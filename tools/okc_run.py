@@ -15,13 +15,20 @@ written as soon as the judge accepts the job, before waiting, so a killed proces
 `collect` (no arguments: every pending job) waits on each with `okc status --wait` and writes the
 rest. Running `collect` in the background is also the way to wait for results.
 
+The judge starts our team's runs one at a time (FINDINGS, "Judge queue"), so at most OKC_INFLIGHT
+(default 4) of our runs sit at the judge; further sends wait here in runs/waiting/ and go in
+priority order (scored runs, then decode layer, MoE, attention and prefill, proj; --priority overrides),
+woken by the judge finishing our oldest run or by another waiter leaving. OKC_INFLIGHT=0 sends at once.
+
 Runs are capped per problem per day (10 scored, 20 checks; reset 00:00 UTC), and the judge
 answers the same source again with its earlier result, so this refuses source the ledger
 (or runs/pending/) already has for the same mode unless --force. Host Python, standard library only.
 """
 
 import argparse
+import ctypes
 import datetime
+import fcntl
 import hashlib
 import json
 import os
@@ -29,12 +36,20 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 LEDGER = REPO / "runs" / "ledger.jsonl"
 PENDING = REPO / "runs" / "pending"
+WAITING = REPO / "runs" / "waiting"
+LOCK = REPO / "runs" / ".dispatch.lock"
+CAP = int(os.environ.get("OKC_INFLIGHT", "4"))  # our runs at the judge at once; 0 sends at once
+# Lower goes first; scored runs (-1) before every check. The decode layer decides the overall board
+# (CEILING, "Overall board weight"), MoE next.
+PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_attention_decode": 2, "muse_prefill_layer": 2,
+            "muse_bf16_proj": 3}
 JOB_KEYS = ("job_id", "job", "id")
 OKC_MODE = {"check": "check", "submit": "run"}  # our mode -> okc's job mode
 
@@ -92,6 +107,81 @@ def known(sha: str, mode: str):
     return None
 
 
+def in_flight() -> list:
+    """Our runs the judge hasn't finished (queued or running), oldest first: `okc jobs` is the authority,
+    so runs sent by other tools or by processes that died still count."""
+    jobs, _ = okc_json("jobs")
+    live = [j for j in (jobs or []) if isinstance(j, dict) and j.get("status") in ("queued", "running")]
+    return sorted(live, key=lambda j: float(j.get("submitted_at") or 0))
+
+
+def waiters() -> list:
+    """Sends waiting for a slot as (priority, time, path), best first; dead processes' entries are dropped."""
+    out = []
+    for p in WAITING.glob("*.json") if WAITING.exists() else []:
+        try:
+            w = json.loads(p.read_text())
+            os.kill(w["pid"], 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            continue
+        except ProcessLookupError:
+            p.unlink(missing_ok=True)
+            continue
+        out.append((w["priority"], w["t"], p))
+    return sorted(out)
+
+
+def block_until_change(oldest_job):
+    """Return when the oldest run in flight finishes (the judge's own completion signal) or a waiter
+    leaves runs/waiting/ (inotify), whichever comes first."""
+    done = threading.Event()
+
+    def judge():
+        okc_json("status", oldest_job, "--wait")
+        done.set()
+
+    def queue():
+        libc = ctypes.CDLL(None, use_errno=True)
+        fd = libc.inotify_init1(os.O_CLOEXEC)
+        if fd >= 0 and libc.inotify_add_watch(fd, os.fsencode(WAITING), 0x200 | 0x40) >= 0:  # IN_DELETE, IN_MOVED_FROM
+            os.read(fd, 4096)
+            done.set()
+
+    if oldest_job:
+        threading.Thread(target=judge, daemon=True).start()
+    threading.Thread(target=queue, daemon=True).start()
+    done.wait()
+
+
+def send_in_turn(problem: str, priority: float, send):
+    """Call send() once fewer than CAP of our runs are at the judge and no better waiter is ahead.
+    The judge starts one of our runs at a time (FINDINGS, "Judge queue"), so holding the rest here
+    costs no throughput and lets the most important run go next."""
+    if CAP <= 0:
+        return send()
+    WAITING.mkdir(parents=True, exist_ok=True)
+    me = WAITING / f"{os.getpid()}.json"
+    me.write_text(json.dumps({"pid": os.getpid(), "priority": priority, "t": time.time(), "problem": problem}))
+    announced = False
+    try:
+        while True:
+            with LOCK.open("a") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                live = in_flight()
+                ahead = waiters()
+                if len(live) < CAP and ahead and ahead[0][2] == me:
+                    result = send()
+                    me.unlink(missing_ok=True)
+                    return result
+            if not announced:
+                print(f"waiting for a judge slot: {len(live)} of our runs in flight (cap {CAP}), "
+                      f"{len(ahead) - 1} other sends waiting", flush=True)
+                announced = True
+            block_until_change(live[0]["job_id"] if len(live) >= CAP else None)
+    finally:
+        me.unlink(missing_ok=True)
+
+
 def start_receipt(problem, mode, job, src: bytes, file: Path, note, stamp, **extra) -> dict:
     out = REPO / "runs" / problem
     out.mkdir(parents=True, exist_ok=True)
@@ -146,17 +236,33 @@ def send(args):
         sys.exit(f"this source already ran as {args.mode} job {row['job']} ({row.get('status', 'pending')}, "
                  f"speedup {row.get('speedup')}); --force to send it again")
 
-    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    sent_at = time.time()
-    result, proc = okc_json(args.mode, problem, str(args.file), "--no-wait")
-    job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
-    job = job or newest_job(problem, args.mode, sent_at)
-    if not job:
-        sys.exit(f"okc {args.mode} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
-    start_receipt(problem, args.mode, job, src, args.file, args.note, stamp)
+    def send():
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        sent_at = time.time()
+        result, proc = okc_json(args.mode, problem, str(args.file), "--no-wait")
+        job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
+        job = job or newest_job(problem, args.mode, sent_at)
+        if not job:
+            sys.exit(f"okc {args.mode} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
+        start_receipt(problem, args.mode, job, src, args.file, args.note, stamp)
+        return job
+
+    priority = args.priority if args.priority is not None else (
+        -1 if args.mode == "submit" else PRIORITY.get(problem, 3))
+    job = send_in_turn(problem, priority, send)
     print(f"okc {args.mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
     finish(job)
+
+
+def collect(args):
+    """Finish pending receipts in parallel, so each is written when its own run finishes."""
+    jobs = args.jobs or sorted(f.stem for f in PENDING.glob("*.json"))
+    threads = [threading.Thread(target=finish, args=(j,)) for j in jobs]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
 
 
 def adopt(args):
@@ -185,10 +291,11 @@ def main():
         p.add_argument("file", type=Path)
         p.add_argument("--note", default="", help="what this candidate is, for the ledger")
         p.add_argument("--force", action="store_true", help="send source the ledger already has")
+        p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem; scored runs -1)")
         p.set_defaults(mode=mode, run=send)
     p = sub.add_parser("collect", help="finish pending receipts (all of them if no job is named)")
     p.add_argument("jobs", nargs="*")
-    p.set_defaults(run=lambda a: [finish(j) for j in (a.jobs or sorted(f.stem for f in PENDING.glob("*.json")))])
+    p.set_defaults(run=collect)
     p = sub.add_parser("adopt", help="receipt a run sent without this tool")
     p.add_argument("job")
     p.add_argument("file", type=Path)

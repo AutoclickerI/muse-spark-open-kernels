@@ -49,8 +49,9 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
 - **Judge throughput.** The judge starts our team's runs one at a time, about one every 5-6
   minutes (about 11 an hour across all five problems), and a sent run can't be cancelled. A run
   waits about 5.5 minutes for each of our runs ahead of it (FINDINGS, "Judge queue"). Keep few
-  runs in flight, send the ones that matter most first (decode layer, then MoE), and time several
-  variants inside one diagnostic check rather than sending one check per idea.
+  variants inside one diagnostic check rather than sending one check per idea. `okc_run.py` keeps at
+  most 4 of our runs at the judge and holds the rest in `runs/waiting/`, sending scored runs first,
+  then decode layer, MoE, attention and prefill, proj (`--priority` overrides), so launch it detached.
 - **Local timing** is sm_120 timing, not H200 timing. Use it to rank candidates loosely and
   to catch graph-capture failures. Report H200 claims only from `runs/` receipts.
 - **Hopper-only code** (wgmma, TMA, FA3, sm90 CUTLASS/DeepGEMM) can't run here. Its only test
