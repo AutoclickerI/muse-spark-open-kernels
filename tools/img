@@ -1,0 +1,19 @@
+#!/bin/sh
+# Run a command inside the judge's image (lmsysorg/sglang:dev-muse-spark-open, at the digest
+# GET /api/v1/serving pins) with this box's GPUs and this repo mounted. Run it from inside the
+# repo. CUDA_VISIBLE_DEVICES passes through, so two lanes can each take a GPU.
+#
+#   tools/img python tools/local_eval.py problems/muse_moe_w4a16/submission.py
+#   CUDA_VISIBLE_DEVICES=1 tools/img python ...
+#   tools/img                  # a shell in the image
+set -eu
+repo=$(cd "$(dirname "$0")/.." && pwd)
+sif=${MUSE_SIF:-/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sif}
+# A home of its own, so the host's ~/.local packages stay out and JIT caches (Triton, torch
+# extensions) persist between runs.
+home=${MUSE_IMG_HOME:-/data2/jihoon/muse_kernel/img-home}
+mkdir -p "$home"
+[ $# -gt 0 ] || set -- bash
+exec apptainer exec --nv --contain --cleanenv --home "$home" --bind "$repo" --pwd "$PWD" \
+  --env PYTHONNOUSERSITE=1 ${CUDA_VISIBLE_DEVICES:+--env CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES} \
+  "$sif" "$@"

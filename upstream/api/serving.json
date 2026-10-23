@@ -1,0 +1,145 @@
+{
+    "base": {
+        "commit": "a55ab7d5ae1bba59ac351e55026fe7f7644ecc5f",
+        "image": "lmsysorg/sglang@sha256:8cfc5a72cb296771f5f8a4a4688cb6d05685610a830cbb616fa4ab0eb7bb2b0a",
+        "repository": "https://github.com/sgl-project/sglang"
+    },
+    "check": {
+        "deadline_min": 35,
+        "per_day": 3,
+        "rescore_conversations": 8,
+        "rungs": [
+            {
+                "concurrency": 16,
+                "conversations_per_slot": 2,
+                "reps": 1
+            }
+        ]
+    },
+    "concurrency": [
+        1,
+        4,
+        16,
+        32
+    ],
+    "docs": "https://openkernelchallenge.dev/rules",
+    "launch": {
+        "args": [
+            "--model-path",
+            "meta-models/Muse-Spark-Open-816B-A42B-NVFP4",
+            "--speculative-draft-model-path",
+            "RadixArk/Muse-Spark-Open-DFlash2",
+            "--tp-size",
+            "8",
+            "--ep-size",
+            "8",
+            "--quantization",
+            "modelopt_fp4",
+            "--moe-runner-backend",
+            "marlin",
+            "--mem-fraction-static",
+            "0.85",
+            "--speculative-algorithm",
+            "DFLASH",
+            "--speculative-num-draft-tokens",
+            "8",
+            "--enable-hierarchical-cache",
+            "--chunked-prefill-size",
+            "16384",
+            "--context-length",
+            "131072",
+            "--enable-cache-report",
+            "--incremental-streaming-output",
+            "--random-seed",
+            "1234",
+            "--max-running-requests",
+            "32",
+            "--cuda-graph-max-bs-decode",
+            "32"
+        ],
+        "env": {
+            "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+            "SGLANG_TIMEOUT_KEEP_ALIVE": "1800"
+        }
+    },
+    "open": false,
+    "per_day": 1,
+    "priority": null,
+    "reps": 3,
+    "rules": {
+        "allowed_prefix": "python/sglang/",
+        "allowed_suffixes": [
+            ".py",
+            ".cu",
+            ".cuh",
+            ".h",
+            ".hpp",
+            ".c",
+            ".cc",
+            ".cpp",
+            ".json"
+        ],
+        "forbidden_prefixes": [
+            "python/sglang/srt/model_loader/"
+        ],
+        "forbidden_words": [
+            "kc-secret",
+            "KC_RESULT",
+            "KC_SERVING",
+            "KC_GATE",
+            "/kc-job",
+            "result_secret",
+            "serviceaccount",
+            "SIMULATE"
+        ],
+        "max_line_chars": 400,
+        "max_patch_bytes": 737280,
+        "summary": [
+            "a unified diff (git diff) against the base commit, changing only files under python/sglang/",
+            "not weight loading (python/sglang/srt/model_loader/)",
+            "only source files (.py, .cu, .cuh, .h, .hpp, .c, .cc, .cpp, .json); no renames, mode changes or binary patches",
+            "no added line over 400 characters; at most 720 KB",
+            "the model must stay the model: 8 routed experts per token, the 2,048-token window, every norm",
+            "nothing below stock's precision: activations stay BF16 wherever stock keeps them in BF16 (stock's FP8 query in FA3 attention stays as it is), and the FP8 KV cache stays FP8",
+            "the drafter is DFlash with its released weights: make it run faster, but don't change, retrain or replace it",
+            "other drafting may only use the requests themselves: prompt lookup and n-grams from the conversation"
+        ]
+    },
+    "rungs": [
+        {
+            "concurrency": 1,
+            "conversations_per_slot": 2,
+            "reps": 3
+        },
+        {
+            "concurrency": 4,
+            "conversations_per_slot": 2,
+            "reps": 3
+        },
+        {
+            "concurrency": 16,
+            "conversations_per_slot": 2,
+            "reps": 3
+        },
+        {
+            "concurrency": 32,
+            "conversations_per_slot": 1,
+            "reps": 1
+        }
+    ],
+    "tracks": {
+        "ends": "2026-11-20T00:00:00-08:00",
+        "kernels": {
+            "closes": "2026-11-05T00:00:00-08:00",
+            "open": true
+        },
+        "launch": "2026-10-22T11:00:00-07:00",
+        "note": "Kernel submissions close Nov 4 at 11:59 pm PT. The serving track opens Nov 5 at noon PT.",
+        "phase": "kernels",
+        "serving": {
+            "closes": "2026-11-20T00:00:00-08:00",
+            "open": false,
+            "opens": "2026-11-05T12:00:00-08:00"
+        }
+    }
+}
