@@ -6,11 +6,13 @@ Top place on the serving board: our SGLang patch's throughput on an 8x H200 node
 
 ## Subgoals (ranked)
 
+Until the kernel close (2026-11-05 17:00 KST) G3 ranks above G2; after it, G2 is second (R-20261024-1).
+
 | Rank | Id | Subgoal | Serves G0 by | Done when |
 |---|---|---|---|---|
 | 1 | G1 | The highest-scoring serving patch that agrees with stock | It is what is scored | `okc serve check` passes; scored runs beat stock at all four rungs; harness drift no larger than stock-vs-stock |
-| 2 | G2 | H200-verified kernels at serving's shapes: verify loads (M = 8-256) and prefill (753-16K tokens) | The patch ports them; serving runs no single-token decode | Receipts beat SGLang on verify and prefill loads; ported with agreement |
-| 3 | G3 | Top 50 on the overall kernel board at close (2026-11-05 17:00 KST) | Serving-queue priority, so our daily serving runs land | `GET /me` `serving_priority` true (FINDINGS "Boards") |
+| 3 (2 after 11-05) | G2 | H200-verified kernels at serving's shapes: verify loads (M = 8-256) and prefill (753-16K tokens) | The patch ports them; serving runs no single-token decode | Receipts beat SGLang on verify and prefill loads; ported with agreement |
+| 2 (until 11-05) | G3 | Top 50 on the overall kernel board at close (2026-11-05 17:00 KST) | Serving-queue priority, so our daily serving runs land | `GET /me` `serving_priority` true (FINDINGS "Boards") |
 
 Targets come from the bound ([bound](reference/bound.md)): serving score at most ~6.1x (tau 4.16); a passing H200 receipt is a milestone.
 

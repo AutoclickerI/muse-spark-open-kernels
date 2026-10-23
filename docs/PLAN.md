@@ -42,7 +42,3 @@ Step 3 dominates, since one result costs hours of wall time.
 | 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x; at the 09:00 reset, one check of the exact submission.py (its source was promoted from a receipt the okc_run file-edit bug may have mislabelled) | proj lane | next: 09:00 KST check |
 | 8 | P8 | G2 | One H200 diagnostic: HBM concurrency (LDG/cp.async/bulk), page-1 KV gather, L2 hints/APW, graph PDL boundary, small-N BF16 MMA/WGMMA, NVFP4 decode issue | H200 rates and lane consequences in FINDINGS | probe lane | active: check `849bd4b650e54c7f` queued |
 | 9 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | next |
-
-## Open questions
-- G2 above G3? The overall top-50 cut (G3) closes 11-05, before serving opens, and its decode loads never
-  run in serving. Recommend keeping G2 first while MoE and decode-layer work serves both (not yet asked).

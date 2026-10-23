@@ -85,6 +85,15 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Effect: rule 16.
 - Confirmed: the answer to the standing-rule question.
 
+## R-20261024-1 — 2026-10-24 00:30 KST — G3 above G2 until the kernel close
+> G3 first until 11-05
+
+- Source: `/home/jihoon/.claude/projects/-home-jihoon/70737187-e5b5-4d2f-a79a-2ce9414b9a0a.jsonl`:6780
+  (question-tool label, asked from the jihoon-a5 session). Answered "when they conflict, does G2 (H200
+  kernels at serving's shapes) rank above G3 (top 50 on the overall kernel board by 11-05, which only
+  moves our serving runs to the front of the queue)?"
+- Effect: GOAL subgoal ranking G1 > G3 > G2 until 2026-11-05 17:00 KST, then G1 > G2.
+
 ## Dropped agent rules (do not reintroduce)
 
 | Rule an agent introduced | Dropped | Match |
