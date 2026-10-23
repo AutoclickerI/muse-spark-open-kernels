@@ -1,3 +1,244 @@
+diff --git a/python/sglang/kernels/jit/csrc/muse_spark_v12/all_reduce_norm_residual.cuh b/python/sglang/kernels/jit/csrc/muse_spark_v12/all_reduce_norm_residual.cuh
+new file mode 100644
+index 0000000..08e0d3c
+--- /dev/null
++++ b/python/sglang/kernels/jit/csrc/muse_spark_v12/all_reduce_norm_residual.cuh
+@@ -0,0 +1,136 @@
++/** \brief One-shot push AR fused with Muse's unchanged residual/norm kernels.
++ * Each CTA pushes its part of one row before polling. All CTAs fit the existing
++ * push-counter budget; unused counters advance too, for interleaving with stock
++ * AR/finalize/AG. No private communication allocation or host synchronization.
++ */
++#include <sgl_kernel/distributed/communicator.cuh>
++#include <sgl_kernel/distributed/ptx.cuh>
++#include "norm_residual.cuh"
++
++namespace sglang {
++
++template <uint32_t World>
++struct ReduceNormParams : NormResidualParams {
++  device::distributed::PushWorkSpace<World> ws;
++  uint32_t rank;
++  uint32_t counters;
++};
++
++template <int64_t Hidden, uint32_t World, int Threads, int Cluster, bool Multicast>
++struct ReduceNormLoad {
++  using Params = ReduceNormParams<World>;
++  using Vec = device::AlignedVector<bf16x2_t, 4>;
++  using Lamport = device::distributed::LamportTrait<bf16_t, 8, 4>;
++
++  SGL_DEVICE static int begin(const Params& params) {
++    using namespace device;
++    const auto epoch = distributed::PushEpoch<World>{params.ws};
++    // A block owns the same elements for push and consume, independent of
++    // scheduling order. No barrier spans the grid.
++    const int row = blockIdx.x / Cluster;
++    const int lane = (blockIdx.x % Cluster) * Threads + threadIdx.x;
++    for (int v = lane; v < Hidden / 8; v += Threads * Cluster) {
++      const int vid = row * (Hidden / 8) + v;
++      Vec value;
++      value.load(params.branch, vid);
++      Lamport::clear_pos_zero(value.data());
++      if constexpr (Multicast) {
++        ptx::st_multimem_16B(value, params.ws.mc_workspace, epoch.slot_offset(params.rank) / 16 + vid);
++      } else {
++#pragma unroll
++        for (uint32_t peer = 0; peer < World; ++peer)
++          ptx::st_relaxed_16B(value, epoch.slot_ptr(peer, params.rank), vid);
++      }
++    }
++    if (blockIdx.x == 0) epoch.unsafe_flip_range(gridDim.x, params.counters);
++    return 0;
++  }
++
++  template <typename V>
++  SGL_DEVICE static V load(const Params& params, int, const bf16_t*, int index) {
++    using namespace device;
++    const auto epoch = distributed::PushEpoch<World>{params.ws};
++    const int vid = (blockIdx.x / Cluster) * (Hidden / 8) + index;
++    V values[World];
++    bool pending;
++    do {
++      pending = false;
++#pragma unroll
++      for (uint32_t peer = 0; peer < World; ++peer) {
++        ptx::ld_relaxed_16B(values[peer], epoch.slot_ptr(params.rank, peer), vid);
++        pending |= Lamport::has_pos_zero(values[peer].data());
++      }
++    } while (pending);
++    V zero;
++    Lamport::fill_pos_zero(zero.data());
++#pragma unroll
++    for (uint32_t peer = 0; peer < World; ++peer)
++      ptx::st_global_16B(zero, epoch.slot_ptr(params.rank, peer), vid);
++    // Same FP32 rank-order accumulation and BF16 rounding as generic push AR.
++    return reduce_vec(values);
++  }
++
++  SGL_DEVICE static void end(const Params& params, int) {
++    __syncthreads();
++    device::distributed::PushEpoch<World>{params.ws}.flip();
++  }
++};
++
++template <int64_t Hidden, uint32_t World, int Threads, int Cluster, bool PDL, bool Multicast, bool Router>
++struct MuseAllReduceNormResidual {
++  /// The attention boundary has no post weight, has a pre weight and gated residual.
++  static void run(host::distributed::CommunicatorRef ref,
++                  tvm::ffi::TensorView branch, tvm::ffi::TensorView stream,
++                  tvm::ffi::TensorView output, tvm::ffi::TensorView new_stream,
++                  tvm::ffi::Optional<tvm::ffi::TensorView> router,
++                  tvm::ffi::TensorView pre_weight, tvm::ffi::TensorView alpha,
++                  tvm::ffi::TensorView beta, double post_eps, double pre_eps) {
++    using namespace host;
++    auto M = SymbolicSize{"tokens"};
++    auto G = SymbolicSize{"gate"};
++    auto dev = SymbolicDevice{};
++    TensorMatcher({M, Hidden}).with_dtype<bf16_t>().with_device<kDLCUDA>(dev)
++        .ensure_alignment(16).verify(branch).verify(output);
++    TensorMatcher({M, Hidden}).with_dtype<fp32_t>().with_device(dev)
++        .ensure_alignment(16).verify(stream).verify(new_stream);
++    CHECK_HOST(router.has_value() == Router);
++    if constexpr (Router)
++      TensorMatcher({M, Hidden}).with_dtype<fp32_t>().with_device(dev)
++          .ensure_alignment(16).verify(router.value());
++    TensorMatcher({Hidden}).with_dtype<bf16_t>().with_device(dev).ensure_alignment(16).verify(pre_weight);
++    TensorMatcher({G}).with_dtype<fp32_t>().with_device(dev).verify(alpha).verify(beta);
++    CHECK_HOST(G.unwrap() == 1 || G.unwrap() == Hidden);
++    const auto rows = static_cast<uint32_t>(M.unwrap());
++    CHECK_HOST(rows > 0);
++    const auto& plane = ref->get_push_obj();
++    CHECK_HOST(rows * Cluster <= plane.num_blocks);
++    CHECK_HOST(!Multicast || plane.mc_workspace != nullptr);
++    ReduceNormParams<World> params{};
++    params.branch = branch.data_ptr();
++    params.stream = stream.data_ptr();
++    params.output = output.data_ptr();
++    params.new_stream = new_stream.data_ptr();
++    params.router_out = Router ? router.value().data_ptr() : nullptr;
++    params.pre_weight = pre_weight.data_ptr();
++    params.alpha = alpha.data_ptr();
++    params.beta = beta.data_ptr();
++    params.post_eps = static_cast<float>(post_eps);
++    params.pre_eps = static_cast<float>(pre_eps);
++    params.num_rows = rows;
++    params.gate_channel_wise = G.unwrap() == Hidden;
++    params.has_pre_weight = true;
++    params.ws = plane.template get_workspace<World>(static_cast<int64_t>(rows) * Hidden * 2);
++    params.rank = plane.rank;
++    params.counters = plane.num_blocks;
++    using Load = ReduceNormLoad<Hidden, World, Threads, Cluster, Multicast>;
++    if constexpr (Cluster == 1) {
++      LaunchKernel(rows, Threads, dev.unwrap()).config({.use_pdl = PDL})(
++          muse_spark_norm_residual_kernel<Hidden, Threads, PDL, true, false, Router, false, true, Load>, params);
++    } else {
++      LaunchKernel(rows * Cluster, Threads, dev.unwrap())
++          .config({.use_pdl = PDL, .cluster_dim = dim3(Cluster, 1, 1)})(
++              muse_spark_norm_residual_cluster<Hidden, Threads, Cluster, PDL, true, false, Router, false, true, Load>, params);
++    }
++  }
++};
++}  // namespace sglang
+diff --git a/python/sglang/kernels/jit/csrc/muse_spark_v12/norm_residual.cuh b/python/sglang/kernels/jit/csrc/muse_spark_v12/norm_residual.cuh
+index 3958da2..1bd27a1 100644
+--- a/python/sglang/kernels/jit/csrc/muse_spark_v12/norm_residual.cuh
++++ b/python/sglang/kernels/jit/csrc/muse_spark_v12/norm_residual.cuh
+@@ -67,6 +67,19 @@ SGL_DEVICE fp32x2_t round_bf16(fp32x2_t v) {
+ 
+ }  // namespace device::norm_residual
+ 
++/// Default branch loader; collective loaders keep the norm arithmetic unchanged.
++struct NormResidualLoad {
++  using Params = NormResidualParams;
++  SGL_DEVICE static int begin(const Params&) { return 0; }
++  template <typename Vec>
++  SGL_DEVICE static Vec load(const Params&, int, const bf16_t* branch, int index) {
++    Vec value;
++    value.load(branch, index);
++    return value;
++  }
++  SGL_DEVICE static void end(const Params&, int) {}
++};
++
+ // One CTA per row; the row stays in registers across both RMS reductions.
+ // `kPrefetchWeights` additionally issues the gate / pre-norm weight loads before
+ // the first reduction, so a small-M launch costs one DRAM round trip instead of
+@@ -79,9 +92,10 @@ template <
+     bool kPostNormIsInputScale,
+     bool kHasRouter,
+     bool kPostWeight,
+-    bool kGate>
++    bool kGate,
++    typename Loader = NormResidualLoad>
+ __global__ void __launch_bounds__(kNumThreads)
+-    muse_spark_norm_residual_kernel(const __grid_constant__ NormResidualParams params) {
++    muse_spark_norm_residual_kernel(const __grid_constant__ typename Loader::Params params) {
+   using namespace device;
+   using namespace device::norm_residual;
+ 
+@@ -119,13 +133,13 @@ __global__ void __launch_bounds__(kNumThreads)
+   BF16Vec pre_w_pf[kPreSlots];
+ 
+   PDLWaitPrimary<kUsePDL>();
++  const auto load_state = Loader::begin(params);
+ 
+   float sum_sq = 0.0f;
+ #pragma unroll
+   for (int p = 0; p < kPacks; ++p) {
+     const int idx = threadIdx.x + p * kNumThreads;
+-    BF16Vec branch_v;
+-    branch_v.load(branch, idx);
++    auto branch_v = Loader::template load<BF16Vec>(params, load_state, branch, idx);
+ #pragma unroll
+     for (int j = 0; j < kFParts; ++j)
+       stream_v[p][j].load(stream, idx * kFParts + j);
+@@ -269,6 +283,7 @@ __global__ void __launch_bounds__(kNumThreads)
+   }
+ 
+   PDLTriggerSecondary<kUsePDL>();
++  Loader::end(params, load_state);
+ }
+ 
+ // Multi-CTA path partitions each row and exchanges FP32 partials through DSM.
+@@ -411,9 +426,10 @@ template <
+     bool kPostNormIsInputScale,
+     bool kHasRouter,
+     bool kPostWeight,
+-    bool kGate>
++    bool kGate,
++    typename Loader = NormResidualLoad>
+ __global__ void __launch_bounds__(kNumThreads)
+-    muse_spark_norm_residual_cluster(const __grid_constant__ NormResidualParams params) {
++    muse_spark_norm_residual_cluster(const __grid_constant__ typename Loader::Params params) {
+   using namespace device;
+   using namespace device::norm_residual;
+   using namespace device::norm_residual_cluster;
+@@ -459,6 +475,7 @@ __global__ void __launch_bounds__(kNumThreads)
+   BF16Vec pre_w_pf[kPreSlots];
+ 
+   PDLWaitPrimary<kUsePDL>();
++  const auto load_state = Loader::begin(params);
+ 
+   float branch_sum = 0.0f;
+   float residual_sum = 0.0f;
+@@ -480,7 +497,7 @@ __global__ void __launch_bounds__(kNumThreads)
+     F32Vec stream_values[kFParts];
+     F32Vec alpha_values[kFParts];
+     F32Vec beta_vector[kFParts];
+-    branch_values.load(branch, index);
++    branch_values = Loader::template load<BF16Vec>(params, load_state, branch, index);
+     if constexpr (kPostWeight) post_weights.load(post_weight, index);
+     if constexpr (kPrefetchWeights) {
+       if (has_pre_weight) pre_w_pf[pack].load(pre_weight, index);
+@@ -607,6 +624,7 @@ __global__ void __launch_bounds__(kNumThreads)
+       if constexpr (kHasRouter) router_values[part].store(router, float_index);
+     }
+   }
++  Loader::end(params, load_state);
+ }
+ 
+ template <
 diff --git a/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py b/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
 index 2b6940e..90dec27 100644
 --- a/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
@@ -11,6 +252,135 @@ index 2b6940e..90dec27 100644
  
  
  @cache_once
+diff --git a/python/sglang/kernels/ops/muse_spark_v12/all_reduce_norm_residual.py b/python/sglang/kernels/ops/muse_spark_v12/all_reduce_norm_residual.py
+new file mode 100644
+index 0000000..3712f47
+--- /dev/null
++++ b/python/sglang/kernels/ops/muse_spark_v12/all_reduce_norm_residual.py
+@@ -0,0 +1,96 @@
++"""Attention-output push all-reduce plus the Muse norm/residual boundary."""
++
++import torch
++
++from sglang.kernels.jit.utils import (
++    cache_once,
++    is_arch_support_pdl,
++    load_jit,
++    make_cpp_args,
++)
++from sglang.kernels.ops.muse_spark_v12.norm_residual import norm_residual_launch_config
++
++
++@cache_once
++def _jit_module(hidden, world, threads, cluster, multicast, router):
++    args = make_cpp_args(
++        hidden, world, threads, cluster, is_arch_support_pdl(), multicast, router
++    )
++    return load_jit(
++        "muse_spark_all_reduce_norm_residual",
++        *args,
++        cuda_files=["muse_spark_v12/all_reduce_norm_residual.cuh"],
++        cuda_wrappers=[("run", f"MuseAllReduceNormResidual<{args}>::run")],
++    )
++
++
++def all_reduce_norm_residual_supported(group, tokens, hidden):
++    from sglang.srt.distributed.device_communicators.custom_all_reduce_v2 import (
++        CustomAllReduceV2,
++    )
++
++    comm = group.ca_comm
++    if (
++        not isinstance(comm, CustomAllReduceV2)
++        or comm.disabled
++        or comm.world_size not in (2, 4, 8)
++        or not 0 < tokens <= 128
++        or hidden % 1024
++        or torch.cuda.get_device_capability(comm.device)[0] != 9
++        or not comm.uses_one_shot_push(tokens * hidden * 2)
++    ):
++        return False
++    cluster, _, _ = norm_residual_launch_config(hidden, tokens)
++    if tokens * cluster > comm.config.num_push_blocks:
++        return False
++    # Respect group communication overrides, including NCCL and FlashInfer.
++    probe = (
++        comm._push_workspaces[comm.rank]
++        .view(torch.bfloat16)
++        .view(-1)[: tokens * hidden]
++        .view(tokens, hidden)
++    )
++    return (
++        not group._can_use_flashinfer_allreduce(probe)
++        and group._resolve_outplace_all_reduce_method(probe) == "ca"
++    )
++
++
++def all_reduce_norm_residual(
++    comm,
++    branch,
++    stream,
++    pre_weight,
++    alpha,
++    beta,
++    post_eps,
++    pre_eps,
++    *,
++    want_router=False,
++):
++    """Return (BF16 FFN input, FP32 stream, optional FP32 router input).
++
++    Borrow the existing push plane on its owning stream; callers must not run
++    another operation on this plane concurrently. Geometry and arithmetic match
++    the separate JIT norm kernel, including its small-M cluster policy.
++    """
++    tokens, hidden = branch.shape
++    cluster, threads, _ = norm_residual_launch_config(hidden, tokens)
++    output, residual = torch.empty_like(branch), torch.empty_like(stream)
++    router = torch.empty_like(stream) if want_router else None
++    _jit_module(
++        hidden, comm.world_size, threads, cluster, comm.has_multicast, want_router
++    ).run(
++        comm.obj,
++        branch,
++        stream,
++        output,
++        residual,
++        router,
++        pre_weight,
++        alpha,
++        beta,
++        post_eps,
++        pre_eps,
++    )
++    return output, residual, router
+diff --git a/python/sglang/kernels/ops/muse_spark_v12/fused_norm_residual.py b/python/sglang/kernels/ops/muse_spark_v12/fused_norm_residual.py
+index 1fecaf3..4a4ce45 100644
+--- a/python/sglang/kernels/ops/muse_spark_v12/fused_norm_residual.py
++++ b/python/sglang/kernels/ops/muse_spark_v12/fused_norm_residual.py
+@@ -498,3 +498,22 @@ class FusedPostNormResidualPreNorm(BaseFusedOp):
+             alpha=self._cc_alpha if self._use_residual_gate else None,
+             beta=self._cc_beta if self._use_residual_gate else None,
+         )
++
++    def forward_with_ar(self, stream, local, comm, *, router_dtype=None):
++        """Attention boundary with ownership of the output-projection reduction."""
++        from sglang.kernels.ops.muse_spark_v12.all_reduce_norm_residual import (
++            all_reduce_norm_residual,
++        )
++
++        self._ensure_cached_weights(torch.bfloat16)
++        return all_reduce_norm_residual(
++            comm,
++            local,
++            stream,
++            self._cc_pre_weight,
++            self._cc_alpha,
++            self._cc_beta,
++            self._post_norm.eps,
++            self._pre_norm.eps,
++            want_router=router_dtype is not None,
++        )
 diff --git a/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py b/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py
 index c050c7c..a7571bc 100644
 --- a/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py
@@ -1661,18 +2031,33 @@ index 62f823b..f649f30 100644
          return self.hidden_norm(projected)
  
 diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
-index 312b342..ea24567 100644
+index 312b342..5bde426 100644
 --- a/python/sglang/srt/models/muse_spark.py
 +++ b/python/sglang/srt/models/muse_spark.py
-@@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
- from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
-     gemm_ag,
+@@ -17,11 +17,12 @@ from typing import Iterable, List, Optional, Tuple
+ 
+ import torch
+ import torch.nn.functional as F
+-from torch import nn
+-
+ from sglang.kernels.ops.muse_spark_v12.all_gather_norm_residual import (
+     all_gather_norm_residual_supported,
+ )
++from sglang.kernels.ops.muse_spark_v12.all_reduce_norm_residual import (
++    all_reduce_norm_residual_supported,
++)
+ from sglang.kernels.ops.muse_spark_v12.fused_muse_spark_routing import (
+     FusedMuseSparkRouting,
+ )
+@@ -35,6 +36,7 @@ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
      gemm_ag_supported,
-+    split_projection_supported,
      gemm_local,
      reserve_projection_workspace,
++    split_projection_supported,
  )
-@@ -47,6 +48,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
+ from sglang.kernels.ops.muse_spark_v12.router_gemm import (
+     MAX_TOKENS as ROUTER_GEMM_MAX_TOKENS,
+@@ -47,6 +49,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
  from sglang.srt.environ import envs
  from sglang.srt.layers import layernorm_sp
  from sglang.srt.layers import muse_spark_expert_tp as expert_tp
@@ -1680,7 +2065,15 @@ index 312b342..ea24567 100644
  from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
  from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
  from sglang.srt.layers.cp.utils import is_cp_active
-@@ -247,6 +249,52 @@ def _split_bf16_router_supported() -> bool:
+@@ -93,6 +96,7 @@ from sglang.srt.runtime_context import get_forward, get_parallel
+ from sglang.srt.state_capturer.routed_experts import get_global_experts_capturer
+ from sglang.srt.utils import add_prefix, is_cpu, is_hip, use_intel_amx_backend
+ from sglang.srt.utils.common import get_device_capability, is_cuda
++from torch import nn
+ 
+ _is_cpu = is_cpu()
+ 
+@@ -247,6 +251,52 @@ def _split_bf16_router_supported() -> bool:
      return is_cuda() and get_device_capability()[0] == 9
  
  
@@ -1733,7 +2126,7 @@ index 312b342..ea24567 100644
  def _use_split_bf16_router(num_tokens: int) -> bool:
      if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
          return False
-@@ -413,25 +461,57 @@ class MuseSpark1xAttention(nn.Module):
+@@ -413,25 +463,57 @@ class MuseSpark1xAttention(nn.Module):
      ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
          backend = get_attn_backend()
          pool = get_token_to_kv_pool()
@@ -1803,7 +2196,25 @@ index 312b342..ea24567 100644
          return (
              k_cache.view(k_cache.shape[0], -1),
              v_cache.view(v_cache.shape[0], -1),
-@@ -584,7 +664,7 @@ class MuseSpark1xMoE(nn.Module):
+@@ -443,11 +525,16 @@ class MuseSpark1xAttention(nn.Module):
+         positions: torch.Tensor,
+         hidden_states: torch.Tensor,
+         forward_batch: ForwardBatch,
++        *,
++        skip_output_reduce: bool = False,
+     ) -> torch.Tensor:
+         if hidden_states.shape[0] == 0:
+             return hidden_states
+         qkv, _ = self.qkv_proj(hidden_states)
+-        output, _ = self.o_proj(self.gated_attention(positions, qkv, forward_batch))
++        output, _ = self.o_proj(
++            self.gated_attention(positions, qkv, forward_batch),
++            skip_all_reduce=skip_output_reduce,
++        )
+         return output
+ 
+     def gated_attention(
+@@ -584,7 +671,7 @@ class MuseSpark1xMoE(nn.Module):
              self.pre_expert_proj is not None
              and self.tp_size in (4, 8)
              and torch.cuda.is_available()
@@ -1812,7 +2223,7 @@ index 312b342..ea24567 100644
          ):
              ca_comm = get_tp_group().ca_comm
              reserve_projection_workspace(
-@@ -757,6 +837,10 @@ class MuseSpark1xMoE(nn.Module):
+@@ -757,6 +844,10 @@ class MuseSpark1xMoE(nn.Module):
              and not getattr(get_forward(), "sp_active", False)
              and not already_reduced
          ):
@@ -1823,7 +2234,7 @@ index 312b342..ea24567 100644
              output = tensor_model_parallel_all_reduce(output)
          if self.post_expert_proj is not None:
              if _is_cpu:
-@@ -846,10 +930,14 @@ class MuseSpark1xMoE(nn.Module):
+@@ -846,10 +937,14 @@ class MuseSpark1xMoE(nn.Module):
              if (
                  self.tp_size in (4, 8)
                  and not sp_active
@@ -1839,7 +2250,47 @@ index 312b342..ea24567 100644
              else:
                  expert_input = bf16_gemm_dispatch(
                      hidden_states, self.pre_expert_proj.weight, None
-@@ -1174,11 +1262,11 @@ class MuseSpark1xModel(nn.Module):
+@@ -1071,16 +1166,32 @@ class MuseSpark1xDecoderLayer(nn.Module):
+             )
+             if result is not None:
+                 return result
+-        attn_output = self.self_attn(positions, attn_input, forward_batch)
++        fuse_attn_ar = (
++            self.operator_dtype == torch.bfloat16
++            and not is_dp_attention_enabled()
++            and not get_forward().sp_active
++            and self._fused_attn_boundary.jit_selected()
++            and all_reduce_norm_residual_supported(
++                get_tp_group(), attn_input.shape[0], attn_input.shape[1]
++            )
++        )
++        attn_output = self.self_attn(
++            positions, attn_input, forward_batch, skip_output_reduce=fuse_attn_ar
++        )
+         router_dtype = self._router_dtype
+         if router_dtype is not None and _use_split_bf16_router(attn_output.shape[0]):
+             router_dtype = None
+-        ffn_input, stream, router_input = self._fused_attn_boundary(
+-            stream,
+-            attn_output,
+-            branch_dtype=self.operator_dtype,
+-            router_dtype=router_dtype,
+-        )
++        if fuse_attn_ar:
++            ffn_input, stream, router_input = self._fused_attn_boundary.forward_with_ar(
++                stream, attn_output, get_tp_group().ca_comm, router_dtype=router_dtype
++            )
++        else:
++            ffn_input, stream, router_input = self._fused_attn_boundary(
++                stream,
++                attn_output,
++                branch_dtype=self.operator_dtype,
++                router_dtype=router_dtype,
++            )
+         if self.is_moe_layer:
+             ffn_output = self.mlp(ffn_input, router_input, forward_batch)
+         else:
+@@ -1174,11 +1285,11 @@ class MuseSpark1xModel(nn.Module):
                  get_parallel().tp_size not in (4, 8)
                  or get_parallel().moe_ep_size != get_parallel().tp_size
                  or is_dp_attention_enabled()

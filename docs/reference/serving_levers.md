@@ -184,7 +184,9 @@ model semantics, so this change does not claim that overlap.
 `test_attn_ar_norm.py` runs the real unicast kernel on two sm_120 GPUs with H1024/8192,
 M8/32/128, optional FP32 router, zeros/signed zeros, shared-plane stock/fused alternation and
 CUDA graph replay. **All eager/graph comparisons against separate custom AR + norm: maxdiff 0.**
-TP1 default-loader eager/graph is exact. Existing cluster norm differs from direct torch math
+TP1 default-loader eager/graph is exact. The forced support predicate accepts M8/TP8 and
+rejects M32, zero rows and a forced NCCL choice. TP2 also matches NCCL maxdiff0 and
+changed-input graph replay is exact. Existing cluster norm differs from direct torch math
 by at most 0.03125 BF16 at H1024, 0.015625 at H8192; the fusion adds zero difference.
 All 12 H8192/TP8 sm_90a variants (cluster8/4/1, multicast on/off, router on/off) compile under
 `override_jit_cuda_arch(9,0,suffix="a")`. H200 multicast execution and speed remain unverified.
@@ -202,12 +204,13 @@ Holding tau/prefill fixed, `sim.serving_receipts` plus this c1 step reduction gi
 not a credited recovery of the whole collective bucket.
 
 Full stock prefill graphs (all 74 shapes, max16K), target/draft verify graphs maxbs32,
-GPU0/TP1 and GPU0+1/TP2 with memory fraction0.3:
+GPU0/TP1 (memory fraction0.45) and GPU0+1/TP2 (memory fraction0.3):
 
 | Local run pair, sm_120 | Exact /220 | TTFT ratio c1 / c4 | Scope |
 |---|---|---|---|
+| `g61-stock-tp1-fullgraphs` / `g63-patch-tp1-final` | 30/30, all220 | 1.02 / 1.01 | final source, fusion inactive at TP1 |
 | `g54-stock-tp2-fullgraphs` / `g55-patch-tp2-fullgraphs` | 30/30, all220 | 0.80 / 0.44 | real patch, new SM90 fusion inactive |
-| `g54` / `g56-ar-standin-tp2-fullgraphs` | 30/30, all220 | 0.69 / 0.50 | forced SM90 Python ownership using NCCL+same norm stand-in |
+| `g54` / `g64-ar-final-tp2` | 30/30, all220 | 0.77 / 0.55 | final-source forced SM90 ownership, NCCL+same norm stand-in |
 | `g50` / `g51` (only16K prefill graph) | 30/30, all220 | 17.40 / 17.49 | failed TTFT; retained diagnostic, not gate evidence |
 | `g52` / `g53` (only16K prefill graph, TP2) | 30/30, all220 | 9.45 / 5.49 | failed TTFT; retained diagnostic |
 
@@ -219,7 +222,11 @@ full-graph stock servers (`g58/59/60`, 90 stock pairwise request comparisons). S
 per-request mean p50/p90 = **0.188395/0.200433**; patch-vs-stock p50/p90 =
 **0.188334/0.200898**. Request-max drift stock p50/p90 = **0.693040/0.814768**;
 patch **0.706755/0.813263**, worst **0.947742** versus stock worst **0.903524**.
-The standard median-within-stock-p90 gate **passes**. The new full-graph patch against old
+The final-source random TP2 run `g65-ar-final-random-tp2` returns all30x220 tokens with
+stable source provenance. Against three stock output runs, both stock and patch have
+first-divergence p10/p50/p90=0 and token-agreement p10/p50/p90=0; patch mean positional
+agreement is0.0000505 versus stock0, so this near-uniform fixture remains nondiscriminating.
+The standard median-within-stock-p90 teacher-forced gate **passes**. The new full-graph patch against old
 prefill-disabled stock failed narrowly (mean p50 0.201966 >0.196557); matching graph policy
 restored the comparison. Do not mix those configurations to infer patch drift. Raw failed gate
 and the matched gate are both retained. The forced kernel seam uses the exact existing norm;
