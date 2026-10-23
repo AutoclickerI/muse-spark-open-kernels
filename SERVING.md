@@ -39,6 +39,12 @@ Evidence it holds on the judge: the sm_90 all-reduce config is "Tuned on H200" a
 Confirm with the log line "All Reduce config ... multicast = True" (`custom_all_reduce_v2.py:323-330`) in the first serving check.
 Every path checks `has_multicast` and falls back to stock.
 
+## In serving/patch.diff now (untested on H200)
+
+- #2 with H200 split at <= 128 tokens (`HOPPER_SPLIT_MAX_TOKENS`, `gemm_ag.py`; a modeled threshold), #4, and #5 with
+  clusters capped at 8 on sm_90. Imports checked in the judge image; the cluster and all-gather-norm kernels compile for
+  sm_90a locally (cluster 8/4/2). Nothing here has run on Hopper.
+
 ## Other levers found
 
 - **Prefill replicates the pooler and unpooler at every size** (`gemm_ag` is capped at 512 tokens, `gemm_ag.py:32`;

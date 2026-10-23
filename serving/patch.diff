@@ -1,0 +1,111 @@
+diff --git a/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py b/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
+index 2b6940e..90dec27 100644
+--- a/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
++++ b/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
+@@ -28,7 +28,7 @@ _VEC = 8
+ 
+ @cache_once
+ def _supports_clusters() -> bool:
+-    return torch.cuda.get_device_capability()[0] >= 10
++    return torch.cuda.get_device_capability()[0] >= 9
+ 
+ 
+ @cache_once
+diff --git a/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py b/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py
+index c050c7c..a7571bc 100644
+--- a/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py
++++ b/python/sglang/kernels/ops/muse_spark_v12/gemm_ag.py
+@@ -30,6 +30,9 @@ if TYPE_CHECKING:
+ 
+ SMALL_PROJECTION_MAX_TOKENS = 8
+ MAX_TOKENS = 512
++# Modeled, not measured: above this the 2-4 MB gather may cost more than the 7/8 of the
++# weight reads it saves on H200; re-tune from serving checks.
++HOPPER_SPLIT_MAX_TOKENS = 128
+ _VEC = 8
+ 
+ 
+@@ -45,6 +48,13 @@ def _jit_module(n: int, world_size: int) -> Module:
+     )
+ 
+ 
++def split_projection_supported(device: torch.device, num_tokens: int) -> bool:
++    capability = torch.cuda.get_device_capability(device)
++    return capability == (10, 3) or (
++        capability == (9, 0) and num_tokens <= HOPPER_SPLIT_MAX_TOKENS
++    )
++
++
+ def gemm_ag_supported(
+     comm: Optional[CustomAllReduceV2], x: torch.Tensor, weight: torch.Tensor
+ ) -> bool:
+@@ -70,7 +80,7 @@ def gemm_ag_supported(
+             or (
+                 comm.world_size in (4, 8)
+                 and n in (4096, 8192)
+-                and torch.cuda.get_device_capability(x.device) == (10, 3)
++                and split_projection_supported(x.device, m)
+             )
+         )
+         and weight.shape[1] == k
+diff --git a/python/sglang/kernels/ops/muse_spark_v12/norm_residual.py b/python/sglang/kernels/ops/muse_spark_v12/norm_residual.py
+index 902f242..256f9af 100644
+--- a/python/sglang/kernels/ops/muse_spark_v12/norm_residual.py
++++ b/python/sglang/kernels/ops/muse_spark_v12/norm_residual.py
+@@ -76,8 +76,14 @@ def _cluster_num_threads(hidden_size: int, cluster_size: int) -> Optional[int]:
+     return num_threads
+ 
+ 
++@cache_once
++def _max_cluster_size() -> int:
++    # Hopper's portable cluster limit; 16 needs a non-portable opt-in that is untested on sm_90.
++    return 8 if torch.cuda.get_device_capability()[0] == 9 else 16
++
++
+ def _cluster_size_for_shape(hidden_size: int, num_tokens: int) -> int:
+-    cluster_size = cluster_size_for_num_tokens(num_tokens)
++    cluster_size = min(cluster_size_for_num_tokens(num_tokens), _max_cluster_size())
+     while cluster_size > 1 and _cluster_num_threads(hidden_size, cluster_size) is None:
+         cluster_size //= 2
+     return cluster_size
+@@ -184,7 +190,7 @@ def fused_norm_residual(
+ 
+     auto_cluster = cluster_size is None
+     if auto_cluster:
+-        supports_clusters = torch.cuda.get_device_capability(branch.device)[0] >= 10
++        supports_clusters = torch.cuda.get_device_capability(branch.device)[0] >= 9
+         cluster_size = (
+             _cluster_size_for_shape(hidden_size, m)
+             if supports_clusters and not pre_norm_bf16
+diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
+index 312b342..192e9cc 100644
+--- a/python/sglang/srt/models/muse_spark.py
++++ b/python/sglang/srt/models/muse_spark.py
+@@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
+ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
+     gemm_ag,
+     gemm_ag_supported,
++    split_projection_supported,
+     gemm_local,
+     reserve_projection_workspace,
+ )
+@@ -584,7 +585,7 @@ class MuseSpark1xMoE(nn.Module):
+             self.pre_expert_proj is not None
+             and self.tp_size in (4, 8)
+             and torch.cuda.is_available()
+-            and torch.cuda.get_device_capability() == (10, 3)
++            and torch.cuda.get_device_capability() in ((10, 3), (9, 0))
+         ):
+             ca_comm = get_tp_group().ca_comm
+             reserve_projection_workspace(
+@@ -846,7 +847,9 @@ class MuseSpark1xMoE(nn.Module):
+             if (
+                 self.tp_size in (4, 8)
+                 and not sp_active
+-                and torch.cuda.get_device_capability(hidden_states.device) == (10, 3)
++                and split_projection_supported(
++                    hidden_states.device, hidden_states.shape[0]
++                )
+                 and gemm_ag_supported(comm, hidden_states, self.pre_expert_proj.weight)
+             ):
+                 expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
