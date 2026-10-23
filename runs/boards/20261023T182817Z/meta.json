@@ -1,0 +1,71 @@
+{
+  "finished_utc": "2026-10-23T18:28:23.338526+00:00",
+  "reads": {
+    "muse_attention_decode": {
+      "argv": [
+        "okc",
+        "leaderboard",
+        "muse_attention_decode",
+        "--json"
+      ],
+      "elapsed_s": 1.332,
+      "finished_utc": "2026-10-23T18:28:22.312855+00:00",
+      "started_utc": "2026-10-23T18:28:20.980774+00:00"
+    },
+    "muse_bf16_proj": {
+      "argv": [
+        "okc",
+        "leaderboard",
+        "muse_bf16_proj",
+        "--json"
+      ],
+      "elapsed_s": 1.405,
+      "finished_utc": "2026-10-23T18:28:20.980728+00:00",
+      "started_utc": "2026-10-23T18:28:19.576206+00:00"
+    },
+    "muse_decode_layer": {
+      "argv": [
+        "okc",
+        "leaderboard",
+        "muse_decode_layer",
+        "--json"
+      ],
+      "elapsed_s": 0.678,
+      "finished_utc": "2026-10-23T18:28:18.707757+00:00",
+      "started_utc": "2026-10-23T18:28:18.030184+00:00"
+    },
+    "muse_moe_w4a16": {
+      "argv": [
+        "okc",
+        "leaderboard",
+        "muse_moe_w4a16",
+        "--json"
+      ],
+      "elapsed_s": 0.868,
+      "finished_utc": "2026-10-23T18:28:19.576176+00:00",
+      "started_utc": "2026-10-23T18:28:18.707785+00:00"
+    },
+    "muse_prefill_layer": {
+      "argv": [
+        "okc",
+        "leaderboard",
+        "muse_prefill_layer",
+        "--json"
+      ],
+      "elapsed_s": 1.026,
+      "finished_utc": "2026-10-23T18:28:23.338479+00:00",
+      "started_utc": "2026-10-23T18:28:22.312936+00:00"
+    },
+    "overall": {
+      "argv": [
+        "okc",
+        "leaderboard",
+        "--json"
+      ],
+      "elapsed_s": 0.953,
+      "finished_utc": "2026-10-23T18:28:18.030146+00:00",
+      "started_utc": "2026-10-23T18:28:17.077009+00:00"
+    }
+  },
+  "started_utc": "2026-10-23T18:28:17.076989+00:00"
+}
