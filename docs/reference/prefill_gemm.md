@@ -3,40 +3,32 @@
 Serves G1/G2. Read when merging the new dense block into a prefill portfolio or serving.
 No judge run or commit was launched in this thread. Serving and prefill lanes own integration.
 
-## H200 evidence and attribution limit
+## Direct H200 measurements; dense tuning stopped
 
-Source: `profiles/promoted_6a9cd943fe404d74.965a9a816d4744ea.json` under
-`problems/muse_prefill_layer/`; the H200-proven V11 layer, scored1.367883x.
-`dev/prefill_gemm_profiles.py` reproduces the arithmetic in this document.
-Times are weighted single profile traces, not paired judge medians. Hardware peak is989TFLOPS
-BF16 dense; the router is256 FP32 rows represented as two256-row BF16 products.
+Receipt `runs/muse_prefill_layer/20261023T221428Z_submit_dafbcad024fe4dcd.json`,
+`SCORE_LAST_SUMMARY`, directly times each role. Overall1.3632x versus V11 about1.367x;
+turn1/turn4/first-turn1.234/1.274/1.611x. This direct evidence **supersedes the old
+438TFLOPS /44% qkv inference and its146.5ms first-turn gap**. Identically named kernels
+were grouped across different GEMMs: the earlier profile-name attribution was wrong.
+Do not use `dev/prefill_gemm_profiles.py`'s inferred role allocation to prioritize work.
 
-The report groups identical kernel names. It does **not** expose per-invocation dimensions,
-so assigning the unique tactical names to qkv and pooler is an inference from shape/tile
-structure, consistent across the small/large shapes and peak arithmetic. Confirm this
-assignment with the new per-role tuner timings on H200. The table deliberately gives
-conditional intervals for grouped operations rather than inventing individual measurements.
-An asterisk allocates all of a group's excess time to that op while every peer runs at989;
-its true individual rate is unknown. These are hardware-model bounds, not measured ranges.
+Best library trial below is the minimum reported time, not a separate full-layer result;
+values in the compact receipt are rounded. Peak989TFLOPS; router is two256-row BF16
+products. Include consumer/communication costs when estimating serving speed.
 
-| GEMM | W[N,K] | M753 TF/s | M3012 TF/s | M16384 TF/s |
-|---|---|---:|---:|---:|
-| qkv_gate | (2304, 8192) | 719 | 743 | 438 |
-| o | (8192, 1024) | 240–989* | 400–989* | 714–989* |
-| pooler | (4096, 8192) | 555–989* | 790 | 902–989* |
-| unpooler | (8192, 4096) | 555–989* | 723–989* | 902–989* |
-| router | (512, 8192) | 486 | 682 | 769 |
+| Role W[N,K] | M753: us /TF/s | M3012: us /TF/s | M16384: us /TF/s /peak |
+|---|---:|---:|---:|
+| qkv_gate[2304,8192] | 37.6 /756 | 143 /795 | 766 /807 /81.6% |
+| o[8192,1024] | 19.5 /648 | 71.2 /710 | 338 /813 /82.2% |
+| pooler[4096,8192] | 64.2 /787 | 253 /799 | 1360 /808 /81.7% |
+| unpooler[8192,4096] | 65.8 /768 | 254 /796 | 1340 /821 /83.0% |
+| router hi+lo[512,8192] | 14.8 /427 | 35.9 /704 | 178 /772 /78.1% |
 
-Per-rank inputs are `[M,K]`, outputs `[M,N]`; M753/3012/16384. Router shape512 in the
-arithmetic table denotes the concatenated hi+lo bank, not512 distinct experts.
-The group rates are734.2TF/s (o/pooler/unpooler at M753),763.7TF/s (o/unpooler at M3012),
-and948.4TF/s (o/pooler/unpooler at M16384). Unique-role rates in the table remain inferred.
-
-At first-turn official multiplicity186 layer/chunk calls, dense/router is781.297ms versus
-607.427ms tensor floor. Under that attribution, qkv is262.849ms versus116.316ms,
-**146.533ms of the173.869ms excess (84.3%)**; the three-op group is485.201ms versus465.264ms,
-and router is33.246ms versus25.848ms. Prioritize qkv at M16384. Those floors are not attainable
-speedup promises. The full layer/serving timing is what decides whether a choice wins.
+At M16384 library qkv choices are766–806us; pooler1.36–1.47ms,
+unpooler1.34–1.45ms, o338–406us, router178–204us (one Lt outlier289us).
+These reach roughly80% of dense peak. Dense is close to its practical ceiling for this
+workload; stop this lane's dense tuning and prioritize MoE/overlap. The aggregate781ms
+versus607ms floor remains a bound comparison, not evidence that qkv owns its excess.
 
 ## QKV M16384 targeted layout experiment
 
@@ -47,24 +39,10 @@ residual/norm math remain intact. The original concatenated512-wide router, rout
 and pooler order are the always-eligible group incumbent; four hybrid/fused alternatives
 are timed with that real consumer. Only the added candidate is owned by this thread.
 
-`dev/qkv_geometry.py` makes the causal hypotheses reproducible. For M16384,N2304,K8192,
-work is618.475GFLOP (625.35us at989TF/s), compulsory I/O381.682MB (79.52us at4.8TB/s),
-and the BF16 output store75.497MB (15.73us). Ideal execution is compute-bound. A short
-output width can still make the chosen library dataflow memory-bound through rereads.
-
-A simple model interpreting the reported320x128 tile in either axis orientation gives:
-
-| Assumed token/output tile | Tiles |132SM waves | Tail xwave efficiency | No cross-tile input reuse |
-|---|---:|---:|---:|---:|
-|320x128|936|8|87.27%|6.87GB /1431us at4.8TB/s|
-|128x320|1024|8|87.27%|7.05GB /1470us at4.8TB/s|
-
-Neither tail nor wave quantization alone explains the inferred44.3% peak. Output-store
-cost is also far smaller than the~788us excess over tensor floor. In contrast, naive tiled
-traffic predicts close to the observed inferred1413us. This is evidence for investigating
-operand reuse/shape-selected dataflow, **not a measurement of DRAM traffic or L2 misses**.
-The model ignores the library's cooperative CTA geometry. The op-name attribution itself
-is still inferred; early `PGC_KERNEL` lines in the new run will verify it directly.
+The geometry/naive-traffic model in `dev/qkv_geometry.py` was developed against the
+incorrect op attribution. It is **not causal evidence of a QKV cache or wave problem**.
+The queued candidate is left frozen; its new layouts can still be measured, but there is
+no remaining evidence for the claimed44% bottleneck or146ms recoverable QKV gap.
 
 The new registry tests:
 
@@ -97,7 +75,8 @@ compile SM90; the Lt wrapper compiles SM90a.
 
 The frozen final candidate passes **5/5 official tests and8/8 graph shapes**, preparing in
 **173.161s** locally. Its compact50-line/4731-character summary survives the final16K tail.
-H200 kernel identity, cache/traffic cause, speed and cold prepare time remain unverified.
+This candidate's H200 selections/speed and cold prepare time remain unverified.
+Direct dense-role H200 rates are established by dafbcad0 above; no cache cause is claimed.
 
 ## Delivered source and trial registry
 

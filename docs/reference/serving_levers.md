@@ -25,7 +25,7 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
-| Prefill experts (753-16K tokens) | Marlin at large M | V9 through256; Marlin257–752 pending diagnostic; v11 grouped>=753; H200 integration/TTFT gate pending | `problems/muse_prefill_layer` |
+| Prefill experts (753-16K tokens) | Marlin at large M | V9 calls<=256 through M752 pending512 diagnostic; v11 grouped>=753; H200 integration/TTFT gate pending | `problems/muse_prefill_layer` |
 | Decode attention (FP8 page-1, QK-norm, KV store, gate fused) | FA3 + combine + ~6 small kernels per layer | ~20 us x 62 layers per step at c=1 | `problems/muse_attention_decode` |
 | Dense projections and router | cuBLAS, the FP32 router GEMV | ~10-20 us per layer | `problems/muse_bf16_proj` |
 | Layer glue (norms, residual, routing) | ~70 us of small kernels per layer at batch 1 (FINDINGS) | up to ~4 ms per step at c=1 | `problems/muse_decode_layer` |
@@ -34,13 +34,36 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
-| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly, with the free lane's modules intact | H200 host latency and full-node TTFT |
-| Expert producer | V9<=256; Marlin257–752; `PrefillExpertPlan` grouped>=753; one canonical bank | Queued `cand_serving_prefill_diag` decides257–512; no receipt for513–752; grouped full-model H200 agreement/TTFT |
+| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; next-turn prefill priority fixed after a completion | H200 host latency and full-node TTFT |
+| Expert producer | V9 calls<=256 for M<=752; `PrefillExpertPlan` grouped>=753; one canonical bank | Queued `cand_serving_prefill_diag` decides512-row calls;513–752 currently splits256+256+tail; grouped full-model H200 agreement/TTFT |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
 | `muse_dflash.py` | Retained, unbound; existing DFlash compute stays active | `cand_dflash_diag` |
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
 | Long prefill attention | FA3; experimental q_len>=2048 dispatch removed | `cand_v11_attn` |
+
+The TTFT audit found a concrete scheduler priority bug: the lookahead callback
+processes the previous result, publishes a completed turn, then prepares decode
+before the next loop ingests that conversation's new turn. With other requests
+still running, `take_prepared` bypasses prefill selection for a whole verify
+step. After any completion, the callback now keeps early result processing but
+defers batch selection until ingress. The deterministic two-request regression
+fails before this fix and passes after it; all4 overlap-plan tests pass.
+KV host graphs and the early length relay remain enabled:96 changed-input FP8
+cache graph replays across all32 batch sizes and100 publish/resolve cycles are
+byte-exact, including unchanged cache guards and the GPU-only FA3 relay.
+
+The original2.06x forced TP2 c32 result is not a reproducible2.06x code effect:
+unchanged `q16` source rerun `r01` is1.48x against the old stock run, and0.85x
+against fresh `r04`; the two stock runs themselves differ1.73x at c32.
+The valid host-group ablation `r05` (scheduler/length relay/KV graphs removed)
+is174/174 exact with0 logprob drift and TTFT ratios0.98/1.13/1.89/0.44 versus
+`r04`. Those serial runs were exposed to different external GPU loads, so this
+does not measure the priority fix's isolated speedup. `r02` is rejected: external
+allocation during capture shrank KV from300,000 to25,356 tokens and caused
+retraction. `r09` is exact but excluded from timing because it was stack-sampled;
+it completed and showed HiCache backups/FlashInfer planning, not a deadlock.
+The old failure and all rejected runs remain in the evidence directory.
 
 No receipt IDs or external measurement files are read at runtime. Admission is
 source policy. Pending modules do not change the default or spend startup time.
@@ -108,8 +131,8 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
 
 - **MoE V9 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
   `muse_spark_fp4_moe.py`). V9 handles all verify rows including M256. The serving
-  adapter admits V9 through256 and grouped at>=753. Marlin covers257–752 until the
-  bounded512 diagnostic wins;513–752 cannot silently enter V9.
+  adapter bounds every V9 call to256 through M752, and selects grouped at>=753.
+  The512-row diagnostic must win before larger V9 calls are admitted.
   Both preserve global slot maps and remote -1s. Verify bypasses grouped after its in-layer H200 regression. The current M1..16,384 stock-Marlin layer screen has
   relative L2<=0.005449 (bound0.015), maxabs0.03125 and exact fresh-input graph replay;
   A bounded V11 Humming adapter now competes at M256 in layer1 only; it preserves separate FP32
@@ -586,7 +609,7 @@ capacity and TTFT remain to be checked. No judge run or commit was launched by t
 
 `muse_spark_humming.py` ports the V11 indexed wide producer behind the existing dense
 `[T,8,H]`/identity-or-minus-one finalize interface. Serving now uses V9 at all verify rungs
-and V9 through256; Marlin257–752 and the grouped prefill adapter>=753 define the transition.
+and V9 calls<=256 through M752; grouped prefill starts at>=753.
 The full second bank is rejected by the owner's memory decision. Only layer1 is eligible for one
 0.906GB partial layout, reconstructed losslessly from the canonical bank during eager warmup.
 Admission charges unbacked VMM target KV plus1280bytes/slot draft KV before counting free memory.
@@ -661,7 +684,7 @@ receipts remain available.
 
 H200 in-layer evidence overrides synthetic routing: `0e94268cf5654012` holds
 verify32 sliding/full1.216/1.136x, versus grouped0.549/0.647x in
-`2ad75c19cb514f5c`. Serving calls V9 through M256, Marlin at M257–752 pending the diagnostic, and
+`2ad75c19cb514f5c`. Serving calls V9 in chunks<=256 through M752 pending the512 diagnostic, and
 the prefill adapter's v11 grouped producer at M>=753, rather than the kernel module's grouped dispatch. The bound is derived
 from actual shared-memory capacity and int16 route-slot capacity; chunk maps
 are global and remote slots stay -1. The independently owned `muse_spark_moe.py`
@@ -752,13 +775,17 @@ maxabs0.00879). Local microseconds Marlin/V9:
 512:537/1080, 1024:895/4620, 2048:4070/9300.
 These are local screens, not an H200 ordering or a decision on the shipping
 bound. H200 receipt and full-model TTFT remain the gate; no judge run launched.
-Production now keeps V9 through256 and Marlin at257–752. If the queued
-`cand_serving_prefill_diag` wins at257–512, that interval can be admitted;
-513–752 stays Marlin until it has independent evidence. The grouped producer
-at>=753 is wired through `PrefillExpertPlan`, which consumes the same canonical
-bank and returns dense rows/global slot maps for the existing finalize. Its
-kernel is the prefill lane's v11-backed producer, unchanged here. The diagnostic
-still freezes the512-row V9 adapter so later ports cannot alter its experiment.
+Production now caps V9 calls at256 for all M<753 until the queued
+`cand_serving_prefill_diag` admits512-row calls. M513–752 has an explicit
+256+256+tail path; maps are offset to the original global routing slots.
+The full-size loader deletes Marlin tensors after canonical-bank preparation,
+so selecting a Marlin gap would crash and retaining both complete banks would
+violate the measured KV budget. The layer test deliberately gives the owner
+only its canonical bank to catch that glue failure. The grouped producer at
+>=753 is wired through `PrefillExpertPlan`, reusing the same bank and returning
+dense rows/global slot maps for the existing finalize. Its kernel is the
+prefill lane's v11-backed producer, unchanged here. The diagnostic still
+freezes the512-row V9 adapter so later ports cannot alter its experiment.
 
 
 Random full-graph teacher forcing (`q07`,30 requests x220 continuation tokens;
