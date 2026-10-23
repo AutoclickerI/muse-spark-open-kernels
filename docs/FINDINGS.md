@@ -164,7 +164,7 @@ Per-load speedups against SGLang from our checks. The per-shape tables are in `p
 | Kernel (job) | Overall | Decode loads | Verify loads (serving's) | Notes |
 |---|---|---|---|---|
 | MoE V9 headroom model | Receipt V9 apparent HBM bandwidth 2.14 / 3.11 / 3.08 / 3.06 / 2.17 / 1.50 TB/s for decode M1/16/32, verify M8/128/256; direct routing bytes 74.9 / 338.3 / 451.5 / 239.5 / 644.1 / 694.7 MB | M256 is the largest weighted gap; M128/M256 BF16 tensor floors are 19.85 / 39.38 us, below HBM | `runs/muse_moe_w4a16/20261023T115744Z_check_f6028a478d594b31.json`, `sim/routing.json`, P8 bandwidth probe |
-| MoE V9 phase trace / CTA-private norm reduction | sm120 diagnostic at H200-like local route counts: M128 phase1/phase2/barrier 0.799M/0.396M/0.071M cycles, 297 CTA norm atomics; M256 0.744M/0.366M/0.048M, 573 atomics; V16 partial buffer passed but regressed local GM 1.192x vs V12 1.275x | Atomics are ~280–300 per routed pair in aggregate, but partial-buffer reduction adds more global traffic and final G-way reads; no serving change | `problems/muse_moe_w4a16/dev/local_v15_diag.log`, `problems/muse_moe_w4a16/dev/local_v16.log` |
+| MoE V9 phase diagnostic / CTA imbalance | `cand_v9_phase.py` sm120 trace with H200-like local pairs: M128 median p1/p2/wait/barrier 0.771M/0.384M/0.016M/0.061M cycles, 416 norm atomics; M256 0.734M/0.362M/0.014M/0.030M, 656 atomics. M256 routing model averages 386.93 pairs, 24.39 experts, 60.53 V9 token-blocks; V9's 188 CTAs get 163/163/164 tiles (max/mean 1.01x over 200 samples). The `ceil(n_e/8)` blocks rise 36.76 -> 60.53 from M128 to M256, repeating 512/256 weight tiles; padded norm atomics are ~386/320 per pair | Static CTA tile imbalance is too small to explain H200's M256 tail; heavy-expert phase waits remain a hypothesis. V16 CTA-private partial reduction is packed into the diagnostic, passes local correctness, but adds global traffic and was not ported | `problems/muse_moe_w4a16/cand_v9_phase.py`, `problems/muse_moe_w4a16/dev/m256_imbalance.txt` |
 | MoE V9 (`f6028a478d594b31`) | 1.654x | 2.196 / 1.717 / 1.392 | 1.813 / 1.590 / 1.356 | 256-thread fused resident kernel; thread 0 prefetches instead of a producer warp; incremental tile iterator. Beats v7 and V6 at every load; hybrid (V6 to bs192, Humming3 above) `318227bc382d465c` 1.536x |
 | MoE v7 (`f95bdf5e394e474e`) | 1.535x | 2.136 / 1.614 / 1.326 | 1.739 / 1.312 / 1.255 | v4 with the first tile decoded once per phase and incremental expert/token-block/row indices instead of a binary search per tile; loses V16 to V6 |
 | MoE V6 (`eefecf1eeb724feb`) | 1.492x | bs 1/16/32: 2.054 / 1.542 / 1.249 | V1/V16/V32: 1.635 / 1.405 / 1.211 | One fused resident kernel: routing, both GEMMs, SwiGLU, norm and weighted sum; 8-token tiles. Profile shows only the fused kernel |
@@ -210,68 +210,98 @@ results feed serving's 753–16K prefill path. The current H200 control is v11, 
 | H200 turn4 ranking | Gate/up53.205ms > dense/router48.161 > attention28.726 > down24.408 > boundaries10.208; total170.452ms | Expert77.613ms vs modeled floor34.633ms; dense48.161 vs37.223ms; attention28.726 vs12.911ms. Gate/up remains the largest visible kernel | Same scored profile; `problems/muse_prefill_layer/dev/V11_PROFILE.md` |
 | H200 first-turn ranking | Grouped expert GEMMs744.857ms > dense kernel family485.201 > FA3264.493 > dense TNT family262.849 > dequant172.280 > boundaries157.742 > SwiGLU67.549; total2250.498ms | All dense/router781.297ms; expert GEMM+dequant917.137ms. Expert GEMM tensor floor573.812ms (~77% peak-equivalent); dense607.427ms; attention114.422ms. Per full64K chunk, FA3 alone8.431ms is largest | Same scored profile; official weights138sliding +3*16full; bound model in `docs/reference/bound.md` |
 | Profile/floor scope | Replay-adjusted tensor floors per weighted load:21.035 /84.767 /1295.661ms. Scored profile totals are2.852 /2.011 /1.737x those floors | The bound's raw table adds replay overhead. Routing floors infer mean routes (~1.8/token), not the profiled invocation's actual counts. The model still charges PV at BF16; allowed FP8 PV can lower its attention term. H200 has no FP4 MMA; expert products remain BF16 | `sim/bound.py`, `problems/muse_prefill_layer/dev/rank_v11.py` |
-| One expert bank | Canonical V6: W13 `[32,512,36864]`, W2 `[32,256,36864]`;905,969,664bytes/layer,50.625GiB across60layers/GPU | Separate FP32 gate/up/down scales. A second raw/custom/Marlin bank violates the serving memory design. v11's research state is not that port | `docs/reference/expert_layout.md` |
+| Expert banks are a resource | Canonical V6: W13 `[32,512,36864]`, W2 `[32,256,36864]`;905,969,664bytes/layer,50.625GiB across60layers/GPU | Separate FP32 gate/up/down scales. Board selection has no bank-count or scratch objective: retain every useful lossless layout and choose by speed. Serving can also retain copies where their throughput gain outweighs displaced KV capacity; the current canonical port is an implementation, not a one-bank rule | R-20261024-2; `docs/reference/expert_layout.md` |
 | Canonical reader comparison | Cold-L2 sm120 RS128 / V6 pipeline:753=.979/3.934ms,3012=2.352/4.218,16384=9.805/18.073; RS128 also wins one-hot routing | Local MMA.sync emulation cannot choose an H200 WGMMA winner. RS128 adaptive is the provisional serving reader. Independent FP32 refs, unequal scales and fresh routing replay pass; M8/128/256 zero/all-local boundaries pass; unnormalized intermediate/down errors .003%/.029% prevent norm cancellation from hiding scale errors | `problems/muse_prefill_layer/dev/canonical_comparison_cold.json`, `canonical_comparison_hot_cold.json`, `canonical_edges.json` |
 | FP8 long-context attention | Local16K-query prefixes32K/64K: BF16 Triton20.257/38.839ms, FP8 direct13.357/25.066, gatheredBN12812.890/23.721; not FA3/H200 ratios | Every key is processed; FP8 QK/PV, FP32 online softmax, probability scale448. Fresh full16K graphs have .86–1.19% sampled FP32-reference L2. Main gatheredBN128 has no SM90 stack; BN256 has424B/thread. H200 and serving agreement remain open | `problems/muse_prefill_layer/dev/attention_fp8_bench.json`, `attention_fp8_verify_long.json`, `attention_fp8_compile_tiles.json` |
 | Expert port boundary | `srt/layers/muse_spark_moe_v4.py`: `prepare_layer`, `run_layer`, `_grouped_call`; called from `MuseSpark1xFp4Experts._forward_marlin` in `srt/layers/muse_spark_fp4_moe.py` | Share canonical bank/GS sidecars; retain dense-slot/finalize interface and EP collectives. Prefill metadata can reuse router counts/positions. Preserve BF16 effective norm, pre-expert norm and BF16 layers0/61. JIT multiline source under `python/sglang/`; no cubins or board-file giant string lines | `serving/sglang/python/sglang/srt/layers/muse_spark_moe_v4.py`, `docs/reference/expert_layout.md` |
 | Attention/dense port boundaries | `FlashAttentionBackend.forward_extend` after cache writes/full-SWA selection; fused QK prep at `MuseSpark1xAttention.forward`; dense dispatch at `bf16_gemm_dispatch` / `quantization/unquant.py` | Serving needs per-request `cu_seqlens_q`, query/context lengths, padding, reserved KV slots and head strides; apply the 5.473 QK factor after E4M3 query rounding; K/V descales follow QK/PV. Residual/norm helpers map to `FusedPostNormResidualPreNorm` and `FusedRMSNormGate`; preserve collective completion | `serving/sglang/python/sglang/srt/layers/attention/flashattention_backend.py`, prefill sources |
 | New expert portfolio (local only) | `cand_expert_portfolio_v2.py`: 9 grouped BN64/128/256 configs + canonical pipeline + 8 DG choices (K1024/2048, hints, SwiGLU4/8warps at255/76registers); `cand_prefill_portfolio_v2.py` also tunes FA3/direct/gathered FP8 attention | Synthetic prepare inputs at 753/3012/16384 with 1/2 local routes per token; stores only per-shape choices. GPU counts/positions remain fresh. 24 SM90a C++ specializations have no spills; BN64 r1 uses 80–92 registers, BN256 r1 178–192. Dequant helpers use 80/127 registers and no stack at K1024/2048 | `problems/muse_prefill_layer/dev/canonical_portfolio.cu`, `compile_portfolio_sm90.log`, `coalesced_dequant_sm90.json`, frozen queue |
-| Direct canonical dequant (local only) | Read-once/scattered output 5.325 ms; coalesced K1024/K2048 3.253/3.201 ms; raw-v11 3.113 ms on sm120, both W13/W2, cold-L2 graphs | Sparse scalar stores were the concrete slow recipe; output coalescing recovers 1.66x locally. It is not yet faster than raw dequant, but needs no second resident bank. Both tile sizes preserve exact represented BF16 values over signed finite E4M3/E2M1 probes and fresh count graphs | `problems/muse_prefill_layer/dev/coalesced_dequant_benchmark_local.json`, `coalesced_dequant_validation.json`, `coalesced_dequant_2048_validation.json` |
-| Research workspace | Original16K DG capacity135168rows: each4096-wide BF16 route buffer1.107GB; W13 BF16 expansion2.147GB, W2 1.074GB | The new canonical DG path implements these sequential aliases: gathered input to SwiGLU, gate/up output to down, one expanded weight buffer for both GEMMs. At 16K: 5.60 GB including expert output versus 8.89 GB for v11 scratch (modeled allocation sizes), a 3.29 GB reduction. Every live range is overwritten per call; full checkpoint/KV/allocator peak remains unmeasured | `problems/muse_prefill_layer/cand_v11.py`, new portfolio source |
+| Score portfolio | `cand_score_portfolio.py` retains raw, original WGMMA, bit-plane, canonical, Humming and Marlin representations. Original/shared WGMMA share one raw repack.32 expert choices include18 canonical configurations,7 raw DG/dequant schedules,3 raw WGMMA readers,3 Humming plans and Marlin | Dense/router tune five projections at753/3012/16384: cuBLAS NT/NN with lossless BF16 copies, every returned cuBLASLt heuristic (256MiB workspace), DeepGEMM for BF16 outputs, and3 persistent Triton tiles. Router retains BF16 hi+lo and FP32 accumulation/output. Six attention paths include paged/contiguous/unpacked FA3 and direct/gathered FP8 at all8 scored shapes. No winner is chosen for bank count or scratch size | `problems/muse_prefill_layer/dev/build_score_portfolio.py`, `score_portfolio_tail.py`, `score_loader.py`; exact validation and hash in `NEXT_CHECKS.md` |
+| Humming configuration failure | A forced TMA configuration differed25% from raw WGMMA while ordinary Humming agreed within.23% on the same753-token fixture | `get_heuristics_config` returned a cached mutable dict. Updating TMA flags polluted later standard/stand-in configs and changed their compiled kernel IDs. Copy the dict before setting flags; retain the original.015 expert L2 check. This is a multi-variant construction bug, not evidence that H200 TMA loses | `problems/muse_prefill_layer/dev/diag_score_humming_forced.py`, `diag_score_humming_forced.log`, corrected builder and forced full-portfolio validation |
+| Direct canonical dequant (local only) | Read-once/scattered output 5.325 ms; coalesced K1024/K2048 3.253/3.201 ms; raw-v11 3.113 ms on sm120, both W13/W2, cold-L2 graphs | Sparse scalar stores were the concrete slow recipe; output coalescing recovers 1.66x locally. These local measurements favor raw dequant; bank compatibility does not justify a slower board choice. The new score portfolio measures both on H200. Both tile sizes preserve exact represented BF16 values over signed finite E4M3/E2M1 probes and fresh count graphs | `problems/muse_prefill_layer/dev/coalesced_dequant_benchmark_local.json`, `coalesced_dequant_validation.json`, `coalesced_dequant_2048_validation.json` |
+| Research workspace | Original16K DG capacity135168rows: each4096-wide BF16 route buffer1.107GB; W13 BF16 expansion2.147GB, W2 1.074GB | Canonical DG sequential aliases model 5.60GB versus v11's8.89GB scratch, but this is capacity evidence only. Both allocation schedules compete on speed in the score portfolio; no memory-saving preference. Every live range is overwritten per call; full checkpoint/KV/allocator peak remains unmeasured | `problems/muse_prefill_layer/cand_v11.py`, score portfolio source |
 | Pending expert mechanisms | v14 Hopper TMA indexed Humming; v15 shared/shared WGMMA; v17 bit-plane decoder | v15 gate/down emulation passes; v15/v17 SM90a builds have no spills. v17 exhaustive signed finite E4M3/E2M1 GEMM probe has0.159% local L2. Forcing Hopper TMA flags on unsupported sm120 failed; the actual guarded v14 passes locally. No H200 conclusion until receipts land | `problems/muse_prefill_layer/dev/verify_fast_decode.log`, `compile_hopper_ss.log`, `compile_hopper_fast.log`, immutable candidate sources |
 | Other landed recipes | v6 Humming indexed1.328x; v8 masked-small/DG-large1.292x (turn1 1.240x); v9 contiguous/unpackedFA31.185x; v10 route-indexed SwiGLU1.190x; corrected native-dense v13 1.237x (first-turn1.574x) | Whole-layer performance owns the choice. Small FA3-stage improvements or native-dense labels do not establish a complete gain | Jobs `1961a539127a4184`, `a2702eaedce34844`, `f13e757f4c224e06`, `583a1b97cc544f53`, `362f63065c634281` under `runs/muse_prefill_layer/` |
 
-The frozen reset-time source order and local evidence live in `problems/muse_prefill_layer/dev/NEXT_CHECKS.md`;
-`problems/muse_prefill_layer/FOCUS.md` is the lane entry point. v14–v17 and previous canonical/attention
-candidates remain pending or waiting admission; their source files stay unchanged. The receipt handler
-owns promotion only for its original authorized round; the orchestrator sends this round's queue.
+The frozen source order and local evidence live in `problems/muse_prefill_layer/dev/NEXT_CHECKS.md`;
+`problems/muse_prefill_layer/FOCUS.md` is the lane entry point. Earlier queued sources stay unchanged.
+The obsolete promotion handler was stopped and deleted: `send` chooses a scored run while a slot
+remains, otherwise a check, and the board retains our best. The orchestrator sends the ready queue.
+
+Serving KV accounting from the judge's flags (`serving/RULES.md`): TP8/EP8, FP8 KV,
+`--mem-fraction-static 0.85`, chunked prefill16384, context limit131072, max-running32 and
+hierarchical cache enabled. At15,872B/token/GPU, with no shared-prefix or sliding-cache savings:
+
+| Concurrent requests | KV at80K tokens/request, GB/GPU | KV at131072 tokens/request, GB/GPU (GiB) |
+|---:|---:|---:|
+| 1 | 1.270 | 2.080 (1.9375) |
+| 4 | 5.079 | 8.321 (7.75) |
+| 16 | 20.316 | 33.286 (31) |
+| 32 | 40.632 | 66.572 (62) |
+
+These are capacity scenarios, not observed simultaneous lengths: the judge's conversations are hidden.
+The131072 cap includes generation; do not add220 beyond it. At80K history plus753 new tokens plus220
+generated tokens, each request needs1.285GB/GPU; concurrency32 needs41.127GB. A new16K chunk alone
+adds0.260GB/request/GPU, and220 generation tokens add3.492MB. A full bank across60layers costs
+54.358GB/GPU, equivalent to3,424,785KV tokens. Using the documented141GB device and119.85GB static
+budget, one/two banks leave65.492/11.134GB before KV, dense weights, drafter, graph pools and workspace.
+At32x80K, one bank leaves24.860GB for those allocations; two banks are29.499GB over budget even before
+them. With no other costs, that one-bank remainder could accommodate at most27 extra layer banks
+(24.461GB); real allocation reduces that number. At32x131072, one bank plus all62-layer KV already
+exceeds the modeled static budget by1.080GB. Thus fully resident maximum-length concurrency is not
+established even for stock. Shared prefixes, sliding-cache reuse, scheduling and hierarchical host spills
+change residency; host capacity is not zero-cost bandwidth. Measure actual peak resident tokens,
+stock interactivity and the released-checkpoint allocations before deciding which layers get duplicates.
+Reproducible arithmetic: `problems/muse_prefill_layer/dev/kv_budget.py` / `kv_budget.json`.
 
 ### Projection evidence and next experiment (G3, G2)
 
-The current board source stays in `submission.py`; the new experiment is `cand_portfolio.py`.
+The current board is scored `dd989ef2d76147e7`, **1.172813x**, rank 249 of 462
+when read on 2026-10-24. `submission.py` is its exact frozen portfolio source (`57086918…`).
+The new experiment is `cand_portfolio_all.py`, targeting 1.26x.
 The scored source, rather than the older check table, owns the following numbers. They are
 replay-adjusted cold-L2 H200 medians; the floor includes all compulsory input/output traffic.
-Evidence: `runs/muse_bf16_proj/20261023T100928Z_submit_68e2f34b1d4744cb.json`.
+Evidence: `runs/muse_bf16_proj/20261023T172641Z_submit_dd989ef2d76147e7.json`.
 
 <!-- PROJ_GAP_BEGIN -->
 H200 gap to 1.26x, from all 13 clean completed receipts. SGLang and board
-times use scored `68e2f34b1d4744cb`. Best = that SGLang time / the highest observed
+times use scored `dd989ef2d76147e7`. Best = that SGLang time / the highest observed
 paired speedup for this shape; it is a common-baseline equivalent, not a new measured
 median. Choosing the maximum across receipts is optimistic and includes timing noise;
 the new portfolio must reproduce any gain. All times below are microseconds.
 
 | m | Layer | SGLang | Board | Best equivalent | Best receipt median | Receipt | Excess over SGLang/1.26 |
 |---:|---|---:|---:|---:|---:|---|---:|
-| 1 | qkv_gate | 13.984 | 12.566 | 12.566 | 12.566 | `68e2f34b1d4744cb` | 1.468 |
-| 1 | o | 6.816 | 6.672 | 6.608 | 6.608 | `a3b29a26372c4b35` | 1.198 |
-| 1 | pooler | 20.640 | 18.347 | 17.901 | 18.761 | `9294b3237c4f4e2d` | 1.520 |
-| 1 | unpooler | 7.056 | 5.449 | 5.410 | 5.398 | `9294b3237c4f4e2d` | 0.000 |
-| 1 | router | 10.304 | 6.121 | 6.109 | 6.005 | `dd5ffc6950bc439e` | 0.000 |
-| 16 | qkv_gate | 14.336 | 13.871 | 13.772 | 13.449 | `9294b3237c4f4e2d` | 2.394 |
-| 16 | o | 7.008 | 7.022 | 6.872 | 6.872 | `9294b3237c4f4e2d` | 1.310 |
-| 16 | pooler | 20.560 | 19.382 | 18.881 | 19.689 | `9294b3237c4f4e2d` | 2.564 |
-| 16 | unpooler | 18.720 | 18.822 | 18.489 | 18.599 | `849bd4b650e54c7f` | 3.631 |
-| 16 | router | 14.896 | 6.606 | 6.480 | 6.508 | `849bd4b650e54c7f` | 0.000 |
-| 32 | qkv_gate | 14.240 | 14.374 | 14.032 | 14.079 | `a3b29a26372c4b35` | 2.730 |
-| 32 | o | 6.592 | 6.576 | 6.348 | 6.533 | `9294b3237c4f4e2d` | 1.116 |
-| 32 | pooler | 21.280 | 22.875 | 21.105 | 20.772 | `849bd4b650e54c7f` | 4.217 |
-| 32 | unpooler | 18.688 | 18.616 | 18.512 | 18.544 | `dd989ef2d76147e7` | 3.681 |
-| 32 | router | 14.912 | 7.713 | 7.674 | 7.896 | `849bd4b650e54c7f` | 0.000 |
-| 8 | qkv_gate | 14.176 | 12.931 | 12.820 | 12.560 | `dd989ef2d76147e7` | 1.570 |
-| 8 | o | 6.816 | 6.721 | 6.659 | 6.440 | `dd989ef2d76147e7` | 1.249 |
-| 8 | pooler | 20.496 | 18.367 | 18.007 | 18.864 | `9294b3237c4f4e2d` | 1.740 |
-| 8 | unpooler | 7.104 | 5.566 | 5.435 | 5.509 | `dd989ef2d76147e7` | 0.000 |
-| 8 | router | 26.320 | 6.500 | 6.117 | 6.031 | `dd989ef2d76147e7` | 0.000 |
-| 128 | qkv_gate | 17.024 | 16.918 | 16.378 | 16.347 | `dd989ef2d76147e7` | 2.867 |
-| 128 | o | 7.456 | 7.439 | 7.366 | 7.477 | `a3b29a26372c4b35` | 1.449 |
-| 128 | pooler | 24.608 | 25.203 | 23.914 | 25.236 | `122997f357d04fa2` | 4.384 |
-| 128 | unpooler | 19.744 | 19.615 | 19.607 | 19.909 | `03113fd349d347dc` | 3.937 |
-| 128 | router | 16.176 | 15.958 | 10.216 | 10.327 | `dd989ef2d76147e7` | 0.000 |
-| 256 | qkv_gate | 20.064 | 19.736 | 19.528 | 19.746 | `122997f357d04fa2` | 3.604 |
-| 256 | o | 9.152 | 9.168 | 9.030 | 9.409 | `458c6d3e931c4f63` | 1.767 |
-| 256 | pooler | 29.712 | 29.396 | 29.189 | 30.446 | `03113fd349d347dc` | 5.608 |
-| 256 | unpooler | 23.872 | 24.006 | 23.696 | 24.284 | `458c6d3e931c4f63` | 4.750 |
-| 256 | router | 17.296 | 17.368 | 13.036 | 13.434 | `dd989ef2d76147e7` | 0.000 |
+| 1 | qkv_gate | 13.824 | 12.582 | 12.422 | 12.566 | `68e2f34b1d4744cb` | 1.451 |
+| 1 | o | 6.832 | 6.729 | 6.623 | 6.608 | `a3b29a26372c4b35` | 1.201 |
+| 1 | pooler | 20.832 | 18.646 | 18.068 | 18.761 | `9294b3237c4f4e2d` | 1.534 |
+| 1 | unpooler | 6.944 | 5.370 | 5.324 | 5.398 | `9294b3237c4f4e2d` | 0.000 |
+| 1 | router | 10.432 | 6.285 | 6.185 | 6.005 | `dd5ffc6950bc439e` | 0.000 |
+| 16 | qkv_gate | 13.952 | 13.840 | 13.403 | 13.449 | `9294b3237c4f4e2d` | 2.330 |
+| 16 | o | 6.880 | 6.847 | 6.746 | 6.872 | `9294b3237c4f4e2d` | 1.286 |
+| 16 | pooler | 20.800 | 19.541 | 19.102 | 19.689 | `9294b3237c4f4e2d` | 2.594 |
+| 16 | unpooler | 18.656 | 18.548 | 18.425 | 18.599 | `849bd4b650e54c7f` | 3.619 |
+| 16 | router | 14.976 | 6.586 | 6.515 | 6.508 | `849bd4b650e54c7f` | 0.000 |
+| 32 | qkv_gate | 13.888 | 13.933 | 13.685 | 14.079 | `a3b29a26372c4b35` | 2.663 |
+| 32 | o | 6.928 | 6.750 | 6.671 | 6.533 | `9294b3237c4f4e2d` | 1.173 |
+| 32 | pooler | 21.376 | 21.432 | 21.201 | 20.772 | `849bd4b650e54c7f` | 4.236 |
+| 32 | unpooler | 18.720 | 18.544 | 18.544 | 18.544 | `dd989ef2d76147e7` | 3.687 |
+| 32 | router | 15.232 | 7.863 | 7.839 | 7.896 | `849bd4b650e54c7f` | 0.000 |
+| 8 | qkv_gate | 13.888 | 12.560 | 12.560 | 12.560 | `dd989ef2d76147e7` | 1.538 |
+| 8 | o | 6.592 | 6.440 | 6.440 | 6.440 | `dd989ef2d76147e7` | 1.208 |
+| 8 | pooler | 20.576 | 18.326 | 18.077 | 18.864 | `9294b3237c4f4e2d` | 1.747 |
+| 8 | unpooler | 7.200 | 5.509 | 5.509 | 5.509 | `dd989ef2d76147e7` | 0.000 |
+| 8 | router | 25.952 | 6.031 | 6.031 | 6.031 | `dd989ef2d76147e7` | 0.000 |
+| 128 | qkv_gate | 16.992 | 16.347 | 16.347 | 16.347 | `dd989ef2d76147e7` | 2.862 |
+| 128 | o | 7.296 | 7.352 | 7.208 | 7.477 | `a3b29a26372c4b35` | 1.417 |
+| 128 | pooler | 25.696 | 25.464 | 24.972 | 25.236 | `122997f357d04fa2` | 4.578 |
+| 128 | unpooler | 19.744 | 19.815 | 19.607 | 19.909 | `03113fd349d347dc` | 3.937 |
+| 128 | router | 16.352 | 10.327 | 10.327 | 10.327 | `dd989ef2d76147e7` | 0.000 |
+| 256 | qkv_gate | 20.048 | 20.413 | 19.512 | 19.746 | `122997f357d04fa2` | 3.601 |
+| 256 | o | 9.168 | 9.256 | 9.046 | 9.409 | `458c6d3e931c4f63` | 1.770 |
+| 256 | pooler | 29.280 | 29.329 | 28.764 | 30.446 | `03113fd349d347dc` | 5.526 |
+| 256 | unpooler | 24.576 | 24.590 | 24.395 | 24.284 | `458c6d3e931c4f63` | 4.890 |
+| 256 | router | 17.824 | 13.434 | 13.434 | 13.434 | `dd989ef2d76147e7` | 0.000 |
 
 The last column is a sufficient uniform-shape target, not the score formula. The
 official projection score is the geometric mean of six *load* ratios; each load sums
@@ -280,21 +310,22 @@ remains unpublished; the earlier 11% projection weight is a model, not a rule.
 
 | m/load | SGLang sum | Board sum | Best equivalent sum | Best load ratio | Budget at 1.26x | Saving to that budget |
 |---|---:|---:|---:|---:|---:|---:|
-| 1 | 58.800 | 49.154 | 48.594 | 1.210x | 46.667 | 1.928 |
-| 16 | 75.520 | 65.703 | 64.494 | 1.171x | 59.937 | 4.557 |
-| 32 | 75.712 | 70.153 | 67.671 | 1.119x | 60.089 | 7.582 |
-| 8 | 74.912 | 50.084 | 49.038 | 1.528x | 59.454 | 0.000 |
-| 128 | 85.008 | 85.133 | 77.481 | 1.097x | 67.467 | 10.015 |
-| 256 | 100.096 | 99.674 | 94.479 | 1.059x | 79.441 | 15.038 |
+| 1 | 58.864 | 49.612 | 48.622 | 1.211x | 46.717 | 1.905 |
+| 16 | 75.264 | 65.362 | 64.191 | 1.172x | 59.733 | 4.458 |
+| 32 | 76.144 | 68.522 | 67.939 | 1.121x | 60.432 | 7.508 |
+| 8 | 74.208 | 48.866 | 48.617 | 1.526x | 58.895 | 0.000 |
+| 128 | 86.080 | 79.305 | 78.461 | 1.097x | 68.317 | 10.143 |
+| 256 | 100.896 | 97.022 | 95.152 | 1.060x | 80.076 | 15.076 |
 
-The optimistic stitched score is **1.188255x**, versus the board's
-1.142642x. If the other four loads hold, m128 and m256 each need
-another **1.192x** speedup to reach 1.26x overall.
-The largest uniform-budget deficits are qkv/pooler/unpooler at m16/32/128/256 and
-router at m128/256. Router fusion alone cannot close the complete gap; tune all 30
+The optimistic stitched score is **1.188960x**, versus the board's
+1.172813x. If the other four loads hold, m128 and m256 each need
+another **1.190x** speedup to reach 1.26x overall.
+The largest uniform-budget deficits are pooler/unpooler at m16/32/128/256, then qkv and
+other BF16 layers. Router fusion alone cannot close the complete gap; tune all 30
 shapes, especially memory-heavy BF16 projections. Receipt/source pairs in `runs/`
 own these measurements; profiles diagnose kernels but do not replace paired medians.
 <!-- PROJ_GAP_END -->
+
 
 
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |

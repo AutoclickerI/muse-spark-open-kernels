@@ -13,12 +13,17 @@ prepare(); its sm120 screen passes 5/5 tests and 6/6 graph shapes at 1.262x loca
 Serving ports V9 native through M=128 plus the same-bank grouped wide path from M=256; layer agreement passes
 M=1,8,16,32,64,128,256,753,3012,16384. The canonical bank is 864 MiB/GPU.
 
-Next: decode-layer integration consumes `dev/V9_ABI.md`; wait for V9 scored receipt,
-then compare its per-load table with V11 and port the winning dispatch into the layer.
+Next: `cand_v9_phase.py` is first in the 09:00 KST 20-check queue; its plain kernel is V11,
+while prepare() prints H200 clock64 spreads and ranks V9/V12/V16/Humming on all six shapes.
 V9 headroom model (routing means from `sim/routing.json`, direct distinct experts): total bytes
-are 74.9/338.3/451.5/239.5/644.1/694.7 MB for M=1/16/32/8/128/256.
-Using receipt times, achieved bandwidth is 2.14/3.11/3.08/3.06/2.17/1.50 TB/s;
-P8 implementation range is 3.0–3.15 TB/s and spec is 4.8 TB/s. Tensor work is 19.85/39.38 us
-at M128/M256, below HBM time. Weighted excess over 3.075 TB/s is largest at verify-32
-(~323 weighted us), then verify-16 (~138); this round probed a 3-stage V9 ring at M128.
-Clock64 trace with H200-like local route counts (diagnostic sm120): M128 median CTA route 7.8K, phase1 0.799M, phase2 0.396M, barrier 70.5K cycles, 297 norm atomics; M256 route 6.4K, phase1 0.744M, phase2 0.366M, barrier 47.8K, 573 atomics. Tile counts were 101/50 and 166/83 per CTA; atomics aggregate to roughly 280–300 per routed pair. A CTA-private `ss_partial[cta,pair]` reduction (V16) passed correctness but fell to 1.192x local GM versus V12 1.275x, so serving stays unchanged. Final-combine timestamps had a clock artifact and remain unclaimed.
+are 74.9/338.3/451.5/239.5/644.1/694.7 MB for M=1/16/32/8/128/256; achieved bandwidth
+is 2.14/3.11/3.08/3.06/2.17/1.50 TB/s. Weighted excess over 3.075 TB/s is ~323 us
+at verify-32 and ~138 us at verify-16; tensor floors are 19.85/39.38 us at M128/M256.
+The diagnostic sm120 trace with H200-like local pairs reports M128 median p1/p2/wait/barrier
+770.6K/384.4K/15.5K/61.3K cycles and 416 atomics; M256 734.5K/362.3K/13.6K/30.5K
+and 656 atomics. M256 has 387 pairs, 24.39 experts and 60.53 V9 token-blocks on average;
+V9's 188 CTAs receive 163.0/163.0/164.0 tiles (max/mean 1.01x over 200 routing samples),
+so CTA imbalance is not the explanation. The pair-scaled cost is block padding: `ceil(n_e/8)`
+token blocks rise 36.76 -> 60.53 from M128 to M256 (1.65x), repeating 512/256 weight tiles;
+padded norm atomics are about 386/320 per local pair. V16 partial reduction is embedded for
+evidence; it passes local correctness but adds global traffic, so serving remains unchanged until H200 data.
