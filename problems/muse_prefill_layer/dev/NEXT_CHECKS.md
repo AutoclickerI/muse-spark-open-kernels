@@ -1,34 +1,57 @@
 # Prefill send order
 
-Serves: G2, G1. The orchestrator owns all sends and commits. `send` uses a scored slot when one
-remains, otherwise a check, otherwise waits for the 09:00 KST reset. The board retains its best;
-there is no check-then-promote handler. This thread launched no judge run or collector.
+Serves: G2, G1. Only the orchestrator sends or commits. `send` selects a scored slot while one
+remains, then a check, then waits for the quota reset. This thread starts no judge process.
 
 ## Ready, new source
 
 | Order | Source | SHA256 | Local screen | Purpose |
 |---:|---|---|---|---|
-| 1 | `cand_score_portfolio.py` | `fa202b0272f441d917938481fdecd976278858dbaadabaef089a2f0cf42a0452` | `runs/screen/prefill_round5/muse_prefill_layer.cand_score_portfolio.json` | Complete score portfolio:32 expert choices and multiple lossless banks;15 dense/router shapes with cuBLAS NT/NN, all Lt heuristics, DeepGEMM and persistent Triton;6 attention engines at all8 scored shapes. Synthetic prepare tuning on the judge chooses by speed. |
+| 1 | `cand_fused_expert_portfolio.py` | `c18fa82edad25daf91d621da88dfd9380eea482757c4333c1c633545e4c9d114` | `runs/screen/prefill_round6/muse_prefill_layer.cand_fused_expert_portfolio.json` |45 expert choices:13 new fused/parallel paths plus the queued portfolio's32 controls. All dense/router and6 attention paths retained. Prepare measures complete stages per shape with fresh paired cold-L2 graphs; chooses speed alone. |
 
-Suggested send note: “Score-only portfolio: retain raw/canonical/WGMMA/bitplane/Humming/Marlin
-banks; cold-L2 fresh-input graph tuning with paired swapped order and measured replay-cost subtraction.
-Tune experts at753/3012/16384, all5 dense/router projections and all8 attention shapes. FP32 router,
-BF16 activations, FP8 KV and every key retained. Official local5/5 and graph8/8; every expert/dense/
-attention family passes forced Hopper stand-ins. No memory-saving preference; prepare budget guarded.”
+Suggested note: “New expert algorithms: persistent BF16 grouped GEMM with SwiGLU fused in its
+ epilogue; FP32 split-K reduction; direct NVFP4 grouped GEMM with packed BF16x2 decoding and exact
+ power-of-two accumulator restoration; graph-captured W2 expansion overlapping gate/up GEMM, plus
+ a fused-gate/DG-down overlap hybrid.45 expert choices,15 dense/router shapes and6 attention paths
+ at8 shapes. Full local5/5 and graph8/8; every path forced through Hopper stand-ins; exact FP4/SF
+ codec fixtures. No judge timing claimed locally.”
 
-This single source measures all new components; separate dense-only or expert-only copies would
-repeat its H200 measurements. Keep the original queued experiments unchanged so their receipts remain
-comparable. Do not send a source hash again if it already has an admission request or receipt.
+Expert excess over the modeled first-turn floor is343.325weighted ms, compared with173.870dense
+ and150.071attention. Dequant172.280ms plus SwiGLU67.549ms motivates the new fusions and overlap.
+ Profiles are single H200 traces; model floors infer routing. `V11_PROFILE.md` owns that comparison.
 
-## Already queued by the orchestrator
+One file supplies all new measurements. A separate file for each new expert path would duplicate
+ its diagnostic table. The queued32-choice source stays byte-identical; do not send it again.
 
-These17 sources were sent before this round. Their listed order is the previous recovery order,
-**not17 requests to create again**. The server owns admission/quota; check `runs/waiting/`,
-`runs/pending/` and the ledger before recovering a missing request. A landed receipt owns its result.
-20 prefill checks reset at09:00 KST; `send` handles whether a request uses a scored slot or a check.
+## Validation
+
+- sm120/GPU0 official5/5 and timed graph8/8, exact source hash above.
+- Forced Hopper constructors, stage3 configuration and TMA/FA3 branches use portable stand-ins:
+ 180 fresh expert-layer,552 dense/router and12 production-attention checks pass. The complete
+ selected pipeline additionally passes all8 scored shapes with2 fresh inputs each.
+- Both forced prepare sweeps measure all45 experts at753/3012/16384, all15 dense/router pairs,
+ and6 attention paths at all8 shapes. Warm local prepare43.50/26.54s; cold H200 timing unverified.
+- The actual packed decoder preserves130048 represented BF16 weights exactly for each of2
+ reconstruction forms, covering every FP4 byte and every signed finite E4M3 scale, including zeros
+ and subnormals. Only packed FP4 payload/scales and lossless permutations persist in prepare.
+- Cross-graph shared-event fork/join and empty/skewed routing replay pass for all3 overlap paths.
+ The captured call contains both branches and joins before down GEMM; no data-derived state persists.
+- New GEMM and split epilogue specializations compile for SM90; actual H200 WGMMA execution,
+ cold-compile prepare time and serving agreement await receipts.
+- Local tuner OOM came from uint8 torch.sum's8GiB cast temporary, not a layer failure. The new
+ read-only1GiB flush uses small scratch outside timing events; the complete rerun passes.
+- Evidence: `round6_validation.json`, `fused_portfolio_validation.json`, `fused_selected_validation.json`,
+ `fused_decode_validation.json`, `fused_sm90.json`, `overlap_expert_math.json` and local benchmark JSONs.
+
+## Already queued: retain hashes, no duplicate requests
+
+The32-choice score portfolio below was queued after commit9112546. The17 older sources were queued
+ before it. Their order below is recovery context, not a request to resend them. Match source hashes
+ against receipts, `runs/pending/`, `runs/waiting/` and the ledger; a landed result owns its information.
 
 | Previous order | Source | SHA256 | Local screen | Experiment |
 |---:|---|---|---|---|
+| 0 | `cand_score_portfolio.py` | `fa202b0272f441d917938481fdecd976278858dbaadabaef089a2f0cf42a0452` | `runs/screen/prefill_round5/muse_prefill_layer.cand_score_portfolio.json` | Complete score portfolio:32 expert choices and multiple lossless banks;15 dense/router shapes with cuBLAS NT/NN, all Lt heuristics, DeepGEMM and persistent Triton;6 attention engines at all8 scored shapes. Synthetic prepare tuning on the judge chooses by speed. |
 | 1 | `cand_expert_portfolio_v2.py` | `b1538a10e562f7f5ba7043300eb787be14159f0f5fb1ec5a1259416a71b14f98` | `runs/screen/prefill_round4/muse_prefill_layer.cand_expert_portfolio_v2.json` | Primary diagnostic: 18 same-bank expert choices, including low-register BN64, BN256 and direct canonical DG; v11 attention/dense control. |
 | 2 | `cand_prefill_portfolio_v2.py` | `4ab8bccc3ddde270f499d67974be79c3aa191f66cda71d14732ba07d87919ea4` | `runs/screen/prefill_round4/muse_prefill_layer.cand_prefill_portfolio_v2.json` | Complete serving-compatible stage portfolio: same expert choices plus FA3/direct/gathered FP8 long-context attention. |
 | 3 | `cand_canonical_hybrid.py` | `6d10a6804cfa3964c2bdeb91e6708fd8c27f910d8e7342e6f91389199876dfc4` | `runs/screen/prefill_round4/muse_prefill_layer.cand_canonical_hybrid.json` | Fixed v11-style canonical control: BN128 pipeline below8192, direct-bank DG hint above; checks the fixed hybrid family with row hints and BR4 SwiGLU. |
@@ -47,30 +70,9 @@ These17 sources were sent before this round. Their listed order is the previous 
 | 16 | `cand_v14.py` | `aeeff090a520043b4685eeeb750397e00b8e8efdeb37e8bb013f034e9668de63` | `runs/screen/20261023T143731Z/muse_prefill_layer.cand_v14.json` | Hopper TMA indexed Humming expert path; distinct research bank. |
 | 17 | `cand_combo_ready.py` | `9198aed89bf254e48fb1b49059cecaad123f1cbe9a2d92fa5935917f2f489ec6` | `runs/screen/20261023T143731Z/muse_prefill_layer.cand_combo_ready.json` | Earlier receipt-assembled stage control; may retain multiple research banks, not the serving state. |
 
-## Validation and interpretation
-
-- Exact source passes the five official local tests and all eight timed graph shapes on sm120/GPU0.
-- Forced Hopper prepare exercises both constructor ABI and TMA flag construction using portable
-  MMA/Humming/FA3 stand-ins. All32 experts at all3 shapes and6 attention paths at all8 shapes
-  were measured; dense tuning covers15 projection/shape pairs. Local selection is not an H200 result.
-- Fresh graph/reference validation:128 complete expert-layer cases,552 dense/router cases and12
-  complete production-attention cases; all five official tests also pass with the selected Hopper glue.
-- `score_portfolio_validation.json` ties counts/prepare time to the source SHA; `score_tuning_local.json`
-  contains the complete local diagnostic table. The combined tuned selection passes all8 scored
-  shapes with two fresh inputs each (`score_selected_validation.json`),16 further full-layer passes.
-  The forced complete sweeps take49.18/61.12s with warm local caches; cold H200 timing is unverified.
-- Complete C++ expert/Lt source compiles for SM90a; all15 persistent Triton specializations compile
-  for SM90. H200 execution and cold-compile prepare time remain unverified until the receipt.
-- Tuning retains no synthetic input, output, converted BF16 expert weights or graph between calls.
-  NVFP4 remains NVFP4 at rest; only per-shape choices, lossless layouts and library workspace persist.
-- FINDINGS owns KV capacity arithmetic and the cached-Humming-config mutation failure. Board
-  sources have no bank-count preference. Serving duplication requires measured throughput and actual
-  resident-token allocations, not a canonical-bank compatibility gate.
-
-Current H200 control remains v11: check6a9cd943fe404d74=1.367883x,
-scored965a9a816d4744ea=1.366811x. `submission.py` is unchanged. No local timing is an H200 claim.
-
-Hash verification from the repository root:
+Current recorded H200 control: v11 check6a9cd943fe404d74=1.367883x,
+scored965a9a816d4744ea=1.366811x. `submission.py` stays unchanged. No new H200 receipt is
+inferred from local timings. Bank count and scratch size are resources, not selection objectives.
 
 ```sh
 sha256sum -c problems/muse_prefill_layer/dev/NEXT_CHECKS.sha256

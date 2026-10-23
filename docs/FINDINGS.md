@@ -148,14 +148,74 @@ are counts divided by elapsed time, not measured pipeline utilization.
 | Serving metrics | the site: "throughput (tokens/s per GPU) and interactivity (tokens/s per user) at each load"; nothing on input tokens, TTFT or percentiles. LMSYS's own Muse sweeps count input (with cache hits) + output tokens and use 1000 / p90 inter-token latency | serving | official (site bundle, LMSYS blog) | site JS `index-DQmeD77Z.js` ("Score" card); https://www.lmsys.org/blog/2026-10-15-meta-muse-spark-open (fetched 2026-10-23) |
 | LMSYS's Muse serving numbers | 8x B300 only: headline 14.8K total tok/s per GPU at 543 tok/s per user (p50) at concurrency 1; AgentX single session 457.8 tok/s per user. No H200 serving numbers published | serving | official (LMSYS) | same blog |
 
-## Boards (2026-10-23)
+## Boards (snapshot 2026-10-23T18:28:17Z)
 
-| Quantity | Value | Scope | Class | Receipt |
-|---|---|---|---|---|
-| What the overall board counts | `solved` is the number of entries on proj, attention, MoE and decode layer (matches 368 of 372 teams; 279 if prefill is counted). Prefill isn't on it | overall kernel board, 19:30 KST | measured | `okc leaderboard <p> --json`, `GET /leaderboard` (fit script was session-only) |
-| Overall board formula | Unpublished. A time-weighted speedup fits best: the sum of SGLang's per-step times over the sum of the team's, with a missing problem counted as 1.0x (Kendall tau 0.895; top-50 overlap 46 of 50). Geometric mean of speedups: tau 0.836; mean per-problem rank: 0.73-0.76. Overall ranks 1-8 equal decode-layer ranks 1-8 | same | model (fit) | same |
-| Weights under that reading | decode layer 51%, MoE 30%, proj 11%, attention 8% | same | model | `sglang_us` per problem |
-| 50th place at 19:30 | about 1.38x time-weighted (jcstein: proj 1.237, attention 1.448, MoE 1.398, decode 1.385); ours about 1.19x | same | model | same |
+All six public reads were taken sequentially from `18:28:17.076989Z` through
+`18:28:23.338526Z` and saved in
+[`runs/boards/20261023T182817Z/`](../runs/boards/20261023T182817Z/). The overall board had 567
+teams; `AutoclickerI` was rank 106 with `solved=4`. Prefill is displayed on its own board and is
+not one of those four decode-step problems. The per-problem rows for our team were:
+
+| Problem | Board size | Rank | Speedup | Time (µs) |
+|---|---:|---:|---:|---:|
+| `muse_decode_layer` | 271 | 96 | 1.3554x | 16,688.65 |
+| `muse_moe_w4a16` | 363 | 95 | 1.6528x | 8,136.66 |
+| `muse_bf16_proj` | 462 | 249 | 1.1728x | 4,118.98 |
+| `muse_attention_decode` | 315 | 156 | 1.3840x | 2,721.40 |
+| `muse_prefill_layer` | 157 | 51 | 1.3668x | 283,436.33 |
+
+The overall `solved` values were 1, 2, 3 and 4 for 237, 55, 36 and 239 teams respectively; there
+were no solved-zero rows. This is a four-board completion/presence field, not a fifth prefill score.
+
+The organizers do not publish the aggregation score. A reproducible snapshot fit is the portfolio
+score
+
+```text
+score = max(
+    decode,
+    0.351 + 0.312 * MoE + 0.268 * projection + 0.105 * attention
+)
+```
+
+Here `decode`, `MoE`, `projection` and `attention` are the four decode-step speedups; a missing
+decode-step board contributes `1.0x`, and prefill is ignored. This treats `solved` as a displayed
+presence/attempt count rather than a score term. With ties broken by team name, the fit gives 102/567
+exact ranks, mean absolute rank error 9.99, Kendall τ 0.9549 over all teams, τ 0.9699 over the top
+300, and all 50 top ranks exactly (top-50 overlap 50/50). The tool and constants are
+[`tools/board_model.py`](../tools/board_model.py); this is a snapshot-calibrated model, not an
+organizer-confirmed formula.
+
+The tested alternatives fit worse on this same snapshot:
+
+| Candidate | Kendall τ (all) | Kendall τ (top 300) |
+|---|---:|---:|
+| Fitted `max` portfolio above | 0.9549 | 0.9699 |
+| Arithmetic speedup with baseline-time weights (0.506/0.301/0.108/0.084) | 0.9133 | 0.8248 |
+| Time-weighted harmonic speedup | 0.8928 | 0.7592 |
+| Weighted geometric speedup | 0.9030 | 0.7870 |
+| Rank sum with missing `N+1` penalty | 0.7077 | 0.6990 |
+| Percentile/Borda and geometric per-problem rank variants | ≤0.7722 | ≤0.8054 |
+
+The overall rows have unique ranks, so no board tie rule is observable; solved-first ordering did not
+improve the fit. The `solved` field is not a safe missing-score penalty: a few teams' displayed count
+exceeds the currently visible ranked rows, consistent with unranked or moving entries during the
+six-read window.
+
+For our current speedups the model score is 1.3554x and predicts rank 104 versus the API's rank 106.
+The model's immediate +0.01x rank changes are:
+
+| +0.01x on | Predicted rank | Change |
+|---|---:|---:|
+| Decode layer | 99 | −5 |
+| MoE | 104 | 0 |
+| Projection | 104 | 0 |
+| Attention | 104 | 0 |
+
+The model's rank-50 score threshold is 1.5229x. The least total gain is decode-only: raise
+`muse_decode_layer` from 1.3554x to about 1.5229x (`+0.1675x`), leaving the other three at their
+current values; the predicted rank is 50. The next single-board path is MoE-only at about `+0.6944x`.
+The ranking and threshold move with the boards, and the fitted constants are not independently
+verified by the organizers.
 
 ## Our kernels on the H200
 
@@ -215,11 +275,16 @@ results feed serving's 753–16K prefill path. The current H200 control is v11, 
 | Expert banks are a resource | Canonical V6: W13 `[32,512,36864]`, W2 `[32,256,36864]`;905,969,664bytes/layer,50.625GiB across60layers/GPU | Separate FP32 gate/up/down scales. Board selection has no bank-count or scratch objective: retain every useful lossless layout and choose by speed. Serving can also retain copies where their throughput gain outweighs displaced KV capacity; the current canonical port is an implementation, not a one-bank rule | R-20261024-2; `docs/reference/expert_layout.md` |
 | Canonical reader comparison | Cold-L2 sm120 RS128 / V6 pipeline:753=.979/3.934ms,3012=2.352/4.218,16384=9.805/18.073; RS128 also wins one-hot routing | Local MMA.sync emulation cannot choose an H200 WGMMA winner. RS128 adaptive is the provisional serving reader. Independent FP32 refs, unequal scales and fresh routing replay pass; M8/128/256 zero/all-local boundaries pass; unnormalized intermediate/down errors .003%/.029% prevent norm cancellation from hiding scale errors | `problems/muse_prefill_layer/dev/canonical_comparison_cold.json`, `canonical_comparison_hot_cold.json`, `canonical_edges.json` |
 | FP8 long-context attention | Local16K-query prefixes32K/64K: BF16 Triton20.257/38.839ms, FP8 direct13.357/25.066, gatheredBN12812.890/23.721; not FA3/H200 ratios | Every key is processed; FP8 QK/PV, FP32 online softmax, probability scale448. Fresh full16K graphs have .86–1.19% sampled FP32-reference L2. Main gatheredBN128 has no SM90 stack; BN256 has424B/thread. H200 and serving agreement remain open | `problems/muse_prefill_layer/dev/attention_fp8_bench.json`, `attention_fp8_verify_long.json`, `attention_fp8_compile_tiles.json` |
-| Expert port boundary | `srt/layers/muse_spark_moe_v4.py`: `prepare_layer`, `run_layer`, `_grouped_call`; called from `MuseSpark1xFp4Experts._forward_marlin` in `srt/layers/muse_spark_fp4_moe.py` | Share canonical bank/GS sidecars; retain dense-slot/finalize interface and EP collectives. Prefill metadata can reuse router counts/positions. Preserve BF16 effective norm, pre-expert norm and BF16 layers0/61. JIT multiline source under `python/sglang/`; no cubins or board-file giant string lines | `serving/sglang/python/sglang/srt/layers/muse_spark_moe_v4.py`, `docs/reference/expert_layout.md` |
+| Expert port boundary | `srt/layers/muse_spark_moe.py`: `prepare_layer`, `run_layer`, `_grouped_call`; called from `MuseSpark1xFp4Experts._forward_marlin` in `srt/layers/muse_spark_fp4_moe.py` | Share canonical bank/GS sidecars; retain dense-slot/finalize interface and EP collectives. Prefill metadata can reuse router counts/positions. Preserve BF16 effective norm, pre-expert norm and BF16 layers0/61. JIT multiline source under `python/sglang/`; no cubins or board-file giant string lines | `serving/sglang/python/sglang/srt/layers/muse_spark_moe.py`, `docs/reference/expert_layout.md` |
 | Attention/dense port boundaries | `FlashAttentionBackend.forward_extend` after cache writes/full-SWA selection; fused QK prep at `MuseSpark1xAttention.forward`; dense dispatch at `bf16_gemm_dispatch` / `quantization/unquant.py` | Serving needs per-request `cu_seqlens_q`, query/context lengths, padding, reserved KV slots and head strides; apply the 5.473 QK factor after E4M3 query rounding; K/V descales follow QK/PV. Residual/norm helpers map to `FusedPostNormResidualPreNorm` and `FusedRMSNormGate`; preserve collective completion | `serving/sglang/python/sglang/srt/layers/attention/flashattention_backend.py`, prefill sources |
 | New expert portfolio (local only) | `cand_expert_portfolio_v2.py`: 9 grouped BN64/128/256 configs + canonical pipeline + 8 DG choices (K1024/2048, hints, SwiGLU4/8warps at255/76registers); `cand_prefill_portfolio_v2.py` also tunes FA3/direct/gathered FP8 attention | Synthetic prepare inputs at 753/3012/16384 with 1/2 local routes per token; stores only per-shape choices. GPU counts/positions remain fresh. 24 SM90a C++ specializations have no spills; BN64 r1 uses 80–92 registers, BN256 r1 178–192. Dequant helpers use 80/127 registers and no stack at K1024/2048 | `problems/muse_prefill_layer/dev/canonical_portfolio.cu`, `compile_portfolio_sm90.log`, `coalesced_dequant_sm90.json`, frozen queue |
 | Score portfolio | `cand_score_portfolio.py` retains raw, original WGMMA, bit-plane, canonical, Humming and Marlin representations. Original/shared WGMMA share one raw repack.32 expert choices include18 canonical configurations,7 raw DG/dequant schedules,3 raw WGMMA readers,3 Humming plans and Marlin | Dense/router tune five projections at753/3012/16384: cuBLAS NT/NN with lossless BF16 copies, every returned cuBLASLt heuristic (256MiB workspace), DeepGEMM for BF16 outputs, and3 persistent Triton tiles. Router retains BF16 hi+lo and FP32 accumulation/output. Six attention paths include paged/contiguous/unpacked FA3 and direct/gathered FP8 at all8 scored shapes. No winner is chosen for bank count or scratch size | `problems/muse_prefill_layer/dev/build_score_portfolio.py`, `score_portfolio_tail.py`, `score_loader.py`; exact validation and hash in `NEXT_CHECKS.md` |
 | Score portfolio admission (sm120 only) | Exact SHA256 `fa202b0272f441d917938481fdecd976278858dbaadabaef089a2f0cf42a0452`: official5/5 and timed graph8/8; forced Hopper stand-ins pass128 expert,552 dense/router and12 production-attention fresh replays, plus16 fresh complete selected replays across all8 scored shapes | Warm-cache synthetic full sweeps took49.18/61.12s locally, measuring all32 expert choices at3 shapes, all15 dense shapes and6 attention choices at8 shapes. Paired swapped-order finalists use the same fresh fixture, a1GiB read flush and measured replay-cost subtraction. Complete C++ source compiles SM90a; all15 new Triton dense specializations compile SM90. No H200 execution or cold H200 prepare-time claim | `runs/screen/prefill_round5/muse_prefill_layer.cand_score_portfolio.json`; `problems/muse_prefill_layer/dev/round5_validation.json`, `score_portfolio_validation.json`, `score_selected_validation.json`, `compile_score_sm90.log`, `score_dense_sm90.json` |
+| New fused expert algorithms | `cand_fused_expert_portfolio.py` targets the largest first-turn excess:917.137expert ms versus573.812modeled tensor ms. Persistent grouped BF16 GEMM fuses gate/up GS, BF16 rounding and SwiGLU; split2/4 keeps FP32 partial accumulators. Direct packed NVFP4 readers eliminate full BF16 weight expansion and H13 scratch; BF16x2 decoding and exact power-of-two restoration avoid scalar FP32 E2M1 decoding |13 new choices plus32 queued controls,45 total. All5 dense/router projections and6 attention paths retained; synthetic per-shape cold-L2 fresh paired graph selection on H200. At rest only NVFP4 payload/scales and lossless layout copies persist; all activations remain BF16 at stock boundaries | `problems/muse_prefill_layer/dev/fused_expert_paths.py`, `overlap_expert_paths.py`, frozen `NEXT_CHECKS.md` |
+| Overlapping expansion | Three complete expert schedules fork W2 dequantization to a side stream after fresh routing/gather, while gate/up GEMM and SwiGLU run on the main stream. The main stream joins before down GEMM; a hybrid uses the fused gate/up epilogue with DG down | New graph schedule targets part of172.280weighted ms of dequant and67.549SwiGLU ms. Shared event handles across captured graphs and zero/skewed-count replay pass. Local synthetic2-route16K `overlap_dg_hint_w8`=15.890ms versus paired raw-DG16.302ms; sm120 only, not a whole-layer or SGLang ratio | `problems/muse_prefill_layer/dev/overlap_expert_math.json`, `overlap_expert_bench_local.json` |
+| Fused portfolio admission (sm120 only) | Exact SHA256 `c18fa82edad25daf91d621da88dfd9380eea482757c4333c1c633545e4c9d114`: official5/5, timed graph8/8,180 fresh expert-layer +552 dense/router +12 attention checks, plus16 complete selected replays across8 scored shapes. Both full synthetic sweeps measured45 expert paths at3 sizes,15 dense/router pairs and6 attention paths at8 shapes | Warm local prepare43.50/26.54s. All27 new GEMM/epilogue/metadata/flush specializations compile SM90. Packed BF16 reconstruction is exact over130048 values/form for2 forms, every signed finite E4M3 code and every FP4 byte. No H200 execution, speedup or cold-prepare claim until a receipt | `runs/screen/prefill_round6/muse_prefill_layer.cand_fused_expert_portfolio.json`; `problems/muse_prefill_layer/dev/round6_validation.json`, `fused_portfolio_validation.json`, `fused_selected_validation.json`, `fused_decode_validation.json`, `fused_sm90.json` |
+| Local compiler/tuner failures | Large16K split4 constexpr capacity triggered a sm120 ptxas SIGSEGV; runtime capacity compiled and passed the identical case. A later local tuner OOM requested8GiB for uint8 torch.sum's int64 cast while split-K graph pools were resident | Runtime64-bit pointer arithmetic avoids giant immediates and reduces specializations. A persistent read-only1GiB L2 flush with small per-SM reduction scratch replaces only the synthetic tuner's reduction, outside events. Full admission rerun passes; judge timing is untouched | `problems/muse_prefill_layer/dev/fused_ptxas_failure.log`, `fused_expert_paths.py`, `round6_validation.json` |
+| Fused/overlap serving adapter | Current live hook is `srt/layers/muse_spark_moe.py` (`prepare_layer`, `_grouped_call`, `run_layer`), called by `MuseSpark1xFp4Experts._forward_marlin`; the old `_v4.py` file is gone. New kernels replace the grouped expert producer inside `_grouped_call` | SGLang applies pre-expert norm before the hook: replace the board gather+norm by gather-only. Export sorted `y` before `_combine_kernel`, scatter to dense `[T,8,4096]`, preserve separate gate/up/down GS and BF16 rounding; raw-DG down needs GS2 applied before export. Keep `_finalize_dense_expert_outputs` and EP collectives, avoiding duplicate norm/top-k weighting. Prepare selected lossless raw/interleaved banks from loaded ModelOpt tensors, budget duplicates against measured KV residency. Per-call stream forks must join before down/finalize; concurrent serving graph replay/reentrancy still needs validation | `serving/sglang/python/sglang/srt/layers/muse_spark_moe.py`, `muse_spark_fp4_moe.py`; new candidate helpers |
 | Humming configuration failure | A forced TMA configuration differed25% from raw WGMMA while ordinary Humming agreed within.23% on the same753-token fixture | `get_heuristics_config` returned a cached mutable dict. Updating TMA flags polluted later standard/stand-in configs and changed their compiled kernel IDs. Copy the dict before setting flags; retain the original.015 expert L2 check. This is a multi-variant construction bug, not evidence that H200 TMA loses | `problems/muse_prefill_layer/dev/diag_score_humming_forced.py`, `diag_score_humming_forced.log`, corrected builder and forced full-portfolio validation |
 | Direct canonical dequant (local only) | Read-once/scattered output 5.325 ms; coalesced K1024/K2048 3.253/3.201 ms; raw-v11 3.113 ms on sm120, both W13/W2, cold-L2 graphs | Sparse scalar stores were the concrete slow recipe; output coalescing recovers 1.66x locally. These local measurements favor raw dequant; bank compatibility does not justify a slower board choice. The new score portfolio measures both on H200. Both tile sizes preserve exact represented BF16 values over signed finite E4M3/E2M1 probes and fresh count graphs | `problems/muse_prefill_layer/dev/coalesced_dequant_benchmark_local.json`, `coalesced_dequant_validation.json`, `coalesced_dequant_2048_validation.json` |
 | Research workspace | Original16K DG capacity135168rows: each4096-wide BF16 route buffer1.107GB; W13 BF16 expansion2.147GB, W2 1.074GB | Canonical DG sequential aliases model 5.60GB versus v11's8.89GB scratch, but this is capacity evidence only. Both allocation schedules compete on speed in the score portfolio; no memory-saving preference. Every live range is overwritten per call; full checkpoint/KV/allocator peak remains unmeasured | `problems/muse_prefill_layer/cand_v11.py`, score portfolio source |
@@ -245,17 +310,61 @@ hierarchical cache enabled. At15,872B/token/GPU, with no shared-prefix or slidin
 These are capacity scenarios, not observed simultaneous lengths: the judge's conversations are hidden.
 The131072 cap includes generation; do not add220 beyond it. At80K history plus753 new tokens plus220
 generated tokens, each request needs1.285GB/GPU; concurrency32 needs41.127GB. A new16K chunk alone
-adds0.260GB/request/GPU, and220 generation tokens add3.492MB. A full bank across60layers costs
-54.358GB/GPU, equivalent to3,424,785KV tokens. Using the documented141GB device and119.85GB static
-budget, one/two banks leave65.492/11.134GB before KV, dense weights, drafter, graph pools and workspace.
-At32x80K, one bank leaves24.860GB for those allocations; two banks are29.499GB over budget even before
-them. With no other costs, that one-bank remainder could accommodate at most27 extra layer banks
-(24.461GB); real allocation reduces that number. At32x131072, one bank plus all62-layer KV already
-exceeds the modeled static budget by1.080GB. Thus fully resident maximum-length concurrency is not
-established even for stock. Shared prefixes, sliding-cache reuse, scheduling and hierarchical host spills
-change residency; host capacity is not zero-cost bandwidth. Measure actual peak resident tokens,
-stock interactivity and the released-checkpoint allocations before deciding which layers get duplicates.
-Reproducible arithmetic: `problems/muse_prefill_layer/dev/kv_budget.py` / `kv_budget.json`.
+adds0.260GB/request/GPU, and220 generation tokens add3.492MB. A full bank across 60 layers costs 54.358 GB/GPU, equivalent to 3,424,785 target KV tokens.
+The 119.850 GB static budget must also fund the allocations below. All GB here are decimal.
+
+**TP8/EP8 non-KV accounting (static count, not an H200 allocation measurement).** Reproducer:
+`serving/tests/muse_residency.py`; output:
+`/data2/jihoon/muse_kernel/harness/results/ar-norm-evidence/residency.json`.
+The saved target HF config is an access-denied response, so these counts use the pinned Muse
+configuration/model implementation and public kernel shapes, plus the public released DFlash2
+config. Vision/audio defaults and the target RoPE schedule need full-checkpoint confirmation.
+
+| Resident component per GPU | GB | Basis |
+|---|---:|---|
+| Canonical NVFP4 bank, 60 layers | 54.358 | exact shape count, codes + scales; no second Marlin bank |
+| Two BF16 expert layers | 6.442 | `2*32*3*4096^2*2` |
+| Target QKV/gate/O, pooler/unpooler, FP32 router, vocab | 13.050 | dense shape count; pooler/unpooler remain replicated storage |
+| Router BF16 hi/lo cache | 0.520 | FP32 router retained, two BF16 copies after prefill |
+| DFlash attention/MLP + split FC | 1.153 | 5 layers; released weights unchanged; target head/embedding borrowed |
+| DFlash dynamic convs + selector tables + norms | 0.547 | ten replicated dynamic projections; two `[202048,256]` tables |
+| Vision + replicated audio defaults | 0.721 | source shape count; audio meta construction = 235,680,768 bytes |
+| Target norm/gate params and effective caches | 0.018 | includes FP32 gate coefficients; views may alias |
+| One target + one draft FP32 RoPE table | 0.805 | `1048576*(64+128)*4`; additional distinct target theta adds 0.268 |
+| Existing TP push/pull plane + graph pointer table | 0.159 | 8 MiB slots reserved by projection path; fusion adds zero storage |
+| **Counted non-KV total** | **77.776** | includes bank; source-count estimate, not measured allocation |
+| **Spare before KV and dynamic allocations** | **42.074** | `119.850-77.776` |
+
+Graph pools are **not determined by checkpoint config**: `GraphPoolPrecarve.measure` uses actual
+reserved-byte high water; cuBLAS/FA3 workspaces, graph liveness, request maps, allocator slack,
+CUDA/NCCL allocations and prepare-time transient copies require a full-node measurement. Call
+these additional bytes U; every spare below is **upper bound minus U**. The existing grouped
+prefill allocates `inter`, `y` and dense gather, each `16384*8*4096*2 = 1.074 GB` before
+finalize/scratch; their lifetimes overlap. Five captured target hidden taps add 1.342 GB live at
+16K, plus their concatenation/projection. It would be false precision to call U zero or infer it
+from sm_120 tiny-model free-memory logs (another process changes those logs).
+
+The drafter also stores FP8 KV: conservative full-capacity `5*2*128 = 1,280 B/token/GPU`, in
+addition to the supplied target 15,872 B/token. No prefix sharing or SWA capacity reduction:
+
+| c | context/request | Target KV GB | Draft KV GB | Spare GB before U | Extra 0.906 GB layer banks before U |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 80K / 131072 | 1.270 / 2.080 | 0.102 / 0.168 | 40.702 / 39.826 | 44 / 43 |
+| 4 | 80K / 131072 | 5.079 / 8.321 | 0.410 / 0.671 | 36.586 / 33.082 | 40 / 36 |
+| 16 | 80K / 131072 | 20.316 / 33.286 | 1.638 / 2.684 | 20.120 / 6.104 | 22 / 6 |
+| 32 | 80K / 131072 | 40.632 / 66.572 | 3.277 / 5.369 | -1.835 / -29.866 | 0 / 0 |
+
+A full second bank already exceeds the static budget by 12.284 GB **before KV and U**.
+Partial hot-layer layouts remain spendable: at c16/80K, at most 22 layer copies before U;
+at c16/131K, at most six. These are upper bounds, not layout limits to optimize against.
+At c32 the conservative fully resident scenarios need sharing/SWA savings or hierarchical
+spills even with one bank. With the sim schedule of 46 sliding/16 full layers and resident
+sliding rows capped at 2048, target+draft KV would be only 11.531 / 18.225 GB at c32,
+leaving 30.543 / 23.849 GB minus U; actual SGLang SWA allocation policy must establish
+whether that discount is realized. Judge simultaneous lengths and prefix reuse are hidden.
+Measure post-load allocated/reserved bytes, each target/draft prefill/verify graph pool,
+post-capture KV capacity and peak resident tokens before allocating partial copies.
+
 
 ### Projection evidence and next experiment (G3, G2)
 

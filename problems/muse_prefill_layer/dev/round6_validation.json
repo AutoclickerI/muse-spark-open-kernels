@@ -1,0 +1,33 @@
+{
+  "source": "cand_fused_expert_portfolio.py",
+  "sha256": "c18fa82edad25daf91d621da88dfd9380eea482757c4333c1c633545e4c9d114",
+  "hardware": "sm120/GPU0; SM90 constructor/stage3/TMA/FA3 branches forced through portable stand-ins",
+  "official_tests": 5,
+  "timed_graph_shapes": 8,
+  "prepare_s": {
+    "local": 4.707171673013363,
+    "forced": 43.5038133150083,
+    "selected": 26.540723827958573
+  },
+  "fresh_cases": {
+    "expert": 180,
+    "dense": 552,
+    "attention": 12
+  },
+  "fresh_selected_complete_cases": 16,
+  "expert_trial_counts": {
+    "753": 45,
+    "3012": 45,
+    "16384": 45
+  },
+  "dense_shapes": 15,
+  "attention_shapes": 8,
+  "decode_exact": true,
+  "decode_weights_per_form": 130048,
+  "sm90_compile_specializations": 27,
+  "h200_execution_verified": false,
+  "queued_source_unchanged": true,
+  "best_source_sha256": "5162da15f86b3ab5d28fe9cd4db9d0dbce778e1bdace526ab87e7f69acfc643e",
+  "judge_runs_launched": 0,
+  "commits_created": 0
+}
