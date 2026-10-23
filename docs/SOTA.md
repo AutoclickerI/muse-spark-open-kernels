@@ -15,7 +15,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 | muse_attention_decode | 1.391x xqa_diag `32c5b4b287c24c38` (check) | 1.384x (submission scored `526f31018e2c4449`; rank 158) | 2.366x (colinlikescode) | 2.050x | 1.742x | 318 |
 | muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (v9_phase scored `ac9dd461f0294e34`) | 2.326x (colinlikescode) | 2.040x | 1.811x | 365 |
 | muse_decode_layer | 1.428x r3_v9 `0e94268cf5654012` (scored) | 1.428x (r3_v9 scored `0e94268cf5654012`; rank 81; overall rank 85) | 1.862x (colinlikescode) | 1.744x | 1.523x | 275 |
-| muse_prefill_layer | 1.429x fused_expert_portfolio_routing `99820fa6e5c14fe1` (scored; turn 1 1.246, turn 4 1.447, first turn 1.618) | 1.429x (scored `99820fa6e5c14fe1`; rank 49) | 1.745x | 1.607x | 1.420x | 183 |
+| muse_prefill_layer | 1.434x score_portfolio_routing `a30fb411b0c74ffb` (scored; turn 1 1.253, turn 4 1.457, first turn 1.615) | 1.434x (scored `a30fb411b0c74ffb`; rank 48) | 1.745x | 1.607x | 1.420x | 183 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
 top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
