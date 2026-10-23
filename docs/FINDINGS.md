@@ -1,7 +1,7 @@
 # Findings
 
 Each row is one scoped quantity. Class: **measured** (on the judge, by our runs), **static** (counted
-from code, config or spec), **model** (an estimate under stated assumptions; the ceilings live in
+from code, config or spec), **model** (an estimate under stated assumptions; numbers from `python -m sim`, definitions in
 [ceiling](reference/ceiling.md)), **official** (published by the organizers). Per-shape tables:
 `python -m sim.calibrate`.
 

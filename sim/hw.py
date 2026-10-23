@@ -2,7 +2,7 @@
 
 SPEC values are NVIDIA's peaks; the judge's floors use exactly HBM_BPS and BF16_FLOPS.
 The EFF values are the practical model's knobs: achievable rates and fixed costs. Each says
-where it came from, and the calibration in docs/reference/ceiling.md is what they rest on."""
+where it came from; they rest on the calibration (`python -m sim.calibrate`, docs/FINDINGS.md)."""
 
 # --- SPEC (NVIDIA H200 datasheet; the judge's TASK.md floors use these two) ---
 HBM_BPS = 4.8e12            # HBM3e, bytes/s
