@@ -1,38 +1,42 @@
 # Projection next checks
 
-1. `problems/muse_bf16_proj/cand_portfolio.py` — **passing, frozen; send one check**.
-   SHA256: `57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e`
-   Note: "P7 packed m128/256 portfolio: cold-L2 synthetic graph tuning of TMA/WGMMA
-   BT64/128/256, grouped K64/K128, 2–5 stages, split-K with last-CTA in-kernel merge,
-   DSMEM clusters through 16, balanced Stream-K at one/two SM waves, and up to 32
-   cuBLASLt heuristic algorithms. Fused permitted hi+lo router; retain measured small-M
-   kernels and fold landed pooler M32 cuBLAS winner. Every path has local kernel/glue
-   coverage; each tuning graph owns a native stream to avoid PyTorch #193402."
+`cand_portfolio.py` is frozen at SHA256
+`57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e`.
+The orchestrator queued it as a **scored run, priority 0**; do not resend or edit it.
+Its pending job/receipt will appear under `runs/pending/` / `runs/muse_bf16_proj/`.
 
-The orchestrator sends this file. No okc_run was launched and no commit was made in this round.
-Do not promote over `submission.py` until the H200 receipt supports it.
+## Ready for the orchestrator
 
-## Local admission evidence (sm_120)
+1. `problems/muse_bf16_proj/cand_reduce.py` — passing, frozen fusion experiment.
+   SHA256: `280822ad5f91aae8e20e9440032f3f3ce22043119179375c4087059ee0c887f6`.
+   Router and qkv m128/256 always select a single kernel. Router hi+lo products update the
+   same FP32 accumulators in each K tile; one activation tile serves both. Split-K merges
+   through last-CTA or DSMEM, with no standalone reduce/add. Local sm_120: 9/9 tests,
+   30/30 graph shapes, 770 parameter/replay cases, 1,075 forced Hopper glue cases;
+   **1.093592x overall**, router 1.327x/1.161x and qkv 1.053x/0.979x at m128/m256.
+   Kineto verifies baseline router 5 kernels -> 1, qkv 2 -> 1 at both m values.
+   sm_90a build passes. H200 latency remains unverified.
+   Screen: `runs/screen/proj_reduce/muse_bf16_proj.cand_reduce.json`.
+   Details: `dev/reduce_*.log`, `dev/cand_reduce_kernel_counts_local.json`.
 
-- Exact-source screen: 9/9 tests and 30/30 graph shapes, 20 replays × 3 fresh input sets;
-  **1.078233x** locally, not an H200 measurement; prepare 0.78 s warm / 53.4 s cold.
-- Screen: `runs/screen/proj_round/muse_bf16_proj.cand_portfolio.json`.
-- Manifest: `runs/screen/proj_round/muse_bf16_proj.portfolio_validation.json`.
-- TMA/MMA pipeline + last-CTA/DSMEM/Stream-K: 840 passing cases including outliers,
-  probe rows, graph replays with changed inputs, and counters reset after each launch.
-- Forced Hopper prepare/public dispatch: 1,091 passing cases. Oversized sm_90 shared-memory
-  branches use a portable GEMM stand-in locally; cuBLASLt algorithms execute natively.
-- sm_90a cross-build: 22 WGMMA specializations, zero local bytes/spills, 58–154 registers;
-  SASS has HGMMA/TMA instructions. WGMMA cannot execute on the local GPU.
-- Full validation and SASS/resource logs: `problems/muse_bf16_proj/dev/portfolio_*.log`.
+`cand_reduce_packed.py` is under validation: it packs the same math and reduction with
+128-thread cooperative issue, a 160-thread producer-warp pipeline, and the original
+256-thread producer-warpgroup pipeline. Do not send it until its frozen hash is recorded.
+`cand_reduce_fast.py` is the cooperative diagnostic (local 1.078570x, 9/9 + 30/30);
+it is folded into packed and is not a separate judge recommendation.
 
-Reproduce:
-```sh
-mkdir -p runs/screen/proj_round
-CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_bf16_proj/cand_portfolio.py --json runs/screen/proj_round/muse_bf16_proj.cand_portfolio.json
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_portfolio.py kernels
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_portfolio.py glue
-```
+## Follow-through
+
+- No okc_run launch or commit from this thread; the orchestrator sends passing sources.
+- Checks are spent until 09:00 KST; the orchestrator chooses scored submission or waits for reset.
+- Read the portfolio's selected configs and per-shape H200 table, prune losing variants into
+  `cand_portfolio_v2.py`, then screen/freeze it. Do not claim synthetic timings as judge timings.
+- Event-driven receipt reader: `python3 problems/muse_bf16_proj/dev/receipt_digest.py --watch`.
+  It reads receipts and pending markers; it does not submit, collect or poll.
+- Reproduce fusion screen:
+  `CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_bf16_proj/cand_reduce.py --json runs/screen/proj_reduce/muse_bf16_proj.cand_reduce.json`.
+  Extra checks: `tools/img python problems/muse_bf16_proj/dev/validate_reduce.py kernels` / `glue`,
+  and `tools/img python problems/muse_bf16_proj/dev/profile_reduce.py` (GPU 0).
 
 ## Receipts and inherited queue
 

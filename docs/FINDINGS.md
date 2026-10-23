@@ -160,6 +160,19 @@ Evidence: `runs/screen/proj_round/muse_bf16_proj.cand_portfolio.json`,
 WGMMA execution and H200 speedups remain unverified; the native stream fix also passes the
 custom-kernel-free cuBLAS reproducer. `submission.py` remains the board source.
 
+Fusion follow-up (`cand_reduce.py`, source `280822ad…`, **sm_120 local only**): the router
+loads hi and lo together for each real-K tile and accumulates both products into the same
+FP32 registers. Router/qkv m128/256 select only single-kernel direct, last-CTA or DSMEM
+paths. Kineto counts router **5 -> 1** kernels and qkv **2 -> 1** at both m values.
+Cold-L2 graph screen: **1.093592x overall**; router m128/256 **1.327/1.161x**, qkv
+**1.053/0.979x**. It passes 9/9 tests, 30/30 graph shapes, 770 kernel/replay cases and 1,075
+forced Hopper glue cases; sm_90a build passes. These gains do not establish H200 performance.
+Evidence: `runs/screen/proj_reduce/muse_bf16_proj.cand_reduce.json`,
+`problems/muse_bf16_proj/dev/cand_reduce_kernel_counts_local.json`, `dev/reduce_*.log`.
+The cooperative 128-thread diagnostic (`cand_reduce_fast.py`) passes locally at 1.078570x;
+producer issue serializes its warps, so fewer threads alone is not a demonstrated gain.
+Packed follow-up compares it with 160-thread producer-warp and 256-thread producer-WG schedules.
+
 The previously screened `cand_m16` scalar row stream was 0.968x locally (m16 projections
 0.53–0.64x); repeated activation staging and scalar accumulation lost to tensor cores.
 `cand_tc_k256` / `_qkv` and image-native `cand_dsv3_select` passed locally at 1.044 / 1.062 /

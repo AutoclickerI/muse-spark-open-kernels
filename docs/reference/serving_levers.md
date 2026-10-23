@@ -81,15 +81,23 @@ Every path checks `has_multicast` and falls back to stock.
 
 ## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.
-- **Drafting from the request** is implemented alongside DFlash. Before each eight-token verify block, the patch
-  finds the longest repeated 2-8-gram in each request's committed history, scores the available suffix length, and
-  appends it only after the per-request recent DFlash acceptance prefix; the estimate and fixed-shape candidate
-  buffers are CUDA-graph safe. `SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM=0` disables it for A/B. The 30-request chain
-  fixture produced exactly 220 tokens: mean acceptance rose from 2.9544 (stock) to 2.9743 (patch), +0.0199
-  tokens or +0.67% overall (c=1: 2.9892 -> 2.8653; c=4: 2.9457 -> 3.0015). The smaller full-run gain is the
-  result to use; the 10-request screen was noisier. Margin output agreement stayed exact;
-  random near-tie agreement passed the distributional gate. Local sm_120 uses FlashInfer; H200 FA3 custom-mask
-  drafting and held-out agentic conversations remain unverified.
+- **Drafting from the request** remains opt-in. Before each eight-token verify block, the patch finds the longest
+  repeated 2-8-gram in the last 256 committed tokens, appends it only after a per-request DFlash prefix, and now
+  requires a four-token match plus a suffix EMA that beats DFlash's tail EMA after two bootstrap attempts. All
+  buffers and choices are fixed-shape CUDA-graph operations; `SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM=1` enables the
+  experiment and `SGLANG_DFLASH_SUFFIX_TRACE_ACCEPTANCE=1` records the matched A/B block lengths. On the chain
+  fixture, the trace selected 0/456 c=1 blocks and 5/1,811 c=4 blocks. The raw per-block accept trace was
+  2.004 versus 2.205 at c=1 and 1.967 versus 1.957 at c=4 (DFlash-only versus selective splice); request-level
+  metadata in those same c=1 runs was 2.987 versus 3.211 accepted tokens per verify block. The earlier 2.865 c=1
+  result is therefore cold-run variance rather than broad suffix displacement. A 30-request run with the old permissive selector had
+  2.9544 -> 2.9743 (+0.67%) overall but 2.9892 -> 2.8653 at c=1; therefore the default is now off and no gain
+  is claimed on the random-word fixture. Margin output agreement remains exact. A model-independent 13-turn,
+  220-token synthetic tool/code trace tokenized with the Muse tiny tokenizer gives hit rates (k=1..8) of
+  6.87%, 6.87%, 6.87%, 6.87%, 3.30%, 0%, 0%, 0%; the expected tail beyond DFlash tau=4.16 is 0.0277 tokens,
+  implying tau=4.1877 and a `sim.serving` practical+sharded-pooler score of 3.1567x versus 3.1500x (+0.22%).
+  The tokenizer is synthetic (`wN` vocabulary), so this is an opportunity estimate, not model-logit yield.
+  Local sm_120 uses FlashInfer; H200 FA3 custom-mask drafting and held-out agentic conversations remain
+  unverified.
 
 ## Testing
 

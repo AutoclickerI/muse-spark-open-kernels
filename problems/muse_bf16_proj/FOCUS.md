@@ -1,24 +1,23 @@
 # Projection focus
 
-Serves: G3, G2. Priorities and hard limits are in [GOAL](../../docs/GOAL.md) and
-[CONSTRAINTS](../../docs/CONSTRAINTS.md). Work alone for this round.
+Serves: G3, G2. Read [GOAL](../../docs/GOAL.md) and [CONSTRAINTS](../../docs/CONSTRAINTS.md).
+Work alone; do not launch judge runs or commit in this thread.
 
-`submission.py` is the scored `68e2f34b1d4744cb` snapshot (1.142642x, sha `4bc18cec…`).
-Keep its small-m winners; m128/256 is still cuBLAS parity. The scored per-shape table,
-landed GEMV results, failure mechanisms and local rankings live in
-[FINDINGS](../../docs/FINDINGS.md#projection-evidence-and-next-experiment-g3-g2).
+Board: `submission.py` = scored `68e2f34b1d4744cb`, 1.142642x.
+`cand_portfolio.py` is frozen (`57086918…`) and queued by the orchestrator as a scored run
+at priority 0. Leave it unchanged. Read its per-shape choices/times when its receipt lands.
 
-Current experiment: `cand_portfolio.py` packs TMA/WGMMA, last-CTA split-K, DSMEM and
-balanced Stream-K plus cuBLASLt algorithm search. Synthetic cold-L2 graph tuning chooses each m128/256 layer's fastest
-variant against the incumbent, including a fused permitted hi+lo router. Pooler m32 uses
-cuBLAS, which beats the scored skinny path in the landed GEMV checks.
+Fusion: `cand_reduce.py` traverses real K once, stages router hi+lo together, and adds both
+products into the same FP32 accumulators. Router/qkv m128/256 use one kernel, with an
+in-kernel last-CTA/DSMEM merge. Local profiler confirms 5->1 router and 2->1 qkv kernels;
+local screen 1.093592x, 9/9 tests and 30/30 graph shapes. H200 effect remains unverified.
+`cand_reduce_packed.py` is validating cooperative / producer-warp / producer-WG schedules.
 
-Next: send the passing, frozen portfolio check from
-[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md). The orchestrator sends runs; do not launch them
-or commit this round. Read new `runs/muse_bf16_proj/*.json` receipts while working and
-fold convincing per-shape winners into the portfolio. Do not edit queued candidates.
+Next: read portfolio/inherited receipts as they land and prune measured winners into v2,
+keeping small-m winners. Receipt reader waits on filesystem events; no polling cadence.
+[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md) owns passing hashes, test evidence and send order.
+[FINDINGS](../../docs/FINDINGS.md#projection-evidence-and-next-experiment-g3-g2) owns results.
 
-The old wg/wg2 candidates never set `wg_ok`; their queued scores do not test WGMMA.
-No new H200 gain is established until the portfolio receipt lands. Hopper-only WGMMA
-cannot execute on local sm_120: test its TMA/MMA stand-in, force all Python glue, and
-cross-compile sm_90a. Local timing is not H200 evidence.
+Inherited: dsv3, dsv3_select, gemv3/static, m16, skinny, tc, tc_k256/_qkv, tile, tuned2, wg/wg2.
+The wg/wg2 files never set `wg_ok`; their scores cannot measure WGMMA.
+Keep H200 measurements distinct from local sm_120 timing and portable Hopper stand-ins.
