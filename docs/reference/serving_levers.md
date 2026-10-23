@@ -304,8 +304,13 @@ and has zero teacher-forced prompt/generated drift. TTFT ratios are
 not turned into a pass by the compare script's zero exit code (TTFT is a
 separate field there). Its first-turn median is20.45s versus stock24.91s,
 while later turns regress; aggregate medians and KV scheduling are unstable
-on the shared box. A native-sm_120 control is run to distinguish portable
-forcing from inherited scheduling/contended hardware. Hopper throughput and
+on the shared box. The native-sm_120 control `q18` passes174/174 exact and has prompt/generated
+teacher-forced mean/max drift0.0/0.0. TTFT ratios are1.02/1.79/1.81/1.04,
+all below2, with all74 prefill shapes and verify graphs enabled. The new
+SM90 collective is inactive in this control. This separates the failed
+portable forcing screen from production local dispatch, but cannot certify
+H200's native two-shot latency or TTFT. GPU1 remains a shared device with
+memory fraction0.3; absolute timings vary substantially between runs. Hopper throughput and
 interactivity are still unverified.
 
 The two-shot extension's real-kernel screen uses two logical ranks on
@@ -322,9 +327,14 @@ removed. Prior diagnostic stalls exposed borrowed counter lifetime in the
 single-process fixture and unsafe oversubscription of its stock grid, both
 fixed without changing the equality gate.
 
-GPU0 sm_120 two-logical-rank graph medians (20 samples, warm L2), stock/fused
-microseconds: M32 **13.136/11.088**, M128 **19.936/19.184**, M256
-**29.280/27.792**. These do not establish H200 or inter-GPU speedup.
+GPU0 sm_120 two-logical-rank final graph medians (20 samples, warm L2),
+stock/fused microseconds: M32 **9.536/9.840** (+3.2% latency), M128
+**19.920/18.832** (-5.5%), M256 **27.872/27.664** (-0.7%). An earlier pass
+was13.136/11.088,19.936/19.184,29.280/27.792, so these microsecond effects
+are noisy. There is no claimed H200 or inter-GPU speedup; c4's last local
+protocol timing regresses. The final screen additionally passes the existing
+one-shot `phase=None` ABI in eager and20 graph replays, plus the TP1 default
+norm graph test. Numerical tolerances were not weakened.
 On H200 TP8, M32/128/256 are inside stock's multicast two-shot pull range;
 stock stages in, reduces, stages out, then normalizes (four launches). The
 new scatter+gather/norm takes two. A conservative model is
@@ -607,18 +617,24 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
-Current patch regenerated from `git diff a55ab7d5` plus source-only untracked additions:
-**244,632bytes**, **25files**, longest added line **374**. All19 accepted paths remain;
-14 accepted file diffs are byte-identical, including the unchanged MoE lane file.
-This round changes only the expert adapter/dispatch, dense projection integration/cache reuse,
-and Humming's comparison baseline. The other lanes' new untracked `muse_dflash.py` and `muse_prefill_dense.py` are retained
-in the unified patch without wiring or editing them. A concurrent lane also added
-`managers/dflash_kv_graph.py`, its worker hook and `overlap_utils.py` changes;
-these are preserved as well. Reverse apply, whitespace, source/type/path,
-AST, size and line-limit checks pass. No old doc paths or harness sources were edited.
-Evidence: `/data2/jihoon/muse_kernel/harness/results/serving-dispatch-evidence/`
-(source hashes, compile/unit logs, patch checks), `q11`/`q12` comparisons, and
-`q08-agreement.json`; the older port evidence remains in `projection-ports-evidence/`.
+Current patch regenerated from `git -C serving/sglang diff a55ab7d5` after
+including source-only untracked additions: **329,330bytes**, **31files**,
+longest added line **374**. All25 paths in accepted `aab3243` remain;
+15 accepted file diffs are byte-identical, including the unchanged MoE lane
+source. The new collective wrapper/kernel, prefill plan shape guard and
+concurrent lane changes account for the other diffs. Size, line limit,
+source/type/path, Python AST, whitespace and clean-base apply checks pass.
+Owned manager/worker/attention/drafter changes are preserved. The pinned
+harness snapshot isolates this lane's collective source while other lanes
+continue editing; subsequent concurrent ports are not implied to have run
+through that snapshot. No old doc paths or harness sources were edited.
+This round's evidence is under
+`/data2/jihoon/muse_kernel/harness/results/tree-collective-evidence/`
+(patch/source hashes), `tree-ceiling-q13`, `attn-ar-q16-*`, clean
+`attn-ar-q17-patch-tp1`, and native `attn-ar-q18-native-tp2`. Kernel and
+prepare logs are under the sibling `harness/logs/` directory. Previous
+`serving-dispatch-evidence/`, `projection-ports-evidence/`, q11/q12 and q08
+receipts remain available.
 
 ## Current serving integration: V9 dispatch and dense projections
 
@@ -707,12 +723,12 @@ skew follows the decode-layer5354 residual-stream/router construction; each
 fresh sample rotates the busiest EP8 range to local32. Both sides use changed
 inputs, swapped order, a1GiB L2 flush, CUDA graphs and20 median samples.
 Diagnostics reject on failure without raising; the complete compact shape
-summary prints last in prepare. Local sm_120 prepare10.3s; all5 scored tests
+summary prints last in prepare. Final local sm_120 prepare7.91s; all5 scored tests
 pass (max relative L2 0.004724), all7 diagnostic shapes pass eager/graph and
 fresh-input comparisons (max relative L2 0.00576, worst row0.00688,
 maxabs0.00879). Local microseconds Marlin/V9:
-257:330/521, 320:416/604, 384:454/719, 448:490/1000,
-512:549/1110, 1024:922/4710, 2048:4120/9470.
+257:325/506, 320:407/596, 384:443/706, 448:481/977,
+512:537/1080, 1024:895/4620, 2048:4070/9300.
 These are local screens, not an H200 ordering or a decision on the shipping
 bound. H200 receipt and full-model TTFT remain the gate; no judge run launched.
 The accepted starting point used V9 at all M>=256. During this round the
