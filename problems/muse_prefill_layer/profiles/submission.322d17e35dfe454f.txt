@@ -1,0 +1,155 @@
+okc run 322d17e35dfe454f on muse_prefill_layer
+submission  /home/jihoon/competitions/muse_kernel/problems/muse_prefill_layer/submission.py
+status      ok
+passed      true
+speedup     0.02497495436423015
+speedup_ci  [0.024588429177293033 0.02550295455164683]
+score_us    1.5511696011539107e+07
+tests       5/5 passed
+
+scored shapes (µs; speed of light is the reference's bound)
+case                                                         sglang      yours  speedup        sol  
+batch=1 ctx=80000 dist=soft layer=sliding load=turn 1 page=1 q_len=753    1095.41   67228.60   0.016x     256.95  
+batch=1 ctx=80000 dist=soft layer=full load=turn 1 page=1 q_len=753    1473.22   67279.35   0.022x     496.69  
+batch=4 ctx=80000 dist=soft layer=sliding load=turn 4 page=1 q_len=753    3412.10  164750.87   0.021x    1036.28  
+batch=4 ctx=80000 dist=soft layer=full load=turn 4 page=1 q_len=753    4886.78  160618.41   0.030x    1992.42  
+batch=1 ctx=0 dist=soft layer=full load=first turn page=1 q_len=16384   17946.61  273892.26   0.066x    5518.43  
+batch=1 ctx=32768 dist=soft layer=sliding load=first turn page=1 q_len=16384   17191.26  481950.77   0.036x    5663.35  
+batch=1 ctx=32768 dist=soft layer=full load=first turn page=1 q_len=16384   20807.34  479943.80   0.043x    7710.00  
+batch=1 ctx=65536 dist=soft layer=full load=first turn page=1 q_len=16384   24730.98  677043.37   0.037x    9847.68  
+
+profile 0: batch=1 ctx=80000 dist=soft layer=sliding load=turn 1 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7482.0 µs  10.9%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    6552.3 µs   9.6%    252
+void at::native::elementwise_kernel<128, 2, at::native::g...    5936.0 µs   8.7%     10
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4985.0 µs   7.3%     64
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...    4055.9 µs   5.9%      2
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...    3734.6 µs   5.5%      2
+void at::native::unrolled_elementwise_kernel<at::native::...    3659.2 µs   5.3%     65
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...    3602.4 µs   5.3%      1
+nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN                  3419.2 µs   5.0%     67
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3204.7 µs   4.7%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3089.7 µs   4.5%     66
+void at::native::elementwise_kernel<128, 2, at::native::g...    3074.1 µs   4.5%      3
+... 55 more
+total                                                          68426.0 µs
+
+profile 1: batch=1 ctx=80000 dist=soft layer=full load=turn 1 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7479.8 µs  11.0%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    6536.3 µs   9.6%    242
+void at::native::elementwise_kernel<128, 2, at::native::g...    5934.1 µs   8.7%     10
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4979.8 µs   7.3%     64
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...    3809.0 µs   5.6%      2
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...    3716.7 µs   5.5%      2
+void at::native::unrolled_elementwise_kernel<at::native::...    3658.8 µs   5.4%     65
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...    3604.5 µs   5.3%      1
+nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN                  3411.6 µs   5.0%     67
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3214.0 µs   4.7%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3087.4 µs   4.5%     66
+void at::native::elementwise_kernel<128, 2, at::native::g...    3074.3 µs   4.5%      3
+... 47 more
+total                                                          67915.5 µs
+
+profile 2: batch=4 ctx=80000 dist=soft layer=sliding load=turn 4 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void at::native::elementwise_kernel<128, 2, at::native::g...   23750.8 µs  14.4%     40
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...   16238.6 µs   9.8%      8
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...   15201.5 µs   9.2%      9
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...   14409.4 µs   8.7%      4
+void at::native::elementwise_kernel<128, 2, at::native::g...   12301.7 µs   7.4%     12
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...   11471.5 µs   6.9%      4
+void at::native::elementwise_kernel<128, 2, at::native::g...   10285.5 µs   6.2%    258
+nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT                  8256.6 µs   5.0%     34
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7480.2 µs   4.5%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    7310.6 µs   4.4%     16
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4983.4 µs   3.0%     64
+nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN                  4444.3 µs   2.7%     33
+... 58 more
+total                                                         165395.0 µs
+
+profile 3: batch=4 ctx=80000 dist=soft layer=full load=turn 4 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void at::native::elementwise_kernel<128, 2, at::native::g...   23740.2 µs  14.5%     40
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...   15245.2 µs   9.3%      8
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...   15242.4 µs   9.3%      9
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...   14427.3 µs   8.8%      4
+void at::native::elementwise_kernel<128, 2, at::native::g...   12293.4 µs   7.5%     12
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...   11489.5 µs   7.0%      4
+void at::native::elementwise_kernel<128, 2, at::native::g...   10261.0 µs   6.3%    248
+nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT                  8263.3 µs   5.1%     34
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7486.4 µs   4.6%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    7312.4 µs   4.5%     14
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4982.1 µs   3.0%     64
+nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN                  4445.6 µs   2.7%     33
+... 49 more
+total                                                         163623.1 µs
+
+profile 4: batch=1 ctx=0 dist=soft layer=full load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN                 47562.5 µs  17.1%     35
+void at::native::elementwise_kernel<128, 2, at::native::g...   29802.6 µs  10.7%    242
+void at::native::elementwise_kernel<128, 2, at::native::g...   26152.4 µs   9.4%    128
+nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT                 23751.8 µs   8.5%     33
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...   22736.9 µs   8.2%     32
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...   17802.3 µs   6.4%     33
+void at::native::unrolled_elementwise_kernel<at::native::...   14419.5 µs   5.2%    173
+void at::native::elementwise_kernel<128, 2, at::native::g...   13747.6 µs   4.9%     32
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...   12147.9 µs   4.4%     32
+void at::native::vectorized_elementwise_kernel<4, at::nat...    8156.7 µs   2.9%     34
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7577.9 µs   2.7%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    6641.8 µs   2.4%     34
+... 45 more
+total                                                         278359.7 µs
+
+profile 5: batch=1 ctx=32768 dist=soft layer=sliding load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void at::native::elementwise_kernel<128, 2, at::native::g...   77801.7 µs  15.8%    128
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...   67013.8 µs  13.6%     32
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...   51041.4 µs  10.4%     32
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...   48972.8 µs  10.0%     33
+nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN                 47547.5 µs   9.7%     35
+void at::native::elementwise_kernel<128, 2, at::native::g...   40949.4 µs   8.3%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...   29938.6 µs   6.1%    252
+void at::native::vectorized_elementwise_kernel<4, at::nat...   24191.8 µs   4.9%     36
+nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT                 23740.4 µs   4.8%     33
+void at::native::unrolled_elementwise_kernel<at::native::...   14429.2 µs   2.9%    177
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7548.7 µs   1.5%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    6679.7 µs   1.4%     38
+... 53 more
+total                                                         492039.6 µs
+
+profile 6: batch=1 ctx=32768 dist=soft layer=full load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void at::native::elementwise_kernel<128, 2, at::native::g...   77775.7 µs  16.0%    128
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...   67085.0 µs  13.8%     32
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...   49506.1 µs  10.2%     32
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...   48899.0 µs  10.0%     33
+nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN                 47560.7 µs   9.8%     35
+void at::native::elementwise_kernel<128, 2, at::native::g...   40923.9 µs   8.4%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...   29795.8 µs   6.1%    242
+void at::native::vectorized_elementwise_kernel<4, at::nat...   24182.5 µs   5.0%     34
+nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT                 23785.3 µs   4.9%     33
+void at::native::unrolled_elementwise_kernel<at::native::...   14406.4 µs   3.0%    173
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7551.2 µs   1.5%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    6635.2 µs   1.4%     34
+... 45 more
+total                                                         487572.0 µs
+
+profile 7: batch=1 ctx=65536 dist=soft layer=full load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void at::native::elementwise_kernel<128, 2, at::native::g...  129692.2 µs  18.7%    192
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize64x64x8_sta...  111992.7 µs  16.1%     32
+void at::native::(anonymous namespace)::cunn_SoftMaxForwa...   82685.4 µs  11.9%     32
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_s...   79811.2 µs  11.5%     33
+void at::native::elementwise_kernel<128, 2, at::native::g...   68120.4 µs   9.8%     64
+nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN                 47569.2 µs   6.9%     35
+void at::native::vectorized_elementwise_kernel<4, at::nat...   40402.9 µs   5.8%     66
+void at::native::elementwise_kernel<128, 2, at::native::g...   29805.1 µs   4.3%    242
+nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT                 23790.4 µs   3.4%     33
+void at::native::unrolled_elementwise_kernel<at::native::...   14426.7 µs   2.1%    173
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7543.2 µs   1.1%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    6633.1 µs   1.0%     34
+... 45 more
+total                                                         693585.3 µs

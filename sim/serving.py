@@ -12,7 +12,7 @@ The workload is modeled on LMSYS's OpenHands simulation for Muse (day-0 blog, 20
 conversation is ~13 turns, a ~74K-token first turn, then ~753 new tokens per turn, 220 output tokens
 per turn. The judge's conversations are hidden; prefill is served in line with decode (no overlap).
 
-    python -m sim.serving [--tau 4.16] [--turns 13] [--allreduce-us 5.5] [--host-us 0]
+    python -m sim.serving [--tau 4.16] [--turns 13] [--allreduce-us 5.5] [--host-us 0] [--interactivity e2e|itl]
 """
 
 import argparse
@@ -105,24 +105,36 @@ def extras_us(design: str, c: int, host_us: float) -> dict[str, float]:
             "allreduce": 0.0 if design == "expected" else reduces * hw.allreduce_us(payload), "host": host_us}
 
 
-def curve(design: str, args, shard_dense: bool = False) -> dict[int, dict[str, float]]:
+def curve(design: str, args, shard_dense: bool = False, prefill_design: str | None = None) -> dict[int, dict[str, float]]:
     """Per rung: step time, and with every user running one whole conversation (its prefills
-    in line with the decode steps), tokens/s per GPU and tokens/s per user."""
-    prefill = prefill_load_us("first turn", design) + (args.turns - 1) * prefill_load_us("turn 1", design)
+    in line with the decode steps), tokens/s per GPU and tokens/s per user. `prefill_design`
+    prices the prefills differently from the decode steps (default: the same design).
+
+    The site doesn't define interactivity beyond "tokens/s per user". args.interactivity 'e2e' counts
+    the user's whole conversation time; 'itl' leaves out the user's own prefills (time to first token),
+    as LMSYS's 1000 / inter-token latency does, while other users' prefills still stall its decode.
+    Throughput's ratio to stock at a rung doesn't depend on whether input tokens are counted."""
+    pd = prefill_design or design
+    prefill = prefill_load_us("first turn", pd) + (args.turns - 1) * prefill_load_us("turn 1", pd)
     out_tokens = args.turns * OUTPUT_TOKENS
     out = {}
     for c in RUNGS:
         step = layer_stack_us(c, design, shard_dense) + sum(extras_us(design, c, args.host_us).values())
         window = c * prefill + out_tokens / args.tau * step
+        user_us = window - prefill if args.interactivity == "itl" else window
         out[c] = {"step_us": step, "per_gpu": out_tokens * c / window * 1e6 / 8,
-                  "per_user": out_tokens / window * 1e6, "prefill_share": c * prefill / window}
+                  "per_user": out_tokens / user_us * 1e6, "prefill_share": c * prefill / window}
     return out
 
 
-def score(ours: dict, stock: dict) -> tuple[float, dict[int, float]]:
-    """Mean over rungs of our throughput at stock's interactivity over stock's throughput."""
+def score(ours: dict, stock: dict, capped: bool = False) -> tuple[float, dict[int, float]]:
+    """Mean over rungs of our throughput at stock's interactivity over stock's throughput. Where
+    stock's interactivity is outside our curve, the default extrapolates our curve; `capped` takes
+    our nearest rung instead (we can't run past concurrency 32: --max-running-requests 32)."""
     pts = {v["per_user"]: v["per_gpu"] for v in ours.values()}
-    per = {c: _loglog(pts, s["per_user"]) / s["per_gpu"] for c, s in stock.items()}
+    lo, hi = min(pts), max(pts)
+    per = {c: _loglog(pts, min(max(s["per_user"], lo), hi) if capped else s["per_user"]) / s["per_gpu"]
+           for c, s in stock.items()}
     return sum(per.values()) / len(per), per
 
 
@@ -132,25 +144,33 @@ def main():
     ap.add_argument("--turns", type=int, default=13, help="turns per conversation (LMSYS's OpenHands simulation)")
     ap.add_argument("--allreduce-us", type=float, default=hw.EFF["allreduce_us"], help="all-reduce latency (sim.hw)")
     ap.add_argument("--host-us", type=float, default=0.0, help="host time per step not hidden by overlap")
+    ap.add_argument("--interactivity", choices=("e2e", "itl"), default="e2e",
+                    help="tokens/s per user over the whole conversation, or without the user's own prefills")
     args = ap.parse_args()
     hw.EFF["allreduce_us"] = args.allreduce_us
-    print(f"tau {args.tau}, {args.turns} turns/conversation, all-reduce {args.allreduce_us} us, host {args.host_us} us/step, ctx {CTX:,}")
-    designs = {"stock": ("stock", False), "practical": ("practical", False),
-               "practical + sharded pooler": ("practical", True), "megakernel": ("megakernel", False),
-               "expected (4.8 TB/s, no overheads)": ("expected", False)}
+    print(f"tau {args.tau}, {args.turns} turns/conversation, all-reduce {args.allreduce_us} us, host {args.host_us} us/step, "
+          f"ctx {CTX:,}, interactivity {args.interactivity}")
+    # name: (decode-step design, sharded pooler, prefill design)
+    designs = {"stock": ("stock", False, "stock"), "practical": ("practical", False, "practical"),
+               "practical decode, stock prefill": ("practical", False, "stock"),
+               "stock decode, practical prefill": ("stock", False, "practical"),
+               "practical + sharded pooler": ("practical", True, "practical"),
+               "megakernel": ("megakernel", False, "megakernel"),
+               "expected (4.8 TB/s, no overheads)": ("expected", False, "expected")}
     curves = {}
-    for name, (d, shard) in designs.items():
-        curves[name] = cv = curve(d, args, shard)
+    for name, (d, shard, pd) in designs.items():
+        curves[name] = cv = curve(d, args, shard, pd)
         ex = extras_us(d, 32, args.host_us)
-        print(f"\n== {name}: prefill per conversation {(prefill_load_us('first turn', d) + (args.turns - 1) * prefill_load_us('turn 1', d)) / 1e3:,.0f} ms"
-              f" (first turn {prefill_load_us('first turn', d) / 1e3:,.0f}, later turns {prefill_load_us('turn 1', d) / 1e3:.0f} each); per step at c=32: "
+        print(f"\n== {name}: prefill per conversation {(prefill_load_us('first turn', pd) + (args.turns - 1) * prefill_load_us('turn 1', pd)) / 1e3:,.0f} ms"
+              f" (first turn {prefill_load_us('first turn', pd) / 1e3:,.0f}, later turns {prefill_load_us('turn 1', pd) / 1e3:.0f} each); per step at c=32: "
               + ", ".join(f"{k} {v:.0f} us" for k, v in ex.items()))
         for c, v in cv.items():
             print(f"   c={c:<3} step {v['step_us'] / 1e3:6.2f} ms (layers {layer_stack_us(c, d, shard) / 1e3:6.2f})"
                   f"  {v['per_gpu']:8.1f} tok/s/GPU  {v['per_user']:7.1f} tok/s/user  prefill {v['prefill_share']:.0%} of time")
         if name != "stock":
-            mean, per = score(cv, curves["stock"])
-            print(f"   score vs stock {mean:.2f}x  (" + ", ".join(f"c{c} {x:.2f}" for c, x in per.items()) + ")")
+            for label, capped in (("extrapolated", False), ("capped", True)):
+                mean, per = score(cv, curves["stock"], capped)
+                print(f"   score vs stock, {label:12} {mean:.2f}x  (" + ", ".join(f"c{c} {x:.2f}" for c, x in per.items()) + ")")
 
 
 if __name__ == "__main__":

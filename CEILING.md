@@ -62,7 +62,8 @@ Readings:
 - **Decode layer** carries the largest weight on the overall board (below) and 1.4-1.6x headroom over
   the leader; fusion matters here (8 kernels to 1 is +0.33x).
 - **Prefill** is compute-bound in the expert GEMM at the first-turn shapes; the gap between expected and
-  practical is the 75% tensor-core efficiency assumption.
+  practical is the 75% tensor-core efficiency assumption. It isn't on the overall board, but under the
+  modeled workload it is worth as much serving score as all of decode (Serving below).
 
 ### Overall board weight (inference)
 
@@ -72,40 +73,59 @@ layer 51%, MoE 30%, proj 11%, attention 8% (prefill isn't on the overall board).
 decode layer and MoE carry ~80% of the rank; under an equal-weight reading attention is worth as much
 as either. Ask or watch the board before trading one against another.
 
-## Serving (model; stock pending)
+## Serving (model)
 
 `sim/serving.py` prices one step of the 8xH200 node (TP8 dense and attention, EP8 experts, DFlash
 verifying 8 tokens per request per step) and whole conversations shaped like LMSYS's OpenHands
 simulation: a 74K-token first turn, 12 more turns of ~753 new tokens, 220 output tokens per turn,
-prefill served in line with decode. The judge's conversations are hidden (serving RULES), so the
-workload is the largest assumption here.
+prefill served in line with decode. Stock's 62 layers and its prefills are the judge's own SGLang
+times from our decode-layer and prefill checks (FINDINGS); stock's LM head, drafter and all-reduces
+are modeled at cuBLAS rates. The judge's conversations are hidden (serving RULES), so the workload is
+the largest assumption here.
 
-Practical design, tau 4.16 (LMSYS AgentX), 13 turns:
+tau 4.16 (LMSYS AgentX), 13 turns, interactivity over the whole conversation:
 
-| Concurrency | Step | Layers | Drafter + LM head | All-reduces | tok/s per GPU | tok/s per user | Prefill share of time |
+| Concurrency | Stock step | Practical step | Stock tok/s per GPU | Practical tok/s per GPU | Stock tok/s per user | Practical tok/s per user | Prefill share (stock / practical) |
 |---|---|---|---|---|---|---|---|
-| 1 | 7.66 ms | 6.34 ms | 0.52 ms | 0.80 ms | 49 | 389 | 28% |
-| 4 | 9.63 ms | | | | 95 | 191 | 56% |
-| 16 | 15.66 ms | | | | 129 | 65 | 76% |
-| 32 | 19.44 ms | 16.14 ms | 0.52 ms | 2.77 ms | 142 | 36 | 83% |
+| 1 | 18.00 ms | 7.66 ms | 21.5 | 48.6 | 172 | 389 | 26% / 28% |
+| 4 | 26.53 ms | 9.63 ms | 40.5 | 95.3 | 81 | 191 | 48% / 56% |
+| 16 | 40.28 ms | 15.66 ms | 59.5 | 129.2 | 30 | 65 | 71% / 76% |
+| 32 | 56.95 ms | 19.44 ms | 65.0 | 142.3 | 16 | 36 | 78% / 83% |
 
-Per conversation, prefill is 1.73 s for the first turn and 30 ms for each later turn (practical);
-1.29 s and 22 ms at the expected bound.
+The practical step at c=1 is layers 6.34 ms, drafter + LM head 0.52 ms, all-reduces 0.80 ms (2.77 ms
+at c=32: 134 per step at 5.5 us plus size). Prefill per conversation: stock 3.39 s first turn + 74 ms
+per later turn; practical 1.73 s + 30 ms; expected 1.29 s + 22 ms.
 
-Sensitivity:
+### Score ceilings
 
-- **Prefill dominates from concurrency 4 up** (56-83% of the time) if the judge's conversations look like
-  LMSYS's. Single-turn conversations push it to 81-98%. tau 4.5 instead of 4.16 moves throughput by only
-  1-4%, because prefill doesn't speed up with acceptance.
-- **Sharding the pooler** (and the unpooler above 8 tokens) across the 8 GPUs, as stock already does on
-  GB300 only, saves 0.8-1.7 ms per step: +8% throughput at c=1, +1-4% at c=16-32 under this workload.
-- A fused layer ("megakernel") saves about as much as sharding at c=1 and less at c=32.
-- All-reduces are 10-14% of the step (5.5 us each, 134 per step).
+Score = our throughput at stock's interactivity over stock's throughput, averaged over the four rungs.
+At c=16/32 stock's interactivity is below anything our curve reaches (we can't run past 32 requests),
+so those rungs are either extrapolated along our curve or capped at our c=32 point.
 
-What's missing: stock. `sim.serving` reads stock's per-layer and per-prefill times from the judge's
-decode-layer and prefill calibration checks (queued: b90f4b3c889348d5, 322d17e35dfe454f). With them it
-prints stock's curve and the score ceiling (our throughput at stock's interactivity over stock's,
-averaged over the four rungs).
+| Design | Score (extrapolated / capped) | c=1 | c=4 | c=16 | c=32 |
+|---|---|---|---|---|---|
+| Practical: decode only (stock prefill) | 1.58x / 1.58x | 2.33 | 1.58 | 1.23 | 1.19 |
+| Practical: prefill only (stock decode) | 1.66x / 1.60x | 1.38 | 1.60 | 1.76 | 1.89 |
+| Practical, both | 3.13x / 3.04x | 4.57 | 3.00 | 2.46 | 2.49 |
+| Practical + sharded pooler | 3.28x / 3.20x | 5.00 | 3.14 | 2.49 | 2.48 |
+| One fused kernel per layer | 3.21x / 3.12x | 4.79 | 3.07 | 2.48 | 2.48 |
+| Expected (4.8 TB/s, no fixed costs) | 4.55x / 4.33x | 6.79 | 4.35 | 3.50 | 3.55 |
+
+Readings:
+
+- **Decode and prefill are worth about the same** under this workload (1.58x and 1.66x alone), and
+  they compound (3.1x together), because the score compares at equal interactivity and both set it.
+  Decode wins at c=1, prefill at c=16-32. The prefill kernel isn't on the overall kernel board but is
+  half the serving prize.
+- **The workload decides the split.** Single-turn conversations (`--turns 1`): practical 2.06x, almost
+  all from prefill. tau 4.5 instead of 4.16: 3.06x (moves little, because prefill doesn't use it).
+- **The interactivity definition barely matters**: leaving the user's own prefills out of tokens/s per
+  user (LMSYS's 1/ITL style, `--interactivity itl`) gives 3.05x / 2.96x instead of 3.13x / 3.04x.
+- **Sharding the pooler** (and the unpooler above 8 tokens), as stock does on GB300 only, saves
+  0.8-1.7 ms per step: +0.15x, mostly at c=1.
+- Stock's modeled c=1 decode rate is 231 tok/s per user (4.16 tokens per 18.0 ms step). LMSYS
+  published 543 at c=1 on 8x B300 (1.7x the bandwidth, FP4 tensor cores, Blackwell-only kernels) and
+  nothing for H200, so stock's model is plausible but not validated.
 
 ## Limitations
 
@@ -113,6 +133,8 @@ averaged over the four rungs).
   kernels; the first kernels we write will test them.
 - Routing for the layer problems is inferred from floors, not from the generator.
 - The serving model ignores host time (`--host-us`), scheduling (chunked prefill of 16K, hierarchical
-  cache, cache hits beyond the turn's new tokens), the TTFT cap, and the extra experts a larger verify
-  batch touches beyond the decode layer's routing.
+  cache, cache hits beyond the turn's new tokens, prefix sharing across conversations), p50/p90 effects,
+  the TTFT cap, and the extra experts a larger verify batch touches beyond the decode layer's routing.
+- Stock's step outside the 62 layers (LM head, drafter, all-reduces) is modeled, not measured; serving
+  can't be measured anywhere we have.
 - Leaders move daily; the table above is from 2026-10-23 16:22 KST.

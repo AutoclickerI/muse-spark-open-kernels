@@ -1,0 +1,227 @@
+okc run b90f4b3c889348d5 on muse_decode_layer
+submission  /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/submission.py
+status      ok
+passed      true
+speedup     0.004549878905160375
+speedup_ci  [0.004481630721582969 0.004635333594590872]
+score_us    4.971626821615964e+06
+tests       13/13 passed
+
+scored shapes (µs; speed of light is the reference's bound)
+case                                                         sglang      yours  speedup        sol  
+batch=1 ctx=80000 dist=soft layer=sliding load=decode 1 page=1     169.50   39674.29   0.004x      40.02  
+batch=1 ctx=80000 dist=soft layer=full load=decode 1 page=1     179.65   39540.33   0.005x      44.18  
+batch=16 ctx=80000 dist=soft layer=sliding load=decode 16 page=1 spread=agentic     252.22   84009.30   0.003x      76.72  
+batch=16 ctx=80000 dist=soft layer=full load=decode 16 page=1 spread=agentic     438.96   85473.02   0.005x     137.46  
+batch=32 ctx=80000 dist=soft layer=sliding load=decode 32 page=1 spread=agentic     253.34  134227.18   0.002x      84.51  
+batch=32 ctx=80000 dist=soft layer=full load=decode 32 page=1 spread=agentic     614.08  131166.49   0.005x     208.10  
+batch=1 ctx=80000 dist=soft layer=sliding load=verify 1 page=1 q_len=8     260.53   41025.18   0.006x      62.29  
+batch=1 ctx=80000 dist=soft layer=full load=verify 1 page=1 q_len=8     265.95   40307.93   0.007x      66.44  
+batch=16 ctx=80000 dist=soft layer=sliding load=verify 16 page=1 q_len=8 spread=agentic     556.00   95751.63   0.006x     126.61  
+batch=16 ctx=80000 dist=soft layer=full load=verify 16 page=1 q_len=8 spread=agentic     721.63   94767.13   0.008x     188.68  
+batch=32 ctx=80000 dist=soft layer=sliding load=verify 32 page=1 q_len=8 spread=agentic     757.52  154280.25   0.005x     143.81  
+batch=32 ctx=80000 dist=soft layer=full load=verify 32 page=1 q_len=8 spread=agentic    1112.80  155029.08   0.007x     267.18  
+
+profile 0: batch=1 ctx=80000 dist=soft layer=sliding load=decode 1 page=1
+kernel                                                           GPU time  share  calls
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7467.5 µs  18.6%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    5553.8 µs  13.8%    212
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4992.2 µs  12.4%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3647.9 µs   9.1%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3203.0 µs   8.0%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3083.7 µs   7.7%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3019.6 µs   7.5%     64
+void gemmSN_NN_kernel<float, 128, 2, 4, 8, 4, 4, false, c...    2463.7 µs   6.1%      1
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2330.1 µs   5.8%    102
+void at::native::vectorized_elementwise_kernel<8, at::nat...    1053.4 µs   2.6%     64
+void at::native::unrolled_elementwise_kernel<at::native::...     803.5 µs   2.0%    181
+nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT                           662.8 µs   1.7%     33
+... 54 more
+total                                                          40163.1 µs
+
+profile 1: batch=1 ctx=80000 dist=soft layer=full load=decode 1 page=1
+kernel                                                           GPU time  share  calls
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7465.5 µs  18.6%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    5543.2 µs  13.8%    202
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4995.9 µs  12.5%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3652.4 µs   9.1%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3200.0 µs   8.0%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3079.0 µs   7.7%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3023.2 µs   7.5%     64
+void gemmSN_NN_kernel<float, 128, 2, 4, 8, 4, 4, false, c...    2461.6 µs   6.1%      1
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2327.6 µs   5.8%    102
+void at::native::vectorized_elementwise_kernel<8, at::nat...    1054.8 µs   2.6%     64
+void at::native::unrolled_elementwise_kernel<at::native::...     797.9 µs   2.0%    177
+nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT                           677.0 µs   1.7%     33
+... 46 more
+total                                                          40114.3 µs
+
+profile 2: batch=16 ctx=80000 dist=soft layer=sliding load=decode 16 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void gemmSN_NN_kernel<float, 128, 2, 4, 8, 4, 4, false, c...   42580.0 µs  49.4%     16
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7473.9 µs   8.7%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    6657.9 µs   7.7%    282
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4985.1 µs   5.8%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3649.1 µs   4.2%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3195.6 µs   3.7%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3083.9 µs   3.6%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3040.2 µs   3.5%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2332.8 µs   2.7%    102
+void at::native::unrolled_elementwise_kernel<at::native::...    1757.0 µs   2.0%    207
+void at::native::vectorized_gather_kernel<16, long>(char*...    1705.6 µs   2.0%     32
+void at::native::vectorized_elementwise_kernel<8, at::nat...    1049.5 µs   1.2%     64
+... 58 more
+total                                                          86207.4 µs
+
+profile 3: batch=16 ctx=80000 dist=soft layer=full load=decode 16 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void gemmSN_NN_kernel<float, 128, 2, 4, 8, 4, 4, false, c...   42632.6 µs  49.6%     16
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7472.7 µs   8.7%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    6645.8 µs   7.7%    272
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4988.7 µs   5.8%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3656.2 µs   4.3%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3190.7 µs   3.7%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3083.5 µs   3.6%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3029.5 µs   3.5%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2332.8 µs   2.7%    102
+void at::native::unrolled_elementwise_kernel<at::native::...    1748.2 µs   2.0%    203
+void at::native::vectorized_gather_kernel<16, long>(char*...    1705.2 µs   2.0%     32
+void at::native::vectorized_elementwise_kernel<8, at::nat...    1051.4 µs   1.2%     64
+... 49 more
+total                                                          85937.5 µs
+
+profile 4: batch=32 ctx=80000 dist=soft layer=sliding load=decode 32 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void gemmSN_NN_kernel<float, 128, 2, 4, 8, 4, 4, false, c...   85299.7 µs  63.2%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...    7747.4 µs   5.7%    314
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7473.9 µs   5.5%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4985.0 µs   3.7%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3661.4 µs   2.7%     65
+void at::native::vectorized_gather_kernel<16, long>(char*...    3411.4 µs   2.5%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3206.0 µs   2.4%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3089.0 µs   2.3%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3018.3 µs   2.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    2774.1 µs   2.1%    239
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2337.4 µs   1.7%    102
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_sta...    1623.0 µs   1.2%     32
+... 58 more
+total                                                         134899.2 µs
+
+profile 5: batch=32 ctx=80000 dist=soft layer=full load=decode 32 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void gemmSN_NN_kernel<float, 128, 2, 4, 8, 4, 4, false, c...   85278.7 µs  63.5%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...    7735.6 µs   5.8%    304
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7469.3 µs   5.6%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4983.3 µs   3.7%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3665.5 µs   2.7%     65
+void at::native::vectorized_gather_kernel<16, long>(char*...    3412.3 µs   2.5%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3203.0 µs   2.4%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3082.4 µs   2.3%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3035.8 µs   2.3%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    2765.1 µs   2.1%    235
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2330.7 µs   1.7%    102
+sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_sta...    1621.3 µs   1.2%     32
+... 49 more
+total                                                         134264.3 µs
+
+profile 6: batch=1 ctx=80000 dist=soft layer=sliding load=verify 1 page=1 q_len=8
+kernel                                                           GPU time  share  calls
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7473.0 µs  18.2%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    5633.4 µs  13.7%    252
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4987.3 µs  12.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3652.2 µs   8.9%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3203.1 µs   7.8%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3087.5 µs   7.5%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3026.5 µs   7.4%     64
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...    2928.8 µs   7.1%      1
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2333.1 µs   5.7%    102
+void at::native::vectorized_elementwise_kernel<8, at::nat...    1056.1 µs   2.6%     64
+void at::native::unrolled_elementwise_kernel<at::native::...     811.9 µs   2.0%    177
+nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT                           664.0 µs   1.6%     33
+... 57 more
+total                                                          41026.7 µs
+
+profile 7: batch=1 ctx=80000 dist=soft layer=full load=verify 1 page=1 q_len=8
+kernel                                                           GPU time  share  calls
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7474.1 µs  18.3%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    5632.5 µs  13.8%    242
+void at::native::vectorized_elementwise_kernel<4, at::nat...    5001.5 µs  12.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3646.4 µs   8.9%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3198.4 µs   7.8%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3075.7 µs   7.5%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3037.9 µs   7.4%     64
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...    2859.5 µs   7.0%      1
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2330.6 µs   5.7%    102
+void at::native::vectorized_elementwise_kernel<8, at::nat...    1052.0 µs   2.6%     64
+void at::native::unrolled_elementwise_kernel<at::native::...     802.3 µs   2.0%    173
+nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT                           661.7 µs   1.6%     33
+... 49 more
+total                                                          40898.1 µs
+
+profile 8: batch=16 ctx=80000 dist=soft layer=sliding load=verify 16 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...   49927.4 µs  51.8%     16
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7476.1 µs   7.8%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    6796.1 µs   7.1%    282
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4986.5 µs   5.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3666.2 µs   3.8%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3197.3 µs   3.3%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3078.0 µs   3.2%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3027.5 µs   3.1%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2348.8 µs   2.4%    102
+void at::native::unrolled_elementwise_kernel<at::native::...    1784.5 µs   1.9%    207
+void at::native::vectorized_gather_kernel<16, long>(char*...    1705.9 µs   1.8%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...    1150.9 µs   1.2%     64
+... 56 more
+total                                                          96292.3 µs
+
+profile 9: batch=16 ctx=80000 dist=soft layer=full load=verify 16 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...   49554.6 µs  51.8%     16
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7473.5 µs   7.8%     64
+void at::native::elementwise_kernel<128, 2, at::native::g...    6781.6 µs   7.1%    272
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4983.2 µs   5.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3659.6 µs   3.8%     65
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3195.5 µs   3.3%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3079.6 µs   3.2%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3018.9 µs   3.2%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2349.1 µs   2.5%    102
+void at::native::unrolled_elementwise_kernel<at::native::...    1782.8 µs   1.9%    203
+void at::native::vectorized_gather_kernel<16, long>(char*...    1705.7 µs   1.8%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...    1152.0 µs   1.2%     64
+... 48 more
+total                                                          95685.1 µs
+
+profile 10: batch=32 ctx=80000 dist=soft layer=sliding load=verify 32 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...   99720.1 µs  64.4%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...    8026.8 µs   5.2%    314
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7479.1 µs   4.8%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4986.3 µs   3.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3661.7 µs   2.4%     65
+void at::native::vectorized_gather_kernel<16, long>(char*...    3412.5 µs   2.2%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3198.9 µs   2.1%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3081.3 µs   2.0%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3016.1 µs   1.9%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    2855.6 µs   1.8%    239
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2368.8 µs   1.5%    102
+void at::native::elementwise_kernel<128, 2, at::native::g...    2298.3 µs   1.5%    128
+... 54 more
+total                                                         154829.2 µs
+
+profile 11: batch=32 ctx=80000 dist=soft layer=full load=verify 32 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+sm80_xmma_gemm_f32f32_f32f32_f32_nn_n_tilesize32x32x8_sta...   99792.5 µs  64.6%     32
+void at::native::elementwise_kernel<128, 2, at::native::g...    8016.5 µs   5.2%    304
+void at::native::index_elementwise_kernel<128, 4, at::nat...    7475.0 µs   4.8%     64
+void at::native::vectorized_elementwise_kernel<4, at::nat...    4990.4 µs   3.2%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    3664.2 µs   2.4%     65
+void at::native::vectorized_gather_kernel<16, long>(char*...    3411.0 µs   2.2%     64
+void at::native::vectorized_elementwise_kernel<8, at::nat...    3196.8 µs   2.1%    256
+void at::native::vectorized_elementwise_kernel<4, at::nat...    3073.1 µs   2.0%     66
+void at::native::(anonymous namespace)::CatArrayBatchedCo...    3035.6 µs   2.0%     64
+void at::native::unrolled_elementwise_kernel<at::native::...    2851.1 µs   1.8%    235
+void at::native::vectorized_elementwise_kernel<8, at::nat...    2370.3 µs   1.5%    102
+void at::native::elementwise_kernel<128, 2, at::native::g...    2297.8 µs   1.5%    128
+... 46 more
+total                                                         154559.3 µs
