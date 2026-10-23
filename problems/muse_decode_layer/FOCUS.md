@@ -16,7 +16,7 @@ Full verify32 attention is next at 377.5 us; projections and boundaries are smal
 
 Standalone H200 evidence: MoE V9 reaches 1.654x overall and beats V7 at every load. The scored V9 dispatch layer now reaches 1.366737x overall, but verify32 remains the largest excess: full attention is 377.5 us in the accepted profile and MoE dominates verify16/32.
 
-The next candidate `cand_r3_v9_autotune.py` keeps V7, V9, grouped wide tiles, FA3's 27 `(num_splits, pack_gqa)` settings, cuBLAS/cuBLASLt/custom projections, and PDL on/off for both residual boundaries. Its `prepare()` selects by shape on the judge and logs every timing. Local sm_120 admission is 13/13 tests and 12/12 fresh-input graphs; Hopper FA3/cuBLASLt branches are forced through explicit stand-ins or skipped locally.
+The next candidate `cand_r3_v9_cost_autotune.py` keeps V7, V9, grouped wide tiles, FA3's 27 `(num_splits, pack_gqa)` settings, cuBLAS/cuBLASLt/custom projections, PDL on/off for both residual boundaries, and a fused O-projection/residual/pooler prefix path plus a persistent small-load island path. Its `prepare()` selects by shape on the judge, logs every timing, and rejects invalid/resource-wrong variants instead of aborting. Local sm_120 admission is 13/13 tests and 12/12 fresh-input graphs; Hopper FA3/cuBLASLt branches are forced through explicit stand-ins or skipped locally.
 
 Structural fusion candidates reduced launch count but regressed complete local layers;
 keep them diagnostic until a packed variant is neutral or better. Read [NEXT_CHECKS](dev/NEXT_CHECKS.md)
