@@ -1,0 +1,20 @@
+{
+  "source_sha256": "5a64a2fc8130ee91d6915f43516e8aff86cfddba0caa9cfc8768861d92b4c497",
+  "hardware": "sm120/GPU0; forced Hopper constructors, native TMA/MMA.sync and portable FA3 stand-ins",
+  "official_tests": 5,
+  "timed_shapes": 8,
+  "structural_fresh_checks": 278,
+  "mixed_tma_fresh_checks": 40,
+  "selected_layer_fresh_checks": 16,
+  "warm_forced_prepare_s": 39.34258211101405,
+  "native_sm120_tma_compile_s": 35.22436275205109,
+  "triton_sm90_specializations": 25,
+  "native_sm90a_specializations": 4,
+  "tuner_rejection_phases": [
+    "graph construction",
+    "independent oracle",
+    "timing",
+    "finalist construction"
+  ],
+  "note": "No new H200 run or speedup claim; both queued parent hashes unchanged."
+}

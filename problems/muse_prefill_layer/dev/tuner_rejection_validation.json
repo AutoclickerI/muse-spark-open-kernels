@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "selected": "good",
+  "constructed": {
+    "good": 3,
+    "bad_build": 1,
+    "bad_check": 1,
+    "bad_time": 2,
+    "bad_finalist": 2
+  },
+  "logs": "SCORE_REJECT failure injection bad_build RuntimeError injected graph construction failure\nSCORE_REJECT failure injection bad_check RuntimeError injected independent oracle failure\nSCORE_REJECT timing variant 0 RuntimeError injected graph replay failure\nSCORE_REJECT failure injection finalist bad_finalist RuntimeError injected finalist construction failure\nSCORE_SELECT {\"stage\": \"failure injection\", \"selected\": \"good\", \"us\": {\"good\": 4.095999989658594, \"bad_finalist\": 4.095999989658594}, \"finalists\": [\"good\"], \"paired_us\": [4.095999989658594], \"errors\": {\"good\": {\"finite\": true}, \"bad_time\": {\"finite\": true}, \"bad_finalist\": {\"finite\": true}}}\nSCORE_REJECT timing variant 0 RuntimeError injected graph replay failure\n",
+  "phases": [
+    "graph construction",
+    "independent oracle",
+    "timing",
+    "finalist construction"
+  ]
+}

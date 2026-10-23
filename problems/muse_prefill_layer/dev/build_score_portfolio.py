@@ -1,4 +1,5 @@
 """Freeze all useful expert layouts and per-projection tuning into one board source."""
+from builder_safety import guarded_tuners
 import ast,re
 from pathlib import Path
 P=Path(__file__).resolve().parents[1]
@@ -92,6 +93,9 @@ base=base.replace(old,loader,1)
 base+='\n'+extra+'\n'+(P/'dev/score_portfolio_tail.py').read_text()
 # Raw DG literal shares raw scales but applies the stock effective BF16 norm.
 assert 'def _experts_selected(' in base
-out=P/'cand_score_portfolio.py';out.write_text(base)
+base=guarded_tuners(base)
+import argparse
+parser=argparse.ArgumentParser();parser.add_argument('--output',required=True,type=Path)
+args=parser.parse_args();out=args.output;out.write_text(base)
 ast.parse(base)
 print(out,len(base))

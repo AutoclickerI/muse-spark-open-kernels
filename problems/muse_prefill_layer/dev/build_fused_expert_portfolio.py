@@ -1,5 +1,6 @@
 """Add genuinely new fused expert algorithms, keeping the queued portfolio immutable."""
 from pathlib import Path
+from builder_safety import guarded_tuners
 import ast
 p=Path(__file__).resolve().parents[1]
 s=(p/'cand_score_portfolio.py').read_text()
@@ -10,6 +11,9 @@ s=s.replace("st['expert_dispatch']={753:'raw11',3012:'raw11',16384:'raw_v11'}", 
 s+='\n'+(p/'dev/fused_expert_paths.py').read_text()+'\n'+(p/'dev/overlap_expert_paths.py').read_text()
 assert s.count('flush.sum()')==1
 s=s.replace('flush.sum()', '_fused_flush_l2(flush)')
+s=guarded_tuners(s)
 ast.parse(s)
-(p/'cand_fused_expert_portfolio.py').write_text(s)
-print('Built new portfolio with 45 expert choices; queued source unchanged')
+import argparse
+parser=argparse.ArgumentParser();parser.add_argument('--output',required=True,type=Path)
+args=parser.parse_args();args.output.write_text(s)
+print('Built guarded 45-choice portfolio:',args.output)
