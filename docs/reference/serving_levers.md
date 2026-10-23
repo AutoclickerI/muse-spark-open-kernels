@@ -618,7 +618,7 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
 Current patch regenerated from `git -C serving/sglang diff a55ab7d5` after
-including source-only untracked additions: **329,330bytes**, **31files**,
+including source-only untracked additions: **336,965bytes**, **31files**,
 longest added line **374**. All25 paths in accepted `aab3243` remain;
 15 accepted file diffs are byte-identical, including the unchanged MoE lane
 source. The new collective wrapper/kernel, prefill plan shape guard and
