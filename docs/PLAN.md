@@ -2,8 +2,8 @@
 
 ## Status (2026-10-23 21:30 KST)
 - Kernel track day 1 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST.
-- Best H200 checks: proj 1.142x, attention 1.279x (1.282x on the board), MoE 1.492x, decode layer
-  1.143x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6, prefill v3 and proj tuned are queued.
+- Best H200 checks: proj 1.142x, attention 1.279x (1.282x on the board), MoE 1.535x, decode layer
+  1.143x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7 and prefill v3 are queued.
 - Overall board at 19:30: about 1.19x time-weighted against about 1.38x for 50th place (FINDINGS "Boards").
   Decode layer and MoE carry about 80% of that weight.
 - Serving patch: Hopper gates #2/#4/#5, prefill row split, FA3 QK-norm/KV-store fusion, drafter fc split,
