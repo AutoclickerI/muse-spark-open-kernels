@@ -39,3 +39,20 @@ The new `cand_attn_fa3_struct.py` adds an eight-stage ring to that portfolio.
 Its forced sm_120 path is finite and agrees with the five-stage group path at
 L2 0.0 for B1 sliding and B16 full; the full candidate screen remains 16/16 and
 12/12. H200 timing is intentionally left to the orchestrator.
+
+## Decode-gather math hypothesis
+
+The next family keeps `attn_main`'s q_len=1 producer geometry unchanged: page-1
+row gathers, four `cp.async` stages, and 64 KiB of K/V in flight. Its verify
+consumer runs the same 64-row-per-KV-head `mma.sync.m16n8k16` QK/PV math,
+causal in-block mask, and fused gate. The H200 wrapper launches
+`attn_forward_vmath` (`launch_t<8,4>`); sm_120 cannot opt in to its 100,352 B
+dynamic-smem footprint, so the local stand-in invokes the existing L=8 stage-3
+launch with identical math.
+
+The sm_120 graph benchmark in `decode_math_bench_sm120.log` compares the raw
+KV-byte-equivalent q_len=1 gather with that verify math. At full B16 it measured
+1.441/1.103 TB/s (verify/control), and at full B32 1.488/1.301 TB/s. The
+forced path passes reference validation at B1 sliding, B16 full, and B32 full;
+the SM90 source also compiles with `attn_forward_vmath` exported. Hopper timing
+and whether this closes the FA3 gap remain unverified.

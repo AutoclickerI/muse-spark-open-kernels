@@ -162,6 +162,67 @@ MoE lane's expert kernel), projection gathers, and independent router overlap. T
 kernels themselves remain with their lanes. At c=32 the LM-head compute floor already exceeds the old
 byte-only model, so its modeled recoverable value is clamped to zero.
 
+### Attention-output all-reduce fused with the norm/residual boundary
+
+Implemented `all_reduce_norm_residual.py/.cuh`, `FusedPostNormResidualPreNorm.forward_with_ar`
+and output-projection reduction ownership in `models/muse_spark.py`. The one-shot push loader
+uses the existing custom-AR plane, multicast stores when available and unicast otherwise.
+It polls rank contributions and reduces in FP32 in the same rank order, rounds to BF16, then
+runs the **same** norm/residual kernel body as the separate path. This preserves the existing
+cluster norm arithmetic, post-norm BF16 round trip, FP32 gated stream and pre-norm rounding.
+No extra weight/layout/workspace allocation; each CTA advances its phase counter and advances
+unused counters, permitting stock AR, finalize AR and gather kernels to share the plane.
+
+Dispatch is SM90, custom AR v2 one-shot policy, BF16, no DP attention/SP, JIT boundary selected,
+M<=128 and cluster grid within the counter budget. With stock H200 TP8 one-shot threshold
+128 KiB and H8192, this covers **M=8, c=1**, and does not force a slower algorithm at c4/16/32.
+Attention's row-parallel output projection skips its reduction only when this boundary owns it.
+The expert lane's `layers/muse_spark_moe.py` was not edited. Larger blocks need a measured
+2-shot/partitioned design; overlapping the router before its normalized input exists would change
+model semantics, so this change does not claim that overlap.
+
+`test_attn_ar_norm.py` runs the real unicast kernel on two sm_120 GPUs with H1024/8192,
+M8/32/128, optional FP32 router, zeros/signed zeros, shared-plane stock/fused alternation and
+CUDA graph replay. **All eager/graph comparisons against separate custom AR + norm: maxdiff 0.**
+TP1 default-loader eager/graph is exact. Existing cluster norm differs from direct torch math
+by at most 0.03125 BF16 at H1024, 0.015625 at H8192; the fusion adds zero difference.
+All 12 H8192/TP8 sm_90a variants (cluster8/4/1, multicast on/off, router on/off) compile under
+`override_jit_cuda_arch(9,0,suffix="a")`. H200 multicast execution and speed remain unverified.
+
+Local PCIe sm_120 medians for H8192, no router, separate->fused:
+M8 **25.85->27.81 us**, M32 **52.93->55.62 us**, M128 **150.08->152.68 us**. The local
+1024-wide fixture can save 0.2-3.0 us or regress, depending on M; these shared-job/PCIe
+numbers are **not H200 estimates**. A repeat under concurrent stock graph capture timed H8192 M8
+46.24->44.22 us, M32 126.49->167.26, M128 469.41->405.37, illustrating noise;
+no local speedup is credited. SM120 production dispatch is unchanged. On H200, the
+modeled saving is one removed launch plus the boundary traffic: conservative
+`62 layers * (1-2 us) = 0.062-0.124 ms/step at c1`, zero at the other scored rungs.
+Holding tau/prefill fixed, `sim.serving_receipts` plus this c1 step reduction gives capped
+**1.74621-1.74777x** versus **1.74464x** (+0.09-0.18%). This is a testable candidate,
+not a credited recovery of the whole collective bucket.
+
+Full stock prefill graphs (all 74 shapes, max16K), target/draft verify graphs maxbs32,
+GPU0/TP1 and GPU0+1/TP2 with memory fraction0.3:
+
+| Local run pair, sm_120 | Exact /220 | TTFT ratio c1 / c4 | Scope |
+|---|---|---|---|
+| `g54-stock-tp2-fullgraphs` / `g55-patch-tp2-fullgraphs` | 30/30, all220 | 0.80 / 0.44 | real patch, new SM90 fusion inactive |
+| `g54` / `g56-ar-standin-tp2-fullgraphs` | 30/30, all220 | 0.69 / 0.50 | forced SM90 Python ownership using NCCL+same norm stand-in |
+| `g50` / `g51` (only16K prefill graph) | 30/30, all220 | 17.40 / 17.49 | failed TTFT; retained diagnostic, not gate evidence |
+| `g52` / `g53` (only16K prefill graph, TP2) | 30/30, all220 | 9.45 / 5.49 | failed TTFT; retained diagnostic |
+
+All exact runs have first divergence220 and token agreement1.0; TP1/TP2 load audits pass.
+The failed one-shape tests show that enabling prefill graphs alone is insufficient: the graph
+shape coverage affects this tiny fixture's TTFT. No source graph policy or harness file was changed.
+Final full-graph TP1 and matched random teacher-forced stock spread are recorded below when complete.
+Evidence: `/data2/jihoon/muse_kernel/harness/results/ar-norm-evidence/` plus named run directories.
+
+Memory resource accounting is now in [FINDINGS](../FINDINGS.md): counted fixed non-KV residency
+77.776GB/GPU, 42.074GB spare before KV and dynamic graph/workspace allocations U. The released
+target config is gated, so this is a source-config count with explicit unknown U, not a measured
+full-checkpoint allocation. A full extra bank is12.284GB over budget before KV/U; partial copies
+remain available where faster and the actual resident KV fits.
+
 Implemented the **DFlash2 small-batch candidate collective coalescing**, a graph-captured part of
 rank 1. The default `candidate_topk` at <=32 candidate rows packs each FP32 logit's raw bits and its
 int64 token into two int64 words, replacing two typed all-gathers with one. A Triton pack kernel avoids

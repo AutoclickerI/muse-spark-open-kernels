@@ -1,13 +1,14 @@
 # Attention handoff / frozen send order (2026-10-24)
 
 Only the orchestrator sends. Do not edit or resend a source after it enters the
-queue. The portfolio is first because one receipt measures the complete FA3,
-XQA/WGMMA and FP8-PV space plus the mechanism diagnostics.
+queue; this handoff records that the old portfolio source changed and must be
+requeued. The portfolio is first because one receipt measures the decode-gather
+math family plus the complete FA3, XQA/WGMMA and FP8-PV space.
 
 | Order | File | Frozen SHA256 | Action / state |
 |---:|---|---|---|
-| 0 | `cand_attn_fa3_struct.py` | `77ec70ac8b3fc2f1708c801f55d5eaabc0b4c319ddc7a3b194434e2faec5da` | New ready FA3-structure candidate. Local sm_120 screen passes 16/16 and 12/12; force-tested eight-stage WGMMA path is finite and agrees with group L2 0.0. Requeue this source after the orchestrator's approval. |
-| 1 | `cand_attn_portfolio.py` | `cf2f9e47182c45344220f4123668c3238ec37092b653b4336b4b2c5e5d65ddaf` | Already queued at place ~24 (`4148288`). It logs `PORTFOLIO_MECH`, all FA3 split/pack times, XQA/WGMMA times and FP8-PV times; do not wait for its receipt before using order 0. |
+| 0 | `cand_attn_portfolio.py` | `1aac382fb51cf69da926379713b9d2db8ab7e0d41711f7c0ec02674dbb88d0ff` | Requeue the changed source. It logs `VMATH_BENCH_SM120` locally and `PORTFOLIO_DECODE_MATH` on Hopper, then selects among decode-gather math, FA3, XQA/WGMMA, and FP8-PV per shape. The old queued hash/job (`cf2f9e47...`, `4148288`) is stale. |
+| 1 | `cand_attn_fa3_struct.py` | `77ec70ac8b3fc2f1708c801f55d5eaabc0b4c319ddc7a3b194434e2faec5da` | Ready FA3-structure candidate. Local sm_120 screen passes 16/16 and 12/12; force-tested eight-stage WGMMA path is finite and agrees with group L2 0.0. Requeue after the updated portfolio. |
 | 2 | `submission.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Existing scored q_len=1 winner; verify remains FA3. |
 | 3 | `cand_xqa_next.py` | `fee88fd0a7e9de09639228d67a5300ba760ddd0c946e998b33550466650933c8` | Existing queued producer/WGMMA diagnostic (`3928409`); collect only if it lands before the new source. |
 | failed | `cand_fa3_tune.py` | `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd` | Check `dd927c6c46264afe` failed during prepare because setting `(1, None)` differed from the default by 0.008635; do not resend. |
@@ -26,4 +27,5 @@ screen-all: `xqa_legacy_candidate.py` (`551949b5...`),
 
 Prior H200 evidence: scored `526f31018e2c4449` was 1.384x; check
 `32c5b4b287c24c38` was 1.390910x; K128 check `a0511c0001464dbe` was 1.382808x.
-The next custom verify result and any promotion remain unverified.
+The updated portfolio hash and its H200 decode-gather/verify result remain
+unverified until the orchestrator requeues it.

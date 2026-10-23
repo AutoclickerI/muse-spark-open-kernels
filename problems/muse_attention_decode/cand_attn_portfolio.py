@@ -805,6 +805,62 @@ int64_t max_cluster(int64_t q_len, int64_t cs);
 int64_t occupancy(int64_t q_len);
 """
 
+# Verify-only math sibling of the incumbent decode kernel.  It deliberately
+# reuses attn_main's q_len=1 producer geometry: four cp.async stages (64 KiB
+# of K/V in flight) and the same page-1 row gather.  Only the template's
+# L=8 consumer work changes, so the benchmark below can separate extra math
+# from the memory path.
+CUDA_SRC += r"""
+
+void attn_forward_vmath(int64_t qkv, int64_t positions, int64_t cache_loc, int64_t page_table, int64_t seq_lens,
+                        int64_t k_cache, int64_t v_cache, int64_t k_scale, int64_t v_scale, int64_t inv_freq,
+                        int64_t part_o, int64_t part_ml, int64_t counters, int64_t part1, int64_t dsmem, int64_t out,
+                        int64_t batch, int64_t q_len, int64_t qkv_stride, int64_t hq, int64_t hkv, int64_t max_pages,
+                        int64_t ps, int64_t window, int64_t ns, int64_t cs, double scale_log2, int64_t stream) {
+  Params p;
+  p.qkv = reinterpret_cast<const __nv_bfloat16*>(qkv);
+  p.positions = reinterpret_cast<const int64_t*>(positions);
+  p.cache_loc = reinterpret_cast<const int64_t*>(cache_loc);
+  p.page_table = reinterpret_cast<const int*>(page_table);
+  p.seq_lens = reinterpret_cast<const int*>(seq_lens);
+  p.k_cache = reinterpret_cast<uint8_t*>(k_cache);
+  p.v_cache = reinterpret_cast<uint8_t*>(v_cache);
+  p.k_scale = reinterpret_cast<const float*>(k_scale);
+  p.v_scale = reinterpret_cast<const float*>(v_scale);
+  p.inv_freq = reinterpret_cast<const float*>(inv_freq);
+  p.part_o = reinterpret_cast<float*>(part_o);
+  p.part_ml = reinterpret_cast<float*>(part_ml);
+  p.counters = reinterpret_cast<int*>(counters);
+  p.part1 = reinterpret_cast<float*>(part1);
+  p.dsmem = (int)dsmem;
+  p.out = reinterpret_cast<__nv_bfloat16*>(out);
+  p.batch = (int)batch;
+  p.qkv_stride = (int)qkv_stride;
+  p.hq = (int)hq;
+  p.hkv = (int)hkv;
+  p.max_pages = (int)max_pages;
+  p.ps = (int)ps;
+  int lg = 0;
+  while ((1 << lg) < ps) ++lg;
+  p.ps_log2 = lg;
+  p.window = (int)window;
+  p.ns = (int)ns;
+  p.cs = (int)cs;
+  p.row_bytes = hkv * 64;
+  p.scale_log2 = (float)scale_log2;
+  cudaError_t e = launch_t<8, 4>(p, reinterpret_cast<cudaStream_t>(stream));
+  if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
+}
+"""
+
+CPP_SRC += r"""
+void attn_forward_vmath(int64_t qkv, int64_t positions, int64_t cache_loc, int64_t page_table, int64_t seq_lens,
+                        int64_t k_cache, int64_t v_cache, int64_t k_scale, int64_t v_scale, int64_t inv_freq,
+                        int64_t part_o, int64_t part_ml, int64_t counters, int64_t part1, int64_t dsmem, int64_t out,
+                        int64_t batch, int64_t q_len, int64_t qkv_stride, int64_t hq, int64_t hkv, int64_t max_pages,
+                        int64_t ps, int64_t window, int64_t ns, int64_t cs, double scale_log2, int64_t stream);
+"""
+
 _EXT = None
 # Merge a cluster's split partials through distributed shared memory (True) or global memory/L2.
 DSMEM = True
@@ -890,7 +946,7 @@ def _ext():
             name=f"muse_attn_v2c_sm{arch}",
             cpp_sources=CPP_SRC,
             cuda_sources=CUDA_SRC,
-            functions=["attn_forward", "max_cluster", "occupancy"],
+            functions=["attn_forward", "attn_forward_vmath", "max_cluster", "occupancy"],
             extra_cuda_cflags=["-O3", f"-gencode=arch=compute_{arch},code=sm_{arch}", "-std=c++20",
                                "--expt-relaxed-constexpr", "-lineinfo"],
             verbose=False,
@@ -969,6 +1025,54 @@ def _plan(batch, kvg, max_keys, q_len, window, sms, occ):
     if best is None:  # more groups than resident clusters: one CTA per group and wave
         return 1, 1
     return best[1], best[2]
+
+
+def _vmath_verify(data: Inputs) -> torch.Tensor:
+    """Verify math on the decode kernel's four-stage gather/pipeline.
+
+    The split plan intentionally comes from q_len=1, so the only changed
+    work is the L=8 consumer: 64 query rows per KV head, mma.sync
+    m16n8k16 QK/PV, exact in-block causal masking, and the existing fused
+    RMSNorm/sigmoid gate epilogue.
+    """
+    cfg = data['config']
+    batch, q_len = cfg['batch'], cfg['q_len']
+    assert q_len == 8
+    hq, hkv, d, ps = cfg['num_q_heads'], cfg['num_kv_heads'], cfg['head_dim'], cfg['page_size']
+    device = data['qkv'].device
+    kvg = hkv // 2
+    max_pages = data['page_table'].shape[1]
+    window = cfg['window']
+    max_keys = min(max_pages * ps, window) if window else max_pages * ps
+    # Keep the decode producer's occupancy/split geometry.  This is the
+    # apples-to-apples memory-bandwidth experiment; the L=8 math is the sole
+    # intentional difference.
+    ns, cs = _plan(batch, kvg, max_keys, 1, window, _num_sms(device), _occ(1, device))
+    nc = ns // cs
+    rows = batch * kvg * (nc if nc > 1 else 0) * q_len * 16
+    part_o = torch.empty((max(rows, 1) * 64,), dtype=torch.float32, device=device)
+    part_ml = torch.empty((max(rows, 1) * 2,), dtype=torch.float32, device=device)
+    counters = _counters(batch * kvg * cs, device)
+    part1 = part_o if DSMEM else torch.empty((batch * kvg * ns * q_len * 16 * 68,),
+                                             dtype=torch.float32, device=device)
+    out = torch.empty((batch, q_len, hq * d), dtype=torch.bfloat16, device=device)
+    inv_freq = _inv_freq(cfg['rope_theta'], device) if cfg['rope_theta'] else None
+    scale_log2 = cfg['sm_scale'] * cfg['qk_scale_factor'] * 1.4426950408889634
+    # sm_120's opt-in dynamic shared-memory limit is just below the 100,352 B
+    # L=8/four-stage footprint.  Its stage-3 attn_forward is the portable
+    # stand-in with identical L=8 mma math; Hopper runs the exact four-stage
+    # q1 gather requested by this family.
+    launch = (_ext().attn_forward_vmath if torch.cuda.get_device_capability(device)[0] == 9
+              else _ext().attn_forward)
+    launch(
+        data['qkv'].data_ptr(), data['positions'].data_ptr(), data['cache_loc'].data_ptr(),
+        data['page_table'].data_ptr(), data['seq_lens'].data_ptr(), data['k_cache'].data_ptr(),
+        data['v_cache'].data_ptr(), data['k_scale'].data_ptr(), data['v_scale'].data_ptr(),
+        inv_freq.data_ptr() if inv_freq is not None else 0, part_o.data_ptr(), part_ml.data_ptr(),
+        counters.data_ptr(), part1.data_ptr(), int(DSMEM), out.data_ptr(), batch, q_len,
+        data['qkv'].shape[-1], hq, hkv, max_pages, ps, window, ns, cs, scale_log2,
+        torch.cuda.current_stream(device).cuda_stream)
+    return out
 
 
 def kernel_fn(data: Inputs) -> torch.Tensor:
@@ -1997,7 +2101,7 @@ def _p8_verify(data, setting):
     return out
 
 
-def _next_input(batch, window):
+def _next_input(batch, window, q_len=8):
     device = torch.device('cuda', torch.cuda.current_device())
     gen = torch.Generator(device=device).manual_seed(18751 + batch + window)
     maxpages = 86008 if batch > 1 else 80008
@@ -2005,24 +2109,26 @@ def _next_input(batch, window):
     if batch > 1:
         seq = (seq.float() * (1. + .075 * (2 * torch.rand(batch, device=device, generator=gen) - 1))).to(torch.int32)
     pt = torch.randperm(batch * maxpages, generator=gen, device=device, dtype=torch.int64).to(torch.int32).view(batch, maxpages)
-    positions = (seq.long()[:, None] + torch.arange(8, device=device)).reshape(-1)
-    loc = torch.gather(pt.long(), 1, positions.view(batch, 8)).reshape(-1)
+    positions = (seq.long()[:, None] + torch.arange(q_len, device=device)).reshape(-1)
+    loc = torch.gather(pt.long(), 1, positions.view(batch, q_len)).reshape(-1)
     shape = (batch * maxpages, 1, 2, 64)
     k = torch.randn(shape, generator=gen, device=device, dtype=torch.bfloat16).to(torch.float8_e4m3fn)
     v = torch.randn(shape, generator=gen, device=device, dtype=torch.bfloat16).to(torch.float8_e4m3fn)
-    qkv = torch.randn((batch, 8, 36 * 64), generator=gen, device=device, dtype=torch.bfloat16)
-    return dict(qkv=qkv, positions=positions, cache_loc=loc, cache_seqlens=seq + 8,
-        cu_seqlens_q=torch.arange(0, batch * 8 + 1, 8, device=device, dtype=torch.int32),
+    qkv = torch.randn((batch, q_len, 36 * 64), generator=gen, device=device, dtype=torch.bfloat16)
+    return dict(qkv=qkv, positions=positions, cache_loc=loc, cache_seqlens=seq + q_len,
+        cu_seqlens_q=torch.arange(0, batch * q_len + 1, q_len, device=device, dtype=torch.int32),
         scheduler_metadata=None, k_cache=k, v_cache=v, k_scale=torch.ones((), device=device),
         v_scale=torch.ones((), device=device), page_table=pt, seq_lens=seq,
-        config=dict(batch=batch, q_len=8, num_q_heads=16, num_kv_heads=2, head_dim=64,
+        config=dict(batch=batch, q_len=q_len, num_q_heads=16, num_kv_heads=2, head_dim=64,
             page_size=1, window=window, rope_theta=10000. if window else None,
             qk_scale_factor=5.473, sm_scale=.125, kv_scale=1.))
 
 
 def _portfolio_candidates():
+    # The decode-kernel gather/pipeline with only the verify math changed.
+    out = [('decode_math', ('q1_gather',))]
     # Every XQA/WGMMA variant generated by cand_xqa_next.
-    out = [('xqa_group', ('group', st, w)) for st in (5, 7) for w in (1, 2, 4, 8)]
+    out += [('xqa_group', ('group', st, w)) for st in (5, 7) for w in (1, 2, 4, 8)]
     out += [('xqa_warp', ('warp', st, w)) for st in (3, 4) for w in (1, 2, 4, 8)]
     # Raw FP8 P/V variants test the tensor-PV mechanism used by FA3.
     out += [('xqa_fp8_pv', (st, w)) for st in (3, 5) for w in (1, 2, 4, 8)]
@@ -2049,6 +2155,36 @@ def _time_graph(fn, data, flush, start, end, reps=3):
     return statistics.median(values), values
 
 
+def _benchmark_decode_math_sm120():
+    """Measure the memory-equivalent q1 gather against L=8 math on sm_120."""
+    flush = torch.empty(256 << 20, dtype=torch.uint8, device='cuda')
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+    for batch in (1, 16, 32):
+        for window in (2048, 0):
+            q1 = _next_input(batch, window, 1)
+            q8 = _next_input(batch, window, 8)
+            q1_us, q1_raw = _time_graph(_DECODE_FN, q1, flush, start, end)
+            vm_us, vm_raw = _time_graph(_vmath_verify, q8, flush, start, end)
+            keys = min(80000, window) if window else 80000
+            raw_bytes = batch * keys * 2 * 64 * 2
+            q1_tbps = raw_bytes / q1_us / 1e6
+            vm_tbps = raw_bytes / vm_us / 1e6
+            print('VMATH_BENCH_SM120', batch, window,
+                  'decode_q1_us', round(q1_us, 3),
+                  'verify_math_us', round(vm_us, 3),
+                  'decode_q1_tbps', round(q1_tbps, 4),
+                  'verify_math_tbps', round(vm_tbps, 4),
+                  'math_over_decode', round(vm_us / q1_us, 4),
+                  'verify_over_decode_bytes', round(vm_tbps / q1_tbps, 4),
+                  'raw_bytes', raw_bytes,
+                  'q1_reps', [round(x, 3) for x in q1_raw],
+                  'verify_reps', [round(x, 3) for x in vm_raw], flush=True)
+            del q1, q8
+            torch.cuda.empty_cache()
+    del flush
+
+
 def _portfolio_shape(batch, window, flush, start, end):
     import time
     data = _next_input(batch, window)  # one fresh, scattered page-1 shape input
@@ -2060,6 +2196,8 @@ def _portfolio_shape(batch, window, flush, start, end):
         try:
             if label == 'fa3':
                 fn = lambda d, s=setting: _fa3_verify(d, s)
+            elif label == 'decode_math':
+                fn = _vmath_verify
             elif label == 'xqa_fp8_pv':
                 fn = lambda d, s=setting: _p8_verify(d, s)
             else:
@@ -2086,6 +2224,8 @@ def _portfolio_shape(batch, window, flush, start, end):
     if best[1] == 'fa3':
         _FA3_PLAN[_fa3_key(data)] = best[2]
         _PORTFOLIO_PLAN[key] = ('fa3', best[2])
+    elif best[1] == 'decode_math':
+        _PORTFOLIO_PLAN[key] = ('decode_math', best[2])
     elif best[1] == 'xqa_fp8_pv':
         _PORTFOLIO_PLAN[key] = ('p8', best[2])
     else:
@@ -2108,6 +2248,13 @@ def _portfolio_shape(batch, window, flush, start, end):
               'fa3_gather_tbps_ref', 2.558,
               'custom_effective_tbps', round(raw_bytes / custom_us / 1e6, 4),
               flush=True)
+        vmath = [(us, setting) for us, label, setting in timings if label == 'decode_math']
+        if vmath:
+            vm_us, vm_setting = min(vmath)
+            print('PORTFOLIO_DECODE_MATH', batch, window,
+                  'us', round(vm_us, 3), 'setting', vm_setting,
+                  'effective_tbps', round(raw_bytes / vm_us / 1e6, 4),
+                  'vs_fa3', round(fa3_us / vm_us, 4), flush=True)
         print('PORTFOLIO_MECH_SPLITS', batch, window,
               ';'.join(f'{setting}:{us:.2f}' for us, setting in sorted(fa3)), flush=True)
     all_times = ';'.join(f'{label}:{setting}:{us:.2f}' for us, label, setting in timings)
@@ -2129,6 +2276,8 @@ def kernel_fn(data: Inputs) -> torch.Tensor:
         choice = ('xqa', ('group', 5, 1 if cfg['window'] else 2))
     if choice[0] == 'fa3':
         return _fa3_verify(data, choice[1])
+    if choice[0] == 'decode_math':
+        return _vmath_verify(data)
     if choice[0] == 'p8':
         return _p8_verify(data, choice[1])
     _next_set(choice[1])
@@ -2146,10 +2295,13 @@ def prepare():
         for window in (2048, 0):
             print('PORTFOLIO_DECODE', batch, window, 'selected custom_q1_1.39x', flush=True)
     print('PORTFOLIO_MECH_BINARY FA3=LDGSTS.tensor-memory-loads+HGMMA.BF16.PV '
-          'XQA=cp.async.page-gather+FP16.PV; FP8_PV=raw-FP8-V/P candidate', flush=True)
+          'XQA=cp.async.page-gather+FP16.PV; FP8_PV=raw-FP8-V/P candidate '
+          'DECODE_MATH=same-q1-cp.async-gather+mma16816-L8', flush=True)
     print('PORTFOLIO_MECH_TESTS reuse=raw_kv_bytes/(time), split_fill=FA3 num_splits sweep, '
-          'tma_vs_cp_async=FA3 cubin LDGSTS signature, pv=FP8_PV vs FP16_PV timing', flush=True)
+          'tma_vs_cp_async=FA3 cubin LDGSTS signature, pv=FP8_PV vs FP16_PV timing, '
+          'math_vs_bytes=VMATH_BENCH_SM120 and PORTFOLIO_DECODE_MATH', flush=True)
     if not _fa3_on_device(device):
+        _benchmark_decode_math_sm120()
         for batch in (1, 16, 32):
             for window in (2048, 0):
                 print('PORTFOLIO_SKIP', batch, window, 'Hopper_only_FA3_and_XQA_tuning', flush=True)

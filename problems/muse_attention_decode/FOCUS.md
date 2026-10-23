@@ -3,14 +3,15 @@
 Serves: G2, G3.
 
 The active source is `cand_attn_portfolio.py`. It preserves the scored q_len=1
-kernel and tunes, per q_len=8 scored shape, 27 FA3 settings, the 16 producer /
-MMA-WGMMA variants, and eight raw-FP8 P/V variants. The new FP8-PV family is
-validated on the local sm_120 stand-in against the existing group path: L2
-0.00231 at B1 sliding and 0.00450 at B16 full. Only shape-keyed choices survive
-`prepare()`.
+kernel and tunes, per q_len=8 scored shape, the decode-gather math family, 27
+FA3 settings, the 16 producer/MMA-WGMMA variants, and eight raw-FP8 P/V
+variants. The new FP8-PV family is validated on the local sm_120 stand-in
+against the existing group path: L2 0.00231 at B1 sliding and 0.00450 at B16
+full. Only shape-keyed choices survive `prepare()`.
 
-This source is already queued as job `4148288` at the shared queue's place
-~24; its frozen SHA256 is in `dev/NEXT_CHECKS.md`.
+The previously queued job `4148288` contains the earlier portfolio hash. This
+working-tree change adds the decode-gather math family, so the orchestrator
+must requeue the new frozen hash in `dev/NEXT_CHECKS.md`.
 
 The H200 evidence identifies the gap. `cand_xqa_diag` check `32c5b4b287c24c38`
 measured FA3 versus the best custom paths at full verify B16/B32 as 206.56 vs
@@ -29,13 +30,19 @@ The mechanism measurements are now in the portfolio receipt:
 | Tensor PV format | FA3's SM90 SASS contains `HGMMA.64x128/176x16.F32.BF16`; FP8-PV remains a legal hypothesis to test against our FP16-PV path | The portfolio times raw-FP8 P/V variants beside FP16-PV and logs the winner |
 
 The local sm_120 screen passes all 16 correctness tests and 12 graph timing
-shapes. H200 numbers remain unverified until the orchestrator collects the
-portfolio receipt. The target is a custom path above FA3 at full verify B16/B32;
-no path has been promoted yet.
+shapes. The forced decode-gather math path also passes reference validation at
+B1 sliding, B16 full, and B32 full. Its sm_120 benchmark uses the q1 gather as
+the byte-equivalent control: at B16/full it reaches 1.103 TB/s versus 1.441
+TB/s (76.5%), and at B32/full 1.301 versus 1.488 TB/s (87.4%). The sm_120
+four-stage footprint is 100,352 B, just above that GPU's opt-in limit, so its
+stage-3 L=8 launch is a portable stand-in; the H200 path launches the exact
+four-stage q1 gather. H200 numbers remain unverified until the orchestrator
+requeues and collects the updated portfolio receipt. The target is a custom
+path above FA3 at full verify B16/B32; no path has been promoted yet.
 
 The detailed receipt/source audit is preserved in `dev/fa3_mechanism.md`.
 
-The next ready source is `cand_attn_fa3_struct.py`. It adds an eight-stage
+The companion ready source is `cand_attn_fa3_struct.py`. It adds an eight-stage
 persistent producer/consumer ring beside the existing paths: 128 producer
 threads issue LDGSTS-backed `cp.async` gathers behind mbarriers, the consumer
 warpgroup runs WGMMA QK/PV, and the final CTA performs the FP32 split merge and
