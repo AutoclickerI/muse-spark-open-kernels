@@ -17,6 +17,14 @@ attention lane owns the incoming vstream. This lane's glue fusion diagnostic `ca
 four split-K weight rereads and a second consumer launch still dominate; the regular v9 path wins
 every local shape. The overlap experiment remains parked because its verify race failed the
 correctness guard.
+`cand_r3_union.py` is the next single-run portfolio. It keeps V9 as the MoE fallback and
+selects per scored shape from the q_len=1 V9/FA3/decode-attention family, q_len=8
+FA3/XQA/WGMMA/FP8-PV plus vstream/two-group attention, custom/cuBLAS/cuBLASLt projection
+layouts, router-derived V9/moe_rt/Humming/adaptive choices, and v9all PDL boundaries. Attention choices use
+the vstream FP32 self-reference gate at 0.8 of the decode bound; projection and MoE choices
+use the proven V9 result within 1%. Its compact `UNION_SUMMARY` is printed last in prepare.
+The selected combination also passes a small FP32 full-layer self-reference gate before the
+state is returned; a failure resets every optional plan to V9/custom/layer defaults.
 Do not edit sent sources. The orchestrator owns checks and scored runs.
 
 H200 profile bottleneck: full attention is the largest remaining decode cost at

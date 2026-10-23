@@ -68,7 +68,7 @@ The old failure and all rejected runs remain in the evidence directory.
 No receipt IDs or external measurement files are read at runtime. Admission is
 source policy. Pending modules do not change the default or spend startup time.
 The local tests use immutable source snapshots, all74 prefill graph shapes,
-DFLASH/8 and exactly220 output tokens, with GPU1 memory fraction0.3 for TP2.
+DFLASH/8 and exactly220 output tokens, with memory fraction0.85 on GPU0 for final TP1 pairs and0.3 for shared-GPU1 TP2 pairs.
 The `integration_hook` reaches projection, expert/finalize and attention AR
 ownership through exact-shape portable ABIs; full-size expert arithmetic is
 checked independently. Tiny-model timing cannot establish Hopper ordering.
@@ -662,11 +662,12 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
 Current patch regenerated from `git -C serving/sglang diff a55ab7d5` after
-including source-only untracked additions: **336,965bytes**, **31files**,
-longest added line **374**. All25 paths in accepted `aab3243` remain;
-15 accepted file diffs are byte-identical, including the unchanged MoE lane
-source. The new collective wrapper/kernel, prefill plan shape guard and
-concurrent lane changes account for the other diffs. Size, line limit,
+including source-only untracked additions: **328,900bytes**, **31files**,
+longest added line **374**. All31 paths in accepted `ed4f618` remain, including
+all pending kernel modules and the unchanged MoE lane source. The two unproven
+attention dispatches are removed, pending dense/router tuning is unbound,
+prefill shares the canonical bank, and the host priority fix preserves all
+five accepted worker hunks. Size, line limit,
 source/type/path, Python AST, whitespace and clean-base apply checks pass.
 Owned manager/worker/attention/drafter changes are preserved. The pinned
 harness snapshot isolates this lane's collective source while other lanes
@@ -716,9 +717,12 @@ Real full-size kernels are checked separately; stand-in latency is not H200 timi
 
 Current sm_120 checks:
 
-- V9 M1/8/128/256/272/753/3012/16384: stock-Marlin relative L2<=0.005449,
-  maxabs0.03125, exact changed-input graph replay and chunk-global remote maps.
-  Skewed M256 (all8 local experts) also passes at EP starts0 and64.
+- Canonical-bank-only owner, real production expert/finalize dispatch:15 cases,
+  including M1/8/128/256/257/512/513/752/753/3012/16384, skew at EP starts0/64,
+  and all-remote/all-local graph transitions at M256/753. Stock-Marlin relative
+  L2<=0.005963, maxabs0.03125;30 equality graph replays are exact. Global slot
+  maps and remote-1s match, and all-remote outputs are exactly zero. No Marlin
+  tensors exist on the tested owner; the reference alone retains that bank.
 - Dense projections:8/8 tests;65 public shapes,939 fresh-input native graph
   replays,33 forced Hopper ABI cases. Worst relative L2=0.005039 (bound0.01).
   Complete projection CUDA module compiles for sm_90a.
@@ -748,8 +752,8 @@ The documented TP balance override is required on the shared box; failed
 `q05` is retained. No graph sizes were disabled. New Hopper-only math is
 reached through exact-shape portable stand-ins, real full-size kernels separately.
 
-Bounded V9 prefill warrants an **H200 performance check before shipping** to substantiate
-claimed production TTFT: contended sm_120 graph medians (stock Marlin/V9,
+The historical512-row bounded-V9 prefill screen warrants an **H200 performance check**
+before admitting that larger call size: contended sm_120 graph medians (stock Marlin/V9,
 including finalize) after bounding chunks to512 are0.905/4.713ms at M753,
 5.157/18.286ms at M3012 and36.016/99.542ms at M16384. M256 is0.829/0.841ms.
 Before the512 bound, M3012/16384 took40.662/195.995ms; the bound reduces

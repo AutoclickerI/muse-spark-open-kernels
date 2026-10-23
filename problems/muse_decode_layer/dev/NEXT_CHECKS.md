@@ -1,6 +1,8 @@
 # Decode checks — next send order after 18a5f4e
 
-`cand_r3_v9all.py` is first and `cand_r3_merge.py` is second at the next reset. Both megakernel sources are held: the original persistent qkv failed repeated M=32 agreement
+`cand_r3_union.py` is first at the next reset: it packs all round-3 attention, projection,
+router-aware MoE, and PDL choices into one H200 prepare-time selection. `cand_r3_v9all.py`
+and `cand_r3_merge.py` remain behind it. Both megakernel sources are held: the original persistent qkv failed repeated M=32 agreement
 checks, and the regular-qkv repair still rejected a persistent dense island at M=16. The attention v2 source is parked after its FA3 proxy gate rejected faster verify variants;
 the attention lane owns vstream. The glue diagnostic is parked after Nsight found four split-K weight rereads and a second
 consumer launch; the tiled repair runs M=128/256 but remains slower than regular v9. The earlier overlap source is
@@ -32,6 +34,7 @@ prefix with PDL, and rejects any FP32, resource, or timing failure back to regul
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
+| `cand_r3_union.py` | `32bdf65385b8e0b6955f7135908cdb36bedba7d40015d8a8021d53168c569f4f` | **sm_120: 13/13 tests, 12/12 graphs; prepare 9.314 s**; all 12 timed shapes pass; full FP32 combination gate passes; Hopper attention and router-aware MoE paths retained behind portable stand-ins | **ready first at reset**; one per-shape union tuner; H200 selection and score unverified |
 | `cand_r3_attention_v2.py` | `e5414acdac7ae3a56f860369b88d0866567db6230e4ebe89d758e8f13a17cc15` | 13/13 tests, 12/12 graphs; parked after its 3% FA3 proxy gate rejected faster verify variants | **parked; do not send** |
 | `cand_r3_v9_glue.py` | `0bd8624b275b597b5485daf85a45ac7e6d68d9467b01bcf1a5c1be48df96d7cd` | **13/13 tests, 12/12 graphs; prepare 4.386 s on sm_120**; tiled TB≤32 path runs M=128/256 but `GLUE_TUNE` selects regular everywhere; Nsight measured pool-boundary ~81 us + stats ~11.8 us | **parked; do not send**; four split-K weight rereads and second consumer dominate |
 | `cand_r3_merge_mega_fix.py` | `f7e1217b840a42a85404b7ab563e9c6805e4d724fdfe068e71e69af5376f9d16` | held: regular qkv removed qkv disagreement, but persistent dense island still rejected at M=16; no timed selection | **parked; do not send** |
@@ -51,7 +54,7 @@ Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`
 
 ## Send order
 
-Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
+Send `cand_r3_union.py` first at reset. Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
 (`cand_r3_merge_mega.py` or `cand_r3_merge_mega_fix.py`), `cand_r3_merge_ovl.py`,
 `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`,
 `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals again.

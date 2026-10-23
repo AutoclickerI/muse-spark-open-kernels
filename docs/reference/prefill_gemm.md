@@ -1,4 +1,4 @@
-# Prefill dense GEMMs: source interface and H200 gaps
+# Prefill dense GEMMs: source interface and H200 measurements
 
 Serves G1/G2. Read when merging the new dense block into a prefill portfolio or serving.
 No judge run or commit was launched in this thread. Serving and prefill lanes own integration.
@@ -188,21 +188,18 @@ slower kernel. Full-node capacity/TTFT are unverified.
 
 ## Validation and handoff
 
-Final sm_120 admission:6/6 module tests,2,751 Lt +288 persistent +160 Stream-K boundary
-+36 norm +54 selected fresh graph replays;96 counter-reset checks. Five injected failures
-reject independently. All18 standard keys receive timings within89.315s. The V11 adapter
-passes5/5 official tests and8/8 graph shapes with74.705s prepare. New forced-Hopper loader/Lt
-checks pass14 branches/45 replays, including BF16 effective norm and released mixed layouts.
-The180 dense SM90 specializations all use WGMMA, and four norm epilogues compile.
-An additional normalized-path tuner/capture test completes in18.444s under20s; at M753 it
-selects the Lt NN fused norm epilogue at213.02us versus231.46us for the already selected
-separate producers plus norm. This shared sm_120 result is not an H200 estimate.
-Local rejected resource-heavy configurations are valid Hopper compile targets, not arithmetic passes.
+The frozen V11 dense candidate is queued at priority2.0; do not resend or edit it.
+Its latest sm120 admission is5/5 official tests and8/8 graph shapes,173.161s prepare.
+The new layout suite covers57 configs /171 fresh admissions /1140 timed pairs;136 actual
+Hopper Python/ABI configurations and12 group failures plus a wrapper failure are forced.
+Eighteen swapped WGMMA specializations and12 packing layouts compile SM90; Lt builds SM90a.
+The block's existing180 dense WGMMA specializations and counter/norm math were previously
+validated; no new H200 winner is claimed for this block pending its queued receipt.
 
-
-Current frozen hashes, local results and commands live in
-`problems/muse_bf16_proj/dev/NEXT_CHECKS.md`; evidence is `runs/screen/prefill_gemm/`.
-The local V11 adapter is generated only under that ignored screen directory, with no lane
-candidate edits. It wires qkv/o/pooler/router/unpooler and the256-logit routing consumer.
-The optional norm path also has direct torch/graph tests. H200 execution, actual chosen
-algorithms, per-op speedups, full TP8 model agreement/capacity and TTFT remain unverified.
+Current hashes, commands and evidence live in
+`problems/muse_bf16_proj/dev/NEXT_CHECKS.md`, `runs/screen/prefill_gemm/`.
+The actual single-file candidate is `problems/muse_prefill_layer/cand_v11_gemm.py`; its
+V11 integration preserves the original router/routing/pooler group as incumbent.
+Direct dense rates from dafbcad0 are established above. This candidate's H200 selections,
+whole-layer effect and cold prepare, full TP8 serving agreement/capacity and TTFT remain
+unverified. Dense tuning stopped; this lane moved to M128/256 grouped MoE.
