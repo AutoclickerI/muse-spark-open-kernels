@@ -14,7 +14,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 | muse_bf16_proj | 1.182x fused_select `f3786341611f4f1f` (scored) | 1.182x (fused_select scored `f3786341611f4f1f`; rank 233) | 1.447x (colinlikescode) | 1.330x | 1.264x | 465 |
 | muse_attention_decode | 1.391x xqa_diag `32c5b4b287c24c38` (check) | 1.384x (submission scored `526f31018e2c4449`; rank 158) | 2.366x (colinlikescode) | 2.050x | 1.742x | 318 |
 | muse_moe_w4a16 | 1.664x v11 `41bcf27cfc0e4eff` (scored) | 1.664x (v11 scored `41bcf27cfc0e4eff`) | 2.326x (colinlikescode) | 2.040x | 1.811x | 365 |
-| muse_decode_layer | 1.367x r3_moe_dispatch `85e67f5d6ef945c9` (scored) | 1.367x (r3_moe_dispatch scored `85e67f5d6ef945c9`; rank 93) | 1.862x (colinlikescode) | 1.744x | 1.523x | 275 |
+| muse_decode_layer | 1.428x r3_v9 `0e94268cf5654012` (scored) | 1.428x (r3_v9 scored `0e94268cf5654012`; rank 81; overall rank 85) | 1.862x (colinlikescode) | 1.744x | 1.523x | 275 |
 | muse_prefill_layer | 1.368x v11 `6a9cd943fe404d74` (check) | 1.367x (promoted_6a9cd943fe404d74 scored `965a9a816d4744ea`; rank 52) | 1.726x (colinlikescode) | 1.559x | 1.374x | 159 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
