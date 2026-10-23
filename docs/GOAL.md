@@ -24,6 +24,7 @@ Targets come from the bound ([bound](reference/bound.md)): serving score at most
 ## Decision rights
 - Pre-authorized beyond the global list: any change that improves performance within the rules,
   including scored runs within quota (R-20261023-3, R-20261023-4).
+- Jihoon's alone: `okc login` and accepting the rules (CONSTRAINTS 1); making the repo public (R-20261023-2).
 
 ## Terms
 - **verify load**: `verify N` = N requests x 8 tokens (DFlash TARGET_VERIFY), the only decode shape serving runs.
