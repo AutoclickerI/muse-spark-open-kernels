@@ -87,14 +87,16 @@ tau 4.16 (LMSYS AgentX), 13 turns, interactivity over the whole conversation:
 
 | Concurrency | Stock step | Practical step | Stock tok/s per GPU | Practical tok/s per GPU | Stock tok/s per user | Practical tok/s per user | Prefill share (stock / practical) |
 |---|---|---|---|---|---|---|---|
-| 1 | 18.00 ms | 7.66 ms | 21.5 | 48.6 | 172 | 389 | 26% / 28% |
-| 4 | 26.53 ms | 9.63 ms | 40.5 | 95.3 | 81 | 191 | 48% / 56% |
-| 16 | 40.28 ms | 15.66 ms | 59.5 | 129.2 | 30 | 65 | 71% / 76% |
-| 32 | 56.95 ms | 19.44 ms | 65.0 | 142.3 | 16 | 36 | 78% / 83% |
+| 1 | 18.45 ms | 7.80 ms | 21.1 | 48.0 | 169 | 384 | 25% / 28% |
+| 4 | 26.84 ms | 9.77 ms | 40.4 | 94.7 | 81 | 190 | 48% / 55% |
+| 16 | 40.26 ms | 15.80 ms | 60.0 | 128.9 | 30 | 65 | 71% / 76% |
+| 32 | 56.66 ms | 19.58 ms | 65.6 | 142.2 | 16 | 36 | 78% / 83% |
 
-The practical step at c=1 is layers 6.34 ms, drafter + LM head 0.52 ms, all-reduces 0.80 ms (2.77 ms
-at c=32: 134 per step at 5.5 us plus size). Prefill per conversation: stock 3.39 s first turn + 74 ms
-per later turn; practical 1.73 s + 30 ms; expected 1.29 s + 22 ms.
+The practical step at c=1 is layers 6.34 ms, drafter + LM head 0.66 ms, all-reduces 0.80 ms (2.77 ms
+at c=32: 134 per step at 5.5 us plus size). The drafter's `fc` (5 x 8192 -> 8192, 671 MB) is
+replicated on every GPU (`srt/models/dflash.py:705`). Prefill per conversation: stock 3.37 s first
+turn + 72 ms per later turn; practical 1.73 s + 30 ms; expected 1.29 s + 22 ms. Stock's times are the
+mean of SGLang's times over our judge runs of each shape (two so far; they differ by ~3%).
 
 ### Score ceilings
 
@@ -104,26 +106,28 @@ so those rungs are either extrapolated along our curve or capped at our c=32 poi
 
 | Design | Score (extrapolated / capped) | c=1 | c=4 | c=16 | c=32 |
 |---|---|---|---|---|---|
-| Practical: decode only (stock prefill) | 1.58x / 1.58x | 2.33 | 1.58 | 1.23 | 1.19 |
-| Practical: prefill only (stock decode) | 1.66x / 1.60x | 1.38 | 1.60 | 1.76 | 1.89 |
-| Practical, both | 3.13x / 3.04x | 4.57 | 3.00 | 2.46 | 2.49 |
-| Practical + sharded pooler | 3.28x / 3.20x | 5.00 | 3.14 | 2.49 | 2.48 |
-| One fused kernel per layer | 3.21x / 3.12x | 4.79 | 3.07 | 2.48 | 2.48 |
-| Expected (4.8 TB/s, no fixed costs) | 4.55x / 4.33x | 6.79 | 4.35 | 3.50 | 3.55 |
+| Practical: decode only (stock prefill) | 1.60x / 1.60x | 2.39 | 1.59 | 1.23 | 1.19 |
+| Practical: prefill only (stock decode) | 1.65x / 1.59x | 1.37 | 1.59 | 1.75 | 1.87 |
+| Practical, both | 3.13x / 3.04x | 4.63 | 2.99 | 2.44 | 2.46 |
+| Practical + sharded pooler at every size | 3.17x / 3.09x | 4.83 | 3.03 | 2.42 | 2.42 |
+| One fused kernel per layer | 3.21x / 3.12x | 4.85 | 3.06 | 2.45 | 2.46 |
+| Expected (4.8 TB/s, no fixed costs) | 4.55x / 4.34x | 6.87 | 4.34 | 3.47 | 3.51 |
 
 Readings:
 
-- **Decode and prefill are worth about the same** under this workload (1.58x and 1.66x alone), and
+- **Decode and prefill are worth about the same** under this workload (1.60x and 1.65x alone), and
   they compound (3.1x together), because the score compares at equal interactivity and both set it.
   Decode wins at c=1, prefill at c=16-32. The prefill kernel isn't on the overall kernel board but is
   half the serving prize.
-- **The workload decides the split.** Single-turn conversations (`--turns 1`): practical 2.06x, almost
+- **The workload decides the split.** Single-turn conversations (`--turns 1`): practical 2.05x, almost
   all from prefill. tau 4.5 instead of 4.16: 3.06x (moves little, because prefill doesn't use it).
 - **The interactivity definition barely matters**: leaving the user's own prefills out of tokens/s per
-  user (LMSYS's 1/ITL style, `--interactivity itl`) gives 3.05x / 2.96x instead of 3.13x / 3.04x.
+  user (LMSYS's 1/ITL style, `--interactivity itl`) gives 3.05x / 2.97x instead of 3.13x / 3.04x.
 - **Sharding the pooler** (and the unpooler above 8 tokens), as stock does on GB300 only, saves
-  0.8-1.7 ms per step: +0.15x, mostly at c=1.
-- Stock's modeled c=1 decode rate is 231 tok/s per user (4.16 tokens per 18.0 ms step). LMSYS
+  0.46 ms per step at c=1 after paying its all-gather, and loses ~0.4 ms at c=32 if the gather of
+  2-4 MB costs like an all-reduce: gate it by token count, with the threshold measured on the judge.
+  [SERVING](SERVING.md) lists this and the other Hopper-gated levers.
+- Stock's modeled c=1 decode rate is 225 tok/s per user (4.16 tokens per 18.45 ms step). LMSYS
   published 543 at c=1 on 8x B300 (1.7x the bandwidth, FP4 tensor cores, Blackwell-only kernels) and
   nothing for H200, so stock's model is plausible but not validated.
 

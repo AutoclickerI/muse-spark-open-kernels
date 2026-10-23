@@ -71,7 +71,7 @@ runs/                 receipts of every remote run (exact source, okc's JSON, th
 runs/calibration/     SGLang's baseline.py sent as a check, to profile its kernels on the judge
 sim/                  performance model: `python -m sim` (problem ceilings), `-m sim.serving`
                       (serving step and score), `-m sim.calibrate` (SGLang's measured times)
-HARDWARE.md FINDINGS.md SOTA.md CEILING.md   reference docs (AGENTS.md links them)
+HARDWARE.md FINDINGS.md SOTA.md CEILING.md SERVING.md   reference docs (AGENTS.md links them)
 serving/              okc serve init: RULES.md, patch.diff; sglang/ is the pinned checkout (ignored)
 ```
 

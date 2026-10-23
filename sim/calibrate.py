@@ -26,6 +26,27 @@ def latest_runs() -> dict[str, dict]:
     return out
 
 
+def all_runs(problem: str) -> list[dict]:
+    """Every run of a problem in runs/ that has benchmark records, oldest first."""
+    out = []
+    for f in sorted((REPO / "runs" / problem).glob("*.json")):
+        res = json.loads(f.read_text()).get("result") or {}
+        if any(r.get("event") == "benchmark" for r in res.get("records", [])):
+            out.append({"file": f, **res})
+    return out
+
+
+def sglang_mean(problem: str) -> list[dict]:
+    """SGLang's time per shape averaged over every judge run of the problem (each run times SGLang's
+    kernel alongside ours; runs differ by a few percent)."""
+    acc: dict[str, list] = {}
+    for run in all_runs(problem):
+        for r in shapes(run):
+            key = json.dumps({k: v for k, v in r["case"].items() if k != "seed"}, sort_keys=True)  # seeds differ per run
+            acc.setdefault(key, [r, []])[1].append(r["sglang_us"])
+    return [{**r, "sglang_us": sum(v) / len(v), "runs": len(v)} for r, v in acc.values()]
+
+
 def shapes(run: dict) -> list[dict]:
     rows = []
     for r in run["records"]:

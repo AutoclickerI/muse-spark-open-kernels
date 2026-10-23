@@ -57,4 +57,5 @@ def drafter_bytes() -> float:
     attn = d["hidden"] * (2 * d["heads"] + 2 * d["kv_heads"]) * d["head_dim"]   # q, k, v, o
     mlp = 3 * d["hidden"] * d["inter"]
     fc = d["context_layers"] * d["hidden"] * d["hidden"]    # concat of 5 target layers -> hidden
-    return (d["layers"] * (attn + mlp) + fc) * 2 / TP + LM_HEAD_BYTES
+    # fc is a ReplicatedLinear (srt/models/dflash.py:705): every GPU reads all of it.
+    return d["layers"] * (attn + mlp) * 2 / TP + fc * 2 + LM_HEAD_BYTES

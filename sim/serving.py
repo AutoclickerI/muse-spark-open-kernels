@@ -19,7 +19,7 @@ import argparse
 import math
 
 from sim import hw, muse
-from sim.calibrate import latest_runs, shapes
+from sim.calibrate import sglang_mean
 from sim.problems import layer_routing, shape_bounds, spec, task_floors
 
 RUNGS = (1, 4, 16, 32)
@@ -41,10 +41,10 @@ def _loglog(points: dict[float, float], x: float) -> float:
 
 
 def _stock_shapes(problem: str) -> list[dict]:
-    run = latest_runs().get(problem)
-    if run is None:
+    rows = sglang_mean(problem)
+    if not rows:
         raise SystemExit(f"no calibration run for {problem} in runs/ (tools/okc_run.py check ...)")
-    return shapes(run)
+    return rows
 
 
 def _gemm_us(design: str, nbytes: float, kernels: int) -> float:
@@ -73,9 +73,16 @@ def layer_stack_us(c: int, design: str, shard_dense: bool = False) -> float:
     for layer, n in (("sliding", muse.SLIDING_LAYERS), ("full", muse.FULL_LAYERS)):
         b = {"batch": c, "q_len": BLOCK, "ctx": CTX, "layer": layer, "spread": "agentic" if c > 1 else "fixed"}
         total += n * shape_bounds("muse_decode_layer", b, kernels)[key]
-    if shard_dense:  # each GPU reads 1/8 of the replicated pooler (and unpooler above 8 tokens)
-        saved = muse.POOLER_BYTES + (muse.unpooler_bytes(tokens) if tokens > muse.SLICED_MAX_TOKENS else 0)
+    if shard_dense:  # each GPU reads 1/8 of the replicated pooler (and unpooler above 8 tokens), then
+        # all-gathers the output (gemm_ag; priced like an all-reduce of the gathered output)
+        saved = muse.POOLER_BYTES
+        gathers = [tokens * muse.D_MOE * 2]
+        if tokens > muse.SLICED_MAX_TOKENS:
+            saved += muse.unpooler_bytes(tokens)
+            gathers.append(tokens * muse.HIDDEN * 2)
         total -= muse.LAYERS * _gemm_us(design, saved * (1 - 1 / muse.TP), 0)
+        if design != "expected":
+            total += muse.LAYERS * sum(hw.allreduce_us(n) for n in gathers)
     return total
 
 

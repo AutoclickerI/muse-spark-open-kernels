@@ -61,3 +61,4 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
 - [SOTA](SOTA.md): the leaderboard and prior work worth borrowing, per problem.
 - [CEILING](CEILING.md): how fast each problem and the serving step can get (`sim/`), and how far
   the leaders are from it.
+- [SERVING](SERVING.md): the serving patch's levers, including features stock gates off on H200.
