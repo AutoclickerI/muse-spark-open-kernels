@@ -1,0 +1,67 @@
+digraph dot {
+subgraph cluster_10 {
+label="graph_10" graph[style="dashed"];
+"graph_10_node_0"[style="bold" shape="record" label="{KERNEL
+| {ID | 0 (topoId: 6) | _ZN2at6native29vectorized_elementwise_kernelILi4ENS0_11FillFunctorIiEESt5arrayIPcLm1EELb0EEEviT0_T1_\<\<\<1,128,0\>\>\>}
+| {{node handle | func handle} | {0x00000000429FB6A8 | 0x00000000348EF5A0}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_1"[style="bold" shape="record" label="{KERNEL
+| {ID | 1 (topoId: 5) | _gemv_kernel\<\<\<\{36,8\},128,73728\>\>\>}
+| {{node handle | func handle} | {0x00000000429FAF40 | 0x000000004621FB40}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_2"[style="bold" shape="record" label="{KERNEL
+| {ID | 2 (topoId: 4) | _ZN39_GLOBAL__N__e3093478_7_cuda_cu_3838d1be9attn_mainILi1ELi4EEEvNS_6ParamsE\<\<\<\{12,1,32\},128,71936\>\>\>}
+| {{node handle | func handle} | {0x00000000429FA7D8 | 0x0000000045FED220}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_3"[style="bold" shape="record" label="{KERNEL
+| {ID | 3 (topoId: 3) | _ZN39_GLOBAL__N__e3093478_7_cuda_cu_3838d1be12attn_combineILi1EEEvNS_6ParamsE\<\<\<128,128,0\>\>\>}
+| {{node handle | func handle} | {0x00000000429FA070 | 0x0000000045FE4CC0}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_4"[style="bold" shape="record" label="{KERNEL
+| {ID | 4 (topoId: 2) | _ZN10persistent12dense_islandILi4ELb1EEEvNS_6ParamsE\<\<\<188,256,20480\>\>\>}
+| {{node handle | func handle} | {0x00000000429F9908 | 0x00000000429BD480}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_5"[style="bold" shape="record" label="{KERNEL
+| {ID | 5 (topoId: 1) | _ZN39_GLOBAL__N__9380fe79_7_cuda_cu_56e15e619moe_fusedILi1EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiib\<\<\<188,288,85040\>\>\>}
+| {{node handle | func handle} | {0x00000000429F91A0 | 0x000000003C4AFFC0}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_6"[style="bold" shape="record" label="{KERNEL
+| {ID | 6 (topoId: 0) | _ZN10persistent12dense_islandILi4ELb0EEEvNS_6ParamsE\<\<\<188,256,20480\>\>\>}
+| {{node handle | func handle} | {0x0000000042A03BF8 | 0x00000000429A4670}}
+| {accessPolicyWindow | {base_ptr | num_bytes | hitRatio | hitProp | missProp} | {0x0000000000000000 | 0 | 0.000000 | N | N}}
+| {cooperative | 0}
+| {priority | 0}
+}"];
+
+"graph_10_node_0" -> "graph_10_node_1" [headlabel=0];
+"graph_10_node_1" -> "graph_10_node_2" [headlabel=0];
+"graph_10_node_2" -> "graph_10_node_3" [headlabel=0];
+"graph_10_node_3" -> "graph_10_node_4" [headlabel=0];
+"graph_10_node_4" -> "graph_10_node_5" [headlabel=0];
+"graph_10_node_5" -> "graph_10_node_6" [headlabel=0];
+}
+}

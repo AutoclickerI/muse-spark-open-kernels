@@ -1,0 +1,78 @@
+{
+ "problem": "muse_decode_layer",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_persistent.py",
+ "sha256": "efd8fff050729cc5ffae724a6c9e286c33733e54e12ed499900ff6224333d788",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 77.31996932800394,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, layer sliding",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 1, ctx 3000, layer full",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 8, ctx 2047, layer sliding",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 0.03419688402209431,
+   "ok": true,
+   "msg": "update relative L2 error 3.422e-03 (worst row 3.699e-03) [bound 0.150]; attention input relative L2 error 3.076e-03 (worst row 3.429e-03) [bound 0.116]"
+  },
+  {
+   "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+   "first_call_s": 0.02133820700692013,
+   "ok": true,
+   "msg": "update relative L2 error 7.276e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+  },
+  {
+   "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 1, ctx 1048576, layer full, q_len 8",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  },
+  {
+   "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+   "ok": false,
+   "msg": "RuntimeError: expected scalar type Long but found Int"
+  }
+ ]
+}

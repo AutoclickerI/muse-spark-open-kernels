@@ -1,0 +1,37 @@
+[
+  {
+    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul>, false>(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
+    "start_us": 0.0,
+    "duration_us": 1.151999999999589
+  },
+  {
+    "name": "_gemv_kernel",
+    "start_us": 0.83199999999988,
+    "duration_us": 17.05600000000004
+  },
+  {
+    "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous namespace)::Params)",
+    "start_us": 10.527999999999793,
+    "duration_us": 27.199999999999818
+  },
+  {
+    "name": "void (anonymous namespace)::attn_combine<1>((anonymous namespace)::Params)",
+    "start_us": 30.623999999999796,
+    "duration_us": 9.983999999999924
+  },
+  {
+    "name": "void persistent::dense_island<4, true>(persistent::Params)",
+    "start_us": 31.167999999999665,
+    "duration_us": 96.25500000000011
+  },
+  {
+    "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 const*, int const*, float const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, __nv_bfloat16*, float*, float*, int*, __nv_bfloat16*, int, int, int, bool)",
+    "start_us": 117.5989999999997,
+    "duration_us": 59.80799999999999
+  },
+  {
+    "name": "void persistent::dense_island<4, false>(persistent::Params)",
+    "start_us": 175.39099999999962,
+    "duration_us": 56.48000000000002
+  }
+]

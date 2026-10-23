@@ -1,0 +1,16 @@
+okc check muse_attention_decode problems/muse_attention_decode/cand_v5.py: waiting for the result (`okc jobs` lists it meanwhile)
+okc check muse_attention_decode problems/muse_attention_decode/cand_v5.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T094704Z",
+ "problem": "muse_attention_decode",
+ "mode": "check",
+ "job": "b463dc0e6e8e494a",
+ "sha256": "e019c3ff8451aa155aebae8665646cddce725853847e6a7206f8a26a49d23831",
+ "file": "problems/muse_attention_decode/cand_v5.py",
+ "source": "runs/muse_attention_decode/20261023T094704Z_check_b463dc0e6e8e494a.py",
+ "git": "27a4176+dirty",
+ "status": "duplicate",
+ "speedup": null,
+ "interval": null,
+ "note": "v5: 256-thread decode path, FP8 verify QK/P, in-CTA quarter merge"
+}

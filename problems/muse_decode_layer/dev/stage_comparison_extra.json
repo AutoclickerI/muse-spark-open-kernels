@@ -1,0 +1,515 @@
+{
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "cc": [
+    12,
+    0
+  ],
+  "fixed_us": 2.047999994829297,
+  "reps": 20,
+  "rows": [
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "b1s",
+      "fused": true,
+      "us": {
+        "qkv": 25.071999756619334,
+        "attention": 18.431999487802386,
+        "prefix": 86.52800018899143,
+        "experts": 52.22399975173175,
+        "suffix": 12.288000201806426,
+        "whole": 183.29599569551647
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "b1f",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 80.89599828235805,
+        "prefix": 87.04000036232173,
+        "experts": 70.65600226633251,
+        "suffix": 12.288000201806426,
+        "whole": 261.12000714056194
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "b16s",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 20.480000181123614,
+        "prefix": 89.60000122897327,
+        "experts": 148.51200650446117,
+        "suffix": 50.175999058410525,
+        "whole": 324.0960098337382
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "b16f",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 250.8799887727946,
+        "prefix": 89.08800105564296,
+        "experts": 160.79999576322734,
+        "suffix": 50.175999058410525,
+        "whole": 580.6080258917063
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "b32s",
+      "fused": true,
+      "us": {
+        "qkv": 27.63200062327087,
+        "attention": 28.65600003860891,
+        "prefix": 103.42399845831096,
+        "experts": 224.28800235502422,
+        "suffix": 54.27200044505298,
+        "whole": 424.9600030016154
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "b32f",
+      "fused": true,
+      "us": {
+        "qkv": 27.648000745102763,
+        "attention": 494.59199677221477,
+        "prefix": 103.42399845831096,
+        "experts": 171.03999922983348,
+        "suffix": 54.27200044505298,
+        "whole": 857.0879853796214
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "v1s",
+      "fused": true,
+      "us": {
+        "qkv": 26.62400039844215,
+        "attention": 24.57599970512092,
+        "prefix": 88.06400070898235,
+        "experts": 189.43999777548015,
+        "suffix": 12.288000201806426,
+        "whole": 328.7039853166789
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "v1f",
+      "fused": true,
+      "us": {
+        "qkv": 24.543999461457133,
+        "attention": 113.6640019249171,
+        "prefix": 87.04000036232173,
+        "experts": 174.06400362960994,
+        "suffix": 13.807999668642879,
+        "whole": 406.52801166288555
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "v16s",
+      "fused": false,
+      "us": {
+        "qkv": 31.74400026910007,
+        "attention": 38.91199897043407,
+        "prefix": 90.14400164596736,
+        "experts": 419.3760014604777,
+        "suffix": 64.54400043003261,
+        "whole": 642.1119726728648
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "v16f",
+      "fused": false,
+      "us": {
+        "qkv": 32.768000615760684,
+        "attention": 859.1360009741038,
+        "prefix": 87.07200060598552,
+        "experts": 369.6960068773478,
+        "suffix": 68.64000181667507,
+        "whole": 1410.0960053037852
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "v32s",
+      "fused": false,
+      "us": {
+        "qkv": 50.175999058410525,
+        "attention": 58.39999835006893,
+        "prefix": 136.19199465028942,
+        "experts": 644.1279805731028,
+        "suffix": 97.31199662201107,
+        "whole": 990.2079857420176
+      }
+    },
+    {
+      "candidate": "cand_epilogue",
+      "sha256": "2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598",
+      "case": "v32f",
+      "fused": false,
+      "us": {
+        "qkv": 50.175999058410525,
+        "attention": 1686.527983052656,
+        "prefix": 134.1439939569682,
+        "experts": 620.0639761518687,
+        "suffix": 99.3279970716685,
+        "whole": 2603.008047444746
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "b1s",
+      "fused": true,
+      "us": {
+        "qkv": 26.160000590607524,
+        "attention": 18.431999487802386,
+        "prefix": 80.89599828235805,
+        "experts": 52.22399975173175,
+        "suffix": 14.33599996380508,
+        "whole": 185.3439963888377
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "b1f",
+      "fused": true,
+      "us": {
+        "qkv": 26.608000276610255,
+        "attention": 80.89599828235805,
+        "prefix": 80.89599828235805,
+        "experts": 70.65600226633251,
+        "suffix": 14.33599996380508,
+        "whole": 263.167992932722
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "b16s",
+      "fused": true,
+      "us": {
+        "qkv": 26.62400039844215,
+        "attention": 20.480000181123614,
+        "prefix": 85.0239999126643,
+        "experts": 150.5600071977824,
+        "suffix": 54.27200044505298,
+        "whole": 334.88000999204814
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "b16f",
+      "fused": true,
+      "us": {
+        "qkv": 26.608000276610255,
+        "attention": 250.8799887727946,
+        "prefix": 85.0239999126643,
+        "experts": 160.79999576322734,
+        "suffix": 54.27200044505298,
+        "whole": 582.6719857286662
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "b32s",
+      "fused": true,
+      "us": {
+        "qkv": 27.616000501438975,
+        "attention": 27.648000745102763,
+        "prefix": 132.12800095789135,
+        "experts": 222.2559980582446,
+        "suffix": 91.16800199262798,
+        "whole": 513.055995805189
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "b32f",
+      "fused": true,
+      "us": {
+        "qkv": 27.616000501438975,
+        "attention": 494.59199677221477,
+        "prefix": 132.12800095789135,
+        "experts": 171.05600307695568,
+        "suffix": 91.16800199262798,
+        "whole": 934.4319857191294
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "v1s",
+      "fused": true,
+      "us": {
+        "qkv": 26.62400039844215,
+        "attention": 24.57599970512092,
+        "prefix": 82.94399897567928,
+        "experts": 190.8960051368922,
+        "suffix": 14.33599996380508,
+        "whole": 336.8959880899638
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "v1f",
+      "fused": true,
+      "us": {
+        "qkv": 26.62400039844215,
+        "attention": 115.20000244490802,
+        "prefix": 82.94399897567928,
+        "experts": 175.10399292223155,
+        "suffix": 14.33599996380508,
+        "whole": 406.52801166288555
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "v16s",
+      "fused": false,
+      "us": {
+        "qkv": 32.25600044243038,
+        "attention": 35.840001655742526,
+        "prefix": 87.07200060598552,
+        "experts": 420.89600930921733,
+        "suffix": 68.64000181667507,
+        "whole": 646.2080038618296
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "v16f",
+      "fused": false,
+      "us": {
+        "qkv": 32.32000092975795,
+        "attention": 859.1360009741038,
+        "prefix": 87.07200060598552,
+        "experts": 371.74399266950786,
+        "suffix": 68.64000181667507,
+        "whole": 1416.2559665273875
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "v32s",
+      "fused": false,
+      "us": {
+        "qkv": 50.175999058410525,
+        "attention": 58.39999835006893,
+        "prefix": 135.6799982022494,
+        "experts": 647.1840001177043,
+        "suffix": 97.29599650017917,
+        "whole": 995.3279949259013
+      }
+    },
+    {
+      "candidate": "cand_chain_occ2",
+      "sha256": "66db2d3846aa2742d16f3cbb4c0ef7574b1fbee93fd052607336e29fe15a079c",
+      "case": "v32f",
+      "fused": false,
+      "us": {
+        "qkv": 50.175999058410525,
+        "attention": 1692.6720298361033,
+        "prefix": 136.19199465028942,
+        "experts": 619.5519722532481,
+        "suffix": 97.29599650017917,
+        "whole": 2602.512017590925
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "b1s",
+      "fused": true,
+      "us": {
+        "qkv": 26.62400039844215,
+        "attention": 18.431999487802386,
+        "prefix": 80.89599828235805,
+        "experts": 52.22399975173175,
+        "suffix": 14.33599996380508,
+        "whole": 193.5359991621226
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "b1f",
+      "fused": true,
+      "us": {
+        "qkv": 26.62400039844215,
+        "attention": 80.89599828235805,
+        "prefix": 80.89599828235805,
+        "experts": 70.65600226633251,
+        "suffix": 14.33599996380508,
+        "whole": 275.45599709264934
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "b16s",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 20.480000181123614,
+        "prefix": 82.97599921934307,
+        "experts": 149.53600685112178,
+        "suffix": 54.27200044505298,
+        "whole": 330.7520009111613
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "b16f",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 250.8799887727946,
+        "prefix": 82.97599921934307,
+        "experts": 160.79999576322734,
+        "suffix": 54.27200044505298,
+        "whole": 576.5119947027415
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "b32s",
+      "fused": true,
+      "us": {
+        "qkv": 27.648000745102763,
+        "attention": 27.648000745102763,
+        "prefix": 93.2160026859492,
+        "experts": 223.2640020083636,
+        "suffix": 62.463999493047595,
+        "whole": 424.9920106958598
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "b32f",
+      "fused": true,
+      "us": {
+        "qkv": 27.648000745102763,
+        "attention": 494.59199677221477,
+        "prefix": 93.2160026859492,
+        "experts": 171.03999922983348,
+        "suffix": 62.463999493047595,
+        "whole": 844.8160148691386
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "v1s",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 24.57599970512092,
+        "prefix": 82.94399897567928,
+        "experts": 191.48799846880138,
+        "suffix": 16.384000657126307,
+        "whole": 347.1360064577311
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "v1f",
+      "fused": true,
+      "us": {
+        "qkv": 26.59200015477836,
+        "attention": 115.71200261823833,
+        "prefix": 82.94399897567928,
+        "experts": 173.05600713007152,
+        "suffix": 16.384000657126307,
+        "whole": 422.911987407133
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "v16s",
+      "fused": false,
+      "us": {
+        "qkv": 32.768000615760684,
+        "attention": 36.86399827711284,
+        "prefix": 87.07200060598552,
+        "experts": 422.94399510137737,
+        "suffix": 68.64000181667507,
+        "whole": 644.1599882673472
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "v16f",
+      "fused": false,
+      "us": {
+        "qkv": 32.768000615760684,
+        "attention": 865.2799881529063,
+        "prefix": 87.07200060598552,
+        "experts": 371.77600036375225,
+        "suffix": 68.64000181667507,
+        "whole": 1417.2799743246287
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "v32s",
+      "fused": false,
+      "us": {
+        "qkv": 50.175999058410525,
+        "attention": 58.38400009088218,
+        "prefix": 136.19199465028942,
+        "experts": 643.6159766744822,
+        "suffix": 97.27999637834728,
+        "whole": 994.3040169309825
+      }
+    },
+    {
+      "candidate": "cand_chain_nopf",
+      "sha256": "486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52",
+      "case": "v32f",
+      "fused": false,
+      "us": {
+        "qkv": 50.175999058410525,
+        "attention": 1694.7200454305857,
+        "prefix": 136.19199465028942,
+        "experts": 621.5999878477305,
+        "suffix": 97.27999637834728,
+        "whole": 2611.2001098226756
+      }
+    }
+  ]
+}

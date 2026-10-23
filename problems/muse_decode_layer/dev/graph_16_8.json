@@ -1,0 +1,77 @@
+[
+  {
+    "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul>, false>(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
+    "start_us": 0.0,
+    "duration_us": 1.6959999999999127
+  },
+  {
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x128_64x3_tn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x128_64x3_tn_align8::Params)",
+    "start_us": 2.175999999999931,
+    "duration_us": 30.5920000000001
+  },
+  {
+    "name": "void cublasLt::splitKreduce_kernel<32, 16, int, __nv_bfloat16, __nv_bfloat16, float, __nv_bfloat16, false, __nv_bfloat16, __nv_bfloat16, __nv_bfloat16, true, false, false, false>(cublasLt::cublasSplitKParams<float>, __nv_bfloat16 const*, __nv_bfloat16 const*, __nv_bfloat16*, __nv_bfloat16*, float const*, float const*, __nv_bfloat16 const*, __nv_bfloat16 const*, __nv_bfloat16*, void*, long, float*, int*, float*, float*, float const*, float const*, float const*, float const*, float const*)",
+    "start_us": 33.152000000000044,
+    "duration_us": 2.7840000000001055
+  },
+  {
+    "name": "_qk_prep_kernel",
+    "start_us": 35.615999999999985,
+    "duration_us": 4.640000000000327
+  },
+  {
+    "name": "_attn_split_kernel",
+    "start_us": 36.608000000000175,
+    "duration_us": 35.23199999999997
+  },
+  {
+    "name": "_attn_combine_kernel",
+    "start_us": 59.103000000000065,
+    "duration_us": 17.409000000000106
+  },
+  {
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x64_64x4_tn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x64_64x4_tn_align8::Params)",
+    "start_us": 76.99099999999999,
+    "duration_us": 13.024000000000342
+  },
+  {
+    "name": "_boundary_kernel",
+    "start_us": 90.6550000000002,
+    "duration_us": 8.031999999999698
+  },
+  {
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_s16816gemm_bf16_128x128_32x4_tn_align8>(cutlass_80_tensorop_s16816gemm_bf16_128x128_32x4_tn_align8::Params)",
+    "start_us": 99.10300000000007,
+    "duration_us": 53.215999999999894
+  },
+  {
+    "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, float, float, float, false, float, float, float, true, false, false, false>(cublasLt::cublasSplitKParams<float>, float const*, float const*, float*, float*, float const*, float const*, float const*, float const*, float*, void*, long, float*, int*, float*, float*, float const*, float const*, float const*, float const*, float const*)",
+    "start_us": 152.79899999999998,
+    "duration_us": 4.44800000000032
+  },
+  {
+    "name": "_route_norm_kernel",
+    "start_us": 155.93499999999995,
+    "duration_us": 9.600000000000364
+  },
+  {
+    "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 const*, int const*, float const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, __nv_bfloat16*, float*, float*, int*, __nv_bfloat16*, int, int, int, bool)",
+    "start_us": 157.4390000000003,
+    "duration_us": 271.93399999999974
+  },
+  {
+    "name": "Memset (Unknown)",
+    "start_us": 430.1089999999999,
+    "duration_us": 1.4400000000000546
+  },
+  {
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x128_32x4_tn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x128_32x4_tn_align8::Params)",
+    "start_us": 433.0210000000002,
+    "duration_us": 56.51099999999997
+  },
+  {
+    "name": "_boundary_kernel",
+    "start_us": 489.98,
+    "duration_us": 8.864000000000033
+  }
+]

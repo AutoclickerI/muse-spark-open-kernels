@@ -1,0 +1,81 @@
+muse_decode_layer: problems/muse_decode_layer/cand_layer_sweep.py
+LOCAL screen on NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (sm_120); the judge runs an H200 (sm_90), so these timings are not its timings
+note: off Hopper, inputs carry scheduler_metadata=None (the judge's carry FA3's schedule)
+note: the judge also picks a router seed per run (weights_fields) to hit each load's target MoE load; this uses the default router
+LAYER_SWEEP device=NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition fixed_us=2.048 synthetic_only=1
+LAYER_SWEEP projection T=1 stage=qkv_gate us={'default': 26.624, 'narrow': 26.624, 'cublas': 28.672}
+LAYER_SWEEP projection T=1 stage=pool_router us={'default': 50.176, 'narrow': 51.184, 'cublas': 51.2}
+LAYER_SWEEP projection T=1 stage=unpooler_slice us={'default': 8.192, 'narrow': 8.192, 'cublas': 8.192}
+LAYER_SWEEP prefix T=1 us={'pdl0_pref0': 81.92, 'pdl1_pref0': 81.92, 'pdl1_pref1': 81.92}
+LAYER_SWEEP experts T=1 us={'v4': 49.152, 'v6': 53.248}
+LAYER_SWEEP suffix T=1 us={'pdl0_pref0': 14.336, 'pdl1_pref0': 14.336, 'pdl1_pref1': 14.336}
+LAYER_SWEEP projection T=8 stage=qkv_gate us={'default': 26.592, 'narrow': 26.624, 'cublas': 30.72}
+LAYER_SWEEP projection T=8 stage=pool_router us={'default': 51.2, 'narrow': 51.2, 'cublas': 55.296}
+LAYER_SWEEP projection T=8 stage=unpooler_slice us={'default': 8.192, 'narrow': 8.192, 'cublas': 10.24}
+LAYER_SWEEP prefix T=8 us={'pdl0_pref0': 83.968, 'pdl1_pref0': 83.968, 'pdl1_pref1': 83.968}
+LAYER_SWEEP experts T=8 us={'v4': 118.784, 'v6': 122.88}
+LAYER_SWEEP suffix T=8 us={'pdl0_pref0': 16.384, 'pdl1_pref0': 16.384, 'pdl1_pref1': 16.384}
+LAYER_SWEEP projection T=16 stage=qkv_gate us={'default': 26.624, 'narrow': 26.608, 'cublas': 30.72}
+LAYER_SWEEP projection T=16 stage=pool_router us={'default': 51.2, 'narrow': 51.2, 'cublas': 55.296}
+LAYER_SWEEP projection T=16 stage=unpooler us={'default': 45.056, 'narrow': 47.104, 'cublas': 50.176}
+LAYER_SWEEP prefix T=16 us={'pdl0_pref0': 84.0, 'pdl1_pref0': 85.024, 'pdl1_pref1': 85.008}
+LAYER_SWEEP experts T=16 us={'v4': 187.392, 'v6': 192.512}
+LAYER_SWEEP suffix T=16 us={'pdl0_pref0': 54.272, 'pdl1_pref0': 55.296, 'pdl1_pref1': 53.248}
+LAYER_SWEEP projection T=32 stage=qkv_gate us={'default': 28.672, 'narrow': 28.672, 'cublas': 30.72}
+LAYER_SWEEP projection T=32 stage=pool_router us={'default': 53.248, 'narrow': 55.296, 'cublas': 55.296}
+LAYER_SWEEP projection T=32 stage=unpooler us={'default': 49.136, 'narrow': 49.152, 'cublas': 47.104}
+LAYER_SWEEP prefix T=32 us={'pdl0_pref0': 94.24, 'pdl1_pref0': 94.24, 'pdl1_pref1': 94.24}
+LAYER_SWEEP experts T=32 us={'v4': 292.864, 'v6': 302.112}
+LAYER_SWEEP suffix T=32 us={'pdl0_pref0': 62.48, 'pdl1_pref0': 63.472, 'pdl1_pref1': 61.472}
+LAYER_SWEEP projection T=128 stage=qkv_gate us={'default': 32.768, 'narrow': 32.768, 'cublas': 34.816}
+LAYER_SWEEP projection T=128 stage=pool_router us={'default': 59.424, 'narrow': 59.424, 'cublas': 61.472}
+LAYER_SWEEP projection T=128 stage=unpooler us={'default': 55.296, 'narrow': 56.32, 'cublas': 57.344}
+LAYER_SWEEP experts T=128 us={'v4': 619.536, 'v6': 676.896}
+LAYER_SWEEP projection T=256 stage=qkv_gate us={'default': 51.2, 'narrow': 51.2, 'cublas': 51.2}
+LAYER_SWEEP projection T=256 stage=pool_router us={'default': 84.032, 'narrow': 85.056, 'cublas': 92.192}
+LAYER_SWEEP projection T=256 stage=unpooler us={'default': 77.856, 'narrow': 77.856, 'cublas': 83.968}
+LAYER_SWEEP experts T=256 us={'v4': 858.144, 'v6': 1231.888}
+LAYER_SWEEP attention_prefix B=1 L=1 window=2048 us={'pref0': 98.304, 'pref1': 98.304}
+LAYER_SWEEP attention_prefix B=1 L=1 window=0 us={'pref0': 159.744, 'pref1': 158.72}
+LAYER_SWEEP attention_prefix B=1 L=8 window=2048 us={'pref0': 104.48, 'pref1': 104.48}
+LAYER_SWEEP attention_prefix B=1 L=8 window=0 us={'pref0': 194.56, 'pref1': 190.464}
+LAYER_SWEEP attention_prefix B=16 L=1 window=2048 us={'pref0': 104.48, 'pref1': 102.4}
+LAYER_SWEEP attention_prefix B=16 L=1 window=0 us={'pref0': 342.048, 'pref1': 344.096}
+LAYER_SWEEP attention_prefix B=32 L=1 window=2048 us={'pref0': 114.72, 'pref1': 113.68}
+LAYER_SWEEP attention_prefix B=32 L=1 window=0 us={'pref0': 596.0, 'pref1': 593.952}
+LAYER_SWEEP complete; timed kernel uses fixed chain6 dispatch
+prepare: 6.5 s
+tests (13):
+  PASS  batch 1, ctx 10, layer sliding: update relative L2 error 4.242e-03 (worst row 4.242e-03) [bound 0.085]; attention input relative L2 error 2.645e-03 (worst row 2.645e-03) [bound 0.042]
+  PASS  batch 1, ctx 3000, layer full: update relative L2 error 4.064e-03 (worst row 4.064e-03) [bound 0.150]; attention input relative L2 error 3.128e-03 (worst row 3.128e-03) [bound 0.108]
+  PASS  batch 8, ctx 2047, layer sliding: update relative L2 error 7.275e-03 (worst row 9.582e-03) [bound 0.150]; attention input relative L2 error 5.089e-03 (worst row 6.447e-03) [bound 0.098]
+  PASS  batch 9, ctx 5000, layer sliding, spread mixed, page 1: update relative L2 error 7.780e-03 (worst row 9.703e-03) [bound 0.150]; attention input relative L2 error 5.851e-03 (worst row 7.063e-03) [bound 0.117]
+  PASS  batch 3, ctx 6000, layer full, q_len 8, dist outliers: update relative L2 error 4.200e-03 (worst row 4.549e-03) [bound 0.150]; attention input relative L2 error 2.838e-03 (worst row 3.423e-03) [bound 0.086]
+  PASS  batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1: update relative L2 error 3.422e-03 (worst row 3.699e-03) [bound 0.150]; attention input relative L2 error 3.076e-03 (worst row 3.429e-03) [bound 0.116]
+  PASS  batch 33, ctx 20000, layer full, spread mixed, page 1: update relative L2 error 7.276e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]
+  PASS  batch 2, ctx 300000, layer sliding, q_len 8: update relative L2 error 4.246e-03 (worst row 4.567e-03) [bound 0.150]; attention input relative L2 error 3.469e-03 (worst row 3.878e-03) [bound 0.128]
+  PASS  batch 1, ctx 1048576, layer full, q_len 8: update relative L2 error 4.301e-03 (worst row 4.725e-03) [bound 0.150]; attention input relative L2 error 3.389e-03 (worst row 4.011e-03) [bound 0.135]
+  PASS  batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625: update relative L2 error 4.306e-03 (worst row 4.579e-03) [bound 0.150]; attention input relative L2 error 3.570e-03 (worst row 3.962e-03) [bound 0.109]
+  PASS  batch 1, ctx 80000, layer full, dist soft, page 1: update relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.118]; attention input relative L2 error 3.343e-03 (worst row 3.343e-03) [bound 0.075]
+  PASS  batch 4, ctx 6000, layer sliding, q_len 8, dist soft: update relative L2 error 4.302e-03 (worst row 4.587e-03) [bound 0.150]; attention input relative L2 error 3.583e-03 (worst row 3.936e-03) [bound 0.101]
+  PASS  batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1: update relative L2 error 7.125e-03 (worst row 9.188e-03) [bound 0.150]; attention input relative L2 error 5.099e-03 (worst row 6.510e-03) [bound 0.097]
+baseline uses sgl_kernel.flash_attn, built for Hopper only; timing the submission alone
+timing 12 shapes, 20 replays a side, 3 input sets (graph replay fixed cost 4.1 us, subtracted):
+  ok    [decode 1] batch 1, ctx 80000, dist soft, layer sliding, page 1: 195.1 us
+  ok    [decode 1] batch 1, ctx 80000, dist soft, layer full, page 1: 267.3 us
+  ok    [decode 16] batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic: 293.9 us
+  ok    [decode 16] batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic: 585.7 us
+  ok    [decode 32] batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic: 377.9 us
+  ok    [decode 32] batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic: 869.4 us
+  ok    [verify 1] batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8: 327.2 us
+  ok    [verify 1] batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8: 370.7 us
+  ok    [verify 16] batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic: 610.4 us
+  ok    [verify 16] batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic: 1427.5 us
+  ok    [verify 32] batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic: 991.2 us
+  ok    [verify 32] batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic: 2642.9 us
+  load decode 1: 13249.5 us
+  load decode 16: 22890.5 us
+  load decode 32: 31293.4 us
+  load verify 1: 20980.7 us
+  load verify 16: 50916.0 us
+  load verify 32: 87884.5 us

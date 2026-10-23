@@ -1,0 +1,18 @@
+okc check muse_bf16_proj problems/muse_bf16_proj/cand_sweep1.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T080915Z",
+ "problem": "muse_bf16_proj",
+ "mode": "check",
+ "job": "03113fd349d347dc",
+ "sha256": "3799e9aa48d109962410cf47de7980bc789414eb1dabbce22b40d403a1185732",
+ "file": "problems/muse_bf16_proj/cand_sweep1.py",
+ "source": "runs/muse_bf16_proj/20261023T080915Z_check_03113fd349d347dc.py",
+ "git": "c354a4d+dirty",
+ "status": "done",
+ "speedup": 0.9910779965454173,
+ "interval": [
+  0.976211826597236,
+  1.0059441664935984
+ ],
+ "note": "skinny mma.sync split-K GEMM (M<=64 + router hi/lo, cluster DSMEM reduce), cuBLAS for M>64; prepare() sweeps tile configs on H200 and prints them"
+}

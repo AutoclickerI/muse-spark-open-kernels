@@ -1,2 +1,16 @@
 this source already ran as check job 2c112482e81745af (done, speedup 1.1428001801346024); --force to send it again
 okc check muse_decode_layer problems/muse_decode_layer/cand_adapt2.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T092635Z",
+ "problem": "muse_decode_layer",
+ "mode": "check",
+ "job": "69a655d3b2364fc4",
+ "sha256": "05924bd9d1effa86bd9b4231d9086fe72e33bc86f6d6682ba73fb7b061e933b6",
+ "file": "problems/muse_decode_layer/cand_adapt2.py",
+ "source": "runs/muse_decode_layer/20261023T092635Z_check_69a655d3b2364fc4.py",
+ "git": "e424275+dirty",
+ "status": "done",
+ "speedup": null,
+ "interval": null,
+ "note": "adaptive2: fused custom attention only on sliding q_len=1 decode; FA3 retained for verify/full; v3 multi-CTA glue"
+}

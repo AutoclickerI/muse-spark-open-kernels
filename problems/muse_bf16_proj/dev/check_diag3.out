@@ -1,0 +1,18 @@
+okc check muse_bf16_proj problems/muse_bf16_proj/cand_diag3.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T083051Z",
+ "problem": "muse_bf16_proj",
+ "mode": "check",
+ "job": "87dd70d5f5894f6a",
+ "sha256": "283734d4eb1db1d24be7c644b893c50373c622518f9d3c922cd53404d56ca29e",
+ "file": "problems/muse_bf16_proj/cand_diag3.py",
+ "source": "runs/muse_bf16_proj/20261023T083051Z_check_87dd70d5f5894f6a.py",
+ "git": "ef6c302+dirty",
+ "status": "done",
+ "speedup": 0.8202118523867878,
+ "interval": [
+  0.807908674600986,
+  0.8325150301725895
+ ],
+ "note": "diagnostic: TMA+wgmma swap-AB split-K kernel for 64<M<=256 (self-tested in prepare, cuBLAS fallback if it fails) + config sweep; skinny for M<=64 and router"
+}
