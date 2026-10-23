@@ -27,5 +27,7 @@ Targets come from the bound (PLAN P6); a passing H200 receipt is a milestone, no
 ## Terms
 - **verify load**: `verify N` = N requests x 8 tokens (DFlash TARGET_VERIFY), the only decode shape serving runs.
   **decode load** (q_len 1) counts on the kernel boards only.
+- **stock's interactivity**: the tokens/s per user stock SGLang reaches at each concurrency; our throughput is
+  read at that interactivity, then averaged over the four rungs.
 - **check / scored run**: `okc check` (off the board) / `okc submit` (on the board).
 - **bound**: minimum time at hardware rates; **floor**: the judge's own bound in TASK.md.

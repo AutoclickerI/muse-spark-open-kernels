@@ -11,7 +11,9 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 
 ## Practice
 
-- Use idle capacity, caches and other lanes' outputs (RESOURCES); fix the critical path (PLAN).
+- Next work: the highest-ranked `active` or `next` row in [PLAN](docs/PLAN.md) "Ranked work" that no lane owns.
+- The critical path is judge latency (~11 of our runs start per hour; PLAN "Critical path"): never idle on
+  it, and use idle GPUs, caches and other lanes' outputs (RESOURCES).
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon when unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
 - Remote runs only via `tools/okc_run.py ... --note "<what changed>"` (default): receipts in `runs/`, priority
