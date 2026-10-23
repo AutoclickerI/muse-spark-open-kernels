@@ -7,15 +7,15 @@ step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sg
 and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published H200 numbers (FINDINGS
 "Serving track").
 
-## Current best (2026-10-24 00:45 KST)
+## Current best (2026-10-24 02:00 KST)
 
 | Problem | Our best H200 check | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
 | muse_bf16_proj | 1.142x tuned `9294b3237c4f4e2d` | 1.143x (scored `68e2f34b1d4744cb`) | 1.447x (colinlikescode) | 1.312x | 1.243x | 337 |
 | muse_attention_decode | 1.388x hybrid `4f8c41ef9e924ff4` | 1.384x (hybrid scored `526f31018e2c4449`) | 2.366x (colinlikescode) | 1.912x | 1.585x | 241 |
-| muse_moe_w4a16 | 1.654x V9 `f6028a478d594b31` | 1.500x (V6 scored `c1930af634af4dea`; v7, V8 and V9 scored queued) | 2.326x (colinlikescode) | 1.958x | 1.719x | 278 |
-| muse_decode_layer | 1.355x moe7 `66d5d4c9e4054fa9` | 1.137x (167; moe7 and round3_v7 scored queued) | 1.864x (colinlikescode) | 1.622x | 1.402x | 207 |
-| muse_prefill_layer | 1.345x v3 `82a4e50b54294a2a` | 1.212x (53; v3 scored queued) | 1.695x (luccabb) | 1.515x | 1.222x | 107 |
+| muse_moe_w4a16 | 1.654x V9 `f6028a478d594b31` | 1.528x (v7 scored `96929b98ebc04689`; V8 and V9 scored queued) | 2.326x (colinlikescode) | 1.958x | 1.719x | 278 |
+| muse_decode_layer | 1.355x moe7 `66d5d4c9e4054fa9` | 1.355x (moe7 scored `d2bf1ced702948a4`; round3_v7 and MoE-dispatch scored queued) | 1.864x (colinlikescode) | 1.622x | 1.402x | 207 |
+| muse_prefill_layer | 1.368x v11 `6a9cd943fe404d74` | 1.347x (v3 scored `bab2f3468fcb4b58`; v11 scored queued) | 1.695x (luccabb) | 1.515x | 1.222x | 107 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
 top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
