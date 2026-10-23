@@ -1,0 +1,277 @@
+{
+ "board": "muse_decode_layer",
+ "call_id": "nyc3:kc-69a655d3b2364fc4",
+ "cluster": "nyc3",
+ "content_hash": "2bba7f40f6c0a020cd319e680db5e1430d7b28a358eb693ba398b889bd426e53",
+ "created_at": 1792747596.193066,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792756197.6613424,
+ "id": "69a655d3b2364fc4",
+ "limits": {
+  "checks": {
+   "left": 0,
+   "per_day": 20,
+   "used": 20
+  },
+  "scored": {
+   "left": 8,
+   "per_day": 10,
+   "used": 2
+  }
+ },
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/profiles/cand_adapt2.69a655d3b2364fc4.log"
+ },
+ "payload_ref": "muse_decode_layer/2bba7f40f6c0a020cd319e680db5e1430d7b28a358eb693ba398b889bd426e53.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "2999d8a201bb2b0bad6c7b3998af2143a1ed720d531dbb4d15670721ee9f957b",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_decode_layer/baseline.py": "87d95a0c4b78f0fd6c772436b959330ca45652b10e82dfc8add9acf0549227d4",
+    "problems/muse_decode_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "problems/muse_decode_layer/task.yml": "6a73de4094ff00d7453fb94bd3aa40f5fae79ac7fbea149660eae2125dc5a0c7"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "Traceback (most recent call last):\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-wn_atvy8/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 125.54,
+    "power.limit": 700,
+    "temperature.gpu": 35
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 146.37,
+    "power.limit": 700,
+    "temperature.gpu": 34
+   },
+   "node": "n-3tovvmp4azgxjrdbhkqxjjl254"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 2,
+    "baseline_prepare_pad": 8565248,
+    "copies": 3,
+    "error": null,
+    "event": "setup",
+    "first": "baseline",
+    "prepare_pad": 5065728,
+    "prepare_s": 5.961145799,
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 10,
+     "layer": "sliding",
+     "seed": 2575639398064929112
+    },
+    "event": "test",
+    "index": 0,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 3000,
+     "layer": "full",
+     "seed": 2575847599266237371
+    },
+    "event": "test",
+    "index": 1,
+    "message": "update relative L2 error 5.274e-02 (worst row 5.274e-02) [bound 0.132]; attention input relative L2 error 3.006e-02 (worst row 3.006e-02) [bound 0.075]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 8,
+     "ctx": 2047,
+     "layer": "sliding",
+     "seed": 2576055800467545631
+    },
+    "event": "test",
+    "index": 2,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 9,
+     "ctx": 5000,
+     "layer": "sliding",
+     "page": 1,
+     "seed": 2576264001668853892,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 3,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 6000,
+     "dist": "outliers",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2576472202870162154
+    },
+    "event": "test",
+    "index": 4,
+    "message": "update relative L2 error 6.406e-02 (worst row 8.994e-02) [bound 0.150]; attention input relative L2 error 3.277e-02 (worst row 4.788e-02) [bound 0.081]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 5,
+     "ctx": 5000,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2576680404071470417,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 5,
+    "message": "update relative L2 error 7.047e-02 (worst row 1.086e-01) [bound 0.150]; attention input relative L2 error 4.644e-02 (worst row 7.594e-02) [bound 0.116]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 33,
+     "ctx": 20000,
+     "layer": "full",
+     "page": 1,
+     "seed": 2576888605272778681,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 6,
+    "message": "update relative L2 error 7.207e-02 (worst row 9.711e-02) [bound 0.150]; attention input relative L2 error 4.667e-02 (worst row 6.235e-02) [bound 0.116]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 300000,
+     "layer": "sliding",
+     "q_len": 8,
+     "seed": 2577096806474086946
+    },
+    "event": "test",
+    "index": 7,
+    "message": "update relative L2 error 7.102e-02 (worst row 9.403e-02) [bound 0.150]; attention input relative L2 error 4.746e-02 (worst row 6.639e-02) [bound 0.118]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 1048576,
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2577305007675395212
+    },
+    "event": "test",
+    "index": 8,
+    "message": "update relative L2 error 7.743e-02 (worst row 9.318e-02) [bound 0.150]; attention input relative L2 error 5.031e-02 (worst row 6.410e-02) [bound 0.125]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 7000,
+     "kv_scale": 0.015625,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2578137812480628286
+    },
+    "event": "test",
+    "index": 9,
+    "message": "update relative L2 error 6.902e-02 (worst row 9.457e-02) [bound 0.150]; attention input relative L2 error 4.517e-02 (worst row 6.195e-02) [bound 0.113]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 80000,
+     "dist": "soft",
+     "layer": "full",
+     "page": 1,
+     "seed": 2577513208876703479
+    },
+    "event": "test",
+    "index": 10,
+    "message": "update relative L2 error 5.118e-02 (worst row 5.118e-02) [bound 0.127]; attention input relative L2 error 2.062e-02 (worst row 2.062e-02) [bound 0.051]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "soft",
+     "layer": "sliding",
+     "q_len": 8,
+     "seed": 2577721410078011747
+    },
+    "event": "test",
+    "index": 11,
+    "message": "update relative L2 error 5.368e-02 (worst row 7.680e-02) [bound 0.132]; attention input relative L2 error 3.563e-02 (worst row 4.963e-02) [bound 0.088]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 16,
+     "ctx": 20000,
+     "dist": "soft",
+     "layer": "full",
+     "page": 1,
+     "seed": 2577929611279320016,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 12,
+    "message": "update relative L2 error 5.270e-02 (worst row 6.776e-02) [bound 0.129]; attention input relative L2 error 3.284e-02 (worst row 4.662e-02) [bound 0.081]",
+    "status": "pass"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792756138.729384,
+ "status": "done",
+ "team": "AutoclickerI"
+}

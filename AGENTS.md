@@ -54,7 +54,9 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
 - **Local timing** is sm_120 timing, not H200 timing. Use it to rank candidates loosely and
   to catch graph-capture failures. Report H200 claims only from `runs/` receipts.
 - **Hopper-only code** (wgmma, TMA, FA3, sm90 CUTLASS/DeepGEMM) can't run here. Its only test
-  is `okc check`. Keep a portable fallback path where that's cheap.
+  is `okc check`. Keep a portable fallback path where that's cheap. Exercise the Python glue of every
+  Hopper branch locally by forcing that branch with a portable stand-in kernel: four decode checks
+  (2026-10-23) failed on the judge with a tuple-for-tensor error that only the sm_90 branch reached.
 - **Serving reuse.** The goal is the serving prize (see README), so write kernels so they can
   move into SGLang (`serving/sglang/python/sglang/...`). `serving/RULES.md` lists where they
   plug in.
