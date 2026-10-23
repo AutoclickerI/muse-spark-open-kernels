@@ -1,27 +1,29 @@
 # Attention verify
+
 Serves: G2, G3.
 
-Goal: beat FA3 on q_len=8 full B16/B32 first, then sliding; preserve q_len=1.
-`submission.py` now matches check32c5b4b287c24c38 exactly:1.390910x overall,
-SHA610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810.
-This meets the owner's promotion threshold, inside noise, with FA3 on all verify
-shapes. Board stays1.384x (526f31018e2c4449) until orchestrator scores promotion.
+The active candidate is `cand_attn_portfolio.py`. It keeps the scored q_len=1
+kernel from the 1.39x submission and, for each scored q_len=8 shape, measures
+all 27 FA3 `(num_splits, pack_gqa)` settings plus the eight K128 producer/MMA
+and eight K64 producer/WGMMA variants from `cand_xqa_next.py`. `prepare()` uses
+fresh scattered page-1 synthetic inputs, cold-L2 reads and CUDA-graph replays;
+only the shape-keyed winner survives. Every measured time and agreement check
+is printed as `PORTFOLIO_SHAPE`, with the selected path in `PORTFOLIO_PLAN`.
 
-K64 diagnostic32c5b4b287c24c38 and K128a0511c0001464dbe both lose all verify
-shapes. K128 paired full B16/B32 custom617/1174us vsFA3207/391us.
-Stages3–5 barely change full times; nominal KV throughput0.53–0.56TB/s vs
-standalone gather2.558TB/s. Profiles show selected FA3, not custom stalls.
-The synchronous recipe is closed; producer overlap/WGMMA remain open.
+The local sm_120 screen passed all 16 correctness tests and 12 graph timing
+shapes. Its timings are admission evidence only; H200 timing comes from the
+orchestrator's receipt. On sm_120 FA3 is unavailable, so the fixed group XQA
+stand-in is used for q_len=8 while the q_len=1 path remains unchanged.
 
-Next candidate:cand_xqa_next.py packs K128 swap-AB mma.sync and K64 WGMMA.
-Both use128 producer threads, cp.async/full-empty mbarriers,32–64KiB in flight,
-64 queries on N, exact causal/2048-window mask,FP32 softmax,last-CTA FP32 merge.
-Hopper WGMMA QK:E4M3; PV:exact FP16 V. sm_120 runs matching MMA stand-ins.
-prepare validates and times16 variants +FA3 per shape, then pairs the best.
-All actual input work stays in kernel_fn; only shape choices survive prepare.
+`submission.py` remains the exact `32c5b4b287c24c38` source (1.390910x check,
+SHA256 `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810`),
+and its scored run is already queued. The verify goal remains open until a
+receipt shows a custom or tuned verify path above FA3, especially full B16/B32.
 
-Admission, frozen hashes and09:00 order:dev/NEXT_CHECKS.md.
-SM90a:zero spills; QGMMA/HGMMA/LDGSTS confirmed. CUTLASS layout/descriptor
-checks pass. Actual WGMMA correctness/performance needs H200.
-Pending FA3 tune:dd927c6c46264afe; pipeline remains in local sender queue.
-Only orchestrator sends. Do not edit sent candidates; no commit this round.
+The old `cand_xqa.py`, `cand_xqa_p8.py`, and `cand_xqa_ptranspose.py` sources
+were moved under `dev/` because their XQA variants already have H200 coverage
+through the prior diagnostic. Their builders and timing scripts now read the
+private paths, so screen-all will not spend judge slots on duplicate sources.
+
+Frozen hashes and the send order are in `dev/NEXT_CHECKS.md`. Only the
+orchestrator sends or commits.

@@ -315,5 +315,5 @@ def kernel_fn(data: Inputs) -> torch.Tensor:
         return _xqa_verify(data)
     return _DECODE_FN(data)
 '''
-(root/'cand_xqa.py').write_text(base+'\nX_CUDA = '+repr(cuda)+'\nX_CPP = '+repr(cpp)+'\n'+py)
+(root/'dev/xqa_p8_candidate.py').write_text(base+'\nX_CUDA = '+repr(cuda)+'\nX_CPP = '+repr(cpp)+'\n'+py)
 (root/'dev/xqa_kernel.cu').write_text(cuda)

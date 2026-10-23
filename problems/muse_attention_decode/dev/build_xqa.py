@@ -342,5 +342,5 @@ def render(cuda_source=cuda,python_source=py):
     return base+'\nX_CUDA = r\"\"\"\n'+cuda_source+'\n\"\"\"\nX_CPP = r\"\"\"\n'+cpp+'\n\"\"\"\n'+python_source
 
 if __name__ == '__main__':
-    (root/'cand_xqa.py').write_text(render())
+    (root/'dev/xqa_legacy_candidate.py').write_text(render())
     (root/'dev/xqa_kernel.cu').write_text(cuda)

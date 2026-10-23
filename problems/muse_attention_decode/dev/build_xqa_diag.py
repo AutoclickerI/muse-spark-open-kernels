@@ -1,9 +1,9 @@
 from pathlib import Path
 import ast
 root=Path(__file__).resolve().parents[1]
-base=(root/'cand_xqa.py').read_text()
+base=(root/'dev/xqa_legacy_candidate.py').read_text()
 # Also compare scalar FP8->half V gather and its raw-FP8 PV variant in the same job.
-scalar=ast.parse((root/'cand_xqa_p8.py').read_text())
+scalar=ast.parse((root/'dev/xqa_p8_candidate.py').read_text())
 scuda=next(ast.literal_eval(n.value) for n in scalar.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='X_CUDA' for t in n.targets))
 base+='\nX_SCALAR_CUDA = r"""\n'+scuda+'\n"""\n'
 base+=r'''

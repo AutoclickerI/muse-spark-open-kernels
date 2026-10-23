@@ -1,54 +1,32 @@
-# Attention handoff / 09:00 KST order (2026-10-24)
+# Attention handoff / frozen send order (2026-10-24)
 
-Only the orchestrator sends. Do not edit or resend accepted sources.
-No okc_run or multi-agent work was launched in this attention turn.
+Only the orchestrator sends. Do not edit or resend a source after it enters the
+queue. The portfolio is first because one receipt measures the complete FA3 and
+XQA space and removes duplicate judge runs.
 
-| Order | File | Frozen SHA256 | Action |
-|---|---|---|---|
-| 0 | `submission.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Exact promoted check `32c5b4b287c24c38`,1.390910x >1.388x. Orchestrator may score. Verify is FA3 throughout; gain vs old check is within noise. |
-| 1 | `cand_xqa_next.py` | `fee88fd0a7e9de09639228d67a5300ba760ddd0c946e998b33550466650933c8` | New packed asynchronous-producer MMA/WGMMA diagnostic. Check first among new attention work; full B16/B32 are first in prepare. Prints XQA_NEXT_DIAG/PAIR/AGREE. |
-| collect | `cand_fa3_tune.py` | `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd` | Accepted check `dd927c6c46264afe`; read FA3_TUNE on arrival and promote only the exact passing source under owner's threshold. |
-| existing | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Existing sender `runs/waiting/3126112.json` when inspected; no H200 receipt yet. Collect it; don't duplicate. |
-| existing | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Prior screen sender; inspect queue/receipt before any action. |
+| Order | File | Frozen SHA256 | Action / state |
+|---:|---|---|---|
+| 0 | `cand_attn_portfolio.py` | `37df0f815068750a5b6e2ad9e101197804f1aa3758e42de3e824f3d6f926fd1b` | Local sm_120 screen passed 16/16 tests and 12/12 graph shapes. Send as the next scored run; its `PORTFOLIO_SHAPE` lines are the diagnostic for all FA3 settings and XQA/WGMMA variants. |
+| 1 | `submission.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Scored run already queued; exact check `32c5b4b287c24c38`, 1.390910x. Keep the q_len=1 winner while the portfolio is tested. |
+| 2 | `cand_xqa_next.py` | `fee88fd0a7e9de09639228d67a5300ba760ddd0c946e998b33550466650933c8` | Check already queued (`3928409`); collect its producer/WGMMA receipt if it lands before the portfolio. |
+| 3 | `cand_fa3_tune.py` | `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd` | Check `dd927c6c46264afe` is pending; collect its per-setting FA3 table. Do not send a duplicate once the portfolio receipt contains the same grid. |
+| 4 | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Check already queued (`3890200`); collect only if it lands before the portfolio and supplies new H200 evidence. |
+| 5 | `cand_xqa_ldm.py` | `3511f6ae5cbec225a60cf04696b766e729bd46c317e22c65d3a7382efe285ee9` | Check already queued (`3890196`); this is the remaining unswept ldmatrix diagnostic. |
+| 6 | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Existing check sender (`3890035`); collect only if no portfolio receipt covers its shape choices. |
+| existing | `cand_hybrid_slide.py` | `02c946d2f6cc93c30c792009eea41f994665e7802d6d1a5a075970cd717abeaf` | Existing queued sender (`3890067`); stale relative to the portfolio, do not add another run. |
+| existing | `cand_v4.py` | `7bce06b716e1b041df48161ec1de9cd3f08eb4d1af86847cb22d700c8d202140` | Existing queued sender (`3889995`); retain only as an already queued diagnostic. |
+| existing | `cand_v5d.py` | `2f8e3c7a1012a82dba2df63a01ac3d900082a501aec83e180b1d55c76ec11f68` | Existing queued sender (`3890023`); retain only as an already queued diagnostic. |
+| existing | `cand_v7.py` | `cdd8b25cb9c0985e52e096a4590860409aac8a39860b34d2578cacd35bd5326d` | Existing queued sender (`3890031`); retain only as an already queued diagnostic. |
 
-New design: one KV head per CTA;64 query rows on N. K128 has eight consumer
-warps doing E4M3 mma.sync m16n8k32 QK and FP16 PV; K64 has one consumer
-warpgroup doing E4M3 wgmma m64n64k32 QK and FP16 wgmma PV. Both have128
-separate producer threads gathering every page row with cp.async and full/empty
-mbarriers. K128 stages3/4 hold48/64KiB raw KV; K64 stages5/7 hold40/56KiB.
-Splits scale from the GPU SM count and1/2/4/8 scheduling waves; last CTA merges
-FP32(max,sum,output), gates/norms, resets counters. Exactly2048 sliding tokens
-and exact within-block causality. q_len=1 source is inherited unchanged.
+The already measured XQA sources are private development inputs and are not
+ready screen candidates:
 
-The packed prepare uses synthetic random page tables and spread lengths only,
-validates every variant's output against FA3 (<3% relative L2), then times16
-variants+FA3 and selects custom only at >1.015 paired ratio. No data-derived
-state survives a call. A Hopper variant failure raises; FA3 selection cannot
-hide it. Untuned nearby shapes use the group kernel.
+| Private source | SHA256 |
+|---|---|
+| `dev/xqa_legacy_candidate.py` | `551949b5eb2219d0fd698ab202e529d21095eb08edb8171701796067538f7296` |
+| `dev/xqa_p8_candidate.py` | `5b856076f62f9402d4d1e2f2bfc02efd1a12def8090321d35748fb24a8f9df43` |
+| `dev/xqa_ptranspose_candidate.py` | `308db0b4bfa8e13d22654881227d69596847005a2b7813c39c6af136f22872f7` |
 
-Admission for this exact candidate:
-- `runs/screen/attention_next/muse_attention_decode.cand_xqa_next.json`:16/16
-  tests and12/12 graph shapes,3 replays and2 fresh input sets, CUDA_VISIBLE_DEVICES=0.
-- `dev/xqa_next_variants.log`:32 forced family/stage/split cases, five replays
-  each, including1M context, window edges, page1/64, DP heads, scale1/64;
-  eight FA3 tensor/tuple glue cases; all16 tuner choices/paired dispatch through
-  portable stand-ins. Actual WGMMA is unexecuted locally.
-- `dev/xqa_group_sm90_compile.log`, `xqa_warp_sm90_compile.log`:eight sm_90a
-  specializations,zero spills. Group180–181registers; producer MMA153–156.
-  SASS in `xqa_group_sm90_sass.log` contains QGMMA,HGMMA,LDGSTS.
-- `dev/check_wgmma_layout.cpp` / `wgmma_layout.log`:4096coordinates per K/V/P
-  layout agree with installed CUTLASS canonical atoms; descriptor fields checked.
-- Local producer MMA full B16/B32 about355/676us vs synchronous339/660us;
-  sliding B16/B32 about40/54us vs42/56us. Group MMA stand-in is slower locally
-  (~585/1041us at full B16/B32 best split); this cannot rank Hopper WGMMA.
-
-Landed evidence:
-- `32c5b4b287c24c38`:1.390910x,CI[1.37005,1.41519],16/16H200 tests.
-  All verify choices FA3. Best old K64 full B16/B32 675/1183us vs207/380us.
-- `a0511c0001464dbe`:1.382808x,CI[1.36207,1.40730],16/16tests,all verify FA3.
-  K128 paired full B16/B32 616.74/1173.81us vs207.36/391.36us;
-  sliding B1/B16/B32 custom/FA3 ratios0.683/0.565/0.508.
-
-Do not call the verify goal complete from an overall score. It remains open
-until an actual H200 custom/tuned verify path beats FA3. No H200 ID exists for
-cand_xqa_next yet. Sent diagnostic/K128/pipeline/FA3 files remain frozen.
+The portfolio has exact causal masking, the full context or exactly 2,048
+sliding keys, FP32 online softmax with `ex2.approx`, FP8 cache precision, and a
+last-CTA FP32 `(max, sum, output)` merge. Its H200 result is still unverified.

@@ -7,8 +7,8 @@ root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
 ref=E.load_module('xqa_ref',root/'reference.py')
 ref._fa3_scheduler_metadata=lambda *a,**kw:None
-mod=E.load_module('xqa_candidate',root/'cand_xqa.py')
-scalar=E.load_module('xqa_scalar',root/'cand_xqa_p8.py')
+mod=E.load_module('xqa_candidate',root/'dev/xqa_legacy_candidate.py')
+scalar=E.load_module('xqa_scalar',root/'dev/xqa_p8_candidate.py')
 timer=E.Timer()
 rows=[]
 for batch in (1,16,32):

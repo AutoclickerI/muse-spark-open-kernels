@@ -15,7 +15,7 @@ src = ast.parse((root / 'dev/xqa_w8_diag_candidate.py').read_text())
 src.body.pop()
 mod = types.ModuleType('w8timing')
 exec(compile(src, 'w8timing.py', 'exec'), mod.__dict__)
-old = E.load_module('w8control', root / 'cand_xqa_ptranspose.py')
+old = E.load_module('w8control', root / 'dev/xqa_ptranspose_candidate.py')
 timer = E.Timer()
 rows = []
 for batch, window in ((16, 0), (32, 0), (16, 2048), (32, 2048), (1, 0), (1, 2048)):
