@@ -282,15 +282,12 @@ usage rises to 64–190 versus packed 58–154, so v2 specializes the hierarchic
 and output dtype at compile time. The standalone lossless cuBLASLt NN weight-layout
 experiment passes locally at 1.088505x. All frozen sources and evidence paths are in NEXT_CHECKS.
 
-P8 H200 receipt `849bd4b650e54c7f` landed clean at 1.136951x (it retains earlier projections;
-it is not a new projection dispatch). Its graph-internal microbenchmarks reach 3.01 TB/s
-LDG128, 3.15 TB/s cp.async and 2.88 TB/s bulk/TMA in the tested 64 MiB/256-thread recipe;
-66-CTA, low-flight variants are much slower. This supports testing coverage and flight depth,
-not treating TMA alone as a bandwidth improvement. At N8/N16, mma.sync measured 504/545
-TFLOP/s versus WGMMA 200/363; N32 is 590/608. Keep the small-m MMA winners; this probe
-has no N64–256 measurement. L2 rereads reached 7.3–7.8 TB/s and PDL saved 1.06 us on its
-specific two-kernel probe. The older 4.25 TB/s streaming best is not superseded by a weaker
-recipe. Evidence: `problems/muse_bf16_proj/profiles/cand_probe_hw.849bd4b650e54c7f.log`.
+P8 receipt `849bd4b650e54c7f` landed clean at 1.136951x with an earlier projection
+dispatch. [P8 hardware probes](#p8-hardware-probes-on-h200-2026-10-24-kst) owns its
+microbenchmark values. Projection consequences: retain small-m mma.sync winners; test
+CTA coverage/flight depth rather than assuming TMA improves streaming bandwidth; use TMA
+where a tile is reused. The probe has no N64–256 tensor measurement, so verify WGMMA remains
+open. Its cache-policy and PDL recipe gains are not measured projection dispatch gains.
 
 The previously screened `cand_m16` scalar row stream was 0.968x locally (m16 projections
 0.53–0.64x); repeated activation staging and scalar accumulation lost to tensor cores.
@@ -318,12 +315,13 @@ A negative closes only the recipe tested. "Leaves open" names what the result do
 
 | Recipe tested | Result | Mechanism | Leaves open | Receipt |
 |---|---|---|---|---|
+| MoE V9 with PRMT NVFP4 decode (P8 measured PRMT 1.92x LOP3) | Bit-exact (524,288 cases); local 1.126x vs V9 1.283x; V32 501 -> 703 us | V9's bit-plane decode is already cheaper than P8's scalar raw-nibble decoders; rebuilding PRMT selectors on V9's layout grows the sm_90a inner loop 492 -> 1,255 instructions (LOP3 162 -> 545, SHF 112 -> 368) | A layout designed for PRMT from the start (changes prepare's packing) | local only; source in git `cand_v9_prmt.py` (commit before this one) |
 | Proj: original K64 TMA/WGMMA with one/two consumer warpgroups and fixed DSMEM dispatch | 0.820x and 0.824x; prepare diagnostics m128 BF16 1.3–1.8x slower, m256 1.7–2.1x slower than cuBLAS | Unbalanced output waves, per-K64 synchronization and cluster merge overhead; the selected fixed dispatch also misses faster diagnostic variants | Larger grouped K tiles, last-CTA/Stream-K merge, per-shape autotuning; router m128 diagnostic is a positive lead | `87dd70d5f5894f6a`, `dd5ffc6950bc439e`; diagnostic logs |
 | Proj: skinny mma.sync split-K with cluster DSMEM reduce for all m <= 64 | 0.991x; qkv/o lose 0.55-0.83x at m=1/8/32 | Split-K and cluster-reduce fixed costs dominate at these sizes | Other GEMV layouts (the two landed checks are below incumbent); in-kernel last-CTA reduce | `03113fd349d347dc` |
 | Attention: split partials merged through global memory/L2 instead of a DSMEM cluster | 1.190x against v2's 1.279x | An extra global round trip per split | Global merge with fewer splits, or at long full-layer contexts | `8bfd5e25e582402d` |
 | Prefill: contiguous FP8 cache gather (v4) | 1.194x against v3's 1.345x | Gains about 5% in the FA3 stage but loses elsewhere against the control | Combined with v3's experts (v9 pending) | `27f3e312727d423c` |
 | Prefill: 4-warp residual boundaries and rowwise SwiGLU (v2) | 1.229x, the same as v1 | Glue launches are not the prefill bottleneck | Glue fusion once expert time drops | `7ef49d84f4a14791` |
-| MoE: Humming wider tiles / Stream-K / forced MMA (Humming4, Humming5) | 1.142x and 1.128x against Humming3's 1.270x | Wider token tiles lose at small batch | Per-batch dispatch between families (hybrid pending `318227bc382d465c`) | `14545ac2e22f48d6`, `630397d6cd414734` |
+| MoE: Humming wider tiles / Stream-K / forced MMA (Humming4, Humming5) | 1.142x and 1.128x against Humming3's 1.270x | Wider token tiles lose at small batch | Per-batch dispatch is now measured: V9 native at M128, Humming wide at M256 (`318227bc382d465c`) | `14545ac2e22f48d6`, `630397d6cd414734`, `318227bc382d465c` |
 
 ## Failures
 Failures whose cause was not obvious, so they are not repeated.
