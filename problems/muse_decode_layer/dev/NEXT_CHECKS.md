@@ -1,6 +1,6 @@
-# Decode checks — next send order after b787866
+# Decode checks — next send order after dafac99
 
-The V9 and V9-dispatch scored runs are already at the judge. Three decode scored slots remain today; do not wait for their receipts before sending the next information-dense candidate. The latest completed receipt is `85e67f5d6ef945c9`, 1.366737x (CI [1.346236, 1.387237]).
+The V9, V9-dispatch, and cost-autotune sources are already at the judge; the cost-autotune source is first in the queue from `dafac99`. Do not resend or wait for its receipt before sending the next information-dense candidate. The latest completed receipt is `85e67f5d6ef945c9`, 1.366737x (CI [1.346236, 1.387237]).
 
 ## Non-MoE cost ranking from receipt `85e67f5d6ef945c9`
 
@@ -13,16 +13,17 @@ The V9 and V9-dispatch scored runs are already at the judge. Three decode scored
 | decode 32 sliding | projections 46.9 us | attention 20.6 us | boundary 9.1 us |
 | decode 32 full | attention 227.9 us | projections 56.1 us | boundary 15.2 us |
 | verify 1 sliding/full | projections 47.2/47.1 us | attention 20.3/32.0 us | boundary 14.0/13.6 us |
-| verify 16 sliding/full | projections ~73 us | attention 27/203 us | boundary 11.6/11.2 us |
-| verify 32 sliding/full | projections ~91 us | attention 30/383 us | boundary 19.9/19.6 us |
+| verify 16 sliding/full | projections ~73 us | attention 27/192.6 us | boundary 11.6/11.2 us |
+| verify 32 sliding/full | projections ~91 us | attention 30/373.8 us | boundary 19.9/19.6 us |
 
-The new fused prefix and persistent island variants target the projection/glue rows at small loads; FA3 tuning targets the full-attention rows, especially verify32.
+The fused prefix and persistent island variants target the projection/glue rows at small loads; full attention is the largest remaining decode cost at verify32/decode32/verify16 = 373.8/227.9/192.6 us. The MoE lane owns its V11/V17 verify row-tile work.
 
 ## Frozen source set
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
-| `cand_r3_v9_cost_autotune.py` | `b3fcd1eaa3f7f84c7d74e381ae5564f042ef9324659aef21d9b01ca851fb9d2e` | 13/13 tests, 12/12 graphs; prepare 3.3 s on sm_120; portable FA3/Lt glue PASS | **ready to send first**; adds fused prefix and persistent small-load paths to the sent autotune portfolio |
+| `cand_r3_v9_attention_portfolio.py` | `257674016ee2b5b3ef12a11c2e2af90406d90e9c43efe0e08c5ce2d37373d8f2` | 13/13 tests, 12/12 graphs; prepare 4.87 s on sm_120; Hopper branches forced through layer stand-in | **ready to send next**; adds the attention-lane FA3/XQA/WGMMA/FP8-PV/q1-gather portfolio per scored shape |
+| `cand_r3_v9_cost_autotune.py` | `b3fcd1eaa3f7f84c7d74e381ae5564f042ef9324659aef21d9b01ca851fb9d2e` | 13/13 tests, 12/12 graphs; prepare 3.3 s on sm_120; portable FA3/Lt glue PASS | sent first in the queue from `dafac99`; fused prefix and persistent small-load paths |
 | `cand_r3_v9_autotune.py` | `099ee216693f890b1bc6b737de5d3441e5f210baa2cca0c8fbb0b4fd65ecbc6e` | sent in commit `8584a56`; scored/queued | already sent; original MoE/FA3/projection/PDL portfolio |
 | `cand_r3_v9_dispatch.py` | `633c96ccffa40c6673c99b808c18b28685db5aafd4541667de68e1f0e6c41b84` | scored; receipt `85e67f5d6ef945c9`, 1.366737x | already sent; current H200 incumbent |
 | `cand_r3_v9.py` | `ba990a86f6f7f4985345cfc89a3bc56e36730d974ba47642a344c5c77d84279f` | scored; receipt pending/queued | already sent; V9-only layer |
@@ -33,10 +34,10 @@ Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`
 
 ## Send order
 
-1. **`cand_r3_v9_cost_autotune.py`** (SHA `b3fcd1eaa3f7f84c7d74e381ae5564f042ef9324659aef21d9b01ca851fb9d2e`). Send as the next scored run. One judge run measures and selects V7/V9/grouped MoE, all 27 FA3 settings for each verify shape, custom/cuBLAS/cuBLASLt projection variants, PDL on/off at both boundaries, the fused prefix path, and the persistent small-load island path; every invalid/resource-wrong variant is logged and rejected.
-2. Do not resend `cand_r3_v9_autotune.py`, `cand_r3_v9_dispatch.py`, or `cand_r3_v9.py`; their scored runs already occupy the queue and provide the incumbent H200 evidence.
+1. **`cand_r3_v9_attention_portfolio.py`** (SHA `257674016ee2b5b3ef12a11c2e2af90406d90e9c43efe0e08c5ce2d37373d8f2`). Send next. One judge run measures and selects the cost candidate's MoE/projection/PDL/prefix/island paths plus FA3's 27 `(num_splits, pack_gqa)` settings, XQA/WGMMA warp and grouped settings, FA3-structured WGMMA, FP8-PV, and the four-stage q_len=1 gather per `(batch, q_len, window)`; every invalid/resource-wrong/tolerance-failing variant is logged and rejected.
+2. Do not resend `cand_r3_v9_cost_autotune.py`, `cand_r3_v9_autotune.py`, `cand_r3_v9_dispatch.py`, or `cand_r3_v9.py`; their scored runs already occupy the queue and provide the incumbent H200 evidence.
 
-The cost-autotune log is intentionally part of the scored receipt: `FA3_TUNE`, `PROJ_TUNE`, `PDL_TUNE`, `MOE_TUNE`, `PREFIX_TUNE`, `PERSIST_TUNE`, and reject lines record every accepted timing and selected plan. The local screen uses sm_120; FA3 and cuBLASLt H200 choices remain unverified until this scored run.
+The cost-autotune and attention-portfolio logs are intentionally part of the scored receipt: `ATTN_PORT_TUNE`, `ATTN_PORT_SHAPE`, `ATTN_PORT_REJECT`, `ATTN_PORT_PLAN`, `PROJ_TUNE`, `PDL_TUNE`, `MOE_TUNE`, `PREFIX_TUNE`, `PERSIST_TUNE`, and reject lines record every accepted timing and selected plan. The local screen uses sm_120; FA3, XQA/WGMMA, and cuBLASLt H200 choices remain unverified until the next scored run.
 
 Every candidate in this order must first pass `tools/img python tools/local_eval.py` with 13/13 tests and 12/12 fresh-input graph cases. Force every Hopper-only Python branch through a portable stand-in before remote submission. Remote checks use `tools/okc_run.py` and remain detached; no commit is requested.
 
