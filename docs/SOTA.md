@@ -11,7 +11,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 
 | Problem | Our best H200 run | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
-| muse_bf16_proj | 1.173x portfolio `dd989ef2d76147e7` (scored) | 1.173x (portfolio scored `dd989ef2d76147e7`; rank 252) | 1.447x (colinlikescode) | 1.330x | 1.264x | 465 |
+| muse_bf16_proj | 1.182x fused_select `f3786341611f4f1f` (scored) | 1.182x (fused_select scored `f3786341611f4f1f`; rank 233) | 1.447x (colinlikescode) | 1.330x | 1.264x | 465 |
 | muse_attention_decode | 1.391x xqa_diag `32c5b4b287c24c38` (check) | 1.384x (submission scored `526f31018e2c4449`; rank 158) | 2.366x (colinlikescode) | 2.050x | 1.742x | 318 |
 | muse_moe_w4a16 | 1.664x v11 `41bcf27cfc0e4eff` (scored) | 1.664x (v11 scored `41bcf27cfc0e4eff`) | 2.326x (colinlikescode) | 2.040x | 1.811x | 365 |
 | muse_decode_layer | 1.367x r3_moe_dispatch `85e67f5d6ef945c9` (scored) | 1.367x (r3_moe_dispatch scored `85e67f5d6ef945c9`; rank 93) | 1.862x (colinlikescode) | 1.744x | 1.523x | 275 |
