@@ -32,13 +32,19 @@ Step 3 dominates, since one result costs hours of wall time.
   judge; `collect` lands receipts while it builds the next candidate.
 
 ## Ranked work
+Until 2026-11-05 17:00 KST the order is G1 > G3 > G2 (R-20261024-1). G3 rows rank by overall-board weight
+(FINDINGS "Boards": decode layer 51%, MoE 30%, proj 11%, attention 8%; prefill isn't counted). With our best
+checks on the board the time-weighted score would be about 1.378x (board today 1.21x) against about 1.38x
+for 50th place at 10-23 19:30, and the cut rises until the close. Within decode and MoE, the large-batch
+loads carry the most SGLang time: verify 16/32 (MoE at 128/256 tokens) and decode 32.
+
 | Rank | Id | Serves | Work | Done when | Who | State |
 |---|---|---|---|---|---|---|
-| 1 | P1 | G1 | Serving: an agreement metric that resolves stock's own spread, then request-based (suffix/n-gram) drafting alongside DFlash | Metric reports stock-vs-patch within the stock-vs-stock spread; acceptance gain measured on the multi-turn fixture | serving lane | active |
-| 2 | P2 | G2, G1 | Prefill: RS128 grouped experts on the canonical bank (provisional serving path) and FP8 long-context attention; nine candidates at 09:00 KST | H200 check above 1.345x; ported with agreement | prefill lane | next: 09:00 KST checks |
-| 3 | P3 | G2, G1 | MoE V8 (V6 resident grid plus v7 incremental tiles) on the canonical bank, swapped into the serving port | H200 check above 1.535x; port tests pass | MoE lane | active |
-| 4 | P4 | G3, G2 | Decode layer round 3: cand_moe7 (1.355x; verify 16/32 only 1.06-1.17x) plus the best measured stage per batch size (MoE V8, attention hybrid q_len=1, proj tuned dispatch, neutral structural fusions); `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at 09:00 KST | H200 check above 1.355x on the way to the 50th-place mix | decode lane | active: local build; cand_moe7 scored run queued; checks at 09:00 KST |
-| 5 | P5 | G2, G3 | Attention verify: eight-warp swap-AB K128, matrix-load PV, 24-variant paired FA3 diagnostic; frozen source and 09:00 order in `problems/muse_attention_decode/dev/NEXT_CHECKS.md` | Verify loads above 1.0x on H200; board above 1.384x | attention lane | active: 16 tests / 12 graphs pass locally; six sm_90a builds without spills; H200 admission pending |
-| 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x; at the 09:00 reset, one check of the exact submission.py (its source was promoted from a receipt the okc_run file-edit bug may have mislabelled) | proj lane | next: 09:00 KST check |
-| 8 | P8 | G2 | One H200 diagnostic: HBM concurrency (LDG/cp.async/bulk), page-1 KV gather, L2 hints/APW, graph PDL boundary, small-N BF16 MMA/WGMMA, NVFP4 decode issue | H200 rates and lane consequences in FINDINGS | probe lane | active: check `849bd4b650e54c7f` queued |
-| 9 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | next |
+| 1 | P1 | G1 | Serving: an agreement metric that resolves stock's own spread, then request-based (suffix/n-gram) drafting alongside DFlash | Metric reports stock-vs-patch within the stock-vs-stock spread; acceptance gain measured on the multi-turn fixture | serving lane | active: n-gram drafting +1.77% mean acceptance on the 30-request chain fixture |
+| 2 | P4 | G3, G2 | Decode layer: cand_moe7 1.355x (verify 16/32 only 1.06-1.17x, decode 32 sliding 1.17x); round 3 adds custom q_len=1 attention everywhere, then MoE V8 / wide tiles at 128-256 tokens and fused stages for the large loads; `problems/muse_decode_layer/dev/NEXT_CHECKS.md` | H200 check above 1.355x, then above the decode 50th place (1.402x at 10-23) | decode lane | active: cand_moe7 and round3_v7 scored runs queued |
+| 3 | P3 | G3, G2, G1 | MoE: per-shape dispatch on the canonical bank, V8 for small M and wide tiles for 128/256 tokens (Humming3 reached 1.424x at V32), kept in step with the serving port | H200 check above 1.535x; port tests pass | MoE lane | active: V8 and v7 scored runs queued |
+| 4 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o at m >= 128 (in-kernel split-K reduce, WGMMA) and m >= 16 pooler/unpooler | H200 check above 1.142x | proj lane | next |
+| 5 | P5 | G3, G2 | Attention verify: eight-warp swap-AB K128, matrix-load PV, 24-variant paired FA3 diagnostic; frozen source and 09:00 order in `problems/muse_attention_decode/dev/NEXT_CHECKS.md` | Verify loads above 1.0x on H200; board above 1.384x | attention lane | active: K128 and XQA diagnostics queued at the judge |
+| 6 | P2 | G2, G1 | Prefill: RS128 grouped experts on the canonical bank (provisional serving path) and FP8 long-context attention | H200 check above 1.345x; ported with agreement | prefill lane | active: candidates queued; result handler promotes as receipts land |
+| 7 | P8 | G2 | One H200 diagnostic: HBM concurrency (LDG/cp.async/bulk), page-1 KV gather, L2 hints/APW, graph PDL boundary, small-N BF16 MMA/WGMMA, NVFP4 decode issue | H200 rates and lane consequences in FINDINGS | probe lane | active: check `849bd4b650e54c7f` queued |
+| 8 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | active: attention, MoE |
