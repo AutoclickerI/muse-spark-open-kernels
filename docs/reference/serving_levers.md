@@ -81,8 +81,15 @@ Every path checks `has_multicast` and falls back to stock.
 
 ## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.
-- **Drafting from the request** (prompt lookup, n-grams) is allowed alongside DFlash; the model says tau 4.16 -> 4.5
-  moves the score ~2%, so it ranks below the kernels.
+- **Drafting from the request** is implemented alongside DFlash. Before each eight-token verify block, the patch
+  finds the longest repeated 2-8-gram in each request's committed history, scores the available suffix length, and
+  appends it only after the per-request recent DFlash acceptance prefix; the estimate and fixed-shape candidate
+  buffers are CUDA-graph safe. `SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM=0` disables it for A/B. The 30-request chain
+  fixture produced exactly 220 tokens: mean acceptance rose from 2.9544 (stock) to 3.0067 (patch), +0.0522
+  tokens or +1.77% overall (c=1: 2.9892 -> 2.9344; c=4: 2.9457 -> 3.0247). The 10-request screen was +10.1%
+  at c=1 and +6.4% at c=4, so the full-run gain is the result to use. Margin output agreement stayed exact;
+  random near-tie agreement passed the distributional gate. Local sm_120 uses FlashInfer; H200 FA3 custom-mask
+  drafting and held-out agentic conversations remain unverified.
 
 ## Testing
 
