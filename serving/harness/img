@@ -1,0 +1,12 @@
+#!/bin/sh
+# tools/img plus the harness's data dir and the stock worktree bound into the image.
+# Usage: serving/harness/img <cmd...>   (from anywhere inside the repo)
+set -eu
+here=$(cd "$(dirname "$0")" && pwd)
+repo=$(cd "$here/../.." && pwd)
+data=${MUSE_HARNESS_DATA:-/data2/jihoon/muse_kernel/harness}
+stock=${MUSE_STOCK_TREE:-/data2/jihoon/muse_kernel/sglang-stock}
+mkdir -p "$data"
+binds="$data"
+[ -d "$stock" ] && binds="$binds,$stock"
+APPTAINER_BIND="${APPTAINER_BIND:+$APPTAINER_BIND,}$binds" exec "$repo/tools/img" "$@"
