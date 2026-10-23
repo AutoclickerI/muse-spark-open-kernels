@@ -22,6 +22,7 @@ Results: runs/screen/<utc>/summary.json and one log per candidate.
 """
 
 import argparse
+import ast
 import concurrent.futures as cf
 import datetime
 import hashlib
@@ -79,9 +80,30 @@ def earlier_pass(f: Path):
     return None
 
 
+# The judge gets the one file plus the problem's official files (okc init), so an import of any other module
+# of ours passes here and fails there.
+OFFICIAL = {"reference", "baseline", "checks", "nvfp4"}
+
+
+def local_imports(f: Path) -> set:
+    ours = ({p.stem for p in REPO.glob("problems/**/*.py")} | {p.stem for p in REPO.glob("tools/*.py")}
+            | {p.stem for p in REPO.glob("sim/*.py")} | {"sim", "prof", "tools"}) - OFFICIAL
+    found = set()
+    for n in ast.walk(ast.parse(f.read_text())):
+        if isinstance(n, ast.Import):
+            found |= {a.name for a in n.names if a.name.split(".")[0] in ours}
+        elif isinstance(n, ast.ImportFrom) and (n.level or (n.module or "").split(".")[0] in ours):
+            found.add("." * n.level + (n.module or ""))
+    return found
+
+
 def screen(f: Path, gpu: str, logdir: Path) -> dict:
     stem = f"{f.parent.name}.{f.stem}"
     log, js = logdir / f"{stem}.log", logdir / f"{stem}.json"
+    if bad := local_imports(f):
+        return {"problem": f.parent.name, "file": str(f.relative_to(REPO)), "ok": False, "rc": "local-import",
+                "tests": "0/0", "graphs": "0/0", "prepare_s": None, "minutes": 0,
+                "why": f"imports modules the judge won't have: {sorted(bad)}", "log": str(log.relative_to(REPO))}
     if done := earlier_pass(f):
         res = done[1]
         return {"problem": f.parent.name, "file": str(f.relative_to(REPO)), "ok": True, "rc": 0,
