@@ -14,7 +14,11 @@ The ranks change at the kernel close, 2026-11-05 17:00 KST (R-20261024-1).
 | 3 (2 after 11-05) | G2 | H200-verified kernels at serving's shapes: verify loads (M = 8-256) and prefill (753-16K tokens) | The patch ports them; serving runs no single-token decode | Receipts beat SGLang on verify and prefill loads; ported with agreement |
 | 2 (until 11-05) | G3 | Top 50 on the overall kernel board at close (2026-11-05 17:00 KST) | Serving-queue priority, so our daily serving runs land | `GET /me` `serving_priority` true (FINDINGS "Boards") |
 
-Targets come from the bound ([bound](reference/bound.md)): serving score at most ~6.1x (tau 4.16).
+## Optimize vs spend (R-20261024-2)
+Optimize only the score (board speedup at the scored shapes; serving throughput). Anything else no
+hard limit bounds is a resource to spend, never a second objective:
+GPU memory, power, SMs, `prepare` and compile time, quotas, local GPUs, agent time. In serving, HBM
+costs only the KV pool the judge's loads use.
 
 ## Non-goals
 - Kernel-board rank for its own sake. Decode loads (q_len 1) matter only through G3.

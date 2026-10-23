@@ -33,8 +33,6 @@ Each rule is `[hard]` (external, or protects others, shared resources, safety or
 | 2, 5, 6 | Any reordering (fusion, accumulation and split-K order, scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order; tests and agreement bound the drift | allowed (R-20261023-4) |
 | 2, 5-7, 10 | Below the allowed precision: FP8/FP4 activations, fewer experts, skipped keys | Forbidden | forbidden; inadmissible column of the bound only (R-20261023-4) |
 | 6 | FP8 softmax probabilities in the PV MMA with an FP8 cache | SGLang's FA3 does it | allowed |
-| 5 | Two lossless copies or layouts of the same weights | Lossless; in serving it costs HBM | allowed |
-| 8 | Image binaries (cuBLAS, DeepGEMM, FA3, Humming), nvcc/JIT builds, inline PTX | "build on anything in the image" | allowed |
 | 2, 8 | Our own cubin or hand-edited SASS in a kernel submission | Accepted by the judge and not explicitly banned; discretionary review remains a risk (2) | allowed (R-20261023-6) |
 | 9 | Our own cubin in the serving patch, even base64 in a `.py` | A binary change in substance | forbidden (9) |
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |

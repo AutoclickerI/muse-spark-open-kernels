@@ -94,6 +94,16 @@ question-tool label is Jihoon's word; the question and option text are agent con
   moves our serving runs to the front of the queue)?"
 - Effect: GOAL subgoal ranking G1 > G3 > G2 until 2026-11-05 17:00 KST, then G1 > G2.
 
+## R-20261024-2 — 2026-10-24 03:09 KST — optimize the score, spend everything else
+> Ok. aware of that quota. submit regularly. and please carefully discriminate the things to optimize and things to spend. for example, if there is no constraint about the memory, we can just freely spend the resources. if power not specified, we can use more power. just focus on our optimization and treat everything else as a resource. do not treat it as a resource and try to minimize it together.
+
+> Yes, add to GOAL (Recommended)
+
+- Source: transcript:9505; the yes at transcript:9779 (asked whether to record "optimize only the score;
+  everything not scored and not bounded by a hard limit ... is a resource to spend, never minimized").
+- Effect: GOAL "Optimize vs spend". "submit regularly" was carried out once: `okc_run.py send` takes a
+  scored run while the day's last.
+
 ## Dropped agent rules (do not reintroduce)
 
 | Rule an agent introduced | Dropped | Match |

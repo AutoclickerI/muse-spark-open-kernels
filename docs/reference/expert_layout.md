@@ -1,10 +1,10 @@
-# One resident NVFP4 expert bank for serving
+# The NVFP4 expert bank for serving
 
 Serves: G1, G2. This is the layout contract for the serving MoE port.
 
 ## Canonical bank
 
-The serving port uses the V6 m16 tile layout as its only resident NVFP4 expert bank. It is
+The serving port uses the V6 m16 tile layout as its resident NVFP4 expert bank. It is
 built after the ModelOpt checkpoint tensors are loaded and before any stock Marlin
 conversion. The repack preserves every E2M1 code and E4M3 scale value; it changes only
 physical order and the exact scale encoding consumed by the readers.
@@ -55,8 +55,9 @@ metadata per 16 values, or 9/16 byte per parameter:
 
 H200's 141 GB device with `mem-fraction-static=0.85` provides a 119.85 GB static budget.
 One expert bank leaves 65.49 GB before dense weights, the drafter, BF16 MoE layers,
-workspaces, CUDA-graph pools and allocator slack. Retaining a second Marlin or alternate
-expert bank would consume another 54.358 GB and violates the serving memory design.
+workspaces, CUDA-graph pools and allocator slack. A second Marlin or alternate expert bank
+takes another 54.358 GB from the KV pool. It is worth that only if it is faster and the judge's
+loads don't need the KV it displaces (memory is a resource, not an objective).
 
 At TP8, the FP8 KV cache costs 15,872 bytes per cached token/GPU (`2 * 64 * 2 * 62`).
 The added-bank capacity equivalent is 3,424,785 cached tokens, a capacity calculation
