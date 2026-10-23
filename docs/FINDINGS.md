@@ -338,6 +338,49 @@ A router-aware direct MoE probe on sm_120 isolates the missing mechanism. At M=2
 In-layer overlap (`cand_r3_merge_ovl.py`, local only, parked): the only independent work is row partitions inside qkv and the unpooler; boundary 1's dense and routed paths share norm statistics; KV write -> attention, pooler/router -> experts -> unpooler and router -> attention output are ordered. Two-stream overlap was 9.5% slower at decode 32 (505.9 vs 461.8 us, sm_120) and failed the correctness guard at verify 16/32 (implementation suspect: a race), so it was not sent.
 The profile also exposes small separate residual, router, norm and gate kernels. Existing structural fusion candidates reduce those launches but regressed complete sm_120 layer timings, so the new diagnostic keeps the v7 glue as the control while selecting the expert family first. Any Hopper result must recheck the Python glue with a portable stand-in and compare the full-layer receipt, not infer a win from the isolated MoE ratio.
 
+#### Larger-load stage floors and non-MoE gap (G3)
+
+Receipt `0e94268cf5654012` supplies the H200 profile and scored layer times. The table groups
+profile rows into projections (qkv, O, pooler/router and unpooler), attention (main, combine,
+qk-prep and FA3 preparation/norm support), MoE, and glue (boundary plus route). `gap` is the
+scored adjusted layer time minus the profile kernel sum; negative values are expected when PDL
+rows overlap. Floors are the rules-compliant one-read floors at 4.8 TB/s from
+[`bound.md`](reference/bound.md): projection weights are counted once across the dense group,
+attention uses the legal FP8-QK/BF16-PV work, and MoE uses `sim.problems.layer_routing`; glue's
+scalar floor is below 0.1 us at these sizes.
+
+| Shape | Profile stage time (us): P / A / MoE / glue | Floor (us): P / A / MoE / glue | Adjusted / gap (us) |
+|---|---:|---:|---:|
+| decode32 sliding | 66.2 / 20.2 / 101.7 / 15.6 | 41.8 / 3.55 / 53.1 / <0.1 | 217.5 / +13.9 |
+| decode32 full | 73.4 / 228.5 / 114.2 / 24.9 | 41.8 / 139 / 53.1 / <0.1 | 422.9 / −18.1 |
+| verify16 sliding (M=128) | 72.8 / 25.8 / 258.9 / 16.3 | 43.9 / 1.78 / 108.8 / <0.1 | 393.4 / +19.6 |
+| verify16 full (M=128) | 72.5 / 202.6 / 280.4 / 15.7 | 43.9 / 69.3 / 108.8 / <0.1 | 566.6 / −4.6 |
+| verify32 sliding (M=256) | 90.0 / 31.6 / 477.0 / 25.9 | 51.7 / 3.56 / 125.9 / <0.1 | 615.5 / −9.0 |
+| verify32 full (M=256) | 90.7 / 389.9 / 449.5 / 25.8 | 51.7 / 139 / 125.9 / <0.1 | 979.6 / +23.8 |
+
+The profile's `STAGE_TUNE` lines at T=32 independently report qkv/O/pooler-router/unpooler
+choices of 21.0/11.8/33.1/28.3 us; PDL makes their visible profile aggregate 66.2--73.4 us.
+At M=128/256 the profile's three dense kernel families plus split-K reductions give 72.5--90.7
+us directly. The largest non-MoE gap is full attention at verify32: 389.9 us versus a 139 us
+floor (+251 us), followed by verify16 full (+133 us) and decode32 full (+90 us). Projection gaps
+are 22--39 us, while glue has no material byte floor but consumes 16--26 us of critical-path
+work. The next score experiment should therefore target the full q_len=8 attention path before
+another dense fusion.
+
+#### Megakernel correctness audit (G3)
+
+The held `cand_r3_merge_mega.py` (`98d7e6d6…`) did not have a benign isolated rejection. Two
+independent sm_120 prepares rejected the persistent qkv chain at `(tokens=32,q_len=1)`; one
+repeated debug prepare later accepted that same shape, which identifies nondeterministic launch
+ordering rather than a stable tolerance margin. The `(8,8)` check was repeatably different: the
+persistent qkv chain produced about 0.864% hidden and 0.826% stream relative error and changed
+expert IDs. Turning PDL off removed the launch dependency but did not remove that qkv disagreement.
+The fixed source therefore never exposes the qkv producer to a timed replay: it uses the tuned
+regular qkv producer, keeps the serialized persistent O+pooler/router and unpooler islands around
+V9, and rejects any complete-island comparison that fails agreement. Its five mega comparisons
+all agreed on the final sm_120 screen (`f7e1217b…`, 13/13 tests, 12/12 graphs); the final
+`MEGA_SUMMARY` is printed after all prepare work.
+
 #### Batch-1 stage accounting and megakernel rationale (G3)
 
 The H200 profile for `cand_r3_v9` (`0e94268cf5654012`, profiles 0, 1, 6 and 7) gives the following batch-1 decomposition. “Kernel sum” is the labelled GPU time grouped by layer stage; “gap residual” is the raw graph median minus that sum. Negative residuals are possible because PDL and concurrent work make a profile's per-kernel rows overlap. The byte floors use one read of each stage's weights and 4.8 TB/s; projection and attention bytes are the per-stage formulas in [`bound.md`](reference/bound.md), and MoE bytes use its layer-routing expectation.
@@ -351,7 +394,7 @@ The H200 profile for `cand_r3_v9` (`0e94268cf5654012`, profiles 0, 1, 6 and 7) g
 
 The four loads therefore do not have a large positive launch-gap share in this receipt. Their measured stage kernels are still 1.6–3.0x the one-read byte floors, especially dense GEMVs, MoE decode/route work, and FA3 fixed work. A single persistent launch is still a useful experiment because it can remove barriers and let weight streams advance across operators even when the byte floor does not bind.
 
-This is the motivation for `cand_r3_merge_mega.py`. Hazy Research's batch-1 Llama megakernel work reports that kernel-per-operator boundaries leave bandwidth idle and that merging the forward pass into one megakernel exceeded 1.5x over existing systems on H100 ([Hazy Research, “Look Ma, No Bubbles”](https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles)). Mirage Persistent Kernel generalizes the same idea with an SM-level dependency graph, cross-operator software pipelining and an in-kernel scheduler; its paper reports up to 1.7x over kernel-per-operator serving systems ([Mirage Persistent Kernel, arXiv:2512.22219](https://arxiv.org/abs/2512.22219)). Those results motivate the structure, not a speed claim for Muse: the new candidate must pass the layer's own correctness and full-shape screen.
+This motivated the held `cand_r3_merge_mega.py`; its persistent qkv producer later failed repeated M=32 agreement checks, so `cand_r3_merge_mega_fix.py` keeps regular qkv and serializes the dense islands. Hazy Research's batch-1 Llama megakernel work reports that kernel-per-operator boundaries leave bandwidth idle and that merging the forward pass into one megakernel exceeded 1.5x over existing systems on H100 ([Hazy Research, “Look Ma, No Bubbles”](https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles)). Mirage Persistent Kernel generalizes the same idea with an SM-level dependency graph, cross-operator software pipelining and an in-kernel scheduler; its paper reports up to 1.7x over kernel-per-operator serving systems ([Mirage Persistent Kernel, arXiv:2512.22219](https://arxiv.org/abs/2512.22219)). Those results motivate the structure, not a speed claim for Muse: the new candidate must pass the layer's own correctness and full-shape screen.
 | Proj scored (`68e2f34b1d4744cb`) | 1.142642x, CI 1.1255–1.1598 | router 1.68 / 2.26 / 1.93x; pooler m32 loses at 0.930x | router m8 4.05x; m128/256 all 0.976–1.017x | `submission.py` is the scored snapshot, sha256 `4bc18cec…`; tuned check `9294b3237c4f4e2d` 1.141605x; full table below |
 | Proj hybrid (`6b706627babc4cc6`) | 1.106x | router 1.55-2.01x; unpooler m=1 1.135x | router m=8 3.81x; others 0.98-1.01x | qkv_gate and o stay at cuBLAS parity at every m |
 
@@ -605,6 +648,29 @@ The landed diagnostic profiles contain only the selected FA3 path: full B16 main
 | Verify admission gate v2 | `cand_attn_verify_stream2.py` computes a local FP32 dequantized-KV reference with the same causal/window mask and output gate, then computes the FP8-E4M3-query reference error and judge bound. Each FA3/XQA/stream choice is accepted only at <=0.8x bound and <=0.8x the 5x row bound; exceptions are logged and rejected. | This removes the old FA3-vs-FA3 15% proxy, which could accept a coherent-case failure. The tuner uses a compact coherent q8 input (ctx 2048) because the landed coherent q8 case has the tightest bound. | `cand_attn_verify_stream2.py`, local screen 16/16 tests + 12/12 graphs; H200 unverified |
 
 | Serving verify adapter | `muse_verify_attention.py` consumes the fused QK-norm op's FP8 query and physical paged FP8 K/V cache, walks page tables with exact causal/window limits, and dispatches only fixed q_len=8 GQA shapes; FA3 remains the fallback. | Local SM120 graph replay matches an independent FP32 page-table reference (relative L2 <=3e-5 for full/window). The local image lacks an FA3 SM90 cubin, so H200 adapter-vs-FA3 timing and graph parity remain open. | `serving/tests/test_muse_verify_attention.py`, `flashattention_backend.py`; local only |
+
+### Prefill attention (2026-10-24)
+
+The H200 FA3 prefill profile in `cand_v11.6a9cd943fe404d74` is the current
+attention state of the art. Counting QK and PV as `4 * Q * K * 16 * 64` gives
+the following effective dense-BF16 utilization (989 TFLOPS peak):
+
+| load | FA3 kernel us | effective TFLOPS | peak share |
+|---|---:|---:|---:|
+| turn1 753 sliding/full | 25.8 / 414.8 | 244.8 / 597.7 | 24.8% / 60.4% |
+| turn4 753 sliding/full | 61.7 / 1618.0 | 409.5 / 621.5 | 41.4% / 62.8% |
+| first 16K, ctx0 full | 900.3 | 610.7 | 61.7% |
+| first 16K, ctx32K sliding/full | 309.3 / 4531.4 | 444.4 / 606.6 | 44.9% / 61.3% |
+| first 16K, ctx64K full | 8431.4 | 586.8 | 59.3% |
+
+The short sliding loads are launch/metadata limited. Long full attention sustains
+about 587–622 TFLOPS, leaving 37–41% of dense peak. `cand_attn_prefill.py`
+(`8157261f...`) packages the measured FP8 Q/K plus FP8-PV path: a lossless
+page gather to contiguous storage, GQA reuse, online FP32 softmax, and exact
+causal/window masking. Its serving mirror is `muse_prefill_attention.py`; the
+backend dispatches only uniform q_len >=2048 FP8 prefill shapes and falls back
+to FA3 otherwise. Local graph/reference tests pass with 2.36–2.48% last-row
+error; H200 timing and serving gain remain unverified.
 
 ## Closed recipes
 A negative closes only the recipe tested. "Leaves open" names what the result does not rule out.

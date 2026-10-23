@@ -132,7 +132,7 @@ and components, then normalize shares to its wall. The target receipt excludes c
 | Pooler all-gather | omitted; S estimate outside total | 355.7 | 399.9 | 576.5 | disabled at M=256 |
 | Router all-gather | no such collective; router replicated | 0 | 0 | 0 | 0 |
 | Unpooler all-gather | omitted; S estimate outside total | 370.4 | 458.8 | 812.1 | disabled at M=256 |
-| DFlash kernels (includes borrowed draft LM head) | S | 562.2 | 562.2 | 562.2 | 562.2 |
+| DFlash kernels (includes borrowed draft LM head) | legacy S; incomplete, see source audit below | 562.2 | 562.2 | 562.2 | 562.2 |
 | DFlash all-reduce | S | 59.7 | 74.0 | 131.0 | 207.0 |
 | Target LM head | S | 97.3 | 97.3 | 97.3 | 97.3 |
 | Sampling / verify bookkeeping | unpriced | ? | ? | ? | ? |
@@ -158,7 +158,7 @@ its separate collective floors. This is an opportunity ranking, not a promise of
 | Rank | Unowned component | Recoverable us at c=1 / 4 / 16 / 32 | Step share recoverable | Capped score if recovered alone |
 |---|---|---|---|---|
 | 1 | Target collectives and compute/communication overlap | 416 / 512 / 893 / 1,402 | 4.15 / 3.09 / 3.14 / 3.07% | 1.778x vs 1.745x |
-| 2 | DFlash kernels, unchanged weights | 234 / 231 / 216 / 146 | 2.34 / 1.39 / 0.76 / 0.32% | 1.759x |
+| 2 | DFlash kernels, unchanged weights; source audit complete | 6 / 6 / 6 / 6 from unary launches; dense gains unmeasured | 0.060 / 0.036 / 0.021 / 0.013% from unary | needs H200 diagnostic |
 | 3 | Target LM head | 11 / 11 / 9 / 0 | 0.11 / 0.06 / 0.03 / 0% | 1.7453x |
 | unranked | Sampling/verify and CPU/scheduler | no calibration | unknown | needs a serving trace |
 
@@ -166,6 +166,16 @@ Rank 1 includes attention-output AR, the expert-output communication interface (
 MoE lane's expert kernel), projection gathers, and independent router overlap. The attention and MoE
 kernels themselves remain with their lanes. At c=32 the LM-head compute floor already exceeds the old
 byte-only model, so its modeled recoverable value is clamped to zero.
+
+The [DFlash TP8 source inventory](muse_dflash.md) supersedes rank 2's old234/231/216/146us
+opportunity estimate. The562.2us proxy still charges the original replicated FC despite the
+already wired TP8 output split, and omits ten replicated coefficient GEMMs (335.54MB of weights),
+20 convolutions and selector/context-KV work. It cannot support a calibrated saving estimate.
+The new `layers/muse_dflash.py` supplies exact-stock dense algorithm selection, two-tap convolution,
+selector input fusion and one-launch unary softcap. Its locally verified new structural saving is
+three unary launches, modeled at **0.006ms/step at all four rungs**; dense/layout and other glue get
+no additional H200 credit until `cand_dflash_diag.py` returns. The full inventory gives all four
+per-rank shapes, bytes and hardware floors, including retained TP8 collectives.
 
 ### Attention-output all-reduce fused with the norm/residual boundary
 
@@ -178,13 +188,26 @@ cluster norm arithmetic, post-norm BF16 round trip, FP32 gated stream and pre-no
 No extra weight/layout/workspace allocation; each CTA advances its phase counter and advances
 unused counters, permitting stock AR, finalize AR and gather kernels to share the plane.
 
-Dispatch is SM90, custom AR v2 one-shot policy, BF16, no DP attention/SP, JIT boundary selected,
-M<=128 and cluster grid within the counter budget. With stock H200 TP8 one-shot threshold
-128 KiB and H8192, this covers **M=8, c=1**, and does not force a slower algorithm at c4/16/32.
-Attention's row-parallel output projection skips its reduction only when this boundary owns it.
-The expert lane's `layers/muse_spark_moe.py` was not edited. Larger blocks need a measured
-2-shot/partitioned design; overlapping the router before its normalized input exists would change
-model semantics, so this change does not claim that overlap.
+Dispatch is SM90, BF16, custom AR v2, no DP attention/SP and the JIT
+boundary selected. The existing one-shot fusion retains the normal small-M
+policy. A two-shot extension covers up to256 rows where the push workspace
+has room for `2*ceil(M/TP)*H*2` bytes per slot: at H8192/TP8 the M32/128/256
+requirements are128/512/1024KiB. Existing multicast projection reservation
+already provides8MiB per slot on the judge path; no extra bank or plane is
+allocated. Explicit AR/NCCL/FlashInfer overrides remain authoritative.
+The extension is a new operation policy above stock's128KiB one-shot cutoff;
+it does not mistakenly rely on stock enabling `TWO_SHOT_PUSH` (H200 normally
+chooses pull there). Attention's row-parallel output skips its reduction only
+when this boundary owns it.
+
+The first kernel partitions whole rows among ranks, scatters partials to
+owners, reduces in FP32 rank order, rounds to BF16 and publishes those rows
+with multicast stores or unicast. The second kernel drains each row directly
+into the unchanged norm/residual body. A captured4-byte phase tensor decouples
+the M256 gather/norm grid from the132-counter push plane; its final consumer
+advances every shared counter. Both phases clear their Lamport slots, allowing
+interleaving with stock AR/finalize/AG. The expert lane is untouched.
+No router can run before its normalized input exists without changing semantics.
 
 `test_attn_ar_norm.py` runs the real unicast kernel on two sm_120 GPUs with H1024/8192,
 M8/32/128, optional FP32 router, zeros/signed zeros, shared-plane stock/fused alternation and
@@ -557,6 +580,25 @@ Before the512 bound, M3012/16384 took40.662/195.995ms; the bound reduces
 routing-table overhead while leaving all verify rungs unchanged. Local architecture and
 contention prevent extrapolation, but this is a regression risk, not a win.
 Tiny expert widths remain Marlin and cannot validate this full-shape TTFT.
+The ready single-file check is
+`problems/muse_moe_w4a16/cand_serving_prefill_diag.py` (95,106 bytes).
+Its scored kernel, both scored expert implementations and both preparation
+functions are AST-identical to `cand_v9_phase` (`ac9dd461f0294e34`); only
+prepare diagnostics change, preserving its fixed dispatch. The embedded serving
+CUDA/raw-dense ABI and bounded512 adapter compare against the image Marlin
+path plus the same BF16-output post-expert norm/weighted sum. Router-generated
+skew follows the decode-layer5354 residual-stream/router construction; each
+fresh sample rotates the busiest EP8 range to local32. Both sides use changed
+inputs, swapped order, a1GiB L2 flush, CUDA graphs and20 median samples.
+Diagnostics reject on failure without raising; the complete compact shape
+summary prints last in prepare. Local sm_120 prepare10.3s; all5 scored tests
+pass (max relative L2 0.004724), all7 diagnostic shapes pass eager/graph and
+fresh-input comparisons (max relative L2 0.00576, worst row0.00688,
+maxabs0.00879). Local microseconds Marlin/V9:
+257:330/521, 320:416/604, 384:454/719, 448:490/1000,
+512:549/1110, 1024:922/4710, 2048:4120/9470.
+These are local screens, not an H200 ordering or a decision on the shipping
+bound. H200 receipt and full-model TTFT remain the gate; no judge run launched.
 The owner requested V9 instead of grouped at all M>=256; grouped is bypassed,
 and this limitation is explicit rather than silently restoring that losing path.
 

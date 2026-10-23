@@ -299,10 +299,9 @@ def _all_run(data,state,config):
         w=state['router_hi'] if layer=='router' else state[layer]
         lo=state['router_lo'] if layer=='router' else w
         mod.skinny(w,lo,x,out,n,nt,tr,u,wn,wk,ks,layer=='router',xp,ld)
-    elif tag in ('pair','old'):
+    elif tag=='pair':
         w=state['router_pair'] if layer=='router' else state[layer]
-        call=mod.hopper if tag=='pair' else mod.old_hopper
-        call(w,x,out,*state['scratch'][key],*config[1:])
+        mod.hopper(w,x,out,*state['scratch'][key],*config[1:])
     elif tag=='legacy_lt':
         mod.lt_run(state[layer],x,out,state['legacy_workspace'],state['legacy_codes'][key],config[1])
     elif tag=='lt':
@@ -330,8 +329,8 @@ def _all_variants(state,layer,m,n,k,props):
     key=(layer,m,n,k)
     yield ('incumbent',)
     old=H200_WINNERS.get((layer,m))
-    if _hopper() and old:
-        yield ('legacy_lt',old[1]) if old[0]=='lt' else ('old',)+old
+    if _hopper() and old and old[0]=='lt':
+        yield ('legacy_lt',old[1])
     if layer!='router':
         yield ('torch',0);yield ('torch',1)
         if m==1:
@@ -444,8 +443,7 @@ def prepare(weights: Weights):
             old=H200_WINNERS.get((layer,m))
             if _hopper() and old and old[0]=='lt':
                 codes=state['mod'].lt_options(state[layer],x,dummy)
-                if old[1]>=codes.shape[0]:raise RuntimeError('receipt Lt ordinal unavailable')
-                state['legacy_codes'][key]=codes
+                if old[1]<codes.shape[0]:state['legacy_codes'][key]=codes  # else its variant is rejected below
             baseline,base_out=_graph(lambda:_all_run(data,state,('incumbent',)))
             trials=[];seen=set()
             for config in _all_variants(state,layer,m,n,k,props):
@@ -458,8 +456,8 @@ def prepare(weights: Weights):
                     _all_check(out,expected[0],probes,layer,config)
                     us=_all_measure([baseline,graph],x,banks,flush,2)[1]
                     _all_check(out,expected[0],probes,layer,config)
-                except RuntimeError as e:
-                    print('ALL_REJECT',str(e).splitlines()[0][:200],flush=True);continue
+                except Exception as e:
+                    print('ALL_REJECT',config,type(e).__name__,str(e).splitlines()[0][:200] if str(e) else '',flush=True);continue
                 trials.append((us,config))
             trials.sort(key=lambda v:v[0]);total_trials+=len(trials)
             # Retain best per family as well as global finalists, so a coarse noisy
@@ -469,14 +467,23 @@ def prepare(weights: Weights):
                 if len(selected)<9 or config[0] not in families:
                     if config not in selected:selected.append(config)
                     families.add(config[0])
-            graphs=[baseline];outputs=[base_out]
+            graphs=[baseline];outputs=[base_out];finalists=[('incumbent',)]
             for config in selected[1:]:
-                graph,out=_graph(lambda c=config:_all_run(data,state,c));graphs.append(graph);outputs.append(out)
+                try:
+                    graph,out=_graph(lambda c=config:_all_run(data,state,c))
+                except Exception as e:
+                    print('ALL_REJECT finalist',config,type(e).__name__,str(e).splitlines()[0][:200] if str(e) else '',flush=True);continue
+                graphs.append(graph);outputs.append(out);finalists.append(config)
+            selected=finalists
             scores=_all_measure(graphs,x,banks,flush,12)
             for seed in range(3):
                 x.copy_(banks[seed])
-                for graph,out,config in zip(graphs,outputs,selected):
-                    graph.replay();_all_check(out,expected[seed],probes,layer,config)
+                for i,(graph,out,config) in enumerate(zip(graphs,outputs,selected)):
+                    graph.replay()
+                    if i==0:_all_check(out,expected[seed],probes,layer,config);continue  # the incumbent must hold
+                    try:_all_check(out,expected[seed],probes,layer,config)
+                    except Exception as e:
+                        print('ALL_REJECT finalist',config,type(e).__name__,str(e).splitlines()[0][:200] if str(e) else '',flush=True);scores[i]=float('inf')
             best=min(range(len(scores)),key=scores.__getitem__)
             state['choices'][key]=selected[best]
             report.append((layer,m,selected[best],scores[best],scores[0],len(trials)))

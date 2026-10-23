@@ -1,28 +1,29 @@
-# Projections in decode and serving
+# Projection and DFlash compute handoff
 
-Serves: G3, G2; read [GOAL](../../docs/GOAL.md) and [CONSTRAINTS](../../docs/CONSTRAINTS.md).
-The fitted overall board takes max(decode, component composite): proj alone currently
-cannot move our rank. Put its winners inside decode and serving; top 50 needs ~1.54x decode.
-This round is solo, GPU0 only; the orchestrator sends and commits.
+Serves G1/G2; read [GOAL](../../docs/GOAL.md), [CONSTRAINTS](../../docs/CONSTRAINTS.md).
+Proj alone cannot move the fitted overall rank; its kernels serve decode and serving.
+Solo, GPU0 only. Jihoon/orchestrator sends and commits; this thread did neither.
 
-Ready: **`../muse_decode_layer/cand_r3_proj.py`**, based on frozen autotune-q1 `099ee216…`.
-It tunes 24 projection keys at T=1/8/16/32/128/256: qkv_gate, o, pool_router and unpooler/slice.
-Ported: skinny/GEMV winners, one-pass hi+lo router, mixed pooler/router, strided pooler+router,
-TMA/WGMMA direct/last-CTA/DSMEM/Stream-K, and all checked Lt TN/NN/split-K algorithms.
-Projection trials include the next consumer; every projection preserves `(partials, splits)`.
-Two fresh inputs must agree within 1% with cuBLAS; failing trials are logged and dropped.
-FA3's 27 settings and PDL remain tunable, with a shared 240 s trial deadline.
+Ready next: **`cand_dflash_diag.py`**, frozen **`9b4fae2f…`**; full SHA in NEXT_CHECKS.
+Scored source/dispatch remains byte-identical f3786341611f4f1f (`cand_fused_select.py`).
+Prepare separately measures TP8 DFlash dense shapes and stock-versus-fused glue:
+cold128MiB, fresh inputs, graphs, 20 pairs, exact stock guard, reject/log errors.
+225s diagnostic deadline leaves 15s below the task's 240s limit; compact results print last.
+Local **sm_120**: 9/9 official tests, 30/30 graph shapes, 45.85s prepare;
+all48 diagnostic comparisons complete with no case rejection or budget skip.
+Serving module: `layers/muse_dflash.py`; unchanged released BF16 drafter weights.
+Tuned 2D dense kernels, exact two-tap/group16 convolution, selector input fusion, unary.
+7 unit tests: 464 exact graph comparisons +464 stock repeats, 14 forced Hopper ABI cases.
+16 pointwise SM90 variants and the dense SM90a utility compile; execution unverified.
 
-New complete-layer H200 evidence: pure V9 `0e94268cf5654012` **1.427904x**;
-grouped dispatch `2ad75c19cb514f5c` **1.265668x**, losing heavily at verify32.
-Use proven V9 throughout this projection experiment; synthetic MoE timing misranked that path.
-Local **sm_120**: **13/13 tests, 12/12 graphs, 29.05 s prepare**, no trial rejections.
-Additional admission: **2,742** native configurations ×3 fresh graph replays, **730** forced
-Hopper ABI cases (including FA3 tuple returns/qkv tuples), **16** injected rejections, sm_90a build.
-H200 correctness, selected projections, speedup and cold prepare time remain unverified.
+[Full inventory](../../docs/reference/muse_dflash.md): M=8C, prediction P=7C;
+QKV1280, o K1024, gate/up7168, down K3584, conv coefficients2048, head25256/rank.
+Old562us/234us opportunity is stale: FC split already wired, coefficient GEMMs omitted.
+New structural model saving is **0.006ms/step at C1/4/16/32**, plus unmeasured dense/glue.
+Strided selector hidden stays stock bmm; flattening changes BF16 results.
+Serving lane wires only H200 winners and checks full-model agreement, memory and TTFT.
 
-Standalone evidence remains in [FINDINGS](../../docs/FINDINGS.md#projection-evidence-and-next-experiment-g3-g2):
-board **1.181998x**, router m128/256 **10.133/11.792 us**; small-m router ~**6.1 us**.
-Only `cand_portfolio_all.py` was sent; the other broad portfolios are subsets for this task.
-Builders now reject coarse/finalist/layout failures and stop trials after 240 s; queued sources stay frozen.
-[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md) owns hashes, queue state, validation commands and the next send.
+Receipt `3afea80c527c4969` failed prepare: missing `_AllModule.old_hopper`; no score.
+Do not reuse that source's results as a passing portfolio. The orchestrator owns its fix.
+Decode `cand_r3_proj.py` was accepted/committed24d577c; decode lane owns subsequent work.
+[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md) owns ready hashes, validation and receipt follow-up.

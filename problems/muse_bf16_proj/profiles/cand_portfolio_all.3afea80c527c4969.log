@@ -1,0 +1,44 @@
+ALL compile_repack_s=17.71 h200={'job': 'dd989ef2d76147e7', 'source_sha256': '57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e'}
+ALL_LT router m=1 nn=0 kind=1 heuristics=8 expanded=48
+ALL_LT router m=1 nn=0 kind=2 heuristics=8 expanded=47
+ALL_LT router m=1 nn=1 kind=1 heuristics=6 expanded=36
+ALL_LT router m=1 nn=1 kind=2 heuristics=8 expanded=41
+ALL_CHOICE router m=1 trials=368 chosen=('skin', 1, 1, 4, 1, 8, 4, 1, 0) event_us=10.978 incumbent_event_us=11.200 top=[(10.781187257360193, ('incumbent',)), (11.110423283709357, ('skin', 1, 1, 4, 2, 4, 8, 1, 0)), (11.137805526158445, ('skin', 1, 1, 4, 1, 4, 8, 1, 0))] elapsed_s=18.90
+ALL_LT router m=8 nn=0 kind=1 heuristics=8 expanded=48
+ALL_LT router m=8 nn=0 kind=2 heuristics=8 expanded=47
+ALL_LT router m=8 nn=1 kind=1 heuristics=6 expanded=36
+ALL_LT router m=8 nn=1 kind=2 heuristics=8 expanded=28
+ALL_CHOICE router m=8 trials=355 chosen=('skin', 1, 1, 4, 2, 4, 8, 1, 0) event_us=11.192 incumbent_event_us=11.264 top=[(11.213348839144787, ('incumbent',)), (11.383055773540335, ('skin', 1, 1, 4, 1, 4, 8, 1, 0)), (11.399193055437344, ('skin', 1, 1, 4, 2, 4, 8, 1, 0))] elapsed_s=19.87
+ALL_LT router m=16 nn=0 kind=1 heuristics=8 expanded=48
+ALL_LT router m=16 nn=0 kind=2 heuristics=8 expanded=47
+ALL_LT router m=16 nn=1 kind=1 heuristics=6 expanded=36
+ALL_LT router m=16 nn=1 kind=2 heuristics=8 expanded=28
+ALL_CHOICE router m=16 trials=355 chosen=('skin', 2, 1, 4, 1, 8, 4, 1, 0) event_us=11.567 incumbent_event_us=11.744 top=[(11.687357384714357, ('skin', 2, 1, 4, 2, 4, 8, 1, 0)), (11.753929665505138, ('skin', 2, 1, 4, 1, 8, 4, 1, 0)), (11.97116484595206, ('skin', 2, 1, 4, 1, 4, 8, 1, 0))] elapsed_s=20.83
+ALL_LT router m=32 nn=0 kind=1 heuristics=8 expanded=48
+ALL_LT router m=32 nn=0 kind=2 heuristics=8 expanded=42
+ALL_LT router m=32 nn=1 kind=1 heuristics=6 expanded=36
+ALL_LT router m=32 nn=1 kind=2 heuristics=8 expanded=16
+ALL_CHOICE router m=32 trials=339 chosen=('pair', 64, 128, 4, 1, 16, 256) event_us=12.535 incumbent_event_us=12.864 top=[(12.818065022655318, ('pair', 64, 128, 4, 1, 16, 256)), (12.851938753862292, ('pair', 64, 128, 2, 1, 16, 256)), (12.853950825021558, ('skin', 4, 1, 4, 1, 8, 4, 0, 0))] elapsed_s=21.78
+ALL_LT router m=128 nn=0 kind=1 heuristics=8 expanded=48
+ALL_LT router m=128 nn=0 kind=2 heuristics=8 expanded=42
+ALL_LT router m=128 nn=1 kind=1 heuristics=8 expanded=48
+ALL_LT router m=128 nn=1 kind=2 heuristics=8 expanded=42
+Traceback (most recent call last):
+  File "/tmp/muse_bf16_proj-z1tw0dnv/run/worker.py", line 423, in child_main
+    send(_setup_op(msg, module, state, sync, perf))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/muse_bf16_proj-z1tw0dnv/run/worker.py", line 322, in _setup_op
+    state["prep"] = prepare(weights)
+                    ^^^^^^^^^^^^^^^^
+  File "/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py", line 457, in prepare
+    graph,out=_graph(lambda c=config:_all_run(data,state,c))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py", line 168, in _graph
+    fn()
+  File "/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py", line 457, in <lambda>
+    graph,out=_graph(lambda c=config:_all_run(data,state,c))
+                                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py", line 304, in _all_run
+    call=mod.hopper if tag=='pair' else mod.old_hopper
+                                        ^^^^^^^^^^^^^^
+AttributeError: '_AllModule' object has no attribute 'old_hopper'
