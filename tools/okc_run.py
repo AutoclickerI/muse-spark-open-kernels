@@ -130,8 +130,12 @@ def next_reset() -> float:
 def in_flight() -> list:
     """Our runs the judge hasn't finished (queued or running), oldest first: `okc jobs` is the authority,
     so runs sent by other tools or by processes that died still count."""
-    jobs, _ = okc_json("jobs")
-    live = [j for j in (jobs or []) if isinstance(j, dict) and j.get("status") in ("queued", "running")]
+    jobs, proc = okc_json("jobs")
+    while not isinstance(jobs, list):  # a failed call is not an empty judge: sending on it overfills the cap
+        print(f"okc jobs failed ({proc.returncode}); asking again in 15 s", flush=True)
+        time.sleep(15)
+        jobs, proc = okc_json("jobs")
+    live = [j for j in jobs if isinstance(j, dict) and j.get("status") in ("queued", "running")]
     return sorted(live, key=lambda j: float(j.get("submitted_at") or 0))
 
 
