@@ -40,6 +40,13 @@ def sent_hashes() -> set:
     seen = {hashlib.sha256(p.read_bytes()).hexdigest() for p in REPO.glob("runs/*/*.py")}
     for p in REPO.glob("runs/pending/*.json"):
         seen.add(json.loads(p.read_text()).get("sha256"))
+    for w in REPO.glob("runs/waiting/*.json"):  # sends still in okc_run's local queue
+        try:
+            argv = Path(f"/proc/{w.stem}/cmdline").read_bytes().split(b"\0")
+            f = REPO / argv[argv.index(b"tools/okc_run.py") + 2].decode()
+            seen.add(hashlib.sha256(f.read_bytes()).hexdigest())
+        except (OSError, ValueError, IndexError):
+            continue
     return seen
 
 
