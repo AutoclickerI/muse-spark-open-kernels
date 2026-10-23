@@ -108,6 +108,43 @@ the 753/3012/16384-token layer screen; it is not a duplicate port to make. Dense
 the drafter FC split, and finalize-AR fusion have smaller remaining modeled savings and should follow those
 two checks.
 
+### Per-step breakdown and unowned work
+
+The following is the candidate step decomposition at the four serving concurrency rungs. Target-layer rows
+are measured from the `cand_moe7` verify profile and its receipt wall times; the c=4 component shares are
+rescaled to the receipt-interpolated layer total so the rows add exactly. All-reduce rows, DFlash, and the
+LM-head row are the `sim.serving` practical model using the measured layer and prefill receipts. The model
+attributes the two target-layer all-reduces separately to attention output and experts; pooler/router and
+unpooler all-gathers are zero in this composition because `shard_dense` is disabled. Zero means unpriced or
+excluded from the model, not that the runtime operation is free.
+
+| Step component (source) | c=1 us | c=4 us | c=16 us | c=32 us |
+|---|---:|---:|---:|---:|
+| Target MoE kernels (receipt profile) | 4,126.3 | 8,590.7 | 17,040.9 | 28,348.7 |
+| Target attention kernels (receipt profile) | 1,199.6 | 2,267.9 | 4,085.4 | 7,141.4 |
+| Target projections (receipt profile) | 2,290.5 | 3,084.6 | 3,957.8 | 5,195.1 |
+| Target glue (receipt profile residual) | 960.4 | 970.5 | 934.4 | 1,561.2 |
+| Attention-output all-reduce (sim model) | 370.4 | 458.8 | 812.1 | 1,283.2 |
+| Expert all-reduce (sim model) | 370.4 | 458.8 | 812.1 | 1,283.2 |
+| Pooler/router/unpooler all-gathers (sim model; disabled) | 0 | 0 | 0 | 0 |
+| DFlash kernels (sim model) | 562.2 | 562.2 | 562.2 | 562.2 |
+| DFlash all-reduce (sim model) | 59.7 | 74.0 | 131.0 | 207.0 |
+| LM heads (sim model) | 97.3 | 97.3 | 97.3 | 97.3 |
+| Sampling and verify bookkeeping (not priced) | 0 | 0 | 0 | 0 |
+| Graph replay (included in receipt wall) | 0 | 0 | 0 | 0 |
+| CPU/scheduler (sim host model; not priced) | 0 | 0 | 0 | 0 |
+| **Candidate step total** | **10,037.0** | **16,564.8** | **28,433.2** | **45,679.2** |
+
+The largest unowned opportunity is the collective bucket: the modeled attention-output plus expert
+all-reduces are 0.74, 0.92, 1.62, and 2.57 ms at c=1/4/16/32, before any overlap. The bound permits recovery
+through NVLS/multicast, fused all-gathers, and compute/collective overlap, so this is ranked first even though
+the expert path's V9 kernel is owned by the MoE lane. The attention-output all-reduce and cross-layer overlap
+remain unowned. DFlash's own kernels plus its modeled all-reduce are next (0.62, 0.64, 0.69, 0.77 ms): they
+run every step and are safe to optimize without changing weights. LM-head work is about 0.10 ms; sampling
+and CPU/scheduler time need a trace before a recovery factor can be assigned. The implemented change below
+removes one DFlash TP collective from the dense greedy fallback; it is a targeted part of the second-ranked
+bucket and leaves the default graph sampler and output math unchanged.
+
 
 ## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.

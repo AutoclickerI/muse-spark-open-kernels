@@ -21,3 +21,4 @@ Using receipt times, achieved bandwidth is 2.14/3.11/3.08/3.06/2.17/1.50 TB/s;
 P8 implementation range is 3.0–3.15 TB/s and spec is 4.8 TB/s. Tensor work is 19.85/39.38 us
 at M128/M256, below HBM time. Weighted excess over 3.075 TB/s is largest at verify-32
 (~323 weighted us), then verify-16 (~138); this round probed a 3-stage V9 ring at M128.
+Clock64 trace with H200-like local route counts (diagnostic sm120): M128 median CTA route 7.8K, phase1 0.799M, phase2 0.396M, barrier 70.5K cycles, 297 norm atomics; M256 route 6.4K, phase1 0.744M, phase2 0.366M, barrier 47.8K, 573 atomics. Tile counts were 101/50 and 166/83 per CTA; atomics aggregate to roughly 280–300 per routed pair. A CTA-private `ss_partial[cta,pair]` reduction (V16) passed correctness but fell to 1.192x local GM versus V12 1.275x, so serving stays unchanged. Final-combine timestamps had a clock artifact and remain unclaimed.
