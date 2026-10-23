@@ -1,0 +1,15 @@
+# FA3 verify tuning
+- Candidate: `../cand_fa3_tune.py`, copied from submission; q_len=1 custom CUDA and dispatch computation are unchanged.
+- Sweep: num_splits `{0,1,2,4,8,16,32,64,128}` × pack_gqa `{None,True,False}`; 27 settings for each batch1/16/32 × sliding/full verify shape (q_len8, Hq16/Hkv2, D64, page1, ctx80K).
+- Synthetic batched lengths span74K–86K with scattered pages; allocation bounds match the fixed scored shapes; no runtime inputs enter prepare.
+- Each setting warms twice, checks finite/default agreement, then measures3 cold-L2 graph replays with internal CUDA events, including fresh metadata and the full verify path; lowest median wins. Unsupported settings are logged explicitly.
+- `prepare()` is idempotent and invoked at import because attention has no prepare(weights) hook; it prints one `FA3_TUNE` line per shape with winner, all timings and rejected settings.
+- Every verify call invokes installed `get_scheduler_metadata` using current GPU cache_seqlens/cu_seqlens_q, chosen splits/pack, page size, dtype, causal/window flags; maxK is page_table width×page_size, with no host read of lengths.
+- Metadata and matching knobs are passed to `flash_attn_with_kvcache`; only synthetic shape→choice tuples persist. Untuned nearby shapes use0/None and still rebuild metadata each call.
+- FP8 E4M3 Q is already used by submission and SGLang's accepted baseline; installed flash_ops requires matching Q/K/V dtype, so BF16 Q with FP8 KV is not a second valid variant.
+- GPU0 sm_120 screen:16/16 tests and12/12 graph shapes pass; real FA3 is skipped explicitly, so local timings measure the inherited portable kernel, not tuned FA3.
+- Forced Hopper glue: ABI signatures bound against installed functions; all6×27 settings/captures execute through stand-ins. Four correctness cases cover sliding/full, TP/DP, page1/64, scale1/64; fresh-input graph replay updates metadata; decode bypasses both FA3 APIs.
+- Inherited custom CUDA compiles sm_90a (CUDA13); FA3 and its scheduler remain the installed Hopper binary, unexecuted locally.
+- Evidence: `runs/screen/fa3_tune/{local.log,muse_attention_decode.cand_fa3_tune.json,glue.log,glue.json,check_glue.py,api_signatures.txt,custom.sm90a.log}`.
+- Frozen SHA256: `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd`.
+- Remaining: actual H200 FA3/scheduler capture, valid knob combinations, winners, speedup and import/tuning wall time are unmeasured. No remote run or commit; other attention-lane files were not edited.
