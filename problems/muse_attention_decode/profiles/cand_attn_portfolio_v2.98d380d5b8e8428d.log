@@ -1,0 +1,151 @@
+0.03
+PORTFOLIO_REJECT 16 0 xqa_fp8_pv (5, 4) agreement 0.0542011 > 0.03
+PORTFOLIO_REJECT 16 0 xqa_fp8_pv (5, 8) agreement 0.0541239 > 0.03
+PORTFOLIO_SHAPE 16 0 fa3 (0, None) us 208.416 reps [210.816, 208.416, 207.424] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (0, True) us 209.824 reps [211.296, 208.352, 209.824] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (0, False) us 720.704 reps [720.704, 722.112, 717.088] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (1, None) us 728.64 reps [730.144, 722.24, 728.64] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (1, True) us 730.848 reps [731.36, 729.152, 730.848] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (1, False) us 723.712 reps [773.376, 722.816, 723.712] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (2, None) us 381.536 reps [381.536, 381.664, 376.8] l2 0.006702
+PORTFOLIO_SHAPE 16 0 fa3 (2, True) us 378.656 reps [403.52, 378.656, 377.216] l2 0.006702
+PORTFOLIO_SHAPE 16 0 fa3 (2, False) us 723.936 reps [766.112, 723.936, 719.936] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (4, None) us 211.84 reps [229.984, 211.84, 208.864] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (4, True) us 209.6 reps [228.768, 209.6, 208.32] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (4, False) us 727.36 reps [763.424, 726.752, 727.36] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (8, None) us 209.024 reps [229.536, 207.456, 209.024] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (8, True) us 210.368 reps [227.488, 210.368, 208.768] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (8, False) us 724.992 reps [766.368, 724.992, 717.504] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (16, None) us 209.184 reps [228.384, 209.184, 209.056] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (16, True) us 208.032 reps [229.952, 207.456, 208.032] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (16, False) us 724.064 reps [761.44, 723.648, 724.064] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (32, None) us 208.48 reps [230.144, 208.48, 208.224] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (32, True) us 208.448 reps [230.368, 208.032, 208.448] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (32, False) us 727.52 reps [760.544, 727.52, 725.504] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (64, None) us 208.192 reps [230.048, 208.192, 207.008] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (64, True) us 208.8 reps [229.12, 208.8, 208.288] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (64, False) us 728.768 reps [755.904, 725.92, 728.768] l2 0.009778
+PORTFOLIO_SHAPE 16 0 fa3 (128, None) us 211.712 reps [229.6, 211.712, 208.96] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (128, True) us 209.248 reps [230.464, 209.024, 209.248] l2 0.0
+PORTFOLIO_SHAPE 16 0 fa3 (128, False) us 719.008 reps [765.44, 717.856, 719.008] l2 0.009778
+PORTFOLIO_PLAN 16 0 selected ('fa3', (16, True)) best_us 208.032 accepted 27 candidates 59 all_us fa3:(0, None):208.42;fa3:(0, True):209.82;fa3:(0, False):720.70;fa3:(1, None):728.64;fa3:(1, True):730.85;fa3:(1, False):723.71;fa3:(2, None):381.54;fa3:(2, True):378.66;fa3:(2, False):723.94;fa3:(4, None):211.84;fa3:(4, True):209.60;fa3:(4, False):727.36;fa3:(8, None):209.02;fa3:(8, True):210.37;fa3:(8, False):724.99;fa3:(16, None):209.18;fa3:(16, True):208.03;fa3:(16, False):724.06;fa3:(32, None):208.48;fa3:(32, True):208.45;fa3:(32, False):727.52;fa3:(64, None):208.19;fa3:(64, True):208.80;fa3:(64, False):728.77;fa3:(128, None):211.71;fa3:(128, True):209.25;fa3:(128, False):719.01
+PORTFOLIO_REJECT 32 2048 decode_math (1,) agreement 0.0815773 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math (2,) agreement 0.0815774 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math (4,) agreement 0.081577 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math (8,) agreement 0.081577 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math_twog (1,) agreement 0.0815773 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math_twog (2,) agreement 0.0815774 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math_twog (4,) agreement 0.081577 > 0.03
+PORTFOLIO_REJECT 32 2048 decode_math_twog (8,) agreement 0.081577 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 5, 1) agreement 0.0501511 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 5, 2) agreement 0.0501505 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 5, 4) agreement 0.05015 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 5, 8) agreement 0.0501503 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 7, 1) agreement 0.0501511 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 7, 2) agreement 0.0501505 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 7, 4) agreement 0.05015 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_group ('group', 7, 8) agreement 0.0501503 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 3, 1) agreement 0.050163 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 3, 2) agreement 0.0501618 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 3, 4) agreement 0.050162 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 3, 8) agreement 0.0501616 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 4, 1) agreement 0.050163 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 4, 2) agreement 0.0501618 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 4, 4) agreement 0.050162 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_warp ('warp', 4, 8) agreement 0.0501616 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (3, 1) agreement 0.0504641 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (3, 2) agreement 0.0503562 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (3, 4) agreement 0.0502782 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (3, 8) agreement 0.0502414 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (5, 1) agreement 0.0504641 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (5, 2) agreement 0.0503562 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (5, 4) agreement 0.0502782 > 0.03
+PORTFOLIO_REJECT 32 2048 xqa_fp8_pv (5, 8) agreement 0.0502414 > 0.03
+PORTFOLIO_SHAPE 32 2048 fa3 (0, None) us 40.544 reps [42.624, 40.544, 39.776] l2 0.0
+PORTFOLIO_SHAPE 32 2048 fa3 (0, True) us 40.288 reps [43.328, 39.616, 40.288] l2 0.0
+PORTFOLIO_SHAPE 32 2048 fa3 (0, False) us 45.632 reps [51.808, 45.632, 44.992] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (1, None) us 43.936 reps [49.12, 43.936, 42.976] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (1, True) us 44.736 reps [47.744, 44.736, 44.096] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (1, False) us 45.888 reps [49.056, 45.888, 43.264] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (2, None) us 40.192 reps [44.896, 39.296, 40.192] l2 0.0
+PORTFOLIO_SHAPE 32 2048 fa3 (2, True) us 40.928 reps [42.208, 40.928, 39.328] l2 0.0
+PORTFOLIO_SHAPE 32 2048 fa3 (2, False) us 45.088 reps [49.6, 45.088, 45.088] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (4, None) us 45.632 reps [50.944, 45.632, 44.256] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (4, True) us 45.568 reps [51.072, 45.568, 45.12] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (4, False) us 46.016 reps [49.376, 46.016, 43.488] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (8, None) us 45.472 reps [50.304, 44.544, 45.472] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (8, True) us 45.44 reps [51.808, 45.024, 45.44] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (8, False) us 44.608 reps [48.064, 44.608, 44.384] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (16, None) us 45.632 reps [49.056, 45.632, 44.448] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (16, True) us 45.792 reps [48.576, 44.64, 45.792] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (16, False) us 46.272 reps [51.712, 46.272, 44.576] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (32, None) us 46.304 reps [51.872, 46.304, 44.448] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (32, True) us 47.424 reps [49.408, 47.424, 46.432] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (32, False) us 45.728 reps [49.824, 45.728, 44.48] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (64, None) us 46.24 reps [49.056, 45.344, 46.24] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (64, True) us 46.464 reps [49.504, 46.464, 45.376] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (64, False) us 45.344 reps [49.024, 44.192, 45.344] l2 0.007013
+PORTFOLIO_SHAPE 32 2048 fa3 (128, None) us 46.432 reps [51.296, 46.208, 46.432] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (128, True) us 47.104 reps [49.312, 47.104, 46.24] l2 0.002401
+PORTFOLIO_SHAPE 32 2048 fa3 (128, False) us 45.664 reps [48.448, 45.664, 44.512] l2 0.007013
+PORTFOLIO_PLAN 32 2048 selected ('fa3', (2, None)) best_us 40.192 accepted 27 candidates 59 all_us fa3:(0, None):40.54;fa3:(0, True):40.29;fa3:(0, False):45.63;fa3:(1, None):43.94;fa3:(1, True):44.74;fa3:(1, False):45.89;fa3:(2, None):40.19;fa3:(2, True):40.93;fa3:(2, False):45.09;fa3:(4, None):45.63;fa3:(4, True):45.57;fa3:(4, False):46.02;fa3:(8, None):45.47;fa3:(8, True):45.44;fa3:(8, False):44.61;fa3:(16, None):45.63;fa3:(16, True):45.79;fa3:(16, False):46.27;fa3:(32, None):46.30;fa3:(32, True):47.42;fa3:(32, False):45.73;fa3:(64, None):46.24;fa3:(64, True):46.46;fa3:(64, False):45.34;fa3:(128, None):46.43;fa3:(128, True):47.10;fa3:(128, False):45.66
+PORTFOLIO_REJECT 32 0 decode_math (1,) agreement 0.0915669 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math (2,) agreement 0.0915658 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math (4,) agreement 0.0915656 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math (8,) agreement 0.842297 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math_twog (1,) agreement 0.0915669 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math_twog (2,) agreement 0.0915658 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math_twog (4,) agreement 0.0915656 > 0.03
+PORTFOLIO_REJECT 32 0 decode_math_twog (8,) agreement 0.842297 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 5, 1) agreement 0.0558941 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 5, 2) agreement 0.0558922 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 5, 4) agreement 0.0558925 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 5, 8) agreement 0.0558918 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 7, 1) agreement 0.0558941 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 7, 2) agreement 0.0558922 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 7, 4) agreement 0.0558925 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_group ('group', 7, 8) agreement 0.0558918 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 3, 1) agreement 0.0559137 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 3, 2) agreement 0.0559132 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 3, 4) agreement 0.0559098 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 3, 8) agreement 0.0559122 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 4, 1) agreement 0.0559137 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 4, 2) agreement 0.0559132 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 4, 4) agreement 0.0559098 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_warp ('warp', 4, 8) agreement 0.0559122 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (3, 1) agreement 0.0562539 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (3, 2) agreement 0.0560983 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (3, 4) agreement 0.0560134 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (3, 8) agreement 0.0560154 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (5, 1) agreement 0.0562539 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (5, 2) agreement 0.0560983 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (5, 4) agreement 0.0560134 > 0.03
+PORTFOLIO_REJECT 32 0 xqa_fp8_pv (5, 8) agreement 0.0560154 > 0.03
+PORTFOLIO_SHAPE 32 0 fa3 (0, None) us 393.024 reps [435.2, 391.712, 393.024] l2 0.0
+PORTFOLIO_SHAPE 32 0 fa3 (0, True) us 394.08 reps [432.736, 394.08, 392.64] l2 0.0
+PORTFOLIO_SHAPE 32 0 fa3 (0, False) us 736.416 reps [740.256, 736.416, 733.056] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (1, None) us 747.136 reps [788.096, 739.904, 747.136] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (1, True) us 747.104 reps [789.696, 739.2, 747.104] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (1, False) us 749.632 reps [784.64, 749.632, 739.328] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (2, None) us 393.696 reps [429.76, 393.28, 393.696] l2 0.0
+PORTFOLIO_SHAPE 32 0 fa3 (2, True) us 394.912 reps [437.472, 393.856, 394.912] l2 0.0
+PORTFOLIO_SHAPE 32 0 fa3 (2, False) us 735.168 reps [778.016, 735.168, 735.168] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (4, None) us 390.272 reps [431.904, 389.952, 390.272] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (4, True) us 391.872 reps [427.328, 391.488, 391.872] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (4, False) us 736.32 reps [782.368, 735.072, 736.32] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (8, None) us 389.664 reps [430.592, 389.056, 389.664] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (8, True) us 391.808 reps [432.192, 391.808, 390.72] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (8, False) us 732.704 reps [781.984, 732.704, 731.616] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (16, None) us 389.92 reps [432.16, 389.92, 388.768] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (16, True) us 389.472 reps [434.336, 389.248, 389.472] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (16, False) us 736.192 reps [780.992, 736.192, 731.872] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (32, None) us 389.696 reps [430.016, 389.696, 389.28] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (32, True) us 391.552 reps [430.176, 391.552, 389.344] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (32, False) us 735.872 reps [784.928, 734.144, 735.872] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (64, None) us 392.288 reps [397.152, 392.288, 390.496] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (64, True) us 393.504 reps [394.976, 393.504, 391.424] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (64, False) us 742.688 reps [743.04, 740.544, 742.688] l2 0.008187
+PORTFOLIO_SHAPE 32 0 fa3 (128, None) us 393.472 reps [393.472, 393.792, 392.032] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (128, True) us 391.392 reps [395.456, 390.464, 391.392] l2 0.001278
+PORTFOLIO_SHAPE 32 0 fa3 (128, False) us 737.504 reps [737.504, 734.304, 738.848] l2 0.008187
+PORTFOLIO_PLAN 32 0 selected ('fa3', (16, True)) best_us 389.472 accepted 27 candidates 59 all_us fa3:(0, None):393.02;fa3:(0, True):394.08;fa3:(0, False):736.42;fa3:(1, None):747.14;fa3:(1, True):747.10;fa3:(1, False):749.63;fa3:(2, None):393.70;fa3:(2, True):394.91;fa3:(2, False):735.17;fa3:(4, None):390.27;fa3:(4, True):391.87;fa3:(4, False):736.32;fa3:(8, None):389.66;fa3:(8, True):391.81;fa3:(8, False):732.70;fa3:(16, None):389.92;fa3:(16, True):389.47;fa3:(16, False):736.19;fa3:(32, None):389.70;fa3:(32, True):391.55;fa3:(32, False):735.87;fa3:(64, None):392.29;fa3:(64, True):393.50;fa3:(64, False):742.69;fa3:(128, None):393.47;fa3:(128, True):391.39;fa3:(128, False):737.50
