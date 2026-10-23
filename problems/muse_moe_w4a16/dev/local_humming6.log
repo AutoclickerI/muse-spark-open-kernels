@@ -1,0 +1,23 @@
+muse_moe_w4a16: problems/muse_moe_w4a16/cand_humming6.py
+LOCAL screen on NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (sm_120); the judge runs an H200 (sm_90), so these timings are not its timings
+prepare: 50.6 s
+tests (5):
+  PASS  bs 4, sharding ep8: relative L2 error 5.884e-03 (worst row 5.936e-03)
+  PASS  bs 33, sharding ep8: relative L2 error 4.760e-03 (worst row 6.462e-03)
+  PASS  bs 257, sharding ep8: relative L2 error 5.178e-03 (worst row 6.176e-03)
+  PASS  bs 128, sharding ep8, dist skewed: relative L2 error 4.869e-03 (worst row 6.179e-03)
+  PASS  bs 1, sharding ep8: relative L2 error 5.167e-03 (worst row 5.167e-03)
+timing 6 shapes, 20 replays a side, 3 input sets (graph replay fixed cost 4.1 us, subtracted):
+  ok    [decode 1] bs 1, sharding ep8: 61.2 us vs SGLang 88.1 us = 1.439x (IQR 1.410-1.509)
+  ok    [decode 16] bs 16, sharding ep8: 208.4 us vs SGLang 249.9 us = 1.199x (IQR 1.176-1.230)
+  ok    [decode 32] bs 32, sharding ep8: 373.3 us vs SGLang 385.1 us = 1.032x (IQR 1.021-1.040)
+  ok    [verify 1] bs 8, sharding ep8: 186.5 us vs SGLang 219.1 us = 1.175x (IQR 1.164-1.185)
+  ok    [verify 16] bs 128, sharding ep8: 463.5 us vs SGLang 442.0 us = 0.953x (IQR 0.939-0.968)
+  ok    [verify 32] bs 256, sharding ep8: 568.3 us vs SGLang 684.1 us = 1.204x (IQR 1.199-1.208)
+  load decode 1: 3674.0 us, 1.439x
+  load decode 16: 12502.3 us, 1.199x
+  load decode 32: 22396.2 us, 1.032x
+  load verify 1: 11192.5 us, 1.175x
+  load verify 16: 27812.9 us, 0.953x
+  load verify 32: 34097.2 us, 1.204x
+LOCAL speedup (geomean over loads): 1.157x  [not an H200 number]

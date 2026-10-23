@@ -1,0 +1,18 @@
+okc check muse_moe_w4a16 problems/muse_moe_w4a16/cand_humming2.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T090700Z",
+ "problem": "muse_moe_w4a16",
+ "mode": "check",
+ "job": "15912e7130f643ac",
+ "sha256": "5c5988ec098d51be69239b73b43ef0caa36b051431e2883e5edd18eb8d17e1e3",
+ "file": "problems/muse_moe_w4a16/cand_humming2.py",
+ "source": "runs/muse_moe_w4a16/20261023T090700Z_check_15912e7130f643ac.py",
+ "git": "98398fc+dirty",
+ "status": "done",
+ "speedup": 1.1746956035323313,
+ "interval": [
+  1.1570751694793462,
+  1.1923160375853161
+ ],
+ "note": "Humming2: fuse global-id mapping and deterministic padded routing into one CUDA launch; always fused Triton post-expert norm, removing small-batch torch fallback; all local tests and fresh graph timings passed"
+}

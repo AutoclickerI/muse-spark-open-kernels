@@ -1,0 +1,9 @@
+muse_moe_w4a16: problems/muse_moe_w4a16/cand_humming3.py
+LOCAL screen on NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (sm_120); the judge runs an H200 (sm_90), so these timings are not its timings
+prepare: 53.9 s
+tests (5):
+  PASS  bs 4, sharding ep8: relative L2 error 5.884e-03 (worst row 5.936e-03)
+  PASS  bs 33, sharding ep8: relative L2 error 4.756e-03 (worst row 6.421e-03)
+  PASS  bs 257, sharding ep8: relative L2 error 4.723e-03 (worst row 5.894e-03)
+  PASS  bs 128, sharding ep8, dist skewed: relative L2 error 4.747e-03 (worst row 5.237e-03)
+  PASS  bs 1, sharding ep8: relative L2 error 5.126e-03 (worst row 5.126e-03)

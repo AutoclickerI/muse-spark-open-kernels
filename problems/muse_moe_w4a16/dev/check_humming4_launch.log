@@ -1,0 +1,18 @@
+okc check muse_moe_w4a16 problems/muse_moe_w4a16/cand_humming4.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T092026Z",
+ "problem": "muse_moe_w4a16",
+ "mode": "check",
+ "job": "14545ac2e22f48d6",
+ "sha256": "f2df82a283d8f42f75b39ce881898daca6bedc4d582cf7581c47fa8aaced2613",
+ "file": "problems/muse_moe_w4a16/cand_humming4.py",
+ "source": "runs/muse_moe_w4a16/20261023T092026Z_check_14545ac2e22f48d6.py",
+ "git": "b577d66+dirty",
+ "status": "done",
+ "speedup": 1.1419101943794034,
+ "interval": [
+  1.1247815414637123,
+  1.1590388472950943
+ ],
+ "note": "Humming4: shape-based wider token tiles (8/16/32/64), narrower N tile for wide M to reduce hot-expert repeated weights; sm120 correctness/graphs pass; large local batches regress, Hopper wgmma tradeoff untested"
+}

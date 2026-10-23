@@ -1,0 +1,100 @@
+
+# A single launch maps global ids and builds padded expert-major route lists.
+_GLUE_CUDA = r"""
+#include <torch/extension.h>
+#include <ATen/cuda/CUDAContext.h>
+#include <cuda_runtime.h>
+__global__ void route_kernel(const int* ids, int* local_ids, int* sorted, int* experts,
+                             int* padded, int npairs, int start, int bm, int capacity) {
+  __shared__ int count[32], run[32], wc[8][33];
+  int tid=threadIdx.x, lane=tid&31, warp=tid>>5;
+  if(tid<32) count[tid]=0;
+  for(int i=tid;i<capacity;i+=256) sorted[i]=npairs;
+  for(int i=tid;i<(capacity+bm-1)/bm;i+=256) experts[i]=-1;
+  __syncthreads();
+  for(int i=tid;i<npairs;i+=256) {
+    int e=ids[i]-start;
+    if(e<0 || e>=32) e=-1;
+    local_ids[i]=e;
+    if(e>=0) atomicAdd(count+e,1);
+  }
+  __syncthreads();
+  if(warp==0) {
+    int n=count[lane], p=(n+bm-1)/bm*bm, off=p;
+    for(int d=1;d<32;d*=2) {
+      int v=__shfl_up_sync(~0u,off,d);
+      if(lane>=d) off+=v;
+    }
+    run[lane]=off-p;
+    for(int b=(off-p)/bm;b<off/bm;b++) experts[b]=lane;
+    if(lane==31) padded[0]=off;
+  }
+  __syncthreads();
+  for(int base=0;base<npairs;base+=256) {
+    wc[warp][lane]=0;
+    __syncthreads();
+    int i=base+tid, e=i<npairs?local_ids[i]:-1;
+    unsigned mk=__match_any_sync(~0u,e);
+    int r=__popc(mk&((1u<<lane)-1u));
+    if(e>=0 && r==0) wc[warp][e]=__popc(mk);
+    __syncthreads();
+    if(tid<32) {
+      int s=run[tid];
+      for(int w=0;w<8;w++) {int n=wc[w][tid];wc[w][tid]=s;s+=n;}
+      run[tid]=s;
+    }
+    __syncthreads();
+    if(e>=0) sorted[wc[warp][e]+r]=i;
+    __syncthreads();
+  }
+}
+void route(torch::Tensor ids, torch::Tensor local_ids, torch::Tensor sorted,
+           torch::Tensor experts, torch::Tensor padded, int64_t start, int64_t bm) {
+  route_kernel<<<1,256,0,at::cuda::getCurrentCUDAStream()>>>(
+    ids.data_ptr<int>(), local_ids.data_ptr<int>(), sorted.data_ptr<int>(),
+    experts.data_ptr<int>(), padded.data_ptr<int>(), ids.numel(), start, bm, sorted.numel());
+  C10_CUDA_KERNEL_LAUNCH_CHECK();
+}
+"""
+_GLUE_CPP = r"""
+#include <torch/extension.h>
+void route(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t);
+"""
+_GLUE_MOD = None
+
+
+def _glue_module():
+    global _GLUE_MOD
+    if _GLUE_MOD is None:
+        import hashlib
+        from torch.utils.cpp_extension import load_inline
+        tag = hashlib.sha1(_GLUE_CUDA.encode()).hexdigest()[:12]
+        _GLUE_MOD = load_inline(name="muse_moe_route_"+tag, cpp_sources=_GLUE_CPP,
+                               cuda_sources=_GLUE_CUDA, functions=["route"],
+                               extra_cuda_cflags=["-O3", "-std=c++20"], verbose=False)
+    return _GLUE_MOD
+
+
+def _route(data, block_m, module):
+    ids = data["topk_ids"].to(torch.int32).contiguous()
+    npairs = ids.numel()
+    capacity = npairs + 32 * (block_m-1) + block_m
+    local_ids = torch.empty_like(ids)
+    sorted_ids = torch.empty((capacity,), dtype=torch.int32, device=ids.device)
+    block_experts = torch.empty(((capacity+block_m-1)//block_m,), dtype=torch.int32, device=ids.device)
+    n_padded = torch.empty((1,), dtype=torch.int32, device=ids.device)
+    module.route(ids, local_ids, sorted_ids, block_experts, n_padded, data["config"]["local_start"], block_m)
+    return local_ids, sorted_ids, block_experts, n_padded
+
+
+def _combine(y, scores, norm_weight, local_ids):
+    from sglang.kernels.ops.muse_spark_v12.fused_post_expert_norm_weighted_sum_triton import (
+        _post_expert_norm_weighted_sum_kernel,
+    )
+    bs, topk, hidden = y.shape
+    out = torch.empty((bs, hidden), dtype=y.dtype, device=y.device)
+    _post_expert_norm_weighted_sum_kernel[(bs,)](
+        y, norm_weight, scores, out, local_ids,
+        TOPK=topk, H=hidden, eps=1e-8, APPLY_NORM=True, HAS_WEIGHT=True,
+        WEIGHT_FIRST=True, HAS_IDS=True, BLOCK_H=hidden, num_warps=8, num_stages=2)
+    return out

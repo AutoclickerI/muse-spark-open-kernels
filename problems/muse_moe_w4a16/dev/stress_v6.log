@@ -1,0 +1,10 @@
+bs=2 dist=normal replay=0: True relative L2 error 2.596e-03 (worst row 2.675e-03)
+bs=2 dist=normal replay=1: True relative L2 error 2.530e-03 (worst row 2.630e-03)
+bs=9 dist=skewed replay=0: True relative L2 error 2.519e-03 (worst row 2.668e-03)
+bs=9 dist=skewed replay=1: True relative L2 error 2.534e-03 (worst row 2.659e-03)
+bs=65 dist=normal replay=0: True relative L2 error 2.575e-03 (worst row 2.787e-03)
+bs=65 dist=normal replay=1: True relative L2 error 2.550e-03 (worst row 2.727e-03)
+bs=300 dist=hot replay=0: True relative L2 error 2.550e-03 (worst row 2.723e-03)
+bs=300 dist=hot replay=1: True relative L2 error 2.560e-03 (worst row 2.758e-03)
+bs=17 dist=empty replay=0: True all-remote routes return zeros
+bs=17 dist=empty replay=1: True all-remote routes return zeros

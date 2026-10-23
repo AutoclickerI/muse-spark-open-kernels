@@ -1,0 +1,4 @@
+8192 1 {'block_shape': (16, 256, 128), 'warp_shape': (16, 32, 64), 'use_stream_k': True, 'use_f16_accum': False, 'num_stages': 4} compiled /data2/jihoon/muse_kernel/img-home/.humming/cache/f6090c682477ddbc/kernel.cubin
+8192 256 {'block_shape': (32, 256, 128), 'warp_shape': (32, 32, 64), 'use_stream_k': True, 'use_f16_accum': False, 'num_stages': 4} compiled /data2/jihoon/muse_kernel/img-home/.humming/cache/5b65c4040f9706e6/kernel.cubin
+4096 1 {'block_shape': (16, 128, 256), 'warp_shape': (16, 32, 64), 'use_stream_k': True, 'use_f16_accum': False, 'num_stages': 4} compiled /data2/jihoon/muse_kernel/img-home/.humming/cache/f9c1e69b37eac07d/kernel.cubin
+4096 256 {'block_shape': (32, 128, 256), 'warp_shape': (32, 32, 64), 'use_stream_k': True, 'use_f16_accum': False, 'num_stages': 4} compiled /data2/jihoon/muse_kernel/img-home/.humming/cache/10e1e86f1d8cafa0/kernel.cubin

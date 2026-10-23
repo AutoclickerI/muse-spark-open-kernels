@@ -1,0 +1,18 @@
+okc check muse_moe_w4a16 problems/muse_moe_w4a16/cand_v2.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T085808Z",
+ "problem": "muse_moe_w4a16",
+ "mode": "check",
+ "job": "42cc534151e1499c",
+ "sha256": "6df962d36ad7eac57d58af0eb5b3f5b741ae20cd2479e229a21e43684289875b",
+ "file": "problems/muse_moe_w4a16/cand_v2.py",
+ "source": "runs/muse_moe_w4a16/20261023T085808Z_check_42cc534151e1499c.py",
+ "git": "27a4176+dirty",
+ "status": "done",
+ "speedup": 0.8896860970213498,
+ "interval": [
+  0.8763408055660296,
+  0.9039499908794276
+ ],
+ "note": "v2 fused persistent kernel; shared routing, hot-expert L2 reuse, atomic sumsq and in-kernel combine; local tests and graph checks passed"
+}

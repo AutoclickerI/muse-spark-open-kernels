@@ -1,0 +1,18 @@
+okc check muse_moe_w4a16 problems/muse_moe_w4a16/cand_v6.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T091300Z",
+ "problem": "muse_moe_w4a16",
+ "mode": "check",
+ "job": "eefecf1eeb724feb",
+ "sha256": "dcafb17f6fceba967c3fcfc0078d0ca11e5cb26f08d8d2a91c7178f82aa3fb26",
+ "file": "problems/muse_moe_w4a16/cand_v6.py",
+ "source": "runs/muse_moe_w4a16/20261023T091300Z_check_eefecf1eeb724feb.py",
+ "git": "cc7d707+dirty",
+ "status": "done",
+ "speedup": 1.4915728882532866,
+ "interval": [
+  1.4691992949294872,
+  1.5139464815770858
+ ],
+ "note": "v6: occupancy-sized fully resident grid (up to 2 CTAs/SM on Hopper), 2-stage prefetch and 8-token tiles; launch bounds limit registers, occupancy API ensures grid barrier safety; local correctness and graph timing pass"
+}

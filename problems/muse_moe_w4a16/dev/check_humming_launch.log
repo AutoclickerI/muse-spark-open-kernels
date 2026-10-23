@@ -1,0 +1,18 @@
+okc check muse_moe_w4a16 problems/muse_moe_w4a16/cand_humming.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T085824Z",
+ "problem": "muse_moe_w4a16",
+ "mode": "check",
+ "job": "ae2277f8609e4fd0",
+ "sha256": "9e284bb0f2e5f4faa54605ecd4099aeacd1c3a06420e7646a8d2d48dcd8b5302",
+ "file": "problems/muse_moe_w4a16/cand_humming.py",
+ "source": "runs/muse_moe_w4a16/20261023T085824Z_check_ae2277f8609e4fd0.py",
+ "git": "98398fc+dirty",
+ "status": "done",
+ "speedup": 0.9976815625707643,
+ "interval": [
+  0.9827163391322029,
+  1.0126467860093258
+ ],
+ "note": "Humming NVFP4 indexed MoE, EP-local route heuristic and FP32 per-expert global scales; all local tests and fresh-input graph timing passed"
+}

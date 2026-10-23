@@ -1,0 +1,18 @@
+okc check muse_moe_w4a16 problems/muse_moe_w4a16/cand_marlin2.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T090748Z",
+ "problem": "muse_moe_w4a16",
+ "mode": "check",
+ "job": "a7d687cf44ff4b12",
+ "sha256": "3a20e826a792d4c6c9f537cf50b616589fd985730d8d991f2d88dd06a6ef2644",
+ "file": "problems/muse_moe_w4a16/cand_marlin2.py",
+ "source": "runs/muse_moe_w4a16/20261023T090748Z_check_a7d687cf44ff4b12.py",
+ "git": "06ce55b+dirty",
+ "status": "done",
+ "speedup": 1.1942536324444064,
+ "interval": [
+  1.1763398279577404,
+  1.2121674369310724
+ ],
+ "note": "Marlin2 control: retain incumbent GEMMs, replace mapping/alignment with one CUDA routing launch and force fused Triton postnorm at all batch sizes; all local tests/graphs passed"
+}

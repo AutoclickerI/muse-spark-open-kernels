@@ -1,0 +1,9 @@
+[1/3] ccache c++ -MMD -MF main.o.d -DTORCH_EXTENSION_NAME=muse_moe_v9_sm90_analysis -DTORCH_API_INCLUDE_EXTENSION_H -isystem /opt/sglang/lib/python3.12/site-packages/torch/include -isystem /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /usr/local/cuda/include -isystem /usr/include/python3.12 -fPIC -std=c++20 -c /data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/muse_moe_v9_sm90_analysis/main.cpp -o main.o 
+[2/3] ccache /usr/local/cuda/bin/nvcc -MD -MF cuda.cuda.o.d -DTORCH_EXTENSION_NAME=muse_moe_v9_sm90_analysis -DTORCH_API_INCLUDE_EXTENSION_H -isystem /opt/sglang/lib/python3.12/site-packages/torch/include -isystem /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /usr/local/cuda/include -isystem /usr/include/python3.12 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr -gencode=arch=compute_90,code=sm_90 --compiler-options '-fPIC' -O3 -std=c++20 -lineinfo --ptxas-options=-v -c /data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/muse_moe_v9_sm90_analysis/cuda.cu -o cuda.cuda.o 
+ptxas info    : 28 bytes gmem
+ptxas info    : Compiling entry function '_ZN39_GLOBAL__N__857cfaf2_7_cuda_cu_56e15e619moe_fusedILi1EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iii' for 'sm_90'
+ptxas info    : Function properties for _ZN39_GLOBAL__N__857cfaf2_7_cuda_cu_56e15e619moe_fusedILi1EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 124 registers, used 2 barriers
+ptxas info    : Compile time = 132.805 ms
+[3/3] ccache c++ main.o cuda.cuda.o -shared -L/opt/sglang/lib/python3.12/site-packages/torch/lib -lc10 -lc10_cuda -ltorch_cpu -ltorch_cuda -ltorch -ltorch_python -L/usr/local/cuda/lib64 -lcudart -o muse_moe_v9_sm90_analysis.so
