@@ -468,11 +468,17 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
-Patch regenerated from `git diff a55ab7d5` plus source-only untracked additions: **201,749bytes**,
-**19files**, longest added line **374**. All16 accepted paths remain;14 untouched file diffs
-(including the MoE lane's file) are byte-identical to the accepted patch. The projection handoff is included; its current integration and renewed checks follow below. Reverse apply check and
-whitespace/source/type/path/mode checks pass. No old doc paths or harness sources were edited.
-Evidence: `/data2/jihoon/muse_kernel/harness/results/projection-ports-evidence/` and named run dirs.
+Current patch regenerated from `git diff a55ab7d5` plus source-only untracked additions:
+**240,139bytes**, **24files**, longest added line **374**. All19 accepted paths remain;
+14 accepted file diffs are byte-identical, including the unchanged MoE lane file.
+This round changes only the expert adapter/dispatch, dense projection integration/cache reuse,
+and Humming's comparison baseline. The other lanes' new untracked `muse_dflash.py` and `muse_prefill_dense.py` are retained
+in the unified patch without wiring or editing them. A concurrent lane also added
+`managers/dflash_kv_graph.py` and its worker hook; these are preserved as well. Reverse apply, whitespace, source/type/path,
+AST, size and line-limit checks pass. No old doc paths or harness sources were edited.
+Evidence: `/data2/jihoon/muse_kernel/harness/results/serving-dispatch-evidence/`
+(source hashes, compile/unit logs, patch checks), `q03`/`q06` comparisons, and
+`q08-agreement.json`; the older port evidence remains in `projection-ports-evidence/`.
 
 ## Current serving integration: V9 dispatch and dense projections
 
@@ -493,9 +499,14 @@ M256; their N512/N1024 slices tune8..128, avoiding unused full-path NN layouts.
 A45s model-wide new-trial budget shares plans by actual shape; expired-budget
 cache reuse is now validated rather than dropped. Weight values and parameter
 registration are unchanged; BF16 outputs and FP32 GEMM accumulators remain.
-Only selected lossless NN transposes persist. Worst-case selected layouts are
-about6.24GB/GPU (62 o + full pooler + both local slices); actual selected layout
-bytes, graph pools and KV capacity still require an H200 allocation measurement.
+Only selected lossless NN transposes persist. The receipt choices would retain
+about6.24GB/GPU (62 o + full pooler + both local slices); an NN winner for every
+full unpooler would raise this to10.40GB. These are dense layout copies, not
+expert banks. They reduce KV capacity:6.24GB equals about393,216 target KV slots
+(15,872bytes/slot), before draft KV. Actual selected bytes, graph pools and KV
+capacity still require an H200 allocation measurement; the conservative c32
+fully resident scenario has no spare even before these copies. SWA/hierarchical
+cache behavior determines whether actual judge loads fit without added spills.
 
 The old `projection_hook`/`projection_harness.py` padded tiny router is deleted.
 Production router and QKV predicates reject tiny fixture shapes; a new regression
@@ -533,10 +544,12 @@ The documented TP balance override is required on the shared box; failed
 `q05` is retained. No graph sizes were disabled. New Hopper-only math is
 reached through exact-shape portable stand-ins, real full-size kernels separately.
 
-Bounded V9 prefill warrants a **blocking H200 performance check** before
-claiming production TTFT: contended sm_120 graph medians (stock Marlin/V9,
-including finalize) are0.903/4.647ms at M753,5.227/40.662ms at M3012,
-and42.489/195.995ms at M16384. M256 is0.828/0.844ms. Local architecture and
+Bounded V9 prefill warrants an **H200 performance check before shipping** to substantiate
+claimed production TTFT: contended sm_120 graph medians (stock Marlin/V9,
+including finalize) after bounding chunks to512 are0.905/4.713ms at M753,
+5.157/18.286ms at M3012 and36.016/99.542ms at M16384. M256 is0.829/0.841ms.
+Before the512 bound, M3012/16384 took40.662/195.995ms; the bound reduces
+routing-table overhead while leaving all verify rungs unchanged. Local architecture and
 contention prevent extrapolation, but this is a regression risk, not a win.
 Tiny expert widths remain Marlin and cannot validate this full-shape TTFT.
 The owner requested V9 instead of grouped at all M>=256; grouped is bypassed,
@@ -547,7 +560,12 @@ Random full-graph teacher forcing (`q07`,30 requests x220 continuation tokens;
 numerical gate. Request-mean drift patch p50/p90=0.190164/0.202412 versus
 stock0.188395/0.200433. Request-max drift patch p50/p90=0.691919/0.833754
 versus stock0.693040/0.814768. Worst individual max1.020669 exceeds stock0.903524;
-the tails are not equal. Generated random agreement is checked separately.
+the tails are not equal. Generated random agreement (`q08`,30x220) passes
+against3 stock runs: first-divergence p10/p50/p90=0 and token agreement=0
+for both stock-stock and stock-patch. The logits, rather than exact counts,
+resolve the gate; `q08-agreement.json` records all3 tests passing.
+Margin TP1/TP2 teacher forcing (`q09`/`q10`, matched stock, Triton) has prompt
+and generated-token mean/max drift0.0/0.0 on both TP sizes.
 
 
 H200 receipt arithmetic: dense o/pooler/unpooler gives0.282/0/0.101/0.071ms per

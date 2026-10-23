@@ -291,8 +291,24 @@ Per-load speedups against SGLang from our checks. The per-shape tables are in `p
 | MoE v4 (`84c97d9483b34573`) | 1.353x | 1.996 / 1.400 / 1.136 | 1.498 / 1.154 / 1.115 | The kernel in today's serving patch |
 | MoE Humming3 (`09ba4af4e6bc4791`) | 1.270x | 1.640 / 1.164 / 0.949 | 1.234 / 1.315 / 1.424 | Beats V6 at V32: wider tiles pay off at 256 tokens |
 | Attention hybrid (`4f8c41ef9e924ff4`) | 1.388x | 2.05, 1.65 / 2.09, 1.91 / 1.89, 1.95 | 0.99-1.01 at every verify load (it is FA3 there) | Custom q_len=1 kernel plus SGLang FA3 for q_len=8; scored 1.384x (`526f31018e2c4449`) |
+| Attention portfolio q1 (`aff09765beaf429a`) | 1.3727x (board stays 1.384x) | decode: 2.054/1.630, 2.075/1.914, 1.877/1.959 (sliding/full by batch) | verify: 0.952/0.975, 0.957/0.994, 0.966/0.995 (sliding/full by batch) | q1 stream remains strong; FA3 wins verify. Its prepare rejected XQA/WGMMA at 5.4-5.6% L2 because the old 3% FA3 proxy gate was stricter than TASK.md's FP32-reference bound. Receipt `20261023T201903Z_submit_aff09765beaf429a.json` |
 | Attention v2 (`51ad2ea9ec4f4724`) | 1.279x | sliding, full: 2.04, 1.68 / 2.04, 1.91 / 1.87, 1.96 | 0.93, 0.89 / 0.60, 0.88 / 0.67, 0.93 | Wins decode on fixed cost; loses verify to FA3 |
 | Attention v5 (`ced8d779b16f44a9`) | 1.262x | — | sliding verify 1.49 / 1.04 / 1.14; full verify loses | Sliding verify beats FA3; full verify doesn't |
+
+The verify-stream candidate `cand_attn_verify_stream.py` keeps the q1 KV page
+gather and uses 64 rows per KV head for FP8-to-register dequantization, MMA
+QK/PV, in-block causal masking, and split `(m,l,o)` reduction. Its prepare
+compares FA3, the stream family, XQA/WGMMA and FP8-PV per shape, admits choices
+under the TASK.md 15% maximum, rejects failures without aborting, and prints a
+compact final winner/choice summary. It passes the local 16 tests and 12 graph
+shapes; H200 execution is unverified.
+
+The q1 receipt's H200 profiles put FA3's main verify kernel at 188.5 us of
+205.5 us total for B16/full and 375.9 us of 394.0 us for B32/full. Sliding
+verify totals are 19.4/25.1/30.1 us at B1/B16/B32, with FA3 main only
+6.8/10.9/15.0 us; the rest is combine, norms, cache store, metadata and gate
+work. This separates the full-layer KV-stream target from the sliding fixed
+overhead.
 | Decode layer moe7 (`66d5d4c9e4054fa9`) | 1.355x | sliding, full: 1.53, 1.51 / 1.49, 1.54 / 1.17, 1.48 | 1.70, 1.63 / 1.17, 1.11 / 1.09, 1.06 | MoE v7 tiles in the tuned layer; all_decode `8577b1a2f9054ca2` 1.289x, glue `d32113fa98f946a3` 1.283x; verify 16/32 are the gap; scored run queued |
 | Decode layer tuned (`0fa94cd98ba34c93`) | 1.271x | see profile | see profile | MoE v4 + repaired decode attention + prepare-time cold-L2 GEMV autotuning; moe4_attn `a0b66fe115024a68` 1.220x, native MMA projections `15003b60a9734d28` 1.249x |
 | Decode layer moe4 (`6fed72479ef6446f`) | 1.189x | 1.35, 1.33 / 1.25, 1.14 / 1.05, 1.02 | 1.49, 1.47 / 1.10, 1.09 / 1.03, 1.03 | v3 plus persistent MoE v4, FA3 attention; gains still shrink with batch |

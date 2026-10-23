@@ -44,7 +44,7 @@ budget before dense weights, drafter, workspaces and graph pools. The patch keep
 `muse_spark_serving.py`, leaving the MoE lane's standalone dispatch unchanged.
 V9 supplies all verify rungs (M8/32/128/256). Larger calls use bounded V9 chunks:
 the adapter derives the maximum routing rows from the compiled shared-memory
-formula and caps int16 route positions below32768. Chunk slot maps remain global
+formula and caps each chunk at512 rows, below int16 routing limits. Chunk slot maps remain global
 and preserve -1 for remote experts. The serving path does not invoke the grouped
 reader at M>=256: its H200 in-layer verify32 result regressed to0.549/0.647x,
 whereas V9 held1.216/1.136x (`2ad75c19cb514f5c` vs `0e94268cf5654012`).
