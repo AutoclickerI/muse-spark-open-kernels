@@ -70,3 +70,30 @@
  profile first turn sliding 32768 {'experts': 5152.7, 'dense': 4060.2000000000003, 'glue': 888.9, 'attention': 305.3, 'total': 10474.4}
  profile first turn full 32768 {'attention': 4489.9, 'experts': 5576.299999999999, 'dense': 4081.7000000000003, 'glue': 887.8, 'total': 15094.6}
  profile first turn full 65536 {'attention': 8130.8, 'experts': 5591.099999999999, 'dense': 4073.1, 'glue': 900.5, 'total': 18754.8}
+{"file": "runs/muse_prefill_layer/20261023T093119Z_check_1961a539127a4184.json", "job": "1961a539127a4184", "mode": "check", "passed": true, "speedup": 1.3284400860451775, "loads": {"turn 1": 1.200389, "turn 4": 1.368181, "first turn": 1.427448}, "error": null}
+ profile turn 1 sliding 80000 {'experts': 539.7, 'dense': 204.10000000000002, 'glue': 51.7, 'attention': 32.4, 'total': 847.4}
+ profile turn 1 full 80000 {'attention': 423.9, 'experts': 553.3, 'dense': 201.4, 'glue': 51.300000000000004, 'total': 1249.4}
+ profile turn 4 sliding 80000 {'experts': 1255.9999999999998, 'dense': 757.5000000000001, 'glue': 176.0, 'attention': 61.5, 'total': 2283.7}
+ profile turn 4 full 80000 {'attention': 1623.9, 'experts': 1146.5, 'dense': 755.5, 'glue': 176.4, 'total': 3736.3}
+ profile first turn full 0 {'experts': 6265.799999999999, 'dense': 4048.4, 'attention': 895.4, 'glue': 926.1, 'total': 12210.2}
+ profile first turn sliding 32768 {'experts': 6183.099999999999, 'dense': 4050.5000000000005, 'glue': 938.7, 'attention': 308.1, 'total': 11563.2}
+ profile first turn full 32768 {'attention': 4499.0, 'experts': 6061.000000000001, 'dense': 4067.3999999999996, 'glue': 951.8000000000001, 'total': 15652.2}
+ profile first turn full 65536 {'attention': 8081.7, 'experts': 5848.399999999999, 'dense': 4063.6, 'glue': 952.4, 'total': 19018.7}
+{"file": "runs/muse_prefill_layer/20261023T094307Z_check_a1252f4de2ef4a70.json", "job": "a1252f4de2ef4a70", "mode": "check", "passed": true, "speedup": 1.1635135671989074, "loads": {"turn 1": 1.135026, "turn 4": 1.160485, "first turn": 1.195829}, "error": null}
+ profile turn 1 sliding 80000 {'experts': 636.4, 'dense': 207.8, 'glue': 52.1, 'attention': 33.3, 'total': 943.9}
+ profile turn 1 full 80000 {'attention': 424.1, 'experts': 637.3, 'dense': 203.9, 'glue': 46.8, 'total': 1327.4}
+ profile turn 4 sliding 80000 {'experts': 1783.3, 'dense': 779.6, 'glue': 174.4, 'attention': 61.5, 'total': 2820.4}
+ profile turn 4 full 80000 {'attention': 1626.0, 'experts': 1943.7999999999997, 'dense': 778.3000000000001, 'glue': 173.0, 'total': 4542.1}
+ profile first turn full 0 {'experts': 8182.300000000001, 'dense': 4182.2, 'attention': 884.9, 'glue': 928.9, 'total': 14210.6}
+ profile first turn sliding 32768 {'experts': 9171.4, 'dense': 4185.8, 'glue': 929.6, 'attention': 309.6, 'total': 14628.1}
+ profile first turn full 32768 {'experts': 7683.300000000001, 'attention': 4430.8, 'dense': 4174.2, 'glue': 927.5, 'total': 17248.4}
+ profile first turn full 65536 {'attention': 7957.4, 'experts': 7417.900000000001, 'dense': 4163.3, 'glue': 922.0, 'total': 20491.6}
+{"file": "runs/muse_prefill_layer/20261023T100232Z_check_a2702eaedce34844.json", "job": "a2702eaedce34844", "mode": "check", "passed": true, "speedup": 1.292258401461466, "loads": {"turn 1": 1.23975, "turn 4": 1.125744, "first turn": 1.54623}, "error": null}
+ profile turn 1 sliding 80000 {'experts': 560.6999999999998, 'dense': 208.2, 'glue': 47.1, 'attention': 31.9, 'total': 862.3}
+ profile turn 1 full 80000 {'attention': 426.6, 'experts': 572.7000000000002, 'dense': 202.70000000000002, 'glue': 47.1, 'total': 1263.5}
+ profile turn 4 sliding 80000 {'experts': 1859.6999999999998, 'dense': 763.7, 'glue': 165.4, 'attention': 64.9, 'total': 2885.0}
+ profile turn 4 full 80000 {'attention': 1640.6, 'experts': 1911.9, 'dense': 760.5999999999999, 'glue': 162.0, 'total': 4506.6}
+ profile first turn full 0 {'experts': 5555.4, 'dense': 4087.1000000000004, 'attention': 910.9, 'glue': 880.7, 'total': 11495.7}
+ profile first turn sliding 32768 {'experts': 5257.299999999998, 'dense': 4068.1000000000004, 'glue': 884.9, 'attention': 308.3, 'total': 10586.3}
+ profile first turn full 32768 {'attention': 4527.2, 'dense': 4081.1, 'experts': 5130.099999999999, 'glue': 889.6, 'total': 14687.6}
+ profile first turn full 65536 {'attention': 8246.3, 'experts': 5417.9, 'dense': 4094.1, 'glue': 886.6, 'total': 18703.2}

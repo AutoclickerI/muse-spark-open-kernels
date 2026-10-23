@@ -4,7 +4,7 @@ from pathlib import Path
 p=Path(__file__).resolve().parents[1]
 a=argparse.ArgumentParser()
 a.add_argument('output')
-a.add_argument('--base',required=True,choices=['v2','v3','v6','v7','v8'])
+a.add_argument('--base',required=True,choices=['v2','v3','v6','v7','v8','v11','v12','v14','v15','v16','v17'])
 a.add_argument('--attention',choices=['paged','contiguous','unpacked'],default='paged')
 a.add_argument('--dense',choices=['cublas','deepgemm'],default='cublas')
 a.add_argument('--compact-state',action='store_true')
@@ -23,6 +23,8 @@ if args.attention!='paged':
   att=att.replace("window_size=(W-1,0) if W else (-1,-1), **descale)", "window_size=(W-1,0) if W else (-1,-1),\n                pack_gqa=False if B*triton.cdiv(L,128)*HQ >= 132 else None,\n                num_splits=1 if B*triton.cdiv(L,128)*HQ >= 132 else 0, **descale)")
  s+='\n\n'+att
 if args.dense=='deepgemm':
+ s=s.replace('def prepare(weights):', 'def _prepare_expert_state(weights):')
+ s+='\n\ndef prepare(weights):\n    import deep_gemm\n    deep_gemm.use_deterministic_algorithms(True)\n    return _prepare_expert_state(weights)\n'
  for x,w in [('x','qkv'),('o_in','o'),('h','pooler'),('moe','unpooler')]:
   s=s.replace(f'torch.mm({x}, st["{w}"].t())',f'_dense_mm({x}, st["{w}"])')
  d=(p/'cand_v5.py').read_text();s+='\n\n'+d[d.index('def _dense_mm('):]

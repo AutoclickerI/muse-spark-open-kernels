@@ -1,6 +1,6 @@
 # Prefill experiments
 
-Report generated 2026-10-23T11:56:19+00:00. H200 numbers below come only from judge receipts; local GPU times are excluded.
+Report generated 2026-10-23T13:40:38+00:00. H200 numbers below come only from judge receipts; local GPU times are excluded.
 
 | Candidate | Check job | Status | Turn 1 | Turn 4 | First turn | Overall |
 |---|---|---|---:|---:|---:|---:|
@@ -9,14 +9,18 @@ Report generated 2026-10-23T11:56:19+00:00. H200 numbers below come only from ju
 | v3: Custom WGMMA, 128-token tiles | [`82a4e50b54294a2a`](../../runs/muse_prefill_layer/20261023T090922Z_check_82a4e50b54294a2a.json) | passed | 1.212x | 1.369x | 1.468x | 1.345x |
 | v4: Contiguous FP8 cache gather | [`27f3e312727d423c`](../../runs/muse_prefill_layer/20261023T091428Z_check_27f3e312727d423c.json) | passed | 1.013x | 1.089x | 1.545x | 1.194x |
 | v5: Dense API trial (actually cuBLAS dispatch) | [`84b5433a1f2f43e5`](../../runs/muse_prefill_layer/20261023T091841Z_check_84b5433a1f2f43e5.json) | passed | 1.010x | 1.142x | 1.537x | 1.210x |
-| v6: Humming indexed experts | `1961a539127a4184` | pending | — | — | — | — |
-| v7: Custom WGMMA, 64-token tiles | `a1252f4de2ef4a70` | pending | — | — | — | — |
-| v8: Humming masked groups below2048 | `a2702eaedce34844` | pending | — | — | — | — |
+| v6: Humming indexed experts | [`1961a539127a4184`](../../runs/muse_prefill_layer/20261023T093119Z_check_1961a539127a4184.json) | passed | 1.200x | 1.368x | 1.427x | 1.328x |
+| v7: Custom WGMMA, 64-token tiles | [`a1252f4de2ef4a70`](../../runs/muse_prefill_layer/20261023T094307Z_check_a1252f4de2ef4a70.json) | passed | 1.135x | 1.160x | 1.196x | 1.164x |
+| v8: Humming masked groups below2048 | [`a2702eaedce34844`](../../runs/muse_prefill_layer/20261023T100232Z_check_a2702eaedce34844.json) | passed | 1.240x | 1.126x | 1.546x | 1.292x |
 | v9: Contiguous cache + unpacked GQA | `f13e757f4c224e06` | pending | — | — | — | — |
 | v10: Route-indexed SwiGLU | `583a1b97cc544f53` | pending | — | — | — | — |
 | v11: WGMMA below8192, dequant/DG above | `6a9cd943fe404d74` | pending | — | — | — | — |
 | v12: WGMMA 256-token tiles at large T | `53b79ddde4a048d5` | pending | — | — | — | — |
 | v13: Corrected native DeepGEMM dense | `362f63065c634281` | pending | — | — | — | — |
+| v14: TMA indexed Humming experts | not assigned | waiting admission | — | — | — | — |
+| v15: Shared/shared WGMMA expert pipeline | not assigned | waiting admission | — | — | — | — |
+| v16: Grouped GEMM expected-row tuning | not assigned | waiting admission | — | — | — | — |
+| v17: Lossless bit-plane WGMMA decoding | not assigned | waiting admission | — | — | — | — |
 
 ## Scored runs
 
@@ -44,10 +48,18 @@ Single profiled calls, in microseconds; these differ from the paired benchmark m
 
 ## Verification and porting
 
-All v1–v13 passed the five official local tests. Additional fresh-input CUDA graph tests cover nearby token counts, uneven lengths, page64 and KV scale1/64. Expert edge tests cover zero routes, one expert and eight experts. v12 was forced through its new256-token path on all five local tests and nearby graph tests. v13 was additionally forced through native dense kernels for local layer and graph tests. Hopper-only paths are validated only by their completed judge receipts.
-
-The first scored v1 entry was verified at rank46 (1.2124x) at10:08UTC. Re-query the board for the final rank; later scored jobs may still be pending.
+All v1–v17 passed the five official local tests. Additional fresh-input CUDA graph tests cover nearby token counts, uneven lengths, page64 and KV scale1/64. Expert edge tests cover zero routes, one expert and eight experts. v12 was forced through its new256-token path on all five local tests and nearby graph tests. v13 was additionally forced through native dense kernels for local layer and graph tests. v15 shared-A gate arithmetic is exercised by mma.sync emulation. v16 was also forced through its DG branch on all tests. v17 passed an actual GEMM probe spanning all finite signed E4M3 scales and all E2M1 codes (0.159% relative L2 locally). v15/v17 sm90a builds have no spills. Hopper-only paths are validated only by their completed judge receipts.
 
 See [PORTING.md](PORTING.md) for exact SGLang functions, checkpoint scale/layout differences, collective boundaries, variable-length capture requirements and workspace considerations. No eight-H200 serving validation has run.
 
-New optimization branches stopped after the v2/v4 overall experiments failed to beat the best. Already-submitted runs are still being evaluated; v13 corrects the backend dispatch of the existing v5 experiment.
+The coordinator revoked the two-failed-ideas stopping condition. Background collectors recover pending receipts. dev/finish_round.py promotes and scores only a checked new best from this round; the final check is reserved for measured component integration after the component receipts arrive. Four new checks v14–v17 reserve usage to19/20 including waiting admission; accepted usage may be lower.
+
+Board verified 2026-10-23T13:02:25+00:00: rank 55, 1.2124x. Later scored jobs can still be pending.
+
+## Next ideas, ranked
+
+1. Combine the fast bit-plane decoder with256-token tiles if the separate H200 results support both. Keep one common packed bank.
+2. Dequantize the selected packed bank directly into grouped-GEMM scratch so a custom/DG serving hybrid does not retain another model-wide NVFP4 layout.
+3. Revisit BN64 with lower register limits and fewer pipeline stages to test two-CTA occupancy. v7 changed tile size while retaining the large register allocation; its measured regression does not establish the best attainable BN64 configuration.
+
+These are hypotheses, not measured H200 improvements. Pending receipts determine their priority.
