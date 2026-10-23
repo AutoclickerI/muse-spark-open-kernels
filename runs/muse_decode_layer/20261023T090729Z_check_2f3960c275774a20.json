@@ -1,0 +1,277 @@
+{
+ "board": "muse_decode_layer",
+ "call_id": "nyc3:kc-2f3960c275774a20",
+ "cluster": "nyc3",
+ "content_hash": "90fe5e63573aae4afebddff4507b2fada5e15e044b5fc30eb22dbf5a21066f69",
+ "created_at": 1792746450.6049278,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792750953.9240186,
+ "id": "2f3960c275774a20",
+ "limits": {
+  "checks": {
+   "left": 9,
+   "per_day": 20,
+   "used": 11
+  },
+  "scored": {
+   "left": 8,
+   "per_day": 10,
+   "used": 2
+  }
+ },
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/profiles/cand_attn_v3.2f3960c275774a20.log"
+ },
+ "payload_ref": "muse_decode_layer/90fe5e63573aae4afebddff4507b2fada5e15e044b5fc30eb22dbf5a21066f69.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "2999d8a201bb2b0bad6c7b3998af2143a1ed720d531dbb4d15670721ee9f957b",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_decode_layer/baseline.py": "87d95a0c4b78f0fd6c772436b959330ca45652b10e82dfc8add9acf0549227d4",
+    "problems/muse_decode_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "problems/muse_decode_layer/task.yml": "6a73de4094ff00d7453fb94bd3aa40f5fae79ac7fbea149660eae2125dc5a0c7"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "Traceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\nTraceback (most recent call last):\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1362, in kernel_fn\n    attn = stage_attention(qkv, data, state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1069, in stage_attention\n    return _layer_attention_custom(qkv, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_decode_layer-n2y_oc8k/run/submission.py\", line 1052, in _layer_attention_custom\n    ns = _splits(batch, hkv // 2, max_keys, q_len, _num_sms(qkv.device))\n                                                            ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'device'\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 125.33,
+    "power.limit": 700,
+    "temperature.gpu": 40
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 145.18,
+    "power.limit": 700,
+    "temperature.gpu": 39
+   },
+   "node": "n-3tovvmp4azgxjrdbhkqxjjl254"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 2,
+    "baseline_prepare_pad": 14715904,
+    "copies": 3,
+    "error": null,
+    "event": "setup",
+    "first": "submission",
+    "prepare_pad": 28152832,
+    "prepare_s": 6.180178818,
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 10,
+     "layer": "sliding",
+     "seed": 2597970980171207337
+    },
+    "event": "test",
+    "index": 0,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 3000,
+     "layer": "full",
+     "seed": 2598022326340919367
+    },
+    "event": "test",
+    "index": 1,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 8,
+     "ctx": 2047,
+     "layer": "sliding",
+     "seed": 2598073672510631398
+    },
+    "event": "test",
+    "index": 2,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 9,
+     "ctx": 5000,
+     "layer": "sliding",
+     "page": 1,
+     "seed": 2598125018680343430,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 3,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 6000,
+     "dist": "outliers",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2598176364850055463
+    },
+    "event": "test",
+    "index": 4,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 5,
+     "ctx": 5000,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2598227711019767497,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 5,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 33,
+     "ctx": 20000,
+     "layer": "full",
+     "page": 1,
+     "seed": 2598279057189479532,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 6,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 300000,
+     "layer": "sliding",
+     "q_len": 8,
+     "seed": 2598330403359191568
+    },
+    "event": "test",
+    "index": 7,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 1048576,
+     "layer": "full",
+     "q_len": 8,
+     "seed": 2598381749528903605
+    },
+    "event": "test",
+    "index": 8,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 7000,
+     "kv_scale": 0.015625,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 2598587134207751763
+    },
+    "event": "test",
+    "index": 9,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 80000,
+     "dist": "soft",
+     "layer": "full",
+     "page": 1,
+     "seed": 2598433095698615643
+    },
+    "event": "test",
+    "index": 10,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "soft",
+     "layer": "sliding",
+     "q_len": 8,
+     "seed": 2598484441868327682
+    },
+    "event": "test",
+    "index": 11,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 16,
+     "ctx": 20000,
+     "dist": "soft",
+     "layer": "full",
+     "page": 1,
+     "seed": 2598535788038039722,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 12,
+    "message": "AttributeError: 'tuple' object has no attribute 'device'",
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792750895.3850691,
+ "status": "done",
+ "team": "AutoclickerI"
+}

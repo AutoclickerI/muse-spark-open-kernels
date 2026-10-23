@@ -1,0 +1,12 @@
+{
+ "utc": "20261023T093908Z",
+ "problem": "muse_bf16_proj",
+ "mode": "check",
+ "job": "6b706627babc4cc6",
+ "sha256": "a0bd70cf48aed8b9a5c4493cea4174b31cf962cca31cdd290db8a0af7a7dbf7e",
+ "file": "problems/muse_bf16_proj/cand_hybrid.py",
+ "source": "runs/muse_bf16_proj/20261023T093908Z_check_6b706627babc4cc6.py",
+ "git": "98398fc+dirty",
+ "note": "proj hybrid: skinny for small shapes, cuBLAS elsewhere, hi/lo router; adopted",
+ "adopted": true
+}
