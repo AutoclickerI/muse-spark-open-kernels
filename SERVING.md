@@ -45,7 +45,7 @@ No Muse kernel is built Blackwell-only: `load_jit` compiles for the local GPU (`
 | 3 | `models/muse_spark.py:1177` | MoE finalize fused into the all-reduce | Needs #1 first. Flipping the gate alone gives wrong outputs: Marlin and the BF16 path ignore `ar_workspace` while `_forward_tp` skips the all-reduce (`muse_spark.py:748, 754-760`). Up to 16 tokens on TP8 | 0.12-0.24 ms / 0 | Low to moderate (all-reduce summation order) |
 | 4 | `kernels/ops/muse_spark_v12/all_gather_norm_residual.py:31` | Unpooler all-gather fused into the post-MoE norm-residual | Enable as-is: `>= 10` to `>= 9` | 0.12-0.25 ms / 0.12-0.25 ms (c=32 needs #2) | Low |
 | 5 | `kernels/ops/muse_spark_v12/norm_residual.py:187` | Multi-CTA cluster norm-residual | Enable as-is: `>= 10` to `>= 9`; cap cluster size at 8 if 16 fails on sm_90 (cluster sizes tuned on GB300) | 0.06-0.2 ms / 0 | Low |
-| 6 | `models/muse_spark.py:410-433` (TRT-LLM attention backend only) | KV store and FP8 query written inside the QK-norm Triton kernel | Small-to-medium port to FA3's cache locations (incl. the sliding-window pool); superseded if our attention kernel goes in | 0.3-0.5 ms / 0.3-0.5 ms | Very low |
+| 6 | `models/muse_spark.py:410-433` (TRT-LLM attention backend only) | KV store and FP8 query written inside the QK-norm Triton kernel | **Implemented for FA3**: full and sliding-window pools use the backend's physical write locations, including TARGET_VERIFY `out_cache_loc`; FP8 E4M3/unit-scale and stock BF16 rounding are preserved. Local sm_120 eager+graph cache/output unit: exact (max diff 0); FA3/H200 runtime remains unverified. | 0.3-0.5 ms / 0.3-0.5 ms | Very low; direct cache/output equality is exact, but FA3/H200 attention replay is untested |
 | 7 | `layers/muse_spark_expert_tp.py:25-37` | Helion verify megakernels | Blackwell-only (`cvt.rn.satfinite.e2m1x2.f32`, FP4 `dot_scaled`); FP4 activations would break the BF16 rule | - | - |
 | 8 | `layers/muse_spark_bf16_moe.py:59` | TRT-LLM Gen BF16 MoE (layers 0, 61) | Blackwell-only cubins; its finalize gains from #1 | - | - |
 
@@ -70,9 +70,15 @@ Every path checks `has_multicast` and falls back to stock.
   74K-token first turn. Tested: `serving/tests/test_rowsplit.py` on 2 local GPUs over NCCL, bitwise equal to the
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
+- **MoE v4 at verify sizes (intermediate; do not ship)** (`layers/muse_spark_moe_v4.py`, dispatch in
+  `muse_spark_fp4_moe.py` for M = 8/128/256, Marlin elsewhere, `SGLANG_MUSE_MOE_FORCE_STOCK=1` for A/B). Layer
+  error vs Marlin 0.0049-0.0050 relative L2 (problem tolerance 0.015), graphs capture, TP1 harness 100% /
+  0.0 drift (the tiny model falls back to Marlin, so full-size V4 arithmetic is layer-tested only). It keeps
+  BOTH banks (+57 GB/GPU; serving/MOE_PORT.md, serving/EXPERT_LAYOUT.md): it must become one bank (V6 tiles
+  canonical, with a large-M path reading them) before any serving check.
+
 ## Other levers found
-- **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): column-split it with an
-  all-gather, ~0.15 ms per step.
+- **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.
 - **Drafting from the request** (prompt lookup, n-grams) is allowed alongside DFlash; the model says tau 4.16 -> 4.5
   moves the score ~2%, so it ranks below the kernels.
 

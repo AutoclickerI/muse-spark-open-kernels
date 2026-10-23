@@ -71,6 +71,9 @@ once through `torch.utils.cpp_extension.load_inline` on the first loaded NVFP4
 layer and caches the module process-wide; no request compiles or synchronizes.
 The kernel keeps BF16 activations, carries distinct gate/up FP32 global scales,
 and computes the raw zero-centered post-expert norm as `1 + w` in the epilogue.
+Its persistent counters and scratch are owned per expert layer and are safe for
+the normal serialized model stream; concurrent graph streams and full-grid
+residency on H200 still need a serving-node check.
 
 The H200 V4 receipts are V1=1.498x, V16=1.154x, and V32=1.115x. Humming2's V32
 receipt is 1.343x, but its implementation is a separate experiment. Because the

@@ -72,7 +72,6 @@ def main():
             ).cuda()
             local = hidden_out // world
             module.weight.data.copy_(full_weight[rank * local : (rank + 1) * local])
-            weight_diff = (module.weight.float() - full_weight[rank * local : (rank + 1) * local].float()).abs().max().item()
             patched = module(x)[0]
             graph_stream = torch.cuda.Stream()
             graph = torch.cuda.CUDAGraph()
@@ -88,18 +87,6 @@ def main():
             graph_diff = (graph_out.float() - patched.float()).abs().max().item()
         reference = torch.nn.functional.linear(x, full_weight)
         eager_diff = (patched.float() - reference.float()).abs().max().item()
-        if rank == 0 and world > 1:
-            bad = (patched.float() - reference.float()).abs()
-            print(
-                "debug max element",
-                bad.argmax().item(),
-                patched.flatten()[bad.argmax()].item(),
-                reference.flatten()[bad.argmax()].item(),
-                patched.shape,
-                full_weight.shape,
-                "weight max diff",
-                weight_diff,
-            )
         if rank == 0:
             print(
                 f"drafter fc world={world}: eager max|diff|={eager_diff:.6g}; "

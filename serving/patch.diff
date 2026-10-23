@@ -126,339 +126,6 @@ index 97b1474..d4c93f7 100644
          if pre_expert_norm is not None:
              hidden_states = pre_expert_norm(hidden_states)
          expert_outputs, local_topk_ids = self._marlin_expert_outputs(
-diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-index f6d450a..ad569f4 100644
---- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-+++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-@@ -2,6 +2,7 @@
- 
- from __future__ import annotations
- 
-+import logging
- from typing import cast
- 
- import torch
-@@ -12,6 +13,47 @@ from sglang.srt.layers.quantization.modelopt_quant import (
-     _compute_gemm1_alphas,
- )
- from sglang.srt.layers.utils import copy_or_rebind_param
-+from sglang.srt.environ import envs
-+
-+logger = logging.getLogger(__name__)
-+
-+
-+def _muse_v4_enabled() -> bool:
-+    return not envs.SGLANG_MUSE_MOE_FORCE_STOCK.get()
-+
-+
-+def _prepare_muse_v4(layer) -> None:
-+    """Build the optional serving bank while the canonical tensors are live."""
-+    layer._muse_v4_state = None
-+    if not _muse_v4_enabled() or not torch.cuda.is_available():
-+        return
-+    capability = torch.cuda.get_device_capability(layer.gate_up_proj.device)
-+    if capability[0] < 9:
-+        return
-+    # The serving kernel is specialized to the released 4096-wide routed
-+    # expert. Tiny fixtures and other Muse variants stay on stock Marlin.
-+    if (
-+        layer.gate_up_proj.shape[0] != 32
-+        or layer.gate_up_proj.shape[1] != 8192
-+        or layer.gate_up_proj.shape[2] * 2 != 4096
-+    ):
-+        return
-+    try:
-+        from sglang.srt.layers.muse_spark_moe_v4 import prepare_layer
-+
-+        layer._muse_v4_state = prepare_layer(layer)
-+        logger.info(
-+            "Prepared Muse V4 routed NVFP4 bank for %d local experts on SM%d%d",
-+            layer.gate_up_proj.shape[0],
-+            capability[0],
-+            capability[1],
-+        )
-+    except Exception:
-+        layer._muse_v4_state = None
-+        logger.warning(
-+            "Muse V4 bank preparation failed; retaining stock Marlin path",
-+            exc_info=True,
-+        )
- 
- 
- def _align_fp4_moe_weights_for_flashinfer_trtllm(layer) -> None:
-@@ -126,6 +168,10 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
-     )
- 
-     def _process_weights_for_marlin(self, layer):
-+        # The optional bank is packed from the lossless ModelOpt tensors before
-+        # Marlin permutes them. Marlin remains the exact fallback for all other
-+        # token counts and for the explicit A/B stock flag.
-+        _prepare_muse_v4(layer)
-         for alias, native in self._MARLIN_PARAM_ALIASES:
-             setattr(layer, alias, getattr(layer, native))
-         result = super().process_weights_after_loading(layer)
-diff --git a/python/sglang/srt/models/dflash.py b/python/sglang/srt/models/dflash.py
-index 62f823b..b260383 100644
---- a/python/sglang/srt/models/dflash.py
-+++ b/python/sglang/srt/models/dflash.py
-@@ -700,7 +700,23 @@ class DFlashDraftModel(nn.Module):
-         num_context_features = len(target_layer_ids)
- 
-         self.num_context_features = int(num_context_features)
--        if self.quantizable:
-+        if get_parallel().tp_size > 1:
-+            fc_prefix = f"{prefix}.fc" if prefix else "fc"
-+            # The target hidden state is replicated on every target-TP rank.  Split
-+            # the drafter projection along its output dimension and gather the
-+            # result so the following draft layers still see the stock tensor.
-+            # Construction happens inside draft_tp_context(), therefore this uses
-+            # the same TP group as the draft worker's other sharded modules.
-+            self.fc = ColumnParallelLinear(
-+                self.num_context_features * hidden_size,
-+                hidden_size,
-+                bias=False,
-+                gather_output=True,
-+                quant_config=quant_config,
-+                prefix=fc_prefix,
-+                parallel_group="tp",
-+            )
-+        elif self.quantizable:
-             fc_prefix = f"{prefix}.fc" if prefix else "fc"
-             self.fc = ReplicatedLinear(
-                 self.num_context_features * hidden_size,
-@@ -770,7 +786,11 @@ class DFlashDraftModel(nn.Module):
- 
-     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
-         """Project concatenated target-layer hidden states into draft hidden_size."""
--        expected = int(self.fc.input_size if self.quantizable else self.fc.in_features)
-+        expected = int(
-+            self.fc.input_size
-+            if hasattr(self.fc, "input_size")
-+            else self.fc.in_features
-+        )
-         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
-             raise ValueError(
-                 "DFLASH target_hidden feature dim mismatch. "
-@@ -781,7 +801,7 @@ class DFlashDraftModel(nn.Module):
-                 "the draft checkpoint/config expects."
-             )
-         projected = self.fc(target_hidden)
--        if self.quantizable:
-+        if isinstance(projected, tuple):
-             projected = projected[0]
-         return self.hidden_norm(projected)
- 
-@@ -904,7 +924,14 @@ class DFlashDraftModel(nn.Module):
-                     else:
-                         expected_shape = tuple(param.shape)
-                         loaded_shape = tuple(loaded_weight.shape)
--                        shape_matches = loaded_shape == expected_shape
-+                        tp_size = int(get_parallel().tp_size)
-+                        shape_matches = loaded_shape == expected_shape or (
-+                            tp_size > 1
-+                            and getattr(param, "output_dim", None) == 0
-+                            and len(loaded_shape) == len(expected_shape)
-+                            and loaded_shape[0] == expected_shape[0] * tp_size
-+                            and loaded_shape[1:] == expected_shape[1:]
-+                        )
-                     if not shape_matches:
-                         raise ValueError(
-                             "DFLASH fc.weight shape mismatch. This usually means the draft checkpoint's "
-@@ -1019,7 +1046,9 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
- 
-     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
-         expected = int(
--            self.fc.input_size if self.is_nemotron_35_draft else self.fc.in_features
-+            self.fc.input_size
-+            if hasattr(self.fc, "input_size")
-+            else self.fc.in_features
-         )
-         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
-             raise ValueError(
-@@ -1040,7 +1069,7 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
-             normed[:, i, :] = norm(slices[:, i, :])
-         fused = normed.reshape(target_hidden.shape[0], -1)
-         projected = self.fc(fused)
--        if self.is_nemotron_35_draft:
-+        if isinstance(projected, tuple):
-             projected = projected[0]
-         return self.hidden_norm(projected)
- 
-diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
-index 312b342..e7dabdc 100644
---- a/python/sglang/srt/models/muse_spark.py
-+++ b/python/sglang/srt/models/muse_spark.py
-@@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
- from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
-     gemm_ag,
-     gemm_ag_supported,
-+    split_projection_supported,
-     gemm_local,
-     reserve_projection_workspace,
- )
-@@ -47,6 +48,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
- from sglang.srt.environ import envs
- from sglang.srt.layers import layernorm_sp
- from sglang.srt.layers import muse_spark_expert_tp as expert_tp
-+from sglang.srt.layers.attention.flashattention_backend import FlashAttentionBackend
- from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
- from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
- from sglang.srt.layers.cp.utils import is_cp_active
-@@ -247,6 +249,52 @@ def _split_bf16_router_supported() -> bool:
-     return is_cuda() and get_device_capability()[0] == 9
- 
- 
-+# Prefill only: above gemm_ag.MAX_TOKENS (512) the pooler and unpooler run replicated on every
-+# rank. Arbitrary threshold; no measurement says where the row split starts to pay on H200.
-+ROW_SPLIT_MIN_TOKENS = 1024
-+
-+
-+def _use_row_split(tp_size: int, num_tokens: int) -> bool:
-+    return (
-+        tp_size > 1
-+        and num_tokens >= ROW_SPLIT_MIN_TOKENS
-+        and not _is_cpu
-+        and not get_forward().sp_active
-+        and not torch.cuda.is_current_stream_capturing()
-+    )
-+
-+
-+def _row_split_gemm(x: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
-+    """``x @ weight.T`` with each TP rank computing ceil(M / world) rows, then all-gathered."""
-+    tp_group = get_tp_group()
-+    world, rank = tp_group.world_size, tp_group.rank_in_group
-+    m = x.shape[0]
-+    rows = -(-m // world)
-+    lo, hi = min(rank * rows, m), min((rank + 1) * rows, m)
-+    local = bf16_gemm_dispatch(x[lo:hi], weight, None)
-+    if hi - lo < rows:
-+        local = torch.nn.functional.pad(local, (0, 0, 0, rows - (hi - lo)))
-+    out = local.new_empty(rows * world, weight.shape[0])
-+    tp_group.all_gather_into_tensor(out, local)
-+    return out[:m]
-+
-+
-+def _reduce_scatter_rows_gemm(partial: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
-+    """``all_reduce(partial) @ weight.T``: reduce-scatter rows, local GEMM, all-gather rows."""
-+    tp_group = get_tp_group()
-+    world = tp_group.world_size
-+    m = partial.shape[0]
-+    rows = -(-m // world)
-+    if rows * world != m:
-+        partial = torch.nn.functional.pad(partial, (0, 0, 0, rows * world - m))
-+    reduced = partial.new_empty(rows, partial.shape[1])
-+    tp_group.reduce_scatter_tensor(reduced, partial.contiguous())
-+    local = bf16_gemm_dispatch(reduced, weight, None)
-+    out = local.new_empty(rows * world, weight.shape[0])
-+    tp_group.all_gather_into_tensor(out, local)
-+    return out[:m]
-+
-+
- def _use_split_bf16_router(num_tokens: int) -> bool:
-     if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
-         return False
-@@ -413,25 +461,53 @@ class MuseSpark1xAttention(nn.Module):
-     ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
-         backend = get_attn_backend()
-         pool = get_token_to_kv_pool()
--        if not (
-+        decode_or_verify = (
-+            forward_batch.forward_mode.is_decode()
-+            or forward_batch.forward_mode.is_target_verify()
-+        )
-+        common_ok = (
-+            self.attn.k_scale is None
-+            and self.attn.v_scale is None
-+            and forward_batch.dcp_kv_mask is None
-+            and decode_or_verify
-+            and not is_cp_active(forward_batch)
-+        )
-+        trt_ok = (
-             isinstance(backend, TRTLLMHAAttnBackend)
-             and backend.data_type in (torch.bfloat16, torch.float8_e4m3fn)
-             and pool.dtype == backend.data_type
-             and (pool.dtype == torch.bfloat16 or not backend.is_xqa_impl)
--            and self.attn.k_scale is None
--            and self.attn.v_scale is None
--            and forward_batch.dcp_kv_mask is None
--            # Prefill excluded: the fused store segfaults at breakable prefill replay.
--            and (
--                forward_batch.forward_mode.is_decode()
--                or forward_batch.forward_mode.is_target_verify()
--            )
--            and not is_cp_active(forward_batch)
--        ):
-+        )
-+        fa3_ok = (
-+            isinstance(backend, FlashAttentionBackend)
-+            and backend.fa_impl_ver == 3
-+            and not backend.use_mla
-+            and not backend.fa_skip_kv_cache
-+            and pool.dtype == torch.float8_e4m3fn
-+        )
-+        if not (common_ok and (trt_ok or fa3_ok)):
-+            return None
-+
-+        if trt_ok:
-+            cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
-+        else:
-+            cache_loc = forward_batch.out_cache_loc
-+            layer_mapping = getattr(pool, "layers_mapping", None)
-+            if (
-+                layer_mapping is not None
-+                and layer_mapping[self.layer_idx][1]
-+            ):
-+                metadata = backend.forward_metadata
-+                cache_loc = getattr(metadata, "swa_out_cache_loc", None)
-+                if cache_loc is None:
-+                    return None
-+                cache_loc = cache_loc[: forward_batch.out_cache_loc.shape[0]]
-+        if cache_loc is None:
-             return None
--        cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
-         k_cache = pool.get_key_buffer(self.layer_idx)
-         v_cache = pool.get_value_buffer(self.layer_idx)
-+        if not (k_cache.is_contiguous() and v_cache.is_contiguous()):
-+            return None
-         return (
-             k_cache.view(k_cache.shape[0], -1),
-             v_cache.view(v_cache.shape[0], -1),
-@@ -584,7 +660,7 @@ class MuseSpark1xMoE(nn.Module):
-             self.pre_expert_proj is not None
-             and self.tp_size in (4, 8)
-             and torch.cuda.is_available()
--            and torch.cuda.get_device_capability() == (10, 3)
-+            and torch.cuda.get_device_capability() in ((10, 3), (9, 0))
-         ):
-             ca_comm = get_tp_group().ca_comm
-             reserve_projection_workspace(
-@@ -757,6 +833,10 @@ class MuseSpark1xMoE(nn.Module):
-             and not getattr(get_forward(), "sp_active", False)
-             and not already_reduced
-         ):
-+            if self.post_expert_proj is not None and _use_row_split(
-+                self.tp_size, output.shape[0]
-+            ):
-+                return _reduce_scatter_rows_gemm(output, self.post_expert_proj.weight)
-             output = tensor_model_parallel_all_reduce(output)
-         if self.post_expert_proj is not None:
-             if _is_cpu:
-@@ -846,10 +926,14 @@ class MuseSpark1xMoE(nn.Module):
-             if (
-                 self.tp_size in (4, 8)
-                 and not sp_active
--                and torch.cuda.get_device_capability(hidden_states.device) == (10, 3)
-+                and split_projection_supported(
-+                    hidden_states.device, hidden_states.shape[0]
-+                )
-                 and gemm_ag_supported(comm, hidden_states, self.pre_expert_proj.weight)
-             ):
-                 expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
-+            elif _use_row_split(self.tp_size, hidden_states.shape[0]):
-+                expert_input = _row_split_gemm(hidden_states, self.pre_expert_proj.weight)
-             else:
-                 expert_input = bf16_gemm_dispatch(
-                     hidden_states, self.pre_expert_proj.weight, None
 diff --git a/python/sglang/srt/layers/muse_spark_moe_v4.py b/python/sglang/srt/layers/muse_spark_moe_v4.py
 new file mode 100644
 index 0000000..c1753cd
@@ -1170,3 +837,340 @@ index 0000000..c1753cd
 +        },
 +        state,
 +    )
+diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
+index f6d450a..01039b2 100644
+--- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
++++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
+@@ -2,10 +2,12 @@
+ 
+ from __future__ import annotations
+ 
++import logging
+ from typing import cast
+ 
+ import torch
+ 
++from sglang.srt.environ import envs
+ from sglang.srt.layers import muse_spark_expert_tp as expert_tp
+ from sglang.srt.layers.quantization.modelopt_quant import (
+     ModelOptNvFp4FusedMoEMethod,
+@@ -13,6 +15,46 @@ from sglang.srt.layers.quantization.modelopt_quant import (
+ )
+ from sglang.srt.layers.utils import copy_or_rebind_param
+ 
++logger = logging.getLogger(__name__)
++
++
++def _muse_v4_enabled() -> bool:
++    return not envs.SGLANG_MUSE_MOE_FORCE_STOCK.get()
++
++
++def _prepare_muse_v4(layer) -> None:
++    """Build the optional serving bank while the canonical tensors are live."""
++    layer._muse_v4_state = None
++    if not _muse_v4_enabled() or not torch.cuda.is_available():
++        return
++    capability = torch.cuda.get_device_capability(layer.gate_up_proj.device)
++    if capability[0] < 9:
++        return
++    # The serving kernel is specialized to the released 4096-wide routed
++    # expert. Tiny fixtures and other Muse variants stay on stock Marlin.
++    if (
++        layer.gate_up_proj.shape[0] != 32
++        or layer.gate_up_proj.shape[1] != 8192
++        or layer.gate_up_proj.shape[2] * 2 != 4096
++    ):
++        return
++    try:
++        from sglang.srt.layers.muse_spark_moe_v4 import prepare_layer
++
++        layer._muse_v4_state = prepare_layer(layer)
++        logger.info(
++            "Prepared Muse V4 routed NVFP4 bank for %d local experts on SM%d%d",
++            layer.gate_up_proj.shape[0],
++            capability[0],
++            capability[1],
++        )
++    except Exception:
++        layer._muse_v4_state = None
++        logger.warning(
++            "Muse V4 bank preparation failed; retaining stock Marlin path",
++            exc_info=True,
++        )
++
+ 
+ def _align_fp4_moe_weights_for_flashinfer_trtllm(layer) -> None:
+     """Align Muse's ``[w1, w3]`` checkpoint layout in-place.
+@@ -126,6 +168,10 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
+     )
+ 
+     def _process_weights_for_marlin(self, layer):
++        # The optional bank is packed from the lossless ModelOpt tensors before
++        # Marlin permutes them. Marlin remains the exact fallback for all other
++        # token counts and for the explicit A/B stock flag.
++        _prepare_muse_v4(layer)
+         for alias, native in self._MARLIN_PARAM_ALIASES:
+             setattr(layer, alias, getattr(layer, native))
+         result = super().process_weights_after_loading(layer)
+diff --git a/python/sglang/srt/models/dflash.py b/python/sglang/srt/models/dflash.py
+index 62f823b..b260383 100644
+--- a/python/sglang/srt/models/dflash.py
++++ b/python/sglang/srt/models/dflash.py
+@@ -700,7 +700,23 @@ class DFlashDraftModel(nn.Module):
+         num_context_features = len(target_layer_ids)
+ 
+         self.num_context_features = int(num_context_features)
+-        if self.quantizable:
++        if get_parallel().tp_size > 1:
++            fc_prefix = f"{prefix}.fc" if prefix else "fc"
++            # The target hidden state is replicated on every target-TP rank.  Split
++            # the drafter projection along its output dimension and gather the
++            # result so the following draft layers still see the stock tensor.
++            # Construction happens inside draft_tp_context(), therefore this uses
++            # the same TP group as the draft worker's other sharded modules.
++            self.fc = ColumnParallelLinear(
++                self.num_context_features * hidden_size,
++                hidden_size,
++                bias=False,
++                gather_output=True,
++                quant_config=quant_config,
++                prefix=fc_prefix,
++                parallel_group="tp",
++            )
++        elif self.quantizable:
+             fc_prefix = f"{prefix}.fc" if prefix else "fc"
+             self.fc = ReplicatedLinear(
+                 self.num_context_features * hidden_size,
+@@ -770,7 +786,11 @@ class DFlashDraftModel(nn.Module):
+ 
+     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
+         """Project concatenated target-layer hidden states into draft hidden_size."""
+-        expected = int(self.fc.input_size if self.quantizable else self.fc.in_features)
++        expected = int(
++            self.fc.input_size
++            if hasattr(self.fc, "input_size")
++            else self.fc.in_features
++        )
+         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
+             raise ValueError(
+                 "DFLASH target_hidden feature dim mismatch. "
+@@ -781,7 +801,7 @@ class DFlashDraftModel(nn.Module):
+                 "the draft checkpoint/config expects."
+             )
+         projected = self.fc(target_hidden)
+-        if self.quantizable:
++        if isinstance(projected, tuple):
+             projected = projected[0]
+         return self.hidden_norm(projected)
+ 
+@@ -904,7 +924,14 @@ class DFlashDraftModel(nn.Module):
+                     else:
+                         expected_shape = tuple(param.shape)
+                         loaded_shape = tuple(loaded_weight.shape)
+-                        shape_matches = loaded_shape == expected_shape
++                        tp_size = int(get_parallel().tp_size)
++                        shape_matches = loaded_shape == expected_shape or (
++                            tp_size > 1
++                            and getattr(param, "output_dim", None) == 0
++                            and len(loaded_shape) == len(expected_shape)
++                            and loaded_shape[0] == expected_shape[0] * tp_size
++                            and loaded_shape[1:] == expected_shape[1:]
++                        )
+                     if not shape_matches:
+                         raise ValueError(
+                             "DFLASH fc.weight shape mismatch. This usually means the draft checkpoint's "
+@@ -1019,7 +1046,9 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
+ 
+     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
+         expected = int(
+-            self.fc.input_size if self.is_nemotron_35_draft else self.fc.in_features
++            self.fc.input_size
++            if hasattr(self.fc, "input_size")
++            else self.fc.in_features
+         )
+         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
+             raise ValueError(
+@@ -1040,7 +1069,7 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
+             normed[:, i, :] = norm(slices[:, i, :])
+         fused = normed.reshape(target_hidden.shape[0], -1)
+         projected = self.fc(fused)
+-        if self.is_nemotron_35_draft:
++        if isinstance(projected, tuple):
+             projected = projected[0]
+         return self.hidden_norm(projected)
+ 
+diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
+index 312b342..e7dabdc 100644
+--- a/python/sglang/srt/models/muse_spark.py
++++ b/python/sglang/srt/models/muse_spark.py
+@@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
+ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
+     gemm_ag,
+     gemm_ag_supported,
++    split_projection_supported,
+     gemm_local,
+     reserve_projection_workspace,
+ )
+@@ -47,6 +48,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
+ from sglang.srt.environ import envs
+ from sglang.srt.layers import layernorm_sp
+ from sglang.srt.layers import muse_spark_expert_tp as expert_tp
++from sglang.srt.layers.attention.flashattention_backend import FlashAttentionBackend
+ from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
+ from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
+ from sglang.srt.layers.cp.utils import is_cp_active
+@@ -247,6 +249,52 @@ def _split_bf16_router_supported() -> bool:
+     return is_cuda() and get_device_capability()[0] == 9
+ 
+ 
++# Prefill only: above gemm_ag.MAX_TOKENS (512) the pooler and unpooler run replicated on every
++# rank. Arbitrary threshold; no measurement says where the row split starts to pay on H200.
++ROW_SPLIT_MIN_TOKENS = 1024
++
++
++def _use_row_split(tp_size: int, num_tokens: int) -> bool:
++    return (
++        tp_size > 1
++        and num_tokens >= ROW_SPLIT_MIN_TOKENS
++        and not _is_cpu
++        and not get_forward().sp_active
++        and not torch.cuda.is_current_stream_capturing()
++    )
++
++
++def _row_split_gemm(x: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
++    """``x @ weight.T`` with each TP rank computing ceil(M / world) rows, then all-gathered."""
++    tp_group = get_tp_group()
++    world, rank = tp_group.world_size, tp_group.rank_in_group
++    m = x.shape[0]
++    rows = -(-m // world)
++    lo, hi = min(rank * rows, m), min((rank + 1) * rows, m)
++    local = bf16_gemm_dispatch(x[lo:hi], weight, None)
++    if hi - lo < rows:
++        local = torch.nn.functional.pad(local, (0, 0, 0, rows - (hi - lo)))
++    out = local.new_empty(rows * world, weight.shape[0])
++    tp_group.all_gather_into_tensor(out, local)
++    return out[:m]
++
++
++def _reduce_scatter_rows_gemm(partial: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
++    """``all_reduce(partial) @ weight.T``: reduce-scatter rows, local GEMM, all-gather rows."""
++    tp_group = get_tp_group()
++    world = tp_group.world_size
++    m = partial.shape[0]
++    rows = -(-m // world)
++    if rows * world != m:
++        partial = torch.nn.functional.pad(partial, (0, 0, 0, rows * world - m))
++    reduced = partial.new_empty(rows, partial.shape[1])
++    tp_group.reduce_scatter_tensor(reduced, partial.contiguous())
++    local = bf16_gemm_dispatch(reduced, weight, None)
++    out = local.new_empty(rows * world, weight.shape[0])
++    tp_group.all_gather_into_tensor(out, local)
++    return out[:m]
++
++
+ def _use_split_bf16_router(num_tokens: int) -> bool:
+     if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
+         return False
+@@ -413,25 +461,53 @@ class MuseSpark1xAttention(nn.Module):
+     ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+         backend = get_attn_backend()
+         pool = get_token_to_kv_pool()
+-        if not (
++        decode_or_verify = (
++            forward_batch.forward_mode.is_decode()
++            or forward_batch.forward_mode.is_target_verify()
++        )
++        common_ok = (
++            self.attn.k_scale is None
++            and self.attn.v_scale is None
++            and forward_batch.dcp_kv_mask is None
++            and decode_or_verify
++            and not is_cp_active(forward_batch)
++        )
++        trt_ok = (
+             isinstance(backend, TRTLLMHAAttnBackend)
+             and backend.data_type in (torch.bfloat16, torch.float8_e4m3fn)
+             and pool.dtype == backend.data_type
+             and (pool.dtype == torch.bfloat16 or not backend.is_xqa_impl)
+-            and self.attn.k_scale is None
+-            and self.attn.v_scale is None
+-            and forward_batch.dcp_kv_mask is None
+-            # Prefill excluded: the fused store segfaults at breakable prefill replay.
+-            and (
+-                forward_batch.forward_mode.is_decode()
+-                or forward_batch.forward_mode.is_target_verify()
+-            )
+-            and not is_cp_active(forward_batch)
+-        ):
++        )
++        fa3_ok = (
++            isinstance(backend, FlashAttentionBackend)
++            and backend.fa_impl_ver == 3
++            and not backend.use_mla
++            and not backend.fa_skip_kv_cache
++            and pool.dtype == torch.float8_e4m3fn
++        )
++        if not (common_ok and (trt_ok or fa3_ok)):
++            return None
++
++        if trt_ok:
++            cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
++        else:
++            cache_loc = forward_batch.out_cache_loc
++            layer_mapping = getattr(pool, "layers_mapping", None)
++            if (
++                layer_mapping is not None
++                and layer_mapping[self.layer_idx][1]
++            ):
++                metadata = backend.forward_metadata
++                cache_loc = getattr(metadata, "swa_out_cache_loc", None)
++                if cache_loc is None:
++                    return None
++                cache_loc = cache_loc[: forward_batch.out_cache_loc.shape[0]]
++        if cache_loc is None:
+             return None
+-        cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
+         k_cache = pool.get_key_buffer(self.layer_idx)
+         v_cache = pool.get_value_buffer(self.layer_idx)
++        if not (k_cache.is_contiguous() and v_cache.is_contiguous()):
++            return None
+         return (
+             k_cache.view(k_cache.shape[0], -1),
+             v_cache.view(v_cache.shape[0], -1),
+@@ -584,7 +660,7 @@ class MuseSpark1xMoE(nn.Module):
+             self.pre_expert_proj is not None
+             and self.tp_size in (4, 8)
+             and torch.cuda.is_available()
+-            and torch.cuda.get_device_capability() == (10, 3)
++            and torch.cuda.get_device_capability() in ((10, 3), (9, 0))
+         ):
+             ca_comm = get_tp_group().ca_comm
+             reserve_projection_workspace(
+@@ -757,6 +833,10 @@ class MuseSpark1xMoE(nn.Module):
+             and not getattr(get_forward(), "sp_active", False)
+             and not already_reduced
+         ):
++            if self.post_expert_proj is not None and _use_row_split(
++                self.tp_size, output.shape[0]
++            ):
++                return _reduce_scatter_rows_gemm(output, self.post_expert_proj.weight)
+             output = tensor_model_parallel_all_reduce(output)
+         if self.post_expert_proj is not None:
+             if _is_cpu:
+@@ -846,10 +926,14 @@ class MuseSpark1xMoE(nn.Module):
+             if (
+                 self.tp_size in (4, 8)
+                 and not sp_active
+-                and torch.cuda.get_device_capability(hidden_states.device) == (10, 3)
++                and split_projection_supported(
++                    hidden_states.device, hidden_states.shape[0]
++                )
+                 and gemm_ag_supported(comm, hidden_states, self.pre_expert_proj.weight)
+             ):
+                 expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
++            elif _use_row_split(self.tp_size, hidden_states.shape[0]):
++                expert_input = _row_split_gemm(hidden_states, self.pre_expert_proj.weight)
+             else:
+                 expert_input = bf16_gemm_dispatch(
+                     hidden_states, self.pre_expert_proj.weight, None

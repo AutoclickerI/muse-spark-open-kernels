@@ -98,7 +98,7 @@ def main():
         graph.capture_end()
         graph.replay()
     stream.synchronize()
-    graph_diff = max(
+    graph_diff = int(bool(max(
         (graph_q.view(torch.uint8) != q_patch.view(torch.uint8)).any().item(),
         (graph_k_norm != k_patch).any().item(),
         (graph_k[locations].view(torch.uint8) != k_cache[locations].view(torch.uint8))
@@ -107,7 +107,7 @@ def main():
         (graph_v[locations].view(torch.uint8) != v_cache[locations].view(torch.uint8))
         .any()
         .item(),
-    )
+    )))
     graph_out = _attention(
         graph_q,
         graph_k[locations],
