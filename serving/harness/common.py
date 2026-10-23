@@ -20,11 +20,15 @@ STOCK_TREE = Path(os.environ.get("MUSE_STOCK_TREE", "/data2/jihoon/muse_kernel/s
 MODELS = DATA / "models"
 RESULTS = DATA / "results"
 
-# Weight sets: "random" = seeded random weights (as asked); "chain" = structured weights whose
-# greedy output has wide margins and that the drafter mostly predicts (see make_tiny.py).
+# Weight sets: "random" = seeded random weights (near-tie diagnostic), "chain" = structured
+# acceptance fixture, and "margin" = stable agreement fixture (see make_tiny.py).
 WEIGHT_SETS = {
     "random": ("muse-tiny-nvfp4", "dflash2-tiny"),
     "chain": ("muse-tiny-nvfp4-chain", "dflash2-tiny-chain"),
+    # A deterministic margin fixture.  The random fixture is useful for finding
+    # numerical sensitivity, but its nearly uniform logits make token agreement
+    # an invalid serving correctness signal.
+    "margin": ("muse-tiny-nvfp4-margin", "dflash2-tiny-margin"),
 }
 
 

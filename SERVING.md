@@ -78,6 +78,14 @@ Every path checks `has_multicast` and falls back to stock.
 
 ## Testing
 
+The judge's agreement rule: "Your outputs have to agree with stock SGLang's nearly as well as it agrees with
+itself" (`upstream/llms.txt:130`). Bit-exactness isn't required; drift beyond stock's own run-to-run
+variation is the risk. Local recipe (serving/harness/README.md): the `margin` fixture (default) has no
+near-ties, so anything below 100% there is a bug; `teacher_forced.py` / `compare_teacher_forced.py` give
+each change's logprob drift (0.0 for everything in patch.diff as of 2026-10-23, TP1 and TP2); for a change
+that alters accumulation order (the MoE port, attention), also compare stock-vs-patched agreement with
+stock-vs-stock on the `random` fixture, where near-ties flip greedy tokens.
+
 Local: `serving/harness/` (tiny-config Muse on our sm_120 GPUs; NVSwitch multicast and Hopper-only kernels can't
 run there). Hopper paths compile for sm_90a locally under `override_jit_cuda_arch(9, 0)` (`kernels/jit/utils/arch.py:144-170`).
 On the judge: `okc serve check` only.

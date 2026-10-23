@@ -13,7 +13,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--prefix', required=True)
     ap.add_argument('--tp', type=int, choices=(1, 2), default=1)
-    ap.add_argument('--weights', choices=common.WEIGHT_SETS, default='random')
+    ap.add_argument('--weights', choices=common.WEIGHT_SETS, default='margin',
+                    help='margin fixture is the agreement default; random is a tie diagnostic')
     ap.add_argument('--quick', action='store_true', help='10 requests instead of 30; same context coverage')
     ap.add_argument('--load-check', action='store_true')
     ap.add_argument('--trace-paths', action='store_true')

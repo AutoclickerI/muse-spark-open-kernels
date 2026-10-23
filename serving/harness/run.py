@@ -361,8 +361,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tree", default="patch", help="'stock', 'patch' (serving/sglang) or a path to an SGLang checkout")
     ap.add_argument("--label", required=True, help=f"results go to {common.RESULTS}/<label>")
-    ap.add_argument("--weights", default="random", choices=sorted(common.WEIGHT_SETS),
-                    help="tiny checkpoint pair written by make_tiny.py")
+    ap.add_argument("--weights", default="margin", choices=sorted(common.WEIGHT_SETS),
+                    help="tiny checkpoint pair written by make_tiny.py (margin is the agreement default; random is a tie diagnostic)")
     ap.add_argument("--target", default=None, help="override the target checkpoint dir")
     ap.add_argument("--draft", default=None, help="override the drafter checkpoint dir")
     ap.add_argument("--tp", type=int, default=1, help="TP size; EP is set equal, as in the judge's flags")

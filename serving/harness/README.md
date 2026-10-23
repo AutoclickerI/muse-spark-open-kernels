@@ -5,10 +5,12 @@ ModelOpt NVFP4-to-Marlin repacking, FP8 KV pools, scheduler, prefix/hierarchical
 cache, HTTP server, and speculative verification. Neither checkout nor the
 judge image is edited. This is a local correctness screen, not H200 timing.
 
-**Current result: servers and 220-token requests run, but random-weight stock
-self-agreement fails. Do not interpret equal low stock/patch agreement as a
-correctness pass.** See the measured results below. The suite deliberately
-exits 1 on any output disagreement, including stock versus itself.
+The agreement fixture is the `margin` checkpoint pair. It keeps the real Muse
+Spark/DFlash2 architecture, NVFP4/BF16 serialization, loaders, KV cache and
+speculative path, but gives the LM head one dominant token. The original
+`random` pair remains available as a deliberately unstable numerical
+diagnostic. The suite defaults to `margin` and exits 1 on any output
+disagreement, including stock versus itself.
 
 ## Commands
 
@@ -18,7 +20,8 @@ From `/home/jihoon/competitions/muse_kernel`:
 # Existing generated fixtures are already under this directory:
 ls /data2/jihoon/muse_kernel/harness/models/
 
-# On a fresh setup only; refuses to overwrite existing checkpoint files.
+# On a fresh setup only; defaults to the margin agreement fixture and refuses
+# to overwrite existing checkpoint files.
 serving/harness/img python -I serving/harness/make_tiny.py
 
 # Generate another seeded pair without overwriting the existing evidence:
@@ -26,7 +29,7 @@ serving/harness/img python -I serving/harness/make_tiny.py \
   --target /data2/jihoon/muse_kernel/harness/models/new-target \
   --draft /data2/jihoon/muse_kernel/harness/models/new-draft --seed 1234
 
-# Four separate TP1 server starts: stock A/B/C and patch.
+# Four separate TP1 server starts: stock A/B/C and patch (margin fixture).
 # Two self baselines (A/B and A/C), plus patch versus A and B.
 # --quick = 10 requests/run; omitting it = 30 requests/run.
 python3 serving/harness/suite.py --prefix my-tp1 --quick --load-check
@@ -38,6 +41,11 @@ python3 serving/harness/run.py --tree patch --label my-patch --load-check
 python3 serving/harness/compare.py my-tp1-stock-a my-tp1-stock-b --require-exact
 python3 serving/harness/compare.py my-tp1-stock-a my-tp1-patch \
   --baseline my-tp1-stock-a my-tp1-stock-b --require-exact
+
+# Teacher-forced prompt and first-k generated-token logprobs.
+python3 serving/harness/teacher_forced.py --tree stock --label my-lp-stock-a --tp 1
+python3 serving/harness/teacher_forced.py --tree patch --label my-lp-patch --tp 1
+python3 serving/harness/compare_teacher_forced.py my-lp-stock-a my-lp-patch
 
 # CPU checks for empty/missing requests, fingerprints and other false passes:
 python3 serving/harness/test_harness.py
@@ -97,6 +105,14 @@ and seed 1235 for the drafter. Shapes:
 | Draft MLP / selector | Intermediate 3584; rank 256 / top 16; block size 8 |
 | Target taps | Layers 1,2,4,5,6 |
 
+`--weights random` uses independent seeded tensors and is useful for exposing
+near-tie sensitivity. `--weights margin` (the default used by `run.py` and
+`suite.py`) retains the same serialized shapes and loader coverage, sets the
+residual branches to zero, and makes token 0's LM-head row dominant. Its
+teacher-forced token-0 logprob is about `-0.000416`, so argmax agreement is a
+meaningful screen. The fixture is intentionally an agreement baseline, not a
+claim about the released model's output distribution.
+
 TP2 partitions attention and experts with EP=TP, including replication of the
 drafter's single KV head. It therefore does not reproduce the judge's per-rank
 head/expert counts exactly. New checkpoints include tensor manifests, seeds,
@@ -136,6 +152,15 @@ and one exceeds the prefill chunk. The default is 2 and 8 conversations with
 The runner verifies collected output IDs, server completion counts, input
 counts and the length finish reason. TTFT is measured to the first SSE chunk
 with token IDs; with speculative decoding, a chunk can contain several tokens.
+
+`teacher_forced.py` makes two HTTP requests for one fixed prompt. The first is
+greedy and records its first `k` output IDs. The second appends those IDs to the
+same prompt and requests `return_logprob=true, logprob_start_len=0`; its
+`input_token_logprobs` therefore contains prompt logprobs followed by the
+teacher-forced first-`k` generated-token logprobs. The helper verifies returned
+token IDs preserve prompt order and reports max/mean absolute differences. The
+retained TP2 receipts use a 2,608-token prompt, exercising the patched row-split
+prefill condition.
 
 Results live at `/data2/jihoon/muse_kernel/harness/results/<label>/`:
 
@@ -225,6 +250,48 @@ times include server startup and cleanup; shared-GPU timings are diagnostic.
 
 <!-- RESULTS -->
 
+### Agreement and teacher-forced logprob results (2026-10-23, sm_120)
+
+The old random fixture's same-server diagnostic measured different cold
+prefill outputs for identical prompts. With `return_logprob` and top-5 output
+logprobs, the first-token values were around `-11.4`, close to
+the `-log(202048) = -12.216` uniform-vocabulary scale; across 32 displayed
+top-two comparisons, the gap ranged from 0.001823 to 0.121263 (mean 0.047429).
+This is a near-tie fixture, not evidence of request regeneration or
+mispaired responses: the request workload hash and all request keys were equal,
+and `compare.py` pairs by those keys. The margin fixture changes only values,
+not tensor names/shapes/dtypes or execution paths; its dominant token is 0.
+
+Generated-token agreement uses 10 requests (concurrency 1: 2, concurrency 4:
+8), each with 220 output IDs. `exact / positional` are both 100% in every row:
+
+| TP | comparison | c=1 exact / positional | c=4 exact / positional | all exact / positional |
+|---:|---|---:|---:|---:|
+| 1 | stock A vs stock B | 100% / 100% | 100% / 100% | 100% / 100% |
+| 1 | stock A vs patched | 100% / 100% | 100% / 100% | 100% / 100% |
+| 2 | stock A vs stock B | 100% / 100% | 100% / 100% | 100% / 100% |
+| 2 | stock A vs patched | 100% / 100% | 100% / 100% | 100% / 100% |
+
+Receipts: `margin-gen-tp1-stock-a`, `margin-gen-tp1-stock-b`,
+`margin-gen-tp1-patch`, `margin-gen-tp2-stock-a`, `margin-gen-tp2-stock-b`,
+`margin-gen-tp2-patch`.
+
+Teacher-forced checks use the same 2,608-token prompt and the first 8 greedy
+generated IDs. The first input token is null by API definition, so the metric
+excludes it. For both prompt-token logprobs (2,615 finite entries) and the
+first-8 generated-token logprobs, every retained comparison had max and mean
+absolute difference exactly `0.0`:
+
+| TP | comparison | generated IDs equal | prompt max / mean | first-8 generated max / mean |
+|---:|---|:---:|---:|---:|
+| 1 | stock A vs stock B | yes | 0.0 / 0.0 | 0.0 / 0.0 |
+| 1 | stock A vs patched | yes | 0.0 / 0.0 | 0.0 / 0.0 |
+| 2 | stock A vs stock B | yes | 0.0 / 0.0 | 0.0 / 0.0 |
+| 2 | stock A vs patched | yes | 0.0 / 0.0 | 0.0 / 0.0 |
+
+Receipts: `margin-lp-tp1-stock-a/b`, `margin-lp-tp1-patch`,
+`margin-lp-tp2-stock-a/b`, `margin-lp-tp2-patch`.
+
 | Run | TP | Startup (s) | Total (s) | Requests × output length |
 |---|---:|---:|---:|---|
 | `verified-tp1-stock-a` | 1 | 39.30 | 45.71 | 10 × 220 |
@@ -238,7 +305,7 @@ times include server startup and cleanup; shared-GPU timings are diagnostic.
 | `accepted-drafts` (structured) | 1 | 42.01 | 47.75 | 10 × 220 |
 
 The TP1 suite therefore took 225.94 seconds across four cold server starts.
-All eight runs above completed without request errors or server tracebacks.
+All nine runs above completed without request errors or server tracebacks.
 Each audited rank reported 194 target parameters (35 intentionally unused
 multimodal parameters) and 66 drafter parameters, with no unwritten text or
 draft parameters. Graph runs captured target prefill, target verification and
@@ -258,17 +325,20 @@ graphs. FP8 target full/sliding and draft KV pools were logged.
 | tp2_patch | 1 | 0.0% | 0.0% | 0.0% | 102.88 / 210.39 | 2.045 |
 | tp2_patch | 4 | 0.0% | 0.0% | 0.0% | 303.59 / 277.44 | 0.914 |
 
-`self_ab` and `self_ac` are two independent TP1 self comparisons using
+The following is historical evidence from the original random fixture, before
+the margin fixture was added; it remains useful for diagnosing the cause but
+is no longer the agreement baseline. `self_ab` and `self_ac` are two independent TP1 self comparisons using
 stock A/B/C. `patch_a` uses stock A. TP2 self uses stock A/B2; TP2 patch
 uses stock B2. All random runs accepted zero proposed draft tokens (reported
 accept length 1.00457 includes the bonus/output-count convention). Every
 request returned 220 tokens, but all compared requests differ at token zero.
 
-**Output agreement is unvalidated.** Stock itself has zero useful agreement,
-so the strict suite and baselined comparisons exit 1. This is not evidence
-that the patch passes correctness, nor proof that the patch caused a fault.
-The remaining cause could include fixture numerical sensitivity or stock/
-backend behavior; it has not been localized. No H200 conclusion follows.
+The random fixture's stock self-agreement was 0% at token zero, so its strict
+suite exited 1. The repeated same-server diagnostic reproduced this for
+identical prompts and greedy parameters, which localizes the cause to the
+fixture's near-tie logits interacting with numerical/caching paths rather than
+request regeneration or key-order comparison. No H200 conclusion follows from
+these local random-fixture results.
 The instrumented TP2 concurrency-1 TTFT ratio is 2.045, slightly above 2;
 concurrency 4 is 0.914. These shared-workstation measurements do not establish
 the judge's TTFT requirement.
@@ -326,7 +396,7 @@ tokens, no loading failures or tracebacks. Mean acceptance length: c=1
 1474 correct drafts out of 5110 proposed. This is acceptance-plumbing coverage,
 not an agreement baseline for the random fixture.
 
-Final verification: all nine CPU integrity checks pass. The final automatic
+Final verification: all ten CPU integrity checks pass. The final automatic
 graph validator was also replayed against the retained server logs of all
 nine successful runs above; it reported no missing captures/replays. The
 stock worktree remains pristine at a55ab7d5; the working-tree diff equals

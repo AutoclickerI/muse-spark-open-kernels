@@ -75,6 +75,13 @@ class HarnessChecks(unittest.TestCase):
         self.assertEqual(result, persisted)
         self.assertFalse(any('error' in row for row in result))
 
+    def test_teacher_forced_diff_summary(self):
+        # The metric helper is intentionally pure and must ignore the leading
+        # null logprob for the first input token.
+        from compare_teacher_forced import diffs
+        self.assertEqual(diffs([None, -1.0, -2.0], [None, -1.25, -1.5]),
+                         {'count': 2, 'max_abs_diff': 0.5, 'mean_abs_diff': 0.375})
+
 
 if __name__ == '__main__':
     unittest.main()

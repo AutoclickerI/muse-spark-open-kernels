@@ -472,6 +472,62 @@ def chain_draft_weights(seed: int, target_seed: int):
     return w
 
 
+def margin_target_weights(seed: int):
+    """Make a real-format checkpoint whose greedy argmax has a large margin.
+
+    The original seeded-random fixture produces logits close to the uniform
+    202,048-way distribution (and therefore a different argmax after harmless
+    kernel reduction-order noise).  For harness agreement we need a stable
+    reference signal.  Keep every tensor and loader path, but make the residual
+    stream constant, all branches zero, and token 0 the sole LM-head row.  The
+    model still executes the full Muse/MoE/FP4 and DFlash code paths.
+    """
+    w = target_weights(seed)
+    for name, tensor in w.items():
+        if name.endswith("embed_tokens.weight"):
+            tensor.fill_(1)
+        elif name == "lm_head.weight":
+            tensor.zero_()
+            tensor[0].fill_(1)
+        elif name.endswith("norm.weight"):
+            tensor.fill_(1)
+        elif name.endswith("input_layernorm.weight") or name.endswith(
+            "pre_feedforward_layernorm.weight"
+        ):
+            tensor.fill_(1)
+        elif name.endswith("post_feedforward_layernorm.weight"):
+            # Post-feedforward norms are zero-centred with gain centre one.
+            tensor.zero_()
+        elif name.endswith("post_expert_norm.weight"):
+            # Same zero-centred convention for the expert output norm.
+            tensor.zero_()
+        elif name.endswith("residual_gate.gate"):
+            tensor.fill_(-20)
+        elif name.endswith("gate.e_score_correction_bias"):
+            tensor.zero_()
+        elif name.endswith("_weight_scale") or name.endswith("_weight_scale_2"):
+            tensor.fill_(1)
+        elif name.endswith("_input_scale"):
+            tensor.fill_(1)
+        else:
+            tensor.zero_()
+    return w
+
+
+def margin_draft_weights(seed: int, target_seed: int):
+    # The target's logits are independent of the drafter.  Reusing a valid
+    # zeroed-format drafter keeps DFlash enabled while making its proposal
+    # deterministic and cheap to reject/accept.
+    w = draft_weights(seed)
+    for name, tensor in w.items():
+        if name.endswith("norm.weight") or name.endswith("input_layernorm.weight") \
+                or name.endswith("post_attention_layernorm.weight"):
+            tensor.fill_(1)
+        else:
+            tensor.zero_()
+    return w
+
+
 # ---------------------------------------------------------------- tokenizer
 SPECIALS = {
     common.BOS_ID: "<|begin_of_text|>",
@@ -528,7 +584,8 @@ def write_tokenizer(out: Path) -> None:
 def main() -> None:
     torch.set_num_threads(8)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--weights", default="random", choices=sorted(common.WEIGHT_SETS))
+    ap.add_argument("--weights", default="margin", choices=sorted(common.WEIGHT_SETS),
+                    help="margin is the agreement fixture; random is a near-tie diagnostic")
     ap.add_argument("--target", type=Path, default=None, help="default: by --weights under the data dir")
     ap.add_argument("--draft", type=Path, default=None)
     ap.add_argument("--seed", type=int, default=1234)
@@ -554,16 +611,24 @@ def main() -> None:
         "pad_token_id": common.PAD_ID,
     }, indent=2))
     write_tokenizer(args.target)
-    tw = (target_weights(args.seed) if args.weights == "random"
-          else chain_target_weights(args.seed, args.beta, args.gamma, args.head_gain))
+    if args.weights == "random":
+        tw = target_weights(args.seed)
+    elif args.weights == "chain":
+        tw = chain_target_weights(args.seed, args.beta, args.gamma, args.head_gain)
+    else:
+        tw = margin_target_weights(args.seed)
     save_file({k: v.contiguous().clone() for k, v in tw.items()}, str(args.target / "model.safetensors"),
               metadata={"format": "pt"})
     print(f"target: {len(tw)} tensors, "
           f"{sum(v.numel() * v.element_size() for v in tw.values()) / 2**20:.0f} MiB -> {args.target}")
 
     (args.draft / "config.json").write_text(json.dumps(draft_config(), indent=2))
-    dw = (draft_weights(args.seed + 1) if args.weights == "random"
-          else chain_draft_weights(args.seed + 1, args.seed))
+    if args.weights == "random":
+        dw = draft_weights(args.seed + 1)
+    elif args.weights == "chain":
+        dw = chain_draft_weights(args.seed + 1, args.seed)
+    else:
+        dw = margin_draft_weights(args.seed + 1, args.seed)
     save_file({k: v.contiguous().clone() for k, v in dw.items()}, str(args.draft / "model.safetensors"),
               metadata={"format": "pt"})
     (args.target / "harness_weights.json").write_text(json.dumps(
