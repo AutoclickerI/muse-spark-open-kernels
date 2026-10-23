@@ -11,9 +11,6 @@ Load ratios aggregate sliding/full latencies with official weights before divisi
 
 | Candidate | Job / receipt | Result | Overall | D1 | D16 | D32 | V1 | V16 | V32 |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
-| cand_adapt2.py (check) | 69a655d3b2364fc4 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_adapt3.py (check) | a5ab4a2011f44321 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_adapt4.py (check) | b2a8999311034eb3 | pending, no H200 result | — | — | — | — | — | — | — |
 | submission.py (check) | [b90f4b3c889348d5](../../../runs/muse_decode_layer/20261023T070737Z_check_b90f4b3c889348d5.json) | pass | 0.0045 | 0.004 | 0.004 | 0.003 | 0.006 | 0.006 | 0.005 |
 | muse_decode_layer_sglang.py (check) | [7deb87da4aa644b5](../../../runs/muse_decode_layer/20261023T071306Z_check_7deb87da4aa644b5.json) | pass | 0.9996 | 0.996 | 1.001 | 1.001 | 0.999 | 0.999 | 1.001 |
 | cand_v0.py (check) | [20cabe4557d84357](../../../runs/muse_decode_layer/20261023T080151Z_check_20cabe4557d84357.json) | pass | 1.0825 | 1.085 | 1.048 | 1.061 | 1.220 | 1.050 | 1.042 |
@@ -24,6 +21,9 @@ Load ratios aggregate sliding/full latencies with official weights before divisi
 | cand_attn.py (check) | [da7ed740833c4535](../../../runs/muse_decode_layer/20261023T090729Z_check_da7ed740833c4535.json) | pass | 1.1042 | 1.107 | 1.146 | 1.235 | 1.177 | 0.999 | 0.984 |
 | cand_attn_v3.py (check) | [2f3960c275774a20](../../../runs/muse_decode_layer/20261023T090729Z_check_2f3960c275774a20.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
 | submission.py (submit) | [f17fad6758ed46d0](../../../runs/muse_decode_layer/20261023T091159Z_submit_f17fad6758ed46d0.json) | pass | 1.1374 | 1.240 | 1.149 | 1.022 | 1.368 | 1.051 | 1.034 |
+| cand_adapt2.py (check) | [69a655d3b2364fc4](../../../runs/muse_decode_layer/20261023T092635Z_check_69a655d3b2364fc4.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
+| cand_adapt3.py (check) | [a5ab4a2011f44321](../../../runs/muse_decode_layer/20261023T092850Z_check_a5ab4a2011f44321.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
+| cand_adapt4.py (check) | [b2a8999311034eb3](../../../runs/muse_decode_layer/20261023T093023Z_check_b2a8999311034eb3.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
 | cand_moe4.py (check) | 6fed72479ef6446f | pending, no H200 result | — | — | — | — | — | — | — |
 | cand_moe4_attn.py (check) | a0b66fe115024a68 | pending, no H200 result | — | — | — | — | — | — | — |
 | cand_tuned.py (check) | 0fa94cd98ba34c93 | pending, no H200 result | — | — | — | — | — | — | — |
@@ -41,7 +41,7 @@ No automatic scored promotion has been launched.
 ## What is established
 
 Best completed whole-layer check remains **1.142800x**, `2c112482e81745af` (`cand_v3.py`).
-Its scored run `f17fad6758ed46d0` already has a waiter; it was not resent or collected.
+Its scored run `f17fad6758ed46d0` completed at **1.137375x**; `submission.py` remains that v3 source.
 `cand_attn.py`, `da7ed740833c4535`, passed at **1.104164x**. At handoff, the new combined candidates had no completed H200 measurements. The receipt
 table above is refreshed as they finish. The final quota snapshot, `budget_final.json`,
 shows **20/20 checks used, zero remaining; 8 scored attempts remain**.
@@ -62,9 +62,9 @@ seeds and timing noise limit fine comparisons. In particular, decode-16's v3/att
 is too small to resolve confidently.
 
 `cand_attn_v3.py` check `2f3960c275774a20` failed before timing: the custom path expected
-a tensor but received v3's `(FP32 partials, split_count)` tuple. The queued adapt2/3/4
-sources contain the same access; their outcomes remain pending and are not called failures
-without a receipt. This is an integration defect, not evidence against fused attention.
+a tensor but received v3's `(FP32 partials, split_count)` tuple. The adapt2/3/4 checks have now all completed with the same tuple/device integration failure:
+`69a655d3b2364fc4`, `a5ab4a2011f44321`, and `b2a8999311034eb3`. Their receipts
+confirm the defect; they do not measure fused-attention performance. This is an integration defect, not evidence against fused attention.
 The new custom path reduces partials inside its CUDA loads and rounds the QKV activation
 to BF16. Local tests now exercise that path on sm_120 rather than bypassing it off Hopper.
 
@@ -130,15 +130,10 @@ pending/source receipts. Original waiters were left alone. At handoff no new sco
 submission had been made because no new H200 check had finished. See the live promotion
 state above and receipt rows for subsequent submissions.
 
-`auto_promote.py` is running detached (log: `auto_promote.log`). It waits on Linux receipt
-file completion/rename events and child exit signals, with no polling or sleep loop.
-It refreshes this report and H200_STAGES as receipts land. A completed passing check
-above the best measured/submitted-promotion ratio is submitted through `tools/okc_run.py`
-using its exact receipt source, only after its hash matches passing local evidence. It
-limits new promotions to the eight remaining scored attempts. Increasing checks that
-arrive after a stronger promotion do not spend an extra scored attempt. Promotion jobs,
-PIDs and failures are recorded in `promotion_state.json` and `submit_<name>_<check>.log`.
-The watcher was verified running; its promotion branch awaits an actual passing result.
+The earlier automatic promotion watcher is **not running** when inspected during this
+structural round. No new check or scored run was launched: the current task holds remote
+runs until the next-day plan is reviewed/executed by the coordinator. Existing receipt
+waiters were left alone. The old script/log remain historical artifacts.
 
 To refresh tables manually: `python3 problems/muse_decode_layer/dev/report_receipts.py`.
 Do not collect an accepted run while its existing waiter is alive.
@@ -160,3 +155,44 @@ Do not collect an accepted run while its existing waiter is alive.
 Source edits are confined to `problems/muse_decode_layer/`; other problem directories
 were read only. The upstream sync ran in an isolated mirror under this dev directory;
 TASK, official AGENTS, reference, checks, NVFP4 helper, baseline and llms.txt were unchanged.
+
+
+## Structural round, local-only (2026-10-23 evening KST)
+
+The complete current evidence is in [STRUCTURAL.md](STRUCTURAL.md), with exact source hashes,
+all round-2 comparisons, and all per-stage timings. [NEXT_CHECKS.md](NEXT_CHECKS.md) is the
+ordered plan for 2026-10-24 09:00 KST. No remote GPU runs or commits were made in this round.
+
+Built `cand_chain.py` (MoE v4), `cand_chain6.py` (MoE v6), `cand_chain_nopf.py`,
+`cand_chain_occ2.py` (two-CTA bounds only at T<=8), `cand_epilogue.py`, and
+`cand_layer_sweep.py`. Each final proposed source must match the passing local JSON hash;
+STRUCTURAL's exact-source validation table is the authority for readiness.
+
+At T<=32, the persistent chain fuses O projection through routing into one resident kernel,
+and unpooler through final residual/norm into another. The MoE is a third persistent kernel.
+Attention and MoE now participate in PDL as well as Triton. The actual T16/T32 local graph
+has six compute kernels plus one zero-fill and six programmatic edges, queried from CUDA;
+the trace shows overlap. At T>32 the existing dense/FA3 dispatch remains, with v6 experts in
+v6 candidates. This is a structural step, not a single fused kernel at every token count.
+
+All final candidates were screened with the 13 official local tests and all 12 fresh-input
+graph cases. The main templates, adaptive-occupancy templates, and both Triton epilogues
+compile for sm_90a. Hopper execution, FA3 integration with this new chain, alternate judge
+router seeds, and actual H200 speed remain unverified.
+
+The new fusion **does not yet win locally**. On common inputs, chain-v4 is about 0.978x v3,
+chain-v6 about 0.952x, and the narrower epilogue path about 0.967x (sm_120 only). MoE v6 is
+retained because its H200 receipt beats v4, despite the local ordering reversing. The
+persistent prefix's row reductions and grid barriers outweigh launch savings locally.
+Initial one-CTA norms and block-wide top-8 were replaced with resident norm chunks and
+one-warp selection. Forcing two CTAs at T16/32 caused large register spills and was retired;
+the adaptive variant keeps one-CTA bounds there. No tests or tolerances were weakened.
+The narrower epilogue fusion removes the first residual boundary launch with four
+sufficient statistics and computes its BF16 input inside pooler/router loads.
+
+The diagnostic `cand_layer_sweep.py` logs synthetic, cold-L2 graph timings in `prepare`:
+projection variants, unfused/epilogue/persistent prefixes, v4/v6 experts, suffix variants,
+and attention+prefix prefetch pairs. Its timed callable remains the fixed chain-v6 path;
+no harness input is used in prepare, and no derived output is retained. The whole local
+log is below the judge's 16,000-character returned-log limit. Prefer its discriminating
+H200 evidence before spending checks on every structural variant.

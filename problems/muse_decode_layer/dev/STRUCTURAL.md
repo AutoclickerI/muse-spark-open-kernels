@@ -1,6 +1,6 @@
 # Structural decode round: local evidence
 
-All times here are measured on the local RTX PRO 6000 (sm_120), inside the judge image. They are not H200 estimates. No new remote GPU run or commit was made. The shipped submission remains v3.
+All times here are measured on the local RTX PRO 6000 (sm_120), inside the judge image. They are not H200 estimates. No new remote GPU run or commit was made. The shipped submission remains v3. `cand_persistent.py` is a superseded prototype, not in the proposed check set.
 
 `structural_bench.py` uses common generated weights and seed 77, cold-L2 graph replay (1 GiB flush), 20 replays/stage, and subtracts the measured replay fixed cost. Baseline and candidates run serially on GPU 0. Attention uses the portable implementation locally; FA3 is Hopper-only. Cross-run comparisons and small gaps remain screening evidence. Stage graphs break cross-stage PDL overlap; their times must not be added to predict whole-layer time.
 
@@ -25,6 +25,7 @@ Ratios are v3 time / candidate time, first aggregating sliding/full with weights
 | cand_epilogue | 0.967x | 0.967x | 0.978x | 0.953x | 0.978x | 1.012x | 0.918x |
 | forced_occ2_retired | 0.935x | 0.957x | 0.957x | 0.822x | 0.961x | 1.006x | 0.916x |
 | cand_chain_nopf | 0.949x | 0.916x | 0.968x | 0.958x | 0.930x | 1.008x | 0.915x |
+| cand_chain_occ2 | 0.963x | 0.957x | 0.967x | 0.956x | 0.962x | 1.013x | 0.922x |
 
 ## Per-stage graph times
 
@@ -68,6 +69,12 @@ Times in microseconds. Prefix groups O projection + first residual/norm + pooler
 | cand_epilogue | v1s | 26.6 | 24.6 | 88.1 | 189.4 | 12.3 | 328.7 |
 | cand_epilogue | v16s | 31.7 | 38.9 | 90.1 | 419.4 | 64.5 | 642.1 |
 | cand_epilogue | v32s | 50.2 | 58.4 | 136.2 | 644.1 | 97.3 | 990.2 |
+| cand_chain_occ2 | b1s | 24.6 | 18.4 | 80.9 | 52.2 | 14.3 | 185.3 |
+| cand_chain_occ2 | b16s | 26.6 | 20.5 | 85.0 | 150.6 | 52.2 | 330.8 |
+| cand_chain_occ2 | b32s | 27.6 | 27.6 | 95.3 | 222.2 | 60.4 | 427.0 |
+| cand_chain_occ2 | v1s | 26.6 | 24.6 | 83.0 | 191.5 | 15.4 | 336.9 |
+| cand_chain_occ2 | v16s | 32.8 | 35.8 | 87.1 | 418.4 | 68.6 | 643.1 |
+| cand_chain_occ2 | v32s | 50.2 | 58.4 | 134.6 | 640.0 | 99.3 | 990.2 |
 | cand_chain_nopf | b1s | 26.6 | 18.4 | 80.9 | 52.2 | 14.3 | 193.5 |
 | cand_chain_nopf | b16s | 26.6 | 20.5 | 83.0 | 149.5 | 54.3 | 330.8 |
 | cand_chain_nopf | b32s | 27.6 | 27.6 | 93.2 | 223.3 | 62.5 | 425.0 |
@@ -84,7 +91,7 @@ Each row is from `tools/img python tools/local_eval.py`: all 13 official local t
 | cand_chain | 13/13 | 12/12 | 0.6 | `0d545fb6fe330e24dbf99f8f21bbb6444a342d945776ab5708f64d447faac4b9` |
 | cand_chain6 | 13/13 | 12/12 | 38.4 | `6e88cfa39935592a081bb95461ee82610c17b0cd7689209c4ea4e07cc72caf11` |
 | cand_chain_nopf | 13/13 | 12/12 | 0.6 | `486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52` |
-| cand_chain_occ2 | 13/13 | 12/12 | 0.6 | `96cf5ecc7141c2aa2df95ff0724d3dcb79a1cc7a38b5565b0374edfa3e9b5581` **SOURCE CHANGED** |
+| cand_chain_occ2 | 13/13 | 12/12 | 0.6 | `96cf5ecc7141c2aa2df95ff0724d3dcb79a1cc7a38b5565b0374edfa3e9b5581` |
 | cand_epilogue | 13/13 | 12/12 | 0.5 | `2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598` |
 | cand_layer_sweep | 13/13 | 12/12 | 9.6 | `08015a0aede234527989a100bb661461dbee843b459844003bb8de59c128d096` |
 
@@ -100,7 +107,7 @@ Above T32, cuBLAS projection and existing boundary dispatch are retained. Local 
 - Every custom attention and MoE kernel now launches with PDL, releases dependents in its independent prologue, and waits before accessing prior-stage outputs. Earlier v3 PDL existed only in its Triton path; merely turning on a flag would not close those gaps.
 - Immutable O weights (16 MiB) are prefetched before the prefix waits; 8 MiB sliced or a bounded 16 MiB full unpooler prefix is prefetched before the suffix waits. Hopper uses `cp.async.bulk.prefetch.L2.global`; sm_120 uses `prefetch.global.L2`. Prefetch is a performance hint. Pooler/router already prefetch their own known weight slices before waiting in the epilogue chain. No expert weight is speculatively chosen or prefetched before routing. Prefetching all dense banks together was rejected on capacity/order grounds: later banks would displace O; there is no measured benefit to claim.
 - Initial single-CTA residual norms cost ~16 us locally; their routing phase cost ~11 us. Token-local multi-CTA statistics and one-warp top-8 fixed correctness and reduced those overheads, but whole-island fusion still regresses locally. `profile_persistent_initial.log` and `island_clock.log` retain the diagnosis; the suffix intermediate timestamp slots in the initial clock log were unpopulated and are not timings.
-- Forced two-CTA residency at every tile size caused Hopper spill stores/loads (up to 688/580 bytes at NT4) and a large local T32 regression. That experiment is retired in `occ2_forced.py`, its JSON/log and `sm90a_occ2/` initial compiler evidence. The revised `cand_chain_occ2` only requests two-CTA launch bounds for NT1 (T<=8); NT2/4 keep one-CTA bounds. Runtime occupancy clips the actual grid. It must pass new exact-source checks before use.
+- Forced two-CTA residency at every tile size caused Hopper spill stores/loads (up to 688/580 bytes at NT4) and a large local T32 regression. That experiment is retired in `occ2_forced.py`, its JSON/log and `sm90a_occ2_forced/` compiler evidence. The revised `cand_chain_occ2` only requests two-CTA launch bounds for NT1 (T<=8); NT2/4 keep one-CTA bounds. Runtime occupancy clips the actual grid. Its final exact-source checks pass; the validation table above and `sm90a_occ2/` describe the revised variant.
 - The narrower epilogue alternative publishes four per-tile sufficient statistics in O, uses the last CTA to compute row norms, and applies the residual/pre-FFN norm in pooler/router loads, writing stream1 once. It preserves BF16 activation rounding. It removes one boundary launch and the materialized hidden buffer, but has extra traffic and last-CTA reduction cost.
 - H200 MoE v6 receipt `eefecf1eeb724feb` (1.4916x standalone) superseded v4 while this round ran. `PROFILE.md`, `research/moe_decode.md` and `research/hw_lowlevel.md` support keeping it as a separate candidate: it loses locally but wins on H200. Thus the v4 structural control remains available. All large-T improvements in the v6 candidates currently come from MoE, not new dense fusion.
 - `sm90a/manifest.json` and `sm90a/epilogue_manifest.json` record successful static compilation of the new CUDA templates and Triton epilogues. This is compile evidence only. FA3 execution, H200 cold-L2 gains, true overlap savings, compilation against a cold judge cache, and alternate router seeds remain unverified.
