@@ -237,6 +237,11 @@ def send(args):
                  f"speedup {row.get('speedup')}); --force to send it again")
 
     def send():
+        # okc reads the file when it sends, so a file edited while this run waited would go out
+        # under a receipt holding the old source.
+        if args.file.read_bytes() != src:
+            sys.exit(f"{args.file} changed while this run waited for a judge slot; not sent. "
+                     "Send it again if the new source is what you want.")
         stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         sent_at = time.time()
         result, proc = okc_json(args.mode, problem, str(args.file), "--no-wait")
