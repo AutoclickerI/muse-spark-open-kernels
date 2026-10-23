@@ -1,0 +1,18 @@
+okc submit muse_decode_layer problems/muse_decode_layer/cand_v0.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T081638Z",
+ "problem": "muse_decode_layer",
+ "mode": "submit",
+ "job": "5f2c0ec2641a42e3",
+ "sha256": "ecd8b86d3d216062411e6a52e3044f8656ada6f17b03ab765ef081d37e53302c",
+ "file": "problems/muse_decode_layer/cand_v0.py",
+ "source": "runs/muse_decode_layer/20261023T081638Z_submit_5f2c0ec2641a42e3.py",
+ "git": "be86797+dirty",
+ "status": "done",
+ "speedup": 1.0821669696206344,
+ "interval": [
+  1.065934465076325,
+  1.0983994741649439
+ ],
+ "note": "v0 (check 20cabe4557d84357 = 1.083x): SGLang cuBLAS/FA3/Marlin + Triton glue; first board entry"
+}

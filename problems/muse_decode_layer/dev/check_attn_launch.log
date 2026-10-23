@@ -1,0 +1,18 @@
+okc check muse_decode_layer problems/muse_decode_layer/cand_attn.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T090729Z",
+ "problem": "muse_decode_layer",
+ "mode": "check",
+ "job": "da7ed740833c4535",
+ "sha256": "c5d9efbcdfe518b69bb118a4ea544f74342b28e068200c3e09822301cbbe408d",
+ "file": "problems/muse_decode_layer/cand_attn.py",
+ "source": "runs/muse_decode_layer/20261023T090729Z_check_da7ed740833c4535.py",
+ "git": "98398fc+dirty",
+ "status": "done",
+ "speedup": 1.1041643080777308,
+ "interval": [
+  1.0876018434565649,
+  1.1207267726988968
+ ],
+ "note": "custom fused CUDA attention from passed muse_attention_decode cand_v1 integrated into v0 layer glue"
+}

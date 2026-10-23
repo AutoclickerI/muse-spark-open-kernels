@@ -1,0 +1,18 @@
+okc check muse_decode_layer problems/muse_decode_layer/cand_v0t.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T080153Z",
+ "problem": "muse_decode_layer",
+ "mode": "check",
+ "job": "a1627bc852cd4657",
+ "sha256": "741508a527717992d369a0bfde358618ff61f24544dadc5a99f7c174d5409ab0",
+ "file": "problems/muse_decode_layer/cand_v0t.py",
+ "source": "runs/muse_decode_layer/20261023T080153Z_check_a1627bc852cd4657.py",
+ "git": "c354a4d+dirty",
+ "status": "done",
+ "speedup": 0.9228921160580554,
+ "interval": [
+  0.9090487343171846,
+  0.9367354977989262
+ ],
+ "note": "v0t: v0 with portable Triton split-KV attention (BF16 q) instead of FA3"
+}

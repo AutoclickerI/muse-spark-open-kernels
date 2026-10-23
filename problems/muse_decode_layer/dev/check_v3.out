@@ -1,0 +1,18 @@
+okc check muse_decode_layer problems/muse_decode_layer/cand_v3.py: waiting for the result (`okc jobs` lists it meanwhile)
+{
+ "utc": "20261023T082030Z",
+ "problem": "muse_decode_layer",
+ "mode": "check",
+ "job": "2c112482e81745af",
+ "sha256": "6c75c27b1796c5ae077e9ef9b94dece39545b59c95148fb1ff7146fea797a307",
+ "file": "problems/muse_decode_layer/cand_v3.py",
+ "source": "runs/muse_decode_layer/20261023T082030Z_check_2c112482e81745af.py",
+ "git": "b966a39+dirty",
+ "status": "done",
+ "speedup": 1.1428001801346024,
+ "interval": [
+  1.1256581774325833,
+  1.1599421828366212
+ ],
+ "note": "v3: v1 + multi-CTA boundaries/route_norm (atomic per-token barrier), own post-expert norm kernel (replaces torch path <32 tok)"
+}

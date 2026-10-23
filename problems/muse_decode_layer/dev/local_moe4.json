@@ -1,0 +1,201 @@
+{
+ "problem": "muse_decode_layer",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_moe4.py",
+ "sha256": "dff6543b69aa99844894941ec9242dd7215602f78921e173318f5e3fa8f8540e",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 0.7524943719618022,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, layer sliding",
+   "first_call_s": 2.4915153890033253,
+   "ok": true,
+   "msg": "update relative L2 error 3.506e-03 (worst row 3.506e-03) [bound 0.085]; attention input relative L2 error 2.261e-03 (worst row 2.261e-03) [bound 0.042]"
+  },
+  {
+   "case": "batch 1, ctx 3000, layer full",
+   "first_call_s": 0.5932311640353873,
+   "ok": true,
+   "msg": "update relative L2 error 3.205e-03 (worst row 3.205e-03) [bound 0.150]; attention input relative L2 error 2.606e-03 (worst row 2.606e-03) [bound 0.108]"
+  },
+  {
+   "case": "batch 8, ctx 2047, layer sliding",
+   "first_call_s": 1.7981444140314125,
+   "ok": true,
+   "msg": "update relative L2 error 3.455e-03 (worst row 3.767e-03) [bound 0.150]; attention input relative L2 error 2.826e-03 (worst row 3.140e-03) [bound 0.098]"
+  },
+  {
+   "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+   "first_call_s": 1.3002496989793144,
+   "ok": true,
+   "msg": "update relative L2 error 3.446e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 3.131e-03 (worst row 3.440e-03) [bound 0.117]"
+  },
+  {
+   "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+   "first_call_s": 2.1571073040249757,
+   "ok": true,
+   "msg": "update relative L2 error 3.321e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.417e-03 (worst row 2.992e-03) [bound 0.086]"
+  },
+  {
+   "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 2.1199911280418746,
+   "ok": true,
+   "msg": "update relative L2 error 3.422e-03 (worst row 3.699e-03) [bound 0.150]; attention input relative L2 error 3.076e-03 (worst row 3.429e-03) [bound 0.116]"
+  },
+  {
+   "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+   "first_call_s": 1.251616952009499,
+   "ok": true,
+   "msg": "update relative L2 error 3.414e-03 (worst row 3.768e-03) [bound 0.150]; attention input relative L2 error 2.931e-03 (worst row 3.487e-03) [bound 0.116]"
+  },
+  {
+   "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+   "first_call_s": 1.836062207003124,
+   "ok": true,
+   "msg": "update relative L2 error 3.388e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.959e-03 (worst row 3.276e-03) [bound 0.128]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, layer full, q_len 8",
+   "first_call_s": 0.8115289250272326,
+   "ok": true,
+   "msg": "update relative L2 error 3.377e-03 (worst row 3.672e-03) [bound 0.150]; attention input relative L2 error 2.800e-03 (worst row 3.051e-03) [bound 0.135]"
+  },
+  {
+   "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "first_call_s": 1.2792103770188987,
+   "ok": true,
+   "msg": "update relative L2 error 3.439e-03 (worst row 3.690e-03) [bound 0.150]; attention input relative L2 error 3.049e-03 (worst row 3.382e-03) [bound 0.109]"
+  },
+  {
+   "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+   "first_call_s": 0.002490015991497785,
+   "ok": true,
+   "msg": "update relative L2 error 3.481e-03 (worst row 3.481e-03) [bound 0.118]; attention input relative L2 error 2.847e-03 (worst row 2.847e-03) [bound 0.075]"
+  },
+  {
+   "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+   "first_call_s": 0.46069911995436996,
+   "ok": true,
+   "msg": "update relative L2 error 3.446e-03 (worst row 3.635e-03) [bound 0.150]; attention input relative L2 error 3.065e-03 (worst row 3.361e-03) [bound 0.101]"
+  },
+  {
+   "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+   "first_call_s": 0.0027406669687479734,
+   "ok": true,
+   "msg": "update relative L2 error 3.449e-03 (worst row 3.615e-03) [bound 0.150]; attention input relative L2 error 2.972e-03 (worst row 3.270e-03) [bound 0.097]"
+  }
+ ],
+ "shapes": [
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+   "load": "decode 1",
+   "weight": 46,
+   "us": 171.00799968466163,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+   "load": "decode 1",
+   "weight": 16,
+   "us": 249.85599657520652,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 46,
+   "us": 268.2879879139364,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 16,
+   "us": 581.6319896839559,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 46,
+   "us": 338.43200048431754,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 16,
+   "us": 817.1519949100912,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 46,
+   "us": 301.47199472412467,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 16,
+   "us": 340.9760012291372,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 46,
+   "us": 582.0159926079214,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 16,
+   "us": 3648.335964884609,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 46,
+   "us": 879.6159937046468,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 16,
+   "us": 2509.824068751186,
+   "ok": true
+  }
+ ],
+ "loads": {
+  "decode 1": {
+   "us": 11864.06393069774,
+   "base_us": 0.0
+  },
+  "decode 16": {
+   "us": 21647.359278984368,
+   "base_us": 0.0
+  },
+  "decode 32": {
+   "us": 28642.303940840065,
+   "base_us": 0.0
+  },
+  "verify 1": {
+   "us": 19323.32777697593,
+   "base_us": 0.0
+  },
+  "verify 16": {
+   "us": 85146.11109811813,
+   "base_us": 0.0
+  },
+  "verify 32": {
+   "us": 80619.52081043273,
+   "base_us": 0.0
+  }
+ }
+}

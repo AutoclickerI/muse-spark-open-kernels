@@ -1,0 +1,39 @@
+muse_decode_layer: problems/muse_decode_layer/cand_moe4.py
+LOCAL screen on NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (sm_120); the judge runs an H200 (sm_90), so these timings are not its timings
+note: off Hopper, inputs carry scheduler_metadata=None (the judge's carry FA3's schedule)
+note: the judge also picks a router seed per run (weights_fields) to hit each load's target MoE load; this uses the default router
+prepare: 0.8 s
+tests (13):
+  PASS  batch 1, ctx 10, layer sliding: update relative L2 error 3.506e-03 (worst row 3.506e-03) [bound 0.085]; attention input relative L2 error 2.261e-03 (worst row 2.261e-03) [bound 0.042]
+  PASS  batch 1, ctx 3000, layer full: update relative L2 error 3.205e-03 (worst row 3.205e-03) [bound 0.150]; attention input relative L2 error 2.606e-03 (worst row 2.606e-03) [bound 0.108]
+  PASS  batch 8, ctx 2047, layer sliding: update relative L2 error 3.455e-03 (worst row 3.767e-03) [bound 0.150]; attention input relative L2 error 2.826e-03 (worst row 3.140e-03) [bound 0.098]
+  PASS  batch 9, ctx 5000, layer sliding, spread mixed, page 1: update relative L2 error 3.446e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 3.131e-03 (worst row 3.440e-03) [bound 0.117]
+  PASS  batch 3, ctx 6000, layer full, q_len 8, dist outliers: update relative L2 error 3.321e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.417e-03 (worst row 2.992e-03) [bound 0.086]
+  PASS  batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1: update relative L2 error 3.422e-03 (worst row 3.699e-03) [bound 0.150]; attention input relative L2 error 3.076e-03 (worst row 3.429e-03) [bound 0.116]
+  PASS  batch 33, ctx 20000, layer full, spread mixed, page 1: update relative L2 error 3.414e-03 (worst row 3.768e-03) [bound 0.150]; attention input relative L2 error 2.931e-03 (worst row 3.487e-03) [bound 0.116]
+  PASS  batch 2, ctx 300000, layer sliding, q_len 8: update relative L2 error 3.388e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.959e-03 (worst row 3.276e-03) [bound 0.128]
+  PASS  batch 1, ctx 1048576, layer full, q_len 8: update relative L2 error 3.377e-03 (worst row 3.672e-03) [bound 0.150]; attention input relative L2 error 2.800e-03 (worst row 3.051e-03) [bound 0.135]
+  PASS  batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625: update relative L2 error 3.439e-03 (worst row 3.690e-03) [bound 0.150]; attention input relative L2 error 3.049e-03 (worst row 3.382e-03) [bound 0.109]
+  PASS  batch 1, ctx 80000, layer full, dist soft, page 1: update relative L2 error 3.481e-03 (worst row 3.481e-03) [bound 0.118]; attention input relative L2 error 2.847e-03 (worst row 2.847e-03) [bound 0.075]
+  PASS  batch 4, ctx 6000, layer sliding, q_len 8, dist soft: update relative L2 error 3.446e-03 (worst row 3.635e-03) [bound 0.150]; attention input relative L2 error 3.065e-03 (worst row 3.361e-03) [bound 0.101]
+  PASS  batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1: update relative L2 error 3.449e-03 (worst row 3.615e-03) [bound 0.150]; attention input relative L2 error 2.972e-03 (worst row 3.270e-03) [bound 0.097]
+baseline uses sgl_kernel.flash_attn, built for Hopper only; timing the submission alone
+timing 12 shapes, 20 replays a side, 3 input sets (graph replay fixed cost 4.1 us, subtracted):
+  ok    [decode 1] batch 1, ctx 80000, dist soft, layer sliding, page 1: 171.0 us
+  ok    [decode 1] batch 1, ctx 80000, dist soft, layer full, page 1: 249.9 us
+  ok    [decode 16] batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic: 268.3 us
+  ok    [decode 16] batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic: 581.6 us
+  ok    [decode 32] batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic: 338.4 us
+  ok    [decode 32] batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic: 817.2 us
+  ok    [verify 1] batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8: 301.5 us
+  ok    [verify 1] batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8: 341.0 us
+  ok    [verify 16] batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic: 582.0 us
+  ok    [verify 16] batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic: 3648.3 us
+  ok    [verify 32] batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic: 879.6 us
+  ok    [verify 32] batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic: 2509.8 us
+  load decode 1: 11864.1 us
+  load decode 16: 21647.4 us
+  load decode 32: 28642.3 us
+  load verify 1: 19323.3 us
+  load verify 16: 85146.1 us
+  load verify 32: 80619.5 us
