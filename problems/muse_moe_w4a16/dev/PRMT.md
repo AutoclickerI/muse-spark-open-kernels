@@ -1,0 +1,19 @@
+# V9 PRMT decode experiment
+- Candidate: `../cand_v9_prmt.py`; only `dq8` and its new `dq_prmt2` helper differ from V9; prepare, scale encoding, BF16 multiply/packing, launch and scheduling are identical.
+- PRMT LUT `0xc0804000` maps two code bits to bytes `{00,40,80,c0}`; each PRMT packs two BF16 mantissa bytes; sign/exponent bits remain in their V9 positions.
+- Algebra: selectors extract `(v>>6)&3` and `(v>>22)&3`; LUT output OR `v&0x81008100` equals `v&0x81c081c0` for every uint32 input. Thus all rotations/slots and unchanged BF16x2 multiplies are bit-exact, including signed zero.
+- GPU proof: 524,288 cases = 8 slots × 16 low codes × 16 high codes × 256 encoded scale bytes; 4,194,304 packed words compared before and after multiplication, zero mismatches.
+- All 256 raw E4M3 scale bytes checked: 254 finite encodings/sign/zero masks match; `0x7f/0xff` NaNs remain rejected. No precision change.
+- Proof/AST isolation: `runs/screen/moe_prmt/prove_exact.py`, `exactness.json`; all Python and CUDA outside the decoder compare identical.
+- CUDA 13 `-O3 -std=c++20 -lineinfo -arch=sm_90a`: V9 → PRMT registers 124 → 128; stack/spill stores/spill loads 0 → 0; no LDL/STL. Full candidate extension also builds sm_90a, 128 registers, no spills.
+- SASS inner region (unrolled g0..7, first weight/scale LDS through final HMMA; includes scheduled bookkeeping): 492 → 1,255 instructions.
+- Inner opcode counts V9 → PRMT: LOP3 162 → 545, SHF 112 → 368, PRMT 16 → 144, HMUL2 128 → 128, HMMA 32 → 32, LDS 9 → 9.
+- SASS/count evidence: `runs/screen/moe_prmt/{v9,prmt}.sm90a.{cubin,sass,line.sass}`, `sass_counts.json`, `full_sm90a.log`, `full_sm90a.sass`.
+- GPU0 sm_120 screen: 5/5 tests and 6/6 fresh-input graph shapes pass (20 replays/side, 3 input sets); repeat screen agrees; no OOM. Final prepare 3.7 s.
+- Local SGLang-relative geomean: PRMT 1.126x, V9 control 1.283x. These are sm_120 results, not H200 measurements.
+- Per-load us V9 → PRMT (D1/D16/D32/V1/V16/V32): 53.8→58.2 / 192.0→208.1 / 341.1→351.5 / 169.4→179.7 / 381.8→472.3 / 501.3→703.2.
+- Separate six-load check: phase-1 BF16 and phase-2 FP32 expert outputs are bit-identical; final norm atomics vary with scheduling (V9 repeat verify outputs vary too). Final outputs satisfy the unchanged checks.
+- Local evidence: `runs/screen/moe_prmt/muse_moe_w4a16.{cand_v9,cand_v9_prmt}.json`, `full_output_bits.json` and corresponding logs.
+- Interpretation: P8's scalar raw-nibble LOP3 decoder is not V9's bit-plane decoder; retaining V9's layout makes PRMT selector reconstruction extra work. This recipe regresses locally; do not promote it based on P8's 1.92x result.
+- Frozen SHA256: `57096c5a55ec0600fab977bff6125b21ae551ed2043026e0f1a3ed7c7738deef`.
+- Remaining: H200 correctness/timing of this candidate is unmeasured; no remote run, commit, or MoE-lane file edits were made.
