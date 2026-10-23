@@ -1,0 +1,37 @@
+# Resources
+Everything usable for G0. Binding usage rules are in CONSTRAINTS (1, 8, 9, 13, 14). Measure capacity,
+usage and free space when needed (`nvidia-smi`, `df -h /data2`, `okc problems`); they aren't written here.
+
+## Setup
+From a fresh checkout to a local screen, about 5 minutes when the image and caches below already exist:
+1. `tools/sync_upstream.sh` (seconds): refreshes `upstream/` and the official problem files; read `git diff`.
+2. `git clone` SGLang into `serving/sglang` at `a55ab7d5` (`okc serve init`), only for serving work.
+   It is ignored by git; the patch is `serving/patch.diff`.
+3. `tools/img python tools/local_eval.py problems/<p>/submission.py` (1-5 min): tests plus CUDA-graph
+   timing against `baseline.py`, inside the judge's image. `--tests-only` checks correctness only.
+4. `python3 tools/okc_run.py check <file> --note "..."` (hours of queue; see PLAN "Critical path").
+   It needs the okc token that Jihoon's `okc login` created.
+5. Serving harness: `serving/harness/README.md`, tiny-config Muse on the local GPUs, with TP1 and TP2 agreement.
+
+The image and its unpacked sandbox already exist on `/data2`; reuse them. JIT caches persist, so a
+second compile of the same kernel is fast.
+
+## Inventory
+| Resource | Use for | Access and non-obvious limits |
+|---|---|---|
+| The judge: 1 H200 SXM per kernel run, 8x H200 per serving run | The only H200 timing | `tools/okc_run.py` (receipts in `runs/`, ledger `runs/ledger.jsonl`, waiting in `runs/pending/` and `runs/waiting/`). Quotas: CONSTRAINTS 13. No cancel, only `okc withdraw` |
+| This box: 2x RTX PRO 6000 Blackwell (sm_120) | Correctness, graph capture, loose ranking, the serving harness at TP1/TP2, nsys, cuobjdump/nvdisasm, nvcc 13 targeting sm_90a | `CUDA_VISIBLE_DEVICES=0` or `1` per lane. ncu is blocked (`RmProfilingAdminOnly=1`). Hopper-only paths (wgmma, TMA, FA3, sm90 DeepGEMM/CUTLASS) don't run |
+| capp DGX `edgexpert0/1`, `zgx0/1`: GB10 (sm_121, LPDDR5x about 273 GB/s) | Extra correctness lanes; useless for H200 timing | Shared machines; check what else runs there first (CONSTRAINTS 14) |
+| Judge image `lmsysorg/sglang@sha256:8cfc5a72…` | Exact software of the judge: torch 2.14.1+cu130, Triton 3.8, sgl_kernel 0.4.9, flashinfer 0.7.0.post1, DeepGEMM 0.2.1.post1+muse, TileLang 0.1.12, CUTLASS DSL 4.8, humming_kernels 0.1.12 | `tools/img <cmd>` runs the sandbox `/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sandbox` (`--nv --contain --cleanenv`). The `.sif` is beside it. JIT caches are in `/data2/jihoon/muse_kernel/img-home`, and `/tmp` maps to `.../img-work`. There is no squashfuse, so never run the `.sif` directly |
+| Host env `~/anaconda3/envs/comp_kv` (torch 2.13, cu130) | Tests without the image (`--no-baseline`) | `baseline.py` needs `sglang` |
+| `okc` 0.7.1 (`~/.okc/bin`) | Boards (`okc leaderboard <p> --json`), `okc problems`, `okc withdraw` | Never `okc check`/`submit` directly (AGENTS) |
+| `sim/` | Bounds and ceilings: `python -m sim` (problems), `-m sim.serving` (serving step and score), `-m sim.calibrate` (SGLang's measured times), `-m sim.bound` (P6) | Model inputs: `sim/routing.json`, `sim/hw.py` |
+| `prof/` | Judge-profile analysis (`prof/analyze.py`), the generator of `docs/reference/profile.md` (`prof/write_report.py`), and the SASS audit (`prof/compile_static.py`, `prof/sass/`) | Writes snapshots; regenerate rather than edit |
+| `runs/calibration/` | SGLang's own kernels profiled on the judge, per problem | `runs/calibration/profiles/*_sglang.*.txt` |
+| Per-problem lanes' outputs | Candidates `problems/<p>/cand_*.py`, judge profiles `problems/<p>/profiles/`, notes `problems/<p>/dev/` | Reuse a component another lane already measured on the H200 |
+| Codex (`codex:codex-rescue`) | Delegated lanes | Kernel lanes run on gpt-6.1-sol; research and serving lanes on gpt-5.6-sol or gpt-6-luna; gpt-6-astra is flaky. To reroute a capacity-stopped job: `CODEX_RESUME_THREAD_ID=<session> node ~/.local/src/codex-plugin-cc/plugins/codex/scripts/codex-companion.mjs task --background --write --model <m> "<delta>"`. Jobs started from `serving/sglang` keep their state under `state/sglang-*` |
+| Repo | Code and docs | github.com/AutoclickerI/muse_kernel, private (R-20261023-2) |
+
+## Consumers
+Files outside the repo that agents read for this project. They point to rules and never restate them.
+- `/home/jihoon/.claude/projects/-home-jihoon-competitions-muse-kernel/memory/*.md`

@@ -4,10 +4,7 @@ Our work for <https://openkernelchallenge.dev/> (Paradigm with Meta and Andromed
 SGLang serve Meta's Muse Spark Open (816B MoE, 256 experts, NVFP4 weights) faster on H200s.
 The full rules are in `upstream/llms.txt`, the terms in `upstream/terms.pdf`.
 
-**Goal (decided 2026-10-23): the serving prize.** Prizes are paid only on the serving board
-($100k, 1st $50k). The kernel track pays nothing. We use it for two things: a place in the
-top 50 of the overall kernel board, which gets priority in the serving queue, and kernels
-that drop into SGLang for the serving patch.
+Goal, rules and plan: [AGENTS.md](AGENTS.md) and [docs/](docs/). Prizes are paid only on the serving board.
 
 ## Dates
 
@@ -41,21 +38,10 @@ Each `problems/<name>/TASK.md` has the problem's shapes, bounds and rules.
 `python/sglang/`. It is scored by throughput on a whole 8×H200 node at stock SGLang's
 interactivity. See `serving/RULES.md`.
 
-## Hardware: why the local box can't rank kernels for us
+## Hardware
 
-The judge runs on H200 (sm_90, HBM3e at 4.8 TB/s, no FP4 tensor cores). Our GPUs don't match it:
-
-- **This box:** 2× RTX PRO 6000 Blackwell (sm_120, about 1.8 TB/s, with FP4 tensor cores).
-- **The capp DGX boxes:** GB10s (sm_121, LPDDR5x at about 273 GB/s).
-
-So:
-
-- **Correctness:** checking it locally is real. A failure here is a real failure.
-- **Timing:** local timings only rank candidates loosely. Hopper-only paths can't run here at
-  all: wgmma, TMA warp specialization, FA3, DeepGEMM sm90 and CUTLASS sm90.
-- **H200 numbers:** these come from `okc check` only, at 20 a day per problem.
-- **Serving:** it can't be run anywhere we have. It needs an 8-GPU Hopper node and the 816B
-  checkpoint.
+The judge is an H200 (sm_90); our GPUs are Blackwell (sm_120, sm_121). Local runs check correctness and
+graph capture; only `okc check` times the H200. Details: [docs/reference/hardware.md](docs/reference/hardware.md).
 
 ## Layout
 
@@ -72,8 +58,10 @@ runs/                 receipts of every remote run (exact source, okc's JSON, th
 runs/calibration/     SGLang's baseline.py sent as a check, to profile its kernels on the judge
 sim/                  performance model: `python -m sim` (problem ceilings), `-m sim.serving`
                       (serving step and score), `-m sim.calibrate` (SGLang's measured times)
-HARDWARE.md FINDINGS.md SOTA.md CEILING.md SERVING.md   reference docs (AGENTS.md links them)
-serving/              okc serve init: RULES.md, patch.diff; sglang/ is the pinned checkout (ignored)
+docs/                 GOAL, CONSTRAINTS, PLAN, FINDINGS, SOTA, RESOURCES, RULINGS; docs/reference/ for domain notes
+prof/                 judge-profile analysis and the SASS audit
+serving/              okc serve init: RULES.md, patch.diff; sglang/ is the pinned checkout (ignored);
+                      harness/ (local agreement tests), tests/ (layer tests)
 ```
 
 ## Kernel loop
@@ -111,17 +99,4 @@ and times the submission alone (`--no-baseline`), because `baseline.py` needs `s
 
 ## Environment
 
-- **Judge image:** `lmsysorg/sglang@sha256:8cfc5a72…` (the pin from `GET /api/v1/serving`).
-  It was pulled as `/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sif`
-  (16.6 GB) and unpacked once beside it as `….sandbox` (41 GB). This host has no squashfuse,
-  so running the `.sif` itself would unpack it into `/tmp` on every call. `tools/img` uses
-  the sandbox. It runs with `--nv --contain --cleanenv`, so host `~/.local` packages stay out.
-  JIT caches persist in `/data2/jihoon/muse_kernel/img-home`, and `/tmp` is
-  `/data2/jihoon/muse_kernel/img-work`.
-- **Image contents:** Python 3.12.3, torch 2.14.1+cu130 (built for sm_75 through sm_120),
-  Triton 3.8.0, sgl_kernel 0.4.9, flashinfer 0.7.0.post1, DeepGEMM 0.2.1.post1+muse,
-  TileLang 0.1.12, CUTLASS DSL 4.8.0.
-- **CLI:** `okc` 0.7.1, in `~/.okc/bin`. `okc update` upgrades it.
-- **Account:** submissions are refused until a person runs `okc login` in a terminal. That
-  shows the rules and terms to accept, then GitHub's device flow. An agent must not accept
-  them for anyone.
+Judge image, `tools/img`, host env, `okc` and machines: [docs/RESOURCES.md](docs/RESOURCES.md).
