@@ -3,11 +3,11 @@
 ## Status (2026-10-23 21:30 KST)
 - Kernel track day 1 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST.
 - Best H200 checks: proj 1.142x, attention 1.388x (1.384x on the board), MoE 1.535x, decode layer
-  1.189x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7 and prefill v3 are queued.
+  1.271x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7 and prefill v3 are queued.
 - Overall board at 19:30: about 1.19x time-weighted against about 1.38x for 50th place (FINDINGS "Boards").
   Decode layer and MoE carry about 80% of that weight.
 - Serving patch: Hopper gates #2/#4/#5, prefill row split, FA3 QK-norm/KV-store fusion, drafter fc split,
-  and an intermediate MoE v4 port that keeps two expert banks and must not ship. None of it has run on Hopper.
+  fused MoE finalize (#1, #3), and a single-bank MoE port (canonical V6 bank, 54.4 GB/GPU). None of it has run on Hopper.
 - Bound (`docs/reference/bound.md`): serving score at most 6.13x at spec HBM (5.89x at our measured
   4.25 TB/s, tau 4.16) against the practical model's 3.0x. The kernel bounds are proj 2.02x, attention 6.29x,
   MoE 3.29x, decode 3.34x, prefill 2.93x. The biggest gaps from our receipts are attention 4.9x, decode 2.9x, MoE 2.2x.
@@ -32,13 +32,13 @@ Step 3 dominates, since one result costs hours of wall time.
 ## Ranked work
 | Rank | Id | Serves | Work | Done when | Who | State |
 |---|---|---|---|---|---|---|
-| 1 | P1 | G1, G2 | MoE single-bank serving port: V6 tiles as the canonical bank plus a large-M path; replaces the two-bank v4 port | Patch holds one bank (`docs/reference/expert_layout.md`); layer tests and harness agreement pass | MoE lane | active |
+| 1 | P1 | G1 | Serving: an agreement metric that resolves stock's own spread, then request-based (suffix/n-gram) drafting alongside DFlash | Metric reports stock-vs-patch within the stock-vs-stock spread; acceptance gain measured on the multi-turn fixture | serving lane | active |
 | 2 | P2 | G2, G1 | Prefill expert path at the first-turn 16K and turn-1 shapes; port the best into serving | H200 check above 1.345x; ported with agreement | prefill lane | active |
-| 3 | P3 | G1 | Serving levers: fused MoE finalize (#1), finalize in the all-reduce (#3), gate thresholds | Patch passes harness TP1/TP2 with drift no larger than stock-vs-stock | serving lane | active |
-| 4 | P4 | G3, G2 | Decode layer: integrate MoE V6, attention verify and the structural candidates; `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at the 09:00 KST reset | H200 check above 1.189x on the way to the 50th-place mix | decode lane | next: 09:00 KST checks |
+| 3 | P3 | G2, G1 | MoE V8 (V6 resident grid plus v7 incremental tiles) on the canonical bank, swapped into the serving port | H200 check above 1.535x; port tests pass | MoE lane | active |
+| 4 | P4 | G3, G2 | Decode layer: integrate MoE V6, attention verify and the structural candidates; `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at the 09:00 KST reset | H200 check above 1.271x on the way to the 50th-place mix | decode lane | next: 09:00 KST checks |
 | 5 | P5 | G2, G3 | Attention verify kernel (XQA-style q8 x G8, page-1 gathers) to beat FA3 on verify loads | Verify loads above 1.0x on H200; board above 1.384x | attention lane (Claude agent: Codex at capacity) | active |
-| 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x | proj lane | active |
-| 8 | P8 | G2 | H200 probes inside one diagnostic check: HBM concurrency, L2 hints, TMA, page-1 gather rate (`docs/reference/research_hw_lowlevel.md` "Probe plan") | Probe receipts in FINDINGS | probe lane | active |
+| 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x; at the 09:00 reset, one check of the exact submission.py (its source was promoted from a receipt the okc_run file-edit bug may have mislabelled) | proj lane | next: 09:00 KST check |
+| 8 | P8 | G2 | One H200 diagnostic: HBM concurrency (LDG/cp.async/bulk), page-1 KV gather, L2 hints/APW, graph PDL boundary, small-N BF16 MMA/WGMMA, NVFP4 decode issue | H200 rates and lane consequences in FINDINGS | probe lane | active: check `849bd4b650e54c7f` queued |
 | 9 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | next |
 
 ## Open questions

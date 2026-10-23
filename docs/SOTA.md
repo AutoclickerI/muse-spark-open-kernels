@@ -14,7 +14,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 | muse_bf16_proj | 1.142x tuned `9294b3237c4f4e2d` | 1.143x (scored `68e2f34b1d4744cb`) | 1.447x (colinlikescode) | 1.312x | 1.243x | 337 |
 | muse_attention_decode | 1.388x hybrid `4f8c41ef9e924ff4` | 1.384x (hybrid scored `526f31018e2c4449`) | 2.366x (colinlikescode) | 1.912x | 1.585x | 241 |
 | muse_moe_w4a16 | 1.535x v7 `f95bdf5e394e474e` | 1.352x (v4 scored `f0eca2fe003f456d`; V6 and v7 scored queued) | 2.326x (colinlikescode) | 1.958x | 1.719x | 278 |
-| muse_decode_layer | 1.189x moe4 `6fed72479ef6446f` | 1.137x (167) | 1.864x (colinlikescode) | 1.622x | 1.402x | 207 |
+| muse_decode_layer | 1.271x tuned `0fa94cd98ba34c93` | 1.137x (167) | 1.864x (colinlikescode) | 1.622x | 1.402x | 207 |
 | muse_prefill_layer | 1.345x v3 `82a4e50b54294a2a` | 1.212x (53; v3 scored queued) | 1.695x (luccabb) | 1.515x | 1.222x | 107 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
