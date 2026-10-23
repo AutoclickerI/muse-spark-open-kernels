@@ -99,7 +99,7 @@ def main():
         "utc": stamp, "problem": problem, "mode": args.mode, "job": job, "sha256": sha,
         "file": os.path.relpath(args.file.resolve(), REPO), "source": str(stem.with_suffix(".py").relative_to(REPO)),
         "git": git_rev(), "status": pick(result, "status"), "speedup": pick(result, "speedup"),
-        "interval": pick(result, "interval", "speedup_interval", "ci"), "note": args.note,
+        "interval": pick(result, "speedup_ci"), "note": args.note,
     }
     with LEDGER.open("a") as f:
         f.write(json.dumps(row) + "\n")

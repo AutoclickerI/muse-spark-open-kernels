@@ -1,0 +1,46 @@
+{
+ "source": "muse_moe_w4a16 reference.generate_input, dist normal, rank busiest",
+ "samples": 200,
+ "tokens": {
+  "1": {
+   "distinct": 2.645,
+   "pairs": 2.645
+  },
+  "4": {
+   "distinct": 5.83,
+   "pairs": 7.525
+  },
+  "8": {
+   "distinct": 8.455,
+   "pairs": 13.655
+  },
+  "16": {
+   "distinct": 11.94,
+   "pairs": 26.415
+  },
+  "32": {
+   "distinct": 15.93,
+   "pairs": 50.145
+  },
+  "64": {
+   "distinct": 19.605,
+   "pairs": 97.085
+  },
+  "128": {
+   "distinct": 22.675,
+   "pairs": 195.03
+  },
+  "256": {
+   "distinct": 24.39,
+   "pairs": 386.93
+  },
+  "512": {
+   "distinct": 26.275,
+   "pairs": 769.545
+  },
+  "1024": {
+   "distinct": 27.3,
+   "pairs": 1528.855
+  }
+ }
+}
