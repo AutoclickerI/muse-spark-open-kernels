@@ -45,11 +45,16 @@ Every path checks `has_multicast` and falls back to stock.
   clusters capped at 8 on sm_90. Imports checked in the judge image; the cluster and all-gather-norm kernels compile for
   sm_90a locally (cluster 8/4/2). Nothing here has run on Hopper.
 
-## Other levers found
+- Prefill row split (`muse_spark.py`, `_row_split_gemm`, `_reduce_scatter_rows_gemm`): at >= 1024 tokens
+  (`ROW_SPLIT_MIN_TOKENS`, arbitrary) each rank runs the pooler on 1/8 of the token rows and all-gathers; the expert
+  output's all-reduce becomes a reduce-scatter, the unpooler runs on the rank's rows, then an all-gather. Stock
+  replicates both at prefill (`gemm_ag` is capped at 512 tokens, `gemm_ag.py:32`; SP prefill is Blackwell/flag-gated):
+  ~2.2 TFLOP per layer per 16K chunk, ~3 ms of the 17-25 ms layer (from SGLang's profile: GEMMs 4.3 ms per chunk,
+  of which pooler + unpooler are 2.2 of 3.1 TFLOP). Estimated saving ~2 ms per layer per 16K chunk, ~0.5 s per
+  74K-token first turn. Tested: `serving/tests/test_rowsplit.py` on 2 local GPUs over NCCL, bitwise equal to the
+  replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
-- **Prefill replicates the pooler and unpooler at every size** (`gemm_ag` is capped at 512 tokens, `gemm_ag.py:32`;
-  SP prefill is Blackwell/flag-gated): ~2.2 TFLOP duplicated per layer per 16K chunk, ~3 ms of 17-25 ms per layer.
-  Splitting with an all-gather: ~1.5-2 ms per layer per chunk (estimate, audit).
+## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): column-split it with an
   all-gather, ~0.15 ms per step.
 - **Drafting from the request** (prompt lookup, n-grams) is allowed alongside DFlash; the model says tau 4.16 -> 4.5
