@@ -35,5 +35,13 @@ no path has been promoted yet.
 
 The detailed receipt/source audit is preserved in `dev/fa3_mechanism.md`.
 
+The next ready source is `cand_attn_fa3_struct.py`. It adds an eight-stage
+persistent producer/consumer ring beside the existing paths: 128 producer
+threads issue LDGSTS-backed `cp.async` gathers behind mbarriers, the consumer
+warpgroup runs WGMMA QK/PV, and the final CTA performs the FP32 split merge and
+fused gate epilogue. Its sm_120 stand-in is finite, exactly agrees with the
+five-stage group path (L2 0.0 for B1 sliding and B16 full), and the full local
+screen passes.
+
 Frozen hashes and all ready send candidates are in `dev/NEXT_CHECKS.md`.
 Only the orchestrator sends or commits.

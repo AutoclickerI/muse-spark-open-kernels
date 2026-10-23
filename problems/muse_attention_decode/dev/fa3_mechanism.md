@@ -34,3 +34,8 @@ The portfolio's `prepare()` emits:
 The raw-FP8 P/V stand-in agrees with the existing group path at relative L2
 0.00231 for B1 sliding and 0.00450 for B16 full. The full local screen passes
 16/16 correctness cases and 12/12 graph shapes on sm_120.
+
+The new `cand_attn_fa3_struct.py` adds an eight-stage ring to that portfolio.
+Its forced sm_120 path is finite and agrees with the five-stage group path at
+L2 0.0 for B1 sliding and B16 full; the full candidate screen remains 16/16 and
+12/12. H200 timing is intentionally left to the orchestrator.

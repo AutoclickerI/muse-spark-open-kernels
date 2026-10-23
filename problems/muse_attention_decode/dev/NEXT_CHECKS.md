@@ -6,13 +6,14 @@ XQA/WGMMA and FP8-PV space plus the mechanism diagnostics.
 
 | Order | File | Frozen SHA256 | Action / state |
 |---:|---|---|---|
-| 0 | `cand_attn_portfolio.py` | `cf2f9e47182c45344220f4123668c3238ec37092b653b4336b4b2c5e5d65ddaf` | Already queued at place ~24 (`4148288`). It logs `PORTFOLIO_MECH`, all FA3 split/pack times, XQA/WGMMA times and FP8-PV times; do not wait for its receipt before using the next ready source. |
-| 1 | `submission.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Existing scored q_len=1 winner; verify remains FA3. |
-| 2 | `cand_xqa_next.py` | `fee88fd0a7e9de09639228d67a5300ba760ddd0c946e998b33550466650933c8` | Existing queued producer/WGMMA diagnostic (`3928409`); collect only if it lands before the portfolio. |
-| failed | `cand_fa3_tune.py` | `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd` | Check `dd927c6c46264afe` failed during prepare because setting `(1, None)` differed from the default by 0.008635; do not resend. The portfolio logs rejected settings and continues with accepted ones. |
-| 4 | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Existing queued check (`3890200`), collect only for new H200 evidence. |
-| 5 | `cand_xqa_ldm.py` | `3511f6ae5cbec225a60cf04696b766e729bd46c317e22c65d3a7382efe285ee9` | Existing queued check (`3890196`), remaining unswept ldmatrix diagnostic. |
-| 6 | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Existing queued sender (`3890035`); do not duplicate after portfolio receipt. |
+| 0 | `cand_attn_fa3_struct.py` | `77ec70ac8b3fc2f1708c801f55d5eaabc0b4c319ddc7a3b194434e2faec5da` | New ready FA3-structure candidate. Local sm_120 screen passes 16/16 and 12/12; force-tested eight-stage WGMMA path is finite and agrees with group L2 0.0. Requeue this source after the orchestrator's approval. |
+| 1 | `cand_attn_portfolio.py` | `cf2f9e47182c45344220f4123668c3238ec37092b653b4336b4b2c5e5d65ddaf` | Already queued at place ~24 (`4148288`). It logs `PORTFOLIO_MECH`, all FA3 split/pack times, XQA/WGMMA times and FP8-PV times; do not wait for its receipt before using order 0. |
+| 2 | `submission.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Existing scored q_len=1 winner; verify remains FA3. |
+| 3 | `cand_xqa_next.py` | `fee88fd0a7e9de09639228d67a5300ba760ddd0c946e998b33550466650933c8` | Existing queued producer/WGMMA diagnostic (`3928409`); collect only if it lands before the new source. |
+| failed | `cand_fa3_tune.py` | `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd` | Check `dd927c6c46264afe` failed during prepare because setting `(1, None)` differed from the default by 0.008635; do not resend. |
+| 5 | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Existing queued check (`3890200`), collect only for new H200 evidence. |
+| 6 | `cand_xqa_ldm.py` | `3511f6ae5cbec225a60cf04696b766e729bd46c317e22c65d3a7382efe285ee9` | Existing queued check (`3890196`), remaining unswept ldmatrix diagnostic. |
+| 7 | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Existing queued sender (`3890035`); do not duplicate after portfolio receipt. |
 | existing | `cand_hybrid_slide.py` | `02c946d2f6cc93c30c792009eea41f994665e7802d6d1a5a075970cd717abeaf` | Already queued (`3890067`); no new send. |
 | existing | `cand_v4.py` | `7bce06b716e1b041df48161ec1de9cd3f08eb4d1af86847cb22d700c8d202140` | Already queued (`3889995`); no new send. |
 | existing | `cand_v5d.py` | `2f8e3c7a1012a82dba2df63a01ac3d900082a501aec83e180b1d55c76ec11f68` | Already queued (`3890023`); no new send. |
