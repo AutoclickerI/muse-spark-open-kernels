@@ -1743,8 +1743,10 @@ def prepare(weights):
         del flush
     torch.cuda.synchronize()
     st.pop('_generator');st.pop('_deadline')
-    print('SCORE_COMPLETE_TABLE',json.dumps(_score_compact_table(st.pop('_measurements')),separators=(',',':')),flush=True)
+    measurements=st.pop('_measurements')
+    print('SCORE_COMPLETE_TABLE',json.dumps(_score_compact_table(measurements),separators=(',',':')),flush=True)
     print('SCORE_PREPARE',json.dumps(dict(seconds=time.monotonic()-started,expert=st['expert_dispatch'],dense={str(k):v for k,v in st['dense_choices'].items()},attention={str(k):v for k,v in st['attention_choices'].items()},expert_contenders=len(_EXPERT_CHOICES),graph_fixed_us=_SCORE_FIXED_US)),flush=True)
+    print('SCORE_LAST_SUMMARY',json.dumps(_score_last_summary(measurements),separators=(',',':')),flush=True)
     return st
 # All builders append this tuner implementation. A rejected variant never aborts prepare.
 # Component admission uses an independent math oracle and the public compare() floor/rows.
@@ -1921,6 +1923,20 @@ def _score_compact_table(measurements):
             if key not in lookup:lookup[key]=len(catalogs);catalogs.append(choices)
             stages[stage][str(shape)]=dict(catalog=lookup[key],us=[round(v,2) for v in record['us']],selected=record['selected'])
     return dict(catalogs=catalogs,stages=stages)
+
+def _score_last_summary(measurements):
+    """Keep one receipt-safe line with every admitted choice and its time."""
+    catalogs=[];lookup={};rows=[]
+    for stage,shapes in measurements.items():
+        for shape,record in shapes.items():
+            choices=record.get('choices',record.get('names',[]))
+            costs=record.get('us',[])
+            key=json.dumps(choices,separators=(',',':'))
+            if key not in lookup:
+                lookup[key]=len(catalogs);catalogs.append(choices)
+            rows.append(dict(stage=stage,shape=str(shape),winner=record.get('selected'),catalog=lookup[key],
+                             us=[format(float(us),'.3g') for us in costs]))
+    return dict(catalogs=catalogs,rows=rows)
 
 @triton.jit
 def _fused_flush_read(X,OUT,N:tl.constexpr,B:tl.constexpr,GRID:tl.constexpr):
