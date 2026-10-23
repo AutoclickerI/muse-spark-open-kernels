@@ -1,17 +1,17 @@
 # Prefill focus
 Serves: G2, G1.
 
-- Rank 6 / P2; serving prefill is 753–16K tokens. Read `../../docs/FINDINGS.md` “Prefill evidence and serving path”.
-- Best H200 receipt/source and per-load rankings are there; `submission.py` is the handler-promoted board source.
-- Primary task: improve gate/up at753/3012 and grouped experts+dequant at16K; full64K FA3 is the largest individual chunk stage.
-- Serving keeps one canonical V6 bank; contract: `../../docs/reference/expert_layout.md`.
-- Active candidate: `cand_expert_portfolio_v2.py`, synthetic per-shape BN64/128/256, canonical pipeline and direct-bank DG choice.
-- Complete stage combination: `cand_prefill_portfolio_v2.py`; fixed v11-style canonical control: `cand_canonical_hybrid.py`.
-- Reset order, frozen SHA256 and exact local screens: `dev/NEXT_CHECKS.md`; orchestrator sends.
+- Rank6/P2; serving prefill is753–16K tokens. Durable evidence: `../../docs/FINDINGS.md` “Prefill evidence and serving path”.
+- H200 control: v11 check6a9cd943fe404d74=1.367883x; scored965a9a816d4744ea=1.366811x. `submission.py` is unchanged.
+- Active source: `cand_score_portfolio.py`; one prepare-time H200 sweep chooses expert, dense/router and attention paths per shape.
+- Board layouts are unrestricted resources: raw, original WGMMA, bit-plane, canonical and Humming/Marlin banks coexist losslessly.
+- The canonical V6 contract remains a serving interface, not a bank-count constraint. Allocate duplicates from measured throughput and KV need.
+- KV scenarios and source flags: FINDINGS; reproducible arithmetic `dev/kv_budget.py` / `kv_budget.json`.
+- Next send order, frozen hashes and exact local screens: `dev/NEXT_CHECKS.md`; the orchestrator owns sends and commits.
 - H200 profile/floor detail: `dev/V11_PROFILE.md`, `dev/v11_profile_ranking.json`.
-- Expert port: `srt/layers/muse_spark_moe_v4.py` (`prepare_layer`, `run_layer`, `_grouped_call`); keep finalize/EP contracts.
-- Attention port: `FlashAttentionBackend.forward_extend`; mixed batches/head counts still need serving validation.
-- Runtime evidence: judge receipts in `../../runs/muse_prefill_layer/`; handler state in `dev/finish_round_state.json`.
-- Existing receipt handler may promote its original checked sources; do not duplicate accepted jobs.
-- This round sends no remote jobs, starts no handler and makes no commits; work is solo per the current task.
-- Remaining: H200 execution/selection, released-checkpoint memory and serving TP/EP agreement.
+- Expert port: `srt/layers/muse_spark_moe_v4.py` (`prepare_layer`, `run_layer`, `_grouped_call`); preserve finalize/EP contracts.
+- Dense port: `bf16_gemm_dispatch`; attention port: `FlashAttentionBackend.forward_extend` after KV writes.
+- Humming heuristic configs must be copied before setting variant flags; cached dict mutation corrupted the local TMA stand-in.
+- `dev/finish_round.py` was stopped/deleted. No check-then-promote daemon; `send` admission and board best retention own that workflow.
+- Receipts: `../../runs/muse_prefill_layer/`; `dev/write_report.py` renders receipt JSON without launching work.
+- Remaining: H200 selection/execution, held-out nearby shapes, released-checkpoint allocations and serving TP/EP agreement.

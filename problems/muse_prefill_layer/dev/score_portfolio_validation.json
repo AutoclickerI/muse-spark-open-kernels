@@ -1,0 +1,7539 @@
+{
+  "source_sha256": "fa202b0272f441d917938481fdecd976278858dbaadabaef089a2f0cf42a0452",
+  "hardware": "sm120, forced Hopper constructors with portable stand-ins",
+  "prepare_s": 49.18010143103311,
+  "official_tests": [
+    {
+      "case": "batch 1, ctx 0, layer sliding, q_len 300, page 1",
+      "first_call_s": 0.022459945990704,
+      "ok": true,
+      "msg": "update relative L2 error 3.170e-02 (worst row 6.063e-02) [bound 0.066]; attention input relative L2 error 2.098e-02 (worst row 3.934e-02) [bound 0.044]"
+    },
+    {
+      "case": "batch 1, ctx 3000, layer full, q_len 753, page 1",
+      "first_call_s": 0.005363560048863292,
+      "ok": true,
+      "msg": "update relative L2 error 6.754e-02 (worst row 1.170e-01) [bound 0.150]; attention input relative L2 error 4.409e-02 (worst row 8.349e-02) [bound 0.110]"
+    },
+    {
+      "case": "batch 2, ctx 2500, layer sliding, q_len 753, page 1",
+      "first_call_s": 0.0038538830121979117,
+      "ok": true,
+      "msg": "update relative L2 error 6.585e-02 (worst row 1.223e-01) [bound 0.150]; attention input relative L2 error 4.287e-02 (worst row 7.974e-02) [bound 0.104]"
+    },
+    {
+      "case": "batch 3, ctx 5000, layer full, q_len 200, dist outliers",
+      "first_call_s": 0.009901307988911867,
+      "ok": true,
+      "msg": "update relative L2 error 6.473e-02 (worst row 1.126e-01) [bound 0.150]; attention input relative L2 error 3.451e-02 (worst row 6.183e-02) [bound 0.086]"
+    },
+    {
+      "case": "batch 1, ctx 4096, layer sliding, q_len 4096, page 1",
+      "first_call_s": 0.017243098001927137,
+      "ok": true,
+      "msg": "update relative L2 error 4.691e-02 (worst row 1.248e-01) [bound 0.112]; attention input relative L2 error 3.060e-02 (worst row 8.287e-02) [bound 0.073]"
+    }
+  ],
+  "records": [
+    {
+      "stage": "expert",
+      "choice": "adaptive128",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "adaptive128",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "adaptive128",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "adaptive128",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r2",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r2",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r2",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r2",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1_g8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1_g8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1_g8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn64_r1_g8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r1",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r1",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r1",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r1",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r2",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r2",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r2",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_r2",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_s3",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_s3",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_s3",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn128_s3",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s2",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s2",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s2",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s2",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s3",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s3",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s3",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "bn256_s3",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "pipeline",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "pipeline",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "pipeline",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "pipeline",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_k2048_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "dg_hint_k2048_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_v11",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_v11",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_v11",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_v11",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_hint_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_k1024_w8",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_k1024_w8",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_k1024_w8",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_k1024_w8",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_routes",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.548e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.088e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_routes",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.010e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.523e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_routes",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.451e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw_dg_routes",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.306e-02 (worst row 1.141e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.758e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw11",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.092e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw11",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw11",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw11",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw15",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.092e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw15",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw15",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw15",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw17",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.092e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw17",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw17",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "raw17",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.303e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.147e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.092e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.012e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.537e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.550e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.304e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.148e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_tma",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.086e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_tma",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.012e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.538e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_tma",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.551e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.452e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_tma",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.304e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.148e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_masked",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.544e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.092e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_masked",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.644e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.355e-02 (worst row 7.533e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_masked",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.551e-02 (worst row 1.045e-01) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 7.450e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "humming_masked",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.304e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.148e-02 (worst row 8.749e-02) [bound 0.103]"
+    },
+    {
+      "stage": "expert",
+      "choice": "marlin",
+      "layer": "sliding",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.549e-02 (worst row 1.112e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.090e-02) [bound 0.109]"
+    },
+    {
+      "stage": "expert",
+      "choice": "marlin",
+      "layer": "sliding",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.649e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.358e-02 (worst row 7.528e-02) [bound 0.108]"
+    },
+    {
+      "stage": "expert",
+      "choice": "marlin",
+      "layer": "full",
+      "seed": 55302,
+      "ok": true,
+      "msg": "update relative L2 error 6.555e-02 (worst row 1.046e-01) [bound 0.150]; attention input relative L2 error 4.357e-02 (worst row 7.457e-02) [bound 0.107]"
+    },
+    {
+      "stage": "expert",
+      "choice": "marlin",
+      "layer": "full",
+      "seed": 55303,
+      "ok": true,
+      "msg": "update relative L2 error 6.307e-02 (worst row 1.140e-01) [bound 0.150]; attention input relative L2 error 4.150e-02 (worst row 8.751e-02) [bound 0.103]"
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026279869489371777,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026354969013482332,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026377819012850523,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002637392608448863,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026447041891515255,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026341418270021677,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002638376783579588,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026460213121026754,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003190814983099699,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032135234214365482,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032264268957078457,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003229412715882063,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032388009130954742,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003238621400669217,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003233379451557994,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003235073760151863,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003198081161826849,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032133462373167276,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003215085482224822,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032014527823776007,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004246855620294809,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004243025556206703,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003854872891679406,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003858427982777357,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0038709843065589666,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0038584007415920496,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003867191029712558,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003868624335154891,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003867545397952199,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003856020513921976,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.005387990269809961,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.005394200328737497,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004151690285652876,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004154052119702101,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004876469727605581,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004867216572165489,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003984473180025816,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003982891794294119,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004165062680840492,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004166936036199331,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004231696017086506,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004235067870467901,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004236169625073671,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004238177556544542,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003256295807659626,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032485451083630323,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032575035002082586,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003244366031140089,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032493406906723976,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032460817601531744,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003256971715018153,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003253982635214925,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0038750693202018738,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003861897625029087,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004237511660903692,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004247633274644613,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003464085515588522,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.00346754165366292,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003692016704007983,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003692011581733823,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003254856914281845,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032539470121264458,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032496810890734196,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003251712303608656,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0036962779704481363,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003679575864225626,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002151268534362316,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002143291989341378,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0027548710349947214,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0027536116540431976,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.601236913818866e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.661513675178867e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.66339269123273e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.65171205077786e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.589832759753335e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.644426998216659e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 4.235671440255828e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 4.252075029853586e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 4.051215114486695e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 4.058649949456594e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 3.9860049128037645e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 3.986286003510031e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 3.860255048948602e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 3.8351933540070604e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 3.9407345298059226e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 3.929933427571086e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 3.811652788954234e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 139,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 3.8124861134747334e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0038852840662002563,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0038897469639778137,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0035062299575656652,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003502007108181715,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0035062991082668304,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003508667228743434,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003504764521494508,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0035007328260689974,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003496771678328514,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0035035021137446165,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.005406817886978388,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.005399321671575308,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0051428102888166904,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.005140590015798807,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0054029617458581924,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0053991577588021755,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0042487094178795815,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004246972035616636,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004063614644110203,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004066442605108023,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0038897341582924128,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0038972243200987577,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003501649247482419,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0035001414362341166,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004426309838891029,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004425444640219212,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0037265149876475334,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003725518938153982,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003725656308233738,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0037275811191648245,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003727535018697381,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003722089808434248,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003721965244039893,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0037239142693579197,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.00442283833399415,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0044228616170585155,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004079481121152639,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004089714027941227,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004594307392835617,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004590161610394716,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0042534274980425835,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004250678233802319,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004090071655809879,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004091460257768631,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004092040937393904,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004087576176971197,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003724227659404278,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003722922643646598,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003252115799114108,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003249986097216606,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032466414850205183,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032516687642782927,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032529872842133045,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003251034766435623,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032540294341742992,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032516270875930786,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.00368289602920413,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.00368442852050066,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032509940210729837,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003250367008149624,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003250416135415435,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003250036621466279,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032490387093275785,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032527511939406395,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003251440357416868,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032527530565857887,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032507663127034903,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032524510752409697,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003254249691963196,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032504135742783546,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0027560980524867773,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0027561187744140625,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002968759275972843,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0029705048073083162,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.039969543460757e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.047222763707396e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.033437552512623e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.032448022277094e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.033269295992795e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.04651699581882e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 1.0944796713374672e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 1.09231245914998e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 1.0979805438182666e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 1.0887920325330924e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 1.8378867707724567e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 1.8432089063935564e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 1.340474796052149e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 1.3388638535616337e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 1.3409163557298598e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 753,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 1.34030210574565e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003250029170885682,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003249198431149125,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003253558650612831,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003251170739531517,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003250378416851163,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003250719280913472,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032534003257751465,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032486231066286564,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.003865729318931699,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0038635791279375553,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0036736028268933296,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003675006562843919,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004423771984875202,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.004422112368047237,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0032525009009987116,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0032510056626051664,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.004248850978910923,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0042445966973900795,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0036767541896551847,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0036738163325935602,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0034692620392888784,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.003467102302238345,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0034488551318645477,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0034482211340218782,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002647705841809511,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002647810848429799,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026486054994165897,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002648855559527874,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002650368260219693,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002650541253387928,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026468781288713217,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026484315749257803,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0029483004473149776,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002944755367934704,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026482276152819395,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026510448660701513,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026485861744731665,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026458401698619127,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026457817293703556,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002650670940056443,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002649856498464942,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026507063303142786,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026519400998950005,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026490262243896723,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026709935627877712,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002670104382559657,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026689101941883564,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026710263919085264,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002670245012268424,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026692573446780443,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026703530456870794,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026702149771153927,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002961775753647089,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0029622670263051987,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026701304595917463,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026694978587329388,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026689895894378424,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002669886453077197,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026715260464698076,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002670208690688014,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002669314155355096,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002669591223821044,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002669400768354535,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026707183569669724,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0021514317486435175,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002149499487131834,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002756394911557436,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002755973255261779,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0027547520585358143,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002754590241238475,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 2.092166596412426e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 2.0941254206263693e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.196000635507517e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.197837814805098e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.199615876947064e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.195298505597748e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 8.192779205273837e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 8.203412107832264e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 2.0928798676322913e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 2.095792069667368e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 9.161850016425888e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 9.145116450781643e-07,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 1.0633772262735874e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 1.0627377378114033e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 8.20159948489163e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 8.194147994800005e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 2.0928500816808082e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 2.0933082396368263e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 1.3775479601463303e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 1.3759143939751084e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 3.5633083825814538e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 3012,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 3.561820221875678e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002648524008691311,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002648693509399891,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002648385241627693,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026480427477508783,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026483354158699512,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002648615278303623,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.00264722085557878,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026482385583221912,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026479444932192564,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002648564288392663,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002646371489390731,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002647334011271596,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002944311825558543,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0029434848111122847,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.00264846277423203,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026480373926460743,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002648313995450735,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002648452529683709,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026468129362910986,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "qkv",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026477202773094177,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026488665025681257,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026487712748348713,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0021491374354809523,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0021485083270817995,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002649177797138691,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026489747688174248,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "pooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002148526022210717,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0021483865566551685,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026699015870690346,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002670335117727518,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0026700373273342848,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0026700985617935658,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "unpooler",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "dg"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 0.002149196108803153,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 0.002148012164980173,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0027556081768125296,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0027556719724088907,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0027543623000383377,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "o",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0027552261017262936,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55701,
+      "relative_l2": 3.275753897469258e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "cublas_nn"
+      ],
+      "seed": 55702,
+      "relative_l2": 3.276366896898253e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55701,
+      "relative_l2": 5.664472610078519e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "triton64"
+      ],
+      "seed": 55702,
+      "relative_l2": 5.670310201821849e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55701,
+      "relative_l2": 5.669048277923139e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "triton128"
+      ],
+      "seed": 55702,
+      "relative_l2": 5.6664262046979275e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55701,
+      "relative_l2": 5.67057759326417e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "triton256"
+      ],
+      "seed": 55702,
+      "relative_l2": 5.66380595046212e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55701,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        0
+      ],
+      "seed": 55702,
+      "relative_l2": 0.0,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55701,
+      "relative_l2": 2.742051719906158e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        1
+      ],
+      "seed": 55702,
+      "relative_l2": 2.7462549496704014e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55701,
+      "relative_l2": 2.744434596024803e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        2
+      ],
+      "seed": 55702,
+      "relative_l2": 2.7437461085355608e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55701,
+      "relative_l2": 5.6681283240322955e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        3
+      ],
+      "seed": 55702,
+      "relative_l2": 5.6657609093235806e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55701,
+      "relative_l2": 5.6710559874773026e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        4
+      ],
+      "seed": 55702,
+      "relative_l2": 5.666493052558508e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55701,
+      "relative_l2": 5.666840934281936e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        5
+      ],
+      "seed": 55702,
+      "relative_l2": 5.665001026500249e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55701,
+      "relative_l2": 5.671908638760215e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        6
+      ],
+      "seed": 55702,
+      "relative_l2": 5.666411652782699e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55701,
+      "relative_l2": 5.669315214618109e-06,
+      "ok": true
+    },
+    {
+      "stage": "dense",
+      "tokens": 16384,
+      "projection": "router_cat",
+      "choice": [
+        "lt",
+        7
+      ],
+      "seed": 55702,
+      "relative_l2": 5.667583991453284e-06,
+      "ok": true
+    },
+    {
+      "stage": "attention",
+      "choice": "fa3",
+      "seed": 55902,
+      "ok": true,
+      "msg": "update relative L2 error 7.424e-02 (worst row 1.435e-01) [bound 0.150]; attention input relative L2 error 4.850e-02 (worst row 9.836e-02) [bound 0.120]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fa3",
+      "seed": 55903,
+      "ok": true,
+      "msg": "update relative L2 error 7.251e-02 (worst row 1.393e-01) [bound 0.150]; attention input relative L2 error 4.724e-02 (worst row 1.005e-01) [bound 0.117]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fa3_contiguous",
+      "seed": 55902,
+      "ok": true,
+      "msg": "update relative L2 error 7.424e-02 (worst row 1.435e-01) [bound 0.150]; attention input relative L2 error 4.850e-02 (worst row 9.836e-02) [bound 0.120]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fa3_contiguous",
+      "seed": 55903,
+      "ok": true,
+      "msg": "update relative L2 error 7.251e-02 (worst row 1.393e-01) [bound 0.150]; attention input relative L2 error 4.724e-02 (worst row 1.005e-01) [bound 0.117]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fa3_unpacked",
+      "seed": 55902,
+      "ok": true,
+      "msg": "update relative L2 error 7.424e-02 (worst row 1.435e-01) [bound 0.150]; attention input relative L2 error 4.850e-02 (worst row 9.836e-02) [bound 0.120]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fa3_unpacked",
+      "seed": 55903,
+      "ok": true,
+      "msg": "update relative L2 error 7.251e-02 (worst row 1.393e-01) [bound 0.150]; attention input relative L2 error 4.724e-02 (worst row 1.005e-01) [bound 0.117]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fp8_direct128",
+      "seed": 55902,
+      "ok": true,
+      "msg": "update relative L2 error 7.424e-02 (worst row 1.435e-01) [bound 0.150]; attention input relative L2 error 4.850e-02 (worst row 9.836e-02) [bound 0.120]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fp8_direct128",
+      "seed": 55903,
+      "ok": true,
+      "msg": "update relative L2 error 7.251e-02 (worst row 1.393e-01) [bound 0.150]; attention input relative L2 error 4.724e-02 (worst row 1.005e-01) [bound 0.117]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fp8_gather128",
+      "seed": 55902,
+      "ok": true,
+      "msg": "update relative L2 error 7.424e-02 (worst row 1.435e-01) [bound 0.150]; attention input relative L2 error 4.850e-02 (worst row 9.836e-02) [bound 0.120]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fp8_gather128",
+      "seed": 55903,
+      "ok": true,
+      "msg": "update relative L2 error 7.251e-02 (worst row 1.393e-01) [bound 0.150]; attention input relative L2 error 4.724e-02 (worst row 1.005e-01) [bound 0.117]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fp8_gather256",
+      "seed": 55902,
+      "ok": true,
+      "msg": "update relative L2 error 7.424e-02 (worst row 1.435e-01) [bound 0.150]; attention input relative L2 error 4.850e-02 (worst row 9.836e-02) [bound 0.120]"
+    },
+    {
+      "stage": "attention",
+      "choice": "fp8_gather256",
+      "seed": 55903,
+      "ok": true,
+      "msg": "update relative L2 error 7.251e-02 (worst row 1.393e-01) [bound 0.150]; attention input relative L2 error 4.724e-02 (worst row 1.005e-01) [bound 0.117]"
+    }
+  ]
+}

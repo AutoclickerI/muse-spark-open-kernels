@@ -1,0 +1,172 @@
+{
+  "kv_bytes_per_token_per_gpu": 15872,
+  "bank_bytes_per_layer": 905969664,
+  "bank_bytes_60_layers": 54358179840,
+  "static_budget_bytes": 119850000000.0,
+  "extra_bank_token_equivalent": 3424784.5161290322,
+  "increment_16k_chunk_bytes": 260046848,
+  "increment_220_output_bytes": 3491840,
+  "assumptions": "No prefix sharing or sliding-cache savings; context cap includes generation; hidden judge lengths and actual residency unmeasured.",
+  "scenarios": [
+    {
+      "concurrency": 1,
+      "tokens_per_request": 80000,
+      "total_tokens": 80000,
+      "kv_bytes_per_gpu": 1269760000,
+      "kv_gb": 1.26976,
+      "kv_gib": 1.18255615234375,
+      "remainder_one_bank_bytes": 64222060160.0,
+      "remainder_two_banks_bytes": 9863880320.0
+    },
+    {
+      "concurrency": 1,
+      "tokens_per_request": 80753,
+      "total_tokens": 80753,
+      "kv_bytes_per_gpu": 1281711616,
+      "kv_gb": 1.281711616,
+      "kv_gib": 1.1936869621276855,
+      "remainder_one_bank_bytes": 64210108544.0,
+      "remainder_two_banks_bytes": 9851928704.0
+    },
+    {
+      "concurrency": 1,
+      "tokens_per_request": 80973,
+      "total_tokens": 80973,
+      "kv_bytes_per_gpu": 1285203456,
+      "kv_gb": 1.285203456,
+      "kv_gib": 1.1969389915466309,
+      "remainder_one_bank_bytes": 64206616704.0,
+      "remainder_two_banks_bytes": 9848436864.0
+    },
+    {
+      "concurrency": 1,
+      "tokens_per_request": 131072,
+      "total_tokens": 131072,
+      "kv_bytes_per_gpu": 2080374784,
+      "kv_gb": 2.080374784,
+      "kv_gib": 1.9375,
+      "remainder_one_bank_bytes": 63411445376.0,
+      "remainder_two_banks_bytes": 9053265536.0
+    },
+    {
+      "concurrency": 4,
+      "tokens_per_request": 80000,
+      "total_tokens": 320000,
+      "kv_bytes_per_gpu": 5079040000,
+      "kv_gb": 5.07904,
+      "kv_gib": 4.730224609375,
+      "remainder_one_bank_bytes": 60412780160.0,
+      "remainder_two_banks_bytes": 6054600320.0
+    },
+    {
+      "concurrency": 4,
+      "tokens_per_request": 80753,
+      "total_tokens": 323012,
+      "kv_bytes_per_gpu": 5126846464,
+      "kv_gb": 5.126846464,
+      "kv_gib": 4.774747848510742,
+      "remainder_one_bank_bytes": 60364973696.0,
+      "remainder_two_banks_bytes": 6006793856.0
+    },
+    {
+      "concurrency": 4,
+      "tokens_per_request": 80973,
+      "total_tokens": 323892,
+      "kv_bytes_per_gpu": 5140813824,
+      "kv_gb": 5.140813824,
+      "kv_gib": 4.787755966186523,
+      "remainder_one_bank_bytes": 60351006336.0,
+      "remainder_two_banks_bytes": 5992826496.0
+    },
+    {
+      "concurrency": 4,
+      "tokens_per_request": 131072,
+      "total_tokens": 524288,
+      "kv_bytes_per_gpu": 8321499136,
+      "kv_gb": 8.321499136,
+      "kv_gib": 7.75,
+      "remainder_one_bank_bytes": 57170321024.0,
+      "remainder_two_banks_bytes": 2812141184.0
+    },
+    {
+      "concurrency": 16,
+      "tokens_per_request": 80000,
+      "total_tokens": 1280000,
+      "kv_bytes_per_gpu": 20316160000,
+      "kv_gb": 20.31616,
+      "kv_gib": 18.9208984375,
+      "remainder_one_bank_bytes": 45175660160.0,
+      "remainder_two_banks_bytes": -9182519680.0
+    },
+    {
+      "concurrency": 16,
+      "tokens_per_request": 80753,
+      "total_tokens": 1292048,
+      "kv_bytes_per_gpu": 20507385856,
+      "kv_gb": 20.507385856,
+      "kv_gib": 19.09899139404297,
+      "remainder_one_bank_bytes": 44984434304.0,
+      "remainder_two_banks_bytes": -9373745536.0
+    },
+    {
+      "concurrency": 16,
+      "tokens_per_request": 80973,
+      "total_tokens": 1295568,
+      "kv_bytes_per_gpu": 20563255296,
+      "kv_gb": 20.563255296,
+      "kv_gib": 19.151023864746094,
+      "remainder_one_bank_bytes": 44928564864.0,
+      "remainder_two_banks_bytes": -9429614976.0
+    },
+    {
+      "concurrency": 16,
+      "tokens_per_request": 131072,
+      "total_tokens": 2097152,
+      "kv_bytes_per_gpu": 33285996544,
+      "kv_gb": 33.285996544,
+      "kv_gib": 31.0,
+      "remainder_one_bank_bytes": 32205823616.0,
+      "remainder_two_banks_bytes": -22152356224.0
+    },
+    {
+      "concurrency": 32,
+      "tokens_per_request": 80000,
+      "total_tokens": 2560000,
+      "kv_bytes_per_gpu": 40632320000,
+      "kv_gb": 40.63232,
+      "kv_gib": 37.841796875,
+      "remainder_one_bank_bytes": 24859500160.0,
+      "remainder_two_banks_bytes": -29498679680.0
+    },
+    {
+      "concurrency": 32,
+      "tokens_per_request": 80753,
+      "total_tokens": 2584096,
+      "kv_bytes_per_gpu": 41014771712,
+      "kv_gb": 41.014771712,
+      "kv_gib": 38.19798278808594,
+      "remainder_one_bank_bytes": 24477048448.0,
+      "remainder_two_banks_bytes": -29881131392.0
+    },
+    {
+      "concurrency": 32,
+      "tokens_per_request": 80973,
+      "total_tokens": 2591136,
+      "kv_bytes_per_gpu": 41126510592,
+      "kv_gb": 41.126510592,
+      "kv_gib": 38.30204772949219,
+      "remainder_one_bank_bytes": 24365309568.0,
+      "remainder_two_banks_bytes": -29992870272.0
+    },
+    {
+      "concurrency": 32,
+      "tokens_per_request": 131072,
+      "total_tokens": 4194304,
+      "kv_bytes_per_gpu": 66571993088,
+      "kv_gb": 66.571993088,
+      "kv_gib": 62.0,
+      "remainder_one_bank_bytes": -1080172928.0,
+      "remainder_two_banks_bytes": -55438352768.0
+    }
+  ]
+}

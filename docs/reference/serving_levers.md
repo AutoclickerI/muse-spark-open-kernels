@@ -110,40 +110,122 @@ two checks.
 
 ### Per-step breakdown and unowned work
 
-The following is the candidate step decomposition at the four serving concurrency rungs. Target-layer rows
-are measured from the `cand_moe7` verify profile and its receipt wall times; the c=4 component shares are
-rescaled to the receipt-interpolated layer total so the rows add exactly. All-reduce rows, DFlash, and the
-LM-head row are the `sim.serving` practical model using the measured layer and prefill receipts. The model
-attributes the two target-layer all-reduces separately to attention output and experts; pooler/router and
-unpooler all-gathers are zero in this composition because `shard_dense` is disabled. Zero means unpriced or
-excluded from the model, not that the runtime operation is free.
+Reproduce with `python -m sim.serving_receipts`. This decomposes the **published 1.745x receipt
+composition**, not a measured serving trace. M = profile shares allocated to receipt `best_ns`; S = sim
+model; I = log-log interpolation at c=4. Profile kernel durations overlap and can include PDL waits, so
+M rows are attribution rather than isolated critical-path latency. At c=4 interpolate each layer's wall
+and components, then normalize shares to its wall. The target receipt excludes cross-GPU communication.
 
-| Step component (source) | c=1 us | c=4 us | c=16 us | c=32 us |
-|---|---:|---:|---:|---:|
-| Target MoE kernels (receipt profile) | 4,126.3 | 8,590.7 | 17,040.9 | 28,348.7 |
-| Target attention kernels (receipt profile) | 1,199.6 | 2,267.9 | 4,085.4 | 7,141.4 |
-| Target projections (receipt profile) | 2,290.5 | 3,084.6 | 3,957.8 | 5,195.1 |
-| Target glue (receipt profile residual) | 960.4 | 970.5 | 934.4 | 1,561.2 |
-| Attention-output all-reduce (sim model) | 370.4 | 458.8 | 812.1 | 1,283.2 |
-| Expert all-reduce (sim model) | 370.4 | 458.8 | 812.1 | 1,283.2 |
-| Pooler/router/unpooler all-gathers (sim model; disabled) | 0 | 0 | 0 | 0 |
-| DFlash kernels (sim model) | 562.2 | 562.2 | 562.2 | 562.2 |
-| DFlash all-reduce (sim model) | 59.7 | 74.0 | 131.0 | 207.0 |
-| LM heads (sim model) | 97.3 | 97.3 | 97.3 | 97.3 |
-| Sampling and verify bookkeeping (not priced) | 0 | 0 | 0 | 0 |
-| Graph replay (included in receipt wall) | 0 | 0 | 0 | 0 |
-| CPU/scheduler (sim host model; not priced) | 0 | 0 | 0 | 0 |
-| **Candidate step total** | **10,037.0** | **16,564.8** | **28,433.2** | **45,679.2** |
+| Step component | Basis | c=1 us | c=4 us | c=16 us | c=32 us |
+|---|---|---:|---:|---:|---:|
+| Target MoE | M / I | 4,126.3 | 8,683.8 | 17,040.9 | 28,348.7 |
+| Target attention | M / I | 1,199.6 | 2,130.1 | 4,085.4 | 7,141.4 |
+| Target projections (including router) | M / I | 2,290.5 | 3,118.6 | 3,957.8 | 5,195.1 |
+| Target glue | M / I | 960.4 | 981.2 | 934.4 | 1,561.2 |
+| Attention-output all-reduce | S | 370.4 | 458.8 | 812.1 | 1,283.2 |
+| Expert all-reduce | S, legacy 8192-width proxy | 370.4 | 458.8 | 812.1 | 1,283.2 |
+| Pooler all-gather | omitted; S estimate outside total | 355.7 | 399.9 | 576.5 | disabled at M=256 |
+| Router all-gather | no such collective; router replicated | 0 | 0 | 0 | 0 |
+| Unpooler all-gather | omitted; S estimate outside total | 370.4 | 458.8 | 812.1 | disabled at M=256 |
+| DFlash kernels (includes borrowed draft LM head) | S | 562.2 | 562.2 | 562.2 | 562.2 |
+| DFlash all-reduce | S | 59.7 | 74.0 | 131.0 | 207.0 |
+| Target LM head | S | 97.3 | 97.3 | 97.3 | 97.3 |
+| Sampling / verify bookkeeping | unpriced | ? | ? | ? | ? |
+| Graph replay | omitted; two-stage floor proxy 2 x 4.224 us | 8.4 | 8.4 | 8.4 | 8.4 |
+| CPU / scheduler between replays | unpriced (`host_us=0`) | ? | ? | ? | ? |
+| **Published priced step (excludes omitted rows)** | **M + S** | **10,037.0** | **16,564.8** | **28,433.2** | **45,679.2** |
 
-The largest unowned opportunity is the collective bucket: the modeled attention-output plus expert
-all-reduces are 0.74, 0.92, 1.62, and 2.57 ms at c=1/4/16/32, before any overlap. The bound permits recovery
-through NVLS/multicast, fused all-gathers, and compute/collective overlap, so this is ranked first even though
-the expert path's V9 kernel is owned by the MoE lane. The attention-output all-reduce and cross-layer overlap
-remain unowned. DFlash's own kernels plus its modeled all-reduce are next (0.62, 0.64, 0.69, 0.77 ms): they
-run every step and are safe to optimize without changing weights. LM-head work is about 0.10 ms; sampling
-and CPU/scheduler time need a trace before a recovery factor can be assigned. The implemented change below
-removes one DFlash TP collective from the dense greedy fallback; it is a targeted part of the second-ranked
-bucket and leaves the default graph sampler and output math unchanged.
+The receipt composition is optimistic: `best_ns` is the candidate's fastest sample, whereas receipt
+`median_ns` is the judge statistic; graph replay is subtracted, not included. It also omits the two
+BF16-expert layer premiums, prices expert AR at hidden width 8192 instead of pooled width 4096, retains
+the pre-split drafter FC byte model, and omits its all-gather and target projection gathers. The multicast
+unpool gather/norm and finalize/AR fusions overlap those costs, so simply adding them overstates their
+critical-path contribution. `accounting_sensitivity` in the same script uses candidate layer medians,
+adds BF16 premiums and enabled gathers, corrects AR width, models the existing FC split, and adds two
+full-model replay floors. It gives **1.609x capped**, with candidate steps **12.108 / 19.711 / 33.910 /
+49.434 ms**. Prefill receipts are unchanged. This is a sensitivity model; neither score includes measured
+H200 scheduler/sampling, actual fusion overlap, or a full-node memory/TTFT run.
+
+Rank unowned work by `(current_us - bound_resource_floor_us) / published_step_us`, keeping prefill and
+acceptance fixed. The bound's perfect overlap permits a larger saving; these figures conservatively use
+its separate collective floors. This is an opportunity ranking, not a promise of recovery.
+
+| Rank | Unowned component | Recoverable us at c=1 / 4 / 16 / 32 | Step share recoverable | Capped score if recovered alone |
+|---|---|---|---|---|
+| 1 | Target collectives and compute/communication overlap | 416 / 512 / 893 / 1,402 | 4.15 / 3.09 / 3.14 / 3.07% | 1.778x vs 1.745x |
+| 2 | DFlash kernels, unchanged weights | 234 / 231 / 216 / 146 | 2.34 / 1.39 / 0.76 / 0.32% | 1.759x |
+| 3 | Target LM head | 11 / 11 / 9 / 0 | 0.11 / 0.06 / 0.03 / 0% | 1.7453x |
+| unranked | Sampling/verify and CPU/scheduler | no calibration | unknown | needs a serving trace |
+
+Rank 1 includes attention-output AR, the expert-output communication interface (without changing the
+MoE lane's expert kernel), projection gathers, and independent router overlap. The attention and MoE
+kernels themselves remain with their lanes. At c=32 the LM-head compute floor already exceeds the old
+byte-only model, so its modeled recoverable value is clamped to zero.
+
+Implemented the **DFlash2 small-batch candidate collective coalescing**, a graph-captured part of
+rank 1. The default `candidate_topk` at <=32 candidate rows packs each FP32 logit's raw bits and its
+int64 token into two int64 words, replacing two typed all-gathers with one. A Triton pack kernel avoids
+multiple Python-side pack/cast launches; the top-k receives a contiguous FP32 logit copy, and selected
+IDs are read from a strided view. Payload is 16 instead of 12 bytes per candidate, trading bandwidth
+for one fewer startup. All values/IDs and rank/candidate order are exact. The partition-lse gather stays
+separate. At >32 candidate rows, stock's separate gathers remain: repeated tests of unconditional
+packing regressed at c=16/32. With seven proposed positions per request, the serving rungs c=1/4 use
+coalescing and c=16/32 use stock. This is default selector code, not an unused greedy fallback.
+
+Also tested submitting the independent router before the pooler/all-gather. Eager and graph outputs were
+exact at TP1 and TP2, including changed-input replay, but repeated local timing reversed the apparent win:
+one TP1 pass slowed c=1/4/16/32 from 31.88/38.30/65.42/109.34 to 38.88/53.14/75.85/172.40 us; a TP2 pass
+slowed c=1 from 55.99 to 81.12 us. Shared-job contention prevents attributing all of this to scheduling,
+but it is insufficient evidence to ship a reorder. **Dropped it; original router scheduling is restored.**
+The expert lane's file was untouched. Evidence remains under `/data2/jihoon/muse_kernel/harness/results/collectives-lane-local-evidence/`;
+no speedup is credited to it.
+
+`test_dflash_candidate_gather.py` is exact eager and graph for c=1/4/16/32 at TP1 and TP2, with ties,
+optional log-partition, real FlashInfer top-k and full 202048 vocabulary projection, changed-input graph
+replay, and large int64/NaN bit patterns. The final thresholded TP2 NCCL A/B medians (16 operations per
+graph, alternating nine samples; common head GEMM excluded) are **77.00->65.65 / 101.77->83.18 us** at
+c=1/4: local savings **11.35 / 18.59 us**. The identical stock path at c=16/32 timed 142.37->157.83 /
+163.10->153.44 us, demonstrating shared-job timing noise; no speed claim applies there. Earlier
+unconditional versions sometimes looked faster but regressed on repeat and were replaced. Raw logs
+are retained in `collectives-lane-local-evidence` under the harness results directory.
+
+The pack kernel compiles for sm90 through Triton's explicit CUDA target inside
+`override_jit_cuda_arch(9, 0)`. H200 NVLink/TP8 runtime remains unverified. The startup-only model saves
+2.4-5.5 us at c=1/4 and zero at c=16/32, keeping prefill and tau fixed: 1.744765-1.744932x capped
+versus 1.744636x (+0.007-0.017%). Packing/copy costs and topology
+may erase it. This is a small first collective lever, not the rank-1 bucket's 0.4-1.4 ms recovery.
+
+Final thresholded Triton-pack TP2 run `g47-candidate-pairs-gated-tp2` against fresh stock
+`g38-collectives-stock-tp2`: **30/30 exact**, every request 220 tokens, first-divergence 220 and token
+agreement 1.0 at c=1/4. Target verify and draft verify graphs capture on both ranks; load audits pass;
+source hash stays `09201f947b5b...`. This additional run disables prefill graphs and is a correctness
+screen only: shared-job TTFT p50 ratios of 10.90/4.56 exceed 2x and **do not validate the TTFT gate**.
+The earlier all-rung packing variant's normal-prefill-graph TP2 `g44` was 30/30 exact and had TTFT ratios
+1.32/1.47, but it is not final-source timing evidence. GPU1 was limited to memory fraction 0.3; the 0.2
+retry failed capacity after its other job grew. All failure receipts are retained.
+
+TP1 `g33` against fresh stock `g37` passes **30/30 exact**, first divergence 220 and token agreement 1.0.
+TP1 takes the unchanged early return, so the final packing implementation does not alter that path.
+The 30-request random TP1 run `g42` has 220 tokens per request. Both stock self-pairs and patch pairs
+have first-divergence p10/p50/p90 0/0/0 and token agreement 0/0/0; this output metric remains
+nondiscriminating on random weights. The numerical gate uses the full 220-token teacher-forced
+continuation for each of 30 requests and all three stock pairs among `g20-lp-stock-a/b/c`.
+Earlier pack variants passed (`g45`: median request mean/max drift 0.18891/0.70673 versus stock p90
+0.19656/0.79526). Final thresholded-source `g48` passes the gate: across 30 requests and three stock comparisons,
+median request mean/max drift is **0.18515 / 0.67389**, below stock p90 **0.19656 / 0.79526**. Patch p90
+mean/max drift is 0.19564/0.81289; its largest single max drift is 1.00154 versus stock's 0.89700.
+Thus the declared distribution gate passes, while the worst observed tail is not equal to stock.
+This is the whole accepted patch's drift; the candidate gather unit itself is exact. The forced pass
+uses GPU0 with memory fraction 0.3 and disables prefill graphs for capacity, retaining verify/draft
+graphs. The random-output component uses `g42`, whose TP1 path is unchanged by this TP>1 edit.
+
+`serving/patch.diff` is regenerated against `a55ab7d5`: **94,229 bytes**, 12 allowed source files,
+longest added line **374** characters. It applies cleanly to fresh base files and reconstructs every
+source byte. All nine accepted files outside the drafter/packing additions are byte-identical; all
+other `dflash.py` definitions are AST-identical. No MoE-lane source or weight loader was edited.
+Source `git diff --check`, ruff, Python compile checks, and ten harness CPU tests pass. Remaining:
+H200 TP8/EP8 runtime and speed, final-source normal-prefill-graph TTFT, and measured host/sampling
+costs. No serving check or scored run was launched.
 
 
 ## Other levers found

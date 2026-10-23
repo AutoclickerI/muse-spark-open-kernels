@@ -1,0 +1,29 @@
+{
+  "source": "cand_score_portfolio.py",
+  "sha256": "fa202b0272f441d917938481fdecd976278858dbaadabaef089a2f0cf42a0452",
+  "hardware": "sm120, GPU0; H200 constructors/configs use native/FA3/TMA stand-ins",
+  "official_tests": 5,
+  "timed_shapes": 8,
+  "local_prepare_s": 15.315161517995875,
+  "forced_prepare_s": 49.18010143103311,
+  "selected_prepare_s": 61.11819142202148,
+  "fresh_variant_cases": {
+    "expert": 128,
+    "dense": 552,
+    "attention": 12
+  },
+  "fresh_complete_selected_scored_cases": 16,
+  "expert_trial_counts": {
+    "753": 32,
+    "3012": 32,
+    "16384": 32
+  },
+  "dense_shapes": 15,
+  "attention_shapes": 8,
+  "attention_choices_per_shape": 6,
+  "sm90_cpp_source_compile": true,
+  "sm90_triton_specializations": 15,
+  "h200_execution_verified": false,
+  "judge_runs_launched": 0,
+  "commit_created": false
+}
