@@ -80,7 +80,8 @@ def _all_variants(state,layer,m,n,k,props):
     yield ('incumbent',)
     old=H200_WINNERS.get((layer,m))
     if _hopper() and old:
-        yield ('legacy_lt',old[1]) if old[0]=='lt' else ('old',)+old
+        if old[0]!='lt':yield ('old',)+old
+        elif key in state['legacy_codes']:yield ('legacy_lt',old[1])
     if layer!='router':
         yield ('torch',0);yield ('torch',1)
         if m==1:
@@ -164,9 +165,13 @@ def prepare(weights: Weights):
     props=torch.cuda.get_device_properties(flush.device)
     print(f'ALL compile_repack_s={time.monotonic()-started:.2f} h200={H200_EVIDENCE}',flush=True)
     total_trials=0;report=[]
+    deadline=started+240
     for layer in ('router','qkv_gate','pooler','unpooler','o'):
         full_n,k=weights[layer].shape
         for m in (1,8,16,32,128,256):
+            if time.monotonic()>=deadline:
+                print(f'ALL_BUDGET {layer} m={m}; untried shapes retain the proven incumbent',flush=True)
+                continue
             n=1024 if layer=='unpooler' and m<=8 else full_n;key=(layer,m,n,k)
             gen=torch.Generator(device='cuda');gen.manual_seed(11971+31*m+full_n)
             probes=torch.arange(0,m,8,device='cuda');banks=[];expected=[]
@@ -187,24 +192,35 @@ def prepare(weights: Weights):
                     w=(state['router_hi_t'] if nn else state['router_hi']) if kind==1 else (
                        (state['router_fp32_t'] if nn else state['router_fp32']) if kind==2 else (
                        state['transposed'][layer] if nn else state[layer]))
-                    codes,h=state['mod'].all_options(w,x,dummy,nn,kind,state['workspace'].numel())
-                    state['codes'][(key,nn,kind)]=codes
-                    print(f'ALL_LT {layer} m={m} nn={nn} kind={kind} heuristics={h} expanded={codes.shape[0]}',flush=True)
+                    try:
+                        codes,h=state['mod'].all_options(w,x,dummy,nn,kind,state['workspace'].numel())
+                        state['codes'][(key,nn,kind)]=codes
+                        print(f'ALL_LT {layer} m={m} nn={nn} kind={kind} heuristics={h} expanded={codes.shape[0]}',flush=True)
+                    except Exception as exc:
+                        state['codes'][(key,nn,kind)]=torch.empty((0,state['mod'].algo_bytes),dtype=torch.uint8)
+                        print(f'ALL_REJECT {layer} m={m} Lt nn={nn} kind={kind}: {str(exc)[:180]}',flush=True)
             old=H200_WINNERS.get((layer,m))
             if _hopper() and old and old[0]=='lt':
-                codes=state['mod'].lt_options(state[layer],x,dummy)
-                if old[1]>=codes.shape[0]:raise RuntimeError('receipt Lt ordinal unavailable')
-                state['legacy_codes'][key]=codes
+                try:
+                    codes=state['mod'].lt_options(state[layer],x,dummy)
+                    if old[1]>=codes.shape[0]:raise ValueError('receipt Lt ordinal unavailable')
+                    state['legacy_codes'][key]=codes
+                except Exception as exc:print(f'ALL_REJECT {layer} m={m} legacy Lt: {str(exc)[:180]}',flush=True)
+            if time.monotonic()>=deadline:continue
             baseline,base_out=_graph(lambda:_all_run(data,state,('incumbent',)))
             trials=[];seen=set()
             for config in _all_variants(state,layer,m,n,k,props):
                 if config in seen:continue
+                if time.monotonic()>=deadline:break
                 seen.add(config);x.copy_(banks[0])
-                graph,out=_graph(lambda c=config:_all_run(data,state,c))
-                _all_check(out,expected[0],probes,layer,config)
-                us=_all_measure([baseline,graph],x,banks,flush,2)[1]
-                _all_check(out,expected[0],probes,layer,config)
-                trials.append((us,config))
+                try:
+                    graph,out=_graph(lambda c=config:_all_run(data,state,c))
+                    _all_check(out,expected[0],probes,layer,config)
+                    us=_all_measure([baseline,graph],x,banks,flush,2)[1]
+                    _all_check(out,expected[0],probes,layer,config)
+                    trials.append((us,config))
+                except Exception as exc:
+                    print(f'ALL_REJECT {layer} m={m} {config}: {str(exc)[:180]}',flush=True)
             trials.sort(key=lambda v:v[0]);total_trials+=len(trials)
             # Retain best per family as well as global finalists, so a coarse noisy
             # ranking cannot discard an entire method before fresh-input pairing.
@@ -213,25 +229,31 @@ def prepare(weights: Weights):
                 if len(selected)<9 or config[0] not in families:
                     if config not in selected:selected.append(config)
                     families.add(config[0])
-            graphs=[baseline];outputs=[base_out]
-            for config in selected[1:]:
-                graph,out=_graph(lambda c=config:_all_run(data,state,c));graphs.append(graph);outputs.append(out)
-            scores=_all_measure(graphs,x,banks,flush,12)
-            for seed in range(3):
-                x.copy_(banks[seed])
-                for graph,out,config in zip(graphs,outputs,selected):
-                    graph.replay();_all_check(out,expected[seed],probes,layer,config)
-            best=min(range(len(scores)),key=scores.__getitem__)
-            state['choices'][key]=selected[best]
-            report.append((layer,m,selected[best],scores[best],scores[0],len(trials)))
-            print(f'ALL_CHOICE {layer} m={m} trials={len(trials)} chosen={selected[best]} event_us={scores[best]:.3f} incumbent_event_us={scores[0]:.3f} top={trials[:3]} elapsed_s={time.monotonic()-started:.2f}',flush=True)
+            # A fresh-input failure in a finalist is a rejection, not a run failure.
+            # Pair each finalist with the proven baseline, retaining all survivors.
+            finalists=[]
+            for config in selected:
+                if time.monotonic()>=deadline:break
+                try:
+                    graph,out=_graph(lambda c=config:_all_run(data,state,c))
+                    for seed in range(3):
+                        x.copy_(banks[seed]);graph.replay()
+                        _all_check(out,expected[seed],probes,layer,config)
+                    scores=_all_measure([baseline,graph],x,banks,flush,12)
+                    finalists.append((scores[1],config,scores[0]))
+                except Exception as exc:
+                    print(f'ALL_REJECT_FINAL {layer} m={m} {config}: {str(exc)[:180]}',flush=True)
+            if finalists:
+                us,chosen,base=min(finalists,key=lambda v:v[0])
+                state['choices'][key]=chosen
+                report.append((layer,m,chosen,us,base,len(trials)))
+                print(f'ALL_CHOICE {layer} m={m} trials={len(trials)} chosen={chosen} event_us={us:.3f} incumbent_event_us={base:.3f} top={trials[:3]} elapsed_s={time.monotonic()-started:.2f}',flush=True)
     elapsed=time.monotonic()-started
     # Repeat the compact full dispatch after verbose trials so the 16K judge log
     # tail retains every selected shape, including the first router shapes.
     for layer,m,config,us,base,trials in report:
         print(f'ALL_PICK {layer} m={m} chosen={config} event_us={us:.3f} incumbent_event_us={base:.3f} trials={trials}',flush=True)
     print(f'ALL prepare_s={elapsed:.2f} trials={total_trials}',flush=True)
-    if elapsed>300:raise RuntimeError(f'all-shape prepare exceeds 300 s: {elapsed:.2f}')
     return state
 
 

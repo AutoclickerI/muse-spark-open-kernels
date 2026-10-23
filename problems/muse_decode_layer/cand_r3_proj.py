@@ -669,7 +669,6 @@ def prepare(weights):
         "next_pre_attn_w": 1.0 + f32(weights["next_pre_attn_norm"]),
         "inv_freq": (1.0 / (ROPE_THETA ** (torch.arange(0, HD, 2, device=dev).float() / HD))).contiguous(),
         "moe_bank": v9_prepare({**weights, "post_norm_w": weights["post_expert_norm"]}),
-        "moe_bank_v7": v7_prepare({**weights, "post_norm_w": weights["post_expert_norm"]}),
     }
     torch.cuda.synchronize()
     return state
@@ -3528,28 +3527,11 @@ def _tune_pdl(state,flush,device):
 
 
 def _tune_moe(state,device,flush):
-    plan={m:'v9' for m in _TUNE_TOKENS}
-    if not _dp_left(state,12):return plan
-    try:state['moe_bank']['grouped_mod']=_grouped_module()
-    except Exception as exc:_dp_reject('MOE','all','grouped_module',exc)
-    for m in _TUNE_TOKENS:
-        if not _dp_left(state,2):break
-        x=torch.randn((m,4096),device=device,dtype=torch.bfloat16);ids=torch.randint(0,32,(m,8),device=device,dtype=torch.int32);tw=torch.rand((m,8),device=device)
-        data=dict(hidden_states=x,topk_ids=ids,topk_weights=tw,config=dict(local_count=32,d_hidden=4096,d_expert=4096,local_start=0))
-        fns={'v9':lambda:experts_v9(x,tw,ids,state),'v7':lambda:experts_v7(x,tw,ids,state)}
-        if 'grouped_mod' in state['moe_bank']:fns['grouped']=lambda:_grouped_call(data,state['moe_bank'])
-        scores=[]
-        try:control=fns['v9']()
-        except Exception as exc:_dp_reject('MOE',m,'control',exc);continue
-        for label,fn in fns.items():
-            if not _dp_left(state,1):break
-            try:
-                if not _dp_agree(fn(),control):raise ValueError('exceeds 1% H200-proven V9 guard')
-                scores.append((_measure_graph(fn,flush,3),label))
-            except Exception as exc:_dp_reject('MOE',m,label,exc)
-        if scores:plan[m]=min(scores,key=lambda q:q[0])[1]
-        print(f'MOE_TUNE m={m} best={plan[m]} all={scores}',flush=True)
-    return plan
+    # Full-layer H200 receipt 0e94268cf5654012: pure V9 = 1.427904x.
+    # Isolated synthetic routing selected grouped/V7 paths which regressed the
+    # actual layer (2ad75c19cb514f5c). Keep the measured layer control while
+    # this candidate tests projection/FA3/PDL choices.
+    return {m:'v9' for m in _TUNE_TOKENS}
 
 
 def prepare(weights):

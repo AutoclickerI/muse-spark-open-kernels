@@ -17,6 +17,33 @@ def function(text,name,scope):
     exec(ast.get_source_segment(text,node),scope)
 
 
+def safe_tuner(source, *, extended=False, native=False):
+    """Refresh inherited tuning code without changing a frozen input source.
+
+    Max/native builders read archived candidates. Their generated copies must
+    still get the current rejection handling and prepare-time trial deadline.
+    """
+    template=(P/'dev/portfolio_all_tail.py').read_text()
+    updates={n.name:ast.get_source_segment(template,n) for n in ast.parse(template).body
+             if isinstance(n,ast.FunctionDef) and n.name in ('prepare','_all_variants')}
+    if extended:
+        updates['_base_variants']=updates.pop('_all_variants').replace('def _all_variants(', 'def _base_variants(',1)
+        setup=[]
+        for key,loader in [('deep_gemm_fn','_dg_load')]+([('deep_gemm_cublas_fn','_dg_cublas_load')] if native else []):
+            setup.append(f"    try:state[{key!r}]={loader}()\n"
+                         f"    except Exception as exc:\n"
+                         f"        state[{key!r}]=None\n"
+                         f"        print('ALL_REJECT loader {key}:',str(exc)[:180],flush=True)\n")
+        updates['prepare']=updates['prepare'].replace(
+            '    total_trials=0;report=[]',
+            ''.join(setup)+'    total_trials=0;report=[]')
+    lines=source.splitlines(keepends=True)
+    for n in reversed(ast.parse(source).body):
+        if isinstance(n,ast.FunctionDef) and n.name in updates:
+            lines[n.lineno-1:n.end_lineno]=[updates[n.name]+'\n']
+    return ''.join(lines)
+
+
 def build(output):
     original=(P/'cand_portfolio.py').read_text();ov=values_of(original)
     base=(P/'cand_fused_select.py').read_text();bv=values_of(base)

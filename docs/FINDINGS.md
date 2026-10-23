@@ -258,6 +258,8 @@ The dominant opportunity is the 128/256-token expert path. Standalone H200 resul
 
 
 In the layer on the H200, V9 beats the board's `cand_r3_moe_dispatch` (1.367x, `85e67f5d6ef945c9`) at the first 10 of 12 loads by 1-9%, but `cand_r3_v9_dispatch`'s grouped wide-tile path at the last two loads (verify 32, MoE at 256 tokens) collapses to 0.549x/0.647x against 1.105x/1.071x, for 1.266x overall (`2ad75c19cb514f5c`). V9 below 256 tokens with the board's path at 256 would come to about 1.41x (geomean of the per-load ratios). Standalone, grouped and Humming win at 256 tokens, so a synthetic prepare-time ranking can pick a path that loses inside the layer: read each autotune run's MOE_TUNE choice against its per-load result. The evidence: on the H200, prepare timed MoE at 256 tokens with synthetic routing as grouped 1.87 ms < V9 1.98 (`2ad75c19cb514f5c` log) and V7 1.79 < grouped 1.94 < V8 2.27 (`85e67f5d6ef945c9` log), yet grouped inside the timed layer made verify 32 about 2x slower. Tune MoE on routing from the layer's own router weights (prepare receives them) rather than synthetic ids, and gate paths that lose in-layer receipts.
+A router-aware direct MoE probe on sm_120 isolates the missing mechanism. At M=256, real router fixtures had 672 local pairs across 8 experts with a 221-route hot expert; matched-local-count fixtures had 672 pairs across all 32 experts; uniform fixtures had 2,048 all-local pairs. Graph medians in ms were grouped 0.915/0.866/1.818, v7 0.584/0.763/1.693, v9 0.668/0.841/4.738, V11/Humming 0.536/0.760/1.652, and V17 adaptive 0.662/0.827/4.659 for real/matched/uniform. The hot tail leaves grouped's histogram+plan+scatter, two GEMMs and combine (six launches) with fixed task overhead, while persistent paths benefit more from fewer active routes. No host synchronization appears in `_grouped_call`; the remaining full-layer gap is launch/task interaction under skew, not synthetic GEMM ranking. `problems/muse_decode_layer/moe_tune.py` now routes loaded layer router weights on random hidden states and applies V17's 1% semantic gate before timing.
+
 The profile also exposes small separate residual, router, norm and gate kernels. Existing structural fusion candidates reduce those launches but regressed complete sm_120 layer timings, so the new diagnostic keeps the v7 glue as the control while selecting the expert family first. Any Hopper result must recheck the Python glue with a portable stand-in and compare the full-layer receipt, not infer a win from the isolated MoE ratio.
 | Proj scored (`68e2f34b1d4744cb`) | 1.142642x, CI 1.1255–1.1598 | router 1.68 / 2.26 / 1.93x; pooler m32 loses at 0.930x | router m8 4.05x; m128/256 all 0.976–1.017x | `submission.py` is the scored snapshot, sha256 `4bc18cec…`; tuned check `9294b3237c4f4e2d` 1.141605x; full table below |
 | Proj hybrid (`6b706627babc4cc6`) | 1.106x | router 1.55-2.01x; unpooler m=1 1.135x | router m=8 3.81x; others 0.98-1.01x | qkv_gate and o stay at cuBLAS parity at every m |
@@ -374,13 +376,24 @@ post-capture KV capacity and peak resident tokens before allocating partial copi
 
 ### Projection evidence and next experiment (G3, G2)
 
-Target: **1.26x or better on the H200**. Current scored best is `f3786341611f4f1f`,
+Current priority is **put projection winners inside decode and serving**. The fitted
+overall model in “Boards” takes max(decode, component composite); standalone projection
+improvement currently cannot change our overall rank. The earlier standalone 1.26x goal
+and gap table below remain diagnostic evidence. Current scored best is `f3786341611f4f1f`,
 **1.181998x** (the overall increment overlaps its CI; the router m256 gain is much larger). `submission.py` is its exact
 frozen fused-select source, SHA256 `10d02fa32b572b1649f5e0c63e5f9841567835dc3b83ffe17cd7d843429117e9`.
-The overall-board formula is unpublished; the 11% projection weight above is a fitted model.
+The overall-board formula is unpublished; the old 11% projection weight is superseded
+by the better-fitting max model in “Boards”.
+
+| Finding | Result / scope | Mechanism or remaining limit | Evidence |
+|---|---|---|---|
+| Decode projection port | `cand_r3_proj.py`, SHA256 `235434b35d1407cdb61ff79f291b9a962fa4a56369f60277fb666863f5b1174e`; 24 projection keys at T1/8/16/32/128/256, including the layer's FP32 4608-row pool/router | Skinny/GEMV winners, mixed pooler/router with hi+lo in the same FP32 accumulator, strided pooler Lt + fused router, TMA/WGMMA direct/last-CTA/DSMEM/Stream-K, and all checked Lt TN/NN/split-K algorithms. Trials time the next consumer, validate two fresh inputs within 1% of cuBLAS and reject/log failures; FA3's 27 settings and PDL remain tunable under a shared 240 s deadline | `problems/muse_decode_layer/cand_r3_proj.py`; projection-owned `dev/build_decode_proj.py` and embedded templates |
+| Port admission, **sm_120 only** | **13/13 tests, 12/12 fresh-input graphs**, **29.05 s prepare**, no trial rejections; **2,742** native projection configurations ×3 fresh replays; **730** forced Hopper ABI cases, **16** injected rejections; sm_90a projection build passes | Includes strided/zero-tail outputs, FA3 tensor/tuple returns, q_len1/8 split-qkv tuples and expired budgets. Local success cannot verify Hopper WGMMA execution, H200 ranking or cold H200 prepare time | `runs/screen/decode_proj/muse_decode_layer.cand_r3_proj.json`; `problems/muse_bf16_proj/dev/decode_proj_{validation,sm90a}.log` |
+| Full-layer control overrides isolated MoE ranking | Pure V9 **1.427904x**, CI1.406485–1.449322 (`0e94268cf5654012`), versus grouped dispatch **1.265668x** (`2ad75c19cb514f5c`), with a verify32 collapse | New H200 evidence landed during the port. Keep V9 at every token count for this projection experiment and skip the unused V7 bank; the inherited synthetic MoE tuner can select a path that loses in the real layer | `runs/muse_decode_layer/*0e94268cf5654012.json`, `*2ad75c19cb514f5c.json`; full-layer profiles |
+| Generated tuner rejection/budget handling | All/max/native builders now inherit coarse/finalist/layout rejection and a 240 s trial deadline; v2 template also rejects failures and stops trials | Fault injection rejects launch, numeric, late finalist and layout failures on all 30 standalone projection shapes; expired budget skips all shapes. Sent `cand_portfolio_all.py` stays untouched at the owner's patched `0caf7322…` hash | `problems/muse_bf16_proj/dev/validate_tuner_safety.py`, `tuner_safety_validation.log`; `build_portfolio_all.safe_tuner` |
 
 <!-- PROJ_GAP_BEGIN -->
-H200 gap to 1.26x, from all 14 clean completed receipts. SGLang and board
+Historical standalone H200 gap to 1.26x, from all 14 clean completed receipts. SGLang and board
 times use scored `f3786341611f4f1f`. Best = that SGLang time / the highest observed
 paired speedup for this shape; it is a common-baseline equivalent, not a new measured
 median. Choosing the maximum across receipts is optimistic and includes timing noise;
