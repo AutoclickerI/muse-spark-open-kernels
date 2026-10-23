@@ -2165,9 +2165,10 @@ def _publish_fence():
 def _o_stats_kernel(X,W,STREAM,ALPHA,BETA,A,STATS,COEFF,CNT,T:tl.constexpr,
                     TB:tl.constexpr,BN:tl.constexpr,BK:tl.constexpr,USE_PDL:tl.constexpr):
     pn=tl.program_id(0)
+    tbid=tl.program_id(2)
     _pdl_start(USE_PDL)
     n=pn*BN+tl.arange(0,BN)
-    t=tl.arange(0,TB)
+    t=tbid*TB+tl.arange(0,TB)
     k=tl.arange(0,BK)
     alpha=tl.load(ALPHA+n)
     beta=tl.load(BETA+n)
@@ -2187,18 +2188,20 @@ def _o_stats_kernel(X,W,STREAM,ALPHA,BETA,A,STATS,COEFF,CNT,T:tl.constexpr,
     ast=alpha[:,None]*s
     bb=beta[:,None]*a
     NTILES:tl.constexpr=8192//BN
-    tl.store(STATS+(0*NTILES+pn)*TB+t,tl.sum(a*a,0))
-    tl.store(STATS+(1*NTILES+pn)*TB+t,tl.sum(ast*ast,0))
-    tl.store(STATS+(2*NTILES+pn)*TB+t,tl.sum(ast*bb,0))
-    tl.store(STATS+(3*NTILES+pn)*TB+t,tl.sum(bb*bb,0))
+    TILE_STATS:tl.constexpr=4*NTILES*TB
+    stbase=tbid*TILE_STATS
+    tl.store(STATS+stbase+(0*NTILES+pn)*TB+(t-tbid*TB),tl.sum(a*a,0))
+    tl.store(STATS+stbase+(1*NTILES+pn)*TB+(t-tbid*TB),tl.sum(ast*ast,0))
+    tl.store(STATS+stbase+(2*NTILES+pn)*TB+(t-tbid*TB),tl.sum(ast*bb,0))
+    tl.store(STATS+stbase+(3*NTILES+pn)*TB+(t-tbid*TB),tl.sum(bb*bb,0))
     _publish_fence()
-    previous=tl.atomic_add(CNT,1,sem='acq_rel')
+    previous=tl.atomic_add(CNT+tbid,1,sem='acq_rel')
     if previous==NTILES-1:
         r=tl.arange(0,NTILES)
-        sb=tl.sum(tl.load(STATS+(0*NTILES+r[:,None])*TB+t[None,:]),0)
-        sa=tl.sum(tl.load(STATS+(1*NTILES+r[:,None])*TB+t[None,:]),0)
-        sab=tl.sum(tl.load(STATS+(2*NTILES+r[:,None])*TB+t[None,:]),0)
-        sbb=tl.sum(tl.load(STATS+(3*NTILES+r[:,None])*TB+t[None,:]),0)
+        sb=tl.sum(tl.load(STATS+stbase+(0*NTILES+r[:,None])*TB+(t-tbid*TB)[None,:]),0)
+        sa=tl.sum(tl.load(STATS+stbase+(1*NTILES+r[:,None])*TB+(t-tbid*TB)[None,:]),0)
+        sab=tl.sum(tl.load(STATS+stbase+(2*NTILES+r[:,None])*TB+(t-tbid*TB)[None,:]),0)
+        sbb=tl.sum(tl.load(STATS+stbase+(3*NTILES+r[:,None])*TB+(t-tbid*TB)[None,:]),0)
         rb=tl.rsqrt(sb/8192+1e-8)
         rh=tl.rsqrt((sa+2*rb*sab+rb*rb*sbb)/8192+1e-5)
         tl.store(COEFF+t,rb,mask=t<T)
@@ -2209,10 +2212,10 @@ def _o_stats_kernel(X,W,STREAM,ALPHA,BETA,A,STATS,COEFF,CNT,T:tl.constexpr,
 def _pool_boundary_kernel(A,COEFF,STREAM,STREAM1,ALPHA,BETA,PREW,W,P,T:tl.constexpr,
                           TB:tl.constexpr,BN:tl.constexpr,KS:tl.constexpr,BK:tl.constexpr,
                           USE_PDL:tl.constexpr):
-    pn=tl.program_id(0);ps=tl.program_id(1)
+    pn=tl.program_id(0);ps=tl.program_id(1);tbid=tl.program_id(2)
     _pdl_start(USE_PDL)
     n=pn*BN+tl.arange(0,BN)
-    t=tl.arange(0,TB)
+    t=tbid*TB+tl.arange(0,TB)
     k=tl.arange(0,BK)
     k0=ps*KS
     # Pooler and both hi/lo router matrices are known before the residual is ready.
@@ -2257,20 +2260,21 @@ def o_and_pool(attn,stream,state,counter):
 
 def _fused_prefix(attn, stream, state):
     t = attn.shape[0]
-    tb = max(16, triton.next_power_of_2(t))
+    tb = min(32, triton.next_power_of_2(t))
     bn = 64
+    tiles = triton.cdiv(t, tb)
     dev = attn.device
     a = torch.empty((t, HIDDEN), device=dev, dtype=torch.bfloat16)
-    stats = torch.empty((4, HIDDEN // bn, tb), device=dev, dtype=torch.float32)
+    stats = torch.empty((tiles, 4, HIDDEN // bn, tb), device=dev, dtype=torch.float32)
     coeff = torch.empty((2, t), device=dev, dtype=torch.float32)
     stream1 = torch.empty_like(stream)
     pr = torch.empty((4, t, D_EXPERT + 2 * N_EXPERTS), device=dev, dtype=torch.float32)
-    cnt = torch.zeros((), device=dev, dtype=torch.int32)
+    cnt = torch.zeros((tiles,), device=dev, dtype=torch.int32)
     cnt.zero_()
-    _launch(_o_stats_kernel, (HIDDEN // bn,), attn, state['o'], stream,
+    _launch(_o_stats_kernel, (HIDDEN // bn, 1, tiles), attn, state['o'], stream,
             state['alpha1'], state['beta1'], a, stats, coeff, cnt,
             T=t, TB=tb, BN=bn, BK=128, num_warps=4, num_stages=3)
-    _launch(_pool_boundary_kernel, ((D_EXPERT + 2 * N_EXPERTS) // 64, 4), a, coeff,
+    _launch(_pool_boundary_kernel, ((D_EXPERT + 2 * N_EXPERTS) // 64, 4, tiles), a, coeff,
             stream, stream1, state['alpha1'], state['beta1'], state['pre_ffn_w'],
             state['pool_router'], pr, T=t, TB=tb, BN=64, KS=2048, BK=128,
             num_warps=4, num_stages=3)

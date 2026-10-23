@@ -13,9 +13,9 @@ The prior persistent megakernel `cand_r3_merge_mega.py` is held: its qkv produce
 nondeterministic at M=32 and changed verify routing IDs. Both persistent megakernel sources are held: `cand_r3_merge_mega.py` has a qkv race, and
 `cand_r3_merge_mega_fix.py` still rejects a persistent dense island at M=16 after regular qkv.
 The attention v2 source is parked after its proxy gate rejected faster verify variants; the
-attention lane owns the incoming vstream. This lane's ready diagnostic is `cand_r3_v9_glue.py`,
-which folds the O-boundary and pooler/router prefix with PDL and gates it against FP32 glue and
-routing references. The overlap experiment remains parked because its verify race failed the
+attention lane owns the incoming vstream. This lane's glue fusion diagnostic `cand_r3_v9_glue.py` is parked after profiling found
+four split-K weight rereads and a second consumer launch still dominate; the regular v9 path wins
+every local shape. The overlap experiment remains parked because its verify race failed the
 correctness guard.
 Do not edit sent sources. The orchestrator owns checks and scored runs.
 
@@ -34,11 +34,11 @@ fixed to V9, logs each timing and rejection, and enforces one 285-second prepare
 The held megakernel extension's persistent qkv and dense-island choices are disabled after
 repeated shape-dependent agreement failures. The glue candidate leaves V9 MoE and attention intact, fuses O projection → residual/norm →
 pooler/router with PDL, and feeds the existing PDL route/top-8/softmax/pre-expert-norm kernel.
-Its sm_120 tuner rejects the fused path locally on timing while retaining it for H200 selection.
+Its sm_120 tuner rejects the fused path locally on timing at every shape; the source is parked.
 There is no separate shared/dense branch after boundary1: its normalized
 hidden and residual stream share the same statistics; pooler/router→experts, experts→unpooler,
-router→attention output, and KV write→attention remain ordered dependencies. Local sm_120 admission of `cand_r3_v9_glue.py` is 13/13 tests and 12/12 fresh-input graphs;
-prepare is 8.666 s; fused glue is rejected locally by timing, and Hopper branches use portable stand-ins.
+router→attention output, and KV write→attention remain ordered dependencies. Local sm_120 admission of parked `cand_r3_v9_glue.py` is 13/13 tests and 12/12 fresh-input graphs;
+prepare is 4.386 s after token tiling; fused glue still loses regular v9 at every shape, and Hopper branches use portable stand-ins.
 
 Structural fusion candidates reduced launch count but regressed complete local layers;
 keep them diagnostic until a packed variant is neutral or better. Read [NEXT_CHECKS](dev/NEXT_CHECKS.md)

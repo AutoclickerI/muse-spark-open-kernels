@@ -421,19 +421,25 @@ The profile also exposes small separate residual, router, norm and gate kernels.
 
 #### Glue fusion diagnostic (G3)
 
-`cand_r3_v9_glue.py` ports the epilogue fusion into the V9 board candidate: a PDL O-projection
-stats kernel publishes the two residual RMS coefficients, then a PDL pooler/router kernel applies
-the first residual/norm and writes the pooler/router partials directly for the existing PDL
-route/top-8/softmax/pre-expert-norm kernel. The tuner gates the fused proxy against an FP32 glue
-reference and an FP32 routing/top-8 reference, rejects every failure, and selects by CUDA-graph
-replay time. On sm_120 the fused prefix was correct but slower at every resident size:
-T=1/8/16/32 regular→fused `81.9→106`, `79.9→102`, `81.9→102`, and `81.9→123` us;
-T=128/256 were rejected for shared-memory requirements. Thus local selected savings are
-0 us; H200 remains the only unverified selector. The receipt profile bounds the critical-path
-opportunity at roughly 29.5 us for decode32 sliding (15.6 us glue + 13.9 us positive gap),
-35.9 us for verify16 sliding (16.3 + 19.6), and 49.6 us for verify32 full (25.8 + 23.8).
-These are upper-bound accounting opportunities, not predicted gains; full-shape PDL overlap makes
-the decode32-full and verify16-full residual gaps negative.
+The parked `cand_r3_v9_glue.py` (tiled final SHA `0bd8624b275b597b5485daf85a45ac7e6d68d9467b01bcf1a5c1be48df96d7cd`) ports the epilogue fusion into the V9 board candidate: a PDL
+O-projection stats kernel publishes the two residual RMS coefficients, then a PDL pooler/router
+kernel applies the first residual/norm and writes pooler/router partials for the existing PDL
+route/top-8/softmax/pre-expert-norm kernel. The tuner gates the fused proxy against FP32 glue and
+routing references, rejects every failure, and selects by CUDA-graph replay time.
+
+Nsight Systems on sm_120 identified the performance cause. The original pool-boundary launch was
+a 72×4 grid and averaged about 120 us per invocation; it reread the pooler/router weights for
+four K-splits while every CTA processed padded token lanes. The O-stats kernel averaged about
+11 us and waited for 128 producer CTAs. The fixed parked source tiles tokens with TB≤32 and a
+third grid axis, so T=128/256 now runs instead of failing shared-memory allocation. Nsight now
+measures about 81 us for pool-boundary and 11.8 us for O-stats, but the two-kernel chain still
+materializes the O branch, performs the four split-K pool/router reads, and launches a second
+consumer. That remaining work is why fusion stays slower than regular v9.
+
+Final tiled sm_120 glue timings (regular→fused) are T=1 `77.8→81.9` us, T=8
+`81.9→86.0`, T=16 `81.9→109`, T=32 `84.0→123`, T=128 `92.2→303`, and T=256
+`137→522`. The fixed source passes 13/13 tests and 12/12 graphs but is parked; no H200 run is
+justified while the tuner selects regular at every shape.
 
 #### Larger-load stage floors and non-MoE gap (G3)
 

@@ -2,8 +2,8 @@
 
 `cand_r3_v9all.py` is first and `cand_r3_merge.py` is second at the next reset. Both megakernel sources are held: the original persistent qkv failed repeated M=32 agreement
 checks, and the regular-qkv repair still rejected a persistent dense island at M=16. The attention v2 source is parked after its FA3 proxy gate rejected faster verify variants;
-the attention lane owns vstream. The new ready glue diagnostic folds the O-boundary and
-pooler/router prefix with PDL and gates it against FP32 references. The earlier overlap source is
+the attention lane owns vstream. The glue diagnostic is parked after Nsight found four split-K weight rereads and a second
+consumer launch; the tiled repair runs M=128/256 but remains slower than regular v9. The earlier overlap source is
 parked after a verify correctness failure. Pure V9's completed receipt is
 1.428x overall (rank 85); rank 50 needs about 1.54x. The H200 non-MoE ranking is now full
 verify32 attention first, then verify16 full attention, decode32 full attention, projections,
@@ -25,16 +25,15 @@ and glue; the per-stage floor table is in `docs/FINDINGS.md`.
 
 Full attention is the largest remaining non-MoE cost at verify32/decode32/verify16. Its full-shape
 profile gaps are +251/+90/+133 us over the one-read floors. MoE remains fixed to the in-layer V9
-winner until `moe_tune.py` lands routing-aware choices. The ready glue diagnostic leaves V9 and
-attention intact, fuses the O-boundary/pooler-router prefix with PDL, and rejects any FP32,
-resource, or timing failure back to regular V9.
+winner until `moe_tune.py` lands routing-aware choices. The parked glue diagnostic leaves V9 and attention intact, fuses the O-boundary/pooler-router
+prefix with PDL, and rejects any FP32, resource, or timing failure back to regular V9.
 
 ## Frozen source set
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
 | `cand_r3_attention_v2.py` | `e5414acdac7ae3a56f860369b88d0866567db6230e4ebe89d758e8f13a17cc15` | 13/13 tests, 12/12 graphs; parked after its 3% FA3 proxy gate rejected faster verify variants | **parked; do not send** |
-| `cand_r3_v9_glue.py` | `233f0cddb568592ee85a0d72cb29f3f433e8bfd6df2b4f9870fb2bd031b6e3f6` | **13/13 tests, 12/12 graphs; prepare 8.666 s on sm_120**; `GLUE_TUNE` FP32 gates pass, fused path rejected by local timing at T=1/8/16/32 and shared memory at 128/256 | **ready diagnostic after receipt merge**; PDL O→boundary→pooler/router fusion, existing PDL route/top-8/softmax |
+| `cand_r3_v9_glue.py` | `0bd8624b275b597b5485daf85a45ac7e6d68d9467b01bcf1a5c1be48df96d7cd` | **13/13 tests, 12/12 graphs; prepare 4.386 s on sm_120**; tiled TB≤32 path runs M=128/256 but `GLUE_TUNE` selects regular everywhere; Nsight measured pool-boundary ~81 us + stats ~11.8 us | **parked; do not send**; four split-K weight rereads and second consumer dominate |
 | `cand_r3_merge_mega_fix.py` | `f7e1217b840a42a85404b7ab563e9c6805e4d724fdfe068e71e69af5376f9d16` | held: regular qkv removed qkv disagreement, but persistent dense island still rejected at M=16; no timed selection | **parked; do not send** |
 | `cand_r3_merge_mega.py` | `98d7e6d6029e9337fbc94806ce99c5e739a97d2d884e1385952ba78714e91a2d` | held: repeated prepares rejected persistent qkv at M=32; one verify-8 sample changed IDs; PDL-off did not make qkv deterministic | **parked; do not send** |
 | `cand_r3_merge.py` | `f23a267748791646d9afc4d447068158ecdb71fa74ae134dad0add62d6b5b054` | 13/13 tests, 12/12 graphs; prepare 25.011 s on sm_120; fused-prefix resource rejects logged | queued second; merged non-MoE portfolio with MoE fixed to V9 |
@@ -52,11 +51,12 @@ Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`
 
 ## Send order
 
-1. **`cand_r3_v9_glue.py`** (SHA `233f0cddb568592ee85a0d72cb29f3f433e8bfd6df2b4f9870fb2bd031b6e3f6`). Hold for the receipt merge: one H200 run can select the PDL glue prefix per shape against regular V9; every FP32 agreement, resource, or timing failure rejects the fused path.
-2. Do not send `cand_r3_attention_v2.py` (parked after its proxy gate), either megakernel source (`cand_r3_merge_mega.py` or `cand_r3_merge_mega_fix.py`, both parked), `cand_r3_merge_ovl.py`, `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`, `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals again.
+Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
+(`cand_r3_merge_mega.py` or `cand_r3_merge_mega_fix.py`), `cand_r3_merge_ovl.py`,
+`cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`,
+`cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals again.
 
-The merged, glue, and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, `GLUE_TUNE`/`GLUE_REJECT`, the final compact `MEGA_SUMMARY`, and the
-attention candidate's final compact `ATTN_PORT_SUMMARY` record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
+The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, the final compact `MEGA_SUMMARY`, and the attention candidate's final compact `ATTN_PORT_SUMMARY` record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
 
 Every candidate in this order must first pass `tools/img python tools/local_eval.py` with 13/13 tests and 12/12 fresh-input graph cases. Force every Hopper-only Python branch through a portable stand-in before remote submission. Remote checks use `tools/okc_run.py` and remain detached; no commit is requested.
 
