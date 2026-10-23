@@ -1,100 +1,116 @@
 # Projection next checks
 
-`cand_portfolio.py` is frozen at SHA256
-`57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e`.
-The orchestrator sent it as **scored job `dd989ef2d76147e7`, priority 0**; do not resend or edit it.
-Its pending job/receipt will appear under `runs/pending/` / `runs/muse_bf16_proj/`.
+Target: an H200 scored run at **1.26x or better**. Work alone; GPU0 only. The orchestrator
+sends and commits; this thread does neither. All distinct ready candidates are eligible,
+including diagnostics. There is no check-then-promote or diagnostic hold in this round.
+The order below recommends h200, native, max, then all; existing queued files retain their dispatch state.
 
-## Ready for the orchestrator
+## Ready sources, in recommended order
 
-Next send: the pruned `cand_portfolio_v2.py` once the frozen portfolio receipt lands and
-its exact-source screen passes. The builder refuses a mismatched or unclean receipt.
-While that receipt is pending, the ready latency-first experiment is **`cand_fused_select.py`**.
-It copies the lean fused kernels and permits the current incumbent to win router/qkv tuning.
-The fusion-only diagnostic remains `cand_fused_lean.py`; do not send both separately.
-Both keep the GPU math and replace heavy Torch C++ wrappers with a checked raw-pointer ABI.
-Cold local prepare fell from 294.36 s to 60.21 s; warm retuning is about 3 s.
-The lean port will also wrap any legacy H200 winners in v2.
-Do not send the simpler diagnostics separately. The receipt-derived v2 will retain
-measured H200 winners and compare only a few new fused/layout alternatives.
-Build it with `python3 problems/muse_bf16_proj/dev/build_portfolio_v2.py <actual-receipt>`;
-then screen it on GPU 0 and run `tools/img python problems/muse_bf16_proj/dev/validate_portfolio_v2.py problems/muse_bf16_proj/cand_portfolio_v2.py`.
-The builder refuses to overwrite an existing candidate; use a new `--output` filename.
+Four new broad portfolios are ready. The preferred **`cand_portfolio_h200.py`** retains
+the latest fused-router and 32 MB NN/Lt winners from `f3786341611f4f1f`, as well as the
+previous `dd989ef2d76147e7` winners, and keeps both sets in the final paired comparison.
+It passes 9/9 tests and 30/30 graph shapes at **1.102951x sm_120**, **39.81 s prepare
+with the extension cache warm**, **12,286** forced Hopper cases and an sm_90a build.
+Its GPU bodies match native/max. The parent `cand_portfolio_native.py` explicitly
+enables native BF16 DeepGEMM and also retains the SDK cuBLASLt path. It passes 9/9 tests,
+30/30 graph shapes, **12,281** forced Hopper cases and the sm_90a build. Its local score is
+**1.111248x**, prepare **63.91 s with the extension cache warm**. GPU profiling confirms
+`deep_gemm::sm120_bf16_gemm_impl` actually runs; this is not an H200 measurement.
 
-| Candidate | Frozen SHA256 | Local screen (9/9 tests, 30/30 graph shapes each) | Role |
-|---|---|---|---|
-| cand_fused_select.py | `10d02fa32b572b1649f5e0c63e5f9841567835dc3b83ffe17cd7d843429117e9` | 1.091522x | latency-first selector; ready until receipt-derived v2 replaces it |
-| cand_fused_lean.py | `2d42d4e56886d905a0e278a25ed1fef0578bbc2c924230c9d93c930d37f50f69` | 1.093657x | compact 11-specialization forced fusion; diagnostic |
-| cand_fused.py | `f454863e2ed72f9e6b380d2e4c86528fb3dfdc83fff73a1404ba348d312a4d48` | 1.089587x | compact fusion diagnostic; 294 s cold prepare, superseded by lean |
-| cand_reduce_hier.py | `051b1eeb33f0bd1cc38a19ff8273eaad2a9254fba92529e8be869b464ebbef33` | 1.091486x | complete single-kernel fusion + hierarchical K32/K64 |
-| cand_reduce_packed.py | `d19dcd2bc9c0d036297bc70474318aac6e465d83267d88dff9add5ca78d5211e` | 1.091603x | 128/160/256-thread pipeline diagnostic |
-| cand_reduce.py | `280822ad5f91aae8e20e9440032f3f3ce22043119179375c4087059ee0c887f6` | 1.093592x | 256-thread fusion diagnostic |
-| cand_reduce_fast.py | `b28e00958daef31379f8e3df4698e43be3ae05487c0e09c7d36204248132413e` | 1.078570x | 128-thread cooperative diagnostic |
-| cand_lt_layout.py | `6c65aff44f84301c8eb9b772a1a2ac2ab3cece9429e44a2c6d0adb207d2c0381` | 1.088505x | lossless weight-transpose / cuBLASLt NN diagnostic |
+The other broad portfolios remain ready. `cand_portfolio_max.py` adds shared-X tiles, active
+multicast WGMMA and the default DeepGEMM SDK call (which routes to cuBLAS) to `cand_portfolio_all.py`, which packs the measured H200
+router winners, fused hi+lo/merge kernels, all returned Lt heuristics and checked split-K,
+NN/TN weight layouts, Stream-K, DSMEM, skinny/GEMV/TC/scalar-m16/DSV3 alternatives.
+Its frozen source passes 9/9 tests and 30/30 graph shapes at **1.117166x locally (sm_120)**.
+Cold prepare is **122.66 s**, including **65.53 s** compiling/repacking. All 135 skinny,
+paired and legacy specializations compile for sm_90a. Forced Hopper dispatch checks pass
+**9,912 cases** across every family. These are not H200 speedups.
 
-All numbers above are sm_120, not H200. The fused kernels stage router hi+lo together
-for each real-K tile and update the same FP32 accumulators. Fusion-only candidates always
-select direct/last-CTA/DSMEM/hierarchical single-kernel paths for router/qkv m128/256.
-Kineto confirms baseline router 5 kernels -> 1, qkv 2 -> 1, at both m values.
-The latency-first selector may retain cuBLAS. Its latest local screen selects fused routers
-(1.357/1.227x at m128/256) and cuBLAS qkv (1.008/1.000x); warm prepare is 1.22 s.
+The following files already in the orchestrator queue must not be resent or edited.
+The max superset passes 9/9 tests and 30/30 graph shapes at **1.120767x sm_120**,
+**71.77 s prepare with a cold extension build** (38.92 s compile/repack; shared image-library
+JIT caches may already be warm). It passes **12,265** forced Hopper cases, **72** native
+wide-kernel TMA/MMA fresh-input graph cases and an sm_90a build. No new H200 claim yet.
 
-Admission evidence:
-- Basic fusion: 770 kernel/replay cases; 1,075 forced Hopper glue cases.
-- Packed fusion: 2,310 kernel/replay cases; 3,129 forced Hopper glue cases.
-- Hierarchical fusion: 2,850 kernel/replay cases; 3,243 forced Hopper glue cases.
-- All fused variants cross-build for sm_90a. Packed/hierarchical expose 66 specializations.
-- Compact fused: 11 specializations, 210 pruned fresh-input graph cases. Lean port: 338
-  native kernel/Lt cases and 110 forced Hopper glue cases; its selected graphs remain
-  one kernel for router and qkv. The future legacy-winner raw ABI passes 180 native cases
-  and cross-builds for sm_90a. No CUDA math was moved outside timed calls.
-- Latency-first selector: 338 native kernel/Lt cases and 110 forced Hopper dispatch cases
-  pass; `RAW_CUDA` is identical to the sm_90a-verified lean diagnostic. Screen and validation
-  are in `runs/screen/proj_fused_select/` and `dev/fused_select_*.log`.
-- Full v2 assembly passes 48 native fresh-input graph cases, 100 forced Hopper dispatch
-  cases and an sm_90a build using explicit local control configurations. This is pipeline
-  validation, not a fabricated H200 receipt or a claim about H200 variant winners.
-- Screens: `runs/screen/proj_reduce{,_fast,_packed,_hier}/muse_bf16_proj.cand_*.json` and
-  `runs/screen/proj_lt_layout/muse_bf16_proj.cand_lt_layout.json`.
-- Detailed logs: `dev/reduce_*.log`; kernel counts: `dev/cand_reduce*_kernel_counts_local.json`.
-- New methods are local-only until the orchestrator's H200 receipt measures them.
+| Order | Candidate | Frozen SHA256 | Local score (sm_120) | Dispatch state |
+|---:|---|---|---:|---|
+| 1 | cand_portfolio_h200.py | `37b8c8070ad812db8c545c49756f1a971cc76501eb9e7eb63c238a3515510d8b` | 1.102951x | ready, not sent |
+| 2 | cand_portfolio_native.py | `8018615509eada252cd105526b6d81c5cdfbe181eb620d23fea0cd578ed00eb6` | 1.111248x | ready, not sent |
+| 3 | cand_portfolio_max.py | `f11614551f939216c0dfbc4f0e9d8402e56cb1ea96ac27e8fcec9f8ec2ff9ead` | 1.120767x | ready, not sent |
+| 4 | cand_portfolio_all.py | `65ea3171f44e26fd1b1614b2d0d8c7a5da87cf7b8787338d25888d2bc1e612cd` | 1.117166x | ready, not sent |
+| 5 | cand_reduce_hier.py | `051b1eeb33f0bd1cc38a19ff8273eaad2a9254fba92529e8be869b464ebbef33` | 1.091486x | local queue 3916761 |
+| 6 | cand_reduce_packed.py | `d19dcd2bc9c0d036297bc70474318aac6e465d83267d88dff9add5ca78d5211e` | 1.091603x | local queue 3916762 |
+| 7 | cand_reduce.py | `280822ad5f91aae8e20e9440032f3f3ce22043119179375c4087059ee0c887f6` | 1.093592x | local queue 3916759 |
+| 8 | cand_reduce_fast.py | `b28e00958daef31379f8e3df4698e43be3ae05487c0e09c7d36204248132413e` | 1.078570x | local queue 3916760 |
+| 9 | cand_lt_layout.py | `6c65aff44f84301c8eb9b772a1a2ac2ab3cece9429e44a2c6d0adb207d2c0381` | 1.088505x | local queue 3916758 |
+| 10 | cand_dsv3_select.py | `0453c6ae3dd3b05a46846f556da94290a0b20b31a0c158e354dae72d1523b4c2` | previous screen; see receipt queue | local queue 3890089 |
+| 11 | cand_dsv3.py | `8d9d827cd15b00b22a898d851f1a49e04450fb15cbad494a6d1cf19ca011a624` | previous screen; see receipt queue | local queue 3890092 |
+| 12 | cand_gemv3.py | `16ba69bb100b069ca53d03096057f20261561feeb689a2139a7215f39178c9ec` | previous screen; see receipt queue | local queue 3890094 |
+| 13 | cand_gemv_static.py | `f50425383a9c75e206fbf5d13202ac7ff6c7883087c6900acb9a6a3ab7e7a76a` | previous screen; see receipt queue | local queue 3890182 |
+| 14 | cand_m16.py | `48c5397b78df800e9cc843bdd0659c5475bf745ca65c0184c81d8fea5bff017e` | previous screen; see receipt queue | local queue 3890098 |
+| 15 | cand_skinny.py | `89bb6387a6d43ebf53cae10faee99464b30b6375a3daf45d56b99b1b64438ee8` | previous screen; see receipt queue | local queue 3890111 |
+| 16 | cand_tc_k256_qkv.py | `0036aeba8960ce0ea0585968ae726a4464339f5db4eea16f3233bde7a8093120` | previous screen; see receipt queue | local queue 3890174 |
+| 17 | cand_tc_k256.py | `accd2952ae08baf952e9cced1c2418e94094a1af3ccbb919479d8077f2ae7779` | previous screen; see receipt queue | local queue 3890190 |
+| 18 | cand_tc.py | `c0553a0bb0b060f3f2b74b8d42b938e7ad154a748250d1c43ad9f865e7504cf3` | previous screen; see receipt queue | local queue 3890144 |
+| 19 | cand_tile.py | `4f8b1aa3aa9974b203b85ba68189f3c57ccf2c890f31fb9a789f6b486aa20cb7` | previous screen; see receipt queue | local queue 3890132 |
+| 20 | cand_tuned2.py | `40648053bc6269f2010db7f38d2b92e458498faa94334b31482613c4a525883b` | previous screen; see receipt queue | local queue 3890185 |
+| 21 | cand_wg2.py | `b02135be25cb7918d76252387df63b2bb30e0070a1d2d7006727bf535196fcd7` | previous screen; see receipt queue | local queue 3890192 |
+| 22 | cand_wg.py | `c224d1a5bae0fb7a0164d06e82d185c2271e6c4778b5a70c7d34d6562f6fbe8e` | previous screen; see receipt queue | local queue 3890194 |
 
-The builder and pruner are development tools; frozen files above must not be regenerated
-in place after the orchestrator queues them. Screens retain their exact source hashes.
+Completed/covered sources are excluded from the send list:
 
-## Follow-through
+| Source | Frozen SHA256 | Evidence / queue |
+|---|---|---|
+| cand_fused_lean.py | `2d42d4e56886d905a0e278a25ed1fef0578bbc2c924230c9d93c930d37f50f69` | local queue 3916757; same GPU bodies/configs measured by fused-select |
+| cand_fused.py | `f454863e2ed72f9e6b380d2e4c86528fb3dfdc83fff73a1404ba348d312a4d48` | local queue 3916756; same GPU bodies/configs measured by fused-select |
+| cand_fused_select.py | `10d02fa32b572b1649f5e0c63e5f9841567835dc3b83ffe17cd7d843429117e9` | completed H200 1.181998x, `f3786341611f4f1f` |
 
-- No okc_run launch or commit from this thread; the orchestrator sends passing sources.
-- Read-only quota showed 11/20 checks used and 9 left; those 9 are allocated to the 9
-  inherited queued checks. There are no unallocated checks for this round; the orchestrator
-  chooses a scored submission, reorders its allocations, or waits for the 09:00 KST reset.
-- Read the portfolio's selected configs and per-shape H200 table, prune losing variants into
-  `cand_portfolio_v2.py`, then screen/freeze it. The measured H200 incumbent remains eligible if a fused experiment
-  loses: the decision is latency/G3 first. Fusion-only sources separately verify the kernel-count
-  reduction. Do not claim synthetic timings as judge timings.
-- Event-driven receipt reader: `python3 problems/muse_bf16_proj/dev/receipt_digest.py --watch`.
-  It reads receipts and pending markers; it does not submit, collect or poll.
-- Reproduce fusion screen:
-  `CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_bf16_proj/cand_reduce.py --json runs/screen/proj_reduce/muse_bf16_proj.cand_reduce.json`.
-  Extra checks: `tools/img python problems/muse_bf16_proj/dev/validate_reduce.py kernels` / `glue`,
-  and `tools/img python problems/muse_bf16_proj/dev/profile_reduce.py` (GPU 0).
+The lean/CPP fusion files have the same CUDA arithmetic and configuration lists as the
+completed fused-select receipt. The orchestrator can retire those covered queued copies;
+this thread did not cancel or modify their waiting processes. The other diagnostics still
+add unmeasured configurations and remain listed.
 
-## Receipts and inherited queue
+All prior diagnostic sources remain frozen; their standalone H200 receipts can expose
+a per-shape win even if the complete file loses overall. Do not list another source once
+a completed receipt already measures its same GPU paths/configurations. No submissions
+are launched here. `okc_run.py send` selects scored/check/reset handling for the orchestrator.
 
-Read the original 11 completed projection receipts through `122997f357d04fa2`. The scored
-`68e2f34b1d4744cb` stays at 1.142642x. GEMV checks `a3b29a26372c4b35` (1.112106x) and
-`122997f357d04fa2` (1.114312x) lose overall; their pooler M32 cuBLAS branch beats the scored
-skinny branch (0.991/0.996x versus 0.930x), now folded into the portfolio. Other same-algorithm
-large-M differences and o M1's ~1% difference are inside noise, not per-shape discoveries.
+## Received evidence and remaining work
 
-The 13 inherited dispatch sources remain queued; no completed receipt has landed for them.
-Do not resend or edit them: checks dsv3, dsv3_select, gemv3, gemv_static, m16, skinny, tc,
-tc_k256, tc_k256_qkv; scored tile, tuned2, wg, wg2. P8 hardware probe `849bd4b650e54c7f`
-landed clean at 1.136951x; its projection dispatch is old, and its diagnostic measurements
-are summarized in FINDINGS. Their identities/snapshots live in `runs/waiting/` and
-`runs/pending/`; fold new per-shape winners into a new frozen portfolio revision.
-The wg/wg2 files never set `wg_ok`, so their queued scores do not exercise WGMMA.
+- Read **14** clean projection receipts through **`f3786341611f4f1f`**, scored **1.181998x**.
+  `submission.py` is now its exact source, SHA256
+  `10d02fa32b572b1649f5e0c63e5f9841567835dc3b83ffe17cd7d843429117e9`.
+- Frozen `cand_portfolio.py` is completed `dd989ef2d76147e7` (1.172813x); do not resend it.
+- Latest H200 fused router: m128 `(64,64,4,DSMEM,8,160)` **10.133 us / 1.637x**;
+  m256 `(64,64,4,DSMEM,8,256)` **11.792 us / 1.509x**. Profiles confirm one kernel.
+  Earlier router `(128,128,4,DSMEM,16/8)` **10.327/13.434 us** remains eligible.
+  Qkv m128/m256 picked Lt ordinals 3/4; pooler 0/0; o m128 0. Unpooler and o m256
+  retained cuBLAS. Qkv m256 picked a prepare-time winner but judged at **0.982x**:
+  synthetic selection can regress; the broad portfolio pairs finalists on three fresh sets.
+- FINDINGS owns all 30 SGLang/best shape times and receipt IDs. Best-ratio stitching is
+  an optimistic **1.197544x**, not a new measured run. If only m128/m256 improve, each
+  needs another **1.165x** speedup to reach 1.26x. Starting from the actual board needs
+  **1.211x** each if only verify improves. Large BF16 projections remain the gap.
+- The inherited and unmeasured fusion/layout sources remain pending/local queued as above.
+- Latest fused-select picks: router configs above; qkv retains cuBLAS; pooler NN1/NN0;
+  unpooler NN0/Lt0; o NN0/cuBLAS. The h200 portfolio retains their exact 32 MB choices.
+  Read every receipt as it lands; fold new winners into a new source. Queued hashes stay frozen.
+- The queued wg/wg2 sources never set `wg_ok`; they cannot measure their WGMMA kernels.
+  The max superset activates those branches explicitly; portable and native ABI checks pass.
+- The all-shape screen: `runs/screen/proj_portfolio_all/muse_bf16_proj.cand_portfolio_all.json`.
+  Native/forced glue: `dev/portfolio_all_glue.log`; architecture build: `dev/portfolio_all_sm90a.log`.
+- Reproduce: `CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_bf16_proj/cand_portfolio_all.py --json runs/screen/proj_portfolio_all/muse_bf16_proj.cand_portfolio_all.json`.
+- H200-incumbent evidence: `runs/screen/proj_portfolio_h200/`, `dev/portfolio_h200_glue.log`,
+  `dev/portfolio_h200_sm90a.log`.
+- Native evidence: `runs/screen/proj_portfolio_native/`, `dev/portfolio_native_glue.log`,
+  `dev/portfolio_native_sm90a.log`, `dev/portfolio_native_dg_kernels_local.json`. The stock
+  projection dispatcher was source-checked: it uses cuBLAS/its own kernels, not DeepGEMM;
+  the documented DeepGEMM mode does not alter that baseline.
+- Max evidence: `runs/screen/proj_portfolio_max/`, `dev/portfolio_max_glue.log`,
+  `dev/portfolio_max_wide_native.log`, `dev/portfolio_max_sm90a.log`.
+- Admission failures retained in FINDINGS: nvcc vector-path ICE fixed by owned C buffers;
+  serial cold prepare 348.89 s fixed with 16-way nvcc/ptxas optimization. No variants dropped.
 
-Projection docs: STATUS.md was folded into FINDINGS and FOCUS.md (at most 30 lines).
-The project-docs checker reports zero errors and zero warnings. Cold-read agent test was not
-run because this round is solo. Skill revision: `5205a93`.
+FOCUS stays at most 30 lines. FINDINGS owns results; this file owns ready hashes and queue state.
+No cold-read agent test: this round is solo.

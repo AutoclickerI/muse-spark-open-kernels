@@ -1,27 +1,29 @@
 # Projection focus
 
 Serves: G3, G2. Read [GOAL](../../docs/GOAL.md) and [CONSTRAINTS](../../docs/CONSTRAINTS.md).
-Work alone; do not launch judge runs or commit in this thread.
+This round is solo, GPU0 only; the orchestrator sends and commits.
+Target: **an H200 scored run at least 1.26x**. Memory/layouts/workspaces are resources.
 
-Board: `submission.py` = scored `68e2f34b1d4744cb`, 1.142642x.
-`cand_portfolio.py` is frozen (`57086918…`) and queued by the orchestrator as a scored run
-at priority 0, now judge job `dd989ef2d76147e7`. Leave it unchanged; read its H200 receipt.
+Board: **1.181998x**, scored `f3786341611f4f1f`; `submission.py` matches (`10d02fa3…`).
+Fused router m128/m256: **10.133/11.792 us**, **1.637/1.509x**, one kernel on H200.
+Qkv stays on cuBLAS. The latest pooler/unpooler NN choices add modest large-shape gains.
+Earlier portfolio `dd989ef2d76147e7` (1.172813x, `57086918…`) stays frozen.
 
-Fusion: `cand_reduce.py` traverses real K once, stages router hi+lo together, and adds both
-products into the same FP32 accumulators. Router/qkv m128/256 use one kernel, with an
-in-kernel last-CTA/DSMEM merge. Local profiler confirms 5->1 router and 2->1 qkv kernels;
-local screen 1.093592x, 9/9 tests and 30/30 graph shapes. H200 effect remains unverified.
-Ready: `cand_fused_select.py` (1.091522x local, 9/9 tests, 30/30 graph shapes) prunes to 11
-specializations and lets cuBLAS compete with the fused paths. Its lean module takes 60 s
-cold versus 294 s with Torch headers; warm select prepare 1.22 s. Native/Hopper glue passes.
-Local selected router m128/256: 1.357/1.227x; qkv cuBLAS: 1.008/1.000x versus SGLang.
+[FINDINGS](../../docs/FINDINGS.md#projection-evidence-and-next-experiment-g3-g2) owns all
+30 H200 shape times: optimistic stitching 1.197544x. Verify-only improvements need
+another 1.165x each, or 1.211x from the actual board. Pooler/unpooler/qkv remain the gap.
 
-Next: read portfolio/inherited receipts as they land and prune measured winners into v2,
-keeping small-m winners. Receipt reader waits on filesystem events; no polling cadence.
-V2 keeps the measured H200 incumbent eligible; removing launches can still lose latency.
-[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md) owns passing hashes, test evidence and send order.
-[FINDINGS](../../docs/FINDINGS.md#projection-evidence-and-next-experiment-g3-g2) owns results.
+Ready order: `cand_portfolio_h200.py`, native, max, all. Local scores/prepare seconds:
+h200 **1.102951x/39.81**; native **1.111248x/63.91** (warm extension cache);
+max **1.120767x/71.77** (cold extension build); all **1.117166x/122.66** (cold build).
+Each passes 9 tests and 30 fresh-input graph shapes. Hopper glue cases: h200 12,286;
+native 12,281; max 12,265; all 9,912. All custom CUDA bodies build for sm_90a.
+H200 retains both receipts' winners, including exact 32 MB NN/Lt choices, as finalists.
+All tune every shape: all Lt heuristics/split-K, NN/TN layouts, fused hi+lo, in-kernel
+last-CTA/DSMEM/Stream-K and small-M kernels. Max/native/h200 add shared-X and multicast.
+Native/h200 explicitly enable native DeepGEMM; GPU profiling confirms the local path.
 
-Inherited: dsv3, dsv3_select, gemv3/static, m16, skinny, tc, tc_k256/_qkv, tile, tuned2, wg/wg2.
-The wg/wg2 files never set `wg_ok`; their scores cannot measure WGMMA.
-Keep H200 measurements distinct from local sm_120 timing and portable Hopper stand-ins.
+[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md) owns hashes and queue states. All unmeasured
+diagnostics stay eligible; fused/fused_lean are now covered by the fused-select receipt.
+Queued wg/wg2 never set `wg_ok`; the new portfolios activate those kernels explicitly.
+The new portfolios' H200 latency/prepare time and the 1.26x target remain unverified.

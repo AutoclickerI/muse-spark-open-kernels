@@ -214,7 +214,19 @@ GPU0/TP1 and GPU0+1/TP2 with memory fraction0.3:
 All exact runs have first divergence220 and token agreement1.0; TP1/TP2 load audits pass.
 The failed one-shape tests show that enabling prefill graphs alone is insufficient: the graph
 shape coverage affects this tiny fixture's TTFT. No source graph policy or harness file was changed.
-Final full-graph TP1 and matched random teacher-forced stock spread are recorded below when complete.
+Matched random teacher-forced runs use **30 requests x220 tokens** and three independent
+full-graph stock servers (`g58/59/60`, 90 stock pairwise request comparisons). Stock self-drift
+per-request mean p50/p90 = **0.188395/0.200433**; patch-vs-stock p50/p90 =
+**0.188334/0.200898**. Request-max drift stock p50/p90 = **0.693040/0.814768**;
+patch **0.706755/0.813263**, worst **0.947742** versus stock worst **0.903524**.
+The standard median-within-stock-p90 gate **passes**. The new full-graph patch against old
+prefill-disabled stock failed narrowly (mean p50 0.201966 >0.196557); matching graph policy
+restored the comparison. Do not mix those configurations to infer patch drift. Raw failed gate
+and the matched gate are both retained. The forced kernel seam uses the exact existing norm;
+the real unicast fusion is independently bit-identical to it. No H200 agreement is established.
+Patch regeneration against a55ab7d5: **112,322 bytes**, longest added line **374**,
+16 allowed source files; all 12 accepted paths retained, 11 untouched files byte-preserved
+(including the MoE port), no model_loader changes, no binary/mode/rename hunks.
 Evidence: `/data2/jihoon/muse_kernel/harness/results/ar-norm-evidence/` plus named run directories.
 
 Memory resource accounting is now in [FINDINGS](../FINDINGS.md): counted fixed non-KV residency
@@ -280,13 +292,10 @@ This is the whole accepted patch's drift; the candidate gather unit itself is ex
 uses GPU0 with memory fraction 0.3 and disables prefill graphs for capacity, retaining verify/draft
 graphs. The random-output component uses `g42`, whose TP1 path is unchanged by this TP>1 edit.
 
-`serving/patch.diff` is regenerated against `a55ab7d5`: **94,229 bytes**, 12 allowed source files,
-longest added line **374** characters. It applies cleanly to fresh base files and reconstructs every
-source byte. All nine accepted files outside the drafter/packing additions are byte-identical; all
-other `dflash.py` definitions are AST-identical. No MoE-lane source or weight loader was edited.
-Source `git diff --check`, ruff, Python compile checks, and ten harness CPU tests pass. Remaining:
-H200 TP8/EP8 runtime and speed, final-source normal-prefill-graph TTFT, and measured host/sampling
-costs. No serving check or scored run was launched.
+The current patch size and checks are recorded in the attention-AR section above. The earlier
+candidate-gather-only patch was94,229bytes. The full-graph TP2 runs in this round now exercise
+its accepted dispatch with TTFT below2x. Remaining full-node risks are H200 TP8/EP8 runtime,
+speed/TTFT, graph residency and measured host/sampling costs. No judge run was launched.
 
 
 ## Other levers found

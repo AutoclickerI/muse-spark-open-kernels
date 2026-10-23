@@ -14,6 +14,25 @@ RECEIPTS=ROOT/'runs/muse_bf16_proj'
 PENDING=ROOT/'runs/pending'
 
 
+def tuning_choices(text):
+    choices={};tops={};tune={}
+    for line in text.splitlines():
+        picked=re.match(r'ALL_PICK (\w+) m=(\d+) chosen=(.*?) event_us=([\d.]+) incumbent_event_us=([\d.]+) trials=(\d+)',line)
+        if picked:
+            layer,m,selected,us,baseline,trials=picked.groups();key=f'{layer}:{m}'
+            choices[key]=ast.literal_eval(selected)
+            tune[key]={'incumbent_event_us':float(baseline),'chosen_event_us':float(us),'trials':int(trials)}
+            continue
+        match=re.match(r'(?:PORTFOLIO(?:_V2)?|REDUCE(?:_FAST|_PACKED|_HIER)?|FUSED(?:_LEAN|_SELECT)?) (\w+) m=(\d+) incumbent_us=([\d.]+) chosen=(.*?) chosen_us=([\d.]+) top=(.*)',line)
+        if not match: continue
+        layer,m,baseline,selected,chosen,top=match.groups()
+        key=f'{layer}:{m}'
+        choices[key]=ast.literal_eval(selected)
+        tops[key]=ast.literal_eval(top)
+        tune[key]={'incumbent_us':float(baseline),'chosen_us':float(chosen)}
+    return choices,tops,tune
+
+
 def digest(path):
     path=path.resolve()
     job=json.loads(path.read_text())
@@ -22,15 +41,7 @@ def digest(path):
     text=result.get('log_tail','')
     log=job.get('output',{}).get('log')
     if log and Path(log).exists(): text=Path(log).read_text()
-    choices={};tops={};tune={}
-    for line in text.splitlines():
-        match=re.match(r'(?:PORTFOLIO(?:_V2)?|REDUCE(?:_FAST|_PACKED|_HIER)?|FUSED(?:_LEAN|_SELECT)?) (\w+) m=(\d+) incumbent_us=([\d.]+) chosen=(.*?) chosen_us=([\d.]+) top=(.*)',line)
-        if not match: continue
-        layer,m,baseline,selected,chosen,top=match.groups()
-        key=f'{layer}:{m}'
-        choices[key]=ast.literal_eval(selected)
-        tops[key]=ast.literal_eval(top)
-        tune[key]={'incumbent_us':float(baseline),'chosen_us':float(chosen)}
+    choices,tops,tune=tuning_choices(text)
     shapes=[]
     for row in result.get('records',[]):
         if 'speedup' not in row: continue
