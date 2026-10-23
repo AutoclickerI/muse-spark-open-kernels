@@ -1,5 +1,21 @@
 # MoE checks for 09:00 KST (20-check round)
 
+
+## Distinct grouped TMA design: ready for orchestrator
+
+`cand_tma_grouped.py`, SHA256 **b1209b2ac260654999c11a915606dcfb784dc3373c6e3a26da001a3b2c9e163c**.
+Single file, unchanged complete V9_phase prefix /incumbent; twelve grouped choices at
+M128/256. One resident launch includes route planning, both GEMMs, SwiGLU and norm/sum.
+Model-realistic router fixtures, independent FP321.2% global/6% row gate, any Exception
+rejects,230s overall trial deadline;20 cold fresh paired finalist samples. Summary last.
+Local sm120:5/5 tests +6/6 graphs,7.935s cached prepare.276 direct graph/math checks,
+24 strict native ABI stand-ins, six rejection phases +wrapper/budget failures pass;
+four SM90a specializations compile with all m64n8/16/32/64 WGMMA/TMA paths.
+Direct real-router M128 nativeV9/grouped403.54/402.48us; M256700.45/580.64us.
+M256 actual V9_phase/Humming incumbent563.30us is faster locally; no H200 gain claimed.
+No other lane candidate edited; no send/commit by this lane. The existing V19 queue
+remains owned by the MoE lane. [Full design/results](tma_grouped/README.md).
+
 No remote job is launched from this lane. The orchestrator owns the queue and sends only
 locally screened files. `cand_v8.py` and `cand_v9.py` are frozen/sent; this round preserves
 both. Frozen hashes: V8 `7ab6818fcbb8f28b53686ed90362e4950fe4a642891836dfab9bcabb56c390be`,

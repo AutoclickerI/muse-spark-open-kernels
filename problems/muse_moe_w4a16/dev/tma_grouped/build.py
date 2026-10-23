@@ -22,7 +22,7 @@ def wgmma():
     return '\n  else '.join(out)
 
 
-def build():
+def build(output=None):
     base = (ROOT/'problems/muse_moe_w4a16/cand_v9_phase.py').read_text()
     other = (ROOT/'problems/muse_prefill_layer/cand_expert_tma_cluster.py').read_text()
     tree = ast.parse(other)
@@ -55,10 +55,15 @@ DRAFT_SHARE=0.6
     cuda = (HERE/'grouped.cu').read_text().replace('// @GENERATED_WGMMA@', wgmma())
     fragments.append('TG_CUDA = '+repr(cuda))
     fragments.append((HERE/'tail.py').read_text())
-    path = ROOT/'problems/muse_moe_w4a16/cand_tma_grouped.py'
-    path.write_text(base+'\n\n'+'\n\n'.join(fragments)+'\n')
+    path = Path(output) if output else ROOT/'problems/muse_moe_w4a16/cand_tma_grouped.py'
+    source = base+'\n\n'+'\n\n'.join(fragments)+'\n'
+    if path.exists() and path.read_text()!=source:
+        raise SystemExit('Refusing to overwrite a frozen candidate; use --output with a new name')
+    if not path.exists():path.write_text(source)
     return path
 
 
 if __name__ == '__main__':
-    print(build())
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--output')
+    print(build(parser.parse_args().output))

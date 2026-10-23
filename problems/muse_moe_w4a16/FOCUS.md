@@ -24,3 +24,7 @@ on random hidden states and applies the same 1% gate before choosing a path.
 
 Serving remains V9 native through M=128 plus grouped wide from M=256, 864 MiB/GPU; no serving
 port change is justified until the decode-layer H200 result validates router-aware selection.
+
+Separate TMA design ready: `cand_tma_grouped.py`, frozen b1209b2ac260…; see
+[design and evidence](dev/tma_grouped/README.md). One launch; real-router tuning, FP32 gate.
+sm1205/5 tests +6/6 graphs,7.94s prepare; SM90a compiled, H200 speed unverified.

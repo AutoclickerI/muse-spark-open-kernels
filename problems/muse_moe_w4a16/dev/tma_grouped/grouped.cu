@@ -234,6 +234,10 @@ __device__ __forceinline__ void consume_item(Args p,Route* r,int* pairs,uint8_t*
   constexpr int XB=Shared<MAX,STAGES>::XBYTES,STRIDE=Shared<MAX,STAGES>::STRIDE;
   const int t=threadIdx.x-128,warp=t>>5,lane=t&31,slot=warp*8+(lane>>2);
   float acc[2][N/2];
+#pragma unroll
+  for (int j=0;j<2;++j)
+#pragma unroll
+    for (int i=0;i<N/2;++i)acc[j][i]=0.f;
   uint32_t A0[2][4],A1[2][4];uint4 raw[2];uint2 sfw[2];
   auto load_words=[&](int stage) {
     const uint8_t* st=sm+stage*STRIDE;

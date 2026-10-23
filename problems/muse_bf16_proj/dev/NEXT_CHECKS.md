@@ -1,4 +1,6 @@
-# Send next: V11 dense portfolio (prefill priority)
+# Queued: V11 dense portfolio; dense work stopped
+
+Jihoon screened this source and queued it at2.0. Do not resend or edit it.
 
 Solo, GPU0 only. Jihoon/orchestrator sends and commits; no send/commit was launched here.
 
@@ -60,16 +62,13 @@ cannot be preempted; the remaining margin is below the requested~240s/official30
 `PGC_KERNEL` identifies actual stock op/tactic attribution at M16384; `PG_PICK`, `PG_QKV`,
 `PGC_TRIAL`, `PGC_GROUP` and `PGC_END` print last after all compiler/rejection chatter.
 
-## QKV cause: measured facts and hypotheses
+## QKV attribution corrected
 
-[Full analysis](../../../docs/reference/prefill_gemm.md#qkv-m16384-targeted-layout-experiment).
-The inferred V11 qkv rate is437.7TF/s,1413.17us, with625.35us tensor floor. A simple
-320x128 tile/wave model on132SMs gives87.27% combined utilization, insufficient to explain
-44.3% peak. The compulsory BF16 output store costs15.73us at4.8TB/s, not the~788us excess.
-A no-cross-tile-reuse model streams6.87-7.05GB, predicting1.43-1.47ms: close to the observed
-inferred time. This points to operand reuse/shape-selected dataflow, but is not a DRAM/L2
-counter measurement. Cooperative CTA geometry and op-name attribution remain to confirm.
-The run prints op-level stock names and per-family timings to discriminate those causes.
+[Direct H200 evidence](../../../docs/reference/prefill_gemm.md#direct-h200-measurements-dense-tuning-stopped).
+Receipt dafbcad024fe4dcd directly times M16384 qkv at766–806us, about80% peak.
+The old437.7TF/s /44.3% and146.5ms recoverable-gap allocation was wrong: identical kernel
+names aggregate different GEMMs. The naive-traffic/tile model does not establish a cache
+cause. Stop dense tuning; the queued experiment remains frozen for its receipt.
 
 Focused shared **sm_120**20-pair result: new chunk4096 NN **2380.86->2286.14us**, paired
 ratio0.96352. The complete candidate under heavier shared load selected the same variant,
@@ -109,6 +108,6 @@ The owner-fixed `cand_portfolio_all.py` retry remains the orchestrator's source.
 `cand_dflash_diag.py` is frozen9b4fae2fc29251d8279112f2cd1ff65899b2a249c7618af3fdd97132aa28715a
 and queued; Jihoon will provide its receipt. No queued source was changed here.
 
-Next: send the frozen candidate at prefill priority, read its actual H200 stock names,
-per-family/selected timings and layer score. H200 speed/cold prepare, exact root cause,
-full TP8 serving agreement/KV capacity/TTFT remain unverified.
+Next: read the already queued candidate's H200 selections and layer score when it lands.
+Active work is the distinct M128/256 persistent grouped TMA MoE candidate. No further dense
+work is justified. Full TP8 serving agreement/KV capacity/TTFT remain unverified.
