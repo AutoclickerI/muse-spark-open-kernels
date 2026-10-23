@@ -12,7 +12,7 @@ Top place on the serving board: our SGLang patch's throughput on an 8x H200 node
 | 2 | G2 | H200-verified kernels at serving's shapes: verify loads (M = 8-256) and prefill (753-16K tokens) | The patch ports them; serving runs no single-token decode | Receipts beat SGLang on verify and prefill loads; ported with agreement |
 | 3 | G3 | Top 50 on the overall kernel board at close (2026-11-05 17:00 KST) | Serving-queue priority, so our daily serving runs land | `GET /me` `serving_priority` true (FINDINGS "Boards") |
 
-Targets come from the bound (PLAN P6); a passing H200 receipt is a milestone, not the target.
+Targets come from the bound ([bound](reference/bound.md)): serving score at most ~6.1x (tau 4.16); a passing H200 receipt is a milestone.
 
 ## Non-goals
 - Kernel-board rank for its own sake. Decode loads (q_len 1) matter only through G3.

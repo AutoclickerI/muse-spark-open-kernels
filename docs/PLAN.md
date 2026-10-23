@@ -2,12 +2,15 @@
 
 ## Status (2026-10-23 21:30 KST)
 - Kernel track day 1 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST.
-- Best H200 checks: proj 1.106x, attention 1.279x (1.282x on the board), MoE 1.492x, decode layer
-  1.143x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6, prefill v3 and proj hybrid are queued.
+- Best H200 checks: proj 1.142x, attention 1.279x (1.282x on the board), MoE 1.492x, decode layer
+  1.143x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6, prefill v3 and proj tuned are queued.
 - Overall board at 19:30: about 1.19x time-weighted against about 1.38x for 50th place (FINDINGS "Boards").
   Decode layer and MoE carry about 80% of that weight.
 - Serving patch: Hopper gates #2/#4/#5, prefill row split, FA3 QK-norm/KV-store fusion, drafter fc split,
   and an intermediate MoE v4 port that keeps two expert banks and must not ship. None of it has run on Hopper.
+- Bound (`docs/reference/bound.md`): serving score at most 6.13x at spec HBM (5.89x at our measured
+  4.25 TB/s, tau 4.16) against the practical model's 3.0x. The kernel bounds are proj 2.02x, attention 6.29x,
+  MoE 3.29x, decode 3.34x, prefill 2.93x. The biggest gaps from our receipts are attention 4.9x, decode 2.9x, MoE 2.2x.
 - Bottleneck: judge latency. About 11 of our runs start per hour, so a check sent behind about 35
   others lands 2-3 h later.
 
@@ -34,8 +37,7 @@ Step 3 dominates, since one result costs hours of wall time.
 | 3 | P3 | G1 | Serving levers: fused MoE finalize (#1), finalize in the all-reduce (#3), gate thresholds | Patch passes harness TP1/TP2 with drift no larger than stock-vs-stock | serving lane | active |
 | 4 | P4 | G3, G2 | Decode layer: integrate MoE V6, attention verify and the structural candidates; `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at the 09:00 KST reset | H200 check above 1.143x on the way to the 50th-place mix | decode lane | next: 09:00 KST checks |
 | 5 | P5 | G2, G3 | Attention verify kernel (XQA-style q8 x G8, page-1 gathers) to beat FA3 on verify loads | Verify loads above 1.0x on H200; board above 1.282x | attention lane | active |
-| 6 | P6 | G1, G2, G3 | Lower bound per problem and for serving: `sim/bound.py`, then `docs/reference/bound.md` | Bound and gap tables at spec and measured rates, plus an inadmissible column | bound lane | active |
-| 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.106x | proj lane | active |
+| 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x | proj lane | active |
 | 8 | P8 | G2 | H200 probes inside one diagnostic check: HBM concurrency, L2 hints, TMA, page-1 gather rate (`docs/reference/research_hw_lowlevel.md` "Probe plan") | Probe receipts in FINDINGS | — | next |
 | 9 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | next |
 

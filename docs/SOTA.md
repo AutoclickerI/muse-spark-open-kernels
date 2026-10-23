@@ -11,7 +11,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 
 | Problem | Our best H200 check | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
-| muse_bf16_proj | 1.106x hybrid `6b706627babc4cc6` | none yet (scored runs queued) | 1.447x (colinlikescode) | 1.312x | 1.243x | 337 |
+| muse_bf16_proj | 1.142x tuned `9294b3237c4f4e2d` | none yet (tuned scored run queued) | 1.447x (colinlikescode) | 1.312x | 1.243x | 337 |
 | muse_attention_decode | 1.279x v2 `51ad2ea9ec4f4724` | 1.282x (153) | 2.366x (colinlikescode) | 1.912x | 1.585x | 241 |
 | muse_moe_w4a16 | 1.492x V6 `eefecf1eeb724feb` | 1.022x (274; V6 scored queued) | 2.326x (colinlikescode) | 1.958x | 1.719x | 278 |
 | muse_decode_layer | 1.143x v3 `2c112482e81745af` | 1.137x (167) | 1.864x (colinlikescode) | 1.622x | 1.402x | 207 |
