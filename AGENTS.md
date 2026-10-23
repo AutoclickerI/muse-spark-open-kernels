@@ -46,6 +46,11 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
 - **Budget.** Remote runs are the scarce resource: 20 checks and 10 scored runs per problem
   per day, resetting at 09:00 KST. Screen locally with `tools/local_eval.py` first. A
   candidate that fails a local test doesn't go remote.
+- **Judge throughput.** The judge starts our team's runs one at a time, about one every 5-6
+  minutes (about 11 an hour across all five problems), and a sent run can't be cancelled. A run
+  waits about 5.5 minutes for each of our runs ahead of it (FINDINGS, "Judge queue"). Keep few
+  runs in flight, send the ones that matter most first (decode layer, then MoE), and time several
+  variants inside one diagnostic check rather than sending one check per idea.
 - **Local timing** is sm_120 timing, not H200 timing. Use it to rank candidates loosely and
   to catch graph-capture failures. Report H200 claims only from `runs/` receipts.
 - **Hopper-only code** (wgmma, TMA, FA3, sm90 CUTLASS/DeepGEMM) can't run here. Its only test
