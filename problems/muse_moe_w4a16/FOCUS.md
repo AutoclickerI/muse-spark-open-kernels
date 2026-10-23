@@ -2,23 +2,25 @@
 
 Serves: G3, G2, G1.
 
-V11 is now the MoE board best: H200 receipt `41bcf27cfc0e4eff` is 1.664x overall,
-with decode 2.185/1.684/1.398 and verify 1.800/1.592/1.439 at M=1/16/32 and 8/128/256.
-V9 receipt `f6028a478d594b31` was 1.654x; V11's Humming path wins V32.
+V11 is the H200 MoE board best: receipt `41bcf27cfc0e4eff` is 1.664x overall, with
+2.185/1.684/1.398 decode and 1.800/1.592/1.439 verify at M=1/16/32 and 8/128/256.
+V9 was 1.654x; Humming wins V32.
 
-`cand_v17.py` is the next portfolio. It keeps V9, V12, V16, Humming/grouped-wide, and adds
-an adaptive expert-major kernel: each expert selects 8/16/32/64 token rows from `n_e`, reusing
-each W13/W2 tile across that block. Prepare ranks every path with graph replay, 1 GiB L2 flush,
-three fresh hot-tail routing sets, and keeps the fastest shape choice.
+V18 copies the committed V17 portfolio and keeps its 1% correctness gate. It also accepts a
+full decode-layer weight bank when present and invokes `problems/muse_decode_layer/moe_tune.py`
+for router-derived shape selection; the standalone MoE harness has no router fields, so its
+local screen uses the existing synthetic fallback. V18 passes 5/5 tests and 6/6 graphs at
+1.264x sm120 GM, with 8.3 s cached prepare.
 
-The sm120 screen passes 5/5 tests and 6/6 graph shapes at 1.269x local GM; prepare is 174.0 s.
-Local choices were V9 at M=1/8/32, V12 at M=16/128, and adaptive at M=256 (`NT=1` on sm120);
-H200 has more shared memory and may select wider row tiles. The adaptive M256 graph passed.
+The decode-layer verify-32 mechanism is routing skew plus grouped-path fixed work. Direct sm120
+M256 graph timings (ms) for real hot-tail / matched-local-count uniform / all-local uniform are:
+grouped 0.915/0.866/1.818, V7 0.584/0.763/1.693, V9 0.668/0.841/4.738,
+V11/Humming 0.536/0.760/1.652, and V17 adaptive 0.662/0.827/4.659. Real routing had
+672 local pairs, 8 experts, and a 221-route hot expert for the default loaded router; the
+judge's `sim/problems.py` target is 386.93 pairs and 21.35 experts. Matched uniform had 672
+pairs across 32 experts. Grouped performs histogram+plan+scatter, two GEMMs and a combine (six launches),
+so its fixed task/launch cost survives the hot tail. The new tuner routes loaded router weights
+on random hidden states and applies the same 1% gate before choosing a path.
 
-V9's direct-byte model still gives 1.50 TB/s at verify-32 versus 3.0+ elsewhere. M256 routing
-averages 386.93 pairs, 24.39 experts, and 60.53 `ceil(n_e/8)` blocks versus 36.76 at M128;
-that 1.65x block growth tracks V11 H200 time growth 1.57x better than bytes (1.08x).
-Static CTA imbalance is only 1.01x, so row-block reuse is the active mechanism.
-
-The serving port remains V9 native through M=128 plus grouped wide from M=256, 864 MiB/GPU;
-`V9_ABI.md` is unchanged. Do not port the adaptive path until its H200 receipt proves a win.
+Serving remains V9 native through M=128 plus grouped wide from M=256, 864 MiB/GPU; no serving
+port change is justified until the decode-layer H200 result validates router-aware selection.
