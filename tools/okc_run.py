@@ -135,26 +135,34 @@ def waiters() -> list:
     return sorted(out)
 
 
+CHANGED = threading.Event()  # the oldest run in flight finished, or a waiter left runs/waiting/
+WATCHING = set()  # what this process already watches: "queue" and the jobs with a judge thread
+
+
 def block_until_change(oldest_job):
     """Return when the oldest run in flight finishes (the judge's own completion signal) or a waiter
-    leaves runs/waiting/ (inotify), whichever comes first."""
-    done = threading.Event()
-
-    def judge():
-        okc_json("status", oldest_job, "--wait")
-        done.set()
-
-    def queue():
+    leaves runs/waiting/ (inotify), whichever comes first. One inotify instance and one judge thread
+    per job serve the whole process: the per-user inotify limit is 128 instances."""
+    if "queue" not in WATCHING:
         libc = ctypes.CDLL(None, use_errno=True)
         fd = libc.inotify_init1(os.O_CLOEXEC)
-        if fd >= 0 and libc.inotify_add_watch(fd, os.fsencode(WAITING), 0x200 | 0x40) >= 0:  # IN_DELETE, IN_MOVED_FROM
-            os.read(fd, 4096)
-            done.set()
+        if fd < 0 or libc.inotify_add_watch(fd, os.fsencode(WAITING), 0x200 | 0x40) < 0:  # IN_DELETE, IN_MOVED_FROM
+            sys.exit(f"inotify on {WAITING} failed: {os.strerror(ctypes.get_errno())}")
 
-    if oldest_job:
+        def queue():
+            while True:
+                os.read(fd, 4096)
+                CHANGED.set()
+        threading.Thread(target=queue, daemon=True).start()
+        WATCHING.add("queue")
+    if oldest_job and oldest_job not in WATCHING:
+        def judge():
+            okc_json("status", oldest_job, "--wait")
+            CHANGED.set()
         threading.Thread(target=judge, daemon=True).start()
-    threading.Thread(target=queue, daemon=True).start()
-    done.wait()
+        WATCHING.add(oldest_job)
+    CHANGED.wait()
+    CHANGED.clear()
 
 
 def send_in_turn(entry: dict, priority: float, send):
