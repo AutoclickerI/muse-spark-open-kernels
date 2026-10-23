@@ -40,7 +40,9 @@ class HarnessChecks(unittest.TestCase):
         s = agreement(a, b)
         self.assertFalse(s['exact'])
         self.assertEqual(s['first_diff'], 7)
+        self.assertEqual(s['first_divergence_position'], 7)
         self.assertEqual(s['positional'], 219/220)
+        self.assertEqual(s['token_agreement_rate'], 219/220)
 
     def test_output_count_cannot_hide_missing_ids(self):
         m, r = self.fixture()

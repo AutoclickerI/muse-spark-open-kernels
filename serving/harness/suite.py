@@ -42,7 +42,10 @@ def main():
         comparisons[name] = compare(*runs[i], *runs[j])
     report_path.write_text(json.dumps(comparisons, indent=2))
     for name, result in comparisons.items():
-        print(name, json.dumps(result['per_level']))
+        print(name, json.dumps({
+            'per_level': result['per_level'],
+            'agreement_metric': result['agreement_metric'],
+        }))
     print(f'Full comparison: {report_path}')
     # A red self baseline must not make a broken patch look acceptable. This
     # local smoke gate is deliberately stricter than the judge's unspecified

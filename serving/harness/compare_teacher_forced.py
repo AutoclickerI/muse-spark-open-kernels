@@ -28,12 +28,75 @@ def diffs(a: list, b: list) -> dict:
             "mean_abs_diff": statistics.mean(vals) if vals else None}
 
 
+def load_forced(name: str) -> list[dict]:
+    path = pathlib.Path(name)
+    if not path.is_dir():
+        path = common.RESULTS / name
+    return [
+        json.loads(line)
+        for line in (path / "forced.jsonl").read_text().splitlines()
+    ]
+
+
+def quantile(values: list[float], q: float) -> float | None:
+    values = sorted(values)
+    if not values:
+        return None
+    if len(values) == 1:
+        return values[0]
+    position = q * (len(values) - 1)
+    lo, hi = int(position), min(int(position) + 1, len(values) - 1)
+    return values[lo] + (values[hi] - values[lo]) * (position - lo)
+
+
+def workload_distribution(a_name: str, b_name: str) -> dict:
+    a = {row["key"]: row for row in load_forced(a_name)}
+    b = {row["key"]: row for row in load_forced(b_name)}
+    rows, problems = [], []
+    for key in sorted(set(a) & set(b)):
+        left, right = a[key], b[key]
+        if left["forced_ids"] != right["forced_ids"]:
+            problems.append(f"different forced ids for {key}")
+        drift = diffs(left["logprobs"], right["logprobs"])
+        rows.append({"key": key, **drift})
+    missing = sorted(set(a) ^ set(b))
+    if missing:
+        problems.append(f"{len(missing)} requests present in only one receipt")
+    means = [row["mean_abs_diff"] for row in rows if row["mean_abs_diff"] is not None]
+    maxima = [row["max_abs_diff"] for row in rows if row["max_abs_diff"] is not None]
+    def summary(values):
+        return {
+            "p10": quantile(values, 0.10),
+            "p50": quantile(values, 0.50),
+            "p90": quantile(values, 0.90),
+            "mean": statistics.mean(values) if values else None,
+            "max": max(values) if values else None,
+        }
+    return {
+        "a": a_name,
+        "b": b_name,
+        "requests": len(rows),
+        "per_request_mean_abs_diff": summary(means),
+        "per_request_max_abs_diff": summary(maxima),
+        "rows": rows,
+        "problems": problems,
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("a")
     ap.add_argument("b")
     ap.add_argument("--json", type=pathlib.Path)
+    ap.add_argument("--distribution", action="store_true",
+                    help="compare forced.jsonl receipts and report per-request drift quantiles")
     args = ap.parse_args()
+    if args.distribution:
+        result = workload_distribution(args.a, args.b)
+        if args.json:
+            args.json.write_text(json.dumps(result, indent=2))
+        print(json.dumps(result, indent=2))
+        raise SystemExit(1 if result["problems"] else 0)
     a, b = load(args.a), load(args.b)
     problems = []
     for key in ("tp", "prompt_len", "k", "prompt_ids"):

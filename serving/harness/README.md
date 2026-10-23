@@ -42,10 +42,25 @@ python3 serving/harness/compare.py my-tp1-stock-a my-tp1-stock-b --require-exact
 python3 serving/harness/compare.py my-tp1-stock-a my-tp1-patch \
   --baseline my-tp1-stock-a my-tp1-stock-b --require-exact
 
+# Near-tie agreement gate: retain at least three stock runs and one patch run
+# with 30 requests each, then compare the distributions instead of exact counts.
+python3 serving/harness/agreement_metric.py \
+  --stock random-stock-a --stock random-stock-b --stock random-stock-c \
+  --patch random-patch \
+  --forced-stock random-lp-stock-a --forced-stock random-lp-stock-b \
+  --forced-stock random-lp-stock-c --forced-patch random-lp-patch
+
 # Teacher-forced prompt and first-k generated-token logprobs.
 python3 serving/harness/teacher_forced.py --tree stock --label my-lp-stock-a --tp 1
 python3 serving/harness/teacher_forced.py --tree patch --label my-lp-patch --tp 1
 python3 serving/harness/compare_teacher_forced.py my-lp-stock-a my-lp-patch
+
+# Workload teacher-forcing: score the same 220-token continuation for every
+# saved request, so drift is a 30-request distribution rather than one prompt.
+python3 serving/harness/teacher_forced_workload.py --tree stock \
+  --label my-lp-stock-a --reference my-random-stock-a --weights random
+python3 serving/harness/compare_teacher_forced.py my-lp-stock-a my-lp-patch \
+  --distribution
 
 # CPU checks for empty/missing requests, fingerprints and other false passes:
 python3 serving/harness/test_harness.py
@@ -176,7 +191,13 @@ Results live at `/data2/jihoon/muse_kernel/harness/results/<label>/`:
   functions; row-split input/output shapes, capture status and timestamps.
 
 `compare.py` reports whole-response exact agreement, matching-prefix fraction,
-positional token agreement, output lengths, TTFT ratios and draft acceptance.
+per-request first-divergence position, token agreement over all 220 positions,
+output lengths, TTFT ratios and draft acceptance. `agreement_metric.py` combines
+three or more stock-vs-stock pairs and stock-vs-patch pairs, then adds the
+workload teacher-forced logprob distribution. Its gate accepts a patch when its
+token-agreement p10 is at least stock's p10 and its per-request teacher-forced
+mean/max drift p50 values are no larger than stock's p90 values. Exact-response
+counts remain diagnostic only on near-tie fixtures.
 It rejects incomplete workloads, mismatched fingerprints, errors and loading
 failures. `run.py` also rejects missing capture completion or runtime graph
 replays unless that graph mode was explicitly disabled. Legacy results without checkpoint hashes are explicitly identified.
@@ -249,6 +270,37 @@ The result tables below are generated from the retained JSON receipts. All
 times include server startup and cleanup; shared-GPU timings are diagnostic.
 
 <!-- RESULTS -->
+
+### Distributional agreement gate (2026-10-24, sm_120)
+
+The random fixture was replayed with three stock servers and one current-patch
+server, 30 requests per run (6 at concurrency 1 and 24 at concurrency 4).
+Every response had 220 tokens. Exact counts were 0/30 for both stock-vs-stock
+and stock-vs-patch, so they were not used as the gate. First divergence was at
+position 0 and token agreement was 0.0 for both comparisons.
+
+The workload teacher-forced receipt forced the same stock-A continuation over
+all 30 requests on each tree. Aggregating all three stock pairs (90 paired
+requests) versus all three stock-patch pairs (90 paired requests) gave:
+
+| comparison | mean logprob drift p10 / p50 / p90 | max-token drift p10 / p50 / p90 |
+|---|---:|---:|
+| stock-vs-stock | 0.1532 / 0.1822 / 0.1966 | 0.5369 / 0.6840 / 0.7953 |
+| stock-vs-patch | 0.1736 / 0.1884 / 0.1998 | 0.5996 / 0.6970 / 0.8062 |
+
+The distribution gate passes: patch token-agreement p10 is at least stock's,
+patch mean-drift p50 is below stock's p90, and patch max-drift p50 is below
+stock's p90. Receipts are `g22-agreement-metric.json`, the `g20-lp-stock-*`
+directories, and `g21-lp-patch` under the harness results root.
+
+### Suffix drafting acceptance screen (2026-10-24, sm_120)
+
+The current patch was run on the 30-request `chain` fixture with the fixed
+eight-token DFlash block. All responses were exactly 220 tokens. Mean accepted
+draft length was `2.9544` for stock and `2.9743` for the patch, a `+0.0199`
+token (`+0.67%`) weighted gain; concurrency 1 was `2.9892 -> 2.8653` and
+concurrency 4 was `2.9457 -> 3.0015`. The corresponding output metric was
+stock-vs-patch token-agreement p50 `0.1000` versus stock-vs-stock p50 `0.1068`.
 
 ### Agreement and teacher-forced logprob results (2026-10-23, sm_120)
 

@@ -252,546 +252,9 @@ index 97b1474..21ae296 100644
              )
  
          from flashinfer.fused_moe import trtllm_fp4_block_scale_routed_moe
-diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-index f6d450a..7285a57 100644
---- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-+++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-@@ -2,10 +2,12 @@
- 
- from __future__ import annotations
- 
-+import logging
- from typing import cast
- 
- import torch
- 
-+from sglang.srt.environ import envs
- from sglang.srt.layers import muse_spark_expert_tp as expert_tp
- from sglang.srt.layers.quantization.modelopt_quant import (
-     ModelOptNvFp4FusedMoEMethod,
-@@ -13,6 +15,48 @@ from sglang.srt.layers.quantization.modelopt_quant import (
- )
- from sglang.srt.layers.utils import copy_or_rebind_param
- 
-+logger = logging.getLogger(__name__)
-+
-+
-+def _muse_v4_enabled() -> bool:
-+    return not envs.SGLANG_MUSE_MOE_FORCE_STOCK.get()
-+
-+
-+def _prepare_muse_v4(layer):
-+    """Build the optional serving bank while the canonical tensors are live."""
-+    layer._muse_v4_state = None
-+    if not _muse_v4_enabled() or not torch.cuda.is_available():
-+        return None
-+    capability = torch.cuda.get_device_capability(layer.gate_up_proj.device)
-+    if capability[0] < 9:
-+        return None
-+    # The serving kernel is specialized to the released 4096-wide routed
-+    # expert. Tiny fixtures and other Muse variants stay on stock Marlin.
-+    if (
-+        layer.gate_up_proj.shape[0] != 32
-+        or layer.gate_up_proj.shape[1] != 8192
-+        or layer.gate_up_proj.shape[2] * 2 != 4096
-+    ):
-+        return None
-+    try:
-+        from sglang.srt.layers.muse_spark_moe import prepare_layer
-+
-+        layer._muse_v4_state = prepare_layer(layer)
-+        logger.info(
-+            "Prepared Muse V6 routed NVFP4 bank for %d local experts on SM%d%d",
-+            layer.gate_up_proj.shape[0],
-+            capability[0],
-+            capability[1],
-+        )
-+        return layer._muse_v4_state
-+    except Exception:
-+        layer._muse_v4_state = None
-+        logger.warning(
-+            "Muse V6 bank preparation failed; retaining stock Marlin path",
-+            exc_info=True,
-+        )
-+        return None
-+
- 
- def _align_fp4_moe_weights_for_flashinfer_trtllm(layer) -> None:
-     """Align Muse's ``[w1, w3]`` checkpoint layout in-place.
-@@ -126,6 +170,24 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
-     )
- 
-     def _process_weights_for_marlin(self, layer):
-+        # Build the one canonical V6 bank from the lossless ModelOpt tensors.
-+        # The stock Marlin conversion is retained only for the explicit stock
-+        # A/B path or when preparation is unavailable.
-+        state = _prepare_muse_v4(layer)
-+        if state is not None:
-+            layer._muse_single_bank = True
-+            for name in (
-+                "gate_up_proj",
-+                "down_proj",
-+                "gate_up_proj_weight_scale",
-+                "down_proj_weight_scale",
-+                "gate_up_proj_weight_scale_2",
-+                "down_proj_weight_scale_2",
-+                "gate_up_proj_input_scale",
-+                "down_proj_input_scale",
-+            ):
-+                layer._parameters.pop(name, None)
-+            return None
-         for alias, native in self._MARLIN_PARAM_ALIASES:
-             setattr(layer, alias, getattr(layer, native))
-         result = super().process_weights_after_loading(layer)
-diff --git a/python/sglang/srt/models/dflash.py b/python/sglang/srt/models/dflash.py
-index 62f823b..b260383 100644
---- a/python/sglang/srt/models/dflash.py
-+++ b/python/sglang/srt/models/dflash.py
-@@ -700,7 +700,23 @@ class DFlashDraftModel(nn.Module):
-         num_context_features = len(target_layer_ids)
- 
-         self.num_context_features = int(num_context_features)
--        if self.quantizable:
-+        if get_parallel().tp_size > 1:
-+            fc_prefix = f"{prefix}.fc" if prefix else "fc"
-+            # The target hidden state is replicated on every target-TP rank.  Split
-+            # the drafter projection along its output dimension and gather the
-+            # result so the following draft layers still see the stock tensor.
-+            # Construction happens inside draft_tp_context(), therefore this uses
-+            # the same TP group as the draft worker's other sharded modules.
-+            self.fc = ColumnParallelLinear(
-+                self.num_context_features * hidden_size,
-+                hidden_size,
-+                bias=False,
-+                gather_output=True,
-+                quant_config=quant_config,
-+                prefix=fc_prefix,
-+                parallel_group="tp",
-+            )
-+        elif self.quantizable:
-             fc_prefix = f"{prefix}.fc" if prefix else "fc"
-             self.fc = ReplicatedLinear(
-                 self.num_context_features * hidden_size,
-@@ -770,7 +786,11 @@ class DFlashDraftModel(nn.Module):
- 
-     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
-         """Project concatenated target-layer hidden states into draft hidden_size."""
--        expected = int(self.fc.input_size if self.quantizable else self.fc.in_features)
-+        expected = int(
-+            self.fc.input_size
-+            if hasattr(self.fc, "input_size")
-+            else self.fc.in_features
-+        )
-         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
-             raise ValueError(
-                 "DFLASH target_hidden feature dim mismatch. "
-@@ -781,7 +801,7 @@ class DFlashDraftModel(nn.Module):
-                 "the draft checkpoint/config expects."
-             )
-         projected = self.fc(target_hidden)
--        if self.quantizable:
-+        if isinstance(projected, tuple):
-             projected = projected[0]
-         return self.hidden_norm(projected)
- 
-@@ -904,7 +924,14 @@ class DFlashDraftModel(nn.Module):
-                     else:
-                         expected_shape = tuple(param.shape)
-                         loaded_shape = tuple(loaded_weight.shape)
--                        shape_matches = loaded_shape == expected_shape
-+                        tp_size = int(get_parallel().tp_size)
-+                        shape_matches = loaded_shape == expected_shape or (
-+                            tp_size > 1
-+                            and getattr(param, "output_dim", None) == 0
-+                            and len(loaded_shape) == len(expected_shape)
-+                            and loaded_shape[0] == expected_shape[0] * tp_size
-+                            and loaded_shape[1:] == expected_shape[1:]
-+                        )
-                     if not shape_matches:
-                         raise ValueError(
-                             "DFLASH fc.weight shape mismatch. This usually means the draft checkpoint's "
-@@ -1019,7 +1046,9 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
- 
-     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
-         expected = int(
--            self.fc.input_size if self.is_nemotron_35_draft else self.fc.in_features
-+            self.fc.input_size
-+            if hasattr(self.fc, "input_size")
-+            else self.fc.in_features
-         )
-         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
-             raise ValueError(
-@@ -1040,7 +1069,7 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
-             normed[:, i, :] = norm(slices[:, i, :])
-         fused = normed.reshape(target_hidden.shape[0], -1)
-         projected = self.fc(fused)
--        if self.is_nemotron_35_draft:
-+        if isinstance(projected, tuple):
-             projected = projected[0]
-         return self.hidden_norm(projected)
- 
-diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
-index 312b342..ea24567 100644
---- a/python/sglang/srt/models/muse_spark.py
-+++ b/python/sglang/srt/models/muse_spark.py
-@@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
- from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
-     gemm_ag,
-     gemm_ag_supported,
-+    split_projection_supported,
-     gemm_local,
-     reserve_projection_workspace,
- )
-@@ -47,6 +48,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
- from sglang.srt.environ import envs
- from sglang.srt.layers import layernorm_sp
- from sglang.srt.layers import muse_spark_expert_tp as expert_tp
-+from sglang.srt.layers.attention.flashattention_backend import FlashAttentionBackend
- from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
- from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
- from sglang.srt.layers.cp.utils import is_cp_active
-@@ -247,6 +249,52 @@ def _split_bf16_router_supported() -> bool:
-     return is_cuda() and get_device_capability()[0] == 9
- 
- 
-+# Prefill only: above gemm_ag.MAX_TOKENS (512) the pooler and unpooler run replicated on every
-+# rank. Arbitrary threshold; no measurement says where the row split starts to pay on H200.
-+ROW_SPLIT_MIN_TOKENS = 1024
-+
-+
-+def _use_row_split(tp_size: int, num_tokens: int) -> bool:
-+    return (
-+        tp_size > 1
-+        and num_tokens >= ROW_SPLIT_MIN_TOKENS
-+        and not _is_cpu
-+        and not get_forward().sp_active
-+        and not torch.cuda.is_current_stream_capturing()
-+    )
-+
-+
-+def _row_split_gemm(x: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
-+    """``x @ weight.T`` with each TP rank computing ceil(M / world) rows, then all-gathered."""
-+    tp_group = get_tp_group()
-+    world, rank = tp_group.world_size, tp_group.rank_in_group
-+    m = x.shape[0]
-+    rows = -(-m // world)
-+    lo, hi = min(rank * rows, m), min((rank + 1) * rows, m)
-+    local = bf16_gemm_dispatch(x[lo:hi], weight, None)
-+    if hi - lo < rows:
-+        local = torch.nn.functional.pad(local, (0, 0, 0, rows - (hi - lo)))
-+    out = local.new_empty(rows * world, weight.shape[0])
-+    tp_group.all_gather_into_tensor(out, local)
-+    return out[:m]
-+
-+
-+def _reduce_scatter_rows_gemm(partial: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
-+    """``all_reduce(partial) @ weight.T``: reduce-scatter rows, local GEMM, all-gather rows."""
-+    tp_group = get_tp_group()
-+    world = tp_group.world_size
-+    m = partial.shape[0]
-+    rows = -(-m // world)
-+    if rows * world != m:
-+        partial = torch.nn.functional.pad(partial, (0, 0, 0, rows * world - m))
-+    reduced = partial.new_empty(rows, partial.shape[1])
-+    tp_group.reduce_scatter_tensor(reduced, partial.contiguous())
-+    local = bf16_gemm_dispatch(reduced, weight, None)
-+    out = local.new_empty(rows * world, weight.shape[0])
-+    tp_group.all_gather_into_tensor(out, local)
-+    return out[:m]
-+
-+
- def _use_split_bf16_router(num_tokens: int) -> bool:
-     if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
-         return False
-@@ -413,25 +461,57 @@ class MuseSpark1xAttention(nn.Module):
-     ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
-         backend = get_attn_backend()
-         pool = get_token_to_kv_pool()
--        if not (
-+        decode_or_verify = (
-+            forward_batch.forward_mode.is_decode()
-+            or forward_batch.forward_mode.is_target_verify()
-+        )
-+        common_ok = (
-+            self.attn.k_scale is None
-+            and self.attn.v_scale is None
-+            and forward_batch.dcp_kv_mask is None
-+            and decode_or_verify
-+            and not is_cp_active(forward_batch)
-+        )
-+        trt_ok = (
-             isinstance(backend, TRTLLMHAAttnBackend)
-             and backend.data_type in (torch.bfloat16, torch.float8_e4m3fn)
-             and pool.dtype == backend.data_type
-             and (pool.dtype == torch.bfloat16 or not backend.is_xqa_impl)
--            and self.attn.k_scale is None
--            and self.attn.v_scale is None
--            and forward_batch.dcp_kv_mask is None
--            # Prefill excluded: the fused store segfaults at breakable prefill replay.
--            and (
--                forward_batch.forward_mode.is_decode()
--                or forward_batch.forward_mode.is_target_verify()
--            )
--            and not is_cp_active(forward_batch)
--        ):
-+        )
-+        fa3_ok = (
-+            isinstance(backend, FlashAttentionBackend)
-+            and backend.fa_impl_ver == 3
-+            and not backend.use_mla
-+            and not backend.fa_skip_kv_cache
-+            and pool.dtype == torch.float8_e4m3fn
-+        )
-+        if not (common_ok and (trt_ok or fa3_ok)):
-+            return None
-+
-+        if trt_ok:
-+            cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
-+        else:
-+            cache_loc = getattr(forward_batch, "out_cache_loc", None)
-+            if cache_loc is None:
-+                return None
-+            layer_mapping = getattr(pool, "layers_mapping", None)
-+            if (
-+                layer_mapping is not None
-+                and layer_mapping[self.layer_idx][1]
-+            ):
-+                metadata = backend.forward_metadata
-+                cache_loc = getattr(metadata, "swa_out_cache_loc", None)
-+                if cache_loc is None:
-+                    return None
-+                cache_loc = cache_loc[: forward_batch.out_cache_loc.shape[0]]
-+        if cache_loc is None:
-+            return None
-+        if cache_loc.dtype != torch.int64 or not cache_loc.is_contiguous():
-             return None
--        cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
-         k_cache = pool.get_key_buffer(self.layer_idx)
-         v_cache = pool.get_value_buffer(self.layer_idx)
-+        if not (k_cache.is_contiguous() and v_cache.is_contiguous()):
-+            return None
-         return (
-             k_cache.view(k_cache.shape[0], -1),
-             v_cache.view(v_cache.shape[0], -1),
-@@ -584,7 +664,7 @@ class MuseSpark1xMoE(nn.Module):
-             self.pre_expert_proj is not None
-             and self.tp_size in (4, 8)
-             and torch.cuda.is_available()
--            and torch.cuda.get_device_capability() == (10, 3)
-+            and torch.cuda.get_device_capability() in ((10, 3), (9, 0))
-         ):
-             ca_comm = get_tp_group().ca_comm
-             reserve_projection_workspace(
-@@ -757,6 +837,10 @@ class MuseSpark1xMoE(nn.Module):
-             and not getattr(get_forward(), "sp_active", False)
-             and not already_reduced
-         ):
-+            if self.post_expert_proj is not None and _use_row_split(
-+                self.tp_size, output.shape[0]
-+            ):
-+                return _reduce_scatter_rows_gemm(output, self.post_expert_proj.weight)
-             output = tensor_model_parallel_all_reduce(output)
-         if self.post_expert_proj is not None:
-             if _is_cpu:
-@@ -846,10 +930,14 @@ class MuseSpark1xMoE(nn.Module):
-             if (
-                 self.tp_size in (4, 8)
-                 and not sp_active
--                and torch.cuda.get_device_capability(hidden_states.device) == (10, 3)
-+                and split_projection_supported(
-+                    hidden_states.device, hidden_states.shape[0]
-+                )
-                 and gemm_ag_supported(comm, hidden_states, self.pre_expert_proj.weight)
-             ):
-                 expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
-+            elif _use_row_split(self.tp_size, hidden_states.shape[0]):
-+                expert_input = _row_split_gemm(hidden_states, self.pre_expert_proj.weight)
-             else:
-                 expert_input = bf16_gemm_dispatch(
-                     hidden_states, self.pre_expert_proj.weight, None
-@@ -1174,11 +1262,11 @@ class MuseSpark1xModel(nn.Module):
-                 get_parallel().tp_size not in (4, 8)
-                 or get_parallel().moe_ep_size != get_parallel().tp_size
-                 or is_dp_attention_enabled()
--                or torch.cuda.get_device_capability()[0] != 10
-+                or torch.cuda.get_device_capability() not in ((9, 0), (10, 3))
-             ):
-                 logger.warning(
--                    "Finalize AR fusion unavailable: requires Blackwell TP4/EP4 or TP8/EP8 "
--                    "without DP attention. Using separate finalize and AR."
-+                    "Finalize AR fusion unavailable: requires Hopper/Blackwell TP4/EP4 "
-+                    "or TP8/EP8 without DP attention. Using separate finalize and AR."
-                 )
-             else:
-                 moe_layers = [layer.mlp for layer in self.layers if layer.is_moe_layer]
-diff --git a/python/sglang/srt/speculative/dflash_worker_v2.py b/python/sglang/srt/speculative/dflash_worker_v2.py
-index a91ffd6..bcdcfee 100644
---- a/python/sglang/srt/speculative/dflash_worker_v2.py
-+++ b/python/sglang/srt/speculative/dflash_worker_v2.py
-@@ -563,6 +563,11 @@ class DFlashWorkerV2(BaseSpecWorker):
-         self._draft_block_end_buf: Optional[torch.Tensor] = None  # [cap_bs]
-         self._selector_sample: Optional[Tuple[torch.Tensor, torch.Tensor]] = None
-         self._draft_seq_lens_cpu_buf: Optional[torch.Tensor] = None  # [cap_bs] on CPU
-+        self._suffix_candidate_cpu_buf: Optional[torch.Tensor] = None
-+        self._suffix_score_cpu_buf: Optional[torch.Tensor] = None
-+        self._suffix_candidate_buf: Optional[torch.Tensor] = None
-+        self._suffix_score_buf: Optional[torch.Tensor] = None
-+        self._suffix_accept_estimate: Optional[torch.Tensor] = None
-         self._draft_block_spec_info = make_draft_block_spec_info(
-             draft_token_num=int(self.block_size), device=self.device
-         )
-@@ -1083,6 +1088,120 @@ class DFlashWorkerV2(BaseSpecWorker):
-             (new_cap,), dtype=torch.int32, device="cpu"
-         )
- 
-+    def _ensure_suffix_buffers(self, bs: int, req_pool_size: int) -> None:
-+        """Allocate host-staged suffix candidates and acceptance estimates."""
-+        cap = (
-+            0
-+            if self._suffix_candidate_buf is None
-+            else int(self._suffix_candidate_buf.shape[0])
-+        )
-+        if cap < int(bs):
-+            new_cap = max(int(bs), cap * 2 if cap > 0 else int(bs))
-+            self._suffix_candidate_cpu_buf = torch.empty(
-+                (new_cap, int(self.block_size)),
-+                dtype=torch.long,
-+                pin_memory=True,
-+            )
-+            self._suffix_score_cpu_buf = torch.empty(
-+                (new_cap,), dtype=torch.int32, pin_memory=True
-+            )
-+            self._suffix_candidate_buf = torch.empty(
-+                (new_cap, int(self.block_size)),
-+                dtype=torch.long,
-+                device=self.device,
-+            )
-+            self._suffix_score_buf = torch.empty(
-+                (new_cap,), dtype=torch.int32, device=self.device
-+            )
-+        if (
-+            self._suffix_accept_estimate is None
-+            or int(self._suffix_accept_estimate.shape[0]) < int(req_pool_size)
-+        ):
-+            self._suffix_accept_estimate = torch.zeros(
-+                (int(req_pool_size),), dtype=torch.float32, device=self.device
-+            )
-+
-+    def _prepare_suffix_candidates(
-+        self, batch: ScheduleBatch, block_ids: torch.Tensor
-+    ) -> None:
-+        """Find repeated suffixes in each request's committed token history."""
-+        bs = len(batch.reqs)
-+        req_pool_size = int(batch.req_to_token_pool.req_to_token.shape[0])
-+        self._ensure_suffix_buffers(bs, req_pool_size)
-+        assert self._suffix_candidate_cpu_buf is not None
-+        assert self._suffix_score_cpu_buf is not None
-+        assert self._suffix_candidate_buf is not None
-+        assert self._suffix_score_buf is not None
-+        candidates = self._suffix_candidate_cpu_buf[:bs]
-+        scores = self._suffix_score_cpu_buf[:bs]
-+        candidates.fill_(int(self._mask_token_id))
-+        scores.zero_()
-+        if envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
-+            for row, req in enumerate(batch.reqs):
-+                context = list(req.origin_input_ids) + list(req.output_ids)
-+                if len(context) < 4:
-+                    continue
-+                max_ngram = min(8, len(context) - 1)
-+                for ngram in range(max_ngram, 1, -1):
-+                    suffix_start = len(context) - ngram
-+                    suffix = context[suffix_start:]
-+                    match = None
-+                    for pos in range(suffix_start - 1, -1, -1):
-+                        if context[pos : pos + ngram] == suffix:
-+                            match = pos
-+                            break
-+                    if match is None or match + ngram >= len(context):
-+                        continue
-+                    length = min(
-+                        int(self.block_size) - 1,
-+                        len(context) - match - ngram,
-+                    )
-+                    if length < 1:
-+                        continue
-+                    candidates[row, 1 : 1 + length] = torch.tensor(
-+                        context[match + ngram : match + ngram + length],
-+                        dtype=torch.long,
-+                    )
-+                    scores[row] = length
-+                    break
-+        self._suffix_candidate_buf[:bs].copy_(candidates, non_blocking=True)
-+        self._suffix_score_buf[:bs].copy_(scores, non_blocking=True)
-+        self._suffix_candidate_buf[:bs, 0].copy_(block_ids[:, 0])
-+
-+    def _choose_suffix_candidates(
-+        self, batch: ScheduleBatch, draft_next: torch.Tensor
-+    ) -> torch.Tensor:
-+        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
-+            return draft_next
-+        assert self._suffix_candidate_buf is not None
-+        assert self._suffix_score_buf is not None
-+        assert self._suffix_accept_estimate is not None
-+        req_indices = batch.req_pool_indices.to(torch.long)
-+        recent_accept = self._suffix_accept_estimate.index_select(0, req_indices)
-+        suffix_score = self._suffix_score_buf[: draft_next.shape[0]].to(torch.float32)
-+        use_suffix = (recent_accept >= 1) & (suffix_score > recent_accept)
-+        positions = torch.arange(
-+            draft_next.shape[1], device=draft_next.device, dtype=torch.float32
-+        )[None, :]
-+        append_suffix = use_suffix[:, None] & (positions >= recent_accept[:, None])
-+        return torch.where(
-+            append_suffix,
-+            self._suffix_candidate_buf[: draft_next.shape[0], 1:],
-+            draft_next,
-+        )
-+
-+    def _update_suffix_acceptance_estimate(
-+        self, batch: ScheduleBatch, accept_len: torch.Tensor
-+    ) -> None:
-+        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
-+            return
-+        assert self._suffix_accept_estimate is not None
-+        req_indices = batch.req_pool_indices.to(torch.long)
-+        previous = self._suffix_accept_estimate.index_select(0, req_indices)
-+        self._suffix_accept_estimate[req_indices] = torch.maximum(
-+            previous, accept_len.to(torch.float32)
-+        )
-+
-     def __getattr__(self, name):
-         # Delegate anything not implemented yet to the target worker. Guard
-         # the backing field so a lookup before __init__ sets it raises
-@@ -2533,6 +2652,11 @@ class DFlashWorkerV2(BaseSpecWorker):
-             )
-             verify_out_cache_loc_2d.copy_(verify_out_cache_loc.view(bs, block_size))
- 
-+        # Stage repeated request text before the DFlash graph.  Selection is
-+        # deferred until DFlash has produced its candidate and the per-request
-+        # acceptance estimate is available on device.
-+        self._prepare_suffix_candidates(batch, block_ids)
-+
-         if self._full_embed_gpu is not None:
-             # Replicated lookup avoids the mismatched attn-TP all_reduce
-             # inside VocabParallelEmbedding under dp attention.
-@@ -2769,6 +2893,7 @@ class DFlashWorkerV2(BaseSpecWorker):
-                     lm_head=lm_head,
-                 ).view(bs, int(self.block_size) - 1)
- 
-+        draft_next = self._choose_suffix_candidates(batch, draft_next)
-         draft_tokens = self._draft_block_tokens_buf[:bs]
-         draft_tokens[:, 0].copy_(block_ids[:, 0])
-         draft_tokens[:, 1:].copy_(draft_next)
-@@ -2893,6 +3018,7 @@ class DFlashWorkerV2(BaseSpecWorker):
-             bs=bs,
-             target_predict=target_predict,
-         )
-+        self._update_suffix_acceptance_estimate(batch, accept_len)
- 
-         if SIMULATE_ACC_LEN > 0:
-             if SIMULATE_ACC_TOKEN_MODE not in ("fixed", "real-draft-token"):
 diff --git a/python/sglang/srt/layers/muse_spark_moe.py b/python/sglang/srt/layers/muse_spark_moe.py
 new file mode 100644
-index 0000000..02d9b7a
+index 0000000..6914e58
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_spark_moe.py
 @@ -0,0 +1,1117 @@
@@ -1784,7 +1247,7 @@ index 0000000..02d9b7a
 +    return dense, torch.where(valid, flat, torch.full_like(flat, -1))
 +
 +
-+def _v6_call(data, state, *, return_dense=False):
++def _v8_call(data, state, *, return_dense=False):
 +    cfg = data["config"]
 +    assert cfg["local_count"] == NLOC and cfg["d_hidden"] == H and cfg["d_expert"] == H
 +    mod = state["mod"]
@@ -1798,7 +1261,7 @@ index 0000000..02d9b7a
 +    while nstage > 1 and mod.smem_needed(nt, nstage, m) > mod.smem_optin:
 +        nstage -= 1
 +    if mod.smem_needed(nt, nstage, m) > mod.smem_optin:
-+        raise ValueError(f"batch {m} too large for fused V6 shared-memory routing")
++        raise ValueError(f"batch {m} too large for fused V8 shared-memory routing")
 +    dev = x.device
 +    inter = torch.empty((npairs, H), dtype=torch.bfloat16, device=dev)
 +    y = torch.zeros((npairs, H), dtype=torch.float32, device=dev)
@@ -1854,8 +1317,8 @@ index 0000000..02d9b7a
 +    m = data["hidden_states"].shape[0]
 +    dense, local_map = (
 +        _grouped_call(data, state)
-+        if m > 256
-+        else _v6_call(data, state, return_dense=return_dense)
++        if m >= 128
++        else _v8_call(data, state, return_dense=return_dense)
 +    )
 +    if return_dense:
 +        return dense, local_map
@@ -1870,10 +1333,10 @@ index 0000000..02d9b7a
 +
 +
 +def prepare_layer(layer):
-+    """Pack raw ModelOpt tensors into the single canonical V6 bank."""
++    """Pack raw ModelOpt tensors into the single canonical V8 bank."""
 +    post_norm = getattr(layer, "post_expert_norm", None)
 +    if post_norm is None or getattr(post_norm, "weight", None) is None:
-+        raise RuntimeError("Muse V6 needs the loaded post-expert norm weight")
++        raise RuntimeError("Muse V8 needs the loaded post-expert norm weight")
 +    weights = {
 +        "w13": layer.gate_up_proj.detach(),
 +        "w13_sf": layer.gate_up_proj_weight_scale.detach(),
@@ -1889,12 +1352,12 @@ index 0000000..02d9b7a
 +        "post_norm_w": post_norm.weight.detach(),
 +    }
 +    if weights["w13"].shape[0] != NLOC:
-+        raise ValueError(f"Muse V6 expects 32 local experts, got {weights['w13'].shape[0]}")
++        raise ValueError(f"Muse V8 expects 32 local experts, got {weights['w13'].shape[0]}")
 +    return prepare(weights, local_start=layer.local_expert_offset)
 +
 +
 +def run_layer(state, hidden_states, topk_scores, topk_ids, *, return_dense=False):
-+    """Graph-capturable V6/grouped invocation used by MuseSpark1xFp4Experts."""
++    """Graph-capturable V8/grouped invocation used by MuseSpark1xFp4Experts."""
 +    cfg = {
 +        "bs": hidden_states.shape[0],
 +        "d_hidden": hidden_states.shape[1],
@@ -1912,3 +1375,543 @@ index 0000000..02d9b7a
 +        state,
 +        return_dense=return_dense,
 +    )
+diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
+index f6d450a..7285a57 100644
+--- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
++++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
+@@ -2,10 +2,12 @@
+ 
+ from __future__ import annotations
+ 
++import logging
+ from typing import cast
+ 
+ import torch
+ 
++from sglang.srt.environ import envs
+ from sglang.srt.layers import muse_spark_expert_tp as expert_tp
+ from sglang.srt.layers.quantization.modelopt_quant import (
+     ModelOptNvFp4FusedMoEMethod,
+@@ -13,6 +15,48 @@ from sglang.srt.layers.quantization.modelopt_quant import (
+ )
+ from sglang.srt.layers.utils import copy_or_rebind_param
+ 
++logger = logging.getLogger(__name__)
++
++
++def _muse_v4_enabled() -> bool:
++    return not envs.SGLANG_MUSE_MOE_FORCE_STOCK.get()
++
++
++def _prepare_muse_v4(layer):
++    """Build the optional serving bank while the canonical tensors are live."""
++    layer._muse_v4_state = None
++    if not _muse_v4_enabled() or not torch.cuda.is_available():
++        return None
++    capability = torch.cuda.get_device_capability(layer.gate_up_proj.device)
++    if capability[0] < 9:
++        return None
++    # The serving kernel is specialized to the released 4096-wide routed
++    # expert. Tiny fixtures and other Muse variants stay on stock Marlin.
++    if (
++        layer.gate_up_proj.shape[0] != 32
++        or layer.gate_up_proj.shape[1] != 8192
++        or layer.gate_up_proj.shape[2] * 2 != 4096
++    ):
++        return None
++    try:
++        from sglang.srt.layers.muse_spark_moe import prepare_layer
++
++        layer._muse_v4_state = prepare_layer(layer)
++        logger.info(
++            "Prepared Muse V6 routed NVFP4 bank for %d local experts on SM%d%d",
++            layer.gate_up_proj.shape[0],
++            capability[0],
++            capability[1],
++        )
++        return layer._muse_v4_state
++    except Exception:
++        layer._muse_v4_state = None
++        logger.warning(
++            "Muse V6 bank preparation failed; retaining stock Marlin path",
++            exc_info=True,
++        )
++        return None
++
+ 
+ def _align_fp4_moe_weights_for_flashinfer_trtllm(layer) -> None:
+     """Align Muse's ``[w1, w3]`` checkpoint layout in-place.
+@@ -126,6 +170,24 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
+     )
+ 
+     def _process_weights_for_marlin(self, layer):
++        # Build the one canonical V6 bank from the lossless ModelOpt tensors.
++        # The stock Marlin conversion is retained only for the explicit stock
++        # A/B path or when preparation is unavailable.
++        state = _prepare_muse_v4(layer)
++        if state is not None:
++            layer._muse_single_bank = True
++            for name in (
++                "gate_up_proj",
++                "down_proj",
++                "gate_up_proj_weight_scale",
++                "down_proj_weight_scale",
++                "gate_up_proj_weight_scale_2",
++                "down_proj_weight_scale_2",
++                "gate_up_proj_input_scale",
++                "down_proj_input_scale",
++            ):
++                layer._parameters.pop(name, None)
++            return None
+         for alias, native in self._MARLIN_PARAM_ALIASES:
+             setattr(layer, alias, getattr(layer, native))
+         result = super().process_weights_after_loading(layer)
+diff --git a/python/sglang/srt/models/dflash.py b/python/sglang/srt/models/dflash.py
+index 62f823b..b260383 100644
+--- a/python/sglang/srt/models/dflash.py
++++ b/python/sglang/srt/models/dflash.py
+@@ -700,7 +700,23 @@ class DFlashDraftModel(nn.Module):
+         num_context_features = len(target_layer_ids)
+ 
+         self.num_context_features = int(num_context_features)
+-        if self.quantizable:
++        if get_parallel().tp_size > 1:
++            fc_prefix = f"{prefix}.fc" if prefix else "fc"
++            # The target hidden state is replicated on every target-TP rank.  Split
++            # the drafter projection along its output dimension and gather the
++            # result so the following draft layers still see the stock tensor.
++            # Construction happens inside draft_tp_context(), therefore this uses
++            # the same TP group as the draft worker's other sharded modules.
++            self.fc = ColumnParallelLinear(
++                self.num_context_features * hidden_size,
++                hidden_size,
++                bias=False,
++                gather_output=True,
++                quant_config=quant_config,
++                prefix=fc_prefix,
++                parallel_group="tp",
++            )
++        elif self.quantizable:
+             fc_prefix = f"{prefix}.fc" if prefix else "fc"
+             self.fc = ReplicatedLinear(
+                 self.num_context_features * hidden_size,
+@@ -770,7 +786,11 @@ class DFlashDraftModel(nn.Module):
+ 
+     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
+         """Project concatenated target-layer hidden states into draft hidden_size."""
+-        expected = int(self.fc.input_size if self.quantizable else self.fc.in_features)
++        expected = int(
++            self.fc.input_size
++            if hasattr(self.fc, "input_size")
++            else self.fc.in_features
++        )
+         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
+             raise ValueError(
+                 "DFLASH target_hidden feature dim mismatch. "
+@@ -781,7 +801,7 @@ class DFlashDraftModel(nn.Module):
+                 "the draft checkpoint/config expects."
+             )
+         projected = self.fc(target_hidden)
+-        if self.quantizable:
++        if isinstance(projected, tuple):
+             projected = projected[0]
+         return self.hidden_norm(projected)
+ 
+@@ -904,7 +924,14 @@ class DFlashDraftModel(nn.Module):
+                     else:
+                         expected_shape = tuple(param.shape)
+                         loaded_shape = tuple(loaded_weight.shape)
+-                        shape_matches = loaded_shape == expected_shape
++                        tp_size = int(get_parallel().tp_size)
++                        shape_matches = loaded_shape == expected_shape or (
++                            tp_size > 1
++                            and getattr(param, "output_dim", None) == 0
++                            and len(loaded_shape) == len(expected_shape)
++                            and loaded_shape[0] == expected_shape[0] * tp_size
++                            and loaded_shape[1:] == expected_shape[1:]
++                        )
+                     if not shape_matches:
+                         raise ValueError(
+                             "DFLASH fc.weight shape mismatch. This usually means the draft checkpoint's "
+@@ -1019,7 +1046,9 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
+ 
+     def project_target_hidden(self, target_hidden: torch.Tensor) -> torch.Tensor:
+         expected = int(
+-            self.fc.input_size if self.is_nemotron_35_draft else self.fc.in_features
++            self.fc.input_size
++            if hasattr(self.fc, "input_size")
++            else self.fc.in_features
+         )
+         if target_hidden.ndim != 2 or int(target_hidden.shape[-1]) != expected:
+             raise ValueError(
+@@ -1040,7 +1069,7 @@ class DFlashLagunaForCausalLM(DFlashDraftModel):
+             normed[:, i, :] = norm(slices[:, i, :])
+         fused = normed.reshape(target_hidden.shape[0], -1)
+         projected = self.fc(fused)
+-        if self.is_nemotron_35_draft:
++        if isinstance(projected, tuple):
+             projected = projected[0]
+         return self.hidden_norm(projected)
+ 
+diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
+index 312b342..ea24567 100644
+--- a/python/sglang/srt/models/muse_spark.py
++++ b/python/sglang/srt/models/muse_spark.py
+@@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
+ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
+     gemm_ag,
+     gemm_ag_supported,
++    split_projection_supported,
+     gemm_local,
+     reserve_projection_workspace,
+ )
+@@ -47,6 +48,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
+ from sglang.srt.environ import envs
+ from sglang.srt.layers import layernorm_sp
+ from sglang.srt.layers import muse_spark_expert_tp as expert_tp
++from sglang.srt.layers.attention.flashattention_backend import FlashAttentionBackend
+ from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
+ from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
+ from sglang.srt.layers.cp.utils import is_cp_active
+@@ -247,6 +249,52 @@ def _split_bf16_router_supported() -> bool:
+     return is_cuda() and get_device_capability()[0] == 9
+ 
+ 
++# Prefill only: above gemm_ag.MAX_TOKENS (512) the pooler and unpooler run replicated on every
++# rank. Arbitrary threshold; no measurement says where the row split starts to pay on H200.
++ROW_SPLIT_MIN_TOKENS = 1024
++
++
++def _use_row_split(tp_size: int, num_tokens: int) -> bool:
++    return (
++        tp_size > 1
++        and num_tokens >= ROW_SPLIT_MIN_TOKENS
++        and not _is_cpu
++        and not get_forward().sp_active
++        and not torch.cuda.is_current_stream_capturing()
++    )
++
++
++def _row_split_gemm(x: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
++    """``x @ weight.T`` with each TP rank computing ceil(M / world) rows, then all-gathered."""
++    tp_group = get_tp_group()
++    world, rank = tp_group.world_size, tp_group.rank_in_group
++    m = x.shape[0]
++    rows = -(-m // world)
++    lo, hi = min(rank * rows, m), min((rank + 1) * rows, m)
++    local = bf16_gemm_dispatch(x[lo:hi], weight, None)
++    if hi - lo < rows:
++        local = torch.nn.functional.pad(local, (0, 0, 0, rows - (hi - lo)))
++    out = local.new_empty(rows * world, weight.shape[0])
++    tp_group.all_gather_into_tensor(out, local)
++    return out[:m]
++
++
++def _reduce_scatter_rows_gemm(partial: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
++    """``all_reduce(partial) @ weight.T``: reduce-scatter rows, local GEMM, all-gather rows."""
++    tp_group = get_tp_group()
++    world = tp_group.world_size
++    m = partial.shape[0]
++    rows = -(-m // world)
++    if rows * world != m:
++        partial = torch.nn.functional.pad(partial, (0, 0, 0, rows * world - m))
++    reduced = partial.new_empty(rows, partial.shape[1])
++    tp_group.reduce_scatter_tensor(reduced, partial.contiguous())
++    local = bf16_gemm_dispatch(reduced, weight, None)
++    out = local.new_empty(rows * world, weight.shape[0])
++    tp_group.all_gather_into_tensor(out, local)
++    return out[:m]
++
++
+ def _use_split_bf16_router(num_tokens: int) -> bool:
+     if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
+         return False
+@@ -413,25 +461,57 @@ class MuseSpark1xAttention(nn.Module):
+     ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+         backend = get_attn_backend()
+         pool = get_token_to_kv_pool()
+-        if not (
++        decode_or_verify = (
++            forward_batch.forward_mode.is_decode()
++            or forward_batch.forward_mode.is_target_verify()
++        )
++        common_ok = (
++            self.attn.k_scale is None
++            and self.attn.v_scale is None
++            and forward_batch.dcp_kv_mask is None
++            and decode_or_verify
++            and not is_cp_active(forward_batch)
++        )
++        trt_ok = (
+             isinstance(backend, TRTLLMHAAttnBackend)
+             and backend.data_type in (torch.bfloat16, torch.float8_e4m3fn)
+             and pool.dtype == backend.data_type
+             and (pool.dtype == torch.bfloat16 or not backend.is_xqa_impl)
+-            and self.attn.k_scale is None
+-            and self.attn.v_scale is None
+-            and forward_batch.dcp_kv_mask is None
+-            # Prefill excluded: the fused store segfaults at breakable prefill replay.
+-            and (
+-                forward_batch.forward_mode.is_decode()
+-                or forward_batch.forward_mode.is_target_verify()
+-            )
+-            and not is_cp_active(forward_batch)
+-        ):
++        )
++        fa3_ok = (
++            isinstance(backend, FlashAttentionBackend)
++            and backend.fa_impl_ver == 3
++            and not backend.use_mla
++            and not backend.fa_skip_kv_cache
++            and pool.dtype == torch.float8_e4m3fn
++        )
++        if not (common_ok and (trt_ok or fa3_ok)):
++            return None
++
++        if trt_ok:
++            cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
++        else:
++            cache_loc = getattr(forward_batch, "out_cache_loc", None)
++            if cache_loc is None:
++                return None
++            layer_mapping = getattr(pool, "layers_mapping", None)
++            if (
++                layer_mapping is not None
++                and layer_mapping[self.layer_idx][1]
++            ):
++                metadata = backend.forward_metadata
++                cache_loc = getattr(metadata, "swa_out_cache_loc", None)
++                if cache_loc is None:
++                    return None
++                cache_loc = cache_loc[: forward_batch.out_cache_loc.shape[0]]
++        if cache_loc is None:
++            return None
++        if cache_loc.dtype != torch.int64 or not cache_loc.is_contiguous():
+             return None
+-        cache_loc = backend._get_layer_cache_loc(self.attn, forward_batch)
+         k_cache = pool.get_key_buffer(self.layer_idx)
+         v_cache = pool.get_value_buffer(self.layer_idx)
++        if not (k_cache.is_contiguous() and v_cache.is_contiguous()):
++            return None
+         return (
+             k_cache.view(k_cache.shape[0], -1),
+             v_cache.view(v_cache.shape[0], -1),
+@@ -584,7 +664,7 @@ class MuseSpark1xMoE(nn.Module):
+             self.pre_expert_proj is not None
+             and self.tp_size in (4, 8)
+             and torch.cuda.is_available()
+-            and torch.cuda.get_device_capability() == (10, 3)
++            and torch.cuda.get_device_capability() in ((10, 3), (9, 0))
+         ):
+             ca_comm = get_tp_group().ca_comm
+             reserve_projection_workspace(
+@@ -757,6 +837,10 @@ class MuseSpark1xMoE(nn.Module):
+             and not getattr(get_forward(), "sp_active", False)
+             and not already_reduced
+         ):
++            if self.post_expert_proj is not None and _use_row_split(
++                self.tp_size, output.shape[0]
++            ):
++                return _reduce_scatter_rows_gemm(output, self.post_expert_proj.weight)
+             output = tensor_model_parallel_all_reduce(output)
+         if self.post_expert_proj is not None:
+             if _is_cpu:
+@@ -846,10 +930,14 @@ class MuseSpark1xMoE(nn.Module):
+             if (
+                 self.tp_size in (4, 8)
+                 and not sp_active
+-                and torch.cuda.get_device_capability(hidden_states.device) == (10, 3)
++                and split_projection_supported(
++                    hidden_states.device, hidden_states.shape[0]
++                )
+                 and gemm_ag_supported(comm, hidden_states, self.pre_expert_proj.weight)
+             ):
+                 expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
++            elif _use_row_split(self.tp_size, hidden_states.shape[0]):
++                expert_input = _row_split_gemm(hidden_states, self.pre_expert_proj.weight)
+             else:
+                 expert_input = bf16_gemm_dispatch(
+                     hidden_states, self.pre_expert_proj.weight, None
+@@ -1174,11 +1262,11 @@ class MuseSpark1xModel(nn.Module):
+                 get_parallel().tp_size not in (4, 8)
+                 or get_parallel().moe_ep_size != get_parallel().tp_size
+                 or is_dp_attention_enabled()
+-                or torch.cuda.get_device_capability()[0] != 10
++                or torch.cuda.get_device_capability() not in ((9, 0), (10, 3))
+             ):
+                 logger.warning(
+-                    "Finalize AR fusion unavailable: requires Blackwell TP4/EP4 or TP8/EP8 "
+-                    "without DP attention. Using separate finalize and AR."
++                    "Finalize AR fusion unavailable: requires Hopper/Blackwell TP4/EP4 "
++                    "or TP8/EP8 without DP attention. Using separate finalize and AR."
+                 )
+             else:
+                 moe_layers = [layer.mlp for layer in self.layers if layer.is_moe_layer]
+diff --git a/python/sglang/srt/speculative/dflash_worker_v2.py b/python/sglang/srt/speculative/dflash_worker_v2.py
+index a91ffd6..4d01fea 100644
+--- a/python/sglang/srt/speculative/dflash_worker_v2.py
++++ b/python/sglang/srt/speculative/dflash_worker_v2.py
+@@ -563,6 +563,11 @@ class DFlashWorkerV2(BaseSpecWorker):
+         self._draft_block_end_buf: Optional[torch.Tensor] = None  # [cap_bs]
+         self._selector_sample: Optional[Tuple[torch.Tensor, torch.Tensor]] = None
+         self._draft_seq_lens_cpu_buf: Optional[torch.Tensor] = None  # [cap_bs] on CPU
++        self._suffix_candidate_cpu_buf: Optional[torch.Tensor] = None
++        self._suffix_score_cpu_buf: Optional[torch.Tensor] = None
++        self._suffix_candidate_buf: Optional[torch.Tensor] = None
++        self._suffix_score_buf: Optional[torch.Tensor] = None
++        self._suffix_accept_estimate: Optional[torch.Tensor] = None
+         self._draft_block_spec_info = make_draft_block_spec_info(
+             draft_token_num=int(self.block_size), device=self.device
+         )
+@@ -1083,6 +1088,123 @@ class DFlashWorkerV2(BaseSpecWorker):
+             (new_cap,), dtype=torch.int32, device="cpu"
+         )
+ 
++    def _ensure_suffix_buffers(self, bs: int, req_pool_size: int) -> None:
++        """Allocate host-staged suffix candidates and acceptance estimates."""
++        cap = (
++            0
++            if self._suffix_candidate_buf is None
++            else int(self._suffix_candidate_buf.shape[0])
++        )
++        if cap < int(bs):
++            new_cap = max(int(bs), cap * 2 if cap > 0 else int(bs))
++            self._suffix_candidate_cpu_buf = torch.empty(
++                (new_cap, int(self.block_size)),
++                dtype=torch.long,
++                pin_memory=True,
++            )
++            self._suffix_score_cpu_buf = torch.empty(
++                (new_cap,), dtype=torch.int32, pin_memory=True
++            )
++            self._suffix_candidate_buf = torch.empty(
++                (new_cap, int(self.block_size)),
++                dtype=torch.long,
++                device=self.device,
++            )
++            self._suffix_score_buf = torch.empty(
++                (new_cap,), dtype=torch.int32, device=self.device
++            )
++        if (
++            self._suffix_accept_estimate is None
++            or int(self._suffix_accept_estimate.shape[0]) < int(req_pool_size)
++        ):
++            self._suffix_accept_estimate = torch.zeros(
++                (int(req_pool_size),), dtype=torch.float32, device=self.device
++            )
++
++    def _prepare_suffix_candidates(
++        self, batch: ScheduleBatch, block_ids: torch.Tensor
++    ) -> None:
++        """Find repeated suffixes in each request's committed token history."""
++        bs = len(batch.reqs)
++        req_pool_size = int(batch.req_to_token_pool.req_to_token.shape[0])
++        self._ensure_suffix_buffers(bs, req_pool_size)
++        assert self._suffix_candidate_cpu_buf is not None
++        assert self._suffix_score_cpu_buf is not None
++        assert self._suffix_candidate_buf is not None
++        assert self._suffix_score_buf is not None
++        candidates = self._suffix_candidate_cpu_buf[:bs]
++        scores = self._suffix_score_cpu_buf[:bs]
++        candidates.fill_(int(self._mask_token_id))
++        scores.zero_()
++        if envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
++            for row, req in enumerate(batch.reqs):
++                # Keep host work bounded for long-context requests.  Recent
++                # prompt/output text is where agentic suffix reuse is most
++                # likely, and this stays cheap enough beside DFlash.
++                context = list(req.origin_input_ids[-128:]) + list(req.output_ids[-128:])
++                if len(context) < 4:
++                    continue
++                max_ngram = min(8, len(context) - 1)
++                for ngram in range(max_ngram, 1, -1):
++                    suffix_start = len(context) - ngram
++                    suffix = context[suffix_start:]
++                    match = None
++                    for pos in range(suffix_start - 1, -1, -1):
++                        if context[pos : pos + ngram] == suffix:
++                            match = pos
++                            break
++                    if match is None or match + ngram >= len(context):
++                        continue
++                    length = min(
++                        int(self.block_size) - 1,
++                        len(context) - match - ngram,
++                    )
++                    if length < 1:
++                        continue
++                    candidates[row, 1 : 1 + length] = torch.tensor(
++                        context[match + ngram : match + ngram + length],
++                        dtype=torch.long,
++                    )
++                    scores[row] = length
++                    break
++        self._suffix_candidate_buf[:bs].copy_(candidates, non_blocking=True)
++        self._suffix_score_buf[:bs].copy_(scores, non_blocking=True)
++        self._suffix_candidate_buf[:bs, 0].copy_(block_ids[:, 0])
++
++    def _choose_suffix_candidates(
++        self, batch: ScheduleBatch, draft_next: torch.Tensor
++    ) -> torch.Tensor:
++        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
++            return draft_next
++        assert self._suffix_candidate_buf is not None
++        assert self._suffix_score_buf is not None
++        assert self._suffix_accept_estimate is not None
++        req_indices = batch.req_pool_indices.to(torch.long)
++        recent_accept = self._suffix_accept_estimate.index_select(0, req_indices)
++        suffix_score = self._suffix_score_buf[: draft_next.shape[0]].to(torch.float32)
++        use_suffix = (recent_accept >= 1) & (suffix_score > recent_accept)
++        positions = torch.arange(
++            draft_next.shape[1], device=draft_next.device, dtype=torch.float32
++        )[None, :]
++        append_suffix = use_suffix[:, None] & (positions >= recent_accept[:, None])
++        return torch.where(
++            append_suffix,
++            self._suffix_candidate_buf[: draft_next.shape[0], 1:],
++            draft_next,
++        )
++
++    def _update_suffix_acceptance_estimate(
++        self, batch: ScheduleBatch, accept_len: torch.Tensor
++    ) -> None:
++        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
++            return
++        assert self._suffix_accept_estimate is not None
++        req_indices = batch.req_pool_indices.to(torch.long)
++        previous = self._suffix_accept_estimate.index_select(0, req_indices)
++        self._suffix_accept_estimate[req_indices] = torch.maximum(
++            previous, accept_len.to(torch.float32)
++        )
++
+     def __getattr__(self, name):
+         # Delegate anything not implemented yet to the target worker. Guard
+         # the backing field so a lookup before __init__ sets it raises
+@@ -2533,6 +2655,11 @@ class DFlashWorkerV2(BaseSpecWorker):
+             )
+             verify_out_cache_loc_2d.copy_(verify_out_cache_loc.view(bs, block_size))
+ 
++        # Stage repeated request text before the DFlash graph.  Selection is
++        # deferred until DFlash has produced its candidate and the per-request
++        # acceptance estimate is available on device.
++        self._prepare_suffix_candidates(batch, block_ids)
++
+         if self._full_embed_gpu is not None:
+             # Replicated lookup avoids the mismatched attn-TP all_reduce
+             # inside VocabParallelEmbedding under dp attention.
+@@ -2769,6 +2896,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+                     lm_head=lm_head,
+                 ).view(bs, int(self.block_size) - 1)
+ 
++        draft_next = self._choose_suffix_candidates(batch, draft_next)
+         draft_tokens = self._draft_block_tokens_buf[:bs]
+         draft_tokens[:, 0].copy_(block_ids[:, 0])
+         draft_tokens[:, 1:].copy_(draft_next)
+@@ -2893,6 +3021,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+             bs=bs,
+             target_predict=target_predict,
+         )
++        self._update_suffix_acceptance_estimate(batch, accept_len)
+ 
+         if SIMULATE_ACC_LEN > 0:
+             if SIMULATE_ACC_TOKEN_MODE not in ("fixed", "real-draft-token"):

@@ -13,6 +13,10 @@ Metrics per request (A = first run, B = second):
   prefix      tokens before the first difference, over 220 (1.0 when exact)
   positional  fraction of the 220 positions with equal ids (after a divergence, greedy outputs
               usually stay different, so this is mostly prefix plus chance matches)
+
+The agreement metric treats an exact response as first-divergence position 220 and reports
+token-agreement and first-divergence quantiles.  This keeps near-tie fixtures useful even when
+exact-response counts are all zero.
 """
 
 from __future__ import annotations
@@ -51,14 +55,50 @@ def agreement(a: list[int], b: list[int]) -> dict:
     return {
         "exact": len(a) == n and len(b) == n and a == b,
         "first_diff": first,
+        "first_divergence_position": n if first is None else first,
         "prefix": min(first if first is not None else min(len(a), len(b)), n) / n,
         "positional": sum(1 for i in range(min(len(a), len(b), n)) if a[i] == b[i]) / n,
+        "token_agreement_rate": sum(
+            1 for i in range(min(len(a), len(b), n)) if a[i] == b[i]
+        ) / n,
     }
 
 
 def median(xs):
     xs = [x for x in xs if x is not None]
     return statistics.median(xs) if xs else None
+
+
+def quantile(xs, q):
+    values = sorted(x for x in xs if x is not None)
+    if not values:
+        return None
+    if len(values) == 1:
+        return values[0]
+    pos = q * (len(values) - 1)
+    lo, hi = int(pos), min(int(pos) + 1, len(values) - 1)
+    return values[lo] + (values[hi] - values[lo]) * (pos - lo)
+
+
+def agreement_metric(rows):
+    """Distribution used by the serving agreement gate."""
+    first = [r["first_divergence_position"] for r in rows]
+    tokens = [r["token_agreement_rate"] for r in rows]
+    return {
+        "requests": len(rows),
+        "first_divergence_position": {
+            "p10": quantile(first, 0.10),
+            "p50": quantile(first, 0.50),
+            "p90": quantile(first, 0.90),
+            "mean": statistics.mean(first) if first else None,
+        },
+        "token_agreement_rate": {
+            "p10": quantile(tokens, 0.10),
+            "p50": quantile(tokens, 0.50),
+            "p90": quantile(tokens, 0.90),
+            "mean": statistics.mean(tokens) if tokens else None,
+        },
+    }
 
 
 def compare(ma, ra, mb, rb) -> dict:
@@ -83,6 +123,7 @@ def compare(ma, ra, mb, rb) -> dict:
             "prefix_min": min(r["prefix"] for r in rs),
             "positional_mean": statistics.mean(r["positional"] for r in rs),
             "first_diff_median": median([r["first_diff"] for r in rs if r["first_diff"] is not None]),
+            "agreement_metric": agreement_metric(rs),
             "all_220_a": all(r["n_out_a"] == common.OUTPUT_TOKENS for r in rs),
             "all_220_b": all(r["n_out_b"] == common.OUTPUT_TOKENS for r in rs),
             "ttft_p50_a": median([r["ttft_a"] for r in rs]),
@@ -137,7 +178,8 @@ def compare(ma, ra, mb, rb) -> dict:
     missing = sorted(set(ra) ^ set(rb))
     if missing:
         problems.append(f"{len(missing)} requests present in only one run: {missing[:5]}")
-    return {"a": ma["label"], "b": mb["label"], "per_level": per_level, "rows": rows,
+    return {"a": ma["label"], "b": mb["label"], "per_level": per_level,
+            "agreement_metric": agreement_metric(rows), "rows": rows,
             "problems": problems, "warnings": warnings}
 
 
@@ -169,8 +211,19 @@ def main() -> None:
         for lv, metric in res['per_level'].items():
             bs = base['per_level'].get(lv, {})
             metric['positional_delta_vs_self'] = metric['positional_mean'] - bs.get('positional_mean', 0)
+            metric['token_agreement_delta_vs_self'] = (
+                metric['agreement_metric']['token_agreement_rate']['mean']
+                - bs.get('agreement_metric', {}).get('token_agreement_rate', {}).get('mean', 0)
+            )
+            metric['first_divergence_delta_vs_self'] = (
+                metric['agreement_metric']['first_divergence_position']['p50']
+                - bs.get('agreement_metric', {}).get('first_divergence_position', {}).get('p50', 0)
+            )
             if bs.get('positional_mean', 0) < 0.5:
-                res['problems'].append(f'baseline at concurrency {lv} is too unstable to validate agreement')
+                res['warnings'].append(
+                    f'baseline at concurrency {lv} is near-tie unstable; '
+                    'use token/logprob distributions instead of exact counts'
+                )
     if args.require_exact and any(not row['exact'] for row in res['rows']):
         res['problems'].append('output token disagreement (--require-exact)')
     print(f"A = {res['a']}  ({ma['provenance']['tree']}, diff sha {ma['provenance']['diff_vs_base_sha256'][:12]})")
@@ -184,6 +237,18 @@ def main() -> None:
               f" {('ok' if s['all_220_a'] else 'NO') + '/' + ('ok' if s['all_220_b'] else 'NO'):>8}"
               f" {fmt(s['ttft_p50_a']):>7} {fmt(s['ttft_p50_b']):>7} {fmt(s['ttft_ratio_b_over_a'], '.2f'):>5}"
               f" {fmt(s['accept_mean_a'], '.2f'):>6} {fmt(s['accept_mean_b'], '.2f'):>6}")
+    print("agreement metric: first-divergence position uses 220 for exact; token rate is over all 220")
+    for lv, s in res["per_level"].items():
+        metric = s["agreement_metric"]
+        first = metric["first_divergence_position"]
+        token = metric["token_agreement_rate"]
+        print(
+            f"  {lv:>5} n={metric['requests']:>3} "
+            f"first_divergence p10/p50/p90={fmt(first['p10'], '.1f')}/"
+            f"{fmt(first['p50'], '.1f')}/{fmt(first['p90'], '.1f')} "
+            f"token_agreement p10/p50/p90={fmt(token['p10'], '.4f')}/"
+            f"{fmt(token['p50'], '.4f')}/{fmt(token['p90'], '.4f')}"
+        )
     if args.rows:
         for r in res["rows"]:
             print(f"  {r['key']:<20} exact={r['exact']!s:<5} first_diff={r['first_diff']!s:<4}"

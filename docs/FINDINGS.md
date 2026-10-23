@@ -78,8 +78,65 @@ Per-load speedups against SGLang from our checks. The per-shape tables are in `p
 | Decode layer moe4 (`6fed72479ef6446f`) | 1.189x | 1.35, 1.33 / 1.25, 1.14 / 1.05, 1.02 | 1.49, 1.47 / 1.10, 1.09 / 1.03, 1.03 | v3 plus persistent MoE v4, FA3 attention; gains still shrink with batch |
 | Decode layer v3 (`2c112482e81745af`) | 1.143x | 1.25, 1.23 / 1.18, 1.10 / 1.03, 1.02 | 1.39, 1.35 / 1.06, 1.04 / 1.05, 1.03 | Gains shrink with batch; MoE and attention inside are older than V6 |
 | Prefill v3 (`82a4e50b54294a2a`) | 1.345x | — | turn 1 / turn 4 / first turn: 1.212 / 1.369 / 1.468 | Custom WGMMA grouped experts, 128-token tiles; Humming v6 1.328x close behind |
-| Proj tuned (`9294b3237c4f4e2d`) | 1.142x | router 1.68-2.27x; pooler/unpooler m=1 1.15/1.30x; qkv/o 1.02-1.04x | m=8: router 4.06x, pooler/unpooler 1.14/1.24x; m=128/256 all 0.98-1.00x | Per-shape tiles chosen from H200 sweeps; m>=128 stays at cuBLAS parity |
+| Proj scored (`68e2f34b1d4744cb`) | 1.142642x, CI 1.1255–1.1598 | router 1.68 / 2.26 / 1.93x; pooler m32 loses at 0.930x | router m8 4.05x; m128/256 all 0.976–1.017x | `submission.py` is the scored snapshot, sha256 `4bc18cec…`; tuned check `9294b3237c4f4e2d` 1.141605x; full table below |
 | Proj hybrid (`6b706627babc4cc6`) | 1.106x | router 1.55-2.01x; unpooler m=1 1.135x | router m=8 3.81x; others 0.98-1.01x | qkv_gate and o stay at cuBLAS parity at every m |
+
+### Projection evidence and next experiment (G3, G2)
+
+The current board source stays in `submission.py`; the new experiment is `cand_portfolio.py`.
+The scored source, rather than the older check table, owns the following numbers. They are
+replay-adjusted cold-L2 H200 medians; the floor includes all compulsory input/output traffic.
+Evidence: `runs/muse_bf16_proj/20261023T100928Z_submit_68e2f34b1d4744cb.json`.
+
+| Layer | m | SGLang us | Scored us | Speedup | Floor us |
+|---|---:|---:|---:|---:|---:|
+| qkv_gate | 1 | 13.984 | 12.566 | 1.113x | 7.869 |
+| o | 1 | 6.816 | 6.672 | 1.022x | 3.499 |
+| pooler | 1 | 20.640 | 18.347 | 1.125x | 13.986 |
+| unpooler | 1 | 7.056 | 5.449 | 1.295x | 1.750 |
+| router | 1 | 10.304 | 6.121 | 1.683x | 1.751 |
+| qkv_gate | 16 | 14.336 | 13.871 | 1.034x | 7.934 |
+| o | 16 | 7.008 | 7.022 | 0.998x | 3.557 |
+| pooler | 16 | 20.560 | 19.382 | 1.061x | 14.063 |
+| unpooler | 16 | 18.720 | 18.822 | 0.995x | 14.063 |
+| router | 16 | 14.896 | 6.606 | 2.255x | 1.806 |
+| qkv_gate | 32 | 14.240 | 14.374 | 0.991x | 8.004 |
+| o | 32 | 6.592 | 6.576 | 1.002x | 3.618 |
+| pooler | 32 | 21.280 | 22.875 | 0.930x | 14.145 |
+| unpooler | 32 | 18.688 | 18.616 | 1.004x | 14.145 |
+| router | 32 | 14.912 | 7.713 | 1.933x | 1.864 |
+| qkv_gate | 8 | 14.176 | 12.931 | 1.096x | 7.899 |
+| o | 8 | 6.816 | 6.721 | 1.014x | 3.526 |
+| pooler | 8 | 20.496 | 18.367 | 1.116x | 14.022 |
+| unpooler | 8 | 7.104 | 5.566 | 1.276x | 1.765 |
+| router | 8 | 26.320 | 6.500 | 4.049x | 1.777 |
+| qkv_gate | 128 | 17.024 | 16.918 | 1.006x | 8.424 |
+| o | 128 | 7.456 | 7.439 | 1.002x | 3.987 |
+| pooler | 128 | 24.608 | 25.203 | 0.976x | 14.636 |
+| unpooler | 128 | 19.744 | 19.615 | 1.007x | 14.636 |
+| router | 128 | 16.176 | 15.958 | 1.014x | 2.212 |
+| qkv_gate | 256 | 20.064 | 19.736 | 1.017x | 9.771 |
+| o | 256 | 9.152 | 9.168 | 0.998x | 4.478 |
+| pooler | 256 | 29.712 | 29.396 | 1.011x | 17.371 |
+| unpooler | 256 | 23.872 | 24.006 | 0.994x | 17.371 |
+| router | 256 | 17.296 | 17.368 | 0.996x | 2.676 |
+
+| Finding | Result / scope | Mechanism or remaining limit | Evidence |
+|---|---|---|---|
+| GEMV receipts landed | `cand_gemv` 1.112106x (`a3b29a26372c4b35`), `cand_gemv2` 1.114312x (`122997f357d04fa2`), both 9/9 | M1 GEMV loses qkv/pooler/unpooler to the incumbent; o M1's best normalized improvement is about 1%, inside run noise; retain the incumbent there | `runs/muse_bf16_proj/*a3b29a26372c4b35.json`, `*122997f357d04fa2.json` |
+| Pooler m32 dispatch | Incumbent skinny 0.930x in scored run; cuBLAS 0.991/0.996x in the GEMV checks | The GEMV candidates route this shape to cuBLAS; the portfolio folds that per-shape winner into its incumbent dispatch | Same receipts and `cand_gemv*.py` |
+| cuBLAS split-K overhead | qkv m128: main 12.5 us + reduction 3.1 us (20%); router m128: two mains 9.0 us, two reductions 3.9 us and add 1.1 us (36% outside mains) | Split-K supplies parallelism but requires another graph node/global partial round trip; fuse the merge, and accumulate router hi+lo in one product | `runs/calibration/profiles/muse_bf16_proj_sglang.458c6d3e931c4f63.txt`, profiles 20, 24 |
+| Wave quantization | Interpreting cuBLAS kernel tile names as weight-rows × tokens gives unsplit qkv m128/256 48/96 output tiles, o 128/128, pooler 128/128, unpooler 128/128 | **Inference**, not measured CTA occupancy: 48/96/128 tiles are 0.36/0.73/0.97 of one 132-SM wave; qkv m128 actually splits K; the others run long K loops without a second full wave | Same profiles 20–29; [NVIDIA Hopper occupancy/cluster guidance](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
+| Cold L2 and attainable bandwidth | W-only effective rates at m128/256: qkv 2.22/1.88 TB/s, pooler 2.73/2.26, unpooler 3.40/2.81; all below the measured 4.25 TB/s stream | **Calculated** from scored SGLang medians, not memory counters. Cold L2 removes inter-replay reuse; repeated M tiles can still reuse weights within a replay. The 67 MB pooler/unpooler exceed H200's 50 MB L2; qkv/o fit in capacity but still start cold. Compute, scheduling and launch cost also matter, so this does not isolate cache misses | Scored receipt; sweep2 bandwidth probe; [NVIDIA Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth) |
+| Router WGMMA lead | Old prepare diagnostic: 11.55 us at m128 and 18.46 us at m256 for BT128/256, BR64, ST4, cluster split16 | Measured diagnostic timings, not scored shape speedups; the old dispatch did not select its measured winner | `profiles/cand_diag4.dd5ffc6950bc439e.log`, `cand_diag4.py` |
+| New packed experiment | `cand_portfolio.py` times TMA/WGMMA BT64/128/256, grouped K64/K128, 2–5 stages, direct and split1/2/4/8/16, DSMEM clusters2/4/8, and balanced Stream-K at one/two SM waves | Last-arriving CTA merges FP32 partials in the same launch and resets scratch tickets; no cross-grid spinning. The router concatenates permitted hi+lo weights and indexes activations modulo K. Synthetic cold-L2 graph tuning compares finalists with the measured incumbent per shape | Frozen source and validation in `problems/muse_bf16_proj/dev/NEXT_CHECKS.md` |
+
+The previously screened `cand_m16` scalar row stream was 0.968x locally (m16 projections
+0.53–0.64x); repeated activation staging and scalar accumulation lost to tensor cores.
+`cand_tc_k256` / `_qkv` and image-native `cand_dsv3_select` passed locally at 1.044 / 1.062 /
+1.063x. These are **sm_120 local rankings**, not H200 exclusions: the orchestrator has queued
+all of them, along with dsv3, gemv3/static, skinny, tc, tile, tuned2, wg and wg2. Pending identities
+live in `runs/waiting/` and `runs/pending/`; the next receipt can change the dispatch.
 
 ### Attention local development (G2; sm_120, not H200 evidence)
 
@@ -98,8 +155,8 @@ A negative closes only the recipe tested. "Leaves open" names what the result do
 
 | Recipe tested | Result | Mechanism | Leaves open | Receipt |
 |---|---|---|---|---|
-| Proj: TMA + wgmma swap-AB split-K tile kernel for 64 < M <= 256 | 0.820x and 0.824x | Tile kernels were 2-4x slower than cuBLAS at m=128/256 | Better-tuned wgmma tiles; cuBLAS at large m | `87dd70d5f5894f6a`, `dd5ffc6950bc439e` |
-| Proj: skinny mma.sync split-K with cluster DSMEM reduce for all m <= 64 | 0.991x; qkv/o lose 0.55-0.83x at m=1/8/32 | Split-K and cluster-reduce fixed costs dominate at these sizes | GEMV without split-K at m=1 (pending `a3b29a26372c4b35`, `122997f357d04fa2`); in-kernel last-CTA reduce | `03113fd349d347dc` |
+| Proj: original K64 TMA/WGMMA with one/two consumer warpgroups and fixed DSMEM dispatch | 0.820x and 0.824x; prepare diagnostics m128 BF16 1.3–1.8x slower, m256 1.8–2.1x slower than cuBLAS | Unbalanced output waves, per-K64 synchronization and cluster merge overhead; the selected fixed dispatch also misses faster diagnostic variants | Larger grouped K tiles, last-CTA/Stream-K merge, per-shape autotuning; router m128 diagnostic is a positive lead | `87dd70d5f5894f6a`, `dd5ffc6950bc439e`; diagnostic logs |
+| Proj: skinny mma.sync split-K with cluster DSMEM reduce for all m <= 64 | 0.991x; qkv/o lose 0.55-0.83x at m=1/8/32 | Split-K and cluster-reduce fixed costs dominate at these sizes | Other GEMV layouts (the two landed checks are below incumbent); in-kernel last-CTA reduce | `03113fd349d347dc` |
 | Attention: split partials merged through global memory/L2 instead of a DSMEM cluster | 1.190x against v2's 1.279x | An extra global round trip per split | Global merge with fewer splits, or at long full-layer contexts | `8bfd5e25e582402d` |
 | Prefill: contiguous FP8 cache gather (v4) | 1.194x against v3's 1.345x | Gains about 5% in the FA3 stage but loses elsewhere against the control | Combined with v3's experts (v9 pending) | `27f3e312727d423c` |
 | Prefill: 4-warp residual boundaries and rowwise SwiGLU (v2) | 1.229x, the same as v1 | Glue launches are not the prefill bottleneck | Glue fusion once expert time drops | `7ef49d84f4a14791` |
@@ -111,6 +168,8 @@ Failures whose cause was not obvious, so they are not repeated.
 | Symptom | Cause | Avoid / fix | Cost | Receipt |
 |---|---|---|---|---|
 | Four decode checks fail on the judge with `AttributeError: 'tuple' object has no attribute 'device'` | The sm_90 branch received attention v3's `(partials, split_count)` tuple; only the Hopper branch reached that glue, so local tests passed | Force each Hopper branch's Python glue locally with a portable stand-in kernel | 4 checks | `2f3960c275774a20`, `69a655d3b2364fc4`, `a5ab4a2011f44321`, `b2a8999311034eb3` |
+| Queued proj wg/wg2 can score without running WGMMA | `kernel_fn` requires `state["wg_ok"]`, but their prepare never sets it | New portfolio explicitly tunes and stores the selected branch; force Hopper preparation and dispatch locally | Those queued runs cannot measure WGMMA performance | `cand_wg.py`, `cand_wg2.py` |
+| TMA K128 BF16 descriptor rejected locally | A 256-byte inner box exceeds SWIZZLE_128B | Group two legal K64 transfers under one pipeline barrier; keep each WGMMA descriptor on a K64 swizzle atom | Local compile/test iteration | `cand_portfolio.py`; [CUDA tensor map documentation](https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__TENSOR__MEMORY.html) |
 | A "DeepGEMM dense" prefill candidate profiled as cuBLAS | Plain BF16 `deep_gemm` calls dispatch to cuBLAS unless `deep_gemm.use_deterministic_algorithms(True)` | Set it, and confirm the kernel names in the profile | 1 check (v5); v13 corrects it | `84b5433a1f2f43e5` |
 | A background `okc_run.py` launched from a Codex exec died before submitting | The exec shell exited and killed its children | `nohup ... < /dev/null &` then `wait $!` in the same exec, or launch from the coordinator | lost runs, re-sent | `problems/muse_prefill_layer/dev/LIVE_STATUS.md` |
 | Local ncu fails (`ERR_NVGPUCTRPERM`) | `RmProfilingAdminOnly=1`, and there is no sudo | Use nsys, judge profiles and SASS inspection | — | — |
