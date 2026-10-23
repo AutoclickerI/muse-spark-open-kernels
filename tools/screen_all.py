@@ -44,14 +44,21 @@ def sent_hashes() -> set:
     seen = {hashlib.sha256(p.read_bytes()).hexdigest() for p in REPO.glob("runs/*/*.py")}
     for p in REPO.glob("runs/pending/*.json"):
         seen.add(json.loads(p.read_text()).get("sha256"))
-    for w in REPO.glob("runs/waiting/*.json"):  # sends still in okc_run's local queue
-        try:
-            argv = Path(f"/proc/{w.stem}/cmdline").read_bytes().split(b"\0")
-            f = REPO / argv[argv.index(b"tools/okc_run.py") + 2].decode()
-            seen.add(hashlib.sha256(f.read_bytes()).hexdigest())
-        except (OSError, ValueError, IndexError):
-            continue
+    seen |= {w["sha256"] for w in waiting()}  # sends still in okc_run's local queue
     return seen
+
+
+def waiting() -> list:
+    """Live entries of okc_run's local queue (runs/waiting/<pid>.json)."""
+    out = []
+    for w in REPO.glob("runs/waiting/*.json"):
+        try:
+            e = json.loads(w.read_text())
+            os.kill(e["pid"], 0)
+        except (OSError, ValueError):
+            continue
+        out.append(e)
+    return out
 
 
 def unsent(problems, skip_recent_min):
@@ -115,16 +122,9 @@ def quotas() -> dict:
     q = {}
     for m in re.finditer(r"^(muse_\w+).*?(\d+) of \d+ runs left today, (\d+) of \d+ checks", out, re.M):
         q[m.group(1)] = {"submit": int(m.group(2)), "check": int(m.group(3))}
-    # sends still waiting in okc_run's local queue have not reached okc's count yet
-    for w in REPO.glob("runs/waiting/*.json"):
-        try:
-            argv = Path(f"/proc/{w.stem}/cmdline").read_bytes().split(b"\0")
-        except OSError:
-            continue
-        mode = "check" if b"check" in argv else "submit" if b"submit" in argv else None
-        prob = json.loads(w.read_text()).get("problem")
-        if mode and prob in q:
-            q[prob][mode] -= 1
+    for e in waiting():  # sends still in okc_run's local queue have not reached okc's count yet
+        if e["problem"] in q:
+            q[e["problem"]][e["mode"]] -= 1
     return q
 
 

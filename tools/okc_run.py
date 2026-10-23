@@ -104,6 +104,10 @@ def known(sha: str, mode: str):
         row = json.loads(p.read_text())
         if row["sha256"] == sha and row["mode"] == mode:
             return row
+    for _, _, p in waiters():
+        w = json.loads(p.read_text())
+        if w["sha256"] == sha and w["mode"] == mode:
+            return {"job": f"(waiting in {p.name})", "status": "waiting for a judge slot"}
     return None
 
 
@@ -153,7 +157,7 @@ def block_until_change(oldest_job):
     done.wait()
 
 
-def send_in_turn(problem: str, priority: float, send):
+def send_in_turn(entry: dict, priority: float, send):
     """Call send() once fewer than CAP of our runs are at the judge and no better waiter is ahead.
     The judge starts one of our runs at a time (FINDINGS, "Judge queue"), so holding the rest here
     costs no throughput and lets the most important run go next."""
@@ -161,7 +165,7 @@ def send_in_turn(problem: str, priority: float, send):
         return send()
     WAITING.mkdir(parents=True, exist_ok=True)
     me = WAITING / f"{os.getpid()}.json"
-    me.write_text(json.dumps({"pid": os.getpid(), "priority": priority, "t": time.time(), "problem": problem}))
+    me.write_text(json.dumps({"pid": os.getpid(), "priority": priority, "t": time.time(), **entry}))
     announced = False
     try:
         while True:
@@ -254,7 +258,8 @@ def send(args):
 
     priority = args.priority if args.priority is not None else (
         -1 if args.mode == "submit" else PRIORITY.get(problem, 3))
-    job = send_in_turn(problem, priority, send)
+    job = send_in_turn({"problem": problem, "mode": args.mode, "file": str(args.file),
+                        "sha256": hashlib.sha256(src).hexdigest()}, priority, send)
     print(f"okc {args.mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
     finish(job)
