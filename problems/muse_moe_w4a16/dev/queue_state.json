@@ -83,6 +83,38 @@
       "source": "runs/muse_moe_w4a16/20261023T111449Z_check_45a82e56c24f49f7.py",
       "git": "f81a570+dirty",
       "note": "Humming6k: hot tiles use K64/warpK32 and 8 TMA stages to reduce live-register demand; largest SM90 stack drops from 144 to 88 bytes. Full portable correctness/fresh graphs pass, all six SM90a configs compile; no H200 speed claim yet"
+    },
+    {
+      "job": "d8f4732ad7bf4d85",
+      "file": "problems/muse_moe_w4a16/cand_humming7.py",
+      "source": "problems/muse_moe_w4a16/cand_humming7.py",
+      "mode": "check",
+      "sha256": "ac025d85adf73dfd161bf86ab441aac76d37fe81e626437aa349cb182d84b2fa",
+      "legacy_waiter": true
+    },
+    {
+      "job": "3d1d9c45cd054c2b",
+      "file": "problems/muse_moe_w4a16/cand_humming8.py",
+      "source": "problems/muse_moe_w4a16/cand_humming8.py",
+      "mode": "check",
+      "sha256": "ad702b1e95bb3e46c7977e494fdb8d3a8437390ce31dd45707e7153aec325e17",
+      "legacy_waiter": true
+    },
+    {
+      "job": "f95bdf5e394e474e",
+      "file": "problems/muse_moe_w4a16/cand_v7.py",
+      "source": "problems/muse_moe_w4a16/cand_v7.py",
+      "mode": "check",
+      "sha256": "f8c2e0e9f18d31b4d82c2a4d140e391503799cc31387c5791efc09243f8d9f63",
+      "legacy_waiter": true
+    },
+    {
+      "job": "f0eca2fe003f456d",
+      "file": "problems/muse_moe_w4a16/cand_v4.py",
+      "source": "problems/muse_moe_w4a16/cand_v4.py",
+      "mode": "submit",
+      "sha256": "dd4dc39f19c9076c990e2ef5e3695a29c89fff8fe7532f7b3035cb6b1caf2cb1",
+      "legacy_waiter": true
     }
   ],
   "board": {

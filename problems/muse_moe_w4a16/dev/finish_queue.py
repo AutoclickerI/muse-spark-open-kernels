@@ -25,6 +25,13 @@ NEW_SCORES = 0
 MAX_NEW_SCORES = 7
 BOARD = json.loads((DEV / 'leaderboard_latest.json').read_text())
 ACTIONS = []
+# These four wrappers started before okc_run.py gained immediate pending receipts.
+LEGACY = [
+    ('d8f4732ad7bf4d85', 'cand_humming7.py', 'check'),
+    ('3d1d9c45cd054c2b', 'cand_humming8.py', 'check'),
+    ('f95bdf5e394e474e', 'cand_v7.py', 'check'),
+    ('f0eca2fe003f456d', 'cand_v4.py', 'submit'),
+]
 
 
 def emit(message):
@@ -53,6 +60,14 @@ def pending():
             continue
         if row.get('problem') == 'muse_moe_w4a16':
             answer.append(row)
+    known = {row['job'] for row in answer + ledger()}
+    for job, filename, mode in LEGACY:
+        if job not in known:
+            source = PROBLEM / filename
+            answer.append({'job': job, 'file': str(source.relative_to(ROOT)),
+                           'source': str(source.relative_to(ROOT)), 'mode': mode,
+                           'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+                           'legacy_waiter': True})
     return answer
 
 
@@ -66,7 +81,7 @@ def passed(row):
 
 
 def eligible(row):
-    return row['file'].startswith('problems/muse_moe_w4a16/') and passed(row)
+    return row['file'].startswith('problems/muse_moe_w4a16/') and not row.get('source_uncertain') and passed(row)
 
 
 def watch(pid):
@@ -286,7 +301,11 @@ if __name__ == '__main__':
                     break
                 # Recover receipts only if their original wrappers have all exited.
                 for row in queued:
-                    launch(['collect', row['job']], DEV / f'finish_collect_{row["job"]}.log')
+                    args = ['collect', row['job']]
+                    if row.get('legacy_waiter'):
+                        args = ['adopt', row['job'], row['file'], '--mode', row['mode'],
+                                '--note', 'Recover legacy wrapper after exit; original candidate source retained']
+                    launch(args, DEV / f'finish_collect_{row["job"]}.log')
             for fd, event in POLLER.poll():
                 pid = WATCHED.pop(fd)
                 POLLER.unregister(fd)

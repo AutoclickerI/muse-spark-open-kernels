@@ -6,3 +6,7 @@ __pycache__/
 runs/pending/
 runs/waiting/
 runs/.dispatch.lock
+# lanes' local screening output (sm_120 logs, local timing JSON, okc_run stdout); H200 evidence is runs/ and problems/*/profiles/
+problems/*/dev/*.log
+problems/*/dev/*.out
+problems/*/dev/*_local.json

@@ -1,12 +1,12 @@
 # Muse NVFP4 MoE results
 
-Updated 2026-10-23T12:03:19+00:00.
+Updated 2026-10-23T12:05:07+00:00.
 
 `submission.py` is **v6**, exact receipt source `eefecf1eeb724feb`: **1.4916x** H200 geometric mean, CI [1.4691992949294872, 1.5139464815770858]. Source SHA-256 `dcafb17f6fceba967c3fcfc0078d0ca11e5cb26f08d8d2a91c7178f82aa3fb26`.
 
 Latest verified board: rank **267/270**, 1.0216x. Best completed scored job `540cf831558f48ae`.
 
-6 remote jobs remain pending; the finite `dev/finish_queue.py` worker promotes receipt-verified improvements and scores them within quota.
+10 remote jobs remain pending; the finite `dev/finish_queue.py` worker promotes receipt-verified improvements and scores them within quota.
 
 ## H200 receipts
 
@@ -38,6 +38,10 @@ Ratios are relative to paired SGLang timings. Load columns correspond to batches
 | cand_v9 | `f6028a478d594b31` | check |
 | cand_hybrid | `318227bc382d465c` | check |
 | cand_humming6k | `45a82e56c24f49f7` | check |
+| cand_humming7 | `d8f4732ad7bf4d85` | check |
+| cand_humming8 | `3d1d9c45cd054c2b` | check |
+| cand_v7 | `f95bdf5e394e474e` | check |
+| v4 | `f0eca2fe003f456d` | submit |
 
 ## What changed and what limits it
 
