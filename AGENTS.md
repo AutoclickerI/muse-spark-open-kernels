@@ -28,6 +28,10 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
   - edit loaded modules
   - start processes
   - use the network
+
+  These are checked on our own source. Building on anything in the image is allowed, and so is
+  compiling CUDA with `torch.utils.cpp_extension.load_inline` (nvcc) or a library's JIT
+  (`upstream/llms.txt`, Environment and Kernels). Compile time counts toward the 15-minute run.
 - **Accepting the rules is a person's act.** Never run `okc login` on anyone's behalf, and
   never call `POST /rules/accept`.
 - **Reward-hacky runs.** If one reaches the board, take it off with `okc withdraw <job>` and
