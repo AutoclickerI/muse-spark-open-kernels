@@ -257,12 +257,10 @@ Reproducible arithmetic: `problems/muse_prefill_layer/dev/kv_budget.py` / `kv_bu
 
 ### Projection evidence and next experiment (G3, G2)
 
-The current board is scored `dd989ef2d76147e7`, **1.172813x**, rank 249 of 462
-when read on 2026-10-24. `submission.py` is its exact frozen portfolio source (`57086918…`).
-The new experiment is `cand_portfolio_all.py`, targeting 1.26x.
-The scored source, rather than the older check table, owns the following numbers. They are
-replay-adjusted cold-L2 H200 medians; the floor includes all compulsory input/output traffic.
-Evidence: `runs/muse_bf16_proj/20261023T172641Z_submit_dd989ef2d76147e7.json`.
+Target: **1.26x or better on the H200**. Current scored best is `dd989ef2d76147e7`,
+**1.172813x**, rank **249 of 462** when read on 2026-10-24. `submission.py` is its exact
+frozen portfolio source, SHA256 `57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e`.
+The overall-board formula is unpublished; the 11% projection weight above is a fitted model.
 
 <!-- PROJ_GAP_BEGIN -->
 H200 gap to 1.26x, from all 13 clean completed receipts. SGLang and board
@@ -327,8 +325,6 @@ shapes, especially memory-heavy BF16 projections. Receipt/source pairs in `runs/
 own these measurements; profiles diagnose kernels but do not replace paired medians.
 <!-- PROJ_GAP_END -->
 
-
-
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |
 |---|---|---|---|
 | GEMV receipts landed | `cand_gemv` 1.112106x (`a3b29a26372c4b35`), `cand_gemv2` 1.114312x (`122997f357d04fa2`), both 9/9 | M1 GEMV loses qkv/pooler/unpooler to the incumbent; o M1's best normalized improvement is about 1%, inside run noise; retain the incumbent there | `runs/muse_bf16_proj/*a3b29a26372c4b35.json`, `*122997f357d04fa2.json` |
@@ -336,83 +332,24 @@ own these measurements; profiles diagnose kernels but do not replace paired medi
 | cuBLAS split-K overhead | qkv m128: main 12.5 us + reduction 3.1 us (20%); router m128: two mains 9.0 us, two reductions 3.9 us and add 1.1 us (36% outside mains) | Split-K supplies parallelism but requires another graph node/global partial round trip; fuse the merge, and accumulate router hi+lo in one product | `runs/calibration/profiles/muse_bf16_proj_sglang.458c6d3e931c4f63.txt`, profiles 20, 24 |
 | Wave quantization | Interpreting cuBLAS kernel tile names as weight-rows × tokens gives unsplit qkv m128/256 48/96 output tiles, o 128/128, pooler 128/128, unpooler 128/128 | **Inference**, not measured CTA occupancy: 48/96/128 tiles are 0.36/0.73/0.97 of one 132-SM wave; qkv m128 actually splits K; the others run long K loops without a second full wave | Same profiles 20–29; [NVIDIA Hopper occupancy/cluster guidance](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
 | Roofline changes with m | At m128 all four BF16 projections have HBM floors; at m256 qkv/pooler/unpooler become tensor-bound while o remains narrowly HBM-bound | **Model**, using compulsory bytes and 989 TFLOP/s / 4.8 TB/s. W-only bandwidth cannot explain the entire m256 gap: tensor utilization and wave tails also bind | `docs/reference/bound.md`, scored receipt floors; `reference.speed_of_light_ns` |
-| Cold L2 and attainable bandwidth | W-only effective rates at m128/256: qkv 2.22/1.88 TB/s, pooler 2.73/2.26, unpooler 3.40/2.81; all below the measured 4.25 TB/s stream | **Calculated** from scored SGLang medians, not memory counters. Cold L2 removes inter-replay reuse; repeated M tiles can still reuse weights within a replay. The 67 MB pooler/unpooler exceed H200's 50 MB L2; qkv/o fit in capacity but still start cold. Compute, scheduling and launch cost also matter, so this does not isolate cache misses | Scored receipt; sweep2 bandwidth probe; [NVIDIA Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth) |
+| Cold L2 and attainable bandwidth | W-only effective rates at m128/256: qkv 2.22/1.88 TB/s, pooler 2.73/2.26, unpooler 3.40/2.81; all below the measured 4.25 TB/s stream | **Calculated** from scored SGLang medians, not memory counters. Cold L2 removes inter-replay reuse; repeated M tiles can still reuse weights within a replay. The 67 MB pooler/unpooler exceed H200's 50 MB L2; qkv/o fit in capacity but still start cold. Compute, scheduling and launch cost also matter, so this does not isolate cache misses | Prior scored `68e2f34b1d4744cb`; sweep2 bandwidth probe; [NVIDIA Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth) |
 | Router WGMMA lead | Old prepare diagnostic: 11.55 us at m128 and 18.46 us at m256 for BT128/256, BR64, ST4, cluster split16 | Measured diagnostic timings, not scored shape speedups; the old dispatch did not select its measured winner | `profiles/cand_diag4.dd5ffc6950bc439e.log`, `cand_diag4.py` |
-| New packed experiment | `cand_portfolio.py` times TMA/WGMMA BT64/128/256, grouped K64/K128, 2–5 stages, direct and split1/2/4/8/16, DSMEM clusters2/4/8/16, and balanced Stream-K at one/two SM waves | Last-arriving CTA merges FP32 partials in the same launch and resets scratch tickets; no cross-grid spinning. The router concatenates permitted hi+lo weights and indexes activations modulo K. Synthetic cold-L2 graph tuning compares finalists with the measured incumbent per shape; the four BF16 layers also sweep up to 32 cuBLASLt heuristic algorithms with an owned 32 MB workspace | Frozen source and validation in `problems/muse_bf16_proj/dev/NEXT_CHECKS.md` |
 
-Local portfolio validation (**sm_120, not H200**): exact source `57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e` passes 9/9 tests,
-30/30 cold-L2 graph shapes (20 replays × 3 fresh input sets), at **1.078233x**;
-prepare takes 0.78 s with the JIT cache warm (cold build: 53.4 s in the preceding screen).
-The TMA/MMA stand-in passes 840 kernel/changed-input replay cases; forced Hopper prepare and
-public dispatch pass 1,091 cases, including cuBLASLt algorithms and high-shared-memory branches
-through a portable GEMM stand-in. All 22 sm_90a WGMMA specializations compile with zero local
-memory, 58–154 registers; SASS contains 128 HGMMA and 64 TMA load instructions.
-Evidence: `runs/screen/proj_round/muse_bf16_proj.cand_portfolio.json`,
-`muse_bf16_proj.portfolio_validation.json`, and `problems/muse_bf16_proj/dev/portfolio_*.log`.
-WGMMA execution and H200 speedups remain unverified; the native stream fix also passes the
-custom-kernel-free cuBLAS reproducer. `submission.py` remains the board source.
 
-Fusion follow-up (`cand_reduce.py`, source `280822ad…`, **sm_120 local only**): the router
-loads hi and lo together for each real-K tile and accumulates both products into the same
-FP32 registers. Router/qkv m128/256 select only single-kernel direct, last-CTA or DSMEM
-paths. Kineto counts router **5 -> 1** kernels and qkv **2 -> 1** at both m values.
-Cold-L2 graph screen: **1.093592x overall**; router m128/256 **1.327/1.161x**, qkv
-**1.053/0.979x**. It passes 9/9 tests, 30/30 graph shapes, 770 kernel/replay cases and 1,075
-forced Hopper glue cases; sm_90a build passes. These gains do not establish H200 performance.
-Evidence: `runs/screen/proj_reduce/muse_bf16_proj.cand_reduce.json`,
-`problems/muse_bf16_proj/dev/cand_reduce_kernel_counts_local.json`, `dev/reduce_*.log`.
-The cooperative 128-thread diagnostic (`cand_reduce_fast.py`) passes locally at 1.078570x;
-this does not establish a gain from fewer threads on H200.
-Packed follow-up compares it with 160-thread producer-warp and 256-thread producer-WG schedules.
+| Current evidence | Result / scope | Consequence | Source |
+|---|---|---|---|
+| Portfolio H200 router win | m128 **10.327 us, 1.583x**; m256 **13.434 us, 1.327x**. Both choose BT128/BK128/ST4, DSMEM split16/8 | Real Hopper WGMMA execution and gain are now verified for the original doubled-K router. Keep these exact kernels eligible alongside real-K hi+lo fusion | `runs/muse_bf16_proj/*dd989ef2d76147e7.json`; `profiles/cand_portfolio.dd989ef2d76147e7.log` |
+| Portfolio BF16 choices | qkv m128/256: Lt ordinal3/4; pooler 0/0; o m128 0. Unpooler and o m256 retain cuBLAS | Large BF16 projections remain near parity. Qkv m256 selected a prepare-time winner but scored **0.982x**; synthetic tuning can choose a regression | Same receipt and prepare log |
+| New fused kernels | Router stages hi+lo together for each real-K tile into the same FP32 accumulators. Router **5 -> 1 kernels**, qkv **2 -> 1** with an in-kernel last-CTA/DSMEM merge, at both m128/256 | Kernel count is verified locally; native H200 speed of this new body remains unverified. Hierarchical K32/K64 merges distribute the last cluster's work across 16 resident CTAs | `dev/cand_reduce*_kernel_counts_local.json`; standalone frozen hashes/screens in NEXT_CHECKS |
+| All-shape portfolio | `cand_portfolio_all.py`: **1.117166x sm_120**, 9/9 tests, 30/30 fresh-input graph shapes; **122.66 s cold prepare**, 65.53 s compiling/repacking. **9,912** forced Hopper cases; sm_90a build passes | Tunes all 30 shapes, preserves measured H200 winners, and compares NN/TN layouts, every returned cuBLASLt heuristic, checked explicit split-K, direct/last-CTA/DSMEM/Stream-K, 128/160/256-thread fused paths, skinny/GEMV/TC/scalar-m16/DSV3 kernels | `runs/screen/proj_portfolio_all/muse_bf16_proj.cand_portfolio_all.json`; `dev/portfolio_all_{glue,sm90a}.log` |
+| Full superset | `cand_portfolio_max.py`: **1.120767x sm_120**, 9/9 tests, 30/30 graph shapes; **71.77 s cold prepare** (38.92 s compiling/repacking), independently checked with a new extension directory and ccache disabled. Adds 22 shared-X tile and 32 multicast WGMMA kernels, plus native BF16 DeepGEMM | These are distinct methods, not a claim that 1.1208x beats 1.1172x on H200. Both files keep the incumbents eligible. All 189 skinny/paired/legacy/tile/wide specializations compile for sm_90a; **12,265** forced Hopper cases pass | `runs/screen/proj_portfolio_max/muse_bf16_proj.cand_portfolio_max.json`; `dev/portfolio_max_{glue,sm90a}.log` |
+| Tuning protocol and resources | 128 MB L2 flush, CUDA graph replay, order-swapped paired ratios, best-per-family and global finalists, three fresh synthetic input sets including probes/outliers; 512 MB Lt workspace, 32 MB legacy workspace, weight transposes, router hi/lo/paired layouts, per-shape scratch | No precision is reduced, no benchmark-input result is cached, no math moves outside timed calls. A final compact dispatch log retains all 30 choices in the judge's 16K log tail. CUDA/Lt algorithm configurations are checked through the [NVIDIA cuBLASLt API](https://docs.nvidia.com/cuda/cublas/index.html#cublasltmatmulalgocheck) | `cand_portfolio_{all,max}.py`, builders/ABI in `dev/` |
+| Small-m and diagnostics | The eight fusion/layout diagnostic sources and 13 inherited sources remain independently eligible; their hashes/queue states are in NEXT_CHECKS. Existing wg/wg2 never set `wg_ok`; the new superset directly enables the multicast kernels | This round has no diagnostic hold. Do not claim WGMMA measurements from the queued wg/wg2 bodies; use the superset's explicit active branch. Reuse a completed receipt rather than sending duplicate GPU work | `dev/NEXT_CHECKS.md`; `cand_wg{,2}.py` |
+| P8 hardware probe | `849bd4b650e54c7f`, clean **1.136951x**, uses an earlier projection dispatch. The [P8 section](#p8-hardware-probes-on-h200-2026-10-24-kst) owns its microbenchmark values | Retain small-m MMA winners. Test CTA coverage and flight depth; TMA is useful where a tile is reused. The probe has no N64–256 tensor measurement, and its cache/PDL results are not projection wins | Same receipt and labelled profile log |
 
-Packed/hierarchical follow-up (**sm_120 local only**): `cand_reduce_packed.py` selects among
-128-thread cooperative, 160-thread producer-warp and 256-thread producer-WG schedules;
-1.091603x, 2,310 kernel/replay and 3,129 glue cases. `cand_reduce_hier.py` adds K32/K64
-partitioning, 16-CTA DSMEM partial reduction, and a last-cluster merge distributed over
-16 resident CTAs (no cross-cluster spin); 1.091486x, 2,850 kernel/replay and 3,243 glue cases.
-Both pass 9/9 tests and all 30 timed graph shapes, and profile as one router/qkv kernel.
-Both sm_90a builds have 66 specializations and zero local memory; hierarchical register
-usage rises to 64–190 versus packed 58–154, so v2 specializes the hierarchical branch
-and output dtype at compile time. The standalone lossless cuBLASLt NN weight-layout
-experiment passes locally at 1.088505x. All frozen sources and evidence paths are in NEXT_CHECKS.
-
-Compact fusion (`cand_fused.py`) prunes the new paths to 11 dtype/hierarchy specializations,
-validated by 210 fresh-input graph cases; ordinary kernels use at most 122 registers and
-hierarchical kernels 154, with zero local memory. The Torch-header build still took 294.36 s
-in local prepare under CPU contention, close to the 300 s limit. `cand_fused_lean.py` preserves
-those GPU bodies and uses a checked raw-pointer CUDA/Lt ABI with `load_inline`'s documented
-`no_implicit_headers` / `is_python_module=False` build. Cold prepare falls to 60.21 s; local
-screen is 1.093657x (9/9 tests, 30/30 graph shapes), with 338 native kernel/Lt and 110 forced
-Hopper glue cases. Profiling still confirms one router/qkv kernel. The raw ABI for legacy
-receipt-selected kernels separately passes 180 native graph cases and an sm_90a build.
-This is a compile/setup improvement; no timed math moves into prepare or module import.
-Evidence: `runs/screen/proj_fused_lean/muse_bf16_proj.cand_fused_lean.json`,
-`dev/fused_lean_*.log`, `dev/lean_legacy_*.log`. The v2 generator uses this lean build path.
-Lean local router m128/256 is 1.351/1.250x against SGLang; qkv is 1.062/0.969x.
-Removing kernels therefore does not guarantee lower latency. The receipt-derived v2 keeps
-the H200 incumbent eligible while comparing the new fused paths. Its complete assembly
-pipeline passes 48 native fresh-input graph cases, 100 forced Hopper dispatch cases and
-an sm_90a build with explicitly local control configurations (`dev/v2_assembly_*.log`);
-those controls are not H200 evidence. The frozen portfolio is judge job `dd989ef2d76147e7`.
-The latency-first copy, `cand_fused_select.py`, permits cuBLAS to win router/qkv selection.
-It passes locally at 1.091522x, 9/9 tests and 30/30 graph shapes, plus 338 native and 110
-forced Hopper dispatch cases; its GPU source is identical to the sm_90a-verified lean path.
-The selected local routers reach 1.357/1.227x; qkv retains cuBLAS at 1.008/1.000x.
-Warm prepare is 1.22 s. These are sm_120 measurements, not H200 claims.
-
-P8 receipt `849bd4b650e54c7f` landed clean at 1.136951x with an earlier projection
-dispatch. [P8 hardware probes](#p8-hardware-probes-on-h200-2026-10-24-kst) owns its
-microbenchmark values. Projection consequences: retain small-m mma.sync winners; test
-CTA coverage/flight depth rather than assuming TMA improves streaming bandwidth; use TMA
-where a tile is reused. The probe has no N64–256 tensor measurement, so verify WGMMA remains
-open. Its cache-policy and PDL recipe gains are not measured projection dispatch gains.
-
-The previously screened `cand_m16` scalar row stream was 0.968x locally (m16 projections
-0.53–0.64x); repeated activation staging and scalar accumulation lost to tensor cores.
-`cand_tc_k256` / `_qkv` and image-native `cand_dsv3_select` passed locally at 1.044 / 1.062 /
-1.063x. These are **sm_120 local rankings**, not H200 exclusions: the orchestrator has queued
-all of them, along with dsv3, gemv3/static, skinny, tc, tile, tuned2, wg and wg2. Pending identities
-live in `runs/waiting/` and `runs/pending/`; the next receipt can change the dispatch.
+New portfolio numbers are local sm_120 evidence; H200 score and prepare duration remain
+unverified until their receipts land. The board source is already H200-verified at 1.172813x;
+no 1.26x result is claimed. `dev/gap_table.py --write` regenerates the receipt-derived table.
 
 ### Attention verify development (G2; evidence scopes distinguished)
 
