@@ -91,27 +91,45 @@ index e6cf0dd..66c3f0b 100644
          False, deprecated_name="SGLANG_USE_TRITON_ROUTER_SUM"
      )
 diff --git a/python/sglang/srt/layers/muse_spark_fp4_moe.py b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-index 97b1474..d4c93f7 100644
+index 97b1474..da6a801 100644
 --- a/python/sglang/srt/layers/muse_spark_fp4_moe.py
 +++ b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-@@ -573,6 +573,16 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -162,12 +162,8 @@ class MuseSpark1xFp4Experts(nn.Module):
+         self._post_expert_norm: Optional[nn.Module] = None
+         self._post_expert_norm_eps = 1e-8
+         self._post_expert_norm_weight_first = True
+-        self._fused_finalize_op = (
+-            None
+-            if self.use_marlin
+-            else FusedPostExpertNormWeightedSumTRTLLM(
+-                topk=top_k, hidden_dim=hidden_size, eps=1e-8, weight_first=False
+-            )
++        self._fused_finalize_op = FusedPostExpertNormWeightedSumTRTLLM(
++            topk=top_k, hidden_dim=hidden_size, eps=1e-8, weight_first=False
+         )
+         self.register_buffer("_post_expert_norm_weight", None, persistent=False)
+ 
+@@ -573,6 +569,11 @@ class MuseSpark1xFp4Experts(nn.Module):
              is_zp_float=False,
          ).view(num_tokens, topk, size_k), local_topk_ids
  
 +    def _use_muse_v4(self, num_tokens: int) -> bool:
-+        # Serving's scored MoE work is verify: V4 has H200 evidence at exactly
-+        # the three V1/V16/V32 token counts. Keep Marlin for prefill and nearby
-+        # shapes until a single-layout large-M path exists.
-+        return getattr(self, "_muse_v4_state", None) is not None and num_tokens in {
-+            8,
-+            128,
-+            256,
-+        }
++        # The V6 reader handles verify/decode rows; its grouped reader handles
++        # the large prefill rows. Both consume the same canonical bank.
++        return getattr(self, "_muse_v4_state", None) is not None
 +
      def _forward_marlin(
          self,
          hidden_states: torch.Tensor,
-@@ -592,6 +602,14 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -580,6 +581,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+         topk_ids: torch.Tensor,
+         post_expert_norm: Optional[nn.Module],
+         pre_expert_norm: Optional[nn.Module] = None,
++        ar_workspace: FinalizePushWorkspace | None = None,
+     ) -> torch.Tensor:
+         if post_expert_norm is None:
+             raise ValueError(
+@@ -592,28 +594,91 @@ class MuseSpark1xFp4Experts(nn.Module):
                  "outputs are mis-scaled per expert. Run this checkpoint on "
                  "SM100+ with --moe-runner-backend flashinfer_trtllm instead."
              )
@@ -120,18 +138,116 @@ index 97b1474..d4c93f7 100644
 +                hidden_states = pre_expert_norm(hidden_states)
 +            from sglang.srt.layers.muse_spark_moe_v4 import run_layer
 +
-+            return run_layer(
-+                self._muse_v4_state, hidden_states, topk_scores, topk_ids
++            expert_outputs, local_topk_ids = run_layer(
++                self._muse_v4_state,
++                hidden_states,
++                topk_scores,
++                topk_ids,
++                return_dense=True,
++            )
++            return self._finalize_dense_expert_outputs(
++                expert_outputs,
++                topk_scores,
++                local_topk_ids,
++                post_expert_norm,
++                out_dtype=hidden_states.dtype,
++                ar_workspace=ar_workspace,
 +            )
          if pre_expert_norm is not None:
              hidden_states = pre_expert_norm(hidden_states)
          expert_outputs, local_topk_ids = self._marlin_expert_outputs(
+             hidden_states, topk_scores, topk_ids
+         )
++        return self._finalize_dense_expert_outputs(
++            expert_outputs,
++            topk_scores,
++            local_topk_ids,
++            post_expert_norm,
++            out_dtype=hidden_states.dtype,
++            ar_workspace=ar_workspace,
++        )
++
++    def _finalize_dense_expert_outputs(
++        self,
++        expert_outputs: torch.Tensor,
++        topk_scores: torch.Tensor,
++        local_topk_ids: torch.Tensor,
++        post_expert_norm: Optional[nn.Module],
++        *,
++        out_dtype: torch.dtype,
++        ar_workspace: FinalizePushWorkspace | None = None,
++    ) -> torch.Tensor:
++        """Finalize dense ``[T, topk, H]`` rows from any expert producer.
++
++        The finalize kernel consumes a flat permuted buffer plus an index map.
++        Marlin and V4 already return one row per routing slot, so the map is an
++        identity for local experts and ``-1`` for EP-remote slots.
++        """
+         if self._post_expert_norm is not post_expert_norm:
+             self.set_post_expert_norm(post_expert_norm)
+-        if self._post_expert_norm_weight is not None:
+-            return fused_post_expert_norm_weighted_sum(
+-                expert_outputs,
+-                topk_scores,
+-                norm_weight=self._post_expert_norm_weight,
+-                eps=self._post_expert_norm_eps,
+-                weight_first=self._post_expert_norm_weight_first,
+-                slot_expert_ids=local_topk_ids,
++        if self._post_expert_norm_weight is None:
++            output = finalize_identity_with_post_expert_norm(
++                expert_outputs=expert_outputs,
++                topk_scores=topk_scores,
++                post_expert_norm=post_expert_norm,
++                out_dtype=out_dtype,
+             )
+-        return finalize_identity_with_post_expert_norm(
+-            expert_outputs=expert_outputs,
+-            topk_scores=topk_scores,
+-            post_expert_norm=post_expert_norm,
+-            out_dtype=hidden_states.dtype,
++            if ar_workspace is not None:
++                torch.distributed.all_reduce(output, group=ar_workspace.group)
++            return output
++        num_tokens, topk, hidden = expert_outputs.shape
++        flat_output = expert_outputs.contiguous().view(num_tokens * topk, hidden)
++        identity = torch.arange(
++            num_tokens * topk, device=flat_output.device, dtype=torch.int32
++        ).view(num_tokens, topk)
++        index_map = torch.where(
++            local_topk_ids >= 0, identity, torch.full_like(identity, -1)
++        ).contiguous()
++        output = torch.empty(
++            num_tokens,
++            self.hidden_size,
++            dtype=torch.bfloat16,
++            device=flat_output.device,
+         )
++        self._fused_finalize_op(
++            gemm2_output=flat_output,
++            expert_weights=topk_scores,
++            expanded_idx_to_permuted_idx=index_map.view(-1),
++            rms_norm_weight=self._post_expert_norm_weight,
++            output=output,
++            ar_workspace=ar_workspace,
++        )
++        return output.to(out_dtype)
+ 
+     def prepare_input(
+         self,
+@@ -701,6 +766,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+                 topk_ids,
+                 post_expert_norm,
+                 pre_expert_norm=pre_expert_norm,
++                ar_workspace=ar_workspace,
+             )
+ 
+         from flashinfer.fused_moe import trtllm_fp4_block_scale_routed_moe
 diff --git a/python/sglang/srt/layers/muse_spark_moe_v4.py b/python/sglang/srt/layers/muse_spark_moe_v4.py
 new file mode 100644
-index 0000000..c1753cd
+index 0000000..364e74f
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_spark_moe_v4.py
-@@ -0,0 +1,705 @@
+@@ -0,0 +1,1082 @@
 +"""Serving kernel for Muse Spark routed NVFP4 experts.
 +
 +This file is a drop-in source boundary: a newer kernel can replace this module
@@ -288,8 +404,8 @@ index 0000000..c1753cd
 +    const __nv_bfloat16* __restrict__ x, const int* __restrict__ ids, const float* __restrict__ tw,
 +    const __nv_bfloat16* __restrict__ pnw, const uint8_t* __restrict__ w13p, const uint8_t* __restrict__ w2p,
 +    const float* __restrict__ gs13_gate, const float* __restrict__ gs13_up, const float* __restrict__ gs2, __nv_bfloat16* __restrict__ inter,
-+    float* __restrict__ y, float* __restrict__ ss, int* __restrict__ cnt, __nv_bfloat16* __restrict__ out,
-+    int M, int local_start, int nstage) {
++    float* __restrict__ y, float* __restrict__ ss, int* __restrict__ pos_map, int* __restrict__ cnt, __nv_bfloat16* __restrict__ out,
++    int dense_mode, int M, int local_start, int nstage) {
 +  constexpr int NB = 8 * NT;
 +  constexpr int RED = NT * 4;
 +  const int npairs = M * 8;
@@ -398,8 +514,10 @@ index 0000000..c1753cd
 +        const int pos = rt->wc[warp][e] + rank;
 +        pos_of[i] = static_cast<int16_t>(pos);
 +        pair_of[pos] = static_cast<int16_t>(i);
++        pos_map[i] = pos;
 +      } else {
 +        pos_of[i] = -1;
++        pos_map[i] = -1;
 +      }
 +    }
 +  }
@@ -567,7 +685,9 @@ index 0000000..c1753cd
 +  bar_consumers();
 +
 +  // ---------------- combine: item = (token, half of the columns) ----------------
-+  for (int it = c; it < 2 * M; it += G) {
++  // Dense mode hands the producer rows to the shared finalize kernel. Keep the
++  // routing/GEMM/barrier work identical, but avoid computing a second reduction.
++  if (!dense_mode) for (int it = c; it < 2 * M; it += G) {
 +    const int t = it >> 1;
 +    const int c0 = (it & 1) * 2048 + tid * 8;
 +    float f[8];
@@ -620,20 +740,33 @@ index 0000000..c1753cd
 +
 +void run(torch::Tensor x, torch::Tensor ids, torch::Tensor tw, torch::Tensor pnw, torch::Tensor w13p,
 +         torch::Tensor w2p, torch::Tensor gs13_gate, torch::Tensor gs13_up, torch::Tensor gs2, torch::Tensor inter, torch::Tensor y,
-+         torch::Tensor ss, torch::Tensor cnt, torch::Tensor out, int64_t local_start, int64_t nt, int64_t nstage,
++         torch::Tensor ss, torch::Tensor pos_map, torch::Tensor cnt, torch::Tensor out, int64_t dense_mode, int64_t local_start, int64_t nt, int64_t nstage,
 +         int64_t grid) {
 +  auto stream = at::cuda::getCurrentCUDAStream();
 +  const int M = static_cast<int>(x.size(0));
 +  const size_t smem = smem_bytes(nt, nstage, M);
 +  auto* xp = reinterpret_cast<const __nv_bfloat16*>(x.data_ptr());
++  auto* idp = ids.data_ptr<int>();
++  auto* twp = tw.data_ptr<float>();
 +  auto* pp = reinterpret_cast<const __nv_bfloat16*>(pnw.data_ptr());
++  auto* w13pp = w13p.data_ptr<uint8_t>();
++  auto* w2pp = w2p.data_ptr<uint8_t>();
++  auto* ggp = gs13_gate.data_ptr<float>();
++  auto* gup = gs13_up.data_ptr<float>();
++  auto* g2p = gs2.data_ptr<float>();
 +  auto* ip = reinterpret_cast<__nv_bfloat16*>(inter.data_ptr());
++  auto* yp = y.data_ptr<float>();
++  auto* ssp = ss.data_ptr<float>();
++  auto* posp = pos_map.data_ptr<int>();
++  auto* cntp = cnt.data_ptr<int>();
 +  auto* op = reinterpret_cast<__nv_bfloat16*>(out.data_ptr());
-+#define LAUNCH(NTV)                                                                                          \
-+  moe_fused<NTV><<<grid, NTHR, smem, stream>>>(xp, ids.data_ptr<int>(), tw.data_ptr<float>(), pp,               \
-+      w13p.data_ptr<uint8_t>(), w2p.data_ptr<uint8_t>(), gs13_gate.data_ptr<float>(), gs13_up.data_ptr<float>(), gs2.data_ptr<float>(), ip,     \
-+      y.data_ptr<float>(), ss.data_ptr<float>(), cnt.data_ptr<int>(), op, M, static_cast<int>(local_start),     \
-+      static_cast<int>(nstage))
++#define LAUNCH(NTV) do {                                                                                       \
++  int dm = static_cast<int>(dense_mode), m = M, ls = static_cast<int>(local_start), ns = static_cast<int>(nstage); \
++  void* args[] = {&xp, &idp, &twp, &pp, &w13pp, &w2pp, &ggp, &gup, &g2p, &ip, &yp, &ssp, &posp, &cntp,       \
++      &op, &dm, &m, &ls, &ns};                                                                                    \
++  C10_CUDA_CHECK(cudaLaunchCooperativeKernel(reinterpret_cast<void*>(moe_fused<NTV>),                          \
++      dim3(static_cast<unsigned>(grid)), dim3(NTHR), args, smem, stream));                                     \
++} while (0)
 +  if (nt == 1) LAUNCH(1); else LAUNCH(2);
 +#undef LAUNCH
 +  C10_CUDA_KERNEL_LAUNCH_CHECK();
@@ -646,7 +779,7 @@ index 0000000..c1753cd
 +int64_t smem_needed(int64_t nt, int64_t nstage, int64_t M);
 +void run(torch::Tensor x, torch::Tensor ids, torch::Tensor tw, torch::Tensor pnw, torch::Tensor w13p,
 +         torch::Tensor w2p, torch::Tensor gs13_gate, torch::Tensor gs13_up, torch::Tensor gs2, torch::Tensor inter, torch::Tensor y,
-+         torch::Tensor ss, torch::Tensor cnt, torch::Tensor out, int64_t local_start, int64_t nt, int64_t nstage,
++         torch::Tensor ss, torch::Tensor pos_map, torch::Tensor cnt, torch::Tensor out, int64_t dense_mode, int64_t local_start, int64_t nt, int64_t nstage,
 +         int64_t grid);
 +"""
 +
@@ -662,7 +795,7 @@ index 0000000..c1753cd
 +
 +        tag = hashlib.sha1(CUDA_SRC.encode()).hexdigest()[:12]
 +        _MOD = load_inline(
-+            name=f"muse_moe_w4a16_v4_{tag}",
++            name=f"muse_moe_w4a16_v6_{tag}",
 +            cpp_sources=CPP_SRC,
 +            cuda_sources=CUDA_SRC,
 +            functions=["max_smem_attr", "smem_needed", "run"],
@@ -742,11 +875,375 @@ index 0000000..c1753cd
 +    return torch.cat((wbytes, sbytes), 1).contiguous()
 +
 +
++GROUPED_CUDA_SRC = r"""
++// Canonical V6 36 KiB expert tiles -> exact BF16 register-A WGMMA.
++// No persistent converted or alternative-layout weight bank.
++#include <torch/extension.h>
++#include <ATen/cuda/CUDAContext.h>
++#include <c10/cuda/CUDAException.h>
++#include <cuda_bf16.h>
++#include <stdint.h>
++#include <stdio.h>
++#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == 900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
++#define USE_WGMMA 1
++#else
++#define USE_WGMMA 0
++#endif
++namespace canonical {
++constexpr int H=4096, TB=36864, WB=32768;
++constexpr uint32_t DQ_MASK=0x81C081C0u, LA_MASK=0x60306030u;
++__device__ __forceinline__ uint32_t rotr(uint32_t x,int s){return __funnelshift_r(x,x,s);}
++__device__ __forceinline__ uint32_t hmul2(uint32_t x,uint32_t y){uint32_t z;asm("mul.rn.bf16x2 %0,%1,%2;":"=r"(z):"r"(x),"r"(y));return z;}
++__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {
++  o[0] = A & DQ_MASK;
++  o[1] = rotr(A, 4) & DQ_MASK;
++  o[2] = rotr(A, 10) & DQ_MASK;
++  o[3] = rotr(B, 2) & DQ_MASK;
++  o[4] = rotr(B, 6) & DQ_MASK;
++  o[5] = rotr(B, 12) & DQ_MASK;
++  const uint32_t W = (A & LA_MASK) | (B & ~LA_MASK);
++  o[6] = rotr(W, 24) & DQ_MASK;
++  o[7] = rotr(W, 30) & DQ_MASK;
++}
++
++__device__ __forceinline__ uint32_t sptr(const void* p){return (uint32_t)__cvta_generic_to_shared(p);}
++__device__ __forceinline__ void wfence(){
++#if USE_WGMMA
++ asm volatile("wgmma.fence.sync.aligned;":::"memory");
++#endif
++}
++__device__ __forceinline__ void wcommit(){
++#if USE_WGMMA
++ asm volatile("wgmma.commit_group.sync.aligned;":::"memory");
++#endif
++}
++template<int G> __device__ __forceinline__ void wwait(){
++#if USE_WGMMA
++ asm volatile("wgmma.wait_group.sync.aligned %0;"::"n"(G):"memory");
++#endif
++}
++template<int N> __device__ __forceinline__ void protect(float (&a)[N/2]){
++#pragma unroll
++ for(int j=0;j<N/2;++j)asm volatile("":"+f"(a[j])::"memory");
++}
++__device__ __forceinline__ void keep(uint32_t (&a)[4]){asm volatile(""::"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]));}
++template<int N> __device__ __forceinline__ void atom(float (&d)[N/2],uint32_t (&a)[4],const uint8_t* xs,int s){
++#if USE_WGMMA
++ const uint64_t desc=((uint64_t)(sptr(xs)>>4))|((uint64_t)64<<32)|((uint64_t)1<<62);
++ const uint64_t base=desc+(s*2);
++ { const uint64_t desc=base;
++   if constexpr (N == 8) {
++    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n8k16.f32.bf16.bf16 {%0, %1, %2, %3}, {%4, %5, %6, %7}, %8, p, 1, 1, 0; }\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3])
++      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
++  }
++  else if constexpr (N == 16) {
++    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n16k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7}, {%8, %9, %10, %11}, %12, p, 1, 1, 0; }\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]),
++        "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7])
++      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
++  }
++  else if constexpr (N == 32) {
++    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n32k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15}, {%16, %17, %18, %19}, %20, p, 1, 1, 0; }\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]),
++        "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]),
++        "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]),
++        "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15])
++      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
++  }
++  else if constexpr (N == 64) {
++    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n64k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31}, "
++      " {%32, %33, %34, %35}, %36, p, 1, 1, 0; }\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]),
++        "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]),
++        "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]),
++        "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]),
++        "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]),
++        "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]),
++        "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]),
++        "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31])
++      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
++  }
++  else if constexpr (N == 128) {
++    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n128k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31, %32, %33, %34, %35, %36, %37, %38, %39, %40, %41, %42, %43, %44, %45, %46, %47, %48, %49, %50, %51, %52, %53, %54, %55, %56, %57, %58, %59, %60, %61, %62, %63}, "
++      " {%64, %65, %66, %67}, %68, p, 1, 1, 0; }\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]),
++        "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]),
++        "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]),
++        "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]),
++        "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]),
++        "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]),
++        "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]),
++        "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31]),
++        "+f"(d[32]), "+f"(d[33]), "+f"(d[34]), "+f"(d[35]),
++        "+f"(d[36]), "+f"(d[37]), "+f"(d[38]), "+f"(d[39]),
++        "+f"(d[40]), "+f"(d[41]), "+f"(d[42]), "+f"(d[43]),
++        "+f"(d[44]), "+f"(d[45]), "+f"(d[46]), "+f"(d[47]),
++        "+f"(d[48]), "+f"(d[49]), "+f"(d[50]), "+f"(d[51]),
++        "+f"(d[52]), "+f"(d[53]), "+f"(d[54]), "+f"(d[55]),
++        "+f"(d[56]), "+f"(d[57]), "+f"(d[58]), "+f"(d[59]),
++        "+f"(d[60]), "+f"(d[61]), "+f"(d[62]), "+f"(d[63])
++      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
++  }
++ }
++#else
++ const int lane=threadIdx.x&31,c=lane&3,g=lane>>2;
++#pragma unroll
++ for(int i=0;i<N/8;++i){
++  const int n=8*i+g,k=s*32+c*4;
++  const uint8_t* r=xs+n*128;
++  uint32_t b0=*(const uint32_t*)(r+(((k>>4)^(n&7))<<4)+(k&15));
++  uint32_t b1=*(const uint32_t*)(r+((((k+16)>>4)^(n&7))<<4)+((k+16)&15));
++  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
++   :"+f"(d[i*4]),"+f"(d[i*4+1]),"+f"(d[i*4+2]),"+f"(d[i*4+3])
++   :"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]),"r"(b0),"r"(b1));
++ }
++#endif
++}
++__global__ void histogram(const int* ids,int* counts,int P,int start){
++ __shared__ int local[32];int t=threadIdx.x;
++ if(t<32)local[t]=0;__syncthreads();
++ int j=blockIdx.x*blockDim.x+t;
++ if(j<P){int e=ids[j]-start;if((unsigned)e<32)atomicAdd(local+e,1);}
++ __syncthreads();if(t<32)atomicAdd(counts+t,local[t]);
++}
++__global__ void plan(const int* counts,int* offsets,int* cursors,int* tasks,int fixed_n){
++ int e=threadIdx.x,c=counts[e],sum=c;
++#pragma unroll
++ for(int d=1;d<32;d<<=1){int a=__shfl_up_sync(~0u,sum,d);if(e>=d)sum+=a;}
++ offsets[e]=sum-c;if(e==31)offsets[32]=sum;cursors[e]=0;
++ int chosen=fixed_n?fixed_n:(c<=8?8:c<=16?16:c<=32?32:c<=64?64:128);
++#pragma unroll
++ for(int i=0;i<5;++i){int n=8<<i,v=chosen==n?(c+n-1)/n:0,z=v;
++#pragma unroll
++  for(int d=1;d<32;d<<=1){int a=__shfl_up_sync(~0u,z,d);if(e>=d)z+=a;}
++  tasks[i*33+e]=z-v;if(e==31)tasks[i*33+32]=z;
++ }
++}
++__global__ void scatter(const int* ids,const int* offsets,int* cursors,int* pairs,int* positions,int P,int start){
++ int j=blockIdx.x*blockDim.x+threadIdx.x;
++ if(j<P){int e=ids[j]-start,p=-1;if((unsigned)e<32){p=offsets[e]+atomicAdd(cursors+e,1);pairs[p]=j;}positions[j]=p;}
++}
++template<int N,int MODE> __device__ __forceinline__ void load_x(uint8_t* dst,const __nv_bfloat16* x,const int* pairs,int off,int ne,int nb,int kg){
++ for(int j=threadIdx.x;j<N*32;j+=128){
++  int row=j/32,l=j%32,idx=nb*N+row;
++  // Native A's K permutation: logical pair 8*s+4*j+q -> physical pair 8*q+2*s+j.
++  int physical=8*(l&3)+2*(l>>3)+((l>>2)&1);
++  int pos=off+idx, xr=idx<ne?(MODE?pairs[pos]>>3:pos):0;
++  const void* src=x+(size_t)xr*H+kg*64+physical*2;
++  void* out=dst+row*128+(((l>>2)^(row&7))*4+(l&3))*4;
++  int bytes=idx<ne?4:0;
++  asm volatile("cp.async.ca.shared.global [%0], [%1], 4, %2;"::"r"(sptr(out)),"l"(src),"r"(bytes):"memory");
++ }
++ asm volatile("cp.async.commit_group;":::"memory");
++}
++template<int N,int MODE,int STAGES>
++__global__ void __launch_bounds__(128,2) grouped(const uint8_t* weights,const float* gs_gate,const float* gs_up,const __nv_bfloat16* x,__nv_bfloat16* out,
++ const int* pairs,const int* offsets,const int* tasks){
++ extern __shared__ __align__(1024) uint8_t shared[];
++ constexpr int XBYTES=N*128, MTILES=MODE?512:256, NFB=MTILES/4;
++ const int t=threadIdx.x,warp=t>>5,lane=t&31;
++ const int total=tasks[32]*NFB;
++ for(int item=blockIdx.x;item<total;item+=gridDim.x){
++  int ti=item/NFB,fb=item%NFB,e=0;
++#pragma unroll
++  for(int d=16;d;d>>=1)if(tasks[e+d]<=ti)e+=d;
++  int nb=ti-tasks[e],off=offsets[e],ne=offsets[e+1]-off;
++  const uint8_t* wt=weights+((size_t)e*MTILES+fb*4+warp)*TB;
++  float acc[N/2];
++#pragma unroll
++  for(int j=0;j<N/2;++j)acc[j]=0.f;
++#pragma unroll
++  for(int k=0;k<STAGES;++k)load_x<N,MODE>(shared+k*XBYTES,x,pairs,off,ne,nb,k);
++  uint32_t A[2][4] = {};
++  for(int kg=0;kg<64;++kg){
++   int st=kg%STAGES;
++   // At the tail, fewer than STAGES groups remain: wait for every outstanding copy.
++   if(kg+STAGES<=64)asm volatile("cp.async.wait_group %0;"::"n"(STAGES-1):"memory");
++   else asm volatile("cp.async.wait_group 0;":::"memory");
++   __syncthreads();
++   asm volatile("fence.proxy.async.shared::cta;":::"memory");
++   uint4 w=*(const uint4*)(wt+(kg*32+lane)*16);
++   uint16_t sw=*(const uint16_t*)(wt+WB+(kg/8)*512+lane*16+(kg%8)*2);
++   uint32_t sr=0x70007000u+(uint32_t)(sw&255)*0x100010u;
++   uint32_t su=0x70007000u+(uint32_t)(sw>>8)*0x100010u;
++   uint32_t o[16];dq8(w.x,w.y,o);dq8(w.z,w.w,o+8);
++#pragma unroll
++   for(int s=0;s<4;++s){
++    const uint32_t* os=o+(s>>1)*8+(s&1)*4;
++    uint32_t* a=A[s&1];
++    a[0]=hmul2(os[0],sr);a[1]=hmul2(os[1],su);a[2]=hmul2(os[2],sr);a[3]=hmul2(os[3],su);
++    protect<N>(acc);wfence();atom<N>(acc,A[s&1],shared+st*XBYTES,s);wcommit();protect<N>(acc);
++    wwait<1>();keep(A[(s&1)^1]);
++   }
++   wwait<0>();protect<N>(acc);keep(A[1]);
++   __syncthreads();
++   if(kg+STAGES<64)load_x<N,MODE>(shared+st*XBYTES,x,pairs,off,ne,nb,kg+STAGES);
++  }
++  const float sc_gate=gs_gate[e]*256.f, sc_up=gs_up[e]*256.f;
++#pragma unroll
++  for(int j=0;j<N/8;++j){
++#pragma unroll
++   for(int q=0;q<2;++q){int col=8*j+2*(lane&3)+q,idx=nb*N+col;
++    if(idx<ne){int pos=off+idx;
++     if constexpr(MODE){
++      float g=__bfloat162float(__float2bfloat16_rn(acc[4*j+q]*sc_gate));
++      float u=__bfloat162float(__float2bfloat16_rn(acc[4*j+2+q]*sc_up));
++      out[(size_t)pos*H+fb*32+warp*8+(lane>>2)]=__float2bfloat16_rn((g/(1.f+__expf(-g)))*u);
++     }else{
++#pragma unroll
++      for(int h=0;h<2;++h)out[(size_t)pos*H+fb*64+warp*16+(lane>>2)+8*h]=__float2bfloat16_rn(acc[4*j+2*h+q]*sc_gate);
++     }
++    }
++   }
++  }
++  __syncthreads();
++ }
++}
++} // namespace canonical
++void route(torch::Tensor ids,torch::Tensor counts,torch::Tensor offsets,torch::Tensor cursors,torch::Tensor pairs,torch::Tensor positions,torch::Tensor tasks,int64_t local_start,int64_t fixed_n){
++ auto s=at::cuda::getCurrentCUDAStream();int P=ids.numel();cudaMemsetAsync(counts.data_ptr(),0,128,s);
++ canonical::histogram<<<(P+255)/256,256,0,s>>>(ids.data_ptr<int>(),counts.data_ptr<int>(),P,local_start);
++ canonical::plan<<<1,32,0,s>>>(counts.data_ptr<int>(),offsets.data_ptr<int>(),cursors.data_ptr<int>(),tasks.data_ptr<int>(),fixed_n);
++ canonical::scatter<<<(P+255)/256,256,0,s>>>(ids.data_ptr<int>(),offsets.data_ptr<int>(),cursors.data_ptr<int>(),pairs.data_ptr<int>(),positions.data_ptr<int>(),P,local_start);
++ C10_CUDA_KERNEL_LAUNCH_CHECK();
++}
++void gemm(torch::Tensor w,torch::Tensor gs_gate,torch::Tensor gs_up,torch::Tensor x,torch::Tensor out,torch::Tensor pairs,torch::Tensor offsets,torch::Tensor tasks,int64_t mode,int64_t fixed_n,int64_t grid,int64_t stages){
++ auto stream=at::cuda::getCurrentCUDAStream();
++#define RUN(N,M,S) canonical::grouped<N,M,S><<<grid,128,N*128*S,stream>>>(w.data_ptr<uint8_t>(),gs_gate.data_ptr<float>(),gs_up.data_ptr<float>(),(const __nv_bfloat16*)x.data_ptr(),(__nv_bfloat16*)out.data_ptr(),pairs.data_ptr<int>(),offsets.data_ptr<int>(),tasks.data_ptr<int>()+(__builtin_ctz(N)-3)*33)
++#define WIDTH(N,M,S) if(fixed_n==0||fixed_n==N){RUN(N,M,S);}
++#define SET(M,S) WIDTH(8,M,S);WIDTH(16,M,S);WIDTH(32,M,S);WIDTH(64,M,S);WIDTH(128,M,S)
++ if(mode){if(stages==2){SET(1,2);}else{SET(1,3);}}
++ else{if(stages==2){SET(0,2);}else{SET(0,3);}}
++#undef SET
++#undef WIDTH
++#undef RUN
++ C10_CUDA_KERNEL_LAUNCH_CHECK();
++}
++"""
++
++GROUPED_CPP_SRC = r"""
++#include <torch/extension.h>
++void route(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t);
++void gemm(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t,int64_t,int64_t);
++"""
++
++_GROUPED_MOD = None
++
++
++def _grouped_module():
++    global _GROUPED_MOD
++    if _GROUPED_MOD is None:
++        import hashlib
++        import os
++        from torch.utils.cpp_extension import load_inline
++
++        arch = torch.cuda.get_device_capability()
++        previous = os.environ.get("TORCH_CUDA_ARCH_LIST")
++        os.environ["TORCH_CUDA_ARCH_LIST"] = (
++            "9.0a" if arch == (9, 0) else f"{arch[0]}.{arch[1]}"
++        )
++        try:
++            tag = hashlib.sha1(GROUPED_CUDA_SRC.encode()).hexdigest()[:12]
++            _GROUPED_MOD = load_inline(
++                name=f"muse_canonical_serving_{tag}",
++                cpp_sources=GROUPED_CPP_SRC,
++                cuda_sources=GROUPED_CUDA_SRC,
++                functions=["route", "gemm"],
++                extra_cuda_cflags=["-O3", "-std=c++20", "-lineinfo"],
++                verbose=False,
++            )
++        finally:
++            if previous is None:
++                os.environ.pop("TORCH_CUDA_ARCH_LIST", None)
++            else:
++                os.environ["TORCH_CUDA_ARCH_LIST"] = previous
++    return _GROUPED_MOD
++
++
++def _grouped_call(data, state):
++    x = data["hidden_states"].contiguous()
++    ids = data["topk_ids"].to(torch.int32).contiguous()
++    cfg = data["config"]
++    assert cfg["local_count"] == NLOC and cfg["d_hidden"] == H and cfg["d_expert"] == H
++    m = x.shape[0]
++    count = m * TOPK
++    dev = x.device
++    counts = torch.empty((NLOC,), dtype=torch.int32, device=dev)
++    offsets = torch.empty((NLOC + 1,), dtype=torch.int32, device=dev)
++    cursors = torch.empty((NLOC,), dtype=torch.int32, device=dev)
++    pairs = torch.empty((count,), dtype=torch.int32, device=dev)
++    positions = torch.empty((count,), dtype=torch.int32, device=dev)
++    tasks = torch.empty((5 * (NLOC + 1),), dtype=torch.int32, device=dev)
++    inter = torch.empty((count, H), dtype=torch.bfloat16, device=dev)
++    y = torch.empty_like(inter)
++    mod = state["grouped_mod"]
++    mod.route(
++        ids, counts, offsets, cursors, pairs, positions, tasks,
++        cfg["local_start"], 0,
++    )
++    grid = state["grid"] * 4
++    mod.gemm(
++        state["w13p"], state["gs13_gate"], state["gs13_up"], x, inter,
++        pairs, offsets, tasks, 1, 0, grid, 2,
++    )
++    mod.gemm(
++        state["w2p"], state["gs2"], state["gs2"], inter, y,
++        pairs, offsets, tasks, 0, 0, grid, 2,
++    )
++    safe = positions.clamp_min(0)
++    dense = y.index_select(0, safe).view(m, TOPK, H)
++    flat = torch.arange(count, device=dev, dtype=torch.int32).view(m, TOPK)
++    valid = (ids >= cfg["local_start"]) & (ids < cfg["local_start"] + NLOC)
++    return dense, torch.where(valid, flat, torch.full_like(flat, -1))
++
++
++def _v6_call(data, state, *, return_dense=False):
++    cfg = data["config"]
++    assert cfg["local_count"] == NLOC and cfg["d_hidden"] == H and cfg["d_expert"] == H
++    mod = state["mod"]
++    x = data["hidden_states"].contiguous()
++    ids = data["topk_ids"].to(torch.int32).contiguous()
++    tw = data["topk_weights"].to(torch.float32).contiguous()
++    m = x.shape[0]
++    npairs = m * TOPK
++    nt = 1 if m <= 64 else 2
++    nstage = 5
++    while nstage > 1 and mod.smem_needed(nt, nstage, m) > mod.smem_optin:
++        nstage -= 1
++    if mod.smem_needed(nt, nstage, m) > mod.smem_optin:
++        raise ValueError(f"batch {m} too large for fused V6 shared-memory routing")
++    dev = x.device
++    inter = torch.empty((npairs, H), dtype=torch.bfloat16, device=dev)
++    y = torch.zeros((npairs, H), dtype=torch.float32, device=dev)
++    ss = torch.empty((npairs,), dtype=torch.float32, device=dev)
++    pos_map = torch.empty((npairs,), dtype=torch.int32, device=dev)
++    out = torch.empty((m, H), dtype=torch.bfloat16, device=dev)
++    # Counters are per invocation so concurrent serving streams cannot reuse a
++    # generation/barrier state. Cooperative launch below makes the grid resident.
++    cnt = torch.zeros((NCNT,), dtype=torch.int32, device=dev)
++    mod.run(
++        x, ids, tw, state["pnw"], state["w13p"], state["w2p"],
++        state["gs13_gate"], state["gs13_up"], state["gs2"], inter, y, ss,
++        pos_map, cnt, out, 1, cfg["local_start"], nt, nstage, state["grid"],
++    )
++    safe_map = pos_map.clamp_min(0)
++    dense = y.index_select(0, safe_map).to(torch.bfloat16).view(m, TOPK, H)
++    flat = torch.arange(npairs, device=dev, dtype=torch.int32).view(m, TOPK)
++    valid = (ids >= state["local_start"]) & (ids < state["local_start"] + NLOC)
++    return dense, torch.where(valid, flat, torch.full_like(flat, -1))
++
++
 +def prepare(weights, *, local_start=0):
 +    dev = weights["w13"].device
 +    t = torch.arange(NT1, device=dev)
 +    i = torch.arange(8, device=dev)
-+    rowmap1 = torch.cat((8 * t[:, None] + i, H + 8 * t[:, None] + i), 1)    # gate rows, then up rows
++    rowmap1 = torch.cat((8 * t[:, None] + i, H + 8 * t[:, None] + i), 1)
 +    rowmap2 = torch.arange(H, device=dev).view(NT2, 16)
 +    w13p = torch.empty((NLOC, NT1, TILE_BYTES), dtype=torch.uint8, device=dev)
 +    w2p = torch.empty((NLOC, NT2, TILE_BYTES), dtype=torch.uint8, device=dev)
@@ -754,52 +1251,47 @@ index 0000000..c1753cd
 +        w13p[e] = _repack(weights["w13"][e], weights["w13_sf"][e], rowmap1)
 +        w2p[e] = _repack(weights["w2"][e], weights["w2_sf"][e], rowmap2)
 +    mod = _module()
++    grouped_mod = _grouped_module()
 +    props = torch.cuda.get_device_properties(dev)
 +    torch.cuda.synchronize()
 +    return {
-+        "w13p": w13p, "w2p": w2p,
++        "w13p": w13p,
++        "w2p": w2p,
 +        "gs13_gate": weights["w13_gs_gate"][:NLOC].float().contiguous(),
 +        "gs13_up": weights["w13_gs_up"][:NLOC].float().contiguous(),
 +        "gs2": weights["w2_gs"][:NLOC].float().contiguous(),
 +        "pnw": weights["post_norm_w"].contiguous(),
-+        # synchronization counters only (the kernel returns them to zero each call)
-+        "cnt": torch.zeros((NCNT,), dtype=torch.int32, device=dev),
 +        "grid": props.multi_processor_count,
 +        "mod": mod,
++        "grouped_mod": grouped_mod,
 +        "local_start": int(local_start),
 +    }
 +
 +
-+def kernel_fn(data, state):
-+    cfg = data["config"]
-+    assert cfg["local_count"] == NLOC and cfg["d_hidden"] == H and cfg["d_expert"] == H
-+    mod = state["mod"]
-+    x = data["hidden_states"].contiguous()
-+    ids = data["topk_ids"].to(torch.int32).contiguous()
-+    tw = data["topk_weights"].to(torch.float32).contiguous()
-+    M = x.shape[0]
-+    npairs = M * TOPK
-+    nt = 1 if M <= 64 else 2
-+    nstage = 5
-+    while nstage > 1 and mod.smem_needed(nt, nstage, M) > mod.smem_optin:
-+        nstage -= 1
-+    if mod.smem_needed(nt, nstage, M) > mod.smem_optin:
-+        raise ValueError(f"batch {M} too large for the fused kernel's shared-memory routing")
-+    dev = x.device
-+    inter = torch.empty((npairs, H), dtype=torch.bfloat16, device=dev)
-+    y = torch.empty((npairs, H), dtype=torch.float32, device=dev)
-+    ss = torch.empty((npairs,), dtype=torch.float32, device=dev)
-+    out = torch.empty((M, H), dtype=torch.bfloat16, device=dev)
-+    mod.run(x, ids, tw, state["pnw"], state["w13p"], state["w2p"], state["gs13_gate"], state["gs13_up"], state["gs2"], inter, y, ss,
-+            state["cnt"], out, cfg["local_start"], nt, nstage, state["grid"])
-+    return out
++def kernel_fn(data, state, *, return_dense=False):
++    m = data["hidden_states"].shape[0]
++    dense, local_map = (
++        _grouped_call(data, state)
++        if m > 256
++        else _v6_call(data, state, return_dense=return_dense)
++    )
++    if return_dense:
++        return dense, local_map
++    valid = local_map >= 0
++    norm = (1.0 + state["pnw"]).to(torch.bfloat16)
++    scaled = dense * norm
++    inv = torch.rsqrt(
++        scaled.float().square().mean(dim=-1, keepdim=True) + 1.0e-8
++    )
++    weights = data["topk_weights"].to(torch.bfloat16) * valid.to(torch.bfloat16)
++    return (scaled * inv.to(torch.bfloat16) * weights.unsqueeze(-1)).sum(dim=1)
 +
 +
 +def prepare_layer(layer):
-+    """Pack one EP rank's raw ModelOpt tensors and compile the kernel once."""
++    """Pack raw ModelOpt tensors into the single canonical V6 bank."""
 +    post_norm = getattr(layer, "post_expert_norm", None)
 +    if post_norm is None or getattr(post_norm, "weight", None) is None:
-+        raise RuntimeError("Muse V4 needs the loaded post-expert norm weight")
++        raise RuntimeError("Muse V6 needs the loaded post-expert norm weight")
 +    weights = {
 +        "w13": layer.gate_up_proj.detach(),
 +        "w13_sf": layer.gate_up_proj_weight_scale.detach(),
@@ -815,12 +1307,12 @@ index 0000000..c1753cd
 +        "post_norm_w": post_norm.weight.detach(),
 +    }
 +    if weights["w13"].shape[0] != NLOC:
-+        raise ValueError(f"Muse V4 expects 32 local experts, got {weights['w13'].shape[0]}")
++        raise ValueError(f"Muse V6 expects 32 local experts, got {weights['w13'].shape[0]}")
 +    return prepare(weights, local_start=layer.local_expert_offset)
 +
 +
-+def run_layer(state, hidden_states, topk_scores, topk_ids):
-+    """Graph-capturable invocation used by MuseSpark1xFp4Experts."""
++def run_layer(state, hidden_states, topk_scores, topk_ids, *, return_dense=False):
++    """Graph-capturable V6/grouped invocation used by MuseSpark1xFp4Experts."""
 +    cfg = {
 +        "bs": hidden_states.shape[0],
 +        "d_hidden": hidden_states.shape[1],
@@ -836,9 +1328,10 @@ index 0000000..c1753cd
 +            "config": cfg,
 +        },
 +        state,
++        return_dense=return_dense,
 +    )
 diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-index f6d450a..01039b2 100644
+index f6d450a..d65c947 100644
 --- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 +++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 @@ -2,10 +2,12 @@
@@ -854,7 +1347,7 @@ index f6d450a..01039b2 100644
  from sglang.srt.layers import muse_spark_expert_tp as expert_tp
  from sglang.srt.layers.quantization.modelopt_quant import (
      ModelOptNvFp4FusedMoEMethod,
-@@ -13,6 +15,46 @@ from sglang.srt.layers.quantization.modelopt_quant import (
+@@ -13,6 +15,48 @@ from sglang.srt.layers.quantization.modelopt_quant import (
  )
  from sglang.srt.layers.utils import copy_or_rebind_param
  
@@ -865,14 +1358,14 @@ index f6d450a..01039b2 100644
 +    return not envs.SGLANG_MUSE_MOE_FORCE_STOCK.get()
 +
 +
-+def _prepare_muse_v4(layer) -> None:
++def _prepare_muse_v4(layer):
 +    """Build the optional serving bank while the canonical tensors are live."""
 +    layer._muse_v4_state = None
 +    if not _muse_v4_enabled() or not torch.cuda.is_available():
-+        return
++        return None
 +    capability = torch.cuda.get_device_capability(layer.gate_up_proj.device)
 +    if capability[0] < 9:
-+        return
++        return None
 +    # The serving kernel is specialized to the released 4096-wide routed
 +    # expert. Tiny fixtures and other Muse variants stay on stock Marlin.
 +    if (
@@ -880,35 +1373,51 @@ index f6d450a..01039b2 100644
 +        or layer.gate_up_proj.shape[1] != 8192
 +        or layer.gate_up_proj.shape[2] * 2 != 4096
 +    ):
-+        return
++        return None
 +    try:
 +        from sglang.srt.layers.muse_spark_moe_v4 import prepare_layer
 +
 +        layer._muse_v4_state = prepare_layer(layer)
 +        logger.info(
-+            "Prepared Muse V4 routed NVFP4 bank for %d local experts on SM%d%d",
++            "Prepared Muse V6 routed NVFP4 bank for %d local experts on SM%d%d",
 +            layer.gate_up_proj.shape[0],
 +            capability[0],
 +            capability[1],
 +        )
++        return layer._muse_v4_state
 +    except Exception:
 +        layer._muse_v4_state = None
 +        logger.warning(
-+            "Muse V4 bank preparation failed; retaining stock Marlin path",
++            "Muse V6 bank preparation failed; retaining stock Marlin path",
 +            exc_info=True,
 +        )
++        return None
 +
  
  def _align_fp4_moe_weights_for_flashinfer_trtllm(layer) -> None:
      """Align Muse's ``[w1, w3]`` checkpoint layout in-place.
-@@ -126,6 +168,10 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
+@@ -126,6 +170,24 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
      )
  
      def _process_weights_for_marlin(self, layer):
-+        # The optional bank is packed from the lossless ModelOpt tensors before
-+        # Marlin permutes them. Marlin remains the exact fallback for all other
-+        # token counts and for the explicit A/B stock flag.
-+        _prepare_muse_v4(layer)
++        # Build the one canonical V6 bank from the lossless ModelOpt tensors.
++        # The stock Marlin conversion is retained only for the explicit stock
++        # A/B path or when preparation is unavailable.
++        state = _prepare_muse_v4(layer)
++        if state is not None:
++            layer._muse_single_bank = True
++            for name in (
++                "gate_up_proj",
++                "down_proj",
++                "gate_up_proj_weight_scale",
++                "down_proj_weight_scale",
++                "gate_up_proj_weight_scale_2",
++                "down_proj_weight_scale_2",
++                "gate_up_proj_input_scale",
++                "down_proj_input_scale",
++            ):
++                layer._parameters.pop(name, None)
++            return None
          for alias, native in self._MARLIN_PARAM_ALIASES:
              setattr(layer, alias, getattr(layer, native))
          result = super().process_weights_after_loading(layer)
@@ -1000,7 +1509,7 @@ index 62f823b..b260383 100644
          return self.hidden_norm(projected)
  
 diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
-index 312b342..57cbd20 100644
+index 312b342..ea24567 100644
 --- a/python/sglang/srt/models/muse_spark.py
 +++ b/python/sglang/srt/models/muse_spark.py
 @@ -33,6 +33,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
@@ -1178,3 +1687,18 @@ index 312b342..57cbd20 100644
              else:
                  expert_input = bf16_gemm_dispatch(
                      hidden_states, self.pre_expert_proj.weight, None
+@@ -1174,11 +1262,11 @@ class MuseSpark1xModel(nn.Module):
+                 get_parallel().tp_size not in (4, 8)
+                 or get_parallel().moe_ep_size != get_parallel().tp_size
+                 or is_dp_attention_enabled()
+-                or torch.cuda.get_device_capability()[0] != 10
++                or torch.cuda.get_device_capability() not in ((9, 0), (10, 3))
+             ):
+                 logger.warning(
+-                    "Finalize AR fusion unavailable: requires Blackwell TP4/EP4 or TP8/EP8 "
+-                    "without DP attention. Using separate finalize and AR."
++                    "Finalize AR fusion unavailable: requires Hopper/Blackwell TP4/EP4 "
++                    "or TP8/EP8 without DP attention. Using separate finalize and AR."
+                 )
+             else:
+                 moe_layers = [layer.mlp for layer in self.layers if layer.is_moe_layer]

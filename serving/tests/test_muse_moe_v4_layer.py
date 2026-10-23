@@ -1,8 +1,8 @@
-"""Layer-level screen for the Muse V4 bank against stock NVFP4 Marlin.
+"""Layer-level screen for the single canonical V6 bank against stock Marlin.
 
 Run inside the pinned image with ``tools/img python -u serving/tests/...``.
-The test intentionally uses real 4096 x 4096 serialized NVFP4 shapes and keeps
-the production gate visible: V4 is selected only for verify M=8/128/256.
+The test intentionally uses real 4096 x 4096 serialized NVFP4 shapes and covers
+the verify and grouped prefill sizes used by serving.
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ LOCAL_EXPERTS = 32
 GLOBAL_EXPERTS = 256
 TOP_K = 8
 REFERENCE_REL_L2_TOL = 1.5e-2
-V4_TOKEN_COUNTS = frozenset((8, 128, 256))
+TEST_TOKEN_COUNTS = (1, 8, 16, 32, 64, 128, 256, 753, 3012, 16384)
 
 
 def _weights(device: torch.device):
@@ -50,11 +50,22 @@ def _weights(device: torch.device):
             dtype=torch.float8_e4m3fn,
             device=device,
         ),
-        "w13_gs_gate": torch.full(
-            (LOCAL_EXPERTS,), 1.0 / 256.0, dtype=torch.float32, device=device
+        "w13_gs_gate": torch.linspace(
+            1.0 / 256.0,
+            2.0 / 256.0,
+            LOCAL_EXPERTS,
+            dtype=torch.float32,
+            device=device,
         ),
-        "w13_gs_up": torch.full(
-            (LOCAL_EXPERTS,), 1.0 / 256.0, dtype=torch.float32, device=device
+        "w13_gs_up": torch.linspace(
+            1.0 / 256.0,
+            2.0 / 256.0,
+            LOCAL_EXPERTS,
+            dtype=torch.float32,
+            device=device,
+        )
+        * torch.linspace(
+            0.5, 1.5, LOCAL_EXPERTS, dtype=torch.float32, device=device
         ),
         "w2": torch.randint(
             0,
@@ -203,33 +214,21 @@ def main():
         raise RuntimeError("CUDA is required")
     device = torch.device("cuda")
     weights = _weights(device)
-    v4_state = prepare(weights, local_start=0)
+    v6_state = prepare(weights, local_start=0)
     marlin_layer, workspace = _marlin_state(weights, device)
-    print("m,patched_rel_l2,patched_max_abs,v4_rel_l2,graph_rel_l2,within_1.5pct")
-    for m in (1, 8, 16, 32, 64, 128, 256):
+    print("m,patched_rel_l2,patched_max_abs,graph_rel_l2,within_1.5pct")
+    for m in TEST_TOKEN_COUNTS:
         x, ids, scores = _inputs(m, device, 7000 + m)
         stock = _stock(marlin_layer, workspace, weights, x, ids, scores)
-        patched = (
-            run_layer(v4_state, x, scores, ids)
-            if m in V4_TOKEN_COUNTS
-            else _stock(marlin_layer, workspace, weights, x, ids, scores)
-        )
-        v4 = run_layer(v4_state, x, scores, ids)
-        if m in V4_TOKEN_COUNTS:
-            patched_fn = lambda a, b, c: run_layer(v4_state, a, c, b)
-        else:
-            patched_fn = lambda a, b, c: _stock(
-                marlin_layer, workspace, weights, a, b, c
-            )
+        patched = run_layer(v6_state, x, scores, ids)
+        patched_fn = lambda a, b, c: run_layer(v6_state, a, c, b)
         graph_patched = _capture(patched_fn, (x, ids, scores))
         delta = patched.float() - stock.float()
-        v4_delta = v4.float() - stock.float()
         rel = delta.norm() / stock.float().norm().clamp_min(1e-8)
-        v4_rel = v4_delta.norm() / stock.float().norm().clamp_min(1e-8)
         graph_rel = (graph_patched.float() - patched.float()).norm() / patched.float().norm().clamp_min(1e-8)
         max_abs = delta.abs().max()
         print(
-            f"{m},{float(rel):.7g},{float(max_abs):.7g},{float(v4_rel):.7g},"
+            f"{m},{float(rel):.7g},{float(max_abs):.7g},"
             f"{float(graph_rel):.7g},{bool(rel <= REFERENCE_REL_L2_TOL)}"
         )
 
