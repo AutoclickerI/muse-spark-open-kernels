@@ -1,0 +1,11 @@
+{
+  "request": {
+    "id": 2,
+    "method": "turn/interrupt",
+    "params": {
+      "threadId": "01a167f8-bada-7f60-b20b-48d0813eb376",
+      "turnId": "01a167f8-bc95-7683-91aa-3c330b3e3aaa"
+    }
+  },
+  "reason": "Local kernel round verified and saved; stop stale-hook retry loop without changing config or interrupting other threads."
+}

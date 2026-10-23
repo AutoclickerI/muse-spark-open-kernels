@@ -104,3 +104,121 @@ s=s.replace('    mod.probe_log(ticks, state[\'probe_count\'], m, n, int(skip_nat
         i += 1
     mod.probe_log(ticks, state['probe_count'], m, n, int(skip_native))''')
 (p/'cand_probe.py').write_text(s)
+
+# Checked V7 control, sharing the prepared bank and synchronization-only scratch.
+import ast
+v7text=(p/'cand_v7.py').read_text()
+v7tree=ast.parse(v7text)
+v7lines=v7text.splitlines(keepends=True)
+def function_text(name):
+ n=next(x for x in v7tree.body if isinstance(x,ast.FunctionDef) and x.name==name)
+ return ''.join(v7lines[n.lineno-1:n.end_lineno])
+constants={}
+for n in v7tree.body:
+ if isinstance(n,ast.Assign) and isinstance(n.value,ast.Constant) and isinstance(n.value.value,str):
+  for t in n.targets:
+   if isinstance(t,ast.Name):constants[t.id]=n.value.value
+module=function_text('_module').replace('def _module():','def _v7_probe_module():').replace('_MOD','_V7_MOD').replace('CUDA_SRC','V7_CUDA_SRC').replace('CPP_SRC','V7_CPP_SRC')
+call=function_text('kernel_fn').replace('def kernel_fn(data, state):','def _v7_probe_call(data, state):').replace('mod = state["mod"]','mod = state["v7_mod"]')
+s+='\nV7_CUDA_SRC = r"""'+constants['CUDA_SRC']+'"""\nV7_CPP_SRC = r"""'+constants['CPP_SRC']+'"""\n_V7_MOD = None\n'+module+'\n\n'+call+'\n'
+s=s.replace("    state['grouped_mod'] = _grouped_module()\n", "    state['grouped_mod'] = _grouped_module()\n    state['v7_mod'] = _v7_probe_module()\n")
+s=s.replace('n = 9 if skip_native else 12','n = 9 if skip_native else 13')
+s=s.replace("    mod.probe_log(ticks, state['probe_count'], m, n, int(skip_native))", '''    if not skip_native:
+        checked_output = out
+        mod.probe_evict(state['probe_flush'], sink, state['grid'] * 4)
+        mod.probe_stamp(ticks, 2 + 2*i)
+        _v7_probe_call(data, state)
+        mod.probe_stamp(ticks, 3 + 2*i)
+        out = checked_output
+    mod.probe_log(ticks, state['probe_count'], m, n, int(skip_native))''')
+(p/'cand_probe.py').write_text(s)
+
+# Canonical K512 bulk reader, still over the same resident bank.
+tma_tree=ast.parse((p/'cand_rs_tma.py').read_text())
+tma_node=next(n for n in tma_tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='GROUPED_SRC' for t in n.targets))
+tma_src=ast.literal_eval(tma_node.value)
+a=tma_src.index('namespace canonical {');b=tma_src.index('void route(torch::Tensor');c=tma_src.index('void configure()')
+tma_code=(tma_src[a:b]+tma_src[c:]).replace('namespace canonical {','namespace canonical_tma {').replace('canonical::','canonical_tma::').replace('void configure()','void configure_tma()').replace('void gemm(torch::Tensor','void gemm_tma(torch::Tensor')
+s+='\nGROUPED_SRC += r"""'+tma_code+'"""\n'
+s=s.replace("'gemm_wide']", "'gemm_wide', 'gemm_tma', 'configure_tma', 'probe_compare']")
+s=s.replace("'void probe_evict(torch::Tensor,torch::Tensor,int64_t);", "'void gemm_tma(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t,int64_t,int64_t,int64_t);\\n'\n                            'void configure_tma();\\n'\n                            'void probe_compare(torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t);\\n'\n                            'void probe_evict(torch::Tensor,torch::Tensor,int64_t);")
+s=s.replace('void probe_log(torch::Tensor,torch::Tensor,int64_t,int64_t,int64_t);','void probe_log(torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t,int64_t);')
+s=s.replace("    state['v7_mod'] = _v7_probe_module()\n", "    state['v7_mod'] = _v7_probe_module()\n    state['grouped_mod'].configure_tma()\n    state['weight_stages'] = 2 if torch.cuda.get_device_capability() == (9, 0) else 1\n")
+s=s.replace('def _grouped_call(data, state, fixed_n=0, stages=2, wide=False):','def _grouped_call(data, state, fixed_n=0, stages=2, wide=False, tma=False):')
+s=s.replace('    runner = mod.gemm_wide if wide else mod.gemm', "    runner = mod.gemm_tma if tma else (mod.gemm_wide if wide else mod.gemm)\n    extra = (state['weight_stages'],) if tma else ()")
+s=s.replace('fixed_n, grid, stages)', 'fixed_n, grid, stages, *extra)')
+
+# Emit independent peer-error diagnostics for every timed result, without changing output checks.
+s=s.replace('const int64_t* ticks,int* count,int m,int n,int skip_native', 'const int64_t* ticks,int* count,const float* stats,int m,int n,int skip_native')
+s=s.replace('int v=skip_native?i+3:i;', '''int v=skip_native?(i<9?i+3:13):i;
+  float err=0.f,den=0.f,bad=0.f,worst=0.f;
+  for(int r=0;r<m;++r){const float* q=stats+(i*m+r)*3;err+=q[0];den+=q[1];bad+=q[2];}
+  float floor=den/m*.01f;
+  for(int r=0;r<m;++r){const float* q=stats+(i*m+r)*3;worst=fmaxf(worst,q[0]/fmaxf(q[1],fmaxf(floor,1e-30f)));}''')
+s=s.replace('variant=%d raw_ns=%lld\\n",m,v,(long long)(ticks[3+2*i]-ticks[2+2*i])', 'variant=%d raw_ns=%lld peer_l2=%.7f peer_max_row=%.7f finite=%d\\n",m,v,(long long)(ticks[3+2*i]-ticks[2+2*i]),sqrtf(err/fmaxf(den,1e-30f)),sqrtf(worst),(int)(bad==0.f)')
+s=s.replace('void probe_log(torch::Tensor ticks,torch::Tensor count,int64_t m,int64_t n,int64_t skip_native)', 'void probe_log(torch::Tensor ticks,torch::Tensor count,torch::Tensor stats,int64_t m,int64_t n,int64_t skip_native)')
+s=s.replace('ticks.data_ptr<int64_t>(),count.data_ptr<int>(),m,n,skip_native', 'ticks.data_ptr<int64_t>(),count.data_ptr<int>(),stats.data_ptr<float>(),m,n,skip_native')
+s+=r'''
+GROUPED_SRC += r"""
+namespace probe {
+__global__ void compare(const __nv_bfloat16* actual,const __nv_bfloat16* ref,float* stats,int variant,int m){
+ __shared__ float partial[8][3];
+ int row=blockIdx.x,t=threadIdx.x,l=t&31,w=t>>5;
+ float err=0.f,den=0.f,bad=0.f;
+ for(int c=t;c<4096;c+=256){float a=__bfloat162float(actual[(size_t)row*4096+c]),b=__bfloat162float(ref[(size_t)row*4096+c]);float d=a-b;err+=d*d;den+=b*b;bad+=(!isfinite(a)||!isfinite(b));}
+ for(int d=16;d;d>>=1){err+=__shfl_down_sync(~0u,err,d);den+=__shfl_down_sync(~0u,den,d);bad+=__shfl_down_sync(~0u,bad,d);}
+ if(l==0){partial[w][0]=err;partial[w][1]=den;partial[w][2]=bad;}
+ __syncthreads();
+ if(w==0){err=l<8?partial[l][0]:0;den=l<8?partial[l][1]:0;bad=l<8?partial[l][2]:0;
+  for(int d=16;d;d>>=1){err+=__shfl_down_sync(~0u,err,d);den+=__shfl_down_sync(~0u,den,d);bad+=__shfl_down_sync(~0u,bad,d);}
+  if(l==0){float* q=stats+(variant*m+row)*3;q[0]=err;q[1]=den;q[2]=bad;}
+ }
+}
+}
+void probe_compare(torch::Tensor actual,torch::Tensor ref,torch::Tensor stats,int64_t variant,int64_t m){probe::compare<<<m,256,0,at::cuda::getCurrentCUDAStream()>>>((const __nv_bfloat16*)actual.data_ptr(),(const __nv_bfloat16*)ref.data_ptr(),stats.data_ptr<float>(),variant,m);C10_CUDA_KERNEL_LAUNCH_CHECK();}
+"""
+'''
+# Rewrite the Python sweep plainly; the returned result remains the 128-row three-stage RS path.
+tree=ast.parse(s);fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='kernel_fn')
+lines=s.splitlines(keepends=True);a=sum(map(len,lines[:fn.lineno-1]));b=sum(map(len,lines[:fn.end_lineno]))
+fntext='''def kernel_fn(data, state):
+    # Check-only diagnostic: all work, timing, flushing and validation occurs in this call.
+    m = data['hidden_states'].shape[0]
+    assert m <= 16384
+    skip_native = m > 512
+    specs = [] if skip_native else [('native', 2, 2), ('native', 2, 1), ('native', 3, 1)]
+    specs += [('grouped', width, 2) for width in (8, 16, 32, 64, 128, 0)]
+    specs += [('grouped', 0, 3), ('wide', 0, 2), ('wide', 0, 3)]
+    if not skip_native:
+        specs += [('v7', 0, 0)]
+    specs += [('tma', 0, 2)]
+    n = len(specs)
+    dev = data['hidden_states'].device
+    ticks = torch.empty((2*n+2,), dtype=torch.int64, device=dev)
+    stats = torch.empty((n,m,3), dtype=torch.float32, device=dev)
+    sink = torch.empty((state['grid']*4*256,), dtype=torch.uint32, device=dev)
+    mod = state['grouped_mod']
+    mod.probe_stamp(ticks, 0)
+    mod.probe_stamp(ticks, 1)
+    anchor = None
+    checked_output = None
+    for i, (kind, a, b) in enumerate(specs):
+        mod.probe_evict(state['probe_flush'], sink, state['grid']*4)
+        mod.probe_stamp(ticks, 2+2*i)
+        if kind == 'native':
+            out = _native_call(data, state, a, b)
+        elif kind == 'v7':
+            out = _v7_probe_call(data, state)
+        else:
+            out = _grouped_call(data, state, a, b, wide=(kind=='wide'), tma=(kind=='tma'))
+        mod.probe_stamp(ticks, 3+2*i)
+        if anchor is None:
+            anchor = out
+        mod.probe_compare(out, anchor, stats, i, m)
+        if kind == 'wide' and b == 3:
+            checked_output = out
+    mod.probe_log(ticks, state['probe_count'], stats, m, n, int(skip_native))
+    return checked_output
+'''
+s=s[:a]+fntext+s[b:]
+(p/'cand_probe.py').write_text(s)

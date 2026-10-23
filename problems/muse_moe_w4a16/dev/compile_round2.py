@@ -15,6 +15,9 @@ for filename in sys.argv[1:]:
   cpp=('void route(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t);\n'
        'void gemm(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t,int64_t,int64_t);')
   functions=['route','gemm']
+  if 'void configure()' in src:
+   cpp=cpp.replace('int64_t,int64_t,int64_t,int64_t);','int64_t,int64_t,int64_t,int64_t,int64_t);')+'\nvoid configure();'
+   functions.append('configure')
  else:
   src,cpp=m.CUDA_SRC,m.CPP_SRC
   functions=['max_smem_attr','smem_needed','resident_blocks','run']
