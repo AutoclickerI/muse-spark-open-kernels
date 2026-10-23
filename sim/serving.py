@@ -1,13 +1,18 @@
 """Serving model: one step of the node (8xH200; TP8 attention and dense, EP8 experts) under the judge's
-recipe (DFlash, each request verifying an 8-token block per step), the throughput/interactivity
-curve over the judge's rungs, and the score: our throughput at stock's interactivity over stock's,
-averaged over rungs (the site's "Score" card; how it handles points off our curve isn't published).
+recipe (DFlash, each request verifying an 8-token block per step), whole multi-turn conversations,
+the throughput/interactivity curve over the judge's rungs, and the score: our throughput at stock's
+interactivity over stock's, averaged over rungs (the site's "Score" card; how points off our curve
+are handled isn't published).
 
-All times are per GPU per step; the 8 GPUs run the same step and the busiest sets the pace.
-Stock's layer and prefill times are the judge's own SGLang measurements (sim.calibrate's runs);
-the rest of stock's step (LM head, drafter, all-reduces) is modeled like ours at cuBLAS rates.
+All times are per GPU; the 8 GPUs run the same step and the busiest sets the pace. Stock's layer and
+prefill times are the judge's own SGLang measurements (sim.calibrate's runs); the rest of stock's
+step (LM head, drafter, all-reduces, the two BF16-expert layers) is modeled at cuBLAS rates.
 
-    python -m sim.serving [--tau 4] [--allreduce-us 8] [--cpu-us 0]
+The workload is modeled on LMSYS's OpenHands simulation for Muse (day-0 blog, 2026-10-15): a
+conversation is ~13 turns, a ~74K-token first turn, then ~753 new tokens per turn, 220 output tokens
+per turn. The judge's conversations are hidden; prefill is served in line with decode (no overlap).
+
+    python -m sim.serving [--tau 4.16] [--turns 13] [--allreduce-us 5.5] [--host-us 0]
 """
 
 import argparse
@@ -15,17 +20,18 @@ import math
 
 from sim import hw, muse
 from sim.calibrate import latest_runs, shapes
-from sim.problems import shape_bounds
+from sim.problems import layer_routing, shape_bounds, spec, task_floors
 
 RUNGS = (1, 4, 16, 32)
 BLOCK = 8              # --speculative-num-draft-tokens 8
 OUTPUT_TOKENS = 220    # every request returns exactly 220 tokens
-TURN_TOKENS = 753      # new tokens per agentic turn (muse_prefill_layer's turn loads)
 CTX = 80_000
+BF16_EXPERT_LAYERS = 2   # layers 0 and 61 keep BF16 experts (srt/layers/muse_spark_bf16_moe.py)
+BF16_EXPERT_BYTES = 3 * muse.D_MOE * muse.D_MOE * 2
 STOCK_GEMM = (2.8, 3.54e12)   # SGLang's cuBLAS on H200: fixed us, bytes/s (sim.calibrate, bf16_proj)
 
 
-def _loglog(points: dict[int, float], x: float) -> float:
+def _loglog(points: dict[float, float], x: float) -> float:
     """Interpolate y(x) from {x: y} in log-log space (extrapolating from the end segments)."""
     xs = sorted(points)
     lo, hi = (xs[0], xs[1]) if x <= xs[0] else (xs[-2], xs[-1]) if x >= xs[-1] else \
@@ -34,99 +40,115 @@ def _loglog(points: dict[int, float], x: float) -> float:
     return math.exp(math.log(points[lo]) * (1 - w) + math.log(points[hi]) * w)
 
 
-def stock_layer_us(problem: str, select) -> dict[str, dict[int, float]]:
-    """SGLang's measured per-layer time {layer: {batch: us}} for the shapes `select` keeps."""
+def _stock_shapes(problem: str) -> list[dict]:
     run = latest_runs().get(problem)
     if run is None:
         raise SystemExit(f"no calibration run for {problem} in runs/ (tools/okc_run.py check ...)")
-    out: dict[str, dict[int, float]] = {}
-    for r in shapes(run):
-        c = r["case"]
-        if select(c):
-            out.setdefault(c["layer"], {})[c["batch"]] = r["sglang_us"]
-    return out
+    return shapes(run)
 
 
-def layer_stack_us(c: int, design: str) -> float:
-    """The 62 target layers at batch c, q_len 8, ctx CTX."""
+def _gemm_us(design: str, nbytes: float, kernels: int) -> float:
     if design == "stock":
-        per = stock_layer_us("muse_decode_layer", lambda case: case.get("q_len") == BLOCK)
-        return muse.SLIDING_LAYERS * _loglog(per["sliding"], c) + muse.FULL_LAYERS * _loglog(per["full"], c)
+        fixed, bps = STOCK_GEMM
+        return kernels * fixed + nbytes / bps * 1e6
+    if design == "expected":
+        return hw.stream_us(nbytes, 1.0)
+    return hw.kernels_us(kernels) + hw.stream_us(nbytes)
+
+
+def layer_stack_us(c: int, design: str, shard_dense: bool = False) -> float:
+    """The 62 target layers at batch c, q_len 8, ctx CTX (two of them with BF16 experts)."""
+    tokens = c * BLOCK
+    touched, _ = layer_routing(tokens)
+    bf16_extra = BF16_EXPERT_LAYERS * _gemm_us(design, touched * (BF16_EXPERT_BYTES - muse.EXPERT_BYTES), 0)
+    if design == "stock":
+        per: dict[str, dict[float, float]] = {}
+        for r in _stock_shapes("muse_decode_layer"):
+            if r["case"].get("q_len") == BLOCK:
+                per.setdefault(r["case"]["layer"], {})[r["case"]["batch"]] = r["sglang_us"]
+        return muse.SLIDING_LAYERS * _loglog(per["sliding"], c) + muse.FULL_LAYERS * _loglog(per["full"], c) + bf16_extra
     kernels = {"practical": 8, "megakernel": 1, "expected": 1}[design]
     key = "expected" if design == "expected" else "practical"
-    total = 0.0
+    total = bf16_extra
     for layer, n in (("sliding", muse.SLIDING_LAYERS), ("full", muse.FULL_LAYERS)):
         b = {"batch": c, "q_len": BLOCK, "ctx": CTX, "layer": layer, "spread": "agentic" if c > 1 else "fixed"}
         total += n * shape_bounds("muse_decode_layer", b, kernels)[key]
+    if shard_dense:  # each GPU reads 1/8 of the replicated pooler (and unpooler above 8 tokens)
+        saved = muse.POOLER_BYTES + (muse.unpooler_bytes(tokens) if tokens > muse.SLICED_MAX_TOKENS else 0)
+        total -= muse.LAYERS * _gemm_us(design, saved * (1 - 1 / muse.TP), 0)
     return total
 
 
-def prefill_us(design: str) -> float:
-    """One request's turn: TURN_TOKENS new tokens on CTX through the 62 layers."""
+def prefill_load_us(load: str, design: str) -> float:
+    """One of muse_prefill_layer's loads through the whole model ('turn 1': one request's ~753-token
+    turn at 80K; 'first turn': a 64K-token first turn in 16K chunks)."""
+    benches = spec("muse_prefill_layer")["benchmarks"]
     if design == "stock":
-        per = stock_layer_us("muse_prefill_layer", lambda case: case.get("q_len") == TURN_TOKENS and case["batch"] == 1)
-        return muse.SLIDING_LAYERS * per["sliding"][1] + muse.FULL_LAYERS * per["full"][1]
+        times = {tuple(sorted((k, v) for k, v in r["case"].items() if k not in ("seed",))): r["sglang_us"]
+                 for r in _stock_shapes("muse_prefill_layer")}
+        return sum(b["weight"] * times[tuple(sorted((k, v) for k, v in b.items() if k != "seed"))]
+                   for b in benches if b["load"] == load)
     kernels, key = (10, "practical") if design != "expected" else (1, "expected")
-    return sum(n * shape_bounds("muse_prefill_layer", {"batch": 1, "q_len": TURN_TOKENS, "ctx": CTX, "layer": layer},
-                                kernels)[key]
-               for layer, n in (("sliding", muse.SLIDING_LAYERS), ("full", muse.FULL_LAYERS)))
+    return sum(b["weight"] * shape_bounds("muse_prefill_layer", b, kernels, tf)[key]
+               for b, tf in zip(benches, task_floors("muse_prefill_layer")) if b["load"] == load)
 
 
-def extras_us(design: str, allreduce_us: float, cpu_us: float) -> dict[str, float]:
-    """The step's work outside the 62 layers: LM head, drafter, all-reduces, host."""
+def extras_us(design: str, c: int, host_us: float) -> dict[str, float]:
+    """The step's work outside the 62 layers at batch c: LM head, drafter, all-reduces, host."""
     d = muse.DRAFT
     drafter_kernels = d["layers"] * 6 + 2        # qkv, attention, o, gate_up, down, norms; fc; head
-    if design == "stock":
-        fixed, bps = STOCK_GEMM
-        gemm = lambda nbytes, kernels: kernels * fixed + nbytes / bps * 1e6   # noqa: E731
-    else:
-        bw = 1.0 if design == "expected" else hw.EFF["bw"]
-        gemm = lambda nbytes, kernels: (0 if design == "expected" else hw.kernels_us(kernels)) + hw.stream_us(nbytes, bw)  # noqa: E731
-    # Two all-reduces per target layer (after o and after the unpooler) and per drafter layer.
+    # After o and after the unpooler (target), after o and the MLP (drafter); [tokens, 8192] bf16.
     reduces = 2 * (muse.LAYERS + d["layers"])
-    return {"lm_head": gemm(muse.LM_HEAD_BYTES, 1), "drafter": gemm(muse.drafter_bytes(), drafter_kernels),
-            "allreduce": reduces * (0 if design == "expected" else allreduce_us), "host": cpu_us}
+    payload = c * BLOCK * muse.HIDDEN * 2
+    return {"lm_head": _gemm_us(design, muse.LM_HEAD_BYTES, 1),
+            "drafter": _gemm_us(design, muse.drafter_bytes(), drafter_kernels),
+            "allreduce": 0.0 if design == "expected" else reduces * hw.allreduce_us(payload), "host": host_us}
 
 
-def curve(design: str, tau: float, allreduce_us: float, cpu_us: float) -> dict[int, dict[str, float]]:
-    """Per rung: step time, and (serving each user's turn prefill in line with the decode steps)
-    throughput in tokens/s per GPU and interactivity in tokens/s per user."""
-    extras = sum(extras_us(design, allreduce_us, cpu_us).values())
-    prefill = prefill_us(design)
+def curve(design: str, args, shard_dense: bool = False) -> dict[int, dict[str, float]]:
+    """Per rung: step time, and with every user running one whole conversation (its prefills
+    in line with the decode steps), tokens/s per GPU and tokens/s per user."""
+    prefill = prefill_load_us("first turn", design) + (args.turns - 1) * prefill_load_us("turn 1", design)
+    out_tokens = args.turns * OUTPUT_TOKENS
     out = {}
     for c in RUNGS:
-        step = layer_stack_us(c, design) + extras
-        round_us = c * prefill + OUTPUT_TOKENS / tau * step   # every user finishes one turn
-        out[c] = {"step_us": step, "per_gpu": OUTPUT_TOKENS * c / round_us * 1e6 / 8,
-                  "per_user": OUTPUT_TOKENS / round_us * 1e6, "prefill_share": c * prefill / round_us}
+        step = layer_stack_us(c, design, shard_dense) + sum(extras_us(design, c, args.host_us).values())
+        window = c * prefill + out_tokens / args.tau * step
+        out[c] = {"step_us": step, "per_gpu": out_tokens * c / window * 1e6 / 8,
+                  "per_user": out_tokens / window * 1e6, "prefill_share": c * prefill / window}
     return out
 
 
 def score(ours: dict, stock: dict) -> tuple[float, dict[int, float]]:
     """Mean over rungs of our throughput at stock's interactivity over stock's throughput."""
     pts = {v["per_user"]: v["per_gpu"] for v in ours.values()}
-    per = {}
-    for c, s in stock.items():
-        per[c] = _loglog(pts, s["per_user"]) / s["per_gpu"]
+    per = {c: _loglog(pts, s["per_user"]) / s["per_gpu"] for c, s in stock.items()}
     return sum(per.values()) / len(per), per
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tau", type=float, default=4.0, help="tokens accepted per verify step (stock's DFlash)")
-    ap.add_argument("--allreduce-us", type=float, default=hw.EFF["allreduce_us"])
-    ap.add_argument("--cpu-us", type=float, default=0.0, help="host time per step not hidden by overlap")
+    ap.add_argument("--tau", type=float, default=4.16, help="tokens accepted per verify step (LMSYS: 4.16 on AgentX)")
+    ap.add_argument("--turns", type=int, default=13, help="turns per conversation (LMSYS's OpenHands simulation)")
+    ap.add_argument("--allreduce-us", type=float, default=hw.EFF["allreduce_us"], help="all-reduce latency (sim.hw)")
+    ap.add_argument("--host-us", type=float, default=0.0, help="host time per step not hidden by overlap")
     args = ap.parse_args()
-    curves = {d: curve(d, args.tau, args.allreduce_us, args.cpu_us) for d in ("stock", "practical", "megakernel", "expected")}
-    print(f"tau {args.tau} accepted tokens/step, all-reduce {args.allreduce_us} us, host {args.cpu_us} us/step, ctx {CTX:,}")
-    for d, cv in curves.items():
-        ex = extras_us(d, args.allreduce_us, args.cpu_us)
-        print(f"\n== {d}: prefill {prefill_us(d) / 1e3:.1f} ms/turn; per step: "
+    hw.EFF["allreduce_us"] = args.allreduce_us
+    print(f"tau {args.tau}, {args.turns} turns/conversation, all-reduce {args.allreduce_us} us, host {args.host_us} us/step, ctx {CTX:,}")
+    designs = {"stock": ("stock", False), "practical": ("practical", False),
+               "practical + sharded pooler": ("practical", True), "megakernel": ("megakernel", False),
+               "expected (4.8 TB/s, no overheads)": ("expected", False)}
+    curves = {}
+    for name, (d, shard) in designs.items():
+        curves[name] = cv = curve(d, args, shard)
+        ex = extras_us(d, 32, args.host_us)
+        print(f"\n== {name}: prefill per conversation {(prefill_load_us('first turn', d) + (args.turns - 1) * prefill_load_us('turn 1', d)) / 1e3:,.0f} ms"
+              f" (first turn {prefill_load_us('first turn', d) / 1e3:,.0f}, later turns {prefill_load_us('turn 1', d) / 1e3:.0f} each); per step at c=32: "
               + ", ".join(f"{k} {v:.0f} us" for k, v in ex.items()))
         for c, v in cv.items():
-            print(f"   c={c:<3} step {v['step_us'] / 1e3:6.2f} ms (layers {layer_stack_us(c, d) / 1e3:6.2f})"
-                  f"  {v['per_gpu']:8.1f} tok/s/GPU  {v['per_user']:7.1f} tok/s/user  prefill {v['prefill_share']:.0%}")
-        if d != "stock":
+            print(f"   c={c:<3} step {v['step_us'] / 1e3:6.2f} ms (layers {layer_stack_us(c, d, shard) / 1e3:6.2f})"
+                  f"  {v['per_gpu']:8.1f} tok/s/GPU  {v['per_user']:7.1f} tok/s/user  prefill {v['prefill_share']:.0%} of time")
+        if name != "stock":
             mean, per = score(cv, curves["stock"])
             print(f"   score vs stock {mean:.2f}x  (" + ", ".join(f"c{c} {x:.2f}" for c, x in per.items()) + ")")
 

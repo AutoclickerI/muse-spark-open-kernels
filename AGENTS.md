@@ -49,3 +49,11 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
   plug in.
 - **Upstream changes.** Run `tools/sync_upstream.sh` before starting work. If the official
   files changed, read the diff before relying on them.
+
+## On demand
+
+- [HARDWARE](HARDWARE.md): the H200's rates, limits and what Hopper lacks for NVFP4/FP8, with sources.
+- [FINDINGS](FINDINGS.md): what our judge runs measured (SGLang's per-shape times), with receipts.
+- [SOTA](SOTA.md): the leaderboard and prior work worth borrowing, per problem.
+- [CEILING](CEILING.md): how fast each problem and the serving step can get (`sim/`), and how far
+  the leaders are from it.

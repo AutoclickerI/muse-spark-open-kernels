@@ -68,6 +68,10 @@ tools/img             run a command in the judge's image (Apptainer SIF), GPUs a
 tools/local_eval.py   local screen: the tests, then CUDA-graph timing against baseline.py
 tools/okc_run.py      okc check/submit with a receipt: runs/<problem>/ + runs/ledger.jsonl
 runs/                 receipts of every remote run (exact source, okc's JSON, the ledger)
+runs/calibration/     SGLang's baseline.py sent as a check, to profile its kernels on the judge
+sim/                  performance model: `python -m sim` (problem ceilings), `-m sim.serving`
+                      (serving step and score), `-m sim.calibrate` (SGLang's measured times)
+HARDWARE.md FINDINGS.md SOTA.md CEILING.md   reference docs (AGENTS.md links them)
 serving/              okc serve init: RULES.md, patch.diff; sglang/ is the pinned checkout (ignored)
 ```
 
