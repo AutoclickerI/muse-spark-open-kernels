@@ -11,7 +11,7 @@ import torch
 
 P=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(P/'dev'))
-from build_portfolio_all import build,safe_tuner
+from build_portfolio_all import safe_tuner
 
 source=safe_tuner((P/'cand_portfolio_all.py').read_text())
 compile(source,'generated_portfolio.py','exec')
@@ -19,7 +19,10 @@ assert 'deadline=started+240' in source and 'ALL_REJECT_FINAL' in source
 assert "yield ('old',)" not in source
 
 with tempfile.TemporaryDirectory(prefix='projection_tuner_test_') as tmp:
-    path=Path(tmp)/'portfolio.py';build(path)
+    # The retired singles were intentionally deleted after queue triage.
+    # This fault-injection test needs only the live self-contained source,
+    # not regeneration of its archived CUDA bodies from those deleted inputs.
+    path=Path(tmp)/'portfolio.py';path.write_text(source)
     spec=importlib.util.spec_from_file_location('safe_projection_generated',path)
     c=importlib.util.module_from_spec(spec);spec.loader.exec_module(c)
 

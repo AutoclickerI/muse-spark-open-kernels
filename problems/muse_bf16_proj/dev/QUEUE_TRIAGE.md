@@ -1,6 +1,7 @@
-# Old projection singles: queue triage
+# Applied projection queue triage
 
-For Jihoon/orchestrator; no withdrawal or send was performed here.
+Jihoon applied this triage in991e838:14 subsumed singles were withdrawn and deleted.
+reduce_hier and tile remain queued. This list records the rationale; no queue action is pending here.
 
 cand_lt_layout.py: subsumed by cand_portfolio_all
 cand_skinny.py: subsumed by cand_portfolio_all

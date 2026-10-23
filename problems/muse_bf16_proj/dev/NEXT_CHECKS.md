@@ -1,123 +1,114 @@
-# Prefill dense handoff: relay the block (G1/G2)
+# Send next: V11 dense portfolio (prefill priority)
 
-Solo, GPU0 only. Jihoon/orchestrator sends and commits; this thread did neither.
-No new judge candidate is proposed here. The prefill lane merges this block into its portfolios.
+Solo, GPU0 only. Jihoon/orchestrator sends and commits; no send/commit was launched here.
 
-## Ready to relay
+**`problems/muse_prefill_layer/cand_v11_gemm.py`**
 
-**Copyable single-file block:** `problems/muse_bf16_proj/dev/prefill_gemm_block.py`
+Frozen SHA256: **`1b30690ad9e4c6d67f9efc70d8a8cb8e7395765380ba75774b377f701ccfd390`**.
+First line: `# okc: problem=muse_prefill_layer`.
+Parent `cand_v11.py` SHA5162da15f86b3ab5d28fe9cd4db9d0dbce778e1bdace526ab87e7f69acfc643e;
+its full attention, expert and norm/residual code remains intact. This thread owns only
+this new prefill candidate; other lane candidates and serving sources were not edited.
 
-SHA256 **`d2a99b8c077e0e9e8a68e34d6aa51b09b6b0538f6510c9f4c2d7e4a956d57222`**.
-
-**Serving source:** `serving/sglang/python/sglang/srt/layers/muse_prefill_gemm.py`
-
-SHA256 **`ac29455fc374b5bdaa14e3da1a5d2e9f3dfe88f18c4220785245aa5df87ac02b`**.
-
-The block is the same source minus the future-import line; no imports of our own modules.
-`dev/build_prefill_gemm_block.py` exports it and generates an ignored V11 local-integration
-fixture under `runs/screen/prefill_gemm/`. No prefill candidate, expert or owned serving file
-was edited; `muse_prefill_dense.py` remains the prefill lane's.
-
-Interface and per-op H200 gap table: [prefill_gemm.md](../../../docs/reference/prefill_gemm.md).
-
-```python
-pg = prefill_gemm_prepare(weights, tokens=(16384,3012,753), budget_s=60,
-                         deadline=prepare_started+230, incumbent=proven_local_projection,
-                         pool_norm_weight=st['pre_expert'])
-qkv = prefill_gemm_run(x, pg, 'qkv_gate')
-pooled, logits = prefill_gemm_run(h, pg, 'pool_router')
-```
-
-Keys: BF16 qkv_gate/o/pooler/unpooler and FP32 router; subsets allowed. Router result is
-**summed FP32[M,256]**, not512 hi/lo columns. The V11 routing load changes from the sum of
-its512-wide halves to one256-wide load. Sigmoid/bias/top8/local mapping stay intact.
-`pool_router_norm` returns normalized BF16 pooled activations when given the actual effective
-norm vector; remove the duplicate norm in its consumer. Other norms/collectives stay intact.
-Print `prefill_gemm_summary(pg)` last so every role's cold graph timing survives log_tail.
-Bind the lane's H200-proven projection callback at the same input/output consumer boundary;
-include packing/add costs in either path. The default is SGLang-local torch math.
-
-Registry: stock incumbent; five persistent WGMMA tiles xdirect/Stream-K; every returned
-Lt TN/NN heuristic plus supported CTA swizzles and FP32 split-K2/4/8/16/32,1GiB workspace.
-The mixed persistent path accumulates router hi+lo in shared FP32 accumulators and writes
-BF16 pooler output in the same kernel. Stream-K last-CTA reduction has no spinning or
-second launch; two boundary slots/CTA prevent partial overwrite. Counts reset each replay.
-Three fresh probes precede coarse4-pair screen/top3; finalists require20 fresh cold128MiB
-order-swapped graph pairs within1% BF16 /1e-4 FP32 of the incumbent. Shape/dtype/nonfinite
-and **any Exception** reject/log independently; the incumbent remains eligible. A shared
-budget and per-key shares keep later shapes eligible; untried keys retain stock. One in-flight
-JIT cannot be preempted, so reserve margin below the layer's300s prepare limit.
-Factory preparation releases losing layouts, shares mixed NN copies and prints retained
-layout/scratch/workspace bytes. Workspace may be shared across serialized layers; concurrent
-lanes need separate workspaces. Full-node KV/TTFT remains to measure, not a secondary objective.
-
-## Local validation (sm_120)
-
-| Validation | Final result |
+| Final local admission, sm_120 / GPU0 | Result |
 |---|---|
-| Independent module suite | **6/6 tests**;2,751 fresh Lt replays across917 algorithms,288 persistent/Stream-K replays,160 boundary replays,36 norm-epilogue replays,54 selected replays;96 counter-reset checks;5 injected failures rejected |
-| Tuner budget | All18 standard shape/role keys timed; **89.315s** under90s trial budget |
-| Local V11 integration | **5/5 official tests,8/8 fresh-input graph shapes**, **74.705s prepare**; frozen fixture SHA8e807cc3835edae586a40cf568d1c6c47b58b9c723790d03e74670e3eb480a5c |
-| Hopper compile | **180/180** dense specializations use WGMMA;4 norm epilogues; Lt wrapper SM90a builds. Max shared131072bytes |
-| Forced new Hopper glue | **14** strict portable Lt branches,45 fresh replays; loader chooses9.0a; BF16 effective norm agrees with torch; shared/released mixed layout graph-safe |
-| Optional normalized tuner | M753 raw+normalized registry/selected replay passes;18.444s prepare under20s; fused Lt norm epilogue **231.46->213.02us** vs selected separate producers +norm (sm_120) |
-| Old portfolio coverage | Actual7,581 emitted configs /12 families /30 keys pass strict ABI test; archived missing-entrypoint regression reproduced; default validator now invokes this coverage and has no fabricated old_hopper stub |
+| `tools/local_eval.py` | **5/5 official tests,8/8 fresh-input graph shapes**, **173.161s prepare**, exact frozen hash |
+| New QKV numerical/timing suite | **57 configurations**,171 fresh admission replays +1140 cold timed pairs, all within incumbent guards |
+| Forced Hopper Python/ABI | **136 actual emitted configurations /7 QKV families**, strict signature stubs; shape/stride/dtype checks; no invented entrypoints |
+| Failure isolation | **12** attribute/tuple group failures rejected; original V11 group retained at all3 shapes; injected block failure returns original prepared V11 state |
+| Hopper profiler glue | Hopper-only branch forced with real portable BF16 GEMMs and CUDA profiler; actual CUDA kernel names/durations returned for all5 roles |
+| SM90 compile | **18** swapped WGMMA specializations +**12** packing layouts build; Lt wrapper builds SM90a; existing WGMMA math body unchanged |
+| Receipt tail | All**50** local compact lines fit in the last16K (4731 characters); H200 stock-kernel names add roughly1.3K |
 
-The84 rejected sm_120 specializations exceed its shared-memory limit; all180 compile for
-Hopper. No arithmetic failure is suppressed as a resource rejection. Final evidence:
-`tests_final.json`, `layer_screen_final.json`, `sm90_build_final.log`, `glue_final.json`,
-`portfolio_hopper.json`, `portfolio_entrypoint.log`, `tuner_safety.log` in the evidence directory.
-SM120 paired qkv M753 **118.78->106.53us**, M16384 **7137.30->6948.86us**;
-router M753/3012/16384 **45.06/118.82/557.09->41.98/106.50/497.68us**.
-These shared-job local samples are not H200 predictions. H200 ordinals must be queried and
-chosen on that GPU, never copied from these local choices.
+Evidence directory: `runs/screen/prefill_gemm/`:
+`muse_prefill_layer.cand_v11_gemm.json`, `cand_v11_gemm.log`, `qkv_layouts.json`,
+`qkv_sm90.log`, `v11_gemm_glue4.log`, `qkv_geometry.json`.
+The glue fixture is byte-identical to the final candidate (SHA above). The official
+screen JSON records that hash; no final source edit followed it.
 
-Evidence directory: `runs/screen/prefill_gemm/`.
+## What the run measures
+
+V11's original matmuls control qkv_gate/o/pooler/unpooler. Its original concatenated
+512-wide FP32 router, unchanged512-wide routing consumer, counts and pooler order control
+the **whole** router/pooler group. Choices are V11; V11 router +tuned pooler; tuned router
++V11 pooler; both tuned separately; mixed pooler/router. The actual routing consumer is
+included in every group timing, so a spare add/packing launch cannot bias the comparison.
+Raw logits/pooler admission uses1e-4 FP32 /1% BF16; routing checks permit only the layer's
+near-tie score differences. IDs remain int32 and route weights FP32. Final selected paths
+also pass the complete-layer official tests and graph checks locally.
+
+The block retains all returned Lt heuristics with1GiB workspace, supported swizzles and
+FP32 split-K, TN/NN lossless layouts, persistent WGMMA and in-kernel last-CTA Stream-K.
+New qkv families target N2304/K8192 at M16384:
+
+- `qkv_chunk`:512/1024/2048/4096/8192 token chunks, stock cuBLAS or Lt TN/NN; writes
+  directly into final contiguous BF16 output slices, no concat/copy launch.
+- `qkv_pad`: lossless zero padding to N2560/3072/4096, every returned TN/NN Lt heuristic;
+  timed BF16 packing restores the exact2304-column interface.
+- `qkv_swap`: computes W@X.T in the alternate physical output orientation, then a timed
+  transpose; the NN activation transpose is timed too.
+- `qkv_swap_persistent`: same swapped orientation with persistent/Stream-K WGMMA.
+
+M16384 qkv gets four shares of the dense budget. Each successful QKV family has a cold
+20-pair finalist before selection where budget permits; compact `PG_QKV` lines retain
+both losing and winning families. All variants/finalists reject **any Exception**. Block
+or diagnostic failure retains V11. The incumbent remains eligible; no output is cached.
+
+Dense trial deadline210s and group deadline225s are measured from prepare entry, including
+V11 setup. Early synthetic H200 profiling consumes that same budget. An in-flight JIT
+cannot be preempted; the remaining margin is below the requested~240s/official300s limit.
+`PGC_KERNEL` identifies actual stock op/tactic attribution at M16384; `PG_PICK`, `PG_QKV`,
+`PGC_TRIAL`, `PGC_GROUP` and `PGC_END` print last after all compiler/rejection chatter.
+
+## QKV cause: measured facts and hypotheses
+
+[Full analysis](../../../docs/reference/prefill_gemm.md#qkv-m16384-targeted-layout-experiment).
+The inferred V11 qkv rate is437.7TF/s,1413.17us, with625.35us tensor floor. A simple
+320x128 tile/wave model on132SMs gives87.27% combined utilization, insufficient to explain
+44.3% peak. The compulsory BF16 output store costs15.73us at4.8TB/s, not the~788us excess.
+A no-cross-tile-reuse model streams6.87-7.05GB, predicting1.43-1.47ms: close to the observed
+inferred time. This points to operand reuse/shape-selected dataflow, but is not a DRAM/L2
+counter measurement. Cooperative CTA geometry and op-name attribution remain to confirm.
+The run prints op-level stock names and per-family timings to discriminate those causes.
+
+Focused shared **sm_120**20-pair result: new chunk4096 NN **2380.86->2286.14us**, paired
+ratio0.96352. The complete candidate under heavier shared load selected the same variant,
+ratio0.99357; local timing is noisy and is not an H200 prediction. Padding/swap alternatives
+are retained for H200 selection even where they lost locally. At M3012 no new layout beats
+the local incumbent in the focused test; the tuner retains its existing eligible controls.
+
+## Block/serving source handoff
+
+Serving `layers/muse_prefill_gemm.py`: SHA256 **`d0414cd4d1742c67e5ebb45b952bea105f37eeaceeaf09e9941090dfd8bdd7d6`**.
+Copyable `dev/prefill_gemm_block.py`: SHA256 **`75d47832592cd4d50636cd9e179d89922dc44b2ce5115533adbf54f3952d1fd2`**.
+The candidate embeds the block, with no imports of our repository modules. V11 provenance
+and candidate generation are in `dev/build_v11_gemm.py`; it refuses to overwrite changed
+sources. Future revisions need a new output filename after this send.
+
+The original block interface remains `prefill_gemm_prepare`/`prefill_gemm_run`, BF16 dense
+and summed FP32[M,256] router output. Serving integration retains all collectives and norms.
+Only selected padded/NN copies remain after tuning. The candidate's true V11 group control
+is stronger than the earlier local fixture's generic two-product-router control.
+
+Reproduce:
 
 ```sh
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_portfolio_hopper.py --json runs/screen/prefill_gemm/portfolio_hopper.json
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_tuner_safety.py
-CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_muse_prefill_gemm.py --json runs/screen/prefill_gemm/tests_final.json
-CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/compile_muse_prefill_gemm.py
-python problems/muse_bf16_proj/dev/build_prefill_gemm_block.py
-CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py runs/screen/prefill_gemm/prefill_gemm_layer_smoke.py --json runs/screen/prefill_gemm/layer_screen_final.json
-python problems/muse_bf16_proj/dev/prefill_gemm_profiles.py
+CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_prefill_layer/cand_v11_gemm.py --json runs/screen/prefill_gemm/muse_prefill_layer.cand_v11_gemm.json
+CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_v11_gemm.py problems/muse_prefill_layer/cand_v11_gemm.py
+CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_qkv_prefill_layouts.py
+CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/compile_qkv_prefill_layouts.py
+python problems/muse_bf16_proj/dev/qkv_geometry.py
 ```
 
-Local timings under shared sm_120 load are admission evidence. No H200 speedup is claimed.
-H200 execution/selected algorithms, actual op timings, cold prepare time, full TP8 model
-agreement, collectives/overlap, KV capacity and TTFT remain unverified.
+## Existing queues and what remains
 
-## Old projection queue triage
+Jihoon applied the triage in991e838:14 subsumed singles withdrawn/deleted. Only
+`cand_reduce_hier.py` (extra hierarchical tiles) and `cand_tile.py` (distinct staged MMA)
+remain queued. No additional cancellation is needed. Do not recreate the deleted singles.
+The owner-fixed `cand_portfolio_all.py` retry remains the orchestrator's source.
+`cand_dflash_diag.py` is frozen9b4fae2fc29251d8279112f2cd1ff65899b2a249c7618af3fdd97132aa28715a
+and queued; Jihoon will provide its receipt. No queued source was changed here.
 
-[QUEUE_TRIAGE.md](QUEUE_TRIAGE.md) has exactly the16 requested one-line classifications:
-keep **tile** for its distinct staged mma.sync kernel and **reduce_hier** for hierarchical
-BK128/extra-stage split32/64 templates absent from the portfolio's three hierarchical
-templates; the other14 are subsumed by `cand_portfolio_all`. wg/wg2 never set wg_ok and add no active-kernel evidence.
-No withdrawal was performed here. The orchestrator owns cancellations and the retry.
-
-The forced-Hopper test now uses the **actual** generator and dispatcher, all30 scored keys,
-**7,581 configurations across12 families**, with strict portable ABI stubs. It also loads
-archived failed commit1d6a356 and reproduces the missing old_hopper AttributeError. The
-original native validator also fabricated an old_hopper stand-in; it is removed, and its
-default entrypoint now invokes the strict enumeration test before numerical validation. The
-builder template mirrors the owner fix (removed old family, any-Exception rejection), then
-adds independent finalist/layout rejection and the early shared deadline. Injected attribute,
-tuple, numeric, layout and late-finalist failures are rejected; expired deadlines skip30 keys.
-Queued `cand_portfolio_all.py` was **not edited**. The source family coverage cannot validate
-H200 WGMMA execution, which still requires the judge.
-
-## Existing diagnostics/receipts
-
-- `cand_dflash_diag.py`: committed a4dfade, screened and queued by Jihoon. Frozen
-  SHA256 `9b4fae2fc29251d8279112f2cd1ff65899b2a249c7618af3fdd97132aa28715a`.
- 9/9 official tests,30/30 graphs,45.854s prepare locally;48 diagnostic comparisons, compact
-  last5.6K log. Leave frozen and read the receipt when provided.
-- Failed portfolio receipt `3afea80c527c4969`: no score; old_hopper missing at router M128.
-  Jihoon removed old, widened exception rejection, screened9/9+30/30 and re-sent. His retry
-  supersedes that failed source; no result should be inferred from its four coarse choices.
-- Standalone projection best remains f3786341611f4f1f,1.181998x. Decode `cand_r3_proj.py`
-  was accepted24d577c; serving `muse_proj.py` accepted60e7333. Their lanes own integration.
-
-Next: relay the block/interface to the prefill lane, measure actual per-op H200 choices and
-complete-layer speed, and merge only winning serving paths with the existing dense module.
+Next: send the frozen candidate at prefill priority, read its actual H200 stock names,
+per-family/selected timings and layer score. H200 speed/cold prepare, exact root cause,
+full TP8 serving agreement/KV capacity/TTFT remain unverified.

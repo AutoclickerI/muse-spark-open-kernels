@@ -24,6 +24,19 @@ _pg_workspaces = {}
 PG_TILES = ((64, 128, 64, 4, 3), (128, 128, 64, 8, 3),
             (128, 256, 64, 8, 3), (64, 256, 64, 8, 4),
             (128, 128, 128, 8, 3))
+PG_QKV_PAD = (2560, 3072, 4096)
+PG_QKV_CHUNKS = (512, 1024, 2048, 4096, 8192)
+
+
+@triton.jit
+def _pg_pack_matrix(A, Y, M: tl.constexpr, N: tl.constexpr,
+                    S0: tl.constexpr, S1: tl.constexpr, B: tl.constexpr):
+    row = tl.program_id(0) * B + tl.arange(0, B)
+    col = tl.program_id(1) * B + tl.arange(0, B)
+    value = tl.load(A + row[:, None] * S0 + col[None, :] * S1,
+                    (row[:, None] < M) & (col[None, :] < N), 0)
+    tl.store(Y + row[:, None] * N + col[None, :], value,
+             (row[:, None] < M) & (col[None, :] < N))
 
 
 @triton.jit
@@ -315,6 +328,8 @@ class PrefillGemmPlan:
             if pool_norm_weight.dtype not in (torch.bfloat16, torch.float32):
                 raise ValueError('retain the effective norm vector precision')
         self.plans, self.codes, self.transposes, self.timings, self.rejections = {}, {}, {}, {}, []
+        self.qkv_padded, self.qkv_padded_t, self.qkv_codes = {}, {}, {}
+        self.qkv_final = {}
         self.incumbent = incumbent
         self.workspace = workspace
         self.native = None
@@ -371,12 +386,115 @@ class PrefillGemmPlan:
                 if len(tables[nn]): yield ('lt', nn, 0)
             except Exception as exc:
                 self._reject(m, role, ('layout', nn), exc)
+        qkv_tables = []
+        if role == 'qkv_gate' and m >= 512:
+            for chunk in PG_QKV_CHUNKS:
+                if chunk >= m or m % chunk: continue
+                yield ('qkv_chunk', chunk, -1, 0)  # stock cuBLAS, direct output slices
+                for nn in (0, 1):
+                    try:
+                        codes = self._qkv_options(m, 'qkv_chunk', chunk, nn)
+                        if len(codes):
+                            yield ('qkv_chunk', chunk, nn, 0)
+                            qkv_tables.append(('qkv_chunk', chunk, nn, codes))
+                    except Exception as exc:
+                        self._reject(m, role, ('qkv_chunk', chunk, nn), exc)
+            # Try one member of every layout family before refining ordinals.
+            for family, width in [('qkv_swap', 0)] + [('qkv_pad', p) for p in PG_QKV_PAD]:
+                for nn in (0, 1):
+                    try:
+                        codes = self._qkv_options(m, family, width, nn)
+                        if len(codes):
+                            yield (family, width, nn, 0)
+                            qkv_tables.append((family, width, nn, codes))
+                    except Exception as exc:
+                        self._reject(m, role, (family, width, nn), exc)
+            for tile in (0, 1, 2):
+                yield ('qkv_swap_persistent', tile, 0)
+                yield ('qkv_swap_persistent', tile, 1)
         # Persistent tile and balanced Stream-K are both eligible on all GPUs;
         # SM90 compilation selects WGMMA, SM120 gives a portable arithmetic test.
         for index in range(len(PG_TILES)):
             for schedule in (0, 1): yield ('persistent', index, schedule)
         for nn, codes in tables.items():
             for index in range(1, len(codes)): yield ('lt', nn, index)
+        for family, width, nn, codes in qkv_tables:
+            for index in range(1, len(codes)): yield (family, width, nn, index)
+
+    def _qkv_options(self, m, family, width, nn):
+        key = (m, family, width, nn)
+        if key not in self.qkv_codes:
+            if self.native is None: self.native = _pg_native()
+            if self.workspace is None: self.workspace = _pg_workspace(self.device)
+            weight = self.weights['qkv_gate']
+            n, k = weight.shape
+            if family == 'qkv_pad':
+                if width < n: raise ValueError('QKV padding must preserve every output')
+                if width not in self.qkv_padded:
+                    padded = torch.zeros((width, k), device=self.device, dtype=torch.bfloat16)
+                    padded[:n].copy_(weight)
+                    self.qkv_padded[width] = padded
+                if nn and width not in self.qkv_padded_t:
+                    self.qkv_padded_t[width] = self.qkv_padded[width].T.contiguous()
+                query_m, query_n = m, width
+            elif family == 'qkv_swap':
+                query_m, query_n = n, m
+            elif family == 'qkv_chunk':
+                if width >= m or m % width: raise ValueError('QKV chunk must divide the prepared M')
+                if nn and 'qkv_gate' not in self.transposes:
+                    self.transposes['qkv_gate'] = weight.T.contiguous()
+                query_m, query_n = width, n
+            else: raise ValueError('unknown QKV layout family')
+            self.qkv_codes[key], heuristics = self.native.options(query_m, query_n, k, nn, False, self.workspace.numel())
+            _pg_log.info('PG_QKV_LT m=%d family=%s width=%d nn=%d heuristics=%d expanded=%d',
+                         m, family, width, nn, heuristics, len(self.qkv_codes[key]))
+        return self.qkv_codes[key]
+
+    def _qkv_run(self, x, config):
+        weight = self.weights['qkv_gate']
+        m, k = x.shape
+        n = weight.shape[0]
+        tag = config[0]
+        out = torch.empty((m, n), device=x.device, dtype=torch.bfloat16)
+        if tag == 'qkv_chunk':
+            chunk, nn, index = config[1:]
+            if m % chunk: raise ValueError('QKV chunk does not divide M')
+            codes = self._qkv_options(m, tag, chunk, nn) if nn >= 0 else None
+            w = self.transposes['qkv_gate'] if nn == 1 else weight
+            for start in range(0, m, chunk):
+                if nn < 0: torch.mm(x[start:start+chunk], weight.T, out=out[start:start+chunk])
+                else: self.native.run(x[start:start+chunk], w, out[start:start+chunk],
+                                      self.workspace, codes, index, nn, False)
+            return out
+        if tag == 'qkv_pad':
+            width, nn, index = config[1:]
+            codes = self._qkv_options(m, tag, width, nn)
+            padded = self.qkv_padded_t[width] if nn else self.qkv_padded[width]
+            raw = torch.empty((m, width), device=x.device, dtype=torch.bfloat16)
+            self.native.run(x, padded, raw, self.workspace, codes, index, nn, False)
+            view = raw[:, :n]
+        else:
+            raw = torch.empty((n, m), device=x.device, dtype=torch.bfloat16)
+            if tag == 'qkv_swap':
+                _, nn, index = config[1:]
+                codes = self._qkv_options(m, tag, 0, nn)
+                # Swapping operands changes the physical output leading dimension.
+                # An NN activation transpose is input-dependent and stays timed.
+                dynamic_weight = x.T.contiguous() if nn else x
+                self.native.run(weight, dynamic_weight, raw, self.workspace, codes, index, nn, False)
+            elif tag == 'qkv_swap_persistent':
+                bm, bn, bk, warps, stages = PG_TILES[config[1]]
+                tiles = triton.cdiv(n, bm) * triton.cdiv(m, bn)
+                sm = min(self.props.multi_processor_count, tiles * (triton.cdiv(k, bk) if config[2] else 1))
+                if tiles > self.counts.numel(): raise ValueError('unprepared swapped tile count')
+                _pg_matmul[(sm,)](weight, x, x, raw, raw, self.partial, self.counts,
+                                   n, m, k, 0, False, False, bm, bn, bk, sm, bool(config[2]),
+                                   num_warps=warps, num_stages=stages)
+            else: raise ValueError('unknown QKV layout')
+            view = raw.T
+        _pg_pack_matrix[(triton.cdiv(m, 32), triton.cdiv(n, 32))](
+            view, out, m, n, *view.stride(), 32, num_warps=4)
+        return out
 
     def _reject(self, m, role, config, exc):
         self.rejections.append((m, role, config, type(exc).__name__, str(exc)[:180]))
@@ -385,6 +503,9 @@ class PrefillGemmPlan:
     def run(self, x, role, config):
         tag = config[0]
         if tag == 'stock': return self._stock(x, role)
+        if tag in ('qkv_pad', 'qkv_swap', 'qkv_swap_persistent', 'qkv_chunk'):
+            if role != 'qkv_gate': raise ValueError('QKV layout attached to a different projection')
+            return self._qkv_run(x, config)
         mixed, dual = role.startswith('pool_router'), role == 'router'
         normalized = role == 'pool_router_norm'
         w = self._weight(role, tag)
@@ -436,13 +557,15 @@ class PrefillGemmPlan:
         if self.pool_norm_weight is not None: roles.append('pool_router_norm')
         roles.extend(k for k in ('unpooler', 'o') if k in self.weights)
         flush = None
-        keys_left = len(tokens) * len(roles)
+        # The first-turn QKV profile is the largest suspected dense gap.
+        keys_left = sum(4 if role == 'qkv_gate' and m == 16384 else 1 for role in roles for m in tokens)
         for role in roles:
             for m in tokens:
                 self.plans[(m, role)] = ('stock',)
                 if time.monotonic() >= deadline: continue
-                local_deadline = time.monotonic() + (deadline - time.monotonic()) / keys_left
-                keys_left -= 1
+                share = 4 if role == 'qkv_gate' and m == 16384 else 1
+                local_deadline = time.monotonic() + (deadline - time.monotonic()) * share / keys_left
+                keys_left -= share
                 coarse_deadline = time.monotonic() + max(0, local_deadline - time.monotonic()) * .65
                 k = self.weights['pooler' if role.startswith('pool_router') else role].shape[1]
                 x = torch.randn((m, k), device=self.device, dtype=torch.bfloat16)
@@ -469,12 +592,23 @@ class PrefillGemmPlan:
                     best = (1., ('stock',), None)
                     stock_us = None
                     finalists = sorted(trials)[:3]
+                    if role == 'qkv_gate':
+                        families = set()
+                        for row in sorted(trials):
+                            c = row[1]
+                            family = (c[0], c[1] if c[0] in ('qkv_pad', 'qkv_chunk')
+                                      else c[2] if c[0] in ('persistent', 'qkv_swap_persistent') else 0)
+                            if family not in families:
+                                families.add(family)
+                                if row not in finalists: finalists.append(row)
                     for _, config in finalists:
                         if time.monotonic() >= local_deadline: break
                         try:
                             with _PgGraph(lambda c=config: self.run(x, role, c)) as graph:
                                 ratio, old, new = _pg_paired(base, graph, x, banks, flush, 20)
                                 stock_us = old
+                                if role == 'qkv_gate':
+                                    self.qkv_final[(m, config)] = (ratio, old, new)
                                 if ratio < best[0]: best = (ratio, config, (old, new))
                         except Exception as exc: self._reject(m, role, ('final',) + config, exc)
                     if best[1] == ('stock',):
@@ -489,12 +623,17 @@ class PrefillGemmPlan:
     def release_trials(self):
         """Keep selected layouts; discard losing weight copies before capture."""
         nn_roles = {role for (_, role), config in self.plans.items() if config[:2] == ('lt', 1)}
+        if any(c[0] == 'qkv_chunk' and c[2] == 1 for c in self.plans.values()): nn_roles.add('qkv_gate')
         if 'pool_router_norm' in nn_roles: nn_roles.add('pool_router')
         if 'router' in nn_roles: nn_roles.add('router_lo')
         self.transposes = {k: v for k, v in self.transposes.items() if k in nn_roles}
         mixed = [c for (_, role), c in self.plans.items() if role.startswith('pool_router')]
         if not any(c[0] == 'persistent' for c in mixed): self.bank = None
         if not any(c[0] == 'lt' for c in mixed): self.lt_bank = None
+        widths = {c[1] for c in self.plans.values() if c[0] == 'qkv_pad'}
+        widths_t = {c[1] for c in self.plans.values() if c[0] == 'qkv_pad' and c[2] == 1}
+        self.qkv_padded = {k: v for k, v in self.qkv_padded.items() if k in widths}
+        self.qkv_padded_t = {k: v for k, v in self.qkv_padded_t.items() if k in widths_t}
         return self
 
     def __call__(self, x, role):
@@ -521,7 +660,11 @@ def prefill_gemm_summary(state):
     for (m, role), choice in state.plans.items():
         timing = state.timings.get((m, role), {})
         print(f'PG_PICK {role} m={m} choice={choice} ratio={timing.get("ratio", 1):.6f} us={timing.get("us")}', flush=True)
-    layouts = [state.hi, state.lo, state.bank, state.lt_bank, *state.transposes.values()]
+    for (m, config), (ratio, old, new) in state.qkv_final.items():
+        if m == 16384:
+            print(f'PG_QKV m={m} config={config} old_us={old:.3f} new_us={new:.3f} ratio={ratio:.6f} pairs=20', flush=True)
+    layouts = [state.hi, state.lo, state.bank, state.lt_bank, *state.transposes.values(),
+               *state.qkv_padded.values(), *state.qkv_padded_t.values()]
     allocations = {v.data_ptr(): v.numel() * v.element_size() for v in layouts if v is not None}
     workspace = state.workspace.numel() if state.workspace is not None else 0
     print(f'PG_END rejects={len(state.rejections)} layout_bytes={sum(allocations.values())} '

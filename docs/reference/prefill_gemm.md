@@ -38,12 +38,73 @@ At first-turn official multiplicity186 layer/chunk calls, dense/router is781.297
 and router is33.246ms versus25.848ms. Prioritize qkv at M16384. Those floors are not attainable
 speedup promises. The full layer/serving timing is what decides whether a choice wins.
 
+## QKV M16384 targeted layout experiment
+
+Ready H200 experiment: `problems/muse_prefill_layer/cand_v11_gemm.py`,
+SHA2561b30690ad9e4c6d67f9efc70d8a8cb8e7395765380ba75774b377f701ccfd390.
+It embeds the updated block into the complete V11 layer. Original attention, experts and
+residual/norm math remain intact. The original concatenated512-wide router, routing consumer
+and pooler order are the always-eligible group incumbent; four hybrid/fused alternatives
+are timed with that real consumer. Only the added candidate is owned by this thread.
+
+`dev/qkv_geometry.py` makes the causal hypotheses reproducible. For M16384,N2304,K8192,
+work is618.475GFLOP (625.35us at989TF/s), compulsory I/O381.682MB (79.52us at4.8TB/s),
+and the BF16 output store75.497MB (15.73us). Ideal execution is compute-bound. A short
+output width can still make the chosen library dataflow memory-bound through rereads.
+
+A simple model interpreting the reported320x128 tile in either axis orientation gives:
+
+| Assumed token/output tile | Tiles |132SM waves | Tail xwave efficiency | No cross-tile input reuse |
+|---|---:|---:|---:|---:|
+|320x128|936|8|87.27%|6.87GB /1431us at4.8TB/s|
+|128x320|1024|8|87.27%|7.05GB /1470us at4.8TB/s|
+
+Neither tail nor wave quantization alone explains the inferred44.3% peak. Output-store
+cost is also far smaller than the~788us excess over tensor floor. In contrast, naive tiled
+traffic predicts close to the observed inferred1413us. This is evidence for investigating
+operand reuse/shape-selected dataflow, **not a measurement of DRAM traffic or L2 misses**.
+The model ignores the library's cooperative CTA geometry. The op-name attribution itself
+is still inferred; early `PGC_KERNEL` lines in the new run will verify it directly.
+
+The new registry tests:
+
+- Token chunks512/1024/2048/4096/8192, using stock cuBLAS or every returned Lt TN/NN
+  heuristic. All K is processed; matmuls write directly into final output row slices.
+  Smaller live activation sets and different M dispatch can change cache reuse and tactic
+  choice without extra GEMM work or a concatenation pass.
+- Lossless zero-padded N2560/3072/4096. Both weight layouts and all returned Lt algorithms
+  are eligible; timed BF16 packing restores2304 contiguous columns. N2560 removes a320-wide
+  tail; larger widths test different tactics at an explicit extra-FLOP cost.
+- Operand-swapped W@X.T, using Lt or persistent/Stream-K WGMMA. Transposed output packing
+  and any input-dependent activation transpose are timed. This tests a different physical
+  output leading dimension/operand reuse pattern without precision changes.
+
+Every successful QKV family gets a20-pair cold finalist where budget permits, in addition
+to the global finalists. M16384 qkv gets four budget shares; all other keys remain eligible.
+`PG_QKV` preserves losing-family times, and every role/group selection prints last.
+Dense/global group deadlines are210/225s from prepare entry, with profiling charged to the
+same budget. A rejected diagnostic cannot replace V11 or abort its scored path.
+
+New local **sm_120** suite:57 configurations pass171 fresh admission replays and1140 cold
+paired samples. Focused M16384 chunk4096 NN measures2380.86->2286.14us (paired ratio0.96352).
+M3012 new layouts lose to its incumbent in that focused test. Under heavier shared load,
+the final candidate picks chunk4096 NN at M16384, but the paired advantage is only0.64%.
+These are local observations, not an H200 speedup claim. Native136-configuration strict
+Hopper ABI coverage reaches all7 QKV families. Twelve attribute/tuple group failures and
+an injected block failure retain V11; the forced Hopper profiler branch returns real CUDA
+kernel names with portable BF16 math. Eighteen swapped WGMMA and12 packing specializations
+compile SM90; the Lt wrapper compiles SM90a.
+
+The frozen final candidate passes **5/5 official tests and8/8 graph shapes**, preparing in
+**173.161s** locally. Its compact50-line/4731-character summary survives the final16K tail.
+H200 kernel identity, cache/traffic cause, speed and cold prepare time remain unverified.
+
 ## Delivered source and trial registry
 
 - Serving: `serving/sglang/python/sglang/srt/layers/muse_prefill_gemm.py`.
 - Copyable single-file block: `problems/muse_bf16_proj/dev/prefill_gemm_block.py`.
 - Export/local-integration builder: `dev/build_prefill_gemm_block.py` in that problem.
-- No edit to the prefill lane's `muse_prefill_dense.py`, candidates or experts.
+- No existing prefill-lane source was edited; the explicitly owned new candidate is `cand_v11_gemm.py`.
 
 The source is standalone: standard library, torch, Triton and an embedded source-only
 cuBLASLt wrapper. No imports of our own modules. The block is the same source with its
@@ -139,7 +200,9 @@ One1GiB Lt workspace per **serialized execution lane** can be shared across laye
 lanes require independent workspaces; graph captures/replays share only ordered workspace use.
 FP32 Stream-K scratch is at most34.60MB/layer on132SMs plus small counters. A chosen NN layout
 adds one BF16 weight copy; mixed banks are about71.30/75.50MB per layer if selected. Losing
-layouts are released. At most about0.43GB/layer of extra weight layouts (about26.5GB across62)
+layouts are released. The earlier registry's upper bound was0.43GB/layer; retained padded QKV banks can add up to
+0.319GB/layer if different shapes choose every width/layout. The combined worst case is
+about0.75GB/layer (about46.5GB across62)
 can remain if different shapes select all of them; actual selected bytes must be charged
 against the node's post-capture KV pool. This is an upper bound, not a reason to choose a
 slower kernel. Full-node capacity/TTFT are unverified.
