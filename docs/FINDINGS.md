@@ -665,11 +665,11 @@ the following effective dense-BF16 utilization (989 TFLOPS peak):
 
 The short sliding loads are launch/metadata limited. Long full attention sustains
 about 587–622 TFLOPS, leaving 37–41% of dense peak. `cand_attn_prefill.py`
-(`8157261f...`) packages the measured FP8 Q/K plus FP8-PV path: a lossless
+(`498c8c44...`) packages the measured FP8 Q/K plus FP8-PV path: a lossless
 page gather to contiguous storage, GQA reuse, online FP32 softmax, and exact
 causal/window masking. Its serving mirror is `muse_prefill_attention.py`; the
 backend dispatches only uniform q_len >=2048 FP8 prefill shapes and falls back
-to FA3 otherwise. Local graph/reference tests pass with 2.36–2.48% last-row
+to FA3 otherwise. Local graph/reference tests pass with 2.65–2.72% last-row
 error; H200 timing and serving gain remain unverified.
 
 ## Closed recipes
