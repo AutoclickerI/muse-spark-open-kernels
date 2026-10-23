@@ -14,6 +14,9 @@ import run
 
 launch = run.launch
 stop = run.stop
+native = "--native" in sys.argv
+if native:
+    sys.argv.remove("--native")
 with_logprob = "--with-logprob" in sys.argv
 if with_logprob:
     sys.argv.remove("--with-logprob")
@@ -24,7 +27,7 @@ def local_launch(args, tree, output, port):
     args.max_total_tokens = 300000
     if args.tp > 1:
         args.env += ["SGLANG_ENABLE_TP_MEMORY_INBALANCE_CHECK=0"]
-    if tree != run.common.STOCK_TREE:
+    if not native and tree != run.common.STOCK_TREE:
         args.env += [
             f"PYTHONPATH={tree / 'python'}:{ROOT / 'serving/tests/attn_ar_hook'}:{ROOT / 'serving/harness/pyhook'}"
         ]

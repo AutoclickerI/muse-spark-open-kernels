@@ -68,6 +68,71 @@ def coverage(nodes, ids, future):
     return min(1 + best, len(future))
 
 
+def empirical_transition_screen(requests, blocks):
+    """Cross-conversation diagnostic calibration; never changes the drafter.
+
+    Fit transitions on the other conversation-parity fold, then allocate the
+    same seven nodes with that Markov model. This is an offline sensitivity
+    estimate, not a deployable calibration or a distribution-free upper bound.
+    """
+    from collections import Counter
+
+    vocab = sorted({token for req in requests.values() for token in req["output_ids"]})
+    ids = [vocab] * 7
+    results = []
+    for prior in (0, 0.1, 0.5, 1, 2, 4, 8, 16):
+        sums = {}
+        for fold in (0, 1):
+            counts = {t: Counter({s: prior for s in vocab}) for t in vocab}
+            for req in requests.values():
+                if req["conv"] % 2 == fold:
+                    for a, b in zip(req["output_ids"], req["output_ids"][1:]):
+                        counts[a][b] += 1
+            table = {
+                t: [counts[t][s] / sum(counts[t].values()) for s in vocab]
+                for t in vocab
+            }
+            for block in blocks:
+                req = requests[block["key"]]
+                if req["conv"] % 2 == fold:
+                    continue
+                output, offset = req["output_ids"], block["offset"]
+                probabilities = [[table[output[offset]]] * len(vocab)] + [
+                    [table[token] for token in vocab]
+                ] * 6
+                tree, _ = optimal_tree(probabilities)
+                actual = coverage(tree, ids, output[offset + 1 :])
+                row = sums.setdefault(req["level"], dict(blocks=0, chain=0, tree=0))
+                row["blocks"] += 1
+                row["chain"] += block["chain"]
+                row["tree"] += actual
+        for level, row in sorted(sums.items()):
+            results.append(
+                dict(
+                    level=level,
+                    prior=prior,
+                    blocks=row["blocks"],
+                    chain_tau=row["chain"] / row["blocks"],
+                    tree_tau=row["tree"] / row["blocks"],
+                    gain=row["tree"] / row["chain"] - 1,
+                )
+            )
+        results.append(
+            dict(
+                level="all",
+                prior=prior,
+                chain_tau=sum(r["chain"] for r in sums.values())
+                / sum(r["blocks"] for r in sums.values()),
+                tree_tau=sum(r["tree"] for r in sums.values())
+                / sum(r["blocks"] for r in sums.values()),
+                gain=sum(r["tree"] for r in sums.values())
+                / sum(r["chain"] for r in sums.values())
+                - 1,
+            )
+        )
+    return results
+
+
 def main():
     import torch
 
@@ -107,6 +172,7 @@ def main():
     offsets = {}
     request_blocks = {}
     terminal_blocks = 0
+    candidate_sets = set()
     for file in sorted((args.result / "lattices").glob("*.pt")):
         batch = torch.load(file, map_location="cpu", weights_only=False)
         for i, meta in enumerate(batch["rows"]):
@@ -144,6 +210,7 @@ def main():
             )
             future = output[offset + 1 :]
             ids = batch["ids"][i].tolist()
+            candidate_sets.update(tuple(sorted(row)) for row in ids)
             scores = batch["scores"][i].float().tolist()
             path = chain_path(scores)
             chain = [ids[d][idx] for d, idx in enumerate(path)]
@@ -250,6 +317,17 @@ def main():
                 model_gain=values["expected_tree"] / values["expected_chain"] - 1,
                 changed_tree_fraction=values["changed"] / n,
             )
+        )
+    vocabulary = tuple(
+        sorted({t for req in requests.values() for t in req["output_ids"]})
+    )
+    if candidate_sets == {vocabulary}:
+        report["held_out_transition_screen"] = empirical_transition_screen(
+            requests, records
+        )
+    else:
+        report["held_out_transition_screen"] = (
+            "unavailable: candidate sets differ from output vocabulary"
         )
     (args.result / "tree_ceiling.json").write_text(json.dumps(report, indent=2) + "\n")
     with (args.result / "tree_blocks.jsonl").open("w") as f:

@@ -17,6 +17,7 @@ import reference as ref
 ap=argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--candidate',type=Path,default=P/'cand_portfolio_all.py')
 ap.add_argument('--build-only',action='store_true')
+ap.add_argument('--metadata-only',action='store_true',help='strict ABI coverage of every real Hopper variant, without GPU execution')
 ap.add_argument('--arch',choices=('9.0a','12.0'),default='9.0a')
 args=ap.parse_args()
 spec=importlib.util.spec_from_file_location('all_proj',args.candidate)
@@ -25,6 +26,11 @@ if args.build_only:
     c._hopper=lambda:args.arch=='9.0a';c._module()
     print(json.dumps({'arch':args.arch,'all_module_build':'ok'}),flush=True)
     sys.exit(0)
+
+from validate_portfolio_hopper import exercise, load
+coverage=exercise(load(args.candidate),args.candidate.resolve())
+print(json.dumps({'strict_hopper_coverage':coverage}),flush=True)
+if args.metadata_only:sys.exit(0)
 
 weights=ref.generate_weights(ref.WEIGHTS_SEED)
 native=c._module()
@@ -39,9 +45,7 @@ class Portable:
             product.add_(torch.mm(x,w[:out.shape[1],k:].T,out_dtype=torch.float32))
         out.copy_(product)
 
-    def hopper(self,w,x,out,work,counts,*config):self._product(w,x,out)
-    def old_hopper(self,w,x,out,work,counts,*config):self._product(w,x,out)
-    def wide(self,w,x,out,*config):self._product(w,x,out)
+    def hopper(self,w,x,out,work,counts,bt,bk,st,mode,split,threads):self._product(w,x,out)
 
     def lt_options(self,w,x,out):
         codes=native.lt_options(w,x,out)

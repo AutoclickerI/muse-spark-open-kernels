@@ -1,92 +1,123 @@
-# Ready: DFlash serving compute diagnostic (G1/G2)
+# Prefill dense handoff: relay the block (G1/G2)
 
-Solo, GPU0 only. The orchestrator sends and commits; this thread did neither.
-No judge process was launched here. Existing sends/queue entries belong to the orchestrator.
+Solo, GPU0 only. Jihoon/orchestrator sends and commits; this thread did neither.
+No new judge candidate is proposed here. The prefill lane merges this block into its portfolios.
 
-## Send order: 1
+## Ready to relay
 
-**`problems/muse_bf16_proj/cand_dflash_diag.py`**
+**Copyable single-file block:** `problems/muse_bf16_proj/dev/prefill_gemm_block.py`
 
-Frozen SHA256: **`9b4fae2fc29251d8279112f2cd1ff65899b2a249c7618af3fdd97132aa28715a`**
+SHA256 **`d2a99b8c077e0e9e8a68e34d6aa51b09b6b0538f6510c9f4c2d7e4a956d57222`**.
 
-Scored prefix/dispatch: byte-identical `cand_fused_select.py`, receipt **f3786341611f4f1f**,
-SHA256 `10d02fa32b572b1649f5e0c63e5f9841567835dc3b83ffe17cd7d843429117e9`.
-Its original prepare runs first; the diagnostic returns exactly its state to the scored kernel.
-The new file is self-contained, with no imports of our repository modules.
+**Serving source:** `serving/sglang/python/sglang/srt/layers/muse_prefill_gemm.py`
 
-| Local admission (**sm_120**, GPU0) | Result |
-|---|---|
-| `tools/local_eval.py` | **9/9 tests, 30/30 fresh-input graph shapes**, prepare **45.854s** |
-| DFlash diagnostic | **32 dense +16 glue rows**, each20 cold-L2 order-swapped pairs; no `DFB_REJECT`/`DFB_SKIP` |
-| Serving unit tests | **7/7 tests, 464 exact graph comparisons, 464 stock-repeat checks**, observed stock spread0 |
-| Hopper glue forced with portable stand-in | **14** skinny/TN/NN/stock-NN ABI cases pass |
-| Hopper compile | **16** SM90 pointwise specializations +raw SM90a dense utility build |
-| Failure/budget isolation | Injected TypeError and wrong result rejected/logged; expired24 groups skip; original scored state returned; zero active tuning streams |
-| Receipt tail | All50 compact `DFB` lines occupy **5,619 characters**, printed last after compilation/trial rejection output |
+SHA256 **`ac29455fc374b5bdaa14e3da1a5d2e9f3dfe88f18c4220785245aa5df87ac02b`**.
 
-Evidence: `runs/screen/serving_dflash/{tests.json,sm90_build.log,diagnostic_guards.log,
-muse_bf16_proj.cand_dflash_diag.json,diagnostic_screen.log}`.
-The screen JSON records the exact frozen candidate SHA. Local timings are **not H200 claims**.
+The block is the same source minus the future-import line; no imports of our own modules.
+`dev/build_prefill_gemm_block.py` exports it and generates an ignored V11 local-integration
+fixture under `runs/screen/prefill_gemm/`. No prefill candidate, expert or owned serving file
+was edited; `muse_prefill_dense.py` remains the prefill lane's.
 
-The diagnostic times all local TP8 dense roles at M8/32/128/256 (head P7/28/112/224):
-conv coefficients, gate/up, down, already split context FC, QKV, o, existing NN context-KV,
-and draft head. The strided selector-hidden projection stays stock bmm/count0.
-Each dense trial must be exact to stock on three probes. Coarse trials feed a20-pair final
-comparison; failed variants are dropped/logged. The overall diagnostic deadline is225s from
-prepare entry, leaving15s below the240s task limit; incomplete comparisons are skipped.
-The final48 stock/new comparisons check exactness on every fresh pair. Numerical failure,
-layout/launch error or budget exhaustion never raises into the scored projection run.
+Interface and per-op H200 gap table: [prefill_gemm.md](../../../docs/reference/prefill_gemm.md).
 
-## Serving handoff
-
-Only new SGLang source: `python/sglang/srt/layers/muse_dflash.py`.
-SHA256 **`ecd7348666f1bf34d2ec0bd73084d7fa32b2d8ad812c331478fbf448f3bac65a`**.
-It uses existing `muse_proj.py`, embedded utility SHA
-`734d241ab5dc26e4e758bc01d39a73337ddfcec6672b6b3169c6b276eeb99223` in the diagnostic.
-Use `DFlashLinear` after released weights load, before capture; preserve parameter registration
-and collectives. Use `stock_nn=True` for the existing `[8192,1280]` context-KV layout.
-`DFlashConv2` binds the original coefficient weight/base, preserving Inductor's FP32 first-product
-FMA and BF16 output. Selector helper accepts already projected rank256 hidden; it does not
-replace strided hidden bmm or the walk. `dflash_unary` preserves in-place FP32 semantics.
-No source owned by the serving lane was edited. It wires only measured winning choices.
-
-[Full inventory/model](../../../docs/reference/muse_dflash.md) and
-[serving levers](../../../docs/reference/serving_levers.md#per-step-breakdown-and-unowned-work).
-Three removed unary launches model **0.006/0.006/0.006/0.006ms per step** at C1/4/16/32.
-Other dense/layout/conv/selector savings get zero H200 credit until this receipt. Cold synthetic
-compute measurements do not price TP8 collectives/overlap, full-model agreement, KV capacity or TTFT.
-
-Reproduce:
-
-```sh
-CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_muse_dflash.py --json runs/screen/serving_dflash/tests.json
-CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/compile_muse_dflash.py
-CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_bf16_proj/cand_dflash_diag.py --json runs/screen/serving_dflash/muse_bf16_proj.cand_dflash_diag.json
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_dflash_diag.py
-python serving/tests/dflash_inventory.py
+```python
+pg = prefill_gemm_prepare(weights, tokens=(16384,3012,753), budget_s=60,
+                         deadline=prepare_started+230, incumbent=proven_local_projection,
+                         pool_norm_weight=st['pre_expert'])
+qkv = prefill_gemm_run(x, pg, 'qkv_gate')
+pooled, logits = prefill_gemm_run(h, pg, 'pool_router')
 ```
 
-Builder `dev/build_dflash_diag.py` refuses to overwrite the frozen candidate. Build future
-revisions under a new name after changing its output; never mutate a queued source.
-The pinned stock `_grouped_conv`/`_score_edges` bodies come from a55ab7d5.
+Keys: BF16 qkv_gate/o/pooler/unpooler and FP32 router; subsets allowed. Router result is
+**summed FP32[M,256]**, not512 hi/lo columns. The V11 routing load changes from the sum of
+its512-wide halves to one256-wide load. Sigmoid/bias/top8/local mapping stay intact.
+`pool_router_norm` returns normalized BF16 pooled activations when given the actual effective
+norm vector; remove the duplicate norm in its consumer. Other norms/collectives stay intact.
+Print `prefill_gemm_summary(pg)` last so every role's cold graph timing survives log_tail.
+Bind the lane's H200-proven projection callback at the same input/output consumer boundary;
+include packing/add costs in either path. The default is SGLang-local torch math.
 
-## Receipts and earlier handoffs
+Registry: stock incumbent; five persistent WGMMA tiles xdirect/Stream-K; every returned
+Lt TN/NN heuristic plus supported CTA swizzles and FP32 split-K2/4/8/16/32,1GiB workspace.
+The mixed persistent path accumulates router hi+lo in shared FP32 accumulators and writes
+BF16 pooler output in the same kernel. Stream-K last-CTA reduction has no spinning or
+second launch; two boundary slots/CTA prevent partial overwrite. Counts reset each replay.
+Three fresh probes precede coarse4-pair screen/top3; finalists require20 fresh cold128MiB
+order-swapped graph pairs within1% BF16 /1e-4 FP32 of the incumbent. Shape/dtype/nonfinite
+and **any Exception** reject/log independently; the incumbent remains eligible. A shared
+budget and per-key shares keep later shapes eligible; untried keys retain stock. One in-flight
+JIT cannot be preempted, so reserve margin below the layer's300s prepare limit.
+Factory preparation releases losing layouts, shares mixed NN copies and prints retained
+layout/scratch/workspace bytes. Workspace may be shared across serialized layers; concurrent
+lanes need separate workspaces. Full-node KV/TTFT remains to measure, not a secondary objective.
 
-**`3afea80c527c4969` / cand_portfolio_all:** receipt read. `passed=false`, no speedup or
-completed shape timings; prepare failed at router M128 with
-`AttributeError: '_AllModule' object has no attribute 'old_hopper'` in a coarse graph trial.
-The log contains router M1/8/16/32 trial choices only; these are raw tuning events, not judge
-shape medians. The orchestrator owns that source and its correction; do not resend the failed hash.
-Its failure does not affect this diagnostic, whose scored prefix is the proven fused-select source.
+## Local validation (sm_120)
 
-Standalone best evidence remains **1.181998x**, f3786341611f4f1f; the30-shape receipt table
-is in FINDINGS. Decode `cand_r3_proj.py` (SHA235434b35d1407cdb61ff79f291b9a962fa4a56369f60277fb666863f5b1174e)
-was accepted/committed24d577c and passed13/13 tests +12/12 graphs locally; that lane owns its
-subsequent queue/merge. Serving `muse_proj.py` was accepted/committed60e7333; serving owns wiring.
-For inherited candidate state use `runs/waiting`, `runs/pending`, `runs/sent` and receipts,
-rather than the superseded per-PID snapshot formerly kept here. No cancellation was requested.
+| Validation | Final result |
+|---|---|
+| Independent module suite | **6/6 tests**;2,751 fresh Lt replays across917 algorithms,288 persistent/Stream-K replays,160 boundary replays,36 norm-epilogue replays,54 selected replays;96 counter-reset checks;5 injected failures rejected |
+| Tuner budget | All18 standard shape/role keys timed; **89.315s** under90s trial budget |
+| Local V11 integration | **5/5 official tests,8/8 fresh-input graph shapes**, **74.705s prepare**; frozen fixture SHA8e807cc3835edae586a40cf568d1c6c47b58b9c723790d03e74670e3eb480a5c |
+| Hopper compile | **180/180** dense specializations use WGMMA;4 norm epilogues; Lt wrapper SM90a builds. Max shared131072bytes |
+| Forced new Hopper glue | **14** strict portable Lt branches,45 fresh replays; loader chooses9.0a; BF16 effective norm agrees with torch; shared/released mixed layout graph-safe |
+| Optional normalized tuner | M753 raw+normalized registry/selected replay passes;18.444s prepare under20s; fused Lt norm epilogue **231.46->213.02us** vs selected separate producers +norm (sm_120) |
+| Old portfolio coverage | Actual7,581 emitted configs /12 families /30 keys pass strict ABI test; archived missing-entrypoint regression reproduced; default validator now invokes this coverage and has no fabricated old_hopper stub |
 
-Next: read all final `DFB` rows from the H200 receipt, reject numerically unsafe paths,
-choose by measured per-rung effect, and hand the winning choices to the serving lane.
-H200 execution/cold compile time, full released-model agreement, TP8 serving speed/TTFT and
-post-capture KV capacity remain unverified.
+The84 rejected sm_120 specializations exceed its shared-memory limit; all180 compile for
+Hopper. No arithmetic failure is suppressed as a resource rejection. Final evidence:
+`tests_final.json`, `layer_screen_final.json`, `sm90_build_final.log`, `glue_final.json`,
+`portfolio_hopper.json`, `portfolio_entrypoint.log`, `tuner_safety.log` in the evidence directory.
+SM120 paired qkv M753 **118.78->106.53us**, M16384 **7137.30->6948.86us**;
+router M753/3012/16384 **45.06/118.82/557.09->41.98/106.50/497.68us**.
+These shared-job local samples are not H200 predictions. H200 ordinals must be queried and
+chosen on that GPU, never copied from these local choices.
+
+Evidence directory: `runs/screen/prefill_gemm/`.
+
+```sh
+CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_portfolio_hopper.py --json runs/screen/prefill_gemm/portfolio_hopper.json
+CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_tuner_safety.py
+CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_muse_prefill_gemm.py --json runs/screen/prefill_gemm/tests_final.json
+CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/compile_muse_prefill_gemm.py
+python problems/muse_bf16_proj/dev/build_prefill_gemm_block.py
+CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py runs/screen/prefill_gemm/prefill_gemm_layer_smoke.py --json runs/screen/prefill_gemm/layer_screen_final.json
+python problems/muse_bf16_proj/dev/prefill_gemm_profiles.py
+```
+
+Local timings under shared sm_120 load are admission evidence. No H200 speedup is claimed.
+H200 execution/selected algorithms, actual op timings, cold prepare time, full TP8 model
+agreement, collectives/overlap, KV capacity and TTFT remain unverified.
+
+## Old projection queue triage
+
+[QUEUE_TRIAGE.md](QUEUE_TRIAGE.md) has exactly the16 requested one-line classifications:
+keep **tile** for its distinct staged mma.sync kernel and **reduce_hier** for hierarchical
+BK128/extra-stage split32/64 templates absent from the portfolio's three hierarchical
+templates; the other14 are subsumed by `cand_portfolio_all`. wg/wg2 never set wg_ok and add no active-kernel evidence.
+No withdrawal was performed here. The orchestrator owns cancellations and the retry.
+
+The forced-Hopper test now uses the **actual** generator and dispatcher, all30 scored keys,
+**7,581 configurations across12 families**, with strict portable ABI stubs. It also loads
+archived failed commit1d6a356 and reproduces the missing old_hopper AttributeError. The
+original native validator also fabricated an old_hopper stand-in; it is removed, and its
+default entrypoint now invokes the strict enumeration test before numerical validation. The
+builder template mirrors the owner fix (removed old family, any-Exception rejection), then
+adds independent finalist/layout rejection and the early shared deadline. Injected attribute,
+tuple, numeric, layout and late-finalist failures are rejected; expired deadlines skip30 keys.
+Queued `cand_portfolio_all.py` was **not edited**. The source family coverage cannot validate
+H200 WGMMA execution, which still requires the judge.
+
+## Existing diagnostics/receipts
+
+- `cand_dflash_diag.py`: committed a4dfade, screened and queued by Jihoon. Frozen
+  SHA256 `9b4fae2fc29251d8279112f2cd1ff65899b2a249c7618af3fdd97132aa28715a`.
+ 9/9 official tests,30/30 graphs,45.854s prepare locally;48 diagnostic comparisons, compact
+  last5.6K log. Leave frozen and read the receipt when provided.
+- Failed portfolio receipt `3afea80c527c4969`: no score; old_hopper missing at router M128.
+  Jihoon removed old, widened exception rejection, screened9/9+30/30 and re-sent. His retry
+  supersedes that failed source; no result should be inferred from its four coarse choices.
+- Standalone projection best remains f3786341611f4f1f,1.181998x. Decode `cand_r3_proj.py`
+  was accepted24d577c; serving `muse_proj.py` accepted60e7333. Their lanes own integration.
+
+Next: relay the block/interface to the prefill lane, measure actual per-op H200 choices and
+complete-layer speed, and merge only winning serving paths with the existing dense module.

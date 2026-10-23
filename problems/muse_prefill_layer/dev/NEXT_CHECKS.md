@@ -18,6 +18,7 @@ At reset, the orchestrator sends every ready source in this order; each source i
 | Source | SHA256 | Local screen | Change |
 |---|---|---|---|
 | `cand_firstturn_overlap_grid4.py` | `a97aab65efeedad63f5d8c82aa47a0f85bb87f0d841dabb0136de1a2d1c283f5` | `runs/screen/muse_prefill_layer.cand_firstturn_overlap_grid4.json` | Adds grid-4 persistent grouped expert and overlapped W2 expansion choices; 5/5 official tests pass, prepare 8.2 s on sm120. |
+| `cand_expert_tma_cluster.py` | `00d91b14b74f899639b9978dde63b9d42bbca967051f98c0f231ea5bf90b784c` | `runs/screen/muse_prefill_layer.cand_expert_tma_cluster.full.json` | Adds a raw17 TMA/WGMMA expert choice with a 2-CTA cluster-ready grid and fused W13 SwiGLU; 5/5 tests pass. |
 
 Suggested note: “Routing-aware prepare tuner: fresh BF16 hidden rows use the prepared layer router hi+lo and bias, select the busiest 32-expert range, construct local slots/counts, compare the legacy uniform fixture for diagnostics, and dispatch the realistic winner. Cold-L2 paired CUDA-graph timing and independent semantic/public-floor checks run for every choice. Graph-build, oracle, timing and finalist failures emit SCORE_REJECT and are dropped. All choices remain lossless and BF16-legal; no H200 result is inferred from sm_120.”
 

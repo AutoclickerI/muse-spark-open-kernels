@@ -1,29 +1,30 @@
-# Projection and DFlash compute handoff
+# Prefill dense handoff (G1/G2)
 
-Serves G1/G2; read [GOAL](../../docs/GOAL.md), [CONSTRAINTS](../../docs/CONSTRAINTS.md).
-Proj alone cannot move the fitted overall rank; its kernels serve decode and serving.
-Solo, GPU0 only. Jihoon/orchestrator sends and commits; this thread did neither.
+Read [GOAL](../../docs/GOAL.md) and [CONSTRAINTS](../../docs/CONSTRAINTS.md).
+Solo, GPU0 only; Jihoon/orchestrator sends and commits. This thread did neither.
+Current priority: dense projections in80K-conversation prefill, not standalone proj rank.
 
-Ready next: **`cand_dflash_diag.py`**, frozen **`9b4fae2f…`**; full SHA in NEXT_CHECKS.
-Scored source/dispatch remains byte-identical f3786341611f4f1f (`cand_fused_select.py`).
-Prepare separately measures TP8 DFlash dense shapes and stock-versus-fused glue:
-cold128MiB, fresh inputs, graphs, 20 pairs, exact stock guard, reject/log errors.
-225s diagnostic deadline leaves 15s below the task's 240s limit; compact results print last.
-Local **sm_120**: 9/9 official tests, 30/30 graph shapes, 45.85s prepare;
-all48 diagnostic comparisons complete with no case rejection or budget skip.
-Serving module: `layers/muse_dflash.py`; unchanged released BF16 drafter weights.
-Tuned 2D dense kernels, exact two-tap/group16 convolution, selector input fusion, unary.
-7 unit tests: 464 exact graph comparisons +464 stock repeats, 14 forced Hopper ABI cases.
-16 pointwise SM90 variants and the dense SM90a utility compile; execution unverified.
+Ready block: `dev/prefill_gemm_block.py`; serving module `layers/muse_prefill_gemm.py`.
+Interface: `prefill_gemm_prepare(weights, tokens, budget_s, deadline, incumbent)`;
+`prefill_gemm_run(x, plan, role)` returns BF16 dense / FP32 summed256 router logits.
+`pool_router` returns `(pooled, logits)`; optional `pool_router_norm` includes pre-expert norm.
+Use the actual effective norm vector; skip its consumer's duplicate norm. Preserve collectives.
+Every Lt heuristic +FP32 split-K/swizzles,1GiB workspace, TN/NN weight layouts;
+persistent WGMMA and in-kernel last-CTA Stream-K, five tiles xboth schedules.
+Three fresh probes, any-Exception rejection,20-pair cold graph finalists, shared budget.
+The incumbent stays eligible; losing layouts are dropped and mixed NN layouts shared.
 
-[Full inventory](../../docs/reference/muse_dflash.md): M=8C, prediction P=7C;
-QKV1280, o K1024, gate/up7168, down K3584, conv coefficients2048, head25256/rank.
-Old562us/234us opportunity is stale: FC split already wired, coefficient GEMMs omitted.
-New structural model saving is **0.006ms/step at C1/4/16/32**, plus unmeasured dense/glue.
-Strided selector hidden stays stock bmm; flattening changes BF16 results.
-Serving lane wires only H200 winners and checks full-model agreement, memory and TTFT.
+H200 profile arithmetic: dense/router781.297ms vs607.427ms first-turn tensor floor.
+Tentative shape/tactic attribution puts qkv M16384 at438TF/s,146.533ms excess (84%).
+o/pooler/unpooler jointly948TF/s; individual calls are aggregated, not measured separately.
+[Full table/interface](../../docs/reference/prefill_gemm.md) marks inferred assignments/bounds.
+Local final validation results and frozen SHA: [NEXT_CHECKS](dev/NEXT_CHECKS.md).
 
-Receipt `3afea80c527c4969` failed prepare: missing `_AllModule.old_hopper`; no score.
-Do not reuse that source's results as a passing portfolio. The orchestrator owns its fix.
-Decode `cand_r3_proj.py` was accepted/committed24d577c; decode lane owns subsequent work.
-[dev/NEXT_CHECKS.md](dev/NEXT_CHECKS.md) owns ready hashes, validation and receipt follow-up.
+Queue triage: keep `cand_tile.py` (staged mma.sync) and `cand_reduce_hier.py` (extra hier tiles);
+other14 old singles subsumed.
+[Exact16-line list](dev/QUEUE_TRIAGE.md). No withdrawal was performed here.
+Forced actual Hopper generator/dispatcher:7,581 configs,12 families; archived failure reproduced.
+Builder removes old family; every trial/finalist Exception rejects.
+Queued owner-fixed `cand_portfolio_all.py` was not edited; retry belongs to orchestrator.
+`cand_dflash_diag.py` committed a4dfade and queued; frozen9b4fae2f, receipt pending.
+The serving lane owns `muse_prefill_dense.py` and all wiring; this thread left it untouched.

@@ -2410,12 +2410,150 @@ index 0000000..84121b4
 +        if not dense_router_supported(hidden, self.pooler, self.router):
 +            raise ValueError("dense/router call requires CUDA BF16 [tokens,8192] input")
 +        return self._run(hidden, self.plans.get(hidden.shape[0], "separate"))
+diff --git a/python/sglang/srt/layers/muse_prefill_expert.py b/python/sglang/srt/layers/muse_prefill_expert.py
+new file mode 100644
+index 0000000..8b0abfc
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_prefill_expert.py
+@@ -0,0 +1,132 @@
++"""Drop-in TP8/EP8 prefill expert adapter.
++
++The compiled producer/consumer kernel lives in ``muse_spark_moe``.  This
++module owns the prefill shape policy so the model wiring can stay separate:
++large chunks use the persistent grouped TMA/WGMMA reader (fused W13
++SwiGLU), while small verify batches retain the bounded V9 path.  The input is
++the BF16 pooler output after pre-expert norm; the returned dense slots and map
++are consumed by the model's existing post-expert norm/finalize operation.
++"""
++
++from __future__ import annotations
++
++import logging
++
++import torch
++
++logger = logging.getLogger(__name__)
++
++HIDDEN = 4096
++LOCAL_EXPERTS = 32
++TOP_K = 8
++PREFILL_ROWS = 753
++
++
++def prefill_expert_supported(hidden_states: torch.Tensor, topk_ids: torch.Tensor) -> bool:
++    return bool(
++        hidden_states.is_cuda
++        and hidden_states.dtype == torch.bfloat16
++        and hidden_states.ndim == 2
++        and hidden_states.shape[1] == HIDDEN
++        and 0 < hidden_states.shape[0] <= 16384
++        and topk_ids.is_cuda
++        and topk_ids.dtype in (torch.int32, torch.int64)
++        and tuple(topk_ids.shape) == (hidden_states.shape[0], TOP_K)
++    )
++
++
++class PrefillExpertPlan:
++    """Prepared canonical NVFP4 bank and graph-safe prefill dispatch."""
++
++    def __init__(self, state: dict):
++        self.state = state
++
++    @classmethod
++    def from_layer(cls, layer) -> "PrefillExpertPlan":
++        from sglang.srt.layers.muse_spark_moe import prepare_layer
++
++        return cls(prepare_layer(layer))
++
++    def _v9_chunks(self, hidden_states, topk_scores, topk_ids):
++        from sglang.srt.layers.muse_spark_moe import H, NLOC, TOPK, _v9_call
++
++        mod = self.state["mod"]
++        lo, hi = 1, 512
++        while lo < hi:
++            mid = (lo + hi + 1) // 2
++            if mod.smem_needed(1, 1, mid) <= mod.smem_optin:
++                lo = mid
++            else:
++                hi = mid - 1
++        capacity = max(1, lo // 8 * 8)
++        dense_parts, map_parts = [], []
++        for begin in range(0, hidden_states.shape[0], capacity):
++            end = min(hidden_states.shape[0], begin + capacity)
++            data = {
++                "hidden_states": hidden_states[begin:end].contiguous(),
++                "topk_ids": topk_ids[begin:end].to(torch.int32).contiguous(),
++                "topk_weights": topk_scores[begin:end].to(torch.float32).contiguous(),
++                "config": {
++                    "local_count": NLOC,
++                    "d_hidden": H,
++                    "d_expert": H,
++                    "local_start": self.state["local_start"],
++                },
++            }
++            dense, mapping = _v9_call(data, self.state, return_dense=True)
++            dense_parts.append(dense)
++            map_parts.append(
++                torch.where(
++                    mapping >= 0,
++                    mapping + begin * TOP_K,
++                    mapping,
++                )
++            )
++        return torch.cat(dense_parts), torch.cat(map_parts)
++
++    def __call__(self, hidden_states, topk_scores, topk_ids):
++        if not prefill_expert_supported(hidden_states, topk_ids):
++            raise ValueError("unsupported Muse prefill expert shape or dtype")
++        from sglang.srt.layers.muse_spark_moe import H, NLOC, _grouped_call
++
++        if hidden_states.shape[0] >= PREFILL_ROWS:
++            data = {
++                "hidden_states": hidden_states.contiguous(),
++                "topk_ids": topk_ids.to(torch.int32).contiguous(),
++                "config": {
++                    "local_count": NLOC,
++                    "d_hidden": H,
++                    "d_expert": H,
++                    "local_start": self.state["local_start"],
++                },
++            }
++            return _grouped_call(data, self.state)
++        return self._v9_chunks(hidden_states, topk_scores, topk_ids)
++
++
++def prepare_prefill_expert(layer) -> PrefillExpertPlan | None:
++    """Prepare after weights load; failures leave the caller's stock path intact."""
++    try:
++        return PrefillExpertPlan.from_layer(layer)
++    except Exception:
++        logger.warning(
++            "Muse prefill expert preparation failed; retaining stock expert dispatch",
++            exc_info=True,
++        )
++        return None
++
++
++def attach_prefill_expert(layer) -> PrefillExpertPlan | None:
++    """Serving-lane wiring hook: bind the plan without editing model code here."""
++    plan = prepare_prefill_expert(layer)
++    layer._muse_prefill_expert_plan = plan
++    return plan
++
++
++__all__ = [
++    "PREFILL_ROWS",
++    "PrefillExpertPlan",
++    "attach_prefill_expert",
++    "prefill_expert_supported",
++    "prepare_prefill_expert",
++]
 diff --git a/python/sglang/srt/layers/muse_prefill_gemm.py b/python/sglang/srt/layers/muse_prefill_gemm.py
 new file mode 100644
-index 0000000..b6216ec
+index 0000000..20286ed
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_prefill_gemm.py
-@@ -0,0 +1,543 @@
+@@ -0,0 +1,637 @@
 +"""Prepared Muse TP8 prefill GEMMs; standalone portfolio block as well as serving code.
 +
 +Weights keep their released formats. This module owns local GEMMs only; retain
@@ -2548,6 +2686,25 @@ index 0000000..b6216ec
 +    tl.store(R + j, hi + lo, rr < M)
 +
 +
++@triton.jit
++def _pg_mixed_norm(A, Y, R, GAIN, PN: tl.constexpr, RN: tl.constexpr,
++                    EPS: tl.constexpr, MIXED_INPUT: tl.constexpr, B: tl.constexpr):
++    row = tl.program_id(0)
++    col = tl.arange(0, B)
++    stride = PN + 2 * RN if MIXED_INPUT else PN
++    value = tl.load(A + row * stride + col, col < PN, 0)
++    # Preserve the GEMM's BF16 activation boundary before reducing its norm.
++    value = value.to(tl.bfloat16).to(tl.float32)
++    inv = tl.rsqrt(tl.sum(value * value, 0) / PN + EPS)
++    gain = tl.load(GAIN + col, col < PN, 0).to(tl.float32)
++    tl.store(Y + row * PN + col, value * inv * gain, col < PN)
++    if MIXED_INPUT:
++        rcol = tl.arange(0, RN)
++        hi = tl.load(A + row * stride + PN + rcol, rcol < RN, 0)
++        lo = tl.load(A + row * stride + PN + RN + rcol, rcol < RN, 0)
++        tl.store(R + row * RN + rcol, hi + lo, rcol < RN)
++
++
 +class _PgNative:
 +    def __init__(self, path):
 +        self.lib = ct.CDLL(path)
@@ -2648,8 +2805,10 @@ index 0000000..b6216ec
 +
 +
 +def _pg_equal(got, expected):
-+    if isinstance(got, tuple):
++    if isinstance(got, tuple) or isinstance(expected, tuple):
++        if not isinstance(got, tuple) or not isinstance(expected, tuple) or len(got) != len(expected): return False
 +        return all(_pg_equal(a, b) for a, b in zip(got, expected))
++    if got.shape != expected.shape or got.dtype != expected.dtype: return False
 +    delta = (got.float() - expected.float()).square().sum()
 +    norm = expected.float().square().sum().clamp_min(1e-20)
 +    limit = 1e-4 if got.dtype == torch.float32 else .01
@@ -2680,7 +2839,8 @@ index 0000000..b6216ec
 +    actual TP slices are supported. Pooler/unpooler are full at TP8 prefill.
 +    """
 +    def __init__(self, weights, *, tokens=(16384, 3012, 753), budget_s=60,
-+                 deadline=None, workspace=None, incumbent=None):
++                 deadline=None, workspace=None, incumbent=None,
++                 pool_norm_weight=None, pool_norm_eps=1e-5):
 +        if torch.cuda.is_current_stream_capturing():
 +            raise RuntimeError('prepare PrefillGemmPlan before CUDA graph capture')
 +        self.weights = {k: v.detach() for k, v in weights.items() if k in ('qkv_gate', 'o', 'pooler', 'unpooler', 'router')}
@@ -2701,6 +2861,16 @@ index 0000000..b6216ec
 +        if 'pooler' in self.weights and self.hi is not None:
 +            self.bank = torch.cat((self.weights['pooler'], self.hi), 0)
 +            self.lt_bank = torch.cat((self.bank, self.lo), 0)
++        self.pool_norm_weight = pool_norm_weight
++        self.pool_norm_eps = pool_norm_eps
++        self.pool_norm_version = _pg_version(pool_norm_weight) if pool_norm_weight is not None else None
++        if pool_norm_weight is not None:
++            if self.bank is None or pool_norm_weight.shape != (self.weights['pooler'].shape[0],):
++                raise ValueError('pool_norm_weight must be the actual effective pooler norm vector')
++            if pool_norm_weight.device != self.device or not pool_norm_weight.is_contiguous():
++                raise ValueError('local contiguous effective norm vector required')
++            if pool_norm_weight.dtype not in (torch.bfloat16, torch.float32):
++                raise ValueError('retain the effective norm vector precision')
 +        self.plans, self.codes, self.transposes, self.timings, self.rejections = {}, {}, {}, {}, []
 +        self.incumbent = incumbent
 +        self.workspace = workspace
@@ -2713,6 +2883,12 @@ index 0000000..b6216ec
 +        self.prepare(tokens, deadline=stop)
 +
 +    def _stock(self, x, role):
++        if role == 'pool_router_norm':
++            pooled, router = self._stock(x, 'pool_router')
++            out = torch.empty_like(pooled)
++            _pg_mixed_norm[(x.shape[0],)](pooled, out, router, self.pool_norm_weight,
++                pooled.shape[1], router.shape[1], self.pool_norm_eps, False, triton.next_power_of_2(pooled.shape[1]))
++            return out, router
 +        if role == 'pool_router':
 +            return tuple(self.run(x, name, self.plans.get((x.shape[0], name), ('stock',)))
 +                         for name in ('pooler', 'router'))
@@ -2723,34 +2899,41 @@ index 0000000..b6216ec
 +        return F.linear(x, self.weights[role])
 +
 +    def _weight(self, role, tag):
-+        if role == 'pool_router': return self.lt_bank if tag == 'lt' else self.bank
++        if role.startswith('pool_router'): return self.lt_bank if tag == 'lt' else self.bank
 +        return self.hi if role == 'router' else self.weights[role]
 +
 +    def _options(self, m, role, nn):
-+        key = (m, role, nn)
++        layout_role = 'pool_router' if role.startswith('pool_router') else role
++        key = (m, layout_role, nn)
 +        if key not in self.codes:
 +            if self.native is None: self.native = _pg_native()
 +            if self.workspace is None: self.workspace = _pg_workspace(self.device)
 +            w = self._weight(role, 'lt')
 +            self.codes[key], heuristics = self.native.options(m, w.shape[0], w.shape[1], nn,
-+                                                             role in ('router', 'pool_router'), self.workspace.numel())
++                                                             role == 'router' or role.startswith('pool_router'), self.workspace.numel())
 +            _pg_log.info('PG_LT role=%s m=%d nn=%d heuristics=%d expanded=%d', role, m, nn, heuristics, len(self.codes[key]))
 +            if nn:
-+                self.transposes[role] = w.T.contiguous()
++                self.transposes[layout_role] = w.T.contiguous()
 +                if role == 'router': self.transposes['router_lo'] = self.lo.T.contiguous()
 +        return self.codes[key]
 +
 +    def variants(self, m, role):
 +        yield ('stock',)
++        tables = {}
++        # Reach TN and NN early, then all algorithms. Persistent arithmetic
++        # must not spend the whole budget before the first Lt comparison.
++        for nn in (0, 1):
++            try:
++                tables[nn] = self._options(m, role, nn)
++                if len(tables[nn]): yield ('lt', nn, 0)
++            except Exception as exc:
++                self._reject(m, role, ('layout', nn), exc)
 +        # Persistent tile and balanced Stream-K are both eligible on all GPUs;
 +        # SM90 compilation selects WGMMA, SM120 gives a portable arithmetic test.
 +        for index in range(len(PG_TILES)):
 +            for schedule in (0, 1): yield ('persistent', index, schedule)
-+        for nn in (0, 1):
-+            try:
-+                for index in range(len(self._options(m, role, nn))): yield ('lt', nn, index)
-+            except Exception as exc:
-+                self._reject(m, role, ('layout', nn), exc)
++        for nn, codes in tables.items():
++            for index in range(1, len(codes)): yield ('lt', nn, index)
 +
 +    def _reject(self, m, role, config, exc):
 +        self.rejections.append((m, role, config, type(exc).__name__, str(exc)[:180]))
@@ -2759,7 +2942,8 @@ index 0000000..b6216ec
 +    def run(self, x, role, config):
 +        tag = config[0]
 +        if tag == 'stock': return self._stock(x, role)
-+        mixed, dual = role == 'pool_router', role == 'router'
++        mixed, dual = role.startswith('pool_router'), role == 'router'
++        normalized = role == 'pool_router_norm'
 +        w = self._weight(role, tag)
 +        m, k = x.shape
 +        pn = self.weights['pooler'].shape[0] if mixed else 0
@@ -2777,14 +2961,24 @@ index 0000000..b6216ec
 +            _pg_matmul[(sm,)](x, w, self.lo if dual or mixed else w, y, r, self.partial, self.counts,
 +                               m, n, k, pn, mixed, dual, bm, bn, bk, sm, bool(config[2]),
 +                               num_warps=warps, num_stages=stages)
++            if normalized:
++                norm = torch.empty_like(y)
++                _pg_mixed_norm[(m,)](y, norm, r, self.pool_norm_weight, pn, rn,
++                                      self.pool_norm_eps, False, triton.next_power_of_2(pn))
++                y = norm
 +        elif tag == 'lt':
 +            nn, index = config[1:]
 +            codes = self._options(m, role, nn)
 +            out = torch.empty((m, w.shape[0]), device=x.device, dtype=torch.float32) if mixed else y
-+            self.native.run(x, self.transposes[role] if nn else w, out,
++            layout_role = 'pool_router' if mixed else role
++            self.native.run(x, self.transposes[layout_role] if nn else w, out,
 +                            self.workspace, codes, index, nn, mixed or dual)
 +            if mixed:
-+                _pg_mixed_epilogue[(triton.cdiv(m * pn, 256),)](out, y, r, m, pn, rn, 256)
++                if normalized:
++                    _pg_mixed_norm[(m,)](out, y, r, self.pool_norm_weight, pn, rn,
++                                          self.pool_norm_eps, True, triton.next_power_of_2(pn))
++                else:
++                    _pg_mixed_epilogue[(triton.cdiv(m * pn, 256),)](out, y, r, m, pn, rn, 256)
 +            elif dual:
 +                low = torch.empty_like(y)
 +                self.native.run(x, self.transposes['router_lo'] if nn else self.lo, low,
@@ -2794,14 +2988,20 @@ index 0000000..b6216ec
 +        return (y, r) if mixed else y
 +
 +    def prepare(self, tokens, *, deadline):
-+        roles = [k for k in ('pooler', 'unpooler', 'qkv_gate', 'o', 'router') if k in self.weights]
++        roles = [k for k in ('qkv_gate', 'pooler', 'router') if k in self.weights]
 +        if self.bank is not None: roles.append('pool_router')
++        if self.pool_norm_weight is not None: roles.append('pool_router_norm')
++        roles.extend(k for k in ('unpooler', 'o') if k in self.weights)
 +        flush = None
-+        for m in tokens:
-+            for role in roles:
++        keys_left = len(tokens) * len(roles)
++        for role in roles:
++            for m in tokens:
 +                self.plans[(m, role)] = ('stock',)
 +                if time.monotonic() >= deadline: continue
-+                k = self.weights['pooler' if role == 'pool_router' else role].shape[1]
++                local_deadline = time.monotonic() + (deadline - time.monotonic()) / keys_left
++                keys_left -= 1
++                coarse_deadline = time.monotonic() + max(0, local_deadline - time.monotonic()) * .65
++                k = self.weights['pooler' if role.startswith('pool_router') else role].shape[1]
 +                x = torch.randn((m, k), device=self.device, dtype=torch.bfloat16)
 +                banks = [torch.randn_like(x) for _ in range(2)]
 +                probe = torch.zeros_like(x); probe[:, 127 % k] = .5; banks.append(probe)
@@ -2810,8 +3010,9 @@ index 0000000..b6216ec
 +                # The incumbent must hold and stays eligible even if all trials
 +                # reject. Its failures are not disguised as optimization failures.
 +                with _PgGraph(lambda: self._stock(x, role)) as base:
++                    if not _pg_equal(base.out, base.out): raise RuntimeError('the incumbent produced nonfinite output')
 +                    for config in self.variants(m, role):
-+                        if time.monotonic() >= deadline: break
++                        if time.monotonic() >= coarse_deadline: break
 +                        if config == ('stock',): continue
 +                        try:
 +                            with _PgGraph(lambda c=config: self.run(x, role, c)) as graph:
@@ -2823,17 +3024,34 @@ index 0000000..b6216ec
 +                        except Exception as exc: self._reject(m, role, config, exc)
 +                    # Admit only after >=20 cold, order-swapped fresh pairs.
 +                    best = (1., ('stock',), None)
++                    stock_us = None
 +                    finalists = sorted(trials)[:3]
 +                    for _, config in finalists:
-+                        if time.monotonic() >= deadline: break
++                        if time.monotonic() >= local_deadline: break
 +                        try:
 +                            with _PgGraph(lambda c=config: self.run(x, role, c)) as graph:
 +                                ratio, old, new = _pg_paired(base, graph, x, banks, flush, 20)
++                                stock_us = old
 +                                if ratio < best[0]: best = (ratio, config, (old, new))
 +                        except Exception as exc: self._reject(m, role, ('final',) + config, exc)
++                    if best[1] == ('stock',):
++                        if stock_us is None and time.monotonic() < deadline:
++                            _, stock_us, _ = _pg_paired(base, base, x, banks, flush, 20)
++                        if stock_us is not None: best = (1., ('stock',), (stock_us, stock_us))
 +                    self.plans[(m, role)] = best[1]
 +                    self.timings[(m, role)] = dict(config=best[1], ratio=best[0], us=best[2])
 +                    _pg_log.info('PG_PICK role=%s m=%d config=%s ratio=%.6f', role, m, best[1], best[0])
++        return self
++
++    def release_trials(self):
++        """Keep selected layouts; discard losing weight copies before capture."""
++        nn_roles = {role for (_, role), config in self.plans.items() if config[:2] == ('lt', 1)}
++        if 'pool_router_norm' in nn_roles: nn_roles.add('pool_router')
++        if 'router' in nn_roles: nn_roles.add('router_lo')
++        self.transposes = {k: v for k, v in self.transposes.items() if k in nn_roles}
++        mixed = [c for (_, role), c in self.plans.items() if role.startswith('pool_router')]
++        if not any(c[0] == 'persistent' for c in mixed): self.bank = None
++        if not any(c[0] == 'lt' for c in mixed): self.lt_bank = None
 +        return self
 +
 +    def __call__(self, x, role):
@@ -2842,15 +3060,29 @@ index 0000000..b6216ec
 +        for name, weight in self.weights.items():
 +            if self.versions[name] is not None and _pg_version(weight) != self.versions[name]:
 +                raise RuntimeError('weight changed after preparation')
++        if self.pool_norm_version is not None and _pg_version(self.pool_norm_weight) != self.pool_norm_version:
++            raise RuntimeError('norm weight changed after preparation')
 +        return self.run(x, role, self.plans.get((x.shape[0], role), ('stock',)))
 +
 +
 +def prefill_gemm_prepare(weights, **kwargs):
-+    return PrefillGemmPlan(weights, **kwargs)
++    return PrefillGemmPlan(weights, **kwargs).release_trials()
 +
 +
 +def prefill_gemm_run(x, state, role):
 +    return state(x, role)
++
++
++def prefill_gemm_summary(state):
++    """Call last in prepare so the compact dispatch survives receipt log tails."""
++    for (m, role), choice in state.plans.items():
++        timing = state.timings.get((m, role), {})
++        print(f'PG_PICK {role} m={m} choice={choice} ratio={timing.get("ratio", 1):.6f} us={timing.get("us")}', flush=True)
++    layouts = [state.hi, state.lo, state.bank, state.lt_bank, *state.transposes.values()]
++    allocations = {v.data_ptr(): v.numel() * v.element_size() for v in layouts if v is not None}
++    workspace = state.workspace.numel() if state.workspace is not None else 0
++    print(f'PG_END rejects={len(state.rejections)} layout_bytes={sum(allocations.values())} '
++          f'scratch_bytes={state.partial.numel()*4+state.counts.numel()*4} shared_workspace_bytes={workspace}', flush=True)
 +
 +
 +PG_RAW = r'''
@@ -5328,10 +5560,10 @@ index 0000000..623ce05
 +    )
 diff --git a/python/sglang/srt/layers/muse_spark_serving.py b/python/sglang/srt/layers/muse_spark_serving.py
 new file mode 100644
-index 0000000..70c2eeb
+index 0000000..85e914a
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_spark_serving.py
-@@ -0,0 +1,209 @@
+@@ -0,0 +1,214 @@
 +"""Muse serving dispatch around independently owned expert/projection kernels."""
 +
 +from __future__ import annotations
@@ -5502,7 +5734,10 @@ index 0000000..70c2eeb
 +            # router.  The model gathers the pooler result before routing.
 +            module._prefill_dense_router = None
 +            try:
-+                from sglang.srt.layers.muse_prefill_dense import DenseRouterPlan
++                from sglang.srt.layers.muse_prefill_dense import (
++                    DenseRouterPlan,
++                    dense_router_supported,
++                )
 +
 +                pooler = module.pre_expert_proj
 +                router = module.gate.weight
@@ -5520,12 +5755,14 @@ index 0000000..70c2eeb
 +                        pooler_weight = pooler_weight[
 +                            comm.rank * rows : (comm.rank + 1) * rows
 +                        ]
-+                    module._prefill_dense_router = DenseRouterPlan(
-+                        pooler_weight,
-+                        router,
-+                        tokens=(753, 3012, 16384),
-+                        budget_s=min(2, max(0, prefill_deadline - time.monotonic())),
-+                    )
++                    probe = pooler_weight.new_empty((1, pooler_weight.shape[1]))
++                    if dense_router_supported(probe, pooler_weight, router):
++                        module._prefill_dense_router = DenseRouterPlan(
++                            pooler_weight,
++                            router,
++                            tokens=(753, 3012, 16384),
++                            budget_s=min(2, max(0, prefill_deadline - time.monotonic())),
++                        )
 +            except Exception:
 +                module._prefill_dense_router = None
 +                logger.warning(

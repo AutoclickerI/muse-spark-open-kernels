@@ -13,10 +13,10 @@ P=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(P/'dev'))
 from build_portfolio_all import build,safe_tuner
 
-for file,extended in (('cand_portfolio_all.py',False),('cand_portfolio_max.py',True),('cand_portfolio_native.py',True)):
-    source=safe_tuner((P/file).read_text(),extended=extended,native=file=='cand_portfolio_native.py')
-    compile(source,file,'exec')
-    assert 'deadline=started+240' in source and 'ALL_REJECT_FINAL' in source
+source=safe_tuner((P/'cand_portfolio_all.py').read_text())
+compile(source,'generated_portfolio.py','exec')
+assert 'deadline=started+240' in source and 'ALL_REJECT_FINAL' in source
+assert "yield ('old',)" not in source
 
 with tempfile.TemporaryDirectory(prefix='projection_tuner_test_') as tmp:
     path=Path(tmp)/'portfolio.py';build(path)
@@ -44,12 +44,13 @@ def run(data,state,config):
     x=data['x'];name=data['config']['layer'];n=data['config']['n']
     y=(x.float()@weights[name][:n].float().T)
     if name!='router':y=y.to(torch.bfloat16)
-    if config[0]=='broken':raise ValueError('injected launch failure')
+    if config[0]=='broken':raise AttributeError('injected launch failure')
+    if config[0]=='type_error':raise TypeError('injected tuple failure')
     if config[0]=='wrong':return torch.zeros_like(y)
     if config[0]=='late_wrong' and float(x[0,0])==0:return torch.zeros_like(y)
     return y
 c._all_run=run
-c._all_variants=lambda *args:iter((('incumbent',),('broken',),('wrong',),('late_wrong',),('good',)))
+c._all_variants=lambda *args:iter((('incumbent',),('broken',),('type_error',),('wrong',),('late_wrong',),('good',)))
 class Graph:
     def __init__(self,fn):self.fn=fn;self.out=fn()
     def replay(self):self.out.copy_(self.fn())
@@ -63,6 +64,7 @@ text=log.getvalue();print(text)
 assert text.count('ALL_REJECT_FINAL')==30
 assert 'injected launch failure' in text and 'ALL incorrect' in text
 assert text.count('injected layout failure')==36
+assert 'injected tuple failure' in text
 assert len(state['choices'])==30
 assert all(v[0] in ('incumbent','good') for v in state['choices'].values())
 
@@ -77,4 +79,4 @@ try:
     with contextlib.redirect_stdout(log):expired=c.prepare(weights)
 finally:time.monotonic=real_time
 assert not expired['choices']
-print('PASS generated all/max/native syntax; 30 coarse launch/numeric/finalist failures rejected; expired deadline skips all 30 shapes')
+print('PASS current builder syntax; 30 coarse launch/numeric/finalist failures rejected; expired deadline skips all 30 shapes')
