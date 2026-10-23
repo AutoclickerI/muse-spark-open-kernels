@@ -18,7 +18,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 | muse_prefill_layer | 1.345x v3 `82a4e50b54294a2a` | 1.212x (53; v3 scored queued) | 1.695x (luccabb) | 1.515x | 1.222x | 107 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
-top-50 cut: FINDINGS "Boards". Ceilings against these: [ceiling](reference/ceiling.md).
+top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
 
 ## Comparisons
 Per-load results of our candidates against SGLang: FINDINGS "Our kernels on the H200".

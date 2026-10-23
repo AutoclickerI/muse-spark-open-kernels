@@ -22,7 +22,7 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
   `tools/screen_all.py --send` screens every unsent candidate in parallel and sends each pass.
 - Local timing is sm_120, not H200: use it to rank loosely. H200 claims come only from `runs/` receipts.
 - Hopper-only paths can't run here. Force each Hopper branch's Python glue locally with a portable stand-in kernel.
-- Time several variants inside one diagnostic check: the judge starts ~11 of our runs an hour.
+- Time several variants inside one diagnostic check.
 - Write kernels so they drop into `serving/sglang/python/sglang/`. Serving runs only verify loads and prefill.
 - Run `tools/sync_upstream.sh` before starting; read the diff if official files changed.
 - Delegate per CONSTRAINTS 15-16 (resume command: RESOURCES "Inventory").
