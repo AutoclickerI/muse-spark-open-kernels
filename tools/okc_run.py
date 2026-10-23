@@ -26,6 +26,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 LEDGER = REPO / "runs" / "ledger.jsonl"
+JOB_KEYS = ("job_id", "job", "id")
 
 
 def okc_bin() -> str:
@@ -33,11 +34,16 @@ def okc_bin() -> str:
 
 
 def okc_json(*args: str) -> dict:
+    """okc's JSON; exits unless it names a job (a run that failed the judge's tests still does,
+    and still spent a run, so it gets a receipt)."""
     proc = subprocess.run([okc_bin(), *args, "--json"], capture_output=True, text=True)
     try:
-        return json.loads(proc.stdout)
+        result = json.loads(proc.stdout)
     except json.JSONDecodeError:
+        result = None
+    if not isinstance(result, dict) or not pick(result, *JOB_KEYS):
         sys.exit(f"okc {' '.join(args)} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
+    return result
 
 
 def pick(d: dict, *keys):
@@ -80,19 +86,14 @@ def main():
                 sys.exit(f"this source already ran as {args.mode} job {row['job']} ({row['status']}, "
                          f"speedup {row['speedup']}); --force to send it again")
 
-    sent = okc_json(args.mode, problem, str(args.file), "--no-wait")
-    job = pick(sent, "job_id", "job", "id")
-    if not job:
-        sys.exit(f"okc returned no job id: {sent}")
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    print(f"okc {args.mode} {problem} {args.file}: waiting for the result (`okc jobs` lists it meanwhile)", flush=True)
+    result = okc_json(args.mode, problem, str(args.file))  # waits; okc saves profiles/ beside the file
+    job = pick(result, *JOB_KEYS)
     out = REPO / "runs" / problem
     out.mkdir(parents=True, exist_ok=True)
     stem = out / f"{stamp}_{args.mode}_{job}"
     stem.with_suffix(".py").write_bytes(src)
-    print(f"{args.mode} job {job} sent; waiting (receipt {stem.relative_to(REPO)}.*)", flush=True)
-
-    # okc status writes the profile and log beside the file only from the file's directory.
-    result = okc_json("status", job, "--wait")
     stem.with_suffix(".json").write_text(json.dumps(result, indent=1, sort_keys=True))
     row = {
         "utc": stamp, "problem": problem, "mode": args.mode, "job": job, "sha256": sha,
