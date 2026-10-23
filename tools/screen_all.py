@@ -9,12 +9,16 @@ A candidate is unsent when no receipt under runs/ (or runs/pending/) holds its e
 screen is `tools/local_eval.py` in the judge's image: every test, then CUDA-graph capture and replay
 of every scored shape (2 replays, 1 input set, no baseline; under parallel load the times mean
 nothing, the capture does). Each screen builds its extensions in a directory of its own, so
-concurrent load_inline builds of same-named modules don't collide. Files changed in the last
---skip-recent minutes are left to the lane still writing them.
+concurrent load_inline builds of same-named modules don't collide. A screen that ran out of GPU
+memory beside the others is screened again alone. Files changed in the last --skip-recent minutes
+are left to the lane still writing them.
+
+An earlier screen of the same source (sha256) that passed everything is reused instead of rerun.
 
 --send queues each pass through tools/okc_run.py (receipts, priority queue, judge cap): a check while
-the problem has checks left today (`okc problems`), else a scored run while it has runs left (the
-board keeps a team's best run, so a slower scored run costs no place), else nothing (reported). Sends
+the problem has checks left today (`okc problems`), else a scored run while more than --keep-submits
+remain (the board keeps a team's best run, so a slower scored run costs no place; the kept runs are
+for the lanes' promotions), else nothing (reported). Sends
 take the problem's default priority + 0.5, so lanes' own later sends at the default go first.
 Results: runs/screen/<utc>/summary.json and one log per candidate.
 """
@@ -60,9 +64,26 @@ def unsent(problems, skip_recent_min):
     return out, recent
 
 
+def earlier_pass(f: Path):
+    """An earlier screen's result for this exact source in which every test and graph passed."""
+    sha, stem = hashlib.sha256(f.read_bytes()).hexdigest(), f"{f.parent.name}.{f.stem}"
+    for js in sorted(REPO.glob(f"runs/screen/*/{stem}.json"), reverse=True):
+        res = json.loads(js.read_text())
+        checks = res.get("tests", []) + res.get("shapes", [])
+        if res.get("sha256") == sha and checks and all(c.get("ok") for c in checks):
+            return js, res
+    return None
+
+
 def screen(f: Path, gpu: str, logdir: Path) -> dict:
     stem = f"{f.parent.name}.{f.stem}"
     log, js = logdir / f"{stem}.log", logdir / f"{stem}.json"
+    if done := earlier_pass(f):
+        res = done[1]
+        return {"problem": f.parent.name, "file": str(f.relative_to(REPO)), "ok": True, "rc": 0,
+                "tests": f"{len(res['tests'])}/{len(res['tests'])}", "graphs": f"{len(res['shapes'])}/{len(res['shapes'])}",
+                "prepare_s": res.get("prepare_s"), "minutes": 0, "why": "",
+                "log": str(done[0].with_suffix(".log").relative_to(REPO))}
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=gpu,
                # a path inside the container: tools/img maps the container's /tmp to its work dir on disk
                APPTAINERENV_TORCH_EXTENSIONS_DIR=f"/tmp/screen-ext/{stem}")
@@ -114,6 +135,8 @@ def main():
     ap.add_argument("--gpu", default="0")
     ap.add_argument("--skip-recent", type=float, default=20, help="minutes")
     ap.add_argument("--send", action="store_true")
+    ap.add_argument("--keep-submits", type=int, default=2,
+                    help="scored runs per problem left for the lanes' promotions")
     args = ap.parse_args()
 
     files, recent = unsent(args.problems, args.skip_recent)
@@ -122,20 +145,30 @@ def main():
     logdir.mkdir(parents=True, exist_ok=True)
     print(f"{len(files)} unsent candidates to screen on GPU {args.gpu}, {args.jobs} at a time; "
           f"{len(recent)} skipped as still being written: {' '.join(p.name for p in recent)}", flush=True)
+    def report(r):
+        print(f"{'PASS' if r['ok'] else 'FAIL'} {r['file']} tests {r['tests']} graphs {r['graphs']}"
+              f" ({r['minutes']} min){'  ' + r['why'] if not r['ok'] else ''}", flush=True)
+
     results = []
     with cf.ThreadPoolExecutor(args.jobs) as pool:
         for r in pool.map(lambda f: screen(f, args.gpu, logdir), files):
-            print(f"{'PASS' if r['ok'] else 'FAIL'} {r['file']} tests {r['tests']} graphs {r['graphs']}"
-                  f" ({r['minutes']} min){'  ' + r['why'] if not r['ok'] else ''}", flush=True)
+            report(r)
             results.append(r)
+    # parallel screens share one GPU's memory; a candidate that ran out of it is screened again alone
+    for i, r in enumerate(results):
+        if not r["ok"] and "out of memory" in (REPO / r["log"]).read_text():
+            print(f"retry alone (out of memory in parallel): {r['file']}", flush=True)
+            results[i] = screen(REPO / r["file"], args.gpu, logdir)
+            report(results[i])
 
     if args.send:
         q = quotas()
         for r in sorted((r for r in results if r["ok"]), key=lambda r: PRIORITY.get(r["problem"], 3)):
             left = q.get(r["problem"], {})
-            mode = "check" if left.get("check", 0) > 0 else "submit" if left.get("submit", 0) > 0 else None
+            mode = ("check" if left.get("check", 0) > 0 else
+                    "submit" if left.get("submit", 0) > args.keep_submits else None)
             if not mode:
-                r["sent"] = "no quota left today"
+                r["sent"] = "no quota left today beyond the kept scored runs"
                 continue
             left[mode] -= 1
             log = logdir / (Path(r["file"]).stem + f".{r['problem']}.send.log")
