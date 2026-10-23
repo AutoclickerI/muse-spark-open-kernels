@@ -5,13 +5,10 @@ Submission: custom decode plus FA3 verify; 1.384x scored `526f31018e2c4449`,
 1.388x check `4f8c41ef9e924ff4`. No new H200 promotion yet.
 
 Next: `dev/NEXT_CHECKS.md` holds frozen hashes and queue order.
-The old `cand_xqa_diag.py` stays unchanged; its sender is waiting locally,
-not yet accepted by the judge. Read its `XQA_DIAG` when the receipt arrives.
-`cand_xqa_k128.py` is the sent eight-warp packed diagnostic; do not edit it.
-`cand_xqa_pipeline.py` is the private K128 specialization; it removes the
-runtime RoPE branch on full attention, raises occupancy, and keeps the packed
-prepare-time FA3 dispatch.
-
+The sent diagnostic, K128 and pipeline files remain frozen. Their H200 receipts
+have not landed; current receipts are the older v1-v6 and hybrid runs.
+Those show custom full verify below FA3: v2 B16/B32 0.879/0.931x and v5
+0.697/0.688x, while the hybrid is FA3 at roughly 1.00x.
 K128 design: one KV head / CTA, 64 queries on MMA N, keys on M; raw E4M3 QK;
 FP32 online softmax; exact FP16 V or raw FP8 PV via ldmatrix/packed transpose;
 3/4/5-stage page-row cp.async (32/48/64 KiB outstanding), SM-sized split-KV,
@@ -23,8 +20,11 @@ formats pass fresh graph replays through 1M context. Clock64 profiling found
 the largest per-tile costs are gather issue/address work (~2.1k cycles), QK
 (~1.2k), softmax (~1.2k), widened-PV (~1.1k), and FP16 widening (~0.9k); the
 cross-SM merge mark is not usable as a latency measure. ncu is blocked by
-ERR_NVGPUCTRPERM. The private full-specialized K128 pipeline measures 346/676
-us for verify B16/B32 on sm_120; these are not H200 claims.
+ERR_NVGPUCTRPERM. The private full-specialized K128 pipeline measures 346/676 us for verify
+B16/B32 on sm_120; these are not H200 claims. A register row-base gather
+copy passes 16/16 tests and 12/12 graph shapes but is neutral (358/670 us). A shared row-base copy
+is slower (407/781 us), and the integrated bulk-ring copy hangs on q8; both
+were discarded. Standalone cp.async.bulk plus mbarrier works on sm_120.
 
 Only the orchestrator sends runs. Keep old H200 receipts; infer no H200 wins
 from local times or stand-ins.

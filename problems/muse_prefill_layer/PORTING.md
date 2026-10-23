@@ -58,7 +58,7 @@ scale cancellation cannot hide a missing sidecar. `dev/canonical_edges.json` and
 
 ## Serving integration
 
-The current integration is `srt/layers/muse_spark_moe_v4.py`: `prepare_layer` builds the
+The current integration is `srt/layers/muse_spark_moe.py`: `prepare_layer` builds the
 canonical bank, `run_layer` calls `kernel_fn`, and `_grouped_call` handles large token
 counts. Port RS128 into that grouped reader, retaining separate scales and the existing
 expert mapping. Our `_canonical_plan` / `_canonical_pairs` can reuse metadata when the

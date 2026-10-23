@@ -10,6 +10,10 @@ processes from the attention lane. Do not resend a source already accepted.
 | 2 | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Private K128 full-specialized pipeline: no runtime RoPE branch on full attention, 3-stage 48 KiB gather, waves 2/4/8 plus paired FA3. New local screen passes; leave sending to the orchestrator. |
 | 3 | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Already waiting through screen_all; collect it, do not launch another. |
 
+Sent scored XQA sources remain frozen at these hashes: `cand_xqa.py` `551949b5eb2219d0fd698ab202e529d21095eb08edb8171701796067538f7296`, `cand_xqa_ldm.py` `3511f6ae5cbec225a60cf04696b766e729bd46c317e22c65d3a7382efe285ee9`, `cand_xqa_p8.py` `5b856076f62f9402d4d1e2f2bfc02efd1a12def8090321d35748fb24a8f9df43`, and `cand_xqa_ptranspose.py` `308dbb4fba8e13d22654881227d69596847005a2b7813c39c6af136f22872f7`.
+
+The gather experiments are closed for this round: register offsets were neutral, shared offsets slower, and the bulk ring hung q8. They are not candidates or queue entries. Preserve their logs as evidence and wait for the already sent XQA receipts before changing dispatch.
+
 The sent K128 file replaces the old spilling four-warp source. It preserves the
 q_len=1 implementation. `prepare()` sweeps FP16/FP8 PV, 3/4/5 gather stages and
 1/2/4/8 scheduling waves, prints `XQA_W8_DIAG`, then compares the best custom

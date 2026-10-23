@@ -405,11 +405,7 @@ def prepare_base(weights):
     }
     # SGLang binds the post-expert norm's (1 + w) in BF16 for its Marlin finalize.
     st["post_expert_bf16"] = st["post_expert"].to(torch.bfloat16)
-    try:
-        st["bank"] = _marlin_bank(weights)
-    except Exception as e:  # noqa: BLE001
-        print(f"marlin unavailable: {type(e).__name__}: {e}")
-        st["bank"] = None
+    st["bank"] = None
     torch.cuda.synchronize()
     if False:
         _bench_w4a16(weights)
@@ -557,12 +553,10 @@ def kernel_fn(data, st):
                           num_warps=2)
     # --- experts ---
     pooled = torch.mm(h, st["pooler"].t())                              # [T, 4096] bf16
-    if T >= BIG_TOKENS or st["bank"] is None:
+    if T < 8192:
         moe = experts_tiled(pooled, topk_w, slot_e, slot_pos, counts, st)
     else:
-        xn = torch.empty((T, D_EXPERT), dtype=torch.bfloat16, device=dev)
-        _pre_expert_norm_kernel[(T,)](pooled, st["pre_expert"], xn, D=D_EXPERT, num_warps=8)
-        moe = _experts_marlin(xn, topk_w, ids, data["local_start"], st)
+        moe = _experts_dequant(pooled, topk_w, slot_e, slot_pos, counts, st)
     if T <= 8:
         f = torch.nn.functional.pad(torch.mm(moe, st["unpooler"][:UNPOOL_SLICE].t()), (0, HIDDEN - UNPOOL_SLICE))
     else:

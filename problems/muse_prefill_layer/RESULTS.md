@@ -1,6 +1,6 @@
 # Prefill experiments
 
-Report generated 2026-10-23T14:23:34+00:00. H200 numbers below come only from judge receipts; local GPU times are excluded.
+Report generated 2026-10-23T16:19:45+00:00. H200 numbers below come only from judge receipts; local GPU times are excluded.
 
 | Candidate | Check job | Status | Turn 1 | Turn 4 | First turn | Overall |
 |---|---|---|---:|---:|---:|---:|
@@ -12,11 +12,11 @@ Report generated 2026-10-23T14:23:34+00:00. H200 numbers below come only from ju
 | v6: Humming indexed experts | [`1961a539127a4184`](../../runs/muse_prefill_layer/20261023T093119Z_check_1961a539127a4184.json) | passed | 1.200x | 1.368x | 1.427x | 1.328x |
 | v7: Custom WGMMA, 64-token tiles | [`a1252f4de2ef4a70`](../../runs/muse_prefill_layer/20261023T094307Z_check_a1252f4de2ef4a70.json) | passed | 1.135x | 1.160x | 1.196x | 1.164x |
 | v8: Humming masked groups below2048 | [`a2702eaedce34844`](../../runs/muse_prefill_layer/20261023T100232Z_check_a2702eaedce34844.json) | passed | 1.240x | 1.126x | 1.546x | 1.292x |
-| v9: Contiguous cache + unpacked GQA | `f13e757f4c224e06` | pending | — | — | — | — |
-| v10: Route-indexed SwiGLU | `583a1b97cc544f53` | pending | — | — | — | — |
-| v11: WGMMA below8192, dequant/DG above | `6a9cd943fe404d74` | pending | — | — | — | — |
-| v12: WGMMA 256-token tiles at large T | `53b79ddde4a048d5` | pending | — | — | — | — |
-| v13: Corrected native DeepGEMM dense | `362f63065c634281` | pending | — | — | — | — |
+| v9: Contiguous cache + unpacked GQA | [`f13e757f4c224e06`](../../runs/muse_prefill_layer/20261023T103532Z_check_f13e757f4c224e06.json) | passed | 1.023x | 1.064x | 1.529x | 1.185x |
+| v10: Route-indexed SwiGLU | [`583a1b97cc544f53`](../../runs/muse_prefill_layer/20261023T105801Z_check_583a1b97cc544f53.json) | passed | 1.007x | 1.094x | 1.531x | 1.190x |
+| v11: WGMMA below8192, dequant/DG above | [`6a9cd943fe404d74`](../../runs/muse_prefill_layer/20261023T110413Z_check_6a9cd943fe404d74.json) | passed | 1.216x | 1.364x | 1.543x | 1.368x |
+| v12: WGMMA 256-token tiles at large T | [`53b79ddde4a048d5`](../../runs/muse_prefill_layer/20261023T111525Z_check_53b79ddde4a048d5.json) | ok | 1.211x | 1.349x | — | — |
+| v13: Corrected native DeepGEMM dense | [`362f63065c634281`](../../runs/muse_prefill_layer/20261023T113154Z_check_362f63065c634281.json) | passed | 1.015x | 1.187x | 1.574x | 1.237x |
 | v14: TMA indexed Humming experts | not assigned | waiting admission | — | — | — | — |
 | v15: Shared/shared WGMMA expert pipeline | not assigned | waiting admission | — | — | — | — |
 | v16: Grouped GEMM expected-row tuning | not assigned | waiting admission | — | — | — | — |
@@ -27,9 +27,9 @@ Report generated 2026-10-23T14:23:34+00:00. H200 numbers below come only from ju
 | Job | Status | Turn 1 | Turn 4 | First turn | Overall |
 |---|---|---:|---:|---:|---:|
 | [`facdb8724574420f`](../../runs/muse_prefill_layer/20261023T090605Z_submit_facdb8724574420f.json) | passed | 1.014x | 1.151x | 1.527x | 1.212x |
-| `bab2f3468fcb4b58` | pending | — | — | — | — |
+| [`bab2f3468fcb4b58`](../../runs/muse_prefill_layer/20261023T105118Z_submit_bab2f3468fcb4b58.json) | passed | 1.211x | 1.371x | 1.473x | 1.347x |
 
-Best completed check: **v3, 1.345393x**, 95% interval [1.325212119031937, 1.3655739094593056]. `submission.py` matches its exact receipt source.
+Best completed check: **v11, 1.367883x**, 95% interval [1.3473650789338438, 1.3884015787998492]. `submission.py` matches its exact receipt source.
 
 ## Profile breakdown
 
@@ -37,14 +37,14 @@ Single profiled calls, in microseconds; these differ from the paired benchmark m
 
 | Load / layer / prefix | Expert core | FA3 + cache gather | Dense + router GEMMs | Other | Total |
 |---|---:|---:|---:|---:|---:|
-| turn 1 / sliding / 80000 | 522.0 | 31.9 | 205.3 | 84.0 | 843.2 |
-| turn 1 / full / 80000 | 588.2 | 423.3 | 202.9 | 83.3 | 1297.7 |
-| turn 4 / sliding / 80000 | 1330.9 | 64.5 | 761.0 | 257.6 | 2414.0 |
-| turn 4 / full / 80000 | 1260.1 | 1632.4 | 762.6 | 256.3 | 3911.4 |
-| first turn / full / 0 | 5033.3 | 902.5 | 4076.5 | 1237.1 | 11249.4 |
-| first turn / sliding / 32768 | 5508.9 | 306.8 | 4073.1 | 1255.8 | 11144.6 |
-| first turn / full / 32768 | 4910.2 | 4512.6 | 4072.4 | 1227.9 | 14723.1 |
-| first turn / full / 65536 | 5223.4 | 8020.4 | 4077.2 | 1249.6 | 18570.6 |
+| turn 1 / sliding / 80000 | 526.3 | 32.6 | 207.9 | 84.7 | 851.5 |
+| turn 1 / full / 80000 | 573.1 | 423.2 | 205.1 | 85.8 | 1287.2 |
+| turn 4 / sliding / 80000 | 1340.0 | 61.9 | 774.8 | 254.3 | 2431.0 |
+| turn 4 / full / 80000 | 1433.6 | 1624.9 | 769.7 | 259.5 | 4087.7 |
+| first turn / full / 0 | 4443.9 | 897.0 | 4141.5 | 1533.2 | 11015.6 |
+| first turn / sliding / 32768 | 4952.0 | 316.3 | 4137.8 | 1572.8 | 10978.9 |
+| first turn / full / 32768 | 5026.8 | 4493.9 | 4140.5 | 1547.2 | 15208.4 |
+| first turn / full / 65536 | 4784.6 | 8072.4 | 4149.4 | 1533.2 | 18539.6 |
 
 ## Verification and porting
 
@@ -54,7 +54,7 @@ See [PORTING.md](PORTING.md) for exact SGLang functions, checkpoint scale/layout
 
 The coordinator revoked the two-failed-ideas stopping condition. Background collectors recover pending receipts. dev/finish_round.py promotes and scores only a checked new best from this round; the final check is reserved for measured component integration after the component receipts arrive. Four new checks v14–v17 reserve usage to19/20 including waiting admission; accepted usage may be lower.
 
-Board verified 2026-10-23T13:02:25+00:00: rank 55, 1.2124x. Later scored jobs can still be pending.
+Board verified 2026-10-23T16:17:06+00:00: rank 48, 1.3473x. Later scored jobs can still be pending.
 
 ## Next ideas, ranked
 

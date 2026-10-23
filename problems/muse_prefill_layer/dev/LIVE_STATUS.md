@@ -1,20 +1,15 @@
 # Active prefill round
 
-Current snapshot: 2026-10-23T14:23:34+00:00. This file is rewritten by the receipt handler; experiment history is in runs receipts and RESULTS.md.
+Current snapshot: 2026-10-23T16:19:45+00:00. This file is rewritten by the receipt handler; experiment history is in runs receipts and RESULTS.md.
 
 Owner instructions: the two-failed-ideas stop condition was revoked. Do useful development while judge jobs run. Edit only this problem; the original no-commit hold remains. Keep accepted candidate sources immutable. Use tools/okc_run.py for every remote check/submit, with a note. Count accepted and waiting checks before sending; the external limit is20/day, resetting00:00UTC/09:00KST.
 
-Current submission.py: check82a4e50b54294a2a, 1.345393014x. SHA256 670b945489abc963b19ebe5581dae6be79dec35dffca6e5ce17035252ca15858. Last verified board: rank55, 1.2124x. Check performance and board performance are distinct; pending scored runs do not establish a new board result.
+Current submission.py: check6a9cd943fe404d74, 1.367883329x. SHA256 5162da15f86b3ab5d28fe9cd4db9d0dbce778e1bdace526ab87e7f69acfc643e. Last verified board: rank48, 1.3473x. Check performance and board performance are distinct; pending scored runs do not establish a new board result.
 
-Accepted this UTC day: 15/20 checks, 2/10 scored. Prefill check admission requests: 0. Accepted plus waiting checks: 15/20. Final integration status: awaiting component receipts. Missing component receipts: [9, 10, 11, 12, 13, 14, 15, 16, 17].
+Accepted this UTC day: 15/20 checks, 2/10 scored. Prefill check admission requests: 0. Accepted plus waiting checks: 15/20. Final integration status: awaiting component receipts. Missing component receipts: [14, 15, 16, 17].
 
 Pending accepted jobs:
-- check 583a1b97cc544f53 (problems/muse_prefill_layer/cand_v10.py)
-- submit bab2f3468fcb4b58 (problems/muse_prefill_layer/cand_v3.py)
-- check 53b79ddde4a048d5 (problems/muse_prefill_layer/cand_v12.py)
-- check f13e757f4c224e06 (problems/muse_prefill_layer/cand_v9.py)
-- check 362f63065c634281 (problems/muse_prefill_layer/cand_v13.py)
-- check 6a9cd943fe404d74 (problems/muse_prefill_layer/cand_v11.py)
+- none
 
 Background result handler: dev/finish_round.py, PID1902861, logdev/finish_round.log. It watches actual receipt events, promotes exact passing checked sources, scores through the wrapper within quota, excludes failed scored reruns and rolls back if necessary. Each promoted source is frozen. A single-instance lock prevents duplicate handlers. It exits when this round's checks and scored jobs finish. Collectors and admission wrappers are independent processes; do not relaunch accepted jobs.
 

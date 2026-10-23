@@ -1,51 +1,40 @@
-# Next H200 checks — 2026-10-24 09:00 KST
+# Decode checks — order for 2026-10-24 09:00 KST
 
-No checks/submissions were launched for this structural round. Reset is 2026-10-24
-00:00 UTC. The coordinator owns execution and commits. `submission.py` remains v3:
-best check 1.1428x (`2c112482e81745af`), scored 1.137375x (`f17fad6758ed46d0`).
+The previous check window is exhausted. Do not launch another decode check before the 09:00 KST reset. The best completed whole-layer check is `cand_moe7`, 1.354968x (`66d5d4c9e4054fa9`); its scored submission is already in flight. `submission.py` is the exact `cand_moe7` source, SHA-256 `eb659038a74c628794b585e4579901dfea16fcd23c50eddf7862b5d84b3dcc6c`.
 
-Re-read `runs/ledger.jsonl` and decode profiles before using this order: the nine repaired
-round-2 checks are still pending at this report's snapshot. adapt2/3/4 have now returned
-and all fail the already-repaired tuple/device integration, without timing. Those are
-older candidates, not the nine repaired ones. Use any new *whole-layer* H200 evidence to
-choose dispatch; do not promote isolated or local wins as measured layer wins.
+The previous `cand_hybrid` check is resolved at 1.307138x and loses v7 overall. Do not duplicate it or spend a new check on an already resolved source.
 
-Read [STRUCTURAL.md](STRUCTURAL.md) for all local stage timings, comparisons against v3
-and all nine round-2 candidates, exact hashes and validation. Every proposed candidate
-has 13/13 local tests and 12/12 fresh-input graph cases on sm_120. These timings are
-screening evidence, not H200 predictions. The new fusion currently loses locally.
+## Frozen source set
 
-| Order | Candidate | What this check answers | Local/static evidence |
-|---:|---|---|---|
-| 1 | [cand_layer_sweep.py](../cand_layer_sweep.py) | One diagnostic check for projection tiles/cuBLAS, unfused vs epilogue vs persistent prefix, v4 vs v6 experts, suffix fusion, and PDL/prefetch overlap. It prints `LAYER_SWEEP` lines from synthetic weight-shaped work in prepare. Its judged output uses the fixed chain-v6 implementation. | 13/13 + 12/12; preparation logs are under 16,000 characters locally. Cold-L2 graph timing, no workload inputs in prepare, no retained outputs. See [log](local_layer_sweep.log). This is an information check, not a proposed scored promotion. |
-| 2 | [cand_epilogue.py](../cand_epilogue.py) | Conservative fusion: O epilogue publishes row statistics; pooler/router forms the residual and normalized BF16 input during loads, removing one boundary launch and hidden-buffer round trip. Tests this approach with measured-best v6 experts and a complete PDL chain. | 13/13 + 12/12; eight new epilogue specializations compile for sm_90a. Local overall **0.967x v3**, V1 **0.978x** on common inputs; least local regression among v6 structural alternatives in the initial comparison. |
-| 3 | [cand_chain6.py](../cand_chain6.py) | Full persistent dense islands around v6 experts: O through top-8/pre-expert norm, and unpooler through final residual/norm. Tests whether Hopper's launch/tail savings repay internal barriers. | 13/13 + 12/12; static sm_90a compile, zero ptxas spills in the main dense templates. Local overall **0.952x v3**, V1 **0.925x**. Actual T16/T32 graph: six compute kernels + one fill, six programmatic edges; overlap verified on sm_120. |
-| 4 | [cand_chain.py](../cand_chain.py) | Hold experts at v4 to isolate structural fusion from v6 scheduling/residency. Compare directly with the queued `cand_moe4_attn.py` result once it arrives. | 13/13 + 12/12; local **0.978x v3**, V1 **0.951x**. This is the local-best whole-island control, though standalone H200 evidence favors v6. |
-| 5 | [cand_chain_occ2.py](../cand_chain_occ2.py) | Request two resident dense CTAs per SM only for NT1/T<=8. Retain one-CTA launch bounds at T16/32, and clip every grid to actual occupancy. Tests whether greater memory concurrency pays without the spills from forcing two CTAs everywhere. | 13/13 + 12/12 on its final exact source; sm_90a compile with no spills. NT1 uses 118/124 registers for suffix/prefix; NT2/4 retain the ordinary templates. See [compiler evidence](sm90a_occ2/dense.compile.log) and [stage comparison](stage_comparison_occ2.json). |
-| 6 | [cand_chain_nopf.py](../cand_chain_nopf.py) | Disable the persistent islands' O/unpooler L2 prefetch, retaining all arithmetic and PDL. A control for contention/capacity versus useful latency hiding. | 13/13 + 12/12; local **0.949x v3**, V1 **0.930x**. Synthetic local attention+prefix pairs show only small prefetch effects; Hopper uses bulk prefetch instead of the local per-line implementation. |
+| Source | SHA-256 | Local validation | Role |
+|---|---|---:|---|
+| `cand_moe7.py` | `eb659038a74c628794b585e4579901dfea16fcd23c50eddf7862b5d84b3dcc6c` | 13/13 tests, 12/12 graphs | current H200 winner; v7 experts, glue dispatch, tuned GEMV/router, FA3 verify |
+| `cand_round3_v7.py` | `a3ae91dd3e42bf7edca26824012272e33376c890f41da906929f5b8eedd73d61` | 13/13, 12/12; prepare 18.98 s | v7 plus custom q_len=1 attention for batch 1 as well; FA3 for q_len=8 |
+| `cand_r3_moe_dispatch.py` | `dfe0d8bbc569f0636e4e41b98952cc80baf469bdb3bc0eb634f0e071b2306adf` | 13/13, 12/12; prepare 1.83 s | v7 + canonical-bank V8/grouped wide-tile MoE dispatch, synthetic shape autotune |
+| `cand_r3_v7_hybrid.py` | `2102afbad7424620bff19ad75c8765f2d473d2206520ae9930c4e1bbcb727dcd` | 13/13, 12/12; prepare 58.68 s | `cand_round3_v7` plus Humming2 only at T≥256 (verify-32 hypothesis) |
+| `cand_tuned.py` | `0d10613d0b92f9b63df158436d521bef8bdc1a3fa6a741a6a5b39f18ae4e789f` | 13/13, 12/12 | control, 1.270858x H200 |
+| `cand_v8.py` (MoE lane) | `7ab6818fcbb8f28b53686ed90362e4950fe4a642891836dfab9bcabb56c390be` | MoE local only; no SM90/H200 receipt | hold; V8 is unverified and locally regresses V7 |
 
-The first diagnostic may make orders 4–6 unnecessary. In particular, prefer the ordinary
-chain when extra residency or prefetch loses in complete stage pairs. The retired forced
-`launch_bounds(256,2)` version is **not** a check candidate: it spilled at NT2/4 and lost
-badly at T32. Its evidence is retained in `occ2_forced.py`, `local_occ2_forced.*` and
-`sm90a_occ2_forced/`.
+Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`08015a0aede234527989a100bb661461dbee843b459844003bb8de59c128d096`), `cand_epilogue.py` (`2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598`), `cand_chain6.py` (`6e88cfa39935592a081bb95461ee82610c17b0cd7689209c4ea4e07cc72caf11`), `cand_chain.py` (`0d545fb6fe330e24dbf99f8f21bbb6444a342d945776ab5708f64d447faac4b9`), `cand_chain_occ2.py` (`96cf5ecc7141c2aa2df95ff0724d3dcb79a1cc7a38b5565b0374edfa3e9b5581`), and `cand_chain_nopf.py` (`486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52`). Their local structural round regressed the complete layer, so they are not production checks until a packed diagnostic finds a neutral stage pair.
 
-The prefetch experiment covers only immutable, known dense weights: O (16 MiB), and a
-bounded unpooler prefix (8 MiB sliced or 16 MiB full). Hopper emits
-`cp.async.bulk.prefetch.L2.global`; sm_120 emits `prefetch.global.L2`. The epilogue
-pooler/router also prefetches its own known slices before waiting. Expert weight loads
-remain downstream of current-call routing. Prefetching every dense bank at once was
-rejected because later banks can evict the next-used O weights; no gain is claimed for it.
+## 09:00 order
 
-At T>32 these candidates retain the existing projection/boundary/FA3 structure. Their
-large-verify improvement hypothesis comes from v6 experts, whose standalone H200 check
-`eefecf1eeb724feb` is 1.4916x, not from a new all-token-count megakernel. This matters for
-serving, which uses verify loads. A new H200 result must establish both full-layer speed
-and correctness before a scored promotion or serving port.
+1. **Check `cand_r3_moe_dispatch.py`** (SHA `dfe0d8bbc569f0636e4e41b98952cc80baf469bdb3bc0eb634f0e071b2306adf`). It is the packed large-M diagnostic: v7, canonical-bank V8, and grouped wide tiles are selected by synthetic `prepare()` timing. It directly targets verify-16/32, where the accepted profile puts 49.8–76.9% of time in experts, and decode-32 sliding, where experts consume 54.8%.
+2. **Keep `cand_r3_v7_hybrid.py` as the fallback check** (SHA `2102afbad7424620bff19ad75c8765f2d473d2206520ae9930c4e1bbcb727dcd`). Its Humming2 threshold was locally screened and its old whole-layer check lost overall (1.307138x), so it follows the new canonical-bank dispatch rather than preceding it.
+3. **Keep `cand_round3_v7.py` as the attention isolation check** (SHA `a3ae91dd3e42bf7edca26824012272e33376c890f41da906929f5b8eedd73d61`). It tests q_len=1 batch-1 attention with v7 experts and FA3 verify.
+4. **Only then pack structural fusions into a diagnostic.** The existing chain/epilogue sources all pass local correctness but regress complete local layers; use them as controls for fused residual/router/norm/gate launches, not as production checks.
+5. **Hold V8-only changes** until an H200 receipt and SM90 compile evidence exist. The current V8 occupancy-only source is not independently verified; the new diagnostic uses it only alongside measured v7 and grouped alternatives and records its synthetic choice.
 
-Static compilation does not exercise Hopper FA3, actual cold-L2 behavior, or the judge's
-router seed. Cold-cache judge compilation time is also unverified. Local cached prepare
-is below the 300 s limit, including the diagnostic; inspect its runtime and compile logs
-before expanding the sweep. Exact source hashes in the local JSON must match the files
-sent for checking. Use `tools/okc_run.py` for future authorized checks; this document does
-not schedule or launch them.
+Every candidate in this order must first pass `tools/img python tools/local_eval.py` with 13/13 tests and 12/12 fresh-input graph cases. Force every Hopper-only Python branch through a portable stand-in before remote submission. Remote checks use `tools/okc_run.py` and remain detached; no commit is requested.
+
+## Resolved H200 receipts
+
+| Candidate | Receipt | Overall | D1 | D16 | D32 | V1 | V16 | V32 | Decision |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| `cand_tuned` | `0fa94cd98ba34c93` | 1.271 | 1.470 | 1.370 | 1.091 | 1.568 | 1.081 | 1.018 | control |
+| `cand_glue` | `d32113fa98f946a3` | 1.283 | 1.473 | 1.409 | 1.101 | 1.597 | 1.068 | 1.034 | superseded |
+| `cand_all_decode` | `8577b1a2f9054ca2` | 1.289 | 1.524 | 1.350 | 1.093 | 1.565 | 1.142 | 1.065 | superseded by v7 |
+| `cand_native_glue` | `13e9ea00088b4bb8` | 1.253 | 1.528 | 1.293 | 0.994 | 1.572 | 1.087 | 1.020 | reject; large-T loss |
+| `cand_moe7` | `66d5d4c9e4054fa9` | **1.355** | 1.529 | 1.489 | 1.173 | 1.695 | 1.169 | 1.091 | current best |
+
+`cand_hybrid` receipt `ecc0d2615e294e0d` has now resolved: it passes at 1.307138x (CI [1.287531, 1.326745]) with D1/D16/D32 = 1.493/1.392/1.097 and V1/V16/V32 = 1.591/1.062/1.203. It is rejected as the whole-layer winner because it loses v7 overall, although its V32 result motivates any later per-load hybrid diagnostic.

@@ -24,38 +24,28 @@ Load ratios aggregate sliding/full latencies with official weights before divisi
 | cand_adapt2.py (check) | [69a655d3b2364fc4](../../../runs/muse_decode_layer/20261023T092635Z_check_69a655d3b2364fc4.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
 | cand_adapt3.py (check) | [a5ab4a2011f44321](../../../runs/muse_decode_layer/20261023T092850Z_check_a5ab4a2011f44321.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
 | cand_adapt4.py (check) | [b2a8999311034eb3](../../../runs/muse_decode_layer/20261023T093023Z_check_b2a8999311034eb3.json) | FAIL: AttributeError: 'tuple' object has no attribute 'device' | — | — | — | — | — | — | — |
-| cand_moe4.py (check) | 6fed72479ef6446f | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_moe4_attn.py (check) | a0b66fe115024a68 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_tuned.py (check) | 0fa94cd98ba34c93 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_native.py (check) | 15003b60a9734d28 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_glue.py (check) | d32113fa98f946a3 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_all_decode.py (check) | 8577b1a2f9054ca2 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_native_glue.py (check) | 13e9ea00088b4bb8 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_moe7.py (check) | 66d5d4c9e4054fa9 | pending, no H200 result | — | — | — | — | — | — | — |
-| cand_hybrid.py (check) | ecc0d2615e294e0d | pending, no H200 result | — | — | — | — | — | — | — |
+| cand_moe4.py (check) | 6fed72479ef6446f | pass | 1.1887 | — | — | — | — | — | — | superseded |
+| cand_moe4_attn.py (check) | a0b66fe115024a68 | pass | 1.2200 | — | — | — | — | — | — | superseded |
+| cand_tuned.py (check) | 0fa94cd98ba34c93 | pass | 1.2709 | 1.470 | 1.370 | 1.091 | 1.568 | 1.081 | 1.018 | control |
+| cand_native.py (check) | 15003b60a9734d28 | pass | 1.2491 | — | — | — | — | — | — | superseded |
+| cand_glue.py (check) | d32113fa98f946a3 | pass | 1.2832 | 1.473 | 1.409 | 1.101 | 1.597 | 1.068 | 1.034 | superseded |
+| cand_all_decode.py (check) | 8577b1a2f9054ca2 | pass | 1.2891 | 1.524 | 1.350 | 1.093 | 1.565 | 1.142 | 1.065 | superseded |
+| cand_native_glue.py (check) | 13e9ea00088b4bb8 | pass | 1.2525 | 1.528 | 1.293 | 0.994 | 1.572 | 1.087 | 1.020 | reject |
+| cand_moe7.py (check) | 66d5d4c9e4054fa9 | pass | **1.3550** | 1.529 | 1.489 | 1.173 | 1.695 | 1.169 | 1.091 | current best |
+| cand_hybrid.py (check) | ecc0d2615e294e0d | pass | 1.3071 | 1.493 | 1.392 | 1.097 | 1.591 | 1.062 | 1.203 | V32 gain, overall loses |
 
 ## Live promotion state
 
-No automatic scored promotion has been launched.
+Scored promotion of `cand_moe7.py` was launched detached; it is waiting for a judge slot (13 team runs in flight at the last poll).
 
 ## What is established
 
-Best completed whole-layer check remains **1.142800x**, `2c112482e81745af` (`cand_v3.py`).
-Its scored run `f17fad6758ed46d0` completed at **1.137375x**; `submission.py` remains that v3 source.
-`cand_attn.py`, `da7ed740833c4535`, passed at **1.104164x**. At handoff, the new combined candidates had no completed H200 measurements. The receipt
+The best completed whole-layer check is now **1.354968x**, `66d5d4c9e4054fa9` (`cand_moe7.py`, CI [1.334644, 1.375293]). Its scored promotion is queued; `submission.py` is the exact `cand_moe7.py` source (SHA-256 `eb659038a74c628794b585e4579901dfea16fcd23c50eddf7862b5d84b3dcc6c`). The prior scored run `f17fad6758ed46d0` remains the board row at **1.137375x** until the promotion completes.
+`cand_attn.py`, `da7ed740833c4535`, passed at **1.104164x**. The combined round-2 candidates now have completed H200 measurements. The receipt
 table above is refreshed as they finish. The final quota snapshot, `budget_final.json`,
 shows **20/20 checks used, zero remaining; 8 scored attempts remain**.
 
-The highest measured per-load ratios among completed whole-layer candidates are:
-
-| Load | Candidate | H200 load ratio |
-|---|---|---:|
-| decode 1 | v3 | 1.243 |
-| decode 16 | v3 | 1.153 |
-| decode 32 | attn | 1.235 |
-| verify 1 | v3 | 1.382 |
-| verify 16 | v3 | 1.053 |
-| verify 32 | v3 | 1.042 |
+The highest measured per-load ratios are now cand_moe7: D1 1.529, D16 1.489, D32 1.173, V1 1.695, V16 1.169, V32 1.091. cand_hybrid exceeds it only on V32 (1.203/1.132 sliding/full), but loses overall.
 
 These combine each run's sliding/full measurements with weights 46/16. Cross-run router
 seeds and timing noise limit fine comparisons. In particular, decode-16's v3/attn gap
@@ -196,3 +186,11 @@ and attention+prefix prefetch pairs. Its timed callable remains the fixed chain-
 no harness input is used in prepare, and no derived output is retained. The whole local
 log is below the judge's 16,000-character returned-log limit. Prefer its discriminating
 H200 evidence before spending checks on every structural variant.
+
+
+## Round-2 / round-3 reconciliation (2026-10-24 00:20 KST)
+
+Completed whole-layer checks: cand_tuned 1.270858x (`0fa94cd98ba34c93`), cand_glue 1.283164x (`d32113fa98f946a3`), cand_all_decode 1.289060x (`8577b1a2f9054ca2`), cand_native_glue 1.252528x (`13e9ea00088b4bb8`), cand_moe7 1.354968x (`66d5d4c9e4054fa9`), and cand_hybrid 1.307138x (`ecc0d2615e294e0d`). All passed 13/13 judge tests. cand_moe7 is the selected source because it wins overall; cand_hybrid's verify-32 gain (1.203/1.132 sliding/full) does not offset its losses elsewhere.
+
+New local-only sources are frozen in [NEXT_CHECKS.md](NEXT_CHECKS.md): `cand_round3_v7.py` (v7 plus q_len-1 custom attention for batch 1; SHA `a3ae91dd3e42bf7edca26824012272e33376c890f41da906929f5b8eedd73d61`) and `cand_r3_v7_hybrid.py` (adds Humming2 at T>=256; SHA `2102afbad7424620bff19ad75c8765f2d473d2206520ae9930c4e1bbcb727dcd`). Each passed 13/13 tests and 12/12 graph cases locally. V8 remains unverified and is not integrated.
+New local-only source `cand_r3_moe_dispatch.py` is now frozen in [NEXT_CHECKS.md](NEXT_CHECKS.md), SHA `dfe0d8bbc569f0636e4e41b98952cc80baf469bdb3bc0eb634f0e071b2306adf`. It passed 13/13 tests and 12/12 graph cases; prepare was 1.83 s on the local sm_120 screen. The extracted V8 and grouped kernels also compile for SM90a; grouped has zero spills, while V8 retains 96 registers and small spill frames in the static compile log, so the remote result remains the deciding evidence. Its synthetic shape dispatch chose v7 at M=1/8/16/32/64/256 and grouped wide tiles at M=128 in the final screen; this is not H200 evidence. It combines the accepted v7 layer with the MoE lane's canonical-bank V8/grouped implementation and is the next check order for verify-16/32.
