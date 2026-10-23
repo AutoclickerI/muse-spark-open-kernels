@@ -454,11 +454,10 @@ def kernel_fn(data: Inputs, state) -> torch.Tensor:
         acc = torch.mm(x, hi_t, out_dtype=torch.float32)
         acc += torch.mm(x, lo_t, out_dtype=torch.float32)
         return acc
-    use_skinny = ((layer == "qkv_gate" and m == 16)
-                  or (layer == "pooler" and m <= 16)
+    use_skinny = ((layer == "qkv_gate" and m <= 16)
+                  or (layer == "o" and m == 1)
+                  or (layer == "pooler" and m <= 32)
                   or (layer == "unpooler" and m <= 8))
     if use_skinny:
         return skinny_gemm(x, state[layer], n, layer)
     return F.linear(x, state[layer][:n])
-
-
