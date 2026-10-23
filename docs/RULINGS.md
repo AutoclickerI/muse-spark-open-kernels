@@ -99,7 +99,9 @@ question-tool label is Jihoon's word; the question and option text are agent con
 
 > Yes, add to GOAL (Recommended)
 
-- Source: transcript:9505; the yes at transcript:9779 (asked whether to record "optimize only the score;
+> of course, our loop for fast iteration and fast experiments should be the optimization target. but for the competition, our all other preprocessing and practices are not our scope. we have resource to spend. and resource to optimize. and we should discriminate it.
+
+- Source: transcript:9505; the yes at transcript:9779; the refinement (loop speed is a target) at transcript:9835 (asked whether to record "optimize only the score;
   everything not scored and not bounded by a hard limit ... is a resource to spend, never minimized").
 - Effect: GOAL "Optimize vs spend". "submit regularly" was carried out once: `okc_run.py send` takes a
   scored run while the day's last.

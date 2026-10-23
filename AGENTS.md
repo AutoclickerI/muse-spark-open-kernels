@@ -12,17 +12,16 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 ## Practice
 
 - Next work: the highest-ranked `active` or `next` row in [PLAN](docs/PLAN.md) "Ranked work" that no lane owns.
-- The critical path is judge latency (~11 of our runs start per hour; PLAN "Critical path"): never idle on
-  it, and use idle GPUs, caches and other lanes' outputs (RESOURCES).
+- The critical path is judge latency (PLAN "Critical path"): never idle on it; use idle GPUs, caches and
+  other lanes' outputs (RESOURCES).
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon when unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
 - Remote runs only via `tools/okc_run.py send <file> --note "<what changed>"` (default): a scored run while the
   day's last (the board keeps our best), receipts in `runs/`, priority queue. Launch it detached; `collect` finishes orphans.
 - Screen with `tools/local_eval.py` first; a candidate that fails a local test doesn't go remote (default).
   `tools/screen_all.py --send` screens every unsent candidate in parallel and sends each pass.
-- Local timing is sm_120, not H200: use it to rank loosely. H200 claims come only from `runs/` receipts.
+- Local timing (sm_120) ranks loosely; H200 claims come only from `runs/` receipts.
 - Hopper-only paths can't run here. Force each Hopper branch's Python glue locally with a portable stand-in kernel.
-- Time several variants inside one diagnostic check.
 - Write kernels so they drop into `serving/sglang/python/sglang/`. Serving runs only verify loads and prefill.
 - Run `tools/sync_upstream.sh` before starting; read the diff if official files changed.
 - Delegate per CONSTRAINTS 15-16 (resume command: RESOURCES "Inventory").

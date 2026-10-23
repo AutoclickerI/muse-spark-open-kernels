@@ -15,10 +15,11 @@ The ranks change at the kernel close, 2026-11-05 17:00 KST (R-20261024-1).
 | 2 (until 11-05) | G3 | Top 50 on the overall kernel board at close (2026-11-05 17:00 KST) | Serving-queue priority, so our daily serving runs land | `GET /me` `serving_priority` true (FINDINGS "Boards") |
 
 ## Optimize vs spend (R-20261024-2)
-Optimize only the score (board speedup at the scored shapes; serving throughput). Anything else no
-hard limit bounds is a resource to spend, never a second objective:
-GPU memory, power, SMs, `prepare` and compile time, quotas, local GPUs, agent time. In serving, HBM
-costs only the KV pool the judge's loads use.
+Optimize two things: the score (board speedup at scored shapes; serving throughput) and the speed of
+our experiment loop, whose bottleneck is the judge's ~11 runs of ours per hour (pack new information into
+each run). Anything else no hard limit bounds is a resource to spend,
+never a second objective: GPU memory, power, SMs, `prepare` and compile time, daily quotas, local GPUs,
+agent time. In serving, HBM costs only the KV pool the judge's loads use.
 
 ## Non-goals
 - Kernel-board rank for its own sake. Decode loads (q_len 1) matter only through G3.
