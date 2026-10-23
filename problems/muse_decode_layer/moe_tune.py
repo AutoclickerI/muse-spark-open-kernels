@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 import statistics
+import time
 from typing import Callable
 
 import torch
@@ -120,17 +121,43 @@ def _graph_time(fn: Callable[[dict], torch.Tensor], datasets: list[dict], flush:
 
 def tune(weights: dict[str, torch.Tensor], paths: dict[str, Callable[[dict], torch.Tensor]],
          token_counts=(1, 8, 16, 32, 128, 256), *, seed: int = 5353,
-         flush_bytes: int = 1 << 30) -> tuple[dict[int, str], dict[int, dict[str, float]], dict[int, dict]]:
-    """Rank paths with realistic routing and reject variants >1% from V9."""
+         flush_bytes: int = 1 << 30, budget_s: float = 90.0) -> tuple[dict[int, str], dict[int, dict[str, float]], dict[int, dict]]:
+    """Rank paths on this layer's router and keep only paths within 1% of V9.
+
+    The timer is CUDA-graph replay after an L2 flush.  A wall-clock deadline protects the
+    layer's overall prepare limit; any shape not reached remains on V9.  A bad optional path
+    is rejected per shape, while V9 is always the fallback.
+    """
     device = weights["router"].device
+    deadline = time.monotonic() + float(budget_s)
     flush = torch.empty((flush_bytes,), dtype=torch.uint8, device=device)
     choices, timings, summaries = {}, {}, {}
     for m in token_counts:
+        if time.monotonic() >= deadline:
+            for rest in token_counts:
+                if rest not in choices:
+                    choices[rest] = "v9"; timings[rest] = {"v9": 0.0}
+                    print(f"MOE_REAL_BUDGET M={rest} selected=v9", flush=True)
+            break
         datasets = [make_fixture(weights, m, seed + 7919 * j + m, mode="real") for j in range(3)]
         summaries[m] = route_summary(datasets[0])
-        want = paths["v9"](datasets[0]).float()
         candidates = {}
+        want = None
+        try:
+            want = paths["v9"](datasets[0]).float()
+            if not torch.isfinite(want).all().item():
+                raise RuntimeError("V9 produced non-finite output")
+        except Exception as exc:
+            # The layer's V9 path is the canonical fallback. Keep moving through preparation,
+            # with the explicit default visible in the receipt instead of hiding the failure.
+            print(f"MOE_REAL_V9_ERROR M={m} {str(exc).splitlines()[0][:120]}", flush=True)
+            choices[m] = "v9"; timings[m] = {"v9": 0.0}
+            del datasets
+            continue
         for name, fn in paths.items():
+            if time.monotonic() >= deadline and name != "v9":
+                print(f"MOE_REAL_BUDGET M={m} path={name}", flush=True)
+                continue
             try:
                 got = fn(datasets[0]).float()
                 rel = float((got - want).norm() / want.norm().clamp_min(1e-12))
@@ -138,10 +165,16 @@ def tune(weights: dict[str, torch.Tensor], paths: dict[str, Callable[[dict], tor
                     print(f"MOE_REAL_REJECT M={m} {name} rel={rel:.4g}", flush=True)
                     continue
                 candidates[name] = _graph_time(fn, datasets, flush)
-            except RuntimeError as exc:
+            except Exception as exc:
                 print(f"MOE_REAL_REJECT M={m} {name} {str(exc).splitlines()[0][:120]}", flush=True)
-        choices[m] = min(candidates, key=candidates.get)
-        timings[m] = candidates
+        if not candidates:
+            choices[m] = "v9"; timings[m] = {"v9": 0.0}
+            print(f"MOE_REAL_FALLBACK M={m} selected=v9", flush=True)
+        else:
+            # V9 is in the candidate set whenever its first call succeeded. If its graph
+            # replay failed, retain the required V9 default instead of selecting a partial set.
+            choices[m] = min(candidates, key=candidates.get) if "v9" in candidates else "v9"
+            timings[m] = candidates
         print(f"MOE_REAL_TUNE M={m} route={summaries[m]} choices={candidates} selected={choices[m]}", flush=True)
         del datasets
         torch.cuda.empty_cache()
