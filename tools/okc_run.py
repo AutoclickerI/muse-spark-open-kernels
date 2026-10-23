@@ -156,6 +156,7 @@ def block_until_change(oldest_job):
     if oldest_job and oldest_job not in WATCHING:
         def judge():
             okc_json("status", oldest_job, "--wait")
+            WATCHING.discard(oldest_job)  # if it returned early, the next look watches it again
             CHANGED.set()
         threading.Thread(target=judge, daemon=True).start()
         WATCHING.add(oldest_job)
@@ -187,20 +188,24 @@ def send_in_turn(entry: dict, priority: float, send):
     announced = False
     try:
         while True:
-            with LOCK.open("a") as lock:
-                fcntl.flock(lock, fcntl.LOCK_EX)
-                live = in_flight()
-                ahead = waiters()
-                if len(live) < CAP and ahead and ahead[0][2] == me:
-                    result = send()
-                    me.unlink(missing_ok=True)
-                    return result
+            # Only the head of the queue asks the judge (`okc jobs`) and watches its oldest run; the
+            # rest read runs/waiting/ and sleep until the queue changes, so an event costs one API call.
+            ahead = waiters()
+            place = next(i for i, w in enumerate(ahead) if w[2] == me)
+            live = []
+            if place == 0:
+                with LOCK.open("a") as lock:
+                    fcntl.flock(lock, fcntl.LOCK_EX)
+                    live = in_flight()
+                    if len(live) < CAP and waiters()[0][2] == me:
+                        result = send()
+                        me.unlink(missing_ok=True)
+                        return result
             if not announced:
-                print(f"waiting for a judge slot: {len(live)} of our runs in flight (cap {CAP}), "
-                      f"{len(ahead) - 1} other sends waiting", flush=True)
+                print(f"waiting for a judge slot: place {place + 1} of {len(ahead)} in our queue (cap {CAP} at the judge)",
+                      flush=True)
                 announced = True
-            # only the head of the queue watches the judge; the rest wake when the queue changes
-            block_until_change(live[0]["job_id"] if len(live) >= CAP and ahead and ahead[0][2] == me else None)
+            block_until_change(live[0]["job_id"] if live and len(live) >= CAP else None)
     finally:
         me.unlink(missing_ok=True)
         wake_waiters()
