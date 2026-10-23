@@ -26,7 +26,6 @@ answers the same source again with its earlier result, so this refuses source th
 """
 
 import argparse
-import ctypes
 import datetime
 import fcntl
 import hashlib
@@ -34,6 +33,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -135,23 +135,18 @@ def waiters() -> list:
     return sorted(out)
 
 
-CHANGED = threading.Event()  # the oldest run in flight finished, or a waiter left runs/waiting/
+CHANGED = threading.Event()  # the oldest run in flight finished, or a waiter left the queue
 WATCHING = set()  # what this process already watches: "queue" and the jobs with a judge thread
 
 
 def block_until_change(oldest_job):
     """Return when the oldest run in flight finishes (the judge's own completion signal) or a waiter
-    leaves runs/waiting/ (inotify), whichever comes first. One inotify instance and one judge thread
-    per job serve the whole process: the per-user inotify limit is 128 instances."""
+    leaves the queue (it sends SIGUSR1 to the rest: see send_in_turn), whichever comes first.
+    No inotify: dozens of waiters each holding an instance exhausted the per-user limit of 128."""
     if "queue" not in WATCHING:
-        libc = ctypes.CDLL(None, use_errno=True)
-        fd = libc.inotify_init1(os.O_CLOEXEC)
-        if fd < 0 or libc.inotify_add_watch(fd, os.fsencode(WAITING), 0x200 | 0x40) < 0:  # IN_DELETE, IN_MOVED_FROM
-            sys.exit(f"inotify on {WAITING} failed: {os.strerror(ctypes.get_errno())}")
-
         def queue():
             while True:
-                os.read(fd, 4096)
+                signal.sigwait({signal.SIGUSR1})
                 CHANGED.set()
         threading.Thread(target=queue, daemon=True).start()
         WATCHING.add("queue")
@@ -165,6 +160,17 @@ def block_until_change(oldest_job):
     CHANGED.clear()
 
 
+def wake_waiters():
+    """Tell every other okc_run waiting for a slot that the queue changed."""
+    for _, _, p in waiters():
+        pid = int(p.stem)
+        try:
+            if pid != os.getpid() and b"okc_run.py" in Path(f"/proc/{pid}/cmdline").read_bytes():
+                os.kill(pid, signal.SIGUSR1)
+        except OSError:
+            continue
+
+
 def send_in_turn(entry: dict, priority: float, send):
     """Call send() once fewer than CAP of our runs are at the judge and no better waiter is ahead.
     The judge starts one of our runs at a time (FINDINGS, "Judge queue"), so holding the rest here
@@ -172,6 +178,7 @@ def send_in_turn(entry: dict, priority: float, send):
     if CAP <= 0:
         return send()
     WAITING.mkdir(parents=True, exist_ok=True)
+    signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGUSR1})  # before any thread starts: sigwait receives it
     me = WAITING / f"{os.getpid()}.json"
     me.write_text(json.dumps({"pid": os.getpid(), "priority": priority, "t": time.time(), **entry}))
     announced = False
@@ -192,6 +199,7 @@ def send_in_turn(entry: dict, priority: float, send):
             block_until_change(live[0]["job_id"] if len(live) >= CAP else None)
     finally:
         me.unlink(missing_ok=True)
+        wake_waiters()
 
 
 def start_receipt(problem, mode, job, src: bytes, file: Path, note, stamp, **extra) -> dict:
