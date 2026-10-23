@@ -52,3 +52,14 @@ screen passes.
 
 Frozen hashes and all ready send candidates are in `dev/NEXT_CHECKS.md`.
 Only the orchestrator sends or commits.
+
+`cand_attn_portfolio_v2.py` is the next local candidate and leaves the queued
+portfolio untouched. Its clock64 trace shows all four consumer warps with the
+same stall pattern: at B32/full the median per-tile wait/issue/MMA spans are
+50/238/3,827 cycles, so MMA occupies about 91% of the phase and no single warp
+is a straggler. Nsight Systems independently attributes 62.4% of the traced
+GPU time to the verify kernel (eight 590 us instances). The v2 portfolio adds
+four-stage Hopper overlap and four two-consumer-group split-count settings.
+The two-group setting is measured at 1.280 TB/s at B32/full versus 1.306 TB/s
+for the one-group math path; it remains below the q_len=1 control (1.495 TB/s)
+while preserving correctness. H200 timing is unverified.
