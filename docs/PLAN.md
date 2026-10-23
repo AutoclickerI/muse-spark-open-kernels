@@ -20,8 +20,9 @@
 Kernel loop, measured 2026-10-23:
 1. A lane edits a candidate.
 2. Local screen (`tools/local_eval.py`, sm_120): tests take 1-5 min; local timing ranks loosely.
-3. `okc_run.py check`: the queue wait is our queue position x ~5.5 min, and each run takes 1-5 min.
-4. Read the receipt and per-shape profile, then promote and send a scored run.
+3. `okc_run.py send`: the queue wait is our queue position x ~5.5 min, and each run takes 1-5 min. It is a
+   scored run while the day's last, so a winner lands on the board in this one run (no check-then-promote).
+4. Read the receipt and per-shape profile.
 5. Port into `serving/sglang`, then the local harness: layer tests and TP1/TP2 agreement, minutes each.
 6. Serving check: from 11-06 only, 3 a day.
 

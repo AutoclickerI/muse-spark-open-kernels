@@ -28,7 +28,7 @@ def rows():
  return [r for r in rs if r.get('problem')=='muse_prefill_layer']
 def launch(mode,path,note):
  f=open(DEV/f'auto_{mode}_{path.stem}.log','a')
- proc=subprocess.Popen([sys.executable,str(ROOT/'tools/okc_run.py'),mode,str(path),'--note',note],cwd=ROOT,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
+ proc=subprocess.Popen([sys.executable,str(ROOT/'tools/okc_run.py'),'send',str(path),'--note',note],cwd=ROOT,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
  f.close();return proc.pid
 
 def refresh_status(state,missing):
@@ -53,30 +53,11 @@ def refresh_status(state,missing):
  board=DEV/'board_resumed.json';board_text='not queried'
  if board.exists():
   b=json.loads(board.read_text()).get('you',{});board_text=f"rank{b.get('rank')}, {b.get('speedup')}x"
- text=f'''# Active prefill round
+ snapshot=dict(utc=now(),current=current_text,sha256=current_sha,board_snapshot=board_text,
+               accepted=dict(check=counts['check'],submit=counts['submit']),waiting=len(waiting),
+               integration=stage,missing=missing,pending=pending,pid=os.getpid(),focus=str(P/'FOCUS.md'))
+ (DEV/'runtime_status.json').write_text(json.dumps(snapshot,indent=2))
 
-Current snapshot: {now()}. This file is rewritten by the receipt handler; experiment history is in runs receipts and RESULTS.md.
-
-Owner instructions: the two-failed-ideas stop condition was revoked. Do useful development while judge jobs run. Edit only this problem; the original no-commit hold remains. Keep accepted candidate sources immutable. Use tools/okc_run.py for every remote check/submit, with a note. Count accepted and waiting checks before sending; the external limit is20/day, resetting00:00UTC/09:00KST.
-
-Current submission.py: {current_text}. SHA256 {current_sha}. Last verified board: {board_text}. Check performance and board performance are distinct; pending scored runs do not establish a new board result.
-
-Accepted this UTC day: {counts['check']}/20 checks, {counts['submit']}/10 scored. Prefill check admission requests: {len(waiting)}. Accepted plus waiting checks: {counts['check']+len(waiting)}/20. Final integration status: {stage}. Missing component receipts: {missing}.
-
-Pending accepted jobs:
-'''+('\n'.join('- '+x for x in pending) or '- none')+f'''
-
-Background result handler: dev/finish_round.py, PID{os.getpid()}, logdev/finish_round.log. It watches actual receipt events, promotes exact passing checked sources, scores through the wrapper within quota, excludes failed scored reruns and rolls back if necessary. Each promoted source is frozen. A single-instance lock prevents duplicate handlers. It exits when this round's checks and scored jobs finish. Collectors and admission wrappers are independent processes; do not relaunch accepted jobs.
-
-Final integration builder: dev/build_measured_combo.py. It selects experts by token-size bucket, attention by token/window buckets, and native dense from correctedv13 measurements. It statically prefixes private expert definitions; submitted code imports no other candidate and does not execute generated Python or start processes. The final check is sent only after official local tests, fresh nearby graphs, forced first-turn local tests and Hopper Python-glue stand-ins pass. The assembled research state may retain multiple weight layouts; share a layout or choose one family before full-model serving.
-
-v14–v17 all passed5official local tests. v15 shared-A gate/down emulation passes; v17 covers every finite signed E4M3 scale and all FP4 codes with0.159% local GEMM relativeL2. v15/v17 sm90a builds have no spills. Hopper TMA flags forced onto unsupported sm120 failed; the actual guardedv14 passes. Actual FA3/WGMMA/TMA performance is verified only by H200 receipts. Combined and forced-first-turn rehearsals pass local layer/graph/glue checks; these establish no H200 speedup.
-
-Sources and current evidence: RESULTS.md, PORTING.md, dev/results_summary.json/txt. Builders refuse source overwrite. Upstream sync in own-directory staging found official prefill files and llms unchanged. No serving edits or commits were made.
-
-Next hypotheses when check capacity is available: fast decode plus256-token tiles if both measured components win; a direct packed-bank dequantizer for a memory-efficient custom/DG serving hybrid; lower-register/shallower-pipeline BN64 occupancy tuning if turn1 remains expensive. None is a measured H200 gain yet.
-'''
- (DEV/'LIVE_STATUS.md').write_text(text)
 
 def audit(state,dry):
  rs=combo.receipts();eligible=[]

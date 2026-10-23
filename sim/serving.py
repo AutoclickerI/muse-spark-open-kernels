@@ -43,7 +43,7 @@ def _loglog(points: dict[float, float], x: float) -> float:
 def _stock_shapes(problem: str) -> list[dict]:
     rows = sglang_mean(problem)
     if not rows:
-        raise SystemExit(f"no calibration run for {problem} in runs/ (tools/okc_run.py check ...)")
+        raise SystemExit(f"no calibration run for {problem} in runs/ (tools/okc_run.py send ...)")
     return rows
 
 

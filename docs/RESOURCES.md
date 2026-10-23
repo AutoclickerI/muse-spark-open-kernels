@@ -9,7 +9,8 @@ From a fresh checkout to a local screen, about 5 minutes when the image and cach
    It is ignored by git; the patch is `serving/patch.diff`.
 3. `tools/img python tools/local_eval.py problems/<p>/submission.py` (1-5 min): tests plus CUDA-graph
    timing against `baseline.py`, inside the judge's image. `--tests-only` checks correctness only.
-4. `python3 tools/okc_run.py check <file> --note "..."` (hours of queue; see PLAN "Critical path").
+4. `python3 tools/okc_run.py send <file> --note "..."` (hours of queue; see PLAN "Critical path"): a
+   scored run while the problem has one left today, else a check, else at the 09:00 KST reset.
    It needs the okc token that Jihoon's `okc login` created.
 5. Serving harness: `serving/harness/README.md`, tiny-config Muse on the local GPUs, with TP1 and TP2 agreement.
 
@@ -25,7 +26,7 @@ second compile of the same kernel is fast.
 | Judge image `lmsysorg/sglang@sha256:8cfc5a72…` | Exact software of the judge: torch 2.14.1+cu130, Triton 3.8, sgl_kernel 0.4.9, flashinfer 0.7.0.post1, DeepGEMM 0.2.1.post1+muse, TileLang 0.1.12, CUTLASS DSL 4.8, humming_kernels 0.1.12 | `tools/img <cmd>` runs the sandbox `/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sandbox` (`--nv --contain --cleanenv`). The `.sif` is beside it. JIT caches are in `/data2/jihoon/muse_kernel/img-home`, and `/tmp` maps to `.../img-work`. There is no squashfuse, so never run the `.sif` directly |
 | Host env `~/anaconda3/envs/comp_kv` (torch 2.13, cu130) | Tests without the image (`--no-baseline`) | `baseline.py` needs `sglang` |
 | `okc` 0.7.1 (`~/.okc/bin`) | Boards (`okc leaderboard <p> --json`), `okc problems`, `okc withdraw` | Never `okc check`/`submit` directly (AGENTS) |
-| `tools/screen_all.py` | Screen every candidate the judge hasn't measured, in parallel (tests and graph capture in the image), then send each pass | Logs in `runs/screen/` (ignored). Sends checks while quota lasts, then scored runs (the board keeps a team's best run) |
+| `tools/screen_all.py` | Screen every candidate the judge hasn't measured, in parallel (tests and graph capture in the image), then send each pass | Logs in `runs/screen/` (ignored). Queues each pass with `okc_run.py send` |
 | `sim/` | Bounds and ceilings: `python -m sim` (problems), `-m sim.serving` (serving step and score), `-m sim.calibrate` (SGLang's measured times), `-m sim.bound` (`docs/reference/bound.md`) | Model inputs: `sim/routing.json`, `sim/hw.py` |
 | `prof/` | Judge-profile analysis (`prof/analyze.py`), the generator of `docs/reference/profile.md` (`prof/write_report.py`), and the SASS audit (`prof/compile_static.py`, `prof/sass/`) | Writes snapshots; regenerate rather than edit |
 | `runs/calibration/` | SGLang's own kernels profiled on the judge, per problem | `runs/calibration/profiles/*_sglang.*.txt` |

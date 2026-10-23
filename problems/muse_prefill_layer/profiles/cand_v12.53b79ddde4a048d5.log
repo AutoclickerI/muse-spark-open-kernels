@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/tmp/muse_prefill_layer-i9k2xror/run/worker.py", line 458, in child_main
+    fn(state["data"])
+  File "/tmp/muse_prefill_layer-i9k2xror/run/worker.py", line 415, in <lambda>
+    return functools.partial(lambda k, p, d: k(d, p), fn, state["prep"])
+                                             ^^^^^^^
+  File "/tmp/muse_prefill_layer-i9k2xror/run/submission.py", line 559, in kernel_fn
+    moe = experts_tiled256(pooled, topk_w, slot_e, slot_pos, counts, st)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/muse_prefill_layer-i9k2xror/run/submission.py", line 797, in experts_tiled256
+    combine_tiled_kernel[(T,)](y, rows, topk_w, st['post_expert'], out, D=D, BNC=256, num_warps=4)
+  File "/opt/sglang/lib/python3.12/site-packages/triton/runtime/jit.py", line 374, in <lambda>
+    return lambda *args, **kwargs: self.run(grid=grid, warmup=False, *args, **kwargs)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/triton/runtime/jit.py", line 778, in run
+    launch_metadata = kernel.launch_metadata(grid, stream, *bound_args.values())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/triton/compiler/compiler.py", line 496, in launch_metadata
+    self._init_handles()
+  File "/opt/sglang/lib/python3.12/site-packages/triton/compiler/compiler.py", line 479, in _init_handles
+    self.module, self.function, self.n_regs, self.n_spills, self.n_max_threads = driver.active.utils.load_binary(
+                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Triton Error [CUDA]: an illegal memory access was encountered
+[W1023 15:59:09.624883757 CUDAEvent.h:57] Warning: CUDA warning: an illegal memory access was encountered (function ~CUDAEvent)
+[W1023 15:59:09.624901781 CUDAEvent.h:57] Warning: CUDA warning: an illegal memory access was encountered (function ~CUDAEvent)

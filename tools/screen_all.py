@@ -15,11 +15,9 @@ are left to the lane still writing them.
 
 An earlier screen of the same source (sha256) that passed everything is reused instead of rerun.
 
---send queues each pass through tools/okc_run.py (receipts, priority queue, judge cap): a check while
-the problem has checks left today (`okc problems`), else a scored run while more than --keep-submits
-remain (the board keeps a team's best run, so a slower scored run costs no place; the kept runs are
-for the lanes' promotions), else nothing (reported). Sends
-take the problem's default priority + 0.5, so lanes' own later sends at the default go first.
+--send queues each pass with `tools/okc_run.py send` (receipts, priority queue, judge cap; a scored
+run while the problem has one left today, else a check, else at the reset). Sends take the problem's
+default priority + 0.5, so lanes' own later sends at the default go first.
 Results: runs/screen/<utc>/summary.json and one log per candidate.
 """
 
@@ -29,7 +27,6 @@ import datetime
 import hashlib
 import json
 import os
-import re
 import subprocess
 import sys
 import time
@@ -117,17 +114,6 @@ def screen(f: Path, gpu: str, logdir: Path) -> dict:
             "why": str(why)[:300], "log": str(log.relative_to(REPO))}
 
 
-def quotas() -> dict:
-    out = subprocess.run([os.path.expanduser("~/.okc/bin/okc"), "problems"], capture_output=True, text=True).stdout
-    q = {}
-    for m in re.finditer(r"^(muse_\w+).*?(\d+) of \d+ runs left today, (\d+) of \d+ checks", out, re.M):
-        q[m.group(1)] = {"submit": int(m.group(2)), "check": int(m.group(3))}
-    for e in waiting():  # sends still in okc_run's local queue have not reached okc's count yet
-        if e["problem"] in q:
-            q[e["problem"]][e["mode"]] -= 1
-    return q
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("problems", nargs="*", default=sorted(PRIORITY))
@@ -135,8 +121,6 @@ def main():
     ap.add_argument("--gpu", default="0")
     ap.add_argument("--skip-recent", type=float, default=20, help="minutes")
     ap.add_argument("--send", action="store_true")
-    ap.add_argument("--keep-submits", type=int, default=2,
-                    help="scored runs per problem left for the lanes' promotions")
     args = ap.parse_args()
 
     files, recent = unsent(args.problems, args.skip_recent)
@@ -162,23 +146,15 @@ def main():
             report(results[i])
 
     if args.send:
-        q = quotas()
         for r in sorted((r for r in results if r["ok"]), key=lambda r: PRIORITY.get(r["problem"], 3)):
-            left = q.get(r["problem"], {})
-            mode = ("check" if left.get("check", 0) > 0 else
-                    "submit" if left.get("submit", 0) > args.keep_submits else None)
-            if not mode:
-                r["sent"] = "no quota left today beyond the kept scored runs"
-                continue
-            left[mode] -= 1
             log = logdir / (Path(r["file"]).stem + f".{r['problem']}.send.log")
-            subprocess.Popen([sys.executable, str(REPO / "tools/okc_run.py"), mode, r["file"],
+            subprocess.Popen([sys.executable, str(REPO / "tools/okc_run.py"), "send", r["file"],
                               "--priority", str(PRIORITY.get(r["problem"], 3) + 0.5),
                               "--note", f"screen_all {stamp}: untested candidate, local tests {r['tests']} and graphs {r['graphs']} pass"],
                              cwd=REPO, stdout=log.open("w"), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                              start_new_session=True)
-            r["sent"] = mode
-            print(f"sent {mode}: {r['file']}", flush=True)
+            r["sent"] = True
+            print(f"queued: {r['file']}", flush=True)
 
     (logdir / "summary.json").write_text(json.dumps({"skipped_recent": [str(p.relative_to(REPO)) for p in recent],
                                                      "results": results}, indent=1))

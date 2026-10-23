@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Send a file to the judge with `okc check` or `okc submit`, and keep a receipt.
+"""Send a file to the judge, as a scored run while the problem has one left today, and keep a receipt.
 
-    tools/okc_run.py check  problems/muse_moe_w4a16/submission.py --note "split-K w2"
-    tools/okc_run.py submit problems/muse_moe_w4a16/submission.py --note "..."
+    tools/okc_run.py send problems/muse_moe_w4a16/cand_v12.py --note "split-K w2"
     tools/okc_run.py collect [job ...]     # finish receipts whose waiting process died
     tools/okc_run.py adopt <job> <file> --mode check|submit --note "..."   # a run sent without this tool
 
@@ -17,12 +16,16 @@ rest. Running `collect` in the background is also the way to wait for results.
 
 The judge starts our team's runs one at a time (FINDINGS, "Judge queue"), so at most OKC_INFLIGHT
 (default 4) of our runs sit at the judge; further sends wait here in runs/waiting/ and go in
-priority order (scored runs, then decode layer, MoE, attention and prefill, proj; --priority overrides),
-woken by the judge finishing our oldest run or by another waiter leaving. OKC_INFLIGHT=0 sends at once.
+priority order (PRIORITY; --priority overrides), woken by the judge finishing our oldest run or by
+another waiter leaving. OKC_INFLIGHT=0 sends at once.
 
-Runs are capped per problem per day (10 scored, 20 checks; reset 00:00 UTC), and the judge
-answers the same source again with its earlier result, so this refuses source the ledger
-(or runs/pending/) already has for the same mode unless --force. Host Python, standard library only.
+The mode is chosen when the run goes out: a scored run while the problem has one left today
+(`okc problems`), else a check. A check and a scored run are the same run, and the board keeps a
+team's best scored run, so a slower scored run costs no place and a faster one needs no second run.
+With neither left, the send leaves the queue order until the daily reset (00:00 UTC) and then goes.
+A source that already ran as a check goes again only as a scored run. The judge answers the same
+source again with its earlier result, so this refuses a source that already has a scored run, or
+is pending or waiting, unless --force. Host Python, standard library only.
 """
 
 import argparse
@@ -47,8 +50,7 @@ PENDING = REPO / "runs" / "pending"
 WAITING = REPO / "runs" / "waiting"
 LOCK = REPO / "runs" / ".dispatch.lock"
 CAP = int(os.environ.get("OKC_INFLIGHT", "4"))  # our runs at the judge at once; 0 sends at once
-# Lower goes first; scored runs (-1) before every check. The order is docs/PLAN.md "Ranked work"
-# (overall-board weight, FINDINGS "Boards").
+# Lower goes first. The order is docs/PLAN.md "Ranked work" (overall-board weight, FINDINGS "Boards").
 PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_bf16_proj": 2,
             "muse_attention_decode": 3, "muse_prefill_layer": 4}
 JOB_KEYS = ("job_id", "job", "id")
@@ -96,22 +98,33 @@ def newest_job(problem: str, mode: str, since: float):
     return max(jobs, key=lambda j: float(j["submitted_at"]))["job_id"] if jobs else None
 
 
-def known(sha: str, mode: str):
-    """A ledger row or pending receipt for this source and mode, if there is one."""
-    if LEDGER.exists():
-        for line in LEDGER.read_text().splitlines():
-            row = json.loads(line)
-            if row["sha256"] == sha and row["mode"] == mode:
-                return row
+def known(sha: str):
+    """The modes this source already ran in (ledger), and a pending or waiting entry for it, if any."""
+    ran = {row["mode"] for line in (LEDGER.read_text().splitlines() if LEDGER.exists() else [])
+           if (row := json.loads(line))["sha256"] == sha}
     for p in PENDING.glob("*.json") if PENDING.exists() else []:
         row = json.loads(p.read_text())
-        if row["sha256"] == sha and row["mode"] == mode:
-            return row
-    for _, _, p in waiters():
-        w = json.loads(p.read_text())
-        if w["sha256"] == sha and w["mode"] == mode:
-            return {"job": f"(waiting in {p.name})", "status": "waiting for a judge slot"}
-    return None
+        if row["sha256"] == sha:
+            return ran, row
+    for p, w in entries():
+        if w["sha256"] == sha:
+            return ran, {"job": f"(waiting in {p.name})", "status": "waiting for a judge slot"}
+    return ran, None
+
+
+def runs_left(problem: str) -> dict:
+    """Today's scored runs and checks left for problem: the judge's own count (`okc problems`)."""
+    d, proc = okc_json("problems")
+    for p in (d or {}).get("problems", []):
+        if p.get("name") == problem:
+            return {"submit": p["limits"]["scored"]["left"], "check": p["limits"]["checks"]["left"]}
+    sys.exit(f"okc problems has no {problem}:\n{proc.stdout}{proc.stderr}")
+
+
+def next_reset() -> float:
+    """The daily caps reset at 00:00 UTC."""
+    now = datetime.datetime.now(datetime.timezone.utc)
+    return (now + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
 
 
 def in_flight() -> list:
@@ -122,8 +135,9 @@ def in_flight() -> list:
     return sorted(live, key=lambda j: float(j.get("submitted_at") or 0))
 
 
-def waiters() -> list:
-    """Sends waiting for a slot as (priority, time, path), best first; dead processes' entries are dropped."""
+def entries() -> list:
+    """Live sends in runs/waiting/ as (path, entry), including those held until the reset; dead
+    processes' entries are dropped."""
     out = []
     for p in WAITING.glob("*.json") if WAITING.exists() else []:
         try:
@@ -134,8 +148,13 @@ def waiters() -> list:
         except ProcessLookupError:
             p.unlink(missing_ok=True)
             continue
-        out.append((w["priority"], w["t"], p))
-    return sorted(out)
+        out.append((p, w))
+    return out
+
+
+def waiters() -> list:
+    """Sends waiting for a slot as (priority, time, path), best first; those held until the reset are out."""
+    return sorted((w["priority"], w["t"], p) for p, w in entries() if w.get("until", 0) <= time.time())
 
 
 CHANGED = threading.Event()  # the oldest run in flight finished, or a waiter left the queue
@@ -166,7 +185,7 @@ def block_until_change(oldest_job):
 
 def wake_waiters():
     """Tell every other okc_run waiting for a slot that the queue changed."""
-    for _, _, p in waiters():
+    for p, _ in entries():
         pid = int(p.stem)
         try:
             if pid != os.getpid() and b"okc_run.py" in Path(f"/proc/{pid}/cmdline").read_bytes():
@@ -175,16 +194,16 @@ def wake_waiters():
             continue
 
 
-def send_in_turn(entry: dict, priority: float, send):
-    """Call send() once fewer than CAP of our runs are at the judge and no better waiter is ahead.
-    The judge starts one of our runs at a time (FINDINGS, "Judge queue"), so holding the rest here
-    costs no throughput and lets the most important run go next."""
-    if CAP <= 0:
-        return send()
+def send_in_turn(entry: dict, priority: float, send, mode_now):
+    """Call send(mode) once fewer than CAP of our runs are at the judge, no better waiter is ahead and
+    mode_now() names a mode with runs left today; with none left, wait out of the queue order until
+    the reset. The judge starts one of our runs at a time (FINDINGS, "Judge queue"), so holding the
+    rest here costs no throughput and lets the most important run go next."""
     WAITING.mkdir(parents=True, exist_ok=True)
     signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGUSR1})  # before any thread starts: sigwait receives it
     me = WAITING / f"{os.getpid()}.json"
-    me.write_text(json.dumps({"pid": os.getpid(), "priority": priority, "t": time.time(), **entry}))
+    mine = {"pid": os.getpid(), "priority": priority, "t": time.time(), **entry}
+    me.write_text(json.dumps(mine))
     announced = False
     try:
         while True:
@@ -192,15 +211,26 @@ def send_in_turn(entry: dict, priority: float, send):
             # rest read runs/waiting/ and sleep until the queue changes, so an event costs one API call.
             ahead = waiters()
             place = next(i for i, w in enumerate(ahead) if w[2] == me)
-            live = []
+            live, until = [], 0
             if place == 0:
                 with LOCK.open("a") as lock:
                     fcntl.flock(lock, fcntl.LOCK_EX)
                     live = in_flight()
-                    if len(live) < CAP and waiters()[0][2] == me:
-                        result = send()
-                        me.unlink(missing_ok=True)
-                        return result
+                    if (CAP <= 0 or len(live) < CAP) and waiters()[0][2] == me:
+                        mode = mode_now()
+                        if mode:
+                            result = send(mode)
+                            me.unlink(missing_ok=True)
+                            return result
+                        until = next_reset() + 60
+                        me.write_text(json.dumps({**mine, "until": until}))
+            if until:  # out of the queue order, so the sends behind it go
+                wake_waiters()
+                print(f"no {entry['problem']} runs left today; waiting for the reset at "
+                      f"{datetime.datetime.fromtimestamp(until).isoformat(timespec='minutes')}", flush=True)
+                time.sleep(until - time.time())
+                me.write_text(json.dumps(mine))
+                continue
             if not announced:
                 print(f"waiting for a judge slot: place {place + 1} of {len(ahead)} in our queue (cap {CAP} at the judge)",
                       flush=True)
@@ -260,12 +290,18 @@ def send(args):
     if not m:
         sys.exit(f"{args.file}: the first line must be '# okc: problem=<name>'")
     problem = m.group(1).decode()
-    row = None if args.force else known(hashlib.sha256(src).hexdigest(), args.mode)
-    if row:
-        sys.exit(f"this source already ran as {args.mode} job {row['job']} ({row.get('status', 'pending')}, "
-                 f"speedup {row.get('speedup')}); --force to send it again")
+    sha = hashlib.sha256(src).hexdigest()
+    ran, row = known(sha)
+    if not args.force and (row or "submit" in ran):
+        sys.exit(f"this source already ran as a scored run, or is pending or waiting ({row or 'ledger'}); "
+                 "--force to send it again")
+    modes = ("submit",) if "check" in ran and not args.force else ("submit", "check")
 
-    def send():
+    def mode_now():
+        left = runs_left(problem)
+        return next((m for m in modes if left[m] > 0), None)
+
+    def send(mode):
         # okc reads the file when it sends, so a file edited while this run waited would go out
         # under a receipt holding the old source.
         if args.file.read_bytes() != src:
@@ -273,19 +309,17 @@ def send(args):
                      "Send it again if the new source is what you want.")
         stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         sent_at = time.time()
-        result, proc = okc_json(args.mode, problem, str(args.file), "--no-wait")
+        result, proc = okc_json(mode, problem, str(args.file), "--no-wait")
         job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
-        job = job or newest_job(problem, args.mode, sent_at)
+        job = job or newest_job(problem, mode, sent_at)
         if not job:
-            sys.exit(f"okc {args.mode} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
-        start_receipt(problem, args.mode, job, src, args.file, args.note, stamp)
-        return job
+            sys.exit(f"okc {mode} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
+        start_receipt(problem, mode, job, src, args.file, args.note, stamp)
+        return mode, job
 
-    priority = args.priority if args.priority is not None else (
-        -1 if args.mode == "submit" else PRIORITY.get(problem, 3))
-    job = send_in_turn({"problem": problem, "mode": args.mode, "file": str(args.file),
-                        "sha256": hashlib.sha256(src).hexdigest()}, priority, send)
-    print(f"okc {args.mode} {problem} {args.file}: job {job} accepted; waiting for the result "
+    priority = args.priority if args.priority is not None else PRIORITY.get(problem, 3)
+    mode, job = send_in_turn({"problem": problem, "file": str(args.file), "sha256": sha}, priority, send, mode_now)
+    print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
     finish(job)
 
@@ -321,13 +355,12 @@ def adopt(args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for mode in ("check", "submit"):
-        p = sub.add_parser(mode)
-        p.add_argument("file", type=Path)
-        p.add_argument("--note", default="", help="what this candidate is, for the ledger")
-        p.add_argument("--force", action="store_true", help="send source the ledger already has")
-        p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem; scored runs -1)")
-        p.set_defaults(mode=mode, run=send)
+    p = sub.add_parser("send", help="a scored run while the problem has one left today, else a check")
+    p.add_argument("file", type=Path)
+    p.add_argument("--note", default="", help="what this candidate is, for the ledger")
+    p.add_argument("--force", action="store_true", help="send source the ledger already has")
+    p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem)")
+    p.set_defaults(run=send)
     p = sub.add_parser("collect", help="finish pending receipts (all of them if no job is named)")
     p.add_argument("jobs", nargs="*")
     p.set_defaults(run=collect)

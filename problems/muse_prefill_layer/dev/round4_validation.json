@@ -1,0 +1,35 @@
+{
+  "hardware": "local sm120; timings under shared-device contention",
+  "candidates": [
+    {
+      "file": "problems/muse_prefill_layer/cand_expert_portfolio_v2.py",
+      "sha256": "b1538a10e562f7f5ba7043300eb787be14159f0f5fb1ec5a1259416a71b14f98",
+      "screen": "runs/screen/prefill_round4/muse_prefill_layer.cand_expert_portfolio_v2.json",
+      "official_pass": 5,
+      "timed_graph_shapes_pass": 8,
+      "forced_fresh_graph_pass": 72
+    },
+    {
+      "file": "problems/muse_prefill_layer/cand_prefill_portfolio_v2.py",
+      "sha256": "4ab8bccc3ddde270f499d67974be79c3aa191f66cda71d14732ba07d87919ea4",
+      "screen": "runs/screen/prefill_round4/muse_prefill_layer.cand_prefill_portfolio_v2.json",
+      "official_pass": 5,
+      "timed_graph_shapes_pass": 8,
+      "forced_fresh_graph_pass": 10
+    },
+    {
+      "file": "problems/muse_prefill_layer/cand_canonical_hybrid.py",
+      "sha256": "6d10a6804cfa3964c2bdeb91e6708fd8c27f910d8e7342e6f91389199876dfc4",
+      "screen": "runs/screen/prefill_round4/muse_prefill_layer.cand_canonical_hybrid.json",
+      "official_pass": 5,
+      "timed_graph_shapes_pass": 8,
+      "forced_fresh_graph_pass": 12
+    }
+  ],
+  "canonical_bank_bytes": 905969664,
+  "sm90_cpp_specializations": 24,
+  "sm90_cpp_spills": 0,
+  "sm90_swiglu_resources": "swiglu_sm90.json",
+  "sm90_dequant_resources": "coalesced_dequant_sm90.json",
+  "h200_execution_verified": false
+}

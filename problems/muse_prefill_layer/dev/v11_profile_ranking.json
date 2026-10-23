@@ -1,0 +1,1586 @@
+[
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "turn 1",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1001,
+      "weight": 46
+    },
+    "total_us": 851.5,
+    "kernels": [
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 347.0,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 179.3,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN",
+        "us": 155.4,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 41.5,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN",
+        "us": 39.7,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 25.2,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tss_64x96_64x10_2x1_v_bz_splitK_TNT",
+        "us": 12.8,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 11.5,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 7.8,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+        "us": 7.4,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "_qk_prep_kernel",
+        "us": 5.0,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 5.0,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 138.28658742703067,
+      "dense_us": 150.0916206916077,
+      "attention_us": 4.789351275764588,
+      "tensor_us": 293.167559394403,
+      "routes": 1358.6425281100803,
+      "touched": 26.84541870603873
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "turn 1",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1002,
+      "weight": 16
+    },
+    "total_us": 1287.2,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 416.4,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 391.0,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 182.1,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN",
+        "us": 152.4,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 41.6,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN",
+        "us": 39.5,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tss_64x96_64x10_2x1_v_bz_splitK_TNT",
+        "us": 13.2,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 11.6,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 8.7,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+        "us": 6.8,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 5.1,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_pre_expert_norm_kernel",
+        "us": 4.1,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 133.75255550792045,
+      "dense_us": 150.0916206916077,
+      "attention_us": 187.96566772076676,
+      "tensor_us": 471.8098439202949,
+      "routes": 1314.0964249504937,
+      "touched": 26.84541870603873
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 4,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "turn 4",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1003,
+      "weight": 46
+    },
+    "total_us": 2431.0,
+    "kernels": [
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 929.0,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 411.0,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT",
+        "us": 329.0,
+        "calls": 2,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN",
+        "us": 254.9,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 163.5,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x144_64x5_1x2_h_bz_coopB_TNT",
+        "us": 152.3,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 61.9,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT",
+        "us": 38.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 28.3,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 20.3,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_pre_expert_norm_kernel",
+        "us": 12.3,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 10.3,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 564.2130163747893,
+      "dense_us": 600.3664827664307,
+      "attention_us": 19.157405103058352,
+      "tensor_us": 1183.7369042442783,
+      "routes": 5543.298256344265,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 4,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "turn 4",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1004,
+      "weight": 16
+    },
+    "total_us": 4087.7,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 1624.9,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 965.0,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 468.6,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT",
+        "us": 326.5,
+        "calls": 2,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN",
+        "us": 255.3,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 163.4,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x144_64x5_1x2_h_bz_coopB_TNT",
+        "us": 150.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT",
+        "us": 37.3,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 30.2,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 21.6,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_pre_expert_norm_kernel",
+        "us": 12.4,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 10.4,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 542.4768886983485,
+      "dense_us": 600.3664827664307,
+      "attention_us": 751.862670883067,
+      "tensor_us": 1894.706042347846,
+      "routes": 5329.744447496202,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 1,
+      "ctx": 0,
+      "dist": "soft",
+      "layer": "full",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1006,
+      "weight": 16
+    },
+    "total_us": 11015.6,
+    "kernels": [
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2567.5,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2457.5,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1397.4,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1264.6,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 897.0,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 842.1,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 721.8,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 365.9,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 176.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 129.4,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 94.5,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 41.8,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 3096.193690790698,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 416.85801143905854,
+      "tensor_us": 6778.79023265645,
+      "routes": 30419.583719889324,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 1,
+      "ctx": 32768,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1007,
+      "weight": 138
+    },
+    "total_us": 10978.9,
+    "kernels": [
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2714.2,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2556.5,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1403.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1352.8,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 885.0,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 851.4,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 376.6,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 316.3,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 177.7,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 134.6,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 99.5,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 42.1,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 3104.236894738118,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 104.20814249950466,
+      "tensor_us": 6474.183567664316,
+      "routes": 30498.606849670396,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 1,
+      "ctx": 32768,
+      "dist": "soft",
+      "layer": "full",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1008,
+      "weight": 16
+    },
+    "total_us": 15208.4,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 4493.9,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2681.7,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2559.9,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1402.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1361.5,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 983.6,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 846.2,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 371.4,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 178.0,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 131.1,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 96.7,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 41.9,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 3053.6849539494438,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 2084.188291431133,
+      "tensor_us": 8403.61177580727,
+      "routes": 30001.942509969074,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "check",
+    "job": "6a9cd943fe404d74",
+    "case": {
+      "batch": 1,
+      "ctx": 65536,
+      "dist": "soft",
+      "layer": "full",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1010,
+      "weight": 16
+    },
+    "total_us": 18539.6,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 8072.4,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2562.8,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2521.8,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1408.4,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1279.0,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 983.8,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 851.8,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 359.2,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 178.2,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 127.4,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 93.9,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 42.1,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 2939.3095504415232,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 3751.5185714232075,
+      "tensor_us": 9956.566652291423,
+      "routes": 28878.22335349189,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "turn 1",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1001,
+      "weight": 46
+    },
+    "total_us": 853.6,
+    "kernels": [
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 348.2,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 179.6,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN",
+        "us": 156.2,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 41.8,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN",
+        "us": 39.5,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 25.8,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tss_64x96_64x10_2x1_v_bz_splitK_TNT",
+        "us": 13.1,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 10.6,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+        "us": 7.3,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 7.1,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_qk_prep_kernel",
+        "us": 5.6,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 5.1,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 138.28658742703067,
+      "dense_us": 150.0916206916077,
+      "attention_us": 4.789351275764588,
+      "tensor_us": 293.167559394403,
+      "routes": 1358.6425281100803,
+      "touched": 26.84541870603873
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "turn 1",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1002,
+      "weight": 16
+    },
+    "total_us": 1295.4,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 414.8,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 405.5,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 181.0,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN",
+        "us": 151.0,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 41.2,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN",
+        "us": 39.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tss_64x96_64x10_2x1_v_bz_splitK_TNT",
+        "us": 12.7,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 10.1,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 8.4,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+        "us": 7.1,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 5.2,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_pre_expert_norm_kernel",
+        "us": 4.1,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 133.75255550792045,
+      "dense_us": 150.0916206916077,
+      "attention_us": 187.96566772076676,
+      "tensor_us": 471.8098439202949,
+      "routes": 1314.0964249504937,
+      "touched": 26.84541870603873
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 4,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "turn 4",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1003,
+      "weight": 46
+    },
+    "total_us": 2394.2,
+    "kernels": [
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 888.8,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 408.0,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT",
+        "us": 332.0,
+        "calls": 2,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN",
+        "us": 255.8,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 164.6,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x144_64x5_1x2_h_bz_coopB_TNT",
+        "us": 153.3,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 61.7,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT",
+        "us": 37.0,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 29.3,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 20.9,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_pre_expert_norm_kernel",
+        "us": 12.4,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 10.5,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 564.2130163747893,
+      "dense_us": 600.3664827664307,
+      "attention_us": 19.157405103058352,
+      "tensor_us": 1183.7369042442783,
+      "routes": 5543.298256344265,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 4,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "turn 4",
+      "page": 1,
+      "q_len": 753,
+      "repeats": 6,
+      "seed": 1004,
+      "weight": 16
+    },
+    "total_us": 3769.9,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 1618.0,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<1, 6>(moe::Params)",
+        "us": 770.0,
+        "calls": 1,
+        "kind": "expert gate/up"
+      },
+      {
+        "name": "void moe::moe_gemm_kernel<0, 5>(moe::Params)",
+        "us": 352.5,
+        "calls": 1,
+        "kind": "expert down"
+      },
+      {
+        "name": "nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT",
+        "us": 327.5,
+        "calls": 2,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN",
+        "us": 256.2,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 164.8,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x144_64x5_1x2_h_bz_coopB_TNT",
+        "us": 152.2,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT",
+        "us": 37.1,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "combine_tiled_kernel",
+        "us": 27.6,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "gather_tiled_kernel",
+        "us": 20.5,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_pre_expert_norm_kernel",
+        "us": 12.2,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 10.3,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 542.4768886983485,
+      "dense_us": 600.3664827664307,
+      "attention_us": 751.862670883067,
+      "tensor_us": 1894.706042347846,
+      "routes": 5329.744447496202,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 1,
+      "ctx": 0,
+      "dist": "soft",
+      "layer": "full",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1006,
+      "weight": 16
+    },
+    "total_us": 11252.8,
+    "kernels": [
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2601.2,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2538.3,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1411.8,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1268.6,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 900.3,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 842.5,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 823.6,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 364.8,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 178.7,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 126.3,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 95.5,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 41.7,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 3096.193690790698,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 416.85801143905854,
+      "tensor_us": 6778.79023265645,
+      "routes": 30419.583719889324,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 1,
+      "ctx": 32768,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1007,
+      "weight": 138
+    },
+    "total_us": 11090.1,
+    "kernels": [
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2723.4,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2610.2,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1412.1,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1369.5,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 933.3,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 848.3,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 365.8,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 309.3,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 178.4,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 132.0,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 98.7,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 41.8,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 3104.236894738118,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 104.20814249950466,
+      "tensor_us": 6474.183567664316,
+      "routes": 30498.606849670396,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 1,
+      "ctx": 32768,
+      "dist": "soft",
+      "layer": "full",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1008,
+      "weight": 16
+    },
+    "total_us": 14756.0,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 4531.4,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2599.4,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2385.1,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1415.7,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1197.5,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 933.7,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 843.4,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 356.8,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 178.6,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 122.2,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 90.5,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 42.2,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 3053.6849539494438,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 2084.188291431133,
+      "tensor_us": 8403.61177580727,
+      "routes": 30001.942509969074,
+      "touched": 27.3
+    }
+  },
+  {
+    "mode": "scored",
+    "job": "965a9a816d4744ea",
+    "case": {
+      "batch": 1,
+      "ctx": 65536,
+      "dist": "soft",
+      "layer": "full",
+      "load": "first turn",
+      "page": 1,
+      "q_len": 16384,
+      "repeats": 6,
+      "seed": 1010,
+      "weight": 16
+    },
+    "total_us": 18995.2,
+    "kernels": [
+      {
+        "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+        "us": 8431.4,
+        "calls": 1,
+        "kind": "attention"
+      },
+      {
+        "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+        "us": 2611.5,
+        "calls": 3,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 2568.9,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+        "us": 1421.2,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+        "us": 1293.9,
+        "calls": 1,
+        "kind": "expert BF16 grouped GEMM"
+      },
+      {
+        "name": "_dequant_kernel",
+        "us": 960.5,
+        "calls": 2,
+        "kind": "expert dequant"
+      },
+      {
+        "name": "_boundary_kernel",
+        "us": 856.4,
+        "calls": 2,
+        "kind": "residual boundary"
+      },
+      {
+        "name": "_swiglu_kernel",
+        "us": 345.2,
+        "calls": 1,
+        "kind": "expert SwiGLU"
+      },
+      {
+        "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+        "us": 181.9,
+        "calls": 1,
+        "kind": "dense/router GEMM"
+      },
+      {
+        "name": "_combine_kernel",
+        "us": 129.2,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_gather_norm_kernel",
+        "us": 93.3,
+        "calls": 1,
+        "kind": "other visible"
+      },
+      {
+        "name": "_routing_kernel",
+        "us": 43.3,
+        "calls": 1,
+        "kind": "other visible"
+      }
+    ],
+    "floor": {
+      "experts_us": 2939.3095504415232,
+      "dense_us": 3265.7385304266936,
+      "attention_us": 3751.5185714232075,
+      "tensor_us": 9956.566652291423,
+      "routes": 28878.22335349189,
+      "touched": 27.3
+    }
+  }
+]
