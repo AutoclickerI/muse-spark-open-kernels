@@ -47,7 +47,10 @@ processes the previous result, publishes a completed turn, then prepares decode
 before the next loop ingests that conversation's new turn. With other requests
 still running, `take_prepared` bypasses prefill selection for a whole verify
 step. After any completion, the callback now keeps early result processing but
-defers batch selection until ingress. The deterministic two-request regression
+defers batch selection until ingress. `take_prepared` then filters completed
+rows before prefill admission counts them, including a full32-request batch;
+otherwise the slot budget would still force one extra decode. The deterministic
+two-request/full-slot regression
 fails before this fix and passes after it; all4 overlap-plan tests pass.
 KV host graphs and the early length relay remain enabled:96 changed-input FP8
 cache graph replays across all32 batch sizes and100 publish/resolve cycles are
@@ -662,7 +665,7 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
 Current patch regenerated from `git -C serving/sglang diff a55ab7d5` after
-including source-only untracked additions: **328,900bytes**, **31files**,
+including source-only untracked additions: **329,413bytes**, **31files**,
 longest added line **374**. All31 paths in accepted `ed4f618` remain, including
 all pending kernel modules and the unchanged MoE lane source. The two unproven
 attention dispatches are removed, pending dense/router tuning is unbound,

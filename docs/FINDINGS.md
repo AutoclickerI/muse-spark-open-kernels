@@ -279,6 +279,110 @@ Regression sources: `serving/tests/test_dflash_host_overlap.py` and
 KV/memory capacity, held-out agreement and TTFT at all judge loads. GPU0 timings do not prove
 an incremental serving speedup; the CPU reduction alone must not be subtracted from H200 steps.
 
+### Prefill/verify overlap: measured locally, no scheduler patch (2026-10-24)
+
+**Decision: no qualified ~5% score gain established.** The current expert producers'
+stream behavior prices at **0.17–0.44%** incremental score after request readiness;
+the mixed-row prototype prices at **0.32–4.39%**, or **0.16–3.14%** with first-prefill
+work scaled to five chunks for80K tokens. These are local-to-H200 model sensitivities,
+not measured serving gains. The mixed prototype is not agreement-qualified.
+The existing KV host-work cut above is retained; no serving source changed in this experiment.
+
+The premise needs one correction: `SpeculativeAlgorithm.supports_mixed_chunk()` already
+includes DFLASH. The judge leaves `enable_mixed_chunk=False` by default; its flags do not
+enable it. The existing mixed path advances running rows by **one target token** per
+chunk. Its zero-cost modeled score ceiling is only0.76–2.25%. Eight-token DFlash
+verification inside a mixed forward needs additional worker/result/KV handling.
+
+**Measurement scope.** GPU0 sm120, full8192/4096 widths,32 local NVFP4 experts,
+FP8 paged KV. A chunk is16,384 queries at cached context32,768; each verify request
+has8 queries at context80,000. Reuse one immutable layer bank for46 sliding and16 full
+layer graph replays; exclude LM head, drafter, two BF16-expert layers and collectives.
+The serving producer is V9 for verify and grouped for prefill. The grouped producer's
+MMA stand-in runs locally; native WGMMA and FA3 do not. Attention uses the portable
+BF16 implementation in `cand_v13.py`. Forward streams have separate inputs, caches,
+Marlin scratch, router streams and private graph pools. This is a target-stack proxy.
+Stream cases select the synthetic bank's busiest rank independently per forward;
+actual EP routing imbalance remains unmeasured. Mixed cases share one rank mapping.
+
+| Requests | Verify steps per chunk | Prefill alone, ms | Verify work alone, ms | Serialized pair, ms | Concurrent, decode priority−1, ms | Concurrent, both priority0, ms |
+|---|---:|---:|---:|---:|---:|---:|
+| 16 | 1 | 3027.41 | 105.14 | 3240.68 | 3219.15 | 3218.38 |
+| 32 | 1 | 3187.64 | 163.91 | 3289.20 | 3320.10 | 3405.41 |
+| 16 | 8 | 3321.84 | 921.59 | 4225.28 | 3923.18 | 3925.48 |
+| 32 | 8 | 3731.92 | 1434.53 | 4783.60 | 5270.47 | 6100.41 |
+
+These are **separate marginal medians under changing GPU0 contention**; they do not
+add. Orders alternate forward/reverse. Six sustained rounds and four single-step rounds
+are retained per concurrency. Model inputs use per-round ratios from sustained work:
+`eta=(P+D−concurrent)/D` is0.326/0.207 at c16/c32, and verify progress is only
+0.245/0.315 of isolated speed. Bootstrap95% intervals for eta are[0.231,0.685] and
+[−0.462,0.438]; c32 does not establish positive overlap. Ordinary-priority decode gives
+eta0.340/0.059. Earlier stock-Marlin runs overestimated this port's benefit and are retained
+as exploratory evidence, including unstable and failed pilots.
+
+**Why complementarity is insufficient.** A fresh sm90a compile of the current V9 reports
+124 registers/thread and256 threads/CTA. Its cooperative grid uses
+`SM_count * resident_blocks`. Resource accounting predicts two CTAs/SM on Hopper:
+63,488 registers before allocation rounding, leaving at most2,048 of65,536. The smallest
+compiled grouped-prefill CTA needs7,168 registers; the large W13 variant needs17,920.
+Inference: the default resident V9 grid excludes those prefill CTAs during its main work.
+Actual H200 occupancy is unqueried. Hardware limits: [NVIDIA Hopper tuning guide](https://docs.nvidia.com/cuda/archive/13.0.3/hopper-tuning-guide/index.html).
+
+SGLang also explicitly shares prefill/decode graph memory and input buffers because
+forwards are mutually exclusive (`runner_utils/pool.py`, `input_buffers.py`); a second
+stream alone is unsafe. The image has NCCL2.30.7: graph mixing is supported, captured
+communication is internally ordered by default, and disabling that ordering together
+with mixing is unsupported. TP8 needs rank-consistent launch ordering and independent
+collective scratch. [NCCL graph support](https://docs.nvidia.com/deeplearning/nccl/archives/nccl_2307/user-guide/docs/usage/cudagraph.html),
+[ordering requirements](https://docs.nvidia.com/deeplearning/nccl/archives/nccl_2307/user-guide/docs/env.html#nccl-graph-stream-ordering).
+
+**Mixed-forward ceiling probe.** Concatenate prefill and256 verify rows, run shared
+dense/expert operations once, and use separate causal attention segments in the local
+stand-in. Actual serving expert producers are used. At c32, the paired mixed/prefill
+time ratio is **1.0498** for16K and **1.4975** for753 rows; serialized/mixed speedups are
+**1.0046x/1.0481x**. Both mixes require more work than prefill alone. The16K mixed
+forward has16,640 rows and would also need the serving adapter's16K admission policy
+addressed. Inputs are exact; a diagnostic locates the first numerical difference in
+QKV GEMM after its row count changes (0.37–0.43% relative L2). Attention/routing amplify
+it: the753-row mix has6.4–7.5% layer-output L2 against separate forwards. This is
+unqualified numerical evidence, not a teacher-forced gate result.
+
+`sim/serving_overlap.py` adds FIFO per-user prefill→220-token→next-turn dependencies,
+13 turns, mean acceptance4.16 and a search over minimum ready batch size. Its comparison
+keeps the original capped/e2e score calculation. Small ready batches lose weight-read
+amortization; one mixed verify opportunity per chunk cannot hide every decode step.
+Mixed costs scale with ready rows and include modeled draft/head/AR work; CPU/KV
+materialization cost remains unpriced, so those estimates are optimistic. The first-turn
+benchmark contains **three representative chunks**, despite `sim.serving`'s four-chunk
+docstring. The80K sensitivity scales that timing by5/3 and uses five opportunities.
+
+| Model basis | Streams, score gain | Mixed, score gain | Streams with80K first prefill | Mixed with80K first prefill |
+|---|---:|---:|---:|---:|
+| Practical decode, stock prefill | 0.44% | 0.32% | 0.29% | 0.16% |
+| Practical decode and prefill | 0.17% | 2.06% | 0.09% | 1.42% |
+| Receipts, complete accounting | 0.38% | 4.39% | 0.25% | 3.14% |
+
+**Checked:** isolated versus concurrent serving-producer outputs, route IDs and all KV
+bytes are exact across the fresh-input graph checks. A separate full-width stock-Marlin
+sanity check covers16K prefill and verify32 on full/sliding layers: relative L2≤0.003933,
+exact routes and KV bytes. Model conservation, stock/no-overlap and c1 identities pass;
+all primary source hashes still match their files. No GPU1 computation, judge run or commit.
+
+**Unverified:** native H200 FA3/WGMMA overlap, actual TP8 collectives, full-model graph
+and KV allocator memory, teacher-forced/logprob agreement,220-token request completion
+and TTFT for a new scheduling implementation. H200 mixed attention and a smaller V9
+cooperative grid could change the ceiling; these measurements do not rule them out.
+
+Reproduce with `prof/prefill_overlap.py --expert-backend serving --concurrency 16`
+or32, `--burst 8 --one-step-reps 4 --layers 62 --reps 6 --out <json>`;
+`prof/mixed_prefill_probe.py --expert-backend serving --concurrency 32` at
+`--prefill-length 753` and16384; then `python -m sim.serving_overlap` with both
+`--measurement` and both `--mixed-measurement` paths. GPU commands use
+`CUDA_VISIBLE_DEVICES=0 tools/img python`. Frozen sources, all raw runs, compiler resource
+log, producer agreement, model inputs and summaries live in
+`/data2/jihoon/muse_kernel/harness/results/prefill-overlap/` (`report.json`, `sources/`).
+
 ## Boards (snapshot 2026-10-23T18:28:17Z)
 
 All six public reads were taken sequentially from `18:28:17.076989Z` through
