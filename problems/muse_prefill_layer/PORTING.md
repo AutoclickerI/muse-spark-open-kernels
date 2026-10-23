@@ -1,68 +1,148 @@
-# Prefill kernel integration notes
+# Prefill paths for the single canonical expert bank
 
-Scope: this directory contains one-GPU kernel experiments, not an SGLang patch. H200 speedups belong to the judge receipts; none establishes an eight-GPU serving speedup. See `dev/results_summary.json` and the final experiment report for which candidates are accepted.
+The serving representation is the V6 m16 bank in `docs/reference/expert_layout.md`.
+Keep exactly one W13/W2 bank, with separate FP32 `gs13_gate`, `gs13_up`, `gs2` sidecars.
+Neither this round's grouped reader nor its token-tiled reader retains another packed or
+expanded weight bank. These are local kernel candidates; no serving files were edited.
 
-## Expert path
+## Expert comparison and decision
 
-The entry point is `MuseSpark1xFp4Experts._forward_marlin` in `python/sglang/srt/layers/muse_spark_fp4_moe.py`, called by `MuseSpark1xMoE._forward_experts` in `python/sglang/srt/models/muse_spark.py`. Replace the pre-expert norm, `_marlin_expert_outputs` (alignment, gate/up GEMM, SiLU, down GEMM), and post-expert norm/route sum as one prefill dispatch. Keep the surrounding expert all-reduce or reduce-scatter in the model intact.
+`cand_canonical_prefill.py` adapts v3's 128-token, producer/two-consumer WGMMA pipeline to
+read V6 directly. The consumers decode canonical code/scale bytes into BF16 registers;
+the producer stages BF16 activation tiles. Both gathers and intermediate/output stores
+use V6's K permutation. Gate/up share each m16 tile and use independent FP32 global
+scales before BF16 rounding and SwiGLU. No timed repack or second NVFP4 bank is needed.
+The SM90a build uses 168 registers with no spills. The actual WGMMA execution is unverified.
 
-The candidate API takes pooled BF16 `[T,4096]`, top-8 FP32 scores, local expert indices (`-1` for remote routes), per-route positions, and 32 expert counts. It returns the rank's BF16 `[T,4096]` contribution. Routing uses the current input on every call. In serving, use the real expert map and EP rank rather than the challenge's `local_start` tensor. Counts and offsets must be reset/recomputed on every replay.
+`cand_canonical_grouped.py` embeds the MoE lane's RS128 grouped reader, with the same
+bank and separate gate/up scales. Its N=8/16/32/64/128 selection uses device counts.
+The prefill router already produced counts and per-expert positions, so this wrapper
+builds prefix/task metadata and sorted pairs directly, avoiding a second histogram.
+The MoE lane sources were read and frozen under `dev/canonical_baselines/`; they were
+not edited. The serving lane's current grouped reader uses one m64 accumulator; RS128
+uses two and should be compared explicitly before replacing it.
 
-`_experts_dequant` in the v1/v2 family expands only touched experts in the timed forward, then calls `deep_gemm.m_grouped_bf16_gemm_nt_contiguous` with padded starts and live prefix ends. E2M1 times E4M3 is represented exactly in BF16; the expert's global scale is applied after FP32 accumulation. Expanded weights are scratch, never a resident BF16 bank. At 16K tokens the conservative worst-case route capacity is `8*T+32*128`; reuse allocated workspace across layers but overwrite every live range each call. Profile peak workspace alongside real KV-cache capacity before enabling this on the 816B model.
+Local **sm120**, cold L2, CUDA graph replay; milliseconds. Pre-expert norm is common and excluded.
 
-`dev/moe_w4a16.cu` and `dev/moe_host.py` provide an alternative with lossless packed-weight layouts, swizzled gathered BF16 tiles, register/shared WGMMA, and a gate/up activation epilogue. Its portable mma.sync path validates layout/math; only the H200 receipt validates WGMMA. A single-stage fallback barrier deadlock was fixed locally. These source files are embedded into `cand_v3.py` so the judge receives a single file. In SGLang they should be normal JIT source and wrapper files under `python/sglang/kernels/`.
+| Routing | Tokens | MoE RS | MoE RS128 | V6 pipeline |
+|---|---:|---:|---:|---:|
+| uniform | 753 | 1.260 | 0.979 | 3.934 |
+| uniform | 3012 | 3.503 | 2.352 | 4.218 |
+| uniform | 16384 | 14.431 | 9.805 | 18.073 |
+| one hot expert | 753 | 0.700 | 0.659 | 1.182 |
+| one hot expert | 3012 | 2.580 | 1.866 | 3.454 |
+| one hot expert | 16384 | 12.558 | 8.608 | 15.800 |
 
-`cand_v6.py` adapts the decode MoE agent's Humming integration. The installed library keeps each global scale in FP32 (`WeightScale2Type.TENSOR`), uses BF16 inputs and FP32 accumulation, and has indexed expert GEMMs. Shape-based compilation uses power-of-two buckets; the actual routed count and device alignment metadata still determine all computed work.
+Both grouped readers use adaptive N. Each total includes route metadata, both GEMMs and finalize;
+the pipeline also includes tiled gather. 256 MiB L2 flush is outside the events. Two repetitions
+use the lower median; these short local measurements support a provisional ranking. Stage times
+and complete reproduction commands are in `dev/CANONICAL_COMPARISON.md`.
 
-The real checkpoint can have separate gate and up global scales, whereas this challenge supplies one `w13_gs` per expert. Preserve and apply both scales explicitly when porting; do not assume Marlin's scale folding, gate/up permutation, or checkpoint orientation matches the challenge bank. Hook repacking in the quantization layer's `process_weights_after_loading` path, not `srt/model_loader/`. Keep BF16 expert layers 0 and 61 on their BF16 implementation.
+**Decision:** use adaptive RS128 as the provisional prefill reader for serving. It wins
+the local comparison, avoids BN128 padding at 753 tokens, and needs no swizzled gathered
+input allocation. This is an sm120 decision, not an established H200 winner: the local
+MMA.sync emulation changes the relative execution costs. `cand_canonical_autotune.py`
+compares both readers on synthetic flat/hot/four-local-route routing at 753/3012/16384 during `prepare()`
+and selects a broad token bucket per shape. It prints the measurements for the first
+reset-time H200 check; only the choices survive preparation. Both readers share the
+same V6 allocation. R-20261023-7 explicitly permits this tuning.
 
-## Attention path
+Numerical tests use FP32 dequantized weights, all 32 experts, unequal gate/up global
+scales, changed routing and fresh graph inputs. Uniform-route reader error is about
+0.056% relative L2; this tests expert arithmetic separately from attention and router
+rounding. Additional M=8/128/256 fresh graphs pass with zero local routes and all eight
+routes local. Unnormalized intermediate/down rows also pass an independent FP32
+reference with unequal gate/up scales (0.003% / 0.029% relative L2), so post-norm
+scale cancellation cannot hide a missing sidecar. `dev/canonical_edges.json` and
+`dev/canonical_comparison*.json` record these checks and stages.
 
-`_qk_prep_kernel` replaces `FusedQKNorm.forward_triton` plus FP8 conversion/cache-store glue in `MuseSpark1xAttention.forward` and the attention backend. Its outputs are FP8 Q and the newly written FP8 cache entries. Use the serving backend's real `KVWriteLoc` and sliding-window pool translation; slot zero has different reservation conventions in serving.
+## Serving integration
 
-`_attention_contiguous` / `_gather_cache_kernel` in `cand_v4.py` are a timed byte-for-byte FP8 gather followed by FA3 without a page table. Integrate at `FlashAttentionBackend.forward_extend` in `python/sglang/srt/layers/attention/flashattention_backend.py`, after cache updates and after selecting `metadata.swa_page_table` or the full table. Gather the complete causal context for full layers. For sliding layers, the earliest retained key is `max(0, prefix_length-window+1)`, retaining the union of every query's window. Adjust sequence lengths after removing that prefix, and still pass the causal/window mask to FA3.
+The current integration is `srt/layers/muse_spark_moe_v4.py`: `prepare_layer` builds the
+canonical bank, `run_layer` calls `kernel_fn`, and `_grouped_call` handles large token
+counts. Port RS128 into that grouped reader, retaining separate scales and the existing
+expert mapping. Our `_canonical_plan` / `_canonical_pairs` can reuse metadata when the
+serving router exposes per-expert positions; otherwise keep its histogram/scatter.
+For the pipeline reader, port `dev/moe_w4a16_canonical.cu` and the gather/combine helpers
+from `dev/moe_canonical_host.py` under `python/sglang/`, using the existing canonical bank. Keep CUDA as multiline source in the JIT wrapper;
+the board files' long single-line string literals do not meet serving's 400-character
+added-line limit. Compile from source, without bundling cubins.
 
-The challenge has a uniform query length per request. Production batches need offsets from `cu_seqlens_q`, per-request query lengths, capture bucket padding, and empty-request handling. The gather must write every live byte each call and honor K/V descales. Existing cascade, context-parallel, cross-attention, and non-FP8 paths need their existing dispatch until explicitly validated. Initial 16K chunks and ~753-token later turns should be benchmarked separately.
+`MuseSpark1xFp4Experts._forward_marlin` in `srt/layers/muse_spark_fp4_moe.py` already
+calls `run_layer(..., return_dense=True)` and `_finalize_dense_expert_outputs`. Preserve
+that dense-slot/finalize contract and the surrounding EP communication. Our standalone
+prefill functions fuse post-expert norm and route reduction; port that fusion only
+while preserving the serving all-reduce/finalize workspace semantics. Keep pre-expert
+norm before either GEMM and effective post-expert norm weights in BF16. BF16 expert
+layers 0 and 61 continue through their BF16 implementation.
 
-## Dense projections and boundaries
+One canonical layer is 905,969,664 bytes (864 MiB); 60 routed layers occupy 50.625 GiB/GPU.
+At T=16384 the conservative grouped scratch has two `[T*8,4096]` BF16 buffers (2 GiB),
+plus normalized input/output and metadata. The pipeline has three padded route buffers,
+about 3.1 GiB. These are scratch capacities, not measured full-model peak memory.
+Reuse workspaces across sequential layers and overwrite every live region per call.
+Any expansion for DeepGEMM must read this bank inside the timed call and use temporary
+storage; the old raw-bank/custom-bank hybrids are not the serving memory design.
+Synthetic tuning should run once per GPU/shape family, rather than once for each of the 60 layers.
 
-`_dense_mm` in `cand_v5.py` is an alternative Hopper BF16 implementation for qkv/gate, output, pooler, and unpooler. Integrate a measured shape dispatch in `bf16_gemm_dispatch` (`srt/layers/quantization/unquant.py`) or a Muse-local wrapper. Preserve the existing serving pooler/unpooler sharding; a one-GPU result does not choose its collective strategy.
+## Long-context attention
 
-`_boundary_kernel` computes post-branch norm, the FP32 gated residual, and the next BF16 normalized input. It maps to `FusedPostNormResidualPreNorm` in `kernels/ops/muse_spark_v12/fused_norm_residual.py`. Preserve all-reduce/all-gather completion before this computation. `_norm_gate_kernel` maps to `FusedRMSNormGate`; the hi+lo concatenated router maps to `MuseSpark1xRouter.forward_split2` with FP32 accumulation.
+`cand_attention_fp8.py` tests direct paged FP8 attention; `cand_attention_fp8_contig.py`
+tests a timed byte-exact FP8 cache gather first. QK and PV use E4M3 tensor-core operands,
+with FP32 online softmax and accumulation. Softmax probabilities use E4M3 after scaling by 448, followed by the inverse scale in the output. This
+uses the stock FA3 probability format allowed by the rules; BF16 layer activations and
+FP8 KV remain at their required formats. Every causal/window key participates.
+Production dispatch changes only full layers with at least 2048 query tokens; shorter
+and sliding layers retain the checked FA3 path. Forced variants exercise the new
+attention path across every official local test and nearby graph shape.
 
-## Verification before serving
+Port `_attention_fp8` / `_attn_fp8_kernel` from `dev/attention_fp8.py` into
+`FlashAttentionBackend.forward_extend` in `srt/layers/attention/flashattention_backend.py`,
+after KV writes and selection of the full/SWA page table. Queries come from the FP8
+QK-norm/RoPE preparation in `MuseSpark1xAttention.forward`; preserve the backend's cache
+write locations, K/V descales and QK scale. The gathered variant moves FP8 bytes inside
+every forward and never retains a cache copy between calls. `cand_canonical_attention.py`
+combines this attention with the direct V6 pipeline in one complete layer.
 
-Local checks include all five official shapes and graph replay on fresh nearby inputs, uneven sequence lengths, 64-token pages, and KV scale 1/64. FA3 and WGMMA require judge validation. Eight-rank communication, checkpoint scales/layouts, live allocator pressure, capture padding, breakable prefill replay, and the serving agreement/TTFT metrics remain unverified until a serving harness run.
+The standalone wrappers assume equal query length per request. A serving port must use
+`cu_seqlens_q` and per-request lengths, valid cache lengths, capture padding and serving's
+reserved cache slots. Validate these alongside TP/EP collectives and eight-GPU agreement.
 
-## FA3 query packing experiment
+Local attention-only cold-L2 graph timings (sm120; **not FA3 or H200 comparisons**):
 
-`cand_v9.py` tests `pack_gqa=False, num_splits=1` after the contiguous gather when the unpacked query blocks can occupy H200's SMs. Smaller queries retain FA3 defaults. This follows a source-level finding, not an H200 performance claim: upstream FA3 forces packed GQA for non-TMA paged KV and defaults to packing variable-length queries. Its heuristic notes that packing can cost throughput when query rows already fill tiles. The judge's SGLang fork may differ, so only the check decides this candidate's behavior. Sources inspected 2026-10-23: [FA3 dispatch](https://github.com/Dao-AILab/flash-attention/blob/main/hopper/flash_api.cpp), [packing heuristic](https://github.com/Dao-AILab/flash-attention/blob/main/hopper/heuristics.h). Snapshots are in `dev/fa3_*_upstream.*`.
+| 16K-query prefix | BF16 Triton | FP8 direct BN128 | FP8 gathered BN128 |
+|---|---:|---:|---:|
+| 32768 | 20.257 ms | 13.357 ms | 12.890 ms |
+| 65536 | 38.839 ms | 25.066 ms | 23.721 ms |
 
-DeepGEMM dense dispatch correction: H200 check `84b5433a1f2f43e5` for v5 still ran cuBLAS dense kernels. The installed API exports `use_deterministic_algorithms`, and its native binary contains the cuBLAS dispatch branch. [Upstream GEMM dispatch](https://github.com/deepseek-ai/DeepGEMM/blob/main/csrc/apis/gemm.hpp) defaults plain BF16 output GEMMs to cuBLAS when deterministic mode is off; [its BF16 tests](https://github.com/deepseek-ai/DeepGEMM/blob/main/tests/test_bf16.py) enable deterministic mode to test native kernels. v13 corrects that setting. Do not describe v5 as a native DeepGEMM performance result.
+Two fresh 16K graph inputs per prefix, including stock-like soft keys, have 0.86–1.19%
+relative L2 error versus FP32 attention on sampled rows; every sampled row attends to all keys.
+The gathered BN256 diagnostic is locally faster but compiles with a 424-byte/thread stack
+on SM90; BN128 has no stack. H200 execution and comparison with FA3 remain unverified.
+The fixed candidates and both full-layer combinations pass the official five local cases,
+nearby production-branch graphs and forced Hopper glue. `dev/attention_fp8_*.json` and logs
+preserve the exact tile resources, accuracy and measurements.
 
-## Resident weight and scratch budget
+## H200 evidence and remaining validation
 
-Do not retain all experimental banks in production. One rank's32experts occupy `(32*3*4096*4096)*(1/2+1/16) = 905,969,664` bytes in packed codes and E4M3 scales per layer. Across60 NVFP4 layers, each extra full layout adds54,358,179,840bytes (54.36GB decimal,50.625GiB) per GPU. This is a static count from the problem dimensions, not a measured serving allocation. A raw+Marlin+custom state that is convenient for one-layer experiments is not an appropriate model-wide resident state.
+The current checked baseline for this work is v3, job `82a4e50b54294a2a`: **1.345393x**
+over SGLang (turn 1 **1.211963x**, turn 4 **1.369021x**, first turn **1.467736x**).
+Its scored rerun `bab2f3468fcb4b58` is pending. These figures do not measure either new
+canonical reader or the new FP8 attention.
 
-The BN128 and BN256 custom kernels share the same losslessly packed bank: BN256 reads consecutive pairs of the original m64 fragments using the original KT stride. Prefer that common layout if the measurements support it. When replacing the loader representation, release the redundant storage or bind the existing parameters to same-size views of the packed allocation while preserving required parameter registration. A Humming/custom or raw/custom hybrid needs an explicit memory/performance decision: a common layout, timed lossless repacking, or a verified capacity budget.
+The v3 H200 profile at 16K queries/prefix32K full has experts 4.910 ms, attention 4.513 ms,
+and dense/router GEMMs 4.072 ms; prefix64K has 5.223/8.020/4.077 ms respectively.
+This motivates the attention work without establishing its speedup. Native v3 experts
+use a different physical bank and therefore cannot simply be enabled in the serving
+single-bank state. v14-v17 receipts remain relevant if they arrive; port a winning
+component to V6 before enabling it in serving.
 
-AtT=16384, the dequant path's conservative route capacity is135168rows. A4096-wide BF16 route buffer is1,107,296,256bytes; the gate/up buffer is twice that. Scratch reuse opportunities for a production port include using the gathered-input allocation for the SwiGLU intermediate after GEMM1 finishes, reusing gate/up storage for the down output, and expanding w2 after GEMM1 into the same weight workspace used for w13. These are sequential lifetime aliases, not cross-call caching. They have not yet been benchmarked or validated in this session; do not silently apply them to a checked source.
-
-v14 tests the sibling TMA indexed configuration. The separate MoE check `09ba4af4e6bc4791` measured1.269615x at decode sizes, versus0.997682x for its initial Humming integration (`ae2277f8609e4fd0`). The MoE source and receipts were read only. These are motivation for v14, not a prefill speedup claim; its prefill H200 receipt is pending.
-
-## Expert implementation variants (v14–v17)
-
-`cand_v14.py` applies the sibling's Hopper TMA indexed Humming configuration: weights and scales use TMA, while activation gather/scatter stay direct. `use_warp_spec=True` is guarded to Hopper. Forcing that configuration onto sm120 failed the layer tests; it is not a portable configuration, and the actual guarded candidate passes locally. Its prefill H200 result remains pending. The existing MoE H200 receipt supports only the sibling's decode-size workload.
-
-`dev/moe_w4a16_ss.cu` (v15) stages decoded BF16 weights in shared memory, double-buffers them on Hopper, and issues shared/shared WGMMA in batches of eight instructions. NVFP4 expansion occurs inside every timed GEMM. It uses the original packed bank, so choosing between RS/SS does not require a second resident layout. Both gate and down shared-A arithmetic have now passed local layer tests using a portable MMA emulation with direct global epilogue stores. Hopper shared descriptors and asynchronous behavior still require the judge receipt.
-
-`cand_v16.py` retains the v11 expert dispatch and passes `expected_m_for_psum_layout=ceil(T/32)` to grouped BF16 GEMM. This is a shape-derived tuning estimate, not a bound on live routes. The worst-case scratch capacity and GPU prefix counts are unchanged; every routed row is still computed. DeepGEMM's [SM90 grouped implementation](https://github.com/deepseek-ai/DeepGEMM/blob/main/csrc/jit_kernels/impls/sm90_bf16_gemm.hpp) uses this argument for its expected per-group size and group count when selecting tiles/waves. The installed image exposes the same keyword. A production port should choose the hint from EP topology and expected routing distribution, without reading device counts on the host.
-
-`dev/moe_w4a16_fast.cu` and `dev/fast_decode_repack.py` (v17) adapt the sibling MoE owner's bit-plane representation to the prefill WGMMA layout. Packed codes retain four bits per value and scales retain one byte per group. Scale signs fold into code signs; zero-scale blocks represent zero exactly. The represented NVFP4 weight values are preserved. The timed decoder forms BF16 weights divided by256 with rotates/masks and integer scale reconstruction, then restores the exact power of two in the FP32 epilogue. No expanded BF16 weights are retained across calls. An actual local GEMM spanning every finite signed E4M3 scale and all E2M1 codes has0.159% relative L2 error against FP32. This is correctness evidence; H200 performance remains pending.
-
-The v14–v17 candidates use the existing `MuseSpark1xFp4Experts._forward_marlin` replacement boundary described above. Preserve separate real-checkpoint gate/up global scales in the epilogue. For v17, each corresponding scale gets the same exact power-of-two correction. Use one chosen packed representation per layer in serving; retain raw model parameters only if the loader or checkpoint lifecycle requires them.
-
-`dev/build_measured_combo.py` reserves a final complete integration from finished H200 receipts. It selects checked expert implementations by broad token-count buckets, attention by token-count/window buckets, and native dense only where the corrected v13 comparison supports it. Native dense estimates subtract the unchanged grouped-expert DG contribution from the profile and are labeled as estimates; the final complete check decides the performance. `dev/finish_round.py` is development orchestration, never imported into submitted code: it screens the final candidate locally, checks through the receipt wrapper, promotes exact new checked-best sources and requests scored runs within quota. It exits once this round's checks and scored jobs finish. The submission files themselves start no processes and do not modify loaded modules.
-
-
-The measured integration statically prefixes private expert functions and compiles each chosen implementation normally; submitted code does not import another candidate, execute generated Python, or edit modules. It initializes one expert state per selected family. This can retain multiple resident packed banks during a single-layer measurement. That assembled state is not ready for full-model serving: each extra NVFP4 layout costs about50.6GiB across60 layers per rank. Port the individual measured kernels behind the same expert API, then share a packed representation or choose one family within the real model/KV/scratch capacity. A direct dequantizer from the chosen packed bank into the grouped-GEMM scratch format would let a custom/DG hybrid avoid retaining a second raw bank.
+All nine frozen sources pass their five official local cases, fresh graph replay
+and forced Hopper Python glue. The complete selector also passes forced synthetic
+tuning and fresh full-layer replay of each attention alternative. SM90 compilation checks instruction legality, not asynchronous
+execution. H200 WGMMA/FP8 execution, performance versus FA3, released-checkpoint peak
+memory, uneven serving batches, TP1/TP2 drift and eight-GPU serving agreement remain.
+`cand_prefill_autotune.py` combines the two expert readers with FA3, direct FP8, and
+gathered BN128/BN256 attention choices. Preparation benchmarks synthetic inputs, validates
+cross-path agreement and retains only shape-based choices. Prefix-zero chunks retain FA3.
+Reset-time check order and exact hashes are in `dev/NEXT_CHECKS.md`.

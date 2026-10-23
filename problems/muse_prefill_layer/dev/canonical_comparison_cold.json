@@ -1,0 +1,278 @@
+{
+  "device": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "architecture": [
+    12,
+    0
+  ],
+  "note": "Local sm120 MMA.sync emulation; not Hopper WGMMA timing.",
+  "source_hashes": {
+    "canonical_grouped.cu": "9a6cf19870486b459ac5ebfff05e2387a3d56bfbaa5607507995a01580938add",
+    "cand_rs.py": "57a847900abe9bc668e94fb281a115911ad161945e3c58d3b1a8efbb885d5dd2",
+    "cand_rs128.py": "58f9431be0be4b8d1da367f80606a654174621377f56c8e0db98e012a8dc9cd5"
+  },
+  "harness_sha256": "9d15f5b7acc2105164d0912a2ef321c42f58f24eb6965fd472235a5d4bbf2687",
+  "adapted_grouped_sha256": {
+    "rs": "e621b6ff8266a0f0e3b0c29d138c30013df5324efd8fa0800ad109b4c6dfb00b",
+    "rs128": "8c0e56949420db274229313525f4e453fe1392d7383840e9a66f903067024d01"
+  },
+  "custom_sha256": "7397fecb86c5f405a720e6bbe79e04ffbd9acbc41c35944416b2f90a86f67548",
+  "cache_policy": "256 MiB flush outside each timing event",
+  "unequal_gate_up_scales": true,
+  "rows": [
+    {
+      "tokens": 753,
+      "kind": "rs",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 1259.52001953125,
+      "stage_us": {
+        "route": 8.192000389099121,
+        "gate": 880.6399536132812,
+        "down": 389.1200256347656,
+        "finalize": 14.336000442504883
+      },
+      "local_pairs": 770,
+      "max_expert_pairs": 34,
+      "correctness": {
+        "relative_l2": 0.0005586629267781973,
+        "worst_row": 0.0023478532675653696
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005553493974730372,
+        "worst_row": 0.0023315714206546545
+      }
+    },
+    {
+      "tokens": 753,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 978.9440307617188,
+      "stage_us": {
+        "route": 8.192000389099121,
+        "gate": 648.1920166015625,
+        "down": 354.3039855957031,
+        "finalize": 13.95199966430664
+      },
+      "local_pairs": 770,
+      "max_expert_pairs": 34,
+      "correctness": {
+        "relative_l2": 0.0005586629267781973,
+        "worst_row": 0.0023478532675653696
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005553493974730372,
+        "worst_row": 0.0023315714206546545
+      }
+    },
+    {
+      "tokens": 753,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 3934.2080078125,
+      "stage_us": {
+        "route": 9.2160005569458,
+        "gather": 13.791999816894531,
+        "gate": 2582.528076171875,
+        "down": 1345.5360107421875,
+        "finalize": 18.4320011138916
+      },
+      "local_pairs": 770,
+      "max_expert_pairs": 34,
+      "correctness": {
+        "relative_l2": 0.0005586593761108816,
+        "worst_row": 0.0023478532675653696
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005553493974730372,
+        "worst_row": 0.0023315714206546545
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "rs",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 3503.10400390625,
+      "stage_us": {
+        "route": 9.2160005569458,
+        "gate": 2516.9921875,
+        "down": 882.68798828125,
+        "finalize": 40.959999084472656
+      },
+      "local_pairs": 2922,
+      "max_expert_pairs": 107,
+      "correctness": {
+        "relative_l2": 0.0005572669324465096,
+        "worst_row": 0.0021600008476525545
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005707005620934069,
+        "worst_row": 0.002643800340592861
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 2352.1279296875,
+      "stage_us": {
+        "route": 10.239999771118164,
+        "gate": 1683.4559326171875,
+        "down": 661.4720458984375,
+        "finalize": 43.007999420166016
+      },
+      "local_pairs": 2922,
+      "max_expert_pairs": 107,
+      "correctness": {
+        "relative_l2": 0.0005572669324465096,
+        "worst_row": 0.0021600008476525545
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005707005620934069,
+        "worst_row": 0.002643800340592861
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 4217.85595703125,
+      "stage_us": {
+        "route": 10.239999771118164,
+        "gather": 47.104000091552734,
+        "gate": 2742.27197265625,
+        "down": 1437.6959228515625,
+        "finalize": 43.007999420166016
+      },
+      "local_pairs": 2922,
+      "max_expert_pairs": 107,
+      "correctness": {
+        "relative_l2": 0.0005572931841015816,
+        "worst_row": 0.0021600008476525545
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005707055679522455,
+        "worst_row": 0.002643800340592861
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "rs",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 14431.263671875,
+      "stage_us": {
+        "route": 14.336000442504883,
+        "gate": 10721.2802734375,
+        "down": 3961.88818359375,
+        "finalize": 192.5439910888672
+      },
+      "local_pairs": 16189,
+      "max_expert_pairs": 530,
+      "correctness": {
+        "relative_l2": 0.0005627381033264101,
+        "worst_row": 0.0030206108931452036
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005510768969543278,
+        "worst_row": 0.0028074102010577917
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 9804.83203125,
+      "stage_us": {
+        "route": 13.984000205993652,
+        "gate": 6898.68798828125,
+        "down": 2847.743896484375,
+        "finalize": 192.5439910888672
+      },
+      "local_pairs": 16189,
+      "max_expert_pairs": 530,
+      "correctness": {
+        "relative_l2": 0.0005627381033264101,
+        "worst_row": 0.0030206108931452036
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005510768969543278,
+        "worst_row": 0.0028074102010577917
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "uniform",
+      "total_us": 18072.544921875,
+      "stage_us": {
+        "route": 16.384000778198242,
+        "gather": 210.94400024414062,
+        "gate": 11758.591796875,
+        "down": 6503.42431640625,
+        "finalize": 198.65599060058594
+      },
+      "local_pairs": 16189,
+      "max_expert_pairs": 530,
+      "correctness": {
+        "relative_l2": 0.0005627170321531594,
+        "worst_row": 0.0030206108931452036
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005510638002306223,
+        "worst_row": 0.0028074102010577917
+      }
+    }
+  ]
+}

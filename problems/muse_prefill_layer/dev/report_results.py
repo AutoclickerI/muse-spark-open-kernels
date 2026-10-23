@@ -22,8 +22,8 @@ for f in sorted((root/'runs/muse_prefill_layer').glob('*.json')):
    if not m:continue
    name,us=m.group(1),float(m.group(2))
    if name=='total':st['total']=us;continue
-   if any(s in name for s in ['Marlin','moe_gemm','_dequant','deep_gemm','_swiglu','_combine','_gather_norm','_pre_expert_norm','_post_expert','act_and_mul','combine_tiled','gather_tiled','humming']):kind='experts'
-   elif 'flash::' in name or '_gather_cache' in name:kind='attention'
+   if any(s in name for s in ['Marlin','moe_gemm','_dequant','deep_gemm','_swiglu','_combine','_gather_norm','_pre_expert_norm','_post_expert','act_and_mul','combine_tiled','gather_tiled','humming','canonical::grouped','_canonical_plan','_canonical_pairs','_canonical_finalize']):kind='experts'
+   elif 'flash::' in name or '_gather_cache' in name or '_attn_fp8' in name:kind='attention'
    elif name.startswith('nvjet') or name.startswith('ampere') or 'gemm' in name:kind='dense'
    else:kind='glue'
    st[kind]+=us

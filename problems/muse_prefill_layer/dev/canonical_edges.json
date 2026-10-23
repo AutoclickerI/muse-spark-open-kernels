@@ -1,0 +1,220 @@
+[
+  {
+    "T": 8,
+    "routes": "zero",
+    "reader": "pipeline",
+    "seed": 913,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 8,
+    "routes": "zero",
+    "reader": "pipeline",
+    "seed": 914,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 8,
+    "routes": "zero",
+    "reader": "grouped",
+    "seed": 913,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 8,
+    "routes": "zero",
+    "reader": "grouped",
+    "seed": 914,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 8,
+    "routes": "all8",
+    "reader": "pipeline",
+    "seed": 913,
+    "relative_l2": 0.0008298943284898996,
+    "worst_row": 0.001629677484743297
+  },
+  {
+    "T": 8,
+    "routes": "all8",
+    "reader": "pipeline",
+    "seed": 914,
+    "relative_l2": 0.0008254414424300194,
+    "worst_row": 0.0011971306521445513
+  },
+  {
+    "T": 8,
+    "routes": "all8",
+    "reader": "grouped",
+    "seed": 913,
+    "relative_l2": 0.0008298943284898996,
+    "worst_row": 0.001629677484743297
+  },
+  {
+    "T": 8,
+    "routes": "all8",
+    "reader": "grouped",
+    "seed": 914,
+    "relative_l2": 0.0008254414424300194,
+    "worst_row": 0.0011971306521445513
+  },
+  {
+    "T": 128,
+    "routes": "zero",
+    "reader": "pipeline",
+    "seed": 913,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 128,
+    "routes": "zero",
+    "reader": "pipeline",
+    "seed": 914,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 128,
+    "routes": "zero",
+    "reader": "grouped",
+    "seed": 913,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 128,
+    "routes": "zero",
+    "reader": "grouped",
+    "seed": 914,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 128,
+    "routes": "all8",
+    "reader": "pipeline",
+    "seed": 913,
+    "relative_l2": 0.000720800191629678,
+    "worst_row": 0.001647299388423562
+  },
+  {
+    "T": 128,
+    "routes": "all8",
+    "reader": "pipeline",
+    "seed": 914,
+    "relative_l2": 0.00076564826304093,
+    "worst_row": 0.0015734692569822073
+  },
+  {
+    "T": 128,
+    "routes": "all8",
+    "reader": "grouped",
+    "seed": 913,
+    "relative_l2": 0.0007207886083051562,
+    "worst_row": 0.001647299388423562
+  },
+  {
+    "T": 128,
+    "routes": "all8",
+    "reader": "grouped",
+    "seed": 914,
+    "relative_l2": 0.0007656506495550275,
+    "worst_row": 0.0015734692569822073
+  },
+  {
+    "T": 256,
+    "routes": "zero",
+    "reader": "pipeline",
+    "seed": 913,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 256,
+    "routes": "zero",
+    "reader": "pipeline",
+    "seed": 914,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 256,
+    "routes": "zero",
+    "reader": "grouped",
+    "seed": 913,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 256,
+    "routes": "zero",
+    "reader": "grouped",
+    "seed": 914,
+    "relative_l2": 0.0,
+    "worst_row": 0.0
+  },
+  {
+    "T": 256,
+    "routes": "all8",
+    "reader": "pipeline",
+    "seed": 913,
+    "relative_l2": 0.0007241656421683729,
+    "worst_row": 0.0016476683085784316
+  },
+  {
+    "T": 256,
+    "routes": "all8",
+    "reader": "pipeline",
+    "seed": 914,
+    "relative_l2": 0.0007849682006053627,
+    "worst_row": 0.001734376884996891
+  },
+  {
+    "T": 256,
+    "routes": "all8",
+    "reader": "grouped",
+    "seed": 913,
+    "relative_l2": 0.000724113080650568,
+    "worst_row": 0.0016476683085784316
+  },
+  {
+    "T": 256,
+    "routes": "all8",
+    "reader": "grouped",
+    "seed": 914,
+    "relative_l2": 0.0007849693647585809,
+    "worst_row": 0.001734376884996891
+  },
+  {
+    "T": 8,
+    "routes": "hot_raw_stages",
+    "reader": "grouped",
+    "inter": {
+      "relative_l2": 3.019675932591781e-05,
+      "worst_row": 5.115007297717966e-05
+    },
+    "down": {
+      "relative_l2": 0.00028555039898492396,
+      "worst_row": 0.00047977466601878405
+    }
+  },
+  {
+    "T": 8,
+    "routes": "hot_raw_stages",
+    "reader": "pipeline",
+    "inter": {
+      "relative_l2": 3.019675932591781e-05,
+      "worst_row": 5.115007297717966e-05
+    },
+    "down": {
+      "relative_l2": 0.00028555039898492396,
+      "worst_row": 0.00047977466601878405
+    }
+  }
+]

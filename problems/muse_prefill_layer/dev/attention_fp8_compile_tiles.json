@@ -1,0 +1,65 @@
+[
+  {
+    "bq": 16,
+    "bn": 128,
+    "group": 8,
+    "warps": 8,
+    "stages": 2,
+    "shared": 24576,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:255 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "bq": 16,
+    "bn": 128,
+    "group": 8,
+    "warps": 16,
+    "stages": 2,
+    "shared": 24576,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:128 STACK:128 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "bq": 16,
+    "bn": 128,
+    "group": 8,
+    "warps": 8,
+    "stages": 1,
+    "shared": 24576,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:255 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "bq": 8,
+    "bn": 128,
+    "group": 8,
+    "warps": 8,
+    "stages": 2,
+    "shared": 20480,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:200 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "bq": 8,
+    "bn": 256,
+    "group": 8,
+    "warps": 8,
+    "stages": 2,
+    "shared": 36864,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:255 STACK:240 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "bq": 16,
+    "bn": 256,
+    "group": 8,
+    "warps": 8,
+    "stages": 1,
+    "shared": 40960,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:255 STACK:424 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "bq": 8,
+    "bn": 128,
+    "group": 8,
+    "warps": 4,
+    "stages": 2,
+    "shared": 20480,
+    "resource": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _attn_fp8_kernel:\n  REG:255 STACK:320 SHARED:1024 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  }
+]

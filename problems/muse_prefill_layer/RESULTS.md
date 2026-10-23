@@ -1,6 +1,6 @@
 # Prefill experiments
 
-Report generated 2026-10-23T13:40:38+00:00. H200 numbers below come only from judge receipts; local GPU times are excluded.
+Report generated 2026-10-23T14:23:34+00:00. H200 numbers below come only from judge receipts; local GPU times are excluded.
 
 | Candidate | Check job | Status | Turn 1 | Turn 4 | First turn | Overall |
 |---|---|---|---:|---:|---:|---:|

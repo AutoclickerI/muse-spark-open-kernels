@@ -1,0 +1,193 @@
+{
+  "device": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "architecture": [
+    12,
+    0
+  ],
+  "note": "Local sm120 MMA.sync emulation, warm L2, not Hopper WGMMA timing.",
+  "source_hashes": {
+    "canonical_grouped.cu": "9a6cf19870486b459ac5ebfff05e2387a3d56bfbaa5607507995a01580938add",
+    "cand_rs.py": "57a847900abe9bc668e94fb281a115911ad161945e3c58d3b1a8efbb885d5dd2",
+    "cand_rs128.py": "58f9431be0be4b8d1da367f80606a654174621377f56c8e0db98e012a8dc9cd5"
+  },
+  "harness_sha256": "e4cd4c0b320afd3cd3ab47a94eb8a4ea6e4e880ff4bc0fd6d9035d83f6130a17",
+  "adapted_grouped_sha256": {
+    "rs128": "8c0e56949420db274229313525f4e453fe1392d7383840e9a66f903067024d01"
+  },
+  "custom_sha256": "7397fecb86c5f405a720e6bbe79e04ffbd9acbc41c35944416b2f90a86f67548",
+  "unequal_gate_up_scales": true,
+  "rows": [
+    {
+      "tokens": 753,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 642.3680419921875,
+      "stage_us": {
+        "route": 11.199999809265137,
+        "gate": 448.5119934082031,
+        "down": 189.9199981689453,
+        "finalize": 11.263999938964844
+      },
+      "local_pairs": 753,
+      "max_expert_pairs": 753,
+      "correctness": {
+        "relative_l2": 0.0005343559896573424,
+        "worst_row": 0.0018855490488931537
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0004885365488007665,
+        "worst_row": 0.002448205603286624
+      }
+    },
+    {
+      "tokens": 753,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 1178.464111328125,
+      "stage_us": {
+        "route": 12.543999671936035,
+        "gather": 9.407999992370605,
+        "gate": 765.9840087890625,
+        "down": 394.9440002441406,
+        "finalize": 8.288000106811523
+      },
+      "local_pairs": 753,
+      "max_expert_pairs": 753,
+      "correctness": {
+        "relative_l2": 0.0005343601806089282,
+        "worst_row": 0.0018855490488931537
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0004885403322987258,
+        "worst_row": 0.002448205603286624
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 1850.7200927734375,
+      "stage_us": {
+        "route": 9.727999687194824,
+        "gate": 1227.9039306640625,
+        "down": 578.5919799804688,
+        "finalize": 29.631999969482422
+      },
+      "local_pairs": 3012,
+      "max_expert_pairs": 3012,
+      "correctness": {
+        "relative_l2": 0.0005154768005013466,
+        "worst_row": 0.00266132946126163
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005073841894045472,
+        "worst_row": 0.0027959179133176804
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 3417.56787109375,
+      "stage_us": {
+        "route": 10.04800033569336,
+        "gather": 20.0,
+        "gate": 2075.16796875,
+        "down": 1268.7359619140625,
+        "finalize": 17.375999450683594
+      },
+      "local_pairs": 3012,
+      "max_expert_pairs": 3012,
+      "correctness": {
+        "relative_l2": 0.0005154418759047985,
+        "worst_row": 0.00266132946126163
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005073974025435746,
+        "worst_row": 0.0027959179133176804
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 8644.0966796875,
+      "stage_us": {
+        "route": 16.576000213623047,
+        "gate": 6417.087890625,
+        "down": 2488.287841796875,
+        "finalize": 180.5760040283203
+      },
+      "local_pairs": 16384,
+      "max_expert_pairs": 16384,
+      "correctness": {
+        "relative_l2": 0.0005115892854519188,
+        "worst_row": 0.0030134750995785
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005075769149698317,
+        "worst_row": 0.002900307299569249
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 15699.8720703125,
+      "stage_us": {
+        "route": 18.49599838256836,
+        "gather": 204.6719970703125,
+        "gate": 10352.5126953125,
+        "down": 5635.39208984375,
+        "finalize": 188.48001098632812
+      },
+      "local_pairs": 16384,
+      "max_expert_pairs": 16384,
+      "correctness": {
+        "relative_l2": 0.0005115866661071777,
+        "worst_row": 0.0030134750995785
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005075411172583699,
+        "worst_row": 0.002900307299569249
+      }
+    }
+  ],
+  "cache_policy": "warm L2, no flush"
+}

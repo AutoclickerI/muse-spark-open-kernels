@@ -1,0 +1,278 @@
+{
+  "device": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "architecture": [
+    12,
+    0
+  ],
+  "note": "Local sm120 MMA.sync emulation; not Hopper WGMMA timing.",
+  "source_hashes": {
+    "canonical_grouped.cu": "9a6cf19870486b459ac5ebfff05e2387a3d56bfbaa5607507995a01580938add",
+    "cand_rs.py": "57a847900abe9bc668e94fb281a115911ad161945e3c58d3b1a8efbb885d5dd2",
+    "cand_rs128.py": "58f9431be0be4b8d1da367f80606a654174621377f56c8e0db98e012a8dc9cd5"
+  },
+  "harness_sha256": "9d15f5b7acc2105164d0912a2ef321c42f58f24eb6965fd472235a5d4bbf2687",
+  "adapted_grouped_sha256": {
+    "rs": "e621b6ff8266a0f0e3b0c29d138c30013df5324efd8fa0800ad109b4c6dfb00b",
+    "rs128": "8c0e56949420db274229313525f4e453fe1392d7383840e9a66f903067024d01"
+  },
+  "custom_sha256": "7397fecb86c5f405a720e6bbe79e04ffbd9acbc41c35944416b2f90a86f67548",
+  "cache_policy": "256 MiB flush outside each timing event",
+  "unequal_gate_up_scales": true,
+  "rows": [
+    {
+      "tokens": 753,
+      "kind": "rs",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 700.416015625,
+      "stage_us": {
+        "route": 8.192000389099121,
+        "gate": 485.3760070800781,
+        "down": 204.79998779296875,
+        "finalize": 16.384000778198242
+      },
+      "local_pairs": 753,
+      "max_expert_pairs": 753,
+      "correctness": {
+        "relative_l2": 0.0005343559896573424,
+        "worst_row": 0.0018855490488931537
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0004885365488007665,
+        "worst_row": 0.002448205603286624
+      }
+    },
+    {
+      "tokens": 753,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 659.4559936523438,
+      "stage_us": {
+        "route": 8.192000389099121,
+        "gate": 460.79998779296875,
+        "down": 190.46400451660156,
+        "finalize": 16.384000778198242
+      },
+      "local_pairs": 753,
+      "max_expert_pairs": 753,
+      "correctness": {
+        "relative_l2": 0.0005343559896573424,
+        "worst_row": 0.0018855490488931537
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0004885365488007665,
+        "worst_row": 0.002448205603286624
+      }
+    },
+    {
+      "tokens": 753,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 1181.696044921875,
+      "stage_us": {
+        "route": 9.2160005569458,
+        "gather": 12.288000106811523,
+        "gate": 763.9039916992188,
+        "down": 407.552001953125,
+        "finalize": 16.384000778198242
+      },
+      "local_pairs": 753,
+      "max_expert_pairs": 753,
+      "correctness": {
+        "relative_l2": 0.0005343601806089282,
+        "worst_row": 0.0018855490488931537
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0004885403322987258,
+        "worst_row": 0.002448205603286624
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "rs",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 2580.47998046875,
+      "stage_us": {
+        "route": 10.239999771118164,
+        "gate": 1877.9840087890625,
+        "down": 706.2080078125,
+        "finalize": 38.9119987487793
+      },
+      "local_pairs": 3012,
+      "max_expert_pairs": 3012,
+      "correctness": {
+        "relative_l2": 0.0005154768005013466,
+        "worst_row": 0.00266132946126163
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005073841894045472,
+        "worst_row": 0.0027959179133176804
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 1865.72802734375,
+      "stage_us": {
+        "route": 10.239999771118164,
+        "gate": 1259.52001953125,
+        "down": 591.8719482421875,
+        "finalize": 38.9119987487793
+      },
+      "local_pairs": 3012,
+      "max_expert_pairs": 3012,
+      "correctness": {
+        "relative_l2": 0.0005154768005013466,
+        "worst_row": 0.00266132946126163
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005073841894045472,
+        "worst_row": 0.0027959179133176804
+      }
+    },
+    {
+      "tokens": 3012,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 3453.9521484375,
+      "stage_us": {
+        "route": 10.239999771118164,
+        "gather": 43.007999420166016,
+        "gate": 2153.471923828125,
+        "down": 1304.5760498046875,
+        "finalize": 40.959999084472656
+      },
+      "local_pairs": 3012,
+      "max_expert_pairs": 3012,
+      "correctness": {
+        "relative_l2": 0.0005154418759047985,
+        "worst_row": 0.00266132946126163
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005073974025435746,
+        "worst_row": 0.0027959179133176804
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "rs",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 12558.3359375,
+      "stage_us": {
+        "route": 16.384000778198242,
+        "gate": 9274.3681640625,
+        "down": 3458.048095703125,
+        "finalize": 190.49600219726562
+      },
+      "local_pairs": 16384,
+      "max_expert_pairs": 16384,
+      "correctness": {
+        "relative_l2": 0.0005115892854519188,
+        "worst_row": 0.0030134750995785
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005075769149698317,
+        "worst_row": 0.002900307299569249
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "rs128",
+      "fixed_n": 0,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 8607.775390625,
+      "stage_us": {
+        "route": 16.384000778198242,
+        "gate": 6093.82373046875,
+        "down": 2432.0322265625,
+        "finalize": 190.49600219726562
+      },
+      "local_pairs": 16384,
+      "max_expert_pairs": 16384,
+      "correctness": {
+        "relative_l2": 0.0005115892854519188,
+        "worst_row": 0.0030134750995785
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005075769149698317,
+        "worst_row": 0.002900307299569249
+      }
+    },
+    {
+      "tokens": 16384,
+      "kind": "pipeline128",
+      "fixed_n": 128,
+      "stages": 2,
+      "distribution": "hot",
+      "total_us": 15800.3193359375,
+      "stage_us": {
+        "route": 18.4320011138916,
+        "gather": 208.89599609375,
+        "gate": 10332.16015625,
+        "down": 5611.52001953125,
+        "finalize": 194.5600128173828
+      },
+      "local_pairs": 16384,
+      "max_expert_pairs": 16384,
+      "correctness": {
+        "relative_l2": 0.0005115866661071777,
+        "worst_row": 0.0030134750995785
+      },
+      "fresh_graph_vs_eager": {
+        "relative_l2": 0.0,
+        "worst_row": 0.0
+      },
+      "fresh_reference": {
+        "relative_l2": 0.0005075411172583699,
+        "worst_row": 0.002900307299569249
+      }
+    }
+  ]
+}

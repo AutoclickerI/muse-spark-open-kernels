@@ -1,12 +1,12 @@
 # Active prefill round
 
-Current snapshot: 2026-10-23T13:36:44+00:00. This file is rewritten by the receipt handler; experiment history is in runs receipts and RESULTS.md.
+Current snapshot: 2026-10-23T14:23:34+00:00. This file is rewritten by the receipt handler; experiment history is in runs receipts and RESULTS.md.
 
 Owner instructions: the two-failed-ideas stop condition was revoked. Do useful development while judge jobs run. Edit only this problem; the original no-commit hold remains. Keep accepted candidate sources immutable. Use tools/okc_run.py for every remote check/submit, with a note. Count accepted and waiting checks before sending; the external limit is20/day, resetting00:00UTC/09:00KST.
 
 Current submission.py: check82a4e50b54294a2a, 1.345393014x. SHA256 670b945489abc963b19ebe5581dae6be79dec35dffca6e5ce17035252ca15858. Last verified board: rank55, 1.2124x. Check performance and board performance are distinct; pending scored runs do not establish a new board result.
 
-Accepted this UTC day: 15/20 checks, 2/10 scored. Prefill check admission requests: 4. Accepted plus waiting checks: 19/20. Final integration status: awaiting component receipts. Missing component receipts: [9, 10, 11, 12, 13, 14, 15, 16, 17].
+Accepted this UTC day: 15/20 checks, 2/10 scored. Prefill check admission requests: 0. Accepted plus waiting checks: 15/20. Final integration status: awaiting component receipts. Missing component receipts: [9, 10, 11, 12, 13, 14, 15, 16, 17].
 
 Pending accepted jobs:
 - check 583a1b97cc544f53 (problems/muse_prefill_layer/cand_v10.py)
