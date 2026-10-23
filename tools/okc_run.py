@@ -26,6 +26,7 @@ answers the same source again with its earlier result, so this refuses source th
 """
 
 import argparse
+import ctypes
 import datetime
 import fcntl
 import hashlib
@@ -59,7 +60,9 @@ def okc_bin() -> str:
 
 
 def okc_json(*args: str):
-    proc = subprocess.run([okc_bin(), *args, "--json"], capture_output=True, text=True)
+    # dies with this process (PR_SET_PDEATHSIG), so a killed okc_run leaves no `okc status --wait` polling
+    proc = subprocess.run([okc_bin(), *args, "--json"], capture_output=True, text=True,
+                          preexec_fn=lambda: ctypes.CDLL(None).prctl(1, signal.SIGTERM))
     try:
         return json.loads(proc.stdout), proc
     except json.JSONDecodeError:
@@ -196,7 +199,8 @@ def send_in_turn(entry: dict, priority: float, send):
                 print(f"waiting for a judge slot: {len(live)} of our runs in flight (cap {CAP}), "
                       f"{len(ahead) - 1} other sends waiting", flush=True)
                 announced = True
-            block_until_change(live[0]["job_id"] if len(live) >= CAP else None)
+            # only the head of the queue watches the judge; the rest wake when the queue changes
+            block_until_change(live[0]["job_id"] if len(live) >= CAP and ahead and ahead[0][2] == me else None)
     finally:
         me.unlink(missing_ok=True)
         wake_waiters()

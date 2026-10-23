@@ -1,0 +1,532 @@
+{
+ "board": "muse_prefill_layer",
+ "call_id": "kc-53b79ddde4a048d5",
+ "cluster": "sfo3",
+ "content_hash": "d3c0f27292df12ecad299a0903fbb1458ad7f96e8956ee9be430b8a064bc112d",
+ "created_at": 1792754126.3713276,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792771170.8794847,
+ "id": "53b79ddde4a048d5",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/problems/muse_prefill_layer/profiles/cand_v12.53b79ddde4a048d5.log"
+ },
+ "payload_ref": "muse_prefill_layer/d3c0f27292df12ecad299a0903fbb1458ad7f96e8956ee9be430b8a064bc112d.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "b023c806840d9a0be71e887768b3bd414ad29978b94071d7d965af9f8cd976f0",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_prefill_layer/baseline.py": "87d95a0c4b78f0fd6c772436b959330ca45652b10e82dfc8add9acf0549227d4",
+    "problems/muse_prefill_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "problems/muse_prefill_layer/task.yml": "901aec1ab2767d7d76d851e526aab6b285a59cf425b9bae9e1da7047d33f9feb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "Traceback (most recent call last):\n  File \"/tmp/muse_prefill_layer-i9k2xror/run/worker.py\", line 458, in child_main\n    fn(state[\"data\"])\n  File \"/tmp/muse_prefill_layer-i9k2xror/run/worker.py\", line 415, in <lambda>\n    return functools.partial(lambda k, p, d: k(d, p), fn, state[\"prep\"])\n                                             ^^^^^^^\n  File \"/tmp/muse_prefill_layer-i9k2xror/run/submission.py\", line 559, in kernel_fn\n    moe = experts_tiled256(pooled, topk_w, slot_e, slot_pos, counts, st)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-i9k2xror/run/submission.py\", line 797, in experts_tiled256\n    combine_tiled_kernel[(T,)](y, rows, topk_w, st['post_expert'], out, D=D, BNC=256, num_warps=4)\n  File \"/opt/sglang/lib/python3.12/site-packages/triton/runtime/jit.py\", line 374, in <lambda>\n    return lambda *args, **kwargs: self.run(grid=grid, warmup=False, *args, **kwargs)\n                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/sglang/lib/python3.12/site-packages/triton/runtime/jit.py\", line 778, in run\n    launch_metadata = kernel.launch_metadata(grid, stream, *bound_args.values())\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/sglang/lib/python3.12/site-packages/triton/compiler/compiler.py\", line 496, in launch_metadata\n    self._init_handles()\n  File \"/opt/sglang/lib/python3.12/site-packages/triton/compiler/compiler.py\", line 479, in _init_handles\n    self.module, self.function, self.n_regs, self.n_spills, self.n_max_threads = driver.active.utils.load_binary(\n                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Triton Error [CUDA]: an illegal memory access was encountered\n[W1023 15:59:09.624883757 CUDAEvent.h:57] Warning: CUDA warning: an illegal memory access was encountered (function ~CUDAEvent)\n[W1023 15:59:09.624901781 CUDAEvent.h:57] Warning: CUDA warning: an illegal memory access was encountered (function ~CUDAEvent)\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 126.37,
+    "power.limit": 700,
+    "temperature.gpu": 35
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 134.8,
+    "power.limit": 700,
+    "temperature.gpu": 34
+   },
+   "node": "n-jilerexm7jzqtha3u5ugsjopko"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 2,
+    "baseline_prepare_pad": 1000960,
+    "copies": 2,
+    "error": null,
+    "event": "setup",
+    "first": "submission",
+    "prepare_pad": 8510464,
+    "prepare_s": 77.71209707,
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 0,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 300,
+     "seed": 2801548311617111428
+    },
+    "event": "test",
+    "index": 0,
+    "message": "update relative L2 error 3.378e-02 (worst row 9.006e-02) [bound 0.072]; attention input relative L2 error 2.194e-02 (worst row 4.773e-02) [bound 0.047]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 3000,
+     "layer": "full",
+     "page": 1,
+     "q_len": 753,
+     "seed": 2801618101431239230
+    },
+    "event": "test",
+    "index": 1,
+    "message": "update relative L2 error 6.665e-02 (worst row 1.184e-01) [bound 0.150]; attention input relative L2 error 4.343e-02 (worst row 8.267e-02) [bound 0.108]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 2500,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 753,
+     "seed": 2801687891245367033
+    },
+    "event": "test",
+    "index": 2,
+    "message": "update relative L2 error 6.802e-02 (worst row 1.304e-01) [bound 0.150]; attention input relative L2 error 4.420e-02 (worst row 9.468e-02) [bound 0.109]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 5000,
+     "dist": "outliers",
+     "layer": "full",
+     "q_len": 200,
+     "seed": 2801757681059494837
+    },
+    "event": "test",
+    "index": 3,
+    "message": "update relative L2 error 6.518e-02 (worst row 1.108e-01) [bound 0.150]; attention input relative L2 error 3.300e-02 (worst row 6.924e-02) [bound 0.081]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 4096,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 4096,
+     "seed": 2801827470873622642
+    },
+    "event": "test",
+    "index": 4,
+    "message": "update relative L2 error 4.832e-02 (worst row 1.386e-01) [bound 0.116]; attention input relative L2 error 3.156e-02 (worst row 8.357e-02) [bound 0.076]",
+    "status": "pass"
+   },
+   {
+    "baseline_ns": 1042976.0529659688,
+    "baseline_parent_ns": 1053487.9986662418,
+    "baseline_raw_ns": 1047072.0529556274,
+    "baseline_runs_ns": [
+     996288,
+     1104416,
+     1017856,
+     1055648,
+     1039872,
+     1054272
+    ],
+    "baseline_stats": {
+     "best_ns": 996288.001537323,
+     "err_ns": 15127.361010997034,
+     "mean_ns": 1044725.3485520681,
+     "runs": 6,
+     "std_ns": 37054.3156318154,
+     "worst_ns": 1104416.012763977
+    },
+    "best_ns": 828703.9995193481,
+    "case": {
+     "batch": 1,
+     "ctx": 80000,
+     "dist": "soft",
+     "layer": "sliding",
+     "load": "turn 1",
+     "page": 1,
+     "q_len": 753,
+     "repeats": 6,
+     "seed": 2808527293029896578,
+     "weight": 46
+    },
+    "err_ns": 10892.906831252873,
+    "event": "benchmark",
+    "event_median_ns": 839039.9813652039,
+    "flags": [],
+    "index": 0,
+    "mean_ns": 846501.3206005096,
+    "median_ns": 840518.8384094012,
+    "median_raw_ns": 839039.9813652039,
+    "outside_bursts_ns": [
+     831046.5,
+     828434.9,
+     827592.2
+    ],
+    "outside_ns": 827592.2,
+    "paired_ratio": 1.240871715546195,
+    "parent_ns": 845711.9886297733,
+    "parent_runs_ns": [
+     850272,
+     905248,
+     848224,
+     837152,
+     843200,
+     834304
+    ],
+    "ratios": [
+     1.18479,
+     1.22834,
+     1.21055,
+     1.27196,
+     1.24425,
+     1.27355
+    ],
+    "replay_overhead": {
+     "gate_ns": 297664.0041451901,
+     "one_ns": 5183.999892324209,
+     "overhead_ns": 4095.999989658594,
+     "parent_one_ns": 302688.00258636475,
+     "parent_two_ns": 304096.0133075714,
+     "two_ns": 6271.999794989824
+    },
+    "runs": 6,
+    "runs_ns": [
+     841536,
+     899872,
+     841536,
+     830816,
+     836544,
+     828704
+    ],
+    "speed_of_light_ns": 256950.95121536904,
+    "speedup": 1.240871715546195,
+    "speedup_of_medians": 1.249156920980132,
+    "status": "pass",
+    "std_ns": 26682.06355224672,
+    "worst_ns": 899872.0049858093
+   },
+   {
+    "baseline_ns": 1449472.0143266022,
+    "baseline_parent_ns": 1459552.007727325,
+    "baseline_raw_ns": 1453952.0144462585,
+    "baseline_runs_ns": [
+     1466624,
+     1493664,
+     1421856,
+     1417632,
+     1575008,
+     1441280
+    ],
+    "baseline_stats": {
+     "best_ns": 1417631.983757019,
+     "err_ns": 24138.887228323994,
+     "mean_ns": 1469344.0198898315,
+     "runs": 6,
+     "std_ns": 59127.95666797948,
+     "worst_ns": 1575008.0347061157
+    },
+    "best_ns": 1219007.968902588,
+    "case": {
+     "batch": 1,
+     "ctx": 80000,
+     "dist": "soft",
+     "layer": "full",
+     "load": "turn 1",
+     "page": 1,
+     "q_len": 753,
+     "repeats": 6,
+     "seed": 2808597082844024480,
+     "weight": 16
+    },
+    "err_ns": 30728.933517996196,
+    "event": "benchmark",
+    "event_median_ns": 1252240.002155304,
+    "flags": [],
+    "index": 1,
+    "mean_ns": 1273893.3165868123,
+    "median_ns": 1257425.4476788624,
+    "median_raw_ns": 1252240.002155304,
+    "outside_bursts_ns": [
+     1219315.8,
+     1217027.3,
+     1218244.75
+    ],
+    "outside_ns": 1217027.3,
+    "paired_ratio": 1.1527299825228186,
+    "parent_ns": 1258384.0070292354,
+    "parent_runs_ns": [
+     1293472,
+     1288096,
+     1228672,
+     1224960,
+     1420224,
+     1224832
+    ],
+    "ratios": [
+     1.13993,
+     1.16567,
+     1.16371,
+     1.1632,
+     1.11472,
+     1.18301
+    ],
+    "replay_overhead": {
+     "gate_ns": 298048.00171405077,
+     "one_ns": 5375.999957323074,
+     "overhead_ns": 4480.000119656324,
+     "parent_one_ns": 303391.9930458069,
+     "parent_two_ns": 304576.00951194763,
+     "two_ns": 6271.999794989824
+    },
+    "runs": 6,
+    "runs_ns": [
+     1287136,
+     1282016,
+     1222464,
+     1219360,
+     1413376,
+     1219008
+    ],
+    "speed_of_light_ns": 496692.6391911021,
+    "speedup": 1.1527299825228186,
+    "speedup_of_medians": 1.1616593030405473,
+    "status": "pass",
+    "std_ns": 75270.20745899787,
+    "worst_ns": 1413375.973701477
+   },
+   {
+    "baseline_ns": 3310016.040224582,
+    "baseline_parent_ns": 3318655.9854075313,
+    "baseline_raw_ns": 3314496.0403442383,
+    "baseline_runs_ns": [
+     3348768,
+     3202976,
+     3254208,
+     3308576,
+     3342624,
+     3320416
+    ],
+    "baseline_stats": {
+     "best_ns": 3202975.9883880615,
+     "err_ns": 23174.8233182603,
+     "mean_ns": 3296261.3503138223,
+     "runs": 6,
+     "std_ns": 56766.492008891015,
+     "worst_ns": 3348767.9958343506
+    },
+    "best_ns": 2320863.962173462,
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "soft",
+     "layer": "sliding",
+     "load": "turn 4",
+     "page": 1,
+     "q_len": 753,
+     "repeats": 6,
+     "seed": 2808666872658152383,
+     "weight": 46
+    },
+    "err_ns": 15442.59956308373,
+    "event": "benchmark",
+    "event_median_ns": 2329728.0073165894,
+    "flags": [],
+    "index": 2,
+    "mean_ns": 2350714.643796285,
+    "median_ns": 2352571.503354839,
+    "median_raw_ns": 2329728.0073165894,
+    "outside_bursts_ns": [
+     2328437.7647058824,
+     2382298.1764705884,
+     2500294.470588235
+    ],
+    "outside_ns": 2328437.7647058824,
+    "paired_ratio": 1.4069778688997965,
+    "parent_ns": 2335520.046763122,
+    "parent_runs_ns": [
+     2338288,
+     2330416,
+     2332752,
+     2411376,
+     2395056,
+     2325424
+    ],
+    "ratios": [
+     1.43696,
+     1.37762,
+     1.39883,
+     1.37517,
+     1.39901,
+     1.43151
+    ],
+    "replay_overhead": {
+     "gate_ns": 299664.00284320116,
+     "one_ns": 5375.999957323074,
+     "overhead_ns": 4480.000119656324,
+     "parent_one_ns": 305119.99130249023,
+     "parent_two_ns": 306015.9981250763,
+     "two_ns": 6271.999794989824
+    },
+    "runs": 6,
+    "runs_ns": [
+     2331808,
+     2326240,
+     2327648,
+     2407168,
+     2390560,
+     2320864
+    ],
+    "speed_of_light_ns": 1036277.2319514662,
+    "speedup": 1.4069778688997965,
+    "speedup_of_medians": 1.4235109674235475,
+    "status": "pass",
+    "std_ns": 37826.48923168158,
+    "worst_ns": 2407167.911529541
+   },
+   {
+    "baseline_ns": 4880879.992619157,
+    "baseline_parent_ns": 4889455.985510722,
+    "baseline_raw_ns": 4885071.9928741455,
+    "baseline_runs_ns": [
+     4930208,
+     4822272,
+     4880800,
+     4839776,
+     4895360,
+     4889344
+    ],
+    "baseline_stats": {
+     "best_ns": 4822271.823883057,
+     "err_ns": 16034.151864797006,
+     "mean_ns": 4876293.341318767,
+     "runs": 6,
+     "std_ns": 39275.49052704803,
+     "worst_ns": 4930208.206176758
+    },
+    "best_ns": 3858335.9718322754,
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "soft",
+     "layer": "full",
+     "load": "turn 4",
+     "page": 1,
+     "q_len": 753,
+     "repeats": 6,
+     "seed": 2808736662472280287,
+     "weight": 16
+    },
+    "err_ns": 9838.954276524531,
+    "event": "benchmark",
+    "event_median_ns": 3901696.0859298706,
+    "flags": [],
+    "index": 3,
+    "mean_ns": 3896789.3520991006,
+    "median_ns": 3907458.2084464817,
+    "median_raw_ns": 3901696.0859298706,
+    "outside_bursts_ns": [
+     3958014.4,
+     4054074.4,
+     4147876.1
+    ],
+    "outside_ns": 3958014.4,
+    "paired_ratio": 1.2491189239256602,
+    "parent_ns": 3907520.007574931,
+    "parent_runs_ns": [
+     3906336,
+     3918944,
+     3908704,
+     3884672,
+     3861984,
+     3928960
+    ],
+    "ratios": [
+     1.26449,
+     1.23229,
+     1.25062,
+     1.24762,
+     1.26907,
+     1.24598
+    ],
+    "replay_overhead": {
+     "gate_ns": 300000.0005122274,
+     "one_ns": 5280.000157654285,
+     "overhead_ns": 4192.00025498867,
+     "parent_one_ns": 305151.9989967346,
+     "parent_two_ns": 306528.0020236969,
+     "two_ns": 6368.0000603199005
+    },
+    "runs": 6,
+    "runs_ns": [
+     3899840,
+     3914048,
+     3903552,
+     3880032,
+     3858336,
+     3924928
+    ],
+    "speed_of_light_ns": 1992419.5081577352,
+    "speedup": 1.2491189239256602,
+    "speedup_of_medians": 1.2523091407546263,
+    "status": "pass",
+    "std_ns": 24100.417580059522,
+    "worst_ns": 3924927.9499053955
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 0,
+     "dist": "soft",
+     "layer": "full",
+     "load": "first turn",
+     "page": 1,
+     "q_len": 16384,
+     "repeats": 6,
+     "seed": 2808876242100536098,
+     "weight": 16
+    },
+    "error": "kernel_fn failed: RuntimeError: Triton Error [CUDA]: an illegal memory access was encountered",
+    "event": "benchmark",
+    "index": 4,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792771024.9440136,
+ "status": "done",
+ "team": "AutoclickerI"
+}
