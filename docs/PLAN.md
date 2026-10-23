@@ -3,7 +3,7 @@
 ## Status (2026-10-23 21:30 KST)
 - Kernel track day 1 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST.
 - Best H200 checks: proj 1.142x, attention 1.388x (1.384x on the board), MoE 1.535x, decode layer
-  1.143x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7 and prefill v3 are queued.
+  1.189x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7 and prefill v3 are queued.
 - Overall board at 19:30: about 1.19x time-weighted against about 1.38x for 50th place (FINDINGS "Boards").
   Decode layer and MoE carry about 80% of that weight.
 - Serving patch: Hopper gates #2/#4/#5, prefill row split, FA3 QK-norm/KV-store fusion, drafter fc split,
@@ -35,7 +35,7 @@ Step 3 dominates, since one result costs hours of wall time.
 | 1 | P1 | G1, G2 | MoE single-bank serving port: V6 tiles as the canonical bank plus a large-M path; replaces the two-bank v4 port | Patch holds one bank (`docs/reference/expert_layout.md`); layer tests and harness agreement pass | MoE lane | active |
 | 2 | P2 | G2, G1 | Prefill expert path at the first-turn 16K and turn-1 shapes; port the best into serving | H200 check above 1.345x; ported with agreement | prefill lane | active |
 | 3 | P3 | G1 | Serving levers: fused MoE finalize (#1), finalize in the all-reduce (#3), gate thresholds | Patch passes harness TP1/TP2 with drift no larger than stock-vs-stock | serving lane | active |
-| 4 | P4 | G3, G2 | Decode layer: integrate MoE V6, attention verify and the structural candidates; `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at the 09:00 KST reset | H200 check above 1.143x on the way to the 50th-place mix | decode lane | next: 09:00 KST checks |
+| 4 | P4 | G3, G2 | Decode layer: integrate MoE V6, attention verify and the structural candidates; `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at the 09:00 KST reset | H200 check above 1.189x on the way to the 50th-place mix | decode lane | next: 09:00 KST checks |
 | 5 | P5 | G2, G3 | Attention verify kernel (XQA-style q8 x G8, page-1 gathers) to beat FA3 on verify loads | Verify loads above 1.0x on H200; board above 1.384x | attention lane (Claude agent: Codex at capacity) | active |
 | 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x | proj lane | active |
 | 8 | P8 | G2 | H200 probes inside one diagnostic check: HBM concurrency, L2 hints, TMA, page-1 gather rate (`docs/reference/research_hw_lowlevel.md` "Probe plan") | Probe receipts in FINDINGS | probe lane | active |

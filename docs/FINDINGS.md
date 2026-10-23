@@ -73,6 +73,7 @@ Per-load speedups against SGLang from our checks. The per-shape tables are in `p
 | Attention hybrid (`4f8c41ef9e924ff4`) | 1.388x | 2.05, 1.65 / 2.09, 1.91 / 1.89, 1.95 | 0.99-1.01 at every verify load (it is FA3 there) | Custom q_len=1 kernel plus SGLang FA3 for q_len=8; scored 1.384x (`526f31018e2c4449`) |
 | Attention v2 (`51ad2ea9ec4f4724`) | 1.279x | sliding, full: 2.04, 1.68 / 2.04, 1.91 / 1.87, 1.96 | 0.93, 0.89 / 0.60, 0.88 / 0.67, 0.93 | Wins decode on fixed cost; loses verify to FA3 |
 | Attention v5 (`ced8d779b16f44a9`) | 1.262x | — | sliding verify 1.49 / 1.04 / 1.14; full verify loses | Sliding verify beats FA3; full verify doesn't |
+| Decode layer moe4 (`6fed72479ef6446f`) | 1.189x | 1.35, 1.33 / 1.25, 1.14 / 1.05, 1.02 | 1.49, 1.47 / 1.10, 1.09 / 1.03, 1.03 | v3 plus persistent MoE v4, FA3 attention; gains still shrink with batch |
 | Decode layer v3 (`2c112482e81745af`) | 1.143x | 1.25, 1.23 / 1.18, 1.10 / 1.03, 1.02 | 1.39, 1.35 / 1.06, 1.04 / 1.05, 1.03 | Gains shrink with batch; MoE and attention inside are older than V6 |
 | Prefill v3 (`82a4e50b54294a2a`) | 1.345x | — | turn 1 / turn 4 / first turn: 1.212 / 1.369 / 1.468 | Custom WGMMA grouped experts, 128-token tiles; Humming v6 1.328x close behind |
 | Proj tuned (`9294b3237c4f4e2d`) | 1.142x | router 1.68-2.27x; pooler/unpooler m=1 1.15/1.30x; qkv/o 1.02-1.04x | m=8: router 4.06x, pooler/unpooler 1.14/1.24x; m=128/256 all 0.98-1.00x | Per-shape tiles chosen from H200 sweeps; m>=128 stays at cuBLAS parity |
