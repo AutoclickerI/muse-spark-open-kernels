@@ -36,8 +36,8 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_attention_decode": 2,
-            "muse_prefill_layer": 2, "muse_bf16_proj": 3}
+sys.path.insert(0, str(REPO / "tools"))
+from okc_run import PRIORITY  # noqa: E402
 
 
 def sent_hashes() -> set:

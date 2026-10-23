@@ -1,22 +1,14 @@
 # okc: problem=muse_attention_decode
-"""Fused gated attention decode for Muse Spark Open (GQA 8, head_dim 64, FP8 E4M3 paged cache).
+"""Muse attention: incumbent q_len=1 plus eight-warp swap-AB q_len=8.
 
-One CUDA kernel (compiled with torch's load_inline):
-
-  attn_main     one CTA per (split of the cached keys, pair of KV heads, request). It normalizes
-                (and on sliding layers ropes) the request's queries itself, gathers its share of
-                the cache rows (page table -> 128-byte K and V rows, cp.async into a multistage
-                shared-memory ring), and runs QK^T and PV on tensor cores (mma.sync m16n8k16,
-                FP16 operands: FP8 keys/values widen exactly, queries stay FP16, FP32 accumulate)
-                with an online softmax. The last split also normalizes/ropes the block's new keys,
-                writes the new K/V to the FP8 cache and attends to them (causal inside the block).
-                Each CTA writes an unnormalized partial (O, running max, sum).
-  epilogue      the splits of a request form a thread-block cluster and merge their partials
-                through distributed shared memory (more clusters per request: a per-rank arrival
-                counter lets the last cluster merge theirs), then RMSNorm x sigmoid(gate).
-
-Every key is attended (the whole 2,048 window on sliding layers, the whole context on full
-layers); nothing is cached between calls; no host syncs, so it captures in a CUDA graph.
+For each KV head, all 64 query rows occupy MMA N and 128 gathered keys occupy
+M in 16-key subtiles. Raw FP8 QK uses m16n8k32; FP32 online softmax feeds either
+FP16 PV with exactly widened V, or FP8 P/raw V with packed matrix transposes.
+A 3/4/5-stage cp.async page-row gather has 32/48/64 KiB outstanding per CTA.
+Split-KV CTAs scale to the GPU SM count; the last arriving CTA merges FP32
+(max, sum, output), applies RMSNorm and sigmoid gate, and resets its counter.
+The eight causal new keys use a separate K32 tile. Every key is attended, with
+an exact 2048-token sliding window. No input-derived state survives the call.
 """
 
 from typing import TypedDict
@@ -1048,11 +1040,9 @@ DI void mma16(float (&c)[4],const uint32_t (&a)[4],uint32_t b0,uint32_t b1){
 // A 64-byte row is XOR-swizzled by 16-byte chunks. All four lanes of a row
 // issue adjacent global transactions; the shared permutation removes bank overlap.
 DI int off(int row,int col){return row*64+((col>>4)^((row&3)^((row>>2)&1)))*16+(col&15);}
-DI uint32_t word(const uint8_t* v,int r,int c){return *reinterpret_cast<const uint32_t*>(v+off(r,c));}
-DI uint8_t byte(const uint8_t* v,int r,int c){return v[off(r,c)];}
 DI int voff(int r,int c){return r*128+((c>>3)^(r&7))*16+(c&7)*2;}
-DI void widen(const uint8_t* v,uint8_t* vh){
- for(int i=threadIdx.x;i<KT*32;i+=128){int row=i/32,col=(i%32)*2;
+template<int TK> DI void widen(const uint8_t* v,uint8_t* vh){
+ for(int i=threadIdx.x;i<TK*32;i+=256){int row=i/32,col=(i%32)*2;
   uint16_t f=*reinterpret_cast<const uint16_t*>(v+off(row,col));
   *reinterpret_cast<uint32_t*>(vh+voff(row,col))=halfpair(f);
  }
@@ -1062,31 +1052,44 @@ DI void loadv(uint32_t (&a)[4],const uint8_t* v,int kt,int dt){
  uint32_t ptr=su(v+voff(kt*16+8*(mi>>1)+r,dt*16+8*(mi&1)));
  asm volatile("ldmatrix.sync.aligned.m8n8.x4.trans.shared.b16 {%0,%1,%2,%3},[%4];":"=r"(a[0]),"=r"(a[1]),"=r"(a[2]),"=r"(a[3]):"r"(ptr));
 }
-struct XS {uint32_t qb[2][2][2]; float o[4][2][4];float m[2][2],l[2][2];};
-template<bool P8>
+struct XS {uint32_t qb[1][2][2]; float o[4][1][4];float m[1][2],l[1][2];};
+template<int TK,bool P8>
 DI void tile(XS& st,const uint8_t* K,const uint8_t* V,int kp,int hi,int seq,int window,float scale,uint8_t* vh){
- if constexpr(!P8){widen(V,vh);__syncthreads();}
+ if constexpr(!P8){widen<TK>(V,vh);__syncthreads();}
  int lane=threadIdx.x&31,g=lane>>2,t=lane&3,w=threadIdx.x>>5;
- float s[KT/16][2][4];
+ float s[TK/16][1][4];
  #pragma unroll
- for(int kt=0;kt<KT/16;kt++){
+ for(int kt=0;kt<TK/16;kt++){
   #pragma unroll
-  for(int nt=0;nt<2;nt++)for(int e=0;e<4;e++)s[kt][nt][e]=0;
+  for(int nt=0;nt<1;nt++)for(int e=0;e<4;e++)s[kt][nt][e]=0;
   #pragma unroll
   for(int kk=0;kk<2;kk++){
-   uint32_t a[4]={word(K,kt*16+g,kk*32+4*t),word(K,kt*16+g+8,kk*32+4*t),word(K,kt*16+g,kk*32+16+4*t),word(K,kt*16+g+8,kk*32+16+4*t)};
+   uint32_t a[4];
+   uint32_t ka=su(K+off(kt*16+(lane&7)+8*((lane>>3)&1),kk*32+16*(lane>>4)));
+   asm volatile("ldmatrix.sync.aligned.m8n8.x4.shared.b16 {%0,%1,%2,%3},[%4];":"=r"(a[0]),"=r"(a[1]),"=r"(a[2]),"=r"(a[3]):"r"(ka));
    #pragma unroll
-   for(int nt=0;nt<2;nt++)mma8(s[kt][nt],a,st.qb[nt][kk][0],st.qb[nt][kk][1]);
+   for(int nt=0;nt<1;nt++)mma8(s[kt][nt],a,st.qb[nt][kk][0],st.qb[nt][kk][1]);
   }
  }
  #pragma unroll
- for(int nt=0;nt<2;nt++){
+ for(int nt=0;nt<1;nt++){
   #pragma unroll
   for(int e=0;e<2;e++){
    float mx=-INFINITY;
-   int query=w*16+nt*8+2*t+e,j=query/8;
+   int query=w*8+nt*8+2*t+e,j=query/8;
+   // The interior of a full/sliding split needs no per-score mask.
+   if(kp+TK<=hi && kp+TK<=seq && (!window || kp>=seq+8-window)){
    #pragma unroll
-   for(int kt=0;kt<KT/16;kt++){
+   for(int kt=0;kt<TK/16;kt++){
+    #pragma unroll
+    for(int rh=0;rh<2;rh++){
+     float z=s[kt][nt][rh*2+e]*scale;
+     s[kt][nt][rh*2+e]=z; mx=fmaxf(mx,z);
+    }
+   }
+   }else{
+   #pragma unroll
+   for(int kt=0;kt<TK/16;kt++){
     #pragma unroll
     for(int rh=0;rh<2;rh++){
      int key=kp+16*kt+g+8*rh;
@@ -1095,13 +1098,14 @@ DI void tile(XS& st,const uint8_t* K,const uint8_t* V,int kp,int hi,int seq,int 
      s[kt][nt][rh*2+e]=z; mx=fmaxf(mx,z);
     }
    }
+   }
    mx=fmaxf(mx,__shfl_xor_sync(0xffffffff,mx,4));mx=fmaxf(mx,__shfl_xor_sync(0xffffffff,mx,8));mx=fmaxf(mx,__shfl_xor_sync(0xffffffff,mx,16));
    float nm=fmaxf(st.m[nt][e],mx);
    // Empty partitions retain zero mass, including before their first valid key.
    float alpha=st.m[nt][e]==-INFINITY?0.f:ex(st.m[nt][e]-nm);
    float add=0;
    #pragma unroll
-   for(int kt=0;kt<KT/16;kt++)for(int rh=0;rh<2;rh++){
+   for(int kt=0;kt<TK/16;kt++)for(int rh=0;rh<2;rh++){
     float z=s[kt][nt][rh*2+e]; float p=z==-INFINITY?0.f:ex(z-nm);
     s[kt][nt][rh*2+e]=P8?p*256.f:p;add+=p;
    }
@@ -1113,10 +1117,10 @@ DI void tile(XS& st,const uint8_t* K,const uint8_t* V,int kp,int hi,int seq,int 
  }
  if constexpr(P8){
   #pragma unroll
-  for(int kt=0;kt<KT/32;kt++){
-   uint32_t pb[2][2];
+  for(int kt=0;kt<TK/32;kt++){
+   uint32_t pb[1][2];
    #pragma unroll
-   for(int nt=0;nt<2;nt++){
+   for(int nt=0;nt<1;nt++){
     #pragma unroll
     for(int half=0;half<2;half++){
      // Transpose each 8x8 probability panel in registers; join adjacent
@@ -1131,24 +1135,31 @@ DI void tile(XS& st,const uint8_t* K,const uint8_t* V,int kp,int hi,int seq,int 
    }
    #pragma unroll
    for(int dt=0;dt<4;dt++){
-    uint32_t a[4]={0,0,0,0};
+    uint32_t r[4],a[4];
+    uint32_t va=su(V+off(kt*32+(lane&7)+8*(lane>>3),dt*16));
+    asm volatile("ldmatrix.sync.aligned.m8n8.x4.trans.shared.b16 {%0,%1,%2,%3},[%4];":"=r"(r[0]),"=r"(r[1]),"=r"(r[2]),"=r"(r[3]):"r"(va));
     #pragma unroll
-    for(int i=0;i<4;i++){
-     a[0]|=(uint32_t)byte(V,kt*32+4*t+i,dt*16+g)<<(8*i);
-     a[1]|=(uint32_t)byte(V,kt*32+4*t+i,dt*16+g+8)<<(8*i);
-     a[2]|=(uint32_t)byte(V,kt*32+16+4*t+i,dt*16+g)<<(8*i);
-     a[3]|=(uint32_t)byte(V,kt*32+16+4*t+i,dt*16+g+8)<<(8*i);
+    for(int rh=0;rh<2;rh++){
+     int src=((g+8*rh)>>1)*4+((2*t)&3);
+     uint32_t b[4];
+     #pragma unroll
+     for(int i=0;i<4;i++){
+      uint32_t x=__shfl_sync(0xffffffff,r[i],src);
+      uint32_t y=__shfl_sync(0xffffffff,r[i],src+1);
+      b[i]=__byte_perm(x,y,(g&1)?0x7531:0x6420);
+     }
+     a[rh]=t<2?b[0]:b[1];a[rh+2]=t<2?b[2]:b[3];
     }
     #pragma unroll
-    for(int nt=0;nt<2;nt++)mma8(st.o[dt][nt],a,pb[nt][0],pb[nt][1]);
+    for(int nt=0;nt<1;nt++)mma8(st.o[dt][nt],a,pb[nt][0],pb[nt][1]);
    }
   }
  }else{
   #pragma unroll
-  for(int kt=0;kt<KT/16;kt++){
-   uint32_t pb[2][2];
+  for(int kt=0;kt<TK/16;kt++){
+   uint32_t pb[1][2];
    #pragma unroll
-   for(int nt=0;nt<2;nt++){
+   for(int nt=0;nt<1;nt++){
     #pragma unroll
     for(int half=0;half<2;half++){
      pb[nt][half]=transpose(hpack(s[kt][nt][half*2],s[kt][nt][half*2+1]));
@@ -1158,48 +1169,47 @@ DI void tile(XS& st,const uint8_t* K,const uint8_t* V,int kp,int hi,int seq,int 
    for(int dt=0;dt<4;dt++){
     uint32_t a[4];loadv(a,vh,kt,dt);
     #pragma unroll
-    for(int nt=0;nt<2;nt++)mma16(st.o[dt][nt],a,pb[nt][0],pb[nt][1]);
+    for(int nt=0;nt<1;nt++)mma16(st.o[dt][nt],a,pb[nt][0],pb[nt][1]);
    }
   }
  }
 }
 template<int ST,bool P8>
-__global__ __launch_bounds__(128,2) void xqa(XP p){
+__global__ __launch_bounds__(256,1) void xqa(XP p){
  extern __shared__ __align__(128) uint8_t sm[];
  uint8_t* sk=sm; uint8_t* sv=sk+ST*KB; uint8_t* nq=sv+ST*KB;
- uint8_t* nk=nq+4096;uint8_t* nv=nk+KB;uint8_t* vh=nv+KB;
+ uint8_t* nk=nq+4096;uint8_t* nv=nk+2048;uint8_t* vh=nv+2048;
  int tid=threadIdx.x,w=tid>>5,lane=tid&31,g=lane>>2,t=lane&3;
  int b=blockIdx.z,h=blockIdx.y,sp=blockIdx.x,seq=p.seq[b];bool last=sp==p.ns-1;
  int lo=p.window?max(0,seq-p.window+1):0;
  int chunk=((seq-lo+p.ns-1)/p.ns+KT-1)&~(KT-1);
  int begin=min(seq,lo+sp*chunk),end=min(seq,begin+chunk),ntiles=(end-begin+KT-1)/KT;
  const int* pt=p.pt+(long long)b*p.maxpages; long long rowbytes=p.hkv*64;
- int rows[ST][KT/32];
- auto load_rows=[&](int tileid,int slot){
+ int rows[KT/64];
+ auto load_rows=[&](int tileid){
   #pragma unroll
-  for(int rr=0;rr<KT/32;rr++){
-   int key=begin+tileid*KT+tid/4+rr*32;
-   rows[slot][rr]=(tileid<ntiles&&key<end)?pt[key>>p.lg]*p.ps+(key&(p.ps-1)):-1;
+  for(int rr=0;rr<KT/64;rr++){
+   int key=begin+tileid*KT+tid/4+rr*64;
+   rows[rr]=(tileid<ntiles&&key<end)?pt[key>>p.lg]*p.ps+(key&(p.ps-1)):-1;
   }
  };
- #pragma unroll
- for(int st=0;st<ST;st++)load_rows(st,st);
  auto issue=[&](int tileid,int slot){
   #pragma unroll
-  for(int rr=0;rr<KT/32;rr++){
-   int row=tid/4+rr*32,col=(tid&3)*16;
-   int physical=rows[slot][rr];bool valid=physical>=0;physical=valid?physical:0;
+  for(int rr=0;rr<KT/64;rr++){
+   int row=tid/4+rr*64,col=(tid&3)*16;
+   int physical=rows[rr];bool valid=physical>=0;physical=valid?physical:0;
    cp(sk+slot*KB+off(row,col),p.kc+physical*rowbytes+h*64+col,valid);
    cp(sv+slot*KB+off(row,col),p.vc+physical*rowbytes+h*64+col,valid);
   }
  };
  #pragma unroll
- for(int stage=0;stage<ST-1;stage++){issue(stage,stage);commit();}
+ for(int stage=0;stage<ST-1;stage++){load_rows(stage);issue(stage,stage);commit();}
+ load_rows(ST-1);
  // Every split prepares its own Q; only the final split writes new KV, with
  // no race against the historical row gathers (their upper bound is seq).
  #pragma unroll
- for(int r=0;r<16;r++){
-  int query=w+4*r,j=query/8,head=h*8+query%8;
+ for(int r=0;r<8;r++){
+  int query=w+8*r,j=query/8,head=h*8+query%8;
   const __nv_bfloat16* ptr=p.qkv+(long long)(b*8+j)*p.stride+head*64+2*lane;
   __nv_bfloat162 q=*reinterpret_cast<const __nv_bfloat162*>(ptr);
   float x=__bfloat162float(q.x),y=__bfloat162float(q.y),z=rsqrtf(wsum(x*x+y*y)/64.f+1e-5f);x*=z;y*=z;
@@ -1207,11 +1217,11 @@ __global__ __launch_bounds__(128,2) void xqa(XP p){
   *reinterpret_cast<uint16_t*>(nq+query*64+2*lane)=fp8pair(x,y);
  }
  if(last){
-  for(int i=tid;i<2*KB/16;i+=128)*reinterpret_cast<uint4*>(nk+i*16)=make_uint4(0,0,0,0);
+  for(int i=tid;i<4096/16;i+=256)*reinterpret_cast<uint4*>(nk+i*16)=make_uint4(0,0,0,0);
   __syncthreads();
   #pragma unroll
-  for(int r=0;r<4;r++){
-   int row=w+4*r,j=row/2,isv=row&1;
+  for(int r=0;r<2;r++){
+   int row=w+8*r,j=row/2,isv=row&1;
    auto q=*reinterpret_cast<const __nv_bfloat162*>(p.qkv+(long long)(b*8+j)*p.stride+(p.hq+isv*p.hkv+h)*64+2*lane);
    float x=__bfloat162float(q.x),y=__bfloat162float(q.y);
    if(!isv){float z=rsqrtf(wsum(x*x+y*y)/64.f+1e-5f);x*=z;y*=z;
@@ -1223,11 +1233,11 @@ __global__ __launch_bounds__(128,2) void xqa(XP p){
  }
  __syncthreads();XS st;
  #pragma unroll
- for(int nt=0;nt<2;nt++){
+ for(int nt=0;nt<1;nt++){
   #pragma unroll
   for(int kk=0;kk<2;kk++){
-   st.qb[nt][kk][0]=*reinterpret_cast<uint32_t*>(nq+(w*16+nt*8+g)*64+kk*32+4*t);
-   st.qb[nt][kk][1]=*reinterpret_cast<uint32_t*>(nq+(w*16+nt*8+g)*64+kk*32+16+4*t);
+   st.qb[nt][kk][0]=*reinterpret_cast<uint32_t*>(nq+(w*8+nt*8+g)*64+kk*32+4*t);
+   st.qb[nt][kk][1]=*reinterpret_cast<uint32_t*>(nq+(w*8+nt*8+g)*64+kk*32+16+4*t);
   }
   for(int e=0;e<2;e++){st.m[nt][e]=-INFINITY;st.l[nt][e]=0;}
   for(int dt=0;dt<4;dt++)for(int e=0;e<4;e++)st.o[dt][nt][e]=0;
@@ -1236,16 +1246,16 @@ __global__ __launch_bounds__(128,2) void xqa(XP p){
  for(int i=0;i<ntiles;i++){
   wait<ST-2>();__syncthreads();
   issue(i+ST-1,(i+ST-1)%ST);commit();
-  load_rows(i+ST,(i+ST)%ST);
-  tile<P8>(st,sk+(i%ST)*KB,sv+(i%ST)*KB,begin+i*KT,end,seq,p.window,scale,vh);
+  load_rows(i+ST);
+  tile<KT,P8>(st,sk+(i%ST)*KB,sv+(i%ST)*KB,begin+i*KT,end,seq,p.window,scale,vh);
   __syncthreads();
  }
  wait<0>();__syncthreads();
- if(last)tile<P8>(st,nk,nv,seq,seq+8,seq,p.window,scale,vh);
+ if(last)tile<32,P8>(st,nk,nv,seq,seq+8,seq,p.window,scale,vh);
  float* po=p.partial+((long long)(b*p.hkv+h)*p.ns+sp)*64*68;
  #pragma unroll
- for(int nt=0;nt<2;nt++)for(int e=0;e<2;e++){
-  int query=w*16+nt*8+2*t+e;
+ for(int nt=0;nt<1;nt++)for(int e=0;e<2;e++){
+  int query=w*8+nt*8+2*t+e;
   for(int dt=0;dt<4;dt++){
    po[query*68+dt*16+g]=st.o[dt][nt][e];po[query*68+dt*16+g+8]=st.o[dt][nt][e+2];
   }
@@ -1256,7 +1266,7 @@ __global__ __launch_bounds__(128,2) void xqa(XP p){
  __syncthreads();if(!elected)return;
  // Last-CTA reduction in FP32. Every producer publishes O,m,l before its arrival.
  const volatile float* all=p.partial+(long long)(b*p.hkv+h)*p.ns*64*68;
- for(int query=w;query<64;query+=4){
+ for(int query=w;query<64;query+=8){
   float mx=-INFINITY;
   for(int s=lane;s<p.ns;s+=32)mx=fmaxf(mx,all[(long long)s*64*68+query*68+64]);
   #pragma unroll
@@ -1292,16 +1302,18 @@ __global__ __launch_bounds__(128,2) void xqa(XP p){
  __syncthreads();if(tid==0)atomicExch(p.count+b*p.hkv+h,0);
 }
 template<int ST,bool P8>void go(XP p,cudaStream_t stream){
- constexpr int smem=ST*2*KB+4096+4*KB;
+ constexpr int smem=ST*2*KB+8192+(P8?0:2*KB);
  cudaFuncSetAttribute(xqa<ST,P8>,cudaFuncAttributeMaxDynamicSharedMemorySize,smem);
- xqa<ST,P8><<<dim3(p.ns,p.hkv,p.batch),128,smem,stream>>>(p);
+ xqa<ST,P8><<<dim3(p.ns,p.hkv,p.batch),256,smem,stream>>>(p);
 }
 }
 void xforward(int64_t qkv,int64_t pos,int64_t loc,int64_t pt,int64_t seq,int64_t kc,int64_t vc,int64_t ks,int64_t vs,int64_t freq,int64_t part,int64_t count,int64_t out,int64_t batch,int64_t hq,int64_t hkv,int64_t stride,int64_t maxpages,int64_t ps,int64_t window,int64_t ns,double scale,int64_t stages,int64_t p8,int64_t stream){
  XP p{};p.qkv=(const __nv_bfloat16*)qkv;p.pos=(const int64_t*)pos;p.loc=(const int64_t*)loc;p.pt=(const int*)pt;p.seq=(const int*)seq;p.kc=(uint8_t*)kc;p.vc=(uint8_t*)vc;p.ks=(const float*)ks;p.vs=(const float*)vs;p.freq=(const float*)freq;p.partial=(float*)part;p.count=(int*)count;p.out=(__nv_bfloat16*)out;
  p.batch=batch;p.hq=hq;p.hkv=hkv;p.stride=stride;p.maxpages=maxpages;p.ps=ps;while((1<<p.lg)<ps)p.lg++;p.window=window;p.ns=ns;p.scale=scale;
  auto s=(cudaStream_t)stream;
- if(p8)go<3,true>(p,s);else go<3,false>(p,s);
+ if(stages==5){if(p8)go<5,true>(p,s);else go<5,false>(p,s);}
+ else if(stages==4){if(p8)go<4,true>(p,s);else go<4,false>(p,s);}
+ else{if(p8)go<3,true>(p,s);else go<3,false>(p,s);}
  auto err=cudaGetLastError();if(err!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(err));
 }
 
@@ -1317,15 +1329,15 @@ _DECODE_FN = kernel_fn
 _XEXT = None
 # Diagnostic knobs are fixed before capture; all input-derived work stays in the call.
 X_STAGES = 3
-X_P8 = True
-X_WAVES = 2
+X_P8 = False
+X_WAVES = 4
 
 def _xext():
     global _XEXT
     if _XEXT is None:
         major, minor = torch.cuda.get_device_capability()
         arch = f'{major}{minor}'
-        _XEXT = load_inline(name=f'muse_xqa_k128_sm{arch}', cpp_sources=X_CPP, cuda_sources=X_CUDA,
+        _XEXT = load_inline(name=f'muse_xqa_w8_sm{arch}', cpp_sources=X_CPP, cuda_sources=X_CUDA,
             functions=['xforward'], extra_cuda_cflags=['-O3', '-std=c++20', '--expt-relaxed-constexpr',
                 f'-gencode=arch=compute_{arch},code=sm_{arch}', '-lineinfo'], verbose=False)
     return _XEXT
@@ -1350,6 +1362,134 @@ def _xqa_verify(data):
 def kernel_fn(data: Inputs) -> torch.Tensor:
     if data['config']['q_len']==8:
         global X_WAVES
-        X_WAVES=1 if data['config']['window'] else 4
+        X_WAVES=1 if data['config']['window'] else (8 if data['config']['batch']>=32 else 4)
         return _xqa_verify(data)
     return _DECODE_FN(data)
+
+
+_W8_PLAN = {}
+_W8_READY = False
+
+def _w8_set(v):
+    global X_P8, X_STAGES, X_WAVES
+    X_P8, X_STAGES, X_WAVES = v
+
+def _w8_input(batch, window):
+    device = torch.device('cuda')
+    gen = torch.Generator(device=device).manual_seed(1717 + batch + window)
+    maxpages = (86000 if batch > 1 else 80000) + 8
+    if batch > 1:
+        seq = (80000 * (1 + .075 * (2 * torch.rand(batch, device=device, generator=gen) - 1))).to(torch.int32)
+    else:
+        seq = torch.full((batch,), 80000, device=device, dtype=torch.int32)
+    pt = torch.randperm(batch * maxpages, device=device, generator=gen).to(torch.int32).view(batch, maxpages)
+    positions = (seq.long()[:, None] + torch.arange(8, device=device)).reshape(-1)
+    loc = torch.gather(pt.long(), 1, positions.view(batch, 8)).reshape(-1)
+    shape = (batch * maxpages, 1, 2, 64)
+    k = torch.randn(shape, dtype=torch.bfloat16, device=device, generator=gen).to(torch.float8_e4m3fn)
+    v = torch.randn(shape, dtype=torch.bfloat16, device=device, generator=gen).to(torch.float8_e4m3fn)
+    qkv = torch.randn((batch, 8, 36 * 64), device=device, dtype=torch.bfloat16, generator=gen)
+    cfg = dict(batch=batch, q_len=8, num_q_heads=16, num_kv_heads=2, head_dim=64,
+               page_size=1, window=window, rope_theta=10000. if window else None,
+               qk_scale_factor=5.473, sm_scale=.125, kv_scale=1.)
+    return dict(qkv=qkv, positions=positions, cache_loc=loc, cache_seqlens=seq + 8,
+                cu_seqlens_q=torch.arange(0, batch * 8 + 1, 8, device=device, dtype=torch.int32),
+                scheduler_metadata=None, k_cache=k, v_cache=v, k_scale=torch.ones((), device=device),
+                v_scale=torch.ones((), device=device), page_table=pt, seq_lens=seq, config=cfg)
+
+def _w8_diagnose(hopper):
+    import statistics
+    # Both wider rings are real kernels on Hopper. sm_120 can run stage 3.
+    stages = (3, 4, 5) if hopper else (3,)
+    variants = [(p8, st, waves) for p8 in (False, True)
+                for st in stages for waves in (1, 2, 4, 8)]
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+    flush = torch.empty(1 << 28, device='cuda', dtype=torch.uint8)
+    # Serving priorities first in the diagnostic output as well as the queue.
+    for batch, window in ((16, 0), (32, 0), (16, 2048), (32, 2048), (1, 0), (1, 2048)):
+        data = _w8_input(batch, window)
+        timing = []
+        for variant in variants + (['fa3'] if hopper else []):
+            if variant == 'fa3':
+                fn = _fa3_verify
+            else:
+                _w8_set(variant)
+                fn = _xqa_verify
+            fn(data)
+            torch.cuda.synchronize()
+            graph = torch.cuda.CUDAGraph()
+            with torch.cuda.graph(graph):
+                out = fn(data)
+            times = []
+            for _ in range(7):
+                flush.sum()
+                start.record()
+                graph.replay()
+                end.record()
+                end.synchronize()
+                times.append(start.elapsed_time(end) * 1000)
+            timing.append((statistics.median(times), variant))
+            del graph, out
+        timing.sort(key=lambda r: r[0])
+        selected = timing[0][1]
+        if hopper:
+            # Validate the best custom variant against FA3 with swapped order,
+            # rather than selecting from a noisy sequential sweep alone.
+            best = next(v for us, v in timing if v != 'fa3')
+            _w8_set(best)
+            pair_graphs = []
+            for fn in (_xqa_verify, _fa3_verify):
+                fn(data)
+                torch.cuda.synchronize()
+                graph = torch.cuda.CUDAGraph()
+                with torch.cuda.graph(graph):
+                    out = fn(data)
+                pair_graphs.append((graph, out))
+            pairs = [[], []]
+            for rep in range(10):
+                for side in ((0, 1) if rep % 2 == 0 else (1, 0)):
+                    flush.sum()
+                    start.record()
+                    pair_graphs[side][0].replay()
+                    end.record()
+                    end.synchronize()
+                    pairs[side].append(start.elapsed_time(end) * 1000)
+            ratios = [(pairs[1][r] + pairs[1][r+1]) / (pairs[0][r] + pairs[0][r+1])
+                      for r in range(0, 10, 2)]
+            speedup = statistics.median(ratios)
+            selected = best if speedup > 1.03 else 'fa3'
+            print('XQA_W8_PAIR', batch, window, best, 'custom_us', round(statistics.median(pairs[0]), 2),
+                  'fa3_us', round(statistics.median(pairs[1]), 2), 'speedup', round(speedup, 4), flush=True)
+            del pair_graphs, graph, out
+        _W8_PLAN[(batch, bool(window))] = selected
+        print('XQA_W8_DIAG', batch, window, 'us', [(round(us, 2), v) for us, v in timing], flush=True)
+        print('XQA_W8_PLAN', batch, window, selected, flush=True)
+        del data
+    del flush
+    torch.cuda.synchronize()
+
+def kernel_fn(data: Inputs) -> torch.Tensor:
+    cfg = data['config']
+    if cfg['q_len'] == 1:
+        return _DECODE_FN(data)
+    variant = _W8_PLAN.get((cfg['batch'], bool(cfg['window'])))
+    if variant == 'fa3':
+        return _fa3_verify(data)
+    if variant is not None:
+        _w8_set(variant)
+    else:
+        _w8_set((False, 3, 1 if cfg['window'] else 4))
+    return _xqa_verify(data)
+
+def prepare():
+    global _W8_READY
+    if not _W8_READY:
+        # The local screen exercises every shape with the real custom kernel;
+        # dev/verify_xqa_w8_glue.py forces the Hopper-only selection branches.
+        if torch.cuda.get_device_capability()[0] == 9:
+            _w8_diagnose(True)
+        _W8_READY = True
+
+if torch.cuda.is_available():
+    prepare()

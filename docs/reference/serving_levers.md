@@ -73,8 +73,8 @@ Every path checks `has_multicast` and falls back to stock.
 
 - **MoE V8 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
   `muse_spark_fp4_moe.py`). V8 combines the V6 occupancy-sized resident grid with V7's
-  incremental tile iterator on the canonical V6 bank. Native V8 handles verify/decode rows;
-  the grouped reader handles 753-16K prefill rows from the same bank. Both expose dense expert
+  incremental tile iterator on the canonical V6 bank. Native V8 handles small decode/verify rows;
+  the grouped reader handles verify M>=128 and 753-16K prefill rows from the same bank. Both expose dense expert
   rows to the shared finalize interface. The layer screen is 0.0065-0.0070 relative L2
   (problem tolerance 0.015); H200 V8 runtime and full-node memory remain unverified.
 
@@ -85,9 +85,9 @@ Every path checks `has_multicast` and falls back to stock.
   finds the longest repeated 2-8-gram in each request's committed history, scores the available suffix length, and
   appends it only after the per-request recent DFlash acceptance prefix; the estimate and fixed-shape candidate
   buffers are CUDA-graph safe. `SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM=0` disables it for A/B. The 30-request chain
-  fixture produced exactly 220 tokens: mean acceptance rose from 2.9544 (stock) to 3.0067 (patch), +0.0522
-  tokens or +1.77% overall (c=1: 2.9892 -> 2.9344; c=4: 2.9457 -> 3.0247). The 10-request screen was +10.1%
-  at c=1 and +6.4% at c=4, so the full-run gain is the result to use. Margin output agreement stayed exact;
+  fixture produced exactly 220 tokens: mean acceptance rose from 2.9544 (stock) to 2.9743 (patch), +0.0199
+  tokens or +0.67% overall (c=1: 2.9892 -> 2.8653; c=4: 2.9457 -> 3.0015). The smaller full-run gain is the
+  result to use; the 10-request screen was noisier. Margin output agreement stayed exact;
   random near-tie agreement passed the distributional gate. Local sm_120 uses FlashInfer; H200 FA3 custom-mask
   drafting and held-out agentic conversations remain unverified.
 

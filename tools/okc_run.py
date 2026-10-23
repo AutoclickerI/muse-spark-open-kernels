@@ -46,10 +46,10 @@ PENDING = REPO / "runs" / "pending"
 WAITING = REPO / "runs" / "waiting"
 LOCK = REPO / "runs" / ".dispatch.lock"
 CAP = int(os.environ.get("OKC_INFLIGHT", "4"))  # our runs at the judge at once; 0 sends at once
-# Lower goes first; scored runs (-1) before every check. The decode layer decides the overall board
-# (CEILING, "Overall board weight"), MoE next.
-PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_attention_decode": 2, "muse_prefill_layer": 2,
-            "muse_bf16_proj": 3}
+# Lower goes first; scored runs (-1) before every check. The order is docs/PLAN.md "Ranked work"
+# (overall-board weight, FINDINGS "Boards").
+PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_bf16_proj": 2,
+            "muse_attention_decode": 3, "muse_prefill_layer": 4}
 JOB_KEYS = ("job_id", "job", "id")
 OKC_MODE = {"check": "check", "submit": "run"}  # our mode -> okc's job mode
 

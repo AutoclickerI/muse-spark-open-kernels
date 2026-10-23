@@ -43,9 +43,9 @@ budget before dense weights, drafter, workspaces and graph pools. The patch keep
 `MuseSpark1xFp4Experts._forward_marlin` uses the custom state for every token count when
 it is present. `muse_spark_moe.py` selects:
 
-- V8 fused for `M <= 256` (the scored verify sizes are 8, 128 and 256);
-- the canonical grouped reader for larger prefill batches, including 753, 3012 and
-  16384 tokens.
+- V8 fused for small decode/verify shapes (`M < 128`);
+- the canonical grouped reader for `M >= 128`, including verify 128/256 and prefill
+  753, 3012 and 16384 tokens.
 
 Both readers consume `w13p`/`w2p` and the same gate/up/W2 global-scale sidecars. The grouped
 reader performs histogram, plan and scatter routing, then grouped WGMMA/MMA over the V6
