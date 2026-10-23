@@ -280,27 +280,54 @@ and stock-vs-patch, so they were not used as the gate. First divergence was at
 position 0 and token agreement was 0.0 for both comparisons.
 
 The workload teacher-forced receipt forced the same stock-A continuation over
-all 30 requests on each tree. Aggregating all three stock pairs (90 paired
-requests) versus all three stock-patch pairs (90 paired requests) gave:
+all 30 requests on each tree. The current default-off patch run is
+`g28-random-default-off`; its current-tree teacher-forced receipt is
+`g29-lp-patch-current`. Aggregating all three stock pairs (90 paired requests)
+versus all three stock-patch pairs (90 paired requests) gave:
 
 | comparison | mean logprob drift p10 / p50 / p90 | max-token drift p10 / p50 / p90 |
 |---|---:|---:|
 | stock-vs-stock | 0.1532 / 0.1822 / 0.1966 | 0.5369 / 0.6840 / 0.7953 |
-| stock-vs-patch | 0.1736 / 0.1884 / 0.1998 | 0.5996 / 0.6970 / 0.8062 |
+| stock-vs-patch | 0.1729 / 0.1869 / 0.1983 | 0.6129 / 0.7155 / 0.8105 |
 
 The distribution gate passes: patch token-agreement p10 is at least stock's,
 patch mean-drift p50 is below stock's p90, and patch max-drift p50 is below
-stock's p90. Receipts are `g22-agreement-metric.json`, the `g20-lp-stock-*`
-directories, and `g21-lp-patch` under the harness results root.
+stock's p90. The aggregate receipt is `g29-agreement-metric.json`; the three
+stock forced receipts are `g20-lp-stock-*` and the current patch receipt is
+`g29-lp-patch` under the harness results root.
 
 ### Suffix drafting acceptance screen (2026-10-24, sm_120)
 
-The current patch was run on the 30-request `chain` fixture with the fixed
-eight-token DFlash block. All responses were exactly 220 tokens. Mean accepted
-draft length was `2.9544` for stock and `2.9743` for the patch, a `+0.0199`
-token (`+0.67%`) weighted gain; concurrency 1 was `2.9892 -> 2.8653` and
-concurrency 4 was `2.9457 -> 3.0015`. The corresponding output metric was
+The old permissive selector was run on the 30-request `chain` fixture with the
+fixed eight-token DFlash block. All responses were exactly 220 tokens. Mean
+accepted draft length was `2.9544` for stock and `2.9743` for the patch, a
+`+0.0199` token (`+0.67%`) weighted gain; concurrency 1 was `2.9892 -> 2.8653`
+and concurrency 4 was `2.9457 -> 3.0015`. The corresponding output metric was
 stock-vs-patch token-agreement p50 `0.1000` versus stock-vs-stock p50 `0.1068`.
+
+The current selector is opt-in (`SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM=0` by
+default). It requires a four-token suffix and, after two bootstrap attempts,
+requires the suffix hit EMA to beat the DFlash tail EMA. The debug trace
+(`SGLANG_DFLASH_SUFFIX_TRACE_ACCEPTANCE=1`) directly records accepted lengths:
+the current trace selected 1/152 c=1 blocks and 3/609 c=4 blocks. At c=1 the
+raw mean was 2.033 (2.013 on unselected blocks; the one selected block accepted
+5); at c=4 it was 1.956 (1.960 unselected; selected-block mean 1). The chain
+fixture has no useful repeated suffixes, so it cannot prove a
+positive model gain; the default stays off until a realistic workload screen
+shows a non-regressing c=1 result.
+
+For a model-independent opportunity estimate, `suffix_hit_rate.py` constructs
+13 turns of repeated tool output, code, and file excerpts, tokenizes them with
+the Muse tiny tokenizer, and evaluates every 8-token block in the 220-token
+continuations. Hit rates for exact prefixes of length 1..8 are
+`6.87%, 6.87%, 6.87%, 6.87%, 3.30%, 0%, 0%, 0%`; the expected tail after
+DFlash tau `4.16` is `0.0277`, using
+`tau_est = 4.16 + mean(max(0, longest_correct_prefix - 4.16))`, giving tau
+`4.1877`. With stock held at tau `4.16`, `sim.serving` scores
+practical+sharded-pooler at `3.1500x`; the estimated tau scores `3.1567x`
+(`+0.22%`). The fixture's tokenizer is the
+synthetic `wN` vocabulary, so this is an opportunity estimate rather than a
+logit acceptance result.
 
 ### Agreement and teacher-forced logprob results (2026-10-23, sm_120)
 

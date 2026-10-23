@@ -86,14 +86,15 @@ Every path checks `has_multicast` and falls back to stock.
   requires a four-token match plus a suffix EMA that beats DFlash's tail EMA after two bootstrap attempts. All
   buffers and choices are fixed-shape CUDA-graph operations; `SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM=1` enables the
   experiment and `SGLANG_DFLASH_SUFFIX_TRACE_ACCEPTANCE=1` records the matched A/B block lengths. On the chain
-  fixture, the trace selected 0/456 c=1 blocks and 5/1,811 c=4 blocks. The raw per-block accept trace was
-  2.004 versus 2.205 at c=1 and 1.967 versus 1.957 at c=4 (DFlash-only versus selective splice); request-level
-  metadata in those same c=1 runs was 2.987 versus 3.211 accepted tokens per verify block. The earlier 2.865 c=1
-  result is therefore cold-run variance rather than broad suffix displacement. A 30-request run with the old permissive selector had
+  fixture, the current trace selected 1/152 c=1 blocks and 3/609 c=4 blocks. Raw per-block means were 2.033 at c=1
+  (2.013 on unselected blocks; the one selected block accepted 5) and 1.956 at c=4 (1.960 on unselected blocks;
+  selected-block mean 1). The earlier 2.865 c=1 result is therefore cold-run variance rather than broad suffix
+  displacement. A 30-request run with the old permissive selector had
   2.9544 -> 2.9743 (+0.67%) overall but 2.9892 -> 2.8653 at c=1; therefore the default is now off and no gain
   is claimed on the random-word fixture. Margin output agreement remains exact. A model-independent 13-turn,
   220-token synthetic tool/code trace tokenized with the Muse tiny tokenizer gives hit rates (k=1..8) of
-  6.87%, 6.87%, 6.87%, 6.87%, 3.30%, 0%, 0%, 0%; the expected tail beyond DFlash tau=4.16 is 0.0277 tokens,
+  6.87%, 6.87%, 6.87%, 6.87%, 3.30%, 0%, 0%, 0%; using
+  `tau_est = 4.16 + mean(max(0, longest_correct_prefix - 4.16))`, the expected tail is 0.0277 tokens,
   implying tau=4.1877 and a `sim.serving` practical+sharded-pooler score of 3.1567x versus 3.1500x (+0.22%).
   The tokenizer is synthetic (`wN` vocabulary), so this is an opportunity estimate, not model-logit yield.
   Local sm_120 uses FlashInfer; H200 FA3 custom-mask drafting and held-out agentic conversations remain

@@ -78,20 +78,23 @@ index 902f242..256f9af 100644
              _cluster_size_for_shape(hidden_size, m)
              if supports_clusters and not pre_norm_bf16
 diff --git a/python/sglang/srt/environ.py b/python/sglang/srt/environ.py
-index e6cf0dd..b9ff240 100644
+index e6cf0dd..ecfa3c8 100644
 --- a/python/sglang/srt/environ.py
 +++ b/python/sglang/srt/environ.py
-@@ -1414,6 +1414,9 @@ class Envs:
+@@ -1414,6 +1414,12 @@ class Envs:
      SGLANG_OPT_FUSED_KDA_VERIFY = EnvBool(False)
      # A/B: keep the DFLASH draft greedy head eager (not folded in-graph).
      SGLANG_DFLASH_EAGER_DRAFT_SAMPLER = EnvBool(False)
-+    # Draft repeated request suffixes when their observed per-request score is
-+    # better than the recent DFlash acceptance estimate.
-+    SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM = EnvBool(True)
++    # Draft repeated request suffixes only when explicitly enabled; the tiny
++    # random-word fixture has no matches and cannot establish a positive gain.
++    SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM = EnvBool(False)
++    # Debug-only A/B trace of accepted lengths.  The suffix-off trace is the
++    # DFlash-only would-be baseline; suffix-on records the realized splice.
++    SGLANG_DFLASH_SUFFIX_TRACE_ACCEPTANCE = EnvBool(False)
      SGLANG_ENABLE_LILICORR_SAMPLING = EnvBool(False)
      SGLANG_LILICORR_REQUIRE_SAMPLING = EnvBool(False)
      SGLANG_RAGGED_VERIFY_MODE = EnvStr("static")
-@@ -1766,6 +1769,8 @@ class Envs:
+@@ -1766,6 +1772,8 @@ class Envs:
      # Use the experimental FlyDSL split-K paged GQA kernel for Muse Spark's
      # short-window decode layers on gfx950.
      SGLANG_MUSE_FLYDSL_DECODE = EnvBool(False)
@@ -101,7 +104,7 @@ index e6cf0dd..b9ff240 100644
          False, deprecated_name="SGLANG_USE_TRITON_ROUTER_SUM"
      )
 diff --git a/python/sglang/srt/layers/muse_spark_fp4_moe.py b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-index 97b1474..21ae296 100644
+index 97b1474..d256e83 100644
 --- a/python/sglang/srt/layers/muse_spark_fp4_moe.py
 +++ b/python/sglang/srt/layers/muse_spark_fp4_moe.py
 @@ -162,12 +162,8 @@ class MuseSpark1xFp4Experts(nn.Module):
@@ -124,7 +127,7 @@ index 97b1474..21ae296 100644
          ).view(num_tokens, topk, size_k), local_topk_ids
  
 +    def _use_muse_v4(self, num_tokens: int) -> bool:
-+        # The V6 reader handles verify/decode rows; its grouped reader handles
++        # The V9 reader handles verify/decode rows; its grouped reader handles
 +        # the large prefill rows. Both consume the same canonical bank.
 +        return getattr(self, "_muse_v4_state", None) is not None
 +
@@ -254,11 +257,11 @@ index 97b1474..21ae296 100644
          from flashinfer.fused_moe import trtllm_fp4_block_scale_routed_moe
 diff --git a/python/sglang/srt/layers/muse_spark_moe.py b/python/sglang/srt/layers/muse_spark_moe.py
 new file mode 100644
-index 0000000..6914e58
+index 0000000..623ce05
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_spark_moe.py
-@@ -0,0 +1,1117 @@
-+"""Serving kernel for Muse Spark routed NVFP4 experts.
+@@ -0,0 +1,1140 @@
++"""Serving kernel for Muse Spark routed NVFP4 experts (V9 native + canonical grouped wide path).
 +
 +This file is a drop-in source boundary: a newer kernel can replace this module
 +
@@ -309,7 +312,7 @@ index 0000000..6914e58
 +constexpr int NT2 = 256;
 +constexpr int NCW = 8;                 // consumer warps
 +constexpr int NCT = NCW * 32;          // consumer threads
-+constexpr int NTHR = NCT + 32;         // + producer warp
++constexpr int NTHR = NCT;             // thread 0 also prefetches
 +constexpr uint32_t DQ_MASK = 0x81C081C0u;
 +constexpr uint32_t LA_MASK = 0x60306030u;
 +// persistent counters
@@ -373,6 +376,12 @@ index 0000000..6914e58
 +  o[7] = rotr(W, 30) & DQ_MASK;
 +}
 +
++struct PrefetchState {
++  volatile int index, stage, phase, pass;
++  volatile int e, nb, m, mb, me;
++  volatile uint64_t pol_first, pol_normal;
++};
++
 +struct Route {        // shared-memory routing summary
 +  int n[NLOC];        // pairs per local expert
 +  int off[NLOC];      // first sorted position
@@ -382,6 +391,7 @@ index 0000000..6914e58
 +  int c1, c2;         // m-chunk sizes
 +  int run[NLOC];
 +  int wc[NCW][NLOC];
++  PrefetchState pre;
 +};
 +
 +// unit -> (expert, token block, m tile); order (e, m-chunk, block, m)
@@ -424,6 +434,40 @@ index 0000000..6914e58
 +    }
 +    m = mb;
 +  }
++}
++
++
++__device__ __forceinline__ void prefetch_one(
++    Route* rt, int total, int first, int a2, int nstage,
++    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb,
++    const uint8_t* w13p, const uint8_t* w2p) {
++  auto& p = rt->pre;
++  int idx = p.index;
++  if (idx >= total) return;
++  int st=p.stage, ph=p.phase, pass=p.pass;
++  int e=p.e, nb=p.nb, m=p.m, mb=p.mb, me=p.me;
++  const int ntile=pass?NT2:NT1;
++  const int cc=pass?rt->c2:rt->c1;
++  const uint8_t* base=pass?w2p:w13p;
++  const uint8_t* src=base+(static_cast<size_t>(e)*ntile+m)*TILE_BYTES;
++  const uint64_t pol=rt->nblk[e]>1?p.pol_normal:p.pol_first;
++  mbar_wait(&emptyb[st], ph^1u);
++  mbar_expect_tx(&fullb[st], TILE_BYTES);
++  bulk_g2s(stages+st*TILE_BYTES, src, TILE_BYTES, &fullb[st], pol);
++  ++idx;
++  if (idx < total) {
++    if (idx == first) {
++      pass=1;
++      decode_unit(a2,rt->us2,rt->nblk,rt->c2,NT2,e,nb,m);
++      mb=(m/rt->c2)*rt->c2;
++      me=min(NT2,mb+rt->c2);
++    } else {
++      advance_unit(e,nb,m,mb,me,rt->nblk,cc,ntile);
++    }
++  }
++  if (++st == nstage) { st=0; ph^=1; }
++  p.index=idx; p.stage=st; p.phase=ph; p.pass=pass;
++  p.e=e; p.nb=nb; p.m=m; p.mb=mb; p.me=me;
 +}
 +
 +template <int NT>
@@ -492,38 +536,25 @@ index 0000000..6914e58
 +  const int a1 = static_cast<int>((long long)U1 * c / G), b1 = static_cast<int>((long long)U1 * (c + 1) / G);
 +  const int a2 = static_cast<int>((long long)U2 * c / G), b2 = static_cast<int>((long long)U2 * (c + 1) / G);
 +
-+  if (warp == NCW) {  // ---------------- producer ----------------
-+    if (lane == 0) {
-+      uint64_t pol_first, pol_normal;
-+      asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;" : "=l"(pol_first));
-+      asm volatile("createpolicy.fractional.L2::evict_normal.b64 %0, 1.0;" : "=l"(pol_normal));
-+      int st = 0;
-+      uint32_t ph = 0;
-+      for (int pass = 0; pass < 2; ++pass) {
-+        const int ua = pass ? a2 : a1, ub = pass ? b2 : b1;
-+        const int* us = pass ? rt->us2 : rt->us1;
-+        const int cc = pass ? rt->c2 : rt->c1;
-+        const int ntile = pass ? NT2 : NT1;
-+        const uint8_t* base = pass ? w2p : w13p;
-+        int e=0, nb=0, m=0, mb=0, me=0;
-+        if (ua < ub) {
-+          decode_unit(ua, us, rt->nblk, cc, ntile, e, nb, m);
-+          mb = (m / cc) * cc;
-+          me = min(ntile, mb + cc);
-+        }
-+        for (int u = ua; u < ub; ++u) {
-+          const uint8_t* src = base + (static_cast<size_t>(e) * ntile + m) * TILE_BYTES;
-+          mbar_wait(&emptyb[st], ph ^ 1u);
-+          mbar_expect_tx(&fullb[st], TILE_BYTES);
-+          // a tile read by several token blocks stays in L2 for its neighbours; others stream through
-+          bulk_g2s(stages + st * TILE_BYTES, src, TILE_BYTES, &fullb[st], rt->nblk[e] > 1 ? pol_normal : pol_first);
-+          if (++st == nstage) { st = 0; ph ^= 1u; }
-+          advance_unit(e, nb, m, mb, me, rt->nblk, cc, ntile);
-+        }
-+      }
++  const int first_count=b1-a1, total_count=first_count+b2-a2;
++  if (tid == 0) {
++    uint64_t pf,pn;
++    asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;" : "=l"(pf));
++    asm volatile("createpolicy.fractional.L2::evict_normal.b64 %0, 1.0;" : "=l"(pn));
++    rt->pre.pol_first=pf; rt->pre.pol_normal=pn;
++    rt->pre.index=0; rt->pre.stage=0; rt->pre.phase=0;
++    if (total_count) {
++      int e,nb,m;
++      const int pass=first_count?0:1;
++      const int cc=pass?rt->c2:rt->c1, ntile=pass?NT2:NT1;
++      decode_unit(pass?a2:a1,pass?rt->us2:rt->us1,rt->nblk,cc,ntile,e,nb,m);
++      rt->pre.pass=pass; rt->pre.e=e; rt->pre.nb=nb; rt->pre.m=m;
++      rt->pre.mb=(m/cc)*cc; rt->pre.me=min(ntile,(m/cc)*cc+cc);
 +    }
-+    return;
++    for (int i=0;i<nstage;++i)
++      prefetch_one(rt,total_count,first_count,a2,nstage,stages,fullb,emptyb,w13p,w2p);
 +  }
++  __syncthreads();
 +
 +  // ---------------- consumers: deterministic token lists ----------------
 +  for (int base = 0; base < npairs; base += NCT) {
@@ -655,6 +686,7 @@ index 0000000..6914e58
 +#pragma unroll
 +      for (int j = 0; j < NT; ++j) reinterpret_cast<float4*>(rp)[j] = make_float4(acc[j][0], acc[j][1], acc[j][2], acc[j][3]);
 +      bar_consumers();
++      if (tid == 0) prefetch_one(rt,total_count,first_count,a2,nstage,stages,fullb,emptyb,w13p,w2p);
 +      const float* rb = red + buf * NCW * 32 * RED;
 +      if (pass == 0) {
 +        const float sc_gate = gs13_gate[e] * 256.f;
@@ -722,8 +754,6 @@ index 0000000..6914e58
 +  bar_consumers();
 +
 +  // ---------------- combine: item = (token, half of the columns) ----------------
-+  // Dense mode hands the producer rows to the shared finalize kernel. Keep the
-+  // routing/GEMM/barrier work identical, but avoid computing a second reduction.
 +  if (!dense_mode) for (int it = c; it < 2 * M; it += G) {
 +    const int t = it >> 1;
 +    const int c0 = (it & 1) * 2048 + tid * 8;
@@ -769,15 +799,13 @@ index 0000000..6914e58
 +  C10_CUDA_CHECK(cudaGetDevice(&dev));
 +  C10_CUDA_CHECK(cudaDeviceGetAttribute(&optin, cudaDevAttrMaxSharedMemoryPerBlockOptin, dev));
 +  C10_CUDA_CHECK(cudaFuncSetAttribute(moe_fused<1>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin));
-+  C10_CUDA_CHECK(cudaFuncSetAttribute(moe_fused<2>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin));
 +  return optin;
 +}
 +
 +int64_t smem_needed(int64_t nt, int64_t nstage, int64_t M) { return (int64_t)smem_bytes(nt, nstage, M); }
 +int64_t resident_blocks(int64_t nt, int64_t nstage, int64_t M) {
 +  int n;
-+  if (nt == 1) C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_fused<1>, NTHR, smem_bytes(nt,nstage,M)));
-+  else C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_fused<2>, NTHR, smem_bytes(nt,nstage,M)));
++  C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_fused<1>, NTHR, smem_bytes(nt,nstage,M)));
 +  return n;
 +}
 +
@@ -805,12 +833,10 @@ index 0000000..6914e58
 +  auto* op = reinterpret_cast<__nv_bfloat16*>(out.data_ptr());
 +#define LAUNCH(NTV) do {                                                                                       \
 +  int dm = static_cast<int>(dense_mode), m = M, ls = static_cast<int>(local_start), ns = static_cast<int>(nstage); \
-+  void* args[] = {&xp, &idp, &twp, &pp, &w13pp, &w2pp, &ggp, &gup, &g2p, &ip, &yp, &ssp, &posp, &cntp,       \
-+      &op, &dm, &m, &ls, &ns};                                                                                    \
-+  C10_CUDA_CHECK(cudaLaunchCooperativeKernel(reinterpret_cast<void*>(moe_fused<NTV>),                          \
-+      dim3(static_cast<unsigned>(grid)), dim3(NTHR), args, smem, stream));                                     \
++  void* args[] = {&xp, &idp, &twp, &pp, &w13pp, &w2pp, &ggp, &gup, &g2p, &ip, &yp, &ssp, &posp, &cntp, &op, &dm, &m, &ls, &ns}; \
++  C10_CUDA_CHECK(cudaLaunchCooperativeKernel(reinterpret_cast<void*>(moe_fused<NTV>), dim3(static_cast<unsigned>(grid)), dim3(NTHR), args, smem, stream)); \
 +} while (0)
-+  if (nt == 1) LAUNCH(1); else LAUNCH(2);
++  LAUNCH(1);
 +#undef LAUNCH
 +  C10_CUDA_KERNEL_LAUNCH_CHECK();
 +}
@@ -839,7 +865,7 @@ index 0000000..6914e58
 +
 +        tag = hashlib.sha1(CUDA_SRC.encode()).hexdigest()[:12]
 +        _MOD = load_inline(
-+            name=f"muse_moe_w4a16_v8_{tag}",
++            name=f"muse_moe_w4a16_v9_{tag}",
 +            cpp_sources=CPP_SRC,
 +            cuda_sources=CUDA_SRC,
 +            functions=["max_smem_attr", "smem_needed", "resident_blocks", "run"],
@@ -920,7 +946,7 @@ index 0000000..6914e58
 +
 +
 +GROUPED_CUDA_SRC = r"""
-+// Canonical V6 36 KiB expert tiles -> exact BF16 register-A WGMMA.
++// Canonical V9 36 KiB expert tiles -> exact BF16 register-A WGMMA.
 +// No persistent converted or alternative-layout weight bank.
 +#include <torch/extension.h>
 +#include <ATen/cuda/CUDAContext.h>
@@ -1247,7 +1273,7 @@ index 0000000..6914e58
 +    return dense, torch.where(valid, flat, torch.full_like(flat, -1))
 +
 +
-+def _v8_call(data, state, *, return_dense=False):
++def _v9_call(data, state, *, return_dense=False):
 +    cfg = data["config"]
 +    assert cfg["local_count"] == NLOC and cfg["d_hidden"] == H and cfg["d_expert"] == H
 +    mod = state["mod"]
@@ -1261,7 +1287,7 @@ index 0000000..6914e58
 +    while nstage > 1 and mod.smem_needed(nt, nstage, m) > mod.smem_optin:
 +        nstage -= 1
 +    if mod.smem_needed(nt, nstage, m) > mod.smem_optin:
-+        raise ValueError(f"batch {m} too large for fused V8 shared-memory routing")
++        raise ValueError(f"batch {m} too large for fused V9 shared-memory routing")
 +    dev = x.device
 +    inter = torch.empty((npairs, H), dtype=torch.bfloat16, device=dev)
 +    y = torch.zeros((npairs, H), dtype=torch.float32, device=dev)
@@ -1317,8 +1343,8 @@ index 0000000..6914e58
 +    m = data["hidden_states"].shape[0]
 +    dense, local_map = (
 +        _grouped_call(data, state)
-+        if m >= 128
-+        else _v8_call(data, state, return_dense=return_dense)
++        if m >= 256
++        else _v9_call(data, state, return_dense=return_dense)
 +    )
 +    if return_dense:
 +        return dense, local_map
@@ -1333,10 +1359,10 @@ index 0000000..6914e58
 +
 +
 +def prepare_layer(layer):
-+    """Pack raw ModelOpt tensors into the single canonical V8 bank."""
++    """Pack raw ModelOpt tensors into the single canonical V9 bank."""
 +    post_norm = getattr(layer, "post_expert_norm", None)
 +    if post_norm is None or getattr(post_norm, "weight", None) is None:
-+        raise RuntimeError("Muse V8 needs the loaded post-expert norm weight")
++        raise RuntimeError("Muse V9 needs the loaded post-expert norm weight")
 +    weights = {
 +        "w13": layer.gate_up_proj.detach(),
 +        "w13_sf": layer.gate_up_proj_weight_scale.detach(),
@@ -1352,12 +1378,12 @@ index 0000000..6914e58
 +        "post_norm_w": post_norm.weight.detach(),
 +    }
 +    if weights["w13"].shape[0] != NLOC:
-+        raise ValueError(f"Muse V8 expects 32 local experts, got {weights['w13'].shape[0]}")
++        raise ValueError(f"Muse V9 expects 32 local experts, got {weights['w13'].shape[0]}")
 +    return prepare(weights, local_start=layer.local_expert_offset)
 +
 +
 +def run_layer(state, hidden_states, topk_scores, topk_ids, *, return_dense=False):
-+    """Graph-capturable V8/grouped invocation used by MuseSpark1xFp4Experts."""
++    """Graph-capturable V9/grouped invocation used by MuseSpark1xFp4Experts."""
 +    cfg = {
 +        "bs": hidden_states.shape[0],
 +        "d_hidden": hidden_states.shape[1],
@@ -1376,7 +1402,7 @@ index 0000000..6914e58
 +        return_dense=return_dense,
 +    )
 diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-index f6d450a..7285a57 100644
+index f6d450a..1e4dbc1 100644
 --- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 +++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 @@ -2,10 +2,12 @@
@@ -1424,7 +1450,7 @@ index f6d450a..7285a57 100644
 +
 +        layer._muse_v4_state = prepare_layer(layer)
 +        logger.info(
-+            "Prepared Muse V6 routed NVFP4 bank for %d local experts on SM%d%d",
++            "Prepared Muse V9 routed NVFP4 bank for %d local experts on SM%d%d",
 +            layer.gate_up_proj.shape[0],
 +            capability[0],
 +            capability[1],
@@ -1433,7 +1459,7 @@ index f6d450a..7285a57 100644
 +    except Exception:
 +        layer._muse_v4_state = None
 +        logger.warning(
-+            "Muse V6 bank preparation failed; retaining stock Marlin path",
++            "Muse V9 bank preparation failed; retaining stock Marlin path",
 +            exc_info=True,
 +        )
 +        return None
@@ -1445,7 +1471,7 @@ index f6d450a..7285a57 100644
      )
  
      def _process_weights_for_marlin(self, layer):
-+        # Build the one canonical V6 bank from the lossless ModelOpt tensors.
++        # Build the one canonical V9 bank from the lossless ModelOpt tensors.
 +        # The stock Marlin conversion is retained only for the explicit stock
 +        # A/B path or when preparation is unavailable.
 +        state = _prepare_muse_v4(layer)
@@ -1748,10 +1774,10 @@ index 312b342..ea24567 100644
              else:
                  moe_layers = [layer.mlp for layer in self.layers if layer.is_moe_layer]
 diff --git a/python/sglang/srt/speculative/dflash_worker_v2.py b/python/sglang/srt/speculative/dflash_worker_v2.py
-index a91ffd6..4d01fea 100644
+index a91ffd6..396e5bb 100644
 --- a/python/sglang/srt/speculative/dflash_worker_v2.py
 +++ b/python/sglang/srt/speculative/dflash_worker_v2.py
-@@ -563,6 +563,11 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -563,6 +563,14 @@ class DFlashWorkerV2(BaseSpecWorker):
          self._draft_block_end_buf: Optional[torch.Tensor] = None  # [cap_bs]
          self._selector_sample: Optional[Tuple[torch.Tensor, torch.Tensor]] = None
          self._draft_seq_lens_cpu_buf: Optional[torch.Tensor] = None  # [cap_bs] on CPU
@@ -1760,10 +1786,13 @@ index a91ffd6..4d01fea 100644
 +        self._suffix_candidate_buf: Optional[torch.Tensor] = None
 +        self._suffix_score_buf: Optional[torch.Tensor] = None
 +        self._suffix_accept_estimate: Optional[torch.Tensor] = None
++        self._suffix_hit_estimate: Optional[torch.Tensor] = None
++        self._suffix_attempts: Optional[torch.Tensor] = None
++        self._suffix_last_use: Optional[torch.Tensor] = None
          self._draft_block_spec_info = make_draft_block_spec_info(
              draft_token_num=int(self.block_size), device=self.device
          )
-@@ -1083,6 +1088,123 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -1083,6 +1091,178 @@ class DFlashWorkerV2(BaseSpecWorker):
              (new_cap,), dtype=torch.int32, device="cpu"
          )
  
@@ -1794,16 +1823,24 @@ index a91ffd6..4d01fea 100644
 +            )
 +        if (
 +            self._suffix_accept_estimate is None
++            or self._suffix_hit_estimate is None
++            or self._suffix_attempts is None
 +            or int(self._suffix_accept_estimate.shape[0]) < int(req_pool_size)
 +        ):
 +            self._suffix_accept_estimate = torch.zeros(
 +                (int(req_pool_size),), dtype=torch.float32, device=self.device
++            )
++            self._suffix_hit_estimate = torch.zeros_like(self._suffix_accept_estimate)
++            self._suffix_attempts = torch.zeros(
++                (int(req_pool_size),), dtype=torch.int32, device=self.device
 +            )
 +
 +    def _prepare_suffix_candidates(
 +        self, batch: ScheduleBatch, block_ids: torch.Tensor
 +    ) -> None:
 +        """Find repeated suffixes in each request's committed token history."""
++        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
++            return
 +        bs = len(batch.reqs)
 +        req_pool_size = int(batch.req_to_token_pool.req_to_token.shape[0])
 +        self._ensure_suffix_buffers(bs, req_pool_size)
@@ -1854,14 +1891,28 @@ index a91ffd6..4d01fea 100644
 +        self, batch: ScheduleBatch, draft_next: torch.Tensor
 +    ) -> torch.Tensor:
 +        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
++            self._suffix_last_use = None
 +            return draft_next
 +        assert self._suffix_candidate_buf is not None
 +        assert self._suffix_score_buf is not None
 +        assert self._suffix_accept_estimate is not None
++        assert self._suffix_hit_estimate is not None
++        assert self._suffix_attempts is not None
 +        req_indices = batch.req_pool_indices.to(torch.long)
 +        recent_accept = self._suffix_accept_estimate.index_select(0, req_indices)
++        suffix_hit = self._suffix_hit_estimate.index_select(0, req_indices)
++        suffix_attempts = self._suffix_attempts.index_select(0, req_indices)
 +        suffix_score = self._suffix_score_buf[: draft_next.shape[0]].to(torch.float32)
-+        use_suffix = (recent_accept >= 1) & (suffix_score > recent_accept)
++        # A new suffix may bootstrap only with a long match.  Subsequent
++        # attempts require its EMA to beat DFlash's tail EMA; this prevents a
++        # single lucky match from displacing the DFlash continuation at c=1.
++        long_enough = suffix_score >= torch.maximum(
++            recent_accept + 2.0, torch.full_like(recent_accept, 4.0)
++        )
++        bootstrap = (suffix_attempts == 0) & long_enough
++        confirmed = (suffix_attempts >= 2) & (suffix_hit >= recent_accept)
++        use_suffix = (recent_accept >= 1) & long_enough & (bootstrap | confirmed)
++        self._suffix_last_use = use_suffix
 +        positions = torch.arange(
 +            draft_next.shape[1], device=draft_next.device, dtype=torch.float32
 +        )[None, :]
@@ -1876,18 +1927,51 @@ index a91ffd6..4d01fea 100644
 +        self, batch: ScheduleBatch, accept_len: torch.Tensor
 +    ) -> None:
 +        if not envs.SGLANG_ENABLE_DFLASH_SUFFIX_NGRAM.get():
++            if envs.SGLANG_DFLASH_SUFFIX_TRACE_ACCEPTANCE.get() and get_parallel().tp_rank == 0:
++                logger.info(
++                    "DFLASH_SUFFIX_ACCEPT_TRACE source=dflash_only accepted=%s",
++                    accept_len.detach().to(device="cpu").tolist(),
++                )
 +            return
 +        assert self._suffix_accept_estimate is not None
++        assert self._suffix_hit_estimate is not None
++        assert self._suffix_attempts is not None
 +        req_indices = batch.req_pool_indices.to(torch.long)
 +        previous = self._suffix_accept_estimate.index_select(0, req_indices)
-+        self._suffix_accept_estimate[req_indices] = torch.maximum(
-+            previous, accept_len.to(torch.float32)
++        previous_hit = self._suffix_hit_estimate.index_select(0, req_indices)
++        previous_attempts = self._suffix_attempts.index_select(0, req_indices)
++        accepted = accept_len.to(torch.float32)
++        use = self._suffix_last_use
++        if use is None:
++            use = torch.zeros_like(accepted, dtype=torch.bool)
++        keep = torch.full_like(accepted, 0.75)
++        update_dflash = ~use
++        self._suffix_accept_estimate[req_indices] = torch.where(
++            update_dflash, keep * previous + 0.25 * accepted, previous
 +        )
++        self._suffix_hit_estimate[req_indices] = torch.where(
++            use, keep * previous_hit + 0.25 * accepted, previous_hit
++        )
++        self._suffix_attempts[req_indices] = torch.where(
++            use, torch.clamp(previous_attempts + 1, max=3), previous_attempts
++        )
++        if envs.SGLANG_DFLASH_SUFFIX_TRACE_ACCEPTANCE.get() and get_parallel().tp_rank == 0:
++            use = (
++                self._suffix_last_use.detach().to(device="cpu").tolist()
++                if self._suffix_last_use is not None
++                else [False] * int(accept_len.shape[0])
++            )
++            logger.info(
++                "DFLASH_SUFFIX_ACCEPT_TRACE source=spliced_suffix used=%s accepted=%s baseline_est=%s",
++                use,
++                accept_len.detach().to(device="cpu").tolist(),
++                previous.detach().to(device="cpu").tolist(),
++            )
 +
      def __getattr__(self, name):
          # Delegate anything not implemented yet to the target worker. Guard
          # the backing field so a lookup before __init__ sets it raises
-@@ -2533,6 +2655,11 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -2533,6 +2713,11 @@ class DFlashWorkerV2(BaseSpecWorker):
              )
              verify_out_cache_loc_2d.copy_(verify_out_cache_loc.view(bs, block_size))
  
@@ -1899,7 +1983,7 @@ index a91ffd6..4d01fea 100644
          if self._full_embed_gpu is not None:
              # Replicated lookup avoids the mismatched attn-TP all_reduce
              # inside VocabParallelEmbedding under dp attention.
-@@ -2769,6 +2896,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -2769,6 +2954,7 @@ class DFlashWorkerV2(BaseSpecWorker):
                      lm_head=lm_head,
                  ).view(bs, int(self.block_size) - 1)
  
@@ -1907,7 +1991,7 @@ index a91ffd6..4d01fea 100644
          draft_tokens = self._draft_block_tokens_buf[:bs]
          draft_tokens[:, 0].copy_(block_ids[:, 0])
          draft_tokens[:, 1:].copy_(draft_next)
-@@ -2893,6 +3021,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -2893,6 +3079,7 @@ class DFlashWorkerV2(BaseSpecWorker):
              bs=bs,
              target_predict=target_predict,
          )
