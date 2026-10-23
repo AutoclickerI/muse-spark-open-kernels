@@ -34,7 +34,6 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 PRIORITY = {"muse_decode_layer": 0, "muse_moe_w4a16": 1, "muse_attention_decode": 2,
             "muse_prefill_layer": 2, "muse_bf16_proj": 3}
-WORK = Path(os.environ.get("MUSE_IMG_WORK", "/data2/jihoon/muse_kernel/img-work"))
 
 
 def sent_hashes() -> set:
@@ -58,7 +57,8 @@ def screen(f: Path, gpu: str, logdir: Path) -> dict:
     stem = f"{f.parent.name}.{f.stem}"
     log, js = logdir / f"{stem}.log", logdir / f"{stem}.json"
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=gpu,
-               APPTAINERENV_TORCH_EXTENSIONS_DIR=str(WORK / "screen-ext" / stem))
+               # a path inside the container: tools/img maps the container's /tmp to its work dir on disk
+               APPTAINERENV_TORCH_EXTENSIONS_DIR=f"/tmp/screen-ext/{stem}")
     t0 = time.time()
     with log.open("w") as out:
         try:
