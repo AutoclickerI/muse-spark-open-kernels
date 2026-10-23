@@ -1,0 +1,107 @@
+{
+ "problem": "muse_attention_decode",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/cand_xqa_bulk.py",
+ "sha256": "797a0202abbbbba72924f48e8608a1d1f4436f6feb274a0fd7d6918137e3fc62",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 0.00011023000115528703,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, heads tp8, layer sliding",
+   "first_call_s": 0.07469640497583896,
+   "ok": true,
+   "msg": "relative L2 error 4.774e-03 (worst row 4.774e-03) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 2047, heads tp8, layer sliding",
+   "first_call_s": 0.0001646720338612795,
+   "ok": true,
+   "msg": "relative L2 error 5.580e-03 (worst row 6.168e-03) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 5, ctx 5000, heads tp8, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 26.19887021195609,
+   "ok": true,
+   "msg": "relative L2 error 7.798e-02 (worst row 1.393e-01) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 3000, heads tp8, layer full",
+   "first_call_s": 0.00016461900668218732,
+   "ok": true,
+   "msg": "relative L2 error 5.025e-03 (worst row 5.673e-03) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 8, ctx 8192, heads dp, layer full, spread mixed",
+   "first_call_s": 0.0001907599507831037,
+   "ok": true,
+   "msg": "relative L2 error 5.646e-03 (worst row 6.512e-03) [bound 0.150: 2.5 x the reference's 0.084 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 100000, heads tp8, layer full, q_len 8, page 1",
+   "first_call_s": 0.000421033997554332,
+   "ok": true,
+   "msg": "relative L2 error 7.852e-02 (worst row 1.029e-01) [bound 0.150: 2.5 x the reference's 0.079 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, dist edges, page 1",
+   "first_call_s": 0.00016580999363213778,
+   "ok": true,
+   "msg": "relative L2 error 5.312e-03 (worst row 6.387e-03) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer full, q_len 8, dist edges",
+   "first_call_s": 0.0001460899948142469,
+   "ok": false,
+   "msg": "output contains NaN or Inf [bound 0.150: 2.5 x the reference's 0.088 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, heads tp8, layer full, q_len 8",
+   "first_call_s": 0.0016773069510236382,
+   "ok": true,
+   "msg": "relative L2 error 8.568e-02 (worst row 9.506e-02) [bound 0.150: 2.5 x the reference's 0.086 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 4000, heads tp8, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "first_call_s": 0.00015322101535275578,
+   "ok": true,
+   "msg": "relative L2 error 8.084e-02 (worst row 1.135e-01) [bound 0.150: 2.5 x the reference's 0.081 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 9000, heads tp8, layer full, kv_scale 0.015625",
+   "first_call_s": 0.00015742803225293756,
+   "ok": true,
+   "msg": "relative L2 error 6.207e-03 (worst row 6.692e-03) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist soft",
+   "first_call_s": 0.0001455579767934978,
+   "ok": true,
+   "msg": "relative L2 error 4.798e-03 (worst row 5.191e-03) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, q_len 8, dist soft, page 1",
+   "first_call_s": 0.00011782604269683361,
+   "ok": false,
+   "msg": "output contains NaN or Inf [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist soft",
+   "first_call_s": 0.00038321298779919744,
+   "ok": true,
+   "msg": "relative L2 error 7.015e-02 (worst row 7.577e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist coherent, page 1",
+   "first_call_s": 0.0001946459524333477,
+   "ok": true,
+   "msg": "relative L2 error 2.559e-03 (worst row 2.963e-03) [bound 0.111: 2.5 x the reference's 0.038 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist coherent",
+   "first_call_s": 0.00043473002733662724,
+   "ok": false,
+   "msg": "output contains NaN or Inf [bound 0.104: 2.5 x the reference's 0.035 with FP8 E4M3 queries + 0.015]"
+  }
+ ]
+}

@@ -1,30 +1,27 @@
-# Attention verify — Serves: G2, G3
+# Attention verify
+Serves: G2, G3.
 
 Goal: beat FA3 on q_len=8 full B16/B32 first, then sliding; preserve q_len=1.
-Submission: custom decode plus FA3 verify; 1.384x scored `526f31018e2c4449`,
-1.388x check `4f8c41ef9e924ff4`. No new H200 promotion yet.
+`submission.py` now matches check32c5b4b287c24c38 exactly:1.390910x overall,
+SHA610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810.
+This meets the owner's promotion threshold, inside noise, with FA3 on all verify
+shapes. Board stays1.384x (526f31018e2c4449) until orchestrator scores promotion.
 
-Next: `dev/NEXT_CHECKS.md` holds frozen hashes and queue order.
-The sent diagnostic, K128 and pipeline files remain frozen. Their H200 receipts
-have not landed; current receipts are the older v1-v6 and hybrid runs.
-Those show custom full verify below FA3: v2 B16/B32 0.879/0.931x and v5
-0.697/0.688x, while the hybrid is FA3 at roughly 1.00x.
-K128 design: one KV head / CTA, 64 queries on MMA N, keys on M; raw E4M3 QK;
-FP32 online softmax; exact FP16 V or raw FP8 PV via ldmatrix/packed transpose;
-3/4/5-stage page-row cp.async (32/48/64 KiB outstanding), SM-sized split-KV,
-in-kernel last-CTA FP32 merge; separate causal K32 tile for the eight new keys.
-Every key and exactly 2048 sliding positions are attended. No cached outputs.
+K64 diagnostic32c5b4b287c24c38 and K128a0511c0001464dbe both lose all verify
+shapes. K128 paired full B16/B32 custom617/1174us vsFA3207/391us.
+Stages3–5 barely change full times; nominal KV throughput0.53–0.56TB/s vs
+standalone gather2.558TB/s. Profiles show selected FA3, not custom stalls.
+The synchronous recipe is closed; producer overlap/WGMMA remain open.
 
-The exact K128 source passes 16/16 tests and 12/12 graph shapes; both PV
-formats pass fresh graph replays through 1M context. Clock64 profiling found
-the largest per-tile costs are gather issue/address work (~2.1k cycles), QK
-(~1.2k), softmax (~1.2k), widened-PV (~1.1k), and FP16 widening (~0.9k); the
-cross-SM merge mark is not usable as a latency measure. ncu is blocked by
-ERR_NVGPUCTRPERM. The private full-specialized K128 pipeline measures 346/676 us for verify
-B16/B32 on sm_120; these are not H200 claims. A register row-base gather
-copy passes 16/16 tests and 12/12 graph shapes but is neutral (358/670 us). A shared row-base copy
-is slower (407/781 us), and the integrated bulk-ring copy hangs on q8; both
-were discarded. Standalone cp.async.bulk plus mbarrier works on sm_120.
+Next candidate:cand_xqa_next.py packs K128 swap-AB mma.sync and K64 WGMMA.
+Both use128 producer threads, cp.async/full-empty mbarriers,32–64KiB in flight,
+64 queries on N, exact causal/2048-window mask,FP32 softmax,last-CTA FP32 merge.
+Hopper WGMMA QK:E4M3; PV:exact FP16 V. sm_120 runs matching MMA stand-ins.
+prepare validates and times16 variants +FA3 per shape, then pairs the best.
+All actual input work stays in kernel_fn; only shape choices survive prepare.
 
-Only the orchestrator sends runs. Keep old H200 receipts; infer no H200 wins
-from local times or stand-ins.
+Admission, frozen hashes and09:00 order:dev/NEXT_CHECKS.md.
+SM90a:zero spills; QGMMA/HGMMA/LDGSTS confirmed. CUTLASS layout/descriptor
+checks pass. Actual WGMMA correctness/performance needs H200.
+Pending FA3 tune:dd927c6c46264afe; pipeline remains in local sender queue.
+Only orchestrator sends. Do not edit sent candidates; no commit this round.

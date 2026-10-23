@@ -1,0 +1,13 @@
+# Rebuild with build_xqa_next.py; the standalone cand_xqa_next.py is retained.
+/xqa_warp.cu
+/xqa_group_generated.cu
+/xqa_warp_candidate.py
+/xqa_group_candidate.py
+/xqa_next_candidate.py
+# Local evidence; H200 receipts stay under runs/ and profiles/.
+/xqa_group_tests.json
+/xqa_warp_tests.json
+/xqa_next_initial.json
+/xqa_next_variants.json
+/xqa_warp_bench.json
+/xqa_next_bench.json

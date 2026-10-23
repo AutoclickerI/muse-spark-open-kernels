@@ -233,38 +233,69 @@ The scored source, rather than the older check table, owns the following numbers
 replay-adjusted cold-L2 H200 medians; the floor includes all compulsory input/output traffic.
 Evidence: `runs/muse_bf16_proj/20261023T100928Z_submit_68e2f34b1d4744cb.json`.
 
-| Layer | m | SGLang us | Scored us | Speedup | Floor us |
-|---|---:|---:|---:|---:|---:|
-| qkv_gate | 1 | 13.984 | 12.566 | 1.113x | 7.869 |
-| o | 1 | 6.816 | 6.672 | 1.022x | 3.499 |
-| pooler | 1 | 20.640 | 18.347 | 1.125x | 13.986 |
-| unpooler | 1 | 7.056 | 5.449 | 1.295x | 1.750 |
-| router | 1 | 10.304 | 6.121 | 1.683x | 1.751 |
-| qkv_gate | 16 | 14.336 | 13.871 | 1.034x | 7.934 |
-| o | 16 | 7.008 | 7.022 | 0.998x | 3.557 |
-| pooler | 16 | 20.560 | 19.382 | 1.061x | 14.063 |
-| unpooler | 16 | 18.720 | 18.822 | 0.995x | 14.063 |
-| router | 16 | 14.896 | 6.606 | 2.255x | 1.806 |
-| qkv_gate | 32 | 14.240 | 14.374 | 0.991x | 8.004 |
-| o | 32 | 6.592 | 6.576 | 1.002x | 3.618 |
-| pooler | 32 | 21.280 | 22.875 | 0.930x | 14.145 |
-| unpooler | 32 | 18.688 | 18.616 | 1.004x | 14.145 |
-| router | 32 | 14.912 | 7.713 | 1.933x | 1.864 |
-| qkv_gate | 8 | 14.176 | 12.931 | 1.096x | 7.899 |
-| o | 8 | 6.816 | 6.721 | 1.014x | 3.526 |
-| pooler | 8 | 20.496 | 18.367 | 1.116x | 14.022 |
-| unpooler | 8 | 7.104 | 5.566 | 1.276x | 1.765 |
-| router | 8 | 26.320 | 6.500 | 4.049x | 1.777 |
-| qkv_gate | 128 | 17.024 | 16.918 | 1.006x | 8.424 |
-| o | 128 | 7.456 | 7.439 | 1.002x | 3.987 |
-| pooler | 128 | 24.608 | 25.203 | 0.976x | 14.636 |
-| unpooler | 128 | 19.744 | 19.615 | 1.007x | 14.636 |
-| router | 128 | 16.176 | 15.958 | 1.014x | 2.212 |
-| qkv_gate | 256 | 20.064 | 19.736 | 1.017x | 9.771 |
-| o | 256 | 9.152 | 9.168 | 0.998x | 4.478 |
-| pooler | 256 | 29.712 | 29.396 | 1.011x | 17.371 |
-| unpooler | 256 | 23.872 | 24.006 | 0.994x | 17.371 |
-| router | 256 | 17.296 | 17.368 | 0.996x | 2.676 |
+<!-- PROJ_GAP_BEGIN -->
+H200 gap to 1.26x, from all 13 clean completed receipts. SGLang and board
+times use scored `68e2f34b1d4744cb`. Best = that SGLang time / the highest observed
+paired speedup for this shape; it is a common-baseline equivalent, not a new measured
+median. Choosing the maximum across receipts is optimistic and includes timing noise;
+the new portfolio must reproduce any gain. All times below are microseconds.
+
+| m | Layer | SGLang | Board | Best equivalent | Best receipt median | Receipt | Excess over SGLang/1.26 |
+|---:|---|---:|---:|---:|---:|---|---:|
+| 1 | qkv_gate | 13.984 | 12.566 | 12.566 | 12.566 | `68e2f34b1d4744cb` | 1.468 |
+| 1 | o | 6.816 | 6.672 | 6.608 | 6.608 | `a3b29a26372c4b35` | 1.198 |
+| 1 | pooler | 20.640 | 18.347 | 17.901 | 18.761 | `9294b3237c4f4e2d` | 1.520 |
+| 1 | unpooler | 7.056 | 5.449 | 5.410 | 5.398 | `9294b3237c4f4e2d` | 0.000 |
+| 1 | router | 10.304 | 6.121 | 6.109 | 6.005 | `dd5ffc6950bc439e` | 0.000 |
+| 16 | qkv_gate | 14.336 | 13.871 | 13.772 | 13.449 | `9294b3237c4f4e2d` | 2.394 |
+| 16 | o | 7.008 | 7.022 | 6.872 | 6.872 | `9294b3237c4f4e2d` | 1.310 |
+| 16 | pooler | 20.560 | 19.382 | 18.881 | 19.689 | `9294b3237c4f4e2d` | 2.564 |
+| 16 | unpooler | 18.720 | 18.822 | 18.489 | 18.599 | `849bd4b650e54c7f` | 3.631 |
+| 16 | router | 14.896 | 6.606 | 6.480 | 6.508 | `849bd4b650e54c7f` | 0.000 |
+| 32 | qkv_gate | 14.240 | 14.374 | 14.032 | 14.079 | `a3b29a26372c4b35` | 2.730 |
+| 32 | o | 6.592 | 6.576 | 6.348 | 6.533 | `9294b3237c4f4e2d` | 1.116 |
+| 32 | pooler | 21.280 | 22.875 | 21.105 | 20.772 | `849bd4b650e54c7f` | 4.217 |
+| 32 | unpooler | 18.688 | 18.616 | 18.512 | 18.544 | `dd989ef2d76147e7` | 3.681 |
+| 32 | router | 14.912 | 7.713 | 7.674 | 7.896 | `849bd4b650e54c7f` | 0.000 |
+| 8 | qkv_gate | 14.176 | 12.931 | 12.820 | 12.560 | `dd989ef2d76147e7` | 1.570 |
+| 8 | o | 6.816 | 6.721 | 6.659 | 6.440 | `dd989ef2d76147e7` | 1.249 |
+| 8 | pooler | 20.496 | 18.367 | 18.007 | 18.864 | `9294b3237c4f4e2d` | 1.740 |
+| 8 | unpooler | 7.104 | 5.566 | 5.435 | 5.509 | `dd989ef2d76147e7` | 0.000 |
+| 8 | router | 26.320 | 6.500 | 6.117 | 6.031 | `dd989ef2d76147e7` | 0.000 |
+| 128 | qkv_gate | 17.024 | 16.918 | 16.378 | 16.347 | `dd989ef2d76147e7` | 2.867 |
+| 128 | o | 7.456 | 7.439 | 7.366 | 7.477 | `a3b29a26372c4b35` | 1.449 |
+| 128 | pooler | 24.608 | 25.203 | 23.914 | 25.236 | `122997f357d04fa2` | 4.384 |
+| 128 | unpooler | 19.744 | 19.615 | 19.607 | 19.909 | `03113fd349d347dc` | 3.937 |
+| 128 | router | 16.176 | 15.958 | 10.216 | 10.327 | `dd989ef2d76147e7` | 0.000 |
+| 256 | qkv_gate | 20.064 | 19.736 | 19.528 | 19.746 | `122997f357d04fa2` | 3.604 |
+| 256 | o | 9.152 | 9.168 | 9.030 | 9.409 | `458c6d3e931c4f63` | 1.767 |
+| 256 | pooler | 29.712 | 29.396 | 29.189 | 30.446 | `03113fd349d347dc` | 5.608 |
+| 256 | unpooler | 23.872 | 24.006 | 23.696 | 24.284 | `458c6d3e931c4f63` | 4.750 |
+| 256 | router | 17.296 | 17.368 | 13.036 | 13.434 | `dd989ef2d76147e7` | 0.000 |
+
+The last column is a sufficient uniform-shape target, not the score formula. The
+official projection score is the geometric mean of six *load* ratios; each load sums
+its five equally weighted projections (weight 62 cancels). The overall-board formula
+remains unpublished; the earlier 11% projection weight is a model, not a rule.
+
+| m/load | SGLang sum | Board sum | Best equivalent sum | Best load ratio | Budget at 1.26x | Saving to that budget |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 58.800 | 49.154 | 48.594 | 1.210x | 46.667 | 1.928 |
+| 16 | 75.520 | 65.703 | 64.494 | 1.171x | 59.937 | 4.557 |
+| 32 | 75.712 | 70.153 | 67.671 | 1.119x | 60.089 | 7.582 |
+| 8 | 74.912 | 50.084 | 49.038 | 1.528x | 59.454 | 0.000 |
+| 128 | 85.008 | 85.133 | 77.481 | 1.097x | 67.467 | 10.015 |
+| 256 | 100.096 | 99.674 | 94.479 | 1.059x | 79.441 | 15.038 |
+
+The optimistic stitched score is **1.188255x**, versus the board's
+1.142642x. If the other four loads hold, m128 and m256 each need
+another **1.192x** speedup to reach 1.26x overall.
+The largest uniform-budget deficits are qkv/pooler/unpooler at m16/32/128/256 and
+router at m128/256. Router fusion alone cannot close the complete gap; tune all 30
+shapes, especially memory-heavy BF16 projections. Receipt/source pairs in `runs/`
+own these measurements; profiles diagnose kernels but do not replace paired medians.
+<!-- PROJ_GAP_END -->
+
 
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |
 |---|---|---|---|
@@ -351,7 +382,9 @@ The previously screened `cand_m16` scalar row stream was 0.968x locally (m16 pro
 all of them, along with dsv3, gemv3/static, skinny, tc, tile, tuned2, wg and wg2. Pending identities
 live in `runs/waiting/` and `runs/pending/`; the next receipt can change the dispatch.
 
-### Attention local development (G2; sm_120, not H200 evidence)
+### Attention verify development (G2; evidence scopes distinguished)
+
+The landed diagnostic profiles contain only the selected FA3 path: full B16 main189.2us of206.7us total, B32 main373.0us of391.2us; combine4.4us each. They do not profile the losing custom variants. Their XQA prepare timing lines provide custom totals. The nominal P8 gather-only times for327.68/655.36MB are128.1/256.2us, versus FA3 roughly207/391 and K128617/1174. These comparisons establish unused throughput, not a measured TLB or tensor-pipe cause.
 
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |
 |---|---|---|---|
@@ -363,7 +396,11 @@ live in `runs/waiting/` and `runs/pending/`; the next receipt can change the dis
 | Split-KV occupancy | 24 splits were best locally: B16 waves 4 measured 405 us and B32 waves 8 measured 773 us; one split was 562/1,095 us | The 132-SM target is already oversubscribed at 24 splits (768/1,536 CTAs for two KV heads); merge is not the dominant measured cost | `problems/muse_attention_decode/dev/k128_stage_profile_local.json`, `xqa_pipeline_sweep_local.json` |
 | Full-specialized pipeline | K128 with compile-time full/sliding RoPE selection measured 355/667 us at full verify B16/B32 versus old K128 406/773 us on the same sm_120 sweep | K128 3-stage FP16 path won; K64 and FP8-P variants lost locally; this is not an H200 claim | `problems/muse_attention_decode/dev/xqa_pipeline_sweep_local.json`, exact candidate `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` |
 | Gather follow-up | Register row-base offsets pass 16/16 correctness but measure 358/670 us versus pipeline 355/665 us at B16/B32; shared row-base offsets measure 407/781 us | Extra shared synchronization and row-base traffic erase the address arithmetic saved; integrated cp.async.bulk ring hangs on q8 despite standalone bulk/mbarrier success | `problems/muse_attention_decode/dev/xqa_gather_compare2.log`, `runs/screen/attention_gather2/muse_attention_decode.cand_xqa_gather2.json`, `xqa_gather_tests.log`, `test_bulk_run.py` |
-| H200 receipts available this round | No diagnostic/K128/pipeline receipt has landed under `runs/muse_attention_decode/`; older receipts remain authoritative: v2 full verify B16/B32 0.879/0.931x, v5 0.697/0.688x, hybrid ~1.00x | Keep sent files frozen and wait for their per-shape/XQA prepare output; no local timing is an H200 claim | `problems/muse_attention_decode/profiles/cand_v2.51ad2ea9ec4f4724.txt`, `cand_v5.ced8d779b16f44a9.txt`, `submission.4f8c41ef9e924ff4.txt` |
+| Landed XQA H200 diagnostics | K64 `32c5b4b287c24c38` 1.390910x overall, CI 1.37005–1.41519; K128 `a0511c0001464dbe` 1.382808x, CI 1.36207–1.40730; both select FA3 at all six verify shapes | K128 paired custom/FA3 full B16 616.74/207.36 us (0.3364x), B32 1173.81/391.36 (0.3334x); sliding B1/16/32 0.683/0.565/0.508x. Deeper stages 3–5 barely move full times. Pipeline receipt remains pending | `runs/muse_attention_decode/*32c5b4b287c24c38.json`, `*a0511c0001464dbe.json`; profiles' XQA_DIAG/XQA_W8_PAIR lines |
+| Promoted exact source | `submission.py` is the exact `32c5b4b287c24c38` source, SHA256 `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Owner's >1.388x promotion criterion is met, but this is FA3 parity on verify and its overall change is inside noise. Previous scored board entry remains 1.384x until orchestrator submits | Exact receipt/source SHA match; `runs/screen/attn_diag/diag.json` 16 tests +12 graph shapes |
+| Producer/consumer swap-AB candidate | `cand_xqa_next.py`: K128 eight-warp MMA plus K64 WGMMA, each with 128 separate producer threads, full/empty mbarriers, 32–64 KiB gathered KV in flight; unchanged q_len=1 | FP32 softmax, exact window/causality, last-CTA FP32 merge. WGMMA QK uses E4M3, PV exactly widened FP16; same-kernel MMA stand-in runs locally. Per-shape synthetic prepare times 16 variants plus FA3 and checks agreement before selection | `dev/build_xqa_next.py`, `dev/xqa_group.cu`, `dev/xqa_next_tail.py`; frozen hash/complete admission in `dev/NEXT_CHECKS.md` |
+| Hopper binary/layout validation | Group family uses 180–181 registers; producer MMA 153–156. Eight SM90a specializations have zero spill loads/stores; SASS contains QGMMA E4M3, HGMMA FP16 and LDGSTS | All 4096 coordinates each of K/V/P match installed CUTLASS canonical atoms; K descriptor LBO1/SBO32 B64, V LBO0/SBO64 B128, P LBO1/SBO64 B128. Stand-ins cannot verify Hopper execution | `dev/xqa_group_sm90_compile.log`, `xqa_warp_sm90_compile.log`, `xqa_group_sm90_sass.log`, `check_wgmma_layout.cpp`, `wgmma_layout.log` |
+| Local producer comparison | Same sm_120 sweep: full B16/B32 producer MMA 355/676 us versus synchronous pipeline 339/660; sliding B1/16/32 29.7/39.9/54.2 vs30.7/42.0/56.3 | Producer overlap alone is roughly neutral on full contexts. Warpgroup stand-in has extra cross-warp softmax/barrier costs and is slower; it cannot rank Hopper WGMMA | `dev/xqa_warp_bench.json`, `dev/xqa_next_bench.json`; local only |
 
 ## Closed recipes
 A negative closes only the recipe tested. "Leaves open" names what the result does not rule out.
@@ -373,6 +410,7 @@ A negative closes only the recipe tested. "Leaves open" names what the result do
 | MoE V9 with PRMT NVFP4 decode (P8 measured PRMT 1.92x LOP3) | Bit-exact (524,288 cases); local 1.126x vs V9 1.283x; V32 501 -> 703 us | V9's bit-plane decode is already cheaper than P8's scalar raw-nibble decoders; rebuilding PRMT selectors on V9's layout grows the sm_90a inner loop 492 -> 1,255 instructions (LOP3 162 -> 545, SHF 112 -> 368) | A layout designed for PRMT from the start (changes prepare's packing) | local only; source in git `cand_v9_prmt.py` (commit before this one) |
 | Proj: original K64 TMA/WGMMA with one/two consumer warpgroups and fixed DSMEM dispatch | 0.820x and 0.824x; prepare diagnostics m128 BF16 1.3–1.8x slower, m256 1.7–2.1x slower than cuBLAS | Unbalanced output waves, per-K64 synchronization and cluster merge overhead; the selected fixed dispatch also misses faster diagnostic variants | Larger grouped K tiles, last-CTA/Stream-K merge, per-shape autotuning; router m128 diagnostic is a positive lead | `87dd70d5f5894f6a`, `dd5ffc6950bc439e`; diagnostic logs |
 | Proj: skinny mma.sync split-K with cluster DSMEM reduce for all m <= 64 | 0.991x; qkv/o lose 0.55-0.83x at m=1/8/32 | Split-K and cluster-reduce fixed costs dominate at these sizes | Other GEMV layouts (the two landed checks are below incumbent); in-kernel last-CTA reduce | `03113fd349d347dc` |
+| Attention: synchronous K64/K128 swap-AB MMA, FP16/FP8 PV, deep gather ring | Best K128 full B16/B32 is only 0.336/0.333x FA3, stages 3–5 nearly equal | Nominal raw KV327.68/655.36MB divided by paired custom time gives0.531/0.558TB/s, versus2.558TB/s in the standalone P8 gather; whole-kernel issue/softmax/layout overhead remains. More splits help, deeper rings alone do not. No H200 counters isolate the dominant stall | Separate gather producers, larger warpgroup tensor operations, FA3 settings; pending full-specialized pipeline is not closed | `32c5b4b287c24c38`, `a0511c0001464dbe`; `dev/xqa_sm90_compile.log` shows K64 202–239 registers and runtime-indexed32B stack |
 | Attention: split partials merged through global memory/L2 instead of a DSMEM cluster | 1.190x against v2's 1.279x | An extra global round trip per split | Global merge with fewer splits, or at long full-layer contexts | `8bfd5e25e582402d` |
 | Prefill: contiguous FP8 cache gather (v4) | 1.194x against v3's 1.345x | Gains about 5% in the FA3 stage but loses elsewhere against the control | v9 contiguous/unpacked with DG experts also loses (1.185x); combining with canonical expert winners remains open | `27f3e312727d423c` |
 | Prefill: 4-warp residual boundaries and rowwise SwiGLU (v2) | 1.229x, the same as v1 | Glue launches are not the prefill bottleneck | Glue fusion once expert time drops | `7ef49d84f4a14791` |

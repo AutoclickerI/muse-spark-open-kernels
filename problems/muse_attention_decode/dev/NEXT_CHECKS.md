@@ -1,41 +1,54 @@
-# Attention checks at 09:00 KST (2026-10-24)
+# Attention handoff / 09:00 KST order (2026-10-24)
 
-The owner leaves sending to the orchestrator. Do not launch new `okc_run.py`
-processes from the attention lane. Do not resend a source already accepted.
+Only the orchestrator sends. Do not edit or resend accepted sources.
+No okc_run or multi-agent work was launched in this attention turn.
 
 | Order | File | Frozen SHA256 | Action |
 |---|---|---|---|
-| 0 | `cand_xqa_diag.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Its existing sender is waiting locally for admission (priority 0); preserve it. Read `XQA_DIAG`/`XQA_PLAN` when its receipt lands. |
-| 1 | `cand_xqa_k128.py` | `b519462266ffbfd9379979cd59891fecbc6b12c9f563d9c3ba8009a0efa4730f` | New packed eight-warp K128 diagnostic: 24 configurations plus FA3 at each verify shape, full B16/B32 first. One check covers all configurations. |
-| 2 | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Private K128 full-specialized pipeline: no runtime RoPE branch on full attention, 3-stage 48 KiB gather, waves 2/4/8 plus paired FA3. New local screen passes; leave sending to the orchestrator. |
-| 3 | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Already waiting through screen_all; collect it, do not launch another. |
+| 0 | `submission.py` | `610a590120ae79c446248cce5b6a857e283b425290aba67af29e18283c96c810` | Exact promoted check `32c5b4b287c24c38`,1.390910x >1.388x. Orchestrator may score. Verify is FA3 throughout; gain vs old check is within noise. |
+| 1 | `cand_xqa_next.py` | `fee88fd0a7e9de09639228d67a5300ba760ddd0c946e998b33550466650933c8` | New packed asynchronous-producer MMA/WGMMA diagnostic. Check first among new attention work; full B16/B32 are first in prepare. Prints XQA_NEXT_DIAG/PAIR/AGREE. |
+| collect | `cand_fa3_tune.py` | `bdddb8813ccecaebee3d13dfd18f0a215d6afb53cd537d39cc9ccdcc6b5eeefd` | Accepted check `dd927c6c46264afe`; read FA3_TUNE on arrival and promote only the exact passing source under owner's threshold. |
+| existing | `cand_xqa_pipeline.py` | `b56b70c299139071298edb1bfac7ef3768c5ac8d73bce312822410184b01b43a` | Existing sender `runs/waiting/3126112.json` when inspected; no H200 receipt yet. Collect it; don't duplicate. |
+| existing | `cand_verify_sweep.py` | `2f0205924f1b6ea5f16d27a9b0a5465b6374144987f01d00ad3344da69d6605e` | Prior screen sender; inspect queue/receipt before any action. |
 
-Sent scored XQA sources remain frozen at these hashes: `cand_xqa.py` `551949b5eb2219d0fd698ab202e529d21095eb08edb8171701796067538f7296`, `cand_xqa_ldm.py` `3511f6ae5cbec225a60cf04696b766e729bd46c317e22c65d3a7382efe285ee9`, `cand_xqa_p8.py` `5b856076f62f9402d4d1e2f2bfc02efd1a12def8090321d35748fb24a8f9df43`, and `cand_xqa_ptranspose.py` `308dbb4fba8e13d22654881227d69596847005a2b7813c39c6af136f22872f7`.
+New design: one KV head per CTA;64 query rows on N. K128 has eight consumer
+warps doing E4M3 mma.sync m16n8k32 QK and FP16 PV; K64 has one consumer
+warpgroup doing E4M3 wgmma m64n64k32 QK and FP16 wgmma PV. Both have128
+separate producer threads gathering every page row with cp.async and full/empty
+mbarriers. K128 stages3/4 hold48/64KiB raw KV; K64 stages5/7 hold40/56KiB.
+Splits scale from the GPU SM count and1/2/4/8 scheduling waves; last CTA merges
+FP32(max,sum,output), gates/norms, resets counters. Exactly2048 sliding tokens
+and exact within-block causality. q_len=1 source is inherited unchanged.
 
-The gather experiments are closed for this round: register offsets were neutral, shared offsets slower, and the bulk ring hung q8. They are not candidates or queue entries. Preserve their logs as evidence and wait for the already sent XQA receipts before changing dispatch.
+The packed prepare uses synthetic random page tables and spread lengths only,
+validates every variant's output against FA3 (<3% relative L2), then times16
+variants+FA3 and selects custom only at >1.015 paired ratio. No data-derived
+state survives a call. A Hopper variant failure raises; FA3 selection cannot
+hide it. Untuned nearby shapes use the group kernel.
 
-The sent K128 file replaces the old spilling four-warp source. It preserves the
-q_len=1 implementation. `prepare()` sweeps FP16/FP8 PV, 3/4/5 gather stages and
-1/2/4/8 scheduling waves, prints `XQA_W8_DIAG`, then compares the best custom
-variant to FA3 in swapped order (`XQA_W8_PAIR`). A custom per-shape dispatch is
-selected only above 1.03x in that paired comparison; otherwise it uses FA3.
+Admission for this exact candidate:
+- `runs/screen/attention_next/muse_attention_decode.cand_xqa_next.json`:16/16
+  tests and12/12 graph shapes,3 replays and2 fresh input sets, CUDA_VISIBLE_DEVICES=0.
+- `dev/xqa_next_variants.log`:32 forced family/stage/split cases, five replays
+  each, including1M context, window edges, page1/64, DP heads, scale1/64;
+  eight FA3 tensor/tuple glue cases; all16 tuner choices/paired dispatch through
+  portable stand-ins. Actual WGMMA is unexecuted locally.
+- `dev/xqa_group_sm90_compile.log`, `xqa_warp_sm90_compile.log`:eight sm_90a
+  specializations,zero spills. Group180–181registers; producer MMA153–156.
+  SASS in `xqa_group_sm90_sass.log` contains QGMMA,HGMMA,LDGSTS.
+- `dev/check_wgmma_layout.cpp` / `wgmma_layout.log`:4096coordinates per K/V/P
+  layout agree with installed CUTLASS canonical atoms; descriptor fields checked.
+- Local producer MMA full B16/B32 about355/676us vs synchronous339/660us;
+  sliding B16/B32 about40/54us vs42/56us. Group MMA stand-in is slower locally
+  (~585/1041us at full B16/B32 best split); this cannot rank Hopper WGMMA.
 
-Admission evidence for the exact SHA: `dev/xqa_w8_final_local.json` has 16/16
-tests and 12/12 graph shapes (three replays, two fresh input sets). Additional
-checks: `xqa_w8_formats.log`, `xqa_w8_variants.log`, `xqa_w8_glue.log` and
-`xqa_w8_sm90_compile.log`. All six sm_90a specializations have zero spill loads
-and stores. FP16 stage 5 needs 104 KiB shared memory and is checked locally
-through a stage-3 CUDA stand-in at the same Python ABI; the other five stage /
-PV combinations execute their real kernels locally.
-The exact final JSON/log are copied under `runs/screen/attention_w8/` with the
-standard names; `screen_all.earlier_pass()` recognizes them and can reuse them.
+Landed evidence:
+- `32c5b4b287c24c38`:1.390910x,CI[1.37005,1.41519],16/16H200 tests.
+  All verify choices FA3. Best old K64 full B16/B32 675/1183us vs207/380us.
+- `a0511c0001464dbe`:1.382808x,CI[1.36207,1.40730],16/16tests,all verify FA3.
+  K128 paired full B16/B32 616.74/1173.81us vs207.36/391.36us;
+  sliding B1/B16/B32 custom/FA3 ratios0.683/0.565/0.508.
 
-The pipeline candidate has no H200 job ID; it is locally screened and left for
-the orchestrator. The old
-diagnostic's `runs/screen/attn_diag/send.log` confirms local admission waiting.
-Inspect `runs/pending/` and `runs/muse_attention_decode/` before sending.
-
-Promote an exact passing source to `submission.py` only if its H200 check beats
-1.388x, then let the orchestrator send the scored run. Keep full B16/B32 above
-FA3 as the primary decision, followed by sliding verify. Current submission
-remains the 1.384x hybrid (`526f31018e2c4449`, check `4f8c41ef9e924ff4`).
+Do not call the verify goal complete from an overall score. It remains open
+until an actual H200 custom/tuned verify path beats FA3. No H200 ID exists for
+cand_xqa_next yet. Sent diagnostic/K128/pipeline/FA3 files remain frozen.
