@@ -13,14 +13,23 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
+class Batch(NS):
+    def filter_batch(self):
+        self.reqs = [r for r in self.reqs if not r.aborted and not r.finished()]
+
+    def is_empty(self):
+        return not self.reqs
+
+
 class PlanTests(unittest.TestCase):
     def setup_pipeline(self):
         calls = []
-        req = NS(committed=10, aborted=False)
+        req = NS(committed=10, aborted=False, complete=False)
+        req.finished = lambda: req.complete
         draft = NS(future_indices=object(), _prepare_length_buf=object())
-        batch = NS(spec_algorithm=NS(is_dflash=lambda: True),
+        batch = Batch(spec_algorithm=NS(is_dflash=lambda: True),
                    forward_mode=NS(is_decode=lambda: True), has_grammar=False,
-                   spec_info=draft, reqs=[req])
+                   spec_info=draft, reqs=[req], batch_is_full=False)
         scheduler = NS(device="cuda", running_batch=batch, last_batch=object(),
                        require_mlp_sync=False, waiting_queue=[], chunked_req=None,
                        enable_hisparse=False, model_worker=NS(),
@@ -42,9 +51,7 @@ class PlanTests(unittest.TestCase):
             self.assertIsNot(running_batch.spec_info, draft)
             self.assertIs(running_batch.spec_info.future_indices, draft.future_indices)
             self.assertIsNone(running_batch.spec_info._prepare_length_buf)
-            self.assertEqual(running_batch.reqs[0].committed, 18)
-            running_batch.filter_batch = lambda: setattr(running_batch, "reqs", [r for r in running_batch.reqs if not r.aborted])
-            running_batch.is_empty = lambda: not running_batch.reqs
+            self.assertEqual(req.committed, 18)
             return NS(batch_to_run=running_batch, running_batch=running_batch)
 
         scheduler.get_next_batch_to_run = build
@@ -72,6 +79,42 @@ class PlanTests(unittest.TestCase):
         req.aborted = True
         plan = pipeline.take_prepared()
         self.assertIsNone(plan.batch_to_run)
+
+    def test_next_turn_prefill_after_completion_has_priority(self):
+        pipeline, scheduler, batch, req, calls = self.setup_pipeline()
+        # Other requests remain runnable after this conversation completes.
+        survivor = NS(committed=10, aborted=False, finished=lambda: False)
+        batch.reqs.append(survivor)
+        batch.batch_is_full = True
+        process = scheduler.process_batch_result
+
+        def complete(*args):
+            process(*args)
+            req.complete = True
+
+        scheduler.process_batch_result = complete
+        callback = pipeline.callback(batch)
+        callback()
+        # The completed result makes the client send its next turn. Ingress
+        # happens in the next scheduler iteration, after the callback returned.
+        prefill = object()
+        scheduler.waiting_queue.append(prefill)
+
+        def choose(*, running_batch, last_batch):
+            # Match prefill admission: a finished row still occupying the
+            # full running batch prevents a new request from being admitted.
+            if scheduler.waiting_queue and len(running_batch.reqs) < 2:
+                self.assertFalse(running_batch.batch_is_full)
+                return NS(batch_to_run=prefill, running_batch=running_batch)
+            return NS(batch_to_run=running_batch, running_batch=running_batch)
+
+        scheduler.get_next_batch_to_run = choose
+        plan = pipeline.take_prepared()
+        if plan is None:
+            plan = scheduler.get_next_batch_to_run(running_batch=batch, last_batch=batch)
+        self.assertIs(plan.batch_to_run, prefill, "prepared decode displaced the next-turn prefill")
+        self.assertEqual(calls, ["fence", "output"])
+        self.assertTrue(pipeline.processed_previous)
 
     def test_boundaries_keep_normal_scheduling(self):
         for change in (lambda s, b: setattr(b, "has_grammar", True),

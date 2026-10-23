@@ -40,7 +40,14 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
 | `muse_dflash.py` | Retained, unbound; existing DFlash compute stays active | `cand_dflash_diag` |
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
-| Long prefill attention | FA3; experimental q_len>=2048 dispatch removed | `cand_v11_attn` |
+| Long prefill attention | **FA3 retained**; experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all6 shapes; no new path admitted |
+
+The prefill attention receipt landed during integration. `e789ab194eb7496c`
+passes correctness but selects FA3 at all6 shapes. For q_len16K, FA3 versus the
+fastest gather variant is36.8/80.8us (empty full context),65.184/115.168us
+(SWA2048),707.584/1352.64us (full32K),706.08/1342.88us (full64K). The experimental
+prefill dispatch therefore stays removed; the whole-layer score does not
+justify replacing a faster attention component.
 
 The TTFT audit found a concrete scheduler priority bug: the lookahead callback
 processes the previous result, publishes a completed turn, then prepares decode
@@ -69,7 +76,7 @@ it completed and showed HiCache backups/FlashInfer planning, not a deadlock.
 The old failure and all rejected runs remain in the evidence directory.
 
 No receipt IDs or external measurement files are read at runtime. Admission is
-source policy. Pending modules do not change the default or spend startup time.
+source policy. Unbound modules do not change the default or spend startup time.
 The local tests use immutable source snapshots, all74 prefill graph shapes,
 DFLASH/8 and exactly220 output tokens, with memory fraction0.85 on GPU0 for final TP1 pairs and0.3 for shared-GPU1 TP2 pairs.
 The `integration_hook` reaches projection, expert/finalize and attention AR

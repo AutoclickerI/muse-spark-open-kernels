@@ -856,6 +856,8 @@ The landed diagnostic profiles contain only the selected FA3 path: full B16 main
 
 | Verify admission gate v2 | `cand_attn_verify_stream2.py` computes a local FP32 dequantized-KV reference with the same causal/window mask and output gate, then computes the FP8-E4M3-query reference error and judge bound. Each FA3/XQA/stream choice is accepted only at <=0.8x bound and <=0.8x the 5x row bound; exceptions are logged and rejected. | This removes the old FA3-vs-FA3 15% proxy, which could accept a coherent-case failure. The tuner uses a compact coherent q8 input (ctx 2048) because the landed coherent q8 case has the tightest bound. | `cand_attn_verify_stream2.py`, local screen 16/16 tests + 12/12 graphs; H200 unverified |
 
+| Verify versus decode KV bandwidth | At B32, 80K, full context, q_len=8 reads the same KV bytes as q_len=1: the q1 stream is 196.5 us while verify attention is 391.8 us; the full verify layer is about 980 us, with roughly 480 us outside MoE. | The extra verify cost is attention math/scheduling over the same bytes, not a larger KV transfer. A q_len-8 stream at q1 gather bandwidth would therefore be the relevant win target. | q1/verify receipt notes; `problems/muse_attention_decode/cand_attn_verify_stream2.py`; pending decode-layer stream receipts |
+
 | Serving verify adapter | `muse_verify_attention.py` consumes the fused QK-norm op's FP8 query and physical paged FP8 K/V cache, walks page tables with exact causal/window limits, and dispatches only fixed q_len=8 GQA shapes; FA3 remains the fallback. | Local SM120 graph replay matches an independent FP32 page-table reference (relative L2 <=3e-5 for full/window). The local image lacks an FA3 SM90 cubin, so H200 adapter-vs-FA3 timing and graph parity remain open. | `serving/tests/test_muse_verify_attention.py`, `flashattention_backend.py`; local only |
 
 ### Prefill attention (2026-10-24)
@@ -873,13 +875,16 @@ the following effective dense-BF16 utilization (989 TFLOPS peak):
 | first 16K, ctx64K full | 8431.4 | 586.8 | 59.3% |
 
 The short sliding loads are launch/metadata limited. Long full attention sustains
-about 587–622 TFLOPS, leaving 37–41% of dense peak. `cand_attn_prefill.py`
-(`498c8c44...`) packages the measured FP8 Q/K plus FP8-PV path: a lossless
-page gather to contiguous storage, GQA reuse, online FP32 softmax, and exact
-causal/window masking. Its serving mirror is `muse_prefill_attention.py`; the
-backend dispatches only uniform q_len >=2048 FP8 prefill shapes and falls back
-to FA3 otherwise. Local graph/reference tests pass with 2.65–2.72% last-row
-error; H200 timing and serving gain remain unverified.
+about 587–622 TFLOPS, leaving 37–41% of dense peak. The FP8 gather recipe is
+closed on H200: `cand_v11_attn` scored 1.356768x, but at 16K full attention
+FA3 was 707.584/706.080 us over 32K/64K context versus gather256
+1352.640/1342.880 us, gather128 1468.544/1465.152 us, and gather64
+2646.944/2637.216 us. FA3 is therefore retained for prefill attention; the
+standalone block remains development evidence and has no serving dispatch.
+The current prefill winner is `99820fa6e5c14fe1` at 1.428625x, selecting
+`fa3_contiguous` on most shapes (about 7.62 ms for 16K over 64K and 418 us
+for 753 over 80K full). Evidence: `cand_v11_attn.e789ab194eb7496c.txt` and
+`cand_fused_expert_portfolio_routing.99820fa6e5c14fe1.txt`.
 
 ## Closed recipes
 A negative closes only the recipe tested. "Leaves open" names what the result does not rule out.
