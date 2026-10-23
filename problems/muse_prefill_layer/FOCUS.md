@@ -1,23 +1,25 @@
 # Prefill focus
 Serves: G2, G1.
 
-- Rank6/P2; optimize H200 score and the serving prefill path at753–16K tokens.
-- Best H200 remains v11: check6a9cd943fe404d74=1.367883x; scored965a9a816d4744ea=1.366811x; `submission.py` unchanged.
-- Ready: `cand_dense_fusion_portfolio.py`; exact hash/send order in `dev/NEXT_CHECKS.md`.
-- Structural dense choices: concatenated pooler/router BF16 bank, mixed BF16/FP32 GEMM output, fused router/top8 epilogue.
-- New TMA/WGMMA mixed-output GEMM has4 pipelines; router remains FP32 hi+lo, pooler rounds to BF16.
-- Persistent balanced Stream-K and fixed split-K keep FP32 partials; reduction epilogue rounds the projection to BF16 then applies residual/norm.
-- Separate-stream choices overlap router/pooler and pipeline expert/unpooler chunks2/4; joins and tensor lifetimes stay inside each call.
-- H200 prepare chooses10 front,5 O-boundary,7 back schedules per753/3012/16384, plus45 expert,15 dense and6 attention families.
-- Every tuner rejects/logs failed builds, checks, timings and finalists; builders share `dev/builder_safety.py` and `safe_score_tuning.py`.
-- Independent FP32 semantic checks use public3% floor/5x-row compare and actual router allowances; FA3 disagreement is diagnostic, not an incumbent gate.
-- No synthetic activations, oracle buffers or graphs survive prepare. Deduplicated timing catalogs fit the judge's16K log tail.
-- sm120 admission:5/5 official tests,8/8 timed graphs;278 structural fresh checks,40 TMA checks and16 fully selected Hopper-stand-in replays.
-- Warm forced prepare39.34s; all25 new Triton and4 native WGMMA specializations compile for SM90, native kernels without spills.
-- Local merged NN front=217/793us at753/3012 vs separate236/844us; no first-turn or H200 gain inferred.
-- New TMA, fused routing, Stream-K and most chunk schedules lose locally; keep them for H200 selection, whose WGMMA is not emulated MMA.sync.
-- Durable evidence/serving adapter details: `../../docs/FINDINGS.md`, `dev/round7_validation.json`, `dev/V11_PROFILE.md`.
-- Preserve TP/EP collectives before nonlinear normalization/unpooling; serving already overlaps router/pooler. Distributed chunk pipeline remains unverified.
-- Memory/layout count is a resource. KV requirements and actual-allocation caveats remain in FINDINGS / `dev/kv_budget.json`.
-- Orchestrator owns sends/commits. Queued fused/score sources are unchanged; no promotion handler or new judge process.
-- Remaining: H200 measurements/selection and cold prepare, serving TP/EP agreement/reentrancy, actual checkpoint/KV allocations.
+- Rank 6/P2; optimize H200 score and the serving prefill path at 753–16K tokens.
+- H200 control: v11 check `6a9cd943fe404d74` 1.367883x; scored `965a9a816d4744ea` 1.366811x.
+- Scored profile first-turn gaps: expert GEMM+dequant 917.137 ms, dense/router 781.297 ms,
+  attention 264.493 ms; tensor floor 1,295.661 ms.
+- New tuner routes random BF16 hidden rows through the prepared router hi+lo plus bias,
+  chooses the busiest 32-expert range, and constructs fresh local slots/counts.
+- It compares the old uniform fixture and router-derived fixture, but dispatches the realistic winner.
+  Every graph, oracle, timing and finalist error is logged `SCORE_REJECT` and dropped.
+- Three frozen routing-aware complete portfolios are ready; exact order and hashes are in
+  `dev/NEXT_CHECKS.md`: fused expert, dense fusion, then score portfolio.
+- `cand_fused_expert_portfolio_routing.py` has 45 expert choices; score has 32; dense fusion
+  retains structural front/back, 45 experts and six attention paths.
+- sm_120: all three pass 5/5 official tests and 8/8 graph shapes; prepare 4.2–4.4 s with
+  Hopper tuning dormant. Local route diagnostic shows route-dependent choices and timings; close sm_120 choices can vary.
+- H200 cold-L2 graph selection and receipts are unverified; no local timing is an H200 claim.
+- Serving KV is 15,872 B/token/GPU: 1.270/5.079/20.316/40.632 GB at c1/4/16/32 and 80K;
+  2.080/8.321/33.286/66.572 GB at the 131K cap. One full alternate bank is 54.358 GB/GPU.
+- Serving port facts from the folded notes: preserve TP/EP collectives, BF16 norm boundaries,
+  separate gate/up/down scales, capture padding and per-request KV mapping; agreement is open.
+- Old `RESULTS.md`, `PORTING.md`, and `dev/LIVE_STATUS.md` facts are folded into `docs/FINDINGS.md`;
+  this file is the lane entry point and stays under 30 lines.
+- The orchestrator sends and commits; the obsolete promotion handler and judge process are gone.

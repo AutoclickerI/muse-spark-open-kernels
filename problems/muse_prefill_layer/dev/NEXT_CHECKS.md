@@ -3,19 +3,17 @@
 Serves: G2, G1. Only the orchestrator sends or commits. This thread launched no judge run.
 `send` uses a scored slot while one remains, then a check, then waits for quota reset.
 
-## Ready
+## Ready for the 09:00 KST reset (20 prefill checks then)
+
+At reset, the orchestrator sends every ready source in this order; each source is frozen by its SHA256. A scored slot is used first while one remains, then checks.
 
 | Order | Source | Frozen SHA256 | Local screen | New information |
 |---:|---|---|---|---|
-| 1 | `cand_dense_fusion_portfolio.py` | `5a64a2fc8130ee91d6915f43516e8aff86cfddba0caa9cfc8768861d92b4c497` | `runs/screen/prefill_round7/muse_prefill_layer.cand_dense_fusion_portfolio.json` |10 merged/router/parallel front paths,5 O-projection+boundary paths,7 expert/unpooler schedules; all45 expert and6 attention paths retained. Per-shape H200 prepare selection. |
+| 1 | `cand_fused_expert_portfolio_routing.py` | `4fea734c0b00c006a55b1086ebe3dc240c6e6245a465c94eaa26e5a5ae676b98` | `runs/screen/prefill_routing_round8/muse_prefill_layer.cand_fused_expert_portfolio_routing.json` | 45 expert choices selected with layer-router-derived local counts; persistent/fused/direct/raw controls retained. |
+| 2 | `cand_dense_fusion_portfolio_routing.py` | `82fc7bb30cbfbd9a87c9c6d28bdb63cdf1747e1adba3ddddbab60a5d9d5a7349` | `runs/screen/prefill_routing_round8/muse_prefill_layer.cand_dense_fusion_portfolio_routing.json` | Structural dense/router front/back choices plus the same 45 routing-aware expert choices and six attention paths. |
+| 3 | `cand_score_portfolio_routing.py` | `d22c87c983983a4575e3c0196c9e4d6d3039308f4f6a2fdf100cfbad19aad186` | `runs/screen/prefill_routing_round8/muse_prefill_layer.cand_score_portfolio_routing.json` | Complete 32-choice expert, five dense/router and six attention portfolio with realistic routing selection. |
 
-Suggested note: “Structural dense/router portfolio: lossless concatenated pooler+router bank;
-BF16 pooler and FP32 hi/lo router mixed-output GEMMs;4 native TMA/WGMMA pipelines; router/top8
-fused into a GEMM epilogue; persistent balanced Stream-K and split-K with BF16 projection
-rounding plus residual/norm reduction epilogues; graph fork/join for router/pooler and expert/
-unpooler chunk overlap. Select complete subgraphs on fresh synthetic inputs under cold-L2
-paired graph timing. Reject/log graph-build, oracle, timing and finalist errors. Independent
-semantic oracle/public-floor tensor checks and public routing rules replace incumbent gates.”
+Suggested note: “Routing-aware prepare tuner: fresh BF16 hidden rows use the prepared layer router hi+lo and bias, select the busiest 32-expert range, construct local slots/counts, compare the legacy uniform fixture for diagnostics, and dispatch the realistic winner. Cold-L2 paired CUDA-graph timing and independent semantic/public-floor checks run for every choice. Graph-build, oracle, timing and finalist failures emit SCORE_REJECT and are dropped. All choices remain lossless and BF16-legal; no H200 result is inferred from sm_120.”
 
 ## Exact-source local admission (sm120, not H200)
 
@@ -53,8 +51,6 @@ its pre-edit c18fa82 bytes. Do not replace the queued source with a builder's ne
 
 | Previous order | Source | SHA256 | Local screen | Experiment |
 |---:|---|---|---|---|
-| -1 | `cand_fused_expert_portfolio.py` | `52414150237eb3e7f5b8aa240d62ea574b14639f35b8fda09d68edeed4aad27a` | Earlier local admission is c18fa82; coordinator added runtime rejection guards before queueing |45 expert choices; already queued as waiting147944. Do not resend. |
-| 0 | `cand_score_portfolio.py` | `fa202b0272f441d917938481fdecd976278858dbaadabaef089a2f0cf42a0452` | `runs/screen/prefill_round5/muse_prefill_layer.cand_score_portfolio.json` | Complete score portfolio:32 expert choices and multiple lossless banks;15 dense/router shapes with cuBLAS NT/NN, all Lt heuristics, DeepGEMM and persistent Triton;6 attention engines at all8 scored shapes. Synthetic prepare tuning on the judge chooses by speed. |
 | 1 | `cand_expert_portfolio_v2.py` | `b1538a10e562f7f5ba7043300eb787be14159f0f5fb1ec5a1259416a71b14f98` | `runs/screen/prefill_round4/muse_prefill_layer.cand_expert_portfolio_v2.json` | Primary diagnostic: 18 same-bank expert choices, including low-register BN64, BN256 and direct canonical DG; v11 attention/dense control. |
 | 2 | `cand_prefill_portfolio_v2.py` | `4ab8bccc3ddde270f499d67974be79c3aa191f66cda71d14732ba07d87919ea4` | `runs/screen/prefill_round4/muse_prefill_layer.cand_prefill_portfolio_v2.json` | Complete serving-compatible stage portfolio: same expert choices plus FA3/direct/gathered FP8 long-context attention. |
 | 3 | `cand_canonical_hybrid.py` | `6d10a6804cfa3964c2bdeb91e6708fd8c27f910d8e7342e6f91389199876dfc4` | `runs/screen/prefill_round4/muse_prefill_layer.cand_canonical_hybrid.json` | Fixed v11-style canonical control: BN128 pipeline below8192, direct-bank DG hint above; checks the fixed hybrid family with row hints and BR4 SwiGLU. |

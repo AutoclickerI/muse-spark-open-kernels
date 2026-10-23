@@ -355,7 +355,9 @@ Weights below are `[N,K]`; the operator returns this rank's `[M,N]` result.
 
 The additional pooler N512 and unpooler N1024/M>8 shapes have **no H200 projection receipt**.
 The module tunes their actual dimensions and checks them against torch; it assigns them no
-borrowed standalone speedup. If multicast is unavailable, use the existing full-size route.
+borrowed standalone speedup. At M<=16, these shards also try the same MMA kernel with
+legal cluster K splits2/4/8 to fill the extra SMs; all merges stay inside that kernel.
+If multicast is unavailable, use the existing full-size route.
 The stock automatic BF16 backend on Hopper reaches `F.linear`; Blackwell's separate CuTe/warp
 split-K tactics in `quantization/unquant.py` are not the baseline used by this H200 port.
 
@@ -376,6 +378,9 @@ is not a jointly measured portfolio. Of the ~1.6ms opportunity, this module supp
 ~0.28ms; the already-ported router/QKV supply ~1.33ms. These are **modeled standalone
 savings**, excluding collectives, overlap, launch-policy differences and serving agreement.
 They are not incremental gains over the current pooler/unpooler sharding patch.
+The10.037ms c1 step above already composes optimized layer receipts (its projection
+attribution is2.291ms, versus4.710ms for62 stock standalone projection sums). It is a
+different baseline: subtracting another1.616ms from that step would double-count gains.
 Reproduce with `python serving/tests/muse_proj_model.py`; machine-readable arithmetic is
 `runs/screen/serving_proj/receipt_model.json`.
 
@@ -386,11 +391,27 @@ shape, M and device; cached selections are rechecked against each new weight wit
 Bad trials/finalists are logged and discarded; the trial deadline is15s per new local
 projection. Only selected NN plans retain a lossless weight transpose. A temporary32MiB
 Lt workspace belongs to each call/graph allocator, so concurrent graphs do not share scratch.
+An NN copy costs `2*N*K` bytes:16.78MB for o,67.11MB for either full pooler/unpooler,
+and8.39MB for either TP8 output-row slice. These are layout bytes, not a measured KV-pool
+cost; pass the actual M list so unused full-size paths retain no layout.
 Forward contains no tuning, host sync, input-value branches or cached outputs.
 The serving lane must preserve o's reduction, pooler/unpooler gather and fused boundary
 ownership; this module performs no collective and changes no parameter registration.
 
-Local validation and remaining H200 work are recorded after the module's final screen.
+Local **sm_120** admission: **8/8 unit tests**, **65 public shape cases**, **939 fresh-input
+native graph replays** (313 configurations, including exact weight-column probes), **30 concurrent
+graph pairs**, **15 public graph replays**, **33 forced Hopper ABI cases**, and launch/numeric
+rejection plus expired-budget tests. Maximum relative L2 against torch is**0.005039** (bound0.01).
+TP8 slice/gather math is emulated on GPU0 (18 changed-input replays); o's reduction boundary
+adds3 replays. This is not an NVLink/TP8 distributed test. The complete CUDA source builds
+for**sm_90a**; Hopper execution remains unverified. A capture failure from delayed tuning-graph
+destruction was fixed with explicit graph/stream teardown inside prepare; the regression test
+forces garbage collection during capture with zero live tuning streams.
+Reproduce: `CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_muse_proj.py`.
+Evidence: `runs/screen/serving_proj/tests.json`, `muse_proj_sm120.log`, `muse_proj_sm90a.log`.
+The serving lane still owns wiring, full-model stock-vs-stock/patched agreement, H200 TP8 timing,
+post-capture memory/KV capacity and TTFT; regenerate `serving/patch.diff` from the final source
+after wiring. No judge run or commit was launched by this port.
 
 `muse_spark_humming.py` ports the V11 indexed wide producer behind the existing dense
 `[T,8,H]`/identity-or-minus-one finalize interface. It keeps V9 below256 and grouped prefill.

@@ -159,6 +159,13 @@ class ProjectionTests(unittest.TestCase):
         op.prepare((31,33,255),budget_s=0)
         x=torch.randn((255,1024),device='cuda',dtype=torch.bfloat16)
         agree(op(x),F.linear(x,w))
+        # Later layers must still reuse validated shape choices after the
+        # new-trial budget expires, rather than silently reverting to cuBLAS.
+        key=(op.weight.device.index,op.kind,tuple(op.weight.shape),128)
+        cached=p._PLAN_CACHE[key]
+        with patch.object(op,'_variants',side_effect=AssertionError('trial after deadline')):
+            op.prepare((128,),budget_s=0)
+        self.assertEqual(op.plans[128],cached)
         COUNTS['injected_rejections']+=2
 
     def test_06_immutable_weights_and_capture_contract(self):
@@ -225,7 +232,9 @@ if __name__=='__main__':
     args=ap.parse_args()
     if args.build_only:
         p._module(args.build_only)
-        print(json.dumps(dict(arch=args.build_only,build='ok')))
+        print(json.dumps(dict(arch=args.build_only,build='ok',
+                              module_sha256=hashlib.sha256(Path(p.__file__).read_bytes()).hexdigest(),
+                              cuda_sha256=hashlib.sha256(p._CUDA_SOURCE.encode()).hexdigest())))
         raise SystemExit(0)
     started=time.monotonic()
     result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(ProjectionTests))
