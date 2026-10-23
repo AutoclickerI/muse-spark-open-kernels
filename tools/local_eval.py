@@ -33,6 +33,9 @@ import torch
 REPO = Path(__file__).resolve().parent.parent
 FLUSH_BYTES = 1 << 30  # read before every timed replay; larger than any L2 here or on an H200
 PREPARE_LIMIT_S = 300
+# Modules built for Hopper only. Off sm_90 they exit the process from C++ ("no kernel image is
+# available"), which no try/except catches, so a baseline that imports one isn't run there.
+HOPPER_ONLY = ("sgl_kernel.flash_attn",)
 
 
 def problem_of(path: Path) -> str:
@@ -267,6 +270,11 @@ def main():
     result = {"problem": name, "file": str(file), "sha256": hashlib.sha256(file.read_bytes()).hexdigest(),
               "gpu": dev.name, "cc": f"{dev.major}.{dev.minor}", "torch": torch.__version__}
 
+    if (dev.major, dev.minor) != (9, 0) and hasattr(ref, "_fa3_scheduler_metadata"):
+        # generate_input asks FA3 for its tile schedule on full-attention decode steps; FA3 imports
+        # here but can't run. Take the reference's own no-FA3 path (it returns None on ImportError).
+        setattr(ref, "_fa3_scheduler_metadata", lambda *_, **__: None)
+        print("note: off Hopper, inputs carry scheduler_metadata=None (the judge's carry FA3's schedule)")
     weights = ref.generate_weights(ref.WEIGHTS_SEED) if hasattr(ref, "generate_weights") else None
     if hasattr(ref, "weights_fields"):
         print("note: the judge also picks a router seed per run (weights_fields) to hit each load's"
@@ -284,7 +292,10 @@ def main():
             args.tests_only = True
     if not args.tests_only:
         sides = [sub]
-        if not args.no_baseline:
+        hopper_only = [m for m in HOPPER_ONLY if m in (pdir / "baseline.py").read_text()]
+        if hopper_only and (dev.major, dev.minor) != (9, 0) and not args.no_baseline:
+            print(f"baseline uses {', '.join(hopper_only)}, built for Hopper only; timing the submission alone")
+        elif not args.no_baseline:
             try:
                 sides.append(Side("baseline", load_module("baseline", pdir / "baseline.py"), weights))
             except Exception as e:

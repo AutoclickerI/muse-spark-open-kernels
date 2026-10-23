@@ -84,18 +84,38 @@ okc leaderboard muse_moe_w4a16
 `local_eval.py` follows TASK.md's description of the timing: fresh inputs every replay, the
 L2 flushed, paired ratios in swapped order, and a geometric mean over loads. It uses its own
 test seeds. On the layer problems, the judge also picks a router seed per run, so a pass here
-is necessary but not sufficient. Without the image, the host env
-`~/anaconda3/envs/comp_kv` (torch 2.13, cu130) runs the tests and times the submission alone
-(`--no-baseline`), because `baseline.py` needs `sglang`.
+is necessary but not sufficient.
+
+What runs locally, in the image on sm_120 (checked 2026-10-23 with the starters):
+
+| problem | local tests | local timing vs SGLang |
+|---|---|---|
+| `muse_bf16_proj` | yes | yes |
+| `muse_moe_w4a16` | yes | yes: SGLang's Marlin MoE JIT-compiles for sm_120 |
+| `muse_attention_decode` | yes | submission alone: SGLang's kernel is FA3, Hopper-only |
+| `muse_decode_layer` | yes | submission alone (FA3) |
+| `muse_prefill_layer` | yes | submission alone (FA3) |
+
+Off Hopper, inputs carry `scheduler_metadata=None`. That is the reference's own fallback when
+FA3 is missing; the judge's inputs carry FA3's tile schedule on full-attention decode steps.
+
+Without the image, the host env `~/anaconda3/envs/comp_kv` (torch 2.13, cu130) runs the tests
+and times the submission alone (`--no-baseline`), because `baseline.py` needs `sglang`.
 
 `CUDA_VISIBLE_DEVICES=0|1` gives two lanes a GPU each.
 
 ## Environment
 
-- **Judge image:** `lmsysorg/sglang@sha256:8cfc5a72…` (the pin from `GET /api/v1/serving`),
-  pulled as `/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sif`.
-  `tools/img` runs it with `--nv --contain --cleanenv`, so host `~/.local` packages stay out.
-  Its JIT caches persist in `/data2/jihoon/muse_kernel/img-home`.
+- **Judge image:** `lmsysorg/sglang@sha256:8cfc5a72…` (the pin from `GET /api/v1/serving`).
+  It was pulled as `/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sif`
+  (16.6 GB) and unpacked once beside it as `….sandbox` (41 GB). This host has no squashfuse,
+  so running the `.sif` itself would unpack it into `/tmp` on every call. `tools/img` uses
+  the sandbox. It runs with `--nv --contain --cleanenv`, so host `~/.local` packages stay out.
+  JIT caches persist in `/data2/jihoon/muse_kernel/img-home`, and `/tmp` is
+  `/data2/jihoon/muse_kernel/img-work`.
+- **Image contents:** Python 3.12.3, torch 2.14.1+cu130 (built for sm_75 through sm_120),
+  Triton 3.8.0, sgl_kernel 0.4.9, flashinfer 0.7.0.post1, DeepGEMM 0.2.1.post1+muse,
+  TileLang 0.1.12, CUTLASS DSL 4.8.0.
 - **CLI:** `okc` 0.7.1, in `~/.okc/bin`. `okc update` upgrades it.
 - **Account:** submissions are refused until a person runs `okc login` in a terminal. That
   shows the rules and terms to accept, then GitHub's device flow. An agent must not accept

@@ -8,12 +8,19 @@
 #   tools/img                  # a shell in the image
 set -eu
 repo=$(cd "$(dirname "$0")/.." && pwd)
-sif=${MUSE_SIF:-/data2/jihoon/muse_kernel/images/sglang-dev-muse-spark-open-8cfc5a72.sif}
+# The image unpacked once (apptainer build --sandbox from the .sif): this host has no squashfuse,
+# so running the .sif itself unpacks all of it into /tmp on every call (~75 s, ~40 GB).
+images=/data2/jihoon/muse_kernel/images
+sif=${MUSE_SIF:-$images/sglang-dev-muse-spark-open-8cfc5a72.sandbox}
+[ -e "$sif" ] || sif=$images/sglang-dev-muse-spark-open-8cfc5a72.sif
 # A home of its own, so the host's ~/.local packages stay out and JIT caches (Triton, torch
 # extensions) persist between runs.
 home=${MUSE_IMG_HOME:-/data2/jihoon/muse_kernel/img-home}
-mkdir -p "$home"
+# /tmp and /var/tmp on disk: --contain's default is a 64 MB tmpfs (apptainer.conf sessiondir max
+# size), too small for nvcc's temporaries when SGLang JIT-compiles a kernel.
+work=${MUSE_IMG_WORK:-/data2/jihoon/muse_kernel/img-work}
+mkdir -p "$home" "$work"
 [ $# -gt 0 ] || set -- bash
-exec apptainer exec --nv --contain --cleanenv --home "$home" --bind "$repo" --pwd "$PWD" \
+exec apptainer exec --nv --contain --cleanenv --home "$home" --workdir "$work" --bind "$repo" --pwd "$PWD" \
   --env PYTHONNOUSERSITE=1 ${CUDA_VISIBLE_DEVICES:+--env CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES} \
   "$sif" "$@"
