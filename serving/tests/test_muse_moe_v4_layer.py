@@ -17,7 +17,7 @@ from sglang.kernels.ops.muse_spark_v12.fused_post_expert_norm_weighted_sum_trito
     fused_post_expert_norm_weighted_sum,
 )
 from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
-from sglang.srt.layers.muse_spark_moe_v4 import prepare, run_layer
+from sglang.srt.layers.muse_spark_moe import prepare, run_layer
 from sglang.srt.layers.quantization.marlin_utils import marlin_make_workspace
 from sglang.srt.layers.quantization.marlin_utils_fp4 import (
     prepare_moe_nvfp4_layer_for_marlin,

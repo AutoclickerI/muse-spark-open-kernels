@@ -2,45 +2,42 @@
 
 Local-only round, 2026-10-23. **No checks or scored runs were sent in this round, and no
 submission worker was started.** The coordinator owns the old queue and promotion;
-`finish_queue.py` remains stopped. `submission.py` was not changed by this round.
+`finish_queue.py` remains stopped. The V8 source and serving rename are local-only in this
+round; `submission.py` is unchanged and no serving check is sent from this queue note.
 Use `tools/okc_run.py` after 09:00 KST, detached, with a note. Its local priority queue
 owns the global four-run judge limit; do not create another sender/scheduler.
 
 ## Order
 
+No remote checks or scored runs go out before the 09:00 KST reset. No worker or scheduler is
+started in this round; reconcile pending coordinator receipts first. After reset, use only
+`tools/okc_run.py` through the coordinator, which owns the four-run judge cap.
+
 | Order | Source | Decision and purpose |
 |---:|---|---|
-| 1 | `problems/muse_moe_w4a16/cand_probe.py` | **Diagnostic check only.** Fourteen variants on every load: native residency/staging controls, RS-WGMMA token widths, adaptive scheduling, and 64/128-row weight blocks. Establish which canonical-bank reader wins at M32/128/256 before spending checks on policy variants. |
-| 2 | `cand_rs128_7.py`, `cand_rs7.py` or `cand_rs_tma.py`, chosen from #1 | First production check. All three V7-native revisions are self-contained and pass local standard tests and graph timing. Use the row geometry and direct/bulk reader supported by variant intervals and peer-error logs. Default public policy is native below M64 and grouped at M64+. If RS also wins at M32, test a broad threshold such as M24/32, rescreen locally, then check that policy. Do not blindly enumerate every N. |
-| 3 | `cand_ready9.py`, conditional | V9 plus per-expert **token-block** W13 readiness. Use if the coordinator's V9 result wins and the probe/profile indicates a readiness tail; local gain over V9 is within noise. Otherwise reserve this check. |
-| 4 | The other row-block candidate, conditional | Check only if #1 suggests a real crossover that #2 cannot cover, or the production result disagrees with the probe. Combine readers over the **same** V6 bank. |
+| 1 | `problems/muse_moe_w4a16/cand_v8.py` | **First production check.** V6's occupancy-sized resident grid plus V7's incremental expert/token-block/tile iterator on the canonical one-bank V6 layout. Check all six decode/verify loads; do not send the diagnostic instead. |
+| 2 | `problems/muse_moe_w4a16/cand_rs128.py` | Canonical-bank grouped 128-row RS alternative for large verify/prefill, with its V6 native small-M control. Check only if V8 does not cover the prefill crossover or its production result disagrees with local evidence. |
+| 3 | `problems/muse_moe_w4a16/cand_rs.py` | 64-row grouped canonical-bank control. Use only for a demonstrated row-geometry crossover or if RS128 disagrees; do not enumerate widths blindly. |
+| 4 | `problems/muse_moe_w4a16/cand_ready9.py` (conditional) | V9/native small-M path with current-token-block W13 readiness. Promote ahead of RS controls only if the pending V9 receipt/profile shows a competitive native path and a readiness tail. |
 
-New evidence: V7 check `f95bdf5e394e474e` passed cleanly at **1.53517x**, CI
-[1.51214, 1.55820]. Per-load ratios (M1/16/32/8/128/256) are
-2.136 / 1.614 / 1.326 / 1.739 / 1.312 / 1.255x. Its checked NT1 path improves every
-small load over V6, so `cand_rs7.py` and `cand_rs128_7.py` now carry V7 below M64.
-The original RS files retain V6 as controlled versions, and the diagnostic retains V6
-residency controls **plus variant 12 for exact V7**. Both native modules in the diagnostic
-share the same packed tensors; its prepare does not repack a V7 copy.
+V8 passed the fresh sm120 local screen after the final policy was restored (`nt=1`, two
+requested stages, occupancy-sized grid): all five correctness tests passed and all six graph
+shapes passed. Its local geometric-mean speedup was 1.215x; this is only a loose sm120 rank,
+not an H200 result. Its SM90a source compiled. The V8 serving transplant keeps cooperative
+launch for the native global barrier and uses per-invocation counters.
 
-Reconcile pending V9 `f6028a478d594b31`, v4n1, humming6/6k and the old hybrid receipt
-with the coordinator. The dual-bank hybrid is not a serving candidate. If V9 becomes a
-better checked native path, transplant its small-M call into the selected RS candidate
-and rescreen locally; the packed format is identical.
+V7's H200 check `f95bdf5e394e474e` is 1.53517x (CI [1.51214, 1.55820]); V8's first judge
+check should establish whether the resident occupancy grid recovers V16 while retaining the
+V7 iterator gains. The old `local_v8.log` predates the final host policy and is not evidence
+for this source.
 
-Suggested first invocation **after reset**, through the coordinator's queue:
+Reconcile pending V9 `f6028a478d594b31`, v4n1, humming6/6k and old hybrid receipts with the
+coordinator before choosing conditional order. The dual-bank hybrid remains retired. Suggested
+V8 note after reset:
 
-```bash
-python3 tools/okc_run.py check problems/muse_moe_w4a16/cand_probe.py \
-  --note "Canonical-bank diagnostic: native residency/staging, RS N8/16/32/64/128, adaptive N, 64/128 weight rows, K512 bulk weight staging and checked V7 control; graph device intervals, not a scored candidate"
+```text
+V8: V6 occupancy-sized resident grid plus V7 incremental expert/token-block/tile iterator on one canonical V6 bank; local correctness, fresh CUDA graphs, and SM90a compile pass; production six-load check
 ```
-
-A passing production check must beat the then-current checked best before promotion/scoring.
-Read full MoE latency, not only a GEMM interval. V6's H200 reference is 1.4916x
-(`eefecf1eeb724feb`); the supplied top-50 target is 1.711x. If decode-32 stays unchanged,
-**both** large verify loads need about 1.51x acceleration over V6 to reach that target.
-Improving all three target loads equally needs about 1.315x each. These are geometric-mean
-arithmetic, not performance predictions. Humming3's batch-256 win alone is insufficient.
 
 ## What the diagnostic measures
 

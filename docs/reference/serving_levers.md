@@ -71,13 +71,13 @@ Every path checks `has_multicast` and falls back to stock.
   74K-token first turn. Tested: `serving/tests/test_rowsplit.py` on 2 local GPUs over NCCL, bitwise equal to the
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
-- **MoE v4 at verify sizes** (`layers/muse_spark_moe_v4.py`, dispatch in
-  `muse_spark_fp4_moe.py` for M = 8/128/256, Marlin elsewhere, `SGLANG_MUSE_MOE_FORCE_STOCK=1` for A/B).
-  V4 now exposes raw dense expert rows to the shared finalize interface, so the post-expert norm and weighted
-  sum remain one producer-independent operation and can participate in the finalize/all-reduce path. The
-  current V4 layer screen is 0.0056-0.0061 relative L2 (problem tolerance 0.015); H200 arithmetic and the
-  new sm90 finalize path still need node validation. It keeps BOTH banks (+57 GB/GPU; docs/reference/moe_port.md,
-  docs/reference/expert_layout.md): it must become one bank before a serving check.
+- **MoE V8 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
+  `muse_spark_fp4_moe.py`). V8 combines the V6 occupancy-sized resident grid with V7's
+  incremental tile iterator on the canonical V6 bank. Native V8 handles verify/decode rows;
+  the grouped reader handles 753-16K prefill rows from the same bank. Both expose dense expert
+  rows to the shared finalize interface. The layer screen is 0.0065-0.0070 relative L2
+  (problem tolerance 0.015); H200 V8 runtime and full-node memory remain unverified.
+
 
 ## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.
