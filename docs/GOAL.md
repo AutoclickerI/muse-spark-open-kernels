@@ -22,7 +22,6 @@ Targets come from the bound ([bound](reference/bound.md)): serving score at most
 ## Decision rights
 - Pre-authorized beyond the global list: any change that improves performance within the rules,
   including scored runs within quota (R-20261023-3, R-20261023-4).
-- Ask the owner before shipping a boundary case marked "asked" in CONSTRAINTS.
 
 ## Terms
 - **verify load**: `verify N` = N requests x 8 tokens (DFlash TARGET_VERIFY), the only decode shape serving runs.

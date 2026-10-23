@@ -22,19 +22,21 @@ Each rule is `[hard]` (external, or protects others, shared resources, safety or
 
 ## Jihoon's rules (below G0)
 
-None confirmed yet (PLAN "Open questions").
+15. **Delegate to Codex.** [owner] Subagents default to `codex:codex-rescue`. [Jihoon, R-20261023-5]
+16. **No gpt-6-sol.** [owner] Use gpt-6.1-sol instead. [Jihoon, R-20261023-5]
 
 ## Boundary cases (what the rules allow)
 
 | Rule | Case | Reading | Status |
 |---|---|---|---|
+| 2-12 | Anything else on the kernel boards | Allowed when the judge accepts it and no rule explicitly bans it | allowed (R-20261023-6) |
 | 2, 5, 6 | Any reordering (fusion, accumulation and split-K order, scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order; tests and agreement bound the drift | allowed (R-20261023-4) |
 | 2, 5-7, 10 | Below the allowed precision: FP8/FP4 activations, fewer experts, skipped keys | Forbidden | forbidden; inadmissible column of the bound only (R-20261023-4) |
 | 6 | FP8 softmax probabilities in the PV MMA with an FP8 cache | SGLang's FA3 does it | allowed |
 | 5 | Two lossless copies or layouts of the same weights | Lossless; in serving it costs HBM | allowed |
 | 8 | Image binaries (cuBLAS, DeepGEMM, FA3, Humming), nvcc/JIT builds, inline PTX | "build on anything in the image" | allowed |
-| 2, 8 | Our own cubin or hand-edited SASS in a kernel submission | Not forbidden in the text; at odds with "upstreamed". Recommend: reach the SASS through PTX and flags | asked 2026-10-23 |
+| 2, 8 | Our own cubin or hand-edited SASS in a kernel submission | Accepted by the judge and not explicitly banned; discretionary review remains a risk (2) | allowed (R-20261023-6) |
 | 9 | Our own cubin in the serving patch, even base64 in a `.py` | A binary change in substance | forbidden (9) |
-| 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data`; recommend allowed | asked 2026-10-23 |
-| 11 | Tree verification over DFlash drafts; adaptive draft length under the fixed flags | Drafter unchanged, greedy outputs agree; recommend allowed | asked 2026-10-23 |
+| 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
+| 11 | Tree verification over DFlash drafts; adaptive draft length under the fixed flags | Drafter unchanged; ship only when the harness shows agreement | allowed (R-20261023-8) |
 | 9, 10 | Re-sharding weights (pooler split, drafter fc split, expert layout); scheduling changes (chunk order, batching, overlap) | Repacking after load; flags keep their meaning; TTFT cap | allowed |

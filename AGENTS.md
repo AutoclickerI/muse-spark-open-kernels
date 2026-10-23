@@ -24,7 +24,7 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 - Time several variants inside one diagnostic check: the judge starts ~11 of our runs an hour.
 - Write kernels so they drop into `serving/sglang/python/sglang/`. Serving runs only verify loads and prefill.
 - Run `tools/sync_upstream.sh` before starting; read the diff if official files changed.
-- Delegate to `codex:codex-rescue` (default). Reroute a capacity-stopped job by resuming its thread
+- Delegate per CONSTRAINTS 15-16. Reroute a capacity-stopped job by resuming its thread
   on another model (RESOURCES "Inventory").
 
 ## Commands

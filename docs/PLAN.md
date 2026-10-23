@@ -42,9 +42,5 @@ Step 3 dominates, since one result costs hours of wall time.
 | 9 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | next |
 
 ## Open questions
-- Keep these as rules? "for subagents, use codex rescue as a default" (transcript:2211) and "don't
-  use gpt-6-sol from now on" (transcript:2755). Recommend yes, both as owner rules. They are followed meanwhile.
-- The three boundary cases marked "asked" in CONSTRAINTS: our own cubin or SASS in kernel
-  submissions, autotuning in `prepare()`, and tree verification or adaptive draft length.
-- G2 above G3? The overall top-50 cut (G3) closes 11-05, before serving opens, and its decode loads
-  never run in serving. Recommend keeping G2 first while MoE and decode-layer work serves both.
+- G2 above G3? The overall top-50 cut (G3) closes 11-05, before serving opens, and its decode loads never
+  run in serving. Recommend keeping G2 first while MoE and decode-layer work serves both (not yet asked).

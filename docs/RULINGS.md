@@ -11,7 +11,7 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Source: transcript:147. Answered "What is the real goal? The prizes are only on the serving board
   (Nov 5–19). The kernel boards pay nothing, but they lead into serving through queue priority and
   kernels we can port into SGLang."
-- Effect: G0, and the subgoal ranking G1 > G2 > G3 (GOAL).
+- Effect: G0 (GOAL).
 
 ## R-20261023-2 — 2026-10-23 14:37 KST — private GitHub repo
 > Private GitHub repo (Recommended)
@@ -36,8 +36,41 @@ question-tool label is Jihoon's word; the question and option text are agent con
   (PLAN P6) also reports an "outside the rules" column, labelled inadmissible.
 - Conflict: approximation below the allowed precision (FP8/FP4 activations, fewer experts, skipped
   keys) breaks hard limits 2 and 5-7. Binary changes in the serving patch break limit 9. The hard
-  limits win (llms.txt:107-110, 126, 137). Whether our own cubins or hand-edited SASS may go into a
-  kernel submission was asked 2026-10-23.
+  limits win (llms.txt:107-110, 126, 137). Our own cubins and SASS on the kernel boards: R-20261023-6.
+
+## R-20261023-5 — 2026-10-23 21:55 KST — Codex default, never gpt-6-sol: kept as rules
+> Keep both (Recommended)
+
+- Source: transcript:6054. Answered "Keep these two instructions as standing rules: 'for subagents, use
+  codex rescue as a default' and 'don't use gpt-6-sol from now on'?" The words behind them (2026-10-23):
+  "for subagents, use codex rescue as a default." (transcript:2211) and "don't use gpt-6-sol from now on.
+  there is no reason to use it. we can just use gpt-6.1-sol instead." (transcript:2755)
+- Effect: rules 15 and 16.
+- Confirmed: in the words.
+
+## R-20261023-6 — 2026-10-23 21:55 KST — anything the board accepts and the rules don't ban
+> do anything accepted in leaderboard and not explicitly banned in rules.
+
+- Source: transcript:6054. Answered "May a kernel-board submission embed our own compiled cubin or
+  hand-edited SASS (the serving patch can't; it forbids binary changes)?"
+- Effect: our own cubins and hand-edited SASS are allowed in kernel submissions. Kernel-board boundary
+  cases are read the same way: allowed when the judge accepts them and no rule explicitly bans them.
+- Conflict: llms.txt:139 keeps discretionary disqualification for entries outside "the spirit of the
+  challenge"; that is a review risk, not an explicit ban, so the case is allowed.
+
+## R-20261023-7 — 2026-10-23 21:55 KST — autotuning in prepare()
+> Allowed (Recommended)
+
+- Source: transcript:6054. Answered "May prepare() autotune: time candidate kernels on synthetic inputs
+  of the fixed shapes and pick per shape (untimed, nothing derived from the timed data)?"
+- Effect: allowed (CONSTRAINTS "Boundary cases").
+
+## R-20261023-8 — 2026-10-23 21:55 KST — tree verification and adaptive draft length
+> Allowed if agreement holds (Recommended)
+
+- Source: transcript:6054. Answered "In serving, may we verify a tree of DFlash drafts or adapt the
+  draft length, keeping the released drafter and stock-agreeing outputs?"
+- Effect: allowed when the local harness shows agreement with stock (CONSTRAINTS "Boundary cases").
 
 ## Dropped agent rules (do not reintroduce)
 
