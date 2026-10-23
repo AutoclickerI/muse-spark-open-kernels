@@ -71,7 +71,19 @@ The overall board's formula is unpublished. If problems count in proportion to S
 decode step (the only published per-problem weight that adds up to a step), the shares are: decode
 layer 51%, MoE 30%, proj 11%, attention 8% (prefill isn't on the overall board). Under that reading
 decode layer and MoE carry ~80% of the rank; under an equal-weight reading attention is worth as much
-as either. Ask or watch the board before trading one against another.
+as either.
+
+Tested against the boards on 2026-10-23 19:30 KST (372 teams; script in the session, data from
+`okc leaderboard <problem> --json` and `GET /leaderboard`):
+- `solved` is the number of entries on proj, attention, MoE and decode layer (matches 368 of 372
+  teams; with prefill counted, 279). Prefill is not on the overall board.
+- Overall ranks 1-8 are exactly decode-layer ranks 1-8, and ranks 46-55 follow decode ranks 44-52.
+  Of the formulas tried, a time-weighted speedup (sum of SGLang's per-step times over the sum of the
+  team's, a missing problem counted as 1.0x) fits best (Kendall tau 0.895; top-50 overlap 46 of 50).
+  Geometric mean of speedups: tau 0.836; mean per-problem rank: 0.73-0.76.
+- Under the time-weighted reading the 50th place was at about 1.38x (jcstein: proj 1.237, attention
+  1.448, MoE 1.398, decode 1.385). Our receipts at the time give about 1.19x (proj 1.0, attention 1.28,
+  MoE 1.35, decode 1.14). Decode layer is the lever for the serving-priority cut, then MoE.
 
 ## Serving (model)
 
