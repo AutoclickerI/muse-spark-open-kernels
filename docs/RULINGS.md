@@ -45,7 +45,7 @@ question-tool label is Jihoon's word; the question and option text are agent con
   codex rescue as a default' and 'don't use gpt-6-sol from now on'?" The words behind them (2026-10-23):
   "for subagents, use codex rescue as a default." (transcript:2211) and "don't use gpt-6-sol from now on.
   there is no reason to use it. we can just use gpt-6.1-sol instead." (transcript:2755)
-- Effect: rules 15 and 16.
+- Effect: rule 15; rule 16 is now set by R-20261023-9.
 - Confirmed: in the words.
 
 ## R-20261023-6 — 2026-10-23 21:55 KST — anything the board accepts and the rules don't ban
@@ -71,6 +71,19 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Source: transcript:6054. Answered "In serving, may we verify a tree of DFlash drafts or adapt the
   draft length, keeping the released drafter and stock-agreeing outputs?"
 - Effect: allowed when the local harness shows agreement with stock (CONSTRAINTS "Boundary cases").
+
+## R-20261023-9 — 2026-10-23 22:55 KST — Codex models: gpt-6.1-sol and gpt-6-astra
+> use gpt-6.1-sol. not old models.
+
+> use 6.1-sol and 6-astra.
+
+> Retry gpt-6.1-sol only (Recommended)
+
+- Source: transcript:6579 (after lanes had been rerouted to gpt-5.6-sol, gpt-6-luna and gpt-6-astra on
+  capacity errors); transcript:6649 answered "Make 'use gpt-6.1-sol, not old models' a standing rule
+  (extending rule 16 ...)?" and "When gpt-6.1-sol itself is at capacity ..., what should a stopped lane do?"
+- Effect: rule 16.
+- Confirmed: the answer to the standing-rule question.
 
 ## Dropped agent rules (do not reintroduce)
 

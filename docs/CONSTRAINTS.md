@@ -23,7 +23,7 @@ Each rule is `[hard]` (external, or protects others, shared resources, safety or
 ## Jihoon's rules (below G0)
 
 15. **Delegate to Codex.** [owner] Subagents default to `codex:codex-rescue`. [Jihoon, R-20261023-5]
-16. **No gpt-6-sol.** [owner] Use gpt-6.1-sol instead. [Jihoon, R-20261023-5]
+16. **Codex models.** [owner] Lanes run on gpt-6.1-sol or gpt-6-astra only; a lane stopped by a capacity error is resumed on gpt-6.1-sol. [Jihoon, R-20261023-9]
 
 ## Boundary cases (what the rules allow)
 
