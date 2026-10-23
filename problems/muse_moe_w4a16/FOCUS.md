@@ -1,5 +1,7 @@
 # MoE focus
 
+Serves: G3, G2, G1.
+
 Measured H200 receipts drive this round. V9 check `f6028a478d594b31` is 1.654x overall:
 2.196/1.717/1.392 at decode M1/16/32 and 1.813/1.590/1.356 at verify M8/128/256.
 The prior V7 scored 1.535x; hybrid V9-native/Humming-wide check `318227bc382d465c`
