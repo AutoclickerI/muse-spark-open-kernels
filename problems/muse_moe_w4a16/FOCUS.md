@@ -15,3 +15,9 @@ M=1,8,16,32,64,128,256,753,3012,16384. The canonical bank is 864 MiB/GPU.
 
 Next: decode-layer integration consumes `dev/V9_ABI.md`; wait for V9 scored receipt,
 then compare its per-load table with V11 and port the winning dispatch into the layer.
+V9 headroom model (routing means from `sim/routing.json`, direct distinct experts): total bytes
+are 74.9/338.3/451.5/239.5/644.1/694.7 MB for M=1/16/32/8/128/256.
+Using receipt times, achieved bandwidth is 2.14/3.11/3.08/3.06/2.17/1.50 TB/s;
+P8 implementation range is 3.0–3.15 TB/s and spec is 4.8 TB/s. Tensor work is 19.85/39.38 us
+at M128/M256, below HBM time. Weighted excess over 3.075 TB/s is largest at verify-32
+(~323 weighted us), then verify-16 (~138); this round probed a 3-stage V9 ring at M128.

@@ -163,6 +163,7 @@ Per-load speedups against SGLang from our checks. The per-shape tables are in `p
 
 | Kernel (job) | Overall | Decode loads | Verify loads (serving's) | Notes |
 |---|---|---|---|---|
+| MoE V9 headroom model | Receipt V9 apparent HBM bandwidth 2.14 / 3.11 / 3.08 / 3.06 / 2.17 / 1.50 TB/s for decode M1/16/32, verify M8/128/256; direct routing bytes 74.9 / 338.3 / 451.5 / 239.5 / 644.1 / 694.7 MB | M256 is the largest weighted gap; M128/M256 BF16 tensor floors are 19.85 / 39.38 us, below HBM | `runs/muse_moe_w4a16/20261023T115744Z_check_f6028a478d594b31.json`, `sim/routing.json`, P8 bandwidth probe |
 | MoE V9 (`f6028a478d594b31`) | 1.654x | 2.196 / 1.717 / 1.392 | 1.813 / 1.590 / 1.356 | 256-thread fused resident kernel; thread 0 prefetches instead of a producer warp; incremental tile iterator. Beats v7 and V6 at every load; hybrid (V6 to bs192, Humming3 above) `318227bc382d465c` 1.536x |
 | MoE v7 (`f95bdf5e394e474e`) | 1.535x | 2.136 / 1.614 / 1.326 | 1.739 / 1.312 / 1.255 | v4 with the first tile decoded once per phase and incremental expert/token-block/row indices instead of a binary search per tile; loses V16 to V6 |
 | MoE V6 (`eefecf1eeb724feb`) | 1.492x | bs 1/16/32: 2.054 / 1.542 / 1.249 | V1/V16/V32: 1.635 / 1.405 / 1.211 | One fused resident kernel: routing, both GEMMs, SwiGLU, norm and weighted sum; 8-token tiles. Profile shows only the fused kernel |
@@ -281,6 +282,19 @@ Both sm_90a builds have 66 specializations and zero local memory; hierarchical r
 usage rises to 64–190 versus packed 58–154, so v2 specializes the hierarchical branch
 and output dtype at compile time. The standalone lossless cuBLASLt NN weight-layout
 experiment passes locally at 1.088505x. All frozen sources and evidence paths are in NEXT_CHECKS.
+
+Compact fusion (`cand_fused.py`) prunes the new paths to 11 dtype/hierarchy specializations,
+validated by 210 fresh-input graph cases; ordinary kernels use at most 122 registers and
+hierarchical kernels 154, with zero local memory. The Torch-header build still took 294.36 s
+in local prepare under CPU contention, close to the 300 s limit. `cand_fused_lean.py` preserves
+those GPU bodies and uses a checked raw-pointer CUDA/Lt ABI with `load_inline`'s documented
+`no_implicit_headers` / `is_python_module=False` build. Cold prepare falls to 60.21 s; local
+screen is 1.093657x (9/9 tests, 30/30 graph shapes), with 338 native kernel/Lt and 110 forced
+Hopper glue cases. Profiling still confirms one router/qkv kernel. The raw ABI for legacy
+receipt-selected kernels separately passes 180 native graph cases and an sm_90a build.
+This is a compile/setup improvement; no timed math moves into prepare or module import.
+Evidence: `runs/screen/proj_fused_lean/muse_bf16_proj.cand_fused_lean.json`,
+`dev/fused_lean_*.log`, `dev/lean_legacy_*.log`. The v2 generator uses this lean build path.
 
 P8 receipt `849bd4b650e54c7f` landed clean at 1.136951x with an earlier projection
 dispatch. [P8 hardware probes](#p8-hardware-probes-on-h200-2026-10-24-kst) owns its

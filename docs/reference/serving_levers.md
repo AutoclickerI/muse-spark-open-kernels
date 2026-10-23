@@ -13,16 +13,14 @@ is always a TARGET_VERIFY forward over 8 tokens per request (`srt/speculative/df
 `forward_batch_generation`, "Decode / target-verify stage", `draft_token_num=int(self.block_size)`;
 the drafter's block forward is TARGET_VERIFY too, ~line 2604). The kernel problems' `decode N` loads
 (q_len 1) count on the kernel boards but never run in serving; their `verify N` loads (8N tokens) do.
-Per-load H200 receipts for the verify loads (V1 / V16 / V32; sliding, full where split):
 
-| Kernel | Receipt | Verify loads | Decode loads (board only) |
-|---|---|---|---|
-| MoE cand_v4 | 84c97d9483b34573 | 1.498 / 1.154 / 1.115 | 1.996 / 1.400 / 1.136 |
-| Attention cand_v2 | 51ad2ea9ec4f4724 | 0.93, 0.89 / 0.60, 0.88 / 0.67, 0.93 (loses to FA3) | 2.04, 1.68 / 2.04, 1.91 / 1.87, 1.96 |
-| Decode layer cand_v3 | 2c112482e81745af | 1.39, 1.35 / 1.06, 1.04 / 1.05, 1.03 | 1.25, 1.23 / 1.18, 1.10 / 1.03, 1.02 |
-
-So for serving, the attention kernel's value is in its verify path (being reworked), and kernel choices
-in the port are gated on the verify loads' numbers.
+The current receipt basis is `muse_moe_w4a16/cand_v9.f6028a478d594b31` (MoE summary 1.654x),
+`muse_decode_layer/cand_moe7.d2bf1ced702948a4` (whole-layer verify summary 1.355x),
+`muse_prefill_layer/cand_v11.6a9cd943fe404d74` (prefill summary 1.368x),
+`muse_bf16_proj/submission.68e2f34b1d4744cb` (projection summary 1.143x), and
+`muse_attention_decode/submission.526f31018e2c4449` (FA3 verify path, summary 1.384x but roughly
+1.0x on the verify shapes). The composed `sim.serving` estimate from these measured shapes is 1.756x
+extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
@@ -41,7 +39,7 @@ No Muse kernel is built Blackwell-only: `load_jit` compiles for the local GPU (`
 
 | # | Gate | Feature | Verdict | Modeled saving per step (c=1 / c=32) | Risk to agreement |
 |---|---|---|---|---|---|
-| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented glue; Hopper runtime pending**: Marlin and MoE-v4 expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer, and V4 dense mode skips its old second combine. Local sm_120 native/eager+graph finalize is exact (max diff 0); a V4 dense-row to shared-native-finalize check is rel L2 0.00503 with max abs 0.015625; the broader V4 layer screen is within 0.0062 relative L2 (max abs 0.03125), the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`, and margin TP1/TP2 harness output is exact with teacher-forced logprob drift max/mean 0.0/0.0. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V4 raw-row conversion) |
+| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented V9 glue; Hopper runtime pending**: Marlin and the V9 single-bank producer expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer. Local sm_120 native/eager+graph finalize is exact (max diff 0); the V9 layer screen at 1..16,384 tokens stays within rel L2 0.00695 (bound 0.015), and the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
 | 2 | `models/muse_spark.py:587, 849`; `kernels/ops/muse_spark_v12/gemm_ag.py:73` | Pooler column split + multicast all-gather (`gemm_ag`); unpooler split above 8 tokens | Enable as-is if `has_multicast` (`multimem.st` etc. are sm_90). Gate by token count: our model says it loses at c=32 | 0.46 ms / about -0.4 ms (audit's estimate: 0.55-0.6 / 0.45-1.0) | Low (sliced cuBLAS may round differently; GB300 stock uses it) |
 | 3 | `models/muse_spark.py:1177`; `fi_trtllm_moe_finalize_with_rmsnorm_cutedsl.py` | **Implemented glue; Hopper runtime pending** after #1 for Hopper/Blackwell TP4/8 with EP=TP and no DP attention. Marlin and V4 now consume `ar_workspace`; `_forward_tp` skips the outer all-reduce only after the expert path owns it, avoiding the old `ar_workspace` trap. The CuTeDSL AR path is selected through the existing custom-AR push workspace for small verify batches (including TP8 up to 16 tokens). The sm_90a AR compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`; the two-rank NCCL native AR test is exact in eager and graph replay (max diff 0); sm_120 glue is exact in the margin harness at TP1 and TP2, with teacher-forced logprob drift max/mean 0.0/0.0. On the random fixture, stock-vs-stock and stock-vs-patch both have 0/10 exact responses, so the accumulation-order comparison is indistinguishable from the fixture's own cold-run instability. H200 arithmetic and custom-AR workspace availability remain unverified. | 0.12-0.24 ms / 0 | Moderate (rank accumulation order and custom-AR workspace availability) |
 | 4 | `kernels/ops/muse_spark_v12/all_gather_norm_residual.py:31` | Unpooler all-gather fused into the post-MoE norm-residual | Enable as-is: `>= 10` to `>= 9` | 0.12-0.25 ms / 0.12-0.25 ms (c=32 needs #2) | Low |
@@ -55,6 +53,23 @@ Evidence it holds on the judge: the sm_90 all-reduce config is "Tuned on H200" a
 (`configs/custom_all_reduce_v2.py:247-256, 292`), and stock already splits the unpooler at <= 8 tokens through it.
 Confirm with the log line "All Reduce config ... multicast = True" (`custom_all_reduce_v2.py:323-330`) in the first serving check.
 Every path checks `has_multicast` and falls back to stock.
+
+## Hopper glue audit (2026-10-24, SM90 forced locally)
+
+`serving/tests/test_hopper_glue.py` forces the Python capability/topology gates to `(9, 0)` and replaces
+the CUDA entry points with same-ABI torch stand-ins. The native portable tests and harness checks were:
+
+| Branch | Condition forced | Stand-in / result |
+|---|---|---|
+| `all_gather_norm_residual.py:31,74-86` | SM90 clusters; `CustomAllReduceV2`, multicast, world >=2 | Portable norm/all-gather ABI; policy and tuple shapes pass. Actual multicast remains untested. |
+| `norm_residual.py:80,190-205` | SM90 cluster cap 8; auto cluster for M=1..128 | Portable norm module; all policies and output dtypes pass. |
+| `gemm_ag.py:48-98` | SM90 and M <=128, world 4/8, multicast | Portable gather ABI; exact full projection output. M=129 correctly falls back. |
+| `muse_spark.py:257-264,840,939` | TP >1, M >=1024, no capture | Portable row-split policy; NCCL `test_rowsplit.py` max diff 0 at M=1024, 1027, 2049, 16384. |
+| `muse_spark_fp4_moe.py:59` | auto backend on SM90 | Portable backend selection; auto resolves to Marlin. |
+| `muse_spark.py:465-510` | FA3, FP8 KV pool, TARGET_VERIFY, no MLA/skip | Fake FA3 backend/cache ABI; cache tuple and physical locations pass. Native SM120 FA3 unit is eager/graph exact (max diff 0). |
+| `muse_spark.py:1260-1302` | TP4/8 = EP, no DP attention, SM90, multicast custom-AR | Predicate and workspace ABI are structurally valid; two-rank finalize-AR eager/graph max diff 0. Actual custom-AR multicast remains untested. |
+
+TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4. No tuple-for-tensor glue bug appeared. The harness uses FlashInfer on SM120, so it does not execute the real FA3 or multicast implementation.
 
 ## In serving/patch.diff now (untested on H200)
 
@@ -71,12 +86,27 @@ Every path checks `has_multicast` and falls back to stock.
   74K-token first turn. Tested: `serving/tests/test_rowsplit.py` on 2 local GPUs over NCCL, bitwise equal to the
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
-- **MoE V8 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
-  `muse_spark_fp4_moe.py`). V8 combines the V6 occupancy-sized resident grid with V7's
-  incremental tile iterator on the canonical V6 bank. Native V8 handles small decode/verify rows;
-  the grouped reader handles verify M>=128 and 753-16K prefill rows from the same bank. Both expose dense expert
-  rows to the shared finalize interface. The layer screen is 0.0065-0.0070 relative L2
-  (problem tolerance 0.015); H200 V8 runtime and full-node memory remain unverified.
+- **MoE V9 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
+  `muse_spark_fp4_moe.py`). V9 handles small verify rows with its resident cooperative kernel and uses the
+  canonical grouped reader for M>=256, including the v11 RS128-style prefill shapes. The layer screen at
+  M=1..16,384 is 0.00649-0.00695 relative L2 (problem tolerance 0.015), with graph replay bit-identical;
+  H200 V9 runtime and full-node memory remain unverified.
+
+## Measured serving ranking
+
+Using the receipts above, the composed model has stock/candidate per-step times of 18.094/10.037 ms at c=1,
+25.526/16.565 ms at c=4, 36.839/28.433 ms at c=16, and 53.755/45.679 ms at c=32. Weighted prefill is
+3.419/2.197 s for the first turn and 72.841/58.892 ms for a later turn. The resulting `sim.serving` score is
+1.756x extrapolated (1.745x capped).
+
+The next highest-value work is the V9 expert kernel at verify M=128/256: the decode-layer profile still shows
+286/362 us (sliding/full) at verify16 and 499/503 us at verify32, 49-77% of the candidate layer. Optimize
+that grouped/resident V9 path first. FA3 QK/KV fusion is second: the standalone FA3 candidate is about 1.0x
+on verify loads, but the fused store/query path is modeled at 0.3-0.5 ms per step if H200 confirms it. The
+v11 grouped prefill expert path is already present in serving through V9's M>=256 canonical reader and passed
+the 753/3012/16384-token layer screen; it is not a duplicate port to make. Dense projection/router tuning,
+the drafter FC split, and finalize-AR fusion have smaller remaining modeled savings and should follow those
+two checks.
 
 
 ## Other levers found
