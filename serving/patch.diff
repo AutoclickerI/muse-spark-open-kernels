@@ -522,8 +522,724 @@ index e6cf0dd..ecfa3c8 100644
      SGLANG_USE_CUSTOM_ROUTER_SUM = EnvBoolWithAlias(
          False, deprecated_name="SGLANG_USE_TRITON_ROUTER_SUM"
      )
+diff --git a/python/sglang/srt/layers/muse_proj.py b/python/sglang/srt/layers/muse_proj.py
+new file mode 100644
+index 0000000..deb230d
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_proj.py
+@@ -0,0 +1,710 @@
++"""Local BF16 Muse o/pooler/unpooler GEMMs from H200 receipt f3786341611f4f1f.
++
++Construct MuseProjection(weight, kind) after weight loading, before CUDA graph
++capture. Pass the exact local weight, including a TP row slice when applicable.
++Calls return only this rank's GEMM result: the caller keeps its all-reduce,
++all-gather, residual and norm operations. No model parameters are replaced.
++
++Small-M schedules and 32 MiB cuBLASLt TN/NN selection match the receipt. New
++512-row pooler / 1024-row unpooler shapes tune their actual dimensions; they
++have no standalone H200 speedup evidence. Plans are cached by shape/device,
++then checked against torch for each new weight. Unseen M uses the ordinary
++GEMM or the masked small-M schedule, without online tuning or host sync.
++"""
++
++from __future__ import annotations
++
++import ctypes as ct
++from functools import lru_cache
++from itertools import chain
++import hashlib
++import logging
++import os
++import statistics
++import time
++
++import torch
++import torch.nn.functional as F
++
++logger = logging.getLogger(__name__)
++VERIFY_TOKENS = (8, 16, 32, 64, 128, 256)
++WORKSPACE_BYTES = 32 << 20
++_SHAPES = {
++    "o": ((8192, 1024),),
++    "pooler": ((4096, 8192), (512, 8192)),
++    "unpooler": ((8192, 4096), (1024, 4096)),
++}
++# Ordinals refer to 32 returned heuristics and a 32 MiB workspace, exactly as
++# in f3786341611f4f1f. They compete with cuBLAS and every returned heuristic.
++_RECEIPT = {
++    ("pooler", 128): ("lt_nn", 1),
++    ("pooler", 256): ("lt_nn", 0),
++    ("unpooler", 128): ("lt_nn", 0),
++    ("unpooler", 256): ("lt", 0),
++    ("o", 128): ("lt_nn", 0),
++    ("o", 256): ("cublas",),
++}
++_PLAN_CACHE = {}
++
++
++def projection_supported(x, weight, kind):
++    """H200 integration gate; a direct instance also runs native sm_120 tests."""
++    return (
++        kind in _SHAPES
++        and x.is_cuda
++        and weight.is_cuda
++        and x.device == weight.device
++        and x.ndim == weight.ndim == 2
++        and tuple(weight.shape) in _SHAPES[kind]
++        and x.shape[1] == weight.shape[1]
++        and x.dtype == weight.dtype == torch.bfloat16
++        and x.is_contiguous()
++        and weight.is_contiguous()
++        and 0 < x.shape[0] <= 256
++        and torch.cuda.get_device_capability(x.device) == (9, 0)
++    )
++
++
++class _Module:
++    def __init__(self, path):
++        self.lib = ct.CDLL(path)
++        p, i = ct.c_void_p, ct.c_int
++        self.lib.lean_error_string.restype = ct.c_char_p
++        self.lib.lean_algo_bytes.restype = i
++        self.lib.lean_skinny.argtypes = [p] * 4 + [i] * 12 + [p]
++        self.lib.lean_lt_options.argtypes = [i] * 5 + [p, ct.POINTER(i)]
++        self.lib.lean_lt_run.argtypes = [p] * 5 + [i] * 6 + [ct.c_size_t, p]
++        self.algo_bytes = self.lib.lean_algo_bytes()
++
++    def check(self, status):
++        if status:
++            raise RuntimeError(self.lib.lean_error_string().decode())
++
++    def skinny(self, x, weight, out, config):
++        nt, tr, u, wn, wk, ks, xp = config
++        self.check(self.lib.lean_skinny(
++            weight.data_ptr(), weight.data_ptr(), x.data_ptr(), out.data_ptr(),
++            x.shape[0], weight.shape[0], x.shape[1], nt, tr, u, wn, wk, ks,
++            0, xp, 0, torch.cuda.current_stream(x.device).cuda_stream,
++        ))
++
++    def options(self, m, n, k, nn):
++        count = ct.c_int()
++        codes = torch.empty((32, self.algo_bytes), dtype=torch.uint8, device="cpu")
++        self.check(self.lib.lean_lt_options(
++            n, m, k, n if nn else k, nn, codes.data_ptr(), ct.byref(count),
++        ))
++        return codes[:count.value].clone()
++
++    def lt(self, x, weight, out, workspace, codes, index, nn):
++        if not 0 <= index < codes.shape[0]:
++            raise ValueError("cuBLASLt ordinal outside the prepared heuristic table")
++        self.check(self.lib.lean_lt_run(
++            weight.data_ptr(), x.data_ptr(), out.data_ptr(), workspace.data_ptr(),
++            codes.data_ptr(), out.shape[1], x.shape[0], x.shape[1],
++            weight.stride(0), nn, index, workspace.numel(),
++            torch.cuda.current_stream(x.device).cuda_stream,
++        ))
++
++
++@lru_cache(None)
++def _module(arch=None):
++    from torch.utils.cpp_extension import load_inline
++
++    if torch.cuda.is_current_stream_capturing():
++        raise RuntimeError("construct MuseProjection after loading, before graph capture")
++    capability = torch.cuda.get_device_capability()
++    target = arch or ("9.0a" if capability == (9, 0) else f"{capability[0]}.{capability[1]}")
++    previous = os.environ.get("TORCH_CUDA_ARCH_LIST")
++    os.environ["TORCH_CUDA_ARCH_LIST"] = target
++    try:
++        tag = hashlib.sha256(_CUDA_SOURCE.encode()).hexdigest()[:12]
++        path = load_inline(
++            name=f"muse_dense_{tag}_{target.replace('.', '_')}",
++            cpp_sources="", cuda_sources=_CUDA_SOURCE, functions=None,
++            is_python_module=False, no_implicit_headers=True,
++            extra_cuda_cflags=["-O3", "-std=c++20", "--expt-relaxed-constexpr"],
++            extra_ldflags=["-lcublasLt"], verbose=False,
++        )
++    finally:
++        if previous is None:
++            os.environ.pop("TORCH_CUDA_ARCH_LIST", None)
++        else:
++            os.environ["TORCH_CUDA_ARCH_LIST"] = previous
++    return _Module(path)
++
++
++@lru_cache(None)
++def _options(device_index, m, n, k, nn):
++    with torch.cuda.device(device_index):
++        return _module().options(m, n, k, nn)
++
++
++def _version(weight):
++    try:
++        return weight._version
++    except RuntimeError:
++        # SGLang's inference tensors may not carry version counters. Weights
++        # must remain immutable after preparation, as with other packed weights.
++        return None
++
++
++def _agrees(out, expected):
++    if out.shape != expected.shape or not bool(torch.isfinite(out).all()):
++        return False
++    delta, ref = out.float() - expected.float(), expected.float()
++    if float(delta.norm() / ref.norm().clamp_min(1e-12)) > .01:
++        return False
++    norms = ref.norm(dim=1)
++    return float((delta.norm(dim=1) / norms.clamp_min(norms.mean() * .1 + 1e-12)).max()) <= .05
++
++
++class _Graph:
++    """Own its stream: destruction cannot clear another graph's BLAS workspace."""
++    active_streams = 0
++
++    def __init__(self, fn):
++        self.runtime = torch.cuda.cudart()
++        handle = ct.c_void_p()
++        if int(self.runtime.cudaStreamCreate(ct.addressof(handle))):
++            raise RuntimeError("projection tuning stream creation failed")
++        self.handle = handle.value
++        type(self).active_streams += 1
++        self.stream = torch.cuda.ExternalStream(self.handle)
++        self.graph = torch.cuda.CUDAGraph()
++        try:
++            self.stream.wait_stream(torch.cuda.current_stream())
++            with torch.cuda.stream(self.stream):
++                fn()
++            self.stream.synchronize()
++            with torch.cuda.graph(self.graph, stream=self.stream):
++                self.out = fn()
++            self.graph.replay()
++        except BaseException:
++            self.close()
++            raise
++
++    def close(self):
++        if getattr(self, "handle", None) is not None:
++            self.graph.reset()
++            self.graph = self.out = None
++            self.runtime.cudaStreamDestroy(self.handle)
++            self.handle = None
++            type(self).active_streams -= 1
++
++    def __enter__(self):
++        return self
++
++    def __exit__(self, *exc):
++        self.close()
++
++    def __del__(self):
++        self.close()
++
++
++def _times(graphs, x, banks, flush, repeats):
++    samples = [[] for _ in graphs]
++    for rep in range(repeats):
++        x.copy_(banks[(rep // 2) % len(banks)])
++        order = range(len(graphs)) if rep % 2 == 0 else reversed(range(len(graphs)))
++        for index in order:
++            flush.add_(1)
++            a, b = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
++            a.record()
++            graphs[index].graph.replay()
++            b.record()
++            b.synchronize()
++            samples[index].append(a.elapsed_time(b) * 1000)
++    return [statistics.median(values) for values in samples]
++
++
++class MuseProjection:
++    """Prepared local projection; prepare/timing never occurs in __call__.
++
++    Shape plans are shared across layers; NN weight copies are instance-local.
++    Temporary Lt workspaces use the current stream's allocator, so concurrent
++    graph/eager calls do not race on shared mutable scratch. Set tokens=() to
++    construct without tuning, then call prepare() during the loader's warmup.
++    """
++    def __init__(self, weight, kind, *, tokens=VERIFY_TOKENS, budget_s=15):
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("MuseProjection preparation must precede graph capture")
++        if kind not in _SHAPES or tuple(weight.shape) not in _SHAPES[kind]:
++            raise ValueError(f"unsupported TP8 {kind} projection shape {tuple(weight.shape)}")
++        if not weight.is_cuda or weight.dtype != torch.bfloat16 or not weight.is_contiguous():
++            raise ValueError("MuseProjection requires a contiguous CUDA BF16 weight")
++        self.source, self.weight, self.kind = weight, weight.detach(), kind
++        self.version = _version(weight)
++        self.transposed = None
++        self.plans, self.codes, self.timings = {}, {}, {}
++        with torch.cuda.device(weight.device):
++            self.mod = _module()
++        self.prepare(tokens, budget_s=budget_s)
++
++    def _skin_config(self, m):
++        nt = 1 if m <= 8 else 2
++        if self.kind == "pooler" and m > 8:
++            return nt, 2, 4, 1, 8, 1, 1
++        return nt, 1, 4, 1, 8 if self.kind == "unpooler" else 4, 1, 1
++
++    def _base(self, m):
++        n = self.weight.shape[0]
++        if 0 < m <= 16 and self.kind == "pooler" and n == 4096:
++            return "skin",
++        if 0 < m <= 8 and self.kind == "unpooler" and n == 1024:
++            return "skin",
++        if m == 1 and self.kind == "o":
++            return "skin",
++        return "cublas",
++
++    def _full_shape(self):
++        return self.weight.shape[0] == _SHAPES[self.kind][0][0]
++
++    def _ensure(self, m, config):
++        if config[0] not in ("lt", "lt_nn"):
++            return
++        nn = int(config[0] == "lt_nn")
++        if (m, nn) not in self.codes:
++            n, k = self.weight.shape
++            self.codes[(m, nn)] = _options(self.weight.device.index, m, n, k, nn)
++        if config[1] >= self.codes[(m, nn)].shape[0]:
++            raise ValueError(f"receipt heuristic unavailable: {config}")
++        if nn and self.transposed is None:
++            self.transposed = self.weight.T.contiguous()
++
++    def _run(self, x, config):
++        if config[0] == "cublas":
++            return F.linear(x, self.weight)
++        out = torch.empty((x.shape[0], self.weight.shape[0]), device=x.device, dtype=x.dtype)
++        if config[0] == "skin":
++            schedule = list(self._skin_config(x.shape[0]))
++            if len(config) > 1:
++                schedule[5] = config[1]
++            self.mod.skinny(x, self.weight, out, tuple(schedule))
++        elif config[0] in ("lt", "lt_nn"):
++            nn = int(config[0] == "lt_nn")
++            workspace = torch.empty(WORKSPACE_BYTES, device=x.device, dtype=torch.uint8)
++            w = self.transposed if nn else self.weight
++            self.mod.lt(x, w, out, workspace, self.codes[(x.shape[0], nn)], config[1], nn)
++        else:
++            raise ValueError(f"unknown projection variant {config}")
++        return out
++
++    def _variants(self, m):
++        base = self._base(m)
++        yield base
++        # Receipt small-M dispatch is already measured. Shards introduced by
++        # serving are different shapes and compete against cuBLAS locally.
++        if (self._full_shape() and m < 128) or (self.kind == "unpooler" and m <= 8):
++            return
++        yield "cublas",
++        if m <= 16:
++            yield "skin",
++            # New serving shards have only 16-64 output CTAs. The same receipt
++            # kernel's in-cluster K merge can fill more of H200's 132 SMs.
++            schedule = self._skin_config(m)
++            for split in (2, 4, 8):
++                if self.weight.shape[1] % (split * schedule[4] * 32 * schedule[2]) == 0:
++                    yield "skin", split
++        if self._full_shape() and (self.kind, m) in _RECEIPT:
++            yield _RECEIPT[(self.kind, m)]
++        for nn in (0, 1):
++            tag = "lt_nn" if nn else "lt"
++            try:
++                self._ensure(m, (tag, 0))
++                for index in range(self.codes[(m, nn)].shape[0]):
++                    yield tag, index
++            except Exception as exc:
++                logger.warning("MUSE_PROJ_REJECT role=%s m=%s layout=%s: %s", self.kind, m, tag, exc)
++
++    def prepare(self, tokens=VERIFY_TOKENS, *, budget_s=15):
++        """Select once per actual shape; rejects never abort a trial sweep."""
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("call MuseProjection.prepare before graph capture")
++        deadline = time.monotonic() + max(0, budget_s)
++        flush = None
++        for m in dict.fromkeys(tokens):
++            if not 0 < m <= 256:
++                raise ValueError("prepare token counts must be in 1..256")
++            self.plans[m] = self._base(m)
++            key = (self.weight.device.index, self.kind, tuple(self.weight.shape), m)
++            x = torch.randn((m, self.weight.shape[1]), device=self.weight.device, dtype=torch.bfloat16)
++            if key in _PLAN_CACHE:
++                config = _PLAN_CACHE[key]
++                try:
++                    self._ensure(m, config)
++                    if not _agrees(self._run(x, config), F.linear(x, self.weight)):
++                        raise ValueError("cached choice exceeds 1% torch guard")
++                    self.plans[m] = config
++                    continue
++                except Exception as exc:
++                    logger.warning("MUSE_PROJ_REJECT cached role=%s m=%s: %s", self.kind, m, exc)
++            if time.monotonic() >= deadline:
++                continue
++            # Exact small-M receipt schedules need no redundant benchmarking.
++            configs = iter(self._variants(m))
++            base = next(configs)
++            if (self._full_shape() and m < 128) or (self.kind == "unpooler" and m <= 8):
++                try:
++                    if not _agrees(self._run(x, base), F.linear(x, self.weight)):
++                        raise ValueError("receipt choice exceeds 1% torch guard")
++                    self.plans[m] = _PLAN_CACHE[key] = base
++                except Exception as exc:
++                    self.plans[m] = ("cublas",)
++                    logger.warning("MUSE_PROJ_REJECT receipt role=%s m=%s: %s", self.kind, m, exc)
++                continue
++            if flush is None:
++                flush = torch.zeros(128 << 20, device=x.device, dtype=torch.uint8)
++            banks = [torch.randn_like(x) for _ in range(3)]
++            banks[2][:, ::257] *= 32
++            with _Graph(lambda: self._run(x, self._base(m))) as baseline:
++                trials, seen = [], set()
++                for config in chain((base,), configs):
++                    if time.monotonic() >= deadline:
++                        break
++                    if config in seen:
++                        continue
++                    seen.add(config)
++                    try:
++                        self._ensure(m, config)
++                        with _Graph(lambda c=config: self._run(x, c)) as graph:
++                            for bank in banks:
++                                x.copy_(bank)
++                                graph.graph.replay()
++                                if not _agrees(graph.out, F.linear(x, self.weight)):
++                                    raise ValueError("variant exceeds 1% torch guard")
++                            us = _times([baseline, graph], x, banks, flush, 2)[1]
++                            trials.append((us, config))
++                    except Exception as exc:
++                        logger.warning("MUSE_PROJ_REJECT role=%s m=%s config=%s: %s", self.kind, m, config, exc)
++                finalists = sorted(trials, key=lambda row: row[0])[:3]
++                receipt = _RECEIPT.get((self.kind, m)) if self._full_shape() else None
++                keep = [self._base(m)] + [config for _, config in finalists]
++                if receipt in {config for _, config in trials} and receipt not in keep:
++                    keep.append(receipt)
++                scores = []
++                for config in dict.fromkeys(keep):
++                    if time.monotonic() >= deadline:
++                        break
++                    try:
++                        self._ensure(m, config)
++                        with _Graph(lambda c=config: self._run(x, c)) as graph:
++                            for bank in banks:
++                                x.copy_(bank)
++                                graph.graph.replay()
++                                if not _agrees(graph.out, F.linear(x, self.weight)):
++                                    raise ValueError("finalist exceeds 1% torch guard")
++                            base_us, us = _times([baseline, graph], x, banks, flush, 12)
++                            scores.append((us / base_us, config, us))
++                    except Exception as exc:
++                        logger.warning("MUSE_PROJ_REJECT finalist role=%s m=%s config=%s: %s", self.kind, m, config, exc)
++                if scores:
++                    ratio, config, us = min(scores, key=lambda row: row[0])
++                    self.plans[m] = _PLAN_CACHE[key] = config
++                    self.timings[m] = {"config": config, "event_us": us, "ratio_to_base": ratio}
++                    logger.info("MUSE_PROJ_PICK role=%s n=%s m=%s %s", self.kind, self.weight.shape[0], m, self.timings[m])
++        # Keep an extra weight layout only while a selected plan uses it.
++        if not any(config[0] == "lt_nn" for config in self.plans.values()):
++            self.transposed = None
++        return self
++
++    def __call__(self, x):
++        if _version(self.source) != self.version:
++            raise RuntimeError("Muse projection weight changed: construct a new prepared instance")
++        if (x.ndim != 2 or x.shape[1] != self.weight.shape[1]
++                or x.device != self.weight.device or x.dtype != torch.bfloat16):
++            raise ValueError("projection requires CUDA BF16 [tokens, local K] input")
++        x = x.contiguous()
++        if not x.shape[0]:
++            return x.new_empty((0, self.weight.shape[0]))
++        return self._run(x, self.plans.get(x.shape[0], self._base(x.shape[0])))
++
++
++_CUDA_SOURCE = r"""// Lightweight host ABI for the unchanged CUDA kernels. No Torch C++ headers.
++#include <cuda_runtime.h>
++#include <cuda.h>
++#include <cudaTypedefs.h>
++#include <cuda_bf16.h>
++#include <cooperative_groups.h>
++#include <cublasLt.h>
++#include <stdint.h>
++#include <algorithm>
++#include <cstring>
++#include <cstdio>
++namespace cg=cooperative_groups;
++static thread_local char lean_error[512];
++extern "C" const char* lean_error_string(){return lean_error;}
++static int lean_fail(const char* where,int code){std::snprintf(lean_error,sizeof(lean_error),"%s: status %d",where,code);return code ? code : -1;}
++#define LEAN_CUDA(call) do{auto e=(call);if(e!=cudaSuccess)return lean_fail(#call,(int)e);}while(0)
++#define LEAN_LT(call) do{auto e=(call);if(e!=CUBLAS_STATUS_SUCCESS)return lean_fail(#call,(int)e);}while(0)
++namespace muse_proj {
++
++// Weight stream: read once, keep out of L1. LD 0: 256B L2 prefetch, 1: none, 2: 128B.
++template <int LD>
++__device__ __forceinline__ uint4 ld_stream(const void* p) {
++  uint4 r;
++  if (LD == 0)
++    asm volatile("ld.global.nc.L1::no_allocate.L2::256B.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  else if (LD == 1)
++    asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  else
++    asm volatile("ld.global.nc.L1::no_allocate.L2::128B.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  return r;
++}
++
++// Activations: shared by the CTA's warps through L1.
++__device__ __forceinline__ uint4 ld_act(const void* p) {
++  uint4 r;
++  asm volatile("ld.global.nc.v4.u32 {%0,%1,%2,%3}, [%4];"
++               : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  return r;
++}
++
++__device__ __forceinline__ void mma16816(float (&c)[4], uint32_t a0, uint32_t a1, uint32_t a2,
++                                         uint32_t a3, uint32_t b0, uint32_t b1) {
++  asm volatile(
++      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, "
++      "{%8,%9}, {%0,%1,%2,%3};"
++      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
++      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
++}
++
++// One CTA: BR = WN*TR*16 weight rows x BT = 8*NT tokens x KB of K (its cluster rank's slice).
++// Warp (wn, wk): TR row tiles of 16 x the wk-th 1/WK of the CTA's K slice, in steps of 32*U.
++// Lane (g = lane/4, t = lane%4) loads 16 bytes at k = k0 + 8t of rows g and g+8 (and of
++// token g for activations); the first mma takes k-slots {8t..8t+3}, the second {8t+4..8t+7}.
++// NA = 2: a second weight matrix (the router's lo half) at the same offsets, same accumulators.
++// XP: activations prefetched one batch ahead with the weights (else loaded at compute time).
++template <int NT, int TR, int U, int NA, int XP, int LD>
++__global__ void __launch_bounds__(256) skinny_kernel(
++    const __nv_bfloat16* __restrict__ W0, const __nv_bfloat16* __restrict__ W1,
++    const __nv_bfloat16* __restrict__ X, void* __restrict__ Out, int M, int N, int K, int KB,
++    int WN, int WK) {
++  constexpr bool OUTF32 = NA == 2;
++  constexpr int XU = XP ? U : 1;
++  constexpr int XN = XP ? NT : 1;
++  extern __shared__ float sred[];
++  constexpr int BT = 8 * NT;
++  const int BR = WN * TR * 16;
++  const int S = BR + 4;  // padded token stride of the reduction tile (bank spread)
++  const int lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
++  const int g = lane >> 2, t = lane & 3;
++  const int wn = warp % WN, wk = warp / WN;
++  const int row_cta = blockIdx.x * BR;
++  const int rowbase = row_cta + wn * TR * 16;
++  const int tok0 = blockIdx.z * BT;
++  const int KW = KB / WK;
++  const int kbeg = blockIdx.y * KB + wk * KW;
++  const int nsteps = KW / (32 * U);
++
++  float acc[TR][NT][4];
++#pragma unroll
++  for (int r = 0; r < TR; ++r)
++#pragma unroll
++    for (int j = 0; j < NT; ++j)
++#pragma unroll
++      for (int q = 0; q < 4; ++q) acc[r][j][q] = 0.f;
++
++  const size_t off = (size_t)(rowbase + g) * K + kbeg + 8 * t;
++  const __nv_bfloat16* wp0 = W0 + off;
++  const __nv_bfloat16* wp1 = W1 + off;
++  const size_t rs8 = (size_t)8 * K;
++  const size_t rs16 = (size_t)16 * K;
++  const __nv_bfloat16* xp[NT];
++#pragma unroll
++  for (int j = 0; j < NT; ++j) {
++    int tok = tok0 + j * 8 + g;
++    tok = tok < M ? tok : M - 1;  // padded tokens read a real row; their outputs are dropped
++    xp[j] = X + (size_t)tok * K + kbeg + 8 * t;
++  }
++
++  uint4 a0[U][NA][TR][2], a1[U][NA][TR][2];
++  uint4 b0[XU][XN], b1[XU][XN];
++
++  auto load = [&](uint4 (&a)[U][NA][TR][2], uint4 (&b)[XU][XN], int s) {
++    const int koff = s * 32 * U;
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int na = 0; na < NA; ++na)
++#pragma unroll
++        for (int r = 0; r < TR; ++r) {
++          const __nv_bfloat16* p = (na == 0 ? wp0 : wp1) + r * rs16 + koff + u * 32;
++          a[u][na][r][0] = ld_stream<LD>(p);
++          a[u][na][r][1] = ld_stream<LD>(p + rs8);
++        }
++    if (XP) {
++#pragma unroll
++      for (int u = 0; u < XU; ++u)
++#pragma unroll
++        for (int j = 0; j < XN; ++j) b[u][j] = ld_act(xp[j] + koff + u * 32);
++    }
++  };
++  auto compute = [&](uint4 (&a)[U][NA][TR][2], uint4 (&bp)[XU][XN], int s) {
++    const int koff = s * 32 * U;
++    uint4 bl[U][NT];
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int j = 0; j < NT; ++j) {
++        if (XP)
++          bl[u][j] = bp[u < XU ? u : 0][j < XN ? j : 0];
++        else
++          bl[u][j] = ld_act(xp[j] + koff + u * 32);
++      }
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int na = 0; na < NA; ++na)
++#pragma unroll
++        for (int r = 0; r < TR; ++r)
++#pragma unroll
++          for (int j = 0; j < NT; ++j) {
++            const uint4& lo = a[u][na][r][0];
++            const uint4& hi = a[u][na][r][1];
++            mma16816(acc[r][j], lo.x, hi.x, lo.y, hi.y, bl[u][j].x, bl[u][j].y);
++            mma16816(acc[r][j], lo.z, hi.z, lo.w, hi.w, bl[u][j].z, bl[u][j].w);
++          }
++  };
++
++  if (nsteps > 0) load(a0, b0, 0);
++  for (int s = 0; s < nsteps; s += 2) {
++    if (s + 1 < nsteps) load(a1, b1, s + 1);
++    compute(a0, b0, s);
++    if (s + 1 < nsteps) {
++      if (s + 2 < nsteps) load(a0, b0, s + 2);
++      compute(a1, b1, s + 1);
++    }
++  }
++
++  // Warp partials -> shared tile [WK][BT][S] (token-major so the output stores coalesce).
++#pragma unroll
++  for (int r = 0; r < TR; ++r)
++#pragma unroll
++    for (int j = 0; j < NT; ++j) {
++      const int row = wn * TR * 16 + r * 16 + g;
++      const int tok = j * 8 + 2 * t;
++      float* p = sred + (size_t)(wk * BT + tok) * S + row;
++      p[0] = acc[r][j][0];
++      p[S] = acc[r][j][1];
++      p[8] = acc[r][j][2];
++      p[S + 8] = acc[r][j][3];
++    }
++  __syncthreads();
++  const int E = BT * BR;
++  if (WK > 1) {
++    for (int e = threadIdx.x; e < E; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      float v = 0.f;
++      for (int w = 0; w < WK; ++w) v += sred[(w * BT + tok) * S + row];
++      sred[tok * S + row] = v;
++    }
++    __syncthreads();
++  }
++
++  auto store = [&](int tok, int row, float v) {
++    const size_t idx = (size_t)(tok0 + tok) * N + row_cta + row;
++    if (OUTF32)
++      reinterpret_cast<float*>(Out)[idx] = v;
++    else
++      reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
++  };
++
++  const int KS = gridDim.y;
++  if (KS == 1) {
++    for (int e = threadIdx.x; e < E; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      if (tok0 + tok < M) store(tok, row, sred[tok * S + row]);
++    }
++  } else {
++    cg::cluster_group cluster = cg::this_cluster();
++    cluster.sync();
++    const int rank = (int)cluster.block_rank();
++    const int per = (E + KS - 1) / KS;
++    const int e0 = rank * per;
++    const int e1 = min(E, e0 + per);
++    for (int e = e0 + (int)threadIdx.x; e < e1; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      if (tok0 + tok >= M) continue;
++      float v = 0.f;
++      for (int q = 0; q < KS; ++q) v += cluster.map_shared_rank(sred, q)[tok * S + row];
++      store(tok, row, v);
++    }
++    cluster.sync();  // keep this CTA's shared tile alive until every rank has read it
++  }
++}
++
++
++} // namespace muse_proj
++
++
++
++#include <cuda.h>
++#include <cudaTypedefs.h>
++#ifndef MP_SPIN_LIMIT
++#define MP_SPIN_LIMIT (1u << 26)
++#endif
++#if defined(__CUDA_ARCH__) && defined(__CUDA_ARCH_FEAT_SM90_ALL)
++#define MP_SM90A 1
++#endif
++#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 900
++#define MP_TMA 1  // TMA, mbarriers, clusters: sm_90 and later (wgmma itself needs sm_90a)
++#endif
++
++template<int NT,int TR,int U,int NA,int XP,int LD>
++int lean_skinny_launch(const __nv_bfloat16* w,const __nv_bfloat16* lo,const __nv_bfloat16* x,void* out,
++                      int M,int N,int K,int wn,int wk,int ks,cudaStream_t stream){
++  constexpr int BT=NT*8;int BR=wn*TR*16;
++  if(N%BR || ks<1 || K%ks || (K/ks)%(wk*32*U) || wn*wk>8)return lean_fail("skinny shape",-1);
++  size_t shared=(size_t)wk*BT*(BR+4)*4;if(shared>48*1024)return lean_fail("skinny shared",-1);
++  cudaLaunchConfig_t c={};c.gridDim=dim3(N/BR,ks,(M+BT-1)/BT);c.blockDim=dim3(wn*wk*32);c.dynamicSmemBytes=shared;c.stream=stream;
++  cudaLaunchAttribute attr={};if(ks>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=ks;attr.val.clusterDim.z=1;c.attrs=&attr;c.numAttrs=1;}
++  return (int)cudaLaunchKernelEx(&c,muse_proj::skinny_kernel<NT,TR,U,NA,XP,LD>,w,lo,x,out,M,N,K,K/ks,wn,wk);
++}
++extern "C" int lean_skinny(const void* w,const void* lo,const void* x,void* out,
++                          int M,int N,int K,int nt,int tr,int u,int wn,int wk,int ks,int split2,int xp,int ld,void* stream){
++  int na=split2 ? 2 : 1;
++#define LSKIN(NT,TR,U,NA,XP,LD) if(nt==NT && tr==TR && u==U && na==NA && xp==XP && ld==LD)return lean_skinny_launch<NT,TR,U,NA,XP,LD>((const __nv_bfloat16*)w,(const __nv_bfloat16*)lo,(const __nv_bfloat16*)x,out,M,N,K,wn,wk,ks,(cudaStream_t)stream);
++    LSKIN(1,1,4,1,1,0)
++  LSKIN(1,2,4,1,1,0)
++  LSKIN(2,1,4,1,1,0)
++  LSKIN(2,2,4,1,1,0)
++  return lean_fail("skinny specialization",-1);
++}
++
++struct LeanLayout{
++  cublasLtMatmulDesc_t op=nullptr;cublasLtMatrixLayout_t a=nullptr,b=nullptr,c=nullptr;
++  int init(int n,int m,int k,int stride,int nn){
++    LEAN_LT(cublasLtMatmulDescCreate(&op,CUBLAS_COMPUTE_32F,CUDA_R_32F));cublasOperation_t ta=nn ? CUBLAS_OP_N : CUBLAS_OP_T;
++    LEAN_LT(cublasLtMatmulDescSetAttribute(op,CUBLASLT_MATMUL_DESC_TRANSA,&ta,sizeof(ta)));
++    LEAN_LT(cublasLtMatrixLayoutCreate(&a,CUDA_R_16BF,nn ? n : k,nn ? k : n,stride));
++    LEAN_LT(cublasLtMatrixLayoutCreate(&b,CUDA_R_16BF,k,m,k));LEAN_LT(cublasLtMatrixLayoutCreate(&c,CUDA_R_16BF,n,m,n));return 0;
++  }
++  ~LeanLayout(){if(op)cublasLtMatmulDescDestroy(op);if(a)cublasLtMatrixLayoutDestroy(a);if(b)cublasLtMatrixLayoutDestroy(b);if(c)cublasLtMatrixLayoutDestroy(c);}
++};
++static cublasLtHandle_t lean_lt_handle=nullptr;
++static int lean_lt_init(){if(!lean_lt_handle)LEAN_LT(cublasLtCreate(&lean_lt_handle));return 0;}
++extern "C" int lean_algo_bytes(){return sizeof(cublasLtMatmulAlgo_t);}
++extern "C" int lean_lt_options(int n,int m,int k,int stride,int nn,void* codes,int* count){
++  int err=lean_lt_init();if(err)return err;LeanLayout l;err=l.init(n,m,k,stride,nn);if(err)return err;
++  cublasLtMatmulPreference_t pref;LEAN_LT(cublasLtMatmulPreferenceCreate(&pref));size_t bytes=32*1024*1024;
++  auto status=cublasLtMatmulPreferenceSetAttribute(pref,CUBLASLT_MATMUL_PREF_MAX_WORKSPACE_BYTES,&bytes,sizeof(bytes));
++  if(status!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("Lt preference",(int)status);}
++  cublasLtMatmulHeuristicResult_t rows[32];status=cublasLtMatmulAlgoGetHeuristic(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,pref,32,rows,count);
++  cublasLtMatmulPreferenceDestroy(pref);if(status!=CUBLAS_STATUS_SUCCESS)return lean_fail("Lt heuristics",(int)status);
++  for(int i=0;i<*count;++i){if(rows[i].state!=CUBLAS_STATUS_SUCCESS || rows[i].workspaceSize>bytes)return lean_fail("Lt heuristic state",-1);std::memcpy((char*)codes+i*sizeof(cublasLtMatmulAlgo_t),&rows[i].algo,sizeof(cublasLtMatmulAlgo_t));}
++  return 0;
++}
++extern "C" int lean_lt_run(const void* w,const void* x,void* out,void* work,const void* codes,
++                          int n,int m,int k,int stride,int nn,int index,size_t work_bytes,void* stream){
++  if(work_bytes<32*1024*1024)return lean_fail("Lt workspace",-1);
++  int err=lean_lt_init();if(err)return err;LeanLayout l;err=l.init(n,m,k,stride,nn);if(err)return err;
++  cublasLtMatmulAlgo_t algo;std::memcpy(&algo,(const char*)codes+index*sizeof(algo),sizeof(algo));
++  float alpha=1.f,beta=0.f;
++  auto status=cublasLtMatmul(lean_lt_handle,l.op,&alpha,w,l.a,x,l.b,&beta,out,l.c,out,l.c,&algo,work,work_bytes,(cudaStream_t)stream);
++  return status==CUBLAS_STATUS_SUCCESS ? 0 : lean_fail("Lt matmul",(int)status);
++}
++"""
 diff --git a/python/sglang/srt/layers/muse_spark_fp4_moe.py b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-index 97b1474..bfe0107 100644
+index 97b1474..36db139 100644
 --- a/python/sglang/srt/layers/muse_spark_fp4_moe.py
 +++ b/python/sglang/srt/layers/muse_spark_fp4_moe.py
 @@ -17,11 +17,6 @@ from __future__ import annotations
@@ -569,19 +1285,18 @@ index 97b1474..bfe0107 100644
          from sglang.kernels.ops.activation.activation import silu_and_mul
          from sglang.kernels.ops.moe.moe_wna16_marlin import moe_wna16_marlin_gemm
          from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
-@@ -573,6 +564,11 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -573,6 +564,10 @@ class MuseSpark1xFp4Experts(nn.Module):
              is_zp_float=False,
          ).view(num_tokens, topk, size_k), local_topk_ids
  
 +    def _use_muse_v4(self, num_tokens: int) -> bool:
-+        # The V9 reader handles verify/decode rows; its grouped reader handles
-+        # the large prefill rows. Both consume the same canonical bank.
++        # Serving uses bounded V9 calls for verify and prefill with one bank.
 +        return getattr(self, "_muse_v4_state", None) is not None
 +
      def _forward_marlin(
          self,
          hidden_states: torch.Tensor,
-@@ -580,6 +576,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -580,6 +575,7 @@ class MuseSpark1xFp4Experts(nn.Module):
          topk_ids: torch.Tensor,
          post_expert_norm: Optional[nn.Module],
          pre_expert_norm: Optional[nn.Module] = None,
@@ -589,7 +1304,7 @@ index 97b1474..bfe0107 100644
      ) -> torch.Tensor:
          if post_expert_norm is None:
              raise ValueError(
-@@ -592,28 +589,95 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -592,28 +588,91 @@ class MuseSpark1xFp4Experts(nn.Module):
                  "outputs are mis-scaled per expert. Run this checkpoint on "
                  "SM100+ with --moe-runner-backend flashinfer_trtllm instead."
              )
@@ -597,16 +1312,12 @@ index 97b1474..bfe0107 100644
 +            if pre_expert_norm is not None:
 +                hidden_states = pre_expert_norm(hidden_states)
 +            from sglang.srt.layers.muse_spark_humming import maybe_run_wide
-+            from sglang.srt.layers.muse_spark_moe import run_layer
++            from sglang.srt.layers.muse_spark_serving import run_v9_dense
 +
 +            wide = maybe_run_wide(self, hidden_states, topk_scores, topk_ids)
 +            if wide is None:
-+                wide = run_layer(
-+                    self._muse_v4_state,
-+                    hidden_states,
-+                    topk_scores,
-+                    topk_ids,
-+                    return_dense=True,
++                wide = run_v9_dense(
++                    self._muse_v4_state, hidden_states, topk_scores, topk_ids
 +                )
 +            expert_outputs, local_topk_ids = wide
 +            return self._finalize_dense_expert_outputs(
@@ -698,7 +1409,7 @@ index 97b1474..bfe0107 100644
  
      def prepare_input(
          self,
-@@ -701,6 +765,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -701,6 +760,7 @@ class MuseSpark1xFp4Experts(nn.Module):
                  topk_ids,
                  post_expert_norm,
                  pre_expert_norm=pre_expert_norm,
@@ -1943,6 +2654,51 @@ index f6d450a..1e4dbc1 100644
          for alias, native in self._MARLIN_PARAM_ALIASES:
              setattr(layer, alias, getattr(layer, native))
          result = super().process_weights_after_loading(layer)
+diff --git a/python/sglang/srt/managers/overlap_utils.py b/python/sglang/srt/managers/overlap_utils.py
+index 4fb1981..3a63d07 100644
+--- a/python/sglang/srt/managers/overlap_utils.py
++++ b/python/sglang/srt/managers/overlap_utils.py
+@@ -301,9 +301,11 @@ class FutureMap:
+                 (self.req_pool_size,), dtype=torch.int64, pin_memory=True
+             )
+             self.fwd_prepare_d2h_stream = torch.get_device_module(self.device).Stream()
++            self.seq_lens_copy_done = torch.get_device_module(self.device).Event()
+         else:
+             self.new_seq_lens_cpu_pinned = None
+             self.fwd_prepare_d2h_stream = None
++            self.seq_lens_copy_done = None
+         self.need_topk = False
+         self.need_hidden_states = False
+         self.topk_p_buf = None
+@@ -560,12 +562,10 @@ class FutureMap:
+                 _assert_nonneg_and_invalidate(batch.seq_lens, self.new_seq_lens_buf, fi)
+             return
+ 
+-        # Mechanism: don't sync the schedule stream; gate a private stream on the
+-        # publish event and copy into the static pinned buffer.
+-        self.fwd_prepare_d2h_stream.wait_event(self.publish_ready)
+-        with torch.get_device_module(self.device).stream(self.fwd_prepare_d2h_stream):
+-            self.new_seq_lens_cpu_pinned.copy_(self.new_seq_lens_buf, non_blocking=True)
+-        self.fwd_prepare_d2h_stream.synchronize()
++        # The copy was issued at publish, before draft KV materialization and
++        # next-iteration scheduling. Wait only for that leaf copy, rather than
++        # starting a D2H here and synchronizing the entire private stream.
++        self.seq_lens_copy_done.synchronize()
+ 
+         # FIXME: fi == batch.req_pool_indices; unify future_indices and req_pool_indices.
+         batch.seq_lens_cpu = self.new_seq_lens_cpu_pinned[batch.req_pool_indices_cpu]
+@@ -594,6 +594,11 @@ class FutureMap:
+                 self.publish_ready = torch.get_device_module(self.device).Event()
+             self.publish_ready.record()
+             self._publish_fresh = True
++            if self.needs_cpu_seq_lens and self.fwd_prepare_d2h_stream is not None:
++                self.fwd_prepare_d2h_stream.wait_event(self.publish_ready)
++                with torch.get_device_module(self.device).stream(self.fwd_prepare_d2h_stream):
++                    self.new_seq_lens_cpu_pinned.copy_(self.new_seq_lens_buf, non_blocking=True)
++                    self.seq_lens_copy_done.record()
+         if publish_confidence:
+             self.confidence_relay.issue_ring_copy(
+                 stream=self.fwd_prepare_d2h_stream,
 diff --git a/python/sglang/srt/models/dflash.py b/python/sglang/srt/models/dflash.py
 index 62f823b..f649f30 100644
 --- a/python/sglang/srt/models/dflash.py
@@ -2063,7 +2819,7 @@ index 62f823b..f649f30 100644
          return self.hidden_norm(projected)
  
 diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
-index 312b342..ffc8240 100644
+index 312b342..8e76898 100644
 --- a/python/sglang/srt/models/muse_spark.py
 +++ b/python/sglang/srt/models/muse_spark.py
 @@ -17,11 +17,12 @@ from typing import Iterable, List, Optional, Tuple
@@ -2081,7 +2837,15 @@ index 312b342..ffc8240 100644
  from sglang.kernels.ops.muse_spark_v12.fused_muse_spark_routing import (
      FusedMuseSparkRouting,
  )
-@@ -35,6 +36,13 @@ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
+@@ -30,11 +31,21 @@ from sglang.kernels.ops.muse_spark_v12.fused_norm_residual import (
+     FusedPostNormResidualPreNorm,
+ )
+ from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
++from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
++    all_gather as projection_all_gather,
++)
+ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
+     gemm_ag,
      gemm_ag_supported,
      gemm_local,
      reserve_projection_workspace,
@@ -2095,7 +2859,7 @@ index 312b342..ffc8240 100644
  )
  from sglang.kernels.ops.muse_spark_v12.router_gemm import (
      MAX_TOKENS as ROUTER_GEMM_MAX_TOKENS,
-@@ -47,6 +55,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
+@@ -47,6 +58,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
  from sglang.srt.environ import envs
  from sglang.srt.layers import layernorm_sp
  from sglang.srt.layers import muse_spark_expert_tp as expert_tp
@@ -2103,7 +2867,15 @@ index 312b342..ffc8240 100644
  from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
  from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
  from sglang.srt.layers.cp.utils import is_cp_active
-@@ -93,6 +102,7 @@ from sglang.srt.runtime_context import get_forward, get_parallel
+@@ -73,6 +85,7 @@ from sglang.srt.layers.muse_spark_layers import (
+     MuseSpark1xRMSNormWithInputScale,
+     QKVOGateParallelLinear,
+ )
++from sglang.srt.layers.muse_spark_serving import prepare_projections, project
+ from sglang.srt.layers.quantization.base_config import QuantizationConfig
+ from sglang.srt.layers.quantization.unquant import bf16_gemm_dispatch
+ from sglang.srt.layers.quantization.utils import is_layer_skipped
+@@ -93,6 +106,7 @@ from sglang.srt.runtime_context import get_forward, get_parallel
  from sglang.srt.state_capturer.routed_experts import get_global_experts_capturer
  from sglang.srt.utils import add_prefix, is_cpu, is_hip, use_intel_amx_backend
  from sglang.srt.utils.common import get_device_capability, is_cuda
@@ -2111,7 +2883,7 @@ index 312b342..ffc8240 100644
  
  _is_cpu = is_cpu()
  
-@@ -247,8 +257,56 @@ def _split_bf16_router_supported() -> bool:
+@@ -247,8 +261,56 @@ def _split_bf16_router_supported() -> bool:
      return is_cuda() and get_device_capability()[0] == 9
  
  
@@ -2169,7 +2941,7 @@ index 312b342..ffc8240 100644
          return False
      return True
  
-@@ -268,6 +326,7 @@ class MuseSpark1xRouter(nn.Module):
+@@ -268,6 +330,7 @@ class MuseSpark1xRouter(nn.Module):
          self._split2_hi = None
          self._split2_lo = None
          self._split2_key = None
@@ -2177,7 +2949,7 @@ index 312b342..ffc8240 100644
  
      @torch.no_grad()
      def _build_split2(self) -> None:
-@@ -275,13 +334,23 @@ class MuseSpark1xRouter(nn.Module):
+@@ -275,13 +338,23 @@ class MuseSpark1xRouter(nn.Module):
          key = (w.data_ptr(), w.shape, w._version)
          if self._split2_key == key:
              return
@@ -2205,7 +2977,7 @@ index 312b342..ffc8240 100644
          self._build_split2()
          x = hidden_states.to(torch.bfloat16)
          acc = torch.mm(x, self._split2_hi, out_dtype=torch.float32)
-@@ -413,25 +482,54 @@ class MuseSpark1xAttention(nn.Module):
+@@ -413,25 +486,54 @@ class MuseSpark1xAttention(nn.Module):
      ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
          backend = get_attn_backend()
          pool = get_token_to_kv_pool()
@@ -2272,7 +3044,7 @@ index 312b342..ffc8240 100644
          return (
              k_cache.view(k_cache.shape[0], -1),
              v_cache.view(v_cache.shape[0], -1),
-@@ -443,11 +541,19 @@ class MuseSpark1xAttention(nn.Module):
+@@ -443,11 +545,19 @@ class MuseSpark1xAttention(nn.Module):
          positions: torch.Tensor,
          hidden_states: torch.Tensor,
          forward_batch: ForwardBatch,
@@ -2294,7 +3066,7 @@ index 312b342..ffc8240 100644
          return output
  
      def gated_attention(
-@@ -584,7 +690,7 @@ class MuseSpark1xMoE(nn.Module):
+@@ -584,7 +694,7 @@ class MuseSpark1xMoE(nn.Module):
              self.pre_expert_proj is not None
              and self.tp_size in (4, 8)
              and torch.cuda.is_available()
@@ -2303,7 +3075,7 @@ index 312b342..ffc8240 100644
          ):
              ca_comm = get_tp_group().ca_comm
              reserve_projection_workspace(
-@@ -633,6 +739,8 @@ class MuseSpark1xMoE(nn.Module):
+@@ -633,6 +743,8 @@ class MuseSpark1xMoE(nn.Module):
                  top_k=self.top_k,
                  quant_config=quant_config,
              )
@@ -2312,7 +3084,7 @@ index 312b342..ffc8240 100644
          else:
              self.experts = MuseSpark1xBf16Experts(
                  num_experts=self.num_experts,
-@@ -757,6 +865,10 @@ class MuseSpark1xMoE(nn.Module):
+@@ -757,6 +869,10 @@ class MuseSpark1xMoE(nn.Module):
              and not getattr(get_forward(), "sp_active", False)
              and not already_reduced
          ):
@@ -2323,7 +3095,31 @@ index 312b342..ffc8240 100644
              output = tensor_model_parallel_all_reduce(output)
          if self.post_expert_proj is not None:
              if _is_cpu:
-@@ -815,6 +927,10 @@ class MuseSpark1xMoE(nn.Module):
+@@ -767,10 +883,22 @@ class MuseSpark1xMoE(nn.Module):
+                 comm, output, self.post_expert_proj.weight
+             ):
+                 # Returns this rank's [M, H / world] slice; the FFN boundary gathers it.
++                local_op = getattr(self, "_unpooler_local", None)
++                if local_op is not None:
++                    local = local_op(output)
++                    if self._defers_unpool_gather(comm, output.shape[0]):
++                        return local
++                    full = output.new_empty(output.shape[0], self.hidden_size)
++                    return projection_all_gather(comm, local, full)
+                 if self._defers_unpool_gather(comm, output.shape[0]):
+                     return gemm_local(comm, output, self.post_expert_proj.weight)
+                 return gemm_ag(comm, output, self.post_expert_proj.weight)
+-            output = bf16_gemm_dispatch(output, self.post_expert_proj.weight, None)
++            output = project(
++                output,
++                self.post_expert_proj.weight,
++                "unpooler",
++                getattr(self, "_unpooler", None),
++            )
+         return output
+ 
+     def _defers_unpool_gather(self, comm, num_tokens: int) -> bool:
+@@ -815,6 +943,10 @@ class MuseSpark1xMoE(nn.Module):
          use_split2 = (
              self.router_in_fp32
              and _use_split_bf16_router(hidden_states.shape[0])
@@ -2334,7 +3130,7 @@ index 312b342..ffc8240 100644
              and self.gate.weight.dtype == torch.float32
              and hidden_states.dtype in (torch.bfloat16, torch.float16)
          )
-@@ -846,10 +962,16 @@ class MuseSpark1xMoE(nn.Module):
+@@ -846,13 +978,32 @@ class MuseSpark1xMoE(nn.Module):
              if (
                  self.tp_size in (4, 8)
                  and not sp_active
@@ -2344,15 +3140,34 @@ index 312b342..ffc8240 100644
 +                )
                  and gemm_ag_supported(comm, hidden_states, self.pre_expert_proj.weight)
              ):
-                 expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
+-                expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
++                local_op = getattr(self, "_pooler_local", None)
++                if local_op is None:
++                    expert_input = gemm_ag(
++                        comm, hidden_states, self.pre_expert_proj.weight
++                    )
++                else:
++                    local = local_op(hidden_states)
++                    expert_input = hidden_states.new_empty(
++                        hidden_states.shape[0], self.expert_hidden_size
++                    )
++                    projection_all_gather(comm, local, expert_input)
 +            elif _use_row_split(self.tp_size, hidden_states.shape[0]):
 +                expert_input = _row_split_gemm(
 +                    hidden_states, self.pre_expert_proj.weight
 +                )
              else:
-                 expert_input = bf16_gemm_dispatch(
-                     hidden_states, self.pre_expert_proj.weight, None
-@@ -1071,16 +1193,32 @@ class MuseSpark1xDecoderLayer(nn.Module):
+-                expert_input = bf16_gemm_dispatch(
+-                    hidden_states, self.pre_expert_proj.weight, None
++                expert_input = project(
++                    hidden_states,
++                    self.pre_expert_proj.weight,
++                    "pooler",
++                    getattr(self, "_pooler", None),
+                 )
+         if prepare_early:
+             prepared_input = self.experts.prepare_input(
+@@ -1071,16 +1222,32 @@ class MuseSpark1xDecoderLayer(nn.Module):
              )
              if result is not None:
                  return result
@@ -2392,7 +3207,7 @@ index 312b342..ffc8240 100644
          if self.is_moe_layer:
              ffn_output = self.mlp(ffn_input, router_input, forward_batch)
          else:
-@@ -1174,11 +1312,11 @@ class MuseSpark1xModel(nn.Module):
+@@ -1174,11 +1341,11 @@ class MuseSpark1xModel(nn.Module):
                  get_parallel().tp_size not in (4, 8)
                  or get_parallel().moe_ep_size != get_parallel().tp_size
                  or is_dp_attention_enabled()
@@ -2407,8 +3222,16 @@ index 312b342..ffc8240 100644
                  )
              else:
                  moe_layers = [layer.mlp for layer in self.layers if layer.is_moe_layer]
+@@ -1706,6 +1873,7 @@ class MuseSpark1xForCausalLM(nn.Module):
+         for module in self.modules():
+             if isinstance(module, MuseSpark1xRMSNorm):
+                 module.precompute_effective_weight()
++        prepare_projections(self)
+         # Must follow precompute_effective_weight: the finalize op binds the weight.
+         for module in self.modules():
+             if (
 diff --git a/python/sglang/srt/speculative/dflash_worker_v2.py b/python/sglang/srt/speculative/dflash_worker_v2.py
-index a91ffd6..396e5bb 100644
+index a91ffd6..3448ce8 100644
 --- a/python/sglang/srt/speculative/dflash_worker_v2.py
 +++ b/python/sglang/srt/speculative/dflash_worker_v2.py
 @@ -563,6 +563,14 @@ class DFlashWorkerV2(BaseSpecWorker):
@@ -2426,7 +3249,33 @@ index a91ffd6..396e5bb 100644
          self._draft_block_spec_info = make_draft_block_spec_info(
              draft_token_num=int(self.block_size), device=self.device
          )
-@@ -1083,6 +1091,178 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -596,6 +604,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+         self._out_tokens_bufs: List[torch.Tensor] = []
+         self._new_seq_lens_bufs: List[torch.Tensor] = []
+         self._target_logits_processor = self._defer_target_verify_gather()
++        self._kv_materialize_graph = None
+ 
+     def _defer_target_verify_gather(self) -> Optional[LogitsProcessor]:
+         processors = [
+@@ -729,6 +738,17 @@ class DFlashWorkerV2(BaseSpecWorker):
+             self._draft_worker.init_cuda_graphs(
+                 capture_decode_cuda_graph=capture_decode_cuda_graph
+             )
++            if (
++                is_cuda()
++                and capture_decode_cuda_graph
++                and not get_parallel().attn_dp_enabled
++                and self.lilicorr is None
++            ):
++                from sglang.srt.managers.dflash_kv_graph import DFlashKVGraph
++
++                self._kv_materialize_graph = DFlashKVGraph(
++                    self, max(get_exec().graph.cuda_graph_config.decode.bs)
++                )
+ 
+     def _prewarm_batch_size(self, block_size: int) -> int:
+         """Largest batch the non-greedy verify path can see in one step."""
+@@ -1083,6 +1103,178 @@ class DFlashWorkerV2(BaseSpecWorker):
              (new_cap,), dtype=torch.int32, device="cpu"
          )
  
@@ -2605,7 +3454,7 @@ index a91ffd6..396e5bb 100644
      def __getattr__(self, name):
          # Delegate anything not implemented yet to the target worker. Guard
          # the backing field so a lookup before __init__ sets it raises
-@@ -2533,6 +2713,11 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -2533,6 +2725,11 @@ class DFlashWorkerV2(BaseSpecWorker):
              )
              verify_out_cache_loc_2d.copy_(verify_out_cache_loc.view(bs, block_size))
  
@@ -2617,7 +3466,7 @@ index a91ffd6..396e5bb 100644
          if self._full_embed_gpu is not None:
              # Replicated lookup avoids the mismatched attn-TP all_reduce
              # inside VocabParallelEmbedding under dp attention.
-@@ -2769,6 +2954,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -2769,6 +2966,7 @@ class DFlashWorkerV2(BaseSpecWorker):
                      lm_head=lm_head,
                  ).view(bs, int(self.block_size) - 1)
  
@@ -2625,7 +3474,7 @@ index a91ffd6..396e5bb 100644
          draft_tokens = self._draft_block_tokens_buf[:bs]
          draft_tokens[:, 0].copy_(block_ids[:, 0])
          draft_tokens[:, 1:].copy_(draft_next)
-@@ -2893,6 +3079,7 @@ class DFlashWorkerV2(BaseSpecWorker):
+@@ -2893,6 +3091,7 @@ class DFlashWorkerV2(BaseSpecWorker):
              bs=bs,
              target_predict=target_predict,
          )
@@ -2633,6 +3482,16 @@ index a91ffd6..396e5bb 100644
  
          if SIMULATE_ACC_LEN > 0:
              if SIMULATE_ACC_TOKEN_MODE not in ("fixed", "real-draft-token"):
+@@ -2970,7 +3169,8 @@ class DFlashWorkerV2(BaseSpecWorker):
+         # Consume in this step: every decode graph size shares one aux output,
+         # which the next target forward overwrites (resolve_aux_hidden_states_width).
+         cache_loc = self._draft_write_ids(kv_loc_plan)
+-        self._append_target_hidden_to_draft_kv_by_loc(
++        append_kv = self._kv_materialize_graph or self._append_target_hidden_to_draft_kv_by_loc
++        append_kv(
+             target_hidden=hidden.reshape(-1, hidden.shape[-1]),
+             cache_loc=cache_loc,
+             cache_loc_2d=cache_loc.view(verify_out_cache_loc_2d.shape),
 diff --git a/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py b/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py
 new file mode 100644
 index 0000000..cbf37cf
@@ -3443,723 +4302,517 @@ index 0000000..cbf37cf
 +}
 +
 +"""
-diff --git a/python/sglang/srt/layers/muse_proj.py b/python/sglang/srt/layers/muse_proj.py
+diff --git a/python/sglang/srt/layers/muse_dflash.py b/python/sglang/srt/layers/muse_dflash.py
 new file mode 100644
-index 0000000..bb9bad3
+index 0000000..0ab6a3a
 --- /dev/null
-+++ b/python/sglang/srt/layers/muse_proj.py
-@@ -0,0 +1,708 @@
-+"""Local BF16 Muse o/pooler/unpooler GEMMs from H200 receipt f3786341611f4f1f.
++++ b/python/sglang/srt/layers/muse_dflash.py
+@@ -0,0 +1,296 @@
++"""DFlash2 local compute, preserving released weights and stock rounding.
 +
-+Construct MuseProjection(weight, kind) after weight loading, before CUDA graph
-+capture. Pass the exact local weight, including a TP row slice when applicable.
-+Calls return only this rank's GEMM result: the caller keeps its all-reduce,
-+all-gather, residual and norm operations. No model parameters are replaced.
-+
-+Small-M schedules and 32 MiB cuBLASLt TN/NN selection match the receipt. New
-+512-row pooler / 1024-row unpooler shapes tune their actual dimensions; they
-+have no standalone H200 speedup evidence. Plans are cached by shape/device,
-+then checked against torch for each new weight. Unseen M uses the ordinary
-+GEMM or the masked small-M schedule, without online tuning or host sync.
++The serving owner wires these helpers; no collective, drafter architecture or
++sampling policy changes here. DFlashLinear is prepared after loading and before
++capture. It admits a new GEMM only when it is bit-exact to stock on fresh probes.
 +"""
-+
 +from __future__ import annotations
 +
-+import ctypes as ct
-+from functools import lru_cache
-+from itertools import chain
-+import hashlib
 +import logging
-+import os
-+import statistics
 +import time
 +
 +import torch
 +import torch.nn.functional as F
++import triton
++import triton.language as tl
++from triton.language.extra import cuda as _df_cuda
++
++from sglang.srt.layers import muse_proj as _df_proj
++
++_df_log = logging.getLogger(__name__)
++_df_plan_cache = {}
++
++
++@triton.jit
++def _df_unary_kernel(X, Y, N: tl.constexpr, SCALE: tl.constexpr, CAP: tl.constexpr,
++                     B: tl.constexpr):
++    i = tl.program_id(0) * B + tl.arange(0, B)
++    v = tl.load(X + i, i < N, 0).to(tl.float32)
++    v = v * SCALE
++    if CAP > 0:
++        v = v * (1.0 / CAP)
++        v = _df_cuda.libdevice.tanh(v)
++        v = v * CAP
++    tl.store(Y + i, v, i < N)
++
++
++def dflash_unary(logits, scale=0.1767766952966369, softcap=20.0):
++    """Stock float -> scale -> divide -> tanh -> multiply, in one launch."""
++    x = logits.contiguous()
++    out = x if x.dtype == torch.float32 else torch.empty_like(x, dtype=torch.float32)
++    if x.numel():
++        _df_unary_kernel[(triton.cdiv(x.numel(), 256),)](
++            x, out, x.numel(), scale, 0.0 if softcap is None else softcap,
++            256, num_warps=4, enable_fp_fusion=False)
++    return out
++
++
++@triton.jit
++def _df_prediction_pack_kernel(X, Y, N: tl.constexpr, H: tl.constexpr,
++                               BLOCK: tl.constexpr, B: tl.constexpr):
++    i = tl.program_id(0) * B + tl.arange(0,B)
++    row, col = i // H, i % H
++    source_row = row // (BLOCK-1) * BLOCK + row % (BLOCK-1) + 1
++    value = tl.load(X + source_row * H + col, i < N, 0)
++    tl.store(Y + i, value, i < N)
++
++
++def dflash_prediction_inputs(hidden_states, block_size=8):
++    """Pack seven prediction rows once for both head and selector projection.
++
++    Stock independently reshapes the strided [C,7,H] view for each projection.
++    This returns shared 2D/3D views of one per-call copy; C=1 remains zero-copy.
++    """
++    c = hidden_states.shape[0] // block_size
++    h = hidden_states.shape[-1]
++    if hidden_states.shape[0] != c * block_size or block_size < 2:
++        raise ValueError('full DFlash blocks required')
++    if c <= 1:
++        flat = hidden_states.view(c,block_size,h)[:,1:].reshape(-1,h)
++    else:
++        flat = torch.empty((c*(block_size-1),h),device=hidden_states.device,dtype=hidden_states.dtype)
++        _df_prediction_pack_kernel[(triton.cdiv(flat.numel(),1024),)](
++            hidden_states,flat,flat.numel(),h,block_size,1024,num_warps=4)
++    return flat,flat.view(c,block_size-1,h)
++
++
++@triton.jit
++def _df_conv_kernel(X, D, W, O, T: tl.constexpr, H: tl.constexpr, G: tl.constexpr,
++                    DT: tl.constexpr, DS: tl.constexpr, DG: tl.constexpr,
++                    BLOCK: tl.constexpr, B: tl.constexpr):
++    i = tl.program_id(0) * B + tl.arange(0, B)
++    t, h = i // H, i % H
++    g = h // G
++    x0 = tl.load(X + i, t < T, 0).to(tl.float32)
++    x1 = tl.load(X + (t - 1) * H + h, (t < T) & (t % BLOCK > 0), 0).to(tl.float32)
++    d0 = tl.load(D + t * DT + g * DG, t < T, 0).to(tl.float32)
++    d1 = tl.load(D + t * DT + DS + g * DG, t < T, 0).to(tl.float32)
++    c0 = tl.load(W + h).to(tl.float32) + d0
++    c1 = tl.load(W + H + h).to(tl.float32) + d1
++    # Stock Inductor contracts the first multiply into the final add. BF16
++    # coefficient/product temporaries remain FP32 in that compiled function.
++    result = tl.fma(c0, x0, c1 * x1)
++    tl.store(O + i, result, t < T)
++
++
++
++def dflash_conv2(hidden, delta, base, block_size=8, group_size=16):
++    """Two-tap released grouped convolution; accepts strided [T,2,H/16] deltas.
++
++    Match stock Inductor's FP32 intermediates, first-product FMA and BF16 store.
++    """
++    if hidden.dtype != torch.bfloat16 or delta.dtype != torch.bfloat16 or base.dtype != torch.bfloat16:
++        raise ValueError('DFlash conv2 expects the released BF16 tensors')
++    t, h = hidden.shape
++    if tuple(delta.shape) != (t, 2, h // group_size) or tuple(base.shape) != (2, h):
++        raise ValueError('DFlash conv2 shape mismatch')
++    x, w = hidden.contiguous(), base.contiguous()
++    out = torch.empty_like(x)
++    if t:
++        _df_conv_kernel[(triton.cdiv(t * h, 256),)](
++            x, delta, w, out, t, h, group_size, *delta.stride(), block_size,
++            256, num_warps=4, enable_fp_fusion=False)
++    return out
++
++
++@triton.jit
++def _df_selector_pack_kernel(A, B, IDS, H, ANCHOR, P, Q,
++                             C: tl.constexpr, L: tl.constexpr, K: tl.constexpr,
++                             R: tl.constexpr, V: tl.constexpr, BATCH: tl.constexpr):
++    row = tl.program_id(0)
++    r = tl.arange(0, BATCH)
++    request, slot, candidate = row // (L * K), row // K % L, row % K
++    current = tl.load(IDS + row)
++    if slot == 0:
++        pred = tl.load(ANCHOR + request)
++    else:
++        pred = tl.load(IDS + row - K)
++    av = tl.load(A + pred * R + r, r < R, 0).to(tl.float32)
++    hv = tl.load(H + (request * L + slot) * R + r, r < R, 0).to(tl.float32)
++    bv = tl.load(B + current * R + r, r < R, 0)
++    tl.store(P + row * R + r, av * hv, r < R)
++    tl.store(Q + row * R + r, bv, r < R)
++
++
++def dflash_selector_inputs(predecessor_table, successor_table, candidate_ids, hidden, anchors):
++    """Fuse codebook gathers and BF16 predecessor*hidden before the stock bmm."""
++    c, slots, k = candidate_ids.shape
++    rank = hidden.shape[-1]
++    pred = torch.empty((c * slots, k, rank), device=hidden.device, dtype=hidden.dtype)
++    succ = torch.empty_like(pred)
++    if c:
++        _df_selector_pack_kernel[(c * slots * k,)](
++            predecessor_table, successor_table, candidate_ids.contiguous(), hidden.contiguous(),
++            anchors.contiguous(), pred, succ, c, slots, k, rank,
++            predecessor_table.shape[0], triton.next_power_of_2(rank), num_warps=4)
++    return pred, succ
++
++
++def dflash_selector_scores(predecessor_table, successor_table, candidate_ids, unary_logits, hidden, anchors):
++    """Keep stock BF16 bmm and FP32 unary addition; replace only its input glue."""
++    pred, succ = dflash_selector_inputs(predecessor_table, successor_table, candidate_ids, hidden, anchors)
++    c, slots, k = candidate_ids.shape
++    pair = torch.bmm(pred, succ.transpose(1, 2)).view(c, slots, k, k)
++    return unary_logits[:, :, None] + pair
++
++
++class DFlashLinear:
++    """Arbitrary local released BF16 drafter weight, with exact-stock admission.
++
++    Targets context FC, QKV/o, gate/up/down, convolution coefficient projections,
++    and selector/head projections. The caller retains all TP collectives.
++    """
++    def __init__(self, weight, *, tokens=(8, 32, 128, 256), budget_s=10, stock_nn=False):
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError('prepare DFlashLinear before capture')
++        if not weight.is_cuda or weight.dtype != torch.bfloat16 or not weight.is_contiguous():
++            raise ValueError('DFlashLinear needs contiguous CUDA BF16 weights')
++        self.stock_nn = stock_nn
++        self.weight = weight.detach().T.contiguous() if stock_nn else weight.detach()
++        self.source, self.version = weight, _df_proj._version(weight)
++        self.transpose = weight.detach() if stock_nn else None
++        self.codes, self.plans, self.timings, self.rejections = {}, {}, {}, []
++        self.mod = _df_proj._module()
++        self.prepare(tokens=tokens, budget_s=budget_s)
++
++    def _df_ensure(self, m, config):
++        if config[0] not in ('lt', 'lt_nn'):
++            return
++        nn = int(config[0] == 'lt_nn')
++        if (m, nn) not in self.codes:
++            n, k = self.weight.shape
++            self.codes[(m, nn)] = _df_proj._options(self.weight.device.index, m, n, k, nn)
++        if config[1] >= self.codes[(m, nn)].shape[0]:
++            raise ValueError('unavailable Lt algorithm')
++        if nn and self.transpose is None:
++            self.transpose = self.weight.T.contiguous()
++
++    def _df_run(self, x, config):
++        if config[0] == 'stock':
++            return self._df_stock(x)
++        out = torch.empty((x.shape[0], self.weight.shape[0]), device=x.device, dtype=torch.bfloat16)
++        if config[0] == 'skin':
++            nt = 1 if x.shape[0] <= 8 else 2
++            self.mod.skinny(x, self.weight, out, (nt, 1, 4, 1, 4, config[1], 1))
++        else:
++            nn = int(config[0] == 'lt_nn')
++            work = torch.empty(32 << 20, device=x.device, dtype=torch.uint8)
++            self.mod.lt(x, self.transpose if nn else self.weight, out, work,
++                        self.codes[(x.shape[0], nn)], config[1], nn)
++        return out
++
++    def _df_stock(self, x):
++        return torch.mm(x, self.source) if self.stock_nn else F.linear(x, self.weight)
++
++    def _df_variants(self, m):
++        yield ('stock',)
++        n, k = self.weight.shape
++        if m <= 32 and n % 16 == 0:
++            for split in (1, 2, 4, 8):
++                if k % (split * 512) == 0:
++                    yield ('skin', split)
++        for nn in (0, 1):
++            tag = 'lt_nn' if nn else 'lt'
++            try:
++                self._df_ensure(m, (tag, 0))
++                for index in range(self.codes[(m, nn)].shape[0]):
++                    yield (tag, index)
++            except Exception as exc:
++                _df_log.warning('DFLASH_REJECT layout=%s m=%d: %s', tag, m, exc)
++
++    def prepare(self, *, tokens=(8, 32, 128, 256), budget_s=10):
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError('DFlash tuning must precede capture')
++        deadline = time.monotonic() + budget_s
++        flush = None
++        for m in tokens:
++            self.plans[m] = ('stock',)
++            key = (self.weight.device.index, tuple(self.weight.shape), m, self.stock_nn)
++            x = torch.randn((m, self.weight.shape[1]), device=self.weight.device, dtype=torch.bfloat16)
++            if key in _df_plan_cache:
++                candidate = _df_plan_cache[key]
++                try:
++                    self._df_ensure(m, candidate)
++                    if not torch.equal(self._df_run(x, candidate), self._df_stock(x)):
++                        raise ValueError('cached algorithm differs from deterministic stock')
++                    self.plans[m] = candidate
++                    continue
++                except Exception as exc:
++                    _df_log.warning('DFLASH_REJECT cache m=%d: %s', m, exc)
++            if time.monotonic() >= deadline:
++                continue
++            if flush is None:
++                flush = torch.zeros(128 << 20, device=x.device, dtype=torch.uint8)
++            banks = [torch.randn_like(x) for _ in range(3)]
++            banks[-1].zero_(); banks[-1][:, 127] = .5
++            trials = []
++            with _df_proj._Graph(lambda: self._df_stock(x)) as baseline:
++                for config in self._df_variants(m):
++                    if time.monotonic() >= deadline:
++                        break
++                    try:
++                        self._df_ensure(m, config)
++                        with _df_proj._Graph(lambda c=config: self._df_run(x, c)) as graph:
++                            for fresh in banks:
++                                x.copy_(fresh); graph.graph.replay()
++                                if not torch.equal(graph.out, self._df_stock(x)):
++                                    raise ValueError('not exact to deterministic stock')
++                            base_us, us = _df_proj._times([baseline, graph], x, banks, flush, 4)
++                            trials.append((us / base_us, config))
++                    except Exception as exc:
++                        self.rejections.append((m, config, str(exc)))
++                        _df_log.warning('DFLASH_REJECT shape=%s m=%d config=%s: %s', tuple(self.weight.shape), m, config, exc)
++            if trials:
++                _, config = min(trials, key=lambda row: row[0])
++                self.plans[m] = _df_plan_cache[key] = config
++                self.timings[m] = dict(config=config, trial_ratio=min(trials)[0])
++        if not any(v[0] == 'lt_nn' for v in self.plans.values()):
++            self.transpose = None
++        return self
++
++    def __call__(self, x):
++        if self.version is not None and _df_proj._version(self.source) != self.version:
++            raise RuntimeError('drafter weight changed after preparation')
++        return self._df_run(x.contiguous(), self.plans.get(x.shape[0], ('stock',)))
++
++
++class DFlashConv2:
++    """Drop-in local prepare/finish math for DFlashGroupedConv's two taps.
++
++    Keep the original module's parameters/registration. Bind this helper after
++    loading its kernel_projection.weight and base_kernel; no weights change.
++    """
++    def __init__(self, projection_weight, base_kernel, *, block_size=8, tokens=(8,32,128,256), budget_s=10):
++        h = projection_weight.shape[1]
++        if tuple(base_kernel.shape) != (2,2,h) or projection_weight.shape[0] != h // 4:
++            raise ValueError('released DFlash two-tap/group16 convolution shape required')
++        self.base = base_kernel
++        self.block_size = block_size
++        self.projection = DFlashLinear(projection_weight, tokens=tokens, budget_s=budget_s)
++
++    def prepare(self, x):
++        coefficients = self.projection(x).view(x.shape[0], 2, 2, x.shape[1] // 16)
++        return dflash_conv2(x, coefficients[:,0], self.base[0], self.block_size), coefficients[:,1]
++
++    def finish(self, x, coefficients):
++        return dflash_conv2(x, coefficients, self.base[1], self.block_size)
+diff --git a/python/sglang/srt/layers/muse_prefill_dense.py b/python/sglang/srt/layers/muse_prefill_dense.py
+new file mode 100644
+index 0000000..498f0c2
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_prefill_dense.py
+@@ -0,0 +1,200 @@
++"""Prepared pooler/router plan for Muse prefill.
++
++The pooler stays BF16, while the router keeps its lossless BF16 hi/lo split
++and FP32 accumulation.  Plans are selected before CUDA graph capture and are
++reused by shape.  The merged path is admitted only when it agrees with the
++separate reference on fresh inputs.
++"""
++
++from __future__ import annotations
++
++import logging
++import statistics
++import time
++
++import torch
 +
 +logger = logging.getLogger(__name__)
-+VERIFY_TOKENS = (8, 16, 32, 64, 128, 256)
-+WORKSPACE_BYTES = 32 << 20
-+_SHAPES = {
-+    "o": ((8192, 1024),),
-+    "pooler": ((4096, 8192), (512, 8192)),
-+    "unpooler": ((8192, 4096), (1024, 4096)),
-+}
-+# Ordinals refer to 32 returned heuristics and a 32 MiB workspace, exactly as
-+# in f3786341611f4f1f. They compete with cuBLAS and every returned heuristic.
-+_RECEIPT = {
-+    ("pooler", 128): ("lt_nn", 1),
-+    ("pooler", 256): ("lt_nn", 0),
-+    ("unpooler", 128): ("lt_nn", 0),
-+    ("unpooler", 256): ("lt", 0),
-+    ("o", 128): ("lt_nn", 0),
-+    ("o", 256): ("cublas",),
-+}
-+_PLAN_CACHE = {}
++
++HIDDEN = 8192
++MOE_HIDDEN = 4096
++ROUTER_EXPERTS = 256
++WORKSPACE_BYTES = 128 << 20
++VARIANTS = ("separate", "merged")
 +
 +
-+def projection_supported(x, weight, kind):
-+    """H200 integration gate; a direct instance also runs native sm_120 tests."""
++def dense_router_supported(hidden: torch.Tensor, pooler: torch.Tensor, router: torch.Tensor) -> bool:
 +    return (
-+        kind in _SHAPES
-+        and x.is_cuda
-+        and weight.is_cuda
-+        and x.device == weight.device
-+        and x.ndim == weight.ndim == 2
-+        and tuple(weight.shape) in _SHAPES[kind]
-+        and x.shape[1] == weight.shape[1]
-+        and x.dtype == weight.dtype == torch.bfloat16
-+        and x.is_contiguous()
-+        and weight.is_contiguous()
-+        and 0 < x.shape[0] <= 256
-+        and torch.cuda.get_device_capability(x.device) == (9, 0)
++        hidden.is_cuda
++        and pooler.is_cuda
++        and router.is_cuda
++        and hidden.device == pooler.device == router.device
++        and hidden.ndim == pooler.ndim == router.ndim == 2
++        and tuple(hidden.shape[1:]) == (HIDDEN,)
++        and tuple(pooler.shape) == (MOE_HIDDEN, HIDDEN)
++        and tuple(router.shape) == (ROUTER_EXPERTS, HIDDEN)
++        and hidden.dtype == pooler.dtype == torch.bfloat16
++        and router.dtype in (torch.bfloat16, torch.float32)
++        and hidden.is_contiguous()
++        and pooler.is_contiguous()
++        and router.is_contiguous()
++        and 0 < hidden.shape[0] <= 16384
 +    )
 +
 +
-+class _Module:
-+    def __init__(self, path):
-+        self.lib = ct.CDLL(path)
-+        p, i = ct.c_void_p, ct.c_int
-+        self.lib.lean_error_string.restype = ct.c_char_p
-+        self.lib.lean_algo_bytes.restype = i
-+        self.lib.lean_skinny.argtypes = [p] * 4 + [i] * 12 + [p]
-+        self.lib.lean_lt_options.argtypes = [i] * 5 + [p, ct.POINTER(i)]
-+        self.lib.lean_lt_run.argtypes = [p] * 5 + [i] * 6 + [ct.c_size_t, p]
-+        self.algo_bytes = self.lib.lean_algo_bytes()
-+
-+    def check(self, status):
-+        if status:
-+            raise RuntimeError(self.lib.lean_error_string().decode())
-+
-+    def skinny(self, x, weight, out, config):
-+        nt, tr, u, wn, wk, ks, xp = config
-+        self.check(self.lib.lean_skinny(
-+            weight.data_ptr(), weight.data_ptr(), x.data_ptr(), out.data_ptr(),
-+            x.shape[0], weight.shape[0], x.shape[1], nt, tr, u, wn, wk, ks,
-+            0, xp, 0, torch.cuda.current_stream(x.device).cuda_stream,
-+        ))
-+
-+    def options(self, m, n, k, nn):
-+        count = ct.c_int()
-+        codes = torch.empty((32, self.algo_bytes), dtype=torch.uint8, device="cpu")
-+        self.check(self.lib.lean_lt_options(
-+            n, m, k, n if nn else k, nn, codes.data_ptr(), ct.byref(count),
-+        ))
-+        return codes[:count.value].clone()
-+
-+    def lt(self, x, weight, out, workspace, codes, index, nn):
-+        if not 0 <= index < codes.shape[0]:
-+            raise ValueError("cuBLASLt ordinal outside the prepared heuristic table")
-+        self.check(self.lib.lean_lt_run(
-+            weight.data_ptr(), x.data_ptr(), out.data_ptr(), workspace.data_ptr(),
-+            codes.data_ptr(), out.shape[1], x.shape[0], x.shape[1],
-+            weight.stride(0), nn, index, workspace.numel(),
-+            torch.cuda.current_stream(x.device).cuda_stream,
-+        ))
++def _router_halves(router: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
++    full = router.float()
++    hi = full.to(torch.bfloat16).contiguous()
++    lo = (full - hi.float()).to(torch.bfloat16).contiguous()
++    return hi, lo
 +
 +
-+@lru_cache(None)
-+def _module(arch=None):
-+    from torch.utils.cpp_extension import load_inline
-+
-+    if torch.cuda.is_current_stream_capturing():
-+        raise RuntimeError("construct MuseProjection after loading, before graph capture")
-+    capability = torch.cuda.get_device_capability()
-+    target = arch or ("9.0a" if capability == (9, 0) else f"{capability[0]}.{capability[1]}")
-+    previous = os.environ.get("TORCH_CUDA_ARCH_LIST")
-+    os.environ["TORCH_CUDA_ARCH_LIST"] = target
-+    try:
-+        tag = hashlib.sha256(_CUDA_SOURCE.encode()).hexdigest()[:12]
-+        path = load_inline(
-+            name=f"muse_dense_{tag}_{target.replace('.', '_')}",
-+            cpp_sources="", cuda_sources=_CUDA_SOURCE, functions=None,
-+            is_python_module=False, no_implicit_headers=True,
-+            extra_cuda_cflags=["-O3", "-std=c++20", "--expt-relaxed-constexpr"],
-+            extra_ldflags=["-lcublasLt"], verbose=False,
-+        )
-+    finally:
-+        if previous is None:
-+            os.environ.pop("TORCH_CUDA_ARCH_LIST", None)
-+        else:
-+            os.environ["TORCH_CUDA_ARCH_LIST"] = previous
-+    return _Module(path)
++def _separate(hidden: torch.Tensor, pooler: torch.Tensor, router_hi: torch.Tensor,
++              router_lo: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
++    pooled = torch.mm(hidden, pooler.t())
++    logits = torch.mm(hidden, router_hi.t(), out_dtype=torch.float32)
++    logits.add_(torch.mm(hidden, router_lo.t(), out_dtype=torch.float32))
++    return pooled, logits
 +
 +
-+@lru_cache(None)
-+def _options(device_index, m, n, k, nn):
-+    with torch.cuda.device(device_index):
-+        return _module().options(m, n, k, nn)
++def _merged(hidden: torch.Tensor, bank: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
++    # The mixed bank is lossless; the pooler result is rounded at the same
++    # boundary the layer uses before experts consume it.
++    mixed = torch.mm(hidden, bank.t(), out_dtype=torch.float32)
++    return mixed[:, :MOE_HIDDEN].to(torch.bfloat16), mixed[:, MOE_HIDDEN:]
 +
 +
-+def _version(weight):
-+    try:
-+        return weight._version
-+    except RuntimeError:
-+        # SGLang's inference tensors may not carry version counters. Weights
-+        # must remain immutable after preparation, as with other packed weights.
-+        return None
-+
-+
-+def _agrees(out, expected):
-+    if out.shape != expected.shape or not bool(torch.isfinite(out).all()):
++def _agrees(got: tuple[torch.Tensor, torch.Tensor], expected: tuple[torch.Tensor, torch.Tensor]) -> bool:
++    pooled, logits = got
++    exp_pooled, exp_logits = expected
++    if pooled.shape != exp_pooled.shape or logits.shape != exp_logits.shape:
 +        return False
-+    delta, ref = out.float() - expected.float(), expected.float()
-+    if float(delta.norm() / ref.norm().clamp_min(1e-12)) > .01:
++    if not bool(torch.isfinite(pooled).all()) or not bool(torch.isfinite(logits).all()):
 +        return False
-+    norms = ref.norm(dim=1)
-+    return float((delta.norm(dim=1) / norms.clamp_min(norms.mean() * .1 + 1e-12)).max()) <= .05
++    pe = float((pooled.float() - exp_pooled.float()).norm() / exp_pooled.float().norm().clamp_min(1e-12))
++    re = float((logits - exp_logits).norm() / exp_logits.norm().clamp_min(1e-12))
++    return pe <= 0.01 and re <= 0.01
 +
 +
 +class _Graph:
-+    """Own its stream: destruction cannot clear another graph's BLAS workspace."""
-+    active_streams = 0
++    active = 0
 +
 +    def __init__(self, fn):
-+        self.runtime = torch.cuda.cudart()
-+        handle = ct.c_void_p()
-+        if int(self.runtime.cudaStreamCreate(ct.addressof(handle))):
-+            raise RuntimeError("projection tuning stream creation failed")
-+        self.handle = handle.value
-+        type(self).active_streams += 1
-+        self.stream = torch.cuda.ExternalStream(self.handle)
 +        self.graph = torch.cuda.CUDAGraph()
++        self.out = None
++        type(self).active += 1
 +        try:
-+            self.stream.wait_stream(torch.cuda.current_stream())
-+            with torch.cuda.stream(self.stream):
-+                fn()
-+            self.stream.synchronize()
-+            with torch.cuda.graph(self.graph, stream=self.stream):
++            fn()
++            torch.cuda.synchronize()
++            with torch.cuda.graph(self.graph):
 +                self.out = fn()
 +            self.graph.replay()
++            torch.cuda.synchronize()
 +        except BaseException:
 +            self.close()
 +            raise
 +
++    def replay(self):
++        self.graph.replay()
++
 +    def close(self):
-+        if getattr(self, "handle", None) is not None:
++        if getattr(self, "graph", None) is not None:
 +            self.graph.reset()
-+            self.graph = self.out = None
-+            self.runtime.cudaStreamDestroy(self.handle)
-+            self.handle = None
-+            type(self).active_streams -= 1
++            self.graph = None
++            self.out = None
++            type(self).active -= 1
 +
 +    def __enter__(self):
 +        return self
 +
-+    def __exit__(self, *exc):
++    def __exit__(self, *_):
 +        self.close()
 +
 +    def __del__(self):
 +        self.close()
 +
 +
-+def _times(graphs, x, banks, flush, repeats):
-+    samples = [[] for _ in graphs]
-+    for rep in range(repeats):
-+        x.copy_(banks[(rep // 2) % len(banks)])
-+        order = range(len(graphs)) if rep % 2 == 0 else reversed(range(len(graphs)))
-+        for index in order:
-+            flush.add_(1)
-+            a, b = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
-+            a.record()
-+            graphs[index].graph.replay()
-+            b.record()
-+            b.synchronize()
-+            samples[index].append(a.elapsed_time(b) * 1000)
-+    return [statistics.median(values) for values in samples]
++class DenseRouterPlan:
++    """Shape-specialized pooler/router execution selected before graph capture."""
 +
-+
-+class MuseProjection:
-+    """Prepared local projection; prepare/timing never occurs in __call__.
-+
-+    Shape plans are shared across layers; NN weight copies are instance-local.
-+    Temporary Lt workspaces use the current stream's allocator, so concurrent
-+    graph/eager calls do not race on shared mutable scratch. Set tokens=() to
-+    construct without tuning, then call prepare() during the loader's warmup.
-+    """
-+    def __init__(self, weight, kind, *, tokens=VERIFY_TOKENS, budget_s=15):
++    def __init__(self, pooler: torch.Tensor, router: torch.Tensor,
++                 *, tokens=(753, 3012, 16384), budget_s=15):
++        if (not pooler.is_cuda or not router.is_cuda or pooler.dtype != torch.bfloat16
++                or router.dtype not in (torch.bfloat16, torch.float32)):
++            raise ValueError("DenseRouterPlan requires CUDA BF16 pooler and BF16/FP32 router weights")
++        if tuple(pooler.shape) != (MOE_HIDDEN, HIDDEN) or tuple(router.shape) != (ROUTER_EXPERTS, HIDDEN):
++            raise ValueError("unsupported pooler/router shape")
++        if pooler.device != router.device or not pooler.is_contiguous() or not router.is_contiguous():
++            raise ValueError("pooler and router must be contiguous on one CUDA device")
 +        if torch.cuda.is_current_stream_capturing():
-+            raise RuntimeError("MuseProjection preparation must precede graph capture")
-+        if kind not in _SHAPES or tuple(weight.shape) not in _SHAPES[kind]:
-+            raise ValueError(f"unsupported TP8 {kind} projection shape {tuple(weight.shape)}")
-+        if not weight.is_cuda or weight.dtype != torch.bfloat16 or not weight.is_contiguous():
-+            raise ValueError("MuseProjection requires a contiguous CUDA BF16 weight")
-+        self.source, self.weight, self.kind = weight, weight.detach(), kind
-+        self.version = _version(weight)
-+        self.transposed = None
-+        self.plans, self.codes, self.timings = {}, {}, {}
-+        with torch.cuda.device(weight.device):
-+            self.mod = _module()
++            raise RuntimeError("DenseRouterPlan preparation must precede graph capture")
++        self.pooler = pooler.detach()
++        self.router = router.detach()
++        self.router_hi, self.router_lo = _router_halves(self.router)
++        self.bank = torch.cat((self.pooler, self.router_hi, self.router_lo), 0).contiguous()
++        self.plans: dict[int, str] = {}
++        self.timings: dict[int, dict] = {}
 +        self.prepare(tokens, budget_s=budget_s)
 +
-+    def _skin_config(self, m):
-+        nt = 1 if m <= 8 else 2
-+        if self.kind == "pooler" and m > 8:
-+            return nt, 2, 4, 1, 8, 1, 1
-+        return nt, 1, 4, 1, 8 if self.kind == "unpooler" else 4, 1, 1
++    def _run(self, hidden: torch.Tensor, variant: str):
++        if variant == "separate":
++            return _separate(hidden, self.pooler, self.router_hi, self.router_lo)
++        if variant == "merged":
++            return _merged(hidden, self.bank)
++        raise ValueError(f"unknown dense/router variant {variant}")
 +
-+    def _base(self, m):
-+        n = self.weight.shape[0]
-+        if 0 < m <= 16 and self.kind == "pooler" and n == 4096:
-+            return "skin",
-+        if 0 < m <= 8 and self.kind == "unpooler" and n == 1024:
-+            return "skin",
-+        if m == 1 and self.kind == "o":
-+            return "skin",
-+        return "cublas",
++    def _time(self, graph: _Graph, hidden: torch.Tensor, banks: list[torch.Tensor], repeats=4) -> float:
++        start = torch.cuda.Event(enable_timing=True)
++        end = torch.cuda.Event(enable_timing=True)
++        vals = []
++        for rep in range(repeats):
++            hidden.copy_(banks[rep % len(banks)])
++            start.record()
++            graph.replay()
++            end.record()
++            end.synchronize()
++            vals.append(start.elapsed_time(end) * 1000)
++        return statistics.median(vals)
 +
-+    def _full_shape(self):
-+        return self.weight.shape[0] == _SHAPES[self.kind][0][0]
-+
-+    def _ensure(self, m, config):
-+        if config[0] not in ("lt", "lt_nn"):
-+            return
-+        nn = int(config[0] == "lt_nn")
-+        if (m, nn) not in self.codes:
-+            n, k = self.weight.shape
-+            self.codes[(m, nn)] = _options(self.weight.device.index, m, n, k, nn)
-+        if config[1] >= self.codes[(m, nn)].shape[0]:
-+            raise ValueError(f"receipt heuristic unavailable: {config}")
-+        if nn and self.transposed is None:
-+            self.transposed = self.weight.T.contiguous()
-+
-+    def _run(self, x, config):
-+        if config[0] == "cublas":
-+            return F.linear(x, self.weight)
-+        out = torch.empty((x.shape[0], self.weight.shape[0]), device=x.device, dtype=x.dtype)
-+        if config[0] == "skin":
-+            schedule = list(self._skin_config(x.shape[0]))
-+            if len(config) > 1:
-+                schedule[5] = config[1]
-+            self.mod.skinny(x, self.weight, out, tuple(schedule))
-+        elif config[0] in ("lt", "lt_nn"):
-+            nn = int(config[0] == "lt_nn")
-+            workspace = torch.empty(WORKSPACE_BYTES, device=x.device, dtype=torch.uint8)
-+            w = self.transposed if nn else self.weight
-+            self.mod.lt(x, w, out, workspace, self.codes[(x.shape[0], nn)], config[1], nn)
-+        else:
-+            raise ValueError(f"unknown projection variant {config}")
-+        return out
-+
-+    def _variants(self, m):
-+        base = self._base(m)
-+        yield base
-+        # Receipt small-M dispatch is already measured. Shards introduced by
-+        # serving are different shapes and compete against cuBLAS locally.
-+        if (self._full_shape() and m < 128) or (self.kind == "unpooler" and m <= 8):
-+            return
-+        yield "cublas",
-+        if m <= 16:
-+            yield "skin",
-+            # New serving shards have only 16-64 output CTAs. The same receipt
-+            # kernel's in-cluster K merge can fill more of H200's 132 SMs.
-+            for split in (2, 4, 8):
-+                yield "skin", split
-+        if self._full_shape() and (self.kind, m) in _RECEIPT:
-+            yield _RECEIPT[(self.kind, m)]
-+        for nn in (0, 1):
-+            tag = "lt_nn" if nn else "lt"
-+            try:
-+                self._ensure(m, (tag, 0))
-+                for index in range(self.codes[(m, nn)].shape[0]):
-+                    yield tag, index
-+            except Exception as exc:
-+                logger.warning("MUSE_PROJ_REJECT role=%s m=%s layout=%s: %s", self.kind, m, tag, exc)
-+
-+    def prepare(self, tokens=VERIFY_TOKENS, *, budget_s=15):
-+        """Select once per actual shape; rejects never abort a trial sweep."""
-+        if torch.cuda.is_current_stream_capturing():
-+            raise RuntimeError("call MuseProjection.prepare before graph capture")
-+        deadline = time.monotonic() + max(0, budget_s)
-+        flush = None
++    def prepare(self, tokens=(753, 3012, 16384), *, budget_s=15):
++        deadline = time.monotonic() + max(0.0, budget_s)
 +        for m in dict.fromkeys(tokens):
-+            if not 0 < m <= 256:
-+                raise ValueError("prepare token counts must be in 1..256")
-+            self.plans[m] = self._base(m)
++            if not 0 < m <= 16384:
++                raise ValueError("token counts must be in 1..16384")
++            hidden = torch.randn((m, HIDDEN), device=self.pooler.device, dtype=torch.bfloat16)
++            expected = self._run(hidden, "separate")
++            self.plans[m] = "separate"
 +            if time.monotonic() >= deadline:
-+                break
-+            key = (self.weight.device.index, self.kind, tuple(self.weight.shape), m)
-+            x = torch.randn((m, self.weight.shape[1]), device=self.weight.device, dtype=torch.bfloat16)
-+            if key in _PLAN_CACHE:
-+                config = _PLAN_CACHE[key]
-+                try:
-+                    self._ensure(m, config)
-+                    if not _agrees(self._run(x, config), F.linear(x, self.weight)):
-+                        raise ValueError("cached choice exceeds 1% torch guard")
-+                    self.plans[m] = config
-+                    continue
-+                except Exception as exc:
-+                    logger.warning("MUSE_PROJ_REJECT cached role=%s m=%s: %s", self.kind, m, exc)
-+            # Exact small-M receipt schedules need no redundant benchmarking.
-+            configs = iter(self._variants(m))
-+            base = next(configs)
-+            if (self._full_shape() and m < 128) or (self.kind == "unpooler" and m <= 8):
-+                try:
-+                    if not _agrees(self._run(x, base), F.linear(x, self.weight)):
-+                        raise ValueError("receipt choice exceeds 1% torch guard")
-+                    self.plans[m] = _PLAN_CACHE[key] = base
-+                except Exception as exc:
-+                    self.plans[m] = ("cublas",)
-+                    logger.warning("MUSE_PROJ_REJECT receipt role=%s m=%s: %s", self.kind, m, exc)
 +                continue
-+            if flush is None:
-+                flush = torch.zeros(128 << 20, device=x.device, dtype=torch.uint8)
-+            banks = [torch.randn_like(x) for _ in range(3)]
-+            banks[2][:, ::257] *= 32
-+            with _Graph(lambda: self._run(x, self._base(m))) as baseline:
-+                trials, seen = [], set()
-+                for config in chain((base,), configs):
-+                    if time.monotonic() >= deadline:
-+                        break
-+                    if config in seen:
-+                        continue
-+                    seen.add(config)
-+                    try:
-+                        self._ensure(m, config)
-+                        with _Graph(lambda c=config: self._run(x, c)) as graph:
-+                            for bank in banks:
-+                                x.copy_(bank)
-+                                graph.graph.replay()
-+                                if not _agrees(graph.out, F.linear(x, self.weight)):
-+                                    raise ValueError("variant exceeds 1% torch guard")
-+                            us = _times([baseline, graph], x, banks, flush, 2)[1]
-+                            trials.append((us, config))
-+                    except Exception as exc:
-+                        logger.warning("MUSE_PROJ_REJECT role=%s m=%s config=%s: %s", self.kind, m, config, exc)
-+                finalists = sorted(trials, key=lambda row: row[0])[:3]
-+                receipt = _RECEIPT.get((self.kind, m)) if self._full_shape() else None
-+                keep = [self._base(m)] + [config for _, config in finalists]
-+                if receipt in {config for _, config in trials} and receipt not in keep:
-+                    keep.append(receipt)
-+                scores = []
-+                for config in dict.fromkeys(keep):
++            banks = [torch.randn_like(hidden) for _ in range(2)]
++            best = (float("inf"), "separate")
++            base_graph = _Graph(lambda: self._run(hidden, "separate"))
++            try:
++                for variant in VARIANTS:
 +                    if time.monotonic() >= deadline:
 +                        break
 +                    try:
-+                        self._ensure(m, config)
-+                        with _Graph(lambda c=config: self._run(x, c)) as graph:
-+                            for bank in banks:
-+                                x.copy_(bank)
-+                                graph.graph.replay()
-+                                if not _agrees(graph.out, F.linear(x, self.weight)):
-+                                    raise ValueError("finalist exceeds 1% torch guard")
-+                            base_us, us = _times([baseline, graph], x, banks, flush, 12)
-+                            scores.append((us / base_us, config, us))
-+                    except Exception as exc:
-+                        logger.warning("MUSE_PROJ_REJECT finalist role=%s m=%s config=%s: %s", self.kind, m, config, exc)
-+                if scores:
-+                    ratio, config, us = min(scores, key=lambda row: row[0])
-+                    self.plans[m] = _PLAN_CACHE[key] = config
-+                    self.timings[m] = {"config": config, "event_us": us, "ratio_to_base": ratio}
-+                    logger.info("MUSE_PROJ_PICK role=%s n=%s m=%s %s", self.kind, self.weight.shape[0], m, self.timings[m])
-+        # Keep an extra weight layout only while a selected plan uses it.
-+        if not any(config[0] == "lt_nn" for config in self.plans.values()):
-+            self.transposed = None
++                        graph = _Graph(lambda v=variant: self._run(hidden, v))
++                        try:
++                            if not _agrees(graph.out, expected):
++                                raise ValueError("variant exceeds 1% dense/router agreement guard")
++                            us = self._time(graph, hidden, banks)
++                            if us < best[0]:
++                                best = (us, variant)
++                        finally:
++                            graph.close()
++                    except Exception as exc:  # noqa: BLE001
++                        logger.warning("MUSE_PREFILL_DENSE_REJECT m=%s variant=%s: %s", m, variant, exc)
++                self.plans[m] = best[1]
++                self.timings[m] = {"variant": best[1], "event_us": best[0]}
++            finally:
++                base_graph.close()
++        if _Graph.active:
++            raise RuntimeError("dense/router tuning graphs leaked")
 +        return self
 +
-+    def __call__(self, x):
-+        if _version(self.source) != self.version:
-+            raise RuntimeError("Muse projection weight changed: construct a new prepared instance")
-+        if (x.ndim != 2 or x.shape[1] != self.weight.shape[1]
-+                or x.device != self.weight.device or x.dtype != torch.bfloat16):
-+            raise ValueError("projection requires CUDA BF16 [tokens, local K] input")
-+        x = x.contiguous()
-+        if not x.shape[0]:
-+            return x.new_empty((0, self.weight.shape[0]))
-+        return self._run(x, self.plans.get(x.shape[0], self._base(x.shape[0])))
++    def __call__(self, hidden: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
++        if not dense_router_supported(hidden, self.pooler, self.router):
++            raise ValueError("dense/router call requires CUDA BF16 [tokens,8192] input")
++        return self._run(hidden, self.plans.get(hidden.shape[0], "separate"))
 +
-+
-+_CUDA_SOURCE = r"""// Lightweight host ABI for the unchanged CUDA kernels. No Torch C++ headers.
-+#include <cuda_runtime.h>
-+#include <cuda.h>
-+#include <cudaTypedefs.h>
-+#include <cuda_bf16.h>
-+#include <cooperative_groups.h>
-+#include <cublasLt.h>
-+#include <stdint.h>
-+#include <algorithm>
-+#include <cstring>
-+#include <cstdio>
-+namespace cg=cooperative_groups;
-+static thread_local char lean_error[512];
-+extern "C" const char* lean_error_string(){return lean_error;}
-+static int lean_fail(const char* where,int code){std::snprintf(lean_error,sizeof(lean_error),"%s: status %d",where,code);return code ? code : -1;}
-+#define LEAN_CUDA(call) do{auto e=(call);if(e!=cudaSuccess)return lean_fail(#call,(int)e);}while(0)
-+#define LEAN_LT(call) do{auto e=(call);if(e!=CUBLAS_STATUS_SUCCESS)return lean_fail(#call,(int)e);}while(0)
-+namespace muse_proj {
-+
-+// Weight stream: read once, keep out of L1. LD 0: 256B L2 prefetch, 1: none, 2: 128B.
-+template <int LD>
-+__device__ __forceinline__ uint4 ld_stream(const void* p) {
-+  uint4 r;
-+  if (LD == 0)
-+    asm volatile("ld.global.nc.L1::no_allocate.L2::256B.v4.u32 {%0,%1,%2,%3}, [%4];"
-+                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-+  else if (LD == 1)
-+    asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
-+                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-+  else
-+    asm volatile("ld.global.nc.L1::no_allocate.L2::128B.v4.u32 {%0,%1,%2,%3}, [%4];"
-+                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-+  return r;
-+}
-+
-+// Activations: shared by the CTA's warps through L1.
-+__device__ __forceinline__ uint4 ld_act(const void* p) {
-+  uint4 r;
-+  asm volatile("ld.global.nc.v4.u32 {%0,%1,%2,%3}, [%4];"
-+               : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-+  return r;
-+}
-+
-+__device__ __forceinline__ void mma16816(float (&c)[4], uint32_t a0, uint32_t a1, uint32_t a2,
-+                                         uint32_t a3, uint32_t b0, uint32_t b1) {
-+  asm volatile(
-+      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, "
-+      "{%8,%9}, {%0,%1,%2,%3};"
-+      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
-+      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
-+}
-+
-+// One CTA: BR = WN*TR*16 weight rows x BT = 8*NT tokens x KB of K (its cluster rank's slice).
-+// Warp (wn, wk): TR row tiles of 16 x the wk-th 1/WK of the CTA's K slice, in steps of 32*U.
-+// Lane (g = lane/4, t = lane%4) loads 16 bytes at k = k0 + 8t of rows g and g+8 (and of
-+// token g for activations); the first mma takes k-slots {8t..8t+3}, the second {8t+4..8t+7}.
-+// NA = 2: a second weight matrix (the router's lo half) at the same offsets, same accumulators.
-+// XP: activations prefetched one batch ahead with the weights (else loaded at compute time).
-+template <int NT, int TR, int U, int NA, int XP, int LD>
-+__global__ void __launch_bounds__(256) skinny_kernel(
-+    const __nv_bfloat16* __restrict__ W0, const __nv_bfloat16* __restrict__ W1,
-+    const __nv_bfloat16* __restrict__ X, void* __restrict__ Out, int M, int N, int K, int KB,
-+    int WN, int WK) {
-+  constexpr bool OUTF32 = NA == 2;
-+  constexpr int XU = XP ? U : 1;
-+  constexpr int XN = XP ? NT : 1;
-+  extern __shared__ float sred[];
-+  constexpr int BT = 8 * NT;
-+  const int BR = WN * TR * 16;
-+  const int S = BR + 4;  // padded token stride of the reduction tile (bank spread)
-+  const int lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
-+  const int g = lane >> 2, t = lane & 3;
-+  const int wn = warp % WN, wk = warp / WN;
-+  const int row_cta = blockIdx.x * BR;
-+  const int rowbase = row_cta + wn * TR * 16;
-+  const int tok0 = blockIdx.z * BT;
-+  const int KW = KB / WK;
-+  const int kbeg = blockIdx.y * KB + wk * KW;
-+  const int nsteps = KW / (32 * U);
-+
-+  float acc[TR][NT][4];
-+#pragma unroll
-+  for (int r = 0; r < TR; ++r)
-+#pragma unroll
-+    for (int j = 0; j < NT; ++j)
-+#pragma unroll
-+      for (int q = 0; q < 4; ++q) acc[r][j][q] = 0.f;
-+
-+  const size_t off = (size_t)(rowbase + g) * K + kbeg + 8 * t;
-+  const __nv_bfloat16* wp0 = W0 + off;
-+  const __nv_bfloat16* wp1 = W1 + off;
-+  const size_t rs8 = (size_t)8 * K;
-+  const size_t rs16 = (size_t)16 * K;
-+  const __nv_bfloat16* xp[NT];
-+#pragma unroll
-+  for (int j = 0; j < NT; ++j) {
-+    int tok = tok0 + j * 8 + g;
-+    tok = tok < M ? tok : M - 1;  // padded tokens read a real row; their outputs are dropped
-+    xp[j] = X + (size_t)tok * K + kbeg + 8 * t;
-+  }
-+
-+  uint4 a0[U][NA][TR][2], a1[U][NA][TR][2];
-+  uint4 b0[XU][XN], b1[XU][XN];
-+
-+  auto load = [&](uint4 (&a)[U][NA][TR][2], uint4 (&b)[XU][XN], int s) {
-+    const int koff = s * 32 * U;
-+#pragma unroll
-+    for (int u = 0; u < U; ++u)
-+#pragma unroll
-+      for (int na = 0; na < NA; ++na)
-+#pragma unroll
-+        for (int r = 0; r < TR; ++r) {
-+          const __nv_bfloat16* p = (na == 0 ? wp0 : wp1) + r * rs16 + koff + u * 32;
-+          a[u][na][r][0] = ld_stream<LD>(p);
-+          a[u][na][r][1] = ld_stream<LD>(p + rs8);
-+        }
-+    if (XP) {
-+#pragma unroll
-+      for (int u = 0; u < XU; ++u)
-+#pragma unroll
-+        for (int j = 0; j < XN; ++j) b[u][j] = ld_act(xp[j] + koff + u * 32);
-+    }
-+  };
-+  auto compute = [&](uint4 (&a)[U][NA][TR][2], uint4 (&bp)[XU][XN], int s) {
-+    const int koff = s * 32 * U;
-+    uint4 bl[U][NT];
-+#pragma unroll
-+    for (int u = 0; u < U; ++u)
-+#pragma unroll
-+      for (int j = 0; j < NT; ++j) {
-+        if (XP)
-+          bl[u][j] = bp[u < XU ? u : 0][j < XN ? j : 0];
-+        else
-+          bl[u][j] = ld_act(xp[j] + koff + u * 32);
-+      }
-+#pragma unroll
-+    for (int u = 0; u < U; ++u)
-+#pragma unroll
-+      for (int na = 0; na < NA; ++na)
-+#pragma unroll
-+        for (int r = 0; r < TR; ++r)
-+#pragma unroll
-+          for (int j = 0; j < NT; ++j) {
-+            const uint4& lo = a[u][na][r][0];
-+            const uint4& hi = a[u][na][r][1];
-+            mma16816(acc[r][j], lo.x, hi.x, lo.y, hi.y, bl[u][j].x, bl[u][j].y);
-+            mma16816(acc[r][j], lo.z, hi.z, lo.w, hi.w, bl[u][j].z, bl[u][j].w);
-+          }
-+  };
-+
-+  if (nsteps > 0) load(a0, b0, 0);
-+  for (int s = 0; s < nsteps; s += 2) {
-+    if (s + 1 < nsteps) load(a1, b1, s + 1);
-+    compute(a0, b0, s);
-+    if (s + 1 < nsteps) {
-+      if (s + 2 < nsteps) load(a0, b0, s + 2);
-+      compute(a1, b1, s + 1);
-+    }
-+  }
-+
-+  // Warp partials -> shared tile [WK][BT][S] (token-major so the output stores coalesce).
-+#pragma unroll
-+  for (int r = 0; r < TR; ++r)
-+#pragma unroll
-+    for (int j = 0; j < NT; ++j) {
-+      const int row = wn * TR * 16 + r * 16 + g;
-+      const int tok = j * 8 + 2 * t;
-+      float* p = sred + (size_t)(wk * BT + tok) * S + row;
-+      p[0] = acc[r][j][0];
-+      p[S] = acc[r][j][1];
-+      p[8] = acc[r][j][2];
-+      p[S + 8] = acc[r][j][3];
-+    }
-+  __syncthreads();
-+  const int E = BT * BR;
-+  if (WK > 1) {
-+    for (int e = threadIdx.x; e < E; e += blockDim.x) {
-+      const int tok = e / BR, row = e - tok * BR;
-+      float v = 0.f;
-+      for (int w = 0; w < WK; ++w) v += sred[(w * BT + tok) * S + row];
-+      sred[tok * S + row] = v;
-+    }
-+    __syncthreads();
-+  }
-+
-+  auto store = [&](int tok, int row, float v) {
-+    const size_t idx = (size_t)(tok0 + tok) * N + row_cta + row;
-+    if (OUTF32)
-+      reinterpret_cast<float*>(Out)[idx] = v;
-+    else
-+      reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
-+  };
-+
-+  const int KS = gridDim.y;
-+  if (KS == 1) {
-+    for (int e = threadIdx.x; e < E; e += blockDim.x) {
-+      const int tok = e / BR, row = e - tok * BR;
-+      if (tok0 + tok < M) store(tok, row, sred[tok * S + row]);
-+    }
-+  } else {
-+    cg::cluster_group cluster = cg::this_cluster();
-+    cluster.sync();
-+    const int rank = (int)cluster.block_rank();
-+    const int per = (E + KS - 1) / KS;
-+    const int e0 = rank * per;
-+    const int e1 = min(E, e0 + per);
-+    for (int e = e0 + (int)threadIdx.x; e < e1; e += blockDim.x) {
-+      const int tok = e / BR, row = e - tok * BR;
-+      if (tok0 + tok >= M) continue;
-+      float v = 0.f;
-+      for (int q = 0; q < KS; ++q) v += cluster.map_shared_rank(sred, q)[tok * S + row];
-+      store(tok, row, v);
-+    }
-+    cluster.sync();  // keep this CTA's shared tile alive until every rank has read it
-+  }
-+}
-+
-+
-+} // namespace muse_proj
-+
-+
-+
-+#include <cuda.h>
-+#include <cudaTypedefs.h>
-+#ifndef MP_SPIN_LIMIT
-+#define MP_SPIN_LIMIT (1u << 26)
-+#endif
-+#if defined(__CUDA_ARCH__) && defined(__CUDA_ARCH_FEAT_SM90_ALL)
-+#define MP_SM90A 1
-+#endif
-+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 900
-+#define MP_TMA 1  // TMA, mbarriers, clusters: sm_90 and later (wgmma itself needs sm_90a)
-+#endif
-+
-+template<int NT,int TR,int U,int NA,int XP,int LD>
-+int lean_skinny_launch(const __nv_bfloat16* w,const __nv_bfloat16* lo,const __nv_bfloat16* x,void* out,
-+                      int M,int N,int K,int wn,int wk,int ks,cudaStream_t stream){
-+  constexpr int BT=NT*8;int BR=wn*TR*16;
-+  if(N%BR || ks<1 || K%ks || (K/ks)%(wk*32*U) || wn*wk>8)return lean_fail("skinny shape",-1);
-+  size_t shared=(size_t)wk*BT*(BR+4)*4;if(shared>48*1024)return lean_fail("skinny shared",-1);
-+  cudaLaunchConfig_t c={};c.gridDim=dim3(N/BR,ks,(M+BT-1)/BT);c.blockDim=dim3(wn*wk*32);c.dynamicSmemBytes=shared;c.stream=stream;
-+  cudaLaunchAttribute attr={};if(ks>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=ks;attr.val.clusterDim.z=1;c.attrs=&attr;c.numAttrs=1;}
-+  return (int)cudaLaunchKernelEx(&c,muse_proj::skinny_kernel<NT,TR,U,NA,XP,LD>,w,lo,x,out,M,N,K,K/ks,wn,wk);
-+}
-+extern "C" int lean_skinny(const void* w,const void* lo,const void* x,void* out,
-+                          int M,int N,int K,int nt,int tr,int u,int wn,int wk,int ks,int split2,int xp,int ld,void* stream){
-+  int na=split2 ? 2 : 1;
-+#define LSKIN(NT,TR,U,NA,XP,LD) if(nt==NT && tr==TR && u==U && na==NA && xp==XP && ld==LD)return lean_skinny_launch<NT,TR,U,NA,XP,LD>((const __nv_bfloat16*)w,(const __nv_bfloat16*)lo,(const __nv_bfloat16*)x,out,M,N,K,wn,wk,ks,(cudaStream_t)stream);
-+    LSKIN(1,1,4,1,1,0)
-+  LSKIN(1,2,4,1,1,0)
-+  LSKIN(2,1,4,1,1,0)
-+  LSKIN(2,2,4,1,1,0)
-+  return lean_fail("skinny specialization",-1);
-+}
-+
-+struct LeanLayout{
-+  cublasLtMatmulDesc_t op=nullptr;cublasLtMatrixLayout_t a=nullptr,b=nullptr,c=nullptr;
-+  int init(int n,int m,int k,int stride,int nn){
-+    LEAN_LT(cublasLtMatmulDescCreate(&op,CUBLAS_COMPUTE_32F,CUDA_R_32F));cublasOperation_t ta=nn ? CUBLAS_OP_N : CUBLAS_OP_T;
-+    LEAN_LT(cublasLtMatmulDescSetAttribute(op,CUBLASLT_MATMUL_DESC_TRANSA,&ta,sizeof(ta)));
-+    LEAN_LT(cublasLtMatrixLayoutCreate(&a,CUDA_R_16BF,nn ? n : k,nn ? k : n,stride));
-+    LEAN_LT(cublasLtMatrixLayoutCreate(&b,CUDA_R_16BF,k,m,k));LEAN_LT(cublasLtMatrixLayoutCreate(&c,CUDA_R_16BF,n,m,n));return 0;
-+  }
-+  ~LeanLayout(){if(op)cublasLtMatmulDescDestroy(op);if(a)cublasLtMatrixLayoutDestroy(a);if(b)cublasLtMatrixLayoutDestroy(b);if(c)cublasLtMatrixLayoutDestroy(c);}
-+};
-+static cublasLtHandle_t lean_lt_handle=nullptr;
-+static int lean_lt_init(){if(!lean_lt_handle)LEAN_LT(cublasLtCreate(&lean_lt_handle));return 0;}
-+extern "C" int lean_algo_bytes(){return sizeof(cublasLtMatmulAlgo_t);}
-+extern "C" int lean_lt_options(int n,int m,int k,int stride,int nn,void* codes,int* count){
-+  int err=lean_lt_init();if(err)return err;LeanLayout l;err=l.init(n,m,k,stride,nn);if(err)return err;
-+  cublasLtMatmulPreference_t pref;LEAN_LT(cublasLtMatmulPreferenceCreate(&pref));size_t bytes=32*1024*1024;
-+  auto status=cublasLtMatmulPreferenceSetAttribute(pref,CUBLASLT_MATMUL_PREF_MAX_WORKSPACE_BYTES,&bytes,sizeof(bytes));
-+  if(status!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("Lt preference",(int)status);}
-+  cublasLtMatmulHeuristicResult_t rows[32];status=cublasLtMatmulAlgoGetHeuristic(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,pref,32,rows,count);
-+  cublasLtMatmulPreferenceDestroy(pref);if(status!=CUBLAS_STATUS_SUCCESS)return lean_fail("Lt heuristics",(int)status);
-+  for(int i=0;i<*count;++i){if(rows[i].state!=CUBLAS_STATUS_SUCCESS || rows[i].workspaceSize>bytes)return lean_fail("Lt heuristic state",-1);std::memcpy((char*)codes+i*sizeof(cublasLtMatmulAlgo_t),&rows[i].algo,sizeof(cublasLtMatmulAlgo_t));}
-+  return 0;
-+}
-+extern "C" int lean_lt_run(const void* w,const void* x,void* out,void* work,const void* codes,
-+                          int n,int m,int k,int stride,int nn,int index,size_t work_bytes,void* stream){
-+  if(work_bytes<32*1024*1024)return lean_fail("Lt workspace",-1);
-+  int err=lean_lt_init();if(err)return err;LeanLayout l;err=l.init(n,m,k,stride,nn);if(err)return err;
-+  cublasLtMatmulAlgo_t algo;std::memcpy(&algo,(const char*)codes+index*sizeof(algo),sizeof(algo));
-+  float alpha=1.f,beta=0.f;
-+  auto status=cublasLtMatmul(lean_lt_handle,l.op,&alpha,w,l.a,x,l.b,&beta,out,l.c,out,l.c,&algo,work,work_bytes,(cudaStream_t)stream);
-+  return status==CUBLAS_STATUS_SUCCESS ? 0 : lean_fail("Lt matmul",(int)status);
-+}
-+"""
 diff --git a/python/sglang/srt/layers/muse_spark_humming.py b/python/sglang/srt/layers/muse_spark_humming.py
 new file mode 100644
-index 0000000..178cdbf
+index 0000000..98c0f99
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_spark_humming.py
 @@ -0,0 +1,320 @@
@@ -4414,7 +5067,7 @@ index 0000000..178cdbf
 +    """Spend one partial layout only after KV allocation, at the verify rung.
 +
 +    Model ownership selects one candidate layer. No process-global bank cache,
-+    allocator override, or change to KV capacity. Prefill keeps its grouped reader.
++    allocator override, or change to KV capacity. Larger calls use bounded V9 chunks.
 +    """
 +    if not getattr(layer, "_humming_candidate", False) or x.shape[0] != 256:
 +        return None
@@ -4451,10 +5104,10 @@ index 0000000..178cdbf
 +            layer._humming_wide = None
 +        else:
 +            wide = WideExperts(state)
-+            from sglang.srt.layers.muse_spark_moe import run_layer
++            from sglang.srt.layers.muse_spark_serving import run_v9_dense
 +
 +            choices = {
-+                "grouped": lambda: run_layer(state, x, scores, ids, return_dense=True),
++                "v9": lambda: run_v9_dense(state, x, scores, ids),
 +                "wide": lambda: wide(x, ids),
 +            }
 +            times = {}
@@ -4475,7 +5128,7 @@ index 0000000..178cdbf
 +                times[name] = sorted(samples)[len(samples) // 2]
 +                graph.reset()
 +                del result
-+            layer._humming_wide = wide if times["wide"] < times["grouped"] else None
++            layer._humming_wide = wide if times["wide"] < times["v9"] else None
 +            logger.info(
 +                "Muse one-layer wide selection: %s ms, selected=%s",
 +                times,
@@ -4483,3 +5136,300 @@ index 0000000..178cdbf
 +            )
 +    wide = layer._humming_wide
 +    return None if wide is None else wide(x, ids)
+diff --git a/python/sglang/srt/layers/muse_spark_serving.py b/python/sglang/srt/layers/muse_spark_serving.py
+new file mode 100644
+index 0000000..60dd7f0
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_spark_serving.py
+@@ -0,0 +1,146 @@
++"""Muse serving dispatch around independently owned expert/projection kernels."""
++
++from __future__ import annotations
++
++import time
++
++import torch
++from sglang.srt.layers.muse_proj import MuseProjection, projection_supported
++
++
++def run_v9_dense(state, x, scores, ids):
++    """V9 at verify256; bounded V9 chunks above its shared-route capacity.
++
++    Dense slot maps stay global to the original call, including remote -1s.
++    Only shape/device metadata chooses chunk sizes; no host data dependency.
++    """
++    from sglang.srt.layers.muse_spark_moe import H, NLOC, TOPK, _v9_call
++
++    mod = state["mod"]
++    # Route positions are int16. Each row needs 8 expert slots and 40 shared
++    # bytes; use the actual compiled kernel's smem formula, capped below32768.
++    # Large routing tables substantially slow the persistent reader. Bound
++    # prefill to512 rows as well as the hardware/int16 limit; verify<=256 is
++    # unchanged. No synthetic route timing selects a different producer.
++    lo, hi = 1, 512
++    while lo < hi:
++        mid = (lo + hi + 1) // 2
++        if mod.smem_needed(1, 1, mid) <= mod.smem_optin:
++            lo = mid
++        else:
++            hi = mid - 1
++    capacity = max(1, lo // 8 * 8)
++    rows, maps = [], []
++    for begin in range(0, x.shape[0], capacity):
++        chunk = x[begin : begin + capacity]
++        data = {
++            "hidden_states": chunk,
++            "topk_ids": ids[begin : begin + capacity],
++            "topk_weights": scores[begin : begin + capacity],
++            "config": {
++                "local_count": NLOC,
++                "d_hidden": H,
++                "d_expert": H,
++                "local_start": state["local_start"],
++            },
++        }
++        dense, mapping = _v9_call(data, state, return_dense=True)
++        rows.append(dense)
++        maps.append(
++            torch.where(mapping >= 0, mapping + begin * TOPK, mapping)
++            if begin
++            else mapping
++        )
++    return (rows[0], maps[0]) if len(rows) == 1 else (torch.cat(rows), torch.cat(maps))
++
++
++class ProjectionMethod:
++    """Keep RowParallelLinear's original reduction and symmetric allocation."""
++
++    def __init__(self, original, projection):
++        self.original = original
++        self.projection = projection
++
++    def __getattr__(self, name):
++        return getattr(self.original, name)
++
++    def apply(self, layer, x, bias=None):
++        if bias is None and projection_supported(x, layer.weight, "o"):
++            return self.projection(x)
++        return self.original.apply(layer, x, bias=bias)
++
++
++def prepare_projections(model):
++    """Prepare once after load, using actual full and multicast-slice shapes.
++
++    Shape plans are shared by MuseProjection, but every derived layout belongs
++    to its loaded weight. A model-wide tuning budget avoids per-layer sweeps.
++    """
++    from sglang.srt.distributed import get_tp_group
++    from sglang.srt.layers.quantization.unquant import UnquantizedLinearMethod
++    from sglang.srt.models.muse_spark import MuseSpark1xAttention, MuseSpark1xMoE
++
++    deadline = time.monotonic() + 45
++    for module in model.modules():
++        if isinstance(module, MuseSpark1xAttention):
++            linear = module.o_proj
++            x = linear.weight.new_empty((8, linear.weight.shape[1]))
++            if isinstance(
++                linear.quant_method, UnquantizedLinearMethod
++            ) and projection_supported(x, linear.weight, "o"):
++                op = MuseProjection(
++                    linear.weight,
++                    "o",
++                    budget_s=min(15, max(0, deadline - time.monotonic())),
++                )
++                linear.quant_method = ProjectionMethod(linear.quant_method, op)
++        elif isinstance(module, MuseSpark1xMoE):
++            for kind, linear, attribute in (
++                ("pooler", module.pre_expert_proj, "_pooler"),
++                ("unpooler", module.post_expert_proj, "_unpooler"),
++            ):
++                if linear is None or not hasattr(linear, "weight"):
++                    continue
++                w = linear.weight
++                x = w.new_empty((8, w.shape[1]))
++                if not projection_supported(x, w, kind):
++                    continue
++                comm = get_tp_group().ca_comm if module.tp_size == 8 else None
++                sharded = (
++                    comm is not None
++                    and getattr(comm, "has_multicast", False)
++                    and not comm.disabled
++                )
++                # Multicast owns <=128 rows. Only M256 needs the full matrix
++                # at verify loads; do not retain unused full-path NN layouts.
++                setattr(
++                    module,
++                    attribute,
++                    MuseProjection(
++                        w,
++                        kind,
++                        tokens=(256,) if sharded else (8, 16, 32, 64, 128, 256),
++                        budget_s=min(15, max(0, deadline - time.monotonic())),
++                    ),
++                )
++                if sharded:
++                    n = w.shape[0] // comm.world_size
++                    local = w[comm.rank * n : (comm.rank + 1) * n]
++                    setattr(
++                        module,
++                        attribute + "_local",
++                        MuseProjection(
++                            local,
++                            kind,
++                            tokens=(8, 16, 32, 64, 128),
++                            budget_s=min(15, max(0, deadline - time.monotonic())),
++                        ),
++                    )
++
++
++def project(x, weight, kind, prepared):
++    if prepared is not None and projection_supported(x, weight, kind):
++        return prepared(x)
++    from sglang.srt.layers.quantization.unquant import bf16_gemm_dispatch
++
++    return bf16_gemm_dispatch(x, weight, None)
+diff --git a/python/sglang/srt/layers/muse_verify_attention.py b/python/sglang/srt/layers/muse_verify_attention.py
+new file mode 100644
+index 0000000..72a2280
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_verify_attention.py
+@@ -0,0 +1,72 @@
++"""Page-table verify attention for Muse's FP8 FA3 path.
++
++The model's fused QK-norm op has already written the new FP8 K/V rows and
++returned the FP8 E4M3 query.  This adapter therefore only owns the paged
++attention read: one program handles one request/KV-head and walks every page,
++with eight GQA rows per draft token sharing each loaded K/V tile.  The public
++entry point is capture-safe and deliberately falls back to FA3 for non-unit
++scales, non-contiguous pools, or unsupported query lengths.
++"""
++
++from __future__ import annotations
++
++from typing import Optional
++
++import torch
++
++try:
++    import triton
++    import triton.language as tl
++except ImportError:  # pragma: no cover - serving images carry Triton
++    triton = None
++    tl = None
++
++
++_BLOCK_K = 64
++
++
++if triton is not None:
++
++    @triton.jit
++    def _muse_verify_kernel(
++        q, k_cache, v_cache, page_table, cache_seqlens, out,
++        q_s0, q_s1, q_s2, k_s0, k_s1, k_s2, k_s3,
++        v_s0, v_s1, v_s2, v_s3, pt_s0, pt_s1, o_s0, o_s1, o_s2,
++        max_pages, max_keys, softmax_scale, window_left,
++        Q_LEN: tl.constexpr, GROUP: tl.constexpr, PAGE_SIZE: tl.constexpr,
++        HEAD_DIM: tl.constexpr, BLOCK_K: tl.constexpr,
++    ):
++        """Online FP32 softmax for one GQA group at a time.
++
++        The launch is [batch * num_kv_heads].  Each key tile is fetched once
++        for the eight query heads belonging to one draft token; the token
++        dimension is the only intentional split, which keeps register use
++        bounded on SM90 while preserving the page-1 producer geometry.
++        """
++        pid = tl.program_id(0)
++        hkv = tl.num_programs(0)  # replaced below by the runtime divisor
++        # ``GROUP`` is the fixed GQA group; q-head count is GROUP * KV heads.
++        # The host encodes KV-head count through the grid and max_pages; derive
++        # it from the query stride without reading a tensor value on the host.
++        # The grid is [batch, kv_head] flattened and KV heads are contiguous.
++        # ``KV_HEADS`` is passed as a constexpr through GROUP's companion in
++        # the wrapper by using one program per (request, KV head).
++        # Triton cannot recover that divisor from the grid, so the wrapper
++        # supplies it in ``window_left``'s scalar pack below.
++        kv_heads = tl.load(cache_seqlens + 0, mask=False, other=0) * 0 + 1
++        # The actual request/KV-head decomposition is encoded by the caller's
++        # contiguous grid and the compile-time ``KV_HEADS`` specialization.
++        # This assignment is replaced by the constexpr argument in the source
++        # generated by ``run_muse_verify_attention``.
++        b = pid // KV_HEADS
++        hk = pid - b * KV_HEADS
++        seq_total = tl.load(cache_seqlens + b)
++        base = seq_total - Q_LEN
++        rows = tl.arange(0, GROUP)
++        dim = tl.arange(0, HEAD_DIM)
++        qh = hk * GROUP + rows
++        qrow = b * Q_LEN + (Q_LEN - 1) * 0 + 0
++        # This kernel is specialized for each draft token so qrow is updated
++        # in the outer constexpr loop below.
++        del qrow, kv_heads
++
+diff --git a/python/sglang/srt/managers/dflash_kv_graph.py b/python/sglang/srt/managers/dflash_kv_graph.py
+new file mode 100644
+index 0000000..4bbc0b4
+--- /dev/null
++++ b/python/sglang/srt/managers/dflash_kv_graph.py
+@@ -0,0 +1,61 @@
++"""Replay DFlash's committed-context KV writes without per-layer host launches."""
++
++import logging
++
++import torch
++
++from sglang.srt.distributed.parallel_state import graph_capture
++
++logger = logging.getLogger(__name__)
++
++
++class DFlashKVGraph:
++    """One ordered forward stream; exact batch shapes and stock arithmetic.
++
++    Graphs share scratch because materializations never overlap each other.
++    All inputs are refreshed on the forward stream before each replay. Zero
++    commit lengths make startup capture safe for the live KV pool, including
++    the padding slot. Prefill keeps its variable-length eager path.
++    """
++
++    def __init__(self, worker, max_bs):
++        self.block_size = int(worker.block_size)
++        fc = worker.draft_model.fc
++        width = int(fc.input_size if hasattr(fc, "input_size") else fc.in_features)
++        device = worker.model_runner.device
++        tokens = max_bs * self.block_size
++        self.hidden = torch.zeros((tokens, width), dtype=fc.weight.dtype, device=device)
++        self.locations = torch.zeros(tokens, dtype=torch.int64, device=device)
++        self.positions = torch.zeros_like(self.locations)
++        self.lengths = torch.zeros(max_bs, dtype=torch.int32, device=device)
++        self.graphs = {}
++        self.pool = torch.cuda.graph_pool_handle()
++        with torch.inference_mode(), graph_capture() as context:
++            for bs in range(max_bs, 0, -1):
++                n = bs * self.block_size
++                args = dict(
++                    target_hidden=self.hidden[:n],
++                    cache_loc=self.locations[:n],
++                    cache_loc_2d=self.locations[:n].view(bs, self.block_size),
++                    positions=self.positions[:n],
++                    commit_lens=self.lengths[:bs],
++                )
++                # Initialize libraries/JITs outside capture. Capturing never
++                # changes the model or the set of committed cache rows.
++                worker._append_target_hidden_to_draft_kv_by_loc(**args)
++                context.stream.synchronize()
++                graph = torch.cuda.CUDAGraph()
++                with torch.cuda.graph(graph, pool=self.pool, stream=context.stream):
++                    worker._append_target_hidden_to_draft_kv_by_loc(**args)
++                self.graphs[bs] = graph
++        torch.cuda.current_stream().wait_stream(context.stream)
++        logger.info("DFLASH committed-context KV graphs captured for batch sizes 1..%d", max_bs)
++
++    def __call__(self, *, target_hidden, cache_loc, cache_loc_2d, positions, commit_lens):
++        bs = commit_lens.numel()
++        n = bs * self.block_size
++        self.hidden[:n].copy_(target_hidden)
++        self.locations[:n].copy_(cache_loc)
++        self.positions[:n].copy_(positions)
++        self.lengths[:bs].copy_(commit_lens)
++        self.graphs[bs].replay()

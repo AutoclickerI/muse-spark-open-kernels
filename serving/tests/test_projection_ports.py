@@ -10,6 +10,20 @@ from sglang.kernels.ops.muse_spark_v12.projection_hopper import (
 
 
 def main():
+    from unittest.mock import patch
+    from sglang.kernels.ops.muse_spark_v12.projection_hopper import (
+        router_supported,
+        qkv_supported,
+    )
+
+    with patch.object(torch.cuda, "get_device_capability", return_value=(9, 0)):
+        tiny_x = torch.empty(8, 1024, device="cuda", dtype=torch.bfloat16)
+        tiny_router = torch.empty(32, 1024, device="cuda", dtype=torch.float32)
+        tiny_qkv = torch.empty(768, 1024, device="cuda", dtype=torch.bfloat16)
+        assert not router_supported(tiny_x, tiny_router), (
+            "padded tiny router must never dispatch"
+        )
+        assert not qkv_supported(tiny_x, tiny_qkv), "tiny QKV must never dispatch"
     torch.manual_seed(20261024)
     w = torch.randn(256, 8192, device="cuda", dtype=torch.float32) / 8192**0.5
     op = RouterProjection(w)

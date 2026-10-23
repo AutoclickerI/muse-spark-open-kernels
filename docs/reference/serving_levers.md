@@ -469,15 +469,16 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
 Current patch regenerated from `git diff a55ab7d5` plus source-only untracked additions:
-**240,139bytes**, **24files**, longest added line **374**. All19 accepted paths remain;
+**244,632bytes**, **25files**, longest added line **374**. All19 accepted paths remain;
 14 accepted file diffs are byte-identical, including the unchanged MoE lane file.
 This round changes only the expert adapter/dispatch, dense projection integration/cache reuse,
 and Humming's comparison baseline. The other lanes' new untracked `muse_dflash.py` and `muse_prefill_dense.py` are retained
 in the unified patch without wiring or editing them. A concurrent lane also added
-`managers/dflash_kv_graph.py` and its worker hook; these are preserved as well. Reverse apply, whitespace, source/type/path,
+`managers/dflash_kv_graph.py`, its worker hook and `overlap_utils.py` changes;
+these are preserved as well. Reverse apply, whitespace, source/type/path,
 AST, size and line-limit checks pass. No old doc paths or harness sources were edited.
 Evidence: `/data2/jihoon/muse_kernel/harness/results/serving-dispatch-evidence/`
-(source hashes, compile/unit logs, patch checks), `q03`/`q06` comparisons, and
+(source hashes, compile/unit logs, patch checks), `q11`/`q12` comparisons, and
 `q08-agreement.json`; the older port evidence remains in `projection-ports-evidence/`.
 
 ## Current serving integration: V9 dispatch and dense projections
@@ -533,13 +534,17 @@ all74 stock prefill graph sizes captured and prefill/verify replay observed):
 
 | TP / stock / patch | Exact | TTFT p50 ratio c1 / c4 / c16 / c32 | TTFT p90 ratios | Gate |
 |---|---:|---|---|---|
-| TP1 `q02` / `q03` |174/174|0.982 /0.908 /0.093 /0.040|1.040 /0.874 /0.052 /0.052|all<=2x|
-| TP2 `q04` / `q06` |174/174|1.425 /1.207 /0.937 /0.759|1.265 /1.116 /1.073 /1.052|all<=2x|
+| TP1 `q02` / `q12` |174/174|0.530 /0.641 /0.525 /0.395|0.598 /0.642 /0.554 /0.553|all<=2x|
+| TP2 `q04` / `q11` |174/174|1.103 /1.093 /1.924 /0.845|0.839 /1.044 /1.308 /1.863|all<=2x|
 
 First divergence=220 and token agreement=1 throughout. GPU0 was contended by
 other kernel/profiler jobs and GPU1 by another project; changing contention
 explains the implausibly large TP1 ratios, so these are correctness screens,
 not speedup evidence. Servers use memory fraction0.3 and GPU0, or0+1 for TP2.
+The refreshed q11/q12 runs also include the concurrent committed-context KV graph
+helper:32 extra graph sizes capture on every rank. The earlier q03/q06 screen
+passed before that addition. Teacher-forced q07/q09/q10 receipts cover this
+lane before the concurrent graph hook; no new numerical drift is attributed to it.
 The documented TP balance override is required on the shared box; failed
 `q05` is retained. No graph sizes were disabled. New Hopper-only math is
 reached through exact-shape portable stand-ins, real full-size kernels separately.
