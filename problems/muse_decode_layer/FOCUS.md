@@ -9,8 +9,12 @@ Control: the latest H200 scored dispatch receipt is `85e67f5d6ef945c9`, 1.366737
 [1.346236, 1.387237]); its exact source is `cand_r3_v9_dispatch.py`, SHA
 `633c96ccffa40c6673c99b808c18b28685db5aafd4541667de68e1f0e6c41b84`.
 `cand_r3_v9all.py` goes first at the 09:00 KST reset and `cand_r3_merge.py` goes second.
-The next source is the guarded persistent megakernel `cand_r3_merge_mega.py`; the overlap
-experiment remains parked because its verify race failed the correctness guard.
+The prior persistent megakernel `cand_r3_merge_mega.py` is held: its qkv producer was
+nondeterministic at M=32 and changed verify routing IDs. Both persistent megakernel sources are held: `cand_r3_merge_mega.py` has a qkv race, and
+`cand_r3_merge_mega_fix.py` still rejects a persistent dense island at M=16 after regular qkv.
+The ready source is `cand_r3_attention_v2.py`, which embeds the latest XQA/FP8-PV and
+FA3-structured WGMMA attention families; the overlap experiment remains parked because its verify
+race failed the correctness guard.
 Do not edit sent sources. The orchestrator owns checks and scored runs.
 
 H200 profile bottleneck: full attention is the largest remaining decode cost at
@@ -25,12 +29,13 @@ the layer. The MoE lane owns future routing-aware choices; this merged layer fix
 persistent small-load island, the attention FA3/XQA/WGMMA/FP8-PV/q1-gather portfolio, and
 the projection lane's skinny/mix/TMA/Lt variants. It tunes each stage per shape with MoE
 fixed to V9, logs each timing and rejection, and enforces one 285-second prepare budget.
-The megakernel extension adds a persistent qkv GEMV with a cooperative grid barrier, then
-chains the existing persistent O+pooler/router island, cooperative V9 MoE, and persistent
-unpooler island. There is no separate shared/dense branch after boundary1: its normalized
+The held megakernel extension's persistent qkv and dense-island choices are disabled after
+repeated shape-dependent agreement failures. The ready attention candidate leaves the merge's V9
+MoE and projection/glue portfolio intact, embeds the standalone XQA/FP8-PV and FA3-structured
+WGMMA sources with the layer's q/gate/KV layout, and tunes them per verify shape. There is no separate shared/dense branch after boundary1: its normalized
 hidden and residual stream share the same statistics; pooler/router→experts, experts→unpooler,
-router→attention output, and KV write→attention remain ordered dependencies. Local sm_120
-admission is 13/13 tests and 12/12 fresh-input graphs; Hopper branches use portable stand-ins.
+router→attention output, and KV write→attention remain ordered dependencies. Local sm_120 admission of the ready attention candidate is 13/13 tests and 12/12 fresh-input graphs;
+prepare is 34.927 s; Hopper branches use portable stand-ins.
 
 Structural fusion candidates reduced launch count but regressed complete local layers;
 keep them diagnostic until a packed variant is neutral or better. Read [NEXT_CHECKS](dev/NEXT_CHECKS.md)

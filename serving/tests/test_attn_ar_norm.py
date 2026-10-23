@@ -38,8 +38,10 @@ def main():
     fake = object.__new__(CustomAllReduceV2)
     fake.disabled, fake.world_size, fake.device, fake.rank = False, 8, dev, 0
     fake.config = SimpleNamespace(num_push_blocks=132)
+    fake.max_push_size, fake.override_algo = 1 << 20, None
     fake._push_workspaces = [torch.empty(128 * 8192 * 2, device=dev, dtype=torch.uint8)]
     fake.uses_one_shot_push = lambda size: 0 < size <= 128 * 1024
+    fake.uses_two_shot_push = lambda size: False
     group = SimpleNamespace(
         ca_comm=fake,
         _can_use_flashinfer_allreduce=lambda x: False,
@@ -49,7 +51,7 @@ def main():
     torch.cuda.get_device_capability = lambda *a: (9, 0)
     try:
         assert ar.all_reduce_norm_residual_supported(group, 8, 8192)
-        assert not ar.all_reduce_norm_residual_supported(group, 32, 8192)
+        assert ar.all_reduce_norm_residual_supported(group, 32, 8192)
         assert not ar.all_reduce_norm_residual_supported(group, 0, 8192)
         group._resolve_outplace_all_reduce_method = lambda x: "pynccl"
         assert not ar.all_reduce_norm_residual_supported(group, 8, 8192)
@@ -92,7 +94,9 @@ def main():
             rank, world, workspaces=peers, counter=counter.view(torch.uint8).view(-1, 4)
         )
     )
-    comm = SimpleNamespace(obj=obj, world_size=world, has_multicast=False)
+    comm = SimpleNamespace(obj=obj, world_size=world, has_multicast=False,
+                           uses_two_shot_push=lambda size: False,
+                           uses_one_shot_push=lambda size: True, override_algo=None)
     torch.cuda.synchronize()
     dist.barrier()
     results = []

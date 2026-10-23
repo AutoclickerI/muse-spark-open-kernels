@@ -349,26 +349,29 @@ The profile also exposes small separate residual, router, norm and gate kernels.
 
 Receipt `0e94268cf5654012` supplies the H200 profile and scored layer times. The table groups
 profile rows into projections (qkv, O, pooler/router and unpooler), attention (main, combine,
-qk-prep and FA3 preparation/norm support), MoE, and glue (boundary plus route). `gap` is the
-scored adjusted layer time minus the profile kernel sum; negative values are expected when PDL
-rows overlap. Floors are the rules-compliant one-read floors at 4.8 TB/s from
+qk-prep and FA3 preparation/norm support), MoE, and glue (boundary plus route). The MoE entry is
+shown as `layer-profile → best standalone lane`: the right-hand value comes from `cand_v9_phase`
+receipt `ac9dd461f0294e34` at M=32/128/256 (147.5/277.8/422.2 us). `gap` uses the layer-profile
+value so it remains the profile's adjusted-time residual; the arrow is the headroom available to
+the next merge. Floors are the rules-compliant one-read floors at 4.8 TB/s from
 [`bound.md`](reference/bound.md): projection weights are counted once across the dense group,
 attention uses the legal FP8-QK/BF16-PV work, and MoE uses `sim.problems.layer_routing`; glue's
 scalar floor is below 0.1 us at these sizes.
 
 | Shape | Profile stage time (us): P / A / MoE / glue | Floor (us): P / A / MoE / glue | Adjusted / gap (us) |
 |---|---:|---:|---:|
-| decode32 sliding | 66.2 / 20.2 / 101.7 / 15.6 | 41.8 / 3.55 / 53.1 / <0.1 | 217.5 / +13.9 |
-| decode32 full | 73.4 / 228.5 / 114.2 / 24.9 | 41.8 / 139 / 53.1 / <0.1 | 422.9 / −18.1 |
-| verify16 sliding (M=128) | 72.8 / 25.8 / 258.9 / 16.3 | 43.9 / 1.78 / 108.8 / <0.1 | 393.4 / +19.6 |
-| verify16 full (M=128) | 72.5 / 202.6 / 280.4 / 15.7 | 43.9 / 69.3 / 108.8 / <0.1 | 566.6 / −4.6 |
-| verify32 sliding (M=256) | 90.0 / 31.6 / 477.0 / 25.9 | 51.7 / 3.56 / 125.9 / <0.1 | 615.5 / −9.0 |
-| verify32 full (M=256) | 90.7 / 389.9 / 449.5 / 25.8 | 51.7 / 139 / 125.9 / <0.1 | 979.6 / +23.8 |
+| decode32 sliding | 66.2 / 20.2 / 101.7→147.5 / 15.6 | 41.8 / 3.55 / 53.1 / <0.1 | 217.5 / +13.9 |
+| decode32 full | 73.4 / 228.5 / 114.2→147.5 / 24.9 | 41.8 / 139 / 53.1 / <0.1 | 422.9 / −18.1 |
+| verify16 sliding (M=128) | 72.8 / 25.8 / 258.9→277.8 / 16.3 | 43.9 / 1.78 / 108.8 / <0.1 | 393.4 / +19.6 |
+| verify16 full (M=128) | 72.5 / 202.6 / 280.4→277.8 / 15.7 | 43.9 / 69.3 / 108.8 / <0.1 | 566.6 / −4.6 |
+| verify32 sliding (M=256) | 90.0 / 31.6 / 477.0→422.2 / 25.9 | 51.7 / 3.56 / 125.9 / <0.1 | 615.5 / −9.0 |
+| verify32 full (M=256) | 90.7 / 389.9 / 449.5→422.2 / 25.8 | 51.7 / 139 / 125.9 / <0.1 | 979.6 / +23.8 |
 
 The profile's `STAGE_TUNE` lines at T=32 independently report qkv/O/pooler-router/unpooler
 choices of 21.0/11.8/33.1/28.3 us; PDL makes their visible profile aggregate 66.2--73.4 us.
 At M=128/256 the profile's three dense kernel families plus split-K reductions give 72.5--90.7
-us directly. The largest non-MoE gap is full attention at verify32: 389.9 us versus a 139 us
+us directly. The standalone MoE receipt's 422.2 us at M=256 is the reusable lane result; the
+layer profile's 449.5--477.0 us shows its routing/context penalty. The largest non-MoE gap is full attention at verify32: 389.9 us versus a 139 us
 floor (+251 us), followed by verify16 full (+133 us) and decode32 full (+90 us). Projection gaps
 are 22--39 us, while glue has no material byte floor but consumes 16--26 us of critical-path
 work. The next score experiment should therefore target the full q_len=8 attention path before
@@ -401,7 +404,7 @@ The H200 profile for `cand_r3_v9` (`0e94268cf5654012`, profiles 0, 1, 6 and 7) g
 
 The four loads therefore do not have a large positive launch-gap share in this receipt. Their measured stage kernels are still 1.6–3.0x the one-read byte floors, especially dense GEMVs, MoE decode/route work, and FA3 fixed work. A single persistent launch is still a useful experiment because it can remove barriers and let weight streams advance across operators even when the byte floor does not bind.
 
-This motivated the held `cand_r3_merge_mega.py`; its persistent qkv producer later failed repeated M=32 agreement checks, so `cand_r3_merge_mega_fix.py` keeps regular qkv and serializes the dense islands. Hazy Research's batch-1 Llama megakernel work reports that kernel-per-operator boundaries leave bandwidth idle and that merging the forward pass into one megakernel exceeded 1.5x over existing systems on H100 ([Hazy Research, “Look Ma, No Bubbles”](https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles)). Mirage Persistent Kernel generalizes the same idea with an SM-level dependency graph, cross-operator software pipelining and an in-kernel scheduler; its paper reports up to 1.7x over kernel-per-operator serving systems ([Mirage Persistent Kernel, arXiv:2512.22219](https://arxiv.org/abs/2512.22219)). Those results motivate the structure, not a speed claim for Muse: the new candidate must pass the layer's own correctness and full-shape screen.
+This motivated the held `cand_r3_merge_mega.py`; its persistent qkv producer later failed repeated M=32 agreement checks, and the regular-qkv repair still rejected a dense island at M=16. Both are parked. Hazy Research's batch-1 Llama megakernel work reports that kernel-per-operator boundaries leave bandwidth idle and that merging the forward pass into one megakernel exceeded 1.5x over existing systems on H100 ([Hazy Research, “Look Ma, No Bubbles”](https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles)). Mirage Persistent Kernel generalizes the same idea with an SM-level dependency graph, cross-operator software pipelining and an in-kernel scheduler; its paper reports up to 1.7x over kernel-per-operator serving systems ([Mirage Persistent Kernel, arXiv:2512.22219](https://arxiv.org/abs/2512.22219)). Those results motivate the structure, not a speed claim for Muse: the new candidate must pass the layer's own correctness and full-shape screen.
 | Proj scored (`68e2f34b1d4744cb`) | 1.142642x, CI 1.1255–1.1598 | router 1.68 / 2.26 / 1.93x; pooler m32 loses at 0.930x | router m8 4.05x; m128/256 all 0.976–1.017x | `submission.py` is the scored snapshot, sha256 `4bc18cec…`; tuned check `9294b3237c4f4e2d` 1.141605x; full table below |
 | Proj hybrid (`6b706627babc4cc6`) | 1.106x | router 1.55-2.01x; unpooler m=1 1.135x | router m=8 3.81x; others 0.98-1.01x | qkv_gate and o stay at cuBLAS parity at every m |
 
@@ -428,7 +431,7 @@ results feed serving's 753–16K prefill path. The current H200 control is v11, 
 | Routing-aware portfolio sources | Three immutable complete files retain every existing expert, dense/router and attention choice, but dispatch experts from the router-derived fixture: score (32 choices), fused (45), and dense-fusion (45 plus structural front/back). Every graph/oracle/timing/finalist failure is logged as `SCORE_REJECT` and removed | All three pass 5/5 official tests and 8/8 sm120 graph shapes; latest local prepare is 4.2–4.4 s with Hopper tuning dormant. H200 execution and selection remain unverified until orchestrator sends a frozen source | `runs/screen/prefill_routing_round8/`, `dev/build_routing_aware_portfolios.py` |
 | First-turn stage rates | Scored 16K weighted profile: expert GEMM+dequant 917.137 ms over a 573.812 ms BF16-equivalent floor = 618.8 TFLOPS; dense/router 781.297 over 607.427 = 768.9 TFLOPS; attention 264.493 over 114.422 = 427.8 TFLOPS, using H200 dense BF16 989 TFLOPS | Expert has the largest excess, 343.325 ms; dequant and GEMM must overlap before chasing dense or FA3 fixed work | `problems/muse_prefill_layer/dev/v11_profile_ranking.json`, `V11_PROFILE.md`, scored profile receipt |
 | First-turn overlap candidate (sm120) | `cand_firstturn_overlap_grid4.py` adds grid-4 persistent grouped BF16 expert variants and a grid-4 overlapped W2 expansion variant to the routing-aware fused portfolio | 5/5 official tests pass; prepare 8.2 s; local sm120 timing is only a screen and leaves H200 choice unverified | SHA256 `a97aab65efeedad63f5d8c82aa47a0f85bb87f0d841dabb0136de1a2d1c283f5`, `runs/screen/muse_prefill_layer.cand_firstturn_overlap_grid4.json` |
-| Serving first-turn expert path | `run_v9_dense` now dispatches the persistent grouped canonical reader for chunks of 753 rows or more; smaller verify shapes retain V9 shared routing and global slot maps | Local graph screen passes all 10 routing cases; sm120 grouped path is 1.57/20.86/82.80 ms at 753/3012/16384 versus the prior V9 11.40/34.27/195.49 ms; H200 serving timing is open | `serving/sglang/python/sglang/srt/layers/muse_spark_serving.py`, `serving/tests/test_serving_v9_dispatch.py` |
+| Serving first-turn expert path | `run_v9_dense` now dispatches the persistent grouped canonical reader for chunks of 753 rows or more; smaller verify shapes retain V9 shared routing and global slot maps | Local graph screen passes all 10 routing cases; latest sm120 grouped path is 1.56/14.13/64.18 ms at 753/3012/16384 versus the prior V9 11.40/34.27/195.49 ms; H200 serving timing is open | `serving/sglang/python/sglang/srt/layers/muse_spark_serving.py`, `serving/tests/test_serving_v9_dispatch.py` |
 | P9 note fold | Historical `RESULTS.md`, `PORTING.md`, and `dev/LIVE_STATUS.md` facts are represented here: v1–v17 local/graph admission, v11 H200 control, expert/attention/dense serving hook boundaries, resident-bank and scratch caveats, and no serving agreement run | Old per-problem notes are intentionally absent from the working tree; `FOCUS.md` is the ≤30-line lane entry point. The orchestrator owns sends/commits; no promotion handler or judge process is used | `problems/muse_prefill_layer/FOCUS.md`, `dev/NEXT_CHECKS.md`, `docs/reference/expert_layout.md` |
 | Serving KV need for prefill bank choices | Serving flags fix TP8/EP8 FP8 KV at 15,872 B per cached token/GPU, static budget 119.85 GB (`--mem-fraction-static 0.85`): c1/4/16/32 at 80K consume 1.270/5.079/20.316/40.632 GB/GPU; at the 131,072 cap consume 2.080/8.321/33.286/66.572 GB | A full alternate expert bank costs 54.358 GB/GPU (3,424,785 target-KV-token equivalent), so c32 already cannot retain one extra full bank before other allocations; partial per-shape copies remain a score resource only where the actual KV pool permits them. Chunk 16,384 adds 0.260 GB/request and 220 generated tokens add 3.492 MB/request | `serving/RULES.md`, `docs/reference/expert_layout.md`, `problems/muse_prefill_layer/dev/kv_budget.json` |
 

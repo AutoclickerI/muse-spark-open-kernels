@@ -1,25 +1,26 @@
-# Prefill focus
-Serves: G2, G1.
+# Prefill attention focus
 
-- Rank 6/P2; optimize H200 score and the serving prefill path at 753–16K tokens.
-- H200 control: v11 check `6a9cd943fe404d74` 1.367883x; scored `965a9a816d4744ea` 1.366811x.
-- Scored profile first-turn gaps: expert GEMM+dequant 917.137 ms, dense/router 781.297 ms,
-  attention 264.493 ms; tensor floor 1,295.661 ms.
-- New tuner routes random BF16 hidden rows through the prepared router hi+lo plus bias,
-  chooses the busiest 32-expert range, and constructs fresh local slots/counts.
-- It compares the old uniform fixture and router-derived fixture, but dispatches the realistic winner.
-  Every graph, oracle, timing and finalist error is logged `SCORE_REJECT` and dropped.
-- Three frozen routing-aware complete portfolios are ready; exact order and hashes are in
-  `dev/NEXT_CHECKS.md`: fused expert, dense fusion, then score portfolio.
-- `cand_fused_expert_portfolio_routing.py` has 45 expert choices; score has 32; dense fusion
-  retains structural front/back, 45 experts and six attention paths.
-- sm_120: all three pass 5/5 official tests and 8/8 graph shapes; prepare 4.2–4.4 s with
-  Hopper tuning dormant. Local route diagnostic shows route-dependent choices and timings; close sm_120 choices can vary.
-- H200 cold-L2 graph selection and receipts are unverified; no local timing is an H200 claim.
-- Serving KV is 15,872 B/token/GPU: 1.270/5.079/20.316/40.632 GB at c1/4/16/32 and 80K;
-  2.080/8.321/33.286/66.572 GB at the 131K cap. One full alternate bank is 54.358 GB/GPU.
-- Serving port facts from the folded notes: preserve TP/EP collectives, BF16 norm boundaries,
-  separate gate/up/down scales, capture padding and per-request KV mapping; agreement is open.
-- Old `RESULTS.md`, `PORTING.md`, and `dev/LIVE_STATUS.md` facts are folded into `docs/FINDINGS.md`;
-  this file is the lane entry point and stays under 30 lines.
-- The orchestrator sends and commits; the obsolete promotion handler and judge process are gone.
+The H200 prefill control is FA3 from `cand_v11` receipt `6a9cd943fe404d74`.
+Its profile attention kernel achieves:
+
+| load | FA3 us | attention TFLOPS | % of 989 TFLOPS |
+|---|---:|---:|---:|
+| turn1 753 slide/full | 25.8 / 414.8 | 244.8 / 597.7 | 24.8 / 60.4 |
+| turn4 753 slide/full | 61.7 / 1618.0 | 409.5 / 621.5 | 41.4 / 62.8 |
+| first 16K ctx0 full | 900.3 | 610.7 | 61.7 |
+| first 16K ctx32K slide/full | 309.3 / 4531.4 | 444.4 / 606.6 | 44.9 / 61.3 |
+| first 16K ctx64K full | 8431.4 | 586.8 | 59.3 |
+
+TFLOPS uses 4·Q·K·16·64 (QK plus PV), with causal/window key counts;
+small 753-token sliding is launch/metadata limited, while long full attention
+leaves roughly 37–41% of dense BF16 peak unused.
+
+`cand_attn_prefill.py` and the serving mirror provide FP8 Q/K and FP8-PV,
+lossless page gather into contiguous storage, online FP32 softmax, exact causal
+and 2048-window masks, and GQA reuse. Interface: q `[T,16,64]` FP8, paged
+K/V `[pages,page,2,64]` FP8, page table, int32 `cache_seqlens` and `cu_seqlens_q`,
+scales, softmax scale, window; return BF16 `[T,16,64]`.
+
+Local sm_120 graph/reference tests pass (full/window last-row error 2.65–2.72%,
+page-64 finite output). H200 timing, FA3 comparison, and serving workload gain
+remain unverified. Hash: `498c8c444a014a738326bd768782fe767a8fd73bdcbf235ac58d4086d6180cca`.

@@ -29,7 +29,7 @@ class PatchLoader(importlib.abc.Loader):
         from sglang.kernels.ops.muse_spark_v12.norm_residual import fused_norm_residual
 
         def supported(group, tokens, hidden):
-            return group.world_size > 1 and 0 < tokens <= 128 and hidden % 1024 == 0
+            return group.world_size > 1 and 0 < tokens <= 256 and hidden % 1024 == 0
 
         def portable(
             comm,

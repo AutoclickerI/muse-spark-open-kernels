@@ -25,7 +25,7 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
-| Prefill experts (753-16K tokens) | Marlin at large M | bounded V9 now; grouped bypassed after in-layer regression; H200 prefill recheck pending | `problems/muse_prefill_layer` |
+| Prefill experts (753-16K tokens) | Marlin at large M | V9 below753; concurrent grouped prefill at>=753; H200 integration/TTFT gate pending | `problems/muse_prefill_layer` |
 | Decode attention (FP8 page-1, QK-norm, KV store, gate fused) | FA3 + combine + ~6 small kernels per layer | ~20 us x 62 layers per step at c=1 | `problems/muse_attention_decode` |
 | Dense projections and router | cuBLAS, the FP32 router GEMV | ~10-20 us per layer | `problems/muse_bf16_proj` |
 | Layer glue (norms, residual, routing) | ~70 us of small kernels per layer at batch 1 (FINDINGS) | up to ~4 ms per step at c=1 | `problems/muse_decode_layer` |
@@ -87,9 +87,9 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
 - **MoE V9 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
-  `muse_spark_fp4_moe.py`). V9 now handles all verify rows including M256; larger prefill calls use bounded V9 chunks
-  in `muse_spark_serving.py`, preserving global slot maps and remote -1s. Serving bypasses the grouped
-  reader after its in-layer H200 regression. The current M1..16,384 stock-Marlin layer screen has
+  `muse_spark_fp4_moe.py`). V9 handles all verify rows including M256. The serving
+  adapter bounds its calls to512 below753; a concurrent prefill port now selects grouped at>=753.
+  Both preserve global slot maps and remote -1s. Verify bypasses grouped after its in-layer H200 regression. The current M1..16,384 stock-Marlin layer screen has
   relative L2<=0.005449 (bound0.015), maxabs0.03125 and exact fresh-input graph replay;
   A bounded V11 Humming adapter now competes at M256 in layer1 only; it preserves separate FP32
   gate/up scales via virtual expert records and disables BF16 Stream-K partial reductions. It admits
@@ -268,6 +268,44 @@ changed-input graph replay is exact. Existing cluster norm differs from direct t
 by at most 0.03125 BF16 at H1024, 0.015625 at H8192; the fusion adds zero difference.
 All24 H8192/TP8 sm_90a variants (one/two-shot, cluster8/4/1, multicast on/off, router on/off) compile under
 `override_jit_cuda_arch(9,0,suffix="a")`. H200 multicast execution and speed remain unverified.
+
+The full-graph harness also caught a concurrent prefill plan initialization
+bug: `DenseRouterPlan` was called for unsupported tiny pooler/router weights,
+then logged8 exceptions. The serving adapter now checks its existing
+`dense_router_supported` predicate before construction. This fixes the call
+site without modifying the owned kernel or weakening the traceback gate.
+`q16-patch-tp1` retained174 exact responses and zero logprob drift but is
+rejected for those tracebacks; a clean rerun is required. Earlier `q14` is
+rejected for live-source mutation. `q15` is exact but exceeded the local TTFT
+gate under this lane's concurrent GPU protocol benchmark; it is not counted
+as a passing performance screen. Final comparisons use fresh stock runs and
+no concurrent GPU test from this lane.
+
+The two-shot extension's real-kernel screen uses two logical ranks on
+GPU0 with independent streams and32 counters, avoiding GPU1. Both worlds share
+actual CUDA push buffers; the test retains every FFI counter owner and uses a
+small stock grid so two logical ranks can reside on one GPU. This is a protocol
+screen, not a two-device NVLink measurement. H1024/8192, M8/32/128/129/256,
+router on/off:20 variants, eager and20 stock/fused alternating graph replays,
+changed-input replay, raw-byte equality to stock `TWO_SHOT_PUSH` plus norm:
+**maxdiff0 throughout**. Odd M129 checks uneven row ownership. The M256 norm
+has256 CTAs while the plane has32 counters. All24 TP8 sm_90a variants compile.
+The saved phase is owned by the returned residual; two-shot PDL waiters are
+removed. Prior diagnostic stalls exposed borrowed counter lifetime in the
+single-process fixture and unsafe oversubscription of its stock grid, both
+fixed without changing the equality gate.
+
+GPU0 sm_120 two-logical-rank graph medians (20 samples, warm L2), stock/fused
+microseconds: M32 **13.136/11.088**, M128 **19.936/19.184**, M256
+**29.280/27.792**. These do not establish H200 or inter-GPU speedup.
+On H200 TP8, M32/128/256 are inside stock's multicast two-shot pull range;
+stock stages in, reduces, stages out, then normalizes (four launches). The
+new scatter+gather/norm takes two. A conservative model is
+`62*(2 removed launches*(1..2 us) + 4*M*8192/3.35e12*1e6)/1000`,
+which gives **0.143-0.267 /0.202-0.326 /0.279-0.403ms/step** at c4/16/32.
+This uses the boundary BF16 materialization traffic only; launch cost and HBM
+bandwidth are models, not H200 measurements. Real multicast reduction-order
+agreement, latency and full-model interactivity remain unverified.
 
 Local PCIe sm_120 medians for H8192, no router, separate->fused:
 M8 **25.85->27.81 us**, M32 **52.93->55.62 us**, M128 **150.08->152.68 us**. The local
@@ -490,7 +528,7 @@ capacity and TTFT remain to be checked. No judge run or commit was launched by t
 
 `muse_spark_humming.py` ports the V11 indexed wide producer behind the existing dense
 `[T,8,H]`/identity-or-minus-one finalize interface. Serving now uses V9 at all verify rungs
-and bounded V9 prefill, with no grouped selection.
+and bounded V9 below753; the concurrent prefill port uses grouped at>=753.
 The full second bank is rejected by the owner's memory decision. Only layer1 is eligible for one
 0.906GB partial layout, reconstructed losslessly from the canonical bank during eager warmup.
 Admission charges unbacked VMM target KV plus1280bytes/slot draft KV before counting free memory.
@@ -559,7 +597,7 @@ Evidence: `/data2/jihoon/muse_kernel/harness/results/serving-dispatch-evidence/`
 
 H200 in-layer evidence overrides synthetic routing: `0e94268cf5654012` holds
 verify32 sliding/full1.216/1.136x, versus grouped0.549/0.647x in
-`2ad75c19cb514f5c`. Serving now calls V9 at M256 and bounded V9 chunks for larger
+`2ad75c19cb514f5c`. Serving calls V9 at M256 and bounded V9 chunks below753; the concurrent grouped prefill port handles larger
 calls, rather than the kernel module's grouped dispatch. The bound is derived
 from actual shared-memory capacity and int16 route-slot capacity; chunk maps
 are global and remote slots stay -1. The independently owned `muse_spark_moe.py`
@@ -632,7 +670,7 @@ routing-table overhead while leaving all verify rungs unchanged. Local architect
 contention prevent extrapolation, but this is a regression risk, not a win.
 Tiny expert widths remain Marlin and cannot validate this full-shape TTFT.
 The ready single-file check is
-`problems/muse_moe_w4a16/cand_serving_prefill_diag.py` (95,106 bytes).
+`problems/muse_moe_w4a16/cand_serving_prefill_diag.py` (95,107 bytes).
 Its scored kernel, both scored expert implementations and both preparation
 functions are AST-identical to `cand_v9_phase` (`ac9dd461f0294e34`); only
 prepare diagnostics change, preserving its fixed dispatch. The embedded serving
@@ -650,8 +688,15 @@ maxabs0.00879). Local microseconds Marlin/V9:
 512:549/1110, 1024:922/4710, 2048:4120/9470.
 These are local screens, not an H200 ordering or a decision on the shipping
 bound. H200 receipt and full-model TTFT remain the gate; no judge run launched.
-The owner requested V9 instead of grouped at all M>=256; grouped is bypassed,
-and this limitation is explicit rather than silently restoring that losing path.
+The accepted starting point used V9 at all M>=256. During this round the
+prefill lane independently added a grouped producer at M>=753 in the shared
+adapter, leaving V9 at verify256 and bounded512 V9 below753. That concurrent
+prefill change is preserved; it is not covered by the V9-vs-Marlin diagnostic,
+whose1024/2048 rows intentionally remain bounded-V9 reference timings.
+Its shipping evidence belongs to the prefill lane, and this lane has not
+validated its H200 integration or TTFT. The diagnostic builder freezes the
+accepted bounded-V9 adapter so later portfolio edits cannot change the check.
+
 
 Random full-graph teacher forcing (`q07`,30 requests x220 continuation tokens;
 90 comparisons against `g58/59/60`) passes the standard median-within-stock-p90

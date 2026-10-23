@@ -13,25 +13,49 @@ sys.path.insert(0, str(ROOT / "serving/harness"))
 import run
 
 launch = run.launch
+stop = run.stop
+with_logprob = "--with-logprob" in sys.argv
+if with_logprob:
+    sys.argv.remove("--with-logprob")
 
 
 def local_launch(args, tree, output, port):
     args.mem_fraction_static = 0.3
-    args.max_total_tokens = 100000
-    if not hasattr(args, "tree"):
-        tree_name = "patch" if tree == run.common.PATCH_TREE else "stock"
-    else:
-        tree_name = args.tree
-    if tree_name == "patch":
+    args.max_total_tokens = 300000
+    if args.tp > 1:
+        args.env += ["SGLANG_ENABLE_TP_MEMORY_INBALANCE_CHECK=0"]
+    if tree != run.common.STOCK_TREE:
         args.env += [
             f"PYTHONPATH={tree / 'python'}:{ROOT / 'serving/tests/attn_ar_hook'}:{ROOT / 'serving/harness/pyhook'}"
         ]
-    return launch(args, tree, output, port)
+    proc, cmd = launch(args, tree, output, port)
+    proc.logprob_probe = (args, tree, output, port)
+    return proc, cmd
+
+
+def local_stop(proc):
+    try:
+        if (
+            with_logprob
+            and getattr(proc, "harness_fired", False)
+            and proc.poll() is None
+        ):
+            from harness_logprob_probe import collect
+
+            collect(run, *proc.logprob_probe)
+    finally:
+        stop(proc)
 
 
 run.launch = local_launch
+run.stop = local_stop
 if __name__ == "__main__":
-    if "--forced" in sys.argv:
+    if "--single-forced" in sys.argv:
+        sys.argv.remove("--single-forced")
+        import teacher_forced
+
+        teacher_forced.main()
+    elif "--forced" in sys.argv:
         sys.argv.remove("--forced")
         import teacher_forced_workload
 

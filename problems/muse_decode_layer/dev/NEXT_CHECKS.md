@@ -1,6 +1,12 @@
-# Decode checks — next send order after 3d74527
+# Decode checks — next send order after 18a5f4e
 
-`cand_r3_v9all.py` is first and `cand_r3_merge.py` is second at the 09:00 KST reset. The next information-dense source is the guarded persistent megakernel. The earlier overlap source is parked after a verify correctness failure. Pure V9's completed receipt is 1.428x overall (rank 85); rank 50 needs about 1.54x.
+`cand_r3_v9all.py` is first and `cand_r3_merge.py` is second at the next reset. Both megakernel sources are held: the original persistent qkv failed repeated M=32 agreement
+checks, and the regular-qkv repair still rejected a persistent dense island at M=16. The ready
+source embeds the latest XQA/FP8-PV and FA3-structured WGMMA families in the layer tuner. The
+earlier overlap source is parked after a verify correctness failure. Pure V9's completed receipt is
+1.428x overall (rank 85); rank 50 needs about 1.54x. The H200 non-MoE ranking is now full
+verify32 attention first, then verify16 full attention, decode32 full attention, projections,
+and glue; the per-stage floor table is in `docs/FINDINGS.md`.
 
 ## Non-MoE cost ranking from receipt `85e67f5d6ef945c9`
 
@@ -16,13 +22,19 @@
 | verify 16 sliding/full | projections ~73 us | attention 27/192.6 us | boundary 11.6/11.2 us |
 | verify 32 sliding/full | projections ~91 us | attention 30/373.8 us | boundary 19.9/19.6 us |
 
-Full attention is the largest remaining decode cost at verify32/decode32/verify16 = 373.8/227.9/192.6 us. The merge also spends the projection and glue budget at small loads. MoE remains fixed to the in-layer V9 winner until `moe_tune.py` lands routing-aware choices. The new megakernel streams qkv, O/pooler/router and unpooler through persistent grid-synchronized stages around V9; its tuner retains the merge path when correctness or timing loses.
+Full attention is the largest remaining non-MoE cost at verify32/decode32/verify16. Its full-shape
+profile gaps are +251/+90/+133 us over the one-read floors. MoE remains fixed to the in-layer V9
+winner until `moe_tune.py` lands routing-aware choices. The ready attention candidate leaves the
+merge's V9/projection/glue path intact and adds per-shape XQA/FP8-PV/FA3-structured WGMMA choices;
+failed agreement, resource, or timing variants fall back to the merge path.
 
 ## Frozen source set
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
-| `cand_r3_merge_mega.py` | `98d7e6d6029e9337fbc94806ce99c5e739a97d2d884e1385952ba78714e91a2d` | 13/13 tests, 12/12 graphs; prepare 118.309 s on sm_120; MEGA_TUNE rejects/regular selections logged | **ready after merge**; persistent qkv + dense islands + V9 chain |
+| `cand_r3_attention_v2.py` | `e5414acdac7ae3a56f860369b88d0866567db6230e4ebe89d758e8f13a17cc15` | **13/13 tests, 12/12 graphs; prepare 34.927 s on sm_120**; final `ATTN_PORT_SUMMARY` prints every portable per-shape choice; latest attention families embedded | **ready after merge**; XQA/FP8-PV + FA3-structured WGMMA verify portfolio |
+| `cand_r3_merge_mega_fix.py` | `f7e1217b840a42a85404b7ab563e9c6805e4d724fdfe068e71e69af5376f9d16` | held: regular qkv removed qkv disagreement, but persistent dense island still rejected at M=16; no timed selection | **parked; do not send** |
+| `cand_r3_merge_mega.py` | `98d7e6d6029e9337fbc94806ce99c5e739a97d2d884e1385952ba78714e91a2d` | held: repeated prepares rejected persistent qkv at M=32; one verify-8 sample changed IDs; PDL-off did not make qkv deterministic | **parked; do not send** |
 | `cand_r3_merge.py` | `f23a267748791646d9afc4d447068158ecdb71fa74ae134dad0add62d6b5b054` | 13/13 tests, 12/12 graphs; prepare 25.011 s on sm_120; fused-prefix resource rejects logged | queued second; merged non-MoE portfolio with MoE fixed to V9 |
 | `cand_r3_v9all.py` | `41c018efaefb57bacaf0f55451f6753e1f96a4a1f0ef678066c8ac2cad5ce4d5` | V9 fixed; queued first | queued first at reset |
 | `cand_r3_v9_attention_portfolio.py` | `4be669353a75acd03276f806dfaf6a64a94a6c8f7cf23edcaa67da2212603386` | queued in `c14edac`; V9 fixed | already queued; attention FA3/XQA/WGMMA/FP8-PV/q1-gather portfolio |
@@ -38,10 +50,11 @@ Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`
 
 ## Send order
 
-1. **`cand_r3_merge_mega.py`** (SHA `98d7e6d6029e9337fbc94806ce99c5e739a97d2d884e1385952ba78714e91a2d`). Send after the already queued V9all and merge sources. One H200 run measures the persistent qkv/O+pooler/router/V9/unpooler chain against the merge path per small shape; every agreement, resource, and timing failure is logged and falls back.
-2. Do not resend `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_merge_ovl.py`, `cand_r3_v9_attention_portfolio.py`, `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals.
+1. **`cand_r3_attention_v2.py`** (SHA `e5414acdac7ae3a56f860369b88d0866567db6230e4ebe89d758e8f13a17cc15`). Send after the already queued V9all and merge sources. One H200 run measures the latest XQA/FP8-PV and FA3-structured WGMMA families inside the layer at each verify shape; every agreement, resource, and timing failure rejects the variant and falls back.
+2. Do not send either megakernel source (`cand_r3_merge_mega.py` or `cand_r3_merge_mega_fix.py`, both parked), `cand_r3_merge_ovl.py`, `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`, `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals again.
 
-The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, and reject lines record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
+The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, the final compact `MEGA_SUMMARY`, and the attention candidate's
+final compact `ATTN_PORT_SUMMARY` record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
 
 Every candidate in this order must first pass `tools/img python tools/local_eval.py` with 13/13 tests and 12/12 fresh-input graph cases. Force every Hopper-only Python branch through a portable stand-in before remote submission. Remote checks use `tools/okc_run.py` and remain detached; no commit is requested.
 
