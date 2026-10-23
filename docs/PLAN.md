@@ -1,9 +1,11 @@
 # Plan
 
-## Status (2026-10-23 21:30 KST)
+## Status (2026-10-24 00:15 KST)
 - Kernel track day 1 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST.
 - Best H200 checks: proj 1.142x, attention 1.388x (1.384x on the board), MoE 1.535x, decode layer
-  1.271x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7 and prefill v3 are queued.
+  1.355x, prefill 1.345x (SOTA "Current best"). Scored runs of MoE V6 and v7, decode cand_moe7 and prefill v3 are queued.
+- Every unsent candidate passed the local screen (52 of 52); 38 went to the judge tonight, and 14 wait for
+  the 09:00 KST reset (`tools/screen_all.py --send`; two scored runs per problem stay with the lanes).
 - Overall board at 19:30: about 1.19x time-weighted against about 1.38x for 50th place (FINDINGS "Boards").
   Decode layer and MoE carry about 80% of that weight.
 - Serving patch: Hopper gates #2/#4/#5, prefill row split, FA3 QK-norm/KV-store fusion, drafter fc split,
@@ -11,8 +13,8 @@
 - Bound (`docs/reference/bound.md`): serving score at most 6.13x at spec HBM (5.89x at our measured
   4.25 TB/s, tau 4.16) against the practical model's 3.0x. The kernel bounds are proj 2.02x, attention 6.29x,
   MoE 3.29x, decode 3.34x, prefill 2.93x. The biggest gaps from our receipts are attention 4.9x, decode 2.9x, MoE 2.2x.
-- Bottleneck: judge latency. About 11 of our runs start per hour, so a check sent behind about 35
-  others lands 2-3 h later.
+- Bottleneck: judge latency. About 11 of our runs start per hour; with ~55 of ours queued at 00:15,
+  a new check lands about 5 h later.
 
 ## Critical path
 Kernel loop, measured 2026-10-23:
@@ -36,7 +38,7 @@ Step 3 dominates, since one result costs hours of wall time.
 | 2 | P2 | G2, G1 | Prefill: RS128 grouped experts on the canonical bank (provisional serving path) and FP8 long-context attention; nine candidates at 09:00 KST | H200 check above 1.345x; ported with agreement | prefill lane | next: 09:00 KST checks |
 | 3 | P3 | G2, G1 | MoE V8 (V6 resident grid plus v7 incremental tiles) on the canonical bank, swapped into the serving port | H200 check above 1.535x; port tests pass | MoE lane | active |
 | 4 | P4 | G3, G2 | Decode layer round 3: cand_moe7 (1.355x; verify 16/32 only 1.06-1.17x) plus the best measured stage per batch size (MoE V8, attention hybrid q_len=1, proj tuned dispatch, neutral structural fusions); `problems/muse_decode_layer/dev/NEXT_CHECKS.md` at 09:00 KST | H200 check above 1.355x on the way to the 50th-place mix | decode lane | active: local build; cand_moe7 scored run queued; checks at 09:00 KST |
-| 5 | P5 | G2, G3 | Attention verify kernel (XQA-style q8 x G8, page-1 gathers) to beat FA3 on verify loads | Verify loads above 1.0x on H200; board above 1.384x | attention lane (Claude agent: Codex at capacity) | active |
+| 5 | P5 | G2, G3 | Attention verify kernel (XQA-style q8 x G8, page-1 gathers) to beat FA3 on verify loads | Verify loads above 1.0x on H200; board above 1.384x | attention lane | active |
 | 7 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o (in-kernel split-K reduce) and m>=16 pooler/unpooler | H200 check above 1.142x; at the 09:00 reset, one check of the exact submission.py (its source was promoted from a receipt the okc_run file-edit bug may have mislabelled) | proj lane | next: 09:00 KST check |
 | 8 | P8 | G2 | One H200 diagnostic: HBM concurrency (LDG/cp.async/bulk), page-1 KV gather, L2 hints/APW, graph PDL boundary, small-N BF16 MMA/WGMMA, NVFP4 decode issue | H200 rates and lane consequences in FINDINGS | probe lane | active: check `849bd4b650e54c7f` queued |
 | 9 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | next |
