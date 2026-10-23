@@ -26,7 +26,7 @@ Kernel loop, measured 2026-10-23:
 6. Serving check: from 11-06 only, 3 a day.
 
 Step 3 dominates, since one result costs hours of wall time.
-- Fixes: denser checks (P8), priority queueing (done), and Hopper glue exercised locally (AGENTS).
+- Fixes: denser checks (packed per-shape diagnostics), priority queueing (done), and Hopper glue exercised locally (AGENTS).
 - Step 6 can't run before 11-06, so the harness carries the serving risk until then.
 - Lanes run in parallel: one per problem plus serving, bound and research. A lane never idles on the
   judge; `collect` lands receipts while it builds the next candidate.
@@ -46,5 +46,4 @@ loads carry the most SGLang time: verify 16/32 (MoE at 128/256 tokens) and decod
 | 4 | P7 | G3, G2 | Proj: beat cuBLAS on qkv_gate/o at m >= 128 (in-kernel split-K reduce, WGMMA) and m >= 16 pooler/unpooler | H200 check above 1.142x | proj lane | active: packed TMA/WGMMA + last-CTA/Stream-K/Lt portfolio passed locally; frozen in `problems/muse_bf16_proj/dev/NEXT_CHECKS.md`, orchestrator sends |
 | 5 | P5 | G3, G2 | Attention verify: full-specialized eight-warp swap-AB K128 plus paired FA3 dispatch; frozen source order in `problems/muse_attention_decode/dev/NEXT_CHECKS.md` | Verify loads above 1.0x on H200; board above 1.384x | attention lane | active: profiler identifies gather issue/address as the largest tile cost; pipeline candidate passes local admission; H200 admission pending |
 | 6 | P2 | G2, G1 | Prefill: RS128 grouped experts on the canonical bank (provisional serving path) and FP8 long-context attention | H200 check above 1.345x; ported with agreement | prefill lane | active: candidates queued; result handler promotes as receipts land |
-| 7 | P8 | G2 | One H200 diagnostic: HBM concurrency (LDG/cp.async/bulk), page-1 KV gather, L2 hints/APW, graph PDL boundary, small-N BF16 MMA/WGMMA, NVFP4 decode issue | H200 rates and lane consequences in FINDINGS | probe lane | active: check `849bd4b650e54c7f` queued |
-| 8 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | active: projection notes folded into FINDINGS + FOCUS; attention, MoE |
+| 7 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | active: projection notes folded into FINDINGS + FOCUS; attention, MoE |

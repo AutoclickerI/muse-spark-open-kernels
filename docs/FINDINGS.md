@@ -11,9 +11,106 @@ from code, config or spec), **model** (an estimate under stated assumptions; num
 |---|---|---|---|---|
 | Judge GPU state | H200, SM 1980 MHz, memory 3201 MHz, 700 W limit, ~130 W idle draw | node n-qtqz4qekgtq37epqb5xaarah6h | measured | `runs/muse_bf16_proj/*7fb3e93056d34999.json` (`machine`) |
 | Graph replay fixed cost the judge subtracts | ~4.2 us (raw median minus reported median) | bf16_proj shapes | measured | same, `replay_overhead`, `median_raw_ns` |
-| HBM and L2 read rates (our probes inside a check's prepare()) | streaming read of 52-61 MB: 12.8-14.6 us = 4.04-4.25 TB/s (best 4.25 TB/s: 132 CTAs x 1024 threads, 4 x 16 B loads in flight per thread); L2 re-read of a 4-16 MB window: 8.2-9.6 TB/s; 32 MB window: 4.5-5.1 TB/s | H200 judge, timed with CUDA events (not graph replay) | measured | `problems/muse_bf16_proj/profiles/cand_sweep2.62bd26b45aeb4992.log` |
+| Historical HBM/L2 sweep | 52-61 MB stream: 12.8-14.6 us = 4.04-4.25 TB/s; best used 132 CTAs x 1024 threads and source unroll 4 x 16 B/thread. Warm 4-16 MB: 8.2-9.6 TB/s; 32 MB: 4.5-5.1 TB/s | CUDA events with the sweep's baseline subtraction, different loads/cache hints and CTA sizes from P8 below; outstanding requests were not counted. The 32 MB drop is specific to this protocol | measured | `problems/muse_bf16_proj/profiles/cand_sweep2.62bd26b45aeb4992.log` |
 | Judge queue | Our runs start one at a time, about every 5-6 min (17:09, 17:14, 17:21, 17:28, ... 20:03 on 2026-10-23), each running 1-5 min, while the judge reported 64 GPUs busy and a backlog of 519-552. Wait = queue position x ~5.5 min: runs sent at 17:01 waited 7 min; at 18:11, with ~30 of ours queued, 105 min. No cancel exists (`okc` has withdraw only). | receipts' created_at/started_at/finished_at; `GET /queue` | measured (the per-team scheduling is inferred from start spacing) | `runs/*/*.json` |
 | Run-to-run noise | the starter's speedup CI was 0.892-0.920 (+-1.5%) | one check, 30 shapes | measured | same, `speedup_ci` |
+
+## P8 hardware probes on H200 (2026-10-24 KST)
+
+One check, [849bd4b650e54c7f](../runs/muse_bf16_proj/20261023T135730Z_check_849bd4b650e54c7f.json),
+passed 9/9 projection tests and all 30 scored shapes; the copied projection achieved 1.137x.
+Diagnostic prepare took 31.4 s; total judge execution was 128.3 s. The GPU reported 132 SMs,
+1980 MHz SM / 3201 MHz memory before and after the run, on node `n-3tovvmp4azgxjrdbhkqxjjl254`.
+These are endpoint clocks, not sampled probe clocks.
+
+[Source](../problems/muse_bf16_proj/cand_probe_hw.py) and
+[full labelled log](../problems/muse_bf16_proj/profiles/cand_probe_hw.849bd4b650e54c7f.log).
+Times below are raw CUDA event intervals inside captured graphs, without baseline subtraction or
+host tensor-map setup. Rates count requested useful bytes, not memory-controller counters. Each
+entry is the median of three trials, except the graph-boundary experiment's five. Local screening
+compiled both extensions for sm_90a with CUDA 13; sm_120 portable probes, Hopper Python glue with
+an MMA stand-in, and all nine projection tests passed. Compute Sanitizer memcheck reported zero
+errors on the portable run. SASS confirmed LDG groups of 1/2/4 loads before consumption and no
+local/stack use in the inspected probe kernels; WGMMA N8/16/32 used 42/58/90 registers.
+Local logs, SASS and both sm_90a build flags are preserved in `runs/screen/p8_hw/`.
+
+### HBM concurrency
+
+256 threads/CTA. LDG uses 16-byte `.cg` loads; cp.async uses 16-byte `.cg` copies, followed by shared
+consumption; bulk uses independent 4 KiB copies and an mbarrier, then shared consumption. Each
+trial reads a distinct 64 MiB region, truncated to complete grid iterations (60.6-67.0 MB).
+Flight is the nominal request-group footprint averaged over 132 SMs, not measured outstanding bytes.
+The bulk experiment is 1D `cp.async.bulk`; tensor-map TMA is exercised separately in WGMMA.
+
+| Quantity | Value (TB/s in increasing U order) | Scope | Class | Receipt |
+|---|---|---|---|---|
+| LDG128, 66 CTAs | U1/2/4: 0.64 / 1.04 / 1.61 | nominal flight 2 / 4 / 8 KiB/SM | measured | `849bd4b650e54c7f`, HBM log |
+| LDG128, 132 CTAs | 1.16 / 1.80 / 2.49 | 4 / 8 / 16 KiB/SM | measured | same job |
+| LDG128, 264 CTAs | 1.95 / 2.61 / 3.01 | 8 / 16 / 32 KiB/SM; best 64,880,640 B / 21.57 us | measured | same job |
+| cp.async, 66 CTAs | U1/2/4/8: 0.55 / 0.89 / 1.39 / 1.89 | 2 / 4 / 8 / 16 KiB/SM | measured | same job |
+| cp.async, 132 CTAs | 1.01 / 1.57 / 2.17 / 2.64 | 4 / 8 / 16 / 32 KiB/SM | measured | same job |
+| cp.async, 264 CTAs | 1.72 / 2.39 / 2.88 / 3.15 | 8 / 16 / 32 / 64 KiB/SM; best 60,555,264 B / 19.20 us | measured | same job |
+| cp.async.bulk, 66 CTAs | U1/2/4/8: 0.44 / 0.76 / 1.24 / 1.77 | 2 / 4 / 8 / 16 KiB/SM | measured | same job |
+| cp.async.bulk, 132 CTAs | 0.85 / 1.38 / 2.06 / 2.46 | 4 / 8 / 16 / 32 KiB/SM | measured | same job |
+| cp.async.bulk, 264 CTAs | 1.46 / 2.24 / 2.79 / 2.88 | 8 / 16 / 32 / 64 KiB/SM; best 60,555,264 B / 21.06 us | measured | same job |
+
+These kernels have not saturated the historical 4.25 TB/s result: this check's separate 528-CTA
+weight stream itself reaches 3.80 TB/s. Different CTA sizes, cache instructions, scheduling, sinks
+and timing protocols prevent treating 3.15 TB/s as a new H200 roof or a regression.
+
+### Random page-1 KV gather and L2
+
+Gather reads a random permutation of 1,048,576 unique 128-byte rows (128 MiB), one coalesced warp
+per row, four independent rows per warp. It includes page-index loads and a checksum sink, without
+FP8 conversion or attention math. Warmup precedes timing; the working set exceeds L2, but this is
+not a separately flushed cold-cache bound for every attention workload.
+
+| Quantity | Value | Scope | Class | Receipt |
+|---|---|---|---|---|
+| Page-1 gather, 132 / 528 / 1056 CTAs | 292.67 / 83.10 / 52.48 us; 0.459 / 1.615 / 2.558 TB/s; 3.583 / 12.62 / 19.98 billion rows/s | 128 threads/CTA, same random rows | measured | `849bd4b650e54c7f`, gather log |
+| Warm L2, 4 MiB window | ordinary / evict_first / evict_last / evict_normal hint: 7.69 / 7.80 / 7.78 / 7.42 TB/s | 268,173,312 B requested; `.cg` bypasses L1; 528 CTAs, U4 | measured | same job, L2 log |
+| Warm L2, 16 MiB window | 7.58 / 7.74 / 7.72 / 7.56 TB/s | same policy order and read count | measured | same job |
+| Warm L2, 32 MiB window | 7.31 / 7.32 / 7.31 / 7.35 TB/s | same; no abrupt 32 MiB threshold in this protocol | measured | same job |
+| APW reservation | requested 4 MiB; driver returned 7,864,320 B, previous 11,796,480 B | Previous reservation restored afterward; captured kernel APW verified locally | measured / local verification | same job, APW log |
+
+Retention warms a 4 MiB activation, streams 129,761,280 B of weights, then rereads 25,952,256 B
+from that activation. The printed "8x" target is truncated to complete grid iterations. Each case
+resets persisting lines before configuring APW; APW uses hitRatio=1, persisting hits and streaming
+misses. Weight stream and activation intervals are timed separately.
+
+| Weight policy | APW off: weight us / activation us | APW on: weight us / activation us | Class | Receipt |
+|---|---|---|---|---|
+| ordinary | 34.85 / 8.96 (3.72 / 2.90 TB/s) | 35.10 / 8.51 (3.70 / 3.05 TB/s) | measured | `849bd4b650e54c7f`, retention log |
+| evict_first | 34.11 / 8.42 (3.80 / 3.08 TB/s) | 34.98 / 8.45 (3.71 / 3.07 TB/s) | measured | same job |
+| evict_last | 35.68 / 9.06 (3.64 / 2.87 TB/s) | 34.82 / 9.15 (3.73 / 2.84 TB/s) | measured | same job |
+
+### Graph boundary, BF16 tensor math and NVFP4 decode
+
+| Quantity | Value | Scope | Class | Receipt |
+|---|---|---|---|---|
+| Dependent graph pair, normal vs PDL | producer 9.73 us; consumer 46.88 us; normal pair 59.74 us; PDL 58.69 us; saving 1.06 us (1.8%); normal pair minus isolated sum 3.14 us | 16 MiB producer copy; consumer independently reads 128 MiB weights before `griddepcontrol.wait`, then consumes producer output. Normal trials 59.07-60.16 us; PDL 57.57-59.68 us overlap. Difference includes cache/tail interactions, not a universal launch cost. Programmatic graph edge verified locally | measured | `849bd4b650e54c7f`, boundary log |
+| BF16 MMA vs WGMMA SS, N8 | 504.23 vs 200.16 TFLOP/s (35.14 vs 88.51 us) | swap-AB W[64,64] x X[8,64], 132 CTAs, four independent accumulator sets, 512 repeats | measured | same job, tensor log |
+| BF16 MMA vs WGMMA SS, N16 | 544.66 vs 362.57 TFLOP/s (65.06 vs 97.73 us) | same, X[16,64] | measured | same job |
+| BF16 MMA vs WGMMA SS, N32 | 590.24 vs 607.90 TFLOP/s (120.06 vs 116.58 us) | same, X[32,64] | measured | same job |
+| NVFP4 LOP3 decoder | 0.9815 trillion weights/s; 0.49 TB/s packed input; 3.926 trillion named LOP3 instructions/s; 136.61 us | 134,086,656 weights; 4 LOP3/weight plus extraction, sign and checksum work | measured | same job, NVFP4 log |
+| NVFP4 PRMT LUT decoder | 1.888 trillion weights/s; 0.94 TB/s packed input; 1.888 trillion named PRMT instructions/s; 71.01 us; 1.92x LOP3 weight rate | 1 PRMT/weight; same exact E2M1 magnitude x2 int8 LUT values. All 16 codes and stream checksums agree | measured | same job |
+
+Tensor work and output sums match, but resources differ: MMA uses 128 threads and register operands;
+WGMMA SS uses 256 threads (one consuming warpgroup), shared operands and initial tensor-map TMA.
+All-one operands are reused. These are implementation rates, not isolated ISA peaks or a test of RS.
+Decode rates omit E4M3 scales, BF16 conversion/packing and expert MMA; named instruction rates
+are counts divided by elapsed time, not measured pipeline utilization.
+
+### Design consequences (inferences from this check)
+
+| Lane | Consequence | Receipt |
+|---|---|---|
+| Projection | Increase independent loads and CTA coverage first: LDG grows 0.64 to 3.01 TB/s. At matched request groups, shared staging costs more without reuse. MMA is the stronger tested path at N8/16; keep WGMMA SS as a candidate from N32 with actual reuse | `849bd4b650e54c7f` |
+| Attention | Expose more independent row/context tiles: the same random gather rises 0.459 to 2.558 TB/s with CTAs. Use this as a gather reference for the bound, not a TLB diagnosis or attention throughput prediction | same job |
+| MoE | Try PRMT decoding in the real expert path; the synthetic 1.92x decode gain is large enough to investigate. Include scales and BF16 packing, then measure whole expert time. Tiny token tiles still favor the tested MMA path | same job |
+| Decode layer | Prioritize request concurrency and fusion. PDL is a small lead (1.06 us here) with overlapping trial ranges; test actual stage boundaries before adopting it. evict_first improves this retention case; APW adds little consistently | same job |
+| Prefill | Small-N SS results do not close large-N WGMMA/TMA pipelines. Test tiles with shared reuse and more consumers. Warm L2 remains 7.3+ TB/s at 32 MiB here, so do not assume a fixed 32 MiB capacity cliff | same job |
+| Serving | Apply these as candidate rankings for the relevant operators; no end-to-end serving gain was measured. APW/hints need validation with concurrent streams and the real live working set | same job |
 
 ## SGLang's kernels on H200 (the 1.00x we are timed against)
 
@@ -171,8 +268,29 @@ forced Hopper glue cases; sm_90a build passes. These gains do not establish H200
 Evidence: `runs/screen/proj_reduce/muse_bf16_proj.cand_reduce.json`,
 `problems/muse_bf16_proj/dev/cand_reduce_kernel_counts_local.json`, `dev/reduce_*.log`.
 The cooperative 128-thread diagnostic (`cand_reduce_fast.py`) passes locally at 1.078570x;
-producer issue serializes its warps, so fewer threads alone is not a demonstrated gain.
+this does not establish a gain from fewer threads on H200.
 Packed follow-up compares it with 160-thread producer-warp and 256-thread producer-WG schedules.
+
+Packed/hierarchical follow-up (**sm_120 local only**): `cand_reduce_packed.py` selects among
+128-thread cooperative, 160-thread producer-warp and 256-thread producer-WG schedules;
+1.091603x, 2,310 kernel/replay and 3,129 glue cases. `cand_reduce_hier.py` adds K32/K64
+partitioning, 16-CTA DSMEM partial reduction, and a last-cluster merge distributed over
+16 resident CTAs (no cross-cluster spin); 1.091486x, 2,850 kernel/replay and 3,243 glue cases.
+Both pass 9/9 tests and all 30 timed graph shapes, and profile as one router/qkv kernel.
+Both sm_90a builds have 66 specializations and zero local memory; hierarchical register
+usage rises to 64–190 versus packed 58–154, so v2 specializes the hierarchical branch
+and output dtype at compile time. The standalone lossless cuBLASLt NN weight-layout
+experiment passes locally at 1.088505x. All frozen sources and evidence paths are in NEXT_CHECKS.
+
+P8 H200 receipt `849bd4b650e54c7f` landed clean at 1.136951x (it retains earlier projections;
+it is not a new projection dispatch). Its graph-internal microbenchmarks reach 3.01 TB/s
+LDG128, 3.15 TB/s cp.async and 2.88 TB/s bulk/TMA in the tested 64 MiB/256-thread recipe;
+66-CTA, low-flight variants are much slower. This supports testing coverage and flight depth,
+not treating TMA alone as a bandwidth improvement. At N8/N16, mma.sync measured 504/545
+TFLOP/s versus WGMMA 200/363; N32 is 590/608. Keep the small-m MMA winners; this probe
+has no N64–256 measurement. L2 rereads reached 7.3–7.8 TB/s and PDL saved 1.06 us on its
+specific two-kernel probe. The older 4.25 TB/s streaming best is not superseded by a weaker
+recipe. Evidence: `problems/muse_bf16_proj/profiles/cand_probe_hw.849bd4b650e54c7f.log`.
 
 The previously screened `cand_m16` scalar row stream was 0.968x locally (m16 projections
 0.53–0.64x); repeated activation staging and scalar accumulation lost to tensor cores.
