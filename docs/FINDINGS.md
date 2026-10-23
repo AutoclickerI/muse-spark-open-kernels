@@ -164,6 +164,8 @@ Per-load speedups against SGLang from our checks. The per-shape tables are in `p
 | Kernel (job) | Overall | Decode loads | Verify loads (serving's) | Notes |
 |---|---|---|---|---|
 | MoE V9 headroom model | Receipt V9 apparent HBM bandwidth 2.14 / 3.11 / 3.08 / 3.06 / 2.17 / 1.50 TB/s for decode M1/16/32, verify M8/128/256; direct routing bytes 74.9 / 338.3 / 451.5 / 239.5 / 644.1 / 694.7 MB | M256 is the largest weighted gap; M128/M256 BF16 tensor floors are 19.85 / 39.38 us, below HBM | `runs/muse_moe_w4a16/20261023T115744Z_check_f6028a478d594b31.json`, `sim/routing.json`, P8 bandwidth probe |
+| MoE V11 (`41bcf27cfc0e4eff`) | 1.664x | 2.185 / 1.684 / 1.398 | 1.800 / 1.592 / 1.439 | H200 board best; V9 native through M128 and Humming wide at M256; profile shows M256 wide kernels at 251.2 + 140.5 us | `problems/muse_moe_w4a16/profiles/cand_v11.41bcf27cfc0e4eff.txt` |
+| MoE V17 adaptive row-tile portfolio (local) | 1.269x sm120 only | 1.680 / 1.253 / 1.076 | 1.251 / 1.118 / 1.319 | Graph/cold-L2 prepare autotunes V9/V12/V16/Humming/adaptive expert-major reuse; H200 result pending | `problems/muse_moe_w4a16/cand_v17.py`, sha256 `9b682ae6…` |
 | MoE V9 phase diagnostic / CTA imbalance | `cand_v9_phase.py` sm120 trace with H200-like local pairs: M128 median p1/p2/wait/barrier 0.771M/0.384M/0.016M/0.061M cycles, 416 norm atomics; M256 0.734M/0.362M/0.014M/0.030M, 656 atomics. M256 routing model averages 386.93 pairs, 24.39 experts, 60.53 V9 token-blocks; V9's 188 CTAs get 163/163/164 tiles (max/mean 1.01x over 200 samples). The `ceil(n_e/8)` blocks rise 36.76 -> 60.53 from M128 to M256, repeating 512/256 weight tiles; padded norm atomics are ~386/320 per pair | Static CTA tile imbalance is too small to explain H200's M256 tail; heavy-expert phase waits remain a hypothesis. V16 CTA-private partial reduction is packed into the diagnostic, passes local correctness, but adds global traffic and was not ported | `problems/muse_moe_w4a16/cand_v9_phase.py`, `problems/muse_moe_w4a16/dev/m256_imbalance.txt` |
 | MoE V9 (`f6028a478d594b31`) | 1.654x | 2.196 / 1.717 / 1.392 | 1.813 / 1.590 / 1.356 | 256-thread fused resident kernel; thread 0 prefetches instead of a producer warp; incremental tile iterator. Beats v7 and V6 at every load; hybrid (V6 to bs192, Humming3 above) `318227bc382d465c` 1.536x |
 | MoE v7 (`f95bdf5e394e474e`) | 1.535x | 2.136 / 1.614 / 1.326 | 1.739 / 1.312 / 1.255 | v4 with the first tile decoded once per phase and incremental expert/token-block/row indices instead of a binary search per tile; loses V16 to V6 |
@@ -263,44 +265,44 @@ frozen portfolio source, SHA256 `57086918cce13065f97757c2471b7b79072e2bc45e8c589
 The overall-board formula is unpublished; the 11% projection weight above is a fitted model.
 
 <!-- PROJ_GAP_BEGIN -->
-H200 gap to 1.26x, from all 13 clean completed receipts. SGLang and board
-times use scored `dd989ef2d76147e7`. Best = that SGLang time / the highest observed
+H200 gap to 1.26x, from all 14 clean completed receipts. SGLang and board
+times use scored `f3786341611f4f1f`. Best = that SGLang time / the highest observed
 paired speedup for this shape; it is a common-baseline equivalent, not a new measured
 median. Choosing the maximum across receipts is optimistic and includes timing noise;
 the new portfolio must reproduce any gain. All times below are microseconds.
 
 | m | Layer | SGLang | Board | Best equivalent | Best receipt median | Receipt | Excess over SGLang/1.26 |
 |---:|---|---:|---:|---:|---:|---|---:|
-| 1 | qkv_gate | 13.824 | 12.582 | 12.422 | 12.566 | `68e2f34b1d4744cb` | 1.451 |
-| 1 | o | 6.832 | 6.729 | 6.623 | 6.608 | `a3b29a26372c4b35` | 1.201 |
-| 1 | pooler | 20.832 | 18.646 | 18.068 | 18.761 | `9294b3237c4f4e2d` | 1.534 |
-| 1 | unpooler | 6.944 | 5.370 | 5.324 | 5.398 | `9294b3237c4f4e2d` | 0.000 |
-| 1 | router | 10.432 | 6.285 | 6.185 | 6.005 | `dd5ffc6950bc439e` | 0.000 |
-| 16 | qkv_gate | 13.952 | 13.840 | 13.403 | 13.449 | `9294b3237c4f4e2d` | 2.330 |
-| 16 | o | 6.880 | 6.847 | 6.746 | 6.872 | `9294b3237c4f4e2d` | 1.286 |
-| 16 | pooler | 20.800 | 19.541 | 19.102 | 19.689 | `9294b3237c4f4e2d` | 2.594 |
-| 16 | unpooler | 18.656 | 18.548 | 18.425 | 18.599 | `849bd4b650e54c7f` | 3.619 |
-| 16 | router | 14.976 | 6.586 | 6.515 | 6.508 | `849bd4b650e54c7f` | 0.000 |
-| 32 | qkv_gate | 13.888 | 13.933 | 13.685 | 14.079 | `a3b29a26372c4b35` | 2.663 |
-| 32 | o | 6.928 | 6.750 | 6.671 | 6.533 | `9294b3237c4f4e2d` | 1.173 |
-| 32 | pooler | 21.376 | 21.432 | 21.201 | 20.772 | `849bd4b650e54c7f` | 4.236 |
-| 32 | unpooler | 18.720 | 18.544 | 18.544 | 18.544 | `dd989ef2d76147e7` | 3.687 |
-| 32 | router | 15.232 | 7.863 | 7.839 | 7.896 | `849bd4b650e54c7f` | 0.000 |
-| 8 | qkv_gate | 13.888 | 12.560 | 12.560 | 12.560 | `dd989ef2d76147e7` | 1.538 |
-| 8 | o | 6.592 | 6.440 | 6.440 | 6.440 | `dd989ef2d76147e7` | 1.208 |
-| 8 | pooler | 20.576 | 18.326 | 18.077 | 18.864 | `9294b3237c4f4e2d` | 1.747 |
-| 8 | unpooler | 7.200 | 5.509 | 5.509 | 5.509 | `dd989ef2d76147e7` | 0.000 |
-| 8 | router | 25.952 | 6.031 | 6.031 | 6.031 | `dd989ef2d76147e7` | 0.000 |
-| 128 | qkv_gate | 16.992 | 16.347 | 16.347 | 16.347 | `dd989ef2d76147e7` | 2.862 |
-| 128 | o | 7.296 | 7.352 | 7.208 | 7.477 | `a3b29a26372c4b35` | 1.417 |
-| 128 | pooler | 25.696 | 25.464 | 24.972 | 25.236 | `122997f357d04fa2` | 4.578 |
-| 128 | unpooler | 19.744 | 19.815 | 19.607 | 19.909 | `03113fd349d347dc` | 3.937 |
-| 128 | router | 16.352 | 10.327 | 10.327 | 10.327 | `dd989ef2d76147e7` | 0.000 |
-| 256 | qkv_gate | 20.048 | 20.413 | 19.512 | 19.746 | `122997f357d04fa2` | 3.601 |
-| 256 | o | 9.168 | 9.256 | 9.046 | 9.409 | `458c6d3e931c4f63` | 1.770 |
-| 256 | pooler | 29.280 | 29.329 | 28.764 | 30.446 | `03113fd349d347dc` | 5.526 |
-| 256 | unpooler | 24.576 | 24.590 | 24.395 | 24.284 | `458c6d3e931c4f63` | 4.890 |
-| 256 | router | 17.824 | 13.434 | 13.434 | 13.434 | `dd989ef2d76147e7` | 0.000 |
+| 1 | qkv_gate | 14.208 | 12.833 | 12.768 | 12.566 | `68e2f34b1d4744cb` | 1.491 |
+| 1 | o | 6.880 | 6.888 | 6.670 | 6.608 | `a3b29a26372c4b35` | 1.209 |
+| 1 | pooler | 21.440 | 18.905 | 18.595 | 18.761 | `9294b3237c4f4e2d` | 1.579 |
+| 1 | unpooler | 7.104 | 5.674 | 5.447 | 5.398 | `9294b3237c4f4e2d` | 0.000 |
+| 1 | router | 10.304 | 6.356 | 6.109 | 6.005 | `dd5ffc6950bc439e` | 0.000 |
+| 16 | qkv_gate | 14.384 | 14.210 | 13.818 | 13.449 | `9294b3237c4f4e2d` | 2.402 |
+| 16 | o | 6.784 | 6.784 | 6.652 | 6.872 | `9294b3237c4f4e2d` | 1.268 |
+| 16 | pooler | 21.824 | 19.833 | 19.833 | 19.833 | `f3786341611f4f1f` | 2.512 |
+| 16 | unpooler | 18.640 | 18.680 | 18.410 | 18.599 | `849bd4b650e54c7f` | 3.616 |
+| 16 | router | 14.976 | 7.043 | 6.515 | 6.508 | `849bd4b650e54c7f` | 0.000 |
+| 32 | qkv_gate | 14.688 | 14.682 | 14.473 | 14.079 | `a3b29a26372c4b35` | 2.816 |
+| 32 | o | 6.912 | 6.823 | 6.656 | 6.533 | `9294b3237c4f4e2d` | 1.170 |
+| 32 | pooler | 22.224 | 22.142 | 22.042 | 20.772 | `849bd4b650e54c7f` | 4.404 |
+| 32 | unpooler | 19.024 | 19.033 | 18.845 | 18.544 | `dd989ef2d76147e7` | 3.747 |
+| 32 | router | 15.520 | 8.207 | 7.987 | 7.896 | `849bd4b650e54c7f` | 0.000 |
+| 8 | qkv_gate | 14.208 | 12.528 | 12.528 | 12.528 | `f3786341611f4f1f` | 1.251 |
+| 8 | o | 6.688 | 6.624 | 6.534 | 6.440 | `dd989ef2d76147e7` | 1.226 |
+| 8 | pooler | 21.824 | 18.850 | 18.850 | 18.850 | `f3786341611f4f1f` | 1.529 |
+| 8 | unpooler | 7.008 | 5.439 | 5.362 | 5.509 | `dd989ef2d76147e7` | 0.000 |
+| 8 | router | 26.240 | 6.399 | 6.098 | 6.031 | `dd989ef2d76147e7` | 0.000 |
+| 128 | qkv_gate | 17.152 | 17.001 | 16.501 | 16.347 | `dd989ef2d76147e7` | 2.888 |
+| 128 | o | 7.296 | 7.310 | 7.208 | 7.477 | `a3b29a26372c4b35` | 1.417 |
+| 128 | pooler | 25.264 | 24.336 | 24.336 | 24.336 | `f3786341611f4f1f` | 4.286 |
+| 128 | unpooler | 19.952 | 19.232 | 19.232 | 19.232 | `f3786341611f4f1f` | 3.397 |
+| 128 | router | 16.592 | 10.133 | 10.133 | 10.133 | `f3786341611f4f1f` | 0.000 |
+| 256 | qkv_gate | 19.584 | 19.745 | 19.061 | 19.746 | `122997f357d04fa2` | 3.518 |
+| 256 | o | 9.824 | 9.701 | 9.693 | 9.409 | `458c6d3e931c4f63` | 1.897 |
+| 256 | pooler | 30.592 | 29.714 | 29.714 | 29.714 | `f3786341611f4f1f` | 5.434 |
+| 256 | unpooler | 24.512 | 24.247 | 24.247 | 24.247 | `f3786341611f4f1f` | 4.793 |
+| 256 | router | 17.792 | 11.792 | 11.792 | 11.792 | `f3786341611f4f1f` | 0.000 |
 
 The last column is a sufficient uniform-shape target, not the score formula. The
 official projection score is the geometric mean of six *load* ratios; each load sums
@@ -309,21 +311,24 @@ remains unpublished; the earlier 11% projection weight is a model, not a rule.
 
 | m/load | SGLang sum | Board sum | Best equivalent sum | Best load ratio | Budget at 1.26x | Saving to that budget |
 |---|---:|---:|---:|---:|---:|---:|
-| 1 | 58.864 | 49.612 | 48.622 | 1.211x | 46.717 | 1.905 |
-| 16 | 75.264 | 65.362 | 64.191 | 1.172x | 59.733 | 4.458 |
-| 32 | 76.144 | 68.522 | 67.939 | 1.121x | 60.432 | 7.508 |
-| 8 | 74.208 | 48.866 | 48.617 | 1.526x | 58.895 | 0.000 |
-| 128 | 86.080 | 79.305 | 78.461 | 1.097x | 68.317 | 10.143 |
-| 256 | 100.896 | 97.022 | 95.152 | 1.060x | 80.076 | 15.076 |
+| 1 | 59.936 | 50.656 | 49.588 | 1.209x | 47.568 | 2.020 |
+| 16 | 76.608 | 66.550 | 65.227 | 1.174x | 60.800 | 4.427 |
+| 32 | 78.368 | 70.886 | 70.003 | 1.119x | 62.197 | 7.806 |
+| 8 | 75.968 | 49.840 | 49.371 | 1.539x | 60.292 | 0.000 |
+| 128 | 86.256 | 78.012 | 77.411 | 1.114x | 68.457 | 8.954 |
+| 256 | 102.304 | 95.199 | 94.507 | 1.083x | 81.194 | 13.313 |
 
-The optimistic stitched score is **1.188960x**, versus the board's
-1.172813x. If the other four loads hold, m128 and m256 each need
-another **1.190x** speedup to reach 1.26x overall.
+The optimistic stitched score is **1.197544x**, versus the board's
+1.181998x. If the other four loads hold, m128 and m256 each need
+another **1.165x** speedup to reach 1.26x overall.
+Starting from the actual board rather than optimistic stitching, that factor is **1.211x**.
 The largest uniform-budget deficits are pooler/unpooler at m16/32/128/256, then qkv and
 other BF16 layers. Router fusion alone cannot close the complete gap; tune all 30
 shapes, especially memory-heavy BF16 projections. Receipt/source pairs in `runs/`
 own these measurements; profiles diagnose kernels but do not replace paired medians.
 <!-- PROJ_GAP_END -->
+
+
 
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |
 |---|---|---|---|
@@ -342,8 +347,9 @@ own these measurements; profiles diagnose kernels but do not replace paired medi
 | Portfolio BF16 choices | qkv m128/256: Lt ordinal3/4; pooler 0/0; o m128 0. Unpooler and o m256 retain cuBLAS | Large BF16 projections remain near parity. Qkv m256 selected a prepare-time winner but scored **0.982x**; synthetic tuning can choose a regression | Same receipt and prepare log |
 | New fused kernels | Router stages hi+lo together for each real-K tile into the same FP32 accumulators. Router **5 -> 1 kernels**, qkv **2 -> 1** with an in-kernel last-CTA/DSMEM merge, at both m128/256 | Kernel count is verified locally; native H200 speed of this new body remains unverified. Hierarchical K32/K64 merges distribute the last cluster's work across 16 resident CTAs | `dev/cand_reduce*_kernel_counts_local.json`; standalone frozen hashes/screens in NEXT_CHECKS |
 | All-shape portfolio | `cand_portfolio_all.py`: **1.117166x sm_120**, 9/9 tests, 30/30 fresh-input graph shapes; **122.66 s cold prepare**, 65.53 s compiling/repacking. **9,912** forced Hopper cases; sm_90a build passes | Tunes all 30 shapes, preserves measured H200 winners, and compares NN/TN layouts, every returned cuBLASLt heuristic, checked explicit split-K, direct/last-CTA/DSMEM/Stream-K, 128/160/256-thread fused paths, skinny/GEMV/TC/scalar-m16/DSV3 kernels | `runs/screen/proj_portfolio_all/muse_bf16_proj.cand_portfolio_all.json`; `dev/portfolio_all_{glue,sm90a}.log` |
-| Full superset | `cand_portfolio_max.py`: **1.120767x sm_120**, 9/9 tests, 30/30 graph shapes; **71.77 s cold prepare** (38.92 s compiling/repacking), independently checked with a new extension directory and ccache disabled. Adds 22 shared-X tile and 32 multicast WGMMA kernels, plus native BF16 DeepGEMM | These are distinct methods, not a claim that 1.1208x beats 1.1172x on H200. Both files keep the incumbents eligible. All 189 skinny/paired/legacy/tile/wide specializations compile for sm_90a; **12,265** forced Hopper cases pass | `runs/screen/proj_portfolio_max/muse_bf16_proj.cand_portfolio_max.json`; `dev/portfolio_max_{glue,sm90a}.log` |
-| Tuning protocol and resources | 128 MB L2 flush, CUDA graph replay, order-swapped paired ratios, best-per-family and global finalists, three fresh synthetic input sets including probes/outliers; 512 MB Lt workspace, 32 MB legacy workspace, weight transposes, router hi/lo/paired layouts, per-shape scratch | No precision is reduced, no benchmark-input result is cached, no math moves outside timed calls. A final compact dispatch log retains all 30 choices in the judge's 16K log tail. CUDA/Lt algorithm configurations are checked through the [NVIDIA cuBLASLt API](https://docs.nvidia.com/cuda/cublas/index.html#cublasltmatmulalgocheck) | `cand_portfolio_{all,max}.py`, builders/ABI in `dev/` |
+| Full superset | `cand_portfolio_max.py`: **1.120767x sm_120**, 9/9 tests, 30/30 graph shapes; **71.77 s prepare with a cold extension build** (38.92 s compiling/repacking), independently checked with a new extension directory and ccache disabled; image-library JIT caches may already be warm. Adds 22 shared-X tile and 32 multicast WGMMA kernels, plus the default DeepGEMM SDK call (cuBLAS dispatch) | These are distinct methods, not a claim that 1.1208x beats 1.1172x on H200. Both files keep the incumbents eligible. All 189 skinny/paired/legacy/tile/wide specializations compile for sm_90a; **12,265** forced Hopper cases and **72** native TMA/MMA wide-kernel fresh-input graph cases pass | `runs/screen/proj_portfolio_max/muse_bf16_proj.cand_portfolio_max.json`; `dev/portfolio_max_{glue,sm90a}.log` |
+| Native DeepGEMM superset | `cand_portfolio_native.py`: **1.111248x sm_120**, 9/9 tests, 30/30 graph shapes, **63.91 s prepare with the extension cache warm**; **12,281** forced Hopper cases; sm_90a build passes. CUDA bodies match max exactly | Explicitly calls `use_deterministic_algorithms(True)` to request native BF16 DeepGEMM, retains explicit SDK cuBLASLt as a separate variant, and confirms `deep_gemm::sm120_bf16_gemm_impl` in GPU profiling. The stock projection dispatcher was checked to use cuBLAS/its own kernels, so that documented SDK setting does not change the baseline | `runs/screen/proj_portfolio_native/`; `dev/portfolio_native_{glue,sm90a}.log`; `dev/portfolio_native_dg_kernels_local.json` |
+| Tuning protocol and resources | 128 MB L2 flush, CUDA graph replay, order-swapped paired ratios, best-per-family and global finalists, three fresh synthetic input sets including probes/outliers; 512 MB Lt workspace, 32 MB legacy workspace, weight transposes, router hi/lo/paired layouts, per-shape scratch | No precision is reduced, no benchmark-input result is cached, no math moves outside timed calls. A final compact dispatch log retains all 30 choices in the judge's 16K log tail. CUDA/Lt algorithm configurations are checked through the [NVIDIA cuBLASLt API](https://docs.nvidia.com/cuda/cublas/index.html#cublasltmatmulalgocheck) | `cand_portfolio_{all,max,native}.py`, builders/ABI in `dev/` |
 | Small-m and diagnostics | The eight fusion/layout diagnostic sources and 13 inherited sources remain independently eligible; their hashes/queue states are in NEXT_CHECKS. Existing wg/wg2 never set `wg_ok`; the new superset directly enables the multicast kernels | This round has no diagnostic hold. Do not claim WGMMA measurements from the queued wg/wg2 bodies; use the superset's explicit active branch. Reuse a completed receipt rather than sending duplicate GPU work | `dev/NEXT_CHECKS.md`; `cand_wg{,2}.py` |
 | P8 hardware probe | `849bd4b650e54c7f`, clean **1.136951x**, uses an earlier projection dispatch. The [P8 section](#p8-hardware-probes-on-h200-2026-10-24-kst) owns its microbenchmark values | Retain small-m MMA winners. Test CTA coverage and flight depth; TMA is useful where a tile is reused. The probe has no N64–256 tensor measurement, and its cache/PDL results are not projection wins | Same receipt and labelled profile log |
 
@@ -391,7 +397,7 @@ Failures whose cause was not obvious, so they are not repeated.
 | Symptom | Cause | Avoid / fix | Cost | Receipt |
 |---|---|---|---|---|
 | Four decode checks fail on the judge with `AttributeError: 'tuple' object has no attribute 'device'` | The sm_90 branch received attention v3's `(partials, split_count)` tuple; only the Hopper branch reached that glue, so local tests passed | Force each Hopper branch's Python glue locally with a portable stand-in kernel | 4 checks | `2f3960c275774a20`, `69a655d3b2364fc4`, `a5ab4a2011f44321`, `b2a8999311034eb3` |
-| Queued proj wg/wg2 can score without running WGMMA | `kernel_fn` requires `state["wg_ok"]`, but their prepare never sets it | New portfolio explicitly tunes and stores the selected branch; force Hopper preparation and dispatch locally | Those queued runs cannot measure WGMMA performance | `cand_wg.py`, `cand_wg2.py` |
+| Queued proj wg/wg2 can score without running WGMMA | `kernel_fn` requires `state["wg_ok"]`, but their prepare never sets it | All/max/native portfolios explicitly tune and store selected branches; max/native directly activate multicast WGMMA | Those queued runs cannot measure WGMMA performance | `cand_wg.py`, `cand_wg2.py` |
 | TMA K128 BF16 descriptor rejected locally | A 256-byte inner box exceeds SWIZZLE_128B | Group two legal K64 transfers under one pipeline barrier; keep each WGMMA descriptor on a K64 swizzle atom | Local compile/test iteration | `cand_portfolio.py`; [CUDA tensor map documentation](https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__TENSOR__MEMORY.html) |
 | Proj tuner cuBLAS graph replays fault after trial graphs are destroyed | Reproduced without custom kernels; PyTorch clears stream-keyed cuBLAS workspaces when any graph captured on that stream resets | Give each tuning graph its own native CUDA stream; reset its graph before destroying its stream. Warmup alone and retaining outputs do not fix it | Local test iteration; no judge run | `problems/muse_bf16_proj/dev/graph_debug.py`, `dev/graph_debug.log`; [PyTorch issue #193402](https://github.com/pytorch/pytorch/issues/193402) |
 | Prefill v12 large-shape BN256 faults on H200 after small loads pass | Illegal memory access surfaces at `combine_tiled_kernel`; asynchronous producer source is unresolved | Treat the old384-thread BN256 implementation as suspect, not a negative performance result. New canonical BN256 is a separate128-thread reader with fresh local graph/reference coverage and no SM90 spills | 1 check | `53b79ddde4a048d5`, `problems/muse_prefill_layer/profiles/cand_v12.53b79ddde4a048d5.log` |
@@ -400,3 +406,5 @@ Failures whose cause was not obvious, so they are not repeated.
 | Local ncu fails (`ERR_NVGPUCTRPERM`) | `RmProfilingAdminOnly=1`, and there is no sudo | Use nsys, judge profiles and SASS inspection | — | — |
 | An in-prepare tuner raised on its own agreement check and failed the H200 run (`cand_fa3_tune`, check `dd927c6c46264afe`) | It required each FA3 setting within 0.5% of FA3's default; num_splits=1 differed by 0.86%, while the judge allows 3-15% against FP32 (TASK.md) | Tuners reject a variant (log it) rather than raise, and accept by the judge's tolerance, not agreement with one incumbent | one judge slot and the sweep's data | `problems/muse_attention_decode/cand_attn_portfolio.py` |
 | Runs orphaned in the judge queue after their waiting process died | The judge keeps the job; only the waiting process was lost | `tools/okc_run.py collect <job>` (receipts start in `runs/pending/`) | hours of re-waiting | `runs/pending/` |
+| Proj broad portfolio nvcc crash | `std::vector` path triggered nvcc internal assertion in `stl_construct.h`, `find_allocated_name_reference` | Replaced the host-only heuristic buffers with explicitly owned C buffers; both architectures build without dropping variants | Local admission, no judge run | `dev/all_lt.cuh`; original compiler module `muse_proj_lean_bcfdb871d5_*` |
+| Proj broad serial cold prepare | sm_120 compilation/repack 278.96 s + tuning 69.93 s = 348.89 s, exceeding 300 s | 16-way nvcc and ptxas optimization reduced cold all-shape prepare to 122.66 s; full superset 71.77 s with a cold extension build | Same kernels and searches retained; H200 total prepare still unmeasured | `dev/portfolio_all_serial_cold.log`; new all/max screens |
