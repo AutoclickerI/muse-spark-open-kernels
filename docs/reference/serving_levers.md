@@ -197,7 +197,7 @@ are reconstructed recursively and every live anchor is checked against the
 same request's final output, avoiding counterfactual logits after a mismatch.
 The recorder now also saves the actual GPU position for future probes.
 
-| c | Uncensored chain tokens/step | Best8-node tree, observed | Probability-model chain/tree | Gain |
+| c | Uncensored chain tokens/step | Max-mass raw-selector tree, observed | Probability-model chain/tree | Gain |
 |---|---:|---:|---:|---:|
 |1|3.030733|3.030733|7.86121 /7.86121|0%|
 |4|2.964224|2.964224|7.86121 /7.86121|0%|
@@ -211,8 +211,21 @@ to2.737589/2.718984 (c1/c4); at4 it falls to2.231678/2.235430. Artificially
 flattening probabilities reports an11.38% model gain at4 but loses24.6-26.4%
 of actual coverage. This is not evidence for a real-checkpoint acceptance
 ceiling; the real Muse drafter's uncertainty/repetition remains unmeasured.
-The available fixture misses the+5% gate, so no tree is shipped; work moves
-to the unowned collective extension below.
+A stronger sensitivity screen fits token-transition probabilities on other
+conversations (two parity folds; no request leaks into its training fold),
+then chooses the same exact maximum-mass eight-node tree. All recorded
+candidate sets are checked to equal the output vocabulary before this
+estimator runs. Dirichlet smoothing0/.1/.5/1/2/4/8/16 gives a best observed
+c1 estimate **3.030733->3.167849 (+4.524%)**, c4
+**2.964224->3.077323 (+3.815%)**, and one common setting's best overall
+**2.977273->3.094620 (+3.941%)**. The per-rung maxima use different smoothing
+choices and are not added together. This is an offline estimate on held-out
+conversations, not a calibrated deployable sampler or a distribution-free
+upper bound. Sampling uncertainty and real-model uncertainty remain.
+Neither the raw drafter probability tree nor this empirical screen clears
++5%, so no tree is shipped; work moves to the unowned collective extension
+below. The original model weights and draft proposals are unchanged.
+
 
 A tree implementation needs per-node ancestor visibility, depth-based RoPE
 positions and a graph-capturable eight-node custom verify mask, including SWA.
@@ -275,11 +288,25 @@ then logged8 exceptions. The serving adapter now checks its existing
 `dense_router_supported` predicate before construction. This fixes the call
 site without modifying the owned kernel or weakening the traceback gate.
 `q16-patch-tp1` retained174 exact responses and zero logprob drift but is
-rejected for those tracebacks; a clean rerun is required. Earlier `q14` is
+rejected for those tracebacks. Clean `q17-patch-tp1` passes174/174 exact,
+first divergence220 and token agreement1; teacher forcing has mean/max
+prompt and generated logprob drift0.0/0.0. TTFT p50 ratios against fresh
+`q16-stock-tp1` are0.98/1.98/0.23/0.21 at c1/4/16/32, with all74 prefill
+shapes enabled and all target/draft graphs replayed. Large local timing
+variation is visible even at TP1 where this collective is inactive; no
+H200 speed claim follows from those ratios. Earlier `q14` is
 rejected for live-source mutation. `q15` is exact but exceeded the local TTFT
 gate under this lane's concurrent GPU protocol benchmark; it is not counted
 as a passing performance screen. Final comparisons use fresh stock runs and
-no concurrent GPU test from this lane.
+no concurrent GPU test from this lane. Forced TP2 `q16` passes174/174 exact
+and has zero teacher-forced prompt/generated drift. TTFT ratios are
+0.61/1.26/1.66/**2.06**; c32 misses the2x gate. That failure is retained,
+not turned into a pass by the compare script's zero exit code (TTFT is a
+separate field there). Its first-turn median is20.45s versus stock24.91s,
+while later turns regress; aggregate medians and KV scheduling are unstable
+on the shared box. A native-sm_120 control is run to distinguish portable
+forcing from inherited scheduling/contended hardware. Hopper throughput and
+interactivity are still unverified.
 
 The two-shot extension's real-kernel screen uses two logical ranks on
 GPU0 with independent streams and32 counters, avoiding GPU1. Both worlds share
@@ -670,7 +697,7 @@ routing-table overhead while leaving all verify rungs unchanged. Local architect
 contention prevent extrapolation, but this is a regression risk, not a win.
 Tiny expert widths remain Marlin and cannot validate this full-shape TTFT.
 The ready single-file check is
-`problems/muse_moe_w4a16/cand_serving_prefill_diag.py` (95,107 bytes).
+`problems/muse_moe_w4a16/cand_serving_prefill_diag.py` (95,222 bytes).
 Its scored kernel, both scored expert implementations and both preparation
 functions are AST-identical to `cand_v9_phase` (`ac9dd461f0294e34`); only
 prepare diagnostics change, preserving its fixed dispatch. The embedded serving

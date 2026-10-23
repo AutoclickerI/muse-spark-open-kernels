@@ -155,16 +155,17 @@ one 2,608-token prompt per request, 220 output tokens, and GPU0 only. Nsight Sys
 injected into the server child (not the client wrapper). The harness completed all five
 requests (one at c=1 and four at c=4) with 220 tokens and no request errors. The probe put
 nonblocking CUDA events around each DFlash forward and NVTX/host spans around the scheduler,
-accept, draft-preparation and output functions. `GPU busy` is the device-event interval;
-`gap` is `scheduler.run_batch` wall time minus that interval, so it is an upper bound on
-GPU idle (the host may be doing useful work during part of it). Nested rows are attribution
-rows and must not be added to the step wall time.
+accept, draft-preparation and output functions. These historical device-event intervals
+include launch gaps; they are not GPU-busy measurements. Subtracting that interval from
+`scheduler.run_batch` does not establish 2.1 ms of physical GPU idle or an H200 saving.
+The corrected kernel/copy activity measurement follows below. Nested attribution rows
+must not be added to the step wall time.
 
 | Per decode/verify scheduler step | TP1 c=1 (ms) | TP1 c=4 (ms) | TP2 c=1 / c=4 |
 |---|---:|---:|---:|
 | Scheduler step wall (`run_batch`) | 12.06 | 11.40 | unmeasured / unmeasured |
-| GPU busy (CUDA event) | 9.91 | 9.33 | unmeasured / unmeasured |
-| Host/device gap (idle upper bound) | 2.15 | 2.07 | unmeasured / unmeasured |
+| GPU event interval (includes launch gaps) | 9.91 | 9.33 | unmeasured / unmeasured |
+| Outer-span minus event interval | 2.15 | 2.07 | unmeasured / unmeasured |
 | DFlash forward host span (launches + bookkeeping) | 9.90 | 9.32 | unmeasured / unmeasured |
 | Named CPU batch build (`get_next_batch_to_run` + update) | 1.64 | 1.93 | unmeasured / unmeasured |
 | Verify accept bookkeeping (`_accept_block`) | 0.31 | 0.30 | unmeasured / unmeasured |
@@ -185,25 +186,94 @@ and a `CUDA_VISIBLE_DEVICES=0,0` TP2 attempt failed at CUDA device enumeration b
 
 The runner metadata reports a post-run source-tree hash change while profiling (the workload itself completed); the retained trace and summary are still usable, but this is not a clean provenance run. Evidence: `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1/measurement_summary.json`, `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1/host_trace.jsonl`, `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1.nsys-rep`, and `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1.sqlite`.
 
-### Serving idle ranking
+### Host overhead: implemented, H200 gain unverified (2026-10-24)
 
-1. **CPU-side batch build and overlap scheduling — about 2.1 ms/step exposed at both TP1 c=1 and c=4.**
-   The named batch-update functions consume about 1.6-1.9 ms, and the complete scheduler
-   envelope leaves a 2.07-2.15 ms device gap. Build the next batch's CPU mirrors while the
-   current graph runs, keep allocator/radix decisions out of the replay boundary, and
-   publish a ready batch rather than waiting in `run_batch`.
-2. **DFlash accept and output processing — about 0.6-0.8 ms/step in the regular path.**
-   `_accept_block` is 0.30-0.31 ms and output processing is 0.25 ms at c=1 / 0.50 ms at
-   c=4 (with request-finalization outliers). Move fixed bookkeeping to preallocated buffers
-   and defer response assembly until the next scheduling boundary.
-3. **Host-device synchronizations — 54.8 us/outer batch on average, with millisecond tails.**
-   Remove per-step stream waits and replace host-visible queries with graph-resident flags or
-   one batched completion check. This is a smaller mean lever than batch overlap but can
-   explain the observed long idle bubbles.
-4. **Graph capture of sampling/verify — already applied for this path.** Sampling is folded
-   into the DFLASH graph and target verify replays are present; the remaining local gap is
-   scheduler/host work, not an unpriced sampling kernel. H200/TP2 graph behavior remains
-   unmeasured.
+**DFLASH spec-v2 overlap is already enabled by the judge flags.** `_handle_dflash` in
+`arg_groups/speculative_hook.py` does not disable it; the PP/diffusion/embedding overrides
+do not apply. The normal FA3 backend declares `needs_cpu_seq_lens=False`; local FlashInfer
+requires that mirror. The local length relay and FlashInfer planner's blocking metadata
+conversions therefore cannot be booked as a recoverable H200 budget.
+
+The patch now prepares the next batch and settles the previous result after target verify
+is enqueued, using a separate scheduler/spec-input snapshot and the existing shared-read
+WAR fence. It does not mutate the batch in flight. Decode target-hidden materialization
+uses exact-shape CUDA graphs for every batch size 1..32. Inputs are refreshed each replay;
+the fused helper's captured external workspaces stay alive when a larger prefill replaces
+its eager workspace. `FutureMap` issues its optional D2H at publish and waits on that leaf
+copy's event at consumption. FA3's GPU-only path still performs no CPU-length copy.
+
+GPU0/TP1 sm_120, margin fixture, 2,608-token initial prompts, 30 requests x220 tokens:
+the `host-step` experiment switches scheduling/KV capture every eight decode steps in one
+server. Both modes retain early length copying, isolating those two mechanisms without
+changing the relay mid-step. Node-level Nsight records kernels, copies and memsets;
+GPU busy is their interval union. Step wall is build-to-next-build cadence, including
+output work; moving preparation inside `run_batch` makes that function alone incomparable.
+Only steady full batches inside the capture window, away from switch boundaries, are used.
+Columns are separate per-step medians and need not add exactly.
+
+| Metric, ms | c1 before | c1 after | c4 before | c4 after |
+|---|---:|---:|---:|---:|
+| Steps measured | 49 | 47 | 45 | 54 |
+| Scheduler step wall | 54.485 | 54.009 | 50.800 | 51.067 |
+| GPU busy (kernel/copy union) | 1.870 | 1.874 | 1.975 | 1.980 |
+| Gap (wall minus busy) | 52.618 | 52.136 | 48.825 | 49.085 |
+| `run_batch` host span | 53.650 | 53.794 | 49.942 | 50.890 |
+| CPU batch build | 0.348 | 0.351 | 0.410 | 0.391 |
+| Target-hidden -> draft-KV host span | 0.593 | 0.077 | 0.605 | 0.080 |
+| Accept host bookkeeping | 0.119 | 0.103 | 0.121 | 0.116 |
+| Output processing | 0.154 | 0.165 | 0.198 | 0.206 |
+
+**Verified saving: about 0.52 ms of KV-materialization host work per step. No demonstrated
+native c4 end-to-end win.** Native FlashInfer planning, profiler overhead and other GPU0
+contexts dominate this trace; its gap is not all host waiting and is not an H200 estimate.
+Long separate-server/ABBA timings varied substantially with contention and are not credited
+as speedups. The old 2.1-ms idle ranking is withdrawn. Inference: FA3's existing overlap may
+already hide much of the removed CPU work; incremental H200 credit remains zero pending a run.
+Accept bookkeeping and local FlashInfer planner synchronizations remain; sampling/verify
+were already graph-folded.
+
+Local verification on the frozen `harness/trees/host-final` build:
+
+- `host-final-allloads`: **174/174 exact**, c1/4/16/32, every response exactly220 tokens,
+  first divergence220, all74 prefill sizes retained and verify replay observed; comparison
+  to `q02-stock-tp1-allloads`. `host-final-random` also completes30x220.
+- `host-stock-margin-tf2` / `host-final-margin-tf2`: identical220 generated IDs and
+  prompt/continuation logprob max/mean drift **0/0** (2,827 prompt-side,220 continuation values).
+- Fresh TP1 stock teacher-forcing A/B/C against the common `g15` continuations, compared
+  with `host-final-tf`:90 comparisons pass the standard median-within-stock-p90 gate.
+  Request-mean drift patch p50/p90 **0.188183/0.198271**, stock **0.185864/0.197916**;
+  request-max patch **0.681901/0.813093**, stock **0.647934/0.807272**. Individual maximum
+  **1.232753** exceeds stock **0.960120**; the tails are not equal. Random generated-token
+  agreement p10 is0 for stock and patch, so that diagnostic alone is uninformative.
+- `host-dual-{0-stock,1-patch,2-patch,3-stock}`: both pristine stock and patch resident
+  on GPU0, alternating identical cold-cache workloads,120x220 exact. Worst paired TTFT
+  p50 ratios c1/c4 **1.55/1.12**, p90 **1.18/0.61**, all within2x. A separate-server c1
+  comparison reached7.9x under changing contention; the controlled test resolves attribution.
+- `host-final-gpuonly`: Triton attention forces `needs_cpu_seq_lens=False`,5x220 complete,
+  exercising the judge-like Python relay branch. This is not FA3 arithmetic coverage.
+- Regression tests:96 fresh-input graph replays across all32 batch sizes, exact FP8 cache
+  bytes and untouched rows even after workspace growth;100 reordered length-relay cycles;
+  GPU-only relay and3 CPU plan/lifecycle tests pass.
+
+Rejected experiments exposed and fixed two lifetime bugs: copied draft inputs must start
+with fresh preparation scratch (otherwise its device/capacity check doubles buffers), and
+graphs must retain the fused helper's external workspaces across larger prefills. Initial
+snapshots outside the container mounts imported the image tree and are excluded. A stock
+teacher-forcing startup rejected memory fraction0.3 under contention; the accepted retry
+uses0.6 and a100K-token cap. No GPU1, judge run or commit was used.
+
+Reproduction tools: `prof/sitecustomize.py`, `run_trace.py`, `ab_serving.py --step-ab`,
+`summarize_host.py`, `dual_ttft.py`, and `run_forced.py`. Evidence under
+`/data2/jihoon/muse_kernel/harness/results/`: `host-step-trace.nsys-rep` / `.sqlite`,
+`host-step/host_trace.jsonl`, accepted labels above, and `host-evidence/` (summaries,
+drift/comparisons, source manifest, `host-overhead.diff`, `worker-hunks.diff`). Own source
+patch:13,970 bytes,5 files, longest added line96. The five worker hunks initialize graph
+state, capture KV graphs, add the verify-launched callback argument, invoke it after target
+enqueue, and dispatch decode KV materialization through the graph.
+
+**Unverified:** actual H200 TP8/EP8 FA3 execution, captured drafter-FC collectives, post-capture
+KV/memory capacity, held-out agreement and TTFT at all judge loads. GPU0 timings do not prove
+an incremental serving speedup; the CPU reduction alone must not be subtracted from H200 steps.
 
 ## Boards (snapshot 2026-10-23T18:28:17Z)
 
@@ -344,6 +414,22 @@ A router-aware direct MoE probe on sm_120 isolates the missing mechanism. At M=2
 
 In-layer overlap (`cand_r3_merge_ovl.py`, local only, parked): the only independent work is row partitions inside qkv and the unpooler; boundary 1's dense and routed paths share norm statistics; KV write -> attention, pooler/router -> experts -> unpooler and router -> attention output are ordered. Two-stream overlap was 9.5% slower at decode 32 (505.9 vs 461.8 us, sm_120) and failed the correctness guard at verify 16/32 (implementation suspect: a race), so it was not sent.
 The profile also exposes small separate residual, router, norm and gate kernels. Existing structural fusion candidates reduce those launches but regressed complete sm_120 layer timings, so the new diagnostic keeps the v7 glue as the control while selecting the expert family first. Any Hopper result must recheck the Python glue with a portable stand-in and compare the full-layer receipt, not infer a win from the isolated MoE ratio.
+
+#### Glue fusion diagnostic (G3)
+
+`cand_r3_v9_glue.py` ports the epilogue fusion into the V9 board candidate: a PDL O-projection
+stats kernel publishes the two residual RMS coefficients, then a PDL pooler/router kernel applies
+the first residual/norm and writes the pooler/router partials directly for the existing PDL
+route/top-8/softmax/pre-expert-norm kernel. The tuner gates the fused proxy against an FP32 glue
+reference and an FP32 routing/top-8 reference, rejects every failure, and selects by CUDA-graph
+replay time. On sm_120 the fused prefix was correct but slower at every resident size:
+T=1/8/16/32 regular→fused `81.9→106`, `79.9→102`, `81.9→102`, and `81.9→123` us;
+T=128/256 were rejected for shared-memory requirements. Thus local selected savings are
+0 us; H200 remains the only unverified selector. The receipt profile bounds the critical-path
+opportunity at roughly 29.5 us for decode32 sliding (15.6 us glue + 13.9 us positive gap),
+35.9 us for verify16 sliding (16.3 + 19.6), and 49.6 us for verify32 full (25.8 + 23.8).
+These are upper-bound accounting opportunities, not predicted gains; full-shape PDL overlap makes
+the decode32-full and verify16-full residual gaps negative.
 
 #### Larger-load stage floors and non-MoE gap (G3)
 
