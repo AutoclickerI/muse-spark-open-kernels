@@ -33,3 +33,9 @@ Build Hopper-specific WGMMA/TMA as `sm_90a`; architecture-specific code is not p
 ## Unresolved hardware facts
 
 No primary source checked here establishes H200 bank mapping, exact TLB reach, H200 L2 near/far latency, Hopper PDL savings in Muse shapes, cluster launch latency, or H200 LOP3/PRMT throughput. Treat those as hypotheses until a judge receipt or primary measurement supplies evidence.
+
+## Graph and binary-source references
+
+CUDA Graphs move launch setup into graph instantiation and reduce host submission work on repeated replay: [CUDA Graph programming guide](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html). This does not remove GPU-side tails or make a dependent result available before its producer; use the PDL rules above and judge-adjusted receipts in [FINDINGS](../FINDINGS.md).
+
+CuAssembler is an unofficial SASS assembler/patcher ([repository](https://github.com/cloudcores/CuAssembler)). Its broad-generation README claims do not establish sm_90a encoding support; use `cuobjdump`/`nvdisasm` for inspection and treat patched cubins as research artifacts until a reproducible H200 correctness and timing check exists.

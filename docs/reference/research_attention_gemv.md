@@ -31,3 +31,9 @@ FlashDecoding++ supplies a useful shape rule—pad flat GEMM to 8 rather than 64
 Precision, full-key attention, CUDA-graph capture, and correctness limits are hard constraints in [CONSTRAINTS](../CONSTRAINTS.md) and the problem `TASK.md` files. Host-derived lengths or allocations do not belong in `kernel_fn`; fixed buffers and shape/config branches are graph-safe.
 
 POD-Attention's prefill/decode overlap and tree-verification papers are outside a single fixed attention call; their sparse or gated key selection is also disallowed. Use only legal mask/scheduling ideas: [POD-Attention](https://github.com/microsoft/vattention/tree/main/pod_attn), [SpecInfer](https://arxiv.org/abs/2305.09781), [sparse verification](https://arxiv.org/abs/2512.21911), [FlashPrefill V2](https://arxiv.org/abs/2608.19758).
+
+## Additional Hopper attention donor
+
+FlashMLA's repository at commit `0f11e178da1f67becb087a324b400854931ec3` ([source](https://github.com/deepseek-ai/FlashMLA/tree/0f11e178da1f67becb087a324b400854931ec3)) is an MLA-specific fused norm/RoPE/attention/cast design. The 2026-09-30 release removed Hopper and earlier-model support; the older Hopper path targets DeepSeek MLA layouts, not Muse dense GQA. Its fusion order is a structural reference only, not a direct Muse/Hopper kernel.
+
+The Hopper FA3 source tree ([repository](https://github.com/Dao-AILab/flash-attention/tree/main/hopper)) is the implementation reference for the incumbent FP8 paged path. It is useful for checking GQA packing, FP8 query/cache conversion, split heuristics, and Hopper staging before changing the q8 page-1 loader; current candidate results remain in [FINDINGS](../FINDINGS.md).
