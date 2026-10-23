@@ -1,0 +1,312 @@
+{
+ "board": "muse_attention_decode",
+ "call_id": "nyc3:kc-dd927c6c46264afe",
+ "cluster": "nyc3",
+ "content_hash": "6584c1ad0b9881714b5e8da9ee79d5a8aa55a3a10a80972511275bea3154886f",
+ "created_at": 1792778421.997566,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792781790.8935466,
+ "id": "dd927c6c46264afe",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/profiles/cand_fa3_tune.dd927c6c46264afe.log"
+ },
+ "payload_ref": "muse_attention_decode/6584c1ad0b9881714b5e8da9ee79d5a8aa55a3a10a80972511275bea3154886f.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "1d519ebf2014fef91b41ffea9bcd7e9c5066784ef5a2a5e2cf06a8cec554d188",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_attention_decode/baseline.py": "37f51207283f85a65eb393b1dfb1344759d7df0bdec5450e34d24e7139f56ecc",
+    "problems/muse_attention_decode/reference.py": "386f7f67a1d788501e8fb9005d340423d098a0946e23810ba10878228c11a37b",
+    "problems/muse_attention_decode/task.yml": "645f889fbbd52d1d731bf5eb53356aa7ef6eea8fab3073f0a2a3dd582fe6e4bb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1147, in <module>\n    prepare()\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 1005, in prepare\n    _fa3_tune_shape(data, flush)\n  File \"/tmp/muse_attention_decode-d0pl4gd3/run/submission.py\", line 957, in _fa3_tune_shape\n    raise RuntimeError(f\"FA3 tuning differs from default by {rel:.4g} for {setting}\")\nRuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 123.83,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 142.17,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "node": "n-i3rdb5ks34a6fp3m52rhc7cstu"
+  },
+  "passed": false,
+  "records": [
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 10,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 608347912524768378
+    },
+    "event": "test",
+    "index": 0,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 2047,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 608387163748484797
+    },
+    "event": "test",
+    "index": 1,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 5,
+     "ctx": 5000,
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 608426414972201217,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 2,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 3000,
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 608465666195917638
+    },
+    "event": "test",
+    "index": 3,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 8,
+     "ctx": 8192,
+     "heads": "dp",
+     "layer": "full",
+     "seed": 608504917419634060,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 4,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 100000,
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "q_len": 8,
+     "seed": 608544168643350483
+    },
+    "event": "test",
+    "index": 5,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "seed": 608583419867066907
+    },
+    "event": "test",
+    "index": 6,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 608622671090783332
+    },
+    "event": "test",
+    "index": 7,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 1048576,
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 608661922314499758
+    },
+    "event": "test",
+    "index": 8,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 4000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 608897429656798335
+    },
+    "event": "test",
+    "index": 9,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 9000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "full",
+     "seed": 608936680880514768
+    },
+    "event": "test",
+    "index": 10,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 608701173538216185,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 11,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 608740424761932613
+    },
+    "event": "test",
+    "index": 12,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "soft",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 608779675985649042
+    },
+    "event": "test",
+    "index": 13,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "coherent",
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "seed": 608818927209365472,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 14,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "coherent",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 608858178433081903
+    },
+    "event": "test",
+    "index": 15,
+    "message": "RuntimeError: FA3 tuning differs from default by 0.008635 for (1, None)",
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792781757.2893033,
+ "status": "done",
+ "team": "AutoclickerI"
+}
