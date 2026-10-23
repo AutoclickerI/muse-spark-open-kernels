@@ -40,7 +40,9 @@ Read `README.md` first. For a kernel problem, read `problems/<name>/TASK.md` and
 ## How we work
 
 - **Remote runs** go through `tools/okc_run.py`, so every one leaves a receipt in `runs/`.
-  Never call `okc check` or `okc submit` directly. Give each run a `--note`.
+  Never call `okc check` or `okc submit` directly. Give each run a `--note`. The judge's queue
+  can hold a run for over an hour. A run's receipt starts in `runs/pending/` as soon as the job
+  is accepted, so if the waiting process dies, run `tools/okc_run.py collect`.
 - **Budget.** Remote runs are the scarce resource: 20 checks and 10 scored runs per problem
   per day, resetting at 09:00 KST. Screen locally with `tools/local_eval.py` first. A
   candidate that fails a local test doesn't go remote.

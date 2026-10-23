@@ -11,6 +11,7 @@ from code, config or spec), **model** (an estimate under stated assumptions; the
 |---|---|---|---|---|
 | Judge GPU state | H200, SM 1980 MHz, memory 3201 MHz, 700 W limit, ~130 W idle draw | node n-qtqz4qekgtq37epqb5xaarah6h | measured | `runs/muse_bf16_proj/*7fb3e93056d34999.json` (`machine`) |
 | Graph replay fixed cost the judge subtracts | ~4.2 us (raw median minus reported median) | bf16_proj shapes | measured | same, `replay_overhead`, `median_raw_ns` |
+| HBM and L2 read rates (our probes inside a check's prepare()) | streaming read of 52-61 MB: 12.8-14.6 us = 4.04-4.25 TB/s (best 4.25 TB/s: 132 CTAs x 1024 threads, 4 x 16 B loads in flight per thread); L2 re-read of a 4-16 MB window: 8.2-9.6 TB/s; 32 MB window: 4.5-5.1 TB/s | H200 judge, timed with CUDA events (not graph replay) | measured | `problems/muse_bf16_proj/profiles/cand_sweep2.62bd26b45aeb4992.log` |
 | Run-to-run noise | the starter's speedup CI was 0.892-0.920 (+-1.5%) | one check, 30 shapes | measured | same, `speedup_ci` |
 
 ## SGLang's kernels on H200 (the 1.00x we are timed against)

@@ -66,7 +66,8 @@ upstream/             llms.txt, terms.pdf, the public API's JSON (shapes, seeds,
 tools/sync_upstream.sh   refresh upstream/ and the official problem files; `git diff` shows changes
 tools/img             run a command in the judge's image (Apptainer SIF), GPUs and repo mounted
 tools/local_eval.py   local screen: the tests, then CUDA-graph timing against baseline.py
-tools/okc_run.py      okc check/submit with a receipt: runs/<problem>/ + runs/ledger.jsonl
+tools/okc_run.py      okc check/submit with a receipt: runs/<problem>/ + runs/ledger.jsonl;
+                      `collect` finishes receipts left in runs/pending/ by a killed process
 runs/                 receipts of every remote run (exact source, okc's JSON, the ledger)
 runs/calibration/     SGLang's baseline.py sent as a check, to profile its kernels on the judge
 sim/                  performance model: `python -m sim` (problem ceilings), `-m sim.serving`
