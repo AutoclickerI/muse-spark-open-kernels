@@ -7,6 +7,22 @@ unless marked measured; nothing here has run on an H200 node yet. The serving tr
 
 ## From our kernels (the bulk of the score)
 
+**Serving runs only the problems' verify loads and prefill.** Under DFlash the target model's decode step
+is always a TARGET_VERIFY forward over 8 tokens per request (`srt/speculative/dflash_worker_v2.py`:
+`forward_batch_generation`, "Decode / target-verify stage", `draft_token_num=int(self.block_size)`;
+the drafter's block forward is TARGET_VERIFY too, ~line 2604). The kernel problems' `decode N` loads
+(q_len 1) count on the kernel boards but never run in serving; their `verify N` loads (8N tokens) do.
+Per-load H200 receipts for the verify loads (V1 / V16 / V32; sliding, full where split):
+
+| Kernel | Receipt | Verify loads | Decode loads (board only) |
+|---|---|---|---|
+| MoE cand_v4 | 84c97d9483b34573 | 1.498 / 1.154 / 1.115 | 1.996 / 1.400 / 1.136 |
+| Attention cand_v2 | 51ad2ea9ec4f4724 | 0.93, 0.89 / 0.60, 0.88 / 0.67, 0.93 (loses to FA3) | 2.04, 1.68 / 2.04, 1.91 / 1.87, 1.96 |
+| Decode layer cand_v3 | 2c112482e81745af | 1.39, 1.35 / 1.06, 1.04 / 1.05, 1.03 | 1.25, 1.23 / 1.18, 1.10 / 1.03, 1.02 |
+
+So for serving, the attention kernel's value is in its verify path (being reworked), and kernel choices
+in the port are gated on the verify loads' numbers.
+
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
