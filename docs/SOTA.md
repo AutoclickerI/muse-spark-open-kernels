@@ -7,7 +7,7 @@ step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sg
 and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published H200 numbers (FINDINGS
 "Serving track").
 
-## Current best (2026-10-24 03:35 KST)
+## Current best (2026-10-24 08:25 KST)
 
 | Problem | Our best H200 run | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
@@ -15,7 +15,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 | muse_attention_decode | 1.391x xqa_diag `32c5b4b287c24c38` (check) | 1.384x (submission scored `526f31018e2c4449`; rank 158) | 2.366x (colinlikescode) | 2.050x | 1.742x | 318 |
 | muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (v9_phase scored `ac9dd461f0294e34`) | 2.326x (colinlikescode) | 2.040x | 1.811x | 365 |
 | muse_decode_layer | 1.428x r3_v9 `0e94268cf5654012` (scored) | 1.428x (r3_v9 scored `0e94268cf5654012`; rank 81; overall rank 85) | 1.862x (colinlikescode) | 1.744x | 1.523x | 275 |
-| muse_prefill_layer | 1.368x v11 `6a9cd943fe404d74` (check) | 1.367x (promoted_6a9cd943fe404d74 scored `965a9a816d4744ea`; rank 52) | 1.726x (colinlikescode) | 1.559x | 1.374x | 159 |
+| muse_prefill_layer | 1.429x fused_expert_portfolio_routing `99820fa6e5c14fe1` (scored; turn 1 1.246, turn 4 1.447, first turn 1.618) | 1.429x (scored `99820fa6e5c14fe1`; rank not yet read) | 1.726x (colinlikescode) | 1.559x | 1.374x | 159 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
 top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
