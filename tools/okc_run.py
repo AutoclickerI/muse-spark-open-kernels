@@ -7,7 +7,8 @@
 
 Each run leaves, under runs/<problem>/, <utc>_<mode>_<job>.py (the exact source sent) and
 <utc>_<mode>_<job>.json (okc's whole result), and one line in runs/ledger.jsonl. okc itself
-also writes profiles/<file>.<job>.txt and .log beside the file.
+also writes profiles/<file>.<job>.txt and .log beside the file. What goes is the source as it was
+when queued (a snapshot in runs/sent/), so the file can be edited while the run waits.
 
 The judge's queue can take an hour or more. The source receipt and runs/pending/<job>.json are
 written as soon as the judge accepts the job, before waiting, so a killed process loses nothing:
@@ -48,6 +49,7 @@ REPO = Path(__file__).resolve().parent.parent
 LEDGER = REPO / "runs" / "ledger.jsonl"
 PENDING = REPO / "runs" / "pending"
 WAITING = REPO / "runs" / "waiting"
+SENT = REPO / "runs" / "sent"  # each send's source as queued: okc reads the file it is given at send time
 LOCK = REPO / "runs" / ".dispatch.lock"
 CAP = int(os.environ.get("OKC_INFLIGHT", "4"))  # our runs at the judge at once; 0 sends at once
 # Lower goes first. The order is docs/PLAN.md "Ranked work" (overall-board weight, FINDINGS "Boards").
@@ -278,6 +280,13 @@ def finish(job: str) -> dict:
     except FileNotFoundError:
         return {}
     REPO.joinpath(row["source"]).with_suffix(".json").write_text(json.dumps(result, indent=1, sort_keys=True))
+    if snap := row.pop("snapshot", None):  # okc wrote the profiles beside the snapshot it sent
+        snap = REPO / snap
+        dest = (REPO / row["file"]).parent / "profiles"
+        for f in (snap.parent / "profiles").glob(f"{snap.stem}.{job}.*"):
+            dest.mkdir(exist_ok=True)
+            f.replace(dest / f.name)
+        shutil.rmtree(snap.parent, ignore_errors=True)
     note = row.pop("note")
     row.update(status=pick(result, "status"), speedup=pick(result, "speedup"),
                interval=pick(result, "speedup_ci"), note=note)
@@ -300,25 +309,25 @@ def send(args):
         sys.exit(f"this source already ran as a scored run, or is pending or waiting ({row or 'ledger'}); "
                  "--force to send it again")
     modes = ("submit",) if "check" in ran and not args.force else ("submit", "check")
+    # Send a snapshot, so the file can be edited while this run waits. okc writes the run's profiles
+    # beside the file it sent; finish() moves them beside the original.
+    snap = SENT / sha[:16] / args.file.name
+    snap.parent.mkdir(parents=True, exist_ok=True)
+    snap.write_bytes(src)
 
     def mode_now():
         left = runs_left(problem)
         return next((m for m in modes if left[m] > 0), None)
 
     def send(mode):
-        # okc reads the file when it sends, so a file edited while this run waited would go out
-        # under a receipt holding the old source.
-        if args.file.read_bytes() != src:
-            sys.exit(f"{args.file} changed while this run waited for a judge slot; not sent. "
-                     "Send it again if the new source is what you want.")
         stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         sent_at = time.time()
-        result, proc = okc_json(mode, problem, str(args.file), "--no-wait")
+        result, proc = okc_json(mode, problem, str(snap), "--no-wait")
         job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
         job = job or newest_job(problem, mode, sent_at)
         if not job:
             sys.exit(f"okc {mode} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
-        start_receipt(problem, mode, job, src, args.file, args.note, stamp)
+        start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)))
         return mode, job
 
     priority = args.priority if args.priority is not None else PRIORITY.get(problem, 3)
