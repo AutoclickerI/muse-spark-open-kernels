@@ -90,7 +90,11 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
   `muse_spark_fp4_moe.py`). V9 handles small verify rows with its resident cooperative kernel and uses the
   canonical grouped reader for M>=256, including the v11 RS128-style prefill shapes. The layer screen at
   M=1..16,384 is 0.00649-0.00695 relative L2 (problem tolerance 0.015), with graph replay bit-identical;
-  H200 V9 runtime and full-node memory remain unverified.
+  A bounded V11 Humming adapter now competes at M256 in layer1 only; it preserves separate FP32
+  gate/up scales via virtual expert records and disables BF16 Stream-K partial reductions. It admits
+  one0.906GB layout only after charging target/draft KV backing, graph-times actual routing, and
+  discards a losing copy. All remaining layers and prefill retain the existing producer. The MoE
+  lane source is unchanged. H200 V9/wide runtime and full-node memory remain unverified.
 
 ## Measured serving ranking
 
@@ -299,11 +303,154 @@ This is the whole accepted patch's drift; the candidate gather unit itself is ex
 uses GPU0 with memory fraction 0.3 and disables prefill graphs for capacity, retaining verify/draft
 graphs. The random-output component uses `g42`, whose TP1 path is unchanged by this TP>1 edit.
 
-The current patch size and checks are recorded in the attention-AR section above. The earlier
+The current patch size and checks are recorded in the receipt-port section below. The earlier
 candidate-gather-only patch was94,229bytes. The full-graph TP2 runs in this round now exercise
 its accepted dispatch with TTFT below2x. Remaining full-node risks are H200 TP8/EP8 runtime,
 speed/TTFT, graph residency and measured host/sampling costs. No judge run was launched.
 
+
+## Receipt projection and bounded wide-MoE ports
+
+`f3786341611f4f1f` is the frozen H200 projection source (`cand_fused_select.py`).
+`projection_hopper.py` ports its one-pass BF16 hi+lo router with FP32 accumulators/output and its
+in-kernel QKV split-K. The router is enabled on SM90 at M1..256 for `[256,8192]` weights;
+QKV is enabled at M1..16 for `[2304,8192]`, with BF16 input/output. Larger QKV keeps cuBLAS:
+that receipt selected no fused winner at M128/256. Router hi/lo are views into one paired allocation,
+replacing the existing hi/lo caches with no additional weight bytes. Cluster split-K is eight CTAs,
+and large-M router uses the receipt's TMA/WGMMA configs. No MoE-lane source was edited.
+
+| Verify concurrency / M | Router stock -> receipt us/layer | Router modeled ms/step | QKV modeled ms/step |
+|---:|---:|---:|---:|
+| 1 / 8 | 26.240 -> 6.399 | 1.230144 | 0.104185 (14.208 -> 12.528 us/layer) |
+| 4 / 32 | 15.520 -> 8.207 | 0.453389 | 0 (keep cuBLAS) |
+| 16 / 128 | 16.592 -> 10.133 | 0.400444 | 0 (keep cuBLAS) |
+| 32 / 256 | 17.792 -> 11.792 | 0.371988 | 0 (keep cuBLAS) |
+
+Formula: `62*(baseline_ns-median_ns)/1e6` ms. M32 uses the identical router matmul from
+board decode32; the receipt has no verify4 record. These are standalone-vs-stock estimates,
+not incremental measured serving savings: the previous patch already used two hi/lo GEMMs above M8,
+and its router overlaps the pooler. Summing component savings is an upper estimate before overlap.
+
+### o, pooler and unpooler module
+
+[`muse_proj.py`](../../serving/sglang/python/sglang/srt/layers/muse_proj.py) is the local-GEMM
+handoff for the remaining dense projections. It copies the BF16 skinny MMA arithmetic from
+`f3786341611f4f1f` and its 32 MiB cuBLASLt TN/NN heuristic selection. At M128/256 the
+receipt's full-size choices were pooler NN1/NN0, unpooler NN0/TN0 and o NN0/cuBLAS.
+These choices remain finalists during shape-specific cold-L2 graph tuning against cuBLAS.
+The module retains the receipt's small-M dispatch: pooler skinny through M16,
+1024-row unpooler skinny through M8, and o on cuBLAS at serving's M8 and above except
+the large-M tuner. All activations/results are BF16; MMA and Lt accumulate in FP32.
+
+Shapes were checked against `MuseSpark1xAttention.__init__`, `MuseSpark1xMoE.__init__`,
+`_forward_experts`, `_reduce_and_unpool` in `models/muse_spark.py`, and `gemm_ag.gemm_local`.
+Config defaults are H8192, MoE4096, 128 query heads of dimension64, TP8.
+Weights below are `[N,K]`; the operator returns this rank's `[M,N]` result.
+
+| Projection | Stock H200 / problem shape | Current serving patch's local shape |
+|---|---|---|
+| o | `[8192,1024]`, followed by attention-TP reduction | Same; preserve the existing all-reduce/AR-norm ownership |
+| pooler | Replicated `[4096,8192]` | `[512,8192]` at M<=128 when multicast splitting is active; full `[4096,8192]` at M256 |
+| unpooler | `[1024,4096]` at M<=8, full `[8192,4096]` above | `[1024,4096]` through M128 with multicast; full `[8192,4096]` at M256. Existing all-gather or FFN boundary owns reconstruction |
+
+The additional pooler N512 and unpooler N1024/M>8 shapes have **no H200 projection receipt**.
+The module tunes their actual dimensions and checks them against torch; it assigns them no
+borrowed standalone speedup. If multicast is unavailable, use the existing full-size route.
+The stock automatic BF16 backend on Hopper reaches `F.linear`; Blackwell's separate CuTe/warp
+split-K tactics in `quantization/unquant.py` are not the baseline used by this H200 port.
+
+Receipt model, using the paired medians of **one** scored run, `f3786341611f4f1f`:
+
+| c / M | o+pooler+unpooler SGLang -> receipt us/layer | This module's credited ms/step | Router+QKV+this module credited ms/step |
+|---:|---:|---:|---:|
+| 1 / 8 | 35.520 -> 30.913 | **0.282** | **1.616** |
+| 4 / 32 | 48.160 -> 47.997 | **0.000** | **0.453** |
+| 16 / 128 | 52.512 -> 50.879 | **0.101** | **0.502** |
+| 32 / 256 | 64.928 -> 63.662 | **0.071** | **0.443** |
+
+Formula: sum `62*(baseline_us-receipt_us)/1000` only for changed algorithms. Unchanged
+cuBLAS o at M8/32/256, pooler/unpooler at M32, and QKV above M8 receive zero credit;
+their small measured deltas are timing noise. At c1 all five raw projection medians sum
+75.968 ->49.840 us/layer, or1.620ms/step; the optimistic cross-receipt table's49.371us
+is not a jointly measured portfolio. Of the ~1.6ms opportunity, this module supplies
+~0.28ms; the already-ported router/QKV supply ~1.33ms. These are **modeled standalone
+savings**, excluding collectives, overlap, launch-policy differences and serving agreement.
+They are not incremental gains over the current pooler/unpooler sharding patch.
+Reproduce with `python serving/tests/muse_proj_model.py`; machine-readable arithmetic is
+`runs/screen/serving_proj/receipt_model.json`.
+
+Integration: construct `MuseProjection(exact_local_weight, "o"/"pooler"/"unpooler")`
+after loading, before graph capture. Pass `tokens=` for that local shape's actual graph
+sizes (e.g. full pooler at256, its row slice through128). Plans are cached by role, actual
+shape, M and device; cached selections are rechecked against each new weight within1%.
+Bad trials/finalists are logged and discarded; the trial deadline is15s per new local
+projection. Only selected NN plans retain a lossless weight transpose. A temporary32MiB
+Lt workspace belongs to each call/graph allocator, so concurrent graphs do not share scratch.
+Forward contains no tuning, host sync, input-value branches or cached outputs.
+The serving lane must preserve o's reduction, pooler/unpooler gather and fused boundary
+ownership; this module performs no collective and changes no parameter registration.
+
+Local validation and remaining H200 work are recorded after the module's final screen.
+
+`muse_spark_humming.py` ports the V11 indexed wide producer behind the existing dense
+`[T,8,H]`/identity-or-minus-one finalize interface. It keeps V9 below256 and grouped prefill.
+The full second bank is rejected by the owner's memory decision. Only layer1 is eligible for one
+0.906GB partial layout, reconstructed losslessly from the canonical bank during eager warmup.
+Admission charges unbacked VMM target KV plus1280bytes/slot draft KV before counting free memory.
+Below3GiB remaining it retains grouped; otherwise graph-timed actual warmup routing chooses
+the faster producer and discards a losing copy. There is no KV resize and no request-value-based graph
+branch. Other layers keep their existing producer; this is deliberately a bounded partial port.
+
+Two serving adaptations prevent a direct claim of V11's timing: the checkpoint has different FP32
+gate/up scales, so gate/up become64 virtual expert records in one indexed launch, preserving both
+sidecars; Humming's default Stream-K can add partial GEMMs in BF16 (`gmem_writer.cuh`), so it is
+disabled to retain complete FP32 K accumulation. The raw V11 receipt used Stream-K and a common W13
+scale, therefore its1.664x standalone score does not validate this adapted producer's H200 speed.
+At M256 its434.808us versus V9's464.277us from a separate receipt implies
+`60*(464.277-434.808)/1000 = 1.7681ms/step` if all60layers could use that exact winner.
+One admitted layer's proxy is0.02947ms; the actual adapted copy gets **zero credited saving** until
+H200 graph timing selects it. The receipts are cross-run comparisons, not a paired incremental test.
+Local SM120 real-shape producer timing is grouped913.61 -> wide1516.86us at M256; the admission
+screen correctly discards wide. No SM120 regression is enabled.
+
+All projection specializations and both exact-scale wide kernels compile for SM90a locally;
+both Triton canonical-unpack adapters also compile for the explicit SM90 target.
+`test_projection_ports.py` executes the CUDA kernels on SM120: router M1/8/9/16/32/64/128/256
+has relative L2 <=3.32e-6 and max absolute error1.55e-5 versus FP64 math; QKV M1/8/9/16
+has relative L2<=0.002562 versus BF16 cuBLAS (M8 maxabs0.00390625; M9/16 maxabs0.015625).
+All eager-to-graph and changed-input replays are bit-identical. `test_humming_wide.py` passes
+M256/272 against stock Marlin math (relative L2<=0.005943,maxabs0.0234375), exact changed-input
+graph replay, remote masking, distinct gate/up scales, and all signed finite E4M3 scale patterns
+including subnormals/zero. Its SM120 admission test selects grouped. `test_humming_admission.py`
+confirms pending VMM KV backing rejects an otherwise apparently affordable layout copy.
+
+Local SM120/FlashInfer margin harness (all74 stock prefill graph sizes,30x220 tokens):
+
+| Run / branch | Exact requests | TTFT p90 patch/stock c1 / c4 | Interpretation |
+|---|---:|---:|---|
+| `p16`, TP1 actual portable projection CUDA + wide Marlin ABI |30/30|1.218 /1.154|vs `g61`; agreement and local TTFT pass |
+| `p14`, native patch TP2 |30/30|0.709 /0.409|vs fresh `p10`; new Hopper gates inactive; local native TTFT gate passes |
+| `p12`, TP2 actual portable projection CUDA + wide Marlin ABI |30/30|1.132 /4.334|vs `p10`; forced tiny timing fails c4; zero-padding tiny router1024->8192 adds artificial work, so not production timing evidence |
+| `p08`, TP2 torch projection stand-ins + wide Marlin ABI |30/30|1.025 /2.540|vs `p04`; c4 TTFT also fails; retained with no speed claim |
+
+Margin first-divergence is220 and token agreement1.0 throughout. Random `p15` returns30x220;
+three stock runs and patch all have first-divergence p10/p50/p90=0 and positional token agreement0,
+so generated random text still cannot resolve numerical drift. Matched full-graph teacher forcing
+`p13` against `g58/59/60` scores each common220-token continuation for30requests (90 comparisons):
+request-mean drift patch p50/p90=0.199099/0.212055 versus stock0.188395/0.200433; request-max
+patch p50/p90=0.754621/0.894391 versus stock0.693040/0.814768. The standard median-within-stock-p90
+**gate passes**. Worst single max drift is0.990461 versus stock0.903524; tails are not equal.
+This exercises actual portable router/QKV math through the model; tiny expert producer uses a
+same-ABI Marlin stand-in, with real Humming tested independently at full4096-wide shapes.
+
+Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
+prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
+Patch regenerated from `git diff a55ab7d5` plus source-only untracked additions: **201,749bytes**,
+**19files**, longest added line **374**. All16 accepted paths remain;14 untouched file diffs
+(including the MoE lane's file) are byte-identical to the accepted patch. The other lane's untracked
+`muse_proj.py` handoff is included and is not yet connected by this round. Reverse apply check and
+whitespace/source/type/path/mode checks pass. No old doc paths or harness sources were edited.
+Evidence: `/data2/jihoon/muse_kernel/harness/results/projection-ports-evidence/` and named run dirs.
 
 ## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.

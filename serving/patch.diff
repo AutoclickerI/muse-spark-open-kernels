@@ -523,10 +523,30 @@ index e6cf0dd..ecfa3c8 100644
          False, deprecated_name="SGLANG_USE_TRITON_ROUTER_SUM"
      )
 diff --git a/python/sglang/srt/layers/muse_spark_fp4_moe.py b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-index 97b1474..d256e83 100644
+index 97b1474..bfe0107 100644
 --- a/python/sglang/srt/layers/muse_spark_fp4_moe.py
 +++ b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-@@ -162,12 +162,8 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -17,11 +17,6 @@ from __future__ import annotations
+ from typing import TYPE_CHECKING, Optional
+ 
+ import torch
+-from torch import nn
+-
+-from sglang.kernels.ops.muse_spark_v12.fused_post_expert_norm_weighted_sum_triton import (
+-    fused_post_expert_norm_weighted_sum,
+-)
+ from sglang.kernels.ops.muse_spark_v12.fused_post_expert_norm_weighted_sum_trtllm import (
+     FusedPostExpertNormWeightedSumTRTLLM,
+ )
+@@ -35,6 +30,7 @@ from sglang.srt.layers.quantization.muse_spark_nvfp4_moe import (
+     MuseSparkNvFp4FusedMoEMethod,
+ )
+ from sglang.srt.utils.common import get_device_capability, is_cuda
++from torch import nn
+ 
+ if TYPE_CHECKING:
+     from sglang.kernels.ops.muse_spark_v12.fi_trtllm_moe_finalize_with_rmsnorm_cutedsl import (
+@@ -162,12 +158,8 @@ class MuseSpark1xFp4Experts(nn.Module):
          self._post_expert_norm: Optional[nn.Module] = None
          self._post_expert_norm_eps = 1e-8
          self._post_expert_norm_weight_first = True
@@ -541,7 +561,15 @@ index 97b1474..d256e83 100644
          )
          self.register_buffer("_post_expert_norm_weight", None, persistent=False)
  
-@@ -573,6 +569,11 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -455,7 +447,6 @@ class MuseSpark1xFp4Experts(nn.Module):
+         topk_ids: torch.Tensor,
+     ) -> torch.Tensor:
+         from sgl_kernel.scalar_type import scalar_types
+-
+         from sglang.kernels.ops.activation.activation import silu_and_mul
+         from sglang.kernels.ops.moe.moe_wna16_marlin import moe_wna16_marlin_gemm
+         from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
+@@ -573,6 +564,11 @@ class MuseSpark1xFp4Experts(nn.Module):
              is_zp_float=False,
          ).view(num_tokens, topk, size_k), local_topk_ids
  
@@ -553,7 +581,7 @@ index 97b1474..d256e83 100644
      def _forward_marlin(
          self,
          hidden_states: torch.Tensor,
-@@ -580,6 +581,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -580,6 +576,7 @@ class MuseSpark1xFp4Experts(nn.Module):
          topk_ids: torch.Tensor,
          post_expert_norm: Optional[nn.Module],
          pre_expert_norm: Optional[nn.Module] = None,
@@ -561,22 +589,26 @@ index 97b1474..d256e83 100644
      ) -> torch.Tensor:
          if post_expert_norm is None:
              raise ValueError(
-@@ -592,28 +594,91 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -592,28 +589,95 @@ class MuseSpark1xFp4Experts(nn.Module):
                  "outputs are mis-scaled per expert. Run this checkpoint on "
                  "SM100+ with --moe-runner-backend flashinfer_trtllm instead."
              )
 +        if self._use_muse_v4(hidden_states.shape[0]):
 +            if pre_expert_norm is not None:
 +                hidden_states = pre_expert_norm(hidden_states)
++            from sglang.srt.layers.muse_spark_humming import maybe_run_wide
 +            from sglang.srt.layers.muse_spark_moe import run_layer
 +
-+            expert_outputs, local_topk_ids = run_layer(
-+                self._muse_v4_state,
-+                hidden_states,
-+                topk_scores,
-+                topk_ids,
-+                return_dense=True,
-+            )
++            wide = maybe_run_wide(self, hidden_states, topk_scores, topk_ids)
++            if wide is None:
++                wide = run_layer(
++                    self._muse_v4_state,
++                    hidden_states,
++                    topk_scores,
++                    topk_ids,
++                    return_dense=True,
++                )
++            expert_outputs, local_topk_ids = wide
 +            return self._finalize_dense_expert_outputs(
 +                expert_outputs,
 +                topk_scores,
@@ -666,7 +698,7 @@ index 97b1474..d256e83 100644
  
      def prepare_input(
          self,
-@@ -701,6 +766,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -701,6 +765,7 @@ class MuseSpark1xFp4Experts(nn.Module):
                  topk_ids,
                  post_expert_norm,
                  pre_expert_norm=pre_expert_norm,
@@ -2031,7 +2063,7 @@ index 62f823b..f649f30 100644
          return self.hidden_norm(projected)
  
 diff --git a/python/sglang/srt/models/muse_spark.py b/python/sglang/srt/models/muse_spark.py
-index 312b342..5bde426 100644
+index 312b342..ffc8240 100644
 --- a/python/sglang/srt/models/muse_spark.py
 +++ b/python/sglang/srt/models/muse_spark.py
 @@ -17,11 +17,12 @@ from typing import Iterable, List, Optional, Tuple
@@ -2049,15 +2081,21 @@ index 312b342..5bde426 100644
  from sglang.kernels.ops.muse_spark_v12.fused_muse_spark_routing import (
      FusedMuseSparkRouting,
  )
-@@ -35,6 +36,7 @@ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
+@@ -35,6 +36,13 @@ from sglang.kernels.ops.muse_spark_v12.gemm_ag import (
      gemm_ag_supported,
      gemm_local,
      reserve_projection_workspace,
 +    split_projection_supported,
++)
++from sglang.kernels.ops.muse_spark_v12.projection_hopper import (
++    RouterProjection,
++    qkv_projection,
++    qkv_supported,
++    router_supported,
  )
  from sglang.kernels.ops.muse_spark_v12.router_gemm import (
      MAX_TOKENS as ROUTER_GEMM_MAX_TOKENS,
-@@ -47,6 +49,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
+@@ -47,6 +55,7 @@ from sglang.srt.distributed import get_tp_group, tensor_model_parallel_all_reduc
  from sglang.srt.environ import envs
  from sglang.srt.layers import layernorm_sp
  from sglang.srt.layers import muse_spark_expert_tp as expert_tp
@@ -2065,7 +2103,7 @@ index 312b342..5bde426 100644
  from sglang.srt.layers.attention.trtllm_mha_backend import TRTLLMHAAttnBackend
  from sglang.srt.layers.aux_hidden_states import pack_aux_hidden_states
  from sglang.srt.layers.cp.utils import is_cp_active
-@@ -93,6 +96,7 @@ from sglang.srt.runtime_context import get_forward, get_parallel
+@@ -93,6 +102,7 @@ from sglang.srt.runtime_context import get_forward, get_parallel
  from sglang.srt.state_capturer.routed_experts import get_global_experts_capturer
  from sglang.srt.utils import add_prefix, is_cpu, is_hip, use_intel_amx_backend
  from sglang.srt.utils.common import get_device_capability, is_cuda
@@ -2073,7 +2111,7 @@ index 312b342..5bde426 100644
  
  _is_cpu = is_cpu()
  
-@@ -247,6 +251,52 @@ def _split_bf16_router_supported() -> bool:
+@@ -247,8 +257,56 @@ def _split_bf16_router_supported() -> bool:
      return is_cuda() and get_device_capability()[0] == 9
  
  
@@ -2107,7 +2145,9 @@ index 312b342..5bde426 100644
 +    return out[:m]
 +
 +
-+def _reduce_scatter_rows_gemm(partial: torch.Tensor, weight: torch.Tensor) -> torch.Tensor:
++def _reduce_scatter_rows_gemm(
++    partial: torch.Tensor, weight: torch.Tensor
++) -> torch.Tensor:
 +    """``all_reduce(partial) @ weight.T``: reduce-scatter rows, local GEMM, all-gather rows."""
 +    tp_group = get_tp_group()
 +    world = tp_group.world_size
@@ -2124,9 +2164,48 @@ index 312b342..5bde426 100644
 +
 +
  def _use_split_bf16_router(num_tokens: int) -> bool:
-     if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
+-    if num_tokens <= ROUTER_GEMM_MAX_TOKENS or not _split_bf16_router_supported():
++    if not _split_bf16_router_supported():
          return False
-@@ -413,25 +463,57 @@ class MuseSpark1xAttention(nn.Module):
+     return True
+ 
+@@ -268,6 +326,7 @@ class MuseSpark1xRouter(nn.Module):
+         self._split2_hi = None
+         self._split2_lo = None
+         self._split2_key = None
++        self._hopper_router = None
+ 
+     @torch.no_grad()
+     def _build_split2(self) -> None:
+@@ -275,13 +334,23 @@ class MuseSpark1xRouter(nn.Module):
+         key = (w.data_ptr(), w.shape, w._version)
+         if self._split2_key == key:
+             return
+-        hi = w.to(torch.bfloat16)
+-        lo = (w - hi.to(torch.float32)).to(torch.bfloat16)
+-        self._split2_hi = hi.t().contiguous()
+-        self._split2_lo = lo.t().contiguous()
++        if w.is_cuda and get_device_capability()[0] == 9 and w.shape == (256, 8192):
++            if self._hopper_router is None:
++                self._hopper_router = RouterProjection(self.weight)
++            self._split2_hi = self._hopper_router.high.t()
++            self._split2_lo = self._hopper_router.low.t()
++        else:
++            hi = w.to(torch.bfloat16)
++            lo = (w - hi.to(torch.float32)).to(torch.bfloat16)
++            self._split2_hi = hi.t().contiguous()
++            self._split2_lo = lo.t().contiguous()
+         self._split2_key = key
+ 
+     def forward_split2(self, hidden_states: torch.Tensor) -> torch.Tensor:
++        if router_supported(hidden_states, self.weight):
++            if self._hopper_router is None:
++                self._hopper_router = RouterProjection(self.weight)
++            return self._hopper_router(hidden_states)
+         self._build_split2()
+         x = hidden_states.to(torch.bfloat16)
+         acc = torch.mm(x, self._split2_hi, out_dtype=torch.float32)
+@@ -413,25 +482,54 @@ class MuseSpark1xAttention(nn.Module):
      ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
          backend = get_attn_backend()
          pool = get_token_to_kv_pool()
@@ -2175,10 +2254,7 @@ index 312b342..5bde426 100644
 +            if cache_loc is None:
 +                return None
 +            layer_mapping = getattr(pool, "layers_mapping", None)
-+            if (
-+                layer_mapping is not None
-+                and layer_mapping[self.layer_idx][1]
-+            ):
++            if layer_mapping is not None and layer_mapping[self.layer_idx][1]:
 +                metadata = backend.forward_metadata
 +                cache_loc = getattr(metadata, "swa_out_cache_loc", None)
 +                if cache_loc is None:
@@ -2196,7 +2272,7 @@ index 312b342..5bde426 100644
          return (
              k_cache.view(k_cache.shape[0], -1),
              v_cache.view(v_cache.shape[0], -1),
-@@ -443,11 +525,16 @@ class MuseSpark1xAttention(nn.Module):
+@@ -443,11 +541,19 @@ class MuseSpark1xAttention(nn.Module):
          positions: torch.Tensor,
          hidden_states: torch.Tensor,
          forward_batch: ForwardBatch,
@@ -2205,8 +2281,12 @@ index 312b342..5bde426 100644
      ) -> torch.Tensor:
          if hidden_states.shape[0] == 0:
              return hidden_states
-         qkv, _ = self.qkv_proj(hidden_states)
+-        qkv, _ = self.qkv_proj(hidden_states)
 -        output, _ = self.o_proj(self.gated_attention(positions, qkv, forward_batch))
++        if qkv_supported(hidden_states, self.qkv_proj.weight):
++            qkv = qkv_projection(hidden_states, self.qkv_proj.weight)
++        else:
++            qkv, _ = self.qkv_proj(hidden_states)
 +        output, _ = self.o_proj(
 +            self.gated_attention(positions, qkv, forward_batch),
 +            skip_all_reduce=skip_output_reduce,
@@ -2214,7 +2294,7 @@ index 312b342..5bde426 100644
          return output
  
      def gated_attention(
-@@ -584,7 +671,7 @@ class MuseSpark1xMoE(nn.Module):
+@@ -584,7 +690,7 @@ class MuseSpark1xMoE(nn.Module):
              self.pre_expert_proj is not None
              and self.tp_size in (4, 8)
              and torch.cuda.is_available()
@@ -2223,7 +2303,16 @@ index 312b342..5bde426 100644
          ):
              ca_comm = get_tp_group().ca_comm
              reserve_projection_workspace(
-@@ -757,6 +844,10 @@ class MuseSpark1xMoE(nn.Module):
+@@ -633,6 +739,8 @@ class MuseSpark1xMoE(nn.Module):
+                 top_k=self.top_k,
+                 quant_config=quant_config,
+             )
++            # One partial wide layout; do not duplicate the 60-layer bank.
++            self.experts._humming_candidate = layer_idx == 1
+         else:
+             self.experts = MuseSpark1xBf16Experts(
+                 num_experts=self.num_experts,
+@@ -757,6 +865,10 @@ class MuseSpark1xMoE(nn.Module):
              and not getattr(get_forward(), "sp_active", False)
              and not already_reduced
          ):
@@ -2234,7 +2323,18 @@ index 312b342..5bde426 100644
              output = tensor_model_parallel_all_reduce(output)
          if self.post_expert_proj is not None:
              if _is_cpu:
-@@ -846,10 +937,14 @@ class MuseSpark1xMoE(nn.Module):
+@@ -815,6 +927,10 @@ class MuseSpark1xMoE(nn.Module):
+         use_split2 = (
+             self.router_in_fp32
+             and _use_split_bf16_router(hidden_states.shape[0])
++            and (
++                hidden_states.shape[0] > ROUTER_GEMM_MAX_TOKENS
++                or router_supported(hidden_states, self.gate.weight)
++            )
+             and self.gate.weight.dtype == torch.float32
+             and hidden_states.dtype in (torch.bfloat16, torch.float16)
+         )
+@@ -846,10 +962,16 @@ class MuseSpark1xMoE(nn.Module):
              if (
                  self.tp_size in (4, 8)
                  and not sp_active
@@ -2246,11 +2346,13 @@ index 312b342..5bde426 100644
              ):
                  expert_input = gemm_ag(comm, hidden_states, self.pre_expert_proj.weight)
 +            elif _use_row_split(self.tp_size, hidden_states.shape[0]):
-+                expert_input = _row_split_gemm(hidden_states, self.pre_expert_proj.weight)
++                expert_input = _row_split_gemm(
++                    hidden_states, self.pre_expert_proj.weight
++                )
              else:
                  expert_input = bf16_gemm_dispatch(
                      hidden_states, self.pre_expert_proj.weight, None
-@@ -1071,16 +1166,32 @@ class MuseSpark1xDecoderLayer(nn.Module):
+@@ -1071,16 +1193,32 @@ class MuseSpark1xDecoderLayer(nn.Module):
              )
              if result is not None:
                  return result
@@ -2290,7 +2392,7 @@ index 312b342..5bde426 100644
          if self.is_moe_layer:
              ffn_output = self.mlp(ffn_input, router_input, forward_batch)
          else:
-@@ -1174,11 +1285,11 @@ class MuseSpark1xModel(nn.Module):
+@@ -1174,11 +1312,11 @@ class MuseSpark1xModel(nn.Module):
                  get_parallel().tp_size not in (4, 8)
                  or get_parallel().moe_ep_size != get_parallel().tp_size
                  or is_dp_attention_enabled()
@@ -2531,3 +2633,1853 @@ index a91ffd6..396e5bb 100644
  
          if SIMULATE_ACC_LEN > 0:
              if SIMULATE_ACC_TOKEN_MODE not in ("fixed", "real-draft-token"):
+diff --git a/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py b/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py
+new file mode 100644
+index 0000000..cbf37cf
+--- /dev/null
++++ b/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py
+@@ -0,0 +1,804 @@
++"""Receipt f3786341611f4f1f projection kernels, scoped to Muse verify shapes.
++
++BF16 activations, FP32 hi+lo router accumulation, BF16 QKV output. Small-M
++MMA kernel and large-M TMA/WGMMA kernel are copied from cand_fused_select;
++no prepare-time tuning, external files or binary artifacts are required.
++"""
++
++from __future__ import annotations
++
++import ctypes as ct
++import hashlib
++import os
++
++import torch
++
++from sglang.kernels.jit.utils import cache_once, get_jit_cuda_arch
++
++
++class ProjectionModule:
++    def __init__(self, path):
++        self.lib = ct.CDLL(path)
++        P, I, L = ct.c_void_p, ct.c_int, ct.c_int64
++        self.lib.lean_error_string.restype = ct.c_char_p
++        self.lib.lean_skinny.argtypes = [P] * 4 + [I] * 12 + [P]
++        self.lib.lean_pair.argtypes = [P] * 5 + [I] * 11 + [L, L, P]
++
++    def check(self, status):
++        if status:
++            raise RuntimeError(self.lib.lean_error_string().decode())
++
++    def skinny(self, x, weight, low, output, config):
++        nt, tr, u, wn, wk, ks, xp = config
++        self.check(
++            self.lib.lean_skinny(
++                weight.data_ptr(),
++                (weight if low is None else low).data_ptr(),
++                x.data_ptr(),
++                output.data_ptr(),
++                x.shape[0],
++                weight.shape[0],
++                x.shape[1],
++                nt,
++                tr,
++                u,
++                wn,
++                wk,
++                ks,
++                int(low is not None),
++                xp,
++                0,
++                torch.cuda.current_stream(x.device).cuda_stream,
++            )
++        )
++
++    def pair(self, x, weight, output, scratch, config):
++        bt, bk, st, mode, split, threads = config
++        work, counts = scratch
++        self.check(
++            self.lib.lean_pair(
++                weight.data_ptr(),
++                x.data_ptr(),
++                output.data_ptr(),
++                work.data_ptr(),
++                counts.data_ptr(),
++                x.shape[0],
++                output.shape[1],
++                x.shape[1],
++                weight.shape[1],
++                int(output.dtype == torch.float32),
++                bt,
++                bk,
++                st,
++                mode,
++                split,
++                threads,
++                work.numel(),
++                counts.numel(),
++                torch.cuda.current_stream(x.device).cuda_stream,
++            )
++        )
++
++
++@cache_once
++def _module(arch=None):
++    from torch.utils.cpp_extension import load_inline
++
++    target = arch or get_jit_cuda_arch().target_name
++    # torch.cpp_extension predates family suffixes; sm120 MMA/TMA works on
++    # the generic target, while Hopper requires its architecture-specific ISA.
++    if target == "12.0f":
++        target = "12.0"
++    old = os.environ.get("TORCH_CUDA_ARCH_LIST")
++    os.environ["TORCH_CUDA_ARCH_LIST"] = target
++    try:
++        tag = hashlib.sha256(RAW_CUDA.encode()).hexdigest()[:12]
++        path = load_inline(
++            name=f"muse_proj_port_{tag}_{target.replace('.', '_')}",
++            cpp_sources="",
++            cuda_sources=RAW_CUDA,
++            functions=None,
++            is_python_module=False,
++            no_implicit_headers=True,
++            extra_cuda_cflags=["-O3", "-std=c++20", "--expt-relaxed-constexpr"],
++            verbose=False,
++        )
++    finally:
++        if old is None:
++            os.environ.pop("TORCH_CUDA_ARCH_LIST", None)
++        else:
++            os.environ["TORCH_CUDA_ARCH_LIST"] = old
++    return ProjectionModule(path)
++
++
++def router_supported(x, weight):
++    return (
++        x.is_cuda
++        and torch.cuda.get_device_capability(x.device) == (9, 0)
++        and x.dtype == torch.bfloat16
++        and weight.dtype == torch.float32
++        and weight.shape == (256, 8192)
++        and 0 < x.shape[0] <= 256
++    )
++
++
++def qkv_supported(x, weight):
++    # The H200 portfolio rejected large-M fused QKV; only the measured skinny
++    # winner is enabled. Odd/padded batch rows use the same masked kernel.
++    return (
++        x.is_cuda
++        and torch.cuda.get_device_capability(x.device) == (9, 0)
++        and x.dtype == torch.bfloat16
++        and weight.dtype == torch.bfloat16
++        and weight.shape == (2304, 8192)
++        and 0 < x.shape[0] <= 16
++    )
++
++
++class RouterProjection:
++    def __init__(self, weight):
++        self.source = weight
++        self.version = weight._version
++        high = weight.detach().to(torch.bfloat16)
++        low = (weight.detach() - high.float()).to(torch.bfloat16)
++        # A single pair allocation: hi and lo are views, no duplicate layout.
++        self.pair = torch.cat((high, low), dim=1).contiguous()
++        self.high = self.pair[:, : weight.shape[1]]
++        self.low = self.pair[:, weight.shape[1] :]
++        self.scratch = {}
++        _module()
++
++    def __call__(self, x):
++        if self.source._version != self.version:
++            raise RuntimeError("Muse router derived weights stale after weight update")
++        m, n = x.shape[0], self.source.shape[0]
++        out = torch.empty((m, n), device=x.device, dtype=torch.float32)
++        if m <= 32:
++            if m <= 8:
++                cfg = (1, 1, 4, 2, 4, 8, 1)
++            elif m <= 16:
++                cfg = (2, 1, 4, 1, 8, 4, 1)
++            else:
++                cfg = (4, 1, 4, 1, 8, 4, 0)
++            _module().skinny(x, self.high, self.low, out, cfg)
++        else:
++            cfg = (64, 64, 4, 1, 8, 160 if m <= 128 else 256)
++            tiles = (n // 64) * ((m + 63) // 64)
++            if m not in self.scratch:
++                self.scratch[m] = (
++                    torch.empty(
++                        tiles * 17 * 64 * 64, device=x.device, dtype=torch.float32
++                    ),
++                    torch.zeros(tiles, device=x.device, dtype=torch.uint32),
++                )
++            _module().pair(x, self.pair, out, self.scratch[m], cfg)
++        return out
++
++
++def qkv_projection(x, weight):
++    out = torch.empty(
++        (x.shape[0], weight.shape[0]), device=x.device, dtype=torch.bfloat16
++    )
++    cfg = (1, 2, 4, 1, 8, 1, 1) if x.shape[0] <= 8 else (2, 1, 4, 4, 1, 8, 1)
++    _module().skinny(x, weight, None, out, cfg)
++    return out
++
++
++RAW_CUDA = r"""// Lightweight host ABI for the unchanged CUDA kernels. No Torch C++ headers.
++#include <cuda_runtime.h>
++#include <cuda.h>
++#include <cudaTypedefs.h>
++#include <cuda_bf16.h>
++#include <cooperative_groups.h>
++
++#include <stdint.h>
++#include <algorithm>
++#include <cstring>
++#include <cstdio>
++namespace cg=cooperative_groups;
++static thread_local char lean_error[512];
++extern "C" const char* lean_error_string(){return lean_error;}
++static int lean_fail(const char* where,int code){std::snprintf(lean_error,sizeof(lean_error),"%s: status %d",where,code);return code ? code : -1;}
++#define LEAN_CUDA(call) do{auto e=(call);if(e!=cudaSuccess)return lean_fail(#call,(int)e);}while(0)
++
++
++
++
++#include <cuda_bf16.h>
++#include <cooperative_groups.h>
++#include <stdint.h>
++
++
++
++namespace muse_proj {
++
++// Weight stream: read once, keep out of L1. LD 0: 256B L2 prefetch, 1: none, 2: 128B.
++template <int LD>
++__device__ __forceinline__ uint4 ld_stream(const void* p) {
++  uint4 r;
++  if (LD == 0)
++    asm volatile("ld.global.nc.L1::no_allocate.L2::256B.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  else if (LD == 1)
++    asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  else
++    asm volatile("ld.global.nc.L1::no_allocate.L2::128B.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  return r;
++}
++
++// Activations: shared by the CTA's warps through L1.
++__device__ __forceinline__ uint4 ld_act(const void* p) {
++  uint4 r;
++  asm volatile("ld.global.nc.v4.u32 {%0,%1,%2,%3}, [%4];"
++               : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  return r;
++}
++
++__device__ __forceinline__ void mma16816(float (&c)[4], uint32_t a0, uint32_t a1, uint32_t a2,
++                                         uint32_t a3, uint32_t b0, uint32_t b1) {
++  asm volatile(
++      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, "
++      "{%8,%9}, {%0,%1,%2,%3};"
++      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
++      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
++}
++
++// One CTA: BR = WN*TR*16 weight rows x BT = 8*NT tokens x KB of K (its cluster rank's slice).
++// Warp (wn, wk): TR row tiles of 16 x the wk-th 1/WK of the CTA's K slice, in steps of 32*U.
++// Lane (g = lane/4, t = lane%4) loads 16 bytes at k = k0 + 8t of rows g and g+8 (and of
++// token g for activations); the first mma takes k-slots {8t..8t+3}, the second {8t+4..8t+7}.
++// NA = 2: a second weight matrix (the router's lo half) at the same offsets, same accumulators.
++// XP: activations prefetched one batch ahead with the weights (else loaded at compute time).
++template <int NT, int TR, int U, int NA, int XP, int LD>
++__global__ void __launch_bounds__(256) skinny_kernel(
++    const __nv_bfloat16* __restrict__ W0, const __nv_bfloat16* __restrict__ W1,
++    const __nv_bfloat16* __restrict__ X, void* __restrict__ Out, int M, int N, int K, int KB,
++    int WN, int WK) {
++  constexpr bool OUTF32 = NA == 2;
++  constexpr int XU = XP ? U : 1;
++  constexpr int XN = XP ? NT : 1;
++  extern __shared__ float sred[];
++  constexpr int BT = 8 * NT;
++  const int BR = WN * TR * 16;
++  const int S = BR + 4;  // padded token stride of the reduction tile (bank spread)
++  const int lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
++  const int g = lane >> 2, t = lane & 3;
++  const int wn = warp % WN, wk = warp / WN;
++  const int row_cta = blockIdx.x * BR;
++  const int rowbase = row_cta + wn * TR * 16;
++  const int tok0 = blockIdx.z * BT;
++  const int KW = KB / WK;
++  const int kbeg = blockIdx.y * KB + wk * KW;
++  const int nsteps = KW / (32 * U);
++
++  float acc[TR][NT][4];
++#pragma unroll
++  for (int r = 0; r < TR; ++r)
++#pragma unroll
++    for (int j = 0; j < NT; ++j)
++#pragma unroll
++      for (int q = 0; q < 4; ++q) acc[r][j][q] = 0.f;
++
++  const int weight_stride = NA == 2 ? K * 2 : K;
++  const size_t off = (size_t)(rowbase + g) * weight_stride + kbeg + 8 * t;
++  const __nv_bfloat16* wp0 = W0 + off;
++  const __nv_bfloat16* wp1 = W1 + off;
++  const size_t rs8 = (size_t)8 * weight_stride;
++  const size_t rs16 = (size_t)16 * weight_stride;
++  const __nv_bfloat16* xp[NT];
++#pragma unroll
++  for (int j = 0; j < NT; ++j) {
++    int tok = tok0 + j * 8 + g;
++    tok = tok < M ? tok : M - 1;  // padded tokens read a real row; their outputs are dropped
++    xp[j] = X + (size_t)tok * K + kbeg + 8 * t;
++  }
++
++  uint4 a0[U][NA][TR][2], a1[U][NA][TR][2];
++  uint4 b0[XU][XN], b1[XU][XN];
++
++  auto load = [&](uint4 (&a)[U][NA][TR][2], uint4 (&b)[XU][XN], int s) {
++    const int koff = s * 32 * U;
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int na = 0; na < NA; ++na)
++#pragma unroll
++        for (int r = 0; r < TR; ++r) {
++          const __nv_bfloat16* p = (na == 0 ? wp0 : wp1) + r * rs16 + koff + u * 32;
++          a[u][na][r][0] = ld_stream<LD>(p);
++          a[u][na][r][1] = ld_stream<LD>(p + rs8);
++        }
++    if (XP) {
++#pragma unroll
++      for (int u = 0; u < XU; ++u)
++#pragma unroll
++        for (int j = 0; j < XN; ++j) b[u][j] = ld_act(xp[j] + koff + u * 32);
++    }
++  };
++  auto compute = [&](uint4 (&a)[U][NA][TR][2], uint4 (&bp)[XU][XN], int s) {
++    const int koff = s * 32 * U;
++    uint4 bl[U][NT];
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int j = 0; j < NT; ++j) {
++        if (XP)
++          bl[u][j] = bp[u < XU ? u : 0][j < XN ? j : 0];
++        else
++          bl[u][j] = ld_act(xp[j] + koff + u * 32);
++      }
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int na = 0; na < NA; ++na)
++#pragma unroll
++        for (int r = 0; r < TR; ++r)
++#pragma unroll
++          for (int j = 0; j < NT; ++j) {
++            const uint4& lo = a[u][na][r][0];
++            const uint4& hi = a[u][na][r][1];
++            mma16816(acc[r][j], lo.x, hi.x, lo.y, hi.y, bl[u][j].x, bl[u][j].y);
++            mma16816(acc[r][j], lo.z, hi.z, lo.w, hi.w, bl[u][j].z, bl[u][j].w);
++          }
++  };
++
++  if (nsteps > 0) load(a0, b0, 0);
++  for (int s = 0; s < nsteps; s += 2) {
++    if (s + 1 < nsteps) load(a1, b1, s + 1);
++    compute(a0, b0, s);
++    if (s + 1 < nsteps) {
++      if (s + 2 < nsteps) load(a0, b0, s + 2);
++      compute(a1, b1, s + 1);
++    }
++  }
++
++  // Warp partials -> shared tile [WK][BT][S] (token-major so the output stores coalesce).
++#pragma unroll
++  for (int r = 0; r < TR; ++r)
++#pragma unroll
++    for (int j = 0; j < NT; ++j) {
++      const int row = wn * TR * 16 + r * 16 + g;
++      const int tok = j * 8 + 2 * t;
++      float* p = sred + (size_t)(wk * BT + tok) * S + row;
++      p[0] = acc[r][j][0];
++      p[S] = acc[r][j][1];
++      p[8] = acc[r][j][2];
++      p[S + 8] = acc[r][j][3];
++    }
++  __syncthreads();
++  const int E = BT * BR;
++  if (WK > 1) {
++    for (int e = threadIdx.x; e < E; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      float v = 0.f;
++      for (int w = 0; w < WK; ++w) v += sred[(w * BT + tok) * S + row];
++      sred[tok * S + row] = v;
++    }
++    __syncthreads();
++  }
++
++  auto store = [&](int tok, int row, float v) {
++    const size_t idx = (size_t)(tok0 + tok) * N + row_cta + row;
++    if (OUTF32)
++      reinterpret_cast<float*>(Out)[idx] = v;
++    else
++      reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
++  };
++
++  const int KS = gridDim.y;
++  if (KS == 1) {
++    for (int e = threadIdx.x; e < E; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      if (tok0 + tok < M) store(tok, row, sred[tok * S + row]);
++    }
++  } else {
++    cg::cluster_group cluster = cg::this_cluster();
++    cluster.sync();
++    const int rank = (int)cluster.block_rank();
++    const int per = (E + KS - 1) / KS;
++    const int e0 = rank * per;
++    const int e1 = min(E, e0 + per);
++    for (int e = e0 + (int)threadIdx.x; e < e1; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      if (tok0 + tok >= M) continue;
++      float v = 0.f;
++      for (int q = 0; q < KS; ++q) v += cluster.map_shared_rank(sred, q)[tok * S + row];
++      store(tok, row, v);
++    }
++    cluster.sync();  // keep this CTA's shared tile alive until every rank has read it
++  }
++}
++
++
++} // namespace muse_proj
++
++
++
++#include <cuda.h>
++#include <cudaTypedefs.h>
++#ifndef MP_SPIN_LIMIT
++#define MP_SPIN_LIMIT (1u << 26)
++#endif
++#if defined(__CUDA_ARCH__) && defined(__CUDA_ARCH_FEAT_SM90_ALL)
++#define MP_SM90A 1
++#endif
++#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 900
++#define MP_TMA 1  // TMA, mbarriers, clusters: sm_90 and later (wgmma itself needs sm_90a)
++#endif
++
++namespace muse_pair {
++
++__device__ __forceinline__ uint32_t su32(const void* p) { return (uint32_t)__cvta_generic_to_shared(p); }
++
++#ifdef MP_TMA
++__device__ __forceinline__ void mbar_init(uint64_t* bar, uint32_t count) {
++  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" ::"r"(su32(bar)), "r"(count));
++}
++__device__ __forceinline__ void mbar_expect_tx(uint64_t* bar, uint32_t bytes) {
++  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" ::"r"(su32(bar)), "r"(bytes) : "memory");
++}
++__device__ __forceinline__ void mbar_arrive(uint64_t* bar) {
++  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" ::"r"(su32(bar)) : "memory");
++}
++// Bounded: a pipeline bug yields wrong numbers (caught by tests) instead of a hung GPU.
++__device__ __forceinline__ void mbar_wait(uint64_t* bar, uint32_t parity) {
++  uint32_t done = 0;
++  uint32_t tries = 0;
++  do {
++    if (++tries > (uint32_t)MP_SPIN_LIMIT) {
++#ifdef MP_DEBUG
++      printf("mbar_wait timeout block (%d,%d,%d) thread %d parity %u\n", blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, parity);
++#endif
++      asm volatile("trap;");
++    }
++    asm volatile(
++        "{\n .reg .pred p;\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\n selp.u32 %0, 1, 0, p;\n}\n"
++        : "=r"(done) : "r"(su32(bar)), "r"(parity) : "memory");
++  } while (!done);
++}
++// Same box into this CTA and every CTA in mask (same smem offsets, each one's own mbarrier).
++__device__ __forceinline__ void tma_load_2d_mc(void* dst, const CUtensorMap* map, uint64_t* bar, int c0, int c1,
++                                               uint16_t mask) {
++  asm volatile(
++      "cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes.multicast::cluster"
++      " [%0], [%1, {%3, %4}], [%2], %5;"
++      ::"r"(su32(dst)), "l"(reinterpret_cast<uint64_t>(map)), "r"(su32(bar)), "r"(c0), "r"(c1), "h"(mask)
++      : "memory");
++}
++__device__ __forceinline__ void mbar_arrive_remote(uint64_t* bar, uint32_t cta_rank) {
++  asm volatile(
++      "{\n .reg .b32 ra;\n mapa.shared::cluster.u32 ra, %0, %1;\n"
++      " mbarrier.arrive.release.cluster.shared::cluster.b64 _, [ra];\n}\n"
++      ::"r"(su32(bar)), "r"(cta_rank) : "memory");
++}
++__device__ __forceinline__ void tma_load_2d(void* dst, const CUtensorMap* map, uint64_t* bar, int c0, int c1) {
++  asm volatile(
++      "cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes [%0], [%1, {%3, %4}], [%2];"
++      ::"r"(su32(dst)), "l"(reinterpret_cast<uint64_t>(map)), "r"(su32(bar)), "r"(c0), "r"(c1) : "memory");
++}
++template <int N_>
++__device__ __forceinline__ void acc_fence(float (&d)[N_]) {
++#pragma unroll
++  for (int i = 0; i < N_; ++i) asm volatile("" : "+f"(d[i])::"memory");
++}
++#endif
++#ifdef MP_SM90A
++__device__ __forceinline__ void wgmma_fence() { asm volatile("wgmma.fence.sync.aligned;" ::: "memory"); }
++__device__ __forceinline__ void wgmma_commit() { asm volatile("wgmma.commit_group.sync.aligned;" ::: "memory"); }
++template <int N_>
++__device__ __forceinline__ void wgmma_wait() { asm volatile("wgmma.wait_group.sync.aligned %0;" ::"n"(N_) : "memory"); }
++// K-major operand, 128-byte swizzle, 8-row atoms 1024 bytes apart.
++__device__ __forceinline__ uint64_t make_desc(const void* p, int bk) {
++  const uint64_t a = su32(p);
++  return ((a & 0x3FFFF) >> 4) | ((uint64_t)1 << 16) | ((uint64_t)(1024 >> 4) << 32) | ((uint64_t)1 << 62);
++}
++__device__ __forceinline__ void wgmma_m64n64(float (&d)[32], uint64_t da, uint64_t db, int scale_d) {
++  asm volatile("{\n"
++      ".reg .pred p;\n"
++      "setp.ne.b32 p, %34, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n64k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31}, %32, %33, p, 1, 1, 0, 0;\n"
++      "}\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]),
++      "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31])
++      : "l"(da), "l"(db), "r"(scale_d));
++}
++__device__ __forceinline__ void wgmma_m64n128(float (&d)[64], uint64_t da, uint64_t db, int scale_d) {
++  asm volatile("{\n"
++      ".reg .pred p;\n"
++      "setp.ne.b32 p, %66, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n128k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31, %32, %33, %34, %35, %36, %37, %38, %39, %40, %41, %42, %43, %44, %45, %46, %47, %48, %49, %50, %51, %52, %53, %54, %55, %56, %57, %58, %59, %60, %61, %62,"
++      "%63}, %64, %65, p, 1, 1, 0, 0;\n"
++      "}\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]),
++      "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31]), "+f"(d[32]), "+f"(d[33]), "+f"(d[34]), "+f"(d[35]), "+f"(d[36]), "+f"(d[37]), "+f"(d[38]), "+f"(d[39]), "+f"(d[40]), "+f"(d[41]), "+f"(d[42]), "+f"(d[43]), "+f"(d[44]), "+f"(d[45]), "+f"(d[46]), "+f"(d[47]), "+f"(d[48]), "+f"(d[49]), "+f"(d[50]), "+f"(d[51]), "+f"(d[52]), "+f"(d[53]), "+f"(d[54]), "+f"(d[55]),
++      "+f"(d[56]), "+f"(d[57]), "+f"(d[58]), "+f"(d[59]), "+f"(d[60]), "+f"(d[61]), "+f"(d[62]), "+f"(d[63])
++      : "l"(da), "l"(db), "r"(scale_d));
++}
++__device__ __forceinline__ void wgmma_m64n256(float (&d)[128], uint64_t da, uint64_t db, int scale_d) {
++  asm volatile("{\n"
++      ".reg .pred p;\n"
++      "setp.ne.b32 p, %130, 0;\n"
++      "wgmma.mma_async.sync.aligned.m64n256k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31, %32, %33, %34, %35, %36, %37, %38, %39, %40, %41, %42, %43, %44, %45, %46, %47, %48, %49, %50, %51, %52, %53, %54, %55, %56, %57, %58, %59, %60, %61, %62, %63,"
++      "%64, %65, %66, %67, %68, %69, %70, %71, %72, %73, %74, %75, %76, %77, %78, %79, %80, %81, %82, %83, %84, %85, %86, %87, %88, %89, %90, %91, %92, %93, %94, %95, %96, %97, %98, %99, %100, %101, %102, %103, %104, %105, %106, %107, %108, %109, %110, %111, %112, %113, %114, %115, %116, %117, %118, %119, %120, %121, %122, %123, %124, %125, %126, %127}, %128, %129, p,"
++      "1, 1, 0, 0;\n"
++      "}\n"
++      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]),
++      "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31]), "+f"(d[32]), "+f"(d[33]), "+f"(d[34]), "+f"(d[35]), "+f"(d[36]), "+f"(d[37]), "+f"(d[38]), "+f"(d[39]), "+f"(d[40]), "+f"(d[41]), "+f"(d[42]), "+f"(d[43]), "+f"(d[44]), "+f"(d[45]), "+f"(d[46]), "+f"(d[47]), "+f"(d[48]), "+f"(d[49]), "+f"(d[50]), "+f"(d[51]), "+f"(d[52]), "+f"(d[53]), "+f"(d[54]), "+f"(d[55]),
++      "+f"(d[56]), "+f"(d[57]), "+f"(d[58]), "+f"(d[59]), "+f"(d[60]), "+f"(d[61]), "+f"(d[62]), "+f"(d[63]), "+f"(d[64]), "+f"(d[65]), "+f"(d[66]), "+f"(d[67]), "+f"(d[68]), "+f"(d[69]), "+f"(d[70]), "+f"(d[71]), "+f"(d[72]), "+f"(d[73]), "+f"(d[74]), "+f"(d[75]), "+f"(d[76]), "+f"(d[77]), "+f"(d[78]), "+f"(d[79]), "+f"(d[80]), "+f"(d[81]), "+f"(d[82]), "+f"(d[83]),
++      "+f"(d[84]), "+f"(d[85]), "+f"(d[86]), "+f"(d[87]), "+f"(d[88]), "+f"(d[89]), "+f"(d[90]), "+f"(d[91]), "+f"(d[92]), "+f"(d[93]), "+f"(d[94]), "+f"(d[95]), "+f"(d[96]), "+f"(d[97]), "+f"(d[98]), "+f"(d[99]), "+f"(d[100]), "+f"(d[101]), "+f"(d[102]), "+f"(d[103]), "+f"(d[104]), "+f"(d[105]), "+f"(d[106]), "+f"(d[107]), "+f"(d[108]), "+f"(d[109]), "+f"(d[110]),
++      "+f"(d[111]), "+f"(d[112]), "+f"(d[113]), "+f"(d[114]), "+f"(d[115]), "+f"(d[116]), "+f"(d[117]), "+f"(d[118]), "+f"(d[119]), "+f"(d[120]), "+f"(d[121]), "+f"(d[122]), "+f"(d[123]), "+f"(d[124]), "+f"(d[125]), "+f"(d[126]), "+f"(d[127])
++      : "l"(da), "l"(db), "r"(scale_d));
++}
++
++#elif defined(MP_TMA)
++// Off sm_90a: the same swizzled tiles through ldmatrix + mma.sync (validates the pipeline).
++__device__ __forceinline__ void ldsm_x4(const void* p, uint32_t& a0, uint32_t& a1, uint32_t& a2, uint32_t& a3) {
++  asm volatile("ldmatrix.sync.aligned.m8n8.x4.shared.b16 {%0,%1,%2,%3}, [%4];"
++               : "=r"(a0), "=r"(a1), "=r"(a2), "=r"(a3) : "r"(su32(p)));
++}
++__device__ __forceinline__ void ldsm_x2(const void* p, uint32_t& b0, uint32_t& b1) {
++  asm volatile("ldmatrix.sync.aligned.m8n8.x2.shared.b16 {%0,%1}, [%2];" : "=r"(b0), "=r"(b1) : "r"(su32(p)));
++}
++__device__ __forceinline__ void mma_emu(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
++                                        uint32_t b0, uint32_t b1) {
++  asm volatile(
++      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
++      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
++      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
++}
++#endif
++
++
++// Each block owns a contiguous K interval. No CTA waits for another CTA to be scheduled.
++// Mode 0: split-K + last-CTA merge; mode 1: DSMEM cluster; mode 2: balanced Stream-K.
++template <int BT, int BK, int ST, bool OUTF32, int THREADS, bool HIER>
++__global__ void __launch_bounds__(THREADS) hop_kernel(
++    const __grid_constant__ CUtensorMap tmW, const __grid_constant__ CUtensorMap tmX,
++    void* __restrict__ Out, volatile float* __restrict__ Work, unsigned* __restrict__ Counts,
++    int M, int N, int nkb, int kx, int mode, int split, int chunk, int total) {
++#ifdef MP_TMA
++  // A 128-byte TMA swizzle admits at most 64 BF16 elements in its inner box.
++  // BK=128 groups two legal K64 boxes under one pipeline barrier.
++  constexpr int BR = 64, AB = BR * 64 * 2, XB = AB * (OUTF32 ? 2 : 1);
++  constexpr int CB = (BR * (OUTF32 ? 2 : 1) + BT) * 64 * 2, SB = CB * (BK/64);
++  extern __shared__ __align__(1024) unsigned char smem[];
++  uint64_t* full = reinterpret_cast<uint64_t*>(smem + ST * SB);
++  uint64_t* empty = full + ST;
++  __shared__ unsigned last;
++  const int tid = threadIdx.x, consumer = tid < 128;
++  const int begin = mode == 2 ? blockIdx.x * chunk : 0;
++  const int end = mode == 2 ? min(total, begin + chunk) : 1;
++  int pos = begin;
++  while (pos < end) {
++    const int tile = mode == 2 ? pos / nkb : (int)blockIdx.x;
++    const int first = mode == 2 ? tile * nkb / chunk : 0;
++    const int parts = mode == 2 ? ((tile + 1) * nkb - 1) / chunk - first + 1 : split;
++    const int slot = mode == 2 ? (int)blockIdx.x - first : (int)blockIdx.y;
++    const int kb0 = mode == 2 ? pos - tile * nkb : slot * nkb / split;
++    const int kb1 = mode == 2 ? min(nkb, end - tile * nkb) : (slot + 1) * nkb / split;
++    const int steps = kb1 - kb0;
++    const int row0 = (tile % (N / BR)) * BR, tok0 = (tile / (N / BR)) * BT;
++    if (tid == 0) {
++      for (int s = 0; s < ST; ++s) { mbar_init(full + s, 1); mbar_init(empty + s, 1); }
++      asm volatile("fence.mbarrier_init.release.cluster;" ::: "memory");
++      asm volatile("fence.proxy.async.shared::cta;" ::: "memory");
++    }
++    __syncthreads();
++    float acc[BT / 2];
++#pragma unroll
++    for (int i = 0; i < BT / 2; ++i) acc[i] = 0.f;
++    // One warpgroup owns both the TMA ring and WGMMA; no idle producer warpgroup.
++    auto prefetch = [&](int s) {
++      int stage=s%ST, kc=(kb0+s)*BK;
++      unsigned char* a=smem+stage*SB;
++      mbar_expect_tx(full+stage,SB);
++#pragma unroll
++      for (int chunk_k=0;chunk_k<BK/64;++chunk_k) {
++        tma_load_2d(a+chunk_k*CB,&tmW,full+stage,kc+chunk_k*64,row0);
++        if constexpr(OUTF32) tma_load_2d(a+chunk_k*CB+AB,&tmW,full+stage,kc+chunk_k*64+kx,row0);
++        tma_load_2d(a+chunk_k*CB+XB,&tmX,full+stage,kc+chunk_k*64,tok0);
++      }
++    };
++    if constexpr(THREADS==128) { if(tid==0) for(int s=0;s<ST && s<steps;++s) prefetch(s); }
++    if (THREADS>128 && tid == 128) {
++      for (int s = 0; s < steps; ++s) {
++        int stage = s % ST;
++        if (s >= ST) mbar_wait(empty + stage, ((s / ST) & 1) ^ 1);
++        unsigned char* a = smem + stage * SB;
++        mbar_expect_tx(full + stage, SB);
++        int kc = (kb0 + s) * BK;
++#pragma unroll
++        for (int chunk_k=0; chunk_k<BK/64; ++chunk_k) {
++          tma_load_2d(a+chunk_k*CB, &tmW, full + stage, kc+chunk_k*64, row0);
++          if constexpr (OUTF32) tma_load_2d(a+chunk_k*CB+AB, &tmW, full + stage, kc+chunk_k*64+kx, row0);
++          tma_load_2d(a+chunk_k*CB+XB, &tmX, full + stage, kc+chunk_k*64, tok0);
++        }
++      }
++    } else if (consumer) {
++      for (int s = 0; s < steps; ++s) {
++        int stage = s % ST;
++        mbar_wait(full + stage, (s / ST) & 1);
++        unsigned char* a = smem + stage * SB;
++#ifdef MP_SM90A
++        acc_fence(acc);
++        wgmma_fence();
++#pragma unroll
++        for (int kk = 0; kk < BK / 16; ++kk) {
++          const uint64_t db = make_desc(a+(kk/4)*CB+XB,64);
++          { const uint64_t da = make_desc(a+(kk/4)*CB,64); if constexpr(BT==64) wgmma_m64n64(acc,da+2*(kk%4),db+2*(kk%4),1); else if constexpr(BT==128) wgmma_m64n128(acc,da+2*(kk%4),db+2*(kk%4),1); else if constexpr(BT==256) wgmma_m64n256(acc,da+2*(kk%4),db+2*(kk%4),1); }
++          if constexpr (OUTF32) { const uint64_t da = make_desc(a+(kk/4)*CB+AB,64); if constexpr(BT==64) wgmma_m64n64(acc,da+2*(kk%4),db+2*(kk%4),1); else if constexpr(BT==128) wgmma_m64n128(acc,da+2*(kk%4),db+2*(kk%4),1); else if constexpr(BT==256) wgmma_m64n256(acc,da+2*(kk%4),db+2*(kk%4),1); }
++        }
++        wgmma_commit();
++        wgmma_wait<0>();
++        acc_fence(acc);
++#else
++        const int warp = tid >> 5, ln = tid & 31;
++#pragma unroll
++        for (int kk = 0; kk < BK / 16; ++kk) {
++          unsigned char* chunk_a=a+(kk/4)*CB;
++          int ar = warp * 16 + (ln & 15), ac = (kk%4) * 2 + (ln >> 4);
++          uint32_t a0,a1,a2,a3,lo0,lo1,lo2,lo3;
++          ldsm_x4(chunk_a + ar * 128 + ((ac ^ (ar & 7)) << 4), a0,a1,a2,a3);
++          if constexpr (OUTF32) ldsm_x4(chunk_a + AB + ar * 128 + ((ac ^ (ar & 7)) << 4),lo0,lo1,lo2,lo3);
++#pragma unroll
++          for (int j = 0; j < BT / 8; ++j) {
++            int br = j * 8 + (ln & 7), bc = (kk%4) * 2 + ((ln >> 3) & 1);
++            uint32_t b0,b1;
++            ldsm_x2(chunk_a + XB + br * 128 + ((bc ^ (br & 7)) << 4), b0,b1);
++            mma_emu(&acc[4*j],a0,a1,a2,a3,b0,b1);
++            if constexpr (OUTF32) mma_emu(&acc[4*j],lo0,lo1,lo2,lo3,b0,b1);
++          }
++        }
++        asm volatile("bar.sync 1, 128;" ::: "memory");
++#endif
++        if constexpr(THREADS==128) {
++          if(tid==0 && s+ST<steps) prefetch(s+ST);
++        } else {
++          if (tid == 0) mbar_arrive(empty + stage);
++        }
++      }
++    }
++    __syncthreads();
++    auto store = [&](int token, int row, float v) {
++      if (tok0 + token < M) {
++        size_t idx = (size_t)(tok0 + token) * N + row0 + row;
++        if constexpr (OUTF32) reinterpret_cast<float*>(Out)[idx] = v;
++        else reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
++      }
++    };
++    // Same WGMMA accumulator layout as mma.sync emulation.
++    if (consumer) {
++      int warp = tid >> 5, lane = tid & 31, row = warp * 16 + (lane >> 2), col = 2 * (lane & 3);
++#pragma unroll
++      for (int j = 0; j < BT / 8; ++j) {
++#pragma unroll
++        for (int q = 0; q < 4; ++q) {
++          int r = row + (q >= 2 ? 8 : 0), t = j * 8 + col + (q & 1);
++          if (parts == 1) store(t, r, acc[j*4+q]);
++          else if (mode == 1 || mode == 3) reinterpret_cast<float*>(smem)[t * 68 + r] = acc[j*4+q];
++          else Work[((size_t)tile * 17 + slot) * BT * BR + t * BR + r] = acc[j*4+q];
++        }
++      }
++    }
++    if (parts > 1) {
++      if constexpr (HIER) {
++        // Hierarchical split-K: each 16-CTA cluster reduces its K interval in DSMEM.
++        // Only the last completed cluster merges the 2/4 global partials, distributed
++        // over all 16 resident CTAs. There is no cross-cluster spin or second kernel.
++        constexpr int CK=16;
++        auto cluster=cg::this_cluster();
++        const int rank=slot%CK, group=slot/CK, groups=parts/CK;
++        cluster.sync();
++        for(int e=rank*THREADS+tid;e<BT*BR;e+=CK*THREADS) {
++          int t=e/BR,r=e%BR; float v=0.f;
++          for(int p=0;p<CK;++p) v+=cluster.map_shared_rank(reinterpret_cast<float*>(smem),p)[t*68+r];
++          Work[((size_t)tile*17+group)*BT*BR+e]=v;
++        }
++        __threadfence();
++        cluster.sync();
++        if(rank==0 && tid==0) last=atomicAdd(Counts+tile,1u)==(unsigned)(groups-1);
++        cluster.sync();
++        const bool elected=*cluster.map_shared_rank(&last,0)!=0;
++        if(elected) {
++          for(int e=rank*THREADS+tid;e<BT*BR;e+=CK*THREADS) {
++            float v=0.f;
++            for(int p=0;p<groups;++p) v+=Work[((size_t)tile*17+p)*BT*BR+e];
++            store(e/BR,e%BR,v);
++          }
++        }
++        cluster.sync();
++        if(elected && rank==0 && tid==0) atomicExch(Counts+tile,0u);
++      } else if (mode == 1) {
++        auto cluster = cg::this_cluster();
++        cluster.sync();
++        for (int e = slot * THREADS + tid; e < BT * BR; e += parts * THREADS) {
++          int t = e / BR, r = e % BR;
++          float v = 0.f;
++          for (int p = 0; p < parts; ++p) v += cluster.map_shared_rank(reinterpret_cast<float*>(smem), p)[t*68+r];
++          store(t,r,v);
++        }
++        cluster.sync();
++      } else {
++        // Release each writer's global stores before publishing this block's ticket.
++        __threadfence();
++        __syncthreads();
++        if (tid == 0) last = atomicAdd(Counts + tile, 1u) == (unsigned)(parts - 1);
++        __syncthreads();
++        if (last) {
++          for (int e = tid; e < BT * BR; e += THREADS) {
++            float v = 0.f;
++            for (int p = 0; p < parts; ++p) v += Work[((size_t)tile*17+p)*BT*BR+e];
++            store(e/BR,e%BR,v);
++          }
++          __syncthreads();
++          if (tid == 0) atomicExch(Counts + tile, 0u);
++        }
++      }
++    }
++    __syncthreads();
++    pos = mode == 2 ? tile * nkb + kb1 : end;
++  }
++#endif
++}
++
++
++} // namespace muse_pair
++
++
++template<int NT,int TR,int U,int NA,int XP,int LD>
++int lean_skinny_launch(const __nv_bfloat16* w,const __nv_bfloat16* lo,const __nv_bfloat16* x,void* out,
++                      int M,int N,int K,int wn,int wk,int ks,cudaStream_t stream){
++  constexpr int BT=NT*8;int BR=wn*TR*16;
++  if(N%BR || ks<1 || K%ks || (K/ks)%(wk*32*U) || wn*wk>8)return lean_fail("skinny shape",-1);
++  size_t shared=(size_t)wk*BT*(BR+4)*4;if(shared>48*1024)return lean_fail("skinny shared",-1);
++  cudaLaunchConfig_t c={};c.gridDim=dim3(N/BR,ks,(M+BT-1)/BT);c.blockDim=dim3(wn*wk*32);c.dynamicSmemBytes=shared;c.stream=stream;
++  cudaLaunchAttribute attr={};if(ks>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=ks;attr.val.clusterDim.z=1;c.attrs=&attr;c.numAttrs=1;}
++  return (int)cudaLaunchKernelEx(&c,muse_proj::skinny_kernel<NT,TR,U,NA,XP,LD>,w,lo,x,out,M,N,K,K/ks,wn,wk);
++}
++extern "C" int lean_skinny(const void* w,const void* lo,const void* x,void* out,
++                          int M,int N,int K,int nt,int tr,int u,int wn,int wk,int ks,int split2,int xp,int ld,void* stream){
++  int na=split2 ? 2 : 1;
++#define LSKIN(NT,TR,U,NA,XP,LD) if(nt==NT && tr==TR && u==U && na==NA && xp==XP && ld==LD)return lean_skinny_launch<NT,TR,U,NA,XP,LD>((const __nv_bfloat16*)w,(const __nv_bfloat16*)lo,(const __nv_bfloat16*)x,out,M,N,K,wn,wk,ks,(cudaStream_t)stream);
++  LSKIN(1,1,4,1,1,0) LSKIN(1,2,4,1,1,0) LSKIN(2,1,4,1,1,0) LSKIN(2,2,4,1,1,0) LSKIN(4,1,4,1,1,0) LSKIN(8,1,2,1,1,0) LSKIN(1,1,4,2,1,0) LSKIN(2,1,4,2,1,0) LSKIN(4,1,4,2,0,0)
++  return lean_fail("skinny specialization",-1);
++}
++
++static int lean_map(CUtensorMap* m,const void* ptr,int rows,int cols,int box_rows){
++  static PFN_cuTensorMapEncodeTiled_v12000 fn=nullptr;
++  if(!fn){void* p=nullptr;cudaDriverEntryPointQueryResult q;LEAN_CUDA(cudaGetDriverEntryPoint("cuTensorMapEncodeTiled",&p,cudaEnableDefault,&q));if(!p)return lean_fail("tensor map function",-1);fn=(PFN_cuTensorMapEncodeTiled_v12000)p;}
++  cuuint64_t dims[2]={(cuuint64_t)cols,(cuuint64_t)rows},strides[1]={(cuuint64_t)cols*2};
++  cuuint32_t box[2]={64,(cuuint32_t)box_rows},es[2]={1,1};
++  auto e=fn(m,CU_TENSOR_MAP_DATA_TYPE_BFLOAT16,2,const_cast<void*>(ptr),dims,strides,box,es,
++            CU_TENSOR_MAP_INTERLEAVE_NONE,CU_TENSOR_MAP_SWIZZLE_128B,CU_TENSOR_MAP_L2_PROMOTION_L2_256B,CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE);
++  return e==CUDA_SUCCESS ? 0 : lean_fail("tensor map encode",(int)e);
++}
++template<int BT,int BK,int ST,int THREADS,bool OF,bool HH>
++int lean_pair_launch(const void* w,const void* x,void* out,float* work,unsigned* counts,
++                     int M,int N,int K,int KW,int mode,int split,int64_t work_elems,int64_t count_elems,cudaStream_t stream){
++  if(N%64 || K%BK || KW%BK || K<1 || split<1)return lean_fail("pair shape",-1);
++  int nkb=K/BK,tiles=(N/64)*((M+BT-1)/BT),total=tiles*nkb;
++  if(mode!=2 && (split>64 || split>nkb || (mode==1 && split>16) || (mode==3 && split%16)))return lean_fail("pair split",-1);
++  int target=std::min(split,tiles*16),chunk=(total+target-1)/target,blocks=mode==2 ? (total+chunk-1)/chunk : tiles;
++  if(work_elems<(int64_t)tiles*17*BT*64 || count_elems<tiles)return lean_fail("pair workspace",-1);
++  auto kern=muse_pair::hop_kernel<BT,BK,ST,OF,THREADS,HH>;
++  size_t shared=std::max((size_t)ST*(64*(OF ? 2 : 1)+BT)*BK*2+ST*16,(size_t)BT*68*4);
++  int device=0,optin=0;LEAN_CUDA(cudaGetDevice(&device));LEAN_CUDA(cudaDeviceGetAttribute(&optin,cudaDevAttrMaxSharedMemoryPerBlockOptin,device));
++  if(shared>(size_t)optin)return lean_fail("pair shared memory",-1);
++  static bool initialized=false;if(!initialized){LEAN_CUDA(cudaFuncSetAttribute(kern,cudaFuncAttributeMaxDynamicSharedMemorySize,shared));LEAN_CUDA(cudaFuncSetAttribute(kern,cudaFuncAttributeNonPortableClusterSizeAllowed,1));initialized=true;}
++  CUtensorMap mw,mx;int err=lean_map(&mw,w,N,KW,64);if(err)return err;err=lean_map(&mx,x,M,K,BT);if(err)return err;
++  cudaLaunchConfig_t c={};c.gridDim=dim3(blocks,mode==2 ? 1 : split);c.blockDim=dim3(THREADS);c.dynamicSmemBytes=shared;c.stream=stream;
++  cudaLaunchAttribute attr={};if((mode==1 || mode==3) && split>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=mode==3 ? 16 : split;attr.val.clusterDim.z=1;c.attrs=&attr;c.numAttrs=1;}
++  auto e=cudaLaunchKernelEx(&c,kern,mw,mx,out,work,counts,M,N,nkb,K,mode,split,chunk,total);
++  return e==cudaSuccess ? 0 : lean_fail("pair launch",(int)e);
++}
++extern "C" int lean_pair(const void* w,const void* x,void* out,void* work,void* counts,
++                        int M,int N,int K,int KW,int of,int bt,int bk,int st,int mode,int split,int threads,
++                        int64_t work_elems,int64_t count_elems,void* stream){
++#define LPAIR(BT,BK,ST,TH,OF,HH) if(bt==BT && bk==BK && st==ST && threads==TH && of==OF && (mode==3)==HH)return lean_pair_launch<BT,BK,ST,TH,OF,HH>(w,x,out,(float*)work,(unsigned*)counts,M,N,K,KW,mode,split,work_elems,count_elems,(cudaStream_t)stream);
++  LPAIR(64,64,4,128,true,false) LPAIR(64,64,4,160,false,false) LPAIR(64,64,4,160,true,false) LPAIR(64,64,4,256,false,false) LPAIR(64,64,4,256,true,false) LPAIR(128,64,3,160,false,false) LPAIR(128,64,3,160,true,true) LPAIR(128,64,4,160,false,false) LPAIR(128,64,4,256,false,false) LPAIR(128,128,2,256,false,false) LPAIR(256,64,2,160,true,true)
++  return lean_fail("pair specialization",-1);
++}
++
++"""
+diff --git a/python/sglang/srt/layers/muse_proj.py b/python/sglang/srt/layers/muse_proj.py
+new file mode 100644
+index 0000000..bb9bad3
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_proj.py
+@@ -0,0 +1,708 @@
++"""Local BF16 Muse o/pooler/unpooler GEMMs from H200 receipt f3786341611f4f1f.
++
++Construct MuseProjection(weight, kind) after weight loading, before CUDA graph
++capture. Pass the exact local weight, including a TP row slice when applicable.
++Calls return only this rank's GEMM result: the caller keeps its all-reduce,
++all-gather, residual and norm operations. No model parameters are replaced.
++
++Small-M schedules and 32 MiB cuBLASLt TN/NN selection match the receipt. New
++512-row pooler / 1024-row unpooler shapes tune their actual dimensions; they
++have no standalone H200 speedup evidence. Plans are cached by shape/device,
++then checked against torch for each new weight. Unseen M uses the ordinary
++GEMM or the masked small-M schedule, without online tuning or host sync.
++"""
++
++from __future__ import annotations
++
++import ctypes as ct
++from functools import lru_cache
++from itertools import chain
++import hashlib
++import logging
++import os
++import statistics
++import time
++
++import torch
++import torch.nn.functional as F
++
++logger = logging.getLogger(__name__)
++VERIFY_TOKENS = (8, 16, 32, 64, 128, 256)
++WORKSPACE_BYTES = 32 << 20
++_SHAPES = {
++    "o": ((8192, 1024),),
++    "pooler": ((4096, 8192), (512, 8192)),
++    "unpooler": ((8192, 4096), (1024, 4096)),
++}
++# Ordinals refer to 32 returned heuristics and a 32 MiB workspace, exactly as
++# in f3786341611f4f1f. They compete with cuBLAS and every returned heuristic.
++_RECEIPT = {
++    ("pooler", 128): ("lt_nn", 1),
++    ("pooler", 256): ("lt_nn", 0),
++    ("unpooler", 128): ("lt_nn", 0),
++    ("unpooler", 256): ("lt", 0),
++    ("o", 128): ("lt_nn", 0),
++    ("o", 256): ("cublas",),
++}
++_PLAN_CACHE = {}
++
++
++def projection_supported(x, weight, kind):
++    """H200 integration gate; a direct instance also runs native sm_120 tests."""
++    return (
++        kind in _SHAPES
++        and x.is_cuda
++        and weight.is_cuda
++        and x.device == weight.device
++        and x.ndim == weight.ndim == 2
++        and tuple(weight.shape) in _SHAPES[kind]
++        and x.shape[1] == weight.shape[1]
++        and x.dtype == weight.dtype == torch.bfloat16
++        and x.is_contiguous()
++        and weight.is_contiguous()
++        and 0 < x.shape[0] <= 256
++        and torch.cuda.get_device_capability(x.device) == (9, 0)
++    )
++
++
++class _Module:
++    def __init__(self, path):
++        self.lib = ct.CDLL(path)
++        p, i = ct.c_void_p, ct.c_int
++        self.lib.lean_error_string.restype = ct.c_char_p
++        self.lib.lean_algo_bytes.restype = i
++        self.lib.lean_skinny.argtypes = [p] * 4 + [i] * 12 + [p]
++        self.lib.lean_lt_options.argtypes = [i] * 5 + [p, ct.POINTER(i)]
++        self.lib.lean_lt_run.argtypes = [p] * 5 + [i] * 6 + [ct.c_size_t, p]
++        self.algo_bytes = self.lib.lean_algo_bytes()
++
++    def check(self, status):
++        if status:
++            raise RuntimeError(self.lib.lean_error_string().decode())
++
++    def skinny(self, x, weight, out, config):
++        nt, tr, u, wn, wk, ks, xp = config
++        self.check(self.lib.lean_skinny(
++            weight.data_ptr(), weight.data_ptr(), x.data_ptr(), out.data_ptr(),
++            x.shape[0], weight.shape[0], x.shape[1], nt, tr, u, wn, wk, ks,
++            0, xp, 0, torch.cuda.current_stream(x.device).cuda_stream,
++        ))
++
++    def options(self, m, n, k, nn):
++        count = ct.c_int()
++        codes = torch.empty((32, self.algo_bytes), dtype=torch.uint8, device="cpu")
++        self.check(self.lib.lean_lt_options(
++            n, m, k, n if nn else k, nn, codes.data_ptr(), ct.byref(count),
++        ))
++        return codes[:count.value].clone()
++
++    def lt(self, x, weight, out, workspace, codes, index, nn):
++        if not 0 <= index < codes.shape[0]:
++            raise ValueError("cuBLASLt ordinal outside the prepared heuristic table")
++        self.check(self.lib.lean_lt_run(
++            weight.data_ptr(), x.data_ptr(), out.data_ptr(), workspace.data_ptr(),
++            codes.data_ptr(), out.shape[1], x.shape[0], x.shape[1],
++            weight.stride(0), nn, index, workspace.numel(),
++            torch.cuda.current_stream(x.device).cuda_stream,
++        ))
++
++
++@lru_cache(None)
++def _module(arch=None):
++    from torch.utils.cpp_extension import load_inline
++
++    if torch.cuda.is_current_stream_capturing():
++        raise RuntimeError("construct MuseProjection after loading, before graph capture")
++    capability = torch.cuda.get_device_capability()
++    target = arch or ("9.0a" if capability == (9, 0) else f"{capability[0]}.{capability[1]}")
++    previous = os.environ.get("TORCH_CUDA_ARCH_LIST")
++    os.environ["TORCH_CUDA_ARCH_LIST"] = target
++    try:
++        tag = hashlib.sha256(_CUDA_SOURCE.encode()).hexdigest()[:12]
++        path = load_inline(
++            name=f"muse_dense_{tag}_{target.replace('.', '_')}",
++            cpp_sources="", cuda_sources=_CUDA_SOURCE, functions=None,
++            is_python_module=False, no_implicit_headers=True,
++            extra_cuda_cflags=["-O3", "-std=c++20", "--expt-relaxed-constexpr"],
++            extra_ldflags=["-lcublasLt"], verbose=False,
++        )
++    finally:
++        if previous is None:
++            os.environ.pop("TORCH_CUDA_ARCH_LIST", None)
++        else:
++            os.environ["TORCH_CUDA_ARCH_LIST"] = previous
++    return _Module(path)
++
++
++@lru_cache(None)
++def _options(device_index, m, n, k, nn):
++    with torch.cuda.device(device_index):
++        return _module().options(m, n, k, nn)
++
++
++def _version(weight):
++    try:
++        return weight._version
++    except RuntimeError:
++        # SGLang's inference tensors may not carry version counters. Weights
++        # must remain immutable after preparation, as with other packed weights.
++        return None
++
++
++def _agrees(out, expected):
++    if out.shape != expected.shape or not bool(torch.isfinite(out).all()):
++        return False
++    delta, ref = out.float() - expected.float(), expected.float()
++    if float(delta.norm() / ref.norm().clamp_min(1e-12)) > .01:
++        return False
++    norms = ref.norm(dim=1)
++    return float((delta.norm(dim=1) / norms.clamp_min(norms.mean() * .1 + 1e-12)).max()) <= .05
++
++
++class _Graph:
++    """Own its stream: destruction cannot clear another graph's BLAS workspace."""
++    active_streams = 0
++
++    def __init__(self, fn):
++        self.runtime = torch.cuda.cudart()
++        handle = ct.c_void_p()
++        if int(self.runtime.cudaStreamCreate(ct.addressof(handle))):
++            raise RuntimeError("projection tuning stream creation failed")
++        self.handle = handle.value
++        type(self).active_streams += 1
++        self.stream = torch.cuda.ExternalStream(self.handle)
++        self.graph = torch.cuda.CUDAGraph()
++        try:
++            self.stream.wait_stream(torch.cuda.current_stream())
++            with torch.cuda.stream(self.stream):
++                fn()
++            self.stream.synchronize()
++            with torch.cuda.graph(self.graph, stream=self.stream):
++                self.out = fn()
++            self.graph.replay()
++        except BaseException:
++            self.close()
++            raise
++
++    def close(self):
++        if getattr(self, "handle", None) is not None:
++            self.graph.reset()
++            self.graph = self.out = None
++            self.runtime.cudaStreamDestroy(self.handle)
++            self.handle = None
++            type(self).active_streams -= 1
++
++    def __enter__(self):
++        return self
++
++    def __exit__(self, *exc):
++        self.close()
++
++    def __del__(self):
++        self.close()
++
++
++def _times(graphs, x, banks, flush, repeats):
++    samples = [[] for _ in graphs]
++    for rep in range(repeats):
++        x.copy_(banks[(rep // 2) % len(banks)])
++        order = range(len(graphs)) if rep % 2 == 0 else reversed(range(len(graphs)))
++        for index in order:
++            flush.add_(1)
++            a, b = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
++            a.record()
++            graphs[index].graph.replay()
++            b.record()
++            b.synchronize()
++            samples[index].append(a.elapsed_time(b) * 1000)
++    return [statistics.median(values) for values in samples]
++
++
++class MuseProjection:
++    """Prepared local projection; prepare/timing never occurs in __call__.
++
++    Shape plans are shared across layers; NN weight copies are instance-local.
++    Temporary Lt workspaces use the current stream's allocator, so concurrent
++    graph/eager calls do not race on shared mutable scratch. Set tokens=() to
++    construct without tuning, then call prepare() during the loader's warmup.
++    """
++    def __init__(self, weight, kind, *, tokens=VERIFY_TOKENS, budget_s=15):
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("MuseProjection preparation must precede graph capture")
++        if kind not in _SHAPES or tuple(weight.shape) not in _SHAPES[kind]:
++            raise ValueError(f"unsupported TP8 {kind} projection shape {tuple(weight.shape)}")
++        if not weight.is_cuda or weight.dtype != torch.bfloat16 or not weight.is_contiguous():
++            raise ValueError("MuseProjection requires a contiguous CUDA BF16 weight")
++        self.source, self.weight, self.kind = weight, weight.detach(), kind
++        self.version = _version(weight)
++        self.transposed = None
++        self.plans, self.codes, self.timings = {}, {}, {}
++        with torch.cuda.device(weight.device):
++            self.mod = _module()
++        self.prepare(tokens, budget_s=budget_s)
++
++    def _skin_config(self, m):
++        nt = 1 if m <= 8 else 2
++        if self.kind == "pooler" and m > 8:
++            return nt, 2, 4, 1, 8, 1, 1
++        return nt, 1, 4, 1, 8 if self.kind == "unpooler" else 4, 1, 1
++
++    def _base(self, m):
++        n = self.weight.shape[0]
++        if 0 < m <= 16 and self.kind == "pooler" and n == 4096:
++            return "skin",
++        if 0 < m <= 8 and self.kind == "unpooler" and n == 1024:
++            return "skin",
++        if m == 1 and self.kind == "o":
++            return "skin",
++        return "cublas",
++
++    def _full_shape(self):
++        return self.weight.shape[0] == _SHAPES[self.kind][0][0]
++
++    def _ensure(self, m, config):
++        if config[0] not in ("lt", "lt_nn"):
++            return
++        nn = int(config[0] == "lt_nn")
++        if (m, nn) not in self.codes:
++            n, k = self.weight.shape
++            self.codes[(m, nn)] = _options(self.weight.device.index, m, n, k, nn)
++        if config[1] >= self.codes[(m, nn)].shape[0]:
++            raise ValueError(f"receipt heuristic unavailable: {config}")
++        if nn and self.transposed is None:
++            self.transposed = self.weight.T.contiguous()
++
++    def _run(self, x, config):
++        if config[0] == "cublas":
++            return F.linear(x, self.weight)
++        out = torch.empty((x.shape[0], self.weight.shape[0]), device=x.device, dtype=x.dtype)
++        if config[0] == "skin":
++            schedule = list(self._skin_config(x.shape[0]))
++            if len(config) > 1:
++                schedule[5] = config[1]
++            self.mod.skinny(x, self.weight, out, tuple(schedule))
++        elif config[0] in ("lt", "lt_nn"):
++            nn = int(config[0] == "lt_nn")
++            workspace = torch.empty(WORKSPACE_BYTES, device=x.device, dtype=torch.uint8)
++            w = self.transposed if nn else self.weight
++            self.mod.lt(x, w, out, workspace, self.codes[(x.shape[0], nn)], config[1], nn)
++        else:
++            raise ValueError(f"unknown projection variant {config}")
++        return out
++
++    def _variants(self, m):
++        base = self._base(m)
++        yield base
++        # Receipt small-M dispatch is already measured. Shards introduced by
++        # serving are different shapes and compete against cuBLAS locally.
++        if (self._full_shape() and m < 128) or (self.kind == "unpooler" and m <= 8):
++            return
++        yield "cublas",
++        if m <= 16:
++            yield "skin",
++            # New serving shards have only 16-64 output CTAs. The same receipt
++            # kernel's in-cluster K merge can fill more of H200's 132 SMs.
++            for split in (2, 4, 8):
++                yield "skin", split
++        if self._full_shape() and (self.kind, m) in _RECEIPT:
++            yield _RECEIPT[(self.kind, m)]
++        for nn in (0, 1):
++            tag = "lt_nn" if nn else "lt"
++            try:
++                self._ensure(m, (tag, 0))
++                for index in range(self.codes[(m, nn)].shape[0]):
++                    yield tag, index
++            except Exception as exc:
++                logger.warning("MUSE_PROJ_REJECT role=%s m=%s layout=%s: %s", self.kind, m, tag, exc)
++
++    def prepare(self, tokens=VERIFY_TOKENS, *, budget_s=15):
++        """Select once per actual shape; rejects never abort a trial sweep."""
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("call MuseProjection.prepare before graph capture")
++        deadline = time.monotonic() + max(0, budget_s)
++        flush = None
++        for m in dict.fromkeys(tokens):
++            if not 0 < m <= 256:
++                raise ValueError("prepare token counts must be in 1..256")
++            self.plans[m] = self._base(m)
++            if time.monotonic() >= deadline:
++                break
++            key = (self.weight.device.index, self.kind, tuple(self.weight.shape), m)
++            x = torch.randn((m, self.weight.shape[1]), device=self.weight.device, dtype=torch.bfloat16)
++            if key in _PLAN_CACHE:
++                config = _PLAN_CACHE[key]
++                try:
++                    self._ensure(m, config)
++                    if not _agrees(self._run(x, config), F.linear(x, self.weight)):
++                        raise ValueError("cached choice exceeds 1% torch guard")
++                    self.plans[m] = config
++                    continue
++                except Exception as exc:
++                    logger.warning("MUSE_PROJ_REJECT cached role=%s m=%s: %s", self.kind, m, exc)
++            # Exact small-M receipt schedules need no redundant benchmarking.
++            configs = iter(self._variants(m))
++            base = next(configs)
++            if (self._full_shape() and m < 128) or (self.kind == "unpooler" and m <= 8):
++                try:
++                    if not _agrees(self._run(x, base), F.linear(x, self.weight)):
++                        raise ValueError("receipt choice exceeds 1% torch guard")
++                    self.plans[m] = _PLAN_CACHE[key] = base
++                except Exception as exc:
++                    self.plans[m] = ("cublas",)
++                    logger.warning("MUSE_PROJ_REJECT receipt role=%s m=%s: %s", self.kind, m, exc)
++                continue
++            if flush is None:
++                flush = torch.zeros(128 << 20, device=x.device, dtype=torch.uint8)
++            banks = [torch.randn_like(x) for _ in range(3)]
++            banks[2][:, ::257] *= 32
++            with _Graph(lambda: self._run(x, self._base(m))) as baseline:
++                trials, seen = [], set()
++                for config in chain((base,), configs):
++                    if time.monotonic() >= deadline:
++                        break
++                    if config in seen:
++                        continue
++                    seen.add(config)
++                    try:
++                        self._ensure(m, config)
++                        with _Graph(lambda c=config: self._run(x, c)) as graph:
++                            for bank in banks:
++                                x.copy_(bank)
++                                graph.graph.replay()
++                                if not _agrees(graph.out, F.linear(x, self.weight)):
++                                    raise ValueError("variant exceeds 1% torch guard")
++                            us = _times([baseline, graph], x, banks, flush, 2)[1]
++                            trials.append((us, config))
++                    except Exception as exc:
++                        logger.warning("MUSE_PROJ_REJECT role=%s m=%s config=%s: %s", self.kind, m, config, exc)
++                finalists = sorted(trials, key=lambda row: row[0])[:3]
++                receipt = _RECEIPT.get((self.kind, m)) if self._full_shape() else None
++                keep = [self._base(m)] + [config for _, config in finalists]
++                if receipt in {config for _, config in trials} and receipt not in keep:
++                    keep.append(receipt)
++                scores = []
++                for config in dict.fromkeys(keep):
++                    if time.monotonic() >= deadline:
++                        break
++                    try:
++                        self._ensure(m, config)
++                        with _Graph(lambda c=config: self._run(x, c)) as graph:
++                            for bank in banks:
++                                x.copy_(bank)
++                                graph.graph.replay()
++                                if not _agrees(graph.out, F.linear(x, self.weight)):
++                                    raise ValueError("finalist exceeds 1% torch guard")
++                            base_us, us = _times([baseline, graph], x, banks, flush, 12)
++                            scores.append((us / base_us, config, us))
++                    except Exception as exc:
++                        logger.warning("MUSE_PROJ_REJECT finalist role=%s m=%s config=%s: %s", self.kind, m, config, exc)
++                if scores:
++                    ratio, config, us = min(scores, key=lambda row: row[0])
++                    self.plans[m] = _PLAN_CACHE[key] = config
++                    self.timings[m] = {"config": config, "event_us": us, "ratio_to_base": ratio}
++                    logger.info("MUSE_PROJ_PICK role=%s n=%s m=%s %s", self.kind, self.weight.shape[0], m, self.timings[m])
++        # Keep an extra weight layout only while a selected plan uses it.
++        if not any(config[0] == "lt_nn" for config in self.plans.values()):
++            self.transposed = None
++        return self
++
++    def __call__(self, x):
++        if _version(self.source) != self.version:
++            raise RuntimeError("Muse projection weight changed: construct a new prepared instance")
++        if (x.ndim != 2 or x.shape[1] != self.weight.shape[1]
++                or x.device != self.weight.device or x.dtype != torch.bfloat16):
++            raise ValueError("projection requires CUDA BF16 [tokens, local K] input")
++        x = x.contiguous()
++        if not x.shape[0]:
++            return x.new_empty((0, self.weight.shape[0]))
++        return self._run(x, self.plans.get(x.shape[0], self._base(x.shape[0])))
++
++
++_CUDA_SOURCE = r"""// Lightweight host ABI for the unchanged CUDA kernels. No Torch C++ headers.
++#include <cuda_runtime.h>
++#include <cuda.h>
++#include <cudaTypedefs.h>
++#include <cuda_bf16.h>
++#include <cooperative_groups.h>
++#include <cublasLt.h>
++#include <stdint.h>
++#include <algorithm>
++#include <cstring>
++#include <cstdio>
++namespace cg=cooperative_groups;
++static thread_local char lean_error[512];
++extern "C" const char* lean_error_string(){return lean_error;}
++static int lean_fail(const char* where,int code){std::snprintf(lean_error,sizeof(lean_error),"%s: status %d",where,code);return code ? code : -1;}
++#define LEAN_CUDA(call) do{auto e=(call);if(e!=cudaSuccess)return lean_fail(#call,(int)e);}while(0)
++#define LEAN_LT(call) do{auto e=(call);if(e!=CUBLAS_STATUS_SUCCESS)return lean_fail(#call,(int)e);}while(0)
++namespace muse_proj {
++
++// Weight stream: read once, keep out of L1. LD 0: 256B L2 prefetch, 1: none, 2: 128B.
++template <int LD>
++__device__ __forceinline__ uint4 ld_stream(const void* p) {
++  uint4 r;
++  if (LD == 0)
++    asm volatile("ld.global.nc.L1::no_allocate.L2::256B.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  else if (LD == 1)
++    asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  else
++    asm volatile("ld.global.nc.L1::no_allocate.L2::128B.v4.u32 {%0,%1,%2,%3}, [%4];"
++                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  return r;
++}
++
++// Activations: shared by the CTA's warps through L1.
++__device__ __forceinline__ uint4 ld_act(const void* p) {
++  uint4 r;
++  asm volatile("ld.global.nc.v4.u32 {%0,%1,%2,%3}, [%4];"
++               : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
++  return r;
++}
++
++__device__ __forceinline__ void mma16816(float (&c)[4], uint32_t a0, uint32_t a1, uint32_t a2,
++                                         uint32_t a3, uint32_t b0, uint32_t b1) {
++  asm volatile(
++      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, "
++      "{%8,%9}, {%0,%1,%2,%3};"
++      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
++      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
++}
++
++// One CTA: BR = WN*TR*16 weight rows x BT = 8*NT tokens x KB of K (its cluster rank's slice).
++// Warp (wn, wk): TR row tiles of 16 x the wk-th 1/WK of the CTA's K slice, in steps of 32*U.
++// Lane (g = lane/4, t = lane%4) loads 16 bytes at k = k0 + 8t of rows g and g+8 (and of
++// token g for activations); the first mma takes k-slots {8t..8t+3}, the second {8t+4..8t+7}.
++// NA = 2: a second weight matrix (the router's lo half) at the same offsets, same accumulators.
++// XP: activations prefetched one batch ahead with the weights (else loaded at compute time).
++template <int NT, int TR, int U, int NA, int XP, int LD>
++__global__ void __launch_bounds__(256) skinny_kernel(
++    const __nv_bfloat16* __restrict__ W0, const __nv_bfloat16* __restrict__ W1,
++    const __nv_bfloat16* __restrict__ X, void* __restrict__ Out, int M, int N, int K, int KB,
++    int WN, int WK) {
++  constexpr bool OUTF32 = NA == 2;
++  constexpr int XU = XP ? U : 1;
++  constexpr int XN = XP ? NT : 1;
++  extern __shared__ float sred[];
++  constexpr int BT = 8 * NT;
++  const int BR = WN * TR * 16;
++  const int S = BR + 4;  // padded token stride of the reduction tile (bank spread)
++  const int lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
++  const int g = lane >> 2, t = lane & 3;
++  const int wn = warp % WN, wk = warp / WN;
++  const int row_cta = blockIdx.x * BR;
++  const int rowbase = row_cta + wn * TR * 16;
++  const int tok0 = blockIdx.z * BT;
++  const int KW = KB / WK;
++  const int kbeg = blockIdx.y * KB + wk * KW;
++  const int nsteps = KW / (32 * U);
++
++  float acc[TR][NT][4];
++#pragma unroll
++  for (int r = 0; r < TR; ++r)
++#pragma unroll
++    for (int j = 0; j < NT; ++j)
++#pragma unroll
++      for (int q = 0; q < 4; ++q) acc[r][j][q] = 0.f;
++
++  const size_t off = (size_t)(rowbase + g) * K + kbeg + 8 * t;
++  const __nv_bfloat16* wp0 = W0 + off;
++  const __nv_bfloat16* wp1 = W1 + off;
++  const size_t rs8 = (size_t)8 * K;
++  const size_t rs16 = (size_t)16 * K;
++  const __nv_bfloat16* xp[NT];
++#pragma unroll
++  for (int j = 0; j < NT; ++j) {
++    int tok = tok0 + j * 8 + g;
++    tok = tok < M ? tok : M - 1;  // padded tokens read a real row; their outputs are dropped
++    xp[j] = X + (size_t)tok * K + kbeg + 8 * t;
++  }
++
++  uint4 a0[U][NA][TR][2], a1[U][NA][TR][2];
++  uint4 b0[XU][XN], b1[XU][XN];
++
++  auto load = [&](uint4 (&a)[U][NA][TR][2], uint4 (&b)[XU][XN], int s) {
++    const int koff = s * 32 * U;
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int na = 0; na < NA; ++na)
++#pragma unroll
++        for (int r = 0; r < TR; ++r) {
++          const __nv_bfloat16* p = (na == 0 ? wp0 : wp1) + r * rs16 + koff + u * 32;
++          a[u][na][r][0] = ld_stream<LD>(p);
++          a[u][na][r][1] = ld_stream<LD>(p + rs8);
++        }
++    if (XP) {
++#pragma unroll
++      for (int u = 0; u < XU; ++u)
++#pragma unroll
++        for (int j = 0; j < XN; ++j) b[u][j] = ld_act(xp[j] + koff + u * 32);
++    }
++  };
++  auto compute = [&](uint4 (&a)[U][NA][TR][2], uint4 (&bp)[XU][XN], int s) {
++    const int koff = s * 32 * U;
++    uint4 bl[U][NT];
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int j = 0; j < NT; ++j) {
++        if (XP)
++          bl[u][j] = bp[u < XU ? u : 0][j < XN ? j : 0];
++        else
++          bl[u][j] = ld_act(xp[j] + koff + u * 32);
++      }
++#pragma unroll
++    for (int u = 0; u < U; ++u)
++#pragma unroll
++      for (int na = 0; na < NA; ++na)
++#pragma unroll
++        for (int r = 0; r < TR; ++r)
++#pragma unroll
++          for (int j = 0; j < NT; ++j) {
++            const uint4& lo = a[u][na][r][0];
++            const uint4& hi = a[u][na][r][1];
++            mma16816(acc[r][j], lo.x, hi.x, lo.y, hi.y, bl[u][j].x, bl[u][j].y);
++            mma16816(acc[r][j], lo.z, hi.z, lo.w, hi.w, bl[u][j].z, bl[u][j].w);
++          }
++  };
++
++  if (nsteps > 0) load(a0, b0, 0);
++  for (int s = 0; s < nsteps; s += 2) {
++    if (s + 1 < nsteps) load(a1, b1, s + 1);
++    compute(a0, b0, s);
++    if (s + 1 < nsteps) {
++      if (s + 2 < nsteps) load(a0, b0, s + 2);
++      compute(a1, b1, s + 1);
++    }
++  }
++
++  // Warp partials -> shared tile [WK][BT][S] (token-major so the output stores coalesce).
++#pragma unroll
++  for (int r = 0; r < TR; ++r)
++#pragma unroll
++    for (int j = 0; j < NT; ++j) {
++      const int row = wn * TR * 16 + r * 16 + g;
++      const int tok = j * 8 + 2 * t;
++      float* p = sred + (size_t)(wk * BT + tok) * S + row;
++      p[0] = acc[r][j][0];
++      p[S] = acc[r][j][1];
++      p[8] = acc[r][j][2];
++      p[S + 8] = acc[r][j][3];
++    }
++  __syncthreads();
++  const int E = BT * BR;
++  if (WK > 1) {
++    for (int e = threadIdx.x; e < E; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      float v = 0.f;
++      for (int w = 0; w < WK; ++w) v += sred[(w * BT + tok) * S + row];
++      sred[tok * S + row] = v;
++    }
++    __syncthreads();
++  }
++
++  auto store = [&](int tok, int row, float v) {
++    const size_t idx = (size_t)(tok0 + tok) * N + row_cta + row;
++    if (OUTF32)
++      reinterpret_cast<float*>(Out)[idx] = v;
++    else
++      reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
++  };
++
++  const int KS = gridDim.y;
++  if (KS == 1) {
++    for (int e = threadIdx.x; e < E; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      if (tok0 + tok < M) store(tok, row, sred[tok * S + row]);
++    }
++  } else {
++    cg::cluster_group cluster = cg::this_cluster();
++    cluster.sync();
++    const int rank = (int)cluster.block_rank();
++    const int per = (E + KS - 1) / KS;
++    const int e0 = rank * per;
++    const int e1 = min(E, e0 + per);
++    for (int e = e0 + (int)threadIdx.x; e < e1; e += blockDim.x) {
++      const int tok = e / BR, row = e - tok * BR;
++      if (tok0 + tok >= M) continue;
++      float v = 0.f;
++      for (int q = 0; q < KS; ++q) v += cluster.map_shared_rank(sred, q)[tok * S + row];
++      store(tok, row, v);
++    }
++    cluster.sync();  // keep this CTA's shared tile alive until every rank has read it
++  }
++}
++
++
++} // namespace muse_proj
++
++
++
++#include <cuda.h>
++#include <cudaTypedefs.h>
++#ifndef MP_SPIN_LIMIT
++#define MP_SPIN_LIMIT (1u << 26)
++#endif
++#if defined(__CUDA_ARCH__) && defined(__CUDA_ARCH_FEAT_SM90_ALL)
++#define MP_SM90A 1
++#endif
++#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 900
++#define MP_TMA 1  // TMA, mbarriers, clusters: sm_90 and later (wgmma itself needs sm_90a)
++#endif
++
++template<int NT,int TR,int U,int NA,int XP,int LD>
++int lean_skinny_launch(const __nv_bfloat16* w,const __nv_bfloat16* lo,const __nv_bfloat16* x,void* out,
++                      int M,int N,int K,int wn,int wk,int ks,cudaStream_t stream){
++  constexpr int BT=NT*8;int BR=wn*TR*16;
++  if(N%BR || ks<1 || K%ks || (K/ks)%(wk*32*U) || wn*wk>8)return lean_fail("skinny shape",-1);
++  size_t shared=(size_t)wk*BT*(BR+4)*4;if(shared>48*1024)return lean_fail("skinny shared",-1);
++  cudaLaunchConfig_t c={};c.gridDim=dim3(N/BR,ks,(M+BT-1)/BT);c.blockDim=dim3(wn*wk*32);c.dynamicSmemBytes=shared;c.stream=stream;
++  cudaLaunchAttribute attr={};if(ks>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=ks;attr.val.clusterDim.z=1;c.attrs=&attr;c.numAttrs=1;}
++  return (int)cudaLaunchKernelEx(&c,muse_proj::skinny_kernel<NT,TR,U,NA,XP,LD>,w,lo,x,out,M,N,K,K/ks,wn,wk);
++}
++extern "C" int lean_skinny(const void* w,const void* lo,const void* x,void* out,
++                          int M,int N,int K,int nt,int tr,int u,int wn,int wk,int ks,int split2,int xp,int ld,void* stream){
++  int na=split2 ? 2 : 1;
++#define LSKIN(NT,TR,U,NA,XP,LD) if(nt==NT && tr==TR && u==U && na==NA && xp==XP && ld==LD)return lean_skinny_launch<NT,TR,U,NA,XP,LD>((const __nv_bfloat16*)w,(const __nv_bfloat16*)lo,(const __nv_bfloat16*)x,out,M,N,K,wn,wk,ks,(cudaStream_t)stream);
++    LSKIN(1,1,4,1,1,0)
++  LSKIN(1,2,4,1,1,0)
++  LSKIN(2,1,4,1,1,0)
++  LSKIN(2,2,4,1,1,0)
++  return lean_fail("skinny specialization",-1);
++}
++
++struct LeanLayout{
++  cublasLtMatmulDesc_t op=nullptr;cublasLtMatrixLayout_t a=nullptr,b=nullptr,c=nullptr;
++  int init(int n,int m,int k,int stride,int nn){
++    LEAN_LT(cublasLtMatmulDescCreate(&op,CUBLAS_COMPUTE_32F,CUDA_R_32F));cublasOperation_t ta=nn ? CUBLAS_OP_N : CUBLAS_OP_T;
++    LEAN_LT(cublasLtMatmulDescSetAttribute(op,CUBLASLT_MATMUL_DESC_TRANSA,&ta,sizeof(ta)));
++    LEAN_LT(cublasLtMatrixLayoutCreate(&a,CUDA_R_16BF,nn ? n : k,nn ? k : n,stride));
++    LEAN_LT(cublasLtMatrixLayoutCreate(&b,CUDA_R_16BF,k,m,k));LEAN_LT(cublasLtMatrixLayoutCreate(&c,CUDA_R_16BF,n,m,n));return 0;
++  }
++  ~LeanLayout(){if(op)cublasLtMatmulDescDestroy(op);if(a)cublasLtMatrixLayoutDestroy(a);if(b)cublasLtMatrixLayoutDestroy(b);if(c)cublasLtMatrixLayoutDestroy(c);}
++};
++static cublasLtHandle_t lean_lt_handle=nullptr;
++static int lean_lt_init(){if(!lean_lt_handle)LEAN_LT(cublasLtCreate(&lean_lt_handle));return 0;}
++extern "C" int lean_algo_bytes(){return sizeof(cublasLtMatmulAlgo_t);}
++extern "C" int lean_lt_options(int n,int m,int k,int stride,int nn,void* codes,int* count){
++  int err=lean_lt_init();if(err)return err;LeanLayout l;err=l.init(n,m,k,stride,nn);if(err)return err;
++  cublasLtMatmulPreference_t pref;LEAN_LT(cublasLtMatmulPreferenceCreate(&pref));size_t bytes=32*1024*1024;
++  auto status=cublasLtMatmulPreferenceSetAttribute(pref,CUBLASLT_MATMUL_PREF_MAX_WORKSPACE_BYTES,&bytes,sizeof(bytes));
++  if(status!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("Lt preference",(int)status);}
++  cublasLtMatmulHeuristicResult_t rows[32];status=cublasLtMatmulAlgoGetHeuristic(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,pref,32,rows,count);
++  cublasLtMatmulPreferenceDestroy(pref);if(status!=CUBLAS_STATUS_SUCCESS)return lean_fail("Lt heuristics",(int)status);
++  for(int i=0;i<*count;++i){if(rows[i].state!=CUBLAS_STATUS_SUCCESS || rows[i].workspaceSize>bytes)return lean_fail("Lt heuristic state",-1);std::memcpy((char*)codes+i*sizeof(cublasLtMatmulAlgo_t),&rows[i].algo,sizeof(cublasLtMatmulAlgo_t));}
++  return 0;
++}
++extern "C" int lean_lt_run(const void* w,const void* x,void* out,void* work,const void* codes,
++                          int n,int m,int k,int stride,int nn,int index,size_t work_bytes,void* stream){
++  if(work_bytes<32*1024*1024)return lean_fail("Lt workspace",-1);
++  int err=lean_lt_init();if(err)return err;LeanLayout l;err=l.init(n,m,k,stride,nn);if(err)return err;
++  cublasLtMatmulAlgo_t algo;std::memcpy(&algo,(const char*)codes+index*sizeof(algo),sizeof(algo));
++  float alpha=1.f,beta=0.f;
++  auto status=cublasLtMatmul(lean_lt_handle,l.op,&alpha,w,l.a,x,l.b,&beta,out,l.c,out,l.c,&algo,work,work_bytes,(cudaStream_t)stream);
++  return status==CUBLAS_STATUS_SUCCESS ? 0 : lean_fail("Lt matmul",(int)status);
++}
++"""
+diff --git a/python/sglang/srt/layers/muse_spark_humming.py b/python/sglang/srt/layers/muse_spark_humming.py
+new file mode 100644
+index 0000000..178cdbf
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_spark_humming.py
+@@ -0,0 +1,320 @@
++"""Bounded V11 wide producer; leaves the resident V9 bank and finalize ABI intact.
++
++Only one routed layer per model is a candidate. Its layout is built after the
++KV pools exist, from canonical weights, during eager graph warmup. Thus the copy
++cannot reduce the allocated KV capacity. Gate/up use separate FP32 sidecars.
++"""
++
++from __future__ import annotations
++
++import json
++import logging
++import os
++
++import torch
++import triton
++import triton.language as tl
++
++logger = logging.getLogger(__name__)
++
++
++@triton.jit
++def _unpack(
++    C, W, S, BITS, ROWS: tl.constexpr, GATED: tl.constexpr, BLOCK: tl.constexpr
++):
++    v = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
++    r, k = v // 4096, v % 4096
++    if GATED:
++        tile, ri, rr = (r % 4096) // 8, r // 4096, r % 8
++    else:
++        tile, ri, rr = r // 16, (r // 8) % 2, r % 8
++    w, g, q = k // 512, (k // 64) % 8, (k // 16) % 4
++    p, sl, j, h = (k // 8) % 2, (k // 4) % 2, (k // 2) % 2, k % 2
++    lane = rr * 4 + q
++    word = (((w * 8 + g) * 32 + lane) * 2 + p) * 2
++    a = tl.load(C + tile * 9216 + word, r < ROWS, 0).to(tl.uint32)
++    b = tl.load(C + tile * 9216 + word + 1, r < ROWS, 0).to(tl.uint32)
++    slot = sl * 4 + j * 2 + ri
++    code = tl.full((BLOCK,), 0, tl.uint32)
++    for bit in tl.static_range(4):
++        entry = tl.load(BITS + slot * 8 + h * 4 + bit)
++        code |= ((tl.where(entry >= 32, b, a) >> (entry % 32)) & 1) << bit
++    # Adjacent columns are the two nibbles of one serialized byte.
++    other = tl.gather(code, tl.arange(0, BLOCK) ^ 1, 0)
++    tl.store(W + v // 2, code | (other << 4), (r < ROWS) & (k % 2 == 0))
++    scale_idx = 32768 + ((((w * 8 + rr) * 4 + q) * 8 + g) * 2 + ri)
++    encoded = tl.load(
++        C.to(tl.pointer_type(tl.uint8)) + tile * 36864 + scale_idx, r < ROWS, 0
++    )
++    scale = tl.exp2((encoded.to(tl.int32) >> 3).to(tl.float32) - 21) * (
++        1 + (encoded & 7).to(tl.float32) / 8
++    )
++    scale = tl.where(encoded == 0, 0.0, scale).to(tl.float8e4nv)
++    tl.store(S + v // 16, scale, (r < ROWS) & (k % 16 == 0))
++
++
++def unpack_expert(bank, *, gated):
++    """Recover effective E2M1/E4M3 exactly, including signed/zero block scales."""
++    from sglang.srt.layers.muse_spark_moe import _TABLE
++
++    bits = torch.tensor(
++        [pos + (32 if word == "B" else 0) for _, _, _, word, pos in _TABLE],
++        dtype=torch.int32,
++        device=bank.device,
++    )
++    rows = bank.shape[0] * 16
++    w = torch.empty((rows, 2048), device=bank.device, dtype=torch.uint8)
++    s = torch.empty((rows, 256), device=bank.device, dtype=torch.float8_e4m3fn)
++    _unpack[(triton.cdiv(rows * 4096, 256),)](
++        bank.view(torch.int32),
++        w,
++        s,
++        bits,
++        rows,
++        gated,
++        256,
++    )
++    return w, s
++
++
++def _imports():
++    # The image has these helpers prebuilt. Avoid Humming's redundant import
++    # subprocess builds; restore its import-time setting before kernel builds.
++    previous = os.environ.get("HUMMING_DISABLE_PARALLEL_BUILD")
++    os.environ["HUMMING_DISABLE_PARALLEL_BUILD"] = "1"
++    try:
++        from humming import ops
++        from humming.config import GemmType, WeightScale2Type
++        from humming.kernel.humming import HummingKernel
++        from humming.layer import HummingMethod
++        from humming.schema.modelopt import ModeloptNvfp4WeightSchema
++        from humming.tune import get_heuristics_config
++    finally:
++        if previous is None:
++            os.environ.pop("HUMMING_DISABLE_PARALLEL_BUILD", None)
++        else:
++            os.environ["HUMMING_DISABLE_PARALLEL_BUILD"] = previous
++    return (
++        ops,
++        GemmType,
++        WeightScale2Type,
++        HummingKernel,
++        HummingMethod,
++        ModeloptNvfp4WeightSchema,
++        get_heuristics_config,
++    )
++
++
++class WideExperts:
++    """V11 indexed Humming producer with independent gate and up scales."""
++
++    def __init__(self, state):
++        ops, GemmType, Scale2, Kernel, Method, Schema, heuristic = _imports()
++        self.ops = ops
++        self.layer = torch.nn.Module()
++        self.state = state
++        banks = {name: [] for name in ("gate", "up", "down")}
++        for e in range(32):
++            w13, s13 = unpack_expert(state["w13p"][e], gated=True)
++            w2, s2 = unpack_expert(state["w2p"][e], gated=False)
++            for name, w, s, scale in (
++                ("gate", w13[:4096], s13[:4096], state["gs13_gate"][e : e + 1]),
++                ("up", w13[4096:], s13[4096:], state["gs13_up"][e : e + 1]),
++                ("down", w2, s2, state["gs2"][e : e + 1]),
++            ):
++                schema, tensors = Schema().convert_humming(
++                    tensors={
++                        "weight": w.unsqueeze(0).contiguous(),
++                        "weight_scale": s.unsqueeze(0).contiguous(),
++                        "weight_scale_2": scale,
++                    },
++                    shape_n_stacks=[4096],
++                    shape_k_stacks=[4096],
++                    param_dtype=torch.bfloat16,
++                    num_experts=1,
++                )
++                assert schema.weight_scale_2_type == Scale2.TENSOR
++                tmp = torch.nn.Module()
++                for key, value in tensors.items():
++                    setattr(tmp, key, torch.nn.Parameter(value, requires_grad=False))
++                Method.prepare_layer_meta(
++                    layer=tmp,
++                    shape_n=4096,
++                    shape_k=4096,
++                    weight_schema=schema,
++                    num_experts=1,
++                    pad_n_to_multiple=256,
++                    pad_k_to_multiple=128,
++                    torch_dtype=torch.bfloat16,
++                )
++                Method.transform_humming_layer(tmp)
++                banks[name].append({key: getattr(tmp, key).detach() for key in tensors})
++        # Gate/up become adjacent virtual experts, each retaining its own FP32
++        # tensor scale. One indexed launch still computes both products.
++        paired = [item for pair in zip(banks["gate"], banks["up"]) for item in pair]
++        banks = {"gate_up": paired, "down": banks["down"]}
++        self.weights = {
++            name: {
++                key: torch.cat([item[key] for item in items], dim=0) for key in items[0]
++            }
++            for name, items in banks.items()
++        }
++        self.plans = {}
++        compute = json.dumps(
++            {"use_f16_accum": False, "gemm_type": GemmType.INDEXED.value}
++        )
++        for name in self.weights:
++            meta = Method.prepare_layer_meta(
++                layer=self.layer,
++                shape_n=4096,
++                shape_k=4096,
++                weight_schema=schema,
++                num_experts=64 if name == "gate_up" else 32,
++                pad_n_to_multiple=256,
++                pad_k_to_multiple=128,
++                torch_dtype=torch.bfloat16,
++                sublayer_name=name,
++            )
++            tuning = dict(
++                heuristic(
++                    meta,
++                    shape_m=512 if name == "gate_up" else 256,
++                    gemm_type=GemmType.INDEXED,
++                )
++            )
++            if torch.cuda.get_device_capability() == (9, 0):
++                tuning.update(
++                    use_tma=True,
++                    use_tma_a=False,
++                    use_tma_as=False,
++                    use_tma_c=False,
++                    use_mbarrier=True,
++                    use_warp_spec=True,
++                )
++            # Keep a complete FP32 K reduction before the BF16 output seam.
++            tuning["use_stream_k"] = False
++            launch = Kernel.prepare_kernels(
++                meta.to_str(), compute, [[0, 1 << 30, tuning]]
++            )
++            self.plans[name] = (tuning["block_shape"][0], launch)
++        self.locks = torch.zeros(1024, dtype=torch.int32, device=state["w13p"].device)
++
++    def __call__(self, x, ids):
++        from sglang.kernels.ops.activation.activation import silu_and_mul
++        from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
++
++        m, h = x.shape
++        local = ids.to(torch.int32) - self.state["local_start"]
++        local = torch.where(
++            (local >= 0) & (local < 32), local, torch.full_like(local, -1)
++        )
++        paired = torch.stack((local * 2, local * 2 + 1), dim=-1).view(m, 16)
++        paired = torch.where(paired >= 0, paired, torch.full_like(paired, -1))
++        act = None
++        for name, routing, count, topk in (
++            ("gate_up", paired, 64, 16),
++            ("down", local, 32, 1),
++        ):
++            bm, launch = self.plans[name]
++            sorted_ids, expert_ids, padded = moe_align_block_size(routing, bm, count)
++            source = x if name == "gate_up" else act
++            out = torch.empty((m * routing.shape[1], h), device=x.device, dtype=x.dtype)
++            self.ops.launch_kernel(
++                configs=launch,
++                inputs=source,
++                outputs=out,
++                **self.weights[name],
++                locks=self.locks,
++                sorted_ids=sorted_ids,
++                expert_ids=expert_ids,
++                num_tokens_padded=padded,
++                top_k=topk,
++                valid_shape_m=m * 2 if name == "gate_up" else m,
++            )
++            if name == "gate_up":
++                act = torch.empty((m * 8, h), device=x.device, dtype=x.dtype)
++                silu_and_mul(
++                    out.view(m * 8, h * 2),
++                    act,
++                    expert_ids=local.view(-1),
++                    expert_step=1,
++                )
++        flat = torch.arange(m * 8, dtype=torch.int32, device=x.device).view(m, 8)
++        return out.view(m, 8, h), torch.where(
++            local >= 0, flat, torch.full_like(flat, -1)
++        )
++
++
++def maybe_run_wide(layer, x, scores, ids):
++    """Spend one partial layout only after KV allocation, at the verify rung.
++
++    Model ownership selects one candidate layer. No process-global bank cache,
++    allocator override, or change to KV capacity. Prefill keeps its grouped reader.
++    """
++    if not getattr(layer, "_humming_candidate", False) or x.shape[0] != 256:
++        return None
++    state = getattr(layer, "_muse_v4_state", None)
++    if state is None or torch.cuda.get_device_capability(x.device) != (9, 0):
++        return None
++    if not hasattr(layer, "_humming_wide"):
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("Muse wide expert producer must warm up before capture")
++        free, _ = torch.cuda.mem_get_info(x.device)
++        # Post-capture VMM pools can be virtually reserved but not yet backed.
++        # Charge their entire target and draft reservation before admitting a
++        # copy; otherwise a warmup allocation would silently steal final KV.
++        from sglang.srt.model_executor.forward_context import (
++            get_token_to_kv_pool,
++            has_forward_context,
++        )
++
++        pending_kv = 0
++        if has_forward_context():
++            pool = get_token_to_kv_pool()
++            if getattr(pool, "post_capture_active", False):
++                size = pool.get_kv_size_bytes()
++                logical = sum(size) if isinstance(size, tuple) else size
++                target_pending = max(0, logical - pool.post_capture_backed_bytes)
++                # Draft has five full-context layers, replicated 128-wide KV
++                # heads on TP8: 1280 B per token. It uses the target slot cap.
++                pending_kv = target_pending + pool.size * 1280
++        if free - pending_kv < 3 * 1024**3:
++            logger.info(
++                "Muse wide copy skipped: %.3f GB after pending KV",
++                (free - pending_kv) / 1e9,
++            )
++            layer._humming_wide = None
++        else:
++            wide = WideExperts(state)
++            from sglang.srt.layers.muse_spark_moe import run_layer
++
++            choices = {
++                "grouped": lambda: run_layer(state, x, scores, ids, return_dense=True),
++                "wide": lambda: wide(x, ids),
++            }
++            times = {}
++            for name, fn in choices.items():
++                fn()
++                graph = torch.cuda.CUDAGraph()
++                with torch.cuda.graph(graph):
++                    result = fn()
++                samples = []
++                for _ in range(5):
++                    begin = torch.cuda.Event(enable_timing=True)
++                    end = torch.cuda.Event(enable_timing=True)
++                    begin.record()
++                    graph.replay()
++                    end.record()
++                    end.synchronize()
++                    samples.append(begin.elapsed_time(end))
++                times[name] = sorted(samples)[len(samples) // 2]
++                graph.reset()
++                del result
++            layer._humming_wide = wide if times["wide"] < times["grouped"] else None
++            logger.info(
++                "Muse one-layer wide selection: %s ms, selected=%s",
++                times,
++                layer._humming_wide is not None,
++            )
++    wide = layer._humming_wide
++    return None if wide is None else wide(x, ids)
