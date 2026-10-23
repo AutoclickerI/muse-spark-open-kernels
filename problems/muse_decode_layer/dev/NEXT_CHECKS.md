@@ -1,6 +1,6 @@
-# Decode checks — next send order after 2255839
+# Decode checks — next send order after 3d74527
 
-`cand_r3_v9all.py` is first and `cand_r3_merge.py` is second at the 09:00 KST reset. The next information-dense source is the overlap extension. Pure V9's completed receipt is 1.428x overall (rank 85); rank 50 needs about 1.54x.
+`cand_r3_v9all.py` is first and `cand_r3_merge.py` is second at the 09:00 KST reset. The next information-dense source is the guarded persistent megakernel. The earlier overlap source is parked after a verify correctness failure. Pure V9's completed receipt is 1.428x overall (rank 85); rank 50 needs about 1.54x.
 
 ## Non-MoE cost ranking from receipt `85e67f5d6ef945c9`
 
@@ -16,13 +16,13 @@
 | verify 16 sliding/full | projections ~73 us | attention 27/192.6 us | boundary 11.6/11.2 us |
 | verify 32 sliding/full | projections ~91 us | attention 30/373.8 us | boundary 19.9/19.6 us |
 
-Full attention is the largest remaining decode cost at verify32/decode32/verify16 = 373.8/227.9/192.6 us. The merge also spends the projection and glue budget at small loads. MoE remains fixed to the in-layer V9 winner until `moe_tune.py` lands routing-aware choices. The shared/dense branch has no independent post-boundary work: it shares boundary1 statistics with the routed path. Safe overlap pairs are qkv-row partitions→attention and unpooler-row partitions→boundary2; pooler/router→experts, experts→unpooler, router→attention output, and KV write→attention are ordered.
+Full attention is the largest remaining decode cost at verify32/decode32/verify16 = 373.8/227.9/192.6 us. The merge also spends the projection and glue budget at small loads. MoE remains fixed to the in-layer V9 winner until `moe_tune.py` lands routing-aware choices. The new megakernel streams qkv, O/pooler/router and unpooler through persistent grid-synchronized stages around V9; its tuner retains the merge path when correctness or timing loses.
 
 ## Frozen source set
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
-| `cand_r3_merge_ovl.py` | `4fe46f35f8e6853c3623460ecb47c4ce504cf31e01dbe736f9158d232d3ceff2` | 13/13 tests, 12/12 graphs; prepare 13.917 s on sm_120; overlap timings and rejects logged | **ready after merge**; qkv/unpooler two-stream overlap variants |
+| `cand_r3_merge_mega.py` | `98d7e6d6029e9337fbc94806ce99c5e739a97d2d884e1385952ba78714e91a2d` | 13/13 tests, 12/12 graphs; prepare 118.309 s on sm_120; MEGA_TUNE rejects/regular selections logged | **ready after merge**; persistent qkv + dense islands + V9 chain |
 | `cand_r3_merge.py` | `f23a267748791646d9afc4d447068158ecdb71fa74ae134dad0add62d6b5b054` | 13/13 tests, 12/12 graphs; prepare 25.011 s on sm_120; fused-prefix resource rejects logged | queued second; merged non-MoE portfolio with MoE fixed to V9 |
 | `cand_r3_v9all.py` | `41c018efaefb57bacaf0f55451f6753e1f96a4a1f0ef678066c8ac2cad5ce4d5` | V9 fixed; queued first | queued first at reset |
 | `cand_r3_v9_attention_portfolio.py` | `4be669353a75acd03276f806dfaf6a64a94a6c8f7cf23edcaa67da2212603386` | queued in `c14edac`; V9 fixed | already queued; attention FA3/XQA/WGMMA/FP8-PV/q1-gather portfolio |
@@ -38,10 +38,10 @@ Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`
 
 ## Send order
 
-1. **`cand_r3_merge_ovl.py`** (SHA `4fe46f35f8e6853c3623460ecb47c4ce504cf31e01dbe736f9158d232d3ceff2`). Send after the already queued V9all and merge sources. One H200 run measures qkv-row and unpooler-row two-stream overlap against the full merged portfolio at every scored shape; event joins, correctness guards, and per-shape timing decide whether overlap survives.
-2. Do not resend `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`, `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals.
+1. **`cand_r3_merge_mega.py`** (SHA `98d7e6d6029e9337fbc94806ce99c5e739a97d2d884e1385952ba78714e91a2d`). Send after the already queued V9all and merge sources. One H200 run measures the persistent qkv/O+pooler/router/V9/unpooler chain against the merge path per small shape; every agreement, resource, and timing failure is logged and falls back.
+2. Do not resend `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_merge_ovl.py`, `cand_r3_v9_attention_portfolio.py`, `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals.
 
-The merged and overlap logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `OVL_TUNE`, `OVL_REJECT`, and reject lines record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and overlap choices remain unverified.
+The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, and reject lines record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
 
 Every candidate in this order must first pass `tools/img python tools/local_eval.py` with 13/13 tests and 12/12 fresh-input graph cases. Force every Hopper-only Python branch through a portable stand-in before remote submission. Remote checks use `tools/okc_run.py` and remain detached; no commit is requested.
 

@@ -3,7 +3,7 @@
 Serves: G1, G2. Read with `expert_layout.md` for the physical bank and memory count.
 
 The serving hook is `MuseSparkNvFp4FusedMoEMethod.process_weights_after_loading`. On the
-patch path it repacks the loaded ModelOpt NVFP4 tensors once into the canonical V6/V8 bank,
+patch path it repacks the loaded ModelOpt NVFP4 tensors once into the canonical V6 canonical bank,
 then drops the large serialized tensors. Marlin's repack is not run and no Marlin bank is
 resident. `SGLANG_MUSE_MOE_FORCE_STOCK=1` selects the stock Marlin path for A/B runs.
 
@@ -15,7 +15,7 @@ For each EP8 rank and routed layer the state owns:
 w13p       [32, 512, 36864] uint8  (576 MiB)
 w2p        [32, 256, 36864] uint8  (288 MiB)
 gs13_gate  [32] float32
- gs13_up   [32] float32
+gs13_up   [32] float32
 gs2        [32] float32
 pnw        [4096] bfloat16
 ```
@@ -40,25 +40,27 @@ budget before dense weights, drafter, workspaces and graph pools. The patch keep
 
 ## Dispatch and output ABI
 
-`MuseSpark1xFp4Experts._forward_marlin` uses the custom state for every token count when
-it is present. `muse_spark_moe.py` selects:
+`MuseSpark1xFp4Experts._forward_marlin` calls the serving adapter in
+`muse_spark_serving.py`, leaving the MoE lane's standalone dispatch unchanged.
+V9 supplies all verify rungs (M8/32/128/256). Larger calls use bounded V9 chunks:
+the adapter derives the maximum routing rows from the compiled shared-memory
+formula and caps int16 route positions below32768. Chunk slot maps remain global
+and preserve -1 for remote experts. The serving path does not invoke the grouped
+reader at M>=256: its H200 in-layer verify32 result regressed to0.549/0.647x,
+whereas V9 held1.216/1.136x (`2ad75c19cb514f5c` vs `0e94268cf5654012`).
 
-- V8 fused for small decode/verify shapes (`M < 128`);
-- the canonical grouped reader for `M >= 128`, including verify 128/256 and prefill
-  753, 3012 and 16384 tokens.
-
-Both readers consume `w13p`/`w2p` and the same gate/up/W2 global-scale sidecars. The grouped
-reader performs histogram, plan and scatter routing, then grouped WGMMA/MMA over the V6
-tiles. It has no cross-grid barrier. Its temporary intermediate and W2 buffers are per-call
-workspace; at M=16384 they are about 2 GiB each and are not resident weights.
+One candidate layer may admit the lossless Humming layout after charging pending
+KV backing, and keeps it only if graph timing on actual routing beats V9. This is
+one0.906GB partial copy, not a second full bank. Distinct gate/up scales and FP32
+K accumulation remain mandatory. All producers read the same canonical state.
 
 Both producers return the stock dense expert interface `[T, topk, H]` plus a local-slot map.
 The existing fused finalize in `muse_spark_fp4_moe.py` remains the sole post-expert norm and
 routing-weight combine. A reduced `[T, H]` form is retained for the standalone layer check.
 
-The V8 persistent kernel uses a native grid barrier. Its counters are allocated per call so
+The V9 persistent kernel uses a native grid barrier. Its counters are allocated per call so
 concurrent streams cannot share generations, and the launch uses
-`cudaLaunchCooperativeKernel` with one resident CTA per SM. A non-cooperative launch is not
+`cudaLaunchCooperativeKernel` with occupancy-bounded resident CTAs per SM. A non-cooperative launch is not
 used. CUDA graph capture is therefore checked at the verify shapes.
 
 Preparation is load-time only; request execution performs no weight repack or compilation.
@@ -66,18 +68,15 @@ The loader under `srt/model_loader` is unchanged.
 
 ## Verification
 
-The sm120 layer screen compares stock Marlin math and the patch at M=8, 128 and 256, and
-also exercises the grouped reader at M=753, 3012 and 16384. The problem tolerance is
-relative L2 <= 0.015. The canonical grouped path has fresh graph replays at all three large
-sizes. The native V8 path has graph capture/replay at the verify sizes.
+The current sm120 layer screen (`serving/tests/test_serving_v9_dispatch.py`) runs
+M1/8/128/256/272/753/3012/16384 against stock Marlin plus post-expert norm and
+weighted sum. Worst relative L2 is0.005449 (bound0.015), max absolute error0.03125;
+eager/fresh-input graph replay is bit-identical. Chunk-global maps and remote
+masking are exact. The previous grouped reader's standalone results do not
+establish in-layer speed and are not the serving selection.
 
-The local margin harness at TP1 completed all ten requests with exactly 220 output tokens,
-100% stock-vs-stock and stock-vs-patch response agreement, and zero teacher-forced ID and
-log-probability drift. TP2 and the random-fixture comparison are separate diagnostics: the
-random fixture is compared against stock-vs-stock because its independent stock runs are
-intentionally unstable.
-
-The local machine is sm120. The grouped source has an sm90a compile path and the V8 source
-is compiled through the same Python glue, but runtime WGMMA and cooperative-launch behavior
-on H200, full 816B memory pressure, 8-way collectives, serving concurrency 16/32 and judge
-throughput remain unverified. No H200 claim is inferred from local timings.
+Full-graph TP1/TP2 harness and current projection integration receipts are recorded
+in `serving_levers.md`. Tiny models use a same-ABI Marlin producer stand-in to reach
+the dispatch branch; the real4096-wide V9 arithmetic is checked independently.
+Actual H200 cooperative launch, full-checkpoint memory, TP8/EP8 FA3 agreement,
+bounded-V9 prefill TTFT and all four judge loads remain unverified.

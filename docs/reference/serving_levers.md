@@ -25,7 +25,7 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
-| Prefill experts (grouped NVFP4 GEMM at 753-16K tokens) | Marlin at large M | largest part of prefill's 1.65x | `problems/muse_prefill_layer` |
+| Prefill experts (753-16K tokens) | Marlin at large M | bounded V9 now; grouped bypassed after in-layer regression; H200 prefill recheck pending | `problems/muse_prefill_layer` |
 | Decode attention (FP8 page-1, QK-norm, KV store, gate fused) | FA3 + combine + ~6 small kernels per layer | ~20 us x 62 layers per step at c=1 | `problems/muse_attention_decode` |
 | Dense projections and router | cuBLAS, the FP32 router GEMV | ~10-20 us per layer | `problems/muse_bf16_proj` |
 | Layer glue (norms, residual, routing) | ~70 us of small kernels per layer at batch 1 (FINDINGS) | up to ~4 ms per step at c=1 | `problems/muse_decode_layer` |
@@ -39,7 +39,7 @@ No Muse kernel is built Blackwell-only: `load_jit` compiles for the local GPU (`
 
 | # | Gate | Feature | Verdict | Modeled saving per step (c=1 / c=32) | Risk to agreement |
 |---|---|---|---|---|---|
-| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented V9 glue; Hopper runtime pending**: Marlin and the V9 single-bank producer expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer. Local sm_120 native/eager+graph finalize is exact (max diff 0); the V9 layer screen at 1..16,384 tokens stays within rel L2 0.00695 (bound 0.015), and the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
+| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented V9 glue; Hopper runtime pending**: Marlin and the V9 single-bank producer expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer. Local sm_120 native/eager+graph finalize is exact (max diff 0); the bounded V9 layer screen at 1..16,384 tokens stays within rel L2 0.005449 (bound 0.015), and the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
 | 2 | `models/muse_spark.py:587, 849`; `kernels/ops/muse_spark_v12/gemm_ag.py:73` | Pooler column split + multicast all-gather (`gemm_ag`); unpooler split above 8 tokens | Enable as-is if `has_multicast` (`multimem.st` etc. are sm_90). Gate by token count: our model says it loses at c=32 | 0.46 ms / about -0.4 ms (audit's estimate: 0.55-0.6 / 0.45-1.0) | Low (sliced cuBLAS may round differently; GB300 stock uses it) |
 | 3 | `models/muse_spark.py:1177`; `fi_trtllm_moe_finalize_with_rmsnorm_cutedsl.py` | **Implemented glue; Hopper runtime pending** after #1 for Hopper/Blackwell TP4/8 with EP=TP and no DP attention. Marlin and V9 now consume `ar_workspace`; `_forward_tp` skips the outer all-reduce only after the expert path owns it, avoiding the old `ar_workspace` trap. The CuTeDSL AR path is selected through the existing custom-AR push workspace for small verify batches (including TP8 up to 16 tokens). The sm_90a AR compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`; the two-rank NCCL native AR test is exact in eager and graph replay (max diff 0); sm_120 glue is exact in the margin harness at TP1 and TP2. H200 arithmetic and custom-AR workspace availability remain unverified. | 0.12-0.24 ms / 0 | Moderate (rank accumulation order and custom-AR workspace availability) |
 | 4 | `kernels/ops/muse_spark_v12/all_gather_norm_residual.py:31` | Unpooler all-gather fused into the post-MoE norm-residual | Enable as-is: `>= 10` to `>= 9` | 0.12-0.25 ms / 0.12-0.25 ms (c=32 needs #2) | Low |
@@ -87,9 +87,10 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
 - **MoE V9 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
-  `muse_spark_fp4_moe.py`). V9 handles small verify rows with its resident cooperative kernel and uses the
-  canonical grouped reader for M>=256, including the v11 RS128-style prefill shapes. The layer screen at
-  M=1..16,384 is 0.00649-0.00695 relative L2 (problem tolerance 0.015), with graph replay bit-identical;
+  `muse_spark_fp4_moe.py`). V9 now handles all verify rows including M256; larger prefill calls use bounded V9 chunks
+  in `muse_spark_serving.py`, preserving global slot maps and remote -1s. Serving bypasses the grouped
+  reader after its in-layer H200 regression. The current M1..16,384 stock-Marlin layer screen has
+  relative L2<=0.005449 (bound0.015), maxabs0.03125 and exact fresh-input graph replay;
   A bounded V11 Humming adapter now competes at M256 in layer1 only; it preserves separate FP32
   gate/up scales via virtual expert records and disables BF16 Stream-K partial reductions. It admits
   one0.906GB layout only after charging target/draft KV backing, graph-times actual routing, and
@@ -105,10 +106,10 @@ Using the receipts above, the composed model has stock/candidate per-step times 
 
 The next highest-value work is the V9 expert kernel at verify M=128/256: the decode-layer profile still shows
 286/362 us (sliding/full) at verify16 and 499/503 us at verify32, 49-77% of the candidate layer. Optimize
-that grouped/resident V9 path first. FA3 QK/KV fusion is second: the standalone FA3 candidate is about 1.0x
+that resident V9 path first. FA3 QK/KV fusion is second: the standalone FA3 candidate is about 1.0x
 on verify loads, but the fused store/query path is modeled at 0.3-0.5 ms per step if H200 confirms it. The
-v11 grouped prefill expert path is already present in serving through V9's M>=256 canonical reader and passed
-the 753/3012/16384-token layer screen; it is not a duplicate port to make. Dense projection/router tuning,
+v11 grouped reader remains in the kernel lane's module but is bypassed by serving after the
+in-layer collapse; bounded V9 prefill now needs an H200 TTFT check. Dense projection/router tuning,
 the drafter FC split, and finalize-AR fusion have smaller remaining modeled savings and should follow those
 two checks.
 
@@ -409,16 +410,17 @@ destruction was fixed with explicit graph/stream teardown inside prepare; the re
 forces garbage collection during capture with zero live tuning streams.
 Reproduce: `CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_muse_proj.py`.
 Evidence: `runs/screen/serving_proj/tests.json`, `muse_proj_sm120.log`, `muse_proj_sm90a.log`.
-The serving lane still owns wiring, full-model stock-vs-stock/patched agreement, H200 TP8 timing,
-post-capture memory/KV capacity and TTFT; regenerate `serving/patch.diff` from the final source
-after wiring. No judge run or commit was launched by this port.
+The module is now wired through `muse_spark_serving.py` at exact full and TP8 output-row-slice
+shapes, preserving all collectives and fused boundaries. H200 TP8 timing, post-capture memory/KV
+capacity and TTFT remain to be checked. No judge run or commit was launched by this port.
 
 `muse_spark_humming.py` ports the V11 indexed wide producer behind the existing dense
-`[T,8,H]`/identity-or-minus-one finalize interface. It keeps V9 below256 and grouped prefill.
+`[T,8,H]`/identity-or-minus-one finalize interface. Serving now uses V9 at all verify rungs
+and bounded V9 prefill, with no grouped selection.
 The full second bank is rejected by the owner's memory decision. Only layer1 is eligible for one
 0.906GB partial layout, reconstructed losslessly from the canonical bank during eager warmup.
 Admission charges unbacked VMM target KV plus1280bytes/slot draft KV before counting free memory.
-Below3GiB remaining it retains grouped; otherwise graph-timed actual warmup routing chooses
+Below3GiB remaining it retains V9; otherwise graph-timed actual warmup routing chooses
 the faster producer and discards a losing copy. There is no KV resize and no request-value-based graph
 branch. Other layers keep their existing producer; this is deliberately a bounded partial port.
 
@@ -442,7 +444,7 @@ has relative L2<=0.002562 versus BF16 cuBLAS (M8 maxabs0.00390625; M9/16 maxabs0
 All eager-to-graph and changed-input replays are bit-identical. `test_humming_wide.py` passes
 M256/272 against stock Marlin math (relative L2<=0.005943,maxabs0.0234375), exact changed-input
 graph replay, remote masking, distinct gate/up scales, and all signed finite E4M3 scale patterns
-including subnormals/zero. Its SM120 admission test selects grouped. `test_humming_admission.py`
+including subnormals/zero. Its earlier SM120 admission test selected grouped; current admission compares against V9. `test_humming_admission.py`
 confirms pending VMM KV backing rejects an otherwise apparently affordable layout copy.
 
 Local SM120/FlashInfer margin harness (all74 stock prefill graph sizes,30x220 tokens):
@@ -451,7 +453,7 @@ Local SM120/FlashInfer margin harness (all74 stock prefill graph sizes,30x220 to
 |---|---:|---:|---|
 | `p16`, TP1 actual portable projection CUDA + wide Marlin ABI |30/30|1.218 /1.154|vs `g61`; agreement and local TTFT pass |
 | `p14`, native patch TP2 |30/30|0.709 /0.409|vs fresh `p10`; new Hopper gates inactive; local native TTFT gate passes |
-| `p12`, TP2 actual portable projection CUDA + wide Marlin ABI |30/30|1.132 /4.334|vs `p10`; forced tiny timing fails c4; zero-padding tiny router1024->8192 adds artificial work, so not production timing evidence |
+| `p12`, TP2 actual portable projection CUDA + wide Marlin ABI |30/30|1.132 /4.334|vs `p10`; historical padded-hook failure; hook deleted this round, production rejects tiny shapes |
 | `p08`, TP2 torch projection stand-ins + wide Marlin ABI |30/30|1.025 /2.540|vs `p04`; c4 TTFT also fails; retained with no speed claim |
 
 Margin first-divergence is220 and token agreement1.0 throughout. Random `p15` returns30x220;
@@ -468,10 +470,100 @@ Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node cap
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
 Patch regenerated from `git diff a55ab7d5` plus source-only untracked additions: **201,749bytes**,
 **19files**, longest added line **374**. All16 accepted paths remain;14 untouched file diffs
-(including the MoE lane's file) are byte-identical to the accepted patch. The other lane's untracked
-`muse_proj.py` handoff is included and is not yet connected by this round. Reverse apply check and
+(including the MoE lane's file) are byte-identical to the accepted patch. The projection handoff is included; its current integration and renewed checks follow below. Reverse apply check and
 whitespace/source/type/path/mode checks pass. No old doc paths or harness sources were edited.
 Evidence: `/data2/jihoon/muse_kernel/harness/results/projection-ports-evidence/` and named run dirs.
+
+## Current serving integration: V9 dispatch and dense projections
+
+H200 in-layer evidence overrides synthetic routing: `0e94268cf5654012` holds
+verify32 sliding/full1.216/1.136x, versus grouped0.549/0.647x in
+`2ad75c19cb514f5c`. Serving now calls V9 at M256 and bounded V9 chunks for larger
+calls, rather than the kernel module's grouped dispatch. The bound is derived
+from actual shared-memory capacity and int16 route-slot capacity; chunk maps
+are global and remote slots stay -1. The independently owned `muse_spark_moe.py`
+is unchanged. One admitted Humming copy may compete with **V9**, never grouped.
+
+`prepare_projections` connects `muse_proj.py` to the exact o, pooler and unpooler
+matrices after weight loading. O replaces only `quant_method.apply`, so the
+original RowParallelLinear keeps symmetric allocation, skip-reduce and its AR.
+Pooler/unpooler local row slices feed the existing multicast gather and deferred
+norm/residual boundary. At TP8/multicast, full pooler/unpooler plans tune only
+M256; their N512/N1024 slices tune8..128, avoiding unused full-path NN layouts.
+A45s model-wide new-trial budget shares plans by actual shape; expired-budget
+cache reuse is now validated rather than dropped. Weight values and parameter
+registration are unchanged; BF16 outputs and FP32 GEMM accumulators remain.
+Only selected lossless NN transposes persist. Worst-case selected layouts are
+about6.24GB/GPU (62 o + full pooler + both local slices); actual selected layout
+bytes, graph pools and KV capacity still require an H200 allocation measurement.
+
+The old `projection_hook`/`projection_harness.py` padded tiny router is deleted.
+Production router and QKV predicates reject tiny fixture shapes; a new regression
+check forces SM90 and verifies that rejection. The replacement test hook uses
+exact-shape torch/Marlin stand-ins and does not pad weights or activations.
+Real full-size kernels are checked separately; stand-in latency is not H200 timing.
+
+Current sm_120 checks:
+
+- V9 M1/8/128/256/272/753/3012/16384: stock-Marlin relative L2<=0.005449,
+  maxabs0.03125, exact changed-input graph replay and chunk-global remote maps.
+  Skewed M256 (all8 local experts) also passes at EP starts0 and64.
+- Dense projections:8/8 tests;65 public shapes,939 fresh-input native graph
+  replays,33 forced Hopper ABI cases. Worst relative L2=0.005039 (bound0.01).
+  Complete projection CUDA module compiles for sm_90a.
+- Two NCCL ranks own four virtual TP8 slices each: pooler/unpooler gather math
+  at M8/32/128 has relative L2<=0.003692 and exact graph replay; o AR ownership
+  at M8/32/128/256/753 is bit-identical. This is not eight-GPU multicast coverage.
+- Humming admission still rejects wide when slower than V9 on local routing;
+  independent dense wide math remains within relative L2=0.005943.
+
+Local sm_120/FlashInfer margin results (174 requests each, exactly220 tokens;
+all74 stock prefill graph sizes captured and prefill/verify replay observed):
+
+| TP / stock / patch | Exact | TTFT p50 ratio c1 / c4 / c16 / c32 | TTFT p90 ratios | Gate |
+|---|---:|---|---|---|
+| TP1 `q02` / `q03` |174/174|0.982 /0.908 /0.093 /0.040|1.040 /0.874 /0.052 /0.052|all<=2x|
+| TP2 `q04` / `q06` |174/174|1.425 /1.207 /0.937 /0.759|1.265 /1.116 /1.073 /1.052|all<=2x|
+
+First divergence=220 and token agreement=1 throughout. GPU0 was contended by
+other kernel/profiler jobs and GPU1 by another project; changing contention
+explains the implausibly large TP1 ratios, so these are correctness screens,
+not speedup evidence. Servers use memory fraction0.3 and GPU0, or0+1 for TP2.
+The documented TP balance override is required on the shared box; failed
+`q05` is retained. No graph sizes were disabled. New Hopper-only math is
+reached through exact-shape portable stand-ins, real full-size kernels separately.
+
+Bounded V9 prefill warrants a **blocking H200 performance check** before
+claiming production TTFT: contended sm_120 graph medians (stock Marlin/V9,
+including finalize) are0.903/4.647ms at M753,5.227/40.662ms at M3012,
+and42.489/195.995ms at M16384. M256 is0.828/0.844ms. Local architecture and
+contention prevent extrapolation, but this is a regression risk, not a win.
+Tiny expert widths remain Marlin and cannot validate this full-shape TTFT.
+The owner requested V9 instead of grouped at all M>=256; grouped is bypassed,
+and this limitation is explicit rather than silently restoring that losing path.
+
+Random full-graph teacher forcing (`q07`,30 requests x220 continuation tokens;
+90 comparisons against `g58/59/60`) passes the standard median-within-stock-p90
+numerical gate. Request-mean drift patch p50/p90=0.190164/0.202412 versus
+stock0.188395/0.200433. Request-max drift patch p50/p90=0.691919/0.833754
+versus stock0.693040/0.814768. Worst individual max1.020669 exceeds stock0.903524;
+the tails are not equal. Generated random agreement is checked separately.
+
+
+H200 receipt arithmetic: dense o/pooler/unpooler gives0.282/0/0.101/0.071ms per
+step at c1/4/16/32, using `62*sum(stock_us-receipt_us)/1000` for changed
+algorithms only. These are standalone full-shape proxies, **not incremental**
+over the existing multicast split; N512 and N1024/M>8 have no H200 receipt.
+Router's existing1.230/0.453/0.400/0.372ms and QKV's c1=0.104ms remain separate.
+For MoE, the cross-run whole-layer difference is
+`60/62*(46*(1286.930-615.533)+16*(1651.033-979.627))/1000=40.284ms`
+at c32 if extrapolated to60 NVFP4 layers. Different seeds/baselines and included
+glue prevent crediting that as a serving gain; it quantifies avoiding a known
+regression. No extra speedup is subtracted from the earlier45.679ms composed
+step, which did not model the bad grouped dispatch.
+
+Actual H200 TP8/EP8 FA3 agreement, bounded-V9 prefill TTFT, actual shape-plan
+selection, memory/KV capacity and all four judge TTFT loads remain unverified.
 
 ## Other levers found
 - **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.

@@ -148,6 +148,63 @@ are counts divided by elapsed time, not measured pipeline utilization.
 | Serving metrics | the site: "throughput (tokens/s per GPU) and interactivity (tokens/s per user) at each load"; nothing on input tokens, TTFT or percentiles. LMSYS's own Muse sweeps count input (with cache hits) + output tokens and use 1000 / p90 inter-token latency | serving | official (site bundle, LMSYS blog) | site JS `index-DQmeD77Z.js` ("Score" card); https://www.lmsys.org/blog/2026-10-15-meta-muse-spark-open (fetched 2026-10-23) |
 | LMSYS's Muse serving numbers | 8x B300 only: headline 14.8K total tok/s per GPU at 543 tok/s per user (p50) at concurrency 1; AgentX single session 457.8 tok/s per user. No H200 serving numbers published | serving | official (LMSYS) | same blog |
 
+### Local host/device step trace (2026-10-24, sm_120)
+
+The tiny margin fixture was served with `serving/harness/run.py`'s judge flags, DFLASH,
+one 2,608-token prompt per request, 220 output tokens, and GPU0 only. Nsight Systems was
+injected into the server child (not the client wrapper). The harness completed all five
+requests (one at c=1 and four at c=4) with 220 tokens and no request errors. The probe put
+nonblocking CUDA events around each DFlash forward and NVTX/host spans around the scheduler,
+accept, draft-preparation and output functions. `GPU busy` is the device-event interval;
+`gap` is `scheduler.run_batch` wall time minus that interval, so it is an upper bound on
+GPU idle (the host may be doing useful work during part of it). Nested rows are attribution
+rows and must not be added to the step wall time.
+
+| Per decode/verify scheduler step | TP1 c=1 (ms) | TP1 c=4 (ms) | TP2 c=1 / c=4 |
+|---|---:|---:|---:|
+| Scheduler step wall (`run_batch`) | 12.06 | 11.40 | unmeasured / unmeasured |
+| GPU busy (CUDA event) | 9.91 | 9.33 | unmeasured / unmeasured |
+| Host/device gap (idle upper bound) | 2.15 | 2.07 | unmeasured / unmeasured |
+| DFlash forward host span (launches + bookkeeping) | 9.90 | 9.32 | unmeasured / unmeasured |
+| Named CPU batch build (`get_next_batch_to_run` + update) | 1.64 | 1.93 | unmeasured / unmeasured |
+| Verify accept bookkeeping (`_accept_block`) | 0.31 | 0.30 | unmeasured / unmeasured |
+| DFlash draft-prep CPU helpers | 0.10 | 0.10 | unmeasured / unmeasured |
+| Target-hidden → draft-KV materialization host span | 1.95 | 1.88 | unmeasured / unmeasured |
+| Sampling on decode path | 0 (folded into graph) | 0 (folded into graph) | unmeasured / unmeasured |
+| Output processing, regular step | 0.25 | 0.50 | unmeasured / unmeasured |
+| Host-device sync API time | 0.026 (14 `cudaStreamSynchronize`) | 0.055 (54.8 us; 523 stream + 41 event sync, 353 query, 174 wait; zero device sync) | unmeasured / unmeasured |
+
+The c=4 steady window contained 63 outer batches (59 steady decode batches and four extend/transition batches). Nsight counted 523
+`cudaStreamSynchronize`, 41 `cudaEventSynchronize`, 353 `cudaEventQuery` and 174
+`cudaStreamWaitEvent` calls, 3.45 ms of synchronization API time in total, or 54.8 us per
+outer batch. A single c=1 steady event had 14 stream synchronizes taking 25.6 us; c=4
+stream-synchronize calls had a long tail up to 1.32 ms even though their median was short.
+The decode sampling path is already graph-folded, so there is no measured host sampling
+budget to recover locally. TP2 was deliberately not run: GPU1 was occupied by another job,
+and a `CUDA_VISIBLE_DEVICES=0,0` TP2 attempt failed at CUDA device enumeration before load.
+
+The runner metadata reports a post-run source-tree hash change while profiling (the workload itself completed); the retained trace and summary are still usable, but this is not a clean provenance run. Evidence: `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1/measurement_summary.json`, `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1/host_trace.jsonl`, `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1.nsys-rep`, and `/data2/jihoon/muse_kernel/harness/results/nsys-device-tp1.sqlite`.
+
+### Serving idle ranking
+
+1. **CPU-side batch build and overlap scheduling — about 2.1 ms/step exposed at both TP1 c=1 and c=4.**
+   The named batch-update functions consume about 1.6-1.9 ms, and the complete scheduler
+   envelope leaves a 2.07-2.15 ms device gap. Build the next batch's CPU mirrors while the
+   current graph runs, keep allocator/radix decisions out of the replay boundary, and
+   publish a ready batch rather than waiting in `run_batch`.
+2. **DFlash accept and output processing — about 0.6-0.8 ms/step in the regular path.**
+   `_accept_block` is 0.30-0.31 ms and output processing is 0.25 ms at c=1 / 0.50 ms at
+   c=4 (with request-finalization outliers). Move fixed bookkeeping to preallocated buffers
+   and defer response assembly until the next scheduling boundary.
+3. **Host-device synchronizations — 54.8 us/outer batch on average, with millisecond tails.**
+   Remove per-step stream waits and replace host-visible queries with graph-resident flags or
+   one batched completion check. This is a smaller mean lever than batch overlap but can
+   explain the observed long idle bubbles.
+4. **Graph capture of sampling/verify — already applied for this path.** Sampling is folded
+   into the DFLASH graph and target verify replays are present; the remaining local gap is
+   scheduler/host work, not an unpriced sampling kernel. H200/TP2 graph behavior remains
+   unmeasured.
+
 ## Boards (snapshot 2026-10-23T18:28:17Z)
 
 All six public reads were taken sequentially from `18:28:17.076989Z` through
@@ -264,6 +321,21 @@ A router-aware direct MoE probe on sm_120 isolates the missing mechanism. At M=2
 
 In-layer overlap (`cand_r3_merge_ovl.py`, local only, parked): the only independent work is row partitions inside qkv and the unpooler; boundary 1's dense and routed paths share norm statistics; KV write -> attention, pooler/router -> experts -> unpooler and router -> attention output are ordered. Two-stream overlap was 9.5% slower at decode 32 (505.9 vs 461.8 us, sm_120) and failed the correctness guard at verify 16/32 (implementation suspect: a race), so it was not sent.
 The profile also exposes small separate residual, router, norm and gate kernels. Existing structural fusion candidates reduce those launches but regressed complete sm_120 layer timings, so the new diagnostic keeps the v7 glue as the control while selecting the expert family first. Any Hopper result must recheck the Python glue with a portable stand-in and compare the full-layer receipt, not infer a win from the isolated MoE ratio.
+
+#### Batch-1 stage accounting and megakernel rationale (G3)
+
+The H200 profile for `cand_r3_v9` (`0e94268cf5654012`, profiles 0, 1, 6 and 7) gives the following batch-1 decomposition. “Kernel sum” is the labelled GPU time grouped by layer stage; “gap residual” is the raw graph median minus that sum. Negative residuals are possible because PDL and concurrent work make a profile's per-kernel rows overlap. The byte floors use one read of each stage's weights and 4.8 TB/s; projection and attention bytes are the per-stage formulas in [`bound.md`](reference/bound.md), and MoE bytes use its layer-routing expectation.
+
+| Load | Adjusted / raw layer (us) | Kernel sum by stage (us) | Gap residual (us; share of adjusted) | 4.8 TB/s byte floor by stage (us) |
+|---|---:|---|---:|---|
+| decode 1 sliding | 108.49 / 111.22 | projections 45.5; attention 14.8; MoE 31.7; boundaries 12.9; route 3.6; misc 0.7 = 109.2 | +2.0; 1.9% | projections 28.85; attention 0.11; MoE 14.75; glue <0.1 |
+| decode 1 full | 128.57 / 133.31 | projections 44.8; attention 33.9; MoE 32.3; boundaries 13.3; route 3.6; misc 0.8 = 128.5 | +4.8; 3.7% | projections 28.85; attention 4.33; MoE 14.75; glue <0.1 |
+| verify 1 sliding | 149.16 / 153.25 | projections 46.0; attention 23.3; MoE 76.6; boundaries 13.6; route 3.7; misc 0.7 = 163.2 | −10.0; PDL/profile overlap | projections 28.99; attention 0.12; MoE 44.25; glue <0.1 |
+| verify 1 full | 164.44 / 166.40 | projections 46.4; attention 34.7; MoE 70.8; boundaries 14.0; route 3.7; misc 0.7 = 169.5 | −3.1; PDL/profile overlap | projections 28.99; attention 4.34; MoE 44.25; glue <0.1 |
+
+The four loads therefore do not have a large positive launch-gap share in this receipt. Their measured stage kernels are still 1.6–3.0x the one-read byte floors, especially dense GEMVs, MoE decode/route work, and FA3 fixed work. A single persistent launch is still a useful experiment because it can remove barriers and let weight streams advance across operators even when the byte floor does not bind.
+
+This is the motivation for `cand_r3_merge_mega.py`. Hazy Research's batch-1 Llama megakernel work reports that kernel-per-operator boundaries leave bandwidth idle and that merging the forward pass into one megakernel exceeded 1.5x over existing systems on H100 ([Hazy Research, “Look Ma, No Bubbles”](https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles)). Mirage Persistent Kernel generalizes the same idea with an SM-level dependency graph, cross-operator software pipelining and an in-kernel scheduler; its paper reports up to 1.7x over kernel-per-operator serving systems ([Mirage Persistent Kernel, arXiv:2512.22219](https://arxiv.org/abs/2512.22219)). Those results motivate the structure, not a speed claim for Muse: the new candidate must pass the layer's own correctness and full-shape screen.
 | Proj scored (`68e2f34b1d4744cb`) | 1.142642x, CI 1.1255–1.1598 | router 1.68 / 2.26 / 1.93x; pooler m32 loses at 0.930x | router m8 4.05x; m128/256 all 0.976–1.017x | `submission.py` is the scored snapshot, sha256 `4bc18cec…`; tuned check `9294b3237c4f4e2d` 1.141605x; full table below |
 | Proj hybrid (`6b706627babc4cc6`) | 1.106x | router 1.55-2.01x; unpooler m=1 1.135x | router m=8 3.81x; others 0.98-1.01x | qkv_gate and o stay at cuBLAS parity at every m |
 

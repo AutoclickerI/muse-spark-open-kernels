@@ -27,19 +27,18 @@ sidecars total 23,040 bytes/GPU. The BF16 post-expert norm sidecars are also tin
 
 ## Readers
 
-The V8 fused reader handles verify/decode rows. It stages complete canonical tiles and
-runs the SwiGLU and W2 phases with BF16 activations and FP32 accumulation. The native
-persistent grid barrier is launched cooperatively, with per-invocation counters.
+The V9 fused reader stages complete canonical tiles and runs SwiGLU and W2
+with BF16 activations and FP32 accumulation. Its persistent grid uses cooperative
+launch and per-call counters. Serving's `muse_spark_serving.run_v9_dense` uses V9
+at M256 and bounded V9 chunks above shared-memory/int16 routing capacity.
+The grouped reader remains in the independently owned kernel module, but the
+serving dispatcher bypasses it after its H200 in-layer regression at verify32.
 
-The grouped reader uses the same V6/V8 bank for large M. It routes with histogram/prefix/
-scatter metadata, gathers activation pairs in the V6 K order, and selects N=8/16/32/64/128
-row groups. W13 uses the separate gate and up global scales; W2 uses its own scale. The
-reader returns dense `[T, topk, H]` expert rows and a local-slot map, leaving norm and
-routing-weight reduction to the serving finalize.
-
-The grouped path has no resident converted weight buffer and no global barrier. Its temporary
-BF16 activation/output buffers are allocated per request and are not part of steady-state
-expert memory.
+All producers return dense `[T,8,H]` rows with identity-or-minus-one slot maps;
+post-expert norm, weighted reduction and EP collectives remain owned by serving.
+One optional Humming layout in layer1 may compete against V9 after KV admission.
+It reconstructs a lossless0.906GB subset, preserves gate/up scales and disables
+BF16 Stream-K partial sums. No second full expert bank is allocated.
 
 ## Memory accounting
 
@@ -65,13 +64,13 @@ rather than a serving allocation forecast.
 
 ## Source and verification state
 
-The physical repack and V8 decoder are shared with `problems/muse_moe_w4a16/submission.py`.
+The physical repack and V9 decoder are shared with `problems/muse_moe_w4a16/submission.py`.
 The grouped CUDA reader is the canonical source from
 `problems/muse_moe_w4a16/dev/canonical_grouped.cu` with the serving-required separate W13
 scale pointers. The serving implementation keeps no Marlin qweight bank on the patch path;
 stock Marlin remains available only when `SGLANG_MUSE_MOE_FORCE_STOCK=1` is set before load.
 
 The required local checks are layer math at M=8, 128, 256, 753, 3012 and 16384, fresh graph
-replays at the verify and grouped sizes, margin harness agreement at TP1/TP2, teacher-forced
+replays at the verify and bounded-prefill sizes, margin harness agreement at TP1/TP2, teacher-forced
 log-prob drift, and a random-fixture comparison against stock-vs-stock. H200 WGMMA execution,
 full released-checkpoint memory and judge serving throughput are not established by sm120.
