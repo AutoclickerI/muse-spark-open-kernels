@@ -177,6 +177,52 @@ three unary launches, modeled at **0.006ms/step at all four rungs**; dense/layou
 no additional H200 credit until `cand_dflash_diag.py` returns. The full inventory gives all four
 per-rank shapes, bytes and hardware floors, including retained TP8 collectives.
 
+### Eight-node tree acceptance screen
+
+`probe_tree_harness.py` plus `tree_probe_hook/sitecustomize.py` records the live
+DFlash2 selector's7x16x16 transition logits and candidate IDs without changing
+proposals, attention or KV writes. Every recorded lattice must reproduce the
+actual chain, including padded CUDA-graph buckets. `analyze_tree_ceiling.py`
+softmaxes each conditional row, then best-first selects the seven largest
+prefix reach probabilities. Reach mass never increases down an edge, so this
+is the exact maximum-mass prefix-closed tree for seven proposal nodes plus the
+known anchor. Expected emitted tokens are `1+sum(node reach probabilities)`.
+Three CPU tests include exhaustive small-tree enumeration.
+
+GPU0 sm_120 `tree-ceiling-q13`:30 requests, all220 tokens, full target prefill
+and target/draft verify graphs,2,156 uncensored blocks. The98 terminal blocks
+are right-censored;5 startup warmup blocks are excluded by prompt hash.
+Overlap scheduling leaves the host output list behind the GPU; anchor offsets
+are reconstructed recursively and every live anchor is checked against the
+same request's final output, avoiding counterfactual logits after a mismatch.
+The recorder now also saves the actual GPU position for future probes.
+
+| c | Uncensored chain tokens/step | Best8-node tree, observed | Probability-model chain/tree | Gain |
+|---|---:|---:|---:|---:|
+|1|3.030733|3.030733|7.86121 /7.86121|0%|
+|4|2.964224|2.964224|7.86121 /7.86121|0%|
+
+The fixture's per-position top1 probability is0.994993 at every depth;
+entropy0.0450733 nats. Observed conditional top1 hits at positions1..7 are
+67.58/67.88/68.25/67.56/70.39/70.09/62.22%. It is deliberately overconfident,
+so the uncalibrated7.861 estimate is not measured acceptance. Temperatures
+1,1.5,2,2.5 all choose the same chain. At3, branching reduces observed tau
+to2.737589/2.718984 (c1/c4); at4 it falls to2.231678/2.235430. Artificially
+flattening probabilities reports an11.38% model gain at4 but loses24.6-26.4%
+of actual coverage. This is not evidence for a real-checkpoint acceptance
+ceiling; the real Muse drafter's uncertainty/repetition remains unmeasured.
+The available fixture misses the+5% gate, so no tree is shipped; work moves
+to the unowned collective extension below.
+
+A tree implementation needs per-node ancestor visibility, depth-based RoPE
+positions and a graph-capturable eight-node custom verify mask, including SWA.
+Each node needs an independent target KV slot. After selecting a path, commit
+its KV slots/auxiliary hidden states in ancestry order, discard siblings and
+materialize only accepted context into the drafter cache. A chain's current
+contiguous-prefix KV commit cannot be reused unchanged. FA3's existing tree
+metadata does not establish that the lane's new verify kernel supports these
+masks; that attention interface remains with its owner and was not edited.
+
 ### Attention-output all-reduce fused with the norm/residual boundary
 
 Implemented `all_reduce_norm_residual.py/.cuh`, `FusedPostNormResidualPreNorm.forward_with_ar`
@@ -203,20 +249,24 @@ when this boundary owns it.
 The first kernel partitions whole rows among ranks, scatters partials to
 owners, reduces in FP32 rank order, rounds to BF16 and publishes those rows
 with multicast stores or unicast. The second kernel drains each row directly
-into the unchanged norm/residual body. A captured4-byte phase tensor decouples
-the M256 gather/norm grid from the132-counter push plane; its final consumer
-advances every shared counter. Both phases clear their Lamport slots, allowing
+into the unchanged norm/residual body. A captured4-byte phase stored alongside the returned FP32 residual decouples
+the M256 gather/norm grid from the push-plane counter geometry; its final consumer
+advances every shared counter. Producers split each row into up to8 vector
+partitions to occupy up to128 CTAs, independently of the counter count.
+The gather is stream ordered: PDL provides no independent pre-input work and
+can strand waiters ahead of a peer-dependent producer. Both phases clear
+their Lamport slots, allowing
 interleaving with stock AR/finalize/AG. The expert lane is untouched.
 No router can run before its normalized input exists without changing semantics.
 
 `test_attn_ar_norm.py` runs the real unicast kernel on two sm_120 GPUs with H1024/8192,
 M8/32/128, optional FP32 router, zeros/signed zeros, shared-plane stock/fused alternation and
 CUDA graph replay. **All eager/graph comparisons against separate custom AR + norm: maxdiff 0.**
-TP1 default-loader eager/graph is exact. The forced support predicate accepts M8/TP8 and
-rejects M32, zero rows and a forced NCCL choice. TP2 also matches NCCL maxdiff0 and
+TP1 default-loader eager/graph is exact. The refreshed predicate accepts M8/32/128/256 at TP8 with sufficient workspace
+and rejects zero/oversized rows, insufficient workspace and forced NCCL. TP2 also matches NCCL maxdiff0 and
 changed-input graph replay is exact. Existing cluster norm differs from direct torch math
 by at most 0.03125 BF16 at H1024, 0.015625 at H8192; the fusion adds zero difference.
-All 12 H8192/TP8 sm_90a variants (cluster8/4/1, multicast on/off, router on/off) compile under
+All24 H8192/TP8 sm_90a variants (one/two-shot, cluster8/4/1, multicast on/off, router on/off) compile under
 `override_jit_cuda_arch(9,0,suffix="a")`. H200 multicast execution and speed remain unverified.
 
 Local PCIe sm_120 medians for H8192, no router, separate->fused:
@@ -226,7 +276,8 @@ numbers are **not H200 estimates**. A repeat under concurrent stock graph captur
 46.24->44.22 us, M32 126.49->167.26, M128 469.41->405.37, illustrating noise;
 no local speedup is credited. SM120 production dispatch is unchanged. On H200, the
 modeled saving is one removed launch plus the boundary traffic: conservative
-`62 layers * (1-2 us) = 0.062-0.124 ms/step at c1`, zero at the other scored rungs.
+`62 layers * (1-2 us) = 0.062-0.124 ms/step at c1`. The two-shot extension below supersedes the previous zero estimate
+at the other rungs.
 Holding tau/prefill fixed, `sim.serving_receipts` plus this c1 step reduction gives capped
 **1.74621-1.74777x** versus **1.74464x** (+0.09-0.18%). This is a testable candidate,
 not a credited recovery of the whole collective bucket.

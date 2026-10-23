@@ -1,0 +1,88 @@
+{
+ "board": "muse_bf16_proj",
+ "call_id": "nyc3:kc-3afea80c527c4969",
+ "cluster": "nyc3",
+ "content_hash": "4092162c1c9c2028ac9f3283b54e362bff766e50d7f15a3cd1a627c74beb6bfb",
+ "created_at": 1792786756.231533,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792792058.3880482,
+ "id": "3afea80c527c4969",
+ "mode": "run",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/0caf732223b82631/profiles/cand_portfolio_all.3afea80c527c4969.log"
+ },
+ "payload_ref": "muse_bf16_proj/4092162c1c9c2028ac9f3283b54e362bff766e50d7f15a3cd1a627c74beb6bfb.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "986ed3ebb096eab83d16797609f4c0e7895248d6bce33252d25dd306cbe5d018",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_bf16_proj/baseline.py": "39f52ea5b65505958aa9dee9c8129dd394cbba4e670046f862b5a88ce91a0574",
+    "problems/muse_bf16_proj/reference.py": "e62491abc9ddcad33f5faba8b0ee74cf6370b7be5dd2dc05031742f3ebf7147d",
+    "problems/muse_bf16_proj/task.yml": "18e9da6357144b0a1348434a18bd2d1938b1948d9f2130876f6b6706588470c9"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "ALL compile_repack_s=17.71 h200={'job': 'dd989ef2d76147e7', 'source_sha256': '57086918cce13065f97757c2471b7b79072e2bc45e8c589899723bf1d70d748e'}\nALL_LT router m=1 nn=0 kind=1 heuristics=8 expanded=48\nALL_LT router m=1 nn=0 kind=2 heuristics=8 expanded=47\nALL_LT router m=1 nn=1 kind=1 heuristics=6 expanded=36\nALL_LT router m=1 nn=1 kind=2 heuristics=8 expanded=41\nALL_CHOICE router m=1 trials=368 chosen=('skin', 1, 1, 4, 1, 8, 4, 1, 0) event_us=10.978 incumbent_event_us=11.200 top=[(10.781187257360193, ('incumbent',)), (11.110423283709357, ('skin', 1, 1, 4, 2, 4, 8, 1, 0)), (11.137805526158445, ('skin', 1, 1, 4, 1, 4, 8, 1, 0))] elapsed_s=18.90\nALL_LT router m=8 nn=0 kind=1 heuristics=8 expanded=48\nALL_LT router m=8 nn=0 kind=2 heuristics=8 expanded=47\nALL_LT router m=8 nn=1 kind=1 heuristics=6 expanded=36\nALL_LT router m=8 nn=1 kind=2 heuristics=8 expanded=28\nALL_CHOICE router m=8 trials=355 chosen=('skin', 1, 1, 4, 2, 4, 8, 1, 0) event_us=11.192 incumbent_event_us=11.264 top=[(11.213348839144787, ('incumbent',)), (11.383055773540335, ('skin', 1, 1, 4, 1, 4, 8, 1, 0)), (11.399193055437344, ('skin', 1, 1, 4, 2, 4, 8, 1, 0))] elapsed_s=19.87\nALL_LT router m=16 nn=0 kind=1 heuristics=8 expanded=48\nALL_LT router m=16 nn=0 kind=2 heuristics=8 expanded=47\nALL_LT router m=16 nn=1 kind=1 heuristics=6 expanded=36\nALL_LT router m=16 nn=1 kind=2 heuristics=8 expanded=28\nALL_CHOICE router m=16 trials=355 chosen=('skin', 2, 1, 4, 1, 8, 4, 1, 0) event_us=11.567 incumbent_event_us=11.744 top=[(11.687357384714357, ('skin', 2, 1, 4, 2, 4, 8, 1, 0)), (11.753929665505138, ('skin', 2, 1, 4, 1, 8, 4, 1, 0)), (11.97116484595206, ('skin', 2, 1, 4, 1, 4, 8, 1, 0))] elapsed_s=20.83\nALL_LT router m=32 nn=0 kind=1 heuristics=8 expanded=48\nALL_LT router m=32 nn=0 kind=2 heuristics=8 expanded=42\nALL_LT router m=32 nn=1 kind=1 heuristics=6 expanded=36\nALL_LT router m=32 nn=1 kind=2 heuristics=8 expanded=16\nALL_CHOICE router m=32 trials=339 chosen=('pair', 64, 128, 4, 1, 16, 256) event_us=12.535 incumbent_event_us=12.864 top=[(12.818065022655318, ('pair', 64, 128, 4, 1, 16, 256)), (12.851938753862292, ('pair', 64, 128, 2, 1, 16, 256)), (12.853950825021558, ('skin', 4, 1, 4, 1, 8, 4, 0, 0))] elapsed_s=21.78\nALL_LT router m=128 nn=0 kind=1 heuristics=8 expanded=48\nALL_LT router m=128 nn=0 kind=2 heuristics=8 expanded=42\nALL_LT router m=128 nn=1 kind=1 heuristics=8 expanded=48\nALL_LT router m=128 nn=1 kind=2 heuristics=8 expanded=42\nTraceback (most recent call last):\n  File \"/tmp/muse_bf16_proj-z1tw0dnv/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-z1tw0dnv/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py\", line 457, in prepare\n    graph,out=_graph(lambda c=config:_all_run(data,state,c))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py\", line 168, in _graph\n    fn()\n  File \"/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py\", line 457, in <lambda>\n    graph,out=_graph(lambda c=config:_all_run(data,state,c))\n                                     ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-z1tw0dnv/run/submission.py\", line 304, in _all_run\n    call=mod.hopper if tag=='pair' else mod.old_hopper\n                                        ^^^^^^^^^^^^^^\nAttributeError: '_AllModule' object has no attribute 'old_hopper'\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 125.63,
+    "power.limit": 700,
+    "temperature.gpu": 34
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 345,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 77.89,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "node": "n-3tovvmp4azgxjrdbhkqxjjl254"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 16,
+    "baseline_prepare_pad": 13615104,
+    "copies": null,
+    "error": "AttributeError: '_AllModule' object has no attribute 'old_hopper'",
+    "event": "setup",
+    "first": "submission",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792792007.2297432,
+ "status": "done",
+ "team": "AutoclickerI"
+}
