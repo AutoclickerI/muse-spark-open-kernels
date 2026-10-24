@@ -461,7 +461,7 @@ log, producer agreement, model inputs and summaries live in
 The current patch has not run as a full H200 server. No commit or candidate
 judge run was made; authorized component labs are queued, with no judge polling.
 
-**Expert storage solved; performance admission pending.** The direct V9 reader
+**Expert storage correct; direct reader loses on H200.** The direct V9 reader
 in `kernels/ops/moe/muse_marlin_v9_reader.py` reads stock Marlin's code/scale
 arrays. `layers/muse_spark_expert_bank.py` joins them without changing a byte;
 stock retains contiguous tensor views into those same allocations. V9 converts
@@ -471,13 +471,13 @@ needed. Bank residency remains905969664B/layer,54358179840B for60 layers;
 additional resident expert bytes and timed repack scratch are both0.
 Stock's native loading aliases are released before service.
 
-The desired policy is V9 at M<=256 and stock Marlin above256, explicitly
-including257–511 and513–752. Real-weight H200 evidence `26d7e05ab97d4f96` has
-V9/Marlin478/561us at256,931/563us at512 and1332/716us at753. Grouped/Humming
-are never dispatched. Those V9 times used a different bank reader; they cannot
-admit this new reader. `MARLIN_READER_ADMITTED=False` keeps stock default
-until the direct-reader H200 lab wins. sm120 direct/native/Marlin M256 is
-2490/678/550us, so no local performance win is claimed.
+The serving policy remains stock Marlin. H200 `6fab497d67e2420b` rejects the
+direct-reader implementation: M8/32/128/256 direct **298/651/1430/2590us** versus
+stock **79.2/147/314/510us** (3.76–5.08x slower at those points). Its separate
+native-V9 control is77.9/163/389/698us; that different reader cannot admit this
+one. Shared-bank Marlin stays528/736/15900us at M512/753/16384, essentially
+identical to stock528/737/15900us. `MARLIN_READER_ADMITTED=False` already keeps
+the losing reader out of serving. No new serving dispatch or port is justified.
 
 The derived source preserves V9 routing, arithmetic, launch ABI and dense
 outputs. The serving global sidecars reproduce **stock Marlin's rounded shared
@@ -494,24 +494,17 @@ passes. Logs: `direct_reader_bitparity.log`, `production_reader_layer.log`,
 `direct_sm90.log`.
 
 Direct-reader H200 payload `prof/lab/marlin_v9_reader.py` SHA-256
-`78be248dda10d8473e42887d4c50572b64faa1b63b1a291f60a2f46744c700c2` is queued as
-source **6a3168ef5d749e10** (not a job ID). It tests23 shapes: all20 verify graph
-buckets plus512/753/16K prefill,3 refreshed real-router distributions,20 rotated
-cold graph medians, stock-byte equality, native-V9 bit parity and stock normalized
-output. Local prepare5.66s,23/23 pass. No receipt was polled while building.
+`78be248dda10d8473e42887d4c50572b64faa1b63b1a291f60a2f46744c700c2`, job
+**6fab497d67e2420b**, passes23 shapes: all20 verify graph buckets plus512/753/16K
+prefill,3 refreshed real-router distributions,20 rotated cold graph medians,
+stock-byte equality and native-V9 bit parity. Relative L2 against stock's
+normalized output is≤0.00571, maxabs≤0.00781. Extra resident bytes0; lab69.2s,
+total prepare196.3s. Correctness/storage pass; performance admission fails.
+Evidence: `runs/muse_moe_w4a16/*6fab497d67e2420b.json`.
 
-**Serialized bridge rejected for score.** The earlier per-call one-layer
-lossless V9-to-Marlin bridge is correct (byte-exact codes/scales, eager/graph,
-sm90a compile) but adds serial traffic. At c32,13 turns,220 tokens,tau4.05,
-`steps=13*220/4.05=706.17`; four initial chunks plus12 followups means16 prefills
-per conversation. Copy break-even per layer is
-`706.17*(561-478)/(32*16)=114.48us`. Ideal packed read+write at4.8TB/s already
-costs`2*905969664/4.8e12=377.49us`; launch/traffic inefficiency worsens it, and
-no overlap is assumed. Even that floor needs69.7% hiding to break even.
-No overlapped conversion is implemented or credited. The serial bridge is
-removed from shipping source. Diagnostic source
-`cb2c40fb27780d2d` remains queued; retained implementation is
-`prof/lab/v9_marlin_bridge.py`, frozen runtime `shared-bank-r03`.
+| Finding (serving only) | H200 result | Decision / evidence |
+|---|---|---|
+| Serialized shared-bank bridge | `afb3b3649e664cb3`: byte-exact codes/scales, 905969664B workspace, **2500us** cold repack. M8/32/128/256 stock→V9+bridge **113→111 / 164→176 / 317→396 / 513→711us**; M257/512/753/1024/2048/16384 stock→Marlin+bridge **345→2840 / 532→3030 / 745→3230 / 999→3480 / 1880→4360 / 15800→19200us**. Ten shapes ×3 fresh fixtures pass; relative L2≤0.00569, maxabs≤0.00781, 20 cold graph medians | Serial conversion loses except the M8 noise-sized difference. Keep it out of shipping source; the conversion-free direct reader also loses (`6fab497d67e2420b`). `problems/muse_moe_w4a16/lab/profiles/lab_shared_bank_bridge.afb3b3649e664cb3.log`; `prof/lab/v9_marlin_bridge.py` |
 
 **TTFT margin passes locally with interleaved controls.** The accepted code
 fixes remain: drain ready first tokens before ingress/planning, remove completed
@@ -1297,6 +1290,7 @@ by the better-fitting max model in “Boards”.
 | Verify projection search, authorized decision | Library596b2a5d436e4fee: best M128 qkv/unpooler gains4.5%/4.3%, others near parity. Corrected custom TMA v2 `92e7802783a54212`: M256 qkv23.49->37.73, pool33.39->65.55, unpool28.19->44.85, o13.34->20.51us; M12821.20->25.55/27.66->40.40/23.47->32.29/11.57->16.46. PDL chain loses1.32–1.62x | Custom v2 is a measured losing implementation, **not a closure of TMA/WGMMA**. Next is shipped CUTLASS Hopper cooperative split-K/Stream-K with timed workspace reset, tile/cluster/grid/operand choices at exact decode shapes, retaining the incumbent elsewhere. No judge polling: send, build the handoff, inspect receipts once per turn | `prof/lab/verify_proj_cutlass.py`, `problems/muse_bf16_proj/dev/cutlass/`; denseV11 remains open, glue parked, MoE grouped withdrawn |
 | Owned NVFP4 weight-bank audit | Owned dense serving modules contain BF16 projections only. `cand_v11_gemm` retains packed expert bytes/E4M3 scales in prepare, expands in each timed expert call. Raw17 grouped path permutes NVFP4/E4M3 bytes; FP32 diagnostic reference is not returned in runtime state | No prepared BF16/FP8 expanded NVFP4 weight bank found. Inherited V9 prefix in the withdrawn/parked grouped candidate recodes scales to uint8 exponent/mantissa and folds sign/zero into FP4; exact but not a permutation of stored E4M3 bytes. Do not reuse that encoder under the stricter byte-layout instruction; the MoE lane owns its incumbent | `problems/muse_moe_w4a16/dev/tma_grouped/README.md`; new CUTLASS block handles BF16 dense only |
 | Stock CUTLASS verify recipe set closed | H200 lab45f58e7009c440eb:144 recipes/key, every choice loses.20-pair best M256 control/new: qkv23.792/31.024us (1.306x), pool/router33.648/41.856 (1.254x), unpool28.528/30.752 (1.082x), o13.312/15.664 (1.183x); M128 qkv20.416/27.200 (1.322x), pool28.352/35.072 (1.244x), unpool23.632/27.264 (1.142x), o11.728/13.920 (1.186x). The often-quoted1.07 unpooler ratio is coarse, not the20-pair finalist | Standard image CUTLASS Hopper cooperative TMA schedules, including split-K/Stream-K, multicast, swapped AB, rings/raster/grid/reduction choices do not beat cuBLAS/Lt at these exact M128/256 shapes. Close this **recipe set**, not the family. No native recipe is installed. Cold compile71.61s; lab80.64s; total prepare88.7s | `runs/muse_bf16_proj/20261024T063237Z_check_45f58e7009c440eb.json`; payloadSHAe43ed9b225d98cf1… |
+| Verify weight-wide WGMMA (local admission; H200 pending) | New TMA kernel uses tokens on M64, weight rows on N64/128/256, 1–4 consumer warpgroups sharing 2–8-stage rings and one-launch split-K reduction. **744** local checks/**90** fresh graphs/**415** native descriptors; full lab **407** passing recipes at12 keys, zero rejections; forced decode **13/13 tests,12/12 graphs,15/15 static**; prefill host **5/5 tests,8/8 graphs,3/3 static**. Native15 kernels have no spills, max154 registers | Exact best6 `1b80ffc0` cuBLAS/Lt controls at M8/128/256, real loaded BF16/router weights,3 fixtures,20 cold rotated finalist pairs. Pooled capture streams cause a replay failure; distinct native streams fix the full reproducer (cuBLAS workspace lifetime is inferred). M128/256 dense bank is197.13MB/50.47GFLOP at256 (41.07us read floor,63.08us at800TFLOPS);138.41MB applies to M8's unpool slice. No prepared NVFP4 expansion; no H200 winner or dispatch installed | `problems/muse_bf16_proj/dev/verify_streaming/README.md` and JSON admission; payloadSHA`7b67602f1d4b77c0…`; merged with proj glue on prefill, send key **be5d6aa5ae1ac0bd**, priority0.5; detached log reports waiting for a slot, no rejection |
 | GEMV/glue fusion: H200 implementation closed | H200 lab `479aab3038c6407c`: every fused stage, prefix and chain lost. Ratios were b1 **1.06–7.8x**, pool **2.04–11.36x**, b2 **1.09–9.02x**, PREFIX **1.88–9.74x**, and chains **1.04–9.60x** slower; `picks=0` | Folding norms, residual gates and routing into these skinny GEMVs costs the GEMV's parallelism and does not recover the nominal 12–25us glue. Close this implementation, not the general idea of eliminating glue launches; keep the service lane free to revisit it with a fused vector/consumer design | `runs/muse_bf16_proj/*479aab3038c6407c*.json`; `dev/glue/projection_glue.py` |
 | Corrected native projection local admission | **sm120**:2148 fresh checks,342 executable configs per output dtype; all8 target keys. Full Hopper lab forced73 tile/ring/K-group families,1247 calls and4 PDL chains; injected AttributeError rejects. Lab host9/9 tests+30/30 graph cases,2.091s cached prepare; full-layer fixture13/13+12/12,3.264s. Shortlist32 trials+140 fresh/stride/weight cases and expired/short/module rejection pass; all SM90a static builds pass | Local reader uses mma.sync and ordinary TMA as the multicast transport stand-in; actual native multicast also passed24 target cases but is extremely slow on sm120. Isolated MC1 controls are68–80us versus MC2~1.9–2.7s at M128 pool/router; wait/scope changes do not fix that timing. NVIDIA documents multicast as optimized for sm90a. No inference of Hopper latency from this local penalty | `runs/screen/verify_proj/{grouped_validation_v2,grouped_lab_glue_v2,cluster_contrast,poll_probe}.log`; `integration_fixture.json`, `lab_tma_v2.json`; [CUDA TMA guide](https://docs.nvidia.com/cuda/archive/13.1.1/cuda-programming-guide/04-special-topics/async-copies.html) |
 | Persistent projection barrier lifetime | Native v1 `6b72087f64584258` reached the judge before cancellation and is **invalid for dispatch selection**: persistent tiles reinitialize valid barriers. Local numerical passes did not expose that contract violation. Scored kernel_fn remains the frozen incumbent | V2 invalidates full/empty barriers after cluster/CTA users finish, before reinitialization, and uses cluster-scope acquire for remote releases. The [PTX lifetime requirement](https://docs.nvidia.com/cuda/parallel-thread-execution/#parallel-synchronization-and-communication-instructions-mbarrier-init) establishes the defect; it does not explain the sm120 multicast timing penalty (invalidation alone did not fix it). No execution cancellation API exists; the result reader rejects v1 | `dev/verify/build_tma.py`; `runs/screen/verify_proj/barrier_lifetime_probe.log`; corrected v2 admission above |
