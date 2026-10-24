@@ -9,8 +9,8 @@
 - The decode layer's MoE (V9) takes 477/450 us at verify 32 and 259/280 us at verify 16 against a ~70 us floor under its
   real router (672 pairs, 8 experts, hot 221 rows at M=256; receipt 0e94268). MoE at ~200/120 us lifts the layer to ~1.68x,
   and the same MoE is 62% of serving's c=32 decode step: the top G3 lever and a top G1 lever.
-- Serving model (`sim.serving_receipts`, older receipts): 1.745x capped. Prefill takes 29-44% of the time at c=1 and 76-91%
-  at c=16/32, so prefill x0.8 lifts the capped score to 2.056x: the top G1 lever.
+- Serving model (`sim.serving_receipts` on receipts 0e94268 + a30fb411): 1.807x capped (1.710x in its accounting sensitivity).
+  Prefill takes 26-30% of the time at c=1 and 70-78% at c=16/32: the top G1 lever.
 - Patch (323 KB of 720 KB): V9 MoE to M=256, muse_proj, fused router, AR+norm fusion, FA3 QK-norm/KV store, lookahead
   scheduling, bounded SWA KV sizing (c=32 needs 16.9 GB/GPU, was 37.9); exact at TP1/TP2 locally; nothing has run on Hopper.
 - Bottleneck: judge latency (~9-11 of our runs start per hour, one at a time).
@@ -45,7 +45,7 @@ tokens, full attention) and decode 32.
 
 | Rank | Id | Serves | Work | Done when | Who | State |
 |---|---|---|---|---|---|---|
-| 1 | P2 | G1, G2 | Prefill, the top G1 lever (prefill x0.8 -> serving 1.745x -> 2.056x capped): first-turn 16K chunks at 2,197 ms against a 1,296 ms floor (experts 917, dense/router 781, attention 264 ms); routing-aware portfolios and cand_dense_router_prefill queued at 1.5; serving module muse_prefill_dense.py | Board above 1.367x; ported with agreement | prefill lane | active: tma_cluster (re-sent, never reached the judge) and mid_experts2 queued; lab sweep of every expert variant at 753/3012/16384 on the H200 |
+| 1 | P2 | G1, G2 | Prefill, the top G1 lever (70-78% of serving time at c=16/32): first-turn 16K chunks at 2,197 ms against a 1,296 ms floor (experts 917, dense/router 781, attention 264 ms); routing-aware portfolios and cand_dense_router_prefill queued at 1.5; serving module muse_prefill_dense.py | Board above 1.367x; ported with agreement | prefill lane | active: tma_cluster (re-sent, never reached the judge) and mid_experts2 queued; lab sweep of every expert variant at 753/3012/16384 on the H200 |
 | 2 | P3 | G3 (via the decode layer), G1, G2 | MoE at verify M=128/256 under the decode layer's real router: V9 477/259 us against ~70/35 us floors (Status). Designs in flight: cand_tma_grouped (in-register W4 into WGMMA, proj lane), V19 (MoE lane), cand_r3_bf16moe (BF16-resident hybrid, free lane); MoE lane's lab times every kernel under real routing on the H200 | Decode-layer MoE at verify 32 <= 200 us on H200, then ported to serving (W4 path only: BF16 copies don't fit 62 layers) | MoE, proj, free lanes | active: lab moe_real_routing, tma_grouped and v19 receipts pending |
 | 3 | P1 | G1 | Serving patch: TTFT margin (hard limit 2x stock per load; TP2 native c16 at 1.955x locally, target <=1.5x), the router-scratch handoff from KV sizing (`prof/kv_capacity_router.patch`, 2.76 GB/GPU), then the V9 <=512-row prefill bound on the `cand_serving_prefill_diag` receipt. Tree verification closed: best held-out estimate +3.9-4.5% tokens/step, under the +5% bar | TTFT <=1.5x stock at every rung locally; diag receipt decides the 512 bound | serving lane | active: TTFT decomposition |
 | 4 | P4 | G3, G2 | Decode layer (the only G3 lever): board 1.428x with pure V9 MoE (V9 1.216/1.136x at M=256 against grouped 0.549/0.647x); round 3 merges V9 with FA3/proj/PDL tuning, router-aware MoE tuning. The score is the geometric mean of 6 loads; the weakest are verify 32 1.19x (4.0x off SOL, ~80% MoE on sliding), decode 32 1.32x and verify 16 1.33x (`0e94268cf5654012`); `problems/muse_decode_layer/dev/NEXT_CHECKS.md` | Scored above ~1.54x (rank 50) | decode lane | active: v9all, merge, cost_v9, attention_portfolio, proj, moe_rt go at the 09:00 KST reset |

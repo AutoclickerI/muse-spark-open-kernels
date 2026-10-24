@@ -15,12 +15,12 @@ the drafter's block forward is TARGET_VERIFY too, ~line 2604). The kernel proble
 (q_len 1) count on the kernel boards but never run in serving; their `verify N` loads (8N tokens) do.
 
 The current receipt basis is `muse_moe_w4a16/cand_v9.f6028a478d594b31` (MoE summary 1.654x),
-`muse_decode_layer/cand_moe7.d2bf1ced702948a4` (whole-layer verify summary 1.355x),
-`muse_prefill_layer/cand_v11.6a9cd943fe404d74` (prefill summary 1.368x),
+`muse_decode_layer/cand_r3_v9.0e94268cf5654012` (whole-layer board 1.428x),
+`muse_prefill_layer/cand_score_portfolio_routing.a30fb411b0c74ffb` (prefill board 1.434x),
 `muse_bf16_proj/submission.68e2f34b1d4744cb` (projection summary 1.143x), and
 `muse_attention_decode/submission.526f31018e2c4449` (FA3 verify path, summary 1.384x but roughly
-1.0x on the verify shapes). The composed `sim.serving` estimate from these measured shapes is 1.756x
-extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
+1.0x on the verify shapes). The composed `sim.serving` estimate from these measured shapes is 1.820x
+extrapolated and 1.807x capped; it is a receipt composition, not a judge run.
 
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
@@ -212,13 +212,12 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
 
 ## Measured serving ranking
 
-Using the receipts above, the composed model has stock/candidate per-step times of 18.094/10.037 ms at c=1,
-25.526/16.565 ms at c=4, 36.839/28.433 ms at c=16, and 53.755/45.679 ms at c=32. Weighted prefill is
-3.419/2.197 s for the first turn and 72.841/58.892 ms for a later turn. The resulting `sim.serving` score is
-1.756x extrapolated (1.745x capped).
+Using the receipts above, the composed model has stock/candidate per-step times of 18.094/10.065 ms at c=1,
+25.526/16.417 ms at c=4, 36.839/27.866 ms at c=16, and 53.755/45.202 ms at c=32. The resulting `sim.serving` score is
+1.820x extrapolated (1.807x capped).
 
 The next highest-value work is the V9 expert kernel at verify M=128/256: the decode-layer profile still shows
-286/362 us (sliding/full) at verify16 and 499/503 us at verify32, 49-77% of the candidate layer. Optimize
+259/280 us (sliding/full) at verify16 and 477/450 us at verify32 (receipt 0e94268), 47-76% of the candidate layer. Optimize
 that resident V9 path first. FA3 QK/KV fusion is second: the standalone FA3 candidate is about 1.0x
 on verify loads, but the fused store/query path is modeled at 0.3-0.5 ms per step if H200 confirms it. The
 v11 grouped reader remains in the kernel lane's module but is bypassed by serving after the
@@ -228,7 +227,7 @@ two checks.
 
 ### Per-step breakdown and unowned work
 
-Reproduce with `python -m sim.serving_receipts`. This decomposes the **published 1.745x receipt
+Reproduce with `python -m sim.serving_receipts`. This decomposes the **published 1.807x receipt
 composition**, not a measured serving trace. M = profile shares allocated to receipt `best_ns`; S = sim
 model; I = log-log interpolation at c=4. Profile kernel durations overlap and can include PDL waits, so
 M rows are attribution rather than isolated critical-path latency. At c=4 interpolate each layer's wall
@@ -236,10 +235,10 @@ and components, then normalize shares to its wall. The target receipt excludes c
 
 | Step component | Basis | c=1 us | c=4 us | c=16 us | c=32 us |
 |---|---|---:|---:|---:|---:|
-| Target MoE | M / I | 4,126.3 | 8,683.8 | 17,040.9 | 28,348.7 |
-| Target attention | M / I | 1,199.6 | 2,130.1 | 4,085.4 | 7,141.4 |
-| Target projections (including router) | M / I | 2,290.5 | 3,118.6 | 3,957.8 | 5,195.1 |
-| Target glue | M / I | 960.4 | 981.2 | 934.4 | 1,561.2 |
+| Target MoE | M / I | 3,915.4 | 8,144.9 | 15,891.1 | 27,536.4 |
+| Target attention | M / I | 1,282.4 | 2,214.3 | 4,138.4 | 7,322.7 |
+| Target projections (including router) | M / I | 2,406.0 | 3,348.5 | 4,372.5 | 5,287.1 |
+| Target glue | M / I | 1,000.9 | 1,057.8 | 1,049.2 | 1,622.4 |
 | Attention-output all-reduce | S | 370.4 | 458.8 | 812.1 | 1,283.2 |
 | Expert all-reduce | S, legacy 8192-width proxy | 370.4 | 458.8 | 812.1 | 1,283.2 |
 | Pooler all-gather | omitted; S estimate outside total | 355.7 | 399.9 | 576.5 | disabled at M=256 |
@@ -251,7 +250,7 @@ and components, then normalize shares to its wall. The target receipt excludes c
 | Sampling / verify bookkeeping | unpriced | ? | ? | ? | ? |
 | Graph replay | omitted; two-stage floor proxy 2 x 4.224 us | 8.4 | 8.4 | 8.4 | 8.4 |
 | CPU / scheduler between replays | unpriced (`host_us=0`) | ? | ? | ? | ? |
-| **Published priced step (excludes omitted rows)** | **M + S** | **10,037.0** | **16,564.8** | **28,433.2** | **45,679.2** |
+| **Published priced step (excludes omitted rows)** | **M + S** | **10,064.8** | **16,416.6** | **27,865.9** | **45,201.6** |
 
 The receipt composition is optimistic: `best_ns` is the candidate's fastest sample, whereas receipt
 `median_ns` is the judge statistic; graph replay is subtracted, not included. It also omits the two
@@ -260,8 +259,8 @@ the pre-split drafter FC byte model, and omits its all-gather and target project
 unpool gather/norm and finalize/AR fusions overlap those costs, so simply adding them overstates their
 critical-path contribution. `accounting_sensitivity` in the same script uses candidate layer medians,
 adds BF16 premiums and enabled gathers, corrects AR width, models the existing FC split, and adds two
-full-model replay floors. It gives **1.609x capped**, with candidate steps **12.108 / 19.711 / 33.910 /
-49.434 ms**. Prefill receipts are unchanged. This is a sensitivity model; neither score includes measured
+full-model replay floors. It gives **1.710x capped**, with candidate steps **11.793 / 18.658 / 31.230 /
+47.557 ms**. Prefill receipts are unchanged. This is a sensitivity model; neither score includes measured
 H200 scheduler/sampling, actual fusion overlap, or a full-node memory/TTFT run.
 
 Rank unowned work by `(current_us - bound_resource_floor_us) / published_step_us`, keeping prefill and
@@ -270,9 +269,9 @@ its separate collective floors. This is an opportunity ranking, not a promise of
 
 | Rank | Unowned component | Recoverable us at c=1 / 4 / 16 / 32 | Step share recoverable | Capped score if recovered alone |
 |---|---|---|---|---|
-| 1 | Target collectives and compute/communication overlap | 416 / 512 / 893 / 1,402 | 4.15 / 3.09 / 3.14 / 3.07% | 1.778x vs 1.745x |
+| 1 | Target collectives and compute/communication overlap | 416 / 512 / 893 / 1,402 | 4.13 / 3.12 / 3.20 / 3.10% | 1.842x vs 1.807x |
 | 2 | DFlash kernels, unchanged weights; source audit complete | 6 / 6 / 6 / 6 from unary launches; dense gains unmeasured | 0.060 / 0.036 / 0.021 / 0.013% from unary | needs H200 diagnostic |
-| 3 | Target LM head | 11 / 11 / 9 / 0 | 0.11 / 0.06 / 0.03 / 0% | 1.7453x |
+| 3 | Target LM head | 11 / 11 / 9 / 0 | 0.11 / 0.07 / 0.03 / 0% | 1.8077x |
 | unranked | Sampling/verify and CPU/scheduler | no calibration | unknown | needs a serving trace |
 
 Rank 1 includes attention-output AR, the expert-output communication interface (without changing the

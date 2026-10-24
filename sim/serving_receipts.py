@@ -17,8 +17,8 @@ from sim import bound, hw, muse, serving
 from sim.problems import layer_routing
 
 ROOT = Path(__file__).resolve().parent.parent
-DECODE = ROOT / "problems/muse_decode_layer/profiles/cand_moe7.d2bf1ced702948a4.json"
-PREFILL = ROOT / "problems/muse_prefill_layer/profiles/cand_v11.6a9cd943fe404d74.json"
+DECODE = ROOT / "problems/muse_decode_layer/profiles/cand_r3_v9.0e94268cf5654012.json"
+PREFILL = ROOT / "problems/muse_prefill_layer/profiles/cand_score_portfolio_routing.a30fb411b0c74ffb.json"
 
 
 def _benchmarks(path: Path) -> list[dict]:
