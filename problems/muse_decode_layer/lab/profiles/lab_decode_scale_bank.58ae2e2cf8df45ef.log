@@ -1,0 +1,48 @@
+STAGE_TUNE qkv_gate T=1: 19.33 us (32, 1024, 128, False); all=[(22.175999358296394, (64, 1024, 128, True)), (19.328000023961067, (32, 1024, 128, False)), (19.840000197291374, (64, 512, 128, False)), (21.247999742627144, 'cublas')]
+STAGE_TUNE o T=1: 11.84 us (64, 512, 128, False); all=[(12.992000207304955, (64, 512, 128, True)), (12.06399966031313, (32, 512, 128, False)), (11.839999817311764, (64, 512, 128, False)), (12.191999703645706, 'cublas')]
+STAGE_TUNE pool_router T=1: 31.30 us (32, 1024, 128, False); all=[(39.16800022125244, (64, 2048, 128, True)), (31.295999884605408, (32, 1024, 128, False)), (31.456001102924347, (64, 512, 128, False)), (32.3840007185936, 'cublas')]
+STAGE_TUNE unpooler_slice T=1: 8.93 us (64, 512, 128, False); all=[(9.440000168979168, (64, 512, 128, True)), (9.631999768316746, (32, 1024, 128, False)), (8.927999995648861, (64, 512, 128, False)), (11.648000217974186, 'cublas')]
+STAGE_TUNE qkv_gate T=8: 19.46 us (32, 1024, 128, False); all=[(21.95199951529503, (64, 1024, 128, True)), (19.45599913597107, (32, 1024, 128, False)), (20.06400004029274, (64, 512, 128, False)), (21.183999255299568, 'cublas')]
+STAGE_TUNE o T=8: 11.68 us (64, 512, 128, False); all=[(13.151999562978745, (64, 512, 128, True)), (11.96799986064434, (32, 512, 128, False)), (11.680000461637974, (64, 512, 128, False)), (12.095999903976917, 'cublas')]
+STAGE_TUNE pool_router T=8: 31.14 us (32, 1024, 128, False); all=[(39.29600119590759, (64, 2048, 128, True)), (31.136000528931618, (32, 1024, 128, False)), (31.456001102924347, (64, 512, 128, False)), (32.607998698949814, 'cublas')]
+STAGE_TUNE unpooler_slice T=8: 8.96 us (64, 512, 128, False); all=[(9.631999768316746, (64, 512, 128, True)), (9.727999567985535, (32, 1024, 128, False)), (8.960000239312649, (64, 512, 128, False)), (11.776000261306763, 'cublas')]
+STAGE_TUNE qkv_gate T=16: 19.65 us (32, 1024, 128, False); all=[(22.143999114632607, (64, 1024, 128, True)), (19.648000597953796, (32, 1024, 128, False)), (20.255999639630318, (64, 512, 128, False)), (21.31200022995472, 'cublas')]
+STAGE_TUNE o T=16: 11.58 us (64, 512, 128, False); all=[(13.120000250637531, (64, 512, 128, True)), (12.06399966031313, (32, 512, 128, False)), (11.58399973064661, (64, 512, 128, False)), (12.223999947309494, 'cublas')]
+STAGE_TUNE pool_router T=16: 31.58 us (32, 1024, 128, False); all=[(38.94399851560593, (64, 2048, 128, True)), (31.5839983522892, (32, 1024, 128, False)), (31.936001032590866, (64, 512, 128, False)), (32.99200162291527, 'cublas')]
+STAGE_TUNE unpooler T=16: 27.87 us cublas; all=[(33.31200033426285, (64, 2048, 128, True)), (31.007999554276466, (32, 1024, 128, False)), (29.21600081026554, (64, 512, 128, False)), (27.871999889612198, 'cublas')]
+STAGE_TUNE qkv_gate T=32: 21.28 us (64, 512, 128, False); all=[(23.360000923275948, (64, 1024, 128, True)), (22.752000018954277, (32, 1024, 128, False)), (21.27999998629093, (64, 512, 128, False)), (21.536000072956085, 'cublas')]
+STAGE_TUNE o T=32: 12.03 us (64, 512, 128, False); all=[(13.632000423967838, (64, 512, 128, True)), (12.799999676644802, (32, 512, 128, False)), (12.032000347971916, (64, 512, 128, False)), (12.160000391304493, 'cublas')]
+STAGE_TUNE pool_router T=32: 32.96 us (64, 512, 128, False); all=[(41.37599840760231, (64, 2048, 128, True)), (35.071998834609985, (32, 1024, 128, False)), (32.96000137925148, (64, 512, 128, False)), (33.24799984693527, 'cublas')]
+STAGE_TUNE unpooler T=32: 28.45 us cublas; all=[(34.304000437259674, (64, 2048, 128, True)), (30.047999694943428, (32, 1024, 128, False)), (30.527999624609947, (64, 512, 128, False)), (28.44800055027008, 'cublas')]
+LAB_BEGIN decode_scale_bank 8e01adcec8da5a0f
+META E scale-bank: A=best7 raw E4M3 NT1, B=board host recoded NT1; same x/IDs/weights; B:A<1 favors recode; seeds=172903,180822,188741; AB/BA6 cold128MiB before each replay
+META cases2,3=decode16 S,F;4,5=decode32 S,F;6,7=verify1 S,F;8,9=verify16 S,F; public ctx80000/page1/soft, agentic B>1; real full-layer prefix/busiest EP; times include equal replay overhead; oracle<=1% L2/5% row before+after; no host mutation
+SETUP seconds=30.6 remaining=216.7
+DISPATCH M=8 NT1 NB8 stages/grid/smem=(2, 264, 84136) both
+DISPATCH M=16 NT1 NB8 stages/grid/smem=(2, 264, 84456) both
+DISPATCH M=32 NT1 NB8 stages/grid/smem=(2, 264, 85096) both
+DISPATCH M=128 NT1 NB8 stages/grid/smem=(2, 264, 88936) both
+ROUTES case:localStart,pairs,experts,hot per seed 2:96/30/7/9,96/29/7/10,96/32/8/11 3:96/29/8/8,96/29/10/10,96/27/5/12 4:96/51/10/18,96/51/9/17,96/62/9/21 5:96/59/10/17,96/60/12/19,96/50/8/18 6:192/14/9/3,96/16/9/3,96/18/9/6 7:96/12/8/3,192/13/7/4,96/12/6/4 8:96/202/20/51,96/188/18/43,96/207/20/38 9:96/188/19/44,96/201/20/44,96/206/18/42
+E2:C 0.910/0.915/0.892 99.7/90.2
+E3:C 0.914/0.897/0.921 99.2/90.1
+E4:C 0.896/0.902/0.901 134.4/120.9
+E5:C 0.896/0.888/0.901 145.5/130.1
+E6:C 0.909/0.919/0.912 100.8/92.1
+E7:C 0.911/0.915/0.920 83.3/76.2
+E8:C 0.881/0.883/0.877 326.3/287.3
+E9:C 0.879/0.882/0.880 318.1/280.0
+NOISE E2 A:A delta_us=-0.74
+NOISE E3 A:A delta_us=-0.55
+NOISE E4 A:A delta_us=-0.24
+NOISE E5 A:A delta_us=-0.78
+NOISE E6 A:A delta_us=-0.14
+NOISE E7 A:A delta_us=0.00
+NOISE E8 A:A delta_us=-0.69
+NOISE E9 A:A delta_us=-0.72
+MEAN M8 raw/recode_us=92.04/84.13 save_us=7.91 B:A=0.9143 fixtures=6/6
+MEAN M16 raw/recode_us=99.44/90.14 save_us=9.31 B:A=0.9080 fixtures=6/6
+MEAN M32 raw/recode_us=139.95/125.52 save_us=14.43 B:A=0.8974 fixtures=6/6
+MEAN M128 raw/recode_us=322.17/283.64 save_us=38.53 B:A=0.8804 fixtures=6/6
+GATE maxL2=0.00167 maxRow=0.00174; route tensors identical
+END fixtures=24/24 pairs=24 elapsed=60.1s remaining=187.3s
+LAB_END lab_s=60.1 prepare_s=97.7
