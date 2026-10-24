@@ -1,0 +1,21 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7.py",
+  "sha256": "b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a",
+  "base_sha256": "4516cb979dac623a6b6a2347be54cb5ecb416be23d7631aeae092a403beb9528",
+  "old_sha256": "a651af25cb44550932f497b57eb82fb32c0fbe07c1f21a8592bd0982f937c150",
+  "stream_cuda_sha256": "0c49db6f7ee421f01c28cd377c4cfb05691ef3688d8071726142ee71c9f87771",
+  "stream_runtime_sha256": "f6c2d6e5ff3473967dbb6702c0343a721535b3877e4e3e2943fbba4effd47476",
+  "settings_sha256": "68514e781e1d8ab7a4eb3d5329aa9e5b5ca8afa5a0b0e7dfc3cfcae0579997f4",
+  "old_glue_names": {
+    "_boundary_kernel": "_best7_old_boundary_kernel",
+    "_qk_prep_kernel": "_best7_old_qk_prep_kernel",
+    "qk_prep": "_best7_old_qk_prep",
+    "_chunks": "_best7_old_chunks",
+    "_route_norm_kernel": "_best7_old_route_norm_kernel",
+    "boundary": "_best7_old_boundary",
+    "route_and_norm": "_best7_old_route_and_norm",
+    "_group_barrier": "_best7_old_group_barrier"
+  },
+  "precision_builder_sha256": "4955d4a4d35848e6cd02528012278e01c98805f50bcb6777ac69c584e3b1d520",
+  "prefetch_sha256": "9612c54853996dadd5af7077cba1aef2ecaa599b16b767c1975bbb55cc99151d"
+}
