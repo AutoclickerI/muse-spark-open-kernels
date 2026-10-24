@@ -22,7 +22,11 @@ class Loader(importlib.abc.Loader):
             assert layer.num_local_experts==32 and layer.hidden_size==layer.intermediate_size_per_partition==4096
             from sglang.srt.layers.muse_spark_expert_bank import prepare_shared_bank
             prepare_shared_bank(layer)
-            print('SHARED_READER actual NVFP4 arithmetic; local_start',layer.local_expert_offset,flush=True)
+            for name in ('w13','w2'):
+                assert getattr(layer,name+'_weight').untyped_storage().data_ptr()==getattr(layer,name+'_weight_scale').untyped_storage().data_ptr()
+            size=sum(getattr(layer,name+'_weight').untyped_storage().nbytes() for name in ('w13','w2'))
+            assert size==905969664,size
+            print('SHARED_READER actual NVFP4 arithmetic; local_start',layer.local_expert_offset,'unique bank bytes',size,flush=True)
             return result
         cls._process_weights_for_marlin=prepare
 

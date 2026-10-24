@@ -4,7 +4,7 @@ import statistics
 import time
 import zlib
 
-DC_NAMES = ('NT1', 'NT2', 'raw17', 'humming_masked', 'dg_w8')
+DC_NAMES = ('NT1', 'NT2', 'raw17', 'raw64', 'humming_masked', 'dg_w8')
 DC_SEEDS = tuple(5353 + 7919 * i for i in range(12))
 
 
@@ -24,6 +24,7 @@ class DCLocalDGStandin:
 class DCRawModule:
     def __init__(self, mod):
         self.moe_gemm = mod.raw17_gemm
+        self.moe_gemm64 = mod.raw64_gemm
 
 
 def dc_weights(seed, device):
@@ -57,6 +58,7 @@ def dc_prepare(w, *, local_glue=False):
         raw['blob13' if gated else 'blob2'] = out
         raw['sfb13' if gated else 'sfb2'] = sf  # unchanged E4M3 bytes, layout only
     st['raw17'] = raw
+    st['raw64'] = raw
     # With distinct stacked GS Humming's importer expands block scales to BF16.
     # Unit W13 GS retains E4M3; real FP32 GS are used in portfolio_swiglu instead.
     hum_weights = dict(w, w13_gs=torch.ones(32, device=dev))
@@ -90,6 +92,8 @@ def dc_call(data, native, st, name):
     args = (x, data['topk_weights'], local, pos, counts)
     if name == 'raw17':
         return pf__raw_experts_tiled(*args, st['raw17'])
+    if name == 'raw64':
+        return pf__raw_experts_tiled64(*args, st['raw64'])
     if name == 'humming_masked':
         return pf__experts_humming_masked(*args, st)
     assert name == 'dg_w8'

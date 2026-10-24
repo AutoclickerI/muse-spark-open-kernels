@@ -848,7 +848,10 @@ public:
 
   static constexpr int NumProducerThreadEvents = 1;
 
-  using SmemLayoutAtomScale = Layout<Shape<decltype(cute::shape<0>(SwappedSmemLayoutAtomA{})), cute::Int<4>>>;
+  // Raw E4M3 occupies one byte. TMA requires at least 16 contiguous bytes;
+  // inheriting A's eight-row atom makes an invalid eight-byte scale box.
+  // The consumer indexes these scales as [row + group16 * BLK_M].
+  using SmemLayoutAtomScale = Layout<Shape<cute::Int<16>, cute::Int<4>>>;
   using ScaleTileShape = decltype(make_shape(shape<0>(TileShape{}), shape<1>(SmemLayoutAtomScale{})));
 
   static_assert(cute::rank(SwappedSmemLayoutAtomA{}) == 2, "SmemLayoutAtom must be rank 2 (M/N, K)");
@@ -1017,7 +1020,8 @@ public:
 
     // These tensor shapes (only applicable for grouped gemm) and pointers are only used to create tensormap/tma desc.
     // These will be replaced with correct values before the initial tma load.
-    auto init_shape = repeat_like(typename ProblemShape::UnderlyingProblemShape{}, int32_t(1));
+    TORCH_CHECK(problem_shapes.is_host_problem_shape_available(), "mixed host shapes required");
+    auto init_shape = problem_shapes.get_host_problem_shape(0);
     auto init_M = get<0>(init_shape);
     auto init_N = get<1>(init_shape);
     auto init_K = get<2>(init_shape);
@@ -1054,7 +1058,7 @@ public:
         ptr_dA = args.dB;
         ptr_dB = args.dA;
       }
-      dA = InternalSwappedStrideA{};
+      dA = InternalSwappedStrideA{int64_t(init_K),Int<1>{},Int<0>{}};
       if constexpr (is_layout<InternalSwappedStrideA>::value) {
         dA = make_layout(
           transform_leaf(dA.shape(), [](auto x){
@@ -1066,7 +1070,7 @@ public:
           }),
           dA.stride());
       }
-      dB = InternalSwappedStrideB{};
+      dB = InternalSwappedStrideB{int64_t(init_K),Int<1>{},Int<0>{}};
     }
     else {
       // Tensor shapes for Ptr-Array are initialized correctly only here.
@@ -1139,7 +1143,7 @@ public:
     else if constexpr (ModeHasScales) {
       auto scale_k = ceil_div(init_K, args.chunk_size);
       ElementScale const* ptr_S = reinterpret_cast<ElementScale const*>(args.ptr_S);
-      StrideScale dS{};
+      StrideScale dS{Int<1>{},int64_t(init_M),int64_t(0)};
       Tensor tensor_scale = make_tensor(detail::get_logical_ptr(ptr_S), make_layout(make_shape(init_M,scale_k,mock_L), dS));
       tma_load_scale = make_tma_copy<TmaElementScale>(
           GmemTiledCopyScale{},
@@ -1231,8 +1235,8 @@ public:
             return stride;
           }
         };
-        auto dA = get_stride(args.dA);
-        auto dB = get_stride(args.dB);
+        auto dA = decltype(get_stride(args.dA)){int64_t(K),Int<1>{},Int<0>{}};
+        auto dB = decltype(get_stride(args.dB)){int64_t(K),Int<1>{},Int<0>{}};
         implementable = implementable && cutlass::detail::check_alignment<min_tma_aligned_elements_A>(detail::get_gmem_layout(cute::make_shape(M,K,L), dA));
         implementable = implementable && cutlass::detail::check_alignment<min_tma_aligned_elements_B>(detail::get_gmem_layout(cute::make_shape(N,K,L), dB));
         if constexpr (KernelConversionMode == ConversionMode::DirectConvert) {
@@ -1243,7 +1247,7 @@ public:
           const int scale_mn = SwapAB ? N : M;
           const int scale_k = ceil_div(K, args.chunk_size);
           constexpr int min_tma_aligned_elements_scale = tma_alignment_bits / cutlass::sizeof_bits<ElementScale>::value;
-          implementable = implementable && cutlass::detail::check_alignment<min_tma_aligned_elements_scale>(cute::make_shape(scale_mn,scale_k,L), StrideScale{});
+          implementable = implementable && cutlass::detail::check_alignment<min_tma_aligned_elements_scale>(cute::make_shape(scale_mn,scale_k,L), StrideScale{Int<1>{},int64_t(scale_mn),int64_t(0)});
           implementable = implementable && (args.chunk_size == 16);
           implementable = implementable && args.chunk_size != 0;
           implementable = implementable && (args.ptr_S != nullptr);
@@ -1252,7 +1256,7 @@ public:
           }
           else if constexpr (KernelConversionMode == ConversionMode::ConvertAndScaleWithZero) {
             constexpr int min_tma_aligned_elements_zero = tma_alignment_bits / cutlass::sizeof_bits<ElementZero>::value;
-            implementable = implementable && cutlass::detail::check_alignment<min_tma_aligned_elements_zero>(cute::make_shape(scale_mn,scale_k,L), StrideScale{});
+            implementable = implementable && cutlass::detail::check_alignment<min_tma_aligned_elements_zero>(cute::make_shape(scale_mn,scale_k,L), StrideScale{Int<1>{},int64_t(scale_mn),int64_t(0)});
             implementable = implementable && (args.ptr_Z != nullptr);
           }
           else {
@@ -2052,6 +2056,7 @@ using Gemm=cutlass::gemm::device::GemmUniversalAdapter<Kernel>;
 struct Plan {
  Gemm op; Gemm::Arguments args{};
  torch::Tensor a,b,s,d,shapes,counts,pa,pb,ps,pd,sa,sb,ss,workspace;
+ std::vector<Shape<int,int,int>> host_shapes;
 };
 void check(cutlass::Status s){TORCH_CHECK(s==cutlass::Status::kSuccess,cutlassGetStatusString(s));}
 }
@@ -2059,6 +2064,7 @@ int64_t mixed_create(torch::Tensor a,torch::Tensor b,torch::Tensor s,torch::Tens
  using namespace omni_mixed;
  auto p=std::make_unique<Plan>();p->a=a;p->b=b;p->s=s;p->d=d;p->shapes=shapes;p->counts=counts;
  int g=a.size(0),n=d.size(2),k=a.size(2);
+ TORCH_CHECK(g>0&&s.dim()==3&&s.size(0)==g&&s.size(1)==k/16&&s.size(2)==n&&s.is_contiguous(),"scale bank must [E,K/16,N] contiguous raw E4M3");
  auto opts=a.options().dtype(torch::kInt64);
  // Metadata depends only on shapes and fixed scratch addresses, never on routed values.
  auto ptrs=[&](torch::Tensor t){return torch::arange(g,opts)*(int64_t)(t.stride(0)*t.element_size())+(int64_t)t.data_ptr();};
@@ -2066,7 +2072,8 @@ int64_t mixed_create(torch::Tensor a,torch::Tensor b,torch::Tensor s,torch::Tens
  p->sa=torch::full({g},k,opts);p->sb=torch::full({g},k,opts);
  std::vector<Main::StrideScale> scale_strides(g,Main::StrideScale{Int<1>{},int64_t(n),int64_t(0)});
  p->ss=torch::from_blob(scale_strides.data(),{(int64_t)(g*sizeof(Main::StrideScale))},torch::TensorOptions().dtype(torch::kUInt8)).to(a.device());
- ShapeG ps;ps.num_groups=g;ps.problem_shapes=reinterpret_cast<Shape<int,int,int>*>(shapes.data_ptr());ps.host_problem_shapes=nullptr;
+ p->host_shapes.resize(g,Shape<int,int,int>{int(a.size(1)),n,k});
+ ShapeG ps;ps.num_groups=g;ps.problem_shapes=reinterpret_cast<Shape<int,int,int>*>(shapes.data_ptr());ps.host_problem_shapes=p->host_shapes.data();
  Main::Arguments ma{};
  ma.ptr_A=reinterpret_cast<const EA**>(p->pa.data_ptr());
  ma.ptr_B=reinterpret_cast<const cutlass::float_e2m1_t**>(p->pb.data_ptr());
@@ -2079,6 +2086,7 @@ int64_t mixed_create(torch::Tensor a,torch::Tensor b,torch::Tensor s,torch::Tens
  p->args.problem_shape=ps;p->args.mainloop=ma;p->args.epilogue=ea;
  p->args.hw_info.device_id=a.get_device();
  p->args.hw_info.sm_count=cutlass::KernelHardwareInfo::query_device_multiprocessor_count(a.get_device());
+ check(Gemm::can_implement(p->args));
  auto bytes=Gemm::get_workspace_size(p->args);p->workspace=torch::empty({(int64_t)std::max<size_t>(bytes,128)},a.options().dtype(torch::kUInt8));
  auto stream=at::cuda::getCurrentCUDAStream();check(p->op.initialize(p->args,p->workspace.data_ptr(),stream));
  return reinterpret_cast<int64_t>(p.release());

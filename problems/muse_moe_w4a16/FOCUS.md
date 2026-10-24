@@ -33,3 +33,10 @@ The new V9 NT3 (24-row block) specialization is in `dev/v9_reuse/nt3_dropin.py` 
 
 The corrected Humming probe `376ef26ba9bb46a0` is incomplete: it timed bs=1 then failed
 on `shape_m is not within any range`, so it provides no decode-weight agreement evidence.
+
+The raw17-derived WGMMA decode probe `dev/v9_wgmma/raw64_dropin.py` uses packed
+NVFP4/E4M3 banks and `m64n64k16` token tiles, with W13 SwiGLU fused before W2.
+It passes the five local challenge tests and 156 FP32-gated adapter graphs;
+SM90a ptxas reports no spills.  H200 comparison source key
+`f998409b16c5cfea` is pending; do not promote it before the 12-seed mean is
+known.

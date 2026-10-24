@@ -1,5 +1,38 @@
 # Decode checks — best6 attention and expert portfolio
 
+## Paired decode lab — sent, H200 results pending
+
+[Payload `decode_paired.py`](../../../prof/lab/decode_paired.py), SHA-256
+`e088cb961ed16f0b84ccb8e4ea8362226211eea90076718c02c17e6446850890`.
+Decode-host wrapper/send key **`731545a5def446ad`**, base **`0e94268cf5654012`**.
+One payload packs glue, q8 FA3, V9 NT1/NT2 and all best6 expert alternatives; this lane has no other
+unsent screened decode-host payload to add. Previously queued labs are not duplicated.
+
+Three full public inputs per load (all 12 cases, ctx80000/page1/soft, agentic B>1), actual layer prefix
+and router, identical tensors/routing per pair. **Six AB/BA cold128MiB rounds**, plus A/A noise controls.
+**36** whole-layer glue comparisons, **108** q8 FA3 comparisons (public `layer` versus six split/pack
+settings, including `(32,True)` and `(16,True)`), **72** expert comparisons. NT1/NT2 at every load;
+raw17/Humming/dg_w8 at M128/256. Explicit graph replay precedes all gates. Independent FP32 experts
+and router gates, exact glue routing IDs, output gates before/after timing. All optional rejections
+are reported. New glue freezes the H200 receipt's 18 selected geometries; compute choices stay identical.
+
+Empty-cache forced-Hopper screen: **13 official tests, 12 fresh graph shapes, 5 host static checks**;
+all **36 fixtures / 216 pairs** pass, maximum expert L2 **0.679%**, worst row **0.778%**.
+Cold payload **115.283 s** inside a **124 s** two-payload share; setup 54.0 s, host+lab prepare 156.215 s.
+Output **3,982 characters**, below the 4,500-character half-share. Library launches have portable
+stand-ins locally; H200 safety/timing remain unverified. [Protocol, reproduction and validation](paired_lab/README.md).
+
+The host selector was incorrectly choosing withdrawn BF16-bank job `07d07d96` from its old ledger score.
+`tools/h200_lab.py` now consults the receipt's `withdrawn` flag and chooses valid board source `0e94268`.
+The latter uses encoded V9 scales, so the payload builds best6's exact raw-E4M3 packed NT1/NT2 bank once;
+sharing the host's bank with raw-scale readers would be an ABI mismatch. Host state is not changed.
+
+**Decision pending:** keep best6's new glue only with a paired H200 gain, judged against A/A noise;
+use the paired public-input FA3 means to set attention. No source change is made from local timing.
+Best6's only send hold remains native M128/256 adapter safety from `moe_decode_adapters`.
+The earlier proj-host glue/q8 batch is send key **`b6b6b6f04beaad02`**, section `decode_glue`;
+no local receipt at this turn's one lookup. Its key supersedes old glue key `bd664264`.
+
 ## Best6 adapter portfolio — owner holds for native H200 lab
 
 [cand_r3_best6.py](../cand_r3_best6.py), SHA-256
@@ -68,10 +101,12 @@ Best5 chooses NT1 at M32/128 and NT2 at M256, with ~0.17% FP32-gate error.
 Reclaiming the FA3 regression alone implies about **+0.7%** geometric score by accounting;
 the revised candidate has no measured H200 speedup yet.
 
-The owner sent glue `99120569` as a priority-0 check. Its H200 timing and the glue lab
-`bd66426465d8b072` remain unverified in this handoff. The separate `moe_decode_adapters`
-lab has no locally readable receipt at this turn's one lookup; its actual MoE-host job ID was not
-provided here. **The owner's hold on sending best6 remains until native M128/256 safety is established.**
+Glue check **`7370b18221964412`** is resolved at **1.367496x** versus best5 **1.353449x**.
+[Complete glue receipt comparison](paired_lab/GLUE_RECEIPT.md): decode1 sliding glue+Torch **16.0 -> 16.4 us**;
+verify32 sliding glue **30.1 -> 27.9 us**. Total-minus-MoE-minus-attention changes by only a few us;
+MoE verify32 is **527.2/530.3 -> 503.2/489.9 us**, and full FA3 attention is **505.9 -> 376.8 us**.
+The same tuner chose different settings (`32,True` versus `16,True`). These runs do not establish a
+small glue gain; the paired lab above decides it. `moe_decode_adapters` native safety remains pending.
 
 ## P7 overlap reopen (H200 receipt 0e94268)
 
@@ -151,10 +186,12 @@ an independent FP32 oracle gate. NVFP4/E4M3 stays packed; no expanded expert ban
 Normal screen: **13/13 tests, 12/12 fresh graph shapes, 13/13 static checks**, prepare **7.869 s** (warm local caches).
 Forced-Hopper cold screen: **13/13 tests, 12/12 fresh graphs, 13/13 static checks**; candidate prepare **224.516 s**,
 **226.144 s** including extra forced attention-family checks. All 18 three-seed geometry comparisons completed.
-Final [glue handoff](glue/README.md) and [SHA-pinned evidence](glue/validation.json). Sent by the owner; receipt pending at this turn's read.
+Final [glue handoff](glue/README.md) and [SHA-pinned evidence](glue/validation.json). Owner check `7370b18221964412`
+scored 1.367496x; its single-run difference is confounded by routing and FA3 choices. Paired comparison is above.
 All **68** tested Hopper glue specializations compile for sm90, at most **1,024 B** shared memory.
 The separate lab gate passes three changed inputs for each geometry on sm120.
-H200 lab queue key **`bd66426465d8b072`**, source `prof/lab/decode_glue.py`, priority 1, was sent by this lane.
+The owner merged original glue lab `bd66426465d8b072` with q8 attention into proj-host batch
+**`b6b6b6f04beaad02`**, section `decode_glue`; no receipt at this turn's one lookup.
 No judge wait or repeated receipt check. The **<=8 us/layer** glue target is **unverified**.
 
 Full [board glue inventory](glue/PROFILE.md): board `0e94268` (1.428x), aggregate profile durations per layer:

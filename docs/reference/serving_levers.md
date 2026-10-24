@@ -20,12 +20,12 @@ The current receipt basis is `muse_moe_w4a16/cand_v9.f6028a478d594b31` (MoE summ
 `muse_bf16_proj/submission.68e2f34b1d4744cb` (projection summary 1.143x), and
 `muse_attention_decode/submission.526f31018e2c4449` (FA3 verify path, summary 1.384x but roughly
 1.0x on the verify shapes). With tau 4.05, the composed `sim.serving` estimate from these measured shapes is 1.825689x
-extrapolated and 1.812741x capped; it is a receipt composition, not a judge run or the current shipping-patch score while V9 storage is blocked.
+extrapolated and 1.812741x capped; it is a receipt composition, not a judge run or the current shipping-patch score while the shared-bank V9 reader awaits timing admission.
 
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
-| Prefill experts (753-16K tokens) | Marlin at large M | Stock Marlin restored above 256, including 513–752; grouped/Humming retired. V9 currently unbound pending a legal shared packed-bank reader | `problems/muse_prefill_layer` |
+| Prefill experts (753-16K tokens) | Marlin at large M | Stock Marlin above256, including513–752; grouped/Humming retired. A direct V9 reader over the same bank is built, awaiting its H200 timing | `problems/muse_prefill_layer` |
 | Decode attention (FP8 page-1, QK-norm, KV store, gate fused) | FA3 + combine + ~6 small kernels per layer | ~20 us x 62 layers per step at c=1 | `problems/muse_attention_decode` |
 | Dense projections and router | cuBLAS, the FP32 router GEMV | ~10-20 us per layer | `problems/muse_bf16_proj` |
 | Layer glue (norms, residual, routing) | ~70 us of small kernels per layer at batch 1 (FINDINGS) | up to ~4 ms per step at c=1 | `problems/muse_decode_layer` |
@@ -34,9 +34,9 @@ extrapolated and 1.812741x capped; it is a receipt composition, not a judge run 
 
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
-| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill result drained before ingress/planning; 8 deterministic regressions pass | TTFT margin still fails native TP2 c16; see current upstream-round gate below. H200 host latency remains unmeasured |
+| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill result drained before ingress/planning; 8 deterministic regressions pass | Interleaved resident-server sm120 brackets now pass p50 and p90<=1.5 at every rung/mode. Hidden-workload/H200 TTFT remains unverified |
 | KV capacity | Muse live-window SWA sizing wired; 262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch handoff applied; one 4.46 MB workspace per routing stream replaces per-layer/per-shape scratch | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
-| Expert producer | **Stock Marlin at all M**; V9 gate capped at 256 but loader leaves it unbound. No grouped/Humming call sites | Incoming V9 now preserves E4M3 bytes, but the single-bank binder omits Marlin tensors. Need a shared packed-bank reader or an admitted bounded extra layout; no second full bank |
+| Expert producer | **Stock Marlin by default**. Shared-bank V9 reader built for M<=256, stock Marlin above256 including257–511. Same byte-identical Marlin code/scale allocations, no second layout or timed repack. No grouped/Humming calls | `MARLIN_READER_ADMITTED=False` pending H200 source `6a3168ef5d749e10`. Native-V9 bit parity, stock L2<=0.00538, sm90a compile and local real-reader graph tests pass; full released-model TP8/EP8 agreement still required |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
 | `muse_dflash.py` | Retained, unbound; `DFlashDrafterPortfolio` now covers TP8 FC/layers/LM-head shapes and graph-safe FC concat | H200 TP8 lab `dflash_tp8_lab` pending; serving lane wires only after receipt |
@@ -48,24 +48,35 @@ extrapolated and 1.812741x capped; it is a receipt composition, not a judge run 
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
 | Long prefill attention | **FA3 retained**; failed module and experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all 6 shapes; no new path admitted |
 
-Current upstream-round gate (`upstream-r27-coalesced` source, `upstream-r28`
-harness) supersedes the historical timing brackets below. All four patch modes
-return 174/174 exact 220-token responses with full prefill/verify graphs; probe
-mean/max logprob drift is 0. Final random gates use 30 requests, 220 forced
-positions and three stock controls per topology, and pass at TP1/TP2.
+Current TTFT gate uses `shared-bank-r03` source and `shared-bank-r05` resident
+server brackets. All three servers (stock/native/portable) stay loaded; only
+one receives traffic. Per rung, cache flushes precede stock A, native, stock B,
+portable, stock C, so each patch mode is checked against both adjacent stock
+controls. Every server uses mem-fraction0.3 and actual300000 KV slots. TP1 is
+GPU0; TP2 uses GPUs0/1. This addresses the noisy sequential stock controls
+without dropping any failed run or changing the workload/checks.
+
+All four patch modes return174/174 exact220-token responses with all74 prefill
+graph shapes and target/draft verify graphs, with actual replay checked in
+every bracket. Probe2615-position and8-generated-token mean/max drift is0.
+The current direct-reader source differs only on an unadmitted Hopper path;
+its real-arithmetic server gates use the separate full-width fixture below.
 
 | sm120 mode | Exact 220 | Worst p50 ratio c1 / c4 / c16 / c32 | Worst p90 ratio |
 |---|---:|---|---|
-| TP1 native |174/174|0.630 / 0.437 / 0.609 / 0.260|1.389 / 0.294 / 0.306 / 0.237|
-| TP1 portable |174/174|0.592 / 0.487 / 0.542 / 0.268|1.125 / 0.302 / 0.310 / 0.232|
-| TP2 native |174/174|1.140 / 1.086 / 1.757 / 0.681|0.757 / 0.408 / 1.817 / 2.059|
-| TP2 portable |174/174|1.221 / 0.875 / 0.893 / 0.604|0.824 / 0.400 / 0.458 / 0.488|
+| TP1 native |174/174|0.833 / 0.601 / 0.542 / 0.292|0.880 / 0.317 / 0.235 / 0.225|
+| TP1 portable |174/174|0.858 / 0.596 / 0.720 / 0.321|0.855 / 0.428 / 0.248 / 0.249|
+| TP2 native |174/174|0.812 / 0.319 / 0.611 / 0.283|0.819 / 0.385 / 0.098 / 0.416|
+| TP2 portable |174/174|0.727 / 0.694 / 0.143 / 0.308|0.655 / 0.290 / 0.317 / 0.394|
 
-**The 1.5x margin is not achieved everywhere.** Native TP2 c16 remains 1.757x;
-c32 p90 is 2.059x, so TTFT admission stays open. Stock-self TP2 c16 varies 4.034x
-p50/5.029x p90 while GPU1's other project runs; this is a limitation of the
-measurement, not permission to discard failures. All earlier failures are
-retained. Current per-request c16 trace (48 rows each, mean milliseconds):
+**The matched local p50 and p90 margin passes at every rung/mode.** No new
+production scheduling change was needed after interleaving: the ready-prefill
+drain, completed-row admission and contiguous HiCache copy fixes remain active.
+The earlier native TP2 c16/c32 failures1.757x p50/2.059x p90 remain in evidence;
+stock-self c16 varied4.034x/5.029x under shared-device load. Other GPU jobs
+remain visible in resource logs, so this is not exclusive-node evidence or a
+proof for hidden H200 conversations. The preceding diagnostic c16 trace
+(48 rows each, mean milliseconds) isolates the queue/emit mechanisms:
 
 | Trace | Queue | Prefill GPU envelope | First emit | TTFT |
 |---|---:|---:|---:|---:|
@@ -73,9 +84,11 @@ retained. Current per-request c16 trace (48 rows each, mean milliseconds):
 | Before copy fix r22 |1792.73|132.14|20.90|1945.78|
 | Current patch r30 |893.13|157.62|7.47|1058.22|
 
-The envelope includes communication and launch waits. Raw request rows and all
-gate JSON are under `/data2/jihoon/muse_kernel/harness/results/upstream-r01-evidence`.
-These diagnostic traces do not establish an isolated total-speedup claim.
+The envelope includes communication and launch waits. These diagnostic traces
+do not establish an isolated total-speedup claim. Current gate JSON is under
+`/data2/jihoon/muse_kernel/harness/results/shared-bank-r05-evidence`; source,
+tests and summary are in `shared-bank-r01-evidence`. Prior failed brackets and
+per-request traces remain in `upstream-r01-evidence`.
 
 The main new prefill fix coalesces staged HiCache copies within a registered
 host allocation. With page size 1, stock sends one host API call per K/V page;
@@ -84,18 +97,18 @@ median on sm120/GPU0 is 14495.67 → 29.57 us (16 layers, 128 B FP8 rows). 26 by
 63 fresh graphs, registration-boundary and pageable cases pass; three row-size
 variants compile for sm90a. First-token results are processed before ingress
 and planning, and standalone dense finalize keeps stock Triton at M>=32 rather
-than extending CuTe across prefill. H200 host-copy timing is pending the
-queued lab source **344269fe51a18208**; this is a source key, not a judge job ID.
+than extending CuTe across prefill. The later H200 copy receipt is recorded in
+FINDINGS (`3828ee433f0f43c3`); it does not establish full serving TTFT.
 
 Final regeneration also preserves the projection lane's newly added, unbound
 `DFlashDrafterPortfolio`. Three GPU0 sm120 tests pass (eight roles plus
 changed-input graph/FC concat); all previously tested AST nodes are unchanged
-and there are no production imports. Final source provenance is
-`upstream-r31-final-source`; the active harness paths remain those of r27.
+and there are no production imports. Direct-reader test source is
+`shared-bank-r06`; admitted sm120 paths are identical to the r03 timing source.
 
-The current patch is **340,587 bytes / 36 files / 374 max added characters**;
-all accepted paths, incoming MoE raw-scale changes and all five worker hunks
-are preserved. No full-model H200 result or judge TTFT admission is claimed.
+Patch size and preservation checks are updated at final regeneration. All
+accepted paths, incoming MoE raw-scale changes and all five worker hunks must
+remain. No full-model H200 result or judge TTFT admission is claimed.
 The following longer TTFT discussion records the preceding integration's
 controlled cases, not a replacement for the current failing margin result.
 
@@ -225,7 +238,8 @@ Relative L2<=4.43e-5, maxabs0.0078125; graph/eager is exact through753 and
 large-M differences match stock controls. All-remote routes return zero and
 only one packed bank remains. The earlier canonical-bank V9 screen is historical;
 its old custom scale codes no longer meet the stored-E4M3 boundary; the
-incoming MoE source now fixes those bytes, while the mixed-producer bank issue remains.
+incoming MoE source fixes those bytes. The new direct Marlin-bank reader resolves
+storage; its H200 timing admission remains open.
 
 No receipt IDs or external measurement files are read at runtime. Admission is
 source policy. Unbound modules do not change the default or spend startup time.
@@ -291,13 +305,11 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
   74K-token first turn. Tested: `serving/tests/test_rowsplit.py` on 2 local GPUs over NCCL, bitwise equal to the
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
-- **Expert producer:** stock Marlin at every M, including513–752. The V9
-  dispatch gate is capped256, but its loader binder is disabled: the V9-only binder
-  omits the Marlin packed tensors. The MoE lane fixed stored-E4M3 handling in the
-  incoming source; a shared-bank reader or admitted bounded layout is still
-  needed to restore the hybrid below256.
-  Grouped and Humming are never selected. Their modules and the MoE lane's
-  source are retained unbound; no second complete bank is allocated.
+- **Expert producer:** stock Marlin by default; the direct V9 reader over the
+  same Marlin allocations is implemented, awaiting its H200 timing. Admission
+  selects V9 through256 and stock above256, explicitly257–511. No grouped or
+  Humming call sites, second bank, or timed repack. See current gates above;
+  `MARLIN_READER_ADMITTED=False` until source `6a3168ef5d749e10` wins.
 
 ## Measured serving ranking
 
@@ -846,14 +858,15 @@ receipts remain available.
 
 ## Current serving integration: V9 dispatch and dense projections
 
-Real-weight H200 lab `26d7e05ab97d4f96` selects V9 through256 and Marlin
-at512/753; grouped loses under skew and Humming/V11 fail agreement. The
-production adapter therefore removes both producers. The desired hybrid is
-blocked by the existing V9 bank's custom scale encoding and deletion of Marlin
-parameters. **Stock Marlin currently runs at every M**, including513–752; the
-small-M V9 gate is capped256 but remains unbound until it can read the one legal
-packed bank with E4M3 conversion in-kernel. The independently owned
-`muse_spark_moe.py` is unchanged. No second complete bank is allocated.
+Real-weight H200 lab `26d7e05ab97d4f96` selects canonical-bank V9 through256
+and Marlin at512/753; grouped loses under skew and original Humming/V11 fail
+agreement. The production adapter removes both producers. A new direct V9
+reader resolves the layout conflict by reading stock Marlin's packed code
+and scale arrays in-place; joining them preserves every stock byte and tensor
+view. Scale conversion happens in-kernel. The independently owned
+`muse_spark_moe.py` is unchanged. Expert residency remains54.358GB/GPU; no
+second bank or timed conversion is required. Performance admission awaits
+H200 source `6a3168ef5d749e10`; stock remains default at all M.
 
 `prepare_projections` connects `muse_proj.py` to the exact o, pooler and unpooler
 matrices after weight loading. O replaces only `quant_method.apply`, so the
@@ -958,15 +971,32 @@ shipping decision: V9/Marlin at M512 are931/563us and at753 are1332/716us;
 Humming/V11 fail real-weight agreement (relative0.11–0.32), and grouped loses
 under skew. Large prefills and the513–752 gap now select Marlin.
 
-The requested V9<=256/Marlin>256 hybrid is **blocked by storage**, not a
-row-count selector. Existing canonical preparation deletes Marlin parameters
-and re-encodes E4M3 block scales; raw1.0 byte0x38 becomes custom0xa8. New
-CONSTRAINTS5 requires stored E4M3 bytes with conversion in-kernel. The loader
-therefore keeps only stock Marlin and leaves V9 unbound at every M. The MoE
-lane's file is unchanged. A V9 reader over that one bank must land before
-reenabling it; a second complete layout would displace required KV. Existing
-`cand_serving_prefill_diag.py` also embeds the old scale encoder and is not
-admitted under the new boundary. Its frozen measurement remains historical.
+The new shared-bank reader replaces the old storage blocker. It derives
+V9's weight-reader region over the byte-identical Marlin bank, preserving the
+kernel's arithmetic and Python ABI. Native-V9 bit parity, every finite positive
+E4M3 encoding, zero/subnormal scales, shifted EP ownership,13 production layer
+shapes and changed-input graph replay pass on sm120. Versus Marlin, small-M
+relative L2<=0.00538/maxabs0.03125; this is not bit-exact. Stock's rounded shared
+gate global is reproduced, rather than substituting standalone V9's independent
+FP32 gate/up globals. The direct source compiles for sm90a.
+
+Admission lab `prof/lab/marlin_v9_reader.py` (payload SHA-256
+`78be248dda10d8473e42887d4c50572b64faa1b63b1a291f60a2f46744c700c2`, queued source
+`6a3168ef5d749e10`) screens23 shapes,3 fresh router distributions,20 rotated
+cold CUDA-graph medians, native-V9 bit parity and stock normalized output.
+It includes all20 verify graph buckets plus512/753/16K prefill. Local preparation
+is5.66s and all shapes pass, but M256 direct/native/Marlin is2490/678/550us on
+sm120. That local loss and the changed reader prevent reusing the old H200
+V9 timing as a serving gain. `MARLIN_READER_ADMITTED=False` until the receipt.
+
+The earlier serialized one-layer V9-to-Marlin bridge was correct but rejected:
+13*220/4.05=706.17 decode steps,16 prefills/conversation and c32 imply a
+copy break-even of `706.17*(561-478)/(32*16)=114.48us/layer`. Packed read+write
+`2*905969664/4.8e12=377.49us` is already slower, even before launches and
+nonideal traffic; overlap is not credited. The diagnostic is retained outside
+the patch, with queued source `cb2c40fb27780d2d`. No shipping bridge remains.
+The old `cand_serving_prefill_diag.py` embeds the retired custom scale encoder;
+its old measurement remains historical, not an admitted producer.
 
 
 

@@ -96,8 +96,13 @@ def prepare(weights):
 
 def best_source(problem: str) -> dict:
     rows = [json.loads(l) for l in (REPO / "runs/ledger.jsonl").open()]
+    def withdrawn(row):
+        if row.get("withdrawn"):
+            return True
+        receipt = REPO / Path(row["source"]).with_suffix(".json")
+        return receipt.exists() and json.loads(receipt.read_text()).get("withdrawn", False)
     done = [r for r in rows if r["problem"] == problem and r.get("status") == "done" and r.get("speedup")
-            and r["mode"] == "submit" and "h200_lab" not in r.get("note", "")]
+            and r["mode"] == "submit" and "h200_lab" not in r.get("note", "") and not withdrawn(r)]
     return max(done, key=lambda r: r["speedup"])
 
 

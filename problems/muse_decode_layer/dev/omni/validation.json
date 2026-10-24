@@ -1,177 +1,92 @@
 {
-  "sha256": "6774eceabbbb2c81b2baeb281866d7c533ad93e7711462d85eb1a96db9d6cbf1",
-  "cold_prepare_s": 147.341,
-  "cold_with_forced_checks_s": 149.69478454301134,
-  "compile_s": 84.377,
+  "sha256": "74e6e09d0164087d2431bf463f2b8cc7c1cae972934199d038ac21e665bafe01",
+  "mixed_moe": "removed; native source is host-geometry-only experimental",
   "normal": {
-    "sha256": "6774eceabbbb2c81b2baeb281866d7c533ad93e7711462d85eb1a96db9d6cbf1",
-    "prepare_s": 6.123593992029782,
+    "problem": "muse_decode_layer",
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_omni.py",
+    "sha256": "74e6e09d0164087d2431bf463f2b8cc7c1cae972934199d038ac21e665bafe01",
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
     "cc": "12.0",
+    "torch": "2.14.1+cu130",
+    "prepare_s": 5.773153268033639,
     "tests": [
       {
         "case": "batch 1, ctx 10, layer sliding",
-        "first_call_s": 0.007469908043276519,
+        "first_call_s": 0.008578516019042581,
         "ok": true,
-        "msg": "update relative L2 error 7.199e-03 (worst row 7.199e-03) [bound 0.085]; attention input relative L2 error 4.116e-03 (worst row 4.116e-03) [bound 0.042]"
+        "msg": "update relative L2 error 7.172e-03 (worst row 7.172e-03) [bound 0.085]; attention input relative L2 error 4.072e-03 (worst row 4.072e-03) [bound 0.042]"
       },
       {
         "case": "batch 1, ctx 3000, layer full",
-        "first_call_s": 0.0011519819963723421,
+        "first_call_s": 0.0006024010363034904,
         "ok": true,
         "msg": "update relative L2 error 6.812e-03 (worst row 6.812e-03) [bound 0.150]; attention input relative L2 error 4.817e-03 (worst row 4.817e-03) [bound 0.108]"
       },
       {
         "case": "batch 8, ctx 2047, layer sliding",
-        "first_call_s": 0.001096893975045532,
+        "first_call_s": 0.0008341289940290153,
         "ok": true,
         "msg": "update relative L2 error 6.776e-03 (worst row 9.295e-03) [bound 0.150]; attention input relative L2 error 4.811e-03 (worst row 6.312e-03) [bound 0.098]"
       },
       {
         "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
-        "first_call_s": 0.013442506024148315,
+        "first_call_s": 0.02326677698874846,
         "ok": true,
         "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
       },
       {
         "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
-        "first_call_s": 0.033037570014130324,
+        "first_call_s": 0.02267888397909701,
         "ok": true,
         "msg": "update relative L2 error 3.325e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.418e-03 (worst row 2.992e-03) [bound 0.086]"
       },
       {
         "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
-        "first_call_s": 0.011427410005126148,
+        "first_call_s": 0.015806389041244984,
         "ok": true,
         "msg": "update relative L2 error 3.422e-03 (worst row 3.699e-03) [bound 0.150]; attention input relative L2 error 3.076e-03 (worst row 3.429e-03) [bound 0.116]"
       },
       {
         "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
-        "first_call_s": 0.0011237739818170667,
+        "first_call_s": 0.0010217379895038903,
         "ok": true,
         "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
       },
       {
         "case": "batch 2, ctx 300000, layer sliding, q_len 8",
-        "first_call_s": 0.004097913973964751,
+        "first_call_s": 0.00745519797783345,
         "ok": true,
         "msg": "update relative L2 error 3.921e-03 (worst row 4.210e-03) [bound 0.150]; attention input relative L2 error 3.268e-03 (worst row 3.645e-03) [bound 0.128]"
       },
       {
         "case": "batch 1, ctx 1048576, layer full, q_len 8",
-        "first_call_s": 0.01141655194805935,
+        "first_call_s": 0.01273541699629277,
         "ok": true,
         "msg": "update relative L2 error 3.375e-03 (worst row 3.671e-03) [bound 0.150]; attention input relative L2 error 2.786e-03 (worst row 3.078e-03) [bound 0.135]"
       },
       {
         "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
-        "first_call_s": 0.006445069971960038,
+        "first_call_s": 0.010318078973796219,
         "ok": true,
-        "msg": "update relative L2 error 9.106e-03 (worst row 1.583e-02) [bound 0.150]; attention input relative L2 error 6.494e-03 (worst row 1.092e-02) [bound 0.109]"
+        "msg": "update relative L2 error 3.924e-03 (worst row 4.096e-03) [bound 0.150]; attention input relative L2 error 3.354e-03 (worst row 3.607e-03) [bound 0.109]"
       },
       {
         "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
-        "first_call_s": 0.0010274960077367723,
+        "first_call_s": 0.0009167679818347096,
         "ok": true,
         "msg": "update relative L2 error 5.022e-03 (worst row 5.022e-03) [bound 0.118]; attention input relative L2 error 3.799e-03 (worst row 3.799e-03) [bound 0.075]"
       },
       {
         "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
-        "first_call_s": 0.0041271939990110695,
+        "first_call_s": 0.002935947966761887,
         "ok": true,
-        "msg": "update relative L2 error 1.170e-02 (worst row 2.952e-02) [bound 0.150]; attention input relative L2 error 8.173e-03 (worst row 2.004e-02) [bound 0.101]"
+        "msg": "update relative L2 error 3.926e-03 (worst row 4.153e-03) [bound 0.150]; attention input relative L2 error 3.369e-03 (worst row 3.673e-03) [bound 0.101]"
       },
       {
         "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
-        "first_call_s": 0.0011250670067965984,
+        "first_call_s": 0.0027445199666544795,
         "ok": true,
         "msg": "update relative L2 error 6.946e-03 (worst row 9.038e-03) [bound 0.150]; attention input relative L2 error 4.990e-03 (worst row 6.425e-03) [bound 0.097]"
-      }
-    ],
-    "shapes": [
-      {
-        "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
-        "load": "decode 1",
-        "weight": 46,
-        "us": 163.840004010126,
-        "ok": true
-      },
-      {
-        "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
-        "load": "decode 1",
-        "weight": 16,
-        "us": 197.63200054876506,
-        "ok": true
-      },
-      {
-        "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
-        "load": "decode 16",
-        "weight": 46,
-        "us": 280.576006276533,
-        "ok": true
-      },
-      {
-        "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
-        "load": "decode 16",
-        "weight": 16,
-        "us": 575.4879869055003,
-        "ok": true
-      },
-      {
-        "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
-        "load": "decode 32",
-        "weight": 46,
-        "us": 348.16001425497234,
-        "ok": true
-      },
-      {
-        "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
-        "load": "decode 32",
-        "weight": 16,
-        "us": 841.7279876302928,
-        "ok": true
-      },
-      {
-        "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
-        "load": "verify 1",
-        "weight": 46,
-        "us": 299.00799761526287,
-        "ok": true
-      },
-      {
-        "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
-        "load": "verify 1",
-        "weight": 16,
-        "us": 340.14399419538677,
-        "ok": true
-      },
-      {
-        "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
-        "load": "verify 16",
-        "weight": 46,
-        "us": 561.2160123419017,
-        "ok": true
-      },
-      {
-        "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
-        "load": "verify 16",
-        "weight": 16,
-        "us": 1368.1279576849192,
-        "ok": true
-      },
-      {
-        "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
-        "load": "verify 32",
-        "weight": 46,
-        "us": 883.7120092939585,
-        "ok": true
-      },
-      {
-        "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
-        "load": "verify 32",
-        "weight": 16,
-        "us": 2538.496033055708,
-        "ok": true
       }
     ],
     "static": [
@@ -244,95 +159,93 @@
         "name": "VGC_SOURCE",
         "ok": true,
         "msg": ""
-      },
-      {
-        "name": "OMNI_MIXED_CUDA",
-        "ok": true,
-        "msg": ""
       }
     ]
   },
   "forced": {
-    "sha256": "6774eceabbbb2c81b2baeb281866d7c533ad93e7711462d85eb1a96db9d6cbf1",
-    "prepare_s": 149.69478454301134,
+    "problem": "muse_decode_layer",
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_omni.py",
+    "sha256": "74e6e09d0164087d2431bf463f2b8cc7c1cae972934199d038ac21e665bafe01",
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
     "cc": "12.0",
+    "torch": "2.14.1+cu130",
+    "prepare_s": 30.170720777008682,
     "tests": [
       {
         "case": "batch 1, ctx 10, layer sliding",
-        "first_call_s": 0.15408782503800467,
+        "first_call_s": 0.0026549859903752804,
         "ok": true,
         "msg": "update relative L2 error 7.271e-03 (worst row 7.271e-03) [bound 0.085]; attention input relative L2 error 4.091e-03 (worst row 4.091e-03) [bound 0.042]"
       },
       {
         "case": "batch 1, ctx 3000, layer full",
-        "first_call_s": 0.0007386319921351969,
+        "first_call_s": 0.0007117560016922653,
         "ok": true,
         "msg": "update relative L2 error 6.988e-03 (worst row 6.988e-03) [bound 0.150]; attention input relative L2 error 4.954e-03 (worst row 4.954e-03) [bound 0.108]"
       },
       {
         "case": "batch 8, ctx 2047, layer sliding",
-        "first_call_s": 0.0006888880161568522,
+        "first_call_s": 0.0006155959563329816,
         "ok": true,
         "msg": "update relative L2 error 6.893e-03 (worst row 9.319e-03) [bound 0.150]; attention input relative L2 error 4.876e-03 (worst row 6.359e-03) [bound 0.098]"
       },
       {
         "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
-        "first_call_s": 1.978263595025055,
+        "first_call_s": 0.011486573028378189,
         "ok": true,
         "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
       },
       {
         "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
-        "first_call_s": 2.9115844990010373,
+        "first_call_s": 0.01163525099400431,
         "ok": true,
         "msg": "update relative L2 error 6.547e-02 (worst row 9.872e-02) [bound 0.150]; attention input relative L2 error 3.456e-02 (worst row 5.136e-02) [bound 0.086]"
       },
       {
         "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
-        "first_call_s": 1.1021066450048238,
+        "first_call_s": 0.006379877973813564,
         "ok": true,
         "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.870e-02) [bound 0.116]"
       },
       {
         "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
-        "first_call_s": 0.0007933489978313446,
+        "first_call_s": 0.0008873920305632055,
         "ok": true,
         "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
       },
       {
         "case": "batch 2, ctx 300000, layer sliding, q_len 8",
-        "first_call_s": 0.5849309339537285,
+        "first_call_s": 0.01017799403052777,
         "ok": true,
         "msg": "update relative L2 error 7.544e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.115e-02 (worst row 6.993e-02) [bound 0.128]"
       },
       {
         "case": "batch 1, ctx 1048576, layer full, q_len 8",
-        "first_call_s": 0.0011060459655709565,
+        "first_call_s": 0.0009145510266534984,
         "ok": true,
-        "msg": "update relative L2 error 8.148e-03 (worst row 9.678e-03) [bound 0.150]; attention input relative L2 error 5.833e-03 (worst row 7.181e-03) [bound 0.135]"
+        "msg": "update relative L2 error 8.148e-03 (worst row 9.678e-03) [bound 0.150]; attention input relative L2 error 5.835e-03 (worst row 7.181e-03) [bound 0.135]"
       },
       {
         "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
-        "first_call_s": 0.539010678010527,
+        "first_call_s": 0.0033778140204958618,
         "ok": true,
-        "msg": "update relative L2 error 6.653e-02 (worst row 8.715e-02) [bound 0.150]; attention input relative L2 error 4.468e-02 (worst row 6.211e-02) [bound 0.109]"
+        "msg": "update relative L2 error 6.473e-02 (worst row 9.077e-02) [bound 0.150]; attention input relative L2 error 4.354e-02 (worst row 6.501e-02) [bound 0.109]"
       },
       {
         "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
-        "first_call_s": 0.0007055940222926438,
+        "first_call_s": 0.0007236049859784544,
         "ok": true,
         "msg": "update relative L2 error 5.290e-03 (worst row 5.290e-03) [bound 0.118]; attention input relative L2 error 3.935e-03 (worst row 3.935e-03) [bound 0.075]"
       },
       {
         "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
-        "first_call_s": 0.5594001510180533,
+        "first_call_s": 0.0029092089971527457,
         "ok": true,
-        "msg": "update relative L2 error 6.153e-02 (worst row 8.456e-02) [bound 0.150]; attention input relative L2 error 4.129e-02 (worst row 5.759e-02) [bound 0.101]"
+        "msg": "update relative L2 error 6.009e-02 (worst row 8.457e-02) [bound 0.150]; attention input relative L2 error 4.070e-02 (worst row 5.831e-02) [bound 0.101]"
       },
       {
         "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
-        "first_call_s": 0.0011657310533337295,
+        "first_call_s": 0.0009083040058612823,
         "ok": true,
         "msg": "update relative L2 error 7.088e-03 (worst row 9.123e-03) [bound 0.150]; attention input relative L2 error 5.075e-03 (worst row 6.485e-03) [bound 0.097]"
       }
@@ -342,7 +255,7 @@
         "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
         "load": "decode 1",
         "weight": 46,
-        "us": 183.26399568468332,
+        "us": 182.75199923664331,
         "ok": true
       },
       {
@@ -363,66 +276,92 @@
         "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
         "load": "decode 16",
         "weight": 16,
-        "us": 608.240001834929,
+        "us": 608.2239979878068,
         "ok": true
       },
       {
         "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
         "load": "decode 32",
         "weight": 46,
-        "us": 425.9520107880235,
+        "us": 432.09599796682596,
         "ok": true
       },
       {
         "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
         "load": "decode 32",
         "weight": 16,
-        "us": 869.344019331038,
+        "us": 878.5599702969193,
         "ok": true
       },
       {
         "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
         "load": "verify 1",
         "weight": 46,
-        "us": 322.52799812704325,
+        "us": 325.6000066176057,
         "ok": true
       },
       {
         "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
         "load": "verify 1",
         "weight": 16,
-        "us": 304.0960067883134,
+        "us": 302.04799119383097,
         "ok": true
       },
       {
         "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
         "load": "verify 16",
         "weight": 46,
-        "us": 779.2639965191483,
+        "us": 784.3839759007096,
         "ok": true
       },
       {
         "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
         "load": "verify 16",
         "weight": 16,
-        "us": 1106.9600218906999,
+        "us": 1112.0800012722611,
         "ok": true
       },
       {
         "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
         "load": "verify 32",
         "weight": 46,
-        "us": 3000.2879733219743,
+        "us": 1274.8480075970292,
         "ok": true
       },
       {
         "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
         "load": "verify 32",
         "weight": 16,
-        "us": 5645.280086435378,
+        "us": 1991.6480416432023,
         "ok": true
       }
     ],
+    "loads": {
+      "decode 1": {
+        "us": 12125.247923657298,
+        "base_us": 0.0
+      },
+      "decode 16": {
+        "us": 25180.224431678653,
+        "base_us": 0.0
+      },
+      "decode 32": {
+        "us": 33933.375431224704,
+        "base_us": 0.0
+      },
+      "verify 1": {
+        "us": 19810.368163511157,
+        "base_us": 0.0
+      },
+      "verify 16": {
+        "us": 53874.94291178882,
+        "base_us": 0.0
+      },
+      "verify 32": {
+        "us": 90509.37701575458,
+        "base_us": 0.0
+      }
+    },
     "static": [
       {
         "name": "undefined_names",
@@ -493,834 +432,8 @@
         "name": "VGC_SOURCE",
         "ok": true,
         "msg": ""
-      },
-      {
-        "name": "OMNI_MIXED_CUDA",
-        "ok": true,
-        "msg": ""
       }
     ]
   },
-  "shape_tuners": [
-    {
-      "batch": 1,
-      "q_len": 1,
-      "window": 2048,
-      "attention": {
-        "base": 12.3,
-        "F0n": 24.6,
-        "main": 12.3
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 32.8,
-          "BLAS": 32.8,
-          "L0": 32.8,
-          "L1": 32.8
-        },
-        "o": {
-          "V9": 20.5,
-          "BLAS": 20.5,
-          "L0": 20.5,
-          "L1": 22.5
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler_slice": {
-          "V9": 16.4,
-          "BLAS": 16.4,
-          "L0": 16.4,
-          "L1": 16.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          8.2,
-          8.2
-        ],
-        "b2": [
-          8.2,
-          8.2
-        ],
-        "prefix": [
-          71.7,
-          87.0
-        ]
-      },
-      "selection": "('layer', None) ('custom', 'custom', 'custom', 'custom') v9 ('regular', True)"
-    },
-    {
-      "batch": 1,
-      "q_len": 1,
-      "window": 0,
-      "attention": {
-        "base": 30.7,
-        "F128n": 88.1,
-        "main": 47.1
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 32.8,
-          "BLAS": 32.8,
-          "L0": 32.8,
-          "L1": 32.8
-        },
-        "o": {
-          "V9": 20.5,
-          "BLAS": 20.5,
-          "L0": 20.5,
-          "L1": 22.5
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler_slice": {
-          "V9": 16.4,
-          "BLAS": 16.4,
-          "L0": 16.4,
-          "L1": 16.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          8.2,
-          8.2
-        ],
-        "b2": [
-          8.2,
-          8.2
-        ],
-        "prefix": [
-          71.7,
-          87.0
-        ]
-      },
-      "selection": "('layer', None) ('custom', 'custom', 'custom', 'custom') v9 ('regular', True)"
-    },
-    {
-      "batch": 1,
-      "q_len": 8,
-      "window": 2048,
-      "attention": {
-        "base": 30.7,
-        "F0n": 30.7,
-        "verify": 26.6,
-        "W3/1": 26.6,
-        "W3/2": 26.6,
-        "W3/4": 26.6,
-        "W3/8": 26.6,
-        "W4/1": 26.6,
-        "W4/2": 26.6,
-        "W4/4": 26.6,
-        "W4/8": 26.6,
-        "G5/1": 24.6,
-        "G5/2": 24.6,
-        "G5/4": 25.6,
-        "G5/8": 26.6,
-        "G7/1": 25.6,
-        "G7/2": 24.6,
-        "G7/4": 24.6,
-        "G7/8": 24.6,
-        "P3/1": 26.6,
-        "P3/2": 24.6,
-        "P3/4": 25.6,
-        "P3/8": 24.6,
-        "P5/1": 24.6,
-        "P5/2": 24.6,
-        "P5/4": 24.6,
-        "P5/8": 24.6
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 31.7,
-          "BLAS": 33.8,
-          "L0": 34.8,
-          "L1": 32.8
-        },
-        "o": {
-          "V9": 20.5,
-          "BLAS": 22.5,
-          "L0": 22.5,
-          "L1": 24.6
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler_slice": {
-          "V9": 16.4,
-          "BLAS": 18.4,
-          "L0": 18.4,
-          "L1": 18.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          8.2,
-          8.2
-        ],
-        "b2": [
-          8.2,
-          8.2
-        ],
-        "prefix": "E:prefix routing guard"
-      },
-      "selection": "('xqa_group', ('group', 5, 1)) ('custom', 'custom', 'custom', 'custom') v9 ('regular', True)"
-    },
-    {
-      "batch": 1,
-      "q_len": 8,
-      "window": 0,
-      "attention": {
-        "base": 122.9,
-        "F128n": 122.9,
-        "verify": 77.8,
-        "W3/1": 55.3,
-        "W3/2": 55.3,
-        "W3/4": 55.3,
-        "W3/8": 55.3,
-        "W4/1": 54.3,
-        "W4/2": 55.3,
-        "W4/4": 55.3,
-        "W4/8": 54.3,
-        "G5/1": 54.3,
-        "G5/2": 54.3,
-        "G5/4": 55.3,
-        "G5/8": 55.3,
-        "G7/1": 55.3,
-        "G7/2": 54.3,
-        "G7/4": 55.3,
-        "G7/8": 55.3,
-        "P3/1": 55.3,
-        "P3/2": 54.3,
-        "P3/4": 55.3,
-        "P3/8": 55.3,
-        "P5/1": 54.3,
-        "P5/2": 55.3,
-        "P5/4": 55.3,
-        "P5/8": 54.3
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 31.7,
-          "BLAS": 33.8,
-          "L0": 34.8,
-          "L1": 32.8
-        },
-        "o": {
-          "V9": 20.5,
-          "BLAS": 22.5,
-          "L0": 22.5,
-          "L1": 24.6
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler_slice": {
-          "V9": 16.4,
-          "BLAS": 18.4,
-          "L0": 18.4,
-          "L1": 18.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          8.2,
-          8.2
-        ],
-        "b2": [
-          8.2,
-          8.2
-        ],
-        "prefix": "E:prefix routing guard"
-      },
-      "selection": "('xqa_warp', ('warp', 4, 1)) ('custom', 'custom', 'custom', 'custom') v9 ('regular', True)"
-    },
-    {
-      "batch": 16,
-      "q_len": 1,
-      "window": 2048,
-      "attention": {
-        "base": 20.5,
-        "F8t": 28.7,
-        "F16n": 28.7,
-        "F4n": 28.7,
-        "main": 18.4
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 31.7,
-          "BLAS": 34.8,
-          "L0": 34.8,
-          "L1": 32.8
-        },
-        "o": {
-          "V9": 22.5,
-          "BLAS": 22.5,
-          "L0": 22.5,
-          "L1": 26.6
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler": {
-          "V9": 59.4,
-          "BLAS": 59.4,
-          "L0": 59.4,
-          "L1": 59.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          8.2,
-          8.2
-        ],
-        "b2": [
-          10.2,
-          10.2
-        ],
-        "prefix": "E:prefix routing guard"
-      },
-      "selection": "('attn_main', None) ('custom', 'custom', 'custom', 'custom') v9 ('regular', True)"
-    },
-    {
-      "batch": 16,
-      "q_len": 1,
-      "window": 0,
-      "attention": {
-        "base": 257.0,
-        "F32n": 285.7,
-        "F0n": 284.7,
-        "main": 223.2
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 31.7,
-          "BLAS": 34.8,
-          "L0": 34.8,
-          "L1": 32.8
-        },
-        "o": {
-          "V9": 22.5,
-          "BLAS": 22.5,
-          "L0": 22.5,
-          "L1": 26.6
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler": {
-          "V9": 59.4,
-          "BLAS": 59.4,
-          "L0": 59.4,
-          "L1": 59.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          8.2,
-          8.2
-        ],
-        "b2": [
-          10.2,
-          10.2
-        ],
-        "prefix": "E:prefix routing guard"
-      },
-      "selection": "('attn_main', None) ('custom', 'custom', 'custom', 'custom') v9 ('regular', True)"
-    },
-    {
-      "batch": 16,
-      "q_len": 8,
-      "window": 2048,
-      "attention": {
-        "base": 45.1,
-        "F32n": 45.1,
-        "F4t": 45.1,
-        "F4n": 45.1,
-        "verify": 32.8,
-        "W3/1": 34.8,
-        "W3/2": 45.1,
-        "W3/4": 44.0,
-        "W3/8": 43.0,
-        "W4/1": 34.8,
-        "W4/2": 45.1,
-        "W4/4": 44.0,
-        "W4/8": 44.0,
-        "G5/1": 34.8,
-        "G5/2": 45.1,
-        "G5/4": 42.0,
-        "G5/8": 50.2,
-        "G7/1": 34.8,
-        "G7/2": 45.1,
-        "G7/4": 43.0,
-        "G7/8": 51.2,
-        "P3/1": 34.8,
-        "P3/2": 45.1,
-        "P3/4": 43.0,
-        "P3/8": 50.2,
-        "P5/1": 34.8,
-        "P5/2": 45.1,
-        "P5/4": 43.0,
-        "P5/8": 51.2
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 36.9,
-          "C0": 36.9,
-          "C1": 36.9,
-          "BLAS": 36.9,
-          "L0": 36.9,
-          "L1": 36.9,
-          "NN": 43.0
-        },
-        "o": {
-          "V9": 26.6,
-          "C0": 26.6,
-          "C1": 26.6,
-          "BLAS": 26.6,
-          "L0": 26.6,
-          "L1": 26.6,
-          "NN": 26.6
-        },
-        "pool_router": {
-          "V9": 67.6,
-          "C0": 67.6,
-          "C1": 67.6,
-          "BLAS": 67.6,
-          "TN": 67.6
-        },
-        "unpooler": {
-          "V9": 69.7,
-          "C0": 69.7,
-          "C1": 69.7,
-          "BLAS": 69.7,
-          "L0": 69.4,
-          "L1": 76.8,
-          "NN": 61.5
-        }
-      },
-      "moe": {
-        "v9": 393.2,
-        "mixed": 1446.9,
-        "nt2": 297.0,
-        "nt4": 487.4
-      },
-      "glue": {
-        "b1": [
-          12.3,
-          12.3
-        ],
-        "b2": [
-          14.3,
-          14.3
-        ],
-        "prefix": [
-          90.1,
-          311.3
-        ]
-      },
-      "selection": "('port_verify', None) ('custom', ('lt', 1), 'cublas', ('short_lt', 1, 0)) nt2 ('regular', True)"
-    },
-    {
-      "batch": 16,
-      "q_len": 8,
-      "window": 0,
-      "attention": {
-        "base": 846.8,
-        "F64n": 849.9,
-        "F8n": 849.9,
-        "F0n": 852.0,
-        "verify": 266.3,
-        "W3/1": 354.3,
-        "W3/2": 380.9,
-        "W3/4": 329.7,
-        "W3/8": 288.8,
-        "W4/1": 354.3,
-        "W4/2": 380.9,
-        "W4/4": 329.7,
-        "W4/8": 288.8,
-        "G5/1": 354.3,
-        "G5/2": 380.9,
-        "G5/4": 330.8,
-        "G5/8": 288.8,
-        "G7/1": 353.3,
-        "G7/2": 380.9,
-        "G7/4": 329.7,
-        "G7/8": 287.8,
-        "P3/1": 354.3,
-        "P3/2": 380.9,
-        "P3/4": 330.8,
-        "P3/8": 286.8,
-        "P5/1": 354.3,
-        "P5/2": 380.9,
-        "P5/4": 329.7,
-        "P5/8": 288.8
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 36.9,
-          "C0": 36.9,
-          "C1": 36.9,
-          "BLAS": 36.9,
-          "L0": 36.9,
-          "L1": 36.9,
-          "NN": 43.0
-        },
-        "o": {
-          "V9": 26.6,
-          "C0": 26.6,
-          "C1": 26.6,
-          "BLAS": 26.6,
-          "L0": 26.6,
-          "L1": 26.6,
-          "NN": 26.6
-        },
-        "pool_router": {
-          "V9": 67.6,
-          "C0": 67.6,
-          "C1": 67.6,
-          "BLAS": 67.6,
-          "TN": 67.6
-        },
-        "unpooler": {
-          "V9": 69.7,
-          "C0": 69.7,
-          "C1": 69.7,
-          "BLAS": 69.7,
-          "L0": 69.4,
-          "L1": 76.8,
-          "NN": 61.5
-        }
-      },
-      "moe": {
-        "v9": 393.2,
-        "mixed": 1446.9,
-        "nt2": 297.0,
-        "nt4": 487.4
-      },
-      "glue": {
-        "b1": [
-          12.3,
-          12.3
-        ],
-        "b2": [
-          14.3,
-          14.3
-        ],
-        "prefix": [
-          90.1,
-          311.3
-        ]
-      },
-      "selection": "('port_verify', None) ('custom', ('lt', 1), 'cublas', ('short_lt', 1, 0)) nt2 ('regular', True)"
-    },
-    {
-      "batch": 32,
-      "q_len": 1,
-      "window": 2048,
-      "attention": {
-        "base": 28.7,
-        "F2n": 32.8,
-        "F16n": 32.8,
-        "main": 22.5
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 34.8,
-          "BLAS": 34.8,
-          "L0": 34.8,
-          "L1": 34.8
-        },
-        "o": {
-          "V9": 23.6,
-          "BLAS": 22.5,
-          "L0": 22.5,
-          "L1": 23.6
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler": {
-          "V9": 55.3,
-          "BLAS": 56.3,
-          "L0": 55.3,
-          "L1": 59.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          10.2,
-          10.2
-        ],
-        "b2": [
-          10.2,
-          10.2
-        ],
-        "prefix": [
-          77.8,
-          113.7
-        ]
-      },
-      "selection": "('attn_main', None) ('cublas', ('lt', 0), 'custom', 'cublas') v9 ('regular', True)"
-    },
-    {
-      "batch": 32,
-      "q_len": 1,
-      "window": 0,
-      "attention": {
-        "base": 501.8,
-        "F8t": 494.6,
-        "F8n": 495.6,
-        "main": 443.4
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 34.8,
-          "BLAS": 34.8,
-          "L0": 34.8,
-          "L1": 34.8
-        },
-        "o": {
-          "V9": 23.6,
-          "BLAS": 22.5,
-          "L0": 22.5,
-          "L1": 23.6
-        },
-        "pool_router": {
-          "V9": "fixed"
-        },
-        "unpooler": {
-          "V9": 55.3,
-          "BLAS": 56.3,
-          "L0": 55.3,
-          "L1": 59.4
-        }
-      },
-      "moe": {
-        "v9": "fixed"
-      },
-      "glue": {
-        "b1": [
-          10.2,
-          10.2
-        ],
-        "b2": [
-          10.2,
-          10.2
-        ],
-        "prefix": [
-          77.8,
-          113.7
-        ]
-      },
-      "selection": "('attn_main', None) ('cublas', ('lt', 0), 'custom', 'cublas') v9 ('regular', True)"
-    },
-    {
-      "batch": 32,
-      "q_len": 8,
-      "window": 2048,
-      "attention": {
-        "base": 63.5,
-        "F0t": 63.5,
-        "F0n": 64.0,
-        "F16n": 63.5,
-        "verify": 41.0,
-        "W3/1": 43.0,
-        "W3/2": 55.3,
-        "W3/4": 59.4,
-        "W3/8": 61.4,
-        "W4/1": 43.0,
-        "W4/2": 53.2,
-        "W4/4": 59.4,
-        "W4/8": 59.4,
-        "G5/1": 43.0,
-        "G5/2": 54.3,
-        "G5/4": 59.4,
-        "G5/8": 66.6,
-        "G7/1": 43.0,
-        "G7/2": 53.2,
-        "G7/4": 59.4,
-        "G7/8": 65.5,
-        "P3/1": 43.0,
-        "P3/2": 53.2,
-        "P3/4": 59.4,
-        "P3/8": 65.5,
-        "P5/1": 43.0,
-        "P5/2": 53.2,
-        "P5/4": 59.4,
-        "P5/8": 66.6
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 55.3,
-          "C0": 55.3,
-          "C1": 55.3,
-          "BLAS": 55.3,
-          "L0": 55.3,
-          "L1": 55.4,
-          "TN": 55.3
-        },
-        "o": {
-          "V9": 36.9,
-          "C0": 36.9,
-          "C1": 36.9,
-          "BLAS": 36.9,
-          "L0": 36.9,
-          "L1": 36.9
-        },
-        "pool_router": {
-          "V9": 102.4,
-          "C0": 102.4,
-          "C1": 102.4,
-          "BLAS": 102.4,
-          "TN": 102.4
-        },
-        "unpooler": {
-          "V9": 98.3,
-          "C0": 98.3,
-          "C1": 98.3,
-          "BLAS": 99.3,
-          "L0": 98.3,
-          "L1": 94.2,
-          "TN": 98.3
-        }
-      },
-      "moe": {
-        "v9": 683.0,
-        "mixed": 2499.6,
-        "nt2": 585.8,
-        "nt4": 757.8
-      },
-      "glue": {
-        "b1": [
-          20.5,
-          20.5
-        ],
-        "b2": [
-          22.5,
-          22.5
-        ],
-        "prefix": [
-          135.2,
-          572.4
-        ]
-      },
-      "selection": "('port_verify', None) (('lt', 1), ('cutlass', 0), 'custom', ('lt', 1)) nt2 ('regular', False)"
-    },
-    {
-      "batch": 32,
-      "q_len": 8,
-      "window": 0,
-      "attention": {
-        "base": 1659.9,
-        "F32t": 1664.0,
-        "F4n": 1664.0,
-        "F8n": 1664.0,
-        "verify": 518.2,
-        "W3/1": 674.8,
-        "W3/2": 736.3,
-        "W3/4": 608.3,
-        "W3/8": 567.3,
-        "W4/1": 672.8,
-        "W4/2": 733.2,
-        "W4/4": 608.3,
-        "W4/8": 568.3,
-        "G5/1": 672.8,
-        "G5/2": 734.2,
-        "G5/4": 607.2,
-        "G5/8": 568.3,
-        "G7/1": 673.8,
-        "G7/2": 732.2,
-        "G7/4": 608.3,
-        "G7/8": 567.3,
-        "P3/1": 673.8,
-        "P3/2": 733.2,
-        "P3/4": 606.2,
-        "P3/8": 567.3,
-        "P5/1": 674.8,
-        "P5/2": 733.2,
-        "P5/4": 607.2,
-        "P5/8": 568.0
-      },
-      "projection": {
-        "qkv_gate": {
-          "V9": 55.3,
-          "C0": 55.3,
-          "C1": 55.3,
-          "BLAS": 55.3,
-          "L0": 55.3,
-          "L1": 55.4,
-          "TN": 55.3
-        },
-        "o": {
-          "V9": 36.9,
-          "C0": 36.9,
-          "C1": 36.9,
-          "BLAS": 36.9,
-          "L0": 36.9,
-          "L1": 36.9
-        },
-        "pool_router": {
-          "V9": 102.4,
-          "C0": 102.4,
-          "C1": 102.4,
-          "BLAS": 102.4,
-          "TN": 102.4
-        },
-        "unpooler": {
-          "V9": 98.3,
-          "C0": 98.3,
-          "C1": 98.3,
-          "BLAS": 99.3,
-          "L0": 98.3,
-          "L1": 94.2,
-          "TN": 98.3
-        }
-      },
-      "moe": {
-        "v9": 683.0,
-        "mixed": 2499.6,
-        "nt2": 585.8,
-        "nt4": 757.8
-      },
-      "glue": {
-        "b1": [
-          20.5,
-          20.5
-        ],
-        "b2": [
-          22.5,
-          22.5
-        ],
-        "prefix": [
-          135.2,
-          572.4
-        ]
-      },
-      "selection": "('xqa_fp8_pv', (5, 1)) (('lt', 1), ('cutlass', 0), 'custom', ('lt', 1)) nt2 ('regular', False)"
-    }
-  ],
-  "cold_command": "CUDA_VISIBLE_DEVICES=0 tools/img env CCACHE_DISABLE=1 \\\n  TORCH_EXTENSIONS_DIR=/tmp/muse-omni-cold-final2/extensions \\\n  TRITON_CACHE_DIR=/tmp/muse-omni-cold-final2/triton \\\n  CUDA_CACHE_PATH=/tmp/muse-omni-cold-final2/cuda \\\n  TORCH_CUDA_ARCH_LIST=12.0 MAX_JOBS=2 \\\n  python problems/muse_decode_layer/dev/omni/force.py --cold-native"
+  "h200": "not sent; no native mixed numeric pass"
 }

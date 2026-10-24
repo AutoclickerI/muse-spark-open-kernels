@@ -1,28 +1,29 @@
-# Decode layer focus — G3 first
+# Decode layer focus — best6 attention correction
 
 Board control: V9 `0e94268cf5654012`, **1.428x**. Serving uses verify shapes.
 Current build: [cand_r3_best6.py](cand_r3_best6.py), SHA-256
-`c582f3427684b69b67b13be3f1bcb9f43c68fc8b32e9556bffe4377687d85491`.
+`4516cb979dac623a6b6a2347be54cb5ecb416be23d7631aeae092a403beb9528`.
 Owner holds its send until the separate native H200 adapter seed lab passes M128/256.
 
-Base: exact glue `99120569`, sent by the owner as a priority-0 check.
-Best5 `a651af25` is check job **`691bff0bcff44e99`**. Neither receipt existed at this turn's one read.
-Glue lab queue key **`bd66426465d8b072`** was queued. No judge polling/waiting this turn.
+Best5 check **`691bff0bcff44e99`** passes at **1.353449x**, prepare **158.992 s**.
+Verify32 full FA3 main regressed **377.9 -> 501.5 us**; decode full attention improved.
+MoE verify16/32 differences match routing-seed variance. [Full stages](dev/best6_attention/BEST5_STAGES.md).
 
-Best6 adds the verified prefill raw17 / humming_masked / dg_w8 adapters at M128/256 beside V9 NT1/NT2.
-Three fresh loaded-router synthetic routings, FP32 gates before/after captured replays,
-and mean cold timing over seeds select the backend; rejected/unmeasured choices retain measured V9.
-Optional construction, admission, timing and replay RuntimeErrors reject only that alternative.
-All 75 base helpers/kernels and 27 embedded prefill definitions retain their exact AST/native bodies.
-Adapter setup is restricted to M128/256; its packed layouts/scale encoding are preserved as requested.
-No prepared BF16/FP8 expanded expert bank; dg_w8's expansion runs inside each timed call.
+Best6 now compares q1/q8 attention settings on three exact public load draws by mean cold timing.
+Inputs use soft caches, ctx80000/page1, fixed B1 and agentic B16/32 lengths, with loaded QKV weights.
+The q8 `layer` choice restores the board's exact FA3 call, forwarding public scheduler metadata (None).
+Incomplete trials retain `layer`. q1 gets the same sampling without changing its kernel choices.
+All **114** other helper implementations and all native sources remain exact best6 `c582f342`.
+Its raw17 / humming_masked / dg_w8 portfolio at M128/256 and V9 NT1/NT2 remain unchanged.
 
 Normal + cold forced screens each pass **13 tests, 12 fresh graphs, 14 static checks**.
-Cold candidate prepare **174.799 s** (**176.472 s** with forced checks). **18 RuntimeError cases** pass,
-plus all optional build rejections and expired defaults. Native library GEMMs still need the H200 lab.
-[Best6 handoff](dev/best6/README.md) records final evidence, provenance and the submission hold.
+Cold prepare **196.634 s** (**198.312 s** with extra forced checks). All 12 attention shapes sample
+three public draws with `layer` timed. All **36 complete fixtures match the public generator bitwise**.
+[Current handoff and validation](dev/best6_attention/README.md); native H200 adapter safety remains pending.
 
-The glue base has three PDL launches, no cross-CTA barriers/counter clears; its <=8 us H200 target is pending.
-[Board glue inventory](dev/glue/PROFILE.md): 17.2/17.7 us at decode 1, 31.1/29.8 at verify 32;
-profile durations include dependency waits and overlap compute. Both base/glue receipts remain to fold into
-[NEXT_CHECKS](dev/NEXT_CHECKS.md) on owner resume. Existing megakernel/overlap holds remain unchanged.
+Glue check `7370b18221964412` is **1.367496x**; routing/FA3 changes explain the difference from best5.
+Paired lab [decode_paired.py](../../prof/lab/decode_paired.py), send key **`731545a5def446ad`**, tests
+all 12 loads x 3 public seeds: whole-layer glue A/B + A/A noise, q8 FA3 layer/splits, NT1/NT2 and experts.
+Cold forced payload **115.283 s / 124 s**, **216 paired comparisons**, no rejections; 13 tests/12 graphs/5 static.
+Paired H200 means decide glue/attention; native adapter safety remains the only best6 send hold.
+[Protocol and validation](dev/paired_lab/README.md). Earlier proj glue batch: **`b6b6b6f04beaad02`**.

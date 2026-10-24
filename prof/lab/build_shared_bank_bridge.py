@@ -125,7 +125,7 @@ def main():
     for prefix,path in (
         ('ma_','problems/muse_moe_w4a16/baseline.py'),
         ('v9_','serving/sglang/python/sglang/srt/layers/muse_spark_moe.py'),
-        ('br_','serving/sglang/python/sglang/kernels/ops/quantization/muse_v9_marlin.py'),
+        ('br_','prof/lab/v9_marlin_bridge.py'),
         ('fx_','problems/muse_decode_layer/moe_tune.py'),
     ):
         source=(ROOT/path).read_text()

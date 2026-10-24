@@ -2062,8 +2062,8 @@ def _num_sms(device):
 def _splits(batch, kvg, max_keys, q_len, sms):
     """Splits of each request's cached keys: enough CTAs to fill the GPU about twice over,
     at least one 64-token tile each, at most 128 (the combine reads every split)."""
-    target = 2 * sms
-    ns = -(-target // (batch * kvg))
+    target = sms if q_len == 8 else 2 * sms
+    ns = (target // (batch * kvg)) if q_len == 8 else -(-target // (batch * kvg))
     ns = min(ns, max(1, -(-max_keys // 64)), 128)
     return max(1, ns)
 
