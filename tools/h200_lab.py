@@ -18,7 +18,9 @@ first and its state is returned unchanged, so the run still scores, and the boar
 Each payload's source is embedded as a string and executed in its own namespace (a copy of the host
 module's globals, so host functions stay reachable and payload names can't collide), one after another,
 each with an equal share of the time left. Several payloads for one host go in one judge run: our runs
-start one at a time, so batching labs is the cheapest way to more H200 answers per hour. The judge calls
+start one at a time, so batching labs is the cheapest way to more H200 answers per hour. `send` also folds
+in a lab still waiting for a judge slot on the same host (up to MERGE_MAX payloads per run; a payload of
+the same name is replaced by the new one), so lanes that send separately still share runs. The judge calls
 prepare once per run (llms.txt) and keeps the last 16,000 characters of output, followed by up to ~6 KB
 of profiler lines, so all lab lines together are capped at LIMIT characters, split evenly; each payload
 prints between its own LAB_BEGIN and LAB_END. An exception in a payload becomes its LAB_ERROR lines; a sticky
@@ -26,16 +28,21 @@ CUDA error (lab b63389f0) still fails the run after printing them and kills the 
 risky payload last.
 
 Hosts: proj and MoE have 30 runs a day that their own boards barely use (G3 counts only the decode
-layer); decode, attention and prefill have 20, and attention has no prepare. Lab runs default to the
+layer); decode, attention and prefill have 20, prefill is off the overall board, and attention has no prepare. Lab runs default to the
 proj host at the priority of the problem the measurement serves (--priority).
 """
 
 import argparse
+import ast
+import fcntl
 import hashlib
 import json
+import os
 import re
+import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -45,6 +52,7 @@ from screen_all import local_imports  # noqa: E402
 LIMIT = 9000          # characters of lab output kept between the markers
 MARGIN_S = 15         # left of prepare's 300 s after the payload's deadline
 HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer")
+MERGE_MAX = 2        # payloads per run: base prepares take ~130 s on the H200, leaving each ~80 s
 
 WRAPPER = '''
 # ---- h200_lab wrapper: payloads {names} on base {base} ----
@@ -158,17 +166,52 @@ def check_imports(payload: Path) -> list[str]:
     return [] if line == "OK" else line[4:].split(" | ")
 
 
-def build(payloads: list[Path], host: str) -> tuple[str, str]:
-    embedded = []
-    for payload in payloads:
-        if bad := local_imports(payload):
-            sys.exit(f"{payload}: imports modules the judge won't have: {sorted(bad)}")
-        if bad := check_imports(payload):
-            sys.exit(f"{payload}: imports that fail in the judge's image: {bad}")
-        body = payload.read_text()
-        if not re.search(r"^def lab\(", body, re.M):
-            sys.exit(f"{payload}: must define lab(deadline, weights) -> list[str]")
-        embedded.append((payload.stem, hashlib.sha256(body.encode()).hexdigest()[:16], body))
+def embed(payload: Path) -> tuple[str, str, str]:
+    if bad := local_imports(payload):
+        sys.exit(f"{payload}: imports modules the judge won't have: {sorted(bad)}")
+    if bad := check_imports(payload):
+        sys.exit(f"{payload}: imports that fail in the judge's image: {bad}")
+    body = payload.read_text()
+    if not re.search(r"^def lab\(", body, re.M):
+        sys.exit(f"{payload}: must define lab(deadline, weights) -> list[str]")
+    return payload.stem, hashlib.sha256(body.encode()).hexdigest()[:16], body
+
+
+def lab_payloads(lab: Path) -> list:
+    """The (name, sha, source) payloads embedded in a built lab file."""
+    for node in ast.parse(lab.read_text()).body:
+        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "_LAB_PAYLOADS" for t in node.targets):
+            return [tuple(e) for e in ast.literal_eval(node.value)]
+    return []
+
+
+def absorb_waiting(host: str, embedded: list, priority: float, note: str):
+    """Fold a lab still waiting for a judge slot on this host into this send. okc_run sends under its
+    dispatch lock, so holding the lock while stopping the waiter means it can't be sending meanwhile."""
+    with (REPO / "runs/.dispatch.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        for p in sorted((REPO / "runs/waiting").glob("*.json")):
+            try:
+                w = json.loads(p.read_text())
+                os.kill(w["pid"], 0)
+            except (OSError, ValueError, KeyError):
+                continue
+            lab = REPO / w["file"]
+            if w["problem"] != host or lab.parent != REPO / "problems" / host / "lab" or w.get("until", 0) > time.time():
+                continue
+            names = {n for n, _, _ in embedded}
+            kept = [e for e in lab_payloads(lab) if e[0] not in names]
+            if not kept or len(kept) + len(embedded) > MERGE_MAX:
+                continue
+            os.kill(w["pid"], signal.SIGTERM)
+            while p.exists():  # the waiter removes its entry as it exits
+                time.sleep(0.1)
+            print(f"merged the waiting lab {w['file']} ({', '.join(n for n, _, _ in kept)}) into this run", flush=True)
+            return kept + embedded, min(priority, w["priority"]), f"{note} || {w.get('note', w['file'])}"
+    return embedded, priority, note
+
+
+def build(embedded: list, host: str) -> tuple[str, str]:
     if len({name for name, _, _ in embedded}) < len(embedded):
         sys.exit("payload names must differ (they label the receipt's sections)")
     base = best_source(host)
@@ -213,17 +256,19 @@ def main():
 
     if args.cmd == "read":
         return read(args.ref, args.name)
-    src, base = build(args.payloads, args.host)
+    embedded = [embed(p) for p in args.payloads]
     if args.cmd == "build":
+        src, base = build(embedded, args.host)
         args.o.write_text(src)
         return print(f"{args.o}: {len(src)} bytes, base {base}")
-    out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(p.stem for p in args.payloads)}.py"
+    note = f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"
+    embedded, priority, note = absorb_waiting(args.host, embedded, args.priority, note)
+    src, base = build(embedded, args.host)
+    out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in embedded)}.py"
     out.parent.mkdir(exist_ok=True)
     out.write_text(src)
     subprocess.run([sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
-                    "--priority", str(args.priority), "--note",
-                    f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"],
-                   cwd=REPO, check=False)
+                    "--priority", str(priority), "--note", note], cwd=REPO, check=False)
 
 
 if __name__ == "__main__":

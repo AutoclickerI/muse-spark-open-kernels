@@ -453,6 +453,8 @@ log, producer agreement, model inputs and summaries live in
 
 ### Serving upstream ports, expert storage and TTFT admission
 
+**Shared-bank V9 reader loses on the H200 (`6fab497d67e2420b`, serving routing, cold, 3 fresh draws):** reading the shared Marlin bank directly costs 0.20-0.27x stock at every M=8-256 (M=128: 1,430 vs 314 us). V9 in its own layout ties stock at M=8-24 (77.9 vs 79.2 us at M=8) and loses from M=32 (389 vs 314 at M=128, 698 vs 510 at M=256); the shared Marlin path equals stock at M=512-16K. Serving keeps stock Marlin at every M; agreement passes everywhere (rel 0.0057).
+
 **Current source:** `harness/trees/shared-bank-r08-final`, evidence
 `harness/results/shared-bank-r01-evidence/`, both under `/data2/jihoon/muse_kernel/`.
 The current patch has not run as a full H200 server. No commit or candidate

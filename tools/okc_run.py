@@ -373,7 +373,8 @@ def send(args):
             print(f"okc {mode}: daily cap reached; trying the next mode", flush=True)
         return None
 
-    mode, job = send_in_turn({"problem": problem, "file": str(args.file), "sha256": sha}, priority, send, mode_now)
+    mode, job = send_in_turn({"problem": problem, "file": str(args.file), "sha256": sha, "note": args.note},
+                             priority, send, mode_now)
     print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
     finish(job)
