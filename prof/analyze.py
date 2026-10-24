@@ -105,11 +105,11 @@ cv=shifted_curve({c:0 for c in s.RUNGS},psave)
 sensitivity['prefill v3 whole layer']=dict(prefill_saved_us=psave,score=s.score(cv,stock)[0],capped=s.score(cv,stock,True)[0])
 saves=sensitivity['decode layer v3 whole layer']['savings_us'];cv=shifted_curve(saves,psave)
 sensitivity['decode v3 + prefill v3 (disjoint phases)']=dict(savings_us=saves,prefill_saved_us=psave,score=s.score(cv,stock)[0],capped=s.score(cv,stock,True)[0])
-# Current planned serving changes mentioned in docs/reference/serving_levers.md, sensitivity independent of kernel ports.
+# Current planned serving changes mentioned in docs/serving/serving_levers.md, sensitivity independent of kernel ports.
 for label,ms in [('finalize low-token 0.7ms',0.7),('finalize low-token 1.5ms',1.5),('drafter fc sharding 0.15ms',0.15),('CPU +100us',-0.1),('CPU +1ms',-1.0)]:
  saves={c:ms*1000*(1 if 'low-token' not in label or c==1 else 0) for c in s.RUNGS};cv=shifted_curve(saves)
  sensitivity[label]=dict(savings_us=saves,score=s.score(cv,stock)[0],capped=s.score(cv,stock,True)[0])
-# Row-split proposal ~0.5s less first-turn prefill (docs/reference/serving_levers.md).
+# Row-split proposal ~0.5s less first-turn prefill (docs/serving/serving_levers.md).
 cv=shifted_curve({c:0 for c in s.RUNGS},500000)
 sensitivity['prefill row-split assumed 0.5s']=dict(prefill_saved_us=500000,score=s.score(cv,stock)[0],capped=s.score(cv,stock,True)[0])
 # Pooler token gate at <=128 tokens = c<=16.

@@ -1,4 +1,4 @@
-Read this when choosing kernels or revising the Muse serving model from work outside SGLang; the checked-out source snapshots live under `/home/jihoon/scratch_muse_external_20261024a/`.
+Serves: G2. Read this when choosing kernels or revising the Muse serving model from work outside SGLang; the checked-out source snapshots live under `/home/jihoon/scratch_muse_external_20261024a/`.
 
 ## Ranked take
 

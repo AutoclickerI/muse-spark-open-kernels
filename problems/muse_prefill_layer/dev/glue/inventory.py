@@ -105,7 +105,7 @@ def main():
         'H=8192,D=4096. Cache gather uses the actual selected sliding/full capacity rule,',
         'rounded to128 rows;753-token sliding uses FA3 directly and has no gather.',
         'Candidate, interface and verification: [glue README](../../problems/muse_prefill_layer/dev/glue/README.md).','']
-    (ROOT/'docs/reference/prefill_glue.md').write_text('\n'.join(lines))
+    (ROOT/'docs/serving/prefill_glue.md').write_text('\n'.join(lines))
     print('\n'.join(lines))
 
 

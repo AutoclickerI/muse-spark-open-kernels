@@ -1,53 +1,45 @@
 # Plan
 
-## Status (2026-10-24 23:35 KST)
-- G0 until the kernel close (11-05 17:00 KST, day 2 of 14): 1st on the overall kernel board (R-20261024-4). The overall
-  score of every top-50 team is its decode-layer speedup, so the decode layer is the whole game until then.
-- Board (SOTA "Leaderboard", 20:24 KST): we are overall rank 164 of 811 at 1.429x (0e94268, reproduced at 1.422/1.432x on two new router seeds;
-  best5/best5_glue/best6 checks 1.353/1.367/1.380x). Leader 2.101x (Lurrobert), 10th 1.927x, 50th 1.704x; rank 50 gained ~0.08x in 8 h.
-- Where our decode-layer time goes against one-read floors (lever table, NEXT_CHECKS): MoE 2.2-4.3x its floor at every
-  load, full-layer attention 1.5-3x, projections ~1.6x, glue 15-28 us per layer. Model (stage sums on best5_glue):
-  every stage at 1.5x its floor + 6 us glue gives ~2.09x; 1.3x gives ~2.38x; MoE alone at 1.5x gives ~1.75x.
-- The board entry v9 (0e94268) reran at 1.422/1.432/1.434x on new seeds. Its lead over the best6 line (best6 1.380x; best7_reset `c0e74bed` 1.402x) is the scale bank: v9's lossless recoded bank makes NT1 9-12% faster at M=8-128 on identical routes (`58ae2e2c`, FINDINGS "Scale bank"). S1 for the 10-25 reset: best7_paired + the recoded bank (predicted ~+3.7% over the raw line; decode lane building).
-- best6 (1b80ffc0, 1.380x) per load: decode 1/16/32 1.59/1.50/1.21x, verify 1/16/32 1.66/1.19/1.21x. The weak three are
-  MoE-bound (decode 32 138 us vs ~53 floor; verify 16 316 vs ~108; verify 32 408+25 vs ~126) plus FA3 at verify-32 full (372 vs 139).
-- Daily caps since 10-24: decode, attention and prefill 10 scored + 10 checks; MoE and proj 10 + 20.
-  `tools/h200_lab.py` batches several payloads per judge run; labs ride proj, MoE and prefill quota (prefill is off the
-  overall board). The judge rejects some words before queueing (FINDINGS "Failures"); `okc_run.py send` screens for them.
-- Bottleneck: judge latency (our runs start one at a time, ~2-3 an hour under today's backlog) and run-to-run noise
-  (MoE routing per run seed, FA3 choice): compare variants in paired labs, not single scored runs.
+## Status (2026-10-25 00:15 KST)
+- G0 (R-20261025-1): the highest score on the overall kernel board by the close (2026-11-05 16:59 KST, day 3 of 14).
+  Every top-50 team's overall score is its decode-layer speedup, so the decode layer is the whole game.
+- Board (SOTA "Leaderboard", 10-24 23:35 KST): we are 178th of 478 on the decode layer at 1.429x (v9 `0e94268`,
+  1.422-1.434x on four router seeds). Leader 2.146x, 10th 1.967x, 50th 1.734x; rank 50 gains ~0.1x per 11 h.
+- Where our layer time goes against one-read floors: MoE 2.2-4.3x its floor at every load, full-layer attention 1.5-3x,
+  projections ~1.6x (bound by per-launch fixed cost, not HBM: L2 oracle `09d19813`), glue 15-28 us per layer. Floor
+  model: every stage at 1.5x its floor + 6 us glue gives ~2.09x; at 1.3x, ~2.38x.
+- Scored-run line: S1 `cand_r3_best7_scale.py` (`42f543a0`: best7_paired + v9's lossless recoded scale bank, which
+  makes NT1 9-12% faster at M=8-128, `58ae2e2c`) goes at the 09:01 KST reset. S2 adds the fused M=256 MoE
+  (385.2 vs masked Humming 447.6 us, `97be11d4`).
+- Daily caps: decode, attention and prefill 10 scored + 10 checks; MoE and proj 10 + 20. Labs ride the proj, MoE and
+  prefill quota; the judge rejects some words before queueing (FINDINGS "Failures"); `okc_run.py send` screens for them.
+- Bottleneck: judge latency (our runs start one at a time) and run-to-run noise (MoE routing per seed): compare
+  variants in paired labs, not single scored runs.
 
 ## Critical path
 Kernel loop, measured 2026-10-23:
-1. A lane edits a candidate.
+1. A lane edits a candidate or a lab payload.
 2. Local screen (`tools/local_eval.py`, sm_120): tests take 1-5 min; local timing ranks loosely.
-3. `okc_run.py send`: the queue wait is our queue position x ~6.6 min (FINDINGS "Judge queue": slots per run, not per minute), and each run takes 1-5 min. It is a
-   scored run while the day's last, so a winner lands on the board in this one run (no check-then-promote).
-4. Read the receipt and per-shape profile.
-5. Port into `serving/sglang`, then the local harness: layer tests and TP1/TP2 agreement, minutes each.
-6. Serving check: from 11-06 only, 3 a day.
+3. `okc_run.py send` or `h200_lab.py send`: the queue wait is our queue position x ~6.6 min (FINDINGS "Judge queue":
+   slots per run, not per minute), and each run takes 1-5 min. A decode candidate goes as a scored run while the
+   day's last, so a winner lands on the board in this one run (no check-then-promote).
+4. Read the receipt and per-shape profile; the decode lane integrates winners into the next scored candidate.
 
 Step 3 dominates, since one result costs hours of wall time.
-- Fixes: denser checks (packed per-shape diagnostics), priority queueing (done), Hopper glue exercised locally (AGENTS), and
-  `tools/h200_lab.py` (any H200 measurement in proj/MoE prepare, off the scarce decode/attention/prefill quota).
-- Step 6 can't run before 11-06, so the harness carries the serving risk until then. H200 timing of any
-  serving-shape kernel (drafter, per-rank TP8/EP8 shapes) rides in any check's `prepare`; the receipt keeps
-  only the last 16,000 characters of output (`log_tail`), so print compact lines last.
-- Lanes run in parallel: one per problem plus serving, bound and research. A lane never idles on the
-  judge; `collect` lands receipts while it builds the next candidate.
+- Fixes: dense labs (many variants and seeds per run), priority queueing, Hopper glue exercised locally (AGENTS),
+  labs on hosts with quota left (synthetic weights where the host lacks them), batching payloads per host.
+- The receipt keeps only the last 16,000 characters of output (`log_tail`), so print compact lines last.
+- Lanes run in parallel, one per stage plus integration. A lane never idles on the judge; `collect` lands receipts
+  while it builds the next variant.
 
 ## Ranked work
-Until 2026-11-05 17:00 KST the order is G3 > G2 > G1 (R-20261024-4): every decode-layer lever ranks above
-serving-only work. Component kernels count only inside the decode layer; their own boards and prefill's don't
-move the overall rank. Targets come from the floor model above: each stage within ~1.3-1.5x of its floor.
+Targets come from the floor model above: each stage within ~1.3-1.5x of its floor, judged by whole-layer time
+(sensitivity table in `problems/muse_decode_layer/FOCUS.md`).
 
 | Rank | Id | Serves | Work | Done when | Who | State |
 |---|---|---|---|---|---|---|
-| 1 | P4 | G3 | Decode layer, the overall score: integrate every stage win, choose by seed-mean and paired-lab evidence, and use the daily scored runs on the best candidate. best6 (best5_glue + humming_masked at M=256 + attention tuned on public draws) checked 1.380x (1b80ffc0; best of today's checks, verify 32 -90/-100 us); the paired comparison lab decides glue and FA3 settings | A scored run above the leader's (2.101x now, rising) with the seed-mean model above it too | decode lane | active: best7_paired `3baaaa96` applies clean paired9c83cdb G/F/E verdicts (fixed glue, old decode32 sliding, q8 layer, NT1 below M256/Humming M256); normal+forced each13 tests/12 graphs/18 static pass. E:C scale-bank lab58ae2e2c accepted alone on decode; lossless recode remains receipt-gated. FOCUS owns reset allocation/sensitivity |
-| 2 | P3 | G3, G2 | MoE inside the decode layer at every load (M = 1-256): 2.2-4.3x its one-read floor now (decode 1/16/32: 36/98/124 vs 15/45/53 us; verify 16/32: ~340/545 vs 108/126). H200: humming_masked 448 vs V9 NT2 545 us at M=256 (12 seeds, de6a56fc), tie at M=128; V9 cost follows routed pairs (register-bound row blocks). In flight: raw64 WGMMA (MoE lane), M256 packed WGMMA W2 repair (free lane; e8968e36 old fused1201.8 vs masked448.5; last-warp combine isolated locally at510–950us vs norm/tickets9–12; distributed CTA finalizer14us;78 gates and native audit pass, cold full lab36s/78s; H200 pending) | Every load's MoE within ~1.5x of its floor on H200 seed means (alone worth ~1.34 -> 1.75x) | prefill lane (M=1-32), MoE lane (M=128), free lane (M=256) | active: small-M b741f04a passes H200 (v9m1 48.00 vs NT1 47.44us; NT4 loses); M1 two-launch packed GEMV lab963515d3 accepted (send7c830c84,720 local graphs/160 forced calls,10 sm90a kernels without spills); humming_variants 38091e11, free lane W2-tail repair lab 602e2630 queued on MoE, batched with M128 K64 repair; local admission and78s-budget probe pass; e8968e36 and pipeline7156d8d8 landed |
-| 3 | P7 | G3, G2 | Projections and glue: current dense GEMVs reach1.2-2.4TB/s; that is an implementation band, not an H200 roof. A528-CTA stream reached3.80TB/s and52-61MB reads4.04-4.25TB/s. The L2-warm oracle (`09d19813`) caps prefetch: qkv saves 5-6 us but opens the layer, later stages <=2-4 us together, and even L2-resident GEMVs run at 2-3.7 TB/s. So the lever is the GEMV kernels' fixed cost and issue rate (the proj board field is ~30% faster); the PDL prefetch lab measures the small remainder | Projections <=1.3x floor and glue <=6 us per layer (worth ~+0.27x with the MoE and attention targets) | proj lane (PDL weight prologues and many-CTA GEMV, M1-32/verify1), serving lane (persistent dense chain, M1-256) | active: PDL lab sendb2044c78f90cabfd on prefill, local queue until10-25 09:01KST (quota);8 cold best7 layer cases +16 dense/read rows. Forced Hopper and native admission pass; best7 unchanged. Side-stream9367398c624b7796, incumbent-paired dense chain5279d3e3903a57b5 and synthetic WGMMA job120effb2432ea635 remain receipt-gated; no local projection winner |
-| 4 | P5 | G3, G2 | Full-layer attention: verify q8 (FA3 378-509 us at b32 full vs a 139 us KV floor; our q8 kernel fixed, lab queued) and decode full (attn_main ~1.5x floor) | Full-layer attention within ~1.5x of its KV floor at every load | attention lane | active: q8 lab 1dcf5bb9 queued (prefill host); next: verify 16/32 full split-KV FP8 variant |
-| 5 | P2 | G1, G2 | Prefill (serving-only until 11-05: the overall board ignores it), the top G1 lever (70-78% of serving time at c=16/32). In serving's case (lab 70206a2a) our expert kernels beat stock Marlin 1.5-2.8x: raw17 at M=512/753 (400/532 vs 595/788 us), humming_masked or dg_w8 at 3012 (1309/1374 vs 2824), dg_w8 at 16K (6107 vs 14785); serving still runs stock Marlin and imports none of muse_prefill_{dense,gemm,expert}.py. Board: dense/router at ~77% of peak (CUTLASS closed); 16K experts ~1.6x off a 3.2 ms compute bound | Serving prefill experts on the per-M winners, reading the one resident V9 bank, with agreement; board above 1.438x | paused (prefill lane moved to small-M decode MoE until the close) | paused: dg_w8 16K decomposition landed (FINDINGS); a30_overlap at the judge |
-| 6 | P1 | G1 | Serving patch: TTFT margin (hard limit 2x stock per load; TP2 native c16 at 1.955x locally, target <=1.5x), the router-scratch handoff from KV sizing (`prof/kv_capacity_router.patch`, 2.76 GB/GPU), then the V9 <=512-row prefill bound on the `cand_serving_prefill_diag` receipt. Tree verification closed: best held-out estimate +3.9-4.5% tokens/step, under the +5% bar | TTFT <=1.5x stock at every rung locally; diag receipt decides the 512 bound | paused (serving lane on P7 until the close) | paused: shared-bank V9 reader committed (3e70bfd; V9 <=256 / Marlin above, Marlin default until H200 timing 6fab497d); local TTFT brackets in FINDINGS |
-| 7 | P10 | G1 | DFlash drafter kernels (serving's unowned #2: 562 us/step at every rung, 234 us recoverable at c=1): a serving module plus an H200 timing diagnostic carried in a proj check | Module agrees with stock under graph replay; H200 per-shape times in a receipt | proj lane | active (proj lane): drafter fc/layers/LM head per-rank TP8 kernels at c x 8 tokens, H200 lab against stock calls |
-| 8 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | active: projection notes folded into FINDINGS + FOCUS; attention, MoE |
+| 1 | P4 | G1 | Decode-layer integration and the daily scored runs: fold every stage win into the next candidate, chosen by seed-mean and paired-lab evidence. S1 `best7_scale` (`42f543a0`) queued for the 09:01 reset; S2 = S1 + fused M=256 MoE; S3 from whichever attention, glue or projection lab wins next | A scored run above the leader's (2.146x now, rising) with the seed-mean model above it too | decode lane | active: S2 `b0805447` built and unsent; normal+forced each13 tests/12 graphs/19 static pass, prepare14.1/39.6 s. Both M256 rows capture CTA1g2112; FOCUS owns handoff |
+| 2 | P3 | G1, G2 | MoE at every load (M = 1-256). Incumbents: NT1 on the recoded bank at M=1-128 (44 / 84 / 90 / 126 / 284 us at M=1/8/16/32/128), fused CTA1g2112 at M=256 (385 us). One-read floors ~12-18 / 44 / 45 / 53 / 106 / 124 us. Per-weight instruction work binds (recode +9-12%; the M=1 streaming GEMV lost 57 vs 44 us, `963515d3`) | Every load's MoE within ~1.5x of its floor on H200 seed means (alone worth ~1.34 -> 1.75x) | small-M lane (M=1-32), MoE lane (M=128), free lane (M=256) | active: small-M and MoE lanes measure SASS instructions per weight and phase times; MoE lane ports the M=256 W2 combine fix to its M=128 producer (1.65-1.86 ms now, `471f6d62`); free lane builds the recoded M=256 variant |
+| 3 | P7 | G1, G2 | Projections and glue. Dense GEMVs run at 1.2-2.4 TB/s cold and only 2-3.7 TB/s even L2-resident (`09d19813`), so their fixed cost per launch binds; the proj board field is ~30% faster on these shapes. Glue: boundaries 12.9-14 us + route 3.6 us per layer at M=1 against a <0.1 us floor. Verify dense at M=128/256 runs at 84/100 us, ~3x its floor. The persistent dense chain lost 1.5-6.5x to best7 (`87dc944b`) | Projections <=1.3x floor and glue <=6 us per layer | proj lane (GEMV fixed cost, M=1-32), glue lane (boundary/route fusion; verify-dense split-K lab `19f3a13b`) | active: PDL prefetch remainder lab `7426e17c` and split-K lab at the judge |
+| 4 | P5 | G1, G2 | Attention. Verify q8 runs at FA3 speed (0.95-1.0x stock) while the attention board's 50th team is at 1.97x; FA3 at q8 is page-1-gather bound (~1.6 TB/s). Sliding layers spend 15-30 us of fixed work (14.8 us at decode 1, floor 0.1 us). FP8PV parked (`0812f097`: per-tile softmax/PV binds) | Full-layer attention within ~1.5x of its KV floor and sliding attention <=6 us at B1 | attention lane | active: FlashInfer page-1 sweep `c96e0f89` at the judge; single-launch sliding attention in progress |
+| 5 | P9 | G2 | Fold per-problem notes (`dev/STATUS*.md`, `RESULTS.md`, `PORTING.md`, `LIVE_STATUS.md`) into FINDINGS rows plus one FOCUS.md of at most 30 lines per lane | Each problem has a FOCUS.md; its facts are in FINDINGS | each lane, at its next resume | active |

@@ -2,7 +2,7 @@ Serves: G2, G3. Read when choosing an NVFP4 expert or whole-layer design.
 
 # NVFP4 experts and decode-layer structures
 
-Current Muse shapes, H200 receipts, closed recipes, and failures belong in [FINDINGS](../FINDINGS.md) and [SOTA](../SOTA.md). This file keeps mechanisms that remain useful after those measurements move. The serving bank and output ABI are specified in [expert_layout](expert_layout.md) and [moe_port](moe_port.md).
+Current Muse shapes, H200 receipts, closed recipes, and failures belong in [FINDINGS](../FINDINGS.md) and [SOTA](../SOTA.md). This file keeps mechanisms that remain useful after those measurements move. The serving bank and output ABI are specified in [expert_layout](expert_layout.md) and [moe_port](../serving/moe_port.md).
 
 ## Model invariants
 

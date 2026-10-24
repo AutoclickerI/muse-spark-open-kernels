@@ -9,7 +9,7 @@ Screen sm1205/5 tests +8/8 fresh graph shapes,48.111s prepare;78 trials/36 final
 Independent FP32 gates; any optional Exception rejects;230s trial budget; compact table last.
 Direct60 configs, forced all-fusion layer5/5, strict Hopper branch/fault tests pass;
 60 SM90 specializations compile. H200 speed remains unverified. No judge send/commit here.
-[Design and evidence](glue/README.md); [H200 glue inventory](../../../docs/reference/prefill_glue.md).
+[Design and evidence](glue/README.md); [H200 glue inventory](../../../docs/serving/prefill_glue.md).
 
 
 Serves: G2, G1. Only the orchestrator sends or commits. This thread launched no judge run.

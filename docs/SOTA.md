@@ -1,11 +1,10 @@
 # SOTA
 
 ## Baseline
-SGLang at `a55ab7d5` in the judge's image is the 1.00x on every board and in serving. Its published per-step
+SGLang at `a55ab7d5` in the judge's image is the 1.00x on every board. Its published per-step
 times (API, 2026-10-23): proj 4,830.8; attention 3,766.3; MoE 13,448.5; decode layer 22,620.3 us per decode
 step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sglang_us`). Its per-shape times
-and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published H200 numbers (FINDINGS
-"Serving track").
+and where they go are in [FINDINGS](FINDINGS.md).
 
 ## Leaderboard (snapshot `runs/boards/20261024T112455Z`, 2026-10-24 20:24 KST)
 
@@ -47,7 +46,7 @@ Source status: **read** = full text or code read; **checked** = page or code fet
 facts; **snippet** = search-result text only; **memory** = not checked this session. Research by four
 web agents, 2026-10-23.
 
-### Routed experts, NVFP4 W4A16 on Hopper (muse_moe_w4a16, the layer problems, serving)
+### Routed experts, NVFP4 W4A16 on Hopper (muse_moe_w4a16 and the decode layer)
 
 | Work | Relevance | Status |
 |---|---|---|
@@ -82,12 +81,3 @@ web agents, 2026-10-23.
 | SGLang low-latency mode (LMSYS 2026-10-18) | GB300: layer 96.8 to 68.4 us (-29%) from earlier PDL release and all-reduce sends in GEMM epilogues; not a megakernel; no Hopper or Muse support yet | checked |
 | TRT-LLM B200 blog | RouterGEMM and fused small-M GEMMs; PDL +3%; one-shot all-reduce + RMSNorm +2.4% | checked |
 
-### Serving: Muse, DFlash, drafting
-
-| Work | Relevance | Status |
-|---|---|---|
-| LMSYS day-0 Muse Spark Open post (2026-10-15) | Pooler/unpooler sharding with all-gather, router on a side stream, warp split-K (mostly Blackwell-gated in a55ab7d5); layers 0 and 61 BF16 experts; DFlash V2 acceptance 4.16 (AgentX), 4.5 simulated on OpenHands-like conversations (74K first turn, ~753 new and ~220 output tokens per turn, ~92% cache hit) | checked |
-| DFlash (arXiv 2602.06036) | Block-diffusion drafter; speedup falls with concurrency (Qwen3-4B 4.8x at 1 to 2.9x at 32) | checked |
-| SuffixDecoding (arXiv 2411.04975), SAM decoding (2411.10666), prompt lookup | Drafting from the request's own text (allowed): up to 5.3x on agentic SWE-bench-like text (Suffix); +3-11% on top of a model drafter (SAM) | checked |
-| DDTree (arXiv 2604.12989), EcoSpec (2607.12696) | Tree verification over DFlash; more verified tokens touch more experts in MoE | checked |
-| Meta's Muse Spark Open blog | No architecture details | checked |

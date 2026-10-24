@@ -5,14 +5,6 @@ G0 and ranking decisions, answers to agents' questions. Ids are `R-<YYYYMMDD>-<n
 question-tool label is Jihoon's word; the question and option text are agent context. Transcript:
 `~/.claude/projects/-home-jihoon-competitions-muse-kernel/ae5ada91-d8f5-49d0-a518-22df30a603ba.jsonl`.
 
-## R-20261023-1 — 2026-10-23 14:37 KST — the goal is the serving prize
-> Serving prize (Recommended)
-
-- Source: transcript:147. Answered "What is the real goal? The prizes are only on the serving board
-  (Nov 5–19). The kernel boards pay nothing, but they lead into serving through queue priority and
-  kernels we can port into SGLang."
-- Effect: G0 from the kernel close (2026-11-05 17:00 KST); until then R-20261024-4 (GOAL).
-
 ## R-20261023-2 — 2026-10-23 14:37 KST — private GitHub repo
 > Private GitHub repo (Recommended)
 
@@ -35,8 +27,8 @@ question-tool label is Jihoon's word; the question and option text are agent con
   is allowed at the allowed formats. Prebuilt image binaries and JIT builds are allowed. The bound
   (PLAN P6) also reports an "outside the rules" column, labelled inadmissible.
 - Conflict: approximation below the allowed precision (FP8/FP4 activations, fewer experts, skipped
-  keys) breaks hard limits 2 and 5-7. Binary changes in the serving patch break limit 9. The hard
-  limits win (llms.txt:107-110, 126, 137). Our own cubins and SASS on the kernel boards: R-20261023-6.
+  keys) breaks hard limits 2 and 5-7. The hard limits win (llms.txt:107-110, 137). Our own cubins and
+  SASS on the kernel boards: R-20261023-6.
 
 ## R-20261023-5 — 2026-10-23 21:55 KST — Codex default, never gpt-6-sol: kept as rules
 > Keep both (Recommended)
@@ -45,7 +37,7 @@ question-tool label is Jihoon's word; the question and option text are agent con
   codex rescue as a default' and 'don't use gpt-6-sol from now on'?" The words behind them (2026-10-23):
   "for subagents, use codex rescue as a default." (transcript:2211) and "don't use gpt-6-sol from now on.
   there is no reason to use it. we can just use gpt-6.1-sol instead." (transcript:2755)
-- Effect: rule 15; rule 16 is now set by R-20261023-9.
+- Effect: rule 11; rule 12 is now set by R-20261023-9.
 - Confirmed: in the words.
 
 ## R-20261023-6 — 2026-10-23 21:55 KST — anything the board accepts and the rules don't ban
@@ -65,13 +57,6 @@ question-tool label is Jihoon's word; the question and option text are agent con
   of the fixed shapes and pick per shape (untimed, nothing derived from the timed data)?"
 - Effect: allowed (CONSTRAINTS "Boundary cases").
 
-## R-20261023-8 — 2026-10-23 21:55 KST — tree verification and adaptive draft length
-> Allowed if agreement holds (Recommended)
-
-- Source: transcript:6054. Answered "In serving, may we verify a tree of DFlash drafts or adapt the
-  draft length, keeping the released drafter and stock-agreeing outputs?"
-- Effect: allowed when the local harness shows agreement with stock (CONSTRAINTS "Boundary cases").
-
 ## R-20261023-9 — 2026-10-23 22:55 KST — Codex models: gpt-6.1-sol and gpt-6-astra
 > use gpt-6.1-sol. not old models.
 
@@ -81,19 +66,9 @@ question-tool label is Jihoon's word; the question and option text are agent con
 
 - Source: transcript:6579 (after lanes had been rerouted to gpt-5.6-sol, gpt-6-luna and gpt-6-astra on
   capacity errors); transcript:6649 answered "Make 'use gpt-6.1-sol, not old models' a standing rule
-  (extending rule 16 ...)?" and "When gpt-6.1-sol itself is at capacity ..., what should a stopped lane do?"
-- Effect: rule 16.
+  (extending rule 16, now rule 12 ...)?" and "When gpt-6.1-sol itself is at capacity ..., what should a stopped lane do?"
+- Effect: rule 12.
 - Confirmed: the answer to the standing-rule question.
-
-## R-20261024-1 — 2026-10-24 00:30 KST — G1 above G2 after the kernel close
-> G3 first until 11-05
-
-- Source: `/home/jihoon/.claude/projects/-home-jihoon/70737187-e5b5-4d2f-a79a-2ce9414b9a0a.jsonl`:6780
-  (question-tool label, asked from the jihoon-a5 session). Answered "when they conflict, does G2 (H200
-  kernels at serving's shapes) rank above G3 (top 50 on the overall kernel board by 11-05, which only
-  moves our serving runs to the front of the queue)?"
-- Effect: after the kernel close (2026-11-05 17:00 KST), G1 ranks above G2. The ranking until the close is
-  R-20261024-4's.
 
 ## R-20261024-2 — 2026-10-24 03:09 KST — optimize the score, spend everything else
 > Ok. aware of that quota. submit regularly. and please carefully discriminate the things to optimize and things to spend. for example, if there is no constraint about the memory, we can just freely spend the resources. if power not specified, we can use more power. just focus on our optimization and treat everything else as a resource. do not treat it as a resource and try to minimize it together.
@@ -113,7 +88,7 @@ question-tool label is Jihoon's word; the question and option text are agent con
 |---|---|---|
 | Stop opening new optimization branches after two failed ideas in a row (prefill lane) | 2026-10-23: a self-imposed stop; no owner or external source | `no new optimization branches` |
 | "Keep a portable fallback path where that's cheap" (old AGENTS) | 2026-10-23: replaced by the practice of local stand-ins that test Hopper glue | `portable fallback path` |
-| proj is "worth only enough work to keep rank" (old CEILING) | 2026-10-23: an effort cap with no source; proj kernels also feed serving | `worth only enough work` |
+| proj is "worth only enough work to keep rank" (old CEILING) | 2026-10-23: an effort cap with no source | `worth only enough work` |
 | Lanes wait for queued judge receipts before starting new work | 2026-10-23: idle waiting; `okc_run.py collect` lands receipts on its own | `no new checks will be sent` |
 
 ## R-20261024-3 — 2026-10-24 10:40 KST — H200 lab runs in prepare()
@@ -133,6 +108,14 @@ question-tool label is Jihoon's word; the question and option text are agent con
   leaderboard": which board do you mean, and should it change the goal tree?" The chosen option read:
   "1st on the overall kernel board becomes the ultimate goal until 11-05. Serving-only work (prefill port,
   TTFT margin, HiCache) drops below every decode-layer lever until the kernel close."
-- Effect: G0 until 2026-11-05 17:00 KST is 1st place on the overall kernel board; GOAL ranks G3 > G2 > G1
-  until then. SOTA keeps a leaderboard section (overall rank and modeled overall score).
+- Effect: the board in G0 is the overall kernel board (openkernelchallenge.dev/leaderboard), aiming for 1st
+  place. SOTA keeps a leaderboard section (overall rank and modeled overall score). R-20261025-1 makes it the
+  only goal.
 
+## R-20261025-1 — 2026-10-25 00:01 KST — the board score is the only goal
+> I think we missed some context. our only goal for now is having high score in leaderboard. that's the only target. there is no other goals now. serving will be studied in the serving round. if any documents are mentioning about other goal, remove those and make the direction clear.
+
+- Source: transcript:23005.
+- Effect: G0 is the highest score on the overall kernel board until the kernel close; the subgoals are the
+  decode-layer speedup and its stage kernels (GOAL). Serving goals, rules and work leave the live docs; their
+  material and Jihoon's serving answers are parked in `docs/serving/` until the serving round opens.

@@ -48,7 +48,7 @@ Time is dense GEMM/router throughout. The best tested whole candidate is still s
 
 1. **Router’s high-token skinny tile**: at verify32 its profile is 28.7 us versus a 2.7 us judge floor, while qkv/pooler/unpooler cost 20.4/28.9/24.8 us. The same workload reaches only 0.885× overall. Router hi+lo preserves precision; its NT8 specialization uses 220 registers (STATIC).
 2. **Low-M qkv streaming/tail**: verify1 qkv is 16.3 us for ~37.7 MB, versus a ~8.8 us practical work target. There are only 144 row CTAs at the documented WN1/TR1 config; occupancy/tail is a hypothesis, not a measured counter diagnosis.
-3. **Replicated pooler/unpooler**: each full matrix is ~67 MB per rank per layer. At prefill their redundant math matters more than a marginal standalone skinny win; `docs/reference/serving_levers.md` proposes row split. Even the best sweep loses verify16/32. Keep the faster operations selectively; do not extrapolate the verify1 1.277× across token counts.
+3. **Replicated pooler/unpooler**: each full matrix is ~67 MB per rank per layer. At prefill their redundant math matters more than a marginal standalone skinny win; `docs/serving/serving_levers.md` proposes row split. Even the best sweep loses verify16/32. Keep the faster operations selectively; do not extrapolate the verify1 1.277× across token counts.
 
 ### muse_attention_decode
 
@@ -65,7 +65,7 @@ Best H200: `cand_v2.py`, 1.2821×, CI 1.2628–1.3013; [20261023T092042Z_submit_
 
 One fused `attn_main` occupies 100% of our profile; stock uses FA3 main/combine plus prep/norm/store kernels. Shape-level examples below are from the same-code v2 check [51ad2ea9ec4f4724](../../problems/muse_attention_decode/profiles/cand_v2.51ad2ea9ec4f4724.json); the newly collected scored rerun is selected in the table above. Top three bottlenecks:
 
-1. **Verify arithmetic/occupancy**: sliding verify32 is 51.1 us in v2; full verify32 is 420.2 us. Every paired verify shape loses (ratios in `docs/reference/serving_levers.md`: 0.60–0.93×), while decode load gains are ~1.9×. Static verify register use is 230 versus decode’s 110, without allocator spills.
+1. **Verify arithmetic/occupancy**: sliding verify32 is 51.1 us in v2; full verify32 is 420.2 us. Every paired verify shape loses (ratios in `docs/serving/serving_levers.md`: 0.60–0.93×), while decode load gains are ~1.9×. Static verify register use is 230 versus decode’s 110, without allocator spills.
 2. **Full-context gathers at concurrency**: decode32’s fused profile is 3.737 ms per step against 2.610 ms of practical work; verify32 is 9.074 ms against 2.640 ms. The extra verify work reuses keys but requires more QK/PV and softmax operations; the simple bandwidth model is not the whole explanation. Page-size-one irregular gather efficiency is unmeasured.
 3. **Sliding fixed cost and split/cluster finalization**: verify1 sliding is 17.6 us for ~0.1 us of ideal data time. Source/SASS include barriers, shared partials and cluster/global-counter waits. One kernel does not eliminate its internal synchronization cost. Keep FA3 for verify until a replacement wins on H200; prioritize reusable verify tiles over further q_len1 specialization.
 
@@ -129,7 +129,7 @@ Best H200: `cand_v3.py`, 1.3454×, CI 1.3252–1.3656; [20261023T090922Z_check_8
 Top three bottlenecks:
 
 1. **Expert GEMMs**: first-turn profile experts are 1.003 s (44.6%) versus stock’s ~2.05 s; turn1 experts are 33.423 ms (56.1%). Gate/up and down both matter: turn1 sliding MODE1/0 cost 344.3/177.7 us; first full chunk 3,479.5/1,553.8 us. Larger-tile WGMMA helped, but not equally across loads.
-2. **Replicated dense prefill**: first-turn dense is 757.705 ms (33.7%); a 16K chunk’s three grouped cuBLAS calls plus other GEMMs consume ~4.08 ms. Pooler/unpooler account for ~2.2 of 3.1 TFLOPs per chunk by `docs/reference/serving_levers.md`’s source audit. Their row split targets redundant arithmetic, not an assumed launch bottleneck.
+2. **Replicated dense prefill**: first-turn dense is 757.705 ms (33.7%); a 16K chunk’s three grouped cuBLAS calls plus other GEMMs consume ~4.08 ms. Pooler/unpooler account for ~2.2 of 3.1 TFLOPs per chunk by `docs/serving/serving_levers.md`’s source audit. Their row split targets redundant arithmetic, not an assumed launch bottleneck.
 3. **Long-context FA3 plus boundaries**: last first-turn full chunk FA3 is 8.020 ms (43.2%) of 18.571 ms; two boundaries add 0.850 ms. Across the full first turn attention is 263.533 ms (11.7%), glue 220.571 ms (9.8%). v2 wins first-turn 1.564× versus v3’s 1.468×, while v3 wins later turns: a shape-policy hybrid is plausible, but requires its own local and H200 validation.
 
 | Load | Experts profile ms H200 ours / stock | Attention profile ms H200 ours / stock | Dense profile ms H200 ours / stock | Glue + omitted profile ms H200 ours / stock |
@@ -140,7 +140,7 @@ Top three bottlenecks:
 
 ## Serving: verify step critical path and prefill
 
-The target verify length is eight tokens per request: `srt/speculative/dflash_worker_v2.py`, `forward_batch_generation`, `draft_token_num=int(self.block_size)`; [serving audit](serving_levers.md). The kernel boards’ q_len1 decode loads do not run in this target path. c=1/4/16/32 means 8/32/128/256 target tokens. c=4 is unscored in the isolated layer problem and is interpolated, not measured.
+The target verify length is eight tokens per request: `srt/speculative/dflash_worker_v2.py`, `forward_batch_generation`, `draft_token_num=int(self.block_size)`; [serving audit](../serving/serving_levers.md). The kernel boards’ q_len1 decode loads do not run in this target path. c=1/4/16/32 means 8/32/128/256 target tokens. c=4 is unscored in the isolated layer problem and is interpolated, not measured.
 
 `sim.serving` serializes the 62 target layers, the drafter, target LM head and 134 all-reduces. Actual overlap and the scheduler/CPU critical path are not measured on our hardware. Layer totals use the mean of all paired SGLang receipts; the component split below uses calibration profile shares, normalized to those totals. Thus **every cell in this table is MODEL**, grounded in H200 measurements; no cell is a measured full-node serving time. The two BF16 expert-layer byte surcharges are included under MoE. Omitted profile time remains separate.
 

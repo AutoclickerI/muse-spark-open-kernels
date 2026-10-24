@@ -8,7 +8,7 @@ receipt a30fb411b0c74ffb. No parent/queued source edited, no judge job or commit
 
 ## Inventory and scope
 
-[Direct H200 table](../../../../docs/reference/prefill_glue.md) covers both a30fb411 and
+[Direct H200 table](../../../../docs/serving/prefill_glue.md) covers both a30fb411 and
 99820fa6, every visible named glue kernel and all three loads. Missing top12 profile
 entries stay N/A; zero only marks a kernel absent from the selected path. Local expert
 pair/touched-expert counts are not in the profiles, so their byte floors remain ranges.

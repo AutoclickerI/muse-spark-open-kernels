@@ -1,10 +1,10 @@
 # Muse Spark Open Kernel Challenge
 
-Our work for <https://openkernelchallenge.dev/> (Paradigm with Meta and Andromeda): make
-SGLang serve Meta's Muse Spark Open (816B MoE, 256 experts, NVFP4 weights) faster on H200s.
+Our work for <https://openkernelchallenge.dev/> (Paradigm with Meta and Andromeda): the highest score on the
+overall kernel board, i.e. the fastest Muse Spark Open (816B MoE, 256 experts, NVFP4 weights) decoder layer on an H200.
 The full rules are in `upstream/llms.txt`, the terms in `upstream/terms.pdf`.
 
-Goal, rules and plan: [AGENTS.md](AGENTS.md) and [docs/](docs/). Prizes are paid only on the serving board.
+Goal, rules and plan: [AGENTS.md](AGENTS.md) and [docs/](docs/). The serving track is parked until it opens ([docs/serving/](docs/serving/README.md)).
 
 ## Dates
 
@@ -17,11 +17,11 @@ Goal, rules and plan: [AGENTS.md](AGENTS.md) and [docs/](docs/). Prizes are paid
 | daily caps reset | 00:00 UTC | 09:00 |
 
 Daily caps (live: `okc problems`, `upstream/api/problems.json`): 10 scored runs per kernel problem; checks 10 for
-decode, attention and prefill (cut from 20 on 10-24), 20 for MoE and proj. Serving allows 1 scored run and 3 checks.
+decode, attention and prefill (cut from 20 on 10-24), 20 for MoE and proj.
 
-## The two tracks
+## The kernel track
 
-**Kernel track.** There are five problems: `muse_bf16_proj`, `muse_attention_decode`,
+There are five problems: `muse_bf16_proj`, `muse_attention_decode`,
 `muse_moe_w4a16`, `muse_decode_layer` and `muse_prefill_layer`. A submission is one Python
 file defining `kernel_fn` and, except for attention, `prepare(weights)`.
 
@@ -33,10 +33,6 @@ file defining `kernel_fn` and, except for attention, `prepare(weights)`.
 - A run gets 15 minutes in total, compilation included.
 
 Each `problems/<name>/TASK.md` has the problem's shapes, bounds and rules.
-
-**Serving track.** A submission is a git diff against SGLang `a55ab7d5`, touching only
-`python/sglang/`. It is scored by throughput on a whole 8×H200 node at stock SGLang's
-interactivity. See `serving/RULES.md`.
 
 ## Hardware
 
@@ -57,12 +53,12 @@ tools/okc_run.py      `send`: a scored run while today's last, else a check, wit
                       `collect` finishes receipts left in runs/pending/ by a killed process
 runs/                 receipts of every remote run (exact source, okc's JSON, the ledger)
 runs/calibration/     SGLang's baseline.py sent as a check, to profile its kernels on the judge
-sim/                  performance model: `python -m sim` (problem ceilings), `-m sim.serving`
-                      (serving step and score), `-m sim.calibrate` (SGLang's measured times)
-docs/                 GOAL, CONSTRAINTS, PLAN, FINDINGS, SOTA, RESOURCES, RULINGS; docs/reference/ for domain notes
+sim/                  performance model: `python -m sim` (problem ceilings), `-m sim.calibrate`
+                      (SGLang's measured times)
+docs/                 GOAL, CONSTRAINTS, PLAN, FINDINGS, SOTA, RESOURCES, RULINGS; docs/reference/ for domain notes;
+                      docs/serving/ parked
 prof/                 judge-profile analysis and the SASS audit
-serving/              okc serve init: RULES.md, patch.diff; sglang/ is the pinned checkout (ignored);
-                      harness/ (local agreement tests), tests/ (layer tests)
+serving/              parked until the serving round (docs/serving/README.md)
 ```
 
 ## Kernel loop

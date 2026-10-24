@@ -1,45 +1,31 @@
 # MoE focus
+Serves: G1, G2.
 
-Serves: G3, G2, G1.
+G1/G2: the decode-layer score (R-20261025-1). Own M128 MoE.
+Incumbent is NT1 on v9's lossless recoded scale bank:283.6us versus raw322.2us
+on identical routes (58ae2e2cf8df45ef); one-read floor~106us. The old344us bar
+and raw-only bank restriction are stale. Free lane owns M256 and W2/final latency.
 
-V11 is the H200 MoE board best: receipt `41bcf27cfc0e4eff` is 1.664x overall, with
-2.185/1.684/1.398 decode and 1.800/1.592/1.439 verify at M=1/16/32 and 8/128/256.
-V9 was 1.654x; Humming wins V32.
+Sent M128 raw/recoded fused-WGMMA comparison on MoE: send def9bff54e82c1b0,
+judge471f6d6216804dda; detached log confirms accepted. Payload:
+`prof/lab/moe_m128_scale_bank.py`; frozen hashes/protocol in
+`dev/mixed_wgmma/m128/scale_bank/manifest.json`. No decode dispatch promoted.
 
-V18 copies the committed V17 portfolio and keeps its 1% correctness gate. It also accepts a
-full decode-layer weight bank when present and invokes `problems/muse_decode_layer/moe_tune.py`
-for router-derived shape selection; the standalone MoE harness has no router fields, so its
-local screen uses the existing synthetic fallback. V18 passes 5/5 tests and 6/6 graphs at
-1.264x sm120 GM, with 8.3 s cached prepare.
+Recoded producer reads the same9 bytes/block: E2M1 codes plus uint8 exponent/
+mantissa scale; sign/zero folded into codes in prepare. Four byte permutations
+replace four shared scale-table reads; no CTA E4M3 conversion/table remains.
+K64 register-bank repair retained. Configs3/4/5, grid528, paired against actual
+board NT1-recoded;12 public-router weight seeds x3 fresh inputs, six reversed/
+rotated cold128MiB graph orders, NT1 A:A samples, independent FP32 gates.
 
-The decode-layer verify-32 mechanism is routing skew plus grouped-path fixed work. Direct sm120
-M256 graph timings (ms) for real hot-tail / matched-local-count uniform / all-local uniform are:
-grouped 0.915/0.866/1.818, V7 0.584/0.763/1.693, V9 0.668/0.841/4.738,
-V11/Humming 0.536/0.760/1.652, and V17 adaptive 0.662/0.827/4.659. Real routing had
-672 local pairs, 8 experts, and a 221-route hot expert for the default loaded router; the
-judge's `sim/problems.py` target is 386.93 pairs and 21.35 experts. Matched uniform had 672
-pairs across 32 experts. Grouped performs histogram+plan+scatter, two GEMMs and a combine (six launches),
-so its fixed task/launch cost survives the hot tail. The new tuner routes loaded router weights
-on random hidden states and applies the same 1% gate before choosing a path.
+Local: all36 fixtures/216 forced producer graphs pass; maxL2<=0.004132,
+row<=0.004851; all4064 finite E4M3/E2M1 combinations exact. Wrapper5 tests,
+6 scored graph shapes and6 static checks pass. Native12 kernels: no spills/
+C7513; all20 K64 paths retain disjoint A banks. H200 ranking is unverified.
+Recoded-only best7 drop-in passes21 graph gates with signed/zero/subnormal
+scales and changing routes; H200 winner alone gets path+SHA handoff.
 
-Serving remains V9 native through M=128 plus grouped wide from M=256, 864 MiB/GPU; no serving
-port change is justified until the decode-layer H200 result validates router-aware selection.
-
-The new V9 NT3 (24-row block) specialization is in `dev/v9_reuse/nt3_dropin.py` and
-`cand_r3_v9_nt3.py`; its 12-seed sm120 means are 370.7/507.6 us at M=128/256, and
-144 captured configurations plus 576 fresh route/input replays pass the FP32 gate (max L2
-0.001333). sm90a ptxas reports NT1/2/3/4 at 125/219/255/255 registers; NT3 has only
-8-byte spills versus NT4's 288-byte frame. H200 lab `711370966a58ac2b` is pending.
-
-The corrected Humming probe `376ef26ba9bb46a0` is incomplete: it timed bs=1 then failed
-on `shape_m is not within any range`, so it provides no decode-weight agreement evidence.
-
-The raw17-derived WGMMA decode probe `dev/v9_wgmma/raw64_dropin.py` uses packed
-NVFP4/E4M3 banks and `m64n64k16` token tiles, with W13 SwiGLU fused before W2.
-It is correct but closed on H200: receipt `63c980e800194764` gives raw64
-534/679 us at M=128/256 versus Humming masked 342/450.  Do not promote it.
-
-Humming is the current MoE bar.  Profile source key `e858855cac1b5ad0` sweeps
-masked configs, block-M, SM allocation and per-stage event spans; variant source
-key `053c794fc0aba59a` compares masked, masked-TMA and indexed plans.  Both use
-the packed bank and exact R0 plus 12-seed FP32 gates; receipts are pending.
+Prior K64 repair send0ea82c48f2255889 still has no receipt at this turn's one
+read. It is independent of the scale-bank lab; no waiting/polling was added.
+Next resume: read471f6d6216804dda once, require every numeric gate and complete
+seed means, then hand the decode lane a winning M128 cell or reject it.
