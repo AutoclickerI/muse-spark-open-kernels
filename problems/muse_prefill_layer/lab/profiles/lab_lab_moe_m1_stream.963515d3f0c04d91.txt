@@ -1,0 +1,155 @@
+okc run 963515d3f0c04d91 on muse_prefill_layer
+submission  /home/jihoon/competitions/muse_kernel/runs/sent/7c830c8447f4c705/lab_lab_moe_m1_stream.py
+status      ok
+passed      true
+speedup     1.4269789710867278
+speedup_ci  [1.4055742865204268 1.4483836556530285]
+score_us    271485.3602257147
+tests       5/5 passed
+
+scored shapes (µs; speed of light is the reference's bound)
+case                                                         sglang      yours  speedup        sol  
+batch=1 ctx=80000 dist=soft layer=sliding load=turn 1 page=1 q_len=753    1072.11     857.05   1.251x     256.95  
+batch=1 ctx=80000 dist=soft layer=full load=turn 1 page=1 q_len=753    1470.94    1246.21   1.180x     496.69  
+batch=4 ctx=80000 dist=soft layer=sliding load=turn 4 page=1 q_len=753    3408.93    2213.06   1.540x    1036.28  
+batch=4 ctx=80000 dist=soft layer=full load=turn 4 page=1 q_len=753    4882.64    3662.93   1.333x    1992.42  
+batch=1 ctx=0 dist=soft layer=full load=first turn page=1 q_len=16384   16147.18   10011.85   1.613x    5518.43  
+batch=1 ctx=32768 dist=soft layer=sliding load=first turn page=1 q_len=16384   16949.25   10083.49   1.681x    5663.35  
+batch=1 ctx=32768 dist=soft layer=full load=first turn page=1 q_len=16384   20507.06   13846.55   1.481x    7710.00  
+batch=1 ctx=65536 dist=soft layer=full load=first turn page=1 q_len=16384   24594.67   17485.46   1.407x    9847.68  
+
+profile 0: batch=1 ctx=80000 dist=soft layer=sliding load=turn 1 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<6...     352.5 µs  40.2%      1
+void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<6...     192.2 µs  21.9%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...      67.0 µs   7.6%      1
+nvjet_sm90_tst_256x96_64x4_1x2_h_bz_coopA_TNT                     65.6 µs   7.5%      1
+_boundary_kernel                                                  41.6 µs   4.7%      2
+nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN                          39.2 µs   4.5%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...      25.6 µs   2.9%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...      20.7 µs   2.4%      1
+_swiglu_kernel                                                    15.0 µs   1.7%      1
+nvjet_sm90_tss_128x96_64x7_1x2_h_bz_splitK_TNT                    13.9 µs   1.6%      1
+_combine_kernel                                                   10.5 µs   1.2%      1
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       7.1 µs   0.8%      1
+... 8 more
+total                                                            877.1 µs
+
+profile 1: batch=1 ctx=80000 dist=soft layer=full load=turn 1 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...     405.1 µs  33.6%      1
+void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<6...     315.5 µs  26.1%      1
+void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<6...     173.7 µs  14.4%      1
+nvjet_sm90_tst_256x96_64x4_1x2_h_bz_coopA_TNT                     65.4 µs   5.4%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...      63.8 µs   5.3%      1
+_boundary_kernel                                                  41.1 µs   3.4%      2
+nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN                          38.9 µs   3.2%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...      20.6 µs   1.7%      1
+_swiglu_kernel                                                    14.4 µs   1.2%      1
+nvjet_sm90_tss_128x96_64x7_1x2_h_bz_splitK_TNT                    13.3 µs   1.1%      1
+_gather_cache_kernel                                              11.0 µs   0.9%      1
+_combine_kernel                                                   10.0 µs   0.8%      1
+... 9 more
+total                                                           1206.7 µs
+
+profile 2: batch=4 ctx=80000 dist=soft layer=sliding load=turn 4 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<1...     756.8 µs  33.8%      1
+void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<1...     390.3 µs  17.4%      1
+nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT                   249.5 µs  11.1%      1
+nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT                   244.6 µs  10.9%      1
+_boundary_kernel                                                 162.5 µs   7.2%      2
+nvjet_sm90_tst_256x104_64x4_1x1_h_bz_coopA_TNT                   147.6 µs   6.6%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...      73.2 µs   3.3%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...      62.2 µs   2.8%      1
+_swiglu_kernel                                                    42.4 µs   1.9%      1
+nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT                          37.3 µs   1.7%      1
+_combine_kernel                                                   27.8 µs   1.2%      1
+_gather_norm_kernel                                               18.5 µs   0.8%      1
+... 7 more
+total                                                           2242.2 µs
+
+profile 3: batch=4 ctx=80000 dist=soft layer=full load=turn 4 page=1 q_len=753
+kernel                                                           GPU time  share  calls
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...    1542.1 µs  42.3%      1
+void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<1...     680.4 µs  18.7%      1
+void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<1...     351.7 µs   9.6%      1
+nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT                   250.2 µs   6.9%      1
+nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT                   243.8 µs   6.7%      1
+_boundary_kernel                                                 162.5 µs   4.5%      2
+nvjet_sm90_tst_256x104_64x4_1x1_h_bz_coopA_TNT                   145.1 µs   4.0%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...      70.6 µs   1.9%      1
+_swiglu_kernel                                                    43.4 µs   1.2%      1
+_gather_cache_kernel                                              41.9 µs   1.1%      1
+nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT                          37.0 µs   1.0%      1
+_combine_kernel                                                   28.9 µs   0.8%      1
+... 8 more
+total                                                           3646.3 µs
+
+profile 4: batch=1 ctx=0 dist=soft layer=full load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    2204.6 µs  22.1%      1
+nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN                        1607.8 µs  16.1%      2
+nvjet_sm90_tst_128x160_64x5_2x1_v_bz_TNT                        1320.7 µs  13.2%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    1132.4 µs  11.3%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...     865.8 µs   8.7%      1
+_boundary_kernel                                                 847.7 µs   8.5%      2
+nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT                   744.6 µs   7.5%      1
+_canonical_expand_coalesced                                      556.8 µs   5.6%      2
+_portfolio_swiglu                                                226.2 µs   2.3%      1
+nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT                   171.7 µs   1.7%      1
+_combine_kernel                                                  122.4 µs   1.2%      1
+_gather_norm_kernel                                               89.0 µs   0.9%      1
+... 8 more
+total                                                           9992.6 µs
+
+profile 5: batch=1 ctx=32768 dist=soft layer=sliding load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    2580.2 µs  25.5%      1
+nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN                        1617.7 µs  16.0%      2
+nvjet_sm90_tst_128x160_64x5_2x1_v_bz_TNT                        1314.1 µs  13.0%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    1305.2 µs  12.9%      1
+_boundary_kernel                                                 846.5 µs   8.4%      2
+nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT                   740.6 µs   7.3%      1
+_canonical_expand_coalesced                                      655.8 µs   6.5%      2
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...     287.1 µs   2.8%      1
+_portfolio_swiglu                                                246.3 µs   2.4%      1
+nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT                   172.9 µs   1.7%      1
+_combine_kernel                                                  134.3 µs   1.3%      1
+_gather_norm_kernel                                               98.8 µs   1.0%      1
+... 8 more
+total                                                          10111.2 µs
+
+profile 6: batch=1 ctx=32768 dist=soft layer=full load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...    4232.9 µs  29.9%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    2604.2 µs  18.4%      1
+nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN                        1623.7 µs  11.5%      2
+nvjet_sm90_tst_128x160_64x5_2x1_v_bz_TNT                        1320.5 µs   9.3%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    1311.9 µs   9.3%      1
+_boundary_kernel                                                 852.0 µs   6.0%      2
+nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT                   743.9 µs   5.2%      1
+_canonical_expand_coalesced                                      723.4 µs   5.1%      2
+_portfolio_swiglu                                                247.4 µs   1.7%      1
+nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT                   171.9 µs   1.2%      1
+_combine_kernel                                                  133.3 µs   0.9%      1
+_gather_norm_kernel                                               97.6 µs   0.7%      1
+... 8 more
+total                                                          14169.4 µs
+
+profile 7: batch=1 ctx=65536 dist=soft layer=full load=first turn page=1 q_len=16384
+kernel                                                           GPU time  share  calls
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...    7848.9 µs  44.5%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    2554.4 µs  14.5%      1
+nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN                        1628.4 µs   9.2%      2
+nvjet_sm90_tst_128x160_64x5_2x1_v_bz_TNT                        1320.0 µs   7.5%      1
+void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...    1310.3 µs   7.4%      1
+_boundary_kernel                                                 847.2 µs   4.8%      2
+nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT                   743.5 µs   4.2%      1
+_canonical_expand_coalesced                                      625.1 µs   3.5%      2
+_portfolio_swiglu                                                253.8 µs   1.4%      1
+nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT                   175.3 µs   1.0%      1
+_combine_kernel                                                  134.7 µs   0.8%      1
+_gather_norm_kernel                                               99.3 µs   0.6%      1
+... 8 more
+total                                                          17653.7 µs
