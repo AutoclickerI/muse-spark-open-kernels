@@ -1,168 +1,143 @@
-# Decode P4 — best7 integration and pending H200 evidence
+# Decode P4 — current stage levers
 
-## Current candidate
+## Ranking: one lane at 1.3x its floor
 
-[Best7 settings and verification](best7/README.md) owns the frozen reset source/hash;
-[FOCUS](../FOCUS.md) owns the 09:00 KST run allocation and per-load score sensitivity.
-The table fixes NT1 below M256, Humming at M256 and best6 decode1 attention.
-[Dispatch audit](best7/DISPATCH.md) traces the saved board source, sm90a resources, tuner decisions
-and the unresolved M128 regression. M128 already used NT1 in best6; the current scale conversion
-is inside the timed kernel, unlike the older board encoding. The performance gap is not all dispatch.
-Best7 additionally repairs the optional raw17/DG banks to retain stored scale bytes; their earlier
-encoded-scale timings and native-safety result do not verify the revised paths. Humming is unchanged.
-This lane reports candidate paths/hashes; the owner sends candidates. No current best7 H200 claim.
+**Basis:** H200 profile `c0e74bedf7b74be5`; mode **reset**. Until S1/S2 land, this is **best7_reset plus measured scale-bank and M256 deltas**, not a measured S2 profile.
 
-## Best6 H200 receipt — resolved
+| Rank | Lever | Owning lane | Overall score gain |
+|---|---|---|---:|
+| 1 | Small-M MoE M1/8/16/32 | small-M MoE | +13.20% |
+| 2 | Attention, all scored shapes | attention | +11.50% |
+| 3 | Boundaries and route | glue | +6.71% |
+| 4 | Dense projections, all four roles | proj GEMV | +6.55% |
+| 5 | MoE M256 | free M256 | +6.37% |
+| 6 | MoE M128 | MoE M128 | +6.18% |
 
-Check **`1b80ffc037cc454c`**: **1.379716x**, **13/13 tests**, prepare **161.009 s**. Native expert safety
-is established by lab **`de6a56fc38e9477d`** and this full-layer check; the earlier send hold is resolved.
-Best6's three-fixture prepare means (us, same run/router/inputs per alternative):
+Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/stages; gains are independent counterfactuals and must not be added. Projection totals and the lane ranking do not depend on the modeled per-role split. MoE/attention gains use visible rows only; unreported rows can raise them (bounds below). These are optimistic profile-duration headrooms, not measured speedups. Ranks3-6 differ by only0.53 percentage points: treat them as close priorities under router/profile/overlap uncertainty, not a resolved performance ordering.
 
-| M | NT1 | NT2 | raw17 | Humming | dg_w8 | Selected |
-|---|---:|---:|---:|---:|---:|---|
-| 128 | 323.107 | 332.957 | 445.464 | 325.997 | 1010.317 | NT1 |
-| 256 | 551.688 | 511.784 | 527.376 | 419.971 | 1165.216 | Humming |
+## What is measured and what is modeled
 
-The independent **12-seed** lab means agree: M256 Humming **448.04 vs NT2 545.46 us**, winning all
-13 fixtures; M128 **341.35 vs 340.87 us**, a tie. Raw17 **647.03/771.14 us**, dg_w8 **1047.77/1259.65 us**
-at M128/256 lose. Every backend passes FP32 gates. Best7 uses the robust M256 result while retaining
-the three-seed before/after-replay admission for its actual loaded weights.
+- Source: [12-shape profile](../profiles/cand_r3_best7_reset.c0e74bedf7b74be5.json) and [source log](../profiles/cand_r3_best7_reset.c0e74bedf7b74be5.log). The adjusted benchmark fields reproduce **1.402026x** exactly. The corrected six-load accounting gives **1.481379x**, a composition model rather than a new score.
+- Scale bank: paired receipt `58ae2e2cf8df45ef`; subtract 7.91/9.31/14.43/38.53 us at M8/16/32/128 from MoE and adjusted layer latency. No paired M1 delta exists, so M1 keeps its measured time. M256: `97be11d4631b44d6`, masked447.6 minus CTA1g2112 385.2 = **62.4 us**, subtracted once on S/F. These deltas transfer across router seeds and whole-layer overlap only as a model. Paired glue/FA3 setting changes from reset to S1 are not assigned extra savings; their composition needs the S1/S2 profiles. [Scale receipt](../../../runs/muse_decode_layer/20261024T141927Z_check_58ae2e2cf8df45ef.json) · [M256 receipt](../../../runs/muse_moe_w4a16/20261024T142924Z_check_97be11d4631b44d6.json).
+- **Projection role attribution:** the judge merges repeated kernel names. Only a unique custom GEMV role can be timed directly. Other roles in the same custom/library group are allocated in proportion to their one-read resource floors and marked **~**. This is an estimate, not recovered per-role telemetry. Exact group totals and mathematical attribution ranges are retained in JSON.
+- **Overlap:** profile rows include PDL dependency waits; sums can be above or below the paired benchmark median. The signed residual is shown separately, never called spare/idle time or added to a stage. Savings below assume the removed duration was exposed on the critical path; the profiles alone cannot prove that.
+- **Truncation:** six small rows are omitted in each M256 report. The visible MoE and attention times are lower bounds; their combined omitted mass is in Other. No hidden timing is fabricated. Other therefore has no defensible single stage floor/target and receives **n/a**, not a zero-cost win.
+- **Floors:** ideal cold single read at4.8 TB/s, max with dense BF16 at989 TF/s and legal FP8 QK at1979 TF/s (QK/PV tensor times add). Intermediate activations may remain on chip. Dense role shapes/counts and lossless BF16-hi+lo router come from the frozen source. MoE expected touched experts/routes are inferred from that receipt's exact official `speed_of_light_ns`; they are not its hidden actual routes. Attention uses nominal ctx80000, page1, full key coverage, shared q8 KV reads; agentic actual lengths vary±7.5%. No replay, launch or measured issue penalty is charged to the ideal floor. Glue reads five original 8192-wide BF16 vectors and the route stage's 4096-wide pre-expert vector+bias once, with fused activation IO. Those tiny floors express fusion headroom, not achievable isolated launch latencies. [Formula source](../../../sim/bound.py), [hardware rates](../../../sim/hw.py), [official shapes and scoring](../TASK.md).
 
-Best6's verify32 profile is **583.1 us sliding / 883.8 us full**, versus glue **648.3/986.2 us**.
-Sliding Humming W13/W2 are **262.1/145.6 us**, with **25.0 us** in SwiGLU/combine/gather; full W13/W2
-are **230.1/128.8 us**, with **24.2 us** in those kernels. Full FA3 main remains **372.4 us**.
-Other loads move with routing: decode32 MoE **137.6/146.0 us**, verify1 sliding **96.3 us**.
-These are profile aggregates, not matched-route deltas; the per-load score model uses benchmark medians.
-[H200 profile](../profiles/cand_r3_best6.1b80ffc037cc454c.txt), [sensitivity inputs](best7/sensitivity.json).
+## Twelve shapes: times / one-read resource floors (us)
 
-## Receipt application queue
+| Shape | QKV+gate | O | Pool+router | Unpool | Proj sum | Attention | MoE | Boundaries x2 | Route+norm | Other |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| decode 1 S | ~15.1 / 7.864 | ~6.7 / 3.495 | ~23.8 / 15.729 | ~2.6 / 1.748 | 48.3 / 28.84 | 9.9 / 0.111 | 34.8 / 14.747 | 7.5 / 0.017 | 4.5 / 0.002 | 0.0 / n/a |
+| decode 1 F | ~14.5 / 7.864 | ~6.4 / 3.495 | ~23.8 / 15.729 | ~2.6 / 1.748 | 47.3 / 28.84 | 18.3 / 4.333 | 43.4 / 14.747 | 6.9 / 0.017 | 4.1 / 0.002 | 0.0 / n/a |
+| decode 16 S | ~12.4 / 7.864 | ~5.5 / 3.495 | 23.2 / 15.729 | ~22.0 / 13.981 | 63.0 / 41.07 | 12.5 / 1.775 | 105.9 / 44.946 | 8.6 / 0.017 | 4.4 / 0.002 | 0.0 / n/a |
+| decode 16 F | ~12.2 / 7.864 | ~5.4 / 3.495 | 22.9 / 15.729 | ~21.7 / 13.981 | 62.3 / 41.07 | 106.5 / 69.334 | 90.5 / 43.885 | 8.7 / 0.017 | 4.5 / 0.002 | 0.0 / n/a |
+| decode 32 S | ~12.7 / 7.864 | ~5.7 / 3.495 | 24.4 / 15.729 | ~22.6 / 13.981 | 65.4 / 41.07 | 17.0 / 3.550 | 118.1 / 52.732 | 8.8 / 0.017 | 6.7 / 0.002 | 0.0 / n/a |
+| decode 32 F | ~12.7 / 7.864 | ~5.6 / 3.495 | 25.0 / 15.729 | ~22.6 / 13.981 | 65.9 / 41.07 | 195.6 / 138.668 | 119.1 / 53.440 | 9.5 / 0.017 | 6.7 / 0.002 | 0.0 / n/a |
+| verify 1 S | ~17.2 / 7.864 | ~7.7 / 3.495 | 22.7 / 15.729 | ~3.8 / 1.748 | 51.4 / 28.84 | 20.3 / 0.111 | 70.3 / 44.239 | 6.8 / 0.017 | 4.2 / 0.002 | 0.0 / n/a |
+| verify 1 F | ~17.5 / 7.864 | ~7.8 / 3.495 | 22.9 / 15.729 | ~3.9 / 1.748 | 52.0 / 28.84 | 31.3 / 4.334 | 78.9 / 44.239 | 7.3 / 0.017 | 4.4 / 0.002 | 0.0 / n/a |
+| verify 16 S | ~13.9 / 7.864 | ~6.2 / 3.495 | ~27.8 / 15.729 | ~24.7 / 13.981 | 72.7 / 41.07 | 24.9 / 1.781 | 278.9 / 108.411 | 11.0 / 0.017 | 3.1 / 0.002 | 0.0 / n/a |
+| verify 16 F | ~14.1 / 7.864 | ~6.2 / 3.495 | ~28.1 / 15.729 | ~25.0 / 13.981 | 73.4 / 41.07 | 204.1 / 69.340 | 268.0 / 109.119 | 10.8 / 0.017 | 3.0 / 0.002 | 0.0 / n/a |
+| verify 32 S | ~17.5 / 9.771 | ~7.8 / 4.343 | ~35.0 / 19.542 | ~31.1 / 17.371 | 91.3 / 51.03 | >=24.0 / 3.562 | >=352.4 / 125.693 | 18.9 / 0.017 | 4.0 / 0.002 | 11.0 / n/a |
+| verify 32 F | ~17.3 / 9.771 | ~7.7 / 4.343 | ~34.5 / 19.542 | ~30.7 / 17.371 | 90.1 / 51.03 | >=510.1 / 138.681 | >=349.6 / 126.106 | 18.8 / 0.017 | 4.1 / 0.002 | 11.3 / n/a |
 
-- **Paired G/F/E:** latest receipt **`1365af6696884c7e`** failed `full layer glue route IDs differ`;
-  the earlier **`7307be7878604e6d`** also failed glue agreement. Neither is a stage verdict, though
-  both hosts provide independent v9 scored-shape timings. The owner is re-screening a diagnostic
-  allowing/reporting up to 2% near-tie flipped tokens. No new job ID was available this turn.
-- **Small-M:** **`b68afb72b72542b4`** resolved: NT1 means **49.0/84.4/94.1/140.8 us** at
-  M1/8/16/32; hotNT1 **136.8 us** at M32. Keep NT1; a separate hotNT1 integration needs its drop-in.
-- **Streaming GEMV:** **`feb7b287e3464e4a`** resolved: M1 equals a plain one-launch read
-  (QKV 18.3 vs 18.6 us), and every M>=8 loses to cuBLAS. The open lever is cross-launch overlap
-  against best6's in-layer PDL/prefetch control. The table's standalone streaming choices stay off.
-- **Glue geometry:** **`b02a42ce75dc44d4 / decode_glue`** gives producer+glue trials by token
-  count; compare with `7370b182` geometry, but use whole-layer paired G for a table promotion.
+S/F=sliding/full; decode M=B, verify M=8B. QKV includes the gate rows; Pool+router includes the FP32 router's BF16 hi+lo products. Attention includes QK/cache preparation, main, combine, FA3 scheduler and norm/gate. MoE includes expert gather/activation/norm/combine where visible. Boundaries and route are separate. Split-K reductions belong to their projection group.
 
-G compares old/new glue with identical attention/MoE and A/A noise; F compares public `layer`
-metadata against explicit FA3 settings on full public draws; E compares identical routed expert inputs.
-Changed-route tokens do not establish an expert win. Use paired seed means and their spread, apply
-only the supported table change, and screen its new hash. A single board/check score is not a stage test.
-This turn read the latest known paired receipt once; no new lab or candidate was sent.
+## Overall-score gain per shape/stage at 1.3x floor
 
-## Prior control evidence
+A cell changes that one stage in that one shape, retaining the other eleven. **All shapes** changes the indicated stage at every shape simultaneously. ~projection cells use the estimated allocation above; each role's source-attribution gain range is shown below.
 
-Best5 check `691bff0b`: **1.353449x**. Glue check `7370b182`: **1.367496x**, confounded by MoE routing
-and prepare-time FA3 choice. [All stage times](best6_attention/BEST5_STAGES.md),
-[glue comparison](paired_lab/GLUE_RECEIPT.md), [board glue inventory](glue/PROFILE.md).
-The q8 attention tuner in best6/best7 samples the exact public soft-cache/agentic distribution over
-three fresh draws and includes the board's `layer` call, which forwards None at q8. The prior one-draw
-explicit scheduler control did not reproduce it. A full verify32 FA3 regression therefore cannot be
-attributed to glue from one scored profile. Native BF16-resident expert copies remain inadmissible
-(CONSTRAINTS 5); legacy withdrawn hosts are excluded by `h200_lab.py` using receipt flags.
+| Shape | QKV+gate | O | Pool+router | Unpool | Proj sum | Attention | MoE | Boundaries x2 | Route+norm | Other |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| decode 1 S | ~+0.57% | ~+0.25% | ~+0.40% | ~+0.04% | +1.30% | +1.17% | +1.92% | +0.88% | +0.53% | n/a |
+| decode 1 F | ~+0.17% | ~+0.08% | ~+0.13% | ~+0.01% | +0.40% | +0.51% | +1.00% | +0.28% | +0.16% | n/a |
+| decode 16 S | ~+0.13% | ~+0.06% | +0.17% | ~+0.24% | +0.61% | +0.64% | +3.28% | +0.54% | +0.27% | n/a |
+| decode 16 F | ~+0.04% | ~+0.02% | +0.05% | ~+0.08% | +0.19% | +0.36% | +0.74% | +0.19% | +0.10% | n/a |
+| decode 32 S | ~+0.12% | ~+0.05% | +0.19% | ~+0.22% | +0.59% | +0.61% | +2.61% | +0.43% | +0.33% | n/a |
+| decode 32 F | ~+0.04% | ~+0.02% | +0.08% | ~+0.07% | +0.21% | +0.26% | +0.86% | +0.16% | +0.11% | n/a |
+| verify 1 S | ~+0.57% | ~+0.25% | +0.18% | ~+0.12% | +1.15% | +1.70% | +1.05% | +0.55% | +0.34% | n/a |
+| verify 1 F | ~+0.20% | ~+0.09% | +0.07% | ~+0.04% | +0.41% | +0.73% | +0.60% | +0.20% | +0.12% | n/a |
+| verify 16 S | ~+0.10% | ~+0.05% | ~+0.21% | ~+0.18% | +0.55% | +0.64% | +4.44% | +0.31% | +0.09% | n/a |
+| verify 16 F | ~+0.04% | ~+0.02% | ~+0.07% | ~+0.07% | +0.19% | +1.14% | +1.27% | +0.10% | +0.03% | n/a |
+| verify 32 S | ~+0.10% | ~+0.04% | ~+0.20% | ~+0.17% | +0.52% | +0.40% | +4.47% | +0.39% | +0.08% | n/a |
+| verify 32 F | ~+0.03% | ~+0.01% | ~+0.06% | ~+0.06% | +0.17% | +2.55% | +1.38% | +0.13% | +0.03% | n/a |
+| **All shapes** | +2.15% | +0.94% | +1.83% | +1.32% | +6.55% | +11.50% | +27.86% | +4.28% | +2.22% | n/a |
 
-## Projection dependency envelopes (H200 control 0e94268)
+Gain ranges from unresolved attribution (not confidence intervals):
 
-The control profile shows that the projection family is already close to the
-streaming regime; the useful opportunity is the dependency gap around it.
-Weights are BF16 and the numbers below use `bytes / STAGE_TUNE median` (TB/s).
+| Stage | Central all-shape gain | Source-attribution range |
+|---|---:|---:|
+| QKV+gate | +2.15% | 0.00..14.54% |
+| O | +0.94% | 0.00..18.24% |
+| Pool+router | +1.83% | 0.74..5.85% |
+| Unpool | +1.32% | 0.00..16.15% |
+| Attention | +11.50% | 11.50..11.91% |
+| MoE | +27.86% | 27.86..28.43% |
+| Boundaries x2 | +4.28% | 4.28..4.28% |
+| Route+norm | +2.22% | 2.22..2.22% |
 
-| GEMV | Bytes read | T=1 us / TB/s | T=8 us / TB/s | T=16 us / TB/s | T=32 us / TB/s |
-|---|---:|---:|---:|---:|---:|
-| qkv_gate (2304x8192) | 37.75 MB | 19.17 / 1.97 | 19.20 / 1.97 | 19.46 / 1.94 | 21.02 / 1.80 |
-| o (8192x1024) | 16.78 MB | 11.39 / 1.47 | 11.49 / 1.46 | 11.62 / 1.44 | 11.84 / 1.42 |
-| pool+router (4608x8192) | 75.50 MB | 30.82 / 2.45 | 31.07 / 2.43 | 31.36 / 2.41 | 33.12 / 2.28 |
-| unpooler slice (1024x4096) | 8.39 MB | 8.93 / 0.94 | 9.06 / 0.93 | — | — |
-| unpooler full (8192x4096) | 67.11 MB | — | — | 28.22 / 2.38 | 28.26 / 2.37 |
+Ranges permit a shared kernel group to belong entirely to one of its roles; such extrema cannot happen for all roles at once. Attention/MoE maxima each assign all M256 omitted mass to that stage; again these maxima are mutually exclusive. They do not bound PDL critical-path exposure.
 
-In decode-1 sliding, the four GEMV kernels occupy **45.5 us** in a **109.2 us**
-profile (3.04 TB/s for the aggregate 138.4 MB read). The remaining timeline is
-attention 14.8 us, MoE 31.7 us, boundary 12.9 us, routing 3.6 us and a 0.7 us
-cast. Decode-1 full has GEMV 44.8 us in 128.5 us; decode-16 sliding has GEMV
-42.5 us in 177.7 us with an 86.9 us MoE window; decode-32 sliding has 46.9 us
-in 203.6 us with a 101.7 us MoE window. These are overlap windows, not additive
-idle time. The 16.78 MB o bank fits beside a 50 MB L2; pool/router (75.50 MB)
-and full unpooler (67.11 MB) do not, so the experiment prefetches o first and
-keeps the larger banks as an explicit reject/diagnostic.
+## Latency anchor, corrections and overlap residual
 
-The six profile envelopes quantify the surrounding work (the last column is
-wall time outside the aggregate GEMV row; it is overlap opportunity, not a
-claim of idle SMs):
+| Shape | Receipt layer | Scale saving | M256 saving | Model layer | Profile sum after deltas | Layer minus profile |
+|---|---:|---:|---:|---:|---:|---:|
+| decode 1 S | 105.18 | 0.00 | 0.00 | 105.18 | 104.90 | 0.28 |
+| decode 1 F | 115.22 | 0.00 | 0.00 | 115.22 | 120.00 | -4.78 |
+| decode 16 S | 186.09 | 9.31 | 0.00 | 176.78 | 194.49 | -17.71 |
+| decode 16 F | 277.10 | 9.31 | 0.00 | 267.79 | 272.49 | -4.70 |
+| decode 32 S | 230.35 | 14.43 | 0.00 | 215.92 | 215.77 | 0.15 |
+| decode 32 F | 387.12 | 14.43 | 0.00 | 372.69 | 396.77 | -24.08 |
+| verify 1 S | 157.90 | 7.91 | 0.00 | 149.99 | 152.99 | -3.00 |
+| verify 1 F | 180.49 | 7.91 | 0.00 | 172.58 | 173.89 | -1.31 |
+| verify 16 S | 441.77 | 38.53 | 0.00 | 403.24 | 390.67 | 12.57 |
+| verify 16 F | 608.08 | 38.53 | 0.00 | 569.55 | 559.27 | 10.28 |
+| verify 32 S | 574.07 | 0.00 | 62.40 | 511.67 | 501.60 | 10.07 |
+| verify 32 F | 945.21 | 0.00 | 62.40 | 882.81 | 984.00 | -101.19 |
 
-| Load | GEMV row us | Profile total us | Outside GEMV us |
-|---|---:|---:|---:|
-| decode 1 sliding/full | 45.5 / 44.8 | 109.2 / 128.5 | 63.7 / 83.7 |
-| decode 16 sliding/full | 42.5 / 42.9 | 177.7 / 282.8 | 135.2 / 239.9 |
-| decode 32 sliding/full | 46.9 / 53.7 | 203.6 / 441.0 | 156.7 / 387.3 |
+| Load | Adjusted receipt load us | Modeled load us |
+|---|---:|---:|
+| decode 1 | 6681.59 | 6681.59 |
+| decode 16 | 12993.83 | 12416.61 |
+| decode 32 | 16790.19 | 15895.53 |
+| verify 1 | 10151.24 | 9660.82 |
+| verify 16 | 30050.73 | 27661.87 |
+| verify 32 | 41530.36 | 37661.56 |
 
-Standalone projection lab `b63389f01e4741b9` is resolved: GEMV/library kernels stream **0.75–2.4 TB/s**
-versus a plain read's **4.04–4.25 TB/s**. The same run's overlap implementation failed with sticky
-`cudaErrorInvalidAddressSpace` on the withdrawn BF16 host; active overlap is dropped. Details and
-mechanism are in [FINDINGS](../../../docs/FINDINGS.md). Cross-launch weight overlap is the current projection lever;
-[the projection lane](../../muse_bf16_proj/FOCUS.md) owns its source/receipts. Best7 has table hooks
-for its standalone streaming and within-call L2 transport; neither is enabled without an in-layer win. [The attention lane](../../muse_attention_decode/FOCUS.md)
-owns new native attention recipes; the paired F result applies the existing FA3 settings.
+For a selected stage set, `dS/dF = sum(max(0, time - 1.3*floor))` within each shape. Then `gain% = 100 * (product_load[T / (T - 46*dS - 16*dF)]^(1/6) - 1)`. Use adjusted `median_ns` anchors above, never the sum of PDL durations. No regression is assumed if a stage already beats the target.
 
-Existing holds on `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, both megakernel sources and the
-overlap candidate remain; none is in the reset send plan. Historical handoffs and failures are in
-FINDINGS and their source-specific validation, rather than a second current send order here.
+## Refresh and checks
 
-## One-read floors and historical V9/cost controls
+`python problems/muse_decode_layer/dev/levers/build.py` reads local profiles only: chooses frozen S2 `b0805447` first, then S1 `42f543a0`, otherwise reset. It verifies the accepted receipt SHA. Reset gets both measured corrections; S1 only M256; S2 neither. Use `--receipt problems/muse_decode_layer/profiles/<file>.json` for a named profile. Run this once when resumed after the09:01 KST receipts land; it makes no judge calls, watches or timers.
 
-All values are microseconds. Each P/A/M cell is **profile time / modeled floor**; glue is boundary + routing + remaining elementwise kernels. V9 = receipt `0e94268cf5654012`; cost = `906ca5580aef4f86`. Source profiles are linked below. These are separate router seeds: compare scores to each run’s own baseline, rather than treating differences in absolute MoE time as kernel gains.
+[Machine-readable rows, floors, attribution and validation](levers/current.json) · [Rebuild and accounting assertions](levers/build.py)
 
-Floors use one read of stored weights/cache, 4.8 TB/s HBM, 989 TF/s dense BF16, 1979 TF/s FP8 QK and the audited NVFP4 issue floor from `sim/bound.py`. Routing counts are inferred expected counts from the official layer floor, not exact counts recovered from these seeds. Full agentic attention uses its guaranteed 92.5% context minimum. No launch/PDL wait is charged to the floor. Per-stage floors cannot be summed into a whole-layer bound when resources overlap.
+## Closed inputs to the next integration
 
-| Load / context | Run | Whole layer | Projections / floor | Attention / floor | MoE / floor | Glue |
-|---|---|---:|---:|---:|---:|---:|
-| decode 1 sliding | V9 | 108.5 | 45.5 / 28.84 | 14.8 / 0.11 | 31.7 / 14.71 | 17.2 |
-| decode 1 sliding | cost | 112.2 | 52.1 / 28.84 | 11.4 / 0.11 | 31.7 / 14.71 | 15.2 |
-| decode 1 full | V9 | 128.6 | 44.8 / 28.84 | 33.9 / 4.33 | 32.3 / 14.77 | 17.7 |
-| decode 1 full | cost | 131.5 | 50.9 / 28.84 | 30.4 / 4.33 | 38.4 / 14.77 | 15.5 |
-| decode 16 sliding | V9 | 166.1 | 62.1 / 41.07 | 15.8 / 1.77 | 86.9 / 44.92 | 13.0 |
-| decode 16 sliding | cost | 174.7 | 64.2 / 41.07 | 13.7 / 1.77 | 85.3 / 44.92 | 12.4 |
-| decode 16 full | V9 | 278.9 | 62.4 / 41.07 | 124.8 / 64.13 | 77.3 / 43.94 | 18.2 |
-| decode 16 full | cost | 280.7 | 64.5 / 41.07 | 127.8 / 64.13 | 94.8 / 43.94 | 12.4 |
-| decode 32 sliding | V9 | 217.5 | 66.2 / 41.07 | 20.2 / 3.55 | 101.7 / 52.72 | 15.6 |
-| decode 32 sliding | cost | 207.3 | 66.0 / 41.07 | 16.8 / 3.55 | 118.1 / 52.72 | 12.4 |
-| decode 32 full | V9 | 422.9 | 73.4 / 41.07 | 228.5 / 128.27 | 114.2 / 53.44 | 24.9 |
-| decode 32 full | cost | 417.5 | 66.2 / 41.07 | 226.5 / 128.27 | 95.8 / 53.44 | 13.3 |
-| verify 1 sliding | V9 | 149.2 | 46.0 / 28.84 | 22.6 / 0.11 | 76.6 / 44.26 | 18.0 |
-| verify 1 sliding | cost | 156.4 | >=50.9 / 28.84 | >=19.1 / 0.11 | 77.2 / 44.26 | 15.7 + 3.7 unreported |
-| verify 1 full | V9 | 164.4 | 46.4 / 28.84 | 34.0 / 4.33 | 70.8 / 44.18 | 18.4 |
-| verify 1 full | cost | 172.7 | >=53.2 / 28.84 | >=29.2 / 4.33 | 77.1 / 44.18 | 15.3 + 3.6 unreported |
-| verify 16 sliding | V9 | 393.4 | 72.8 / 41.07 | 25.8 / 1.78 | 258.9 / 108.39 | 16.3 |
-| verify 16 sliding | cost | 392.5 | 72.4 / 41.07 | 25.7 / 1.78 | 305.6 / 108.39 | 15.6 |
-| verify 16 full | V9 | 566.6 | 72.5 / 41.07 | 202.6 / 64.14 | 280.4 / 109.15 | 15.7 |
-| verify 16 full | cost | 564.3 | 71.9 / 41.07 | 203.6 / 64.14 | 255.3 / 109.15 | 15.5 |
-| verify 32 sliding | V9 | 615.5 | 90.0 / 51.03 | 31.6 / 3.56 | 477.0 / 125.67 | 25.9 |
-| verify 32 sliding | cost | 592.2 | 91.2 / 51.03 | 32.2 / 3.56 | 443.0 / 125.67 | 26.8 |
-| verify 32 full | V9 | 979.6 | 90.7 / 51.03 | 389.9 / 128.28 | 449.5 / 126.13 | 25.8 |
-| verify 32 full | cost | 940.7 | 89.9 / 51.03 | 388.5 / 128.28 | 446.9 / 126.13 | 26.3 |
+Current negative receipts: FlashInfer full context `8ffbac2d`, persistent chain `87dc944b` (1.5–6.5x slower), verify split-K WGMMA `19f3a13b` (1.6x slower), and M128 fused producer `471f6d62` (5.7–6.5x recoded NT1). They do not supply a cleared S3 cell. Existing source holds remain on `dev/parked/cand_r3_attention_v2.py`, `dev/parked/cand_r3_v9_glue.py`, both `dev/parked/cand_r3_merge_mega*.py` builds and the old overlap candidate. Detailed evidence remains in [FINDINGS](../../../docs/FINDINGS.md); [FOCUS](../FOCUS.md) owns candidate paths and reset allocation.
 
-P includes cuBLAS split-K reductions; A includes QK preparation, cache writes, FA3 scheduling and norm/gate kernels. Profile rows include PDL wait/overlap, so their sum can exceed the whole-layer time. The two cost verify-1 profiles truncate three small rows: their P/A entries are lower bounds and the unreported residual is shown explicitly, rather than assigned to a stage without evidence. Rounding of report rows is about 0.1 us.
 
-These are historical control durations. Current best6 stage times are above; use the floor columns for headroom and the FOCUS critical-path sensitivity for expected score gains. Summing independent floors is a model rather than a whole-layer performance guarantee.
+## Open attention measurement: one-launch sliding
 
-[V9 profile](../profiles/cand_r3_v9.0e94268cf5654012.json) · [cost profile](../profiles/cand_r3_v9_cost_v9.906ca5580aef4f86.json) · [rebuild script](omni/lever_table.py)
+Attention-board job `32f2f07acfe144c2`, send key `68c50c706423f6d6`, measures
+all six sliding shapes with the fused window kernel; full q1 retains
+attn_main, full q8 FA3. Candidate `problems/muse_attention_decode/cand_sliding_singlelaunch.py`,
+SHA-256 `68c50c706423f6d6cfe52cc4cd487840e9794a9c62664f7633d59bfd5cbdcb75`.
+Local screen passes 16 tests / 12 fresh-input graphs / 4 static checks.
 
-## Decode q1 FP8-KV split candidate — lab queued
+Adapter [sliding_attention.py](sliding_attention.py), SHA-256
+`68fb992bd795b29a2257b88fc8c08363749a4446eaf1e1241e1961c1ae8264f6`:
+`attention_sliding(qkv, data)` accepts the existing projection tuple or BF16
+QKV and returns `[tokens, 1024]`. FP32 partial reduction and BF16 rounding
+are inside the launch. All six scored sliding shapes and 1/4-partial graph
+replays pass the task's post-store FP32 gate; profiling confirms one kernel
+at B1 q1/q8. `attention_dropin.with_sliding_attention(source)` embeds the
+adapter and adds `('singlelaunch_sliding', None)` without selecting it.
 
-`dev/cand_r3_v9_attention_dropin.py` now exposes `port_decode_fp8_split` for
-q_len=1. The first local full-context attempt exposed a `cs=1` split-reduction
-bug (1.16 relative L2); the corrected path uses the occupancy/cluster planner,
-two waves only at B=1, one at B=16/32, and the fused norm-gate combine. The
-local full-layer gate passes all six decode shapes. The 13-test/15-static local
-screen passes.
-
-Payload `prof/lab/decode_fp8_split_compare.py` is queued on
-`muse_prefill_layer` at priority 0.6, send key **`5068f5e616648715`**, detached
-log position 2/5. It measures q1 split against attn_main and FA3 at B=1/16/32,
-ctx 80000, page 1, agentic sliding/full, and batches the ready q8 FP8-PV
-settings. Promote only a gated candidate that beats both q1 controls on H200;
-otherwise keep the best6 table.
+Split table: q1 B1/16/32 = 8/4/2; q8 = 8/1/1. Local sm120 sliding times are
+9.2/16.4/26.6 us q1 and 13.3/81.9/122.9 us q8. Larger q8 remains suspect;
+select only same-shape H200 wins, then check whole-layer/PDL composition.
+No H200 timing, <=6 us B1 claim, layer gain or new settings promotion yet.
+At 6 us, projected 46-layer savings from the stated 14.8/19.4 us B1 stages
+are 404.8 us decode1 and 616.4 us verify1. FlashInfer `8ffbac2d68074a0b`
+adds no full-verify winner (FA2 469/912 us at B16/B32); retain FA3.
