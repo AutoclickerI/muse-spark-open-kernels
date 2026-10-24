@@ -1,6 +1,83 @@
-# Decode checks — best5 handoff
+# Decode checks — glue-only best5 handoff
 
-## Current best5 candidate
+## P7 overlap reopen (H200 receipt 0e94268)
+
+The control profile shows that the projection family is already close to the
+streaming regime; the useful opportunity is the dependency gap around it.
+Weights are BF16 and the numbers below use `bytes / STAGE_TUNE median` (TB/s).
+
+| GEMV | Bytes read | T=1 us / TB/s | T=8 us / TB/s | T=16 us / TB/s | T=32 us / TB/s |
+|---|---:|---:|---:|---:|---:|
+| qkv_gate (2304x8192) | 37.75 MB | 19.17 / 1.97 | 19.20 / 1.97 | 19.46 / 1.94 | 21.02 / 1.80 |
+| o (8192x1024) | 16.78 MB | 11.39 / 1.47 | 11.49 / 1.46 | 11.62 / 1.44 | 11.84 / 1.42 |
+| pool+router (4608x8192) | 75.50 MB | 30.82 / 2.45 | 31.07 / 2.43 | 31.36 / 2.41 | 33.12 / 2.28 |
+| unpooler slice (1024x4096) | 8.39 MB | 8.93 / 0.94 | 9.06 / 0.93 | — | — |
+| unpooler full (8192x4096) | 67.11 MB | — | — | 28.22 / 2.38 | 28.26 / 2.37 |
+
+In decode-1 sliding, the four GEMV kernels occupy **45.5 us** in a **109.2 us**
+profile (3.04 TB/s for the aggregate 138.4 MB read). The remaining timeline is
+attention 14.8 us, MoE 31.7 us, boundary 12.9 us, routing 3.6 us and a 0.7 us
+cast. Decode-1 full has GEMV 44.8 us in 128.5 us; decode-16 sliding has GEMV
+42.5 us in 177.7 us with an 86.9 us MoE window; decode-32 sliding has 46.9 us
+in 203.6 us with a 101.7 us MoE window. These are overlap windows, not additive
+idle time. The 16.78 MB o bank fits beside a 50 MB L2; pool/router (75.50 MB)
+and full unpooler (67.11 MB) do not, so the experiment prefetches o first and
+keeps the larger banks as an explicit reject/diagnostic.
+
+Overlap payload `dev/overlap_lab.py`, SHA256
+`dbfbdc774a428f2ca16e034dd7bb1b62c8acf9411f82ebb51ac78d43baac626e`, is sent
+to the decode host at priority 0.8. It compares o-only, unpooler-only and both
+side-stream read-ahead against the six decode loads with 20 paired graph
+medians. The local sm_120 path is a no-op stand-in; only H200 can admit it.
+
+Drop-in experiment: `cand_r3_overlap.py`, SHA256
+`0385b4e02a95b777f66931a2158b3fc6db3235bafd405cf3be28cb6bd18b338f`.
+It preserves the incumbent by default (`overlap_plan=False`) and contains the
+prepared stream/event path for an H200-positive o-prefetch plan. Local sm_120
+screen: 13/13 tests, 12/12 graph loads, 11/11 static checks; no overlap claim
+is made until the lab's H200 paired medians select a plan.
+
+## Current glue candidate (owner screens/sends)
+
+[cand_r3_best5_glue.py](../cand_r3_best5_glue.py), SHA-256
+`9912056970eef92aea847fd1cb68e7426ce73df738eef739e2f63ca1837fb714`.
+This lane has **not sent this candidate**. Base is exact best5 `a651af25`.
+Three PDL launches cover residual/norm boundary 1, routing + pre-expert norm, and residual/norm boundary 2.
+They replace the small-load global atomic rendezvous and eliminate the glue counter-clear launch.
+Each residual CTA owns both reductions; optional replicated statistics expose small-M parallelism without a barrier.
+Routing uses exact ordered FP32 keys plus expert-id tie breaking for a single top-8 reduction.
+QK preparation moves input metadata/scales/RoPE into its PDL prologue. All GEMV/GEMM, attention and MoE
+native sources and implementations are byte/AST-identical to best5; the old O/pool fused-GEMM PREFIX is removed.
+Geometry tuning measures each unchanged producer with its real new consumer over three fresh seeds and selects by their mean. Every selected geometry passes
+an independent FP32 oracle gate. NVFP4/E4M3 stays packed; no expanded expert bank is retained.
+
+Normal screen: **13/13 tests, 12/12 fresh graph shapes, 13/13 static checks**, prepare **7.869 s** (warm local caches).
+Forced-Hopper cold screen: **13/13 tests, 12/12 fresh graphs, 13/13 static checks**; candidate prepare **224.516 s**,
+**226.144 s** including extra forced attention-family checks. All 18 three-seed geometry comparisons completed.
+Final [glue handoff](glue/README.md) and [SHA-pinned evidence](glue/validation.json). Ready for the owner's check.
+All **68** tested Hopper glue specializations compile for sm90, at most **1,024 B** shared memory.
+The separate lab gate passes three changed inputs for each geometry on sm120.
+H200 lab queue key **`bd66426465d8b072`**, source `prof/lab/decode_glue.py`, priority 1, was sent by this lane.
+No judge wait or repeated receipt check. The **<=8 us/layer** glue target is **unverified**.
+
+Full [board glue inventory](glue/PROFILE.md): board `0e94268` (1.428x), aggregate profile durations per layer:
+
+| Load | Sliding glue (us) | Full glue (us) |
+|---|---:|---:|
+| decode 1 | 17.2 | 17.7 |
+| decode 16 | 13.0 | 18.2 |
+| decode 32 | 15.6 | 24.9 |
+| verify 1 | 24.1 | 22.7 |
+| verify 16 | 21.1 | 19.4 |
+| verify 32 | 31.1 | 29.8 |
+
+These include boundary x2, route/norm, separate QK preparation, norm/gate and clear, where present;
+FA3 scheduler launches are listed separately in the inventory. [Weight-storage audit](glue/BOUNDARY_AUDIT.md) also flags an unused legacy Humming scale decoder, outside the active serving dispatch. PDL GPU durations include waits and can overlap
+compute, so their sum is not exposed latency. The older cost-receipt lever table below uses different measurements and is not this board inventory.
+Best5 `a651af25` had no receipt at this turn’s one read (still local waiting row `1047930`); its stage timing
+cannot yet be folded in. Read its landed receipt on the next owner resume and replace that missing evidence.
+
+## Base best5 candidate
 
 [cand_r3_best5.py](../cand_r3_best5.py), SHA-256
 `a651af25cb44550932f497b57eb82fb32c0fbe07c1f21a8592bd0982f937c150`. This lane did not send it; **Jihoon sends it as a decode check**.
@@ -135,8 +212,9 @@ only its H200 phase receipt remains.
 
 ## Send order
 
-For this task, the owner sends `cand_r3_best5.py` at the hash above as a decode check; this lane did not send it.
-The failed omni is closed; best5 changes only the proven NT1/NT2 MoE dispatch and prepare budget guards. Existing holds on
+For this task, the owner sends `cand_r3_best5_glue.py` at the hash above as a decode check; both final local screens pass.
+Base best5 `a651af25` has already been re-sent by the owner as a priority-0 check; it is not being held for reset.
+The failed omni is closed. Existing holds on
 `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, both megakernel sources and overlap remain unchanged.
 
 The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, the final compact `MEGA_SUMMARY`, and the attention candidate's final compact `ATTN_PORT_SUMMARY` record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
