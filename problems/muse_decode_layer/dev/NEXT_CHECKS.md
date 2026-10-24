@@ -217,3 +217,16 @@ P includes cuBLAS split-K reductions; A includes QK preparation, cache writes, F
 Largest levers: verify-32 MoE is 443–477 us; full attention (including preparation) is 389–390 us. At decode-32, full attention is 226–229 us. Small-load projection time remains roughly 45–66 us against a 29–41 us floor, while boundary/routing glue costs about 12–27 us. These justify packing mixed-input/reuse MoE, attention split-K and a few projection recipes into the same timed portfolio.
 
 [V9 profile](../profiles/cand_r3_v9.0e94268cf5654012.json) · [cost profile](../profiles/cand_r3_v9_cost_v9.906ca5580aef4f86.json) · [rebuild script](omni/lever_table.py)
+
+### P7 glue fusion lab (proj lane; H200 receipt pending)
+
+Proj lane sent `prof/lab/verify_projection_glue.py` priority0; payload SHA256
+`34143ac6134efe1f0d0c98ae95e0d3d25425fa536339b734c80f5c190a88e0ac`, exact screened host
+SHA256 `4b4182cb1d0ff580916f7ed6fbe3a9b236264917bea014fa7a09f111168bfcf4`.
+The local waiting request is468733; no judge receipt at the one check this turn.
+Drop-in block SHA256 `c763555f9908158879fb9bf65f766e03b650967487a8f97d325400613d5c92f9`
+is in `../muse_bf16_proj/dev/glue/`. It fuses O/unpooler GEMV boundaries and tiled
+pool/router hi+lo routing, preserving BF16 boundaries and the project layer ABI.
+sm120 fixture13/13+12/12+11 static; host9/9+30/30+5 static. All combined chains lose
+sm120; no recipe is admitted before the actual H200 receipt. Read the proj receipt,
+then retime any positive full-chain recipes in `cand_r3_best`; do not port a phase-only win.

@@ -1,4 +1,4 @@
-"""Build the standalone BF16-resident hybrid over the best measured decode source."""
+"""Rebuild the archived, inadmissible BF16-resident experiment for evidence only."""
 from pathlib import Path
 from build_lab import prefix,ROOT,DECODE
 
@@ -13,7 +13,7 @@ def main():
     source+='\n\n# BF16-resident hybrid: exact block products + real-router prepare selection.\n'
     source+=prefix(fixture,'_bf_fixture_')+'\n'
     source+=(path/'hybrid.py').read_text()+'\n'+(path/'prepare_tail.py').read_text()
-    out=DECODE/'cand_r3_bf16moe.py'
+    out=DECODE/'dev/parked/cand_r3_bf16moe.py'
     out.write_text(source)
     import hashlib
     print(out,len(source),hashlib.sha256(source.encode()).hexdigest())

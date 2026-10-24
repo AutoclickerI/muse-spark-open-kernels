@@ -66,11 +66,12 @@ def summarize(rows):
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--seeds',type=int,default=12);ap.add_argument('--reps',type=int,default=8);ap.add_argument('--balanced',action='store_true');ap.add_argument('--cache',type=Path,default=ROOT/'runs/screen/v9_seed/cache.pt');ap.add_argument('--out',type=Path,default=ROOT/'runs/screen/v9_seed/baseline.json');args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--seeds',type=int,default=12);ap.add_argument('--reps',type=int,default=8);ap.add_argument('--balanced',action='store_true');ap.add_argument('--hot',action='store_true');ap.add_argument('--split',action='store_true');ap.add_argument('--tune',action='store_true');ap.add_argument('--cache',type=Path,default=ROOT/'runs/screen/v9_seed/cache.pt');ap.add_argument('--out',type=Path,default=ROOT/'runs/screen/v9_seed/baseline.json');args=ap.parse_args()
     ref=module('seed_reference',ROOT/'problems/muse_decode_layer/reference.py')
     if hasattr(ref,'_fa3_scheduler_metadata'):ref._fa3_scheduler_metadata=lambda *a,**kw:None
-    d=module('seed_dropin',ROOT/'problems/muse_moe_w4a16/dev/v9_reuse/dropin.py')
-    bal=module('seed_balanced',ROOT/'problems/muse_moe_w4a16/dev/v9_reuse/balanced.py') if args.balanced else None
+    d=module('seed_dropin',ROOT/('runs/screen/v9_seed/tune_dropin.py' if args.tune else 'problems/muse_moe_w4a16/dev/v9_reuse/dropin.py'))
+    bal=module('seed_balanced',ROOT/('problems/muse_moe_w4a16/dev/v9_reuse/split_w2.py' if args.split else 'problems/muse_moe_w4a16/dev/v9_reuse/balanced.py')) if args.balanced or args.split else None
+    hot=module('seed_hot',ROOT/'problems/muse_moe_w4a16/dev/v9_reuse/hot_v9.py') if args.hot else None
     cases=json.loads((ROOT/'upstream/api/problems/muse_decode_layer.json').read_text())['benchmarks']
     targets=[c for c in cases if c['load'] in ('verify 16','verify 32') and c['layer']=='sliding']
     cache=torch.load(args.cache,weights_only=False) if args.cache.exists() else {}
@@ -82,6 +83,7 @@ def main():
         if fields:w=ref.generate_weights(seed,**fields)
         w['post_norm_w']=w['post_expert_norm'];bank=d.rv_prepare(w);rb=dict(bank,reuse_mod=d.rr_reuse_module())
         if bal:bb=bal.balanced_prepare(bank)
+        if hot:hb=dict(bank,mod=hot._module())
         for case in targets:
             m=case['batch']*case['q_len'];key=f'{seed}:{m}'
             if key in cache:
@@ -94,6 +96,14 @@ def main():
             paths.update(hot_r32=lambda x:d.rr_reuse_call(x,rb,(4,0,2)),hot_s128=lambda x:d.rr_reuse_call(x,rb,(16,1,2)))
             if bal:
                 for choice in bal.BAL_CHOICES:paths[bal.balanced_label(choice)]=lambda x,c=choice:bal.balanced_call(x,bb,c)
+            if args.tune:
+                for nt in (1,2,4):
+                    for stages in (1,2):
+                        for factor in (1,2):
+                            paths[f'N{nt}s{stages}g{factor}']=lambda x,n=nt,s=stages,f=factor:d.rv_kernel_fn(x,dict(bank,nt=n,stage_override=s,grid_override=f))
+            if hot:
+                for nt,ch,st in ((1,0,2),(2,0,2),(2,0,1),(2,16,1),(2,32,1),(2,64,1),(2,32,2),(2,64,2)):
+                    paths[f'hotNT{nt}c{ch}s{st}']=lambda x,n=nt,c=ch,st=st:hot.kernel_fn(x,dict(hb,nt=n,sched=1,chunk_cap=c,stages=st))
             timings=compare(paths,data,flush,args.reps)
             row=dict(seed=seed,fields_seed=fields_seed,fields=fields,M=m,case=case,counts=counts.cpu().tolist(),pairs=int(counts.sum()),experts=int((counts>0).sum()),hot=int(counts.max()),timings=timings)
             rows.append(row);print(json.dumps(row),flush=True)

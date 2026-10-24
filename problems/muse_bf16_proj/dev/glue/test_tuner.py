@@ -23,12 +23,13 @@ def mock_pair(old,new,inputs,banks,flush,repeats=20):
  for bank in banks:
   for a,b in zip(inputs,bank):a.copy_(b)
   old.graph.replay();new.graph.replay()
- return 10.,9.,.9
+ full=st.get('_gb_glue',{}).get('prefix',{}).get(1,False) and (1,'b2') in st['_gb_glue']['plans']
+ return (10.,8.,.8) if full else (10.,9.,.9)
 # These numbers test plan installation only. They are never written as performance evidence.
 g.gb_pair=mock_pair
 rows=g.gb_prepare(st,cb,time.monotonic()+240,tokens=(1,),recipes=recipes)
 assert st['_gb_glue']['enabled'].get(1) and st['_gb_glue']['prefix'].get(1),rows
-assert len(st['_gb_glue']['plans'])==3 and counts['final']==5,(rows,counts)
+assert len(st['_gb_glue']['plans'])==3 and counts['final']==7,(rows,counts)
 x=torch.randn(1,1024,device='cuda',dtype=torch.bfloat16);stream=torch.randn(1,8192,device='cuda')
 data={'local_start':torch.tensor(255,device='cuda',dtype=torch.int32)}
 with g._PgGraph(lambda:g.gb_prefix(x,stream,st,data)) as graph:

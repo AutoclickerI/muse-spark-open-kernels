@@ -1,0 +1,15 @@
+OMNI_COMPILE {'v9': 'ok', 'reuse': 'ok', 'layer_attn': 'ok', 'lt': 'ok', 'measured_lt': 'ok', 'cutlass': 'ok', 'mixed': 'ok', 'attn': 'ok', 'xwarp': 'ok', 'xgroup': 'ok', 'p8': 'ok'} seconds 75.403
+TMA Desc Addr:   0x7ffe496c3600
+format         0
+dim            3
+gmem_address   0xc1427f36000
+globalDim      (1,1,1,1,1)
+globalStrides  (1,0,0,0,0)
+boxDim         (8,4,1,1,1)
+elementStrides (1,1,1,1,1)
+interleave     0
+swizzle        0
+l2Promotion    2
+oobFill        0
+Error: Failed to initialize the TMA descriptor 1
+python: /opt/sglang/lib/python3.12/site-packages/deep_gemm/include/cute/atom/copy_traits_sm90_tma.hpp:1069: auto cute::detail::make_tma_copy_desc(const cute::Tensor<Engine, Layout>&, const cute::Layout<NewShape, NewStride>&, const cute::Swizzle<B1, M1, S1>&, uint32_t) [with TmaInternalType = unsigned char; GEngine = cute::ViewEngine<const cutlass::float_e4m3_t*>; GLayout = cute::Layout<cute::tuple<int, int, unsigned int>, cute::tuple<cute::C<1>, long int, long int> >; TShape = cute::tuple<cute::C<8>, cute::C<4>, cute::C<1> >; TStride = cute::tuple<cute::ScaledBasis<cute::C<1>, 0>, cute::ScaledBasis<cute::C<1>, 1>, cute::ScaledBasis<cute::C<1>, 2> >; int B = 0; int M = 4; int S = 3; uint32_t = unsigned int]: Assertion `false' failed.

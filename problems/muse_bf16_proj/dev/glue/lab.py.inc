@@ -21,4 +21,8 @@ def lab(deadline,weights,state=None):
         lines.append(f'GB_CONTROL {m} proj={[st["proj_plan"].get((m,n),"custom") for n in names]} prefix={st["prefix_plan"].get(m)}')
     lines+=gb_prepare(st,callbacks,deadline)
     lines.append(f'GB_LAB_END elapsed_s={time.monotonic()-started:.3f}')
-    return lines
+    errors=[r for r in lines if r.startswith('GB_REJECT')]
+    compact=[r for r in lines if not r.startswith('GB_REJECT')]
+    compact += [r[:180] for r in errors[:6]]
+    if errors:compact.append(f'GB_REJECT_COUNT {len(errors)} sampled={min(6,len(errors))}')
+    return compact

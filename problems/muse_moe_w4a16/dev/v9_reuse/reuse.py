@@ -27,11 +27,12 @@ __device__ __forceinline__ void dq8(uint32_t A,uint32_t B,uint32_t* o){
 }
 // Raw E4M3 -> BF16(s * 2^118), including zero, sign and finite subnormals.
 __device__ __forceinline__ uint32_t sf_bits(uint32_t raw){
- uint32_t mag=raw&127, exp=mag>>3, m=mag&7, b=0;
- if(exp) b=((exp+238)<<7)|(m<<4);
- else if(m){int k=31-__clz(m);b=((236+k)<<7)|((m<<(7-k))&127);}
- b|=(raw&128)<<8; return b|(b<<16);
+ uint32_t mag=raw&127,b=0x7700u+(mag<<4);
+ if(mag<8){if(mag){int k=31-__clz(mag);b=((236+k)<<7)|((mag<<(7-k))&127);}else b=0;}
+ b|=(raw&128)<<8;return b|(b<<16);
 }
+// Each byte is one E4M3; normal conversion is byte-permute + IMAD, with exact subnormal handling.
+__device__ __forceinline__ uint32_t sf_dup(uint32_t sw,int shift){return sf_bits((sw>>shift)&255u);}
 __device__ __forceinline__ uint32_t mul2(uint32_t a,uint32_t b){
  uint32_t d;asm("mul.rn.bf16x2 %0,%1,%2;":"=r"(d):"r"(a),"r"(b));return d;
 }

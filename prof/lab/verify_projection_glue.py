@@ -484,7 +484,7 @@ def gb_prepare(state,callbacks,deadline,*,tokens=GB_TOKENS,recipes=None):
                         rejections+=1;reason=f'{type(exc).__name__}:{str(exc).splitlines()[0][:100]}'
                         if reason not in reasons and len(reasons)<2:rows.append(f'GB_REJECT {m} {phase} c={c} {reason}')
                         reasons.add(reason)
-                best=1.;winner=None;final=[]
+                best=float('inf');winner=None;final=[]
                 for _,c,error in sorted(entries)[:3]:
                     if time.monotonic()>min(stop,deadline-2):break
                     try:
@@ -500,7 +500,7 @@ def gb_prepare(state,callbacks,deadline,*,tokens=GB_TOKENS,recipes=None):
                         rejections+=1;rows.append(f'GB_REJECT final {m} {phase} {type(exc).__name__}:{str(exc)[:95]}')
                 if winner is not None:bank['plans'][m,phase]=winner
                 bank['trials'][m,phase]=final
-                rows.append(f'GB_STAGE {m} {phase} choice={winner.choice if winner else None} ratio={best:.5f} n={len(entries)} rejected={rejections} final={final}')
+                rows.append(f'GB_STAGE {m} {phase} choice={winner.choice if winner else None} ratio={best:.5f} n={len(entries)} rejected={rejections} final={sorted(final,key=lambda r:r[3])[:2]}')
             except Exception as exc:
                 rows.append(f'GB_REJECT incumbent {m} {phase} {type(exc).__name__}:{str(exc).splitlines()[0][:125]}')
             finally:
@@ -531,8 +531,9 @@ def gb_prepare(state,callbacks,deadline,*,tokens=GB_TOKENS,recipes=None):
             except Exception as exc:rows.append(f'GB_REJECT prefix {m} {type(exc).__name__}:{str(exc)[:125]}')
         for m in tokens:
             if time.monotonic()>=deadline-1:rows.append(f'GB_BUDGET chain {m}');continue
-            if not bank['prefix'].get(m,False) and (m,'b2') not in bank['plans']:
-                rows.append(f'GB_CHAIN {m} enabled=False no_stage_win');continue
+            if not bank['prefix'].get(m,False) and (m,'b2') not in bank['plans'] and not any((m,p) in bank['plans'] for p in ('b1','pool')):
+                rows.append(f'GB_CHAIN {m} enabled=False no_valid_fusion');continue
+            tail_plan=bank['plans'].get((m,'b2'));best=1.;winner=None;results=[]
             try:
                 x=torch.randn(m,1024,device=dev,dtype=torch.bfloat16,generator=generator)
                 stream=torch.randn(m,8192,device=dev,generator=generator)
@@ -544,21 +545,41 @@ def gb_prepare(state,callbacks,deadline,*,tokens=GB_TOKENS,recipes=None):
                 def fused_chain():
                     front=gb_prefix(x,stream,state,data)
                     return front+gb_tail(moe,front[4],state)
-                with _PgGraph(lambda:callbacks['chain'](x,stream,moe,data)) as old, _PgGraph(fused_chain) as new:
-                    for fresh in banks:
-                        for a,b in zip(inputs,fresh):a.copy_(b)
-                        old.graph.replay();new.graph.replay()
-                        for i in (0,4,5,6):gb_rel(new.out[i],old.out[i])
-                        carry=state['alpha1']*state['alpha2']*stream
-                        gb_rel(new.out[6]-carry,old.out[6]-carry)
-                    t0,t1,ratio=gb_pair(old,new,inputs,banks,flush,20)
-                    bank['enabled'][m]=ratio<1.
-                    rows.append(f'GB_CHAIN {m} enabled={ratio<1.} us={t0:.3f}/{t1:.3f} ratio={ratio:.5f}')
+                with _PgGraph(lambda:callbacks['chain'](x,stream,moe,data)) as old:
+                    for front_on,tail_on in ((False,True),(True,True),(True,False)):
+                        if time.monotonic()>=deadline-1:break
+                        if tail_on and tail_plan is None:continue
+                        if front_on and not any((m,p) in bank['plans'] for p in ('b1','pool')):continue
+                        bank['prefix'][m]=front_on
+                        if tail_on:bank['plans'][m,'b2']=tail_plan
+                        else:bank['plans'].pop((m,'b2'),None)
+                        try:
+                            with _PgGraph(fused_chain) as new:
+                                for fresh in banks:
+                                    for aa,bb in zip(inputs,fresh):aa.copy_(bb)
+                                    old.graph.replay();new.graph.replay()
+                                    for i in (0,4,5,6):gb_rel(new.out[i],old.out[i])
+                                    carry=state['alpha1']*state['alpha2']*stream
+                                    gb_rel(new.out[6]-carry,old.out[6]-carry)
+                                    (href,sref),_=gb_reference('b1',x,stream,state,data)
+                                    ref,meta=gb_reference('pool',href,sref,state,data)
+                                    gb_check('pool',new.out[:4],ref,meta,sref,state,data)
+                                t0,t1,ratio=gb_pair(old,new,inputs,banks,flush,20)
+                                results.append((int(front_on),int(tail_on),round(t0,3),round(t1,3),round(ratio,5)))
+                                if ratio<best:best=ratio;winner=(front_on,tail_on)
+                        except Exception as exc:rows.append(f'GB_REJECT chain {m} {front_on}/{tail_on} {type(exc).__name__}:{str(exc)[:100]}')
+                rows.append(f'GB_CHAIN {m} enabled={winner is not None} choice={winner} ratio={best:.5f} all={results}')
             except Exception as exc:rows.append(f'GB_REJECT chain {m} {type(exc).__name__}:{str(exc)[:125]}')
+            bank['enabled'][m]=winner is not None
+            bank['prefix'][m]=bool(winner and winner[0])
+            if winner and winner[1]:bank['plans'][m,'b2']=tail_plan
+            else:bank['plans'].pop((m,'b2'),None)
+            if not (winner and winner[0]):
+                for phase in ('b1','pool'):bank['plans'].pop((m,phase),None)
     except Exception as exc:
         bank['plans'].clear();bank['prefix'].clear();bank['enabled'].clear()
         rows.append(f'GB_REJECT setup {type(exc).__name__}:{str(exc)[:150]}')
-    rows.append(f'GB_END elapsed_s={time.monotonic()-begin:.3f} left_s={deadline-time.monotonic():.3f} plans={[(k,p.choice) for k,p in bank["plans"].items()]} prefix={bank["prefix"]}')
+    rows.append(f'GB_END elapsed_s={time.monotonic()-begin:.3f} left_s={deadline-time.monotonic():.3f} picks={len(bank["plans"])} prefix={bank["prefix"]} enabled={bank["enabled"]}')
     return rows
 
 
@@ -1276,4 +1297,8 @@ def lab(deadline,weights,state=None):
         lines.append(f'GB_CONTROL {m} proj={[st["proj_plan"].get((m,n),"custom") for n in names]} prefix={st["prefix_plan"].get(m)}')
     lines+=gb_prepare(st,callbacks,deadline)
     lines.append(f'GB_LAB_END elapsed_s={time.monotonic()-started:.3f}')
-    return lines
+    errors=[r for r in lines if r.startswith('GB_REJECT')]
+    compact=[r for r in lines if not r.startswith('GB_REJECT')]
+    compact += [r[:180] for r in errors[:6]]
+    if errors:compact.append(f'GB_REJECT_COUNT {len(errors)} sampled={min(6,len(errors))}')
+    return compact

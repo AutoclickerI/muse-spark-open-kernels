@@ -1,0 +1,81 @@
+{
+ "board": "muse_decode_layer",
+ "call_id": "nyc3:kc-a704a37c350e4618",
+ "cluster": "nyc3",
+ "content_hash": "77a88117b18caf6ac42ea94c5678aa51590cafdd5839c69c1d02979a305499c9",
+ "created_at": 1792826866.134172,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792829943.261729,
+ "id": "a704a37c350e4618",
+ "mode": "run",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/6774eceabbbb2c81/profiles/cand_r3_omni.a704a37c350e4618.log"
+ },
+ "payload_ref": "muse_decode_layer/77a88117b18caf6ac42ea94c5678aa51590cafdd5839c69c1d02979a305499c9.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": "the submission process exited",
+  "evaluator": {
+   "code_sha256": "2999d8a201bb2b0bad6c7b3998af2143a1ed720d531dbb4d15670721ee9f957b",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_decode_layer/baseline.py": "87d95a0c4b78f0fd6c772436b959330ca45652b10e82dfc8add9acf0549227d4",
+    "problems/muse_decode_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "problems/muse_decode_layer/task.yml": "6a73de4094ff00d7453fb94bd3aa40f5fae79ac7fbea149660eae2125dc5a0c7"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "OMNI_COMPILE {'v9': 'ok', 'reuse': 'ok', 'layer_attn': 'ok', 'lt': 'ok', 'measured_lt': 'ok', 'cutlass': 'ok', 'mixed': 'ok', 'attn': 'ok', 'xwarp': 'ok', 'xgroup': 'ok', 'p8': 'ok'} seconds 75.403\nTMA Desc Addr:   0x7ffe496c3600\nformat         0\ndim            3\ngmem_address   0xc1427f36000\nglobalDim      (1,1,1,1,1)\nglobalStrides  (1,0,0,0,0)\nboxDim         (8,4,1,1,1)\nelementStrides (1,1,1,1,1)\ninterleave     0\nswizzle        0\nl2Promotion    2\noobFill        0\nError: Failed to initialize the TMA descriptor 1\npython: /opt/sglang/lib/python3.12/site-packages/deep_gemm/include/cute/atom/copy_traits_sm90_tma.hpp:1069: auto cute::detail::make_tma_copy_desc(const cute::Tensor<Engine, Layout>&, const cute::Layout<NewShape, NewStride>&, const cute::Swizzle<B1, M1, S1>&, uint32_t) [with TmaInternalType = unsigned char; GEngine = cute::ViewEngine<const cutlass::float_e4m3_t*>; GLayout = cute::Layout<cute::tuple<int, int, unsigned int>, cute::tuple<cute::C<1>, long int, long int> >; TShape = cute::tuple<cute::C<8>, cute::C<4>, cute::C<1> >; TStride = cute::tuple<cute::ScaledBasis<cute::C<1>, 0>, cute::ScaledBasis<cute::C<1>, 1>, cute::ScaledBasis<cute::C<1>, 2> >; int B = 0; int M = 4; int S = 3; uint32_t = unsigned int]: Assertion `false' failed.\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 125.29,
+    "power.limit": 700,
+    "temperature.gpu": 34
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 125.14,
+    "power.limit": 700,
+    "temperature.gpu": 36
+   },
+   "node": "n-3tovvmp4azgxjrdbhkqxjjl254"
+  },
+  "passed": false,
+  "records": [
+   {
+    "error": "the submission process exited",
+    "event": "error"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792829819.0682461,
+ "status": "done",
+ "team": "AutoclickerI"
+}
