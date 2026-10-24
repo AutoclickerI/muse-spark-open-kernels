@@ -29,23 +29,59 @@ def _gb_boundary_gemv(X,W,STREAM,ALPHA,BETA,POST,PRE,P,CNT,OUT,SOUT,
     previous=tl.atomic_add(CNT+pt,1,sem='acq_rel')
     if previous==(N//BN)*(K//KS)-1:
         _gb_publish(WARPS)
-        h=tl.arange(0,8192)
-        aa=tl.load(ALPHA+h);bb=tl.load(BETA+h);pw=tl.load(PRE+h)
-        if POSTW:post=tl.load(POST+h)
-        # A last CTA handles one small token tile; no grid spin or residency assumption.
-        for rr in range(BT):
-            tok=pt*BT+rr
-            f=tl.zeros((8192,),tl.float32)
-            for s in tl.static_range(K//KS):
-                f+=tl.load(P+s*M*N+tok*N+h,mask=(h<N)&(tok<M),other=0.,cache_modifier='.cg')
-            f=f.to(tl.bfloat16).to(tl.float32)
-            if POSTW:f=f*post
-            norm=tl.rsqrt(tl.sum(f*f,0)/8192+1.e-8)
-            st=tl.load(STREAM+tok*8192+h,mask=tok<M,other=0.)
-            st=aa*st+bb*f*norm
-            rh=tl.rsqrt(tl.sum(st*st,0)/8192+1.e-5)
-            tl.store(SOUT+tok*8192+h,st,mask=tok<M)
-            tl.store(OUT+tok*8192+h,(st*rh*pw).to(tl.bfloat16),mask=tok<M)
+        if BT==1:
+            h=tl.arange(0,8192)
+            aa=tl.load(ALPHA+h);bb=tl.load(BETA+h);pw=tl.load(PRE+h)
+            if POSTW:post=tl.load(POST+h)
+            # A last CTA handles one small token tile; no grid spin or residency assumption.
+            for rr in range(BT):
+                tok=pt*BT+rr
+                f=tl.zeros((8192,),tl.float32)
+                for s in tl.static_range(K//KS):
+                    f+=tl.load(P+s*M*N+tok*N+h,mask=(h<N)&(tok<M),other=0.,cache_modifier='.cg')
+                f=f.to(tl.bfloat16).to(tl.float32)
+                if POSTW:f=f*post
+                norm=tl.rsqrt(tl.sum(f*f,0)/8192+1.e-8)
+                st=tl.load(STREAM+tok*8192+h,mask=tok<M,other=0.)
+                st=aa*st+bb*f*norm
+                rh=tl.rsqrt(tl.sum(st*st,0)/8192+1.e-5)
+                tl.store(SOUT+tok*8192+h,st,mask=tok<M)
+                tl.store(OUT+tok*8192+h,(st*rh*pw).to(tl.bfloat16),mask=tok<M)
+        else:
+            CH:tl.constexpr=512
+            rr=tl.arange(0,triton.next_power_of_2(BT));tok=pt*BT+rr
+            d=tl.arange(0,CH)
+            sb=tl.zeros((triton.next_power_of_2(BT),),tl.float32)
+            sa=tl.zeros((triton.next_power_of_2(BT),),tl.float32)
+            sab=tl.zeros((triton.next_power_of_2(BT),),tl.float32)
+            sbb=tl.zeros((triton.next_power_of_2(BT),),tl.float32)
+            for block in range(8192//CH):
+                col=block*CH+d
+                v=tl.zeros((triton.next_power_of_2(BT),CH),tl.float32)
+                for split in tl.static_range(K//KS):
+                    v+=tl.load(P+split*M*N+tok[:,None]*N+col[None,:],
+                        mask=(tok[:,None]<M)&(rr[:,None]<BT)&(col[None,:]<N),other=0.,cache_modifier='.cg')
+                v=v.to(tl.bfloat16).to(tl.float32)
+                if POSTW:v*=tl.load(POST+col)[None,:]
+                carry=tl.load(ALPHA+col)[None,:]*tl.load(STREAM+tok[:,None]*8192+col[None,:],mask=(tok[:,None]<M)&(rr[:,None]<BT),other=0.)
+                branch=tl.load(BETA+col)[None,:]*v
+                sb+=tl.sum(v*v,1);sa+=tl.sum(carry*carry,1)
+                sab+=tl.sum(carry*branch,1);sbb+=tl.sum(branch*branch,1)
+            rb=tl.rsqrt(sb/8192+1.e-8)
+            rh=tl.rsqrt((sa+2*rb*sab+rb*rb*sbb)/8192+1.e-5)
+            for block in range(8192//CH):
+                col=block*CH+d
+                v=tl.zeros((triton.next_power_of_2(BT),CH),tl.float32)
+                for split in tl.static_range(K//KS):
+                    v+=tl.load(P+split*M*N+tok[:,None]*N+col[None,:],
+                        mask=(tok[:,None]<M)&(rr[:,None]<BT)&(col[None,:]<N),other=0.,cache_modifier='.cg')
+                v=v.to(tl.bfloat16).to(tl.float32)
+                if POSTW:v*=tl.load(POST+col)[None,:]
+                carry=tl.load(ALPHA+col)[None,:]*tl.load(STREAM+tok[:,None]*8192+col[None,:],mask=(tok[:,None]<M)&(rr[:,None]<BT),other=0.)
+                result=carry+tl.load(BETA+col)[None,:]*v*rb[:,None]
+                tl.store(SOUT+tok[:,None]*8192+col[None,:],result,mask=(tok[:,None]<M)&(rr[:,None]<BT))
+                y=result*rh[:,None]*tl.load(PRE+col)[None,:]
+                tl.store(OUT+tok[:,None]*8192+col[None,:],y.to(tl.bfloat16),mask=(tok[:,None]<M)&(rr[:,None]<BT))
         _gb_publish(WARPS)
         tl.atomic_xchg(CNT+pt,0,sem='release')
 
@@ -69,22 +105,43 @@ def _gb_pool_route(X,W,PRE,BIAS,LSTART,P,RP,CNT,Y,IDS,WTS,LIDS,
         prev=tl.atomic_add(CNT+pt*2,1,sem='acq_rel')
         if prev==(4096//BN)*(8192//KS)-1:
             _gb_publish(WARPS)
-            d=tl.arange(0,4096);pre=tl.load(PRE+d)
-            for rr in range(BT):
-                tok=pt*BT+rr
-                p=tl.zeros((4096,),tl.float32)
-                for s in tl.static_range(8192//KS):
-                    p+=tl.load(P+s*M*4096+tok*4096+d,mask=tok<M,other=0.,cache_modifier='.cg')
-                # Stock pooler output is BF16 before its pre-expert RMSNorm.
-                p=p.to(tl.bfloat16).to(tl.float32)
-                p=p*tl.rsqrt(tl.sum(p*p,0)/4096+1.e-5)*pre
-                tl.store(Y+tok*4096+d,p.to(tl.bfloat16),mask=tok<M)
+            if BT==1:
+                d=tl.arange(0,4096);pre=tl.load(PRE+d)
+                for rr in range(BT):
+                    tok=pt*BT+rr
+                    p=tl.zeros((4096,),tl.float32)
+                    for s in tl.static_range(8192//KS):
+                        p+=tl.load(P+s*M*4096+tok*4096+d,mask=tok<M,other=0.,cache_modifier='.cg')
+                    # Stock pooler output is BF16 before its pre-expert RMSNorm.
+                    p=p.to(tl.bfloat16).to(tl.float32)
+                    p=p*tl.rsqrt(tl.sum(p*p,0)/4096+1.e-5)*pre
+                    tl.store(Y+tok*4096+d,p.to(tl.bfloat16),mask=tok<M)
+            else:
+                CH:tl.constexpr=512
+                rr=tl.arange(0,triton.next_power_of_2(BT));tok=pt*BT+rr;col=tl.arange(0,CH)
+                squares=tl.zeros((triton.next_power_of_2(BT),),tl.float32)
+                for block in range(4096//CH):
+                    d=block*CH+col
+                    val=tl.zeros((triton.next_power_of_2(BT),CH),tl.float32)
+                    for split in tl.static_range(8192//KS):
+                        val+=tl.load(P+split*M*4096+tok[:,None]*4096+d[None,:],mask=(tok[:,None]<M)&(rr[:,None]<BT),other=0.,cache_modifier='.cg')
+                    val=val.to(tl.bfloat16).to(tl.float32)
+                    squares+=tl.sum(val*val,1)
+                scale=tl.rsqrt(squares/4096+1.e-5)
+                for block in range(4096//CH):
+                    d=block*CH+col
+                    val=tl.zeros((triton.next_power_of_2(BT),CH),tl.float32)
+                    for split in tl.static_range(8192//KS):
+                        val+=tl.load(P+split*M*4096+tok[:,None]*4096+d[None,:],mask=(tok[:,None]<M)&(rr[:,None]<BT),other=0.,cache_modifier='.cg')
+                    val=val.to(tl.bfloat16).to(tl.float32)
+                    val=val*scale[:,None]*tl.load(PRE+d)[None,:]
+                    tl.store(Y+tok[:,None]*4096+d[None,:],val.to(tl.bfloat16),mask=(tok[:,None]<M)&(rr[:,None]<BT))
             _gb_publish(WARPS)
             tl.atomic_xchg(CNT+pt*2,0,sem='release')
     else:
-        # Whole router row group: hi and lo products raccumulate into SAME FP32 raccumulator.
-        e=tl.arange(0,256)
-        racc=tl.zeros((256,TB),tl.float32)
+        # Tiled router rows: hi and lo products share FP32 accumulators.
+        e=(pn-4096//BN)*BN+tl.arange(0,BN)
+        racc=tl.zeros((BN,TB),tl.float32)
         for off in range(ps*KS,(ps+1)*KS,BK):
             a=tl.load(X+t[:,None]*8192+off+kk[None,:],mask=(t[:,None]<M)&(r[:,None]<BT),other=0.)
             hi=tl.load(W+(4096+e[:,None])*8192+off+kk[None,:])
@@ -94,21 +151,22 @@ def _gb_pool_route(X,W,PRE,BIAS,LSTART,P,RP,CNT,Y,IDS,WTS,LIDS,
         tl.store(RP+ps*M*256+t[None,:]*256+e[:,None],racc,mask=(t[None,:]<M)&(r[None,:]<BT))
         _gb_publish(WARPS)
         prev=tl.atomic_add(CNT+pt*2+1,1,sem='acq_rel')
-        if prev==8192//KS-1:
+        if prev==(256//BN)*(8192//KS)-1:
             _gb_publish(WARPS)
+            efull=tl.arange(0,256)
             logits=tl.zeros((TB,256),tl.float32)
             for s in tl.static_range(8192//KS):
-                logits+=tl.load(RP+s*M*256+t[:,None]*256+e[None,:],mask=(t[:,None]<M)&(r[:,None]<BT),other=0.,cache_modifier='.cg')
+                logits+=tl.load(RP+s*M*256+t[:,None]*256+efull[None,:],mask=(t[:,None]<M)&(r[:,None]<BT),other=0.,cache_modifier='.cg')
             score=tl.sigmoid(logits*0.1767766952966369)
-            biased=score+tl.load(BIAS+e)[None,:]
+            biased=score+tl.load(BIAS+efull)[None,:]
             kr=tl.arange(0,8)
             ids=tl.zeros((TB,8),tl.int32);picked=tl.zeros((TB,8),tl.float32)
             for i in tl.static_range(8):
                 which=tl.argmax(biased,1)
-                value=tl.sum(tl.where(e[None,:]==which[:,None],score,0.),1)
+                value=tl.sum(tl.where(efull[None,:]==which[:,None],score,0.),1)
                 ids=tl.where(kr[None,:]==i,which[:,None],ids)
                 picked=tl.where(kr[None,:]==i,value[:,None],picked)
-                biased=tl.where(e[None,:]==which[:,None],-float('inf'),biased)
+                biased=tl.where(efull[None,:]==which[:,None],-float('inf'),biased)
             picked=picked/(tl.sum(picked,1)[:,None]+1.e-15)
             lid=(ids-tl.load(LSTART)+256)%256
             mask=(t[:,None]<M)&(r[:,None]<BT)
@@ -157,7 +215,7 @@ class GbPlan:
             y=torch.empty((m,4096),device=dev,dtype=torch.bfloat16)
             ids=torch.empty((m,8),device=dev,dtype=torch.int32)
             weights=torch.empty((m,8),device=dev,dtype=torch.float32);lids=torch.empty_like(ids)
-            _gb_pool_route[((4096//bn+1)*mt,splits)](x,st['pool_router'],st['pre_expert_w'],
+            _gb_pool_route[((4096//bn+256//bn)*mt,splits)](x,st['pool_router'],st['pre_expert_w'],
                 st['router_bias'],data['local_start'],self.part,self.rpart,self.counter,y,ids,weights,lids,
                 M=m,BN=bn,BK=bk,KS=8192//splits,BT=bt,TB=tb,WARPS=warps,
                 num_warps=warps,num_stages=2,enable_fp_fusion=False)
@@ -308,27 +366,48 @@ def gb_pair(old,new,inputs,banks,flush,repeats=20):
     return statistics.median(vals[0]),statistics.median(vals[1]),statistics.median(ratios)
 
 
-def gb_callbacks(state,project_fn,boundary_fn,route_fn,prefix_fn):
-    def sync(m,dev):
-        # Match the current chain's zero-initialized chunked boundaries exactly.
-        return torch.zeros((m,4),device=dev),torch.zeros(m,device=dev,dtype=torch.int32)
+def gb_callbacks(state,project_fn,boundary_fn,route_fn,o_pool_fn):
+    def workspace(m,dev):
+        raw=(torch.zeros if m<=8 else torch.empty)((15*m,),device=dev,dtype=torch.int32)
+        return raw[3*m:].view(torch.float32).view(3,m,4),raw[:3*m].view(3,m)
     def b1(x,stream,data):
+        m=x.shape[0];sf,si=workspace(m,x.device)
         p=project_fn(x,state['o'],'o',state)
         return boundary_fn(p,stream,state['alpha1'],state['beta1'],state['pre_ffn_w'],
-            sync(x.shape[0],x.device),use_pdl=state.get('pdl_plan',{}).get((x.shape[0],'b1'),True))
+            (sf[0],si[0]),use_pdl=state.get('pdl_plan',{}).get((m,'b1'),True))
     def pool(x,stream,data):
+        m=x.shape[0];sf,si=workspace(m,x.device)
         p=project_fn(x,state['pool_router'],'pool_router',state,out_dtype=torch.float32)
-        return route_fn(p,state,data,sync(x.shape[0],x.device))
-    def b2(x,stream,data):
+        return route_fn(p,state,data,(sf[1],si[1]))
+    def b2_inner(x,stream,sf,si):
         m=x.shape[0];name='unpooler_slice' if m<=8 else 'unpooler'
         p=project_fn(x,state[name],name,state)
         return boundary_fn(p,stream,state['alpha2'],state['beta2'],state['next_pre_attn_w'],
-            sync(m,x.device),postw=state['post_ffn_w'],
+            (sf[2],si[2]),postw=state['post_ffn_w'],
             use_pdl=state.get('pdl_plan',{}).get((m,'b2'),True))
-    def prefix(x,stream,data):
+    def b2(x,stream,data):
+        sf,si=workspace(x.shape[0],x.device)
+        return b2_inner(x,stream,sf,si)
+    def prefix_inner(x,stream,data,sf,si):
         m=x.shape[0];kind,pdl=state.get('prefix_plan',{}).get(m,('regular',True))
-        return prefix_fn(x,stream,state,data,kind,pdl)
-    return {'b1':b1,'pool':pool,'b2':b2,'prefix':prefix}
+        if kind=='fused':
+            counters=torch.zeros((triton.cdiv(m,32),),device=x.device,dtype=torch.int32)
+            pr,ss=o_pool_fn(x,stream,state,counters,use_pdl=pdl)
+        else:
+            a=project_fn(x,state['o'],'o',state)
+            h,ss=boundary_fn(a,stream,state['alpha1'],state['beta1'],state['pre_ffn_w'],
+                (sf[0],si[0]),use_pdl=pdl)
+            pr=project_fn(h,state['pool_router'],'pool_router',state,out_dtype=torch.float32)
+        return route_fn(pr,state,data,(sf[1],si[1]))+(ss,)
+    def prefix(x,stream,data):
+        sf,si=workspace(x.shape[0],x.device)
+        return prefix_inner(x,stream,data,sf,si)
+    def chain(x,stream,moe,data):
+        # Exactly one shared synchronization allocation/reset, as kernel_fn uses.
+        sf,si=workspace(x.shape[0],x.device)
+        front=prefix_inner(x,stream,data,sf,si)
+        return front+b2_inner(moe,front[4],sf,si)
+    return {'b1':b1,'pool':pool,'b2':b2,'prefix':prefix,'chain':chain}
 
 
 def _gb_apply(bank,phase,x,stream,data):
@@ -355,13 +434,14 @@ def gb_prepare(state,callbacks,deadline,*,tokens=GB_TOKENS,recipes=None):
     Optional failures reject and log. No input-derived result is retained in state.
     """
     begin=time.monotonic();deadline=min(deadline,begin+225)
-    bank={'callbacks':callbacks,'plans':{},'prefix':{},'trials':{}}
+    bank={'callbacks':callbacks,'plans':{},'prefix':{},'enabled':{},'trials':{}}
     state['_gb_glue']=bank;rows=[]
+    if recipes is not None and not recipes:return ['GB_END no H200-positive recipes; incumbent retained']
     try:
         dev=state['o'].device;generator=torch.Generator(device=dev).manual_seed(2889121)
         flush=torch.zeros((1<<30)//4,device=dev,dtype=torch.float32)
         keys=[(m,p) for m in tokens for p in ('b1','pool','b2')]
-        stage_stop=begin+.86*max(0,deadline-begin)
+        stage_stop=begin+.80*max(0,deadline-begin)
         for pos,(m,phase) in enumerate(keys):
             now=time.monotonic();stop=now+max(0,stage_stop-now-2)/(len(keys)-pos)
             if now>=stage_stop-2:rows.append(f'GB_BUDGET {m} {phase}');continue
@@ -449,11 +529,51 @@ def gb_prepare(state,callbacks,deadline,*,tokens=GB_TOKENS,recipes=None):
                     bank['prefix'][m]=ratio<1.
                     rows.append(f'GB_PREFIX {m} enabled={ratio<1.} us={t0:.3f}/{t1:.3f} ratio={ratio:.5f}')
             except Exception as exc:rows.append(f'GB_REJECT prefix {m} {type(exc).__name__}:{str(exc)[:125]}')
+        for m in tokens:
+            if time.monotonic()>=deadline-1:rows.append(f'GB_BUDGET chain {m}');continue
+            if not bank['prefix'].get(m,False) and (m,'b2') not in bank['plans']:
+                rows.append(f'GB_CHAIN {m} enabled=False no_stage_win');continue
+            try:
+                x=torch.randn(m,1024,device=dev,dtype=torch.bfloat16,generator=generator)
+                stream=torch.randn(m,8192,device=dev,generator=generator)
+                moe=torch.randn(m,4096,device=dev,dtype=torch.bfloat16,generator=generator)
+                ls=torch.zeros((),device=dev,dtype=torch.int32);data={'local_start':ls}
+                inputs=(x,stream,moe,ls)
+                banks=[(torch.randn_like(x),torch.randn_like(stream),torch.randn_like(moe),
+                        torch.tensor(j*17,device=dev,dtype=torch.int32)) for j in range(3)]
+                def fused_chain():
+                    front=gb_prefix(x,stream,state,data)
+                    return front+gb_tail(moe,front[4],state)
+                with _PgGraph(lambda:callbacks['chain'](x,stream,moe,data)) as old, _PgGraph(fused_chain) as new:
+                    for fresh in banks:
+                        for a,b in zip(inputs,fresh):a.copy_(b)
+                        old.graph.replay();new.graph.replay()
+                        for i in (0,4,5,6):gb_rel(new.out[i],old.out[i])
+                        carry=state['alpha1']*state['alpha2']*stream
+                        gb_rel(new.out[6]-carry,old.out[6]-carry)
+                    t0,t1,ratio=gb_pair(old,new,inputs,banks,flush,20)
+                    bank['enabled'][m]=ratio<1.
+                    rows.append(f'GB_CHAIN {m} enabled={ratio<1.} us={t0:.3f}/{t1:.3f} ratio={ratio:.5f}')
+            except Exception as exc:rows.append(f'GB_REJECT chain {m} {type(exc).__name__}:{str(exc)[:125]}')
     except Exception as exc:
-        bank['plans'].clear();bank['prefix'].clear()
+        bank['plans'].clear();bank['prefix'].clear();bank['enabled'].clear()
         rows.append(f'GB_REJECT setup {type(exc).__name__}:{str(exc)[:150]}')
     rows.append(f'GB_END elapsed_s={time.monotonic()-begin:.3f} left_s={deadline-time.monotonic():.3f} plans={[(k,p.choice) for k,p in bank["plans"].items()]} prefix={bank["prefix"]}')
     return rows
+
+
+def gb_wrap_kernel(original,project_fn,attention_fn,experts_fn):
+    """Wrap cand_r3_best without changing attention/MoE or unselected shapes."""
+    def kernel(data,state):
+        m=data['config']['tokens'];bank=state.get('_gb_glue')
+        if bank is None or not bank['enabled'].get(m,False):return original(data,state)
+        qkv=project_fn(data['attn_input'],state['qkv_gate'],'qkv_gate',state)
+        attn=attention_fn(qkv,data,state)
+        x,ids,wts,lids,stream=gb_prefix(attn,data['stream'],state,data)
+        moe=experts_fn(x,wts,lids,state)
+        hidden,stream2=gb_tail(moe,stream,state)
+        return hidden,stream2,ids
+    return kernel
 
 import torch
 import torch.nn.functional as F
@@ -508,7 +628,7 @@ def _gbc__gemv_kernel(X, W, P, T, x_stride, N: tl.constexpr, K: tl.constexpr, KS
     _gbc__pdl_start(USE_PDL)
     n = pn * BN + tl.arange(0, BN)
     k0 = ps * KS
-    if _gbc_PREFETCH:
+    if PREFETCH:
         lines = tl.arange(0, KS // 64)
         _gbc__l2_prefetch(W + n[:, None] * K + k0 + lines[None, :] * 64)
     _gbc__pdl_wait(USE_PDL)
@@ -549,25 +669,25 @@ def _gbc__qk_prep_kernel(P, S: tl.constexpr, ps_stride, POS, LOC, KC, VC, KSCALE
     t = tl.program_id(0)
     _gbc__pdl_start(USE_PDL)
     _gbc__pdl_wait(USE_PDL)
-    W: tl.constexpr = (2 * _gbc_HQ + 2 * _gbc_HKV) * D
+    W: tl.constexpr = (2 * HQ + 2 * HKV) * D
     base = P + t * W
-    hq = tl.arange(0, _gbc_HQ)
-    hk = tl.arange(0, _gbc_HKV)
+    hq = tl.arange(0, HQ)
+    hk = tl.arange(0, HKV)
     d = tl.arange(0, D)
     qo = hq[:, None] * D + d[None, :]
-    ko = _gbc_HQ * D + hk[:, None] * D + d[None, :]
-    vo = (_gbc_HQ + _gbc_HKV) * D + hk[:, None] * D + d[None, :]
-    go = (_gbc_HQ + 2 * _gbc_HKV) * D + qo
-    q = tl.zeros((_gbc_HQ, D), tl.float32)
-    k = tl.zeros((_gbc_HKV, D), tl.float32)
-    v = tl.zeros((_gbc_HKV, D), tl.float32)
-    g = tl.zeros((_gbc_HQ, D), tl.float32)
+    ko = HQ * D + hk[:, None] * D + d[None, :]
+    vo = (HQ + HKV) * D + hk[:, None] * D + d[None, :]
+    go = (HQ + 2 * HKV) * D + qo
+    q = tl.zeros((HQ, D), tl.float32)
+    k = tl.zeros((HKV, D), tl.float32)
+    v = tl.zeros((HKV, D), tl.float32)
+    g = tl.zeros((HQ, D), tl.float32)
     for s in tl.static_range(S):
         q += tl.load(base + s * ps_stride + qo).to(tl.float32)
         k += tl.load(base + s * ps_stride + ko).to(tl.float32)
         v += tl.load(base + s * ps_stride + vo).to(tl.float32)
         g += tl.load(base + s * ps_stride + go).to(tl.float32)
-    tl.store(GATE + t * (_gbc_HQ * D) + qo, g)
+    tl.store(GATE + t * (HQ * D) + qo, g)
     q = q * tl.rsqrt(tl.sum(q * q, 1) / D + eps)[:, None]
     k = k * tl.rsqrt(tl.sum(k * k, 1) / D + eps)[:, None]
     if ROPE:
@@ -576,18 +696,18 @@ def _gbc__qk_prep_kernel(P, S: tl.constexpr, ps_stride, POS, LOC, KC, VC, KSCALE
         ang = pos * tl.load(INV_FREQ + half)
         c = tl.cos(ang)[None, :]
         sn = tl.sin(ang)[None, :]
-        qe, qd = tl.split(tl.reshape(q, (_gbc_HQ, D // 2, 2)))
-        q = tl.reshape(tl.join(qe * c - qd * sn, qe * sn + qd * c), (_gbc_HQ, D))
-        ke, kd = tl.split(tl.reshape(k, (_gbc_HKV, D // 2, 2)))
-        k = tl.reshape(tl.join(ke * c - kd * sn, ke * sn + kd * c), (_gbc_HKV, D))
+        qe, qd = tl.split(tl.reshape(q, (HQ, D // 2, 2)))
+        q = tl.reshape(tl.join(qe * c - qd * sn, qe * sn + qd * c), (HQ, D))
+        ke, kd = tl.split(tl.reshape(k, (HKV, D // 2, 2)))
+        k = tl.reshape(tl.join(ke * c - kd * sn, ke * sn + kd * c), (HKV, D))
     row = tl.load(LOC + t)
-    kv_off = row * (_gbc_HKV * D) + hk[:, None] * D + d[None, :]
+    kv_off = row * (HKV * D) + hk[:, None] * D + d[None, :]
     tl.store(KC + kv_off, (k / tl.load(KSCALE)).to(tl.float8e4nv))
     tl.store(VC + kv_off, (v / tl.load(VSCALE)).to(tl.float8e4nv))
     if Q_FP8:
-        tl.store(QOUT + t * (_gbc_HQ * D) + qo, q.to(tl.float8e4nv))
+        tl.store(QOUT + t * (HQ * D) + qo, q.to(tl.float8e4nv))
     else:
-        tl.store(QOUT + t * (_gbc_HQ * D) + qo, (q * q_mult).to(tl.bfloat16))
+        tl.store(QOUT + t * (HQ * D) + qo, (q * q_mult).to(tl.bfloat16))
 
 def _gbc_qk_prep(qkv, data, state, q_fp8: bool):
     P, S = qkv
@@ -613,7 +733,7 @@ def _gbc__boundary_kernel(BR, S: tl.constexpr, bs_stride, br_stride, STREAM, STR
     t = tl.program_id(0)
     c = tl.program_id(1)
     _gbc__pdl_start(USE_PDL)
-    CH: tl.constexpr = _gbc_H // C
+    CH: tl.constexpr = H // C
     offs = c * CH + tl.arange(0, CH)
     alpha = tl.load(ALPHA + offs)
     beta = tl.load(BETA + offs)
@@ -621,16 +741,16 @@ def _gbc__boundary_kernel(BR, S: tl.constexpr, bs_stride, br_stride, STREAM, STR
     if HAS_POSTW:
         postw = tl.load(POSTW + offs)
     _gbc__pdl_wait(USE_PDL)
-    st = tl.load(STREAM + t * _gbc_H + offs)
+    st = tl.load(STREAM + t * H + offs)
     br = tl.zeros((CH,), tl.float32)
     for s in tl.static_range(S):
         br += tl.load(BR + s * bs_stride + t * br_stride + offs, mask=offs < NB, other=0.0).to(tl.float32)
     if HAS_POSTW:
         br = br * postw
     if C == 1:
-        br = br * tl.rsqrt(tl.sum(br * br, 0) / _gbc_H + post_eps)
+        br = br * tl.rsqrt(tl.sum(br * br, 0) / H + post_eps)
         st = alpha * st + beta * br
-        rs = tl.rsqrt(tl.sum(st * st, 0) / _gbc_H + pre_eps)
+        rs = tl.rsqrt(tl.sum(st * st, 0) / H + pre_eps)
     else:
         a_s = alpha * st
         b_b = beta * br
@@ -643,11 +763,11 @@ def _gbc__boundary_kernel(BR, S: tl.constexpr, bs_stride, br_stride, STREAM, STR
         sss = tl.atomic_add(SUMS + t * 4 + 1, 0.0, sem='acquire')
         ssb = tl.atomic_add(SUMS + t * 4 + 2, 0.0, sem='acquire')
         sbb2 = tl.atomic_add(SUMS + t * 4 + 3, 0.0, sem='acquire')
-        rb = tl.rsqrt(sbb / _gbc_H + post_eps)
+        rb = tl.rsqrt(sbb / H + post_eps)
         st = a_s + b_b * rb
-        rs = tl.rsqrt((sss + 2.0 * rb * ssb + rb * rb * sbb2) / _gbc_H + pre_eps)
-    tl.store(STREAM_OUT + t * _gbc_H + offs, st)
-    tl.store(OUT + t * _gbc_H + offs, (st * rs * prew).to(tl.bfloat16))
+        rs = tl.rsqrt((sss + 2.0 * rb * ssb + rb * rb * sbb2) / H + pre_eps)
+    tl.store(STREAM_OUT + t * H + offs, st)
+    tl.store(OUT + t * H + offs, (st * rs * prew).to(tl.bfloat16))
 
 def _gbc__chunks(tokens):
     return 16 if tokens <= 8 else 1
@@ -728,7 +848,7 @@ _gbc_LT_CPP_SRC = '\ntorch::Tensor lt_options(torch::Tensor W,torch::Tensor X,to
 _gbc__LT_MOD = None
 
 def _gbc__lt_module():
-    global _LT_MOD
+    global _gbc__LT_MOD
     if _gbc__LT_MOD is None:
         from torch.utils.cpp_extension import load_inline
         import hashlib
@@ -1149,7 +1269,7 @@ def lab(deadline,weights,state=None):
     except Exception as exc:
         # Missing optional incumbent setup cannot produce a misleading comparison.
         return lines+[f'GB_REJECT control_setup {type(exc).__name__}:{str(exc)[-180:]}']
-    callbacks=gb_callbacks(st,_gbc_project,_gbc_boundary,_gbc_route_and_norm,_gbc__prefix_variant)
+    callbacks=gb_callbacks(st,_gbc_project,_gbc_boundary,_gbc_route_and_norm,_gbc_o_and_pool)
     lines.append(f'GB_CONTROL_SETUP elapsed_s={time.monotonic()-started:.3f}')
     for m in GB_TOKENS:
         names=('o','pool_router','unpooler_slice' if m<=8 else 'unpooler')

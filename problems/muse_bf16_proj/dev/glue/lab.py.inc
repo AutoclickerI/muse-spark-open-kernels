@@ -14,7 +14,7 @@ def lab(deadline,weights,state=None):
     except Exception as exc:
         # Missing optional incumbent setup cannot produce a misleading comparison.
         return lines+[f'GB_REJECT control_setup {type(exc).__name__}:{str(exc)[-180:]}']
-    callbacks=gb_callbacks(st,_gbc_project,_gbc_boundary,_gbc_route_and_norm,_gbc__prefix_variant)
+    callbacks=gb_callbacks(st,_gbc_project,_gbc_boundary,_gbc_route_and_norm,_gbc_o_and_pool)
     lines.append(f'GB_CONTROL_SETUP elapsed_s={time.monotonic()-started:.3f}')
     for m in GB_TOKENS:
         names=('o','pool_router','unpooler_slice' if m<=8 else 'unpooler')

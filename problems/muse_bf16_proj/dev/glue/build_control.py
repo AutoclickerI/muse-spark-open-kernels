@@ -23,9 +23,24 @@ for n in ('_prefix_variant','project','boundary','route_and_norm','_seed_v9_gemv
           '_tune_projections','_tune_pdl','_tune_measured_lt','_tune_prefix'):visit(n)
 rename={name:'_gbc_'+name for name in wanted}
 class Rename(ast.NodeTransformer):
-    def visit_Name(self,node):node.id=rename.get(node.id,node.id);return node
+    def __init__(self):self.scopes=[]
+    def visit_Name(self,node):
+        if not any(node.id in s for s in self.scopes):node.id=rename.get(node.id,node.id)
+        return node
+    def visit_Global(self,node):
+        node.names=[rename.get(n,n) for n in node.names];return node
     def visit_FunctionDef(self,node):
-        node.name=rename.get(node.name,node.name);return self.generic_visit(node)
+        node.name=rename.get(node.name,node.name)
+        node.decorator_list=[self.visit(n) for n in node.decorator_list]
+        node.args=self.visit(node.args)
+        local={a.arg for a in ast.walk(node.args) if isinstance(a,ast.arg)}
+        local|={n.id for n in ast.walk(node) if isinstance(n,ast.Name) and isinstance(n.ctx,ast.Store)}
+        global_names={name for n in ast.walk(node) if isinstance(n,ast.Global) for name in n.names}
+        local-=global_names
+        self.scopes.append(local)
+        node.body=[self.visit(n) for n in node.body]
+        self.scopes.pop()
+        return node
     def visit_ClassDef(self,node):
         node.name=rename.get(node.name,node.name);return self.generic_visit(node)
 selected={id(nodes[name]) for name in wanted}

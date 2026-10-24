@@ -37,7 +37,7 @@ class GbPlan:
             y=torch.empty((m,4096),device=dev,dtype=torch.bfloat16)
             ids=torch.empty((m,8),device=dev,dtype=torch.int32)
             weights=torch.empty((m,8),device=dev,dtype=torch.float32);lids=torch.empty_like(ids)
-            _gb_pool_route[((4096//bn+1)*mt,splits)](x,st['pool_router'],st['pre_expert_w'],
+            _gb_pool_route[((4096//bn+256//bn)*mt,splits)](x,st['pool_router'],st['pre_expert_w'],
                 st['router_bias'],data['local_start'],self.part,self.rpart,self.counter,y,ids,weights,lids,
                 M=m,BN=bn,BK=bk,KS=8192//splits,BT=bt,TB=tb,WARPS=warps,
                 num_warps=warps,num_stages=2,enable_fp_fusion=False)

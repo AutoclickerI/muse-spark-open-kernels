@@ -51,7 +51,7 @@ def _gbc__gemv_kernel(X, W, P, T, x_stride, N: tl.constexpr, K: tl.constexpr, KS
     _gbc__pdl_start(USE_PDL)
     n = pn * BN + tl.arange(0, BN)
     k0 = ps * KS
-    if _gbc_PREFETCH:
+    if PREFETCH:
         lines = tl.arange(0, KS // 64)
         _gbc__l2_prefetch(W + n[:, None] * K + k0 + lines[None, :] * 64)
     _gbc__pdl_wait(USE_PDL)
@@ -92,25 +92,25 @@ def _gbc__qk_prep_kernel(P, S: tl.constexpr, ps_stride, POS, LOC, KC, VC, KSCALE
     t = tl.program_id(0)
     _gbc__pdl_start(USE_PDL)
     _gbc__pdl_wait(USE_PDL)
-    W: tl.constexpr = (2 * _gbc_HQ + 2 * _gbc_HKV) * D
+    W: tl.constexpr = (2 * HQ + 2 * HKV) * D
     base = P + t * W
-    hq = tl.arange(0, _gbc_HQ)
-    hk = tl.arange(0, _gbc_HKV)
+    hq = tl.arange(0, HQ)
+    hk = tl.arange(0, HKV)
     d = tl.arange(0, D)
     qo = hq[:, None] * D + d[None, :]
-    ko = _gbc_HQ * D + hk[:, None] * D + d[None, :]
-    vo = (_gbc_HQ + _gbc_HKV) * D + hk[:, None] * D + d[None, :]
-    go = (_gbc_HQ + 2 * _gbc_HKV) * D + qo
-    q = tl.zeros((_gbc_HQ, D), tl.float32)
-    k = tl.zeros((_gbc_HKV, D), tl.float32)
-    v = tl.zeros((_gbc_HKV, D), tl.float32)
-    g = tl.zeros((_gbc_HQ, D), tl.float32)
+    ko = HQ * D + hk[:, None] * D + d[None, :]
+    vo = (HQ + HKV) * D + hk[:, None] * D + d[None, :]
+    go = (HQ + 2 * HKV) * D + qo
+    q = tl.zeros((HQ, D), tl.float32)
+    k = tl.zeros((HKV, D), tl.float32)
+    v = tl.zeros((HKV, D), tl.float32)
+    g = tl.zeros((HQ, D), tl.float32)
     for s in tl.static_range(S):
         q += tl.load(base + s * ps_stride + qo).to(tl.float32)
         k += tl.load(base + s * ps_stride + ko).to(tl.float32)
         v += tl.load(base + s * ps_stride + vo).to(tl.float32)
         g += tl.load(base + s * ps_stride + go).to(tl.float32)
-    tl.store(GATE + t * (_gbc_HQ * D) + qo, g)
+    tl.store(GATE + t * (HQ * D) + qo, g)
     q = q * tl.rsqrt(tl.sum(q * q, 1) / D + eps)[:, None]
     k = k * tl.rsqrt(tl.sum(k * k, 1) / D + eps)[:, None]
     if ROPE:
@@ -119,18 +119,18 @@ def _gbc__qk_prep_kernel(P, S: tl.constexpr, ps_stride, POS, LOC, KC, VC, KSCALE
         ang = pos * tl.load(INV_FREQ + half)
         c = tl.cos(ang)[None, :]
         sn = tl.sin(ang)[None, :]
-        qe, qd = tl.split(tl.reshape(q, (_gbc_HQ, D // 2, 2)))
-        q = tl.reshape(tl.join(qe * c - qd * sn, qe * sn + qd * c), (_gbc_HQ, D))
-        ke, kd = tl.split(tl.reshape(k, (_gbc_HKV, D // 2, 2)))
-        k = tl.reshape(tl.join(ke * c - kd * sn, ke * sn + kd * c), (_gbc_HKV, D))
+        qe, qd = tl.split(tl.reshape(q, (HQ, D // 2, 2)))
+        q = tl.reshape(tl.join(qe * c - qd * sn, qe * sn + qd * c), (HQ, D))
+        ke, kd = tl.split(tl.reshape(k, (HKV, D // 2, 2)))
+        k = tl.reshape(tl.join(ke * c - kd * sn, ke * sn + kd * c), (HKV, D))
     row = tl.load(LOC + t)
-    kv_off = row * (_gbc_HKV * D) + hk[:, None] * D + d[None, :]
+    kv_off = row * (HKV * D) + hk[:, None] * D + d[None, :]
     tl.store(KC + kv_off, (k / tl.load(KSCALE)).to(tl.float8e4nv))
     tl.store(VC + kv_off, (v / tl.load(VSCALE)).to(tl.float8e4nv))
     if Q_FP8:
-        tl.store(QOUT + t * (_gbc_HQ * D) + qo, q.to(tl.float8e4nv))
+        tl.store(QOUT + t * (HQ * D) + qo, q.to(tl.float8e4nv))
     else:
-        tl.store(QOUT + t * (_gbc_HQ * D) + qo, (q * q_mult).to(tl.bfloat16))
+        tl.store(QOUT + t * (HQ * D) + qo, (q * q_mult).to(tl.bfloat16))
 
 def _gbc_qk_prep(qkv, data, state, q_fp8: bool):
     P, S = qkv
@@ -156,7 +156,7 @@ def _gbc__boundary_kernel(BR, S: tl.constexpr, bs_stride, br_stride, STREAM, STR
     t = tl.program_id(0)
     c = tl.program_id(1)
     _gbc__pdl_start(USE_PDL)
-    CH: tl.constexpr = _gbc_H // C
+    CH: tl.constexpr = H // C
     offs = c * CH + tl.arange(0, CH)
     alpha = tl.load(ALPHA + offs)
     beta = tl.load(BETA + offs)
@@ -164,16 +164,16 @@ def _gbc__boundary_kernel(BR, S: tl.constexpr, bs_stride, br_stride, STREAM, STR
     if HAS_POSTW:
         postw = tl.load(POSTW + offs)
     _gbc__pdl_wait(USE_PDL)
-    st = tl.load(STREAM + t * _gbc_H + offs)
+    st = tl.load(STREAM + t * H + offs)
     br = tl.zeros((CH,), tl.float32)
     for s in tl.static_range(S):
         br += tl.load(BR + s * bs_stride + t * br_stride + offs, mask=offs < NB, other=0.0).to(tl.float32)
     if HAS_POSTW:
         br = br * postw
     if C == 1:
-        br = br * tl.rsqrt(tl.sum(br * br, 0) / _gbc_H + post_eps)
+        br = br * tl.rsqrt(tl.sum(br * br, 0) / H + post_eps)
         st = alpha * st + beta * br
-        rs = tl.rsqrt(tl.sum(st * st, 0) / _gbc_H + pre_eps)
+        rs = tl.rsqrt(tl.sum(st * st, 0) / H + pre_eps)
     else:
         a_s = alpha * st
         b_b = beta * br
@@ -186,11 +186,11 @@ def _gbc__boundary_kernel(BR, S: tl.constexpr, bs_stride, br_stride, STREAM, STR
         sss = tl.atomic_add(SUMS + t * 4 + 1, 0.0, sem='acquire')
         ssb = tl.atomic_add(SUMS + t * 4 + 2, 0.0, sem='acquire')
         sbb2 = tl.atomic_add(SUMS + t * 4 + 3, 0.0, sem='acquire')
-        rb = tl.rsqrt(sbb / _gbc_H + post_eps)
+        rb = tl.rsqrt(sbb / H + post_eps)
         st = a_s + b_b * rb
-        rs = tl.rsqrt((sss + 2.0 * rb * ssb + rb * rb * sbb2) / _gbc_H + pre_eps)
-    tl.store(STREAM_OUT + t * _gbc_H + offs, st)
-    tl.store(OUT + t * _gbc_H + offs, (st * rs * prew).to(tl.bfloat16))
+        rs = tl.rsqrt((sss + 2.0 * rb * ssb + rb * rb * sbb2) / H + pre_eps)
+    tl.store(STREAM_OUT + t * H + offs, st)
+    tl.store(OUT + t * H + offs, (st * rs * prew).to(tl.bfloat16))
 
 def _gbc__chunks(tokens):
     return 16 if tokens <= 8 else 1
@@ -271,7 +271,7 @@ _gbc_LT_CPP_SRC = '\ntorch::Tensor lt_options(torch::Tensor W,torch::Tensor X,to
 _gbc__LT_MOD = None
 
 def _gbc__lt_module():
-    global _LT_MOD
+    global _gbc__LT_MOD
     if _gbc__LT_MOD is None:
         from torch.utils.cpp_extension import load_inline
         import hashlib
