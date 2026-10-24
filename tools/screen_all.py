@@ -75,9 +75,9 @@ def earlier_pass(f: Path):
     for js in sorted(REPO.glob(f"runs/screen/*/{stem}.json"), reverse=True):
         res = json.loads(js.read_text())
         checks = res.get("tests", []) + res.get("shapes", [])
-        # a screen from before the sm_90a compile check doesn't count as a pass
-        if (res.get("sha256") == sha and checks and "hopper_compile" in res
-                and all(c.get("ok") for c in checks + res["hopper_compile"])):
+        # a screen from before the static checks (undefined names, sm_90a compile) doesn't count
+        if (res.get("sha256") == sha and checks and "static" in res
+                and all(c.get("ok") for c in checks + res["static"])):
             return js, res
     return None
 
@@ -129,7 +129,7 @@ def screen(f: Path, gpu: str, logdir: Path) -> dict:
     why = ""
     if rc != 0:
         bad = ([t for t in tests if not t.get("ok")] + [s for s in shapes if not s.get("ok")]
-               + [c for c in res.get("hopper_compile", []) if not c.get("ok")])
+               + [c for c in res.get("static", []) if not c.get("ok")])
         why = (bad[0].get("msg") or bad[0].get("error") or "") if bad else log.read_text()[-400:].strip().splitlines()[-1:]
         why = why if isinstance(why, str) else " ".join(why)
     return {"problem": f.parent.name, "file": str(f.relative_to(REPO)), "ok": rc == 0, "rc": rc,

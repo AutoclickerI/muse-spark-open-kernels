@@ -240,6 +240,19 @@ def summarize(rows: list[dict]) -> dict:
     return out
 
 
+def undefined_names(file: Path) -> list[dict]:
+    """Names a function uses that nothing defines (ruff F821-F823): a branch that never runs here
+    still raises NameError on the judge (cand_r3_merge 43a1f3a3 lost every XQA variant to
+    ATTN_X_CUDA). Ruff lives in the image's home (~/bin/ruff, a copy of the host's)."""
+    import os
+    import subprocess
+    ruff = os.path.expanduser("~/bin/ruff")
+    p = subprocess.run([ruff, "check", "--no-cache", "--isolated", "--select", "F821,F822,F823",
+                        "--output-format", "concise", str(file)], capture_output=True, text=True)
+    found = [l.split(": ", 1)[-1] for l in p.stdout.splitlines() if ": F82" in l]
+    return [{"name": "undefined_names", "ok": p.returncode == 0, "msg": " | ".join(found[:8])[:400]}]
+
+
 def hopper_compile(file: Path) -> list[dict]:
     """Compile every CUDA source string in the file for sm_90a, whichever branch would build it.
 
@@ -394,16 +407,16 @@ def main():
             if "speedup" in result:
                 print(f"LOCAL speedup (geomean over loads): {result['speedup']:.3f}x  [not an H200 number]")
 
-    if (dev.major, dev.minor) != (9, 0):
-        result["hopper_compile"] = hopper_compile(file)
-        bad = [c for c in result["hopper_compile"] if not c["ok"]]
-        print(f"sm_90a compile of {len(result['hopper_compile'])} CUDA sources: "
-              + ("all pass" if not bad else "; ".join(f"FAIL {c['name']}: {c['msg']}" for c in bad)), flush=True)
+    # Static checks for code no local run reaches: Hopper-only branches and their names.
+    result["static"] = undefined_names(file) + (hopper_compile(file) if (dev.major, dev.minor) != (9, 0) else [])
+    bad = [c for c in result["static"] if not c["ok"]]
+    print(f"static checks ({len(result['static'])}: undefined names, sm_90a compile of each CUDA source): "
+          + ("all pass" if not bad else "; ".join(f"FAIL {c['name']}: {c['msg']}" for c in bad)), flush=True)
 
     if args.json:
         args.json.write_text(json.dumps(result, indent=1, default=str))
     ok = (all(t["ok"] for t in result.get("tests", [])) and all(r.get("ok") for r in result.get("shapes", []))
-          and all(c["ok"] for c in result.get("hopper_compile", [])))
+          and all(c["ok"] for c in result.get("static", [])))
     sys.exit(0 if ok else 1)
 
 
