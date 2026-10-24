@@ -1,0 +1,49 @@
+FUSED_SELECT router m=128 incumbent_us=23.392 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.168 top=[(14.976000413298607, (64, 64, 4, 1, 16, 160)), (14.976000413298607, (64, 64, 4, 1, 16, 128)), (15.71200042963028, (64, 64, 4, 1, 8, 160)), (19.45599913597107, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.840 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.480 top=[(16.448000445961952, (64, 64, 4, 1, 8, 160)), (16.543999314308167, (64, 64, 4, 1, 8, 256)), (17.632000148296356, (64, 64, 4, 1, 8, 128)), (27.51999907195568, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.600 chosen=None chosen_us=25.600 top=[(29.56799976527691, (128, 64, 3, 1, 4, 160)), (34.272000193595886, (64, 64, 4, 1, 2, 256)), (36.0959991812706, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.440 chosen=None chosen_us=29.440 top=[(38.2080003619194, (128, 64, 4, 1, 2, 256)), (40.44799879193306, (128, 128, 2, 1, 2, 256)), (41.50399938225746, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=32.160 chosen=None chosen_us=32.160 top=[(32.70399942994118, ('lt_nn', 1)), (32.96000137925148, ('lt_nn', 6)), (33.08799862861633, ('lt', 0)), (33.344000577926636, ('lt', 1)), (33.72799977660179, ('lt', 7))]
+FUSED_SELECT pooler m=256 incumbent_us=37.888 chosen=('lt_nn', 4) chosen_us=37.824 top=[(36.607999354600906, ('lt_nn', 0)), (37.50399872660637, ('lt_nn', 4)), (38.11199963092804, ('lt_nn', 1)), (38.36800158023834, ('lt', 1)), (38.55999931693077, ('lt', 5))]
+FUSED_SELECT unpooler m=128 incumbent_us=31.424 chosen=('lt_nn', 0) chosen_us=29.280 top=[(30.33600002527237, ('lt', 0)), (30.400000512599945, ('lt_nn', 0)), (30.6560005992651, ('lt', 1)), (30.751999467611313, ('lt', 3)), (31.199999153614044, ('lt', 4))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.376 chosen=None chosen_us=33.376 top=[(34.55999866127968, ('lt', 0)), (35.58399900794029, ('lt', 2)), (35.80800071358681, ('lt_nn', 0)), (35.80800071358681, ('lt_nn', 1)), (38.11199963092804, ('lt', 6))]
+FUSED_SELECT o m=128 incumbent_us=13.088 chosen=('lt_nn', 1) chosen_us=13.024 top=[(13.120000250637531, ('lt', 0)), (13.151999562978745, ('lt', 1)), (13.183999806642532, ('lt_nn', 1)), (13.21600005030632, ('lt', 5)), (13.376000337302685, ('lt_nn', 4))]
+FUSED_SELECT o m=256 incumbent_us=14.176 chosen=None chosen_us=14.176 top=[(14.208000153303146, ('lt_nn', 0)), (14.336000196635723, ('lt', 0)), (15.00799972563982, ('lt_nn', 4)), (15.231999568641186, ('lt_nn', 1)), (15.263999812304974, ('lt', 6))]
+FUSED_SELECT prepare_s=7.80
+LAB_BEGIN bf16_real_grouped 019e0cf9d76db537
+LAB_BF16 torch=2.14.1+cu130 sm=(9, 0)
+LAB_BF16 weights_bytes=3221225472 fp32_global_epilogue=True
+LAB_ROUTE M=128 counts=[0, 2, 0, 24, 1, 7, 0, 0, 0, 0, 0, 9, 0, 0, 23, 57, 5, 6, 0, 0, 12, 0, 6, 0, 0, 0, 15, 4, 0, 0, 6, 0] pairs=177
+LAB_V9 M=128 full_us=228.496
+LAB_GROUPED M=128 threshold=16 experts=3 hot_rows=104 padded=128 cold_us=147.136 lt=True dense_us=288.064 w13_l2=0.001655
+LAB_GROUPED M=128 threshold=16 experts=3 hot_rows=104 padded=128 cold_us=147.136 lt=False dense_us=287.952 w13_l2=0.001655
+LAB_BATCHED M=128 threshold=16 experts=3 hot_rows=104 padded=128 cold_us=147.136 dense_us=132.736 output=torch.bfloat16
+LAB_BATCHED M=128 threshold=16 experts=3 hot_rows=104 padded=128 cold_us=147.136 dense_us=126.416 output=torch.float32
+LAB_BATCHED_T M=128 threshold=16 experts=3 hot_rows=104 padded=128 cold_us=147.136 dense_us=121.968 output=torch.float32
+LAB_GROUPED M=128 threshold=32 experts=1 hot_rows=57 padded=64 cold_us=198.560 lt=True dense_us=211.680 w13_l2=0.001654
+LAB_GROUPED M=128 threshold=32 experts=1 hot_rows=57 padded=64 cold_us=198.560 lt=False dense_us=211.920 w13_l2=0.001654
+LAB_BATCHED M=128 threshold=32 experts=1 hot_rows=57 padded=64 cold_us=198.560 dense_us=56.080 output=torch.bfloat16
+LAB_BATCHED M=128 threshold=32 experts=1 hot_rows=57 padded=64 cold_us=198.560 dense_us=52.624 output=torch.float32
+LAB_BATCHED_T M=128 threshold=32 experts=1 hot_rows=57 padded=64 cold_us=198.560 dense_us=54.608 output=torch.float32
+LAB_ROUTE M=256 counts=[0, 1, 0, 44, 1, 20, 0, 0, 0, 0, 2, 23, 0, 0, 39, 104, 7, 7, 1, 0, 20, 2, 8, 0, 0, 0, 30, 17, 1, 1, 13, 0] pairs=341
+LAB_V9 M=256 full_us=393.920
+LAB_GROUPED M=256 threshold=16 experts=8 hot_rows=297 padded=368 cold_us=130.240 lt=True dense_us=538.560 w13_l2=0.001659
+LAB_GROUPED M=256 threshold=16 experts=8 hot_rows=297 padded=368 cold_us=130.240 lt=False dense_us=539.312 w13_l2=0.001659
+LAB_BATCHED M=256 threshold=16 experts=8 hot_rows=297 padded=368 cold_us=130.240 dense_us=453.552 output=torch.bfloat16
+LAB_BATCHED M=256 threshold=16 experts=8 hot_rows=297 padded=368 cold_us=130.240 dense_us=419.920 output=torch.float32
+LAB_BATCHED_T M=256 threshold=16 experts=8 hot_rows=297 padded=368 cold_us=130.240 dense_us=431.904 output=torch.float32
+LAB_GROUPED M=256 threshold=32 experts=3 hot_rows=187 padded=208 cold_us=268.384 lt=True dense_us=370.256 w13_l2=0.001659
+LAB_GROUPED M=256 threshold=32 experts=3 hot_rows=187 padded=208 cold_us=268.384 lt=False dense_us=370.416 w13_l2=0.001659
+LAB_BATCHED M=256 threshold=32 experts=3 hot_rows=187 padded=208 cold_us=268.384 dense_us=170.976 output=torch.bfloat16
+LAB_BATCHED M=256 threshold=32 experts=3 hot_rows=187 padded=208 cold_us=268.384 dense_us=160.032 output=torch.float32
+LAB_BATCHED_T M=256 threshold=32 experts=3 hot_rows=187 padded=208 cold_us=268.384 dense_us=161.920 output=torch.float32
+LAB_GROUPED M=256 threshold=64 experts=1 hot_rows=104 padded=112 cold_us=366.304 lt=True dense_us=302.672 w13_l2=0.001657
+LAB_GROUPED M=256 threshold=64 experts=1 hot_rows=104 padded=112 cold_us=366.304 lt=False dense_us=302.464 w13_l2=0.001657
+LAB_BATCHED M=256 threshold=64 experts=1 hot_rows=104 padded=112 cold_us=366.304 dense_us=74.368 output=torch.bfloat16
+LAB_BATCHED M=256 threshold=64 experts=1 hot_rows=104 padded=112 cold_us=366.304 dense_us=69.360 output=torch.float32
+LAB_BATCHED_T M=256 threshold=64 experts=1 hot_rows=104 padded=112 cold_us=366.304 dense_us=70.752 output=torch.float32
+LAB_GROUPED M=256 threshold=96 experts=1 hot_rows=104 padded=112 cold_us=367.728 lt=True dense_us=302.528 w13_l2=0.001657
+LAB_GROUPED M=256 threshold=96 experts=1 hot_rows=104 padded=112 cold_us=367.728 lt=False dense_us=303.040 w13_l2=0.001657
+LAB_BATCHED M=256 threshold=96 experts=1 hot_rows=104 padded=112 cold_us=367.728 dense_us=73.872 output=torch.bfloat16
+LAB_BATCHED M=256 threshold=96 experts=1 hot_rows=104 padded=112 cold_us=367.728 dense_us=69.040 output=torch.float32
+LAB_BATCHED_T M=256 threshold=96 experts=1 hot_rows=104 padded=112 cold_us=367.728 dense_us=70.400 output=torch.float32
+LAB_END lab_s=31.6 prepare_s=39.4
