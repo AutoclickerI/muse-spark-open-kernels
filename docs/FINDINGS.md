@@ -1160,6 +1160,18 @@ kernel profile time; FA3 remains the full-q8 decode-layer choice.
 
 ## P5 conditional rescale and deferred-denominator switches (2026-10-25)
 
+**Resolved by H2009828bfa041a143a9 (1.063824x,16/16 tests): conditional
+q1 rescale is closed for latency.** Full B1/16/32 profiles are15.6/105.3/197.3us
+vs15.5/103.6/193.3 in d98ae45d; sliding9.3/11.6/15.0 vs9.0/11.5/15.1.
+No gain is established. Preserve the frozen submission as evidence, leave
+incumbent q1 unchanged. Deferred-q8 evidence is confounded: full profiles
+428.0/739.8us use the emulated verify8_main family, while sliding68.6/83.6us
+use xqa_group against FA3-based23.9/30.8 controls. This does not isolate the
+denominator transformation. No denominator winner is claimed or promoted.
+The verify8 family is held from further attention sends until a same-shape
+H200 lab beats FA3; native work below is lab-only. [All12 comparisons](../problems/muse_attention_decode/dev/p5_switches/rescale_result.json).
+
+
 One attention measurement candidate, `cand_p5_rescale_deferred.py`, SHA-256
 `acd77ec8d7a34384e9c7f47be209d0c4d7d25b982f19e3a1b1f3d2917a35c855`, is
 accepted as job `9828bfa041a143a9`, send key `acd77ec8d7a34384` (priority 2).
@@ -1206,9 +1218,9 @@ Local cold-graph AB/BA on identical 80K inputs (**sm120, not H200**):
 | split q8 full | 16 | 346.11 | 345.10 | 0.997 | 0 |
 | split q8 full | 32 | 695.30 | 691.20 | 0.994 | 0.000005 |
 
-The group reduction shows a local 5-6% change; q1 and split-q8 differences
-are noise-sized locally. H200 decides each switch. No whole-layer win is
-claimed and no decode row was enabled. The previous `be19da94dc534323`
+The group reduction showed a local 5-6% change; q1 and split-q8 differences
+were noise-sized locally. The H200 receipt above closes q1 rescale and
+leaves the denominator experiment unisolated. No decode row was enabled. The previous `be19da94dc534323`
 receipt was absent at the single initial judge read, then its saved profile
 appeared locally. It was compared offline without a second judge query.
 `dev/p5_switches/compare_profiles.py` compares saved profiles against
@@ -1321,3 +1333,62 @@ shares; cold H200 compilation remains unmeasured.
 Reproducible [SASS/resources, admission and handoff](../problems/muse_attention_decode/dev/producer_phases/README.md).
 No decode setting changed. FA3 remains the full-q8 incumbent; verify1 sliding
 still needs the paired FA3 receipt and then whole-layer composition evidence.
+
+## Native Hopper Q-major verify8 producer (P5, lab-only)
+
+Selected option A, native FP8 WGMMA, over the already-built exact-FP16 shared
+widening design using complete64-key interior-tile sm90a SASS. Counts include
+transpose, softmax, P packing and fixture state load/store; FP16 also loads
+its query-register fixture. Both loops are fully unrolled. This is a static
+instruction comparison, not dynamic throughput or an H200 speed claim.
+
+| design | SASS instructions/64 keys | instructions/key | tensor instructions | production registers | spills |
+|---|---:|---:|---|---:|---:|
+| native WGMMA | 776 | 12.125 | 4 native FP8 QGMMA | 119 | 0 |
+| exact-FP16 shared widening | 1224 | 19.125 | 64 FP16 HMMA per warp | 133 at64 keys | 0 |
+
+The native tile has no FP16 HMMA and no E4M3-unpack instruction. QK maps the
+64 query rows (8 tokens x8 heads per KV head) to WGMMA M64, with keys on N64.
+Each row's online max/sum is reduced across four lanes; the old keys-on-M
+cross-warp softmax reduction is gone. V's64x64 FP8 bytes transpose once per
+stage into K-major shared layout. Allowed FP8 P is stored in K-major shared
+memory, then PV uses native FP8 WGMMA too. Four gather warps supply page1
+K/V through a4/8-stage full/empty mbarrier ring; the128 compute threads use
+consumer-only handoffs. The separate parallel split combine/norm/gate is
+preserved. No stage expanded outside the timed call; global KV stays FP8.
+
+Production119 registers, clocked127, zero spills in both.256-thread CTAs
+use53,248/86,016 dynamic shared bytes at4/8 stages (+1KiB static), modeled
+two CTAs/SM and16 resident warps total.17-way grids remain544/1088 at
+B16/B32, nominal max4736 keys/606208 K+V bytes per CTA. The8-stage ring has
+65536 raw KV bytes/CTA in flight. These are resource/capacity calculations;
+the payload prints runtime occupancy and measures the resulting wall time.
+
+Local exact source passes16 task tests,12 scored fresh-input graphs,
+15 extra forced-Hopper graph/ABI fixtures, and native sm90a compilation.
+Six stage4/8 fixtures include empty splits, pages1/64 and scale1/64; clocked
+outputs match plain bitwise. Nine exact80K B1/16/32 x BF16/one/four-partial
+graphs pass the unchanged post-store FP32 gate (global errors0.019-0.032).
+An installed CUTLASS CUTE host check independently matches4096 accumulator
+coordinates and4096 K-major64B-swizzle addresses. The sm120 shim preserves
+stage/barrier/layout work and replaces only unavailable WGMMA math. Native
+H200 WGMMA descriptors and mbarrier execution remain unverified.
+
+The ready experimental adapter `problems/muse_decode_layer/dev/verify8_native_wgmma.py`
+exposes `attention_verify8_native(qkv,data,setting=(17,4))`, accepts contiguous
+FP32 projection tuples and BF16, returns `[B*8,1024]`. No settings row or
+attention candidate selects it. [Source, SASS comparison, admission and hashes](../problems/muse_attention_decode/dev/native_verify8/README.md).
+
+Before08:50KST, replaced **only our held** e0712c33/PID4023015 via okc_run's
+same-file supersession; the old waiting marker is removed. Replacement send
+**b098ec3e0876b70a**, SHA-256
+`b098ec3e0876b70a38cb5bb73f95adffdab1cba351c702411c7bfbe4e290891e`,
+proj priority0.8, remains held until2026-10-25 09:00:20KST. Detached log
+confirms the hold and no rejection; no judge job exists before dispatch.
+One batch contains original emulation phase clocks plus native producer vs
+same-input layer FA3 (splits/stages9/4,17/4,17/8,33/4) in the first payload,
+and the unchanged verify1 sliding single-launch vs current/best5 layer FA3
+pair in the second. Native consumer/producer clocks, plain/clocked wall
+times and resource queries print per config. Warm complete payload exercises
+finish7.22s/0.33s,3542/997 characters within80s/4500-char shares; cold H200
+compile/runtime remain unverified. No rescale/deferred switch is added.

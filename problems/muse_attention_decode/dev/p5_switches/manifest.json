@@ -90,7 +90,7 @@
   "decisions": {
     "decode_rows_changed": [],
     "verify1_sliding": "Different decode control (public FA3 vs board attn_main_twog): disabled comparator only.",
-    "full_q8": "Retain FA3; producer accounts for 98.6/98.8% at B16/B32. Next: inner producer phase clocks and native resource/occupancy data; keep parallel combine."
+    "full_q8": "Retain FA3. Native successor lab-only; no attention submission before FA3 lab win."
   },
   "unverified": [
     "9828bfa041a143a9 H200 correctness and per-shape speed",
@@ -113,5 +113,6 @@
     "problems/muse_attention_decode/dev/p5_switches/README.md": "7b53d236a5733858bfd150c7d380e0aec870d005349929cab05ec3ed3bf8a661",
     "problems/muse_attention_decode/dev/p5_switches/sliding_result.json": "b2075afbd2355107f210ec6bd08984f4ee254f9ae839a7014b5b7d4651b9d29b",
     "problems/muse_attention_decode/dev/p5_switches/flashdecode_result.json": "45f28c177beb1ca8a20469b520abc9509e59e1154e2118839137ebf04069e057"
-  }
+  },
+  "h200_status": "completed;1.063824x; q1 conditional rescale closed, q8 denominator unisolated"
 }

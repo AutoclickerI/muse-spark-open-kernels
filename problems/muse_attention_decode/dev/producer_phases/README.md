@@ -1,3 +1,10 @@
+Current batch: e0712c33 was superseded before dispatch by **b098ec3e0876b70a**,
+releasing2026-10-25 09:00:20KST on proj. It retains original producer clocks
+and the verify1 FA3 pair, and adds native FP8 WGMMA vs FA3. See
+[the selected native design](../native_verify8/README.md). The explicit
+widening design below lost the static tile-instruction comparison776vs1224;
+only native is added to the batch. Conditional rescale9828bfa0 is closed.
+
 # Hopper producer diagnosis and paired attention lab
 
 The be19da94 producer passes but loses at B16/B32 full: 427.8/713.7 us,

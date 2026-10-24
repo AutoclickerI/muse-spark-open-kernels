@@ -49,3 +49,12 @@ identify the inner binding phase. FA3 remains selected for full verify.
 `compare_profiles.py` reads saved profile JSON only, with d98ae45d as its
 default control; it makes no judge calls or waits. Its 12-shape outputs are
 `sliding_result.json` and `flashdecode_result.json`.
+
+
+H2009828bfa0 is complete (1.063824x,16tests pass). q1 conditional rescale
+is closed: full profiles15.6/105.3/197.3vs15.5/103.6/193.3us, no gain.
+Deferred-q8 was not isolated from the losing verify8/xqa families; the
+68.6/83.6us sliding and428/740us full results do not promote the reduction.
+Frozen source remains evidence only. New native WGMMA work is lab-only in
+../native_verify8; verify8 does not re-enter attention submissions without
+an H200 FA3 win. See rescale_result.json for all12 measured shapes.

@@ -1,0 +1,593 @@
+{
+  "files": {
+    "adapter": {
+      "path": "problems/muse_decode_layer/dev/verify8_native_wgmma.py",
+      "sha256": "a27a3145a06acdeaa09809ac1053c79f2408bf0988c7e2ccdc08c0dbe0757011"
+    },
+    "local_screen": {
+      "path": "problems/muse_attention_decode/dev/native_verify8/local_screen.py",
+      "sha256": "fdf8308c2178d9e0ae9306a1535f88515ed48828d736789eb8bb4a41f0a0d939"
+    }
+  },
+  "tests": {
+    "problem": "muse_attention_decode",
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/native_verify8/local_screen.py",
+    "sha256": "fdf8308c2178d9e0ae9306a1535f88515ed48828d736789eb8bb4a41f0a0d939",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "torch": "2.14.1+cu130",
+    "prepare_s": 0.0007978839566931129,
+    "tests": [
+      {
+        "case": "batch 1, ctx 10, heads tp8, layer sliding",
+        "first_call_s": 0.1048224419937469,
+        "ok": true,
+        "msg": "relative L2 error 4.774e-03 (worst row 4.774e-03) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 3, ctx 2047, heads tp8, layer sliding",
+        "first_call_s": 0.0005913730128668249,
+        "ok": true,
+        "msg": "relative L2 error 5.580e-03 (worst row 6.168e-03) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 5, ctx 5000, heads tp8, layer sliding, q_len 8, spread mixed, page 1",
+        "first_call_s": 0.0008271210244856775,
+        "ok": true,
+        "msg": "relative L2 error 5.367e-03 (worst row 8.723e-03) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 4, ctx 3000, heads tp8, layer full",
+        "first_call_s": 0.000572292017750442,
+        "ok": true,
+        "msg": "relative L2 error 5.025e-03 (worst row 5.673e-03) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 8, ctx 8192, heads dp, layer full, spread mixed",
+        "first_call_s": 0.0006581550114788115,
+        "ok": true,
+        "msg": "relative L2 error 5.646e-03 (worst row 6.512e-03) [bound 0.150: 2.5 x the reference's 0.084 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 2, ctx 100000, heads tp8, layer full, q_len 8, page 1",
+        "first_call_s": 0.04154294397449121,
+        "ok": true,
+        "msg": "relative L2 error 7.843e-02 (worst row 1.041e-01) [bound 0.150: 2.5 x the reference's 0.079 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 4, ctx 6000, heads tp8, layer sliding, dist edges, page 1",
+        "first_call_s": 0.00045505701564252377,
+        "ok": true,
+        "msg": "relative L2 error 5.312e-03 (worst row 6.387e-03) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 4, ctx 6000, heads tp8, layer full, q_len 8, dist edges",
+        "first_call_s": 0.00043080298928543925,
+        "ok": true,
+        "msg": "relative L2 error 8.845e-02 (worst row 1.191e-01) [bound 0.150: 2.5 x the reference's 0.088 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 1, ctx 1048576, heads tp8, layer full, q_len 8",
+        "first_call_s": 0.0016038070316426456,
+        "ok": true,
+        "msg": "relative L2 error 8.570e-02 (worst row 9.471e-02) [bound 0.150: 2.5 x the reference's 0.086 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 3, ctx 4000, heads tp8, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+        "first_call_s": 0.00044723699102178216,
+        "ok": true,
+        "msg": "relative L2 error 5.304e-03 (worst row 7.321e-03) [bound 0.150: 2.5 x the reference's 0.081 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 2, ctx 9000, heads tp8, layer full, kv_scale 0.015625",
+        "first_call_s": 0.000240408000536263,
+        "ok": true,
+        "msg": "relative L2 error 6.207e-03 (worst row 6.692e-03) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist soft",
+        "first_call_s": 0.000269743031822145,
+        "ok": true,
+        "msg": "relative L2 error 4.798e-03 (worst row 5.191e-03) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 4, ctx 6000, heads tp8, layer sliding, q_len 8, dist soft, page 1",
+        "first_call_s": 0.0003180979983881116,
+        "ok": true,
+        "msg": "relative L2 error 4.440e-03 (worst row 5.658e-03) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist soft",
+        "first_call_s": 0.0003532700357027352,
+        "ok": true,
+        "msg": "relative L2 error 7.029e-02 (worst row 7.592e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist coherent, page 1",
+        "first_call_s": 0.0003366589662618935,
+        "ok": true,
+        "msg": "relative L2 error 2.559e-03 (worst row 2.963e-03) [bound 0.111: 2.5 x the reference's 0.038 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist coherent",
+        "first_call_s": 0.00036005297442898154,
+        "ok": true,
+        "msg": "relative L2 error 3.554e-02 (worst row 4.780e-02) [bound 0.104: 2.5 x the reference's 0.035 with FP8 E4M3 queries + 0.015]"
+      }
+    ],
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VERIFY8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "NATIVE_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "graphs": {
+    "problem": "muse_attention_decode",
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/native_verify8/local_screen.py",
+    "sha256": "fdf8308c2178d9e0ae9306a1535f88515ed48828d736789eb8bb4a41f0a0d939",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "torch": "2.14.1+cu130",
+    "prepare_s": 0.0006452620145864785,
+    "shapes": [
+      {
+        "case": "batch 1, ctx 80000, dist soft, heads tp8, layer sliding, page 1",
+        "load": "decode 1",
+        "weight": 46,
+        "us": 8.192000444978476,
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 80000, dist coherent, heads tp8, layer full, page 1",
+        "load": "decode 1",
+        "weight": 16,
+        "us": 22.527999710291624,
+        "ok": true
+      },
+      {
+        "case": "batch 16, ctx 80000, dist soft, heads tp8, layer sliding, page 1, spread agentic",
+        "load": "decode 16",
+        "weight": 46,
+        "us": 16.38399949297309,
+        "ok": true
+      },
+      {
+        "case": "batch 16, ctx 80000, dist coherent, heads tp8, layer full, page 1, spread agentic",
+        "load": "decode 16",
+        "weight": 16,
+        "us": 225.28000315651298,
+        "ok": true
+      },
+      {
+        "case": "batch 32, ctx 80000, dist soft, heads tp8, layer sliding, page 1, spread agentic",
+        "load": "decode 32",
+        "weight": 46,
+        "us": 16.38399949297309,
+        "ok": true
+      },
+      {
+        "case": "batch 32, ctx 80000, dist coherent, heads tp8, layer full, page 1, spread agentic",
+        "load": "decode 32",
+        "weight": 16,
+        "us": 434.17599936947227,
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8",
+        "load": "verify 1",
+        "weight": 46,
+        "us": 21.50399936363101,
+        "ok": true
+      },
+      {
+        "case": "batch 1, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8",
+        "load": "verify 1",
+        "weight": 16,
+        "us": 109.56800123676658,
+        "ok": true
+      },
+      {
+        "case": "batch 16, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8, spread agentic",
+        "load": "verify 16",
+        "weight": 46,
+        "us": 63.48800053820014,
+        "ok": true
+      },
+      {
+        "case": "batch 16, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8, spread agentic",
+        "load": "verify 16",
+        "weight": 16,
+        "us": 363.5520054958761,
+        "ok": true
+      },
+      {
+        "case": "batch 32, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8, spread agentic",
+        "load": "verify 32",
+        "weight": 46,
+        "us": 28.655999805778265,
+        "ok": true
+      },
+      {
+        "case": "batch 32, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8, spread agentic",
+        "load": "verify 32",
+        "weight": 16,
+        "us": 741.3760139606893,
+        "ok": true
+      }
+    ],
+    "loads": {
+      "decode 1": {
+        "us": 737.2800158336759,
+        "base_us": 0.0
+      },
+      "decode 16": {
+        "us": 4358.14402718097,
+        "base_us": 0.0
+      },
+      "decode 32": {
+        "us": 7700.479966588318,
+        "base_us": 0.0
+      },
+      "verify 1": {
+        "us": 2742.2719905152917,
+        "base_us": 0.0
+      },
+      "verify 16": {
+        "us": 8737.280112691224,
+        "base_us": 0.0
+      },
+      "verify 32": {
+        "us": 13180.192214436829,
+        "base_us": 0.0
+      }
+    },
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VERIFY8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "NATIVE_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "fixtures": {
+    "adapter_sha256": "a27a3145a06acdeaa09809ac1053c79f2408bf0988c7e2ccdc08c0dbe0757011",
+    "cuda_sha256": "cfde926a4b5dabd55a885c4c730259c6902e1e60384399e85925c36ad2c744d8",
+    "native_hopper": false,
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "checks": [
+      {
+        "stages": 4,
+        "ctx": 10,
+        "dist": "normal",
+        "page": 1,
+        "scale": 1.0,
+        "ns": 17,
+        "gate": true,
+        "clock_gate": true,
+        "clock_bitwise": true,
+        "msg": "relative L2 error 5.778e-02 (worst row 8.227e-02) [bound 0.150: 2.5 x the reference's 0.058 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "stages": 4,
+        "ctx": 3077,
+        "dist": "edges",
+        "page": 1,
+        "scale": 0.015625,
+        "ns": 7,
+        "gate": true,
+        "clock_gate": true,
+        "clock_bitwise": true,
+        "msg": "relative L2 error 7.810e-02 (worst row 1.044e-01) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "stages": 4,
+        "ctx": 4099,
+        "dist": "coherent",
+        "page": 64,
+        "scale": 1.0,
+        "ns": 5,
+        "gate": true,
+        "clock_gate": true,
+        "clock_bitwise": true,
+        "msg": "relative L2 error 5.554e-02 (worst row 7.713e-02) [bound 0.150: 2.5 x the reference's 0.055 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "stages": 8,
+        "ctx": 10,
+        "dist": "normal",
+        "page": 1,
+        "scale": 1.0,
+        "ns": 17,
+        "gate": true,
+        "clock_gate": true,
+        "clock_bitwise": true,
+        "msg": "relative L2 error 5.778e-02 (worst row 8.227e-02) [bound 0.150: 2.5 x the reference's 0.058 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "stages": 8,
+        "ctx": 3077,
+        "dist": "edges",
+        "page": 1,
+        "scale": 0.015625,
+        "ns": 7,
+        "gate": true,
+        "clock_gate": true,
+        "clock_bitwise": true,
+        "msg": "relative L2 error 7.810e-02 (worst row 1.044e-01) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "stages": 8,
+        "ctx": 4099,
+        "dist": "coherent",
+        "page": 64,
+        "scale": 1.0,
+        "ns": 5,
+        "gate": true,
+        "clock_gate": true,
+        "clock_bitwise": true,
+        "msg": "relative L2 error 5.554e-02 (worst row 7.713e-02) [bound 0.150: 2.5 x the reference's 0.055 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 1,
+        "ctx": 80000,
+        "count": 0,
+        "gate": true,
+        "msg": "relative L2 error 2.488e-02 (worst row 3.858e-02) [bound 0.077: 2.5 x the reference's 0.025 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 1,
+        "ctx": 80000,
+        "count": 1,
+        "gate": true,
+        "msg": "relative L2 error 2.090e-02 (worst row 3.599e-02) [bound 0.067: 2.5 x the reference's 0.021 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 1,
+        "ctx": 80000,
+        "count": 4,
+        "gate": true,
+        "msg": "relative L2 error 2.234e-02 (worst row 3.015e-02) [bound 0.071: 2.5 x the reference's 0.022 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 16,
+        "ctx": 80000,
+        "count": 0,
+        "gate": true,
+        "msg": "relative L2 error 3.224e-02 (worst row 6.106e-02) [bound 0.096: 2.5 x the reference's 0.032 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 16,
+        "ctx": 80000,
+        "count": 1,
+        "gate": true,
+        "msg": "relative L2 error 2.070e-02 (worst row 4.571e-02) [bound 0.067: 2.5 x the reference's 0.021 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 16,
+        "ctx": 80000,
+        "count": 4,
+        "gate": true,
+        "msg": "relative L2 error 2.286e-02 (worst row 4.446e-02) [bound 0.072: 2.5 x the reference's 0.023 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 32,
+        "ctx": 80000,
+        "count": 0,
+        "gate": true,
+        "msg": "relative L2 error 2.598e-02 (worst row 5.549e-02) [bound 0.080: 2.5 x the reference's 0.026 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 32,
+        "ctx": 80000,
+        "count": 1,
+        "gate": true,
+        "msg": "relative L2 error 1.935e-02 (worst row 6.014e-02) [bound 0.063: 2.5 x the reference's 0.019 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      },
+      {
+        "B": 32,
+        "ctx": 80000,
+        "count": 4,
+        "gate": true,
+        "msg": "relative L2 error 2.150e-02 (worst row 6.219e-02) [bound 0.069: 2.5 x the reference's 0.021 with FP8 E4M3 queries + 0.015]",
+        "graph": true,
+        "forced_hopper_glue": true
+      }
+    ]
+  },
+  "static": {
+    "prof/lab/verify8_producer_phases.py": {
+      "sha256": "6b8ece021449b4cae6ba541e3be625753ecb6d0abb52a46238cb46316e617d64",
+      "checks": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PHASE_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "WIDE_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NATIVE_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ]
+    },
+    "prof/lab/verify1_sliding_fa3_pair.py": {
+      "sha256": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9",
+      "checks": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "WINDOW_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ]
+    },
+    "problems/muse_decode_layer/dev/verify8_native_wgmma.py": {
+      "sha256": "a27a3145a06acdeaa09809ac1053c79f2408bf0988c7e2ccdc08c0dbe0757011",
+      "checks": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NATIVE_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ]
+    }
+  },
+  "deadline": {
+    "verify8_producer_phases": {
+      "sha256": "6b8ece021449b4cae6ba541e3be625753ecb6d0abb52a46238cb46316e617d64",
+      "elapsed_s": 7.216914506047033,
+      "chars": 3542,
+      "lines": [
+        "META measured be19da94 producer; synthetic task inputs; clock cycles per stage; PV includes P layout shuffles",
+        "META sms=188 clocks instrument every warp; compare plain/profile overhead and resource limits",
+        "FA3 B=16 us=13602.82 gate=P err=0.033061",
+        "ROW {\"B\":16,\"wide\":false,\"setting\":[17,3,128],\"us\":378.91,\"tb_s\":0.87,\"gate\":true,\"error\":0.033094,\"trace_equal\":true,\"trace_us\":438.27,\"grid\":544,\"cta_kv_max_bytes\":655360,\"resources\":[[197,0,0,65536,1],[218,0,0,65536,1]],\"cta_cycles\":[21865,31270,285450,322874],\"cycles\":{\"issue\":[1868,2183],\"wait\":[6,6],\"transpose\":[1526,1536],\"qk\":[791,794],\"softmax\":[1239,1279],\"p_convert\":[173,177],\"pv_layout\":[998,1024]}}",
+        "FA3 B=32 us=24400.99 gate=P err=0.027892",
+        "ROW {\"B\":32,\"wide\":false,\"setting\":[17,3,128],\"us\":698.37,\"tb_s\":0.943,\"gate\":true,\"error\":0.027883,\"trace_equal\":true,\"trace_us\":825.34,\"grid\":1088,\"cta_kv_max_bytes\":655360,\"resources\":[[197,0,0,65536,1],[218,0,0,65536,1]],\"cta_cycles\":[21445,32242,295276,319039],\"cycles\":{\"issue\":[2032,2224],\"wait\":[6,6],\"transpose\":[1525,1533],\"qk\":[791,794],\"softmax\":[1238,1254],\"p_convert\":[172,180],\"pv_layout\":[997,1014]}}",
+        "META native FP8 WGMMA Q-major M64; parallel combine; same-input FA3; no incumbent selection",
+        "META clocks: consumer wait/transpose/QK/softmax/P/PV plus producer issue/backpressure; resource and plain/clock wall times",
+        "FA3 B=16 us=13621.25 gate=P err=0.033061",
+        "NATIVE {\"B\":16,\"setting\":[9,4],\"us\":432.13,\"tb_s\":0.763,\"gate\":true,\"error\":0.033103,\"trace_equal\":true,\"grid\":288,\"trace_us\":436.22,\"resources\":[[127,0,1024,53248,1],[128,0,1024,53248,1]],\"consumer_cycles\":[0,97,843,558,587,152,531],\"producer_cycles\":[1063,1905]}",
+        "NATIVE {\"B\":16,\"setting\":[17,4],\"us\":376.83,\"tb_s\":0.875,\"gate\":true,\"error\":0.033085,\"trace_equal\":true,\"grid\":544,\"trace_us\":380.96,\"resources\":[[127,0,1024,53248,1],[128,0,1024,53248,1]],\"consumer_cycles\":[0,97,843,553,591,153,532],\"producer_cycles\":[1151,1918]}",
+        "NATIVE {\"B\":16,\"setting\":[17,8],\"us\":374.82,\"tb_s\":0.88,\"gate\":true,\"error\":0.033085,\"trace_equal\":true,\"grid\":544,\"trace_us\":376.86,\"resources\":[[127,0,1024,86016,1],[128,0,1024,86016,1]],\"consumer_cycles\":[0,99,843,546,592,154,533],\"producer_cycles\":[1257,1714]}",
+        "NATIVE {\"B\":16,\"setting\":[33,4],\"us\":417.79,\"tb_s\":0.789,\"gate\":true,\"error\":0.033092,\"trace_equal\":true,\"grid\":1056,\"trace_us\":413.7,\"resources\":[[127,0,1024,53248,1],[128,0,1024,53248,1]],\"consumer_cycles\":[0,97,839,538,587,153,535],\"producer_cycles\":[1288,1906]}",
+        "FA3 B=32 us=24388.38 gate=P err=0.027892",
+        "NATIVE {\"B\":32,\"setting\":[9,4],\"us\":836.61,\"tb_s\":0.788,\"gate\":true,\"error\":0.027916,\"trace_equal\":true,\"grid\":576,\"trace_us\":835.58,\"resources\":[[127,0,1024,53248,1],[128,0,1024,53248,1]],\"consumer_cycles\":[0,97,836,545,592,153,534],\"producer_cycles\":[1240,1779]}",
+        "NATIVE {\"B\":32,\"setting\":[17,4],\"us\":749.57,\"tb_s\":0.879,\"gate\":true,\"error\":0.027881,\"trace_equal\":true,\"grid\":1088,\"trace_us\":749.57,\"resources\":[[127,0,1024,53248,1],[128,0,1024,53248,1]],\"consumer_cycles\":[0,98,836,539,587,152,535],\"producer_cycles\":[1352,1681]}",
+        "NATIVE {\"B\":32,\"setting\":[17,8],\"us\":745.47,\"tb_s\":0.884,\"gate\":true,\"error\":0.027881,\"trace_equal\":true,\"grid\":1088,\"trace_us\":751.62,\"resources\":[[127,0,1024,86016,1],[128,0,1024,86016,1]],\"consumer_cycles\":[0,99,832,534,586,152,538],\"producer_cycles\":[1536,1326]}",
+        "NATIVE {\"B\":32,\"setting\":[33,4],\"us\":776.19,\"tb_s\":0.849,\"gate\":true,\"error\":0.027875,\"trace_equal\":true,\"grid\":2112,\"trace_us\":787.1,\"resources\":[[127,0,1024,53248,1],[128,0,1024,53248,1]],\"consumer_cycles\":[0,97,832,536,587,153,534],\"producer_cycles\":[1378,1753]}"
+      ],
+      "fa3": "portable operation; exact layer Python/Triton glue, PDL disabled locally"
+    },
+    "verify1_sliding_fa3_pair": {
+      "sha256": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9",
+      "elapsed_s": 0.3313008939730935,
+      "chars": 997,
+      "lines": [
+        "META verify1 sliding: exact guarded adapter vs decode public FA3 incl qk_prep and norm_gate; no projection GEMV",
+        "META q_len=8 B=1 ctx=80000 window2048 page1; PDL=True control; BF16 and FP32 partial ABIs",
+        "ROW partials=0 kernel=single us=21.66 gate=P err=0.000208 fresh_err=0.000216 graph=P",
+        "ROW partials=0 kernel=fa3_current us=155.04 gate=P err=0.072185 fresh_err=0.074921 graph=P",
+        "ROW partials=0 kernel=fa3_best5 us=157.70 gate=P err=0.072185 fresh_err=0.074921 graph=P",
+        "ROW partials=1 kernel=single us=21.50 gate=P err=0.000270 fresh_err=0.000163 graph=P",
+        "ROW partials=1 kernel=fa3_current us=157.70 gate=P err=0.067207 fresh_err=0.065157 graph=P",
+        "ROW partials=1 kernel=fa3_best5 us=157.70 gate=P err=0.067207 fresh_err=0.065157 graph=P",
+        "ROW partials=4 kernel=single us=21.50 gate=P err=0.000267 fresh_err=0.000236 graph=P",
+        "ROW partials=4 kernel=fa3_current us=159.74 gate=P err=0.072992 fresh_err=0.069974 graph=P",
+        "ROW partials=4 kernel=fa3_best5 us=157.70 gate=P err=0.072992 fresh_err=0.069974 graph=P"
+      ],
+      "fa3": "portable operation; exact layer Python/Triton glue, PDL disabled locally"
+    }
+  },
+  "layout": {
+    "CLayout_coordinates": 4096,
+    "K_SW64_addresses": 4096,
+    "pass": true,
+    "library": "image flashinfer CUTLASS cute/atom/mma_traits_sm90_gmma.hpp"
+  },
+  "native_hopper_runtime_verified": false
+}

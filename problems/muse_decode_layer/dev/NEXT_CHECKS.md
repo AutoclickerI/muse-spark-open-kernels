@@ -128,3 +128,19 @@ sections `verify8_producer_phases` and `verify1_sliding_fa3_pair`. The pair
 uses the guarded verify1 adapter vs exact public FA3 current/best5 glue and
 BF16/1/4-partial ABIs; whole-layer PDL composition remains unmeasured.
 [Source, hashes, gates and decisions](../../muse_attention_decode/dev/producer_phases/HANDOFF.md).
+
+
+## P5 native verify8 lab, no decode promotion
+
+9828bfa0 closes q1 conditional rescale (full15.6/105.3/197.3vs15.5/103.6/193.3us);
+its q8 denominator test is confounded by losing producer families. Keep current
+q1 and FA3 verify settings. Native successor uses64 query rows on WGMMA M64,
+FP8 QK/PV,4/8-stage page1 gather warpgroup, existing parallel combine.
+776vs1224 static instructions/64keys against explicit FP16 widening;
+119 registers/no spills.16tests/12graphs/15 forced Hopper ABI fixtures and
+8192 CUTE layout-address checks pass locally. Actual Hopper runtime is pending.
+Experimental adapter: [verify8_native_wgmma.py](verify8_native_wgmma.py).
+No settings row enabled. Replacement proj send b098ec3e0876b70a supersedes
+our e0712c33 batch, held until2026-10-25 09:00:20KST; includes original
+phase clocks, native-vs-FA3 and the verify1 sliding/public-FA3 pair.
+[Native source and admission](../../muse_attention_decode/dev/native_verify8/README.md).

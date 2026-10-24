@@ -19,3 +19,11 @@ No new decode attention cell is promoted.
   effects remain unverified.
 - Attention candidate9828bfa041a143a9 still needs its receipt before enabling
   conditional-rescale or deferred-denominator switches in a new candidate.
+
+
+Current replacement: b098ec3e0876b70a, same09:00:20 release, supersedes
+e0712c33 before dispatch. Native M64-query FP8 WGMMA producer added to the
+phase payload; same verify1 pair retained. Native119registers/no spills,
+16tests/12graphs/15 forced ABI+8192 CUTE layout checks pass. Keep FA3:
+actual Hopper runtime/speed remains pending. q1 rescale9828bfa0 is closed;
+its q8 denominator trial is unisolated. See ../native_verify8/README.md.

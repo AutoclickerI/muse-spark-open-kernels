@@ -1,0 +1,72 @@
+{
+  "prof/lab/verify8_producer_phases.py": {
+    "sha256": "6b8ece021449b4cae6ba541e3be625753ecb6d0abb52a46238cb46316e617d64",
+    "checks": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "PHASE_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "WIDE_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "NATIVE_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "prof/lab/verify1_sliding_fa3_pair.py": {
+    "sha256": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9",
+    "checks": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "WINDOW_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "problems/muse_decode_layer/dev/verify8_native_wgmma.py": {
+    "sha256": "a27a3145a06acdeaa09809ac1053c79f2408bf0988c7e2ccdc08c0dbe0757011",
+    "checks": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "NATIVE_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  }
+}

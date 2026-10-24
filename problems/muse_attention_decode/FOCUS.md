@@ -11,26 +11,25 @@ public FA3 for verify1, not d98ae45d's attn_main_twog control: do not promote.
 Ready disabled verify1-only comparator: `muse_decode_layer/dev/verify1_sliding_pick.py`,
 SHA46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e.
 
-Full-q8 split job `be19da94dc534323` passes16 tests but loses: B16/B32
-call431.15/751.42 vs205.98/391.03 us. Producer427.8/713.7 us is98.6/98.8%
-of profiles; combine6.3/8.5 us is no longer the lever. Retain FA3.
-SASS: its FP8 mma.sync lowers to12 converts+2 FP16 HMMAs on Hopper,
-versus one native QMMA on sm120.223 registers, no spills, two CTAs/SM.
-[Producer evidence](dev/producer_phases/README.md) includes grid/bytes and
-an explicit stage-widening variant (133 registers, three CTAs at64 keys).
-Local widened variants have not established a speed win; no new candidate.
-Proj batch send e0712c33ab1cb715 is held until2026-10-25 09:00:20 KST:
-producer phase clocks/FA3 plus verify1 sliding vs exact layer FA3 glue.
-Native phase fractions and paired timing await H200. No judge ID before dispatch.
+Full-q8 split be19da94 passes but loses: producer427.8/713.7us B16/B32,
+combine6.3/8.5us. FP8 mma.sync emulates via FP16 on Hopper. Retain FA3.
+Native successor [dev/native_verify8](dev/native_verify8/README.md) uses M64
+query rows, native FP8 WGMMA QK/PV,4/8-stage gather warpgroup and the same
+parallel combine. Native tile776 instructions/64 keys vs1224 for explicit
+FP16 widening.119 registers, no spills; clocked127/no spills. Local16tests,
+12graphs,15 forced glue/ABI fixtures plus8192 CUTE layout checks pass.
 
-New combined measurement `cand_p5_rescale_deferred.py`, job9828bfa041a143a9,
-sendacd77ec8d7a34384. q1 uses warp-uniform conditional O/l rescale; larger
-sliding q8 measures xqa_group with the denominator reduced once at the end;
-full q8 uses the split FP8 producer with its four-lane denominator deferred.
-B1 sliding q8 keeps the measured window kernel. No decode rows selected.
-Local16 tests/12 graphs/6 static and33 on/off/adapter gates pass.
-q1 is bitwise identical; deferred output/control error <=0.000005 on 80K.
-Local group-q8 saves5-6%; q1/split changes are noise-sized. H200 decides.
+Rescale/deferred9828bfa0 landed1.0638x: q1 rescale gains nothing and is
+closed; q8 denominator remains unisolated inside much slower families.
+No further verify8 attention send until a lab beats FA3. No decode rows
+change. The new adapter remains an experimental lab choice only.
+
+Held e0712c33 was superseded. Replacement proj batch b098ec3e0876b70a,
+priority0.8, releases2026-10-25 09:00:20KST: original phase clocks plus
+native producer vs same-input FA3, paired with verify1 sliding vs actual
+layer FA3 glue. Detached log confirms hold; no job ID before dispatch.
+Warm payload7.22s/3542chars; pair0.33s/997chars. Native H200 runtime,
+ranking and whole-layer composition await receipts.
 
 Promotion: task's post-store FP32 gate, a same-shape H200 win, then a paired
 whole-layer check with best7's projection/PDL path. Details: FINDINGS and

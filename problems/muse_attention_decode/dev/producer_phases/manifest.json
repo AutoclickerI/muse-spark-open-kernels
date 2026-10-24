@@ -6,7 +6,7 @@
   "priority": 0.8,
   "not_before": "2026-10-25T09:00:20+09:00",
   "job_id": null,
-  "status": "held locally; detached log confirms no early judge request",
+  "status": "superseded before dispatch by b098ec3e0876b70a; historical e071 snapshot only",
   "payloads": {
     "prof/lab/verify8_producer_phases.py": "2a78ceb3af7e2bc3a5e5edfe7bc0ca6672e39be824c24ec270caf02e6b47a514",
     "prof/lab/verify1_sliding_fa3_pair.py": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9"
@@ -85,5 +85,7 @@
     "problems/muse_attention_decode/dev/producer_phases/static.json": "2fdce11fd1dd5e034896ecb5b404ba486cf7251b6ad1ab573d2098f9f38bea63",
     "problems/muse_attention_decode/dev/producer_phases/widen.py": "dea99cafd07d9c15a6857b03967eb6b46057020e7ad42989a716c58c43ea2d67",
     "problems/muse_attention_decode/dev/producer_phases/widened.cu": "d4def1ea9907b1d6b75af01451e1fb1af41b10ebb0be4bad0fca38a8b805e809"
-  }
+  },
+  "replacement_send_key": "b098ec3e0876b70a",
+  "replacement_manifest": "../native_verify8/manifest.json"
 }
