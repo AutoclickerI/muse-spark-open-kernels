@@ -21,10 +21,10 @@ class _RGNative:
     def smem_needed(self,nt,stages,m):return self.lib.rg_smem(stages,m)
     def resident_blocks(self,nt,stages,m):return self.lib.rg_resident(stages,m)
     def run(self,x,lids,wts,pnw,w13,w2,gs13,gs2,inter,y,ss,cnt,out,
-            local_start,nt,stages,grid,p,bias,pre,ids,out_lids,out_wts,local,s):
+            local_start,nt,stages,grid,p,bias,pre,ids,out_lids,out_wts,local,s,meta):
         if local_start!=0 or nt!=1:raise ValueError('NT1 private local routes only')
-        values=[x,lids,wts,pnw,w13,w2,gs13,gs2,inter,y,ss,cnt,out,x,p,bias,pre,ids,out_lids,out_wts,local]
-        ptrs=(_rgct.c_void_p*21)(*(t.data_ptr() for t in values))
+        values=[x,lids,wts,pnw,w13,w2,gs13,gs2,inter,y,ss,cnt,out,x,p,bias,pre,ids,out_lids,out_wts,local,meta]
+        ptrs=(_rgct.c_void_p*22)(*(t.data_ptr() for t in values))
         err=self.lib.rg_run(ptrs,x.shape[0],s,stages,grid,p.stride(0),p.stride(1),torch.cuda.current_stream(p.device).cuda_stream)
         if err:raise RuntimeError(f'route MoE launch CUDA={err}')
 
@@ -59,11 +59,12 @@ def rg_expert(pr,state,data):
     y=torch.empty((8*m,4096),device=device,dtype=torch.float32)
     ss=torch.empty(8*m,device=device,dtype=torch.float32)
     out=torch.empty_like(placeholder)
+    meta=torch.empty(736 if m<=32 else 0,device=device,dtype=torch.int32)
     mod.run(placeholder,lids,wts,bank['pnw'],bank['w13p'],bank['w2p'],bank['gs13'],bank['gs2'],
         inter,y,ss,state['route_moe_counts'],out,0,1,stages,
         bank['grid']*mod.resident_blocks(1,stages,m),p,state['router_bias'],state['pre_expert_w'],
-        ids,lids,wts,data['local_start'],s)
-    return out,ids,wts,lids
+        ids,lids,wts,data['local_start'],s,meta)
+    return out,ids,wts,lids,meta
 
 
 @triton.jit
@@ -132,7 +133,7 @@ def rg_run(m,data,state,plan,cell='route'):
     else:
         pr=m._best7_project(h,'pool_router',state,plan,out_dtype=torch.float32)
         if cell in ('route','both'):
-            if plan['moe']=='v9nt1':moe,ids,_,_=rg_expert(pr,state,data)
+            if plan['moe']=='v9nt1':moe,ids,_,_,_=rg_expert(pr,state,data)
             elif plan['moe']=='humming_masked':
                 pooled,ids,wts,lids,pos,counts=rg_humming(pr,state,data)
                 moe=m._pf_experts_humming_masked(pooled,wts,lids,pos,counts,state['moe6_adapters'])

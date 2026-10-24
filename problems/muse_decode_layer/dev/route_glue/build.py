@@ -2,6 +2,10 @@
 from pathlib import Path
 import hashlib
 import sys
+import argparse
+args=argparse.ArgumentParser()
+args.add_argument("--dropin-only",action="store_true")
+args=args.parse_args()
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3]
 cell='RG_CUDA='+repr((HERE/'route_moe.cu').read_text())+'\nRG_CPP='+repr((HERE/'route_moe.cpp').read_text())+'\n'
 old=HERE.parent/'fused_glue'
@@ -9,7 +13,7 @@ cell+='FG_CUDA='+repr((HERE/'projection.cu').read_text())+'\n'+(old/'runtime.py.
 cell+='\n'+(HERE/'runtime.py.inc').read_text()
 (HERE/'dropin.py').write_text(cell)
 (HERE/'best7_route_glue_cell.py').write_text(cell+'\n'+(HERE/'adapter.py.inc').read_text())
-if (HERE/'driver.py.inc').exists():
+if not args.dropin_only and (HERE/'driver.py.inc').exists():
     helpers=(HERE.parent/'paired_lab/driver.py.inc').read_text().split('\ndef lab(deadline,weights,host_state):',1)[0]
     shared=(old/'driver.py.inc').read_text().split('\ndef lab(deadline,weights,host_state):',1)[0]
     shared=shared[:shared.index('\ndef fg_setup')]+shared[shared.index('\ndef fg_route_gate'):]

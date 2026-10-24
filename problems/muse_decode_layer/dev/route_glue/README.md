@@ -28,7 +28,7 @@ can establish saved critical-path time.
   each call; no waiting for unscheduled CTAs. M>=128 uses16-token tiles.
 - `both`: route plus tail, so their whole-layer interaction is measured.
 
-The drop-in's table is empty. No change to best7_scale itself is authorized by
+The current NT1 route cell also emits the small-M lane's per-call routing metadata (below). The drop-in's table is empty. No change to best7_scale itself is authorized by
 local timing; the H200 receipt decides which cells to hand to integration.
 
 ## Lab and validation
@@ -61,8 +61,8 @@ Humming weight transformation must run on the main thread.
 MoE-host send **81ee15ab3a2d29e0**, accepted job **8a3d71811a324c36**.
 Immediate detached log reports acceptance without rejection. Receipt is pending.
 Payload SHA `ded132cf8f7bbdf0af85e52dd4f66ff5272e39ac40e46c4adef841dda85c208e`.
-Disabled cell `best7_route_glue_cell.py`, SHA
-`c0e845637a2cfc658752dbd8c12fa186d74928beb70a8e696eb4c4af94a03248`.
+The original sent cell SHA is `c0e845637a2cfc658752dbd8c12fa186d74928beb70a8e696eb4c4af94a03248`.
+The current working cell adds metadata and has its separate admission below.
 
 The final whole-layer screen passes108 comparisons across all12 cases with
 zero route flips, max hidden/residual-update L2 0.002728. Native route72 and
@@ -77,3 +77,32 @@ Local setup failures were fixed before sending: slice the host's256 experts to
 this layer's32; run Humming transformation on the main thread; subtract static
 shared memory from the opt-in limit; use a value-returning per-thread fence plus
 `tl.debug_barrier` rather than Triton's unsupported void inline assembly.
+
+
+## Shared routing metadata (current, unsent)
+
+`nt1_branches/route_meta.h` defines `MoERouteMeta` v1,2944 bytes,736 int32
+words, capacity32 tokens/256 slots. The current route cell emits every field:
+version/tokens/EP start/local pair count; per-expert count, offset, blocks8,
+W13/W2 unit prefixes; per-token local count; deterministic expert-major token
+lists (`pair_of`) and inverse slot map (`pos_of`). Remote/unused slots are-1;
+padding is zero. It is rewritten from fresh inputs in every timed call.
+
+Only CTA0 exports it, reusing the NT1 scheduler's shared Route storage before
+that storage is initialized. There is no added launch, counter or grid wait.
+`rg_expert` returns `(out,ids,wts,lids,metadata)`. Metadata is an int32[736]
+CUDA tensor at M<=32 and empty above32, which exceeds the shared ABI's capacity.
+The expert body still uses its CTA-private summary; the small-M lane can consume
+the exported metadata to hoist that duplicate scheduler work in its own kernel.
+
+`check_metadata.py` executes the same routing/normalization/metadata helpers and
+compares all736 words with the shared `make_route_meta` writer:84 fresh graph
+checks at M1/2/7/8/16/31/32, splits1/2/8/16, EP starts0/96/224, nonempty-to-empty
+routes and zero inputs. Exact descriptors/global/local IDs, max norm L2<4.4e-5.
+The full current route cell passes108 forced Hopper whole-layer comparisons
+with zero route flips; SM90a compiles at128 registers with no spills.
+
+`metadata_admission.json` binds current source hashes. `admission.json` binds the
+immutable older judge payload, which does not contain this metadata revision.
+Build current sources with `build_moe.py` then `build.py --dropin-only`; this
+leaves the pending judge payload and wrapper unchanged. No new remote send.

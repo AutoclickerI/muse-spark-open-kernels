@@ -1,0 +1,722 @@
+{
+  "h200_job": "80b70f7f20fa41c6",
+  "h200_rows": [
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "S",
+      "cell": "pool",
+      "control_us": 104.88,
+      "candidate_us": 559.0,
+      "paired_ratio": 5.3375,
+      "added_us": 454.12,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "S",
+      "cell": "tail",
+      "control_us": 104.42,
+      "candidate_us": 163.15,
+      "paired_ratio": 1.5633,
+      "added_us": 58.730000000000004,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "S",
+      "cell": "all",
+      "control_us": 104.75,
+      "candidate_us": 617.79,
+      "paired_ratio": 5.9053,
+      "added_us": 513.04,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "S",
+      "cell": "epi",
+      "control_us": 104.75,
+      "candidate_us": 284.57,
+      "paired_ratio": 2.7194,
+      "added_us": 179.82,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "F",
+      "cell": "pool",
+      "control_us": 114.08,
+      "candidate_us": 567.21,
+      "paired_ratio": 4.9773,
+      "added_us": 453.13000000000005,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "F",
+      "cell": "tail",
+      "control_us": 113.85,
+      "candidate_us": 172.28,
+      "paired_ratio": 1.5138,
+      "added_us": 58.43000000000001,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "F",
+      "cell": "all",
+      "control_us": 114.22,
+      "candidate_us": 625.56,
+      "paired_ratio": 5.4826,
+      "added_us": 511.3399999999999,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 1,
+      "tokens": 1,
+      "layer": "F",
+      "cell": "epi",
+      "control_us": 113.83,
+      "candidate_us": 295.04,
+      "paired_ratio": 2.5941,
+      "added_us": 181.21000000000004,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "S",
+      "cell": "pool",
+      "control_us": 108.94,
+      "candidate_us": 885.56,
+      "paired_ratio": 8.218,
+      "added_us": 776.6199999999999,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "S",
+      "cell": "tail",
+      "control_us": 108.9,
+      "candidate_us": 563.54,
+      "paired_ratio": 5.2256,
+      "added_us": 454.64,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "S",
+      "cell": "all",
+      "control_us": 108.92,
+      "candidate_us": 1304.09,
+      "paired_ratio": 12.0957,
+      "added_us": 1195.1699999999998,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "S",
+      "cell": "epi",
+      "control_us": 109.43,
+      "candidate_us": 1181.91,
+      "paired_ratio": 10.9202,
+      "added_us": 1072.48,
+      "route_flips": 1
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "F",
+      "cell": "pool",
+      "control_us": 115.2,
+      "candidate_us": 895.54,
+      "paired_ratio": 7.8555,
+      "added_us": 780.3399999999999,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "F",
+      "cell": "tail",
+      "control_us": 115.47,
+      "candidate_us": 567.98,
+      "paired_ratio": 4.9689,
+      "added_us": 452.51,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "F",
+      "cell": "all",
+      "control_us": 115.49,
+      "candidate_us": 1313.77,
+      "paired_ratio": 11.5045,
+      "added_us": 1198.28,
+      "route_flips": 0
+    },
+    {
+      "batch": 1,
+      "q_len": 8,
+      "tokens": 8,
+      "layer": "F",
+      "cell": "epi",
+      "control_us": 115.44,
+      "candidate_us": 1188.81,
+      "paired_ratio": 10.4089,
+      "added_us": 1073.37,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "S",
+      "cell": "pool",
+      "control_us": 139.25,
+      "candidate_us": 1265.44,
+      "paired_ratio": 9.1076,
+      "added_us": 1126.19,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "S",
+      "cell": "tail",
+      "control_us": 139.8,
+      "candidate_us": 759.68,
+      "paired_ratio": 5.4455,
+      "added_us": 619.8799999999999,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "S",
+      "cell": "all",
+      "control_us": 139.71,
+      "candidate_us": 1872.91,
+      "paired_ratio": 13.4348,
+      "added_us": 1733.2,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "S",
+      "cell": "epi",
+      "control_us": 139.38,
+      "candidate_us": 1383.84,
+      "paired_ratio": 9.9473,
+      "added_us": 1244.46,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "F",
+      "cell": "pool",
+      "control_us": 232.41,
+      "candidate_us": 1333.15,
+      "paired_ratio": 5.74,
+      "added_us": 1100.74,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "F",
+      "cell": "tail",
+      "control_us": 233.0,
+      "candidate_us": 844.62,
+      "paired_ratio": 3.6275,
+      "added_us": 611.62,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "F",
+      "cell": "all",
+      "control_us": 232.96,
+      "candidate_us": 1944.71,
+      "paired_ratio": 8.3547,
+      "added_us": 1711.75,
+      "route_flips": 0
+    },
+    {
+      "batch": 16,
+      "q_len": 1,
+      "tokens": 16,
+      "layer": "F",
+      "cell": "epi",
+      "control_us": 232.82,
+      "candidate_us": 1476.65,
+      "paired_ratio": 6.3473,
+      "added_us": 1243.8300000000002,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "S",
+      "cell": "pool",
+      "control_us": 167.12,
+      "candidate_us": 2122.45,
+      "paired_ratio": 13.4272,
+      "added_us": 1955.33,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "S",
+      "cell": "tail",
+      "control_us": 167.59,
+      "candidate_us": 826.32,
+      "paired_ratio": 5.181,
+      "added_us": 658.73,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "S",
+      "cell": "all",
+      "control_us": 167.28,
+      "candidate_us": 2784.3,
+      "paired_ratio": 17.6315,
+      "added_us": 2617.02,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "S",
+      "cell": "epi",
+      "control_us": 167.43,
+      "candidate_us": 1487.75,
+      "paired_ratio": 9.395,
+      "added_us": 1320.32,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "F",
+      "cell": "pool",
+      "control_us": 350.49,
+      "candidate_us": 2303.56,
+      "paired_ratio": 6.6417,
+      "added_us": 1953.07,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "F",
+      "cell": "tail",
+      "control_us": 350.12,
+      "candidate_us": 1006.11,
+      "paired_ratio": 2.8962,
+      "added_us": 655.99,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "F",
+      "cell": "all",
+      "control_us": 350.57,
+      "candidate_us": 2965.22,
+      "paired_ratio": 8.5524,
+      "added_us": 2614.6499999999996,
+      "route_flips": 0
+    },
+    {
+      "batch": 32,
+      "q_len": 1,
+      "tokens": 32,
+      "layer": "F",
+      "cell": "epi",
+      "control_us": 349.88,
+      "candidate_us": 1686.5,
+      "paired_ratio": 4.8696,
+      "added_us": 1336.62,
+      "route_flips": 0
+    }
+  ],
+  "geometry": [
+    {
+      "tokens": 1,
+      "pool_ctas": 576,
+      "pool_full_row_recomputations": 576,
+      "unpool_ctas": 64,
+      "last_epilogue_ctas": 1,
+      "active_norm_warps_per_epilogue": 4,
+      "warp_serial_row_elements": 64,
+      "token_rows_per_final_cta": 1
+    },
+    {
+      "tokens": 8,
+      "pool_ctas": 576,
+      "pool_full_row_recomputations": 4608,
+      "unpool_ctas": 64,
+      "last_epilogue_ctas": 1,
+      "active_norm_warps_per_epilogue": 4,
+      "warp_serial_row_elements": 256,
+      "token_rows_per_final_cta": 8
+    },
+    {
+      "tokens": 16,
+      "pool_ctas": 1152,
+      "pool_full_row_recomputations": 9216,
+      "unpool_ctas": 1024,
+      "last_epilogue_ctas": 2,
+      "active_norm_warps_per_epilogue": 4,
+      "warp_serial_row_elements": 256,
+      "token_rows_per_final_cta": 8
+    },
+    {
+      "tokens": 32,
+      "pool_ctas": 2304,
+      "pool_full_row_recomputations": 18432,
+      "unpool_ctas": 2048,
+      "last_epilogue_ctas": 4,
+      "active_norm_warps_per_epilogue": 4,
+      "warp_serial_row_elements": 256,
+      "token_rows_per_final_cta": 8
+    }
+  ],
+  "local": {
+    "kind": "local work-deletion diagnostics; not candidates",
+    "source_sha256": "a93e5640659655d9fc8a7901e62b7b93825397480356c18eb5449f7487e083dd",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "rows": [
+      {
+        "tokens": 1,
+        "mode": "pool_prologue",
+        "grid": [
+          72,
+          8,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 1,
+        "timings_us": {
+          "full": 673.7920045852661,
+          "no_epilogue": 619.5200085639954,
+          "full_pdl": 672.7679967880249,
+          "no_prologue": 120.83200365304947,
+          "gemm_only": 68.60800087451935
+        }
+      },
+      {
+        "tokens": 1,
+        "mode": "pool_route",
+        "grid": [
+          72,
+          8,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 1,
+        "timings_us": {
+          "full": 124.92799758911133,
+          "no_epilogue": 69.63200122117996,
+          "full_pdl": 122.8799968957901
+        }
+      },
+      {
+        "tokens": 1,
+        "mode": "unpool_boundary2",
+        "grid": [
+          16,
+          4,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 1,
+        "timings_us": {
+          "full": 63.48799914121628,
+          "no_epilogue": 17.40800030529499,
+          "full_pdl": 63.48799914121628
+        }
+      },
+      {
+        "tokens": 1,
+        "mode": "o_boundary1",
+        "grid": [
+          128,
+          1,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 1,
+        "timings_us": {
+          "full": 74.75200295448303,
+          "no_epilogue": 19.45599913597107,
+          "full_pdl": 73.72800260782242
+        }
+      },
+      {
+        "tokens": 8,
+        "mode": "pool_prologue",
+        "grid": [
+          72,
+          8,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 1224.7040271759033,
+          "no_epilogue": 1142.7839994430542,
+          "full_pdl": 1223.680019378662,
+          "no_prologue": 149.50400590896606,
+          "gemm_only": 69.63200122117996
+        }
+      },
+      {
+        "tokens": 8,
+        "mode": "pool_route",
+        "grid": [
+          72,
+          8,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 152.5759994983673,
+          "no_epilogue": 71.68000191450119,
+          "full_pdl": 153.60000729560852
+        }
+      },
+      {
+        "tokens": 8,
+        "mode": "unpool_boundary2",
+        "grid": [
+          16,
+          4,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 368.6400055885315,
+          "no_epilogue": 19.45599913597107,
+          "full_pdl": 369.6640133857727
+        }
+      },
+      {
+        "tokens": 8,
+        "mode": "o_boundary1",
+        "grid": [
+          128,
+          1,
+          1
+        ],
+        "threads": 128,
+        "final_ctas": 1,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 339.9679958820343,
+          "no_epilogue": 21.503999829292297,
+          "full_pdl": 339.9679958820343
+        }
+      },
+      {
+        "tokens": 16,
+        "mode": "pool_prologue",
+        "grid": [
+          72,
+          8,
+          2
+        ],
+        "threads": 128,
+        "final_ctas": 2,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 2082.8158855438232,
+          "no_epilogue": 2030.5919647216797,
+          "full_pdl": 2079.7441005706787,
+          "no_prologue": 172.03199863433838,
+          "gemm_only": 105.47199845314026
+        }
+      },
+      {
+        "tokens": 16,
+        "mode": "pool_route",
+        "grid": [
+          72,
+          8,
+          2
+        ],
+        "threads": 128,
+        "final_ctas": 2,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 174.0799993276596,
+          "no_epilogue": 98.30400347709656,
+          "full_pdl": 173.0560064315796
+        }
+      },
+      {
+        "tokens": 16,
+        "mode": "unpool_boundary2",
+        "grid": [
+          128,
+          4,
+          2
+        ],
+        "threads": 128,
+        "final_ctas": 2,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 460.7999920845032,
+          "no_epilogue": 84.99199897050858,
+          "full_pdl": 449.535995721817
+        }
+      },
+      {
+        "tokens": 16,
+        "mode": "o_boundary1",
+        "grid": [
+          128,
+          1,
+          2
+        ],
+        "threads": 128,
+        "final_ctas": 2,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 350.20801424980164,
+          "no_epilogue": 22.52800017595291,
+          "full_pdl": 344.06399726867676
+        }
+      },
+      {
+        "tokens": 32,
+        "mode": "pool_prologue",
+        "grid": [
+          72,
+          8,
+          4
+        ],
+        "threads": 128,
+        "final_ctas": 4,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 3861.504077911377,
+          "no_epilogue": 3809.2799186706543,
+          "full_pdl": 3860.4800701141357,
+          "no_prologue": 199.68000054359436,
+          "gemm_only": 144.3839967250824
+        }
+      },
+      {
+        "tokens": 32,
+        "mode": "pool_route",
+        "grid": [
+          72,
+          8,
+          4
+        ],
+        "threads": 128,
+        "final_ctas": 4,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 194.5600062608719,
+          "no_epilogue": 138.2399946451187,
+          "full_pdl": 193.59999895095825
+        }
+      },
+      {
+        "tokens": 32,
+        "mode": "unpool_boundary2",
+        "grid": [
+          128,
+          4,
+          4
+        ],
+        "threads": 128,
+        "final_ctas": 4,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 466.94400906562805,
+          "no_epilogue": 119.80800330638885,
+          "full_pdl": 466.94400906562805
+        }
+      },
+      {
+        "tokens": 32,
+        "mode": "o_boundary1",
+        "grid": [
+          128,
+          1,
+          4
+        ],
+        "threads": 128,
+        "final_ctas": 4,
+        "token_warps": 4,
+        "timings_us": {
+          "full": 337.92001008987427,
+          "no_epilogue": 36.86400130391121,
+          "full_pdl": 339.9679958820343
+        }
+      }
+    ]
+  },
+  "source_sha256": "a93e5640659655d9fc8a7901e62b7b93825397480356c18eb5449f7487e083dd",
+  "receipt_sha256": "cf3b3bb4eff658055a6384a15c5162d99d83696aee756f6d980dbb4732b8d963",
+  "conclusion": "Redundant full-row prologue and under-parallel scalar last-CTA epilogues dominate; not a spin or PDL issue.",
+  "limitation": "Local ablations infer the H200 mechanism; no H200 per-phase counters were collected."
+}

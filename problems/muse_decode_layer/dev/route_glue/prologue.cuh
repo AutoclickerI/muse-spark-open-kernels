@@ -1,7 +1,7 @@
 struct RouteGlue {
   const float* pr;const float* bias;const float* pre;int splits;
   int64_t ps,rs;
-  int* out_ids;int* out_lids;float* out_wts;int* local_start;
+  int* out_ids;int* out_lids;float* out_wts;int* local_start;MoERouteMeta* meta;
 };
 
 __device__ __forceinline__ float rg_wsum(float x){

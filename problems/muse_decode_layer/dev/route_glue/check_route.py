@@ -15,7 +15,7 @@ def main():
     m=local_eval.load_module('route_reference',ROOT/'problems/muse_decode_layer/cand_r3_best7_scale.py')
     from torch.utils.cpp_extension import load_inline
     import hashlib
-    raw='#include <torch/extension.h>\n#include <ATen/cuda/CUDAContext.h>\n#include <cuda_bf16.h>\n#include <math_constants.h>\n'+(HERE/'prologue.cuh').read_text()+'''
+    raw='#include <torch/extension.h>\n#include <ATen/cuda/CUDAContext.h>\n#include <cuda_bf16.h>\n#include <math_constants.h>\n'+(HERE.parent/'nt1_branches/route_meta.h').read_text().replace('#pragma once','')+(HERE/'prologue.cuh').read_text()+'''
 __global__ void probe(const float* p,const float* bias,const float* pre,int* ids,int* lids,float* wts,int* local,__nv_bfloat16* x,int M,int S){
   extern __shared__ char mem[];int* private_ids=(int*)mem;float* weights=(float*)(private_ids+M*8);float* inv=weights+M*8;
   RouteGlue rg={p,bias,pre,S,(int64_t)M*4608,4608,ids,lids,wts,local};

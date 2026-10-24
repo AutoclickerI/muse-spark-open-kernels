@@ -178,10 +178,27 @@ __device__ __forceinline__ void prefetch_one(
   p.e=e; p.nb=nb; p.m=m; p.mb=mb; p.me=me;
 }
 
+
+#include <stdint.h>
+
+// Per-call, input-derived metadata. Every entry is int32, no device pointers.
+// 8 sorted rows per NT1 token block; tiles are W13=512 and W2=256.
+struct alignas(128) MoERouteMeta {
+  int32_t version, tokens, local_start, pairs;
+  int32_t count[32];
+  int32_t offset[33];
+  int32_t blocks8[32];
+  int32_t units13[33], units2[33];
+  int32_t token_local[32];
+  int32_t pair_of[256]; // sorted local position -> token*8+slot, -1 unused
+  int32_t pos_of[256];  // token*8+slot -> sorted local position, -1 remote
+};
+static_assert(sizeof(MoERouteMeta)==2944);
+
 struct RouteGlue {
   const float* pr;const float* bias;const float* pre;int splits;
   int64_t ps,rs;
-  int* out_ids;int* out_lids;float* out_wts;int* local_start;
+  int* out_ids;int* out_lids;float* out_wts;int* local_start;MoERouteMeta* meta;
 };
 
 __device__ __forceinline__ float rg_wsum(float x){
@@ -251,6 +268,49 @@ __device__ __forceinline__ __nv_bfloat16 rg_value(RouteGlue rg,int token,int col
   return __float2bfloat16_rn(value*inv*rg.pre[col]);
 }
 
+// MoERouteMeta v1 from nt1_branches/route_meta.h. Inputs are the CTA-private
+// local route IDs; shared scratch reuses the MoE body's Route storage before
+// that storage is initialized by the expert scheduler.
+__device__ __forceinline__ void rg_emit_meta(MoERouteMeta* dst,int M,int start,const int* ids,int* scratch){
+  int* n=scratch;int* wc=n+32;int* off=wc+256;
+  int t=threadIdx.x,lane=t&31,warp=t>>5;
+  for(int j=t;j<(int)sizeof(MoERouteMeta)/4;j+=256)((int*)dst)[j]=0;
+  __syncthreads();
+  if(t<32)n[t]=0;
+  dst->pair_of[t]=-1;dst->pos_of[t]=-1;
+  __syncthreads();
+  int e=t<M*8?ids[t]:-1;
+  if(e<0||e>=32)e=-1;
+  if(e>=0)atomicAdd(n+e,1);
+  __syncthreads();
+  if(warp==0){
+    int count=n[lane],nb=(count+7)/8,p=count,u1=nb*512,u2=nb*256;
+    #pragma unroll
+    for(int d=1;d<32;d<<=1){
+      int a=__shfl_up_sync(~0u,p,d),b=__shfl_up_sync(~0u,u1,d),c=__shfl_up_sync(~0u,u2,d);
+      if(lane>=d){p+=a;u1+=b;u2+=c;}
+    }
+    off[lane]=p-count;
+    dst->count[lane]=count;dst->offset[lane]=p-count;dst->blocks8[lane]=nb;
+    dst->units13[lane+1]=u1;dst->units2[lane+1]=u2;
+    if(lane==31){dst->pairs=p;dst->offset[32]=p;}
+    if(lane==0){dst->version=1;dst->tokens=M;dst->local_start=start;}
+  }
+  wc[warp*32+lane]=0;__syncthreads();
+  unsigned mask=__match_any_sync(~0u,e);int rank=__popc(mask&((1u<<lane)-1));
+  if(e>=0&&rank==0)wc[warp*32+e]=__popc(mask);
+  __syncthreads();
+  if(t<32){int sum=off[t];for(int w=0;w<8;++w){int v=wc[w*32+t];wc[w*32+t]=sum;sum+=v;}}
+  __syncthreads();
+  if(e>=0){int pos=wc[warp*32+e]+rank;dst->pair_of[pos]=t;dst->pos_of[t]=pos;}
+  if(t<M){int count=0;
+    #pragma unroll
+    for(int s=0;s<8;++s)count+=(ids[t*8+s]>=0);
+    dst->token_local[t]=count;
+  }
+  __syncthreads();
+}
+
 template <int NT>
 __global__ void __launch_bounds__(NTHR, 2) moe_fused(
     const __nv_bfloat16* __restrict__ x, const int* __restrict__ ids, const float* __restrict__ tw,
@@ -275,6 +335,8 @@ __global__ void __launch_bounds__(NTHR, 2) moe_fused(
   float* private_tw=reinterpret_cast<float*>(private_ids+npairs);
   float* private_inv=private_tw+npairs;
   rg_prepare(rg,M,private_ids,private_tw,private_inv);
+  if(blockIdx.x==0 && M<=32)rg_emit_meta(rg.meta,M,*rg.local_start,private_ids,reinterpret_cast<int*>(rt));
+  __syncthreads();
   ids=private_ids;tw=private_tw;
   const int tid = threadIdx.x, lane = tid & 31, warp = tid >> 5;
   const int G = gridDim.x, c = blockIdx.x;
@@ -587,7 +649,7 @@ extern "C" int rg_max_smem(){int dev=0,n=0;cudaGetDevice(&dev);cudaDeviceGetAttr
 extern "C" int rg_smem(int stages,int m){return smem_bytes(1,stages,m);}
 extern "C" int rg_resident(int stages,int m){int n=0;cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n,moe_fused<1>,NTHR,smem_bytes(1,stages,m));return n;}
 extern "C" int rg_run(const void** p,int M,int S,int stages,int grid,int64_t ps,int64_t rs,void* stream){
- RouteGlue rg={(const float*)p[14],(const float*)p[15],(const float*)p[16],S,ps,rs,(int*)p[17],(int*)p[18],(float*)p[19],(int*)p[20]};
+ RouteGlue rg={(const float*)p[14],(const float*)p[15],(const float*)p[16],S,ps,rs,(int*)p[17],(int*)p[18],(float*)p[19],(int*)p[20],(MoERouteMeta*)p[21]};
  moe_fused<1><<<grid,NTHR,smem_bytes(1,stages,M),(cudaStream_t)stream>>>((const __nv_bfloat16*)p[0],(const int*)p[1],(const float*)p[2],(const __nv_bfloat16*)p[3],
  (const uint8_t*)p[4],(const uint8_t*)p[5],(const float*)p[6],(const float*)p[7],(__nv_bfloat16*)p[8],(float*)p[9],(float*)p[10],(int*)p[11],(__nv_bfloat16*)p[12],M,0,stages,rg);
  return (int)cudaGetLastError();

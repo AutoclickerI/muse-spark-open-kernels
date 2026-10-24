@@ -54,9 +54,11 @@ expert gates. Output tensors/counters are checked again after timing.
   executes locally; attn_main and FA3 launch stand-ins exercise Hopper glue.
   Host5/5 tests and6/6 static checks pass. Payload/drop-in name and signature
   checks pass. Native SM90a8 specializations compile with no register spills.
-- Local SM120 timings lose for every cell. They do not enable a projection/glue
-  switch. H200 job80b70f7f20fa41c6, detached send e4a1f1e29a7bf810, accepted
-  without rejection. Receipt pending; no production source was modified.
+- H200 job80b70f7f20fa41c6 loses every arm by1.51–17.63x. The pool prologue
+  repeats a full-row norm576 times per token; last-CTA boundaries serialize
+  up to8 rows into one CTA. Local work-deletion ablations reproduce this; PDL
+  on/off is neutral. This mapping is closed and disabled. It does not rule out
+  fusion with a cooperative reduction. [Mechanism and evidence](audit/README.md).
 
 Build: `python problems/muse_decode_layer/dev/fused_glue/build.py`.
 Local native oracle: `tools/img python problems/muse_decode_layer/dev/fused_glue/validate.py`.
