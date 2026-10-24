@@ -20,8 +20,9 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
   day's last (the board keeps our best), receipts in `runs/`, priority queue. It detaches itself (log in `runs/detached/`); `collect` finishes orphans.
 - Screen with `tools/local_eval.py` first; a candidate that fails a local test doesn't go remote (default).
   `tools/screen_all.py --send` screens every unsent candidate in parallel and sends each pass.
-- Time any kernel on the H200 without a candidate or the target problem's quota: `tools/h200_lab.py send <payload>`
-  (runs in the prepare of proj's best source; proj and MoE have spare runs). Decode's 20 runs a day go to candidates.
+- Time any kernel on the H200 without a candidate or the target problem's quota: `tools/h200_lab.py send <payload> [more ...]`
+  (runs in the prepare of proj's best source; proj and MoE have spare runs). One judge run carries every payload
+  given, so batch labs for one host. Decode's 20 runs a day go to candidates.
 - Local timing (sm_120) ranks loosely; H200 claims come only from `runs/` receipts.
 - Hopper-only paths can't run here. Force each Hopper branch's Python glue locally with a portable stand-in kernel.
 - Write kernels so they drop into `serving/sglang/python/sglang/`. Serving runs only verify loads and prefill.

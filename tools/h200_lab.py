@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Run any H200 measurement inside the prepare() of a problem's best scored source (a lab run).
 
-    tools/h200_lab.py send prof/lab/moe_skew.py --note "V9 vs grouped at real routing" [--host muse_moe_w4a16] [--priority 1]
-    tools/h200_lab.py build prof/lab/moe_skew.py -o /tmp/x.py     # write the lab file only (to screen it)
-    tools/h200_lab.py read <job | receipt.json>                    # print the lab's lines from a receipt
+    tools/h200_lab.py send prof/lab/moe_skew.py [more.py ...] --note "V9 vs grouped at real routing" [--host muse_moe_w4a16] [--priority 1]
+    tools/h200_lab.py build prof/lab/moe_skew.py [more.py ...] -o /tmp/x.py   # write the lab file only (to screen it)
+    tools/h200_lab.py read <job | receipt.json> [name]                        # print the lab sections from a receipt
 
 The payload is one self-contained file defining `lab(deadline, weights[, state]) -> list[str]`: `deadline` is a
 time.monotonic() value (prepare's 300 s cap minus a margin, counted from prepare's start), `weights` is
@@ -13,11 +13,15 @@ our modules, since the judge gets the one file. The optional third argument is t
 host's already-completed base prepare; it avoids rebuilding a long tuner when a lab measures that state.
 The judge's image has torch, triton and SGLang's kernels.
 
-The lab file is the host's best scored source (ledger) with the payload appended and prepare() wrapped:
-the base prepare runs first and its state is returned unchanged, so the run still scores, and the board
-keeps our best anyway. The judge calls prepare once per run (llms.txt) and keeps the last 16,000
-characters of output, followed by up to ~6 KB of profiler lines, so the lab's lines are capped at
-LIMIT characters between LAB_BEGIN and LAB_END. An exception in the payload becomes LAB_ERROR lines.
+The lab file is the host's best scored source (ledger) with prepare() wrapped: the base prepare runs
+first and its state is returned unchanged, so the run still scores, and the board keeps our best anyway.
+Each payload's source is embedded as a string and executed in its own namespace (a copy of the host
+module's globals, so host functions stay reachable and payload names can't collide), one after another,
+each with an equal share of the time left. Several payloads for one host go in one judge run: our runs
+start one at a time, so batching labs is the cheapest way to more H200 answers per hour. The judge calls
+prepare once per run (llms.txt) and keeps the last 16,000 characters of output, followed by up to ~6 KB
+of profiler lines, so all lab lines together are capped at LIMIT characters, split evenly; each payload
+prints between its own LAB_BEGIN and LAB_END. An exception in a payload becomes its LAB_ERROR lines.
 
 Hosts: proj and MoE have 30 runs a day that their own boards barely use (G3 counts only the decode
 layer); decode, attention and prefill have 20, and attention has no prepare. Lab runs default to the
@@ -41,9 +45,20 @@ MARGIN_S = 15         # left of prepare's 300 s after the payload's deadline
 HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer")
 
 WRAPPER = '''
-# ---- h200_lab wrapper: payload {name} sha256 {sha} on base {base} ----
+# ---- h200_lab wrapper: payloads {names} on base {base} ----
+_LAB_PAYLOADS = {payloads!r}
 _lab_base_prepare = prepare
 _lab_ran = False
+
+
+def _lab_run_one(name, src, deadline, weights, state):
+    import inspect as _inspect, linecache as _linecache
+    fname = f"<h200_lab {{name}}>"  # in linecache, so inspect.getsource (triton.jit) finds the source
+    _linecache.cache[fname] = (len(src), None, src.splitlines(True), fname)
+    ns = dict(globals())
+    exec(compile(src, fname, "exec"), ns)
+    fn = ns["lab"]
+    return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)
 
 
 def prepare(weights):
@@ -54,28 +69,27 @@ def prepare(weights):
     if not _lab_ran:
         _lab_ran = True
         import traceback as _tb
-        _t0 = _t.monotonic()
-        try:
-            import inspect as _inspect
-            _lab_params = len(_inspect.signature(lab).parameters)
-            _lab_result = (lab(_start + {budget}, weights, state) if _lab_params >= 3
-                           else lab(_start + {budget}, weights))
-            _lines = [str(x) for x in (_lab_result or [])]
-        except BaseException as _e:  # the run must still score; the error is the result
-            _lines = [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
-        torch.cuda.synchronize()
-        torch.cuda.empty_cache()
-        _out, _n = [], 0
-        for _l in _lines:
-            if _n + len(_l) + 1 > {limit}:
-                _out.append(f"LAB_TRUNCATED {{len(_lines) - len(_out)}} lines")
-                break
-            _out.append(_l)
-            _n += len(_l) + 1
-        print("LAB_BEGIN {name} {sha}", flush=True)
-        for _l in _out:
-            print(_l, flush=True)
-        print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} prepare_s={{_t.monotonic() - _start:.1f}}", flush=True)
+        _end = _start + {budget}
+        for _i, (_name, _sha, _src) in enumerate(_LAB_PAYLOADS):
+            _t0 = _t.monotonic()
+            _deadline = _t0 + max(0.0, _end - _t0) / (len(_LAB_PAYLOADS) - _i)
+            try:
+                _lines = [str(x) for x in (_lab_run_one(_name, _src, _deadline, weights, state) or [])]
+            except BaseException as _e:  # the run must still score; the error is the result
+                _lines = [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
+            _out, _n = [], 0
+            for _l in _lines:
+                if _n + len(_l) + 1 > {limit} // len(_LAB_PAYLOADS):
+                    _out.append(f"LAB_TRUNCATED {{len(_lines) - len(_out)}} lines")
+                    break
+                _out.append(_l)
+                _n += len(_l) + 1
+            print(f"LAB_BEGIN {{_name}} {{_sha}}", flush=True)
+            for _l in _out:
+                print(_l, flush=True)
+            print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} prepare_s={{_t.monotonic() - _start:.1f}}", flush=True)
     return state
 '''
 
@@ -136,25 +150,30 @@ def check_imports(payload: Path) -> list[str]:
     return [] if line == "OK" else line[4:].split(" | ")
 
 
-def build(payload: Path, host: str) -> tuple[str, str]:
-    if bad := local_imports(payload):
-        sys.exit(f"{payload}: imports modules the judge won't have: {sorted(bad)}")
-    if bad := check_imports(payload):
-        sys.exit(f"{payload}: imports that fail in the judge's image: {bad}")
-    body = payload.read_text()
-    if not re.search(r"^def lab\(", body, re.M):
-        sys.exit(f"{payload}: must define lab(deadline, weights) -> list[str]")
+def build(payloads: list[Path], host: str) -> tuple[str, str]:
+    embedded = []
+    for payload in payloads:
+        if bad := local_imports(payload):
+            sys.exit(f"{payload}: imports modules the judge won't have: {sorted(bad)}")
+        if bad := check_imports(payload):
+            sys.exit(f"{payload}: imports that fail in the judge's image: {bad}")
+        body = payload.read_text()
+        if not re.search(r"^def lab\(", body, re.M):
+            sys.exit(f"{payload}: must define lab(deadline, weights) -> list[str]")
+        embedded.append((payload.stem, hashlib.sha256(body.encode()).hexdigest()[:16], body))
+    if len({name for name, _, _ in embedded}) < len(embedded):
+        sys.exit("payload names must differ (they label the receipt's sections)")
     base = best_source(host)
     src = (REPO / base["source"]).read_text()
     if not re.search(r"^def prepare\(", src, re.M):
         sys.exit(f"{host} best source {base['source']} has no prepare(); pick another --host")
-    sha = hashlib.sha256(body.encode()).hexdigest()[:16]
-    out = (src.rstrip() + f"\n\n# ---- h200_lab payload {payload.name} ----\n" + body.rstrip() + "\n"
-           + WRAPPER.format(name=payload.stem, sha=sha, base=base["job"], budget=300 - MARGIN_S, limit=LIMIT))
+    out = src.rstrip() + "\n\n" + WRAPPER.format(
+        names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
+        budget=300 - MARGIN_S, limit=LIMIT)
     return out, base["job"]
 
 
-def read(ref: str):
+def read(ref: str, name: str | None = None):
     p = Path(ref)
     if not p.exists():
         hits = sorted(REPO.glob(f"runs/*/*_{ref}.json"))
@@ -162,8 +181,9 @@ def read(ref: str):
             sys.exit(f"no receipt for {ref} (still running? `tools/okc_run.py collect {ref}`)")
         p = hits[-1]
     tail = json.loads(p.read_text())["result"].get("log_tail", "")
-    m = re.search(r"^LAB_BEGIN.*?(?:^LAB_END.*?$|\Z)", tail, re.M | re.S)
-    print(m.group(0) if m else f"no LAB_BEGIN in {p} (log_tail {len(tail)} chars):\n{tail[-2000:]}")
+    parts = [m.group(0) for m in re.finditer(r"^LAB_BEGIN (\S+).*?(?:^LAB_END.*?$|\Z)", tail, re.M | re.S)
+             if name is None or m.group(1) == name]
+    print("\n".join(parts) if parts else f"no LAB_BEGIN{' ' + name if name else ''} in {p} (log_tail {len(tail)} chars):\n{tail[-2000:]}")
 
 
 def main():
@@ -171,7 +191,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name in ("send", "build"):
         s = sub.add_parser(name)
-        s.add_argument("payload", type=Path)
+        s.add_argument("payloads", type=Path, nargs="+")
         s.add_argument("--host", default="muse_bf16_proj", choices=HOSTS)
         if name == "send":
             s.add_argument("--note", required=True)
@@ -180,19 +200,21 @@ def main():
             s.add_argument("-o", type=Path, required=True)
     r = sub.add_parser("read")
     r.add_argument("ref", help="job id or receipt .json")
+    r.add_argument("name", nargs="?", help="only this payload's section")
     args = ap.parse_args()
 
     if args.cmd == "read":
-        return read(args.ref)
-    src, base = build(args.payload, args.host)
+        return read(args.ref, args.name)
+    src, base = build(args.payloads, args.host)
     if args.cmd == "build":
         args.o.write_text(src)
         return print(f"{args.o}: {len(src)} bytes, base {base}")
-    out = REPO / "problems" / args.host / "lab" / f"lab_{args.payload.stem}.py"
+    out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(p.stem for p in args.payloads)}.py"
     out.parent.mkdir(exist_ok=True)
     out.write_text(src)
     subprocess.run([sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
-                    "--priority", str(args.priority), "--note", f"h200_lab {args.payload}: {args.note}"],
+                    "--priority", str(args.priority), "--note",
+                    f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"],
                    cwd=REPO, check=False)
 
 

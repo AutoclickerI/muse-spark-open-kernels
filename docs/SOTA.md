@@ -15,7 +15,7 @@ and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published
 | muse_attention_decode | 1.403x verify_stream `d98ae45d7204438d` (scored; stream kernel wins only verify-1 sliding) | 1.403x (rank 211) | 2.726x (pjmullin3) | 2.221x | 1.881x | 425 |
 | muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (rank 122) | 2.335x (Lurrobert) | 2.162x | 1.899x | 474 |
 | muse_decode_layer | 1.429x lab moe_real_routing `26d7e05ab97d4f96` on r3_v9 (scored; same kernels as `0e94268cf5654012`) | 1.429x (rank 112) | 2.101x (Lurrobert) | 1.860x | 1.625x | 379 |
-| muse_prefill_layer | 1.438x cand_mid_experts2 `0d738799802340fd` (scored; score portfolio + Humming mid plans at 753/3012) | 1.434x (rank 58) | 1.745x (nl-alonso) | 1.641x | 1.461x | 213 |
+| muse_prefill_layer | 1.451x cand_prefill_a30_h200 `cb8939d0980a4cc3` (scored; receipt-backed dense/attention picks; its prepare tuner still chose humming_masked@753 and dg_hint_w8@16K over the static picks) | 1.434x (rank 58) | 1.745x (nl-alonso) | 1.641x | 1.461x | 213 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
 top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
