@@ -14,7 +14,7 @@ binds or ranks work.
 
 ## Additional parked notes
 
-- [Expert bank](expert_layout.md): the serving loader, reader ABI and residency evidence from `docs/reference/`.
+- [Expert bank](../reference/expert_layout.md) stays in `docs/reference/` (decode candidates read its V6 layout).
 - [Reference sections](reference_notes.md) and [lane sections](lane_notes.md): source text removed from mixed live docs. Historical goal tags and next steps in these archives do not apply to current work.
 - [Prefill send notes](prefill_dev/NEXT_CHECKS.md), [V11 profile](prefill_dev/V11_PROFILE.md), [glue](prefill_dev/glue/README.md), [CUTLASS dense](prefill_dev/cutlass_dense/README.md), [A30 dense](prefill_dev/dense_a30/README.md), [mid dense](prefill_dev/mid_dense/README.md), and [expert dispatch](prefill_dev/sweep_dispatch/README.md): prefill-only lane notes. Code and receipts remain at their original paths.
 

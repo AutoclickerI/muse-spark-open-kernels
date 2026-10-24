@@ -1,10 +1,10 @@
-# The NVFP4 expert bank for serving
+# The NVFP4 expert bank (canonical V6)
 
-> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
-Serves: G2.
+Serves: G2. Read for the bank geometry and raw-scale storage the decode candidates cite. The serving-loader parts are
+inactive until the serving round (R-20261025-1).
 
 Serves G1/G2. Read for bank ownership, raw scale storage and the cost of another layout.
-Current dispatch and gates are in [serving_levers.md](serving_levers.md).
+Current dispatch and gates are in [serving_levers.md](../serving/serving_levers.md).
 
 ## Production bank
 
