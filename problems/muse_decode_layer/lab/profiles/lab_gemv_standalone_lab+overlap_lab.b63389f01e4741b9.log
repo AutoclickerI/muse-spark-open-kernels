@@ -1,0 +1,57 @@
+STAGE_TUNE qkv_gate T=1: 19.10 us (32, 1024, 128, False); all=[(22.112000733613968, (64, 1024, 128, True)), (19.1040001809597, (32, 1024, 128, False)), (19.7759997099638, (64, 512, 128, False)), (20.99199965596199, 'cublas')]
+STAGE_TUNE o T=1: 11.49 us (64, 512, 128, False); all=[(12.83199992030859, (64, 512, 128, True)), (12.06399966031313, (32, 512, 128, False)), (11.487999930977821, (64, 512, 128, False)), (12.095999903976917, 'cublas')]
+STAGE_TUNE pool_router T=1: 31.04 us (32, 1024, 128, False); all=[(40.063999593257904, (64, 2048, 128, True)), (31.039999797940254, (32, 1024, 128, False)), (31.5839983522892, (64, 512, 128, False)), (33.376000821590424, 'cublas')]
+STAGE_TUNE unpooler_slice T=1: 9.06 us (64, 512, 128, False); all=[(9.279999881982803, (64, 512, 128, True)), (9.696000255644321, (32, 1024, 128, False)), (9.056000038981438, (64, 512, 128, False)), (11.52000017464161, 'cublas')]
+STAGE_TUNE qkv_gate T=8: 18.98 us (32, 1024, 128, False); all=[(22.23999984562397, (64, 1024, 128, True)), (18.97599920630455, (32, 1024, 128, False)), (19.936000928282738, (64, 512, 128, False)), (21.407999098300934, 'cublas')]
+STAGE_TUNE o T=8: 11.46 us (64, 512, 128, False); all=[(12.83199992030859, (64, 512, 128, True)), (11.872000060975552, (32, 512, 128, False)), (11.455999687314034, (64, 512, 128, False)), (12.095999903976917, 'cublas')]
+STAGE_TUNE pool_router T=8: 31.01 us (32, 1024, 128, False); all=[(39.23200070858002, (64, 2048, 128, True)), (31.007999554276466, (32, 1024, 128, False)), (31.775999814271927, (64, 512, 128, False)), (33.47200155258179, 'cublas')]
+STAGE_TUNE unpooler_slice T=8: 9.02 us (64, 512, 128, False); all=[(9.375999681651592, (64, 512, 128, True)), (9.568000212311745, (32, 1024, 128, False)), (9.02399979531765, (64, 512, 128, False)), (11.680000461637974, 'cublas')]
+STAGE_TUNE qkv_gate T=16: 19.52 us (32, 1024, 128, False); all=[(22.143999114632607, (64, 1024, 128, True)), (19.519999623298645, (32, 1024, 128, False)), (20.287999883294106, (64, 512, 128, False)), (21.215999498963356, 'cublas')]
+STAGE_TUNE o T=16: 11.58 us (64, 512, 128, False); all=[(13.024000450968742, (64, 512, 128, True)), (11.776000261306763, (32, 512, 128, False)), (11.58399973064661, (64, 512, 128, False)), (12.223999947309494, 'cublas')]
+STAGE_TUNE pool_router T=16: 31.33 us (32, 1024, 128, False); all=[(38.62399980425835, (64, 2048, 128, True)), (31.328000128269196, (32, 1024, 128, False)), (32.03200176358223, (64, 512, 128, False)), (33.055998384952545, 'cublas')]
+STAGE_TUNE unpooler T=16: 28.06 us cublas; all=[(33.504001796245575, (64, 2048, 128, True)), (30.719999223947525, (32, 1024, 128, False)), (28.960000723600388, (64, 512, 128, False)), (28.063999488949776, 'cublas')]
+STAGE_TUNE qkv_gate T=32: 21.22 us (64, 512, 128, False); all=[(23.19999970495701, (64, 1024, 128, True)), (22.624000906944275, (32, 1024, 128, False)), (21.215999498963356, (64, 512, 128, False)), (21.215999498963356, 'cublas')]
+STAGE_TUNE o T=32: 11.81 us (64, 512, 128, False); all=[(13.407999649643898, (64, 512, 128, True)), (12.640000320971012, (32, 512, 128, False)), (11.807999573647976, (64, 512, 128, False)), (12.095999903976917, 'cublas')]
+STAGE_TUNE pool_router T=32: 33.15 us cublas; all=[(41.152000427246094, (64, 2048, 128, True)), (35.16799956560135, (32, 1024, 128, False)), (33.215999603271484, (64, 512, 128, False)), (33.15199911594391, 'cublas')]
+STAGE_TUNE unpooler T=32: 28.03 us cublas; all=[(34.432001411914825, (64, 2048, 128, True)), (29.69600073993206, (32, 1024, 128, False)), (30.079999938607216, (64, 512, 128, False)), (28.031999245285988, 'cublas')]
+BF16_MOE_TUNE M=256 counts=[1, 5, 0, 24, 6, 1, 1, 4, 11, 0, 0, 86, 1, 0, 6, 5, 0, 11, 52, 9, 0, 0, 98, 0, 12, 3, 5, 21, 13, 0, 0, 0] v9_us=451.696 top_us=[('bmm_tn_f32/rows32/grid1.0/sms0/stages2', 337.42399513721466), ('bmm_tn_f32/rows32/grid0.0/sms0/stages2', 339.136004447937), ('bmm_nn_f32/rows32/grid1.0/sms0/stages2', 340.9600108861923), ('masked/rows16/grid0.0/sms0/stages2', 347.82399237155914), ('bmm_nn_f32/rows32/grid0.0/sms0/stages2', 347.8880077600479), ('masked/rows16/grid1.0/sms0/stages2', 348.5119938850403), ('bmm_tn_f32/rows32/grid1.0/sms0/stages1', 348.62400591373444), ('bmm_tn_f32/rows32/grid0.0/sms0/stages1', 350.70399940013885)] trials=192 selected=('bmm_tn_f32', 32, 1.0, 78, 0, 2)
+BF16_MOE_TUNE M=128 counts=[1, 1, 0, 8, 1, 0, 2, 4, 5, 0, 0, 52, 0, 0, 4, 1, 0, 3, 28, 3, 0, 0, 50, 0, 6, 2, 1, 14, 12, 0, 0, 0] v9_us=289.792 top_us=[('masked/rows16/grid1.0/sms0/stages2', 268.8480019569397), ('masked/rows16/grid0.0/sms0/stages2', 270.7360088825226), ('masked/rows32/grid1.0/sms0/stages2', 275.87200701236725), ('masked/rows32/grid1.0/sms66/stages2', 278.30401062965393), ('masked/rows32/grid0.0/sms66/stages2', 278.4480005502701), ('masked/rows16/grid1.0/sms66/stages2', 278.4640043973923), ('masked/rows32/grid0.0/sms0/stages2', 278.7040024995804), ('masked/rows16/grid0.0/sms0/stages1', 278.8960039615631)] trials=128 selected=('masked', 16, 0.0, 43, 0, 2)
+BF16_MOE_TUNE M=32 counts=[13, 0, 7, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0] v9_us=101.376 top_us=[('v9', 101.3759970664978), ('masked/rows16/grid0.25/sms0/stages2', 126.89599767327309), ('masked/rows16/grid0.25/sms66/stages2', 127.67999991774559), ('masked/rows16/grid0.25/sms32/stages2', 130.22400066256523), ('psum/rows16/grid0.25/sms66/stages2', 133.7440013885498), ('psum/rows16/grid0.25/sms0/stages2', 135.903999209404), ('masked/rows16/grid0.0/sms66/stages2', 143.0400013923645), ('masked/rows16/grid0.0/sms0/stages2', 144.54400539398193)] trials=64 selected=v9
+BF16_MOE_PREPARE seconds=87.33 choices={256: ('bmm_tn_f32', 32, 1.0, 78, 0, 2), 128: ('masked', 16, 0.0, 43, 0, 2)} resident_bytes=3825213952
+LAB_BEGIN gemv_standalone_lab 7e3d1a522c7edfe8
+SG_META sms=132 L2_MB=50 cold_L2=256MiB graph_replays=20
+SG_SHAPE role=qkv m=1 bytes=37.75 cublas:20.99us/1.80TB/s/cta=library/waves=library gemv:21.50us/1.76TB/s/cta=288/waves=3 more_cta:23.78us/1.59TB/s/cta=1152/waves=9 lt0:21.66us/1.74TB/s/cta=library/waves=library lt1:21.01us/1.80TB/s/cta=library/waves=library lt2:20.62us/1.83TB/s/cta=library/waves=library lt3:21.79us/1.73TB/s/cta=library/waves=library
+SG_SHAPE role=qkv m=8 bytes=37.75 cublas:20.96us/1.80TB/s/cta=library/waves=library gemv:21.68us/1.74TB/s/cta=288/waves=3 more_cta:24.26us/1.56TB/s/cta=1152/waves=9 lt0:21.17us/1.78TB/s/cta=library/waves=library lt1:20.82us/1.81TB/s/cta=library/waves=library lt2:21.39us/1.76TB/s/cta=library/waves=library lt3:21.94us/1.72TB/s/cta=library/waves=library
+SG_SHAPE role=qkv m=16 bytes=37.75 cublas:20.72us/1.82TB/s/cta=library/waves=library gemv:21.86us/1.73TB/s/cta=288/waves=3 more_cta:24.26us/1.56TB/s/cta=1152/waves=9 lt0:21.68us/1.74TB/s/cta=library/waves=library lt1:21.23us/1.78TB/s/cta=library/waves=library lt2:21.15us/1.78TB/s/cta=library/waves=library lt3:22.05us/1.71TB/s/cta=library/waves=library
+SG_SHAPE role=o m=1 bytes=16.78 cublas:12.02us/1.40TB/s/cta=library/waves=library gemv:13.63us/1.23TB/s/cta=256/waves=2 more_cta:15.55us/1.08TB/s/cta=1024/waves=8 lt0:12.00us/1.40TB/s/cta=library/waves=library lt1:11.90us/1.41TB/s/cta=library/waves=library lt2:12.26us/1.37TB/s/cta=library/waves=library lt3:12.46us/1.35TB/s/cta=library/waves=library
+SG_SHAPE role=o m=8 bytes=16.78 cublas:11.94us/1.41TB/s/cta=library/waves=library gemv:13.81us/1.22TB/s/cta=256/waves=2 more_cta:15.81us/1.06TB/s/cta=1024/waves=8 lt0:11.92us/1.41TB/s/cta=library/waves=library lt1:11.90us/1.41TB/s/cta=library/waves=library lt2:12.13us/1.38TB/s/cta=library/waves=library lt3:12.34us/1.36TB/s/cta=library/waves=library
+SG_SHAPE role=o m=16 bytes=16.78 cublas:11.95us/1.40TB/s/cta=library/waves=library gemv:13.89us/1.21TB/s/cta=256/waves=2 more_cta:16.32us/1.03TB/s/cta=1024/waves=8 lt0:11.94us/1.41TB/s/cta=library/waves=library lt1:12.13us/1.38TB/s/cta=library/waves=library lt2:12.18us/1.38TB/s/cta=library/waves=library lt3:12.34us/1.36TB/s/cta=library/waves=library
+SG_SHAPE role=pool_router m=1 bytes=75.50 cublas:32.29us/2.34TB/s/cta=library/waves=library gemv:33.54us/2.25TB/s/cta=288/waves=3 more_cta:33.49us/2.25TB/s/cta=1152/waves=9 lt0:32.61us/2.32TB/s/cta=library/waves=library lt1:33.34us/2.26TB/s/cta=library/waves=library lt2:32.85us/2.30TB/s/cta=library/waves=library lt3:32.85us/2.30TB/s/cta=library/waves=library
+SG_SHAPE role=pool_router m=8 bytes=75.50 cublas:32.70us/2.31TB/s/cta=library/waves=library gemv:33.68us/2.24TB/s/cta=288/waves=3 more_cta:33.66us/2.24TB/s/cta=1152/waves=9 lt0:32.45us/2.33TB/s/cta=library/waves=library lt1:32.42us/2.33TB/s/cta=library/waves=library lt2:33.02us/2.29TB/s/cta=library/waves=library lt3:32.53us/2.32TB/s/cta=library/waves=library
+SG_SHAPE role=pool_router m=16 bytes=75.50 cublas:32.77us/2.30TB/s/cta=library/waves=library gemv:34.40us/2.19TB/s/cta=288/waves=3 more_cta:34.32us/2.20TB/s/cta=1152/waves=9 lt0:33.06us/2.28TB/s/cta=library/waves=library lt1:33.02us/2.29TB/s/cta=library/waves=library lt2:32.51us/2.32TB/s/cta=library/waves=library lt3:33.28us/2.27TB/s/cta=library/waves=library
+SG_SHAPE role=unpool_slice m=1 bytes=8.39 cublas:11.33us/0.74TB/s/cta=library/waves=library gemv:11.22us/0.75TB/s/cta=128/waves=1 more_cta:13.52us/0.62TB/s/cta=512/waves=4 lt0:11.23us/0.75TB/s/cta=library/waves=library lt1:11.89us/0.71TB/s/cta=library/waves=library lt2:11.74us/0.71TB/s/cta=library/waves=library lt3:12.64us/0.66TB/s/cta=library/waves=library
+SG_SHAPE role=unpool_slice m=8 bytes=8.39 cublas:11.60us/0.72TB/s/cta=library/waves=library gemv:11.34us/0.74TB/s/cta=128/waves=1 more_cta:13.71us/0.61TB/s/cta=512/waves=4 lt0:11.57us/0.73TB/s/cta=library/waves=library lt1:12.02us/0.70TB/s/cta=library/waves=library lt2:11.73us/0.72TB/s/cta=library/waves=library lt3:12.78us/0.66TB/s/cta=library/waves=library
+SG_SHAPE role=unpool_full m=16 bytes=67.11 cublas:27.58us/2.43TB/s/cta=library/waves=library gemv:27.62us/2.43TB/s/cta=256/waves=2 more_cta:33.60us/2.00TB/s/cta=2048/waves=16 lt0:27.82us/2.41TB/s/cta=library/waves=library lt1:29.71us/2.26TB/s/cta=library/waves=library lt2:30.82us/2.18TB/s/cta=library/waves=library lt3:30.96us/2.17TB/s/cta=library/waves=library
+SG_DONE
+LAB_END lab_s=44.8 prepare_s=132.2
+Traceback (most recent call last):
+  File "/tmp/muse_decode_layer-hz19kblx/run/worker.py", line 423, in child_main
+    send(_setup_op(msg, module, state, sync, perf))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/muse_decode_layer-hz19kblx/run/worker.py", line 322, in _setup_op
+    state["prep"] = prepare(weights)
+                    ^^^^^^^^^^^^^^^^
+  File "/tmp/muse_decode_layer-hz19kblx/run/submission.py", line 2745, in prepare
+    torch.cuda.synchronize()
+  File "/opt/sglang/lib/python3.12/site-packages/torch/cuda/__init__.py", line 1281, in synchronize
+    return torch._C._cuda_synchronize()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: operation not supported on global/shared address space
+Search for `cudaErrorInvalidAddressSpace' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+The CUDA driver logged these messages, which may provide useful details:
+Sticky error detected
+Returning 717 (CUDA_ERROR_INVALID_ADDRESS_SPACE) from cuCtxSynchronize_v2
+
+
+[W1024 11:46:45.778409926 CUDAEvent.h:57] Warning: CUDA warning: operation not supported on global/shared address space (function ~CUDAEvent)
+[W1024 11:46:45.778423526 CUDAEvent.h:57] Warning: CUDA warning: operation not supported on global/shared address space (function ~CUDAEvent)

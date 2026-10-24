@@ -21,7 +21,9 @@ each with an equal share of the time left. Several payloads for one host go in o
 start one at a time, so batching labs is the cheapest way to more H200 answers per hour. The judge calls
 prepare once per run (llms.txt) and keeps the last 16,000 characters of output, followed by up to ~6 KB
 of profiler lines, so all lab lines together are capped at LIMIT characters, split evenly; each payload
-prints between its own LAB_BEGIN and LAB_END. An exception in a payload becomes its LAB_ERROR lines.
+prints between its own LAB_BEGIN and LAB_END. An exception in a payload becomes its LAB_ERROR lines; a sticky
+CUDA error (lab b63389f0) still fails the run after printing them and kills the payloads after it, so put a
+risky payload last.
 
 Hosts: proj and MoE have 30 runs a day that their own boards barely use (G3 counts only the decode
 layer); decode, attention and prefill have 20, and attention has no prepare. Lab runs default to the
@@ -73,12 +75,13 @@ def prepare(weights):
         for _i, (_name, _sha, _src) in enumerate(_LAB_PAYLOADS):
             _t0 = _t.monotonic()
             _deadline = _t0 + max(0.0, _end - _t0) / (len(_LAB_PAYLOADS) - _i)
+            _lines = []
             try:
                 _lines = [str(x) for x in (_lab_run_one(_name, _src, _deadline, weights, state) or [])]
-            except BaseException as _e:  # the run must still score; the error is the result
-                _lines = [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
-            torch.cuda.synchronize()
-            torch.cuda.empty_cache()
+                torch.cuda.synchronize()  # inside the try: a sticky CUDA error still prints this payload's lines
+                torch.cuda.empty_cache()
+            except BaseException as _e:  # the error is the result; a sticky CUDA error still fails the run after
+                _lines += [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
             _out, _n = [], 0
             for _l in _lines:
                 if _n + len(_l) + 1 > {limit} // len(_LAB_PAYLOADS):

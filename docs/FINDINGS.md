@@ -69,6 +69,7 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 | best5 vs the board run, per stage | cand_r3_best5 `691bff0bcff44e99` 1.353x vs 0e94268 1.428x: MoE at verify 16/32 ran at the 12-seed mean (341/527-530 us vs 259-280/450-477), attention at decode loads improved (decode 1 full 33.9->18.9, decode 32 full 228.5->197.8 us), and verify-32 full FA3 regressed 377.9->501.5 us: prepare picked num_splits=32, pack_gqa on a synthetic input whose KV lengths don't match the scored 'agentic spread', while SGLang's baseline on that load moved -1.6% | decode_layer | measured | `problems/muse_decode_layer/profiles/cand_r3_best5.691bff0bcff44e99.{txt,log}` |
 | best5_glue vs best5, per stage | `7370b18221964412` 1.367x vs `691bff0b` 1.353x: the three PDL glue launches left glue kernel time and total-minus-MoE-minus-attention within -6.8..+2.6 us per case (noise); the score moved with MoE routing (verify 32 527/530 -> 503/490 us) and FA3 at verify-32 full (509 -> 380 us, same tuner code). Single scored runs can't resolve few-us changes; paired labs can | decode_layer | measured | `problems/muse_decode_layer/profiles/cand_r3_best5_glue.7370b182*.txt` |
 | Lab host on a withdrawn run | `tools/h200_lab.py` picked the host as the best scored run, which for the decode layer was the withdrawn, inadmissible bf16moe `07d07d960b814b86` (1.461x): the batched GEMV+overlap lab `b63389f01e4741b9` runs on it (a check, not on the board; its host-function timings are not the incumbent's). Host selection now skips withdrawn runs (decode host: 0e94268) | tooling | measured | `tools/h200_lab.py` best_source |
+| Standalone projection GEMVs on the H200 | Cold-L2 graph replays, decode-layer shapes (`b63389f01e4741b9`): qkv 37.75 MB in 20.7-21.9 us (1.73-1.82 TB/s), o 16.78 MB in 11.9-13.9 us (1.2-1.4), pool+router 75.5 MB in 32.3-34.4 us (2.2-2.3), unpooler 67.1 MB in 27.6 us (2.4), unpooler slice 8.4 MB in 11.2 us (0.75), at M=1/8/16 alike. cuBLAS, every Lt heuristic, our GEMV and a 4x-CTA split all land within a few percent, while a plain 52-61 MB read stream reaches 4.04-4.25 TB/s. So the GEMV kernels, not launches or dependencies, leave ~45% of the bandwidth unused. The same run's overlap payload hit a sticky `cudaErrorInvalidAddressSpace` (on the withdrawn bf16moe host) and failed the run | decode-layer projections | measured | `tools/h200_lab.py read b63389f01e4741b9 gemv_standalone_lab` |
 | Our own WGMMA MoE kernels at decode M | 12 seeds + R0, H200: raw64 (raw17-derived m64n64k16, MoE lane) 534/679 us and vector TileLang (free lane) 471-501/660-763 us and REJECTED by the FP32 gate, against V9 NT2 342/547 and humming_masked 342/450 at M=128/256 (`63c980e800194764`, `4ee35d3dd5374c40`). Humming's 450 us at M=256 reproduces | moe_w4a16 at decode shapes | measured | `tools/h200_lab.py read 63c980e800194764`, `4ee35d3dd5374c40` |
 | Judge queue | Our runs start one at a time, a median 399 s apart, each running a median 125 s (95 runs to 2026-10-24 03:40). The spacing doesn't depend on our previous run's duration (correlation 0.06, slope 0.07 over 94 pairs), so the judge gives us runs, not minutes: a longer run (compile, prepare autotuning) costs no slot up to the 15-min cap, and packing variants into one run multiplies what each slot measures. Wait = queue position x ~6.6 min. No cancel exists (`okc` has withdraw only; a withdrawn queued run stays queued, 07d07d96). Under load the spacing stretches: 3 of our runs finished between 13:35 and 15:02 on 10-24 while `GET /api/v1/queue` showed a backlog of 1,709 jobs on 64 GPUs (bearer token, client user-agent), so read `/queue` before planning on ~6.6 min. | receipts' created_at/started_at/finished_at | measured | `runs/*/*.json` |
 | Run-to-run noise | the starter's speedup CI was 0.892-0.920 (+-1.5%) | one check, 30 shapes | measured | same, `speedup_ci` |
@@ -446,7 +447,7 @@ log, producer agreement, model inputs and summaries live in
 
 ### Serving upstream ports, expert storage and TTFT admission
 
-**Current source:** `harness/trees/shared-bank-r06`, evidence
+**Current source:** `harness/trees/shared-bank-r08-final`, evidence
 `harness/results/shared-bank-r01-evidence/`, both under `/data2/jihoon/muse_kernel/`.
 The current patch has not run as a full H200 server. No commit or candidate
 judge run was made; authorized component labs are queued, with no judge polling.
@@ -580,9 +581,14 @@ Continuous FP32 is exact, BF16 logits probability maxdiff0.01289545, flat logits
 score: the composition still credits canonical-bank V9 and omits measured host
 copy savings. The shared reader's performance remains unpriced.
 
-**Patch:** final regeneration/check results will replace this sentence. Every
-accepted path, incoming raw-scale MoE change, five worker hunks and router
-handoff must remain. Full H200 TP8/EP8 FA3 arithmetic, graph residency,
+**Patch:**359061 bytes,38 source files, maximum added line374 characters/bytes.
+All36 accepted paths remain,30 byte-identical; incoming MoE source is unchanged.
+Clean-base apply, AST/Ruff F821–F823, whitespace, worker-hunk and router-handoff
+reverse-apply checks pass. The final snapshot includes incoming unbound prefill
+changes: two module-docstrings plus removal of the obsolete256x scale factors.
+The latter has an independent Torch-reference eager/three fresh graph test
+(SwiGLU maxabs3.73e-9,down0,padding unchanged). Full reader server tests use
+r06; those incoming modules have no production import sites. Full H200 TP8/EP8 FA3 arithmetic, graph residency,
 released-checkpoint agreement and hidden-workload TTFT remain unverified.
 
 H200 copy diagnostic `3828ee433f0f43c3` (payload `prof/lab/hicache_coalesced.py` `7094d943`): every case byte-exact. Coalesced copies complete in 73.5 us / 1.27 ms at P=753 / 16384 pages (L=16) and 187 us / 3.62 ms (L=46), against stock's 3.33 / 76.0 ms and 3.53 / 82.0 ms; enqueue drops from 2.8-80 ms to 10-20 us. Measured on the judge.
