@@ -19,13 +19,13 @@ The current receipt basis is `muse_moe_w4a16/cand_v9.f6028a478d594b31` (MoE summ
 `muse_prefill_layer/cand_score_portfolio_routing.a30fb411b0c74ffb` (prefill board 1.434x),
 `muse_bf16_proj/submission.68e2f34b1d4744cb` (projection summary 1.143x), and
 `muse_attention_decode/submission.526f31018e2c4449` (FA3 verify path, summary 1.384x but roughly
-1.0x on the verify shapes). With tau4.05, the composed `sim.serving` estimate from these measured shapes is 1.825689x
-extrapolated and1.812741x capped; it is a receipt composition, not a judge run or the current shipping-patch score while V9 storage is blocked.
+1.0x on the verify shapes). With tau 4.05, the composed `sim.serving` estimate from these measured shapes is 1.825689x
+extrapolated and 1.812741x capped; it is a receipt composition, not a judge run or the current shipping-patch score while V9 storage is blocked.
 
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
-| Prefill experts (753-16K tokens) | Marlin at large M | Stock Marlin restored above256, including513–752; grouped/Humming retired. V9 currently unbound pending a legal shared packed-bank reader | `problems/muse_prefill_layer` |
+| Prefill experts (753-16K tokens) | Marlin at large M | Stock Marlin restored above 256, including 513–752; grouped/Humming retired. V9 currently unbound pending a legal shared packed-bank reader | `problems/muse_prefill_layer` |
 | Decode attention (FP8 page-1, QK-norm, KV store, gate fused) | FA3 + combine + ~6 small kernels per layer | ~20 us x 62 layers per step at c=1 | `problems/muse_attention_decode` |
 | Dense projections and router | cuBLAS, the FP32 router GEMV | ~10-20 us per layer | `problems/muse_bf16_proj` |
 | Layer glue (norms, residual, routing) | ~70 us of small kernels per layer at batch 1 (FINDINGS) | up to ~4 ms per step at c=1 | `problems/muse_decode_layer` |
@@ -34,19 +34,70 @@ extrapolated and1.812741x capped; it is a receipt composition, not a judge run o
 
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
-| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill result drained before ingress/planning;8 deterministic regressions pass | Final upstream-r19 TTFT gate and H200 host latency |
-| KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch handoff applied; one4.46MB workspace per routing stream replaces per-layer/per-shape scratch | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
-| Expert producer | **Stock Marlin at all M**; V9 gate capped256 but loader leaves it unbound. No grouped/Humming call sites | Incoming V9 now preserves E4M3 bytes, but the single-bank binder omits Marlin tensors. Need a shared packed-bank reader or an admitted bounded extra layout; no second full bank |
+| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill result drained before ingress/planning; 8 deterministic regressions pass | TTFT margin still fails native TP2 c16; see current upstream-round gate below. H200 host latency remains unmeasured |
+| KV capacity | Muse live-window SWA sizing wired; 262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch handoff applied; one 4.46 MB workspace per routing stream replaces per-layer/per-shape scratch | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
+| Expert producer | **Stock Marlin at all M**; V9 gate capped at 256 but loader leaves it unbound. No grouped/Humming call sites | Incoming V9 now preserves E4M3 bytes, but the single-bank binder omits Marlin tensors. Need a shared packed-bank reader or an admitted bounded extra layout; no second full bank |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
-| `muse_dflash.py` | Retained, unbound; existing DFlash compute stays active | `cand_dflash_diag` |
-| Upstream #45015 | Pooler multicast through512, unpooler through64; reservations match output width; GEMM plans through256 | TP8 multicast agreement/capture and incremental H200 timing |
-| Upstream #45895 | Existing FC output shard + multicast gather, no second sharding; DP/CP/SP/group guards retain stock | TP2 NCCL stand-in exact; real H200 TP8 multicast |
+| `muse_dflash.py` | Retained, unbound; `DFlashDrafterPortfolio` now covers TP8 FC/layers/LM-head shapes and graph-safe FC concat | H200 TP8 lab `dflash_tp8_lab` pending; serving lane wires only after receipt |
+| Upstream #45015 | Pooler multicast through 512, unpooler through 64; reservations match output width; GEMM plans through 256 | TP8 multicast agreement/capture and incremental H200 timing |
+| Upstream #45895 | Existing FC shard + multicast gather through 64 on Hopper; larger calls use NCCL. DP/CP/SP/group guards retain stock | TP2 NCCL stand-in exact; real H200 TP8 multicast |
 | Upstream #44401 / #45447 | Held-row admission corrected; tiny prefix-hit graph bucket enabled | Full four-rung local agreement/TTFT gate below; hidden conversations |
 | Upstream #46192 | Unused Marlin swizzled scales omitted in base quantizer | Muse's custom create_weights already omitted them; no new Muse bytes credited |
-| Radix verify top-k | **Rejected; stock remains** | Tie support differs: flat probability maxdiff0.015625; correct stock tie semantics before another admission attempt |
+| Radix verify top-k | **Rejected; stock remains** | Tie support differs: flat probability maxdiff 0.015625; correct stock tie semantics before another admission attempt |
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
-| Long prefill attention | **FA3 retained**; failed module and experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all6 shapes; no new path admitted |
+| Long prefill attention | **FA3 retained**; failed module and experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all 6 shapes; no new path admitted |
+
+Current upstream-round gate (`upstream-r27-coalesced` source, `upstream-r28`
+harness) supersedes the historical timing brackets below. All four patch modes
+return 174/174 exact 220-token responses with full prefill/verify graphs; probe
+mean/max logprob drift is 0. Final random gates use 30 requests, 220 forced
+positions and three stock controls per topology, and pass at TP1/TP2.
+
+| sm120 mode | Exact 220 | Worst p50 ratio c1 / c4 / c16 / c32 | Worst p90 ratio |
+|---|---:|---|---|
+| TP1 native |174/174|0.630 / 0.437 / 0.609 / 0.260|1.389 / 0.294 / 0.306 / 0.237|
+| TP1 portable |174/174|0.592 / 0.487 / 0.542 / 0.268|1.125 / 0.302 / 0.310 / 0.232|
+| TP2 native |174/174|1.140 / 1.086 / 1.757 / 0.681|0.757 / 0.408 / 1.817 / 2.059|
+| TP2 portable |174/174|1.221 / 0.875 / 0.893 / 0.604|0.824 / 0.400 / 0.458 / 0.488|
+
+**The 1.5x margin is not achieved everywhere.** Native TP2 c16 remains 1.757x;
+c32 p90 is 2.059x, so TTFT admission stays open. Stock-self TP2 c16 varies 4.034x
+p50/5.029x p90 while GPU1's other project runs; this is a limitation of the
+measurement, not permission to discard failures. All earlier failures are
+retained. Current per-request c16 trace (48 rows each, mean milliseconds):
+
+| Trace | Queue | Prefill GPU envelope | First emit | TTFT |
+|---|---:|---:|---:|---:|
+| Stock r30 |1906.38|108.77|648.10|2663.25|
+| Before copy fix r22 |1792.73|132.14|20.90|1945.78|
+| Current patch r30 |893.13|157.62|7.47|1058.22|
+
+The envelope includes communication and launch waits. Raw request rows and all
+gate JSON are under `/data2/jihoon/muse_kernel/harness/results/upstream-r01-evidence`.
+These diagnostic traces do not establish an isolated total-speedup claim.
+
+The main new prefill fix coalesces staged HiCache copies within a registered
+host allocation. With page size 1, stock sends one host API call per K/V page;
+4096 contiguous pages now use 2 calls instead of 8192. The public-API enqueue
+median on sm120/GPU0 is 14495.67 → 29.57 us (16 layers, 128 B FP8 rows). 26 byte tests,
+63 fresh graphs, registration-boundary and pageable cases pass; three row-size
+variants compile for sm90a. First-token results are processed before ingress
+and planning, and standalone dense finalize keeps stock Triton at M>=32 rather
+than extending CuTe across prefill. H200 host-copy timing is pending the
+queued lab source **344269fe51a18208**; this is a source key, not a judge job ID.
+
+Final regeneration also preserves the projection lane's newly added, unbound
+`DFlashDrafterPortfolio`. Three GPU0 sm120 tests pass (eight roles plus
+changed-input graph/FC concat); all previously tested AST nodes are unchanged
+and there are no production imports. Final source provenance is
+`upstream-r31-final-source`; the active harness paths remain those of r27.
+
+The current patch is **340,587 bytes / 36 files / 374 max added characters**;
+all accepted paths, incoming MoE raw-scale changes and all five worker hunks
+are preserved. No full-model H200 result or judge TTFT admission is claimed.
+The following longer TTFT discussion records the preceding integration's
+controlled cases, not a replacement for the current failing margin result.
 
 The prefill attention receipt landed during integration. `e789ab194eb7496c`
 passes correctness but selects FA3 at all6 shapes. For q_len16K, FA3 versus the
@@ -308,7 +359,7 @@ its separate collective floors. This is an opportunity ranking, not a promise of
 | Rank | Unowned component | Recoverable us at c=1 / 4 / 16 / 32 | Step share recoverable | Capped score if recovered alone |
 |---|---|---|---|---|
 | 1 | Target collectives and compute/communication overlap | 416 / 512 / 893 / 1,402 | 4.13 / 3.12 / 3.20 / 3.10% | 1.842x vs 1.807x |
-| 2 | DFlash kernels, unchanged weights; source audit complete | 6 / 6 / 6 / 6 from unary launches; dense gains unmeasured | 0.060 / 0.036 / 0.021 / 0.013% from unary | needs H200 diagnostic |
+| 2 | DFlash kernels, unchanged weights; source audit complete | 6 / 6 / 6 / 6 from unary launches; TP8 dense portfolio lab pending | 0.060 / 0.036 / 0.021 / 0.013% from unary | H200 `dflash_tp8_lab` |
 | 3 | Target LM head | 11 / 11 / 9 / 0 | 0.11 / 0.07 / 0.03 / 0% | 1.8077x |
 | unranked | Sampling/verify and CPU/scheduler | no calibration | unknown | needs a serving trace |
 
@@ -323,9 +374,14 @@ already wired TP8 output split, and omits ten replicated coefficient GEMMs (335.
 20 convolutions and selector/context-KV work. It cannot support a calibrated saving estimate.
 The new `layers/muse_dflash.py` supplies exact-stock dense algorithm selection, two-tap convolution,
 selector input fusion and one-launch unary softcap. Its locally verified new structural saving is
-three unary launches, modeled at **0.006ms/step at all four rungs**; dense/layout and other glue get
-no additional H200 credit until `cand_dflash_diag.py` returns. The full inventory gives all four
-per-rank shapes, bytes and hardware floors, including retained TP8 collectives.
+three unary launches, modeled at **0.006ms/step at all four rungs**. `DFlashDrafterPortfolio` now
+selects stock/cuBLASLt/skinny plans for the TP8 dense calls: qkv `[1280,8192]`, o `[8192,1024]`,
+gate_up `[7168,8192]`, down `[8192,3584]`, conv coefficients `[2048,8192]`, context FC
+`[1024,40960]`, context KV `[8192,1280]` (transposed source), and draft head `[25256,8192]`.
+Its FC concat helper copies two context halves into a preallocated graph buffer. The proj-host
+H200 lab `dflash_tp8_lab` measures M=8/32/128/256 (draft head M=7/28/112/224) against stock;
+its receipt is the gate for any serving credit. The full inventory gives all four per-rank shapes,
+bytes and hardware floors, including retained TP8 collectives.
 
 ### Eight-node tree acceptance screen
 

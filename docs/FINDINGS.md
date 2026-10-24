@@ -437,106 +437,158 @@ or32, `--burst 8 --one-step-reps 4 --layers 62 --reps 6 --out <json>`;
 log, producer agreement, model inputs and summaries live in
 `/data2/jihoon/muse_kernel/harness/results/prefill-overlap/` (`report.json`, `sources/`).
 
-### Serving upstream ports and producer storage gate
+### Serving upstream ports, expert storage and TTFT admission
 
-The real-weight H200 producer evidence supersedes the synthetic portfolio:
-`26d7e05ab97d4f96` gives V9/Marlin931/563us at M512 and1332/716us at753;
-Humming/V11 fail real-weight agreement (relative0.11–0.32). The serving adapter
-no longer calls grouped or Humming. Marlin owns M257 and above, including the
-513–752 gap. **V9 currently remains unbound even below256:** the existing
-V9-only binder omits Marlin packed parameters and owns a different layout. The
-MoE lane has now replaced its custom scale codes with stored E4M3 bytes and
-in-kernel conversion; that boundary defect is resolved. Reenabling the requested
-hybrid still needs a shared-bank reader or an admitted bounded extra layout;
-a second complete layout would displace required KV. The incoming MoE-owned
-source is preserved without edits by this lane. No small-M V9 integration is claimed.
+**Final source:** `harness/trees/upstream-r31-final-source` under
+`/data2/jihoon/muse_kernel/`; complete evidence is in
+`harness/results/upstream-r01-evidence/`. No serving run on H200 has occurred.
 
-The production loader's released32-expert geometry passes12 shapes M1..2048,
-including257/511/512/513/752/753, against stock math: relative L2<=4.43e-5,
-maxabs0.0078125. After bounding finalize, M128..753 is bit-exact against stock.
-Graph/eager differences are zero through753; at1024/2048 they reach0.0078125,
-within stock controls0.0078125/0.015625.
-Remote routes return exactly zero, and the loader retains one packed bank.
-The parked `problems/muse_moe_w4a16/dev/parked/cand_serving_prefill_diag.py`
-also embeds the old scale encoder and is not admitted under the new boundary.
-The active dense/drafter portfolios copy original BF16 weights, not dequantized
-NVFP4 weights; router hi/lo copies are the permitted FP32-router decomposition.
+**Expert producer: stopped at bank admission.** Real-weight H200 lab
+`26d7e05ab97d4f96` gives V9/Marlin 931/563 us at M=512 and 1332/716 us at M=753;
+Humming/V11 fail agreement (relative 0.11–0.32). Serving never selects grouped
+or Humming. Stock Marlin owns **every M**, including 257–752. V9's dispatch gate
+is capped at 256 but its binder remains off: the V9-only loader omits Marlin's
+packed parameters. The incoming MoE-lane source now preserves stored E4M3
+bytes and converts them in-kernel, resolving its old encoding defect; this lane
+did not edit that module. A reader sharing Marlin's bank, or an admitted bounded
+extra layout, is needed for the requested hybrid. Another full 54.358 GB bank
+cannot fit. Partial 0.906 GB/layer copies remain allowed where faster and capacity
+permits; none is selected. No prepared BF16/FP8 expansion of NVFP4 weights was
+found in the active serving modules. The old parked prefill diagnostic still
+embeds the retired encoder and is not admitted under the new boundary.
 
-The finalize dispatch was overextended: stock already uses one Triton kernel
-at M>=32. On sm120 H512, M16384, graph timing is stock33.78us versus
-CuTe145.71us (30 replays); at M8, CuTe6.79us beats stock23.37us.
-Standalone dense finalize now uses CuTe only below32 and stock Triton above;
-a supplied fused-AR workspace keeps the CuTe reduction owner. The28 shape/form
-unit passes84 fresh graph replays, exact against stock at M>=32. This is a
-real local kernel regression removed, not proof it caused the entire TTFT tail.
-Runtime-M standalone CuTe also replaces static-M specialization;30 shapes and90
-fresh graph replays are bit-identical to the pinned kernel, and new large-M
-lengths reuse a compiled kernel. Four standalone and three static-AR sm90a
-specializations compile. Fixture JIT events all occur during startup, so no
-fixture TTFT saving is credited to that prepare-time optimization.
+The production 32-expert storage test covers 12 shapes M=1..2048 and all 257–753
+boundaries. M128..753 is bit-exact against stock; larger maxabs<=0.0078125 and
+72 fresh graph comparisons stay within stock controls 0.0078125/0.015625.
+Remote routes return zero. The active loader retains one packed Marlin bank.
 
-A second delivery bug was deterministic: choosing the next plan can mutate
-last_batch's mode EXTEND->DECODE before checking whether its completed first
-token needs flushing. The scheduler now drains a completed prefill before
-ingress and planning, rather than only caching the decision for a later drain.
-The stronger actual-loop regression proves delivery precedes ingress, planning
-and the next forward; it fails on the cached-but-delayed implementation. All8
-overlap tests pass after the fix.
-Ten mode mutations were observed in full-grid traces. The initial post-fix
-bracket still failed the requested1.5x margin at TP1 native c32 (1.764x), while
-TP2 native/portable passed every load. All four modes remained174/174 exact220,
-with the2615-position logprob probe max/mean0. A separate TP1 trace did not
-reproduce the native c32 regression: mean queue/prefill/emit are stock
-451.16/28.43/65.13ms, patch578.92/28.94/16.80ms, p50 ratio0.929.
-Captured TP2 rank0 kernel time is dominated by NCCL wait (94.98%); the two
-captures' Marlin totals80.88/81.91ms are close. At collective sequence1003,
-rank0 waits793.43ms while rank1 launches788.94ms later and completes in4.55ms.
-During that delay, rank1 makes85013 cudaMemcpyAsync calls totaling752.98ms;
-this is CPU/rank-readiness delay, not793ms of communication bandwidth cost. These diagnostic captures are
-not timing gates and do not establish a repeatable hardware speedup.
+**Router handoff applied:** three real paired-router layers at M64/128/256 use
+one 4.46 MB buffer per stream; 24 fresh graph replays across two streams are exact,
+with cleared counters. The modeled saving is 2.759 GB/GPU. Both handoff hunks
+reverse-apply cleanly.
 
-The intermediate full bracket (`upstream-r15`, before the early drain) passes
-all696 patch margin responses exactly at220 tokens and zero2615-position
-logprob probe drift. It does **not** pass TTFT admission: p50 worst1.728x,
-but p90 worst5.752x and mean worst2.091x. TP2 stock self-spread reaches2.117x
-p50 and5.809x p90; that variability is evidence against assigning a reliable
-speedup to this bracket, not permission to discard the failures. A later stock
-control (`upstream-r17-random-stock-a-tp2`) rejected before traffic: available
-memory shrank its actual KV pool to25356 instead of300000. The capacity guard
-remains strict. The new early-drain source is frozen at
-`harness/trees/upstream-r18-early-emit`; its full gate is `upstream-r19`.
+**Upstream ports wired in order:** #45015 uses pooler 512/unpooler 64 Hopper
+bounds with matching reservation; full GEMM plans stop at 256 and M512 uses the
+existing GEMM. #45895 gathers the existing FC shard, without slicing twice;
+current Hopper admission is through 64 for its 8192-wide output, with larger
+calls retaining NCCL. TP2 same-ABI tests at M8/32/64/128/256 are eager/graph exact.
+DP/CP/SP/group guards retain the original path. #44401's held-row admission
+regression passes in normal and PD modes. #46192 omits dead Marlin swizzled
+scales; Muse's custom loader already omitted them, so no new Muse bytes are
+credited. #45447 permits the smallest tiny prefix-hit graph bucket while
+keeping the large-bucket padding bound. Actual TP8 multicast remains unverified.
 
-The router-scratch handoff is applied. Three real paired-router layers at
-M64/128/256 share one4.46MB buffer per stream;24 fresh graph replays across two
-streams match private-scratch controls exactly, including zeroed counters.
-This recovers the modeled2.759GB/GPU without changing the kernel.
+**TTFT cause and fixes.** Planning can mutate a completed prefill into decode
+before the old flush predicate runs. Ready first tokens also waited through
+ingress/planning and the following forward. The scheduler now drains completed
+prefills before ingress/planning; all 8 deterministic tests pass, including the
+actual two-iteration loop, no double pop and ordinary finished-row admission.
+Standalone dense finalize was also overextended: stock already fuses M>=32 in
+Triton. It now keeps stock there and uses CuTe below 32 (or for explicit fused AR).
+On sm120 H512/M16384 this removes a 33.78 → 145.71 us regression. 28 shape/forms
+and 84 fresh graphs pass; runtime-M CuTe matches pinned static-M at 30 shapes/90
+fresh graphs. All tested standalone/AR sm90a specializations compile. The fixture's
+JIT events occur during startup, so no fixture TTFT saving is credited to JIT.
 
-Upstream #45015 uses separate Hopper bounds: pooler through512, unpooler
-through64, with matching reservations. Prepared GEMMs remain bounded256;
-M512 uses the existing GEMM. #45895 gathers the existing local FC shard via
-multicast when inputs/groups are replicated and compatible; TP2 NCCL stand-in
-tests at M8/32/64/128/256 are eager/graph bit-identical to the already-sharded
-FC. #44401's final-chunk/free-row regression passes in normal and PD admission.
-#46192 removes unused derived swizzled scales; the Muse-specific loader already
-omitted those buffers, so no additional Muse memory gain is credited. #45447
-admits tiny prefix-hit replay without admitting sparse large-bucket padding.
+The dominant new finding is **HiCache's page-by-page copy queue**. Default
+page-first/kernel write-through stages all layers, then declines batched copies
+when one page is under 128 KB. At page size 1 this submits a host API call per
+K/V page. A captured rank0 all-reduce waited 793.43 ms for rank1, which launched
+788.94 ms later; rank1 spent 752.98 ms in 85,013 copy API calls, not 793 ms transferring
+all-reduce payload. The staged copy helper now merges adjacent host pages and
+bounds each range by CUDA's reported allocation extent
+([driver API](https://docs.nvidia.com/cuda/archive/12.9.2/cuda-driver-api/group__CUDA__UNIFIED.html)).
+An actual split-registration test caught an unsafe first version; the range
+query fixes it. Gaps, reverse order, repeated destinations and pageable memory
+keep their byte semantics. 26 cases and 63 fresh graphs are byte-exact for FP8/BF16,
+including two adjacent registrations. Three row-size variants compile for sm90a.
+A 4096-page/16-layer/128 B test measures **8192 → 2** copy calls and
+**14495.67 → 29.57 us** public-API enqueue time on sm120/GPU0. This is enqueue time;
+H200 latency and score credit remain unmeasured. Full transfer timings are kept
+separate in the lab. Model bytes, cache policy and transferred KV are unchanged.
 
-Radix verify top-k is **rejected**, despite the continuous-FP32 H200 win.
-The stock sparse-sampling call exists in `dflash_utils.py`, but FlashInfer's
-deterministic tie policy changes its selected support. Local sm120 at
-rows8/32/128/256 is exact for continuous FP32; BF16-valued logits change support,
-with max probability difference up to0.01289545, and flat logits differ by0.015625.
-The unmodified stock probability builder has zero self-drift for these inputs.
-All radix graphs replay exactly; this is a sampling-semantics discrepancy,
-not a graph failure. Production keeps stock top-k. The rejecting diagnostic
-is `serving/tests/test_radix_verify_topk.py` and its retained log is under
-`/data2/jihoon/muse_kernel/harness/results/upstream-r01-evidence/`.
+**Final local gates:** full 74-size prefill and target/draft verify graphs remain
+enabled, actual KV capacity is 300000, DFlash uses 8 tokens. `upstream-r28` has
+696/696 exact 220-token patch responses across TP1/TP2 native and forced ABI;
+all four 2615-position logprob probes have mean/max 0, and the first 8 generated
+probe tokens match. Ratios below use the worse of two stock brackets; p50 is
+`statistics.median`, p90 uses the unchanged harness quantile.
 
-The receipt-composition tau correction4.16->4.05 changes capped score
-1.807103017->1.812740536 (+0.311964%) and extrapolated score
-1.819826481->1.825689238 (+0.322160%). This only changes a model assumption;
-it is not a measured speedup, and the composition still credits the V9 receipt
-whose current serving storage integration is blocked.
+| sm120 mode | Exact 220 | Worst p50 ratio c1 / c4 / c16 / c32 | Worst p90 ratio |
+|---|---:|---|---|
+| TP1 native |174/174|0.630 / 0.437 / 0.609 / 0.260|1.389 / 0.294 / 0.306 / 0.237|
+| TP1 portable |174/174|0.592 / 0.487 / 0.542 / 0.268|1.125 / 0.302 / 0.310 / 0.232|
+| TP2 native |174/174|1.140 / 1.086 / 1.757 / 0.681|0.757 / 0.408 / 1.817 / 2.059|
+| TP2 portable |174/174|1.221 / 0.875 / 0.893 / 0.604|0.824 / 0.400 / 0.458 / 0.488|
+
+**TTFT item remains stopped, not admitted.** TP2 native c16 still misses 1.5x
+(p50=1.7573), and its c32 p90 reaches 2.0591. The p50-only 2x screen passes, but
+that is insufficient to claim the requested latency margin or robust 2x TTFT.
+The two TP2 stock controls themselves vary 4.034x at c16 p50 and 5.029x at p90;
+GPU1's other project was active at 99% utilization (58.6 GiB resident at native
+startup). These observations do not isolate every remaining tail or excuse
+it. No stable exclusive-node measurement is available, and no passing bracket
+was cherry-picked. Earlier failures remain in the evidence. One later stock
+control was rejected before traffic when actual capacity shrank to 25356 rather
+than 300000; the capacity check was not relaxed.
+
+The diagnostic per-request c16 decomposition is below (mean milliseconds,
+48 requests per row). GPU envelope includes communication, launch gaps and
+stream waits; it is not pure busy compute. Queue+envelope+emit equals each wire
+TTFT. These traces are separate from the uninstrumented gate and cannot assign
+all total changes to one hunk. Raw rows: `coalesced_c16_per_request.csv`.
+
+| TP2 native c16 trace | Queue | Prefill GPU envelope | First-token emit | TTFT |
+|---|---:|---:|---:|---:|
+| Stock r30 |1906.38|108.77|648.10|2663.25|
+| Patch before copy fix r22 |1792.73|132.14|20.90|1945.78|
+| Patch after copy fix r30 |893.13|157.62|7.47|1058.22|
+
+**Random agreement passes** for the final source at both TP sizes: 30 requests
+with 220 generated and 220 forced positions each, three stock runs per topology,
+90 comparisons per metric. Random first-divergence and positional agreement
+are 0 for stock-self and stock-patch; they remain nondiscriminating. Teacher-forced
+request-mean drift stock p50/p90 versus patch p50/p90 is TP1
+0.183425/0.197497 versus 0.188529/0.203672, TP2
+0.186273/0.199197 versus 0.192749/0.205743. Request-max drift stock p90 versus
+patch p50 is 0.808692/0.700535 (TP1),0.847159/0.722174 (TP2).
+Both median-within-stock-p90 gates pass; tails are not identical. The final
+files are `coalesced_random_gate_tp1.json` and `coalesced_random_gate_tp2.json`.
+
+**Radix top-k stopped:** the non-greedy verify call exists, but cutoff ties change
+selected support. Continuous FP32 is exact; BF16-valued logits differ by up to
+0.01289545 in probability, flat logits 0.015625. The stock fixed-input builder
+has zero self-drift. All radix graphs replay exactly; production keeps stock
+`torch.topk`. The rejection log and diagnostic test are retained.
+
+**Simulator:** `DEFAULT_TAU=4.05` replaces 4.16 in both serving models. Capped
+receipt composition 1.807103017 → 1.812740536 (+0.311964%); extrapolated
+1.819826481 → 1.825689238 (+0.322160%). Both stock/candidate assumptions change.
+This is not measured speedup or the current patch score: the composition still
+credits V9, and does not price the new host-copy saving.
+
+The projection lane added an unbound `DFlashDrafterPortfolio` during final
+regeneration. It has no production import sites; removing only that new class
+leaves the module AST identical to the harness-tested source. Its three GPU0
+sm120 layer tests pass, including eager/changed-input graph equality for
+eight roles and FC concat. The final snapshot preserves it; all other source
+files match `upstream-r27-coalesced` byte for byte. Provenance is recorded in
+`final_source_provenance.json`; it is not newly wired or credited a speedup.
+
+**Patch:** 340,587 bytes, 36 source files, longest added line 374; source/type/path,
+AST, whitespace, clean-base apply and worker-hunk preservation checks pass.
+All 32 accepted paths remain, 22 byte-identical. Intentional changes include the
+incoming MoE raw-scale repair; this lane did not edit that owned file. New
+Hopper, FA3, TP8/EP8 full-model agreement, graph residency and hidden-workload
+TTFT remain unverified. No commit or H200 serving run was launched; one authorized component lab was queued below.
+
+The independent H200 copy diagnostic was locally screened (nine byte-exact
+cases, three fresh graphs, static checks) and queued at priority 0.9. Payload:
+`prof/lab/hicache_coalesced.py`, SHA256
+`7094d943847dafd40a30b737de84dcc643791ba08ff14079d1e0323b4cefd08d`.
+Queued source key **344269fe51a18208** is not a judge job ID; its detached log is
+`runs/detached/344269fe51a18208.log`. Base scored path remains f3786341611f4f1f.
+No judge polling or waiting was performed after this send.
 
 ### KV residency and long-context capacity (2026-10-24)
 
@@ -1164,7 +1216,7 @@ by the better-fitting max model in “Boards”.
 | Verify projection search, authorized decision | Library596b2a5d436e4fee: best M128 qkv/unpooler gains4.5%/4.3%, others near parity. Corrected custom TMA v2 `92e7802783a54212`: M256 qkv23.49->37.73, pool33.39->65.55, unpool28.19->44.85, o13.34->20.51us; M12821.20->25.55/27.66->40.40/23.47->32.29/11.57->16.46. PDL chain loses1.32–1.62x | Custom v2 is a measured losing implementation, **not a closure of TMA/WGMMA**. Next is shipped CUTLASS Hopper cooperative split-K/Stream-K with timed workspace reset, tile/cluster/grid/operand choices at exact decode shapes, retaining the incumbent elsewhere. No judge polling: send, build the handoff, inspect receipts once per turn | `prof/lab/verify_proj_cutlass.py`, `problems/muse_bf16_proj/dev/cutlass/`; denseV11 remains open, glue parked, MoE grouped withdrawn |
 | Owned NVFP4 weight-bank audit | Owned dense serving modules contain BF16 projections only. `cand_v11_gemm` retains packed expert bytes/E4M3 scales in prepare, expands in each timed expert call. Raw17 grouped path permutes NVFP4/E4M3 bytes; FP32 diagnostic reference is not returned in runtime state | No prepared BF16/FP8 expanded NVFP4 weight bank found. Inherited V9 prefix in the withdrawn/parked grouped candidate recodes scales to uint8 exponent/mantissa and folds sign/zero into FP4; exact but not a permutation of stored E4M3 bytes. Do not reuse that encoder under the stricter byte-layout instruction; the MoE lane owns its incumbent | `problems/muse_moe_w4a16/dev/tma_grouped/README.md`; new CUTLASS block handles BF16 dense only |
 | Stock CUTLASS verify recipe set closed | H200 lab45f58e7009c440eb:144 recipes/key, every choice loses.20-pair best M256 control/new: qkv23.792/31.024us (1.306x), pool/router33.648/41.856 (1.254x), unpool28.528/30.752 (1.082x), o13.312/15.664 (1.183x); M128 qkv20.416/27.200 (1.322x), pool28.352/35.072 (1.244x), unpool23.632/27.264 (1.142x), o11.728/13.920 (1.186x). The often-quoted1.07 unpooler ratio is coarse, not the20-pair finalist | Standard image CUTLASS Hopper cooperative TMA schedules, including split-K/Stream-K, multicast, swapped AB, rings/raster/grid/reduction choices do not beat cuBLAS/Lt at these exact M128/256 shapes. Close this **recipe set**, not the family. No native recipe is installed. Cold compile71.61s; lab80.64s; total prepare88.7s | `runs/muse_bf16_proj/20261024T063237Z_check_45f58e7009c440eb.json`; payloadSHAe43ed9b225d98cf1… |
-| GEMV/glue fusion: H200 lab sent | New standalone `dev/glue/projection_glue.py` SHA256c763555f99081588…: O/unpooler last-CTA post-norm/residual/pre-norm epilogues and tiled pooler/router hi+lo GEMV with pre-expert norm, sigmoid/biased top8 and renormalization. BF16 branch/pooler/activation boundaries preserved; counters reset inside every call, no spinning or second reduce/add. M1/8/16/32/128/256 | Phase finalists and three whole-chain combinations are timed cold1GiB/fresh3/20 paired graphs against exact cand_r3_best projection/glue code; the control uses its single shared reset, so individual-stage wins cannot double-charge setup. Only a passing combined-chain win enables dispatch. Local sm120 all combinations lose (closest M1 tail-only81.920->83.968us,paired1.019); H200 ranking and whole-layer/PDL overlap remain unknown.12–27us profiled glue is not an automatically recoverable wall-time budget | Sent priority0 payload34143ac6134efe1f…, host4b4182cb1d0ff580…, local waiting request468733 (no assigned judge ID).300 configurations/900 fresh checks;96 sm90 specializations compile. Layer13/13+12/12+11 static,5.740s cached prepare; host9/9+30/30+5 static,45.116s prepare. All19 block definitions/constants match the layer fixture. `dev/glue/README.md`; scoped source is frozen cand_r3_best812f5f36, host dense weights plus synthetic norm/gate vectors |
+| GEMV/glue fusion: H200 implementation closed | H200 lab `479aab3038c6407c`: every fused stage, prefix and chain lost. Ratios were b1 **1.06–7.8x**, pool **2.04–11.36x**, b2 **1.09–9.02x**, PREFIX **1.88–9.74x**, and chains **1.04–9.60x** slower; `picks=0` | Folding norms, residual gates and routing into these skinny GEMVs costs the GEMV's parallelism and does not recover the nominal 12–25us glue. Close this implementation, not the general idea of eliminating glue launches; keep the service lane free to revisit it with a fused vector/consumer design | `runs/muse_bf16_proj/*479aab3038c6407c*.json`; `dev/glue/projection_glue.py` |
 | Corrected native projection local admission | **sm120**:2148 fresh checks,342 executable configs per output dtype; all8 target keys. Full Hopper lab forced73 tile/ring/K-group families,1247 calls and4 PDL chains; injected AttributeError rejects. Lab host9/9 tests+30/30 graph cases,2.091s cached prepare; full-layer fixture13/13+12/12,3.264s. Shortlist32 trials+140 fresh/stride/weight cases and expired/short/module rejection pass; all SM90a static builds pass | Local reader uses mma.sync and ordinary TMA as the multicast transport stand-in; actual native multicast also passed24 target cases but is extremely slow on sm120. Isolated MC1 controls are68–80us versus MC2~1.9–2.7s at M128 pool/router; wait/scope changes do not fix that timing. NVIDIA documents multicast as optimized for sm90a. No inference of Hopper latency from this local penalty | `runs/screen/verify_proj/{grouped_validation_v2,grouped_lab_glue_v2,cluster_contrast,poll_probe}.log`; `integration_fixture.json`, `lab_tma_v2.json`; [CUDA TMA guide](https://docs.nvidia.com/cuda/archive/13.1.1/cuda-programming-guide/04-special-topics/async-copies.html) |
 | Persistent projection barrier lifetime | Native v1 `6b72087f64584258` reached the judge before cancellation and is **invalid for dispatch selection**: persistent tiles reinitialize valid barriers. Local numerical passes did not expose that contract violation. Scored kernel_fn remains the frozen incumbent | V2 invalidates full/empty barriers after cluster/CTA users finish, before reinitialization, and uses cluster-scope acquire for remote releases. The [PTX lifetime requirement](https://docs.nvidia.com/cuda/parallel-thread-execution/#parallel-synchronization-and-communication-instructions-mbarrier-init) establishes the defect; it does not explain the sm120 multicast timing penalty (invalidation alone did not fix it). No execution cancellation API exists; the result reader rejects v1 | `dev/verify/build_tma.py`; `runs/screen/verify_proj/barrier_lifetime_probe.log`; corrected v2 admission above |
 | Decode projection port | `cand_r3_proj.py`, SHA256 `235434b35d1407cdb61ff79f291b9a962fa4a56369f60277fb666863f5b1174e`; 24 projection keys at T1/8/16/32/128/256, including the layer's FP32 4608-row pool/router | Skinny/GEMV winners, mixed pooler/router with hi+lo in the same FP32 accumulator, strided pooler Lt + fused router, TMA/WGMMA direct/last-CTA/DSMEM/Stream-K, and all checked Lt TN/NN/split-K algorithms. Trials time the next consumer, validate two fresh inputs within 1% of cuBLAS and reject/log failures; FA3's 27 settings and PDL remain tunable under a shared 240 s deadline | `problems/muse_decode_layer/cand_r3_proj.py`; projection-owned `dev/build_decode_proj.py` and embedded templates |

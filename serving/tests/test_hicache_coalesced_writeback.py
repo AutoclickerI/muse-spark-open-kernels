@@ -119,7 +119,7 @@ def check_case(row_bytes, layers, dtype, pages, page_size, layout, graph=False, 
                     page_size=page_size, layout=layout, registrations=registrations, pageable=pageable,
                     eager_maxdiff_bytes=0, fresh_graph_replays=3 if graph else 0,
                     median_enqueue_us=statistics.median(times), old_copies=pages*2,
-                    coalesced_copies=runs*2, measured_copies=measured_copies)
+                    single_registration_copies=runs*2, measured_copies=measured_copies)
     finally:
         if g is not None:
             g.reset()

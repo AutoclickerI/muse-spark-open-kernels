@@ -1656,10 +1656,10 @@ index e6cf0dd..ecfa3c8 100644
      )
 diff --git a/python/sglang/srt/layers/muse_dflash.py b/python/sglang/srt/layers/muse_dflash.py
 new file mode 100644
-index 0000000..8246b4f
+index 0000000..3b6d421
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_dflash.py
-@@ -0,0 +1,290 @@
+@@ -0,0 +1,373 @@
 +"""DFlash2 local compute, preserving released weights and stock rounding.
 +
 +The serving owner wires these helpers; no collective, drafter architecture or
@@ -1928,6 +1928,89 @@ index 0000000..8246b4f
 +        if self.version is not None and _df_proj._version(self.source) != self.version:
 +            raise RuntimeError('drafter weight changed after preparation')
 +        return self._df_run(x.contiguous(), self.plans.get(x.shape[0], ('stock',)))
++
++
++class DFlashDrafterPortfolio:
++    """TP8 DFlash dense portfolio for the serving drafter.
++
++    ``weights`` uses the released per-rank layouts.  ``context_kv`` is the one
++    transposed source layout used by the model (``[K, N]``); all other entries
++    are ``[N, K]``.  Preparation happens before graph capture and chooses a
++    plan independently for every role and draft-token count.
++    """
++
++    ROLE_SHAPES = {
++        "qkv": (1280, 8192, 8, False),
++        "o": (8192, 1024, 8, False),
++        "gate_up": (7168, 8192, 8, False),
++        "down": (8192, 3584, 8, False),
++        "conv_coeff": (2048, 8192, 8, False),
++        "context_fc": (1024, 40960, 8, False),
++        "context_kv": (1280, 8192, 8, True),
++        "draft_head": (25256, 8192, 7, False),
++    }
++    ALIASES = {"fc": "context_fc", "lm_head": "draft_head", "qkv_gate": "qkv"}
++
++    def __init__(self, weights=None, *, tokens=(8, 32, 128, 256), budget_s=10):
++        self.tokens = tuple(int(m) for m in tokens)
++        self.budget_s = float(budget_s)
++        self.ops = {}
++        self._concat_buffers = {}
++        if weights is not None:
++            self.prepare(weights)
++
++    @classmethod
++    def _role(cls, name):
++        role = cls.ALIASES.get(name, name)
++        if role not in cls.ROLE_SHAPES:
++            raise KeyError(f"unknown DFlash TP8 role: {name}")
++        return role
++
++    def prepare(self, weights):
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("DFlash drafter preparation must precede capture")
++        for name, weight in weights.items():
++            role = self._role(name)
++            n, k, _mult, stock_nn = self.ROLE_SHAPES[role]
++            expected = (k, n) if stock_nn else (n, k)
++            if tuple(weight.shape) != expected:
++                raise ValueError(
++                    f"{role} expects released TP8 shape {expected}, got {tuple(weight.shape)}"
++                )
++            op = DFlashLinear(
++                weight,
++                tokens=self.tokens,
++                budget_s=self.budget_s,
++                stock_nn=stock_nn,
++            )
++            self.ops[role] = op
++            if role == "context_fc":
++                for m in self.tokens:
++                    self._concat_buffers[m] = torch.empty(
++                        (m, k), device=weight.device, dtype=weight.dtype
++                    )
++        return self
++
++    def __call__(self, role, x):
++        return self.ops[self._role(role)](x)
++
++    def fc_concat(self, left, right):
++        """Project two context halves through FC without a capture-time concat."""
++        role = "context_fc"
++        if role not in self.ops:
++            raise RuntimeError("context_fc is not prepared")
++        m = int(left.shape[0])
++        buf = self._concat_buffers.get(m)
++        if buf is None:
++            raise ValueError(f"context_fc has no prepared token count {m}")
++        if left.ndim != 2 or right.ndim != 2 or left.shape[0] != m or right.shape[0] != m:
++            raise ValueError("context_fc concat expects matching 2D token batches")
++        split = int(left.shape[1])
++        if split + int(right.shape[1]) != buf.shape[1]:
++            raise ValueError("context_fc concat feature width mismatch")
++        buf[:, :split].copy_(left)
++        buf[:, split:].copy_(right)
++        return self.ops[role](buf)
 +
 +
 +class DFlashConv2:
