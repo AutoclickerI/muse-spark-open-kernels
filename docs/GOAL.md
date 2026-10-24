@@ -23,7 +23,7 @@ judge run). Everything no hard limit bounds is a resource to spend, never minimi
 
 ## Non-goals
 - Serving (patch, board, prefill, drafter) until the serving round (R-20261025-1); parked in [serving/](serving/README.md).
-- The component and prefill boards for their own sake: they don't move a top-50 team's overall score.
+- Component and prefill boards for their own sake (by our fit, no effect on a top-50 overall score).
 - Renting an H200. H200 numbers come only from the judge (R-20261023-3).
 
 ## Decision rights

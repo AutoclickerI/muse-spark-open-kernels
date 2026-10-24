@@ -27,7 +27,7 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 | Rule | Case | Reading | Status |
 |---|---|---|---|
 | 2-8 | Anything else on the kernel boards | Allowed when the judge accepts it and no rule explicitly bans it | allowed (R-20261023-6) |
-| 2, 5, 6 | Any reordering (fusion with BF16 rounding kept, even in registers; accumulation and split-K order; scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order | allowed (R-20261023-4) |
+| 2, 5, 6 | Any reordering (fusion with intermediates kept on chip in BF16 or finer; accumulation and split-K order; scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order | allowed (R-20261023-4) |
 | 2, 5-7 | Below the allowed precision: FP8/FP4 activations, fewer experts, skipped keys | Forbidden | forbidden (R-20261023-4) |
 | 6 | FP8 softmax probabilities in the PV MMA with an FP8 cache | SGLang's FA3 does it | allowed |
 | 2, 8 | Our own cubin or hand-edited SASS | Accepted, not banned; review risk (2) | allowed (R-20261023-6) |
