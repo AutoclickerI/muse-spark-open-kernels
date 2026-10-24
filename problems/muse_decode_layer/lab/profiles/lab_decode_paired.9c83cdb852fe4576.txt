@@ -1,0 +1,187 @@
+okc run 9c83cdb852fe4576 on muse_decode_layer
+submission  /home/jihoon/competitions/muse_kernel/runs/sent/8ef2ef5641b47e43/lab_decode_paired.py
+status      ok
+passed      true
+speedup     1.4336549909408252
+speedup_ci  [1.4121501660767128 1.4551598158049375]
+score_us    15778.063859810232
+tests       13/13 passed
+
+scored shapes (µs; speed of light is the reference's bound)
+case                                                         sglang      yours  speedup        sol  
+batch=1 ctx=80000 dist=soft layer=sliding load=decode 1 page=1     172.96     108.89   1.588x      40.02  
+batch=1 ctx=80000 dist=soft layer=full load=decode 1 page=1     183.26     127.61   1.436x      44.18  
+batch=16 ctx=80000 dist=soft layer=sliding load=decode 16 page=1 spread=agentic     274.43     178.52   1.537x      76.72  
+batch=16 ctx=80000 dist=soft layer=full load=decode 16 page=1 spread=agentic     440.53     281.99   1.562x     137.46  
+batch=32 ctx=80000 dist=soft layer=sliding load=decode 32 page=1 spread=agentic     278.90     218.09   1.279x      84.51  
+batch=32 ctx=80000 dist=soft layer=full load=decode 32 page=1 spread=agentic     625.70     423.42   1.478x     208.10  
+batch=1 ctx=80000 dist=soft layer=sliding load=verify 1 page=1 q_len=8     264.91     154.04   1.720x      62.29  
+batch=1 ctx=80000 dist=soft layer=full load=verify 1 page=1 q_len=8     276.66     165.20   1.675x      66.44  
+batch=16 ctx=80000 dist=soft layer=sliding load=verify 16 page=1 q_len=8 spread=agentic     540.11     392.14   1.377x     126.61  
+batch=16 ctx=80000 dist=soft layer=full load=verify 16 page=1 q_len=8 spread=agentic     721.04     566.87   1.272x     188.68  
+batch=32 ctx=80000 dist=soft layer=sliding load=verify 32 page=1 q_len=8 spread=agentic     727.42     609.84   1.193x     143.81  
+batch=32 ctx=80000 dist=soft layer=full load=verify 32 page=1 q_len=8 spread=agentic    1078.88     961.81   1.122x     267.18  
+
+profile 0: batch=1 ctx=80000 dist=soft layer=sliding load=decode 1 page=1
+kernel                                                           GPU time  share  calls
+_gemv_kernel                                                      45.8 µs  42.5%      4
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      31.3 µs  29.1%      1
+_boundary_kernel                                                  11.8 µs  11.0%      2
+void (anonymous namespace)::attn_main<1, 4>((anonymous na...       8.8 µs   8.1%      1
+void (anonymous namespace)::attn_combine<1>((anonymous na...       5.6 µs   5.2%      1
+_route_norm_kernel                                                 3.5 µs   3.3%      1
+void at::native::vectorized_elementwise_kernel<4, at::nat...       0.8 µs   0.7%      1
+total                                                            107.6 µs
+
+profile 1: batch=1 ctx=80000 dist=soft layer=full load=decode 1 page=1
+kernel                                                           GPU time  share  calls
+_gemv_kernel                                                      45.1 µs  35.8%      4
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      30.5 µs  24.3%      1
+void (anonymous namespace)::attn_main<1, 4>((anonymous na...      17.8 µs  14.2%      1
+void (anonymous namespace)::attn_combine<1>((anonymous na...      15.6 µs  12.4%      1
+_boundary_kernel                                                  12.5 µs  10.0%      2
+_route_norm_kernel                                                 3.5 µs   2.8%      1
+void at::native::vectorized_elementwise_kernel<4, at::nat...       0.7 µs   0.6%      1
+total                                                            125.7 µs
+
+profile 2: batch=16 ctx=80000 dist=soft layer=sliding load=decode 16 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      83.7 µs  48.3%      1
+_gemv_kernel                                                      42.4 µs  24.5%      3
+nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT                           19.3 µs  11.1%      1
+void (anonymous namespace)::attn_main<1, 4>((anonymous na...      10.7 µs   6.2%      1
+_boundary_kernel                                                   8.8 µs   5.1%      2
+void (anonymous namespace)::attn_combine<1>((anonymous na...       4.8 µs   2.7%      1
+_route_norm_kernel                                                 3.8 µs   2.2%      1
+total                                                            173.4 µs
+
+profile 3: batch=16 ctx=80000 dist=soft layer=full load=decode 16 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::attn_main<1, 4>((anonymous na...     119.6 µs  44.7%      1
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      67.9 µs  25.4%      1
+_gemv_kernel                                                      41.3 µs  15.5%      3
+nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT                           20.2 µs   7.5%      1
+_boundary_kernel                                                   9.1 µs   3.4%      2
+void (anonymous namespace)::attn_combine<1>((anonymous na...       5.7 µs   2.1%      1
+_route_norm_kernel                                                 3.8 µs   1.4%      1
+total                                                            267.5 µs
+
+profile 4: batch=32 ctx=80000 dist=soft layer=sliding load=decode 32 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     117.9 µs  54.4%      1
+nvjet_sm90_tss_64x32_64x16_4x1_v_bz_splitK_TNT                    22.3 µs  10.3%      1
+_gemv_kernel                                                      21.1 µs   9.7%      2
+nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT                           19.4 µs   8.9%      1
+void (anonymous namespace)::attn_main<1, 4>((anonymous na...      15.8 µs   7.3%      1
+_boundary_kernel                                                   9.2 µs   4.2%      2
+void (anonymous namespace)::attn_combine<1>((anonymous na...       5.0 µs   2.3%      1
+_route_norm_kernel                                                 3.7 µs   1.7%      1
+void cublasLt::splitKreduce_kernel<32, 16, int, float, fl...       2.3 µs   1.0%      1
+total                                                            216.5 µs
+
+profile 5: batch=32 ctx=80000 dist=soft layer=full load=decode 32 page=1 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::attn_main<1, 4>((anonymous na...     223.6 µs  49.7%      1
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     133.5 µs  29.6%      1
+nvjet_sm90_tss_64x32_64x16_4x1_v_bz_splitK_TNT                    23.2 µs   5.1%      1
+_gemv_kernel                                                      21.8 µs   4.8%      2
+nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT                           20.7 µs   4.6%      1
+_boundary_kernel                                                  15.1 µs   3.4%      2
+void (anonymous namespace)::attn_combine<1>((anonymous na...       6.4 µs   1.4%      1
+_route_norm_kernel                                                 3.6 µs   0.8%      1
+void cublasLt::splitKreduce_kernel<32, 16, int, float, fl...       2.3 µs   0.5%      1
+total                                                            450.3 µs
+GPU busy (kernels overlap: PDL or streams)                       442.9 µs
+an overlapping kernel's time includes any wait for the one before it, so the rows add up to more
+
+profile 6: batch=1 ctx=80000 dist=soft layer=sliding load=verify 1 page=1 q_len=8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      78.2 µs  47.6%      1
+_gemv_kernel                                                      46.3 µs  28.1%      4
+_boundary_kernel                                                  13.5 µs   8.2%      2
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...      10.0 µs   6.1%      1
+_qk_prep_kernel                                                    4.3 µs   2.6%      1
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       4.2 µs   2.5%      1
+_route_norm_kernel                                                 4.0 µs   2.4%      1
+void flash::prepare_varlen_num_blocks_kernel<1, false>(in...       2.1 µs   1.3%      1
+_norm_gate_kernel                                                  1.1 µs   0.7%      1
+void at::native::vectorized_elementwise_kernel<4, at::nat...       0.7 µs   0.4%      1
+total                                                            164.4 µs
+GPU busy (kernels overlap: PDL or streams)                       162.7 µs
+an overlapping kernel's time includes any wait for the one before it, so the rows add up to more
+
+profile 7: batch=1 ctx=80000 dist=soft layer=full load=verify 1 page=1 q_len=8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      77.5 µs  43.9%      1
+_gemv_kernel                                                      46.3 µs  26.2%      4
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...      19.4 µs  11.0%      1
+_boundary_kernel                                                  13.3 µs   7.5%      2
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       7.4 µs   4.2%      1
+_qk_prep_kernel                                                    4.0 µs   2.2%      1
+_route_norm_kernel                                                 3.9 µs   2.2%      1
+void flash::prepare_varlen_num_blocks_kernel<1, true>(int...       3.0 µs   1.7%      1
+_norm_gate_kernel                                                  1.1 µs   0.6%      1
+void at::native::vectorized_elementwise_kernel<4, at::nat...       0.8 µs   0.4%      1
+total                                                            176.5 µs
+
+profile 8: batch=16 ctx=80000 dist=soft layer=sliding load=verify 16 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     276.6 µs  70.4%      1
+nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT                           28.1 µs   7.2%      2
+nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN                           27.4 µs   7.0%      1
+nvjet_sm90_tst_96x64_64x10_4x2_h_bz_splitK_TNN                    16.1 µs   4.1%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...      14.3 µs   3.6%      1
+_boundary_kernel                                                  11.6 µs   3.0%      2
+_route_norm_kernel                                                 4.4 µs   1.1%      1
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       4.3 µs   1.1%      1
+_qk_prep_kernel                                                    3.3 µs   0.8%      1
+void cublasLt::splitKreduce_kernel<32, 16, int, float, __...       3.1 µs   0.8%      1
+void flash::prepare_varlen_num_blocks_kernel<1, false>(in...       2.5 µs   0.6%      1
+_norm_gate_kernel                                                  1.3 µs   0.3%      1
+total                                                            393.1 µs
+
+profile 9: batch=16 ctx=80000 dist=soft layer=full load=verify 16 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     270.8 µs  48.1%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...     192.4 µs  34.2%      1
+nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT                           28.2 µs   5.0%      2
+nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN                           26.1 µs   4.6%      1
+nvjet_sm90_tst_96x64_64x10_4x2_h_bz_splitK_TNN                    15.2 µs   2.7%      1
+_boundary_kernel                                                  11.6 µs   2.1%      2
+_route_norm_kernel                                                 4.5 µs   0.8%      1
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       4.0 µs   0.7%      1
+void cublasLt::splitKreduce_kernel<32, 16, int, float, __...       3.2 µs   0.6%      1
+void flash::prepare_varlen_num_blocks_kernel<1, true>(int...       3.1 µs   0.6%      1
+_qk_prep_kernel                                                    2.2 µs   0.4%      1
+_norm_gate_kernel                                                  1.6 µs   0.3%      1
+total                                                            563.0 µs
+
+profile 10: batch=32 ctx=80000 dist=soft layer=sliding load=verify 32 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     465.6 µs  75.6%      1
+nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT                          34.3 µs   5.6%      2
+nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN                           33.3 µs   5.4%      1
+nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN                           23.7 µs   3.8%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...      20.7 µs   3.4%      1
+_boundary_kernel                                                  19.9 µs   3.2%      2
+_route_norm_kernel                                                 5.9 µs   1.0%      1
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       4.6 µs   0.8%      1
+_qk_prep_kernel                                                    3.6 µs   0.6%      1
+void flash::prepare_varlen_num_blocks_kernel<2, false>(in...       2.5 µs   0.4%      1
+_norm_gate_kernel                                                  1.7 µs   0.3%      1
+total                                                            615.8 µs
+
+profile 11: batch=32 ctx=80000 dist=soft layer=full load=verify 32 page=1 q_len=8 spread=agentic
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     487.4 µs  49.0%      1
+void cutlass::device_kernel<flash::enable_sm90_or_later<f...     380.0 µs  38.2%      1
+nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT                          35.3 µs   3.5%      2
+nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN                           32.9 µs   3.3%      1
+nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN                           22.8 µs   2.3%      1
+_boundary_kernel                                                  19.2 µs   1.9%      2
+_route_norm_kernel                                                 6.0 µs   0.6%      1
+void flash::prepare_varlen_num_blocks_kernel<2, true>(int...       3.9 µs   0.4%      1
+void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...       3.7 µs   0.4%      1
+_qk_prep_kernel                                                    2.1 µs   0.2%      1
+_norm_gate_kernel                                                  2.1 µs   0.2%      1
+total                                                            995.4 µs
