@@ -1517,7 +1517,7 @@ def _attention_contiguous(data, q8, st, unpacked=False):
 
 # Layouts are resources: every expert contender reads its preferred lossless bank.
 _RAW_DG_CHOICES=('raw_v11','raw_dg','raw_dg_hint','raw_dg_w8','raw_dg_hint_w8','raw_dg_k1024_w8','raw_dg_routes')
-_EXPERT_CHOICES=tuple(_GROUPED_CHOICES)+('pipeline','dg','dg_hint','dg_k2048','dg_hint_k2048','dg_w8','dg_hint_w8','dg_k2048_w8','dg_hint_k2048_w8')+_RAW_DG_CHOICES+('raw11','raw15','raw17','humming','humming_tma','humming_masked','humming_mid','marlin')
+_EXPERT_CHOICES=tuple(_GROUPED_CHOICES)+('pipeline','dg','dg_hint','dg_k2048','dg_hint_k2048','dg_w8','dg_hint_w8','dg_k2048_w8','dg_hint_k2048_w8')+_RAW_DG_CHOICES+('raw11','raw15','raw17','humming','humming_tma','humming_masked','humming_mid','humming_mid_tma','marlin')
 
 
 def _run_raw_dg(pooled,probs,slot_e,slot_pos,counts,st,name):
@@ -1562,7 +1562,7 @@ def _score_expert(pooled,probs,slot_e,slot_pos,counts,st,name):
         return _raw_experts_tiled(pooled,probs,slot_e,slot_pos,counts,st['raw_states'][name])
     if name.startswith('humming'):
         hs=dict(st);hs['humming']=st['humming_variants'][name]
-        if name in ('humming_masked','humming_mid'):
+        if name in ('humming_masked','humming_mid','humming_mid_tma'):
             return _experts_humming_masked(pooled,probs,slot_e,slot_pos,counts,hs)
         return _experts_humming(pooled,probs,slot_e,hs)
     if name=='pipeline':return _experts_pipeline(pooled,probs,slot_e,slot_pos,counts,st)
@@ -1726,6 +1726,22 @@ def prepare(weights):
     if 753 in mid.plans: mid.plans[1024]=mid.plans[753]
     if 3012 in mid.plans: mid.plans[4096]=mid.plans[3012]
     st['humming_variants']['humming_mid']=mid
+    # The H200 profile puts most of the 753/3012 expert time in the two Humming
+    # GEMMs, while route/scatter is already small once grouped-masked is used.
+    # Keep the exact-route plan but enable Humming's weight-side TMA path: it
+    # streams each expert's NVFP4 tiles through the bulk-copy path without
+    # reintroducing indexed sorting or a second route layout.
+    try:
+        mid_tma=copy.copy(mid);mid_tma.tma=True
+        mid_tma.kernels={'w13':{},'w2':{}};mid_tma.plans={}
+        mid_tma.compile([753,3012])
+        if 753 in mid_tma.plans: mid_tma.plans[1024]=mid_tma.plans[753]
+        if 3012 in mid_tma.plans: mid_tma.plans[4096]=mid_tma.plans[3012]
+        st['humming_variants']['humming_mid_tma']=mid_tma
+    except Exception as error:
+        # A library build can reject this Hopper-only configuration. Keep the
+        # portfolio alive; the tuner then falls back to the validated masked bank.
+        print('SCORE_REJECT build humming_mid_tma',type(error).__name__,str(error).splitlines()[0][:240],flush=True)
     marlin_weights={k:(v.clone() if k.startswith(('w13','w2')) else v) for k,v in weights.items()}
     st['bank']=_marlin_bank(marlin_weights)
     st['zero_start']=torch.zeros((),device=st['qkv'].device,dtype=torch.int32)
