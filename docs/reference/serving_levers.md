@@ -36,7 +36,7 @@ extrapolated and1.812741x capped; it is a receipt composition, not a judge run o
 |---|---|---|
 | Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill first-token delivery fixed | H200 host latency and full-node TTFT |
 | KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch handoff applied; one4.46MB workspace per routing stream replaces per-layer/per-shape scratch | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
-| Expert producer | **Stock Marlin at all M**; V9 gate capped256 but loader leaves it unbound. No grouped/Humming call sites | Requested hybrid blocked: V9 bank stores re-encoded scales and removes Marlin tensors. Need a V9 reader over the one Marlin bank with stored E4M3 scales converted in-kernel; do not retain two full banks |
+| Expert producer | **Stock Marlin at all M**; V9 gate capped256 but loader leaves it unbound. No grouped/Humming call sites | Incoming V9 now preserves E4M3 bytes, but the single-bank binder omits Marlin tensors. Need a shared packed-bank reader or an admitted bounded extra layout; no second full bank |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
 | `muse_dflash.py` | Retained, unbound; existing DFlash compute stays active | `cand_dflash_diag` |
@@ -173,7 +173,8 @@ separate stock-math reference at12 shapes M1..2048, including257/511/512/513/752
 Relative L2<=4.43e-5, maxabs0.0078125; graph/eager is exact through753 and
 large-M differences match stock controls. All-remote routes return zero and
 only one packed bank remains. The earlier canonical-bank V9 screen is historical;
-its custom scale codes no longer meet the stored-E4M3 boundary.
+its old custom scale codes no longer meet the stored-E4M3 boundary; the
+incoming MoE source now fixes those bytes, while the mixed-producer bank issue remains.
 
 No receipt IDs or external measurement files are read at runtime. Admission is
 source policy. Unbound modules do not change the default or spend startup time.
@@ -192,8 +193,8 @@ No Muse kernel is built Blackwell-only: `load_jit` compiles for the local GPU (`
 
 | # | Gate | Feature | Verdict | Modeled saving per step (c=1 / c=32) | Risk to agreement |
 |---|---|---|---|---|---|
-| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented V9 glue; Hopper runtime pending**: Marlin and the V9 single-bank producer expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer. Local sm_120 native/eager+graph finalize is exact (max diff 0); the V9/grouped layer screen at 1..16,384 tokens stays within rel L2 0.005963 (bound 0.015), and the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
-| 2 | `models/muse_spark.py:587, 849`; `kernels/ops/muse_spark_v12/gemm_ag.py:73` | Pooler column split + multicast all-gather (`gemm_ag`); unpooler split above 8 tokens | Enable as-is if `has_multicast` (`multimem.st` etc. are sm_90). Gate by token count: our model says it loses at c=32 | 0.46 ms / about -0.4 ms (audit's estimate: 0.55-0.6 / 0.45-1.0) | Low (sliced cuBLAS may round differently; GB300 stock uses it) |
+| 1 | `layers/muse_spark_fp4_moe.py::_finalize_dense_expert_outputs`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented, small-M scope corrected**: producer-independent dense `[T,topk,H]` ABI with identity map / remote -1. CuTe replaces stock Torch only at M<32; M>=32 retains stock fused Triton, unless a fused-AR workspace owns reduction. Current producer is Marlin; V9 remains unbound.28 local shape/forms and84 fresh graph replays pass, M>=32 bit-exact against stock. Runtime-M CuTe is bit-identical to pinned static-M at30 shapes/90 fresh replays; standalone/AR sm90a compiles pass. Hopper execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
+| 2 | `models/muse_spark.py`; `kernels/ops/muse_spark_v12/gemm_ag.py` | Width-specific multicast projection all-gather | Ported #45015: H200 TP4/8 pooler through512, unpooler through64. The losing unpooler M128 extension is removed | Upstream H200 pooler M128/256 savings6.5/6.3us per layer; unpooler M32/64 saves3.7/4.2us. Incremental serving savings unmeasured | Low; local NCCL/ABI equality passes, actual TP8 multicast remains unverified |
 | 3 | `models/muse_spark.py:1177`; `fi_trtllm_moe_finalize_with_rmsnorm_cutedsl.py` | **Implemented glue; Hopper runtime pending** after #1 for Hopper/Blackwell TP4/8 with EP=TP and no DP attention. Marlin and V9 now consume `ar_workspace`; `_forward_tp` skips the outer all-reduce only after the expert path owns it, avoiding the old `ar_workspace` trap. The CuTeDSL AR path is selected through the existing custom-AR push workspace for small verify batches (including TP8 up to 16 tokens). The sm_90a AR compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`; the two-rank NCCL native AR test is exact in eager and graph replay (max diff 0); sm_120 glue is exact in the margin harness at TP1 and TP2. H200 arithmetic and custom-AR workspace availability remain unverified. | 0.12-0.24 ms / 0 | Moderate (rank accumulation order and custom-AR workspace availability) |
 | 4 | `kernels/ops/muse_spark_v12/all_gather_norm_residual.py:31` | Unpooler all-gather fused into the post-MoE norm-residual | Enable as-is: `>= 10` to `>= 9` | 0.12-0.25 ms / 0.12-0.25 ms (c=32 needs #2) | Low |
 | 5 | `kernels/ops/muse_spark_v12/norm_residual.py:187` | Multi-CTA cluster norm-residual | Enable as-is: `>= 10` to `>= 9`; cap cluster size at 8 if 16 fails on sm_90 (cluster sizes tuned on GB300) | 0.06-0.2 ms / 0 | Low |
@@ -240,9 +241,10 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
 - **Expert producer:** stock Marlin at every M, including513–752. The V9
-  dispatch gate is capped256, but its loader binder is disabled: its custom scale
-  encoding violates the new stored-E4M3 boundary and removes the Marlin tensors.
-  The MoE lane owns the legal shared-bank reader needed to restore V9 below256.
+  dispatch gate is capped256, but its loader binder is disabled: the V9-only binder
+  omits the Marlin packed tensors. The MoE lane fixed stored-E4M3 handling in the
+  incoming source; a shared-bank reader or admitted bounded layout is still
+  needed to restore the hybrid below256.
   Grouped and Humming are never selected. Their modules and the MoE lane's
   source are retained unbound; no second complete bank is allocated.
 

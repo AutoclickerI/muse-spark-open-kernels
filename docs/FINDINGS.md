@@ -421,22 +421,51 @@ The real-weight H200 producer evidence supersedes the synthetic portfolio:
 `26d7e05ab97d4f96` gives V9/Marlin931/563us at M512 and1332/716us at753;
 Humming/V11 fail real-weight agreement (relative0.11–0.32). The serving adapter
 no longer calls grouped or Humming. Marlin owns M257 and above, including the
-513–752 gap. **V9 currently remains unbound even below256:** its existing
-bank removes Marlin parameters and stores custom scale codes (E4M3 1.0 byte
-0x38 becomes0xa8). New CONSTRAINTS5 requires E4M3 storage with conversion
-in-kernel. Reenabling V9 needs a reader over the one legal packed bank; keeping
-two complete layouts would displace required KV. The MoE-owned source was
-not edited. No claim of a legal small-M V9 integration is made.
+513–752 gap. **V9 currently remains unbound even below256:** the existing
+V9-only binder omits Marlin packed parameters and owns a different layout. The
+MoE lane has now replaced its custom scale codes with stored E4M3 bytes and
+in-kernel conversion; that boundary defect is resolved. Reenabling the requested
+hybrid still needs a shared-bank reader or an admitted bounded extra layout;
+a second complete layout would displace required KV. The incoming MoE-owned
+source is preserved without edits by this lane. No small-M V9 integration is claimed.
 
 The production loader's released32-expert geometry passes12 shapes M1..2048,
 including257/511/512/513/752/753, against stock math: relative L2<=4.43e-5,
-maxabs0.0078125. Graph/eager differences are zero through753; at1024/2048
-they reach0.00390625/0.0078125, equal to stock's own graph/eager control.
+maxabs0.0078125. After bounding finalize, M128..753 is bit-exact against stock.
+Graph/eager differences are zero through753; at1024/2048 they reach0.0078125,
+within stock controls0.0078125/0.015625.
 Remote routes return exactly zero, and the loader retains one packed bank.
 The parked `problems/muse_moe_w4a16/dev/parked/cand_serving_prefill_diag.py`
 also embeds the old scale encoder and is not admitted under the new boundary.
 The active dense/drafter portfolios copy original BF16 weights, not dequantized
 NVFP4 weights; router hi/lo copies are the permitted FP32-router decomposition.
+
+The finalize dispatch was overextended: stock already uses one Triton kernel
+at M>=32. On sm120 H512, M16384, graph timing is stock33.78us versus
+CuTe145.71us (30 replays); at M8, CuTe6.79us beats stock23.37us.
+Standalone dense finalize now uses CuTe only below32 and stock Triton above;
+a supplied fused-AR workspace keeps the CuTe reduction owner. The28 shape/form
+unit passes84 fresh graph replays, exact against stock at M>=32. This is a
+real local kernel regression removed, not proof it caused the entire TTFT tail.
+Runtime-M standalone CuTe also replaces static-M specialization;30 shapes and90
+fresh graph replays are bit-identical to the pinned kernel, and new large-M
+lengths reuse a compiled kernel. Four standalone and three static-AR sm90a
+specializations compile. Fixture JIT events all occur during startup, so no
+fixture TTFT saving is credited to that prepare-time optimization.
+
+A second delivery bug was deterministic: choosing the next plan can mutate
+last_batch's mode EXTEND->DECODE before checking whether its completed first
+token needs flushing. The scheduler now caches that decision before planning.
+The actual-loop regression fails before the fix; all8 overlap tests pass after.
+Ten mode mutations were observed in full-grid traces. The initial post-fix
+bracket still failed the requested1.5x margin at TP1 native c32 (1.764x), while
+TP2 native/portable passed every load. All four modes remained174/174 exact220,
+with the2615-position logprob probe max/mean0. A separate TP1 trace did not
+reproduce the native c32 regression: mean queue/prefill/emit are stock
+451.16/28.43/65.13ms, patch578.92/28.94/16.80ms, p50 ratio0.929.
+Captured TP2 rank0 kernel time is dominated by NCCL wait (94.98%); the two
+captures' Marlin totals80.88/81.91ms are close. These diagnostic captures are
+not timing gates and do not establish a repeatable hardware speedup.
 
 The router-scratch handoff is applied. Three real paired-router layers at
 M64/128/256 share one4.46MB buffer per stream;24 fresh graph replays across two

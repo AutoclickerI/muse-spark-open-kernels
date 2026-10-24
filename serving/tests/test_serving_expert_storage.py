@@ -1,7 +1,8 @@
 """Released-shape loader must own one legal Marlin bank, including prefill gaps.
 
 Old canonical-only preparation deleted Marlin's parameters, so selecting the
-new large-M winner crashed. It also retained custom scale codes. This test
+new large-M winner crashed. The incoming raw-E4M3 repair does not solve
+that mixed-producer layout ownership problem. This test
 loads the real 32-expert NVFP4 geometry through the production quant method.
 """
 import json

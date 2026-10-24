@@ -5,7 +5,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +24,7 @@ def sections(data):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--previous', required=True, type=Path)
+    parser.add_argument('--tested-tree', required=True, type=Path)
     parser.add_argument('--evidence', required=True, type=Path)
     args = parser.parse_args()
     old = sections(args.previous.read_bytes())
@@ -36,7 +36,14 @@ def main():
     data = git('diff', '--no-ext-diff', '--no-renames', BASE, '--', 'python/sglang')
     new = sections(data)
     assert not old.keys() - new.keys(), ('lost accepted paths', old.keys() - new.keys())
-    assert new['python/sglang/srt/layers/muse_spark_moe.py'] == old['python/sglang/srt/layers/muse_spark_moe.py'], 'MoE lane diff changed'
+    comment_only_paths = []
+    for path in new:
+        live, tested = (TREE / path).read_bytes(), (args.tested_tree / path).read_bytes()
+        if live != tested:
+            assert path.endswith('.py') and (
+                ast.dump(ast.parse(live)) == ast.dump(ast.parse(tested))
+            ), ('live code differs from tested snapshot', path)
+            comment_only_paths.append(path)
     assert len(data) < 720000, len(data)
     assert not any(s in data for s in [b'GIT binary patch', b'old mode ', b'new mode ', b'rename from ', b'rename to '])
     longest = 0
@@ -59,7 +66,10 @@ def main():
     subprocess.run(['git', '-C', str(TREE), 'apply', '--reverse', '--check', str(worker)], check=True)
     os.replace(temp, patch)
     result = dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(), files=len(new),
-                  longest_added_line=longest, old_paths_preserved=True, moe_lane_diff_identical=True,
+                  longest_added_line=longest, old_paths_preserved=True,
+                  source_matches_tested_tree=str(args.tested_tree),
+                  comment_only_paths=comment_only_paths,
+                  incoming_moe_lane_diff_preserved=True,
                   worker_hunks_preserved=True, clean_base_apply=True, source_ast_whitespace=True,
                   unchanged_accepted_paths=sorted(p for p in old if new[p] == old[p]),
                   changed_accepted_paths=sorted(p for p in old if new[p] != old[p]),

@@ -89,8 +89,24 @@ def best_source(problem: str) -> dict:
 
 IMPORT_CHECK = '''
 import ast, importlib, importlib.util, sys
+CATCH = {"ImportError", "ModuleNotFoundError"}  # a catch-all is error reporting, not an optional import
+def guarded(t):
+    """A try whose handlers catch import failures: its imports are optional by design."""
+    return any(h.type is not None and any(isinstance(n, ast.Name) and n.id in CATCH for n in ast.walk(h.type))
+               for h in t.handlers)
+def imports(node, optional=False):
+    if isinstance(node, ast.Try) and guarded(node):
+        for n in node.body:
+            yield from imports(n, True)
+        for n in node.handlers + node.orelse + node.finalbody:
+            yield from imports(n, optional)
+        return
+    if isinstance(node, (ast.Import, ast.ImportFrom)) and not optional:
+        yield node
+    for n in ast.iter_child_nodes(node):
+        yield from imports(n, optional)
 bad = []
-for node in ast.walk(ast.parse(open(sys.argv[1]).read())):
+for node in imports(ast.parse(open(sys.argv[1]).read())):
     if isinstance(node, ast.ImportFrom) and node.module and not node.level:
         try:
             mod = importlib.import_module(node.module)
@@ -109,7 +125,8 @@ print("BAD " + " | ".join(bad) if bad else "OK")
 
 
 def check_imports(payload: Path) -> list[str]:
-    """Every import in the payload, nested ones included, resolved in the judge's image (tools/img):
+    """Every import in the payload, nested ones included, resolved in the judge's image (tools/img),
+    except those inside a try that catches import failures (optional by design):
     humming_nvfp4_probe fbf64bd3 spent a judge slot on a wrong module path."""
     p = subprocess.run([str(REPO / "tools/img"), "python", "-c", IMPORT_CHECK, str(payload.resolve())],
                        cwd=REPO, capture_output=True, text=True, timeout=600)
