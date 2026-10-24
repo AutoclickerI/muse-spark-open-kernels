@@ -1,3 +1,82 @@
+diff --git a/python/sglang/kernels/jit/csrc/kvcacheio/staged_write_back.cuh b/python/sglang/kernels/jit/csrc/kvcacheio/staged_write_back.cuh
+index 9332264..232e3e8 100644
+--- a/python/sglang/kernels/jit/csrc/kvcacheio/staged_write_back.cuh
++++ b/python/sglang/kernels/jit/csrc/kvcacheio/staged_write_back.cuh
+@@ -61,6 +61,30 @@ inline auto call_cuda_memcpy_batch_async(
+ }
+ #endif
+ 
++#ifndef USE_ROCM
++inline size_t hicache_registered_bytes_remaining(const void* ptr) {
++  using QueryFn = CUresult (*)(unsigned int, CUpointer_attribute*, void**, CUdeviceptr);
++  static const QueryFn query = []() {
++    void* symbol = nullptr;
++    cudaDriverEntryPointQueryResult status;
++    host::RuntimeDeviceCheck(cudaGetDriverEntryPointByVersion(
++        "cuPointerGetAttributes", &symbol, 11000, cudaEnableDefault, &status));
++    host::RuntimeCheck(status == cudaDriverEntryPointSuccess && symbol != nullptr, "CUDA pointer range query unavailable");
++    return reinterpret_cast<QueryFn>(symbol);
++  }();
++  CUdeviceptr base = 0;
++  size_t bytes = 0;
++  CUpointer_attribute attrs[] = {CU_POINTER_ATTRIBUTE_RANGE_START_ADDR, CU_POINTER_ATTRIBUTE_RANGE_SIZE};
++  void* values[] = {&base, &bytes};
++  const auto address = reinterpret_cast<CUdeviceptr>(ptr);
++  const auto result = query(2, attrs, values, address);
++  host::RuntimeCheck(result == CUDA_SUCCESS, "CUDA pointer range query failed: ", static_cast<int>(result));
++  // Unregistered host pointers have zero range attributes. They retain one
++  // copy per page; never merge across an unknown or separate registration.
++  return base <= address && address - base < bytes ? bytes - (address - base) : 0;
++}
++#endif
++
+ inline void copy_page_first_pages_fallback(
+     const std::vector<tvm::ffi::TensorView>& src_ptrs,
+     std::vector<tvm::ffi::TensorView> dst_ptrs,
+@@ -81,12 +105,31 @@ inline void copy_page_first_pages_fallback(
+     const size_t src_page_bytes = static_cast<size_t>(page_size * src_stride0 * elem_size);
+     const size_t dst_page_bytes = static_cast<size_t>(page_size * dst_stride0 * elem_size);
+     RuntimeCheck(src_page_bytes == dst_page_bytes, "Source and destination page spans must match");
+-    for (const auto page_offset : irange(num_pages)) {
++    // Staging is contiguous in page order. Merge adjacent destination pages
++    // instead of submitting one host API call per page (page_size is 1 for
++    // Muse). Preserve order at gaps, descending indices and repeated slots.
++    for (int64_t page_offset = 0; page_offset < num_pages;) {
++      int64_t page_end = page_offset + 1;
++#ifndef USE_ROCM
++      while (page_end < num_pages &&
++             dst_indices_ptr[page_end * page_size] == dst_indices_ptr[(page_end - 1) * page_size] + page_size) {
++        ++page_end;
++      }
++#endif
+       const char* src_ptr = static_cast<const char*>(src_ptrs[tensor_id].data_ptr()) +
+                             static_cast<size_t>(page_offset * page_size * src_stride0 * elem_size);
+       char* dst_ptr = static_cast<char*>(dst_ptrs[tensor_id].data_ptr()) +
+                       static_cast<size_t>(dst_indices_ptr[page_offset * page_size] * dst_stride0 * elem_size);
+-      RuntimeDeviceCheck(cudaMemcpyAsync(dst_ptr, src_ptr, src_page_bytes, cudaMemcpyDeviceToHost, stream));
++#ifndef USE_ROCM
++      if (page_end > page_offset + 1) {
++        const size_t span_bytes = hicache_registered_bytes_remaining(dst_ptr);
++        const int64_t span_pages = static_cast<int64_t>(std::max(size_t{1}, span_bytes / dst_page_bytes));
++        page_end = std::min(page_end, page_offset + span_pages);
++      }
++#endif
++      const size_t bytes = src_page_bytes * static_cast<size_t>(page_end - page_offset);
++      RuntimeDeviceCheck(cudaMemcpyAsync(dst_ptr, src_ptr, bytes, cudaMemcpyDeviceToHost, stream));
++      page_offset = page_end;
+     }
+   }
+ }
+@@ -140,6 +183,9 @@ inline bool try_copy_page_first_pages_batch(
+     host::RuntimeCheck(src_page_bytes == dst_page_bytes, "Source and destination page spans must match");
+     if (tensor_id == 0) {
+       first_page_bytes = src_page_bytes;
++      if (first_page_bytes < kLargeCopyThresholdBytes) {
++        return false;
++      }
+     }
+     for (const auto page_offset : host::irange(num_pages)) {
+       char* src_ptr = static_cast<char*>(src_ptrs[tensor_id].data_ptr()) +
 diff --git a/python/sglang/kernels/jit/csrc/muse_spark_v12/all_reduce_norm_residual.cuh b/python/sglang/kernels/jit/csrc/muse_spark_v12/all_reduce_norm_residual.cuh
 new file mode 100644
 index 0000000..f5d983d

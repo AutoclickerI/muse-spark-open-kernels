@@ -1447,6 +1447,7 @@ def prepare(weights):
     return state
 
 """Native V9 MoE seed portfolio. FP32 prepare gate; byte-preserving NVFP4/E4M3 storage."""
+import torch
 """NVFP4 BF16 MoE: eight math warps per CTA, thread 0 streams the next weight tile.
 A fully resident occupancy-sized grid runs both GEMMs, SwiGLU, expert norm and reduction.
 All scheduling metadata and activations are recomputed each call. Weights remain lossless

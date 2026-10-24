@@ -4,6 +4,7 @@ import statistics
 import time
 import zlib
 
+MW_LAB_PLANES=False
 
 class MWGraph:
     def __init__(self,fn,data):
@@ -63,13 +64,20 @@ def lab(deadline,weights,state=None):
     lines=['META TileLang0.1.12 RS-WGMMA NVFP4/E4M3 converted in timed GEMMs; FP32 GS epilogue; paired raw graph us n6 cold128MiB; R0=26d7e05 fixture0 exact IDs, fresh x/public decode weights5353; G=public router5353, q_len1 for prefill; FP32 gate L2<=.01 row<=.05']
     w=rg_generate_weights(5353,device=dev,router_seed=5353)
     w['post_norm_w']=w['post_expert_norm']
-    bank=mw_prepare(w);native=ctrl_prepare(w);marlin=marlin_prepare(w)
+    bank=mw_prepare(w)
+    if MW_LAB_PLANES:mw_add_planes(bank)
+    native=ctrl_prepare(w);marlin=marlin_prepare(w)
     flush=torch.empty(128<<20,device=dev,dtype=torch.uint8)
     raw=zlib.decompress(base64.b64decode(CAPTURED_R0))
     sms=torch.cuda.get_device_properties(dev).multi_processor_count
     core=((64,16,128,2,sms*2,True),(64,32,128,2,sms*2,True),
           (64,16,128,0,sms,True),(64,16,128,2,sms*2,False))
     wide=(core[1],core[0])
+    if MW_LAB_PLANES:
+        # Keep every required M inside prepare's 300s hard cap. Wider BM128
+        # remains in the locally checked tuner, rather than displacing 16K data.
+        core=((64,16,128,2,sms*2,True,True),(64,32,128,2,sms*2,True,True))
+        wide=((64,64,128,3,sms*2,True,True),)
     for m in (128,256,512,753,3012,16384):
         if time.monotonic()>deadline-15:
             lines.append(f'BUDGET M={m} before fixtures');break
@@ -109,7 +117,7 @@ def lab(deadline,weights,state=None):
                 err,row=mw_gate(graph,ds,wants)
                 a,b,ratio=mw_pair(old,graph,ds,flush)
                 valid=err<=.01 and row<=.05
-                label=f'{"RS" if choice[-1] else "SS"}n{choice[1]}k{choice[2]}s{choice[3]}g{choice[4]}'
+                label=f'{"P" if len(choice)>6 and choice[6] else ""}{"RS" if choice[5] else "SS"}m{choice[0]}n{choice[1]}k{choice[2]}s{choice[3]}g{choice[4]}'
                 lines.append(f'T {label} M={m} us={b:.1f} {old_label}={a:.1f} ratio={ratio:.4f} fp32={err:.5f} row={row:.5f} '+('PASS' if valid else 'REJECT'))
                 if valid and (winner is None or b<winner[0]):winner=(b,choice,label)
                 del graph

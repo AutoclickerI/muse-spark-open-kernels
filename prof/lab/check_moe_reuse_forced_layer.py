@@ -1,4 +1,4 @@
-"""Force portable reuse producers inside the final layer's four scored verify graph cases."""
+"""Force native hot-first producers inside the final layer's four scored verify graph cases."""
 import hashlib
 import json
 from pathlib import Path
@@ -14,8 +14,8 @@ if hasattr(ref,'_fa3_scheduler_metadata'):ref._fa3_scheduler_metadata=lambda *a,
 w=ref.generate_weights(ref.WEIGHTS_SEED)
 mod=ev.load_module('forced_reuse_layer',p)
 state=mod.prepare(ev.clone(w))
-state['moe_bank']['moe_reuse_plan']={128:(4,0,2),256:(16,1,2)}
-print('FORCED',state['moe_bank']['moe_reuse_plan'],flush=True)
+state['moe_bank']['plan']={128:(2,0,1),256:(2,0,2)}
+print('FORCED',state['moe_bank']['plan'],flush=True)
 side=SimpleNamespace(call=lambda data:mod.kernel_fn(data,state),name='forced')
 problem=ev.Problem(ref,w);timer=ev.Timer()
 spec=json.loads((root/'upstream/api/problems/muse_decode_layer.json').read_text())
@@ -26,6 +26,6 @@ for case in spec['benchmarks']:
     assert row['ok'],row
     rows.append(row);print('PASS',case['load'],case.get('layer'),flush=True)
 assert len(rows)==4
-out=dict(source=str(p.relative_to(root)),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),choices=state['moe_bank']['moe_reuse_plan'],shapes=rows)
+out=dict(source=str(p.relative_to(root)),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),choices=state['moe_bank']['plan'],shapes=rows)
 (root/'runs/screen/v9_reuse/final_forced.json').write_text(json.dumps(out,indent=2)+'\n')
 print('PASS 4 forced verify layer cases, 20 replays and 3 fresh inputs each; existing static/13-test screen applies to the same source bytes')

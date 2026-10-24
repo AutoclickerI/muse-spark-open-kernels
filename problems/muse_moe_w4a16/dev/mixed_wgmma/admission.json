@@ -1,0 +1,43 @@
+{
+  "hardware": "Local SM120 only; H200 receipts pending",
+  "files": {
+    "problems/muse_decode_layer/cand_r3_mixed_wgmma.py": "4b3753823bd6176bda1abc2b373e87ebeb32418c7e941e323525674081338dcb",
+    "prof/lab/moe_mixed_wgmma.py": "9dca1a1e70e56716da341774ba6571ff1fae86dc9c5bd2dfb22080aa7c597090",
+    "prof/lab/moe_mixed_wgmma_planes.py": "224f4cdd6189de1d5db6e07e13bba6f125fac6292f0cbbfe3b3f90d02da67f6a",
+    "prof/lab/moe_mixed_wgmma_prefill.py": "042c8ef6d094439c2e3466b583bcff946143fc324e83906baf5d8ca7d9cbefd3"
+  },
+  "screens": {
+    "decode_mixed_wgmma_planes": {
+      "sha256": "4b3753823bd6176bda1abc2b373e87ebeb32418c7e941e323525674081338dcb",
+      "tests": 13,
+      "static": 5,
+      "prepare_s": 108.24407498002984
+    },
+    "mixed_wgmma_planes_lab_screen": {
+      "sha256": "71c2f471b2e74efe214da02cbe42c16637c65a9490cc8cdebbd23436deb76f4f",
+      "tests": 9,
+      "static": 5,
+      "prepare_s": 31.68279650603654
+    },
+    "mixed_wgmma_prefill_lab_screen": {
+      "sha256": "9176ba0035ba05648c6a97173dfdf3376cf62e678c00f4071773606cd1632b4d",
+      "tests": 9,
+      "static": 6,
+      "prepare_s": 10.634366885991767
+    }
+  },
+  "forced_layer_graphs": 24,
+  "forced_layer_sha256": "4b3753823bd6176bda1abc2b373e87ebeb32418c7e941e323525674081338dcb",
+  "scalar_conversion_exact_cases": 130048,
+  "plane_conversion_exact_cases": 1040384,
+  "scalar_graph_checks": 36,
+  "plane_graph_checks": 36,
+  "sm90a_builds_per_family": 8,
+  "h200_jobs": {
+    "scalar": "296fdf45382244dc",
+    "planes_source_key": "71c2f471b2e74efe",
+    "prefill_source_key": "9176ba0035ba0564",
+    "5d16a813364a8d20": "296fdf45382244dc"
+  },
+  "serving": "Producer handoff documented; not switched; no H200 win established"
+}

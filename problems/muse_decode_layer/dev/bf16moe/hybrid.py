@@ -1,7 +1,7 @@
-"""Self-contained append-only BF16-resident MoE engine for the decode-layer candidate.
+"""Archived BF16-resident experiment: inadmissible under CONSTRAINTS 5.
 
-NVFP4 banks remain resident. The BF16 bank is an exact derived block-product layout;
-FP32 global scales are applied in the two activation/output epilogues.
+Its prepared BF16 bank moves NVFP4 dequantization out of timed calls. Exact values
+and retaining the packed bank do not make that legal. Evidence only; do not submit.
 """
 import math
 import statistics as _bf_statistics

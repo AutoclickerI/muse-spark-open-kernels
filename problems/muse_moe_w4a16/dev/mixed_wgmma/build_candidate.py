@@ -1,4 +1,5 @@
 """Build a decode-layer adapter with the incumbent raw-scale V9 and a gated WGMMA producer."""
+import ast
 import hashlib
 from pathlib import Path
 import sys
@@ -12,7 +13,15 @@ from build_moe_real_routing import namespace
 def main():
     base=(ROOT/'problems/muse_decode_layer/cand_r3_v9.py').read_text()
     raw=(HERE.parent/'v9_reuse/dropin.py').read_text()
-    raw=raw[:raw.index('import hashlib as rr_hashlib')]
+    # Select the raw incumbent by namespace, independent of neighboring lane additions.
+    nodes=[]
+    for node in ast.parse(raw).body:
+        if isinstance(node,ast.FunctionDef) and node.name.startswith('rv_'):nodes.append(node)
+        elif isinstance(node,ast.Import) and any((a.asname or '').startswith('rv_') for a in node.names):nodes.append(node)
+        elif isinstance(node,ast.Assign) and any(isinstance(n,ast.Name) and n.id.startswith('rv_')
+                                               for t in node.targets for n in ast.walk(t)):nodes.append(node)
+    raw=ast.unparse(ast.Module(body=nodes,type_ignores=[]))+'\n'
+    assert 'def rv_prepare(' in raw and 'def rv_kernel_fn(' in raw
     adapter='''
 v9_prepare=rv_prepare
 v9_kernel_fn=rv_kernel_fn
@@ -28,10 +37,10 @@ def experts_v9(x,wts,lids,state):
     fixture=fixture[:fixture.index('\ndef _graph_time')]
     oracle=(HERE.parent/'v9_reuse/reuse.py').read_text()
     oracle=oracle[oracle.index('def _reuse_fp32_impl'):]
-    driver=(HERE/'lab_driver.py').read_text()
+    driver=(HERE/'lab_driver.py.inc').read_text()
     driver=driver[:driver.index('\ndef mw_phase_times')]
     parts=[base,(HERE/'engine.py').read_text(),namespace(fixture,'fx_'),oracle,
-           driver,(HERE/'dropin_tail.py').read_text()]
+           driver,(HERE/'dropin_tail.py.inc').read_text()]
     src='\n\n'.join(parts)
     out=ROOT/'problems/muse_decode_layer/cand_r3_mixed_wgmma.py'
     out.write_text(src)

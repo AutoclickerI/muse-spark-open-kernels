@@ -1,0 +1,43 @@
+{
+  "source_sha256": "a651af25cb44550932f497b57eb82fb32c0fbe07c1f21a8592bd0982f937c150",
+  "base_sha256": "812f5f369d042c9bb7f80c4e7198bc4883922539c619c10f1e49622f1fe7aad2",
+  "nt2_kernel_sha256": "31e7f3ce930f512d7a33f708dc3136d83de081833925458cf2d874eda7e6e1d2",
+  "unchanged_literals": [
+    "V9_CUDA_SRC",
+    "V9_CPP_SRC",
+    "CUDA_SRC",
+    "LT_CUDA_SRC",
+    "ATTN_PORT_CUDA_SRC",
+    "ATTN_X_CUDA",
+    "ATTN_G_CUDA",
+    "ATTN_P8_CUDA",
+    "PG_RAW"
+  ],
+  "unchanged_functions": [
+    "kernel_fn",
+    "_prepare_weights",
+    "v9_prepare",
+    "_v9_module",
+    "_repack",
+    "boundary",
+    "route_and_norm",
+    "project",
+    "_project_variant",
+    "_projection_consumer",
+    "o_and_pool",
+    "stage_attention",
+    "_attn_port_variant",
+    "_attn_port_candidates",
+    "_attention_reference",
+    "_attention_agrees",
+    "_attention_store_agrees"
+  ],
+  "expired_deadline_tuners": [
+    "moe_nt",
+    "projections",
+    "measured_lt",
+    "attention",
+    "pdl",
+    "prefix"
+  ]
+}

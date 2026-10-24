@@ -1,37 +1,51 @@
-# Decode checks — current omni handoff
+# Decode checks — best5 handoff
 
-## Current omni candidate
+## Current best5 candidate
 
-[cand_r3_omni.py](../cand_r3_omni.py), SHA-256
-`6774eceabbbb2c81b2baeb281866d7c533ad93e7711462d85eb1a96db9d6cbf1`.
-This lane did not send it; **Jihoon sends**. Base: best `812f5f36`.
-Normal and forced-Hopper screens both pass **13/13 tests, 12/12 fresh graph shapes and 15/15 static checks**.
-Cold candidate prepare is **147.341 s**, including **84.377 s** for all 11 concurrent extension builds;
-extra forced checks bring the wrapper prepare to **149.695 s**. Extension/Triton/CUDA caches were empty
-and ccache disabled. Every eligible alternative was measured; none was skipped for the 230-second tuning deadline.
+[cand_r3_best5.py](../cand_r3_best5.py), SHA-256
+`a651af25cb44550932f497b57eb82fb32c0fbe07c1f21a8592bd0982f937c150`. This lane did not send it; **Jihoon sends it as a decode check**.
+Base: exact best `812f5f36`. Only MoE M32/128/256 gains a per-run V9 NT1/NT2 choice, using the loaded
+router on three fresh inputs, an independent FP32 gate before/after timing, and 12 alternating paired
+cold graph replays. The pair, ratio, gate errors and routing summary print once per M at prepare’s end.
+Other M retain NT1. Existing native NT1 and all non-MoE sources/stage bodies are unchanged.
+The NT2 body is byte-identical to H200 lab `3f2b8da0f1d244d7`; the bindings instantiate only NT2.
+No CUTLASS, reuse, hot-first or NT4 alternative is included.
 
-The portfolio adds loaded-weight FP32-gated NT2/NT4 and CUTLASS mixed-input MoE at M128/256,
-two CUTLASS projection recipes per large role, four-stage `port_verify`, all 24 XQA settings and
-receipt-shortlisted FA3 recipes. Small pool/router keeps V9 GEMV. The mixed collective explicitly loads
-four E4M3 scale columns per K64 tile and widens before multiplication; weights stay packed NVFP4.
-The final 12 per-shape lines contain every alternative’s time/rejection and the selected plans in 8,647 bytes.
-See [omni handoff](omni/README.md) and [validation / per-shape timings](omni/validation.json).
-Native Hopper execution and selections remain unverified; portable stand-ins exercise Hopper glue locally.
-The stage lever table from V9/cost receipts is below.
+Normal and forced-Hopper screens each pass **13/13 tests, 12/12 fresh graph shapes and 13/13 static checks**.
+Cold candidate prepare is **190.343 s**, including every extension build; extra forced checks bring it
+to **192.029 s**. Extension/Triton/CUDA caches were empty and ccache disabled. Every tuner uses the same
+240-second deadline measured from prepare entry. All three MoE comparisons completed; their gate errors
+are ~0.17% locally. The expired-deadline audit verifies all six tuners return without GPU allocation or compilation.
+See [best5 handoff](best5/README.md) and [validation / per-M timings](best5/validation.json).
+Local NT2 choices do not predict H200 selection; the complete best5 build remains unverified on H200.
 
-Attention sweep `59e53e746df341a9` is now available in shared receipt files. It again marks every
-variant F, including FA3; no correctness winner can be promoted from it. Its timing shortlist is included
-behind Omni’s independent post-store FP32 gate. No extra judge query or submission was made.
+## Resolved predecessor runs
 
-MoE handoff: `../muse_moe_w4a16/dev/v9_reuse/dropin.py` (SHA256800263d7643190809210e51704540950350b97a44c8b6e3b8da30a29d2f82588) exposes `moe_reuse_prepare(full_weights)` / `moe_reuse_experts(x,scores,local_ids,state)`, with raw E4M3/NVFP4 storage and a three-input FP32 gate before cold paired graph selection at M128/256. `cand_r3_v9_reuse.py` (SHA256da9db7a5517a8aaf9c4c079f67389d9866fc99fc79ec66e9ad3db0fce7afb876) is the full-layer integration:13/13 tests,12/12 fresh graph cases,7 static checks pass; NT2 wins locally, which does not establish H200 speed. Proj lab queue keys8f516be7bb7c5c00/370b07e5e40e5ad0 (not judge IDs) carry the exact captured414-pair routing plus a separately seed-reproduced router, native NT2/4, register/shared reuse, hot-first channel CTAs, and clocks. Await their receipts and Humming fbf64bd39bde4bf6 for the H200 ranking; the owner screens/sends candidates. Preserve this component's raw-scale bank when merging; the new kernel's scale bytes are incompatible with old E5M3-encoded banks. Full details and commands are in FINDINGS; free lane keeps CUTLASS/TileLang ownership.
+Best `812f5f36`, receipt `7b2165c8`, scored **1.351x**, with H200 prepare **130.547 s**. Its V9 MoE
+routing-seed variance dominates the gap to board V9 `0e94268` (1.428x); compare matched routing or
+non-MoE stages. Native NT2 ran cleanly in lab `3f2b8da0`: M256 R0 549.8 vs NT1 573.8 us, M128 G
+390.4 vs 396.7 us, M128 R0 348.6 vs 331.7 us. That distribution dependence motivates best5’s tuner.
+
+Omni `6774ecea`, receipt `a704a37c`, **failed before tests**: its 11 extensions compiled in 75.4 s,
+then mixed-input CUTLASS aborted in CuTe TMA descriptor construction (scale globalDim 1,1,1 versus
+boxDim 8,4,1). A C++ abort bypasses Python/FP32 rejection. Both CUTLASS families are absent from best5;
+projection lab `45f58e70` found no winning CUTLASS recipe at M128/256. The failure is a FINDINGS lesson,
+not a new CONSTRAINTS/RULINGS entry. Previous [omni local evidence](omni/README.md) does not establish
+native H200 safety.
+
+Attention sweep `59e53e746df341a9` marks every variant F, including FA3, so its reference gate is faulty.
+Its timing evidence favors q1 attn_main and q8 FA3. Best5 deliberately retains best’s attention source,
+choice set and gate unchanged. The stage lever table from board V9/cost receipts remains below.
+
+MoE handoff: `../muse_moe_w4a16/dev/v9_reuse/dropin.py` is now a native V9 seed portfolio (`moe_reuse_prepare(full_weights)` / `moe_reuse_experts(x,scores,local_ids,state)`). It preserves raw NVFP4/E4M3 and FP32 GS, gates against three independent FP32 expert samples, and selects by cold paired graph ratios with a per-sample slowdown guard. Across12 public full-model seeds on GPU0, hot-first NT2/one stage improves M128 mean376.5→359.0us, and native NT2 improves M256560.7→514.8us; max/mean1.181/1.104 misses the5% spread goal. These are sm120, not H200 numbers. Exact-front local routing changes both touched experts and hot load; use matched routes or non-MoE times when assessing layer receipts. V1 H200 a029bd95 loses badly (best experimental1743/2833us vs V9333/577us); do not port its register/shared tile kernels. V2 job3f2b8da0f1d244d7 is already accepted; a new twelve-seed native lab carries the updated comparison (proj submission queue key56040f879cdeefd2; no judge ID returned). `cand_r3_v9_reuse.py` is the integration, locally13/13 tests+12/12 graphs+7 static; candidateSHA590b8026aa7a00da3644aa11392cbc3b972764cc234354a78c4c796fc14c971d, drop-inSHA4e6fff436bbfaf34e1620b97206e516760d6d8e1a17244ceeb1819a6935aeda8; current hashes and status are in `../muse_moe_w4a16/dev/v9_reuse/manifest.json`, tables in REPORT.md, decisions in FINDINGS. Preserve its raw-scale bank when merging. The owner screens/sends candidates; no candidate send or commit by this lane. CUTLASS/TileLang remains with the free lane.
 
 Previous base handoff: **[cand_r3_best.py](../cand_r3_best.py)**, SHA-256
 `812f5f369d042c9bb7f80c4e7198bc4883922539c619c10f1e49622f1fe7aad2`. This lane did not send it; Jihoon owns its screening/submission.
 It supersedes the older best/best2 construction for this task. Normal and forced-Hopper screens each pass
 13/13 tests, 12/12 fresh graph cases and 11/11 static checks. Cold prepare including native attention
 compiles and all tuners is **175.121 s locally**, with **177.152 s** including extra forced-family checks.
-H200 prepare time and native attention execution remain unverified. See [BEST](BEST.md) for every stage's
-local selections, resource metadata, commands and the remaining attention job `59e53e746df341a9`.
+Best’s H200 prepare is 130.547 s and its score is 1.351x in `7b2165c8`; the current source is best5 above.
+See [BEST](BEST.md) for the prior local selections and resource metadata.
 The current source keeps V9 MoE at every T, preserves small pool/router GEMV, restores XQA/attn_main,
 and repairs PREFIX with TB≤32 instead of disabling it. The cost receipt selected regular persistent
 islands at every small T; those losing kernels and the unused MoE banks are removed.
@@ -115,8 +129,8 @@ only its H200 receipt remains.
 
 ## Send order
 
-For this task, the owner sends `cand_r3_omni.py` at the hash above; this lane did not send it.
-The previous best/best2-first construction is superseded by this requested portfolio build. Existing holds on
+For this task, the owner sends `cand_r3_best5.py` at the hash above as a decode check; this lane did not send it.
+The failed omni is closed; best5 changes only the proven NT1/NT2 MoE dispatch and prepare budget guards. Existing holds on
 `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, both megakernel sources and overlap remain unchanged.
 
 The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, the final compact `MEGA_SUMMARY`, and the attention candidate's final compact `ATTN_PORT_SUMMARY` record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.

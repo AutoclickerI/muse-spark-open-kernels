@@ -3,10 +3,11 @@
 
 def mw_install(state,weights,incumbent):
     dev=weights['w13'].device
-    bank=mw_prepare(weights)
+    bank=mw_add_planes(mw_prepare(weights))
     flush=torch.empty(128<<20,device=dev,dtype=torch.uint8)
     sms=torch.cuda.get_device_properties(dev).multi_processor_count
-    choices=((64,16,128,2,sms*2,True),(64,32,128,2,sms*2,True))
+    choices=((64,16,128,2,sms*2,True,True),(64,32,128,2,sms*2,True,True),
+             (128,32,128,2,sms*2,True,True))
     selected={};records={}
     for m in (128,256):
         ds=[fx_make_fixture(weights,m,9000+m+7919*j) for j in range(3)]

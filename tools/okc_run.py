@@ -27,7 +27,7 @@ The mode is chosen when the run goes out: a scored run while the problem has one
 (`okc problems`), else a check. A check and a scored run are the same run, and the board keeps a
 team's best scored run, so a slower scored run costs no place and a faster one needs no second run.
 With neither left, the send leaves the queue order until the daily reset (00:00 UTC) and then goes.
-A source that already ran as a check goes again only as a scored run. The judge answers the same
+A source that already ran as a check goes again only as a scored run; --scored never sends a check. The judge answers the same
 source again with its earlier result, so this refuses a source that already has a scored run, or
 is pending or waiting, unless --force. Host Python, standard library only.
 """
@@ -308,7 +308,9 @@ def send(args):
     if not args.force and (row or "submit" in ran):
         sys.exit(f"this source already ran as a scored run, or is pending or waiting ({row or 'ledger'}); "
                  "--force to send it again")
-    modes = ("submit",) if "check" in ran and not args.force else ("submit", "check")
+    # --scored: a candidate that may beat the board waits for the reset rather than going as a check,
+    # since a check can't place it and the judge answers the same source again with the check's result.
+    modes = ("submit",) if args.scored or ("check" in ran and not args.force) else ("submit", "check")
     # Send a snapshot, so the file can be edited while this run waits. okc writes the run's profiles
     # beside the file it sent; finish() moves them beside the original.
     snap = SENT / sha[:16] / args.file.name
@@ -386,6 +388,7 @@ def main():
     p.add_argument("file", type=Path)
     p.add_argument("--note", default="", help="what this candidate is, for the ledger")
     p.add_argument("--force", action="store_true", help="send source the ledger already has")
+    p.add_argument("--scored", action="store_true", help="only as a scored run: wait for the reset if none is left today")
     p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem)")
     p.set_defaults(run=send)
     p = sub.add_parser("collect", help="finish pending receipts (all of them if no job is named)")

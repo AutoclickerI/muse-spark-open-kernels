@@ -700,14 +700,6 @@ def kernel_fn(data, state):
     return hidden, stream2, ids
 
 
-"""Decode-layer MoE drop-in: moe_reuse_prepare(full_weights), moe_reuse_experts(x,wts,local_ids,state).
-Raw E4M3/NVFP4 banks only; FP32 gate and paired cold graph selection in prepare.
-"""
-"""NVFP4 BF16 MoE: eight math warps per CTA, thread 0 streams the next weight tile.
-A fully resident occupancy-sized grid runs both GEMMs, SwiGLU, expert norm and reduction.
-All scheduling metadata and activations are recomputed each call. Weights remain lossless
-packed NVFP4; BF16 activations use FP32 accumulation.
-"""
 import torch as rv_torch
 rv_H = 4096
 rv_NLOC = 32
@@ -793,7 +785,7 @@ def rv_kernel_fn(data, state):
     M = x.shape[0]
     npairs = M * rv_TOPK
     nt = state.get('nt', 1)
-    nstage = 2
+    nstage = state.get('nstage_choice', 2)
     while nstage > 1 and mod.smem_needed(nt, nstage, M) > mod.smem_optin:
         nstage -= 1
     if mod.smem_needed(nt, nstage, M) > mod.smem_optin:
@@ -805,14 +797,6 @@ def rv_kernel_fn(data, state):
     out = rv_torch.empty((M, rv_H), dtype=rv_torch.bfloat16, device=dev)
     mod.run(x, ids, tw, state['pnw'], state['w13p'], state['w2p'], state['gs13'], state['gs2'], inter, y, ss, state['cnt'], out, cfg['local_start'], nt, nstage, state['grid'] * mod.resident_blocks(nt, nstage, M))
     return out
-
-"""V9 fragment reuse with independent channel-tile CTAs; no prepared dequantized bank.
-
-mode 0: decode into registers once per tile and feed up to 128 token rows.
-mode 1: decode K=2048 into shared BF16, ldmatrix, retain row accumulators.
-mode 2 (Hopper): decode all K into shared BF16, ldmatrix, process row blocks serially.
-Scales are byte-for-byte E4M3 layout repacks. Global scales remain FP32.
-"""
 
 v9_prepare=rv_prepare
 v9_kernel_fn=rv_kernel_fn
@@ -1599,6 +1583,26 @@ __device__ __forceinline__ cutlass::bfloat16_t mw_decode(unsigned q, unsigned s,
                 __hmul(__ushort_as_bfloat16((unsigned short)vb),
                        __ushort_as_bfloat16((unsigned short)sb))));
 }
+__device__ __forceinline__ cutlass::bfloat16_t mw_plane(unsigned a,unsigned b,unsigned raw,int slot,int half) {
+  unsigned v;
+  if(slot==0)v=a;
+  else if(slot==1)v=__funnelshift_r(a,a,4);
+  else if(slot==2)v=__funnelshift_r(a,a,10);
+  else if(slot==3)v=__funnelshift_r(b,b,2);
+  else if(slot==4)v=__funnelshift_r(b,b,6);
+  else if(slot==5)v=__funnelshift_r(b,b,12);
+  else {unsigned w=(a&0x60306030u)|(b&~0x60306030u);
+        v=__funnelshift_r(w,w,slot==6?24:30);}
+  v&=0x81c081c0u; // two exact BF16 values, each scaled by 2^-126
+  unsigned s=raw&127u,sb;
+  if(s>=8u)sb=(238u<<7)+(s<<4);
+  else if(s){unsigned k=31u-__clz(s);sb=((236u+k)<<7)|((s<<(7u-k))&127u);}
+  else sb=0;
+  sb|=(raw&128u)<<8;
+  unsigned sf=sb|(sb<<16), out;
+  asm("mul.rn.bf16x2 %0,%1,%2;":"=r"(out):"r"(v),"r"(sf));
+  return cutlass::bfloat16_t::bitcast((unsigned short)(out>>(half*16)));
+}
 '''
 
 
@@ -1637,11 +1641,13 @@ def mw_prefix(COUNTS, OFFS, ORDER, TASKS, BN: tl.constexpr):
     tl.store(TASKS,0)
 
 
-def mw_prim(M, N, K, BM=64, BN=16, BK=128, STAGES=2, GRID=264, FIRST=True, RS=True):
+def mw_prim(M, N, K, BM=64, BN=16, BK=128, STAGES=2, GRID=264, FIRST=True, RS=True, PLANES=False):
     CAP=M*8+32*BN
+    QSHAPE=(32,N//16,K//32,32,2) if PLANES else (32,N,K//2)
+    QDTYPE='int32' if PLANES else 'uint8'
 
     @T.prim_func
-    def main(Q:T.Tensor((32,N,K//2),'uint8'),
+    def main(Q:T.Tensor(QSHAPE,QDTYPE),
              SF:T.Tensor((32,N,K//16),'uint8'),
              GS:T.Tensor((32,),'float32'),
              X:T.Tensor((M if FIRST else CAP,K),'bfloat16'),
@@ -1652,7 +1658,10 @@ def mw_prim(M, N, K, BM=64, BN=16, BK=128, STAGES=2, GRID=264, FIRST=True, RS=Tr
              SLOTS:T.Tensor((32,M),'int32'),
              Y:T.Tensor((CAP,N),'float32')):
         with T.Kernel(GRID,threads=128,prelude=MW_PRELUDE) as pid:
-            qs=T.alloc_shared((BM,BK//2),'uint8')
+            if PLANES:
+                qs=T.alloc_shared((BM//16,BK//32,32,2),'int32')
+            else:
+                qs=T.alloc_shared((BM,BK//2),'uint8')
             ss=T.alloc_shared((BM,BK//16),'uint8')
             bs=T.alloc_shared((BN,BK),'bfloat16')
             if RS:
@@ -1678,7 +1687,10 @@ def mw_prim(M, N, K, BM=64, BN=16, BK=128, STAGES=2, GRID=264, FIRST=True, RS=Tr
                     offset=OFFS[e]
                     T.clear(acc)
                     for kk in T.Pipelined(K//BK,num_stages=STAGES):
-                        T.copy(Q[e,tile*BM,kk*(BK//2)],qs)
+                        if PLANES:
+                            T.copy(Q[e,tile*(BM//16),kk*(BK//32),0,0],qs)
+                        else:
+                            T.copy(Q[e,tile*BM,kk*(BK//2)],qs)
                         T.copy(SF[e,tile*BM,kk*(BK//16)],ss)
                         for j,k in T.Parallel(BN,BK):
                             if row+j<count:
@@ -1690,19 +1702,27 @@ def mw_prim(M, N, K, BM=64, BN=16, BK=128, STAGES=2, GRID=264, FIRST=True, RS=Tr
                             else:
                                 bs[j,k]=T.cast(0,'bfloat16')
                         for i,k in T.Parallel(BM,BK):
-                            af[i,k]=T.call_pure_extern('bfloat16','mw_decode',
-                                T.cast(qs[i,k//2],'uint32'),T.cast(ss[i,k//16],'uint32'),k%2)
+                            if PLANES:
+                                lane=(i%8)*4+(k%8)//2
+                                slot=(k%32)//16*4+(k%16)//8*2+(i%16)//8
+                                af[i,k]=T.call_pure_extern('bfloat16','mw_plane',
+                                    T.cast(qs[i//16,k//32,lane,0],'uint32'),
+                                    T.cast(qs[i//16,k//32,lane,1],'uint32'),
+                                    T.cast(ss[i,k//16],'uint32'),slot,k%2)
+                            else:
+                                af[i,k]=T.call_pure_extern('bfloat16','mw_decode',
+                                    T.cast(qs[i,k//2],'uint32'),T.cast(ss[i,k//16],'uint32'),k%2)
                         T.gemm(af,bs,acc,transpose_B=True)
                     for i,j in T.Parallel(BM,BN):
                         if row+j<count:
-                            Y[offset+row+j,tile*BM+i]=acc[i,j]*GS[e]
+                            Y[offset+row+j,tile*BM+i]=acc[i,j]*(GS[e]*(256. if PLANES else 1.))
     return main
 
 
 @functools.lru_cache(None)
-def mw_compile(M,N,K=4096,BM=64,BN=16,BK=128,STAGES=2,GRID=264,FIRST=True,RS=True,target='auto'):
+def mw_compile(M,N,K=4096,BM=64,BN=16,BK=128,STAGES=2,GRID=264,FIRST=True,RS=True,target='auto',PLANES=False):
     spec=target if target=='auto' else {'kind':'cuda','arch':target}
-    return tilelang.compile(mw_prim(M,N,K,BM,BN,BK,STAGES,GRID,FIRST,RS),target=spec,
+    return tilelang.compile(mw_prim(M,N,K,BM,BN,BK,STAGES,GRID,FIRST,RS,PLANES),target=spec,
                             pass_configs={'tl.disable_warp_specialized':True})
 
 
@@ -1751,8 +1771,38 @@ def mw_prepare(weights):
         'pnw':weights.get('post_norm_w',weights.get('post_expert_norm')).contiguous()}
 
 
+def mw_repack_planes(q):
+    """A permutation of all four bits of every nibble, matching RS register ownership.
+
+    Two words encode the 16 codes each lane needs for M16/K32. The extraction
+    table is the incumbent V9 bit-plane bijection, used here with WGMMA layout.
+    """
+    e,n,k2=q.shape;k=k2*2
+    dst=torch.empty((e,n//16,k//32,32,2),device=q.device,dtype=torch.int32)
+    slots=(('A',0),('A',4),('A',10),('B',2),('B',6),('B',12),('W',24),('W',30))
+    mask=0x60306030
+    for expert in range(e):
+        codes=torch.stack((q[expert]&15,q[expert]>>4),-1).reshape(n//16,2,8,k//32,2,2,4,2)
+        codes=codes.permute(0,3,2,6,4,5,1,7).reshape(n//16,k//32,32,8,2).to(torch.int64)
+        words=torch.zeros((n//16,k//32,32,2),device=q.device,dtype=torch.int64)
+        for slot,(src,rot) in enumerate(slots):
+            for half in (0,1):
+                for bit,dbit in enumerate((6,7,8,15)):
+                    p=(dbit+16*half+rot)%32
+                    word=(0 if (mask>>p)&1 else 1) if src=='W' else (0 if src=='A' else 1)
+                    words[...,word]|=((codes[...,slot,half]>>bit)&1)<<p
+        dst[expert]=words.to(torch.int32)
+    return dst
+
+
+def mw_add_planes(bank):
+    for name in ('w13','w2'):bank[name+'_planes']=mw_repack_planes(bank[name])
+    return bank
+
+
 def mw_work(data,bank,choice=(64,16,128,2,264,True),target='auto'):
-    bm,bn,bk,stages,grid,rs=choice
+    bm,bn,bk,stages,grid,rs=choice[:6]
+    planes=len(choice)>6 and choice[6]
     x=data['hidden_states'];m=x.shape[0];dev=x.device;cap=m*8+32*bn
     counts=torch.empty(32,device=dev,dtype=torch.int32)
     offs=torch.empty(33,device=dev,dtype=torch.int32);order=torch.empty_like(counts)
@@ -1764,18 +1814,18 @@ def mw_work(data,bank,choice=(64,16,128,2,264,True),target='auto'):
     y=torch.empty((cap,4096),device=dev,dtype=torch.float32)
     inv=torch.empty(cap,device=dev,dtype=torch.float32)
     out=torch.empty_like(x)
-    first=mw_compile(m,8192,4096,bm,bn,bk,stages,grid,True,rs,target)
-    second=mw_compile(m,4096,4096,bm,bn,bk,stages,grid,False,rs,target)
+    first=mw_compile(m,8192,4096,bm,bn,bk,stages,grid,True,rs,target,planes)
+    second=mw_compile(m,4096,4096,bm,bn,bk,stages,grid,False,rs,target,planes)
     start=data['config'].get('local_start',0)
     def route():
         mw_route[(32,)](data['topk_ids'],counts,slots,pos,m,start,triton.next_power_of_2(m),num_warps=4 if m<2048 else 16)
         mw_prefix[(1,)](counts,offs,order,tasks,bn)
     def w13():
-        first(bank['w13'],bank['w13_sf'],bank['w13_gs'],x,counts,offs,order,tasks,slots,h)
+        first(bank['w13_planes' if planes else 'w13'],bank['w13_sf'],bank['w13_gs'],x,counts,offs,order,tasks,slots,h)
     def act():
         mw_swiglu[(cap,)](h,z,offs,num_warps=4)
     def w2():
-        second(bank['w2'],bank['w2_sf'],bank['w2_gs'],z,counts,offs,order,tasks,slots,y)
+        second(bank['w2_planes' if planes else 'w2'],bank['w2_sf'],bank['w2_gs'],z,counts,offs,order,tasks,slots,y)
     def norm():
         mw_norm[(cap,)](y,bank['pnw'],offs,inv,num_warps=4)
     def combine():
@@ -1920,6 +1970,7 @@ import statistics
 import time
 import zlib
 
+MW_LAB_PLANES=False
 
 class MWGraph:
     def __init__(self,fn,data):
@@ -1967,10 +2018,11 @@ def mw_gate(graph,ds,wants):
 
 def mw_install(state,weights,incumbent):
     dev=weights['w13'].device
-    bank=mw_prepare(weights)
+    bank=mw_add_planes(mw_prepare(weights))
     flush=torch.empty(128<<20,device=dev,dtype=torch.uint8)
     sms=torch.cuda.get_device_properties(dev).multi_processor_count
-    choices=((64,16,128,2,sms*2,True),(64,32,128,2,sms*2,True))
+    choices=((64,16,128,2,sms*2,True,True),(64,32,128,2,sms*2,True,True),
+             (128,32,128,2,sms*2,True,True))
     selected={};records={}
     for m in (128,256):
         ds=[fx_make_fixture(weights,m,9000+m+7919*j) for j in range(3)]

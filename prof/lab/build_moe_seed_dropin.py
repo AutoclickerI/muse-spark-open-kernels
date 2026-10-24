@@ -26,7 +26,7 @@ def parts():
 
 
 def build():
-    block='"""Native V9 MoE seed portfolio. FP32 prepare gate; byte-preserving NVFP4/E4M3 storage."""\n'+parts()
+    block='"""Native V9 MoE seed portfolio. FP32 prepare gate; byte-preserving NVFP4/E4M3 storage."""\nimport torch\n'+parts()
     out=ROOT/'problems/muse_moe_w4a16/dev/v9_reuse/dropin.py';out.write_text(block)
     src=(ROOT/'problems/muse_decode_layer/cand_r3_v9.py').read_text();a=src.index('# MoE V9: persistent');b=src.index('\nCUDA_SRC = r"""',a);src=src[:a]+src[b:]
     src+='\n'+block+'''

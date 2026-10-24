@@ -13,7 +13,7 @@ import time
 import torch
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'problems/muse_decode_layer'),str(ROOT/'tools')]
-import local_eval as ev
+from types import SimpleNamespace
 
 
 def module(name,path):
@@ -69,7 +69,12 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--seeds',type=int,default=12);ap.add_argument('--reps',type=int,default=8);ap.add_argument('--balanced',action='store_true');ap.add_argument('--hot',action='store_true');ap.add_argument('--split',action='store_true');ap.add_argument('--tune',action='store_true');ap.add_argument('--cache',type=Path,default=ROOT/'runs/screen/v9_seed/cache.pt');ap.add_argument('--out',type=Path,default=ROOT/'runs/screen/v9_seed/baseline.json');args=ap.parse_args()
     ref=module('seed_reference',ROOT/'problems/muse_decode_layer/reference.py')
     if hasattr(ref,'_fa3_scheduler_metadata'):ref._fa3_scheduler_metadata=lambda *a,**kw:None
-    d=module('seed_dropin',ROOT/('runs/screen/v9_seed/tune_dropin.py' if args.tune else 'problems/muse_moe_w4a16/dev/v9_reuse/dropin.py'))
+    if args.tune:
+        d=module('seed_dropin',ROOT/'runs/screen/v9_seed/tune_dropin.py')
+    else:
+        frozen=module('seed_control',ROOT/'prof/lab/moe_v9_reuse_v2.py')
+        d=SimpleNamespace(rv_prepare=frozen.base_prepare,rv_kernel_fn=frozen.base_kernel_fn,
+                          rr_reuse_module=frozen.rr_reuse_module,rr_reuse_call=frozen.rr_reuse_call)
     bal=module('seed_balanced',ROOT/('problems/muse_moe_w4a16/dev/v9_reuse/split_w2.py' if args.split else 'problems/muse_moe_w4a16/dev/v9_reuse/balanced.py')) if args.balanced or args.split else None
     hot=module('seed_hot',ROOT/'problems/muse_moe_w4a16/dev/v9_reuse/hot_v9.py') if args.hot else None
     cases=json.loads((ROOT/'upstream/api/problems/muse_decode_layer.json').read_text())['benchmarks']
@@ -105,7 +110,7 @@ def main():
                 for nt,ch,st in ((1,0,2),(2,0,2),(2,0,1),(2,16,1),(2,32,1),(2,64,1),(2,32,2),(2,64,2)):
                     paths[f'hotNT{nt}c{ch}s{st}']=lambda x,n=nt,c=ch,st=st:hot.kernel_fn(x,dict(hb,nt=n,sched=1,chunk_cap=c,stages=st))
             timings=compare(paths,data,flush,args.reps)
-            row=dict(seed=seed,fields_seed=fields_seed,fields=fields,M=m,case=case,counts=counts.cpu().tolist(),pairs=int(counts.sum()),experts=int((counts>0).sum()),hot=int(counts.max()),timings=timings)
+            row=dict(seed=seed,fields_seed=fields_seed,fields=fields,router_sha256=hashlib.sha256(w['router'].contiguous().view(torch.uint8).cpu().numpy().tobytes()).hexdigest(),M=m,case=case,counts=counts.cpu().tolist(),pairs=int(counts.sum()),experts=int((counts>0).sum()),hot=int(counts.max()),timings=timings)
             rows.append(row);print(json.dumps(row),flush=True)
         torch.save(cache,args.cache)
         print('SEED_DONE',i,seed,round(time.monotonic()-t0,2),flush=True)
