@@ -1,12 +1,18 @@
 # Best7 — one receipt settings table
 
-Reset candidate: [cand_r3_best7_reset.py](../../cand_r3_best7_reset.py), SHA-256
-`b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a`.
-Base: exact best6 `4516cb97`, H200 check `1b80ffc037cc454c`, **1.379716x**.
-The reset file is frozen to prevent concurrent builder edits from invalidating its checks.
-[reset_manifest.json](reset_manifest.json) pins the snapshot; the shared builder still emits `cand_r3_best7.py`.
-This lane has not sent best7; Jihoon sends candidates. It is the first scored candidate recommended
-at the next 09:00 KST reset, updated with any additional paired-lab winners available by then.
+Current successor: [cand_r3_best7_paired.py](../../cand_r3_best7_paired.py), SHA-256
+`3baaaa9697825d527e0e451b3d1bbb79087987c54ffd01be3ac262d5b641c57a` (screened: 13 tests, 12 graphs and 18 static checks on normal + forced paths).
+[paired_validation.json](paired_validation.json) pins both screens and the actual admitted table.
+It applies paired receipt `9c83cdb852fe4576`: the exact measured new glue geometry, old glue at
+decode32 sliding, and public `layer` scheduling for all q8 cases. It retains NT1 below M256,
+Humming at M256 and best6 decode1 attention. No scale-bank change has been promoted.
+
+Prior frozen reset: [cand_r3_best7_reset.py](../../cand_r3_best7_reset.py), SHA-256
+`b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a`, sent by the owner as
+check `c0e74bedf7b74be5`. Its source and [reset validation](reset_validation.json) remain intact.
+Base is exact best6 `4516cb97`, H200 check `1b80ffc037cc454c`, **1.379716x**.
+The builder emits `cand_r3_best7.py`; the paired snapshot is frozen for candidate handoff.
+This lane sends labs and reports candidate paths/hashes; Jihoon sends candidates.
 
 ## P7 within-call L2 prefetch switch
 
@@ -55,13 +61,13 @@ repository import. Its configuration IDs and split counts come from the H200 rec
 
 `BEST7_DENSE_CHAIN` is the receipt-gated P7 switch for the persistent `o -> boundary -> pool/router`
 chain at M=1/8/128/256. It is false in every row until the real-weight H200 A/B lab
-`86a149e7b115d57d` passes. The prototype uses a phase-numbered grid barrier, prefetches dependent
+`5279d3e3903a57b5` passes. The prototype uses a phase-numbered grid barrier, prefetches dependent
 pool/router rows before the barrier, and zeroes its counters inside the captured graph so changed-input
 replays are deterministic.
 
 Default settings lock **V9 NT1 at M1/8/16/32/128**, **Humming at M256**, and best6's
-**`attn_main` for both decode1 layer types**. Glue, q8 attention and dense projections retain best6's
-choices until matched-input evidence resolves them. Standalone streaming stays disabled: H200 lab
+**`attn_main` for both decode1 layer types**. Paired G fixes glue geometry per row (old at decode32
+sliding); paired F fixes q8 to public `layer` scheduling. Dense projections retain best6's choices. Standalone streaming stays disabled: H200 lab
 `feb7b287` only wins against cuBLAS at M1; the open comparison is cross-launch overlap against best6.
 M256 Humming has the twelve-seed mean win (448.0 vs NT2 545.5 us) and passed best6's full-layer check.
 Fixed settings retain independent FP32 and fresh-graph admission. [Exact dispatch changes and limits](DISPATCH.md).
@@ -69,7 +75,9 @@ Fixed settings retain independent FP32 and fresh-graph admission. [Exact dispatc
 The old NT tuner remains in base prepare but cannot override table-locked runtime choices. This matters
 at M32: best6 chose NT2 from a 0.929961 paired ratio despite slower pooled NT2 medians. At M128 best6
 already chose NT1, so restoring NT1 alone cannot recover board v9's M128 timing. Stored E4M3 conversion
-inside the native kernel is another difference from v9; its earlier prepare-time recoding is not reinstated.
+inside the native kernel is another difference from v9. Lossless packed-bank recoding is allowed by
+CONSTRAINTS 5; [paired E:C](../paired_lab/README.md) measures that difference on identical routes
+at M8/16/32/128 before a bank choice per M is promoted.
 No prepared BF16/FP8 expert weight bank is retained. Optional adapters must still pass best6's three-seed
 final gates; rejection is printed explicitly. Fixed NT1/NT2 at small M get three public-stream FP32 gates,
 with changed routing before and after graph replay. The MoE-only fixture uses sliding metadata because
@@ -148,13 +156,8 @@ attention saving affects 16. For several simultaneous stage savings, add their c
 inside each load before applying the geometric formula. Summed PDL kernel durations are not such deltas.
 This is a local accounting sensitivity around one receipt, not an independent seed-mean performance claim.
 
-Latest paired receipt **`1365af6696884c7e`** failed the full-layer route-ID comparison, so it yields
-no G/F/E verdict. The owner is re-screening a diagnostic that reports up to 2% near-tie token flips;
-those changed-route tokens must not be used to infer an expert performance win. Small-M lab
-**`b68afb72b72542b4`** resolved against NT2 below M128; streaming **`feb7b287e3464e4a`** resolved above.
-The existing geometry diagnostic **`b02a42ce75dc44d4` / decode_glue** is producer+glue evidence, not
-a substitute for whole-layer paired G. Current run order and load sensitivities live in FOCUS.
-
-Docs were maintained with project-docs revision `ee2c679`; the checker reports zero errors. The
-30-line FOCUS owns the current reset order and sensitivities. No multi-agent cold read was run under
-this thread's solo instruction.
+Paired **`9c83cdb852fe4576`** resolves G/F/E with zero route flips; its supported table
+changes are in best7_paired. E:C isolates scale-bank conversion on identical routes before any
+recode promotion. Small-M **`b68afb72b72542b4`** resolved against NT2 below M128; streaming
+**`feb7b287e3464e4a`** only supports further in-layer M1 overlap work. Current run order and
+sensitivity ownership stay in FOCUS. A final-place gain still needs seed-mean/median evidence.

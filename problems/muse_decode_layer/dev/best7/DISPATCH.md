@@ -48,16 +48,20 @@ successfully executed in best6. New engine improvements need their own paired ev
 
 The NT1 device-source diff from board v9 to best6 is exactly the new `scale_e4m3` conversion plus its
 two call sites. Board v9 recoded E4M3 bytes in prepare and folded negative/zero scales into NVFP4 codes;
-best6 preserves stored scale bytes and converts them inside the timed kernel, as the current instruction
-requires. Best7 keeps that compliant NT1 path. Its inherited raw17/DG banks had the same older recoding
-problem; best7 now preserves their stored scales too and converts in the timed expansion/native
-kernels. Their new native Hopper composition is unverified. Humming's native transform is unchanged.
+best6 preserves stored scale bytes and converts them inside the timed kernel. Both representations
+are allowed by CONSTRAINTS 5: lossless recoding of the packed bank does not dequantize its weights.
+Best7 currently keeps the raw NT1 bank pending the paired E:C measurement, rather than treating
+raw byte preservation as a hard limit. Optional raw17/DG banks also use raw bytes and timed
+conversion; their new native Hopper composition is unverified. Humming's native transform is unchanged.
 [All-scale precision gate](precision_gate.py) tests all 254 finite codes and lossless code recovery.
 No expanded BF16/FP8 expert weight bank is retained.
 Conversion instruction cost, changed real routing, and producer/consumer overlap can explain part of the
-remaining M8/16/128 gap; the present receipts do **not** isolate their contributions. Attributing all of
-those gaps to NT dispatch is unsupported. The next matched-input MoE comparison must distinguish
-legal in-kernel scale-conversion recipes rather than reinstating prepare-time scale recoding.
+remaining M8/16/128 gap; the present receipts do **not** isolate their contributions. Paired E:C
+[decode_scale_bank.py](../../../../prof/lab/decode_scale_bank.py) compares best7's exact raw NT1
+reader/bank with the board host's own recoded reader/bank on identical post-attention routes at
+M8/16/32/128, both layer types and three public seeds. It asserts matching NT/stages/grid/shared-memory
+choices, checks each bank against its packer, and gates both outputs against FP32 before/after replay.
+Only the H200 receipt can promote recoding per M; local timing cannot explain the board gap.
 
 ## Score accounting
 
