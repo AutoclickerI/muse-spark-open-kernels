@@ -114,3 +114,12 @@ question-tool label is Jihoon's word; the question and option text are agent con
 | "Keep a portable fallback path where that's cheap" (old AGENTS) | 2026-10-23: replaced by the practice of local stand-ins that test Hopper glue | `portable fallback path` |
 | proj is "worth only enough work to keep rank" (old CEILING) | 2026-10-23: an effort cap with no source; proj kernels also feed serving | `worth only enough work` |
 | Lanes wait for queued judge receipts before starting new work | 2026-10-23: idle waiting; `okc_run.py collect` lands receipts on its own | `no new checks will be sent` |
+
+## R-20261024-3 — 2026-10-24 10:40 KST — H200 lab runs in prepare()
+> Allowed (Recommended)
+
+- Source: question-tool answer in this session (asked whether lanes may keep running unrelated H200 benchmarks
+  inside prepare() of a proj/MoE submission via `tools/h200_lab.py`, given llms.txt's "do work outside the timed
+  calls"; the reading offered: that clause targets moving the timed computation out of the timed calls, and a lab
+  computes nothing the timed calls return).
+

@@ -36,5 +36,6 @@ Each rule is `[hard]` (external, or protects others, shared resources, safety or
 | 2, 8 | Our own cubin or hand-edited SASS in a kernel submission | Accepted by the judge and not explicitly banned; discretionary review remains a risk (2) | allowed (R-20261023-6) |
 | 9 | Our own cubin in the serving patch, even base64 in a `.py` | A binary change in substance | forbidden (9) |
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
+| 2, 8 | Lab runs: timing any other kernel or shape inside `prepare()` (`tools/h200_lab.py`); the run scores the base kernel | Computes nothing the timed calls return; worst case the lab rows are removed | allowed (R-20261024-3) |
 | 11 | Tree verification over DFlash drafts; adaptive draft length under the fixed flags | Drafter unchanged; ship only when the harness shows agreement | allowed (R-20261023-8) |
 | 9, 10 | Re-sharding weights (pooler split, drafter fc split, expert layout); scheduling changes (chunk order, batching, overlap) | Repacking after load; flags keep their meaning; TTFT cap | allowed |
