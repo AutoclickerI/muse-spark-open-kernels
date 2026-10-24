@@ -224,8 +224,8 @@ def send_in_turn(entry: dict, priority: float, send, mode_now):
                     live = in_flight()
                     if (CAP <= 0 or len(live) < CAP) and waiters()[0][2] == me:
                         mode = mode_now()
-                        if mode:
-                            result = send(mode)
+                        result = send(mode) if mode else None
+                        if result:
                             me.unlink(missing_ok=True)
                             return result
                         until = next_reset() + 60
@@ -297,8 +297,28 @@ def finish(job: str) -> dict:
     return row
 
 
+# The judge rejects a source before running it on words alone, even in a docstring or comment: "starts
+# processes" for one docstring mention of the subprocess module (0d7b6cf0), "edits loaded modules" for
+# sys.modules (731545a5). Catching them here saves the queue wait. Categories are TASK.md's "Checked before running".
+REJECTED_WORDS = {
+    "starts processes": r"\bsubprocess\b|multiprocessing|\bPopen\b|ProcessPoolExecutor|\bos\.(system|popen|fork|exec\w*|spawn\w*|posix_spawn\w*)\b",
+    "edits loaded modules": r"\bsys\.modules\b|importlib\.reload",
+    "uses the network": r"\bsocket\b|\burllib\b|\bhttp\.client\b|\bhttpx\b|\brequests\.(get|post)\b",
+    "reads harness frames": r"\bsys\._getframe\b|\bcurrentframe\b|\bf_back\b",
+    "imports the reference": r"^\s*(from|import)\s+reference\b",
+}
+
+
+def rejected_words(src: str) -> list:
+    return [f"{why}: line {src.count(chr(10), 0, m.start()) + 1} {m.group(0)!r}"
+            for why, pat in REJECTED_WORDS.items() for m in re.finditer(pat, src, re.M)]
+
+
 def send(args):
     src = args.file.read_bytes()
+    if hits := rejected_words(src.decode(errors="replace")):
+        sys.exit(f"{args.file}: the judge rejects these words before running, even in comments; reword them:\n  "
+                 + "\n  ".join(hits[:20]))
     m = re.match(rb"#\s*okc:\s*problem=(\w+)", src)
     if not m:
         sys.exit(f"{args.file}: the first line must be '# okc: problem=<name>'")
@@ -336,16 +356,22 @@ def send(args):
         left = runs_left(problem)
         return next((m for m in modes if left[m] > 0), None)
 
-    def send(mode):
-        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        result, proc = okc_json(mode, problem, str(snap), "--no-wait")
-        # Only okc's own reply names our job. Guessing "our newest job" once gave this send another
-        # file's job (cand_v11_gemm took cand_expert_tma_cluster's d318167e, FINDINGS "Failures").
-        job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
-        if not job:
-            sys.exit(f"okc {mode} named no job ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
-        start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)))
-        return mode, job
+    def send(first):
+        """Send in the first mode the judge accepts from `first` on; None when every one is capped."""
+        for mode in modes[modes.index(first):]:
+            stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            result, proc = okc_json(mode, problem, str(snap), "--no-wait")
+            # Only okc's own reply names our job. Guessing "our newest job" once gave this send another
+            # file's job (cand_v11_gemm took cand_expert_tma_cluster's d318167e, FINDINGS "Failures").
+            job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
+            if job:
+                start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)))
+                return mode, job
+            # `okc problems` lags the cap, which counts runs not yet queued: a 429 here means this mode is spent
+            if "daily cap" not in proc.stdout + proc.stderr:
+                sys.exit(f"okc {mode} named no job ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
+            print(f"okc {mode}: daily cap reached; trying the next mode", flush=True)
+        return None
 
     mode, job = send_in_turn({"problem": problem, "file": str(args.file), "sha256": sha}, priority, send, mode_now)
     print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "

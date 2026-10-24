@@ -1,4 +1,4 @@
-import gc,json,linecache,math,statistics,sys,time,types
+import gc,json,linecache,math,statistics,time
 import torch
 
 DP_SEEDS=(172903,180822,188741)
@@ -8,15 +8,21 @@ DP_ROWS=[]
 DP_MODULES={}
 
 
+class DPSpace:
+    """Attribute view of an exec namespace: payloads may not register or edit modules (CONSTRAINTS 8)."""
+    def __init__(self,ns):object.__setattr__(self,'_ns',ns)
+    def __getattr__(self,key):
+        try:return self._ns[key]
+        except KeyError:raise AttributeError(key) from None
+    def __setattr__(self,key,value):self._ns[key]=value
+
+
 def dp_module(name,source,base=None):
     filename='<decode_paired '+name+'>'
     linecache.cache[filename]=(len(source),None,source.splitlines(True),filename)
-    module=types.ModuleType('_decode_paired_'+name)
-    if base is not None:module.__dict__.update(base.__dict__)
-    module.__dict__['__name__']='_decode_paired_'+name
-    sys.modules[module.__name__]=module
-    exec(compile(source,filename,'exec'),module.__dict__)
-    return module
+    ns=dict(base._ns) if base is not None else {'__name__':__name__,'__builtins__':__builtins__}
+    exec(compile(source,filename,'exec'),ns)
+    return DPSpace(ns)
 
 
 def dp_reason(exc):
