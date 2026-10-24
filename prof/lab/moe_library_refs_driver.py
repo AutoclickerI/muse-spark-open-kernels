@@ -28,11 +28,10 @@ def lab_cutlass(d,b):
 def lab(deadline,weights):
     dev=next(iter(weights.values())).device
     if lab_torch.cuda.get_device_capability(dev)[0]>=12:
-        # The exact Python invocation is exercised through a local fake API.
+        # Validate the exact keyword ABI locally; SM90 arithmetic remains judge-only.
         import flashinfer
         original=flashinfer.cutlass_fused_moe
-        # Do not patch a loaded module: inject a facade into this function's globals instead.
-        # Calling flashinfer on sm120 would select a different kernel than Hopper.
+        # Calling FlashInfer on sm120 would select a different kernel than Hopper.
         import inspect
         kw=dict(input=lab_torch.empty(8,4096,device=dev,dtype=lab_torch.bfloat16),token_selected_experts=lab_torch.zeros(8,8,device=dev,dtype=lab_torch.int32),token_final_scales=lab_torch.ones(8,8,device=dev),fc1_expert_weights=lab_torch.empty(1,device=dev,dtype=lab_torch.uint8),fc2_expert_weights=lab_torch.empty(1,device=dev,dtype=lab_torch.uint8),output_dtype=lab_torch.bfloat16,quant_scales=[],ep_size=8,ep_rank=0,tp_size=1,tp_rank=0,use_w4_group_scaling=True,tune_max_num_tokens=1024,enable_pdl=False)
         inspect.signature(original).bind(**kw)
@@ -53,7 +52,7 @@ def lab(deadline,weights):
             if lab_time.monotonic()>deadline-8:
                 out.append('BUDGET '+name);break
             try:
-                old=LabGraph(lambda d:v9_kernel_fn(d,native),ds[0]);new=LabGraph(lambda d:fn(d,bank),ds[0])
+                old=LabGraph(lambda d:v9_kernel_fn(d,native),ds[0]);new=LabGraph(lambda d,f=fn,b=bank:f(d,b),ds[0])
                 got=new.replay();lab_torch.cuda.synchronize()
                 if not bool(lab_torch.isfinite(got).all()):raise ValueError('nonfinite')
                 us,raw,anchor=lab_pair(old,new,ds,flush)

@@ -586,7 +586,7 @@ def ho_kernel_fn(data: ho_Inputs, state) -> ho_torch.Tensor:
             ho_silu_and_mul(gate_up, act, expert_ids=local_ids.view(-1), expert_step=1)
     return ho_fused_post_expert_norm_weighted_sum(y.view(bs, ho_TOP_K, bank.d_hidden), topk_weights, norm_weight=state['norm_w'], eps=ho_POST_NORM_EPS, weight_first=True, slot_expert_ids=local_ids)
 
-# Copied from problems/muse_moe_w4a16/cand_v19.py, source sha256 5a1809f7100ed60edabe5879b6bda2f40851fd7292db9dd99be63a17fc4bfd67
+# Copied from problems/muse_moe_w4a16/dev/parked/cand_v19.py, source sha256 5a1809f7100ed60edabe5879b6bda2f40851fd7292db9dd99be63a17fc4bfd67
 
 """NVFP4 BF16 MoE: eight math warps per CTA, thread 0 streams the next weight tile.
 A fully resident occupancy-sized grid runs both GEMMs, SwiGLU, expert norm and reduction.
@@ -722,11 +722,12 @@ def v19__kernel_v9(data, state, nstage_override=2, module=None, partial=False, t
     else:
         ss_partial = v19_torch.empty((0,), dtype=v19_torch.float32, device=dev)
     if trace is None:
-        trace_arg = v19_torch.empty((launch_grid * TRACE_STRIDE,), dtype=v19_torch.int64, device=dev) if state.get('trace_enabled', False) else v19_torch.empty((0,), dtype=v19_torch.int64, device=dev)
+        trace_arg = v19_torch.empty((launch_grid * v19_TRACE_STRIDE,), dtype=v19_torch.int64, device=dev) if state.get('trace_enabled', False) else v19_torch.empty((0,), dtype=v19_torch.int64, device=dev)
     else:
         trace_arg = trace
     mod.run(x, ids, tw, state['pnw'], state['w13p'], state['w2p'], state['gs13'], state['gs2'], inter, y, ss, ss_partial, trace_arg, state['cnt'], out, cfg['local_start'], nt, nstage, launch_grid, int(state.get('permute', 0)))
     return out
+v19_TRACE_STRIDE = 10
 
 # Copied from problems/muse_decode_layer/cand_r3_v9_cost_autotune.py, source sha256 b3fcd1eaa3f7f84c7d74e381ae5564f042ef9324659aef21d9b01ca851fb9d2e
 
@@ -795,7 +796,7 @@ def gr__grouped_call(data, state, fixed_n=0, stages=2):
     gr__combine_canonical[m,](y, positions, weights, state['pnw'], out, HIDDEN=hidden, num_warps=8)
     return out
 
-# Copied from problems/muse_moe_w4a16/cand_tma_grouped.py, source sha256 b1209b2ac260654999c11a915606dcfb784dc3373c6e3a26da001a3b2c9e163c
+# Copied from problems/muse_moe_w4a16/dev/parked/cand_tma_grouped.py, source sha256 b1209b2ac260654999c11a915606dcfb784dc3373c6e3a26da001a3b2c9e163c
 
 import triton as tg_triton
 import triton.language as tg_tl
@@ -1321,7 +1322,9 @@ def lab_local_glue(device):
             self.locks=lab_torch.zeros(1024,device=device,dtype=lab_torch.int32)
         def plan(self,m):return m,{'w13':(16,lab_torch.zeros(4,dtype=lab_torch.int64)),'w2':(16,lab_torch.zeros(4,dtype=lab_torch.int64))}
         def weight(self,name):return dict(weight=meta((1,),lab_torch.uint8),weight_scale=meta((1,),lab_torch.uint8),weight_scale_2=meta((1,),lab_torch.float32))
-    hu_state=dict(banks={(0,32):Experts()},glue=Route(),norm_w=lab_torch.ones(4096,device=device,dtype=lab_torch.bfloat16))
+    wide=Experts();del wide.expert_map
+    hu_state=dict(banks={(0,32):wide},glue=Route(),norm_w=lab_torch.ones(4096,device=device,dtype=lab_torch.bfloat16))
+    ho_state=dict(hu_state,banks={(0,32):Experts()})
     global hu_humming_ops,ho_humming_ops
     old_hu,old_ho=hu_humming_ops,ho_humming_ops
     hu_humming_ops=ho_humming_ops=Ops()
@@ -1335,10 +1338,17 @@ def lab_local_glue(device):
         for fn in paths:
             got=fn(d);lab_torch.testing.assert_close(got,d['hidden_states'],rtol=0,atol=0)
             count+=1
-        for fn in (lambda q:gr__grouped_call(q,group),lambda q:hu__kernel_humming(q,hu_state),lambda q:ho_kernel_fn(q,hu_state)):
+        for fn in (lambda q:gr__grouped_call(q,group),lambda q:hu__kernel_humming(q,hu_state),lambda q:ho_kernel_fn(q,ho_state)):
             got=fn(d);assert got.shape==d['hidden_states'].shape and bool((got==0).all())
             graph=LabGraph(fn,d);graph.refresh(d);assert bool((graph.replay()==0).all())
             count+=1
+        for st,original in ((hu_state,False),(ho_state,True)):
+            fs=lab_phase_humming(d,st,original)
+            for f in fs:
+                graph=lab_torch.cuda.CUDAGraph()
+                with lab_torch.cuda.graph(graph):f()
+                graph.replay();count+=1
+            assert bool((fs[-1]()==0).all())
     hu_humming_ops,ho_humming_ops=old_hu,old_ho
     return [f'LOCAL_GLUE {count} launch paths passed, grouped/Humming captured; H200 arithmetic unverified']
 
@@ -1398,10 +1408,11 @@ def lab_phase_humming(data,st,original=False):
     h=lab_torch.empty(m*8,8192,device=x.device,dtype=x.dtype)
     a=lab_torch.empty(m*8,4096,device=x.device,dtype=x.dtype);y=lab_torch.empty_like(a)
     aligns={}
-    local=bank.expert_map[data['topk_ids']]
+    local=bank.expert_map[data['topk_ids']] if original else None
     for name,(bm,launch) in gemms.items():
         if bm not in aligns:
             aligns[bm]=(local,*ho_moe_align_block_size(local,bm,32,ignore_invalid_expert=True)) if original else hu__route(data,bm,st['glue'])
+    local=next(iter(aligns.values()))[0]
     ops=ho_humming_ops if original else hu_humming_ops
     silu=ho_silu_and_mul if original else hu_silu_and_mul
     def gemm(name,inp,out,topk):
@@ -1549,11 +1560,10 @@ def lab_cutlass(d,b):
 def lab(deadline,weights):
     dev=next(iter(weights.values())).device
     if lab_torch.cuda.get_device_capability(dev)[0]>=12:
-        # The exact Python invocation is exercised through a local fake API.
+        # Validate the exact keyword ABI locally; SM90 arithmetic remains judge-only.
         import flashinfer
         original=flashinfer.cutlass_fused_moe
-        # Do not patch a loaded module: inject a facade into this function's globals instead.
-        # Calling flashinfer on sm120 would select a different kernel than Hopper.
+        # Calling FlashInfer on sm120 would select a different kernel than Hopper.
         import inspect
         kw=dict(input=lab_torch.empty(8,4096,device=dev,dtype=lab_torch.bfloat16),token_selected_experts=lab_torch.zeros(8,8,device=dev,dtype=lab_torch.int32),token_final_scales=lab_torch.ones(8,8,device=dev),fc1_expert_weights=lab_torch.empty(1,device=dev,dtype=lab_torch.uint8),fc2_expert_weights=lab_torch.empty(1,device=dev,dtype=lab_torch.uint8),output_dtype=lab_torch.bfloat16,quant_scales=[],ep_size=8,ep_rank=0,tp_size=1,tp_rank=0,use_w4_group_scaling=True,tune_max_num_tokens=1024,enable_pdl=False)
         inspect.signature(original).bind(**kw)
@@ -1574,7 +1584,7 @@ def lab(deadline,weights):
             if lab_time.monotonic()>deadline-8:
                 out.append('BUDGET '+name);break
             try:
-                old=LabGraph(lambda d:v9_kernel_fn(d,native),ds[0]);new=LabGraph(lambda d:fn(d,bank),ds[0])
+                old=LabGraph(lambda d:v9_kernel_fn(d,native),ds[0]);new=LabGraph(lambda d,f=fn,b=bank:f(d,b),ds[0])
                 got=new.replay();lab_torch.cuda.synchronize()
                 if not bool(lab_torch.isfinite(got).all()):raise ValueError('nonfinite')
                 us,raw,anchor=lab_pair(old,new,ds,flush)

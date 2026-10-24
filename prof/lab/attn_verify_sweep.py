@@ -3103,6 +3103,48 @@ def _lab_attn_main(data):
     return out
 
 
+def _lab_fp32_reference_after_store(data, new_kv=None):
+    """Same independent FP32 reference ordering as the screened WGMMA gate."""
+    cfg = data['config']; bsz, length = cfg['batch'], cfg['q_len']
+    hq, hkv, d = cfg['num_q_heads'], cfg['num_kv_heads'], cfg['head_dim']
+    group = hq // hkv
+    qkv = data['qkv']
+    q0 = qkv[..., :hq * d].reshape(bsz, length, hq, d)
+    k0 = qkv[..., hq * d:(hq + hkv) * d].reshape(bsz, length, hkv, d)
+    v0 = qkv[..., (hq + hkv) * d:(hq + 2 * hkv) * d].reshape(bsz, length, hkv, d)
+    gate = qkv[..., (hq + 2 * hkv) * d:].reshape(bsz, length, hq, d).float()
+    pos = data['seq_lens'].long()[:, None] + torch.arange(length, device=qkv.device)
+    q = _lab_rms(q0) * float(cfg['qk_scale_factor'])
+    k = _lab_rms(k0)
+    if cfg['rope_theta']:
+        q, k = _lab_rope(q, pos, cfg['rope_theta']), _lab_rope(k, pos, cfg['rope_theta'])
+    q = q.to(torch.bfloat16).float()
+    scale = data['k_scale'].float()
+    if new_kv is None:
+        knew = (k / scale).to(torch.float8_e4m3fn).float() * scale
+        vnew = (v0 / scale).to(torch.float8_e4m3fn).float() * scale
+    else:
+        knew, vnew = new_kv[0].float() * scale, new_kv[1].float() * scale
+    kflat = data['k_cache'].view(-1, hkv, d).float() * scale
+    vflat = data['v_cache'].view(-1, hkv, d).float() * scale
+    out = torch.empty((bsz, length, hq, d), dtype=torch.float32, device=qkv.device)
+    with torch.no_grad():
+        for bi in range(bsz):
+            seq = int(data['seq_lens'][bi].item())
+            past = torch.arange(seq, device=qkv.device)
+            rows = data['page_table'][bi].long()[past]
+            keys = torch.cat((kflat[rows], knew[bi]), dim=0)
+            vals = torch.cat((vflat[rows], vnew[bi]), dim=0)
+            for j in range(length):
+                p = seq + j
+                lo = max(0, p - int(cfg['window']) + 1) if cfg['window'] else 0
+                kk, vv = keys[lo:p + 1], vals[lo:p + 1]
+                logits = torch.einsum('kgd,skd->kgs', q[bi, j].view(hkv, group, d), kk) * float(cfg['sm_scale'])
+                probs = torch.softmax(logits, dim=-1)
+                out[bi, j] = torch.einsum('kgs,skd->kgd', probs, vv).reshape(hq, d)
+    return (_lab_rms(out.reshape(bsz, length, hq * d)) * gate.reshape(bsz, length, hq * d).sigmoid()).to(torch.bfloat16)
+
+
 def _lab_variant(label, setting):
     if label == 'attn':
         return _lab_attn_main
@@ -3193,7 +3235,6 @@ def lab(deadline, weights):
                 tag = f'q{q_len}b{batch}w{window or "f"}'
                 timing_data = _next_input(batch, window, q_len)
                 gate_data = _lab_input(1, window, q_len, 2048)
-                refs = _lab_fp32_reference(gate_data)
                 torch.cuda.synchronize()
                 shape_winners = []
                 active_variants = variants if q_len == 8 else [('attn', '-')] + [('fa3', (sp, pack)) for sp in _FA3_SPLITS for pack in _FA3_PACK]
@@ -3203,6 +3244,10 @@ def lab(deadline, weights):
                         _counters(1 << 16, device).zero_()
                         fn = _lab_variant(label, setting)
                         actual_gate = fn(gate_data)
+                        slots = gate_data['cache_loc'].view(1, q_len)
+                        kc = gate_data['k_cache'].view(-1, 2, 64)[slots]
+                        vc = gate_data['v_cache'].view(-1, 2, 64)[slots]
+                        refs = _lab_fp32_reference_after_store(gate_data, new_kv=(kc, vc))
                         gate, err = _lab_gate(actual_gate, refs)
                         _counters(1 << 16, device).zero_()
                         us = _lab_time(fn, timing_data, flush, start, end)
@@ -3217,7 +3262,7 @@ def lab(deadline, weights):
                     lines.append(f'W {tag} {best[1]} {best[0]:.2f}')
                 else:
                     lines.append(f'W {tag} none')
-                del timing_data, gate_data, refs
+                del timing_data, gate_data
                 torch.cuda.empty_cache()
             if time.monotonic() >= deadline:
                 break
