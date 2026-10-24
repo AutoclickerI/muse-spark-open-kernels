@@ -1,0 +1,78 @@
+PG_REJECT role=router m=16384 config=('persistent', 2, 0) OutOfResources: out of resource: shared memory, Required: 245760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=16384 config=('persistent', 2, 1) OutOfResources: out of resource: shared memory, Required: 245760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=16384 config=('persistent', 3, 0) OutOfResources: out of resource: shared memory, Required: 299008, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=16384 config=('persistent', 3, 1) OutOfResources: out of resource: shared memory, Required: 299008, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=16384 config=('persistent', 4, 0) OutOfResources: out of resource: shared memory, Required: 294912, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=16384 config=('persistent', 4, 1) OutOfResources: out of resource: shared memory, Required: 294912, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=3012 config=('persistent', 2, 0) OutOfResources: out of resource: shared memory, Required: 245760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=3012 config=('persistent', 2, 1) OutOfResources: out of resource: shared memory, Required: 245760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=3012 config=('persistent', 3, 0) OutOfResources: out of resource: shared memory, Required: 299008, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=3012 config=('persistent', 3, 1) OutOfResources: out of resource: shared memory, Required: 299008, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=3012 config=('persistent', 4, 0) OutOfResources: out of resource: shared memory, Required: 294912, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=3012 config=('persistent', 4, 1) OutOfResources: out of resource: shared memory, Required: 294912, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=753 config=('persistent', 2, 0) OutOfResources: out of resource: shared memory, Required: 245760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=753 config=('persistent', 2, 1) OutOfResources: out of resource: shared memory, Required: 245760, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=753 config=('persistent', 3, 0) OutOfResources: out of resource: shared memory, Required: 299008, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=753 config=('persistent', 3, 1) OutOfResources: out of resource: shared memory, Required: 299008, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=753 config=('persistent', 4, 0) OutOfResources: out of resource: shared memory, Required: 294912, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PG_REJECT role=router m=753 config=('persistent', 4, 1) OutOfResources: out of resource: shared memory, Required: 294912, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.
+PGC_BEGIN V11 incumbent; three fresh probes; cold128MiB; paired20
+PG_PICK qkv_gate m=16384 choice=('lt', 1, 1) ratio=0.990407 us=(767.3439979553223, 759.6800029277802)
+PG_PICK qkv_gate m=3012 choice=('lt', 1, 0) ratio=0.998667 us=(148.22400361299515, 148.14399927854538)
+PG_PICK qkv_gate m=753 choice=('lt', 0, 0) ratio=0.993678 us=(43.5199998319149, 43.60000044107437)
+PG_PICK pooler m=16384 choice=('lt', 1, 5) ratio=0.969723 us=(1387.6479864120483, 1347.6800322532654)
+PG_PICK pooler m=3012 choice=('lt', 1, 1) ratio=0.989924 us=(256.3679963350296, 253.61599028110504)
+PG_PICK pooler m=753 choice=('lt', 1, 3) ratio=0.994319 us=(70.20799815654755, 69.72800195217133)
+PG_PICK router m=16384 choice=('stock',) ratio=1.000000 us=(193.85599344968796, 193.85599344968796)
+PG_PICK router m=3012 choice=('stock',) ratio=1.000000 us=(47.66400158405304, 47.66400158405304)
+PG_PICK router m=753 choice=('stock',) ratio=1.000000 us=(26.127999648451805, 26.127999648451805)
+PG_PICK pool_router m=16384 choice=('stock',) ratio=1.000000 us=(1538.271963596344, 1538.271963596344)
+PG_PICK pool_router m=3012 choice=('stock',) ratio=1.000000 us=(295.9519922733307, 295.9519922733307)
+PG_PICK pool_router m=753 choice=('stock',) ratio=1.000000 us=(89.79199826717377, 89.79199826717377)
+PG_PICK unpooler m=16384 choice=('lt', 1, 6) ratio=0.948019 us=(1390.9920454025269, 1320.639967918396)
+PG_PICK unpooler m=3012 choice=('lt', 1, 1) ratio=0.999425 us=(255.75999915599823, 255.8719962835312)
+PG_PICK unpooler m=753 choice=('lt', 0, 1) ratio=0.996021 us=(71.87199965119362, 71.71200215816498)
+PG_PICK o m=16384 choice=('lt', 1, 6) ratio=0.894930 us=(374.39998984336853, 335.2639973163605)
+PG_PICK o m=3012 choice=('lt', 1, 1) ratio=0.997059 us=(76.48000121116638, 76.49600133299828)
+PG_PICK o m=753 choice=('lt', 1, 0) ratio=0.985749 us=(25.456000119447708, 25.391999632120132)
+PG_QKV m=16384 config=('lt', 1, 1) old_us=767.344 new_us=759.680 ratio=0.990407 pairs=20
+PG_QKV m=16384 config=('lt', 0, 1) old_us=767.072 new_us=760.768 ratio=0.992870 pairs=20
+PG_QKV m=16384 config=('qkv_chunk', 8192, -1, 0) old_us=769.488 new_us=766.048 ratio=0.995473 pairs=20
+PG_QKV m=16384 config=('qkv_chunk', 4096, 0, 0) old_us=770.160 new_us=767.808 ratio=0.999084 pairs=20
+PG_QKV m=16384 config=('qkv_chunk', 2048, 0, 0) old_us=773.456 new_us=777.488 ratio=1.004975 pairs=20
+PG_QKV m=16384 config=('persistent', 2, 0) old_us=771.104 new_us=789.184 ratio=1.024001 pairs=20
+PG_QKV m=16384 config=('qkv_chunk', 1024, 0, 0) old_us=772.800 new_us=811.616 ratio=1.053023 pairs=20
+PG_QKV m=16384 config=('qkv_swap', 0, 0, 0) old_us=771.872 new_us=809.040 ratio=1.050863 pairs=20
+PG_QKV m=16384 config=('qkv_swap_persistent', 2, 0) old_us=770.208 new_us=835.280 ratio=1.087676 pairs=20
+PG_QKV m=16384 config=('qkv_pad', 2560, 1, 0) old_us=769.248 new_us=884.880 ratio=1.149995 pairs=20
+PG_QKV m=16384 config=('qkv_chunk', 512, 0, 0) old_us=769.184 new_us=935.984 ratio=1.217548 pairs=20
+PG_QKV m=16384 config=('qkv_pad', 3072, 0, 0) old_us=767.936 new_us=1028.720 ratio=1.341563 pairs=20
+PG_QKV m=16384 config=('persistent', 2, 1) old_us=768.896 new_us=1099.488 ratio=1.428613 pairs=20
+PG_QKV m=16384 config=('qkv_pad', 4096, 0, 0) old_us=768.784 new_us=1333.328 ratio=1.773210 pairs=20
+PG_QKV m=16384 config=('qkv_swap_persistent', 2, 1) old_us=774.528 new_us=1369.152 ratio=1.764763 pairs=20
+PG_END rejects=18 layout_bytes=197132288 scratch_bytes=34734080 shared_workspace_bytes=1073741824
+PGC_KERNEL qkv_gate m=16384 us=751.149 name=nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN
+PGC_KERNEL qkv_gate m=16384 us=0.800 name=Memset (Device)
+PGC_KERNEL o m=16384 us=369.054 name=nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN
+PGC_KERNEL o m=16384 us=0.800 name=Memset (Device)
+PGC_KERNEL pooler m=16384 us=1355.741 name=nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT
+PGC_KERNEL pooler m=16384 us=0.800 name=Memset (Device)
+PGC_KERNEL unpooler m=16384 us=1369.699 name=nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN
+PGC_KERNEL unpooler m=16384 us=0.800 name=Memset (Device)
+PGC_KERNEL router m=16384 us=179.457 name=nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT
+PGC_TRIAL m=16384 choice=v11_router old_us=1584.624 new_us=1555.120 ratio=0.981510
+PGC_TRIAL m=16384 choice=v11_pooler old_us=1585.536 new_us=1598.112 ratio=1.008629
+PGC_TRIAL m=16384 choice=separate old_us=1587.008 new_us=1567.056 ratio=0.987288
+PGC_TRIAL m=16384 choice=mixed old_us=1589.312 new_us=1571.552 ratio=0.989351
+PGC_GROUP m=16384 choice=v11_router ratio=0.981510 us=(1584.6239924430847, 1555.1199913024902)
+PGC_TRIAL m=3012 choice=v11_router old_us=306.496 new_us=304.384 ratio=0.995579
+PGC_TRIAL m=3012 choice=v11_pooler old_us=306.864 new_us=311.136 ratio=1.012923
+PGC_TRIAL m=3012 choice=separate old_us=306.560 new_us=308.464 ratio=1.006287
+PGC_TRIAL m=3012 choice=mixed old_us=305.936 new_us=306.704 ratio=1.002410
+PGC_GROUP m=3012 choice=v11_router ratio=0.995579 us=(306.4959943294525, 304.3840080499649)
+PGC_TRIAL m=753 choice=v11_router old_us=95.184 new_us=95.104 ratio=0.995047
+PGC_TRIAL m=753 choice=v11_pooler old_us=95.424 new_us=97.776 ratio=1.021125
+PGC_TRIAL m=753 choice=separate old_us=95.440 new_us=97.248 ratio=1.018541
+PGC_TRIAL m=753 choice=mixed old_us=95.216 new_us=96.832 ratio=1.022542
+PGC_GROUP m=753 choice=v11_router ratio=0.995047 us=(95.18400207161903, 95.10400146245956)
+PGC_END prepare_s=157.462 dense_deadline=210 group_deadline=225
