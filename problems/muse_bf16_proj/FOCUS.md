@@ -14,7 +14,7 @@ PDL chains also lose. This closes that implementation, not TMA/WGMMA generally.
 V1 6b72087f64584258 remains invalid (live mbarrier reinit); never select it.
 
 Sent priority0: prof/lab/verify_proj_cutlass.py, payloadSHAe43ed9b225d98cf1…;
-hostSHA b81c9564402fa62c…; full hashes/status in dev/NEXT_CHECKS.md.
+hostSHA b81c9564402fa62c…; waiting request3790760, judge job unassigned at one check.
 Image CUTLASS4.5 Hopper3.x cooperative collectives +Stream-K scheduler.
 16 compiled specializations;144 recipes/key: splitK2/4/8/16, Stream-K/DP,
 multicast clusters, swapped operands, K64/128,3/auto stages,132/98/66 SMs.

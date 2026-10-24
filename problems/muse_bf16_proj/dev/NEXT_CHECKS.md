@@ -5,7 +5,7 @@ Do not resend frozen sources. Lab host's scored path remains proj f3786341611f4f
 
 |Order|Source|SHA256|Status|
 |---|---|---|---|
-|1|`prof/lab/verify_proj_cutlass.py`|`e43ed9b225d98cf1feaf1b720f295ca21a69bf74a389cc560ed4ffc588246bab`|sent priority0; detached log `runs/detached/b81c9564402fa62c.log`|
+|1|`prof/lab/verify_proj_cutlass.py`|`e43ed9b225d98cf1feaf1b720f295ca21a69bf74a389cc560ed4ffc588246bab`|sent priority0; waiting request3790760, no judge job assigned at one receipt check; detached log `runs/detached/b81c9564402fa62c.log`|
 |—|`lab/lab_verify_proj_cutlass.py`|`b81c9564402fa62c4e4a87cca541c853506aa6884c8cd4b41b61f583b7fb34ab`|exact screened host9/9+30/30 graph shapes;3 static checks pass|
 
 CUTLASS lab: M128/256 qkv2304x8192, pool/router4608x8192 FP32, unpool8192x4096,
@@ -23,6 +23,10 @@ checks pass; AttributeError/runtime/accuracy/budget/unknown-tile failures retain
 Portable math verifies glue; no Hopper timing is inferred. Logs in `runs/screen/verify_proj/`.
 
 Drop-in `dev/cutlass/projection_cutlass.py`; API/merge instructions in `dev/cutlass/README.md`.
+Frozen SHA256 `a5823cb913cb24fbbd316a004c450c7e7825aa4e409ad8bd96e6dcc02f10ed60`.
+Full-layer portable fixture13/13 tests+12/12 graphs,3.113s prepare;9 static checks pass.
+All15 production definitions/constants in the pruned block match the admitted fixture;
+the full factory/ctypes branch is forced separately. This validates glue, not Hopper SASS.
 `vgc_bind(incumbent)` preserves `project(x,w,name,state,out_dtype)->(partials,splits)`.
 `vgc_prepare(state,incumbent,deadline,recipes)` retimes H200-positive recipes only.
 Default empty before receipt; incumbent holds elsewhere and on any optional exception.

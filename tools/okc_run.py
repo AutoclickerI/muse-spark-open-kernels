@@ -324,6 +324,7 @@ def send(args):
               f"the receipt in runs/ when the judge finishes")
         return
     os.setsid()
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))  # `kill` withdraws a waiting send cleanly
     out = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
     os.dup2(out, 1)
     os.dup2(out, 2)

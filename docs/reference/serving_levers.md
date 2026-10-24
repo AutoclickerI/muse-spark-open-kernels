@@ -19,13 +19,13 @@ The current receipt basis is `muse_moe_w4a16/cand_v9.f6028a478d594b31` (MoE summ
 `muse_prefill_layer/cand_score_portfolio_routing.a30fb411b0c74ffb` (prefill board 1.434x),
 `muse_bf16_proj/submission.68e2f34b1d4744cb` (projection summary 1.143x), and
 `muse_attention_decode/submission.526f31018e2c4449` (FA3 verify path, summary 1.384x but roughly
-1.0x on the verify shapes). The composed `sim.serving` estimate from these measured shapes is 1.820x
-extrapolated and 1.807x capped; it is a receipt composition, not a judge run.
+1.0x on the verify shapes). With tau4.05, the composed `sim.serving` estimate from these measured shapes is 1.825689x
+extrapolated and1.812741x capped; it is a receipt composition, not a judge run or the current shipping-patch score while V9 storage is blocked.
 
 | Lever | Replaces in stock | Modeled gain | Source of the kernel |
 |---|---|---|---|
 | NVFP4 W4A16 MoE (decode/verify sizes) | Marlin + ~14 torch glue kernels per layer (`layers/muse_spark_fp4_moe.py`, `moe_runner/marlin.py`) | largest part of decode's 1.60x | `problems/muse_moe_w4a16` |
-| Prefill experts (753-16K tokens) | Marlin at large M | V9 calls<=256 through M752 pending512 diagnostic; v11 grouped>=753; H200 integration/TTFT gate pending | `problems/muse_prefill_layer` |
+| Prefill experts (753-16K tokens) | Marlin at large M | Stock Marlin restored above256, including513–752; grouped/Humming retired. V9 currently unbound pending a legal shared packed-bank reader | `problems/muse_prefill_layer` |
 | Decode attention (FP8 page-1, QK-norm, KV store, gate fused) | FA3 + combine + ~6 small kernels per layer | ~20 us x 62 layers per step at c=1 | `problems/muse_attention_decode` |
 | Dense projections and router | cuBLAS, the FP32 router GEMV | ~10-20 us per layer | `problems/muse_bf16_proj` |
 | Layer glue (norms, residual, routing) | ~70 us of small kernels per layer at batch 1 (FINDINGS) | up to ~4 ms per step at c=1 | `problems/muse_decode_layer` |
@@ -35,11 +35,16 @@ extrapolated and 1.807x capped; it is a receipt composition, not a judge run.
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
 | Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill first-token delivery fixed | H200 host latency and full-node TTFT |
-| KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch sharing is a tested two-hunk handoff in `prof/kv_capacity_router.patch` | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
-| Expert producer | V9 calls<=256 for M<=752; `PrefillExpertPlan` grouped>=753; one canonical bank | Queued `cand_serving_prefill_diag` decides512-row calls;513–752 currently splits256+256+tail; grouped full-model H200 agreement/TTFT |
+| KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch handoff applied; one4.46MB workspace per routing stream replaces per-layer/per-shape scratch | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
+| Expert producer | **Stock Marlin at all M**; V9 gate capped256 but loader leaves it unbound. No grouped/Humming call sites | Requested hybrid blocked: V9 bank stores re-encoded scales and removes Marlin tensors. Need a V9 reader over the one Marlin bank with stored E4M3 scales converted in-kernel; do not retain two full banks |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
 | `muse_dflash.py` | Retained, unbound; existing DFlash compute stays active | `cand_dflash_diag` |
+| Upstream #45015 | Pooler multicast through512, unpooler through64; reservations match output width; GEMM plans through256 | TP8 multicast agreement/capture and incremental H200 timing |
+| Upstream #45895 | Existing FC output shard + multicast gather, no second sharding; DP/CP/SP/group guards retain stock | TP2 NCCL stand-in exact; real H200 TP8 multicast |
+| Upstream #44401 / #45447 | Held-row admission corrected; tiny prefix-hit graph bucket enabled | Full four-rung local agreement/TTFT gate below; hidden conversations |
+| Upstream #46192 | Unused Marlin swizzled scales omitted in base quantizer | Muse's custom create_weights already omitted them; no new Muse bytes credited |
+| Radix verify top-k | **Rejected; stock remains** | Tie support differs: flat probability maxdiff0.015625; correct stock tie semantics before another admission attempt |
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
 | Long prefill attention | **FA3 retained**; failed module and experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all6 shapes; no new path admitted |
 
@@ -787,20 +792,23 @@ receipts remain available.
 
 ## Current serving integration: V9 dispatch and dense projections
 
-H200 in-layer evidence overrides synthetic routing: `0e94268cf5654012` holds
-verify32 sliding/full1.216/1.136x, versus grouped0.549/0.647x in
-`2ad75c19cb514f5c`. Serving calls V9 in chunks<=256 through M752 pending the512 diagnostic, and
-the prefill adapter's v11 grouped producer at M>=753, rather than the kernel module's grouped dispatch. The bound is derived
-from actual shared-memory capacity and int16 route-slot capacity; chunk maps
-are global and remote slots stay -1. The independently owned `muse_spark_moe.py`
-is unchanged. One admitted Humming copy may compete with **V9**, never grouped.
+Real-weight H200 lab `26d7e05ab97d4f96` selects V9 through256 and Marlin
+at512/753; grouped loses under skew and Humming/V11 fail agreement. The
+production adapter therefore removes both producers. The desired hybrid is
+blocked by the existing V9 bank's custom scale encoding and deletion of Marlin
+parameters. **Stock Marlin currently runs at every M**, including513–752; the
+small-M V9 gate is capped256 but remains unbound until it can read the one legal
+packed bank with E4M3 conversion in-kernel. The independently owned
+`muse_spark_moe.py` is unchanged. No second complete bank is allocated.
 
 `prepare_projections` connects `muse_proj.py` to the exact o, pooler and unpooler
 matrices after weight loading. O replaces only `quant_method.apply`, so the
 original RowParallelLinear keeps symmetric allocation, skip-reduce and its AR.
 Pooler/unpooler local row slices feed the existing multicast gather and deferred
-norm/residual boundary. At TP8/multicast, full pooler/unpooler plans tune only
-M256; their N512/N1024 slices tune8..128, avoiding unused full-path NN layouts.
+norm/residual boundary. At TP8/multicast, pooler splits through512 and unpooler through64 (#45015).
+Full pooler has no verify-shape plans; full unpooler tunes128/256. Local N512
+pooler plans cover8..256 and N1024 unpooler plans8..64. M512 uses the existing
+GEMM without startup tuning; MuseProjection.prepare only admits M<=256.
 A45s model-wide new-trial budget shares plans by actual shape; expired-budget
 cache reuse is now validated rather than dropped. Weight values and parameter
 registration are unchanged; BF16 outputs and FP32 GEMM accumulators remain.
@@ -824,12 +832,17 @@ Real full-size kernels are checked separately; stand-in latency is not H200 timi
 
 Current sm_120 checks:
 
-- Canonical-bank-only owner, real production expert/finalize dispatch:15 cases,
-  including M1/8/128/256/257/512/513/752/753/3012/16384, skew at EP starts0/64,
-  and all-remote/all-local graph transitions at M256/753. Stock-Marlin relative
-  L2<=0.005963, maxabs0.03125;30 equality graph replays are exact. Global slot
-  maps and remote-1s match, and all-remote outputs are exactly zero. No Marlin
-  tensors exist on the tested owner; the reference alone retains that bank.
+- Released-shape **Marlin-only production loader**,12 shapes M1..2048 including
+  257/511/512/513/752/753: relative L2<=4.43e-5, maxabs0.0078125 against
+  stock math. Fresh-input graph differences are zero through753; at1024/2048
+  they are0.00390625/0.0078125, equal to the stock self-control. Remote rows
+  finalize to exactly zero. Only one packed bank remains after load.
+- Shared router scratch: actual sm_120 paired kernel, three layers, M64/128/256,
+  two independent streams and24 fresh graph replays: eager/graph maxdiff0;
+  completion counters reset and buffers are distinct across streams.
+- DFlash FC local-compute/gather seam: TP2 NCCL stand-in at M8/32/64/128/256,
+  eager and15 fresh-input graph replays maxdiff0 against the shipped sharded FC;
+  DP/CP guards retain stock. Actual eight-H200 multicast is unverified.
 - Dense projections:8/8 tests;65 public shapes,939 fresh-input native graph
   replays,33 forced Hopper ABI cases. Worst relative L2=0.005039 (bound0.01).
   Complete projection CUDA module compiles for sm_90a.
@@ -886,17 +899,21 @@ maxabs0.00879). Local microseconds Marlin/V9:
 512:537/1080, 1024:895/4620, 2048:4070/9300.
 These are local screens, not an H200 ordering or a decision on the shipping
 bound. H200 receipt and full-model TTFT remain the gate; no judge run launched.
-Production now caps V9 calls at256 for all M<753 until the queued
-`cand_serving_prefill_diag` admits512-row calls. M513–752 has an explicit
-256+256+tail path; maps are offset to the original global routing slots.
-The full-size loader deletes Marlin tensors after canonical-bank preparation,
-so selecting a Marlin gap would crash and retaining both complete banks would
-violate the measured KV budget. The layer test deliberately gives the owner
-only its canonical bank to catch that glue failure. The grouped producer at
->=753 is wired through `PrefillExpertPlan`, reusing the same bank and returning
-dense rows/global slot maps for the existing finalize. Its kernel is the
-prefill lane's v11-backed producer, unchanged here. The diagnostic still
-freezes the512-row V9 adapter so later ports cannot alter its experiment.
+The real-weight H200 lab `26d7e05ab97d4f96` supersedes that diagnostic's
+shipping decision: V9/Marlin at M512 are931/563us and at753 are1332/716us;
+Humming/V11 fail real-weight agreement (relative0.11–0.32), and grouped loses
+under skew. Large prefills and the513–752 gap now select Marlin.
+
+The requested V9<=256/Marlin>256 hybrid is **blocked by storage**, not a
+row-count selector. Existing canonical preparation deletes Marlin parameters
+and re-encodes E4M3 block scales; raw1.0 byte0x38 becomes custom0xa8. New
+CONSTRAINTS5 requires stored E4M3 bytes with conversion in-kernel. The loader
+therefore keeps only stock Marlin and leaves V9 unbound at every M. The MoE
+lane's file is unchanged. A V9 reader over that one bank must land before
+reenabling it; a second complete layout would displace required KV. Existing
+`cand_serving_prefill_diag.py` also embeds the old scale encoder and is not
+admitted under the new boundary. Its frozen measurement remains historical.
+
 
 
 Random full-graph teacher forcing (`q07`,30 requests x220 continuation tokens;
@@ -924,11 +941,11 @@ glue prevent crediting that as a serving gain; it quantifies avoiding a known
 regression. No extra speedup is subtracted from the earlier45.679ms composed
 step, which did not model the bad grouped dispatch.
 
-Actual H200 TP8/EP8 FA3 agreement, V9/grouped prefill TTFT, actual shape-plan
+Actual H200 TP8/EP8 FA3 agreement, legal hybrid expert-bank integration, actual shape-plan
 selection, memory/KV capacity and all four judge TTFT loads remain unverified.
 
 ## Other levers found
-- **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. Modeled saving: ~0.15 ms per step. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.
+- **The drafter's `fc` is replicated** (`srt/models/dflash.py:705`, 671 MB per GPU per step): implemented as a TP-column split with an all-gather (the released weight is loaded into unchanged output slices). `draft_tp_context` is safe here: judge attention-DP is disabled, so the target TP group is shared; when attention-DP is enabled, the context installs the draft attention-TP group before construction and execution. TP1 and TP2 NCCL unit coverage passes eager+graph; TP2 eager GEMM max diff is 0.0625 (one BF16 ULP), graph replay is bit-identical, and the margin TP2 harness has exact generated IDs plus teacher-forced prompt/generated logprob max/mean drift 0.0/0.0. The #45895 port now computes the existing local FC shard and multicast-gathers eligible replicated-input calls; DP/CP/SP or mismatched groups retain the stock FC. Workspace is reserved before capture. H200 TP8 multicast timing remains open. Modeled split saving: ~0.15 ms per step; the multicast increment is not yet measured on Hopper. The one-ULP BF16 GEMM-tile difference is the output-agreement risk on non-margin weights.
 - **Drafting from the request** remains opt-in. Before each eight-token verify block, the patch finds the longest
   repeated 2-8-gram in the last 256 committed tokens, appends it only after a per-request DFlash prefix, and now
   requires a four-token match plus a suffix EMA that beats DFlash's tail EMA after two bootstrap attempts. All

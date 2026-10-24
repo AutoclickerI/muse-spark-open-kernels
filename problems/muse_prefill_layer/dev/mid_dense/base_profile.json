@@ -1,0 +1,639 @@
+{
+  "job": "0d738799802340fd",
+  "speedup": 1.4384023897545977,
+  "loads": {
+    "turn 1": {
+      "candidate_ms": 57.16821841934691,
+      "baseline_ms": 70.95890977140516,
+      "speedup": 1.2412300353825825
+    },
+    "turn 4": {
+      "candidate_ms": 157.16027948694503,
+      "baseline_ms": 233.05017754249275,
+      "speedup": 1.4828821780114723
+    },
+    "first turn": {
+      "candidate_ms": 2050.4344880901,
+      "baseline_ms": 3315.340691118501,
+      "speedup": 1.6168966676943735
+    }
+  },
+  "first_turn_dense_profile_ms": 731.5022,
+  "profiles": [
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "turn 1",
+        "page": 1,
+        "q_len": 753,
+        "repeats": 6,
+        "seed": 3173767347065770231,
+        "weight": 46
+      },
+      "kernels": [
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<6...",
+          "us": 329.4,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<6...",
+          "us": 181.6,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 66.4,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 65.2,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 42.5,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN",
+          "us": 38.4,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 25.7,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN",
+          "us": 20.8,
+          "calls": 1
+        },
+        {
+          "name": "_swiglu_kernel",
+          "us": 14.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_128x96_64x7_1x2_h_bz_splitK_TNT",
+          "us": 12.5,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 10.0,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 7.4,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "turn 1",
+        "page": 1,
+        "q_len": 753,
+        "repeats": 6,
+        "seed": 3173816587680772769,
+        "weight": 16
+      },
+      "kernels": [
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 406.6,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<6...",
+          "us": 304.4,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<6...",
+          "us": 169.1,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 64.5,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 64.5,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 41.9,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_112x128_64x7_1x2_h_bz_TNN",
+          "us": 39.1,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x192_64x5_2x1_v_bz_coopB_TNN",
+          "us": 20.7,
+          "calls": 1
+        },
+        {
+          "name": "_swiglu_kernel",
+          "us": 14.1,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_128x96_64x7_1x2_h_bz_splitK_TNT",
+          "us": 12.6,
+          "calls": 1
+        },
+        {
+          "name": "_gather_cache_kernel",
+          "us": 10.9,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 10.7,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "turn 4",
+        "page": 1,
+        "q_len": 753,
+        "repeats": 6,
+        "seed": 3173865828295775308,
+        "weight": 46
+      },
+      "kernels": [
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<1...",
+          "us": 696.2,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<1...",
+          "us": 360.5,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT",
+          "us": 251.2,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 248.7,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 164.5,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_256x104_64x4_1x1_h_bz_coopA_TNT",
+          "us": 149.8,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 73.5,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 61.3,
+          "calls": 1
+        },
+        {
+          "name": "_swiglu_kernel",
+          "us": 43.4,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT",
+          "us": 37.6,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 29.9,
+          "calls": 1
+        },
+        {
+          "name": "_gather_norm_kernel",
+          "us": 19.3,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "turn 4",
+        "page": 1,
+        "q_len": 753,
+        "repeats": 6,
+        "seed": 3173915068910777848,
+        "weight": 16
+      },
+      "kernels": [
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 1540.9,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<1...",
+          "us": 667.1,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<1...",
+          "us": 340.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x152_64x4_1x2_h_bz_coopA_TNT",
+          "us": 250.9,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 247.2,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 161.9,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_256x104_64x4_1x1_h_bz_coopA_TNT",
+          "us": 145.4,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 70.8,
+          "calls": 1
+        },
+        {
+          "name": "_swiglu_kernel",
+          "us": 44.4,
+          "calls": 1
+        },
+        {
+          "name": "_gather_cache_kernel",
+          "us": 42.6,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_128x104_64x7_4x2_h_bz_TNT",
+          "us": 38.0,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 28.3,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 0,
+        "dist": "soft",
+        "layer": "full",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 3174013550140782931,
+        "weight": 16
+      },
+      "kernels": [
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 2535.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 2100.1,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN",
+          "us": 1659.0,
+          "calls": 2
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 1283.4,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 857.2,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 850.4,
+          "calls": 2
+        },
+        {
+          "name": "_canonical_expand_coalesced",
+          "us": 479.5,
+          "calls": 2
+        },
+        {
+          "name": "_portfolio_swiglu",
+          "us": 242.9,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 175.8,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 132.4,
+          "calls": 1
+        },
+        {
+          "name": "_gather_norm_kernel",
+          "us": 97.1,
+          "calls": 1
+        },
+        {
+          "name": "_routing_kernel",
+          "us": 41.5,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 32768,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 3174062790755785474,
+        "weight": 138
+      },
+      "kernels": [
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 2540.4,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 2101.7,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN",
+          "us": 1652.8,
+          "calls": 2
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 1293.6,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 841.0,
+          "calls": 2
+        },
+        {
+          "name": "_canonical_expand_coalesced",
+          "us": 516.6,
+          "calls": 2
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 289.5,
+          "calls": 1
+        },
+        {
+          "name": "_portfolio_swiglu",
+          "us": 243.6,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 176.2,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 130.4,
+          "calls": 1
+        },
+        {
+          "name": "_gather_norm_kernel",
+          "us": 97.9,
+          "calls": 1
+        },
+        {
+          "name": "_routing_kernel",
+          "us": 41.3,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 32768,
+        "dist": "soft",
+        "layer": "full",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 3174112031370788018,
+        "weight": 16
+      },
+      "kernels": [
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 4266.4,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 2648.3,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 2099.3,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN",
+          "us": 1664.9,
+          "calls": 2
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 1333.4,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 839.7,
+          "calls": 2
+        },
+        {
+          "name": "_canonical_expand_coalesced",
+          "us": 552.7,
+          "calls": 2
+        },
+        {
+          "name": "_portfolio_swiglu",
+          "us": 249.2,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 175.3,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 134.4,
+          "calls": 1
+        },
+        {
+          "name": "_gather_norm_kernel",
+          "us": 99.2,
+          "calls": 1
+        },
+        {
+          "name": "_routing_kernel",
+          "us": 41.8,
+          "calls": 1
+        }
+      ]
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 65536,
+        "dist": "soft",
+        "layer": "full",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 3174210512600793109,
+        "weight": 16
+      },
+      "kernels": [
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 7657.0,
+          "calls": 1
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 2618.3,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 2104.8,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_176x128_64x5_1x2_h_bz_TNN",
+          "us": 1661.9,
+          "calls": 2
+        },
+        {
+          "name": "void deep_gemm::sm90_bf16_gemm_impl<(cute::UMMA::Major)0,...",
+          "us": 1325.6,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_kernel",
+          "us": 849.7,
+          "calls": 2
+        },
+        {
+          "name": "_canonical_expand_coalesced",
+          "us": 480.1,
+          "calls": 2
+        },
+        {
+          "name": "_portfolio_swiglu",
+          "us": 247.5,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_256x128_64x4_1x2_h_bz_coopA_TNT",
+          "us": 175.5,
+          "calls": 1
+        },
+        {
+          "name": "_combine_kernel",
+          "us": 134.1,
+          "calls": 1
+        },
+        {
+          "name": "_gather_norm_kernel",
+          "us": 97.6,
+          "calls": 1
+        },
+        {
+          "name": "_routing_kernel",
+          "us": 41.6,
+          "calls": 1
+        }
+      ]
+    }
+  ],
+  "expert_controls": {
+    "753": "humming_masked",
+    "3012": "humming_masked",
+    "16384": "dg_hint_w8"
+  },
+  "expert_sweep": "b964cb5d180a463b",
+  "sweep_received": false
+}

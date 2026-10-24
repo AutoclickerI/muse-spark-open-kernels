@@ -1,4 +1,9 @@
-"""Bounded V9 serving dispatch vs stock Marlin; real NVFP4, eager/fresh graphs."""
+"""Retired V9 verify-reader diagnostic; NOT a production admission gate.
+
+Shipping Marlin loader/prefill coverage is test_serving_expert_storage.py.
+This only exercises V9 at the measured <=256 verify shapes. Its encoded scale
+bank is intentionally unbound from serving under CONSTRAINTS5.
+"""
 
 import json
 from types import MethodType, SimpleNamespace
@@ -19,12 +24,9 @@ def main():
     marlin, workspace = _marlin_state(weights, device)
     norm = (1 + weights["post_norm_w"].float()).bfloat16()
 
-    # Invoke the real production branch with ONLY the canonical bank, as the
-    # full-size loader does. Selecting Marlin here must fail on missing tensors.
-    # The separate reference owns the original serialized Marlin tensors.
+    # The production loader deliberately does not bind this encoded bank.
+    # A synthetic owner isolates the retired reader's verify ABI only.
     owner = SimpleNamespace(_muse_v4_state=state)
-    from sglang.srt.layers.muse_prefill_expert import PrefillExpertPlan
-    assert PrefillExpertPlan.from_layer(owner).state is state, "second expert bank"
     owner.num_local_experts = 32
     owner.global_num_experts = 256
     owner.hidden_size = 4096
@@ -46,7 +48,7 @@ def main():
         return output
 
     rows = []
-    for m in (1, 8, 128, 256, 257, 512, 513, 752, 753, 3012, 16384):
+    for m in (1, 8, 128, 256):
         x, ids, scores = _inputs(m, device, 91000 + m)
         reference = _stock(marlin, workspace, weights, x, ids, scores)
         eager = call(x, scores, ids)
@@ -129,7 +131,7 @@ def main():
         print(json.dumps(rows[-1]), flush=True)
     # A whole EP rank may have no local routes. Its dense producer can leave
     # remote rows unwritten; finalize must keep their garbage out of the sum.
-    for m in (256, 753):
+    for m in (256,):
         state["local_start"] = 0
         x, ids, scores = _inputs(m, device, 99000 + m)
         ids.fill_(200)

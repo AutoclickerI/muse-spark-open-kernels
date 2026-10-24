@@ -9,7 +9,7 @@ def format_source(name,value):
 
 def build():
     source=(HERE/'kernel.cu').read_text()
-    core=(HERE/'runtime.py').read_text()+'\n'+format_source('VGC_SOURCE',source)
+    core=(HERE/'runtime.py.inc').read_text()+'\n'+format_source('VGC_SOURCE',source)
     graph=(HERE.parent/'verify/library.py').read_text()
     pairs=(HERE.parent/'verify/lab_library_tail.py').read_text().split('\ndef lab(')[0]
     common=core+'\n'+graph+'\n'+pairs
@@ -23,9 +23,9 @@ def build():
     graph_only='import ctypes as ct\nimport time,statistics\n'+graph[
         graph.index('class _PgGraph:'):graph.index('PG_RAW =')]
     drop=HERE/'projection_cutlass.py'
-    drop.write_text(core+'\n'+graph_only+'\n'+pairs+'\n'+(HERE/'install.py').read_text())
+    drop.write_text(core+'\n'+graph_only+'\n'+pairs+'\n'+(HERE/'install.py.inc').read_text())
     lab=ROOT/'prof/lab/verify_proj_cutlass.py'
-    lab.write_text(common+'\n'+(HERE/'gemv.py').read_text()+'\n'+(HERE/'lab.py').read_text())
+    lab.write_text(common+'\n'+(HERE/'gemv.py.inc').read_text()+'\n'+(HERE/'lab.py.inc').read_text())
     print(drop);print(lab)
 
 if __name__=='__main__':build()

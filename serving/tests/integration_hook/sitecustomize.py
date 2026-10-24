@@ -75,10 +75,6 @@ class Loader(importlib.abc.Loader):
 
             module.all_gather_supported = supported
             module.projection_all_gather = gather
-        print('SERVING_INTEGRATION expert', n, path, flush=True)
-                return admitted
-
-            MuseSpark1xFp4Experts._use_muse_v4 = use
         print('SERVING_INTEGRATION portable ABI loaded:', module.__name__, flush=True)
 
 

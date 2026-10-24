@@ -91,4 +91,14 @@ any H200-selected integration; isolated projection correctness isn't that eviden
 Reproduce: `python build.py`; GPU0 `tools/img python validate.py`; build the host with
 `tools/h200_lab.py build prof/lab/verify_proj_cutlass.py -o <fixture>`; run
 `tools/img python tools/local_eval.py <fixture> --json <result>`.
-Evidence: `runs/screen/verify_proj/cutlass_*`. H200 timing is pending the sent lab.
+Evidence: `runs/screen/verify_proj/cutlass_*`. Final host9/9+30/30,1.026s prepare,
+3 static checks pass. Full-layer portable fixture13/13+12/12,3.113s prepare,
+9 static checks pass. `check_identity.py` confirms all15 production definitions and
+constants in the20KB pruned block match the admitted fixture. Full factory/ctypes
+construction is independently forced. The final stand-in test covers1152 recipes,
+2367 ABI calls plus48 fresh/guard checks; mock times are not measurements.
+
+Frozen block SHA256a5823cb913cb24fbbd316a004c450c7e7825aa4e409ad8bd96e6dcc02f10ed60.
+Sent payload SHA256e43ed9b225d98cf1feaf1b720f295ca21a69bf74a389cc560ed4ffc588246bab;
+scored hostSHAb81c9564402fa62c4e4a87cca541c853506aa6884c8cd4b41b61f583b7fb34ab.
+H200 timing and actual cold prepare total remain pending.

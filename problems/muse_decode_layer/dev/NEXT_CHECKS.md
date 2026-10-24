@@ -1,6 +1,8 @@
 # Decode checks — next send order after 18a5f4e
 
-`cand_r3_best.py` is the next candidate: it repairs the Hopper Lt/XQA static failures,
+`cand_r3_best2.py` is the next candidate: it adds the attention lane's q_len=1
+`attn_main` drop-in to the repaired Hopper Lt/XQA portfolio. `cand_r3_best.py` is the
+already-sent candidate; it repairs the Hopper Lt/XQA static failures,
 keeps the union's measured small-shape protection, and tunes the cost/projection and
 attention portfolios from one V9 state. `cand_r3_merge2.py` is retained as the previous
 V9-control candidate. The union's measured small-shape
@@ -44,6 +46,7 @@ BF16 bank dequantized in prepare (CONSTRAINTS 5 boundary row); H200 labs f8e9773
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
+| `cand_r3_best2.py` | `999ecf9124e72a2e7e935bcd247311892b84889a13ad468f2ac9f18757403bd6` | **sm_120: 13/13 tests, 12/12 graphs; prepare 13.247 s**; 15 static checks pass including call signatures and sm_90a CUDA compilation; q1 `attn_main` is a prepare-time choice for b1/16/32 sliding/full | **ready; send next; q1 H200 evidence 16.9/107.6 us at B16, sweep `59e53e746df341a9` pending** |
 | `cand_r3_best.py` | `82f54e676a0b62d720847a051d6793fb7fb5a57bb4f5f15984224ba8473dfc0f` | **sm_120: 13/13 tests, 12/12 graphs; prepare 16.560 s**; 14 static checks pass (including sm_90a CUDA compilation); V9 MoE, pool/router custom at T≤32, prefix off | **ready; send first; H200 V9 control `0e94268cf5654012`, cost-v9 receipt `906ca5580aef4f86`, attention sweep `59e53e746df341a9` pending** |
 | `cand_r3_merge2.py` | `c7716ba073e9fa92661a2c2463062ee44f8221bccc3aa5a1cc1d41488eed926` | **sm_120: 13/13 tests, 12/12 graphs; prepare 16.344 s**; all 12 timed shapes pass; V9 custom GEMV forced at T=1/8/16/32/128/256; prefix/persistent paths disabled | **ready; choices backed by V9 receipt `0e94268cf5654012` until pending receipts improve a complete shape** |
 | `cand_r3_union.py` | `32bdf65385b8e0b6955f7135908cdb36bedba7d40015d8a8021d53168c569f4f` | **sm_120: 13/13 tests, 12/12 graphs; prepare 9.314 s**; all 12 timed shapes pass; full FP32 combination gate passes; Hopper attention and router-aware MoE paths retained behind portable stand-ins | **ready first at reset**; one per-shape union tuner; H200 selection and score unverified |
@@ -91,7 +94,7 @@ checks pass.
 
 ## Send order
 
-Send `cand_r3_best.py` first at reset. Keep `cand_r3_merge2.py` as the V9-control fallback. Do not send `cand_r3_union.py` until its small-shape projection dispatch is replaced by a receipt-backed winner. Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
+Send `cand_r3_best2.py` next after the already-sent `cand_r3_best.py`. Keep `cand_r3_merge2.py` as the V9-control fallback. Do not send `cand_r3_union.py` until its small-shape projection dispatch is replaced by a receipt-backed winner. Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
 (`cand_r3_merge_mega.py` or `cand_r3_merge_mega_fix.py`), `cand_r3_merge_ovl.py`,
 `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`,
 `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals again.
@@ -135,3 +138,23 @@ checks pass. Final block AST matches that fixture (C++ bytes identical), max lin
 Union's old Lt source lacks `ATen/cuda/CUDAContext.h`; FP32 pool_router also excludes Lt.
 The new block fixes that entry point. The lane's candidate files were not edited.
 Interface and integration example: `../muse_bf16_proj/dev/verify/README.md`.
+
+### P7 CUTLASS projection lab (proj lane; not a decode candidate)
+
+Sent priority0 proj-host `prof/lab/verify_proj_cutlass.py`, payload SHA256
+`e43ed9b225d98cf1feaf1b720f295ca21a69bf74a389cc560ed4ffc588246bab`;
+exact screened hostSHA `b81c9564402fa62c4e4a87cca541c853506aa6884c8cd4b41b61f583b7fb34ab`.
+H200 comparison pending; never poll or reserve a decode slot for this source.
+Custom TMA v2 job92e7802783a54212 lost1.21–1.95x; no native winner to port yet.
+CUTLASS tests splitK/StreamK/DP,132/98/66 SMs, activation multicast and swapped AB
+at M128/256 qkv2304x8192, pool_router4608x8192 FP32, o8192x1024, unpool8192x4096.
+Counter reset is timed, cold1GiB, fresh3,20-pair finalists; all optional Exceptions reject.
+
+Prepared self-contained block `../muse_bf16_proj/dev/cutlass/projection_cutlass.py`, SHA256
+`a5823cb913cb24fbbd316a004c450c7e7825aa4e409ad8bd96e6dcc02f10ed60`.
+`vgc_bind(old_project)` and `vgc_prepare(state,old_project,prepare_entry+240,recipes)`;
+identical5-argument project tuple ABI. Empty default shortlist retains the incumbent.
+Local sm120 host9/9+30/30, full-layer portable fixture13/13+12/12,9 static checks;
+all1152 Hopper ABI recipes forced. These validate glue/capture, not native H200 speed.
+Wait for the owner-supplied receipt; proj's `dev/cutlass/read_receipt.py` validates its
+payload hash and emits **H200-positive** recipes. Retime winners in the full layer.

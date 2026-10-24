@@ -4836,7 +4836,7 @@ def _attn_port_ext():
         _ATTN_PORT_EXT = load_inline(
             name=f'muse_decode_attn_port_{arch}', cpp_sources=ATTN_PORT_CPP_SRC,
             cuda_sources=ATTN_PORT_CUDA_SRC,
-            functions=['attn_forward', 'attn_forward_vmath', 'max_cluster', 'occupancy'],
+            functions=['attn_forward', 'max_cluster', 'occupancy'],
             extra_cuda_cflags=['-O3', '-std=c++20', '--expt-relaxed-constexpr',
                                f'-gencode=arch=compute_{arch},code=sm_{arch}', '-lineinfo'],
             verbose=False)
@@ -5042,7 +5042,7 @@ def _attn_port_candidates(q_len):
     out = [('layer', None), ('fa3', (0, None))]
     if q_len == 1:
         return out + [('port_decode', None)]
-    return out + [('port_verify', None), ('port_vmath', None)] + \
+    return out + [('port_verify', None)] + \
         [('xqa_group', ('group', st, w)) for st in (5, 7) for w in (1, 2, 4, 8)] + \
         [('xqa_warp', ('warp', st, w)) for st in (3, 4) for w in (1, 2, 4, 8)] + \
         [('xqa_fp8_pv', (st, w)) for st in (3, 5) for w in (1, 2, 4, 8)]

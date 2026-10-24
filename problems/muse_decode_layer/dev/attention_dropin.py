@@ -78,6 +78,10 @@ def build(output: Path = OUTPUT) -> Path:
         "_measure_graph(lambda setting=setting: _fa3_call(q, gate, data, setting), flush, repeats=3)",
         "_measure_graph(lambda q=q, gate=gate, data=data, setting=setting: _fa3_call(q, gate, data, setting), flush, repeats=3)",
     )
+    source = source.replace("functions=['attn_forward', 'attn_forward_vmath', 'max_cluster', 'occupancy']",
+                            "functions=['attn_forward', 'max_cluster', 'occupancy']")
+    source = source.replace("return out + [('port_verify', None), ('port_vmath', None)] + \\",
+                            "return out + [('port_verify', None)] + \\")
     source = source.replace(
         "fn = lambda choice=choice: _attn_port_variant(qkv, data, state, choice)",
         "fn = lambda qkv=qkv, data=data, choice=choice: _attn_port_variant(qkv, data, state, choice)",

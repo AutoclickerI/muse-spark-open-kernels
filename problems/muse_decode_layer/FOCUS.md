@@ -17,8 +17,9 @@ attention lane owns the incoming vstream. This lane's glue fusion diagnostic `ca
 four split-K weight rereads and a second consumer launch still dominate; the regular v9 path wins
 every local shape. The overlap experiment remains parked because its verify race failed the
 correctness guard.
-`cand_r3_union.py` is the diagnostic portfolio; `cand_r3_best.py` is the next single-run
-candidate. It repairs the undefined Hopper Lt/XQA branches, keeps V9 as the MoE fallback, and
+`cand_r3_union.py` is the diagnostic portfolio; `cand_r3_best2.py` is the next single-run
+candidate. It adds the attention lane's q_len=1 `attn_main` drop-in to `cand_r3_best.py`,
+which repairs the undefined Hopper Lt/XQA branches, keeps V9 as the MoE fallback, and
 selects per scored shape from the q_len=1 V9/FA3/decode-attention family, q_len=8
 FA3/XQA/WGMMA/FP8-PV plus vstream/two-group attention, custom/cuBLAS/cuBLASLt projection
 layouts, router-derived V9/moe_rt/Humming/adaptive choices, and v9all PDL boundaries. Attention choices use

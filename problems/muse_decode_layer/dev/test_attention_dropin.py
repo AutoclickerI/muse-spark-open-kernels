@@ -12,6 +12,7 @@ def test_shape_contract_and_generated_copy(tmp_path: Path):
     text = out.read_text()
     assert "ATTENTION_DROPIN_SHAPES" in text
     assert "def attention_dropin_choice" in text
+    assert "('port_verify', None)" in text
     assert "o_and_pool" not in text
     for name in ("ATTN_X_CUDA", "ATTN_X_CPP", "ATTN_G_CUDA", "ATTN_P8_CUDA"):
         assert f"{name} =" in text
