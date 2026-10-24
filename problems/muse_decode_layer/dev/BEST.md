@@ -15,4 +15,4 @@ Board best remains V9 `0e94268cf5654012`, **1.427904x**; its favourable routing 
 
 [FOCUS.md](../FOCUS.md) owns the next reset's scored/check allocation and per-load score sensitivity;
 [NEXT_CHECKS.md](NEXT_CHECKS.md) owns landed/pending evidence. Jihoon sends candidates.
-G0 until 11-05 17:00 KST is first overall kernel board (R-20261024-4), so serving-only work is secondary.
+The overall kernel score is the only goal (R-20261025-1); serving work is parked until its round.

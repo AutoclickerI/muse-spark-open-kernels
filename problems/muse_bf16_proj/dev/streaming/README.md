@@ -1,4 +1,4 @@
-# Streaming projections (P7 / G3)
+# Streaming projections (P7 / G1)
 
 `python3 build.py` emits `../streaming_gemv_lab.py`: a self-contained lab and
 `StreamingProjection` drop-in. Source is `kernel.cu`, `runtime.py.inc` and

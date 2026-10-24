@@ -1,8 +1,10 @@
 # The NVFP4 expert bank for serving
+
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
 Serves: G2.
 
 Serves G1/G2. Read for bank ownership, raw scale storage and the cost of another layout.
-Current dispatch and gates are in [serving_levers.md](../serving/serving_levers.md).
+Current dispatch and gates are in [serving_levers.md](serving_levers.md).
 
 ## Production bank
 

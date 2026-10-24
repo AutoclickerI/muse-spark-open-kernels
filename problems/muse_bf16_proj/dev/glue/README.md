@@ -32,9 +32,7 @@ moments combine the post-norm and residual norm; a second chunk pass writes outp
 O/unpooler outputs and pooler output round to BF16 before stock's next boundary.
 Normalized activations remain BF16, streams/scales/accumulators FP32. All K and every
 router row are processed. Layer tests retain the original attention, KV, experts and
-routing checks. These component fusions assume the board's identity collectives;
-serving must complete its O/expert all-reduces and unpooler gather before global norms.
-No serving module is changed by this experiment.
+routing checks. These component fusions assume the board's identity collectives.
 
 ## Selection and fair measurement
 

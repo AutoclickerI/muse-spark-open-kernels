@@ -1,4 +1,4 @@
-Serves: G2, G3. Read when a kernel is near an H200 bandwidth, tensor-issue, cache, or register limit.
+Serves: G2, G1. Read when a kernel is near an H200 bandwidth, tensor-issue, cache, or register limit.
 
 # Hopper low-level design laws
 

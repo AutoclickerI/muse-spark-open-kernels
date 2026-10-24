@@ -1,8 +1,8 @@
-Serves: G2, G3. Read when designing paged attention or skinny BF16 projections.
+Serves: G2, G1. Read when designing paged attention or skinny BF16 projections.
 
 # Attention and small-M GEMM structures
 
-The serving-relevant attention shape is q_len=8 with GQA=8 and a page-size-1 FP8 KV cache; the projection problem covers BF16 M values from 1 through 256. Current H200 outcomes and candidate profiles belong in [FINDINGS](../FINDINGS.md) and [SOTA](../SOTA.md). This file keeps portable mechanisms and exact source constraints.
+The decode-layer verify attention shape is q_len=8 with GQA=8 and a page-size-1 FP8 KV cache; the projection problem covers BF16 M values from 1 through 256. Current H200 outcomes and candidate profiles belong in [FINDINGS](../FINDINGS.md) and [SOTA](../SOTA.md). This file keeps portable mechanisms and exact source constraints.
 
 ## Packed GQA attention
 

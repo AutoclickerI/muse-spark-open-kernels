@@ -1,6 +1,6 @@
 # Projection next checks
 
-P7 owns decode M1-32 and glue; verify dense belongs to serving.
+P7 serves G1/G2: decode M1-32 and glue, plus verify dense inside the decode layer.
 
 | Order | Artifact | State |
 |---|---|---|

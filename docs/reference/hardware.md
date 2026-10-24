@@ -1,8 +1,8 @@
-Serves: G1, G2, G3. Read when sizing a kernel or interpreting a H200 bound.
+Serves: G1, G2. Read when sizing a decode-layer kernel or interpreting a H200 bound.
 
 # H200 and Hopper hardware
 
-Only judge receipts measure H200 kernel or serving performance; current values and profiles are in [FINDINGS](../FINDINGS.md). This file keeps hardware specifications and laws that remain valid across candidates. Local sm_120 timing is for correctness and loose ranking, not H200 evidence; machine access is documented in [RESOURCES](../RESOURCES.md).
+Only judge receipts measure H200 kernel performance; current values and profiles are in [FINDINGS](../FINDINGS.md). This file keeps hardware specifications and laws that remain valid across candidates. Local sm_120 timing is for correctness and loose ranking, not H200 evidence; machine access is documented in [RESOURCES](../RESOURCES.md).
 
 ## H200 facts
 
@@ -13,7 +13,6 @@ Only judge receipts measure H200 kernel or serving performance; current values a
 | Shared memory | 228 KB per SM, 227 KB per block | [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
 | Registers | 64K 32-bit registers per SM; up to 255 per thread | [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
 | Dense tensor rates | 989 TFLOP/s BF16 and 1,979 TFLOP/s FP8 are the model's H200 rates | [NVIDIA H200](https://www.nvidia.com/en-us/data-center/h200/), [FINDINGS](../FINDINGS.md) |
-| Serving fabric | 8x H200 HGX uses NVLink/NVSwitch; TP8 all-reduce evidence is receipt/source dependent | [Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/), [FINDINGS](../FINDINGS.md) |
 
 H200 uses Hopper sm_90; WGMMA/TMA paths requiring `sm_90a` are available on the judge. The local RTX PRO 6000 sm_120 and GB10 sm_121 machines have different memory systems and execute neither Hopper WGMMA/TMA nor FA3; do not transfer their timings.
 
@@ -33,4 +32,4 @@ H200 HBM latency, L2 near/far latency and bandwidth, bank mapping, TLB reach, Ho
 
 External measurements provide bounds, not portable constants. The H100/H200 power-cap study ([arXiv:2604.11391](https://arxiv.org/abs/2604.11391)) is the source for the observed memory-bound versus tensor-heavy clock ranges. H100 global-load-concurrency work ([arXiv:2608.15764](https://arxiv.org/abs/2608.15764)) supports the unloaded-memory-latency/concurrency model; its roughly 350–400 ns latency is H100 evidence, not an H200 specification. The H200 NVL deviceQuery record ([cluster-gpu wiki](https://deac-wiki.readthedocs.io/en/latest/cluster-gpu.html)) corroborates the driver-reported 60 MB L2 observation.
 
-For serving interconnect, the NVSHMEM 8x-H200 study ([arXiv:2606.05951](https://arxiv.org/abs/2606.05951)) reports roughly 2.4–3.1 us for its best small all-reduces, while SiFAR's 8x-H200 results ([arXiv:2607.08973](https://arxiv.org/abs/2607.08973)) and NCCL/NVLS measurements support about 5–7 us for 8–32 KB TP8 reductions and roughly 276 GB/s algorithm bandwidth for large NVLS reductions. These are implementation measurements, not a guarantee for the serving harness. The graph-boundary issue ([frontiers issue](https://github.com/vectorware-inc/frontiers-feedback/issues/24)) reports about 1.0 us empty-kernel and 1.3 us graph versus 2.1 us stream launch behavior; it is H100-era evidence for why graph tails matter, not an H200 fixed cost.
+The graph-boundary issue ([frontiers issue](https://github.com/vectorware-inc/frontiers-feedback/issues/24)) reports about 1.0 us empty-kernel and 1.3 us graph versus 2.1 us stream launch behavior; it is H100-era evidence for why graph tails matter, not an H200 fixed cost.

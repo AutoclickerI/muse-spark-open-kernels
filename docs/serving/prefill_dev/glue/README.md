@@ -1,5 +1,7 @@
 # Prefill glue portfolio
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 Ready: `problems/muse_prefill_layer/cand_glue_prefill.py`.
 Frozen SHA256 **2a2e3914ea26756fc2df828f8c58cc88d0157171dcff880dec50c55290ebdbef**.
 One242894-byte file; no repository imports. Parent is board1.434x
@@ -8,7 +10,7 @@ receipt a30fb411b0c74ffb. No parent/queued source edited, no judge job or commit
 
 ## Inventory and scope
 
-[Direct H200 table](../../../../docs/serving/prefill_glue.md) covers both a30fb411 and
+[Direct H200 table](../../prefill_glue.md) covers both a30fb411 and
 99820fa6, every visible named glue kernel and all three loads. Missing top12 profile
 entries stay N/A; zero only marks a kernel absent from the selected path. Local expert
 pair/touched-expert counts are not in the profiles, so their byte floors remain ranges.

@@ -1,5 +1,7 @@
 # Prefill send order
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 ## New ready: glue portfolio (separate from expert/attention lanes)
 
 `cand_glue_prefill.py` — SHA256 **2a2e3914ea26756fc2df828f8c58cc88d0157171dcff880dec50c55290ebdbef**.
@@ -9,7 +11,7 @@ Screen sm1205/5 tests +8/8 fresh graph shapes,48.111s prepare;78 trials/36 final
 Independent FP32 gates; any optional Exception rejects;230s trial budget; compact table last.
 Direct60 configs, forced all-fusion layer5/5, strict Hopper branch/fault tests pass;
 60 SM90 specializations compile. H200 speed remains unverified. No judge send/commit here.
-[Design and evidence](glue/README.md); [H200 glue inventory](../../../docs/serving/prefill_glue.md).
+[Design and evidence](glue/README.md); [H200 glue inventory](../prefill_glue.md).
 
 
 Serves: G2, G1. Only the orchestrator sends or commits. This thread launched no judge run.

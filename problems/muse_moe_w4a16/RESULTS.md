@@ -59,21 +59,18 @@ All remotely checked variants first passed local standard correctness and fresh-
 
 Upstream sync ran in an isolated `dev/upstream_sync/` mirror to respect the edit scope. Official TASK/AGENTS/reference/checks/nvfp4/baseline and llms.txt were unchanged. No commits/pushes or edits to tools, serving, sim or other problems.
 
-## API and serving port
+## API and decode-layer reuse
 
 `prepare(weights) -> state`; `kernel_fn(data, state) -> BF16 [M,4096]`. Inputs: BF16 hidden states, int32 top-8 global expert ids, FP32 route weights and shape/rank config. Weights: packed NVFP4 E2M1 codes, group-16 E4M3 scales, FP32 global scales, raw BF16 zero-centered post-norm weight. Repacking is lossless; every timed call recomputes routing and activations. Persistent state has weights and synchronization control only; generation counters carry no input-derived results.
 
-SGLang hook: `MuseSpark1xFp4Experts._forward_marlin` / `_marlin_expert_outputs` in `python/sglang/srt/layers/muse_spark_fp4_moe.py`. Repack the original ModelOpt checkpoint before Marlin permutation. Retain pre-expert norm and the surrounding expert collective (the challenge omits all-reduce), select the actual local EP shard, and give each concurrent stream/graph private counters and scratch. Extend the epilogue for distinct real-checkpoint gate/up FP32 global scales. Native norm expects raw w and computes 1+w; Humming prepare constructs the effective weight. Normalize each expert before applying routing weights and summing.
+Decode-layer reuse: pass normalized expert input, ids and scores; adapt already-local ids and rename `post_expert_norm` to `post_norm_w`; return the tensor consumed by unpooling. That task supplies only the 32 local experts. Whole-layer performance remains unverified.
 
-The native global barrier requires full grid residency. For concurrent serving, enforce that guarantee, e.g. cooperative launch; isolated occupancy sizing alone has not verified serving concurrency. NVIDIA: [cooperative launch](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cooperative-groups.html), [graph support](https://developer.nvidia.com/blog/cuda-11-features-revealed/). Replace/release the old Marlin bank; retaining duplicate layouts across layers can consume substantial HBM.
-
-Decode-layer reuse: pass normalized expert input, ids and scores; adapt already-local ids and rename `post_expert_norm` to `post_norm_w`; return the tensor consumed by unpooling. That task supplies only the 32 local experts. Prefill can reuse the weight/precision code, but needs wider route indices, scalable distributed alignment and larger grouped/TMA plans: the current single-CTA routing and plans through 512 are decode-oriented. Serving and whole-layer performance remain unverified.
+The native global barrier requires full grid residency.
 
 ## Next ideas, ranked by expected gain (unmeasured)
 
 1. Native WGMMA with 64-row weight tiles and per-expert 8/16/32-token tiles; reuse exact dequantization across more tokens and keep activation tiles in shared memory. Largest architectural opportunity; requires a new lossless layout and SM90a code.
 2. Use the measured best native/Humming family over broad batch ranges with one canonical packed bank, removing the hybrid memory duplication.
-3. Serving pre-expert-norm fusion and launch dependency improvements, after expert GEMM throughput; profiles put nearly all large-batch time in expert computation.
 
 ## Queue completion actions
 

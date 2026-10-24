@@ -12,6 +12,12 @@ binds or ranks work.
 - Code: `serving/` (the organizers' `RULES.md`, our `patch.diff`, the local harness), `problems/muse_prefill_layer/`
   (also a live H200 lab host), `sim/serving.py`.
 
+## Additional parked notes
+
+- [Expert bank](expert_layout.md): the serving loader, reader ABI and residency evidence from `docs/reference/`.
+- [Reference sections](reference_notes.md) and [lane sections](lane_notes.md): source text removed from mixed live docs. Historical goal tags and next steps in these archives do not apply to current work.
+- [Prefill send notes](prefill_dev/NEXT_CHECKS.md), [V11 profile](prefill_dev/V11_PROFILE.md), [glue](prefill_dev/glue/README.md), [CUTLASS dense](prefill_dev/cutlass_dense/README.md), [A30 dense](prefill_dev/dense_a30/README.md), [mid dense](prefill_dev/mid_dense/README.md), and [expert dispatch](prefill_dev/sweep_dispatch/README.md): prefill-only lane notes. Code and receipts remain at their original paths.
+
 ## Serving rules (bind serving submissions only)
 Source: `upstream/llms.txt` "Serving" and `serving/RULES.md`.
 - **Serving patch.** A git diff against SGLang `a55ab7d5`: only source files and JSON under `python/sglang/`,

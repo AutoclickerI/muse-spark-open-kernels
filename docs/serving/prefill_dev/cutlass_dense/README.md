@@ -1,5 +1,7 @@
 # Prefill CUTLASS dense search
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 This experiment targets the89.482ms of first-turn pooler/unpooler excess measured
 in the a30 receipt,66.7% of its134.08ms dense excess. Those two products already
 reach roughly809/817TFLOPS (81.8/82.6% of989); the residual is GEMM efficiency,

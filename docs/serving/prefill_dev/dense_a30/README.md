@@ -1,5 +1,7 @@
 # A30 dense/router experiment
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 Base: immutable `a30fb411b0c74ffb`, 1.4340355x. Candidate:
 `problems/muse_prefill_layer/cand_dense_router_a30.py`.
 No candidate send or commit was made by this lane.

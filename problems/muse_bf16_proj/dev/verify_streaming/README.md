@@ -1,4 +1,4 @@
-# Verify-load weight-streaming GEMM (P7 / G3)
+# Verify-load weight-streaming GEMM (P7 / G1)
 
 Owned shapes: M64–256, plus the M8 diagnostic. The projection lane owns M1–32
 and glue fusion. This block changes only BF16 dense GEMMs; it retains no

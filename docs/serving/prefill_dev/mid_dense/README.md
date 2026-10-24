@@ -1,5 +1,7 @@
 # Mid-experts2 plus dense/router scheduling
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 Candidate `problems/muse_prefill_layer/cand_mid_dense.py` starts from the exact
 `cand_mid_experts2.py` source (SHA ea453ff54f4850f8…), receipt
 `0d738799802340fd`, overall 1.438402x. `build.py` merges the dense integration

@@ -53,4 +53,4 @@ Byte formulas: boundaries24TH; separate dequant2.5625E(3D²); SwiGLU6RD;
 combine/gather2D(R+T); router2176T+8R; attention-gate6T*1024; QK-prep4112T.
 H=8192,D=4096. Cache gather uses the actual selected sliding/full capacity rule,
 rounded to128 rows;753-token sliding uses FA3 directly and has no gather.
-Candidate, interface and verification: [glue README](../../problems/muse_prefill_layer/dev/glue/README.md).
+Candidate, interface and verification: [glue README](prefill_dev/glue/README.md).

@@ -1,7 +1,7 @@
 # Decode verify projection block: H200 Lt shortlist; native pending
 
-`projection_dropin.py` is self-contained: append it to a decode single file, or import
-it in a serving experiment after agreement testing. Its default shortlist now contains
+`projection_dropin.py` is self-contained: append it to a decode single file.
+Its default shortlist now contains
 seven isolated H200-positive Lt choices; whole-layer H200 speed is unverified.
 Frozen SHA256: `97c874743a23ab6eef0beee32cbd153e436b193e811eaaaaab5dea78dac8450a`.
 

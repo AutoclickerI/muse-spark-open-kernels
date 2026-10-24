@@ -1,6 +1,6 @@
 # Routed NVFP4 MoE serving port
 
-Serves G1/G2. Read with [expert_layout.md](../reference/expert_layout.md) for bank geometry.
+Serves G1/G2. Read with [expert_layout.md](expert_layout.md) for bank geometry.
 The current serving producer is **stock Marlin at every M**. V9 is retained
 unbound; grouped and Humming have no serving dispatch call sites.
 

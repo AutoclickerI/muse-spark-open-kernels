@@ -35,9 +35,6 @@ decode-gather family under TASK.md's admission bound and prints all choices.
 - `cand_xqa_next.py`: **keep: its H200 K64/K128 producer/WGMMA diagnostic only**; stream2 contains the family but not that queued receipt.
 - `submission.py`: **keep: scored 1.384x board anchor and per-load q1 control**; it is the comparison baseline.
 
-Serving port: `muse_verify_attention.py` plus the TARGET_VERIFY dispatch in
-`flashattention_backend.py`; local graph/reference passes, FA3/H200 runtime is pending.
-
 Already-measured XQA inputs remain private under `dev/` and are excluded from
 screen-all: `xqa_legacy_candidate.py` (`551949b5...`),
 `xqa_p8_candidate.py` (`5b856076...`), and

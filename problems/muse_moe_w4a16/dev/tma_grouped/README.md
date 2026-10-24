@@ -78,11 +78,9 @@ Reproduce with `CUDA_VISIBLE_DEVICES=0 tools/img python` and:
 - `env TORCH_CUDA_ARCH_LIST=9.0a python problems/muse_moe_w4a16/dev/tma_grouped/validate.py --compile90`
 
 Do not regenerate the frozen candidate after handoff; future variants need a new name.
-H200 execution/cold prepare/choices/speed, decode-layer integration, concurrent serving
-replays and serving agreement remain unverified. The serving adapter needs per-lane
-counter/workspaces, existing expert precision/norm semantics and EP collectives retained.
+H200 execution/cold prepare/choices/speed and decode-layer integration remain unverified.
 
-Precision audit (2026-10-24): raw17 banks retain packed NVFP4 bytes and E4M3 scale bytes, only permuted; no BF16/FP8 expanded weight bank is prepared. FP32 dequant in `_tg_reference` is diagnostic-only and not returned in state or read by timed kernels. `cand_v11_gemm` likewise retains packed/scaled expert weights in prepare and expands inside `_experts_dequant` on every timed call. The owned serving `muse_proj`, `muse_dflash`, `muse_prefill_gemm` modules handle BF16 dense weights and have no NVFP4 weight bank.
+Precision audit (2026-10-24): raw17 banks retain packed NVFP4 bytes and E4M3 scale bytes, only permuted; no BF16/FP8 expanded weight bank is prepared. FP32 dequant in `_tg_reference` is diagnostic-only and not returned in state or read by timed kernels. `cand_v11_gemm` likewise retains packed/scaled expert weights in prepare and expands inside `_experts_dequant` on every timed call.
 
 The inherited V9 prefix is different: `_encode_scales` rebiases scales into uint8
 exponent/mantissa codes and folds sign/zero into FP4 nibbles. It is exact and has

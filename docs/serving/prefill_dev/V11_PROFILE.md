@@ -1,5 +1,7 @@
 # V11 H200 profile ranking versus tensor floors
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 Serves: G2, G1. Profile calls are single traces, not scored medians. All times below are judge evidence; floors are `sim.bound` model calculations (989 TFLOP/s BF16, 1979 TFLOP/s FP8 QK). Top-k profiles omit six small kernels per shape. The floor currently charges PV at BF16 peak; legal FP8 PV can lower its attention component.
 
 | Run | Load/layer/prefix | Expert GEMM+dequant ms | Dense/router ms | Attention ms | Boundary ms | Total ms | Tensor floor ms | Expert / dense / attention floors ms |

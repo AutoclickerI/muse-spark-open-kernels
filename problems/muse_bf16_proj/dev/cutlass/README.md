@@ -2,8 +2,7 @@
 
 Read when handing the M128/256 H200 lab to the decode lane. No judge polling or wait:
 inspect a receipt once per turn, build independently, end if only the receipt remains.
-No candidate or serving lane file is modified. #45015 already belongs to the serving
-lane (`docs/serving/upstream_sglang.md`); its port is not duplicated here.
+No candidate file is modified.
 
 `projection_cutlass.py` is a self-contained source block. Its only dependencies are
 standard Python, torch, CUDA and image-shipped CUTLASS headers. The image's FlashInfer

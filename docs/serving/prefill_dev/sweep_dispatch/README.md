@@ -1,5 +1,7 @@
 # Receipt-backed prefill expert dispatch
 
+> Parked until the serving round (R-20261025-1). Historical goal tags and next steps below are inactive.
+
 `cand_mid_sweep.py` builds on the frozen `cand_mid_dense.py` (SHA1a341fc7…)
 and folds in sweep b964cb5d180a463b. The owner sends candidates. No candidate
 submission or commit is performed here. The default expert choices are:
