@@ -1,0 +1,136 @@
+{
+  "payload_sha256": "8ec41783b2300e77a48e456124aa7502a89731c0dcbad3bdfd643d45b7feb188",
+  "host_sha256": "552621abdd6a86a3994815039ef792da22e87320704aec6ebcecdde092b78c68",
+  "host": "muse_prefill_layer",
+  "base": "cb8939d0980a4cc3",
+  "tests_passed": 5,
+  "stage_keys": [
+    [
+      1,
+      "qkv"
+    ],
+    [
+      1,
+      "o"
+    ],
+    [
+      1,
+      "pool"
+    ],
+    [
+      1,
+      "pool_norm"
+    ],
+    [
+      1,
+      "unpool"
+    ],
+    [
+      8,
+      "qkv"
+    ],
+    [
+      8,
+      "o"
+    ],
+    [
+      8,
+      "pool"
+    ],
+    [
+      8,
+      "pool_norm"
+    ],
+    [
+      8,
+      "unpool"
+    ],
+    [
+      16,
+      "qkv"
+    ],
+    [
+      16,
+      "o"
+    ],
+    [
+      16,
+      "pool"
+    ],
+    [
+      16,
+      "pool_norm"
+    ],
+    [
+      16,
+      "unpool"
+    ],
+    [
+      32,
+      "qkv"
+    ],
+    [
+      32,
+      "o"
+    ],
+    [
+      32,
+      "pool"
+    ],
+    [
+      32,
+      "pool_norm"
+    ],
+    [
+      32,
+      "unpool"
+    ],
+    [
+      128,
+      "qkv"
+    ],
+    [
+      128,
+      "o"
+    ],
+    [
+      128,
+      "pool"
+    ],
+    [
+      128,
+      "pool_norm"
+    ],
+    [
+      128,
+      "unpool"
+    ],
+    [
+      256,
+      "qkv"
+    ],
+    [
+      256,
+      "o"
+    ],
+    [
+      256,
+      "pool"
+    ],
+    [
+      256,
+      "pool_norm"
+    ],
+    [
+      256,
+      "unpool"
+    ]
+  ],
+  "chain_pairs": 12,
+  "issues": [],
+  "log_characters": 5889,
+  "prepare_seconds": 34.4,
+  "payload_seconds": 28.804,
+  "static_rejected_words": [],
+  "device": "sm_120; portable reduced-stage reader; no H200 timing inference"
+}
