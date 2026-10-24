@@ -85,6 +85,8 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 
 - **Deeper packed WGMMA pipeline, exact R0 routing (`7156d8d8b56a40d1`; seed means truncated):** the best whole-MoE config P5 (NT32, K128, 4 stages, overlap) takes 313.4 us at M=128 (NT1 331.3, masked Humming 348.0) and 415.5 at M=256 (masked 437.0, NT1 576.0), ~5% ahead. Its W13 alone peaks at 195 us for M=128 (P1, grid 1056: 1.74 TB/s of unique bytes) and 261.6 at M=256 (P5: 1.51 TB/s), still ~2.5x one read at 4 TB/s. Humming's masked-TMA variant is ~3% faster than masked (337.6/427.4 vs 350.9/437.6 us); its indexed variant fails the gate (0.37). The run's prepare reached 295 of 300 s because the first payload overran its time share.
 
+- **M=256 12-seed means and the fused path (`e8968e36ea98422a`):** masked Humming 448.5 us stays best (P128 503.2, NT2 548.1, VFIX32 556.4, P256 585.3, NT1 606.7). The free lane's fused route/W13+SwiGLU/W2+norm+combine path (F0-F12) takes 1,138-3,159 us, with its W2 phase alone 1.38-2.64 ms at R0 (W13 266-426 us); implementation suspect. Humming at M=128 (R0 only): block-M 32 328.0 us vs default 355.3, TMA 341.3; 66/88 SMs 629/489; 2 stages is invalid (WGMMA needs 3).
+
 ## The judge's H200 (measured, 2026-10-23)
 
 | Quantity | Value | Scope | Class | Receipt |
