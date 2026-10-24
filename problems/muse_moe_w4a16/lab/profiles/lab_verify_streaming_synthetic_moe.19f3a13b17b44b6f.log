@@ -1,0 +1,28 @@
+MOE_PHASE M=1 ctas=264 route=5474/5781/6025 p1=20067/24523/30434 wait=3194/10592/15348 barrier=1304/4377/8889 p2=21365/25781/31121 norm=976/1821/2797 final=97/148/2045 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0772ms v12=0.0711ms v16=0.1002ms wide=0.3799ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5819/6130/6450 p1=99268/122821/138531 wait=752/7777/39839 barrier=1144/16886/55731 p2=53489/62787/95980 norm=7844/9532/12326 final=103/157/2355 p1_tiles=29/29/30 p2_tiles=14/15/15 atomics=112/120/120
+MOE_TIME M=16 v9=0.1632ms v12=0.1766ms v16=0.1892ms wide=0.2582ms selected=v9
+MOE_PHASE M=32 ctas=264 route=6110/6398/6742 p1=142282/176263/197296 wait=961/4989/58295 barrier=1384/20943/71975 p2=77956/84361/135915 norm=11543/14308/18313 final=103/166/2590 p1_tiles=42/43/43 p2_tiles=21/21/22 atomics=168/168/176
+MOE_TIME M=32 v9=0.2183ms v12=0.2350ms v16=0.2429ms wide=0.3346ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5547/5873/6066 p1=73174/90449/102417 wait=690/6996/30665 barrier=994/12017/38436 p2=42449/48418/73795 norm=5538/6945/9491 final=97/152/2339 p1_tiles=21/21/22 p2_tiles=10/11/11 atomics=80/88/88
+MOE_TIME M=8 v9=0.1340ms v12=0.1403ms v16=0.1569ms wide=0.2099ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7457/7691/8007 p1=251762/309267/346395 wait=815/5539/97150 barrier=1134/37923/128096 p2=138447/145301/235396 norm=21081/25566/30836 final=106/2078/4556 p1_tiles=75/76/76 p2_tiles=37/38/38 atomics=296/304/304
+MOE_TIME M=128 v9=0.3392ms v12=0.3915ms v16=0.3785ms wide=0.4693ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10577/10954/11209 p1=399928/494069/547323 wait=752/8111/144462 barrier=1181/50054/195571 p2=218135/229185/363148 norm=33811/42483/50107 final=1366/3874/7565 p1_tiles=120/120/121 p2_tiles=60/60/61 atomics=480/480/488
+MOE_TIME M=256 v9=0.5002ms v12=0.5957ms v16=0.5611ms wide=0.5211ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.0772159993648529, 'v12': 0.07107199728488922, 'v16': 0.10019200295209885, 'wide': 0.37987199425697327}, 16: {'v9': 0.16316799819469452, 'v12': 0.17660799622535706, 'v16': 0.1892479956150055, 'wide': 0.2582400143146515}, 32: {'v9': 0.21833600103855133, 'v12': 0.23503999412059784, 'v16': 0.24291199445724487, 'wide': 0.33456000685691833}, 8: {'v9': 0.13395200669765472, 'v12': 0.14032000303268433, 'v16': 0.15689599514007568, 'wide': 0.20985600352287292}, 128: {'v9': 0.3391999900341034, 'v12': 0.3914560079574585, 'v16': 0.378495991230011, 'wide': 0.46931201219558716}, 256: {'v9': 0.5001599788665771, 'v12': 0.5957120060920715, 'v16': 0.5610880255699158, 'wide': 0.5210559964179993}}
+LAB_BEGIN verify_streaming_synthetic_moe 294cceb1593352c0
+META synthetic BF16 banks; incumbent=best7 Lt/cuBLAS; candidate=weight-wide TMA/WGMMA split-K/Stream-K; cold 256MiB; 3 fresh inputs; A/B graph timing
+PAYLOAD sha256=7b67602f1d4b77c0ccb074d52772d93e7fd228767900fb07178565373896445d bytes=46907
+M=128 role=qkv_gate control=best7_cublas old_us=21.728 new_us=44.864 ratio=2.05822 code=1 split=1 tile=64x128x64 stages=6 pipe=0 TBps=0.8414 tried=27
+M=128 role=o control=best7_cublas old_us=11.808 new_us=16.608 ratio=1.39704 code=12 split=1 tile=128x64x64 stages=8 pipe=1 TBps=1.0102 tried=32
+M=128 role=pool_router control=best7_lt_0_0 old_us=28.064 new_us=44.240 ratio=1.58085 code=1 split=1 tile=64x128x64 stages=6 pipe=0 TBps=1.7065 tried=32
+M=128 role=unpooler control=best7_cublas old_us=23.728 new_us=31.728 ratio=1.33602 code=12 split=1 tile=128x64x64 stages=8 pipe=1 TBps=2.1151 tried=32
+TOTAL M=128 old_us=85.328 new_us=137.440 ratio=1.61073
+M=256 role=qkv_gate control=best7_lt_0_0 old_us=24.128 new_us=45.056 ratio=1.87681 code=1 split=1 tile=64x128x64 stages=6 pipe=0 TBps=0.8378 tried=31
+M=256 role=o control=best7_cublas old_us=13.776 new_us=22.000 ratio=1.58808 code=11 split=1 tile=128x128x64 stages=6 pipe=0 TBps=0.7626 tried=28
+M=256 role=pool_router control=best7_cublas old_us=33.856 new_us=54.320 ratio=1.58846 code=11 split=1 tile=128x128x64 stages=6 pipe=0 TBps=1.3899 tried=28
+M=256 role=unpooler control=best7_cublas old_us=28.640 new_us=38.512 ratio=1.36629 code=11 split=1 tile=128x128x64 stages=6 pipe=0 TBps=1.7425 tried=28
+TOTAL M=256 old_us=100.400 new_us=159.888 ratio=1.59251
+END elapsed=9.4s left=147.5s
+LAB_END lab_s=9.4 prepare_s=137.5
