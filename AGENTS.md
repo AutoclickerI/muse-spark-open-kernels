@@ -13,16 +13,13 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 
 - Next work: the highest-ranked `active` or `next` row in [PLAN](docs/PLAN.md) "Ranked work" that no lane owns.
 - Judge every change by the decode layer's score (GOAL "Terms"; sensitivity: `problems/muse_decode_layer/FOCUS.md`).
-- The critical path is judge latency (PLAN "Critical path"): never idle on it; use idle GPUs, caches, other lanes' outputs.
+- The critical path is judge latency (PLAN "Critical path"): never idle on it.
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon if unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
 - Remote runs only via `tools/okc_run.py send <file> --note "<what changed>"` (default): scored while any are
-  left (the board keeps our best); receipts in `runs/`, log in `runs/detached/`; `collect` finishes orphans.
-- Screen with `tools/local_eval.py` first; a candidate that fails a local test doesn't go remote (default).
-  `tools/screen_all.py --send` screens every unsent candidate in parallel and sends each pass.
-- H200 timing without decode runs: `tools/h200_lab.py send <payload> [more ...]` (prepare of a host's best source:
-  proj, MoE or prefill). Synthesize weights a host lacks; never wait on a spent host. Batch labs per host.
-  Decode's 20 runs a day go to candidates.
+  left; receipts in `runs/`. Screen with `tools/local_eval.py` first; a local test failure stays local (default).
+- H200 timing without decode runs: `tools/h200_lab.py send <payload> [more ...]` on a host with quota (proj, MoE
+  or prefill), synthetic weights where it lacks them; batch labs per host. Decode's runs go to candidates.
 - Local timing (sm_120) ranks loosely; H200 claims come only from `runs/` receipts.
 - Hopper-only paths can't run here: force each Hopper branch's glue locally with a stand-in kernel.
 - Run `tools/sync_upstream.sh` before starting; read the diff if official files changed.

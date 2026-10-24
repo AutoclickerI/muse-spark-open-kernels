@@ -27,13 +27,16 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 | Rule | Case | Reading | Status |
 |---|---|---|---|
 | 2-8 | Anything else on the kernel boards | Allowed when the judge accepts it and no rule explicitly bans it | allowed (R-20261023-6) |
-| 2, 5, 6 | Any reordering (fusion, accumulation and split-K order, scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order | allowed (R-20261023-4) |
-| 2, 5-7 | Below the allowed precision: FP8/FP4 activations, fewer experts, skipped keys | Forbidden | forbidden; inadmissible column of the bound only (R-20261023-4) |
+| 2, 5, 6 | Any reordering (fusion with BF16 rounding kept, even in registers; accumulation and split-K order; scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order | allowed (R-20261023-4) |
+| 2, 5-7 | Below the allowed precision: FP8/FP4 activations, fewer experts, skipped keys | Forbidden | forbidden (R-20261023-4) |
 | 6 | FP8 softmax probabilities in the PV MMA with an FP8 cache | SGLang's FA3 does it | allowed |
-| 2, 8 | Our own cubin or hand-edited SASS in a kernel submission | Accepted and not banned; review risk (2) | allowed (R-20261023-6) |
+| 2, 8 | Our own cubin or hand-edited SASS | Accepted, not banned; review risk (2) | allowed (R-20261023-6) |
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
-| 5 | Lossless re-encoding or compression of the weights in `prepare()`, decoded inside the timed kernels: the recoded scale bank (FINDINGS "Scale bank"), hardware generic memory compression, coded BF16 exponents | llms.txt:107: "compress them losslessly ... or smaller, losslessly" | allowed |
-| 5 | A dequantized (BF16, FP8) copy of NVFP4 weights made in `prepare()`, even beside the packed bank | Moves timed dequant work into prepare | forbidden (withdrawn job 07d07d96) |
-| 2 | L2 persistence (access-policy windows, set-aside L2) to keep weights through the judge's per-replay L2 flush | Defeats the judge's cold-cache protocol | forbidden |
-| 2 | Streaming a later stage's weights into L2 while an earlier dependent stage runs, inside one timed call | Overlap within the call; nothing survives the flush | allowed |
-| 2, 8 | Lab runs: timing any other kernel or shape inside `prepare()` (`tools/h200_lab.py`); the run scores the base kernel | Computes nothing the timed calls return | allowed (R-20261024-3) |
+| 5 | Lossless re-encoding or compression of the weights in `prepare()` (recoded scale bank, coded exponents), decoded in the timed kernels | llms.txt:107: "compress them losslessly" | allowed |
+| 5 | A dequantized (BF16, FP8) copy of NVFP4 weights made in `prepare()` | Moves timed dequant into prepare | forbidden (withdrawn job 07d07d96) |
+| 2, 6 | Correctness | TASK.md:76-87 is the check (near-tie routing; 3-15% relative L2), not equality with our incumbent: time a variant that fails our exact-ID or 0.003 gates but passes it; promote only with margin on many seeds | allowed |
+| 5 | A constant table of format products (all 4,064 E2M1 x E4M3 values as BF16) | Not a dequantized bank: the timed kernel still reads and decodes the weights | allowed |
+| 2 | The unpooler's T <= 8 shortcut (TASK.md:22) | Set by the call's total T; internal chunking doesn't extend it | forbidden above T = 8 |
+| 2 | L2 persistence (access-policy windows, set-aside L2) across the per-replay flush | Defeats the cold-cache protocol | forbidden |
+| 2 | Prefetching a later stage's weights into L2 within one timed call | Nothing survives the flush | allowed |
+| 2, 8 | Lab runs: timing other kernels inside `prepare()` (`tools/h200_lab.py`) | Computes nothing the timed calls return | allowed (R-20261024-3) |
