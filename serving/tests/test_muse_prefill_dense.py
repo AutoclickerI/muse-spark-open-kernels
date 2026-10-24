@@ -26,11 +26,12 @@ def main():
     pooler = (torch.randn((p.MOE_HIDDEN, p.HIDDEN), device=dev, dtype=torch.bfloat16) / p.HIDDEN**0.5).contiguous()
     router = (torch.randn((p.ROUTER_EXPERTS, p.HIDDEN), device=dev, dtype=torch.float32) / p.HIDDEN**0.5).contiguous()
     started = time.monotonic()
-    op = p.DenseRouterPlan(pooler, router, tokens=(8, 16, 32, 64, 128, 256), budget_s=10)
+    token_counts = (753, 3012, 16384)
+    op = p.DenseRouterPlan(pooler, router, tokens=token_counts, budget_s=10)
     assert p._Graph.active == 0
     rows = []
     worst = [0.0, 0.0]
-    for m in (8, 16, 32, 64, 128, 256):
+    for m in token_counts:
         x = torch.randn((m, p.HIDDEN), device=dev, dtype=torch.bfloat16)
         expected = p._separate(x, op.pooler, op.router_hi, op.router_lo)
         got = op(x)

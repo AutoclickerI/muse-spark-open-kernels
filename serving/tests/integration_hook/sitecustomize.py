@@ -14,6 +14,7 @@ exec(compile((ROOT / 'serving/harness/pyhook/sitecustomize.py').read_text(),
 AR = 'sglang.kernels.ops.muse_spark_v12.all_reduce_norm_residual'
 ADAPTER = 'sglang.srt.layers.muse_spark_serving'
 DRAFT = 'sglang.srt.models.dflash'
+QUANT = 'sglang.srt.layers.quantization.muse_spark_nvfp4_moe'
 
 
 class Loader(importlib.abc.Loader):
@@ -75,12 +76,25 @@ class Loader(importlib.abc.Loader):
 
             module.all_gather_supported = supported
             module.projection_all_gather = gather
+        elif module.__name__ == QUANT:
+            cls = module.MuseSparkNvFp4FusedMoEMethod
+            original = cls._process_weights_for_marlin
+
+            def prepare(self, layer):
+                result = original(self, layer)
+                # Force the same verify dispatch using the tiny model's exact
+                # Marlin arithmetic. Real 32x4096 bank/repack arithmetic has a
+                # separate layer test; it cannot use the tiny H512 checkpoint.
+                layer._muse_v4_state = {'portable_layer': layer}
+                return result
+
+            cls._process_weights_for_marlin = prepare
         print('SERVING_INTEGRATION portable ABI loaded:', module.__name__, flush=True)
 
 
 class Finder(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
-        if fullname in (AR, ADAPTER, DRAFT):
+        if fullname in (AR, ADAPTER, DRAFT, QUANT):
             spec = importlib.machinery.PathFinder.find_spec(fullname, path)
             spec.loader = Loader(spec.loader)
             return spec
