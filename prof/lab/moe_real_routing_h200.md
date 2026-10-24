@@ -120,6 +120,149 @@ LIB flashinfer grouped_mm_fp4=FP4_activations; mm_bf16_fp4=SM100+; cutlass W4A16
 END left_s=73.3 rows=252 tg_choices=((32, 3, 1, 8), (32, 3, 1, 16), (32, 3, 0.5, 8), (64, 3, 1, 8), (64, 3, 1, 16), (64, 3, 0.5, 8), (64, 5, 1, 8), (64, 5, 1, 16), (64, 5, 0.5, 8), (32, 5, 1, 8), (32, 5, 1, 16), (32, 5, 0.5, 8))
 ```
 
+## 907004cbcc7c4b82 — loaded route IDs from 26d7e05ab97d4f96, fixture 0
+
+Receipt: `runs/muse_bf16_proj/20261024T035335Z_submit_907004cbcc7c4b82.json`
+
+| Kernel / routing | 8 | 16 | 32 | 128 | 256 | 512 | 753 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| v9 / R | 63.6 | 75.7 | 105.0 | 278.7 | 476.4 | — | — |
+| v9 / B | 80.9 | 112.8 | 146.1 | 277.4 | 448.2 | — | — |
+| marlin / R | 121.9 | 136.6 | 120.9 | 389.4 | 557.9 | — | — |
+| marlin / B | 142.5 | 187.3 | 199.1 | 457.0 | 613.5 | — | — |
+| bf16ref / R | 307.7 | 259.4 | 333.6 | 790.7 | 1002.1 | — | — |
+| bf16ref / B | 392.7 | 497.0 | 715.0 | 972.9 | 1112.0 | — | — |
+| v9p / R | 66.3 | 75.0 | 104.5 | 279.2 | 474.7 | — | — |
+| v9p / B | 81.8 | 113.0 | 146.9 | 274.3 | 446.9 | — | — |
+| v19 / R | 64.0 | 75.4 | 105.4 | 279.9 | 478.0 | — | — |
+| v19 / B | 81.3 | 114.4 | 147.7 | 278.3 | 450.1 | — | — |
+| h7 / R | 97.5 | 87.2 | 117.4 | 328.4 | 462.8 | — | — |
+| h7 / B | 118.9 | 162.5 | 215.0 | 331.7 | 465.7 | — | — |
+| v11 / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| v11 / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| humming / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| humming / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| h2 / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| h2 / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| h4 / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| h4 / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| h5 / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| h5 / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| h6 / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| h6 / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| h6k / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| h6k / B | ERR | ERR | ERR | ERR | ERR | — | — |
+| h8 / R | ERR | ERR | ERR | ERR | ERR | — | — |
+| h8 / B | ERR | ERR | ERR | ERR | ERR | — | — |
+
+Verify-block sharing: corrected for every 8-token block. `v9p` is the native V9_phase probe; `v11` is its wide Humming path. `humming` uses the original indexed Humming settings.
+
+Measured minima among admissible candidates (BF16/FlashInfer reference banks excluded):
+
+| M | R winner | R us | B winner | B us |
+|---:|---|---:|---|---:|
+| 8 | v9 | 63.6 | v9 | 80.9 |
+| 16 | v9p | 75.0 | v9 | 112.8 |
+| 32 | v9p | 104.5 | v9 | 146.1 |
+| 128 | v9 | 278.7 | v9p | 274.3 |
+| 256 | h7 | 462.8 | v9p | 446.9 |
+| 512 | — | — | — | — |
+| 753 | — | — | — | — |
+
+```text
+ROUTE R 8 pairs=14 E=6 hot=5
+ROUTE B 8 pairs=13 E=11 hot=3
+ROUTE R 16 pairs=31 E=5 hot=11
+ROUTE B 16 pairs=24 E=15 hot=3
+ROUTE R 32 pairs=65 E=6 hot=22
+ROUTE B 32 pairs=43 E=17 hot=7
+ROUTE R 128 pairs=209 E=18 hot=55
+ROUTE B 128 pairs=208 E=17 hot=73
+ROUTE R 256 pairs=414 E=21 hot=119
+ROUTE B 256 pairs=408 E=24 hot=188
+ERR v11/8/R ValueError agreement 0.2415/0.3858
+ERR v11/8/B ValueError agreement 0.2294/0.3915
+ERR v11/16/R ValueError agreement 0.2676/0.3978
+ERR v11/16/B ValueError agreement 0.2396/0.3907
+ERR v11/32/R ValueError agreement 0.2616/0.4016
+ERR v11/32/B ValueError agreement 0.3051/0.414
+ERR v11/128/R ValueError agreement 0.2592/0.4236
+ERR v11/128/B ValueError agreement 0.2041/0.4365
+ERR v11/256/R ValueError agreement 0.264/0.4325
+ERR v11/256/B ValueError agreement 0.3067/0.4308
+ERR humming/8/R ValueError agreement 0.2415/0.3858
+ERR humming/8/B ValueError agreement 0.2294/0.3915
+ERR humming/16/R ValueError agreement 0.2676/0.3978
+ERR humming/16/B ValueError agreement 0.2396/0.3907
+ERR humming/32/R ValueError agreement 0.2616/0.4016
+ERR humming/32/B ValueError agreement 0.3051/0.414
+ERR humming/128/R ValueError agreement 0.2592/0.4236
+ERR humming/128/B ValueError agreement 0.2041/0.4365
+ERR humming/256/R ValueError agreement 0.264/0.4325
+ERR humming/256/B ValueError agreement 0.3067/0.4308
+ERR h2/8/R ValueError agreement 0.2415/0.3858
+ERR h2/8/B ValueError agreement 0.2294/0.3915
+ERR h2/16/R ValueError agreement 0.2676/0.3978
+ERR h2/16/B ValueError agreement 0.2396/0.3907
+ERR h2/32/R ValueError agreement 0.2616/0.4016
+ERR h2/32/B ValueError agreement 0.3051/0.414
+ERR h2/128/R ValueError agreement 0.2592/0.4236
+ERR h2/128/B ValueError agreement 0.2041/0.4365
+ERR h2/256/R ValueError agreement 0.264/0.4325
+ERR h2/256/B ValueError agreement 0.3067/0.4308
+ERR h4/8/R ValueError agreement 0.2415/0.3858
+ERR h4/8/B ValueError agreement 0.2294/0.3915
+ERR h4/16/R ValueError agreement 0.2676/0.3978
+ERR h4/16/B ValueError agreement 0.2396/0.3907
+ERR h4/32/R ValueError agreement 0.2616/0.4016
+ERR h4/32/B ValueError agreement 0.3051/0.414
+ERR h4/128/R ValueError agreement 0.2592/0.4236
+ERR h4/128/B ValueError agreement 0.2041/0.4365
+ERR h4/256/R ValueError agreement 0.264/0.4325
+ERR h4/256/B ValueError agreement 0.3067/0.4308
+ERR h5/8/R ValueError agreement 0.2415/0.3858
+ERR h5/8/B ValueError agreement 0.2294/0.3915
+ERR h5/16/R ValueError agreement 0.2676/0.3978
+ERR h5/16/B ValueError agreement 0.2396/0.3907
+ERR h5/32/R ValueError agreement 0.2616/0.4016
+ERR h5/32/B ValueError agreement 0.3051/0.414
+ERR h5/128/R ValueError agreement 0.2592/0.4236
+ERR h5/128/B ValueError agreement 0.2041/0.4365
+ERR h5/256/R ValueError agreement 0.264/0.4325
+ERR h5/256/B ValueError agreement 0.3068/0.4308
+ERR h6/8/R ValueError agreement 0.2415/0.3858
+ERR h6/8/B ValueError agreement 0.2294/0.3915
+ERR h6/16/R ValueError agreement 0.2676/0.3978
+ERR h6/16/B ValueError agreement 0.2396/0.3907
+ERR h6/32/R ValueError agreement 0.2616/0.4016
+ERR h6/32/B ValueError agreement 0.3051/0.414
+ERR h6/128/R ValueError agreement 0.2592/0.4236
+ERR h6/128/B ValueError agreement 0.2041/0.4365
+ERR h6/256/R ValueError agreement 0.264/0.4325
+ERR h6/256/B ValueError agreement 0.3068/0.4308
+ERR h6k/8/R ValueError agreement 0.2415/0.3858
+ERR h6k/8/B ValueError agreement 0.2294/0.3915
+ERR h6k/16/R ValueError agreement 0.2676/0.3978
+ERR h6k/16/B ValueError agreement 0.2396/0.3907
+ERR h6k/32/R ValueError agreement 0.2616/0.4016
+ERR h6k/32/B ValueError agreement 0.3051/0.414
+ERR h6k/128/R ValueError agreement 0.2592/0.4236
+ERR h6k/128/B ValueError agreement 0.2041/0.4365
+ERR h6k/256/R ValueError agreement 0.264/0.4325
+ERR h6k/256/B ValueError agreement 0.3068/0.4308
+ERR h8/8/R ValueError agreement 0.2415/0.3858
+ERR h8/8/B ValueError agreement 0.2293/0.3915
+ERR h8/16/R ValueError agreement 0.2676/0.3978
+ERR h8/16/B ValueError agreement 0.2395/0.3907
+ERR h8/32/R ValueError agreement 0.2616/0.4016
+ERR h8/32/B ValueError agreement 0.3051/0.414
+ERR h8/128/R ValueError agreement 0.2592/0.4236
+ERR h8/128/B ValueError agreement 0.2041/0.4365
+ERR h8/256/R ValueError agreement 0.264/0.4325
+ERR h8/256/B ValueError agreement 0.3067/0.4308
+END left_s=65.0
+```
+
 ## c8c89f9f111845af — generated router model / reference
 
 Receipt: `runs/muse_bf16_proj/20261024T011237Z_submit_c8c89f9f111845af.json`
