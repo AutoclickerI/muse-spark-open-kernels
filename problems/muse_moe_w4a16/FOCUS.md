@@ -36,7 +36,10 @@ on `shape_m is not within any range`, so it provides no decode-weight agreement 
 
 The raw17-derived WGMMA decode probe `dev/v9_wgmma/raw64_dropin.py` uses packed
 NVFP4/E4M3 banks and `m64n64k16` token tiles, with W13 SwiGLU fused before W2.
-It passes the five local challenge tests and 156 FP32-gated adapter graphs;
-SM90a ptxas reports no spills.  H200 comparison source key
-`f998409b16c5cfea` is pending; do not promote it before the 12-seed mean is
-known.
+It is correct but closed on H200: receipt `63c980e800194764` gives raw64
+534/679 us at M=128/256 versus Humming masked 342/450.  Do not promote it.
+
+Humming is the current MoE bar.  Profile source key `e858855cac1b5ad0` sweeps
+masked configs, block-M, SM allocation and per-stage event spans; variant source
+key `053c794fc0aba59a` compares masked, masked-TMA and indexed plans.  Both use
+the packed bank and exact R0 plus 12-seed FP32 gates; receipts are pending.

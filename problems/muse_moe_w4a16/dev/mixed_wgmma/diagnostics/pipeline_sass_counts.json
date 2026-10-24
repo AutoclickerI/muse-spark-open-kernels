@@ -1,147 +1,211 @@
 [
   {
-    "name": "_ZN6mwpipe7groupedILi16ELi128ELi4ELi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 40,
-    "wait_args": [
+    "config": [
+      16,
+      128,
+      4,
+      4,
+      true
+    ],
+    "registers": 89,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 40,
+    "waits": [
       "gsb0, 0x1",
       "gsb0, 0x1",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 13824
   },
   {
-    "name": "_ZN6mwpipe7groupedILi32ELi128ELi4ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 48,
-    "wait_args": [
+    "config": [
+      32,
+      128,
+      4,
+      2,
+      true
+    ],
+    "registers": 103,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 48,
+    "waits": [
       "gsb0, 0x1",
       "gsb0, 0x1",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 13824
   },
   {
-    "name": "_ZN6mwpipe7groupedILi16ELi128ELi4ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 40,
-    "wait_args": [
+    "config": [
+      16,
+      128,
+      4,
+      2,
+      true
+    ],
+    "registers": 89,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 40,
+    "waits": [
       "gsb0, 0x1",
       "gsb0, 0x1",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 13824
   },
   {
-    "name": "_ZN6mwpipe7groupedILi32ELi256ELi3ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 16,
-    "cp_async": 72,
-    "wait_args": [
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0"
+    "config": [
+      32,
+      256,
+      3,
+      1,
+      true
     ],
-    "barriers": 3
-  },
-  {
-    "name": "_ZN6mwpipe7groupedILi32ELi128ELi4ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 48,
-    "wait_args": [
+    "registers": 126,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 72,
+    "waits": [
       "gsb0, 0x1",
       "gsb0, 0x1",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 9216,
+    "prologue_packed_Q_SF_bytes": 18432
   },
   {
-    "name": "_ZN6mwpipe7groupedILi16ELi256ELi4ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 16,
-    "cp_async": 80,
-    "wait_args": [
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0"
+    "config": [
+      32,
+      128,
+      4,
+      1,
+      true
     ],
-    "barriers": 3
-  },
-  {
-    "name": "_ZN6mwpipe7groupedILi16ELi128ELi6ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 60,
-    "wait_args": [
+    "registers": 103,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 48,
+    "waits": [
       "gsb0, 0x1",
       "gsb0, 0x1",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 13824
   },
   {
-    "name": "_ZN6mwpipe7groupedILi16ELi128ELi4ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 40,
-    "wait_args": [
-      "gsb0, 0x0",
-      "gsb0, 0x0",
-      "gsb0, 0x0"
+    "config": [
+      16,
+      256,
+      4,
+      1,
+      true
     ],
-    "barriers": 3
-  },
-  {
-    "name": "_ZN6mwpipe7groupedILi16ELi128ELi4ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 8,
-    "cp_async": 40,
-    "wait_args": [
+    "registers": 100,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 80,
+    "waits": [
       "gsb0, 0x1",
       "gsb0, 0x1",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 9216,
+    "prologue_packed_Q_SF_bytes": 27648
   },
   {
-    "name": "_ZN6mwpipe7groupedILi16ELi64ELi4ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_Pfiiii",
-    "spills": 0,
-    "hgmma": 4,
-    "cp_async": 20,
-    "wait_args": [
+    "config": [
+      16,
+      128,
+      6,
+      1,
+      true
+    ],
+    "registers": 102,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 60,
+    "waits": [
+      "gsb0, 0x1",
+      "gsb0, 0x1",
+      "gsb0, 0x0"
+    ],
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 23040
+  },
+  {
+    "config": [
+      16,
+      128,
+      4,
+      1,
+      false
+    ],
+    "registers": 72,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 40,
+    "waits": [
+      "gsb0, 0x0",
       "gsb0, 0x0",
       "gsb0, 0x0"
     ],
-    "barriers": 3
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 13824
+  },
+  {
+    "config": [
+      16,
+      128,
+      4,
+      1,
+      true
+    ],
+    "registers": 88,
+    "local_load_store": 0,
+    "static_bf16_mma": 8,
+    "static_cp_async": 40,
+    "waits": [
+      "gsb0, 0x1",
+      "gsb0, 0x1",
+      "gsb0, 0x0"
+    ],
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 4608,
+    "prologue_packed_Q_SF_bytes": 13824
+  },
+  {
+    "config": [
+      16,
+      64,
+      4,
+      1,
+      false
+    ],
+    "registers": 66,
+    "local_load_store": 0,
+    "static_bf16_mma": 4,
+    "static_cp_async": 20,
+    "waits": [
+      "gsb0, 0x0",
+      "gsb0, 0x0"
+    ],
+    "static_CTA_barrier": 3,
+    "stage_packed_Q_SF_bytes": 2304,
+    "prologue_packed_Q_SF_bytes": 6912
   }
 ]

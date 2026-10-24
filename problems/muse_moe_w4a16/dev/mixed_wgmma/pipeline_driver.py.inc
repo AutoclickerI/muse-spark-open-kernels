@@ -68,7 +68,35 @@ def pp_measure(w,bank,old,st,ds,flush,raw=False):
     return [(statistics.median(t) if t else float('inf'),e,r) for t,(e,r) in zip(times,errors)]
 
 
-def pp_w13(w,bank,ds,flush):
+def pp_raw_phase(w,st,ds,refs,counts,flush):
+    m=ds[0]['hidden_states'].shape[0];dev=w['w13'].device
+    c=torch.tensor(counts,device=dev,dtype=torch.int32);ts=torch.empty(33,device=dev,dtype=torch.int32)
+    ids=ds[0]['topk_ids'];slots=torch.empty((32,m),device=dev,dtype=torch.int32);pos=torch.empty_like(ids)
+    mw_route[(32,)](ids,c,slots,pos,m,0,triton.next_power_of_2(m))
+    pf__raw_tile_offsets_kernel[(1,)](c,ts,BNC=128)
+    cap=triton.cdiv(m*8+32*127,128)*128
+    xt=torch.empty(cap*4096,device=dev,dtype=torch.bfloat16);inter=torch.empty_like(xt);rows=torch.empty_like(ids)
+    x=ds[0]['hidden_states'].clone()
+    def gather():pf__raw_gather_tiled_kernel[(m,)](x,ids,pos,ts,xt,rows,D=4096,BNC=128,num_warps=4)
+    def gemm():st['tiled_mod'].moe_gemm(st['blob13'],st['sfb13'],st['w13_gs'],xt,inter,ts,32,64,64,1,st['sms'])
+    gather();gemm();torch.cuda.synchronize();g=torch.cuda.CUDAGraph()
+    with torch.cuda.graph(g):gemm()
+    starts=ts.cpu().tolist();valid=torch.tensor([r for e,n in enumerate(counts) for r in range(starts[e]*128,starts[e]*128+n)],device=dev)
+    rr=valid[:,None];cc=torch.arange(4096,device=dev)[None,:]
+    indices=((rr//128*64+cc//64)*128+rr%128)*64+((cc%64//8)^(rr%8))*8+cc%8
+    worst=0.
+    for data,rr in zip(ds,refs):
+        x.copy_(data['hidden_states']);gather();g.replay();torch.cuda.synchronize()
+        want=(torch.nn.functional.silu(rr[:,:4096])*rr[:,4096:]).bfloat16().float()
+        worst=max(worst,float((inter[indices].float()-want).norm()/want.norm().clamp_min(1e-12)))
+    if worst>.01:raise RuntimeError(f'raw17 W13/SwiGLU gate {worst}')
+    vals=[];a=torch.cuda.Event(enable_timing=True);b=torch.cuda.Event(enable_timing=True)
+    for i in range(6):
+        x.copy_(ds[i%3]['hidden_states']);gather();flush.zero_();a.record();g.replay();b.record();b.synchronize();vals.append(a.elapsed_time(b)*1000.)
+    return f'RAW17_W13_SWIGLU M={m} us={statistics.median(vals):.1f} fp32={worst:.6f} gather_excluded'
+
+
+def pp_w13(w,bank,ds,flush,rawst):
     # Native W13 timings, including split-K reduction, on three fresh R0 inputs.
     m=ds[0]['hidden_states'].shape[0];dev=w['w13'].device;out=[]
     plans=((0,264),(0,528),(0,1056),(1,264),(1,528),(1,1056),(2,528),
@@ -109,12 +137,15 @@ def pp_w13(w,bank,ds,flush):
         for data,want in zip(ds,refs):
             static['hidden_states'].copy_(data['hidden_states']);graph.replay();torch.cuda.synchronize()
             worst=max(worst,float((y[valid]-want).norm()/want.norm().clamp_min(1e-12)))
-        if worst>.01:raise RuntimeError(f'W13 gate {which}/{grid} {worst}')
+        if worst>.01:
+            out.append(f'W13_REJECT M={m} P{which} grid={grid} fp32={worst:.6f}')
+            continue
         vals=[];a=torch.cuda.Event(enable_timing=True);b=torch.cuda.Event(enable_timing=True)
         for i in range(6):
             static['hidden_states'].copy_(ds[i%3]['hidden_states']);flush.zero_();a.record();graph.replay();b.record();b.synchronize();vals.append(a.elapsed_time(b)*1000.)
         us=statistics.median(vals)
         out.append(f'W13 M={m} P{which} grid={grid} us={us:.1f} req_GBs={requested[nt]/us/1e3:.1f} unique_GBs={unique/us/1e3:.1f} fp32={worst:.6f}')
+    out.append(pp_raw_phase(w,rawst,ds,refs,counts,flush))
     return out
 
 
@@ -132,7 +163,7 @@ def lab(deadline,weights,state=None):
             if i==0:
                 r0=dc_fixtures(w,m,True);rr=pp_measure(w,bank,old,control,r0,flush,raw=True)
                 lines.append(f'R0 M={m} us='+','.join(f'{v[0]:.1f}' for v in rr)+f' raw17_last l2={max(v[1] for v in rr):.5f} row={max(v[2] for v in rr):.4f}')
-                lines.extend(pp_w13(w,bank,r0,flush))
+                lines.extend(pp_w13(w,bank,r0,flush,control['raw']))
             vals=pp_measure(w,bank,old,control,ds,flush)
             counts=torch.bincount(ds[0]['topk_ids'][ds[0]['topk_ids']>=0],minlength=32)
             lines.append(f'S {i} M={m} P={int(counts.sum())} E={int((counts>0).sum())} us='+','.join(f'{v[0]:.1f}' for v in vals)+f' l2={max(v[1] for v in vals):.5f} row={max(v[2] for v in vals):.4f}')

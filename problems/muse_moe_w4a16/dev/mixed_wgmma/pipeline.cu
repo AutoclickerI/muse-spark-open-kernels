@@ -75,6 +75,15 @@ template<int NT>__device__ __forceinline__ void mma(float*c,const unsigned*a,con
  }
 #endif
 }
+template<int NT,bool OVERLAP>__device__ __forceinline__ void mma_group(float*c,const unsigned*a,const __nv_bfloat16*xs){
+#pragma unroll
+for(int b=0;b<4;++b)mma<NT>(c,a+b*4,xs,b);
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
+asm volatile("wgmma.commit_group.sync.aligned;":::"memory");
+if constexpr(OVERLAP)asm volatile("wgmma.wait_group.sync.aligned 1;":::"memory");
+else asm volatile("wgmma.wait_group.sync.aligned 0;":::"memory");
+#endif
+}
 template<int NT,int KT>__device__ __forceinline__ void load_stage(
  unsigned char*q,unsigned char*s,__nv_bfloat16*bs,const int*Q,const unsigned char*S,
  const __nv_bfloat16*X,const int*src,int e,int mt,int N,int tile){
@@ -147,10 +156,12 @@ __global__ void __launch_bounds__(128,2) grouped(const int*Q,const unsigned char
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
    asm volatile("fence.proxy.async.shared::cta;":::"memory");
 #endif
+   #pragma unroll 1
+   for(int pair=0;pair<(KT>=128?KT/128:1);++pair){
    #pragma unroll
-   for(int chunk=0;chunk<KT/64;++chunk){
-    constexpr int CHUNKS=KT/64;
-    int reg=OVERLAP?((k*CHUNKS+chunk)&1):0;
+   for(int sub=0;sub<(KT>=128?2:1);++sub){
+    int chunk=pair*2+sub;
+    int reg=OVERLAP?sub:0;
     #pragma unroll
     for(int g=0;g<2;++g){int z=chunk*2+g;
      uint2 q=*(const uint2*)(qs+st*QB+(z*128+t)*8);
@@ -161,13 +172,7 @@ __global__ void __launch_bounds__(128,2) grouped(const int*Q,const unsigned char
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
     asm volatile("wgmma.fence.sync.aligned;":::"memory");
 #endif
-    #pragma unroll
-    for(int b=0;b<4;++b)mma<NT>(acc,af[reg]+b*4,bs+st*NT*KT+chunk*NT*64,b);
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
-    asm volatile("wgmma.commit_group.sync.aligned;":::"memory");
-    if constexpr(OVERLAP)asm volatile("wgmma.wait_group.sync.aligned 1;":::"memory");
-    else asm volatile("wgmma.wait_group.sync.aligned 0;":::"memory");
-#endif
+    mma_group<NT,OVERLAP>(acc,af[reg],bs+st*NT*KT+chunk*NT*64);
     // Input-only keep extends the *previous* bank through the next wait1.
     // A read/write empty asm whose result is overwritten loses this lifetime
     // under unrolling: ptxas then reuses four registers and inserts wait0/MMA.
@@ -178,6 +183,7 @@ __global__ void __launch_bounds__(128,2) grouped(const int*Q,const unsigned char
                        Q,SCALE,X,src,e,mt,N,split*NS+k+S-1);
      }
     }
+   }
    }
   }
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
