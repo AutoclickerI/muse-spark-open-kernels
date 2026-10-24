@@ -22,7 +22,8 @@ Kernel loop, measured 2026-10-23:
 6. Serving check: from 11-06 only, 3 a day.
 
 Step 3 dominates, since one result costs hours of wall time.
-- Fixes: denser checks (packed per-shape diagnostics), priority queueing (done), and Hopper glue exercised locally (AGENTS).
+- Fixes: denser checks (packed per-shape diagnostics), priority queueing (done), Hopper glue exercised locally (AGENTS), and
+  `tools/h200_lab.py` (any H200 measurement in proj/MoE prepare, off the scarce decode/attention/prefill quota).
 - Step 6 can't run before 11-06, so the harness carries the serving risk until then. H200 timing of any
   serving-shape kernel (drafter, per-rank TP8/EP8 shapes) rides in any check's `prepare`; the receipt keeps
   only the last 16,000 characters of output (`log_tail`), so print compact lines last.

@@ -27,6 +27,7 @@ second compile of the same kernel is fast.
 | Host env `~/anaconda3/envs/comp_kv` (torch 2.13, cu130) | Tests without the image (`--no-baseline`) | `baseline.py` needs `sglang` |
 | `okc` 0.7.1 (`~/.okc/bin`) | Boards (`okc leaderboard <p> --json`), `okc problems`, `okc withdraw` | Never `okc check`/`submit` directly (AGENTS) |
 | `tools/screen_all.py` | Screen every candidate the judge hasn't measured, in parallel (tests and graph capture in the image), then send each pass | Logs in `runs/screen/` (ignored). Queues each pass with `okc_run.py send` |
+| `tools/h200_lab.py` | Any H200 measurement (kernel variants at any shape, library kernels in the judge's image) without a candidate | Payload `lab(deadline, weights) -> list[str]` appended to proj's (or MoE's) best scored source; `read <job>` prints its lines; up to ~280 s and 9,000 characters per run |
 | `sim/` | Bounds and ceilings: `python -m sim` (problems), `-m sim.serving` (serving step and score), `-m sim.calibrate` (SGLang's measured times), `-m sim.bound` (`docs/reference/bound.md`) | Model inputs: `sim/routing.json`, `sim/hw.py` |
 | `prof/` | Judge-profile analysis (`prof/analyze.py`), the generator of `docs/reference/profile.md` (`prof/write_report.py`), and the SASS audit (`prof/compile_static.py`, `prof/sass/`) | Writes snapshots; regenerate rather than edit |
 | `runs/calibration/` | SGLang's own kernels profiled on the judge, per problem | `runs/calibration/profiles/*_sglang.*.txt` |
