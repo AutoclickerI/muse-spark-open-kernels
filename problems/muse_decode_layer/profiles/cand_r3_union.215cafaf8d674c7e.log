@@ -1,0 +1,105 @@
+s=112.576 rel=0
+UNION_MOE_CHOICE M=8 route=layer choice=router_v9 us=113.120 rel=1.2688e-07
+UNION_MOE_CHOICE M=8 route=layer choice=moe_rt_v9 us=113.472 rel=2.5376e-07
+UNION_MOE_CHOICE M=8 route=layer choice=v7 us=119.232 rel=4.0701e-06
+UNION_REJECT family=moe key=8 choice=grouped reason='grouped_mod'
+UNION_MOE_PLAN M=8 winner=v9 all_us=v9:113;router_v9:113;moe_rt_v9:113;v7:119
+UNION_MOE_CHOICE M=16 route=layer choice=v9 us=114.688 rel=3.0412e-06
+UNION_MOE_CHOICE M=16 route=layer choice=router_v9 us=113.952 rel=3.0412e-06
+UNION_MOE_CHOICE M=16 route=layer choice=moe_rt_v9 us=114.080 rel=1.1903e-08
+UNION_MOE_CHOICE M=16 route=layer choice=v7 us=116.224 rel=1.1903e-08
+UNION_REJECT family=moe key=16 choice=grouped reason='grouped_mod'
+UNION_MOE_PLAN M=16 winner=router_v9 all_us=v9:115;router_v9:114;moe_rt_v9:114;v7:116
+UNION_MOE_CHOICE M=32 route=layer choice=v9 us=161.600 rel=6.0645e-07
+UNION_MOE_CHOICE M=32 route=layer choice=router_v9 us=158.624 rel=7.5954e-08
+UNION_MOE_CHOICE M=32 route=layer choice=moe_rt_v9 us=158.048 rel=7.5807e-08
+UNION_MOE_CHOICE M=32 route=layer choice=v7 us=166.016 rel=7.5806e-08
+UNION_REJECT family=moe key=32 choice=grouped reason='grouped_mod'
+UNION_MOE_PLAN M=32 winner=moe_rt_v9 all_us=v9:162;router_v9:159;moe_rt_v9:158;v7:166
+UNION_MOE_CHOICE M=128 route=layer choice=v9 us=269.856 rel=9.7293e-06
+UNION_MOE_CHOICE M=128 route=layer choice=router_v9 us=271.872 rel=1.0799e-05
+UNION_MOE_CHOICE M=128 route=layer choice=moe_rt_v9 us=271.264 rel=1.3512e-05
+UNION_MOE_CHOICE M=128 route=layer choice=v7 us=336.896 rel=7.2628e-06
+UNION_REJECT family=moe key=128 choice=grouped reason='grouped_mod'
+UNION_MOE_PLAN M=128 winner=v9 all_us=v9:270;router_v9:272;moe_rt_v9:271;v7:337
+UNION_MOE_CHOICE M=256 route=layer choice=v9 us=440.448 rel=6.9196e-06
+UNION_MOE_CHOICE M=256 route=layer choice=router_v9 us=436.768 rel=1.0497e-05
+UNION_MOE_CHOICE M=256 route=layer choice=moe_rt_v9 us=434.048 rel=9.6298e-06
+UNION_MOE_CHOICE M=256 route=layer choice=v7 us=522.304 rel=2.4e-05
+UNION_REJECT family=moe key=256 choice=grouped reason='grouped_mod'
+UNION_MOE_PLAN M=256 winner=moe_rt_v9 all_us=v9:440;router_v9:437;moe_rt_v9:434;v7:522
+UNION_MOE_CHOICE M=1 route=layer choice=v9 us=36.256 rel=0
+UNION_MOE_CHOICE M=1 route=layer choice=router_v9 us=36.384 rel=0
+UNION_MOE_CHOICE M=1 route=layer choice=moe_rt_v9 us=36.832 rel=0
+UNION_MOE_CHOICE M=1 route=layer choice=v7 us=37.952 rel=0
+UNION_REJECT family=moe key=1 choice=grouped reason='grouped_mod'
+UNION_REJECT family=moe key=1 choice=humming reason=v9 gate rel=0.46751
+UNION_MOE_CHOICE M=1 route=layer choice=adaptive us=342.880 rel=0
+UNION_MOE_PLAN M=1 winner=v9 all_us=v9:36.3;router_v9:36.4;moe_rt_v9:36.8;v7:38;adaptive:343
+UNION_MOE_CHOICE M=8 route=layer choice=v9 us=113.184 rel=2.8371e-07
+UNION_MOE_CHOICE M=8 route=layer choice=router_v9 us=113.504 rel=2.8371e-07
+UNION_MOE_CHOICE M=8 route=layer choice=moe_rt_v9 us=115.392 rel=1.0463e-06
+UNION_MOE_CHOICE M=8 route=layer choice=v7 us=117.792 rel=2.5377e-07
+UNION_REJECT family=moe key=8 choice=grouped reason='grouped_mod'
+UNION_REJECT family=moe key=8 choice=humming reason=v9 gate rel=0.28854
+UNION_MOE_CHOICE M=8 route=layer choice=adaptive us=1685.920 rel=1.0463e-06
+UNION_MOE_PLAN M=8 winner=v9 all_us=v9:113;router_v9:114;moe_rt_v9:115;v7:118;adaptive:1.69e+03
+UNION_MOE_CHOICE M=16 route=layer choice=v9 us=113.792 rel=1.1903e-08
+UNION_MOE_CHOICE M=16 route=layer choice=router_v9 us=115.552 rel=7.4247e-10
+UNION_MOE_CHOICE M=16 route=layer choice=moe_rt_v9 us=113.760 rel=1.5206e-06
+UNION_MOE_CHOICE M=16 route=layer choice=v7 us=116.288 rel=6.0823e-06
+UNION_REJECT family=moe key=16 choice=grouped reason='grouped_mod'
+UNION_REJECT family=moe key=16 choice=humming reason=v9 gate rel=0.25865
+UNION_MOE_CHOICE M=16 route=layer choice=adaptive us=1614.432 rel=2.4332e-05
+UNION_MOE_PLAN M=16 winner=moe_rt_v9 all_us=v9:114;router_v9:116;moe_rt_v9:114;v7:116;adaptive:1.61e+03
+UNION_MOE_CHOICE M=32 route=layer choice=v9 us=158.528 rel=7.5807e-08
+UNION_MOE_CHOICE M=32 route=layer choice=router_v9 us=160.672 rel=6.1234e-07
+UNION_MOE_CHOICE M=32 route=layer choice=moe_rt_v9 us=159.392 rel=6.0763e-07
+UNION_MOE_CHOICE M=32 route=layer choice=v7 us=163.168 rel=3.3902e-07
+UNION_REJECT family=moe key=32 choice=grouped reason='grouped_mod'
+UNION_REJECT family=moe key=32 choice=humming reason=v9 gate rel=0.31294
+UNION_MOE_CHOICE M=32 route=layer choice=adaptive us=2358.688 rel=1.5628e-07
+UNION_MOE_PLAN M=32 winner=v9 all_us=v9:159;router_v9:161;moe_rt_v9:159;v7:163;adaptive:2.36e+03
+UNION_MOE_CHOICE M=128 route=layer choice=v9 us=270.432 rel=8.2857e-07
+UNION_MOE_CHOICE M=128 route=layer choice=router_v9 us=271.712 rel=1.0457e-05
+UNION_MOE_CHOICE M=128 route=layer choice=moe_rt_v9 us=271.648 rel=1.0458e-05
+UNION_MOE_CHOICE M=128 route=layer choice=v7 us=339.296 rel=1.6757e-05
+UNION_REJECT family=moe key=128 choice=grouped reason='grouped_mod'
+UNION_REJECT family=moe key=128 choice=humming reason=v9 gate rel=0.31766
+UNION_MOE_CHOICE M=128 route=layer choice=adaptive us=3007.072 rel=1.2712e-05
+UNION_MOE_PLAN M=128 winner=v9 all_us=v9:270;router_v9:272;moe_rt_v9:272;v7:339;adaptive:3.01e+03
+UNION_MOE_CHOICE M=256 route=layer choice=v9 us=436.544 rel=6.8839e-06
+UNION_MOE_CHOICE M=256 route=layer choice=router_v9 us=436.992 rel=8.19e-06
+UNION_MOE_CHOICE M=256 route=layer choice=moe_rt_v9 us=436.864 rel=7.8311e-06
+UNION_MOE_CHOICE M=256 route=layer choice=v7 us=521.440 rel=2.4657e-05
+UNION_REJECT family=moe key=256 choice=grouped reason='grouped_mod'
+UNION_REJECT family=moe key=256 choice=humming reason=v9 gate rel=0.30014
+UNION_MOE_CHOICE M=256 route=layer choice=adaptive us=3946.720 rel=1.5889e-05
+UNION_MOE_PLAN M=256 winner=v9 all_us=v9:437;router_v9:437;moe_rt_v9:437;v7:521;adaptive:3.95e+03
+UNION_PDL_CHOICE key=(1, 'b1') choice=False us=13.952 rel=0
+UNION_PDL_CHOICE key=(1, 'b1') choice=True us=13.472 rel=6.7257e-07
+UNION_PDL_CHOICE key=(1, 'b2') choice=False us=14.048 rel=0
+UNION_PDL_CHOICE key=(1, 'b2') choice=True us=13.472 rel=0
+UNION_PDL_CHOICE key=(8, 'b1') choice=False us=14.016 rel=0
+UNION_PDL_CHOICE key=(8, 'b1') choice=True us=13.888 rel=3.0383e-05
+UNION_PDL_CHOICE key=(8, 'b2') choice=False us=14.208 rel=0
+UNION_PDL_CHOICE key=(8, 'b2') choice=True us=13.824 rel=0
+UNION_PDL_CHOICE key=(16, 'b1') choice=False us=12.192 rel=0
+UNION_PDL_CHOICE key=(16, 'b1') choice=True us=12.320 rel=0
+UNION_PDL_CHOICE key=(16, 'b2') choice=False us=12.448 rel=0
+UNION_PDL_CHOICE key=(16, 'b2') choice=True us=12.704 rel=0
+UNION_PDL_CHOICE key=(32, 'b1') choice=False us=12.992 rel=0
+UNION_PDL_CHOICE key=(32, 'b1') choice=True us=12.160 rel=0
+UNION_PDL_CHOICE key=(32, 'b2') choice=False us=12.416 rel=0
+UNION_PDL_CHOICE key=(32, 'b2') choice=True us=13.248 rel=0
+UNION_PDL_CHOICE key=(128, 'b1') choice=False us=14.656 rel=0
+UNION_PDL_CHOICE key=(128, 'b1') choice=True us=14.304 rel=0
+UNION_PDL_CHOICE key=(128, 'b2') choice=False us=15.392 rel=0
+UNION_PDL_CHOICE key=(128, 'b2') choice=True us=14.656 rel=0
+UNION_PDL_CHOICE key=(256, 'b1') choice=False us=20.416 rel=0
+UNION_PDL_CHOICE key=(256, 'b1') choice=True us=18.752 rel=0
+UNION_PDL_CHOICE key=(256, 'b2') choice=False us=20.224 rel=0
+UNION_PDL_CHOICE key=(256, 'b2') choice=True us=18.688 rel=0
+UNION_FULL_GATE stream_rel=0.0036259 hidden_rel=0.0042252 bound=0.15 e4=0.056146
+UNION_PREPARE seconds=192.111 deadline=238.0 attention=12 projection=24 moe={1: 'v9', 8: 'v9', 16: 'moe_rt_v9', 32: 'v9', 128: 'v9', 256: 'v9'}
+UNION_SUMMARY {"attention": {"(1, 1, False)": "('layer', None)", "(1, 1, True)": "('layer', None)", "(1, 8, False)": "('layer', None)", "(1, 8, True)": "('layer', None)", "(16, 1, False)": "('layer', None)", "(16, 1, True)": "('layer', None)", "(16, 8, False)": "('layer', None)", "(16, 8, True)": "('layer', None)", "(32, 1, False)": "('layer', None)", "(32, 1, True)": "('layer', None)", "(32, 8, False)": "('layer', None)", "(32, 8, True)": "('layer', None)"}, "attention_timings": {"(1, 1, False)": {"all_us": "layer:39.2;fa3:40.9", "winner": "('layer', None)"}, "(1, 1, True)": {"all_us": "layer:16", "winner": "('layer', None)"}, "(1, 8, False)": {"all_us": "layer:36.9;fa3:42.8", "winner": "('layer', None)"}, "(1, 8, True)": {"all_us": "layer:21.6;verify_stream:50;verify_stream_twog:45.2", "winner": "('layer', None)"}, "(16, 1, False)": {"all_us": "layer:128;fa3:304", "winner": "('layer', None)"}, "(16, 1, True)": {"all_us": "layer:16", "winner": "('layer', None)"}, "(16, 8, False)": {"all_us": "layer:202;fa3:221", "winner": "('layer', None)"}, "(16, 8, True)": {"all_us": "layer:22.8;verify_stream:50.1;verify_stream_twog:45.9", "winner": "('layer', None)"}, "(32, 1, False)": {"all_us": "layer:222;fa3:376", "winner": "('layer', None)"}, "(32, 1, True)": {"all_us": "layer:16.3", "winner": "('layer', None)"}, "(32, 8, False)": {"all_us": "layer:375;fa3:412", "winner": "('layer', None)"}, "(32, 8, True)": {"all_us": "layer:23.6;verify_stream:50.2;verify_stream_twog:45.7", "winner": "('layer', None)"}}, "moe": {"1": {"all_us": {"adaptive": 342.8800106048584, "moe_rt_v9": 36.83200106024742, "router_v9": 36.38400137424469, "v7": 37.9519984126091, "v9": 36.25600039958954}, "winner": "v9"}, "128": {"all_us": {"adaptive": 3007.0719718933105, "moe_rt_v9": 271.64798974990845, "router_v9": 271.7120051383972, "v7": 339.29601311683655, "v9": 270.4319953918457}, "winner": "v9"}, "16": {"all_us": {"adaptive": 1614.4319772720337, "moe_rt_v9": 113.76000195741653, "router_v9": 115.55200070142746, "v7": 116.28799885511398, "v9": 113.79200220108032}, "winner": "moe_rt_v9"}, "256": {"all_us": {"adaptive": 3946.7198848724365, "moe_rt_v9": 436.8639886379242, "router_v9": 436.99198961257935, "v7": 521.4400291442871, "v9": 436.5440011024475}, "winner": "v9"}, "32": {"all_us": {"adaptive": 2358.6881160736084, "moe_rt_v9": 159.39199924468994, "router_v9": 160.67199409008026, "v7": 163.16799819469452, "v9": 158.52800011634827}, "winner": "v9"}, "8": {"all_us": {"adaptive": 1685.920000076294, "moe_rt_v9": 115.39199948310852, "router_v9": 113.50400000810623, "v7": 117.79200285673141, "v9": 113.18399757146835}, "winner": "v9"}}, "pdl": {"(1, 'b1')": {"all_us": {"False": 13.952000066637993, "True": 13.472000136971474}, "winner": true}, "(1, 'b2')": {"all_us": {"False": 14.047999866306782, "True": 13.472000136971474}, "winner": true}, "(128, 'b1')": {"all_us": {"False": 14.655999839305878, "True": 14.303999952971935}, "winner": true}, "(128, 'b2')": {"all_us": {"False": 15.39199985563755, "True": 14.655999839305878}, "winner": true}, "(16, 'b1')": {"all_us": {"False": 12.191999703645706, "True": 12.319999746978283}, "winner": false}, "(16, 'b2')": {"all_us": {"False": 12.44799979031086, "True": 12.703999876976013}, "winner": false}, "(256, 'b1')": {"all_us": {"False": 20.416000857949257, "True": 18.751999363303185}, "winner": true}, "(256, 'b2')": {"all_us": {"False": 20.22399939596653, "True": 18.688000738620758}, "winner": true}, "(32, 'b1')": {"all_us": {"False": 12.992000207304955, "True": 12.160000391304493}, "winner": true}, "(32, 'b2')": {"all_us": {"False": 12.415999546647072, "True": 13.248000293970108}, "winner": false}, "(8, 'b1')": {"all_us": {"False": 14.015999622642994, "True": 13.887999579310417}, "winner": true}, "(8, 'b2')": {"all_us": {"False": 14.208000153303146, "True": 13.824000023305416}, "winner": true}}, "projection": {"(1, 'o')": {"all_us": {"cublas": 12.992000207304955, "custom": 12.575999833643436}, "winner": "custom"}, "(1, 'pool_router')": {"all_us": {"cublas": 32.44800120592117, "custom": 35.13599932193756}, "winner": "cublas"}, "(1, 'qkv_gate')": {"all_us": {"cublas": 21.183999255299568, "custom": 20.51199972629547}, "winner": "custom"}, "(1, 'unpooler_slice')": {"all_us": {"cublas": 13.311999849975109, "custom": 11.136000044643879}, "winner": "custom"}, "(128, 'o')": {"all_us": {"cublas": 13.919999822974205, "custom": 14.14399966597557}, "winner": "cublas"}, "(128, 'pool_router')": {"all_us": {"cublas": 32.32000023126602, "custom": 32.86400064826012}, "winner": "cublas"}, "(128, 'qkv_gate')": {"all_us": {"cublas": 25.98400041460991, "custom": 24.320000782608986}, "winner": "custom"}, "(128, 'unpooler')": {"all_us": {"cublas": 27.39199995994568, "custom": 27.807999402284622}, "winner": "cublas"}, "(16, 'o')": {"all_us": {"cublas": 13.98400031030178, "custom": 12.480000033974648}, "winner": "custom"}, "(16, 'pool_router')": {"all_us": {"cublas": 33.08799862861633, "custom": 36.38400137424469}, "winner": "cublas"}, "(16, 'qkv_gate')": {"all_us": {"cublas": 22.495999932289124, "custom": 21.60000056028366}, "winner": "custom"}, "(16, 'unpooler')": {"all_us": {"cublas": 26.623999699950218, "custom": 30.7839997112751}, "winner": "cublas"}, "(256, 'o')": {"all_us": {"cublas": 15.680000185966492, "custom": 16.063999384641647}, "winner": "cublas"}, "(256, 'pool_router')": {"all_us": {"cublas": 39.61599990725517, "custom": 37.11999952793121}, "winner": "custom"}, "(256, 'qkv_gate')": {"all_us": {"cublas": 27.456000447273254, "custom": 27.327999472618103}, "winner": "custom"}, "(256, 'unpooler')": {"all_us": {"cublas": 32.67199918627739, "custom": 32.03200176358223}, "winner": "custom"}, "(32, 'o')": {"all_us": {"cublas": 13.407999649643898, "custom": 14.015999622642994}, "winner": "cublas"}, "(32, 'pool_router')": {"all_us": {"cublas": 32.03200176358223, "custom": 38.11199963092804}, "winner": "cublas"}, "(32, 'qkv_gate')": {"all_us": {"cublas": 21.95199951529503, "custom": 22.495999932289124}, "winner": "cublas"}, "(32, 'unpooler')": {"all_us": {"cublas": 28.12799997627735, "custom": 29.888000339269638}, "winner": "cublas"}, "(8, 'o')": {"all_us": {"cublas": 13.632000423967838, "custom": 12.640000320971012}, "winner": "custom"}, "(8, 'pool_router')": {"all_us": {"cublas": 31.136000528931618, "custom": 35.0399985909462}, "winner": "cublas"}, "(8, 'qkv_gate')": {"all_us": {"cublas": 21.888000890612602, "custom": 21.503999829292297}, "winner": "custom"}, "(8, 'unpooler_slice')": {"all_us": {"cublas": 14.015999622642994, "custom": 9.631999768316746}, "winner": "custom"}}}

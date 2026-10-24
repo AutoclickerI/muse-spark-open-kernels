@@ -5,11 +5,13 @@
     tools/h200_lab.py build prof/lab/moe_skew.py -o /tmp/x.py     # write the lab file only (to screen it)
     tools/h200_lab.py read <job | receipt.json>                    # print the lab's lines from a receipt
 
-The payload is one self-contained file defining `lab(deadline, weights) -> list[str]`: `deadline` is a
+The payload is one self-contained file defining `lab(deadline, weights[, state]) -> list[str]`: `deadline` is a
 time.monotonic() value (prepare's 300 s cap minus a margin, counted from prepare's start), `weights` is
 what the host problem's prepare() receives (proj: qkv_gate, o, pooler, unpooler and the real router;
 MoE: the packed NVFP4 experts). Inline its CUDA/Triton (load_inline under a unique name); no imports of
-our modules, since the judge gets the one file. The judge's image has torch, triton and SGLang's kernels.
+our modules, since the judge gets the one file. The optional third argument is the state returned by the
+host's already-completed base prepare; it avoids rebuilding a long tuner when a lab measures that state.
+The judge's image has torch, triton and SGLang's kernels.
 
 The lab file is the host's best scored source (ledger) with the payload appended and prepare() wrapped:
 the base prepare runs first and its state is returned unchanged, so the run still scores, and the board
@@ -54,7 +56,11 @@ def prepare(weights):
         import traceback as _tb
         _t0 = _t.monotonic()
         try:
-            _lines = [str(x) for x in (lab(_start + {budget}, weights) or [])]
+            import inspect as _inspect
+            _lab_params = len(_inspect.signature(lab).parameters)
+            _lab_result = (lab(_start + {budget}, weights, state) if _lab_params >= 3
+                           else lab(_start + {budget}, weights))
+            _lines = [str(x) for x in (_lab_result or [])]
         except BaseException as _e:  # the run must still score; the error is the result
             _lines = [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
         torch.cuda.synchronize()
