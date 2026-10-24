@@ -1,0 +1,306 @@
+{
+  "status": "H200 accepted; new fixed-phase variants unranked",
+  "source_sha256": {
+    "problems/muse_decode_layer/dev/nt1_branches/README.md": "c56af5a8b7b8917e6ef907b96c797832b943259434701474f99ceb0dc40e5814",
+    "problems/muse_decode_layer/dev/nt1_branches/route_meta.h": "7d062328ac730708442536d8fb07ec00c8d17843cbb07cf6356432745b7b1915",
+    "problems/muse_decode_layer/dev/nt1_branches/route_meta.cu.inc": "7856f565375ca8ee2b7a615df999919747a97ecb3d2260d24bb5a0688b11eea8",
+    "problems/muse_decode_layer/dev/nt1_branches/ready.cu.inc": "810d10b7f956d553d7b616fab695262ec3557c6f3211fbb270d0cc6e8804821a",
+    "problems/muse_decode_layer/dev/nt1_branches/ws_produce.cu.inc": "9a1ae0a92c8d2ddcdb569098e121070255060324e593e7f47b67a88e76e80685",
+    "problems/muse_decode_layer/dev/nt1_branches/ws_consume.cu.inc": "437763c25cc5c83371df804e7171aa5557168ace5a256f018b2f56b3a881d318",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_runtime.py.inc": "5d40cace4e8bfbab64d70d9f06f80230a2dc813abfe1438b3836f106972eb713",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_lab.py.inc": "33c2c4282a12d484458a087a7d25ee316dff9b330675dec4cbae011711ea1df9",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_prepare.py.inc": "90219e557c175aa1d83eea047697275af2025970796d1713b6c53f2fd59546ba",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_cell.py": "bb168b645d30628bcd7f077cdb13d3677b19ddc42c082e4b96aaf60182bca9b0",
+    "problems/muse_decode_layer/dev/nt1_branches/nt1_lop3_cell.py": "3f84a8a4e12b41bd7257712d8656d3f417f6a9e238f00e481b3be526da69cc40",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_A.cu": "16d0bda101c82605adfe5976f0645a604d75d0be19cfe42472725a0883706203",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_ABC.cu": "cb831bc89d4dfe24dceea9d697c62f8dfbf1408684531e27df6d080f434adfd4",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_ABCD.cu": "2a0083ff2a04f66d0573222c7494747038ee59d44fc60d57fee5447d545ef650",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_ABCD128.cu": "bd2243f11268c1037d5e65baf97669f4a108a0dd53ef67ad75e092611eca0be4",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_B.cu": "11cff78a257764e6f15b242aed14518e5c86d3dfeb2854df785d8d7de603bc5b",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_C.cu": "76c439ecacbaf376fd17fabba32859f522adb8eabbf1070c4753d1f4f995e523",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_D.cu": "9f57d513e155f14d0ef59cead478207bfad62f636236b703e843fb295131b6ef",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_D128.cu": "51c4a2a1814ec9c602db6c40aa5df5ff0ce61fb75a27389a5a16edb89847245e",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_INC.cu": "752790e4440144fb3f4daf251f5f7fb7a33fb19212fcd84b8bcd5f9de060d97b",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_K2.cu": "736a4efbb9c8e2b5b42e3c525a1414b7a2138601d1cf86cbbcfbed97b18b3587",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_L26.cu": "29070829481ec060e7ff4e6484f64cc43f79229326303ad5b8a3952e0994efbc",
+    "problems/muse_decode_layer/dev/nt1_branches/fixed_R2.cu": "d6371b3e881a41c741484ebf7f4f32733edde4a9496bc5b04503ef6a6245dfd4",
+    "prof/lab/moe_nt1_fixed.py": "eb6f6940cafe424ebd54a427308ea526aa59087c3e3c8f32da476e78779f1b80",
+    "prof/lab/build_moe_nt1_fixed.py": "fd65fb580b751e31cacdcaf8ae552b5a7ec4c2f0a2b06f4422f5e4bbe9770b3e",
+    "prof/lab/check_moe_nt1_fixed.py": "bf4fed61b00a5a6161254ce3c5786f1a5dfbefbec5b3615f96ce8f80ce2e1075",
+    "prof/lab/check_moe_nt1_handoff.py": "a9cff75cff65d529065307c1dbc41b93147426815929bea43adaca84c44c3f4b",
+    "prof/lab/moe_nt1_limit.py": "7014f33df86522d3f99803f3af5458f3c5875f9813f73f9998d48af99df81b93",
+    "prof/lab/build_moe_nt1_branches.py": "5e2a1eaa443c2a89acd4f26150acbffec6fc37fbba7b3a98dba8aceeecf6a070",
+    "prof/lab/build_moe_nt1_limit.py": "7c26cbfe43af9a00d3df74b7a4ab9c673f68ce3319a504376048587cfa1f134f",
+    "prof/lab/build_moe_small_debug.py": "9991d606302f09bd9e3f7ac1cde48c2115181568afdc55be22d9589604ed9aad",
+    "problems/muse_moe_w4a16/lab/lab_moe_nt1_fixed.py": "d52b02e0bc91d390407deb726817b1c6cb48881cf0825f1269686d945be58965"
+  },
+  "handoff": {
+    "path": "problems/muse_decode_layer/dev/nt1_branches/nt1_lop3_cell.py",
+    "sha256": "3f84a8a4e12b41bd7257712d8656d3f417f6a9e238f00e481b3be526da69cc40",
+    "cuda_identical_to_h200_INC": true,
+    "native_graph_checks": 21,
+    "forced_hopper_graph_checks": 21,
+    "worst_fp32": 0.0023679889272898436,
+    "aliases_existing_bank": true
+  },
+  "validation": {
+    "native_graph_gates": 1008,
+    "exact_stage_comparisons": 1584,
+    "metadata_checks": 288,
+    "forced_hopper_calls": 864,
+    "worst_fp32": 0.002415949013084173,
+    "worst_vs_incumbent": 0.00029447651468217373,
+    "seconds": 18.15054315899033,
+    "expert_counters_reset": true,
+    "bank_bytes_unchanged": true,
+    "portable_depth": "standard and WS128 stages3 map to2; WS64 and K2 execute native stages1/2/3",
+    "scale_storage_bits": 8,
+    "lossless_scale_recode": true
+  },
+  "standalone_cell": {
+    "native_graph_checks": 63,
+    "worst_fp32": 0.0023591851349920034,
+    "one_selected_bank": true,
+    "source_sha256": "bb168b645d30628bcd7f077cdb13d3677b19ddc42c082e4b96aaf60182bca9b0"
+  },
+  "sm90a": {
+    "R2": {
+      "sha256": "d6371b3e881a41c741484ebf7f4f32733edde4a9496bc5b04503ef6a6245dfd4",
+      "regs": [
+        124
+      ],
+      "spills": [
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 12,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "INC": {
+      "sha256": "752790e4440144fb3f4daf251f5f7fb7a33fb19212fcd84b8bcd5f9de060d97b",
+      "regs": [
+        125
+      ],
+      "spills": [
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 12,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "L26": {
+      "sha256": "29070829481ec060e7ff4e6484f64cc43f79229326303ad5b8a3952e0994efbc",
+      "regs": [
+        121
+      ],
+      "spills": [
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 12,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "K2": {
+      "sha256": "736a4efbb9c8e2b5b42e3c525a1414b7a2138601d1cf86cbbcfbed97b18b3587",
+      "regs": [
+        127
+      ],
+      "spills": [
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 14,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "A": {
+      "sha256": "16d0bda101c82605adfe5976f0645a604d75d0be19cfe42472725a0883706203",
+      "regs": [
+        126,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 12,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "B": {
+      "sha256": "11cff78a257764e6f15b242aed14518e5c86d3dfeb2854df785d8d7de603bc5b",
+      "regs": [
+        119,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 13,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "C": {
+      "sha256": "76c439ecacbaf376fd17fabba32859f522adb8eabbf1070c4753d1f4f995e523",
+      "regs": [
+        125,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 19,
+      "explicit_L2_prefetch_ops": 7
+    },
+    "ABC": {
+      "sha256": "cb831bc89d4dfe24dceea9d697c62f8dfbf1408684531e27df6d080f434adfd4",
+      "regs": [
+        119,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 20,
+      "explicit_L2_prefetch_ops": 7
+    },
+    "D": {
+      "sha256": "9f57d513e155f14d0ef59cead478207bfad62f636236b703e843fb295131b6ef",
+      "regs": [
+        70,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 12,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "ABCD": {
+      "sha256": "2a0083ff2a04f66d0573222c7494747038ee59d44fc60d57fee5447d545ef650",
+      "regs": [
+        72,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 20,
+      "explicit_L2_prefetch_ops": 7
+    },
+    "D128": {
+      "sha256": "51c4a2a1814ec9c602db6c40aa5df5ff0ce61fb75a27389a5a16edb89847245e",
+      "regs": [
+        78,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 12,
+      "explicit_L2_prefetch_ops": 0
+    },
+    "ABCD128": {
+      "sha256": "bd2243f11268c1037d5e65baf97669f4a108a0dd53ef67ad75e092611eca0be4",
+      "regs": [
+        79,
+        32
+      ],
+      "spills": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "local_ops": 0,
+      "hmma": 32,
+      "prefetch": 20,
+      "explicit_L2_prefetch_ops": 7
+    }
+  },
+  "wrapper": {
+    "path": "problems/muse_moe_w4a16/lab/lab_moe_nt1_fixed.py",
+    "sha256": "d52b02e0bc91d390407deb726817b1c6cb48881cf0825f1269686d945be58965",
+    "tests": 5,
+    "static": 6,
+    "prepare_seconds": 9.25948010099819
+  },
+  "protocol": {
+    "weight_router_seeds": 12,
+    "shapes": [
+      1,
+      8,
+      16,
+      32
+    ],
+    "per_arm_ABBA_pairs": 4,
+    "independent_AA": true,
+    "cold_flush_bytes": 134217728,
+    "min_seeds_for_admission": 8,
+    "all_12_local": true,
+    "local_payload_seconds": 7.2,
+    "host_deadline_seconds": 280
+  },
+  "shared_address_model": {
+    "word_stride_to_max_bank_uses_per_8_lane_vector_wave": {
+      "16": 4,
+      "4": 1
+    },
+    "hardware_profile": false
+  },
+  "h200": {
+    "send": "d52b02e0bc91d390",
+    "job": "383ccc1fbbae41e2",
+    "host": "muse_moe_w4a16",
+    "immediate_log": "accepted; no rejection",
+    "receipt_read_this_turn": false
+  },
+  "limits": [
+    "No H200 ranking of new switches yet; local timings mostly regress",
+    "WS uses normal L2 policy; baseline evict-first for single-block experts",
+    "Global W13 readiness was already per expert; B removes norm initialization/final grid dependencies",
+    "Norm accumulation order causes small final BF16 differences; inter/W2 are bit-exact except K2 partial reduction",
+    "Standard and WS128 depth3 Hopper glue uses depth2 native arithmetic stand-ins on SM120",
+    "fold25 inadmissible and removed; all prepared banks packed FP4/u8 scales, unchanged byte count",
+    "No new fixed-phase kernel enabled in best7"
+  ]
+}

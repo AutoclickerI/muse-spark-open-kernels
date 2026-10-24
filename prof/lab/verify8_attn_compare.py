@@ -3348,5 +3348,25 @@ def lab(deadline, weights):
                 torch.cuda.empty_cache()
             # The per-phase run uses the target batch so split/occupancy effects
             # are visible; the gate uses a fresh single-request input.
+        # Ready FP8-probability/PV variants use raw FP8 QK/PV MMA and one
+        # split combine. Gate each setting independently before recording its
+        # target-batch timing; these are the promotion candidates for verify.
+        for window in (2048, 0):
+            for setting in ((3, 1), (3, 2), (5, 1), (5, 2)):
+                try:
+                    timing_data = _lab_input(batch, window, 8, 80000)
+                    fn = lambda d, s=setting: _p8_verify(d, s)
+                    us = _compare_time(fn, timing_data, flush, start, end)
+                    gate_data = _lab_input(1, window, 8, 80000)
+                    got = fn(gate_data)
+                    torch.cuda.synchronize()
+                    gate, err = _compare_gate(gate_data, got)
+                    lines.append(f'FP8PV b{batch} w{window or "f"} setting={setting} '
+                                 f'us={us:.1f} gate={gate}{err:.3f}')
+                    del timing_data, gate_data, got
+                    torch.cuda.empty_cache()
+                except BaseException as exc:
+                    lines.append(f'FP8PV b{batch} w{window or "f"} setting={setting} '
+                                 f'ERR={type(exc).__name__}')
     del flush
     return lines

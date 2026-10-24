@@ -1,0 +1,23 @@
+{
+  "sha256": "9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e",
+  "source": "problems/muse_decode_layer/cand_r3_best7_s4.py",
+  "scored_only": true,
+  "priority": 0,
+  "local_queue": {
+    "pid": 3549135,
+    "priority": 0.0,
+    "t": 1792856585.7395918,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/cand_r3_best7_s4.py",
+    "sha256": "9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e",
+    "note": "S4: S3 + exact dc3fea0a D32g M128 (273 vs recoded NT1 290 us) and one-LOP3 NT1 M1-32; normal+forced 13 tests/12 graphs/21 static each, prepare 49.1/57.5 s; retain recoded C1g2112 M256",
+    "until": 1792886460.0
+  },
+  "log": "runs/detached/9b2b2a48337aa13b.log",
+  "frozen_snapshot": "runs/sent/9b2b2a48337aa13b/cand_r3_best7_s4.py",
+  "behind": [
+    "42f543a0",
+    "b0805447",
+    "cadef19a"
+  ]
+}

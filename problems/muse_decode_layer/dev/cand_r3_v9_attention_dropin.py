@@ -4947,16 +4947,49 @@ def _attn_port_fa3(raw, data, setting):
                          head_dim=d, eps=RMS_EPS, has_norm=True)
 
 
-def _attn_port_forward(raw, data, vmath=False):
+def _attn_decode_fp8_splits(batch, kvg, max_keys, sms):
+    target = 2 * sms if batch == 1 else sms
+    ns = -(-target // (batch * kvg))
+    return min(ns, max(1, -(-max_keys // 64)), 128)
+
+
+def _attn_port_plan(batch, kvg, max_keys, q_len, window, sms, device, split_mode):
+    ext = _attn_port_ext()
+    groups = batch * kvg
+    per_sm = max(1, int(ext.occupancy(q_len)))
+    fit = max(1, sms * per_sm // groups)
+    fit = min(fit, max(1, -(-max_keys // 64)), 16 if window else 512)
+    if split_mode == 'fp8' and q_len == 1:
+        target = 2 * sms if batch == 1 else sms
+        fit = min(fit, max(1, -(-target // groups)))
+    choices = [cs for cs in range(1, 17) if int(ext.max_cluster(q_len, cs)) >= 1]
+    best = None
+    for cs in choices or [1]:
+        if cs > fit:
+            continue
+        nc = min(fit // cs, 32)
+        while nc > 0 and int(ext.max_cluster(q_len, cs)) < groups * nc:
+            nc -= 1
+        if nc:
+            key = (nc * cs, -nc, cs)
+            if best is None or key > best[0]:
+                best = (key, nc * cs, cs)
+    if best is None:
+        return 1, 1
+    return best[1], best[2]
+
+
+def _attn_port_forward(raw, data, vmath=False, split_mode='auto'):
     """Run the standalone four-stage q1 gather or its L=8 sibling."""
     cfg = data['config']; batch, length = cfg['batch'], cfg['q_len']; device = raw.device
     max_pages = data['page_table'].shape[1]; ps = cfg['page_size']; window = cfg['window']
     max_keys = min(max_pages * ps, window) if window else max_pages * ps
     # One cluster per KV group is a safe ABI for both standalone families.  The
     # layer's own q/gate/KV layout is passed directly; no hidden attention state.
-    ns = _splits(batch, HKV // 2, max_keys, length, _num_sms(device))
-    cs = 1
-    rows = batch * (HKV // 2) * ns * length * 16
+    ns, cs = _attn_port_plan(batch, HKV // 2, max_keys, length, window,
+                             _num_sms(device), device, split_mode)
+    nc = ns // cs
+    rows = batch * (HKV // 2) * (nc if nc > 1 else 0) * length * 16
     part_o = torch.empty((max(rows, 1) * 64,), dtype=torch.float32, device=device)
     part_ml = torch.empty((max(rows, 1) * 2,), dtype=torch.float32, device=device)
     counters = _attn_port_counters(batch * (HKV // 2) * cs, device)
@@ -5049,7 +5082,7 @@ def _attn_port_synthetic(batch, q_len, window, device):
 def _attn_port_candidates(q_len):
     out = [('layer', None), ('fa3', (0, None))]
     if q_len == 1:
-        return out + [('port_decode', None)]
+        return out + [('port_decode', None), ('port_decode_fp8_split', None)]
     return out + [('port_verify', None)] + \
         [('xqa_group', ('group', st, w)) for st in (5, 7) for w in (1, 2, 4, 8)] + \
         [('xqa_warp', ('warp', st, w)) for st in (3, 4) for w in (1, 2, 4, 8)] + \
@@ -5063,7 +5096,11 @@ def _attn_port_variant(qkv, data, state, choice):
     raw = _attn_port_raw(qkv, data)
     if label == 'fa3':
         return _attn_port_fa3(raw, data, setting)
-    if label == 'port_decode' or label == 'port_verify':
+    if label == 'port_decode':
+        return _attn_port_forward(raw, data, vmath=False)
+    if label == 'port_decode_fp8_split':
+        return _attn_port_forward(raw, data, vmath=False, split_mode='fp8')
+    if label == 'port_verify':
         return _attn_port_forward(raw, data, vmath=False)
     if label == 'port_vmath':
         return _attn_port_forward(raw, data, vmath=True)

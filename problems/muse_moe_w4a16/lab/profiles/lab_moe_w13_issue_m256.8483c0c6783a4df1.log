@@ -1,0 +1,58 @@
+MOE_PHASE M=1 ctas=264 route=5506/5749/6076 p1=20175/24616/30278 wait=2926/7925/13809 barrier=1294/4506/9325 p2=19583/22620/27426 norm=979/1812/2552 final=103/146/2145 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0860ms v12=0.0758ms v16=0.0975ms wide=0.5174ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5677/5857/6023 p1=122951/153088/175012 wait=1045/5532/53985 barrier=1271/20535/64578 p2=67907/75392/122403 norm=9782/12472/15962 final=97/155/2643 p1_tiles=36/37/37 p2_tiles=18/18/19 atomics=144/144/152
+MOE_TIME M=16 v9=0.2061ms v12=0.2187ms v16=0.2336ms wide=0.3168ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5703/6124/6528 p1=174811/217010/245144 wait=775/6349/70379 barrier=1235/26585/90233 p2=96152/102384/166360 norm=14478/17610/22303 final=103/166/3439 p1_tiles=52/52/53 p2_tiles=26/26/27 atomics=208/208/216
+MOE_TIME M=32 v9=0.2588ms v12=0.2902ms v16=0.2944ms wide=0.4102ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5773/6016/6146 p1=72772/90143/101873 wait=916/7496/32893 barrier=1308/14553/41999 p2=42849/49393/75184 norm=5531/6916/9306 final=97/152/2068 p1_tiles=21/21/22 p2_tiles=10/11/11 atomics=80/88/88
+MOE_TIME M=8 v9=0.1508ms v12=0.1461ms v16=0.1652ms wide=0.2267ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7389/7778/7985 p1=250369/309204/346019 wait=777/5913/89031 barrier=1234/36458/121592 p2=140096/145594/228402 norm=21245/26090/31832 final=124/2122/4628 p1_tiles=75/76/76 p2_tiles=37/38/38 atomics=296/304/304
+MOE_TIME M=128 v9=0.3519ms v12=0.3984ms v16=0.3897ms wide=0.5011ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10659/10964/11341 p1=401045/492939/554579 wait=1228/9312/148140 barrier=1209/53484/192822 p2=219107/229816/366876 norm=33776/41995/48685 final=753/4233/7382 p1_tiles=120/120/121 p2_tiles=60/60/61 atomics=480/480/488
+MOE_TIME M=256 v9=0.5127ms v12=0.6061ms v16=0.5638ms wide=0.5225ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.0859839990735054, 'v12': 0.07580800354480743, 'v16': 0.09747199714183807, 'wide': 0.5174400210380554}, 16: {'v9': 0.20614400506019592, 'v12': 0.2186560034751892, 'v16': 0.23360000550746918, 'wide': 0.31679999828338623}, 32: {'v9': 0.2588160037994385, 'v12': 0.29020801186561584, 'v16': 0.29440000653266907, 'wide': 0.4102399945259094}, 8: {'v9': 0.150751993060112, 'v12': 0.14611199498176575, 'v16': 0.16518400609493256, 'wide': 0.2266560047864914}, 128: {'v9': 0.3518719971179962, 'v12': 0.3984319865703583, 'v16': 0.38972800970077515, 'wide': 0.5011199712753296}, 256: {'v9': 0.5127040147781372, 'v12': 0.6060799956321716, 'v16': 0.5637760162353516, 'wide': 0.5224639773368835}}
+LAB_BEGIN moe_w13_issue_m256 cb20858c5de9bfac
+META M256 W13-only edits; p3-6/8/9 use same recoded W2,others raw W2. K128/S4/grid2112 fixed; p5/6 split <=16-row experts N16,others N32; seq/parallel. Typed shared align1024; Q16B/SF16B vector copies; immediate LOP3; p7+ quad scale broadcasts; recW13 uses exact scale recode. 12same public weight/router seeds x3fresh inputs x8rotated cold128MiB graphs. Gates finite/L2<=.01,row<=.05; partial n not a win.
+ORDER CTA1g2112,masked,typed_LOP,vector_LOP,vector_LOP_recW13,C1g2112,vector_LOP_fullrec,mixed_seq,mixed_parallel,quad_raw,quad_fullrec,mixed_parallel_quad
+BUILD s=6.4 left=115.6
+RECBASE W13/W2=[101, 0, 4096, 52223, 4][98, 0, 1024, 52223, 4]
+BASE W13regs,local,static,dynamic,res=[106, 0, 5120, 52223, 4]
+MIXRES cold/hot=[79, 0, 2048, 35839, 6][95, 0, 4096, 52223, 4]
+RES p=0 regs,local,static,dynamic,res=[99, 0, 5120, 52223, 4]
+RES p=1 regs,local,static,dynamic,res=[96, 0, 5120, 52223, 4]
+RES p=2 regs,local,static,dynamic,res=[95, 0, 4096, 52223, 4]
+S0 P=342 E=18 H=95 us=355,390,354,343,333,336,326,323,314,344,330,316
+S1 P=389 E=20 H=120 us=369,425,368,352,342,347,337,334,327,355,340,327
+S2 P=395 E=18 H=158 us=365,439,364,350,339,345,334,333,326,352,338,326
+S3 P=457 E=16 H=159 us=370,440,370,356,345,348,338,344,330,357,342,333
+S4 P=653 E=23 H=133 us=457,548,454,437,424,430,415,417,406,441,419,411
+S5 P=503 E=20 H=116 us=445,519,444,428,416,420,408,401,391,430,412,393
+S6 P=565 E=14 H=143 us=409,476,407,392,380,385,373,373,366,394,378,370
+S7 P=349 E=20 H=154 us=364,395,365,351,342,344,334,330,322,353,339,323
+S8 P=380 E=25 H=110 us=405,465,406,390,381,385,373,367,358,392,377,359
+S9 P=451 E=19 H=145 us=367,442,368,353,343,347,336,347,331,356,340,332
+S10 P=417 E=19 H=110 us=366,415,365,354,343,346,337,331,325,355,340,325
+S11 P=405 E=21 H=75 us=383,447,382,367,356,360,350,345,337,368,354,339
+R0 P=414 E=21 hot=119 groups32=28 fill=0.462 qsf_reqMB=528.5 uniqueMB=396.4
+PH p=-1 route,w13,w2,finish=10.4,252.7,130.3,14.7 W13reqTBs=2.09 uniqueTBs=1.57 e=0.00408
+PH p=1 route,w13,w2,finish=10.2,238.1,130.5,14.8 W13reqTBs=2.22 uniqueTBs=1.66 e=0.00408
+PH p=3 route,w13,w2,finish=9.9,237.9,123.8,14.3 W13reqTBs=2.22 uniqueTBs=1.67 e=0.00408
+PH p=4 route,w13,w2,finish=10.0,225.8,123.6,15.1 W13reqTBs=2.34 uniqueTBs=1.76 e=0.00408
+PH p=6 route,w13,w2,finish=10.2,212.4,123.7,15.0 W13reqTBs=2.49 uniqueTBs=1.87 e=0.00408
+PH p=7 route,w13,w2,finish=10.2,242.2,131.0,15.2 W13reqTBs=2.18 uniqueTBs=1.64 e=0.00408
+PH p=8 route,w13,w2,finish=10.2,233.0,124.5,15.2 W13reqTBs=2.27 uniqueTBs=1.70 e=0.00408
+PH p=9 route,w13,w2,finish=10.4,214.9,124.2,15.1 W13reqTBs=2.46 uniqueTBs=1.84 e=0.00408
+AGG CTA1g2112 n=12 mean=388.0 med=369.4 /base=1.000 l2=0.00412 row=0.0046 PASS
+AGG masked n=12 mean=450.2 med=441.0 /base=1.159 l2=0.00555 row=0.0071 PASS
+AGG typed_LOP n=12 mean=387.3 med=369.1 /base=0.998 l2=0.00412 row=0.0046 PASS
+AGG vector_LOP n=12 mean=372.7 med=354.8 /base=0.961 l2=0.00412 row=0.0046 PASS
+AGG vector_LOP_recW13 n=12 mean=362.1 med=344.3 /base=0.933 l2=0.00412 row=0.0046 PASS
+AGG C1g2112 n=12 mean=366.2 med=347.9 /base=0.944 l2=0.00412 row=0.0046 PASS
+AGG vector_LOP_fullrec n=12 mean=354.9 med=337.6 /base=0.915 l2=0.00412 row=0.0046 PASS
+AGG mixed_seq n=12 mean=353.8 med=344.4 /base=0.912 l2=0.00412 row=0.0046 PASS
+AGG mixed_parallel n=12 mean=344.5 med=330.8 /base=0.888 l2=0.00412 row=0.0046 PASS
+AGG quad_raw n=12 mean=374.8 med=356.6 /base=0.966 l2=0.00412 row=0.0046 PASS
+AGG quad_fullrec n=12 mean=359.0 med=341.2 /base=0.925 l2=0.00412 row=0.0046 PASS
+AGG mixed_parallel_quad n=12 mean=346.1 med=332.7 /base=0.892 l2=0.00412 row=0.0046 PASS
+COMPLETE seeds=12/12 used=17.1 left=104.9
+LAB_END lab_s=23.7 prepare_s=180.2

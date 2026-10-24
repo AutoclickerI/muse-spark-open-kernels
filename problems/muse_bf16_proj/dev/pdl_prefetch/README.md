@@ -1,5 +1,10 @@
 # Dense weight prologues under PDL
 
+H200 receipt7426e17cd3bc4659 is partial: M1 sliding115.78->115.58us is noise;
+the remaining seven cases and standalone rows stopped at the unchanged0.3%
+whole-layer gate (0.305-0.333% error). No cell was promoted. This directory keeps
+that experiment's source/evidence; current P7 work is `../gemv_fixed/README.md`.
+
 This experiment serves G1: improve best7's decode layer at M1/16/32 and verify-1
 (M8), sliding and full. H200 whole-layer receipts decide the projection cells.
 The projection board's rank is evidence of headroom, not this experiment's goal.

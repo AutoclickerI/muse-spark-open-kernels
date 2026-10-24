@@ -2,7 +2,7 @@
 
 ## Ranking: one lane at 1.3x its floor
 
-**Basis:** H200 profile `c0e74bedf7b74be5`; mode **reset**. Until S1/S2 land, this is **best7_reset plus measured scale-bank and M256 deltas**, not a measured S2 profile.
+**Basis:** H200 profile `c0e74bedf7b74be5`; mode **reset**. Until S1–S6 profiles land, this is **best7_reset plus measured scale-bank and raw M256 deltas**, not a measured candidate profile.
 
 | Rank | Lever | Owning lane | Overall score gain |
 |---|---|---|---:|
@@ -13,14 +13,14 @@
 | 5 | MoE M256 | free M256 | +6.37% |
 | 6 | MoE M128 | MoE M128 | +6.18% |
 
-Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/stages; gains are independent counterfactuals and must not be added. Projection totals and the lane ranking do not depend on the modeled per-role split. MoE/attention gains use visible rows only; unreported rows can raise them (bounds below). These are optimistic profile-duration headrooms, not measured speedups. Ranks3-6 differ by only0.53 percentage points: treat them as close priorities under router/profile/overlap uncertainty, not a resolved performance ordering.
+Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/stages; gains are independent counterfactuals and must not be added. Projection totals and the lane ranking do not depend on the modeled per-role split. MoE/attention gains use visible rows only; unreported rows can raise them (bounds below). These are optimistic profile-duration headrooms, not measured speedups. Ranks3-6 span 0.53 percentage points: treat them as close priorities under router/profile/overlap uncertainty, not a resolved performance ordering.
 
 ## What is measured and what is modeled
 
 - Source: [12-shape profile](../profiles/cand_r3_best7_reset.c0e74bedf7b74be5.json) and [source log](../profiles/cand_r3_best7_reset.c0e74bedf7b74be5.log). The adjusted benchmark fields reproduce **1.402026x** exactly. The corrected six-load accounting gives **1.481379x**, a composition model rather than a new score.
-- Scale bank: paired receipt `58ae2e2cf8df45ef`; subtract 7.91/9.31/14.43/38.53 us at M8/16/32/128 from MoE and adjusted layer latency. No paired M1 delta exists, so M1 keeps its measured time. M256: `97be11d4631b44d6`, masked447.6 minus CTA1g2112 385.2 = **62.4 us**, subtracted once on S/F. These deltas transfer across router seeds and whole-layer overlap only as a model. Paired glue/FA3 setting changes from reset to S1 are not assigned extra savings; their composition needs the S1/S2 profiles. [Scale receipt](../../../runs/muse_decode_layer/20261024T141927Z_check_58ae2e2cf8df45ef.json) · [M256 receipt](../../../runs/muse_moe_w4a16/20261024T142924Z_check_97be11d4631b44d6.json).
+- Scale bank: paired receipt `58ae2e2cf8df45ef`; subtract 7.91/9.31/14.43/38.53 us at M8/16/32/128 from MoE and adjusted layer latency. No paired M1 delta exists, so M1 keeps its measured time. M256: `97be11d4631b44d6`, masked447.6 minus CTA1g2112 385.2 = **62.4 us**, subtracted once on S/F. These deltas transfer across router seeds and whole-layer overlap only as a model. Paired glue/FA3 setting changes from reset to S1 are not assigned extra savings; their composition needs the S1–S6 profiles. [Scale receipt](../../../runs/muse_decode_layer/20261024T141927Z_check_58ae2e2cf8df45ef.json) · [M256 receipt](../../../runs/muse_moe_w4a16/20261024T142924Z_check_97be11d4631b44d6.json).
 - **Projection role attribution:** the judge merges repeated kernel names. Only a unique custom GEMV role can be timed directly. Other roles in the same custom/library group are allocated in proportion to their one-read resource floors and marked **~**. This is an estimate, not recovered per-role telemetry. Exact group totals and mathematical attribution ranges are retained in JSON.
-- **Overlap:** profile rows include PDL dependency waits; sums can be above or below the paired benchmark median. The signed residual is shown separately, never called spare/idle time or added to a stage. Savings below assume the removed duration was exposed on the critical path; the profiles alone cannot prove that.
+- **Overlap:** profile rows include PDL dependency waits and, in S6, parallel W13 execution; sums can be above or below the paired benchmark median. The signed residual is shown separately, never called spare/idle time or added to a stage. Savings below assume the removed duration was exposed on the critical path; the profiles alone cannot prove that.
 - **Truncation:** six small rows are omitted in each M256 report. The visible MoE and attention times are lower bounds; their combined omitted mass is in Other. No hidden timing is fabricated. Other therefore has no defensible single stage floor/target and receives **n/a**, not a zero-cost win.
 - **Floors:** ideal cold single read at4.8 TB/s, max with dense BF16 at989 TF/s and legal FP8 QK at1979 TF/s (QK/PV tensor times add). Intermediate activations may remain on chip. Dense role shapes/counts and lossless BF16-hi+lo router come from the frozen source. MoE expected touched experts/routes are inferred from that receipt's exact official `speed_of_light_ns`; they are not its hidden actual routes. Attention uses nominal ctx80000, page1, full key coverage, shared q8 KV reads; agentic actual lengths vary±7.5%. No replay, launch or measured issue penalty is charged to the ideal floor. Glue reads five original 8192-wide BF16 vectors and the route stage's 4096-wide pre-expert vector+bias once, with fused activation IO. Those tiny floors express fusion headroom, not achievable isolated launch latencies. [Formula source](../../../sim/bound.py), [hardware rates](../../../sim/hw.py), [official shapes and scoring](../TASK.md).
 
@@ -108,36 +108,10 @@ For a selected stage set, `dS/dF = sum(max(0, time - 1.3*floor))` within each sh
 
 ## Refresh and checks
 
-`python problems/muse_decode_layer/dev/levers/build.py` reads local profiles only: chooses frozen S2 `b0805447` first, then S1 `42f543a0`, otherwise reset. It verifies the accepted receipt SHA. Reset gets both measured corrections; S1 only M256; S2 neither. Use `--receipt problems/muse_decode_layer/profiles/<file>.json` for a named profile. Run this once when resumed after the09:01 KST receipts land; it makes no judge calls, watches or timers.
+`python problems/muse_decode_layer/dev/levers/build.py` reads local profiles only: chooses frozen S6 `4c98f12f` first, then S5 `f7064fc0`, S4 `9b2b2a48`, S3 `cadef19a`, S2 `b0805447`, S1 `42f543a0`, otherwise reset. It hashes the immutable submitted source beside the accepted receipt and verifies the known candidate SHA. Reset gets both measured corrections; S1 only raw M256; S2–S6 neither. Use `--receipt problems/muse_decode_layer/profiles/<file>.json` for a named profile. Run this once when resumed after the09:01 KST receipts land; it makes no judge calls, watches or timers.
 
 [Machine-readable rows, floors, attribution and validation](levers/current.json) · [Rebuild and accounting assertions](levers/build.py)
 
 ## Closed inputs to the next integration
 
-Current negative receipts: FlashInfer full context `8ffbac2d`, persistent chain `87dc944b` (1.5–6.5x slower), verify split-K WGMMA `19f3a13b` (1.6x slower), and M128 fused producer `471f6d62` (5.7–6.5x recoded NT1). They do not supply a cleared S3 cell. Existing source holds remain on `dev/parked/cand_r3_attention_v2.py`, `dev/parked/cand_r3_v9_glue.py`, both `dev/parked/cand_r3_merge_mega*.py` builds and the old overlap candidate. Detailed evidence remains in [FINDINGS](../../../docs/FINDINGS.md); [FOCUS](../FOCUS.md) owns candidate paths and reset allocation.
-
-
-## Open attention measurement: one-launch sliding
-
-Attention-board job `32f2f07acfe144c2`, send key `68c50c706423f6d6`, measures
-all six sliding shapes with the fused window kernel; full q1 retains
-attn_main, full q8 FA3. Candidate `problems/muse_attention_decode/cand_sliding_singlelaunch.py`,
-SHA-256 `68c50c706423f6d6cfe52cc4cd487840e9794a9c62664f7633d59bfd5cbdcb75`.
-Local screen passes 16 tests / 12 fresh-input graphs / 4 static checks.
-
-Adapter [sliding_attention.py](sliding_attention.py), SHA-256
-`68fb992bd795b29a2257b88fc8c08363749a4446eaf1e1241e1961c1ae8264f6`:
-`attention_sliding(qkv, data)` accepts the existing projection tuple or BF16
-QKV and returns `[tokens, 1024]`. FP32 partial reduction and BF16 rounding
-are inside the launch. All six scored sliding shapes and 1/4-partial graph
-replays pass the task's post-store FP32 gate; profiling confirms one kernel
-at B1 q1/q8. `attention_dropin.with_sliding_attention(source)` embeds the
-adapter and adds `('singlelaunch_sliding', None)` without selecting it.
-
-Split table: q1 B1/16/32 = 8/4/2; q8 = 8/1/1. Local sm120 sliding times are
-9.2/16.4/26.6 us q1 and 13.3/81.9/122.9 us q8. Larger q8 remains suspect;
-select only same-shape H200 wins, then check whole-layer/PDL composition.
-No H200 timing, <=6 us B1 claim, layer gain or new settings promotion yet.
-At 6 us, projected 46-layer savings from the stated 14.8/19.4 us B1 stages
-are 404.8 us decode1 and 616.4 us verify1. FlashInfer `8ffbac2d68074a0b`
-adds no full-verify winner (FA2 469/912 us at B16/B32); retain FA3.
+Current negative receipts: FlashInfer full context `8ffbac2d`, persistent chain `87dc944b` (1.5–6.5x slower), verify split-K WGMMA `19f3a13b` (1.6x slower), and M128 fused producer `471f6d62` (5.7–6.5x recoded NT1). None supplies a promoted cell. S3 instead integrates the M256 recoded C1g2112 win `9e8a6a15f95748db` (365.2 vs raw386.1 us, 12 seeds); S4 adds D32g at M128 and one-LOP3 NT1 at M1–32 from `dc3fea0a20a349bf`; S5 replaces M128 with H_H from `770809cf159f41e2` (234.44 vs D32g272.70 us, 36 fixtures). S6 adds M256 mixed_parallel from8483c0c6 (344.5 vs C1rec366.2 us,12 seeds) and the M1 O/config6 cell (near timing noise). This table retains its reset + raw-M256 composition basis until the S1–S6 whole-layer profiles land. Existing source holds remain on `dev/parked/cand_r3_attention_v2.py`, `dev/parked/cand_r3_v9_glue.py`, both `dev/parked/cand_r3_merge_mega*.py` builds and the old overlap candidate. Detailed evidence remains in [FINDINGS](../../../docs/FINDINGS.md); [FOCUS](../FOCUS.md) owns candidate paths and reset allocation.

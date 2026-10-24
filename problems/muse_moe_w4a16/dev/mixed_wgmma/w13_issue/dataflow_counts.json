@@ -1,0 +1,36 @@
+[
+  {
+    "name": "raw",
+    "total": 286,
+    "per16": {
+      "control_barrier_other": 5.75,
+      "address_integer": 18.75,
+      "predicated_off_fence_scaffold": 1.75,
+      "SF_shared_load": 1.0,
+      "Q_shared_load": 1.0,
+      "scale_decode": 8.0,
+      "scale_lookup_load": 4.0,
+      "FP4_unpack": 17.0,
+      "scale_multiply": 8.0,
+      "WGMMA_issue_fence_wait": 3.0,
+      "address_constant_state": 0.25,
+      "async_weight_activation_load": 3.0
+    }
+  },
+  {
+    "name": "recoded",
+    "total": 269,
+    "per16": {
+      "control_barrier_other": 5.75,
+      "address_integer": 18.75,
+      "predicated_off_fence_scaffold": 1.75,
+      "Q_shared_load": 1.0,
+      "SF_shared_load": 1.0,
+      "FP4_unpack": 17.0,
+      "scale_decode": 8.0,
+      "scale_multiply": 8.0,
+      "WGMMA_issue_fence_wait": 3.0,
+      "async_weight_activation_load": 3.0
+    }
+  }
+]

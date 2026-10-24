@@ -17,6 +17,7 @@ if not args.dropin_only and (HERE/'driver.py.inc').exists():
     helpers=(HERE.parent/'paired_lab/driver.py.inc').read_text().split('\ndef lab(deadline,weights,host_state):',1)[0]
     shared=(old/'driver.py.inc').read_text().split('\ndef lab(deadline,weights,host_state):',1)[0]
     shared=shared[:shared.index('\ndef fg_setup')]+shared[shared.index('\ndef fg_route_gate'):]
+    shared+='\n'+(old/'flip_gate.py.inc').read_text()
     body='BEST7_SOURCE='+repr((ROOT/'problems/muse_decode_layer/cand_r3_best7_scale.py').read_text())+'\n'+cell+'\n'+helpers+'\n'+shared+'\n'+(HERE/'driver.py.inc').read_text()
     sys.path.insert(0,str(ROOT/'tools'));from okc_run import rejected_words
     assert not rejected_words(body),rejected_words(body)

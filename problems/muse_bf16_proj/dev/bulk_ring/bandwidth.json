@@ -1,0 +1,183 @@
+{
+  "receipt": "95ab383de42a4fae",
+  "reference_tbps": 3.6,
+  "rows": [
+    {
+      "tokens": 1,
+      "role": "qkv_gate",
+      "weight_bytes": 37748736,
+      "logical_bytes": 37748736,
+      "best7_us": 21.1,
+      "tbps": 1.7890396208530803,
+      "stream_floor_us": 10.48576,
+      "gap_us": 10.61424,
+      "gap_62_layers_us": 658.08288
+    },
+    {
+      "tokens": 1,
+      "role": "o",
+      "weight_bytes": 16777216,
+      "logical_bytes": 16777216,
+      "best7_us": 12.07,
+      "tbps": 1.3899930405965204,
+      "stream_floor_us": 4.6603377777777775,
+      "gap_us": 7.409662222222223,
+      "gap_62_layers_us": 459.39905777777784
+    },
+    {
+      "tokens": 1,
+      "role": "pool_router",
+      "weight_bytes": 75497472,
+      "logical_bytes": 75497472,
+      "best7_us": 30.8,
+      "tbps": 2.4512166233766233,
+      "stream_floor_us": 20.97152,
+      "gap_us": 9.828479999999999,
+      "gap_62_layers_us": 609.3657599999999
+    },
+    {
+      "tokens": 1,
+      "role": "unpooler_slice",
+      "weight_bytes": 8388608,
+      "logical_bytes": 8388608,
+      "best7_us": 8.92,
+      "tbps": 0.9404269058295964,
+      "stream_floor_us": 2.3301688888888887,
+      "gap_us": 6.589831111111112,
+      "gap_62_layers_us": 408.5695288888889
+    },
+    {
+      "tokens": 8,
+      "role": "qkv_gate",
+      "weight_bytes": 37748736,
+      "logical_bytes": 37748736,
+      "best7_us": 21.23,
+      "tbps": 1.778084597268017,
+      "stream_floor_us": 10.48576,
+      "gap_us": 10.74424,
+      "gap_62_layers_us": 666.14288
+    },
+    {
+      "tokens": 8,
+      "role": "o",
+      "weight_bytes": 16777216,
+      "logical_bytes": 16777216,
+      "best7_us": 12.08,
+      "tbps": 1.3888423841059603,
+      "stream_floor_us": 4.6603377777777775,
+      "gap_us": 7.419662222222223,
+      "gap_62_layers_us": 460.0190577777778
+    },
+    {
+      "tokens": 8,
+      "role": "pool_router",
+      "weight_bytes": 75497472,
+      "logical_bytes": 75497472,
+      "best7_us": 31.27,
+      "tbps": 2.4143739047009913,
+      "stream_floor_us": 20.97152,
+      "gap_us": 10.298479999999998,
+      "gap_62_layers_us": 638.5057599999999
+    },
+    {
+      "tokens": 8,
+      "role": "unpooler_slice",
+      "weight_bytes": 8388608,
+      "logical_bytes": 8388608,
+      "best7_us": 8.88,
+      "tbps": 0.9446630630630629,
+      "stream_floor_us": 2.3301688888888887,
+      "gap_us": 6.5498311111111125,
+      "gap_62_layers_us": 406.089528888889
+    },
+    {
+      "tokens": 16,
+      "role": "qkv_gate",
+      "weight_bytes": 37748736,
+      "logical_bytes": 37748736,
+      "best7_us": 19.56,
+      "tbps": 1.9298944785276073,
+      "stream_floor_us": 10.48576,
+      "gap_us": 9.074239999999998,
+      "gap_62_layers_us": 562.6028799999999
+    },
+    {
+      "tokens": 16,
+      "role": "o",
+      "weight_bytes": 16777216,
+      "logical_bytes": 16777216,
+      "best7_us": 12.05,
+      "tbps": 1.3923000829875518,
+      "stream_floor_us": 4.6603377777777775,
+      "gap_us": 7.389662222222223,
+      "gap_62_layers_us": 458.15905777777783
+    },
+    {
+      "tokens": 16,
+      "role": "pool_router",
+      "weight_bytes": 75497472,
+      "logical_bytes": 75497472,
+      "best7_us": 31.49,
+      "tbps": 2.397506255954271,
+      "stream_floor_us": 20.97152,
+      "gap_us": 10.518479999999997,
+      "gap_62_layers_us": 652.1457599999998
+    },
+    {
+      "tokens": 16,
+      "role": "unpooler",
+      "weight_bytes": 67108864,
+      "logical_bytes": 67108864,
+      "best7_us": 28.3,
+      "tbps": 2.3713379505300356,
+      "stream_floor_us": 18.64135111111111,
+      "gap_us": 9.65864888888889,
+      "gap_62_layers_us": 598.8362311111113
+    },
+    {
+      "tokens": 32,
+      "role": "qkv_gate",
+      "weight_bytes": 37748736,
+      "logical_bytes": 37748736,
+      "best7_us": 21.57,
+      "tbps": 1.7500573018080667,
+      "stream_floor_us": 10.48576,
+      "gap_us": 11.08424,
+      "gap_62_layers_us": 687.2228799999999
+    },
+    {
+      "tokens": 32,
+      "role": "o",
+      "weight_bytes": 16777216,
+      "logical_bytes": 16777216,
+      "best7_us": 12.36,
+      "tbps": 1.357379935275081,
+      "stream_floor_us": 4.6603377777777775,
+      "gap_us": 7.699662222222222,
+      "gap_62_layers_us": 477.37905777777775
+    },
+    {
+      "tokens": 32,
+      "role": "pool_router",
+      "weight_bytes": 75497472,
+      "logical_bytes": 75497472,
+      "best7_us": 33.69,
+      "tbps": 2.240946037399822,
+      "stream_floor_us": 20.97152,
+      "gap_us": 12.718479999999996,
+      "gap_62_layers_us": 788.5457599999997
+    },
+    {
+      "tokens": 32,
+      "role": "unpooler",
+      "weight_bytes": 67108864,
+      "logical_bytes": 67108864,
+      "best7_us": 28.24,
+      "tbps": 2.376376203966006,
+      "stream_floor_us": 18.64135111111111,
+      "gap_us": 9.598648888888889,
+      "gap_62_layers_us": 595.1162311111111
+    }
+  ],
+  "byte_definition": "Original resident weight bank, one useful read; pooler BF16 plus router hi+lo BF16. Excludes activations, outputs and split partial traffic; raw graph time includes replay/launch overhead."
+}

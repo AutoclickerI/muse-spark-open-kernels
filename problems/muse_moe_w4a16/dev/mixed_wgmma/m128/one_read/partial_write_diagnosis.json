@@ -1,0 +1,16 @@
+{
+  "shape": 129,
+  "expert": 0,
+  "shared_N_limit": 64,
+  "poisoned_ACT_nonfinite": 0,
+  "poisoned_Y_nonfinite": 0,
+  "SS_nonfinite_by_row": {
+    "0": 0,
+    "1": 0,
+    "126": 0,
+    "127": 0,
+    "128": 64
+  },
+  "cause": "128-thread CTA writes SS only with t<NT, leaving rows128+ unwritten for NT256/384. Loop rr=t;rr<NT;rr+=128 writes every active row.",
+  "gates_preserved": "Every newly allocated ACT/Y/SS hot-row entry poisoned before both producers; all must become finite before output gate."
+}

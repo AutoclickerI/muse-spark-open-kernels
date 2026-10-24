@@ -1,0 +1,472 @@
+{
+  "manifest": {
+    "source": "problems/muse_decode_layer/cand_r3_best7_scale_recoded_m256.py",
+    "sha256": "cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7",
+    "base_sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+    "payload": "prof/lab/moe_recoded_m256.py",
+    "payload_sha256": "d30f4a862fa0b882529ba3b9ea9c37013f305559c707e27db62e10b4ff1a2bce",
+    "rc_cuda_sha256": "cbf0cdab66442772ab743c3df72dfdbb094a44619c302aca7c962901edaae64d",
+    "receipt": "9e8a6a15f95748db",
+    "variant": "C1g2112",
+    "config": {
+      "which": 1,
+      "grid": 2112,
+      "encoded": true
+    },
+    "functions": [
+      "mw_repack_planes",
+      "rc_call",
+      "rc_masks",
+      "rc_plan",
+      "rc_prepare",
+      "rc_repack"
+    ]
+  },
+  "screens": {
+    "normal": {
+      "sha256": "cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7",
+      "prepare_s": 9.179732751043048,
+      "tests": 13,
+      "graphs": 12,
+      "static": 19,
+      "phases_s": {
+        "weights": 0.8862459679949097,
+        "moe_nt": 1.7682856830069795,
+        "projections": 0.9638491499936208,
+        "attention": 4.1951017919927835e-05,
+        "scale_recode": 0.30930957198143005,
+        "s3_repack": 0.5344180739484727,
+        "pdl_prefix": 4.716177021036856
+      },
+      "cc": "12.0",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
+    },
+    "forced": {
+      "sha256": "cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7",
+      "prepare_s": 40.95441112399567,
+      "tests": 13,
+      "graphs": 12,
+      "static": 19,
+      "phases_s": {
+        "weights": 1.5239829649799503,
+        "moe_nt": 2.180856427992694,
+        "projections": 4.228508191008586,
+        "attention": 27.355696171987802,
+        "scale_recode": 0.3040999170043506,
+        "s3_repack": 0.32223309704568237,
+        "pdl_prefix": 4.481874566990882
+      },
+      "cc": "12.0",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
+    }
+  },
+  "source_audit": {
+    "sha256": "cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7",
+    "unchanged_base_functions": 156,
+    "changed_base_functions": [
+      "_best6_call",
+      "_best7_gate_moe",
+      "_best7_prepare_settings",
+      "prepare"
+    ],
+    "removed_raw_engine": [
+      "_s2_gate_moe",
+      "fx_call",
+      "fx_from_packed",
+      "fx_module",
+      "fx_plan",
+      "fx_prepare",
+      "fx_work"
+    ],
+    "exact_measured_functions": [
+      "mw_repack_planes",
+      "rc_call",
+      "rc_masks",
+      "rc_plan",
+      "rc_prepare",
+      "rc_repack"
+    ],
+    "native_source_exact": true,
+    "accepted_h200_wrapper_exact": true,
+    "changed_table_rows": [
+      [
+        32,
+        8,
+        2048
+      ],
+      [
+        32,
+        8,
+        0
+      ]
+    ],
+    "humming_transform_unchanged": true,
+    "s1_recoded_nt1_unchanged": true,
+    "retains_only_recoded_m256_bank": true,
+    "rejected_words": []
+  },
+  "forced_recoded_calls": {
+    "calls": 11,
+    "captured_calls": 3,
+    "full_layer_rows": {
+      "(32, 8, 2048)": {
+        "eager": 3,
+        "captured": 1
+      },
+      "(32, 8, 0)": {
+        "eager": 3,
+        "captured": 1
+      }
+    }
+  },
+  "forced_gates": {
+    "('moe', 1, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016554509056732059,
+      "worst_row": 0.0016554509056732059
+    },
+    "('attention', 1, 2048, \"('attn_main', None)\", 'best6')": [
+      0.004936551209539175,
+      0.005189876537770033
+    ],
+    "('attention', 1, 0, \"('attn_main', None)\", 'best6')": [
+      0.005765494424849749,
+      0.003977565560489893
+    ],
+    "('moe', 16, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016594346379861236,
+      "worst_row": 0.001727238530293107
+    },
+    "('moe', 32, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016635659849271178,
+      "worst_row": 0.0017097427044063807
+    },
+    "('moe', 8, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016685122391209006,
+      "worst_row": 0.00168683344963938
+    },
+    "('attention', 8, 2048, \"('layer', None)\", 'best6')": [
+      0.073316790163517,
+      0.08087240904569626
+    ],
+    "('attention', 8, 0, \"('layer', None)\", 'best6')": [
+      0.07193760573863983,
+      0.08714704215526581
+    ],
+    "('moe', 128, 'v9nt1')": {
+      "source": "best6 three-seed final gate",
+      "fp32": 0.001663,
+      "worst_row": 0.001728,
+      "seed_mean_us": [
+        351.8,
+        391.72,
+        395.296
+      ],
+      "mean_us": 379.605
+    },
+    "('moe', 256, 'recoded_c1g2112')": {
+      "source": "three public streams, forward/reverse fresh route graph replays",
+      "fp32": 0.0038027639966458082,
+      "worst_row": 0.0042609479278326035,
+      "which": 1,
+      "grid": 2112,
+      "encoded": true,
+      "bank": "lossless NVFP4 exponent/mantissa and folded sign/zero"
+    }
+  },
+  "forced_plans": {
+    "other": {
+      "glue": "best6",
+      "geometry": {},
+      "attention": "auto",
+      "moe": "auto",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 1, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          16
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "attn_main",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 1, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          16
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "attn_main",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 1, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 1, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 1, 2048)": {
+      "glue": "best5",
+      "geometry": {},
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 1, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 8, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          4
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 8, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          4
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 8, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 8, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 8, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "recoded_c1g2112",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 8, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "recoded_c1g2112",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    }
+  },
+  "sent": false,
+  "unverified": [
+    "whole-layer H200 composition",
+    "cold H200 prepare",
+    "new judge seeds"
+  ]
+}

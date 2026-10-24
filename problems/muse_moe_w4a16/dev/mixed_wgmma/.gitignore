@@ -2,6 +2,9 @@
 *.cu
 !vector.cu
 !pipeline.cu
+!fused.cu
+!w2fix.cu
+!tail_probe.cu
 diagnostics/*.sass
 diagnostics/*.cubin
 diagnostics/*.cu

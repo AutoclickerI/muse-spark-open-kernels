@@ -1,0 +1,23 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_scale_recoded_m256.py",
+  "sha256": "cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7",
+  "base_sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+  "payload": "prof/lab/moe_recoded_m256.py",
+  "payload_sha256": "d30f4a862fa0b882529ba3b9ea9c37013f305559c707e27db62e10b4ff1a2bce",
+  "rc_cuda_sha256": "cbf0cdab66442772ab743c3df72dfdbb094a44619c302aca7c962901edaae64d",
+  "receipt": "9e8a6a15f95748db",
+  "variant": "C1g2112",
+  "config": {
+    "which": 1,
+    "grid": 2112,
+    "encoded": true
+  },
+  "functions": [
+    "mw_repack_planes",
+    "rc_call",
+    "rc_masks",
+    "rc_plan",
+    "rc_prepare",
+    "rc_repack"
+  ]
+}

@@ -1,0 +1,613 @@
+[
+  {
+    "label": "raw",
+    "loop": [
+      "0x1740",
+      "0x2910"
+    ],
+    "static_instructions": 286,
+    "per16_weights": {
+      "address_index_integer": 18.75,
+      "control_sync_other": 7.25,
+      "memory_instructions": 9.0,
+      "mma_fence_commit_wait": 3.25,
+      "unpack_scale_bitops": 33.25
+    },
+    "instructions_per_weight": 4.46875,
+    "uniform_instructions": 42,
+    "opcodes": {
+      "UISETP.NE.AND": 3,
+      "PLOP3.LUT": 4,
+      "BRA": 6,
+      "DEPBAR.LE": 3,
+      "BAR.SYNC.DEFER_BLOCKING": 1,
+      "USHF.L.U32": 6,
+      "ULOP3.LUT": 7,
+      "IMAD.U32": 5,
+      "IADD3": 8,
+      "IADD3.X": 3,
+      "LDS": 23,
+      "MEMBAR.ALL.CTA": 1,
+      "FENCE.VIEW.ASYNC.S": 1,
+      "LD.E": 4,
+      "LD.E.64": 4,
+      "UIADD3": 6,
+      "USHF.R.U32.HI": 2,
+      "UMOV": 3,
+      "UIADD3.64": 6,
+      "SHF.R.U32.HI": 12,
+      "IMAD.SHL.U32": 6,
+      "LOP3.LUT": 59,
+      "SHF.R.W.U32": 28,
+      "HMUL2.BF16_V2": 32,
+      "WARPGROUP.ARRIVE": 2,
+      "HGMMA.64x32x16.F32.BF16": 8,
+      "UISETP.GT.U32.AND": 1,
+      "WARPGROUP.DEPBAR.LE": 2,
+      "S2R": 1,
+      "ULEA": 1,
+      "LEA": 4,
+      "LEA.HI.X.SX32": 1,
+      "SHF.L.U64.HI": 1,
+      "VIADD": 6,
+      "SHF.R.S32.HI": 1,
+      "LEA.HI.X": 4,
+      "IMAD.X": 3,
+      "LDGSTS.E.64": 4,
+      "LDGSTS.E": 4,
+      "ISETP.NE.U32.AND": 2,
+      "IMAD": 2,
+      "LDGSTS.E.BYPASS.128": 4,
+      "LDGDEPBAR": 1,
+      "UIADD3.X": 1
+    },
+    "conditional_sites": [
+      [
+        "0x1760",
+        "BRA",
+        "0x17e0",
+        "@!P1"
+      ],
+      [
+        "0x1790",
+        "BRA",
+        "0x17c0",
+        "@P1"
+      ],
+      [
+        "0x1880",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1890",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x18a0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x18b0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1f20",
+        "BRA",
+        "0x2310",
+        "@P1"
+      ],
+      [
+        "0x1fb0",
+        "LEA",
+        "R49, P2, R52.reuse, R17, 0x5",
+        "@!P0"
+      ],
+      [
+        "0x20b0",
+        "LEA.HI.X",
+        "R52, R52, RZ, R51, 0x5, P2",
+        "@!P0"
+      ],
+      [
+        "0x2100",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x2110",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x2120",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x2140",
+        "IADD3",
+        "R48, P1, R49, R6, RZ",
+        "@!P0"
+      ],
+      [
+        "0x2170",
+        "IMAD.X",
+        "R49, R52, 0x1, R7, P1",
+        "@!P0"
+      ],
+      [
+        "0x2190",
+        "VIADD",
+        "R51, R22, UR10",
+        "@!P0"
+      ],
+      [
+        "0x21e0",
+        "LDGSTS.E",
+        "[R51], desc[UR12][R48.64]",
+        "@!P0"
+      ],
+      [
+        "0x2200",
+        "VIADD",
+        "R53, R50.reuse, UR15",
+        "@!P0"
+      ],
+      [
+        "0x2220",
+        "VIADD",
+        "R93, R50.reuse, UR15",
+        "@!P0"
+      ],
+      [
+        "0x2240",
+        "VIADD",
+        "R95, R50, UR15",
+        "@!P0"
+      ],
+      [
+        "0x2250",
+        "LDGSTS.E",
+        "[R53+0x80], desc[UR12][R44.64]",
+        "@!P0"
+      ],
+      [
+        "0x2290",
+        "LDGSTS.E",
+        "[R93+0x100], desc[UR12][R44.64+0x20]",
+        "@!P0"
+      ],
+      [
+        "0x22b0",
+        "LDGSTS.E",
+        "[R95+0x180], desc[UR12][R44.64+0x40]",
+        "@!P0"
+      ],
+      [
+        "0x2910",
+        "BRA",
+        "0x1740",
+        "@P1"
+      ]
+    ],
+    "note": "Static loop includes both cp.async drain paths and warp-masked SF copies; executed count depends on branch. Categories use opcodes, not a data-flow attribution. K128 is64 weights/lane, four16-weight groups."
+  },
+  {
+    "label": "raw_pair",
+    "loop": [
+      "0x1740",
+      "0x2910"
+    ],
+    "static_instructions": 286,
+    "per16_weights": {
+      "address_index_integer": 18.75,
+      "control_sync_other": 7.25,
+      "memory_instructions": 9.0,
+      "mma_fence_commit_wait": 3.25,
+      "unpack_scale_bitops": 33.25
+    },
+    "instructions_per_weight": 4.46875,
+    "uniform_instructions": 42,
+    "opcodes": {
+      "UISETP.NE.AND": 3,
+      "PLOP3.LUT": 4,
+      "BRA": 6,
+      "DEPBAR.LE": 3,
+      "BAR.SYNC.DEFER_BLOCKING": 1,
+      "USHF.L.U32": 6,
+      "ULOP3.LUT": 7,
+      "IMAD.U32": 5,
+      "IADD3": 8,
+      "IADD3.X": 3,
+      "LDS": 23,
+      "MEMBAR.ALL.CTA": 1,
+      "FENCE.VIEW.ASYNC.S": 1,
+      "LD.E": 4,
+      "LD.E.64": 4,
+      "UIADD3": 6,
+      "USHF.R.U32.HI": 2,
+      "UMOV": 3,
+      "UIADD3.64": 6,
+      "SHF.R.U32.HI": 12,
+      "IMAD.SHL.U32": 6,
+      "LOP3.LUT": 59,
+      "SHF.R.W.U32": 28,
+      "HMUL2.BF16_V2": 32,
+      "WARPGROUP.ARRIVE": 2,
+      "HGMMA.64x32x16.F32.BF16": 8,
+      "UISETP.GT.U32.AND": 1,
+      "WARPGROUP.DEPBAR.LE": 2,
+      "S2R": 1,
+      "ULEA": 1,
+      "LEA": 4,
+      "LEA.HI.X.SX32": 1,
+      "SHF.L.U64.HI": 1,
+      "VIADD": 6,
+      "SHF.R.S32.HI": 1,
+      "LEA.HI.X": 4,
+      "IMAD.X": 3,
+      "LDGSTS.E.64": 4,
+      "LDGSTS.E": 4,
+      "ISETP.NE.U32.AND": 2,
+      "IMAD": 2,
+      "LDGSTS.E.BYPASS.128": 4,
+      "LDGDEPBAR": 1,
+      "UIADD3.X": 1
+    },
+    "conditional_sites": [
+      [
+        "0x1760",
+        "BRA",
+        "0x17e0",
+        "@!P1"
+      ],
+      [
+        "0x1790",
+        "BRA",
+        "0x17c0",
+        "@P1"
+      ],
+      [
+        "0x1880",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1890",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x18a0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x18b0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1f20",
+        "BRA",
+        "0x2310",
+        "@P1"
+      ],
+      [
+        "0x1fb0",
+        "LEA",
+        "R49, P2, R52.reuse, R17, 0x5",
+        "@!P0"
+      ],
+      [
+        "0x20b0",
+        "LEA.HI.X",
+        "R52, R52, RZ, R51, 0x5, P2",
+        "@!P0"
+      ],
+      [
+        "0x2100",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x2110",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x2120",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x2140",
+        "IADD3",
+        "R48, P1, R49, R6, RZ",
+        "@!P0"
+      ],
+      [
+        "0x2170",
+        "IMAD.X",
+        "R49, R52, 0x1, R7, P1",
+        "@!P0"
+      ],
+      [
+        "0x2190",
+        "VIADD",
+        "R51, R22, UR10",
+        "@!P0"
+      ],
+      [
+        "0x21e0",
+        "LDGSTS.E",
+        "[R51], desc[UR12][R48.64]",
+        "@!P0"
+      ],
+      [
+        "0x2200",
+        "VIADD",
+        "R53, R50.reuse, UR15",
+        "@!P0"
+      ],
+      [
+        "0x2220",
+        "VIADD",
+        "R93, R50.reuse, UR15",
+        "@!P0"
+      ],
+      [
+        "0x2240",
+        "VIADD",
+        "R95, R50, UR15",
+        "@!P0"
+      ],
+      [
+        "0x2250",
+        "LDGSTS.E",
+        "[R53+0x80], desc[UR12][R44.64]",
+        "@!P0"
+      ],
+      [
+        "0x2290",
+        "LDGSTS.E",
+        "[R93+0x100], desc[UR12][R44.64+0x20]",
+        "@!P0"
+      ],
+      [
+        "0x22b0",
+        "LDGSTS.E",
+        "[R95+0x180], desc[UR12][R44.64+0x40]",
+        "@!P0"
+      ],
+      [
+        "0x2910",
+        "BRA",
+        "0x1740",
+        "@P1"
+      ]
+    ],
+    "note": "Static loop includes both cp.async drain paths and warp-masked SF copies; executed count depends on branch. Categories use opcodes, not a data-flow attribution. K128 is64 weights/lane, four16-weight groups."
+  },
+  {
+    "label": "recoded",
+    "loop": [
+      "0x1440",
+      "0x2500"
+    ],
+    "static_instructions": 269,
+    "per16_weights": {
+      "address_index_integer": 21.75,
+      "control_sync_other": 7.0,
+      "memory_instructions": 5.0,
+      "mma_fence_commit_wait": 3.25,
+      "unpack_scale_bitops": 30.25
+    },
+    "instructions_per_weight": 4.203125,
+    "uniform_instructions": 42,
+    "opcodes": {
+      "UISETP.NE.AND": 3,
+      "PLOP3.LUT": 4,
+      "BRA": 6,
+      "DEPBAR.LE": 3,
+      "BAR.SYNC.DEFER_BLOCKING": 1,
+      "USHF.L.U32": 6,
+      "ULOP3.LUT": 7,
+      "IMAD.U32": 5,
+      "IADD3": 8,
+      "IADD3.X": 3,
+      "LDS": 7,
+      "MEMBAR.ALL.CTA": 1,
+      "FENCE.VIEW.ASYNC.S": 1,
+      "LD.E.64": 4,
+      "LD.E": 4,
+      "UMOV": 3,
+      "UIADD3": 6,
+      "USHF.R.U32.HI": 2,
+      "UIADD3.64": 6,
+      "UISETP.GT.U32.AND": 1,
+      "LOP3.LUT": 43,
+      "SHF.R.W.U32": 28,
+      "PRMT": 16,
+      "LEA": 20,
+      "HMUL2.BF16_V2": 32,
+      "WARPGROUP.ARRIVE": 2,
+      "HGMMA.64x32x16.F32.BF16": 8,
+      "WARPGROUP.DEPBAR.LE": 2,
+      "IMAD.SHL.U32": 2,
+      "ULEA": 1,
+      "LEA.HI.X.SX32": 1,
+      "SHF.L.U64.HI": 1,
+      "VIADD": 6,
+      "SHF.R.S32.HI": 1,
+      "LEA.HI.X": 4,
+      "IMAD.X": 3,
+      "LDGSTS.E.64": 4,
+      "LDGSTS.E": 4,
+      "ISETP.NE.U32.AND": 2,
+      "IMAD": 2,
+      "LDGSTS.E.BYPASS.128": 4,
+      "LDGDEPBAR": 1,
+      "UIADD3.X": 1
+    },
+    "conditional_sites": [
+      [
+        "0x1460",
+        "BRA",
+        "0x14e0",
+        "@!P1"
+      ],
+      [
+        "0x1490",
+        "BRA",
+        "0x14c0",
+        "@P1"
+      ],
+      [
+        "0x1590",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x15a0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x15b0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x15c0",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1ba0",
+        "BRA",
+        "0x1f80",
+        "@P1"
+      ],
+      [
+        "0x1c20",
+        "LEA",
+        "R49, P2, R52.reuse, R21, 0x5",
+        "@!P0"
+      ],
+      [
+        "0x1d20",
+        "LEA.HI.X",
+        "R52, R52, RZ, R51, 0x5, P2",
+        "@!P0"
+      ],
+      [
+        "0x1d70",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1d80",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1d90",
+        "LDS",
+        "RZ, [RZ]",
+        "@!PT"
+      ],
+      [
+        "0x1db0",
+        "IADD3",
+        "R48, P1, R49, R2, RZ",
+        "@!P0"
+      ],
+      [
+        "0x1de0",
+        "IMAD.X",
+        "R49, R52, 0x1, R3, P1",
+        "@!P0"
+      ],
+      [
+        "0x1e00",
+        "VIADD",
+        "R51, R72, UR10",
+        "@!P0"
+      ],
+      [
+        "0x1e50",
+        "LDGSTS.E",
+        "[R51], desc[UR12][R48.64]",
+        "@!P0"
+      ],
+      [
+        "0x1e70",
+        "VIADD",
+        "R53, R50.reuse, UR14",
+        "@!P0"
+      ],
+      [
+        "0x1e90",
+        "VIADD",
+        "R93, R50.reuse, UR14",
+        "@!P0"
+      ],
+      [
+        "0x1eb0",
+        "VIADD",
+        "R95, R50, UR14",
+        "@!P0"
+      ],
+      [
+        "0x1ec0",
+        "LDGSTS.E",
+        "[R53+0x80], desc[UR12][R44.64]",
+        "@!P0"
+      ],
+      [
+        "0x1f00",
+        "LDGSTS.E",
+        "[R93+0x100], desc[UR12][R44.64+0x20]",
+        "@!P0"
+      ],
+      [
+        "0x1f20",
+        "LDGSTS.E",
+        "[R95+0x180], desc[UR12][R44.64+0x40]",
+        "@!P0"
+      ],
+      [
+        "0x2500",
+        "BRA",
+        "0x1440",
+        "@P1"
+      ]
+    ],
+    "note": "Static loop includes both cp.async drain paths and warp-masked SF copies; executed count depends on branch. Categories use opcodes, not a data-flow attribution. K128 is64 weights/lane, four16-weight groups."
+  }
+]

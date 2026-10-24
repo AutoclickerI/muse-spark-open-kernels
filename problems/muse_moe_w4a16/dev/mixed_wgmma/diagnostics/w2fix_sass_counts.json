@@ -1,0 +1,81 @@
+{
+  "sha256": "5936461f1adc33b654ce749f52ad53fa232a08d1766e4f00b1c4ce9fc331d2bb",
+  "kernels": [
+    {
+      "name": "_ZN4mwfx6finishEPKiS1_PKfS1_S3_S3_P13__nv_bfloat16ii",
+      "registers": 32,
+      "local_memory": 0,
+      "mma": 0,
+      "waits": [],
+      "global_atomic": 0
+    },
+    {
+      "name": "_ZN4mwfx5fusedILi32ELi128ELi4ELi1ELb0ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+      "registers": 102,
+      "local_memory": 0,
+      "mma": 8,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "global_atomic": 0
+    },
+    {
+      "name": "_ZN4mwfx5fusedILi32ELi128ELi4ELi1ELb1ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+      "registers": 106,
+      "local_memory": 0,
+      "mma": 8,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "global_atomic": 0
+    },
+    {
+      "name": "_ZN4mwfx5fusedILi16ELi128ELi4ELi1ELb0ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+      "registers": 88,
+      "local_memory": 0,
+      "mma": 8,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "global_atomic": 0
+    },
+    {
+      "name": "_ZN4mwfx5fusedILi16ELi128ELi4ELi1ELb0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+      "registers": 96,
+      "local_memory": 0,
+      "mma": 8,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "global_atomic": 2
+    },
+    {
+      "name": "_ZN4mwfx5fusedILi16ELi128ELi4ELi1ELb1ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+      "registers": 101,
+      "local_memory": 0,
+      "mma": 8,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "global_atomic": 0
+    },
+    {
+      "name": "_ZN4mwfx10route_initEPKiPiS2_S2_S2_S2_S2_S2_P13__nv_bfloat16iiii",
+      "registers": 22,
+      "local_memory": 0,
+      "mma": 0,
+      "waits": [],
+      "global_atomic": 5
+    }
+  ]
+}

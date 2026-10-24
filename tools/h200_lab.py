@@ -263,6 +263,7 @@ def main():
         if name == "send":
             s.add_argument("--note", required=True)
             s.add_argument("--priority", type=float, default=1.0)
+            s.add_argument("--not-before", help="pass an ISO8601 send-time gate to okc_run; no early judge send")
         else:
             s.add_argument("-o", type=Path, required=True)
     r = sub.add_parser("read")
@@ -284,13 +285,17 @@ def main():
               f"Hosts with scored+check runs left: {spare or 'none'}. A payload that needs only its own "
               f"synthetic data or the MoE experts can go on --host muse_moe_w4a16.", file=sys.stderr)
     note = f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"
-    embedded, priority, note = absorb_waiting(args.host, embedded, args.priority, note)
+    # An explicitly scheduled lab must not pull another lane's ready payload
+    # into its delay. Other sends also skip this held entry via its until field.
+    embedded, priority, note = (embedded, args.priority, note) if args.not_before else absorb_waiting(args.host, embedded, args.priority, note)
     src, base = build(embedded, args.host)
     out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in embedded)}.py"
     out.parent.mkdir(exist_ok=True)
     out.write_text(src)
-    subprocess.run([sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
-                    "--priority", str(priority), "--note", note], cwd=REPO, check=False)
+    command=[sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
+             "--priority", str(priority), "--note", note]
+    if args.not_before:command += ["--not-before", args.not_before]
+    subprocess.run(command, cwd=REPO, check=False)
 
 
 if __name__ == "__main__":

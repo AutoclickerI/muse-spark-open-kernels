@@ -1,0 +1,55 @@
+{
+  "manifest": {
+    "payload": "prof/lab/decode_scale_bank.py",
+    "sha256": "8e01adcec8da5a0f1caa873433c791dca6f8bb05b1934803c07b8edb71be736b",
+    "raw_source_sha256": "4516cb979dac623a6b6a2347be54cb5ecb416be23d7631aeae092a403beb9528",
+    "best7_sha256": "b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a",
+    "host_source_sha256": "ba990a86f6f7f4985345cfc89a3bc56e36730d974ba47642a344c5c77d84279f",
+    "best7_identical_definitions": [
+      "V9_CUDA_SRC",
+      "V9_CPP_SRC",
+      "_repack",
+      "v9_prepare",
+      "v9_kernel_fn"
+    ],
+    "seeds": [
+      172903,
+      180822,
+      188741
+    ],
+    "cases": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "rounds": 6
+  },
+  "wrapper_sha256": "6edfaa87ad96a5ca1e2d369fd1efced16cd90a3db6297bb662f4de14e41ec4e1",
+  "tests": 13,
+  "graphs": 12,
+  "static": 5,
+  "embedded_raw_sm90a": [
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": ""
+    }
+  ],
+  "local_payload_s": 4.422998698952142,
+  "local_prepare_s": 44.94833278999431,
+  "share_s": 80.0,
+  "fixtures": 24,
+  "rounds": 6,
+  "max_l2": 0.0016651605255901814,
+  "max_row": 0.0017564448062330484,
+  "native_h200": "unmeasured; receipt required for a bank promotion",
+  "sent": true,
+  "send_key": "6edfaa87ad96a5ca",
+  "job": "58ae2e2cf8df45ef",
+  "budget_note": "single-payload send; cold serial setup/prefix took 123.5 s, so shared version must overlap compilation"
+}

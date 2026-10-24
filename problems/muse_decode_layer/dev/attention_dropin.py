@@ -20,6 +20,37 @@ OUTPUT = REPO / "problems/muse_decode_layer/dev/cand_r3_v9_attention_dropin.py"
 SHAPES = tuple((batch, q_len, sliding) for batch in (1, 16, 32) for q_len in (1, 8) for sliding in (True, False))
 
 
+def with_sliding_attention(source: str) -> str:
+    """Add the gated one-launch choice; promotion still comes from a measured settings row."""
+    marker = "def _attn_port_variant(qkv, data, state, choice):\n"
+    if source.count(marker) != 1:
+        raise ValueError("expected one attention portfolio dispatcher")
+    branch = (
+        marker
+        + "    if choice[0] == 'singlelaunch_sliding':\n"
+        + "        return attention_sliding(qkv, data)\n"
+    )
+    source = source.replace(marker, branch, 1)
+    module = REPO / "problems/muse_decode_layer/dev/sliding_attention.py"
+    return source + "\n\n# One-launch sliding attention; settings promotion awaits H200 evidence.\n" + module.read_text()
+
+
+
+def with_verify8_flashdecode(source: str) -> str:
+    """Add the full-q8 measurement choice; select only after an H200 win."""
+    marker = "def _attn_port_variant(qkv, data, state, choice):\n"
+    if source.count(marker) != 1:
+        raise ValueError("expected one attention portfolio dispatcher")
+    branch = (
+        marker
+        + "    if choice[0] == 'flashdecode_verify8':\n"
+        + "        return attention_verify8(qkv, data, choice[1])\n"
+    )
+    source = source.replace(marker, branch, 1)
+    module = REPO / "problems/muse_decode_layer/dev/verify8_flashdecode.py"
+    return source + "\n\n# Full-q8 split attention; select only after H200 admission.\n" + module.read_text()
+
+
 def _assignment(source: str, name: str, renamed: str) -> str:
     tree = ast.parse(source)
     for node in tree.body:
@@ -82,6 +113,65 @@ def build(output: Path = OUTPUT) -> Path:
         "    target = 2 * sms\n    ns = -(-target // (batch * kvg))",
         "    target = sms if q_len == 8 else 2 * sms\n"
         "    ns = (target // (batch * kvg)) if q_len == 8 else -(-target // (batch * kvg))",
+    )
+    # The decode candidate keeps two resident waves only for B=1, where one
+    # request otherwise leaves half the H200 idle.  Larger batches already
+    # provide enough independent KV groups; one wave reduces split partials
+    # and the fused norm-gate combine.  The cache remains FP8 throughout.
+    source = source.replace(
+        "def _attn_port_forward(raw, data, vmath=False):\n",
+        "def _attn_decode_fp8_splits(batch, kvg, max_keys, sms):\n"
+        "    target = 2 * sms if batch == 1 else sms\n"
+        "    ns = -(-target // (batch * kvg))\n"
+        "    return min(ns, max(1, -(-max_keys // 64)), 128)\n\n\n"
+        "def _attn_port_plan(batch, kvg, max_keys, q_len, window, sms, device, split_mode):\n"
+        "    ext = _attn_port_ext()\n"
+        "    groups = batch * kvg\n"
+        "    per_sm = max(1, int(ext.occupancy(q_len)))\n"
+        "    fit = max(1, sms * per_sm // groups)\n"
+        "    fit = min(fit, max(1, -(-max_keys // 64)), 16 if window else 512)\n"
+        "    if split_mode == 'fp8' and q_len == 1:\n"
+        "        target = 2 * sms if batch == 1 else sms\n"
+        "        fit = min(fit, max(1, -(-target // groups)))\n"
+        "    choices = [cs for cs in range(1, 17) if int(ext.max_cluster(q_len, cs)) >= 1]\n"
+        "    best = None\n"
+        "    for cs in choices or [1]:\n"
+        "        if cs > fit:\n"
+        "            continue\n"
+        "        nc = min(fit // cs, 32)\n"
+        "        while nc > 0 and int(ext.max_cluster(q_len, cs)) < groups * nc:\n"
+        "            nc -= 1\n"
+        "        if nc:\n"
+        "            key = (nc * cs, -nc, cs)\n"
+        "            if best is None or key > best[0]:\n"
+        "                best = (key, nc * cs, cs)\n"
+        "    if best is None:\n"
+        "        return 1, 1\n"
+        "    return best[1], best[2]\n\n\n"
+        "def _attn_port_forward(raw, data, vmath=False, split_mode='auto'):\n",
+    )
+    source = source.replace(
+        "    cs = 1\n    rows = batch * (HKV // 2) * ns * length * 16\n",
+        "    ns, cs = _attn_port_plan(batch, HKV // 2, max_keys, length, window,\n"
+        "                             _num_sms(device), device, split_mode)\n"
+        "    nc = ns // cs\n"
+        "    rows = batch * (HKV // 2) * (nc if nc > 1 else 0) * length * 16\n",
+        1,
+    )
+    source = source.replace(
+        "    ns = _splits(batch, HKV // 2, max_keys, length, _num_sms(device))\n",
+        "",
+        1,
+    )
+    source = source.replace(
+        "        return out + [('port_decode', None)]\n",
+        "        return out + [('port_decode', None), ('port_decode_fp8_split', None)]\n",
+    )
+    source = source.replace(
+        "    if label == 'port_decode' or label == 'port_verify':\n        return _attn_port_forward(raw, data, vmath=False)\n",
+        "    if label == 'port_decode':\n        return _attn_port_forward(raw, data, vmath=False)\n"
+        "    if label == 'port_decode_fp8_split':\n        return _attn_port_forward(raw, data, vmath=False, split_mode='fp8')\n"
+        "    if label == 'port_verify':\n        return _attn_port_forward(raw, data, vmath=False)\n",
     )
     # The standalone q_len=8 port is the drop-in kernel measured by the lab.
     # On Hopper its four-stage KV ring hides one more page-table/global-load

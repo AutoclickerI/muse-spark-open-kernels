@@ -1,0 +1,180 @@
+{
+  "receipt": "/home/jihoon/competitions/muse_kernel/runs/muse_moe_w4a16/20261024T160010Z_check_4233660b1bff4d18.json",
+  "payload_sha256": "bf0d4b38e1bc2826bd55a02b53c8c4fb759c647bebf0f8474fcf75f9524ede09",
+  "support": {
+    "attribute_status": 0,
+    "attribute": 1,
+    "requested": 1,
+    "granularity_status": 0,
+    "create_status": 0,
+    "probe_bytes": 2097152,
+    "granularity": 2097152,
+    "properties_status": 0,
+    "granted": 1
+  },
+  "complete": true,
+  "controls": [
+    {
+      "data": "zero",
+      "normal_us": 74.44,
+      "compressed_us": 36.74,
+      "normal_gbs": 3606.0,
+      "compressed_gbs": 7306.0,
+      "gain": 2.0265,
+      "aa_ratio": 0.9994,
+      "all_config_gains": [
+        2.04,
+        1.888,
+        2.026
+      ]
+    },
+    {
+      "data": "pattern",
+      "normal_us": 73.98,
+      "compressed_us": 43.51,
+      "normal_gbs": 3628.0,
+      "compressed_gbs": 6170.0,
+      "gain": 1.7008,
+      "aa_ratio": 0.999,
+      "all_config_gains": [
+        1.471,
+        1.666,
+        1.701
+      ]
+    },
+    {
+      "data": "random",
+      "normal_us": 74.33,
+      "compressed_us": 74.55,
+      "normal_gbs": 3612.0,
+      "compressed_gbs": 3601.0,
+      "gain": 0.9971,
+      "aa_ratio": 0.9945,
+      "all_config_gains": [
+        0.996,
+        0.999,
+        0.997
+      ]
+    },
+    {
+      "data": "raw_nvfp4",
+      "normal_us": 74.42,
+      "compressed_us": 74.5,
+      "normal_gbs": 3607.0,
+      "compressed_gbs": 3603.0,
+      "gain": 0.9991,
+      "aa_ratio": 1.0027,
+      "all_config_gains": [
+        0.998,
+        1.009,
+        0.999
+      ]
+    },
+    {
+      "data": "bf16",
+      "normal_us": 74.47,
+      "compressed_us": 74.31,
+      "normal_gbs": 3605.0,
+      "compressed_gbs": 3613.0,
+      "gain": 1.0024,
+      "aa_ratio": 0.9948,
+      "all_config_gains": [
+        1.003,
+        0.997,
+        1.002
+      ]
+    },
+    {
+      "data": "recoded_nvfp4",
+      "normal_us": 74.45,
+      "compressed_us": 74.63,
+      "normal_gbs": 3606.0,
+      "compressed_gbs": 3597.0,
+      "gain": 0.9977,
+      "aa_ratio": 1.0042,
+      "all_config_gains": [
+        1.001,
+        1.002,
+        0.998
+      ]
+    }
+  ],
+  "kernels": [
+    {
+      "name": "MOE NT1recoded M=1",
+      "normal_us": 40.77,
+      "compressed_us": 40.86,
+      "ratio": 1.0025,
+      "aa_ratio": 1.0018,
+      "bit_identical": false,
+      "aa_bad": 10,
+      "ab_bad": 15,
+      "seed_ratios": [
+        0.999,
+        1.009,
+        0.999
+      ],
+      "ordered_bit_exact": true,
+      "w2_bit_exact": true,
+      "raw_line": "MOE NT1recoded M=1 N/C=40.77/40.86us r=1.0025 aa=1.0018 bit=0 aa_bad=10/24 ab_bad=15/36 s=0.999,1.009,0.999 Ybit=1 ordered_bit=1 native_rel=4.18e-09"
+    },
+    {
+      "name": "MOE NT1recoded M=8",
+      "normal_us": 89.1,
+      "compressed_us": 89.16,
+      "ratio": 1.0009,
+      "aa_ratio": 1.0018,
+      "bit_identical": false,
+      "aa_bad": 16,
+      "ab_bad": 22,
+      "seed_ratios": [
+        1.003,
+        0.994,
+        1.006
+      ],
+      "ordered_bit_exact": true,
+      "w2_bit_exact": true,
+      "raw_line": "MOE NT1recoded M=8 N/C=89.10/89.16us r=1.0009 aa=1.0018 bit=0 aa_bad=16/24 ab_bad=22/36 s=1.003,0.994,1.006 Ybit=1 ordered_bit=1 native_rel=3.21e-05"
+    },
+    {
+      "name": "DENSE qkv_gate M=1 choice=cublas",
+      "normal_us": 21.25,
+      "compressed_us": 21.24,
+      "ratio": 0.9996,
+      "aa_ratio": 1.0023,
+      "bit_identical": true,
+      "aa_bad": 0,
+      "ab_bad": 0,
+      "seed_ratios": [
+        0.999,
+        1.004,
+        0.995
+      ],
+      "ordered_bit_exact": false,
+      "w2_bit_exact": false,
+      "raw_line": "DENSE qkv_gate M=1 choice=cublas N/C=21.25/21.24us r=0.9996 grant=0/1 aa=1.0023 bit=1 aa_bad=0/24 ab_bad=0/36 s=0.999,1.004,0.995"
+    },
+    {
+      "name": "DENSE o M=1 choice=cublas",
+      "normal_us": 12.15,
+      "compressed_us": 12.17,
+      "ratio": 1.0024,
+      "aa_ratio": 1.0132,
+      "bit_identical": true,
+      "aa_bad": 0,
+      "ab_bad": 0,
+      "seed_ratios": [
+        0.991,
+        0.985,
+        1.032
+      ],
+      "ordered_bit_exact": false,
+      "w2_bit_exact": false,
+      "raw_line": "DENSE o M=1 choice=cublas N/C=12.15/12.17us r=1.0024 grant=0/1 aa=1.0132 bit=1 aa_bad=0/24 ab_bad=0/36 s=0.991,0.985,1.032"
+    }
+  ],
+  "real_weight_bw_gains": [],
+  "bit_exact_kernel_cells": [],
+  "raw_lab": "META generic driver compression vs normal VMM; bytes identical; 256MiB cold flush outside events; raw graph us; BW logical GB/s not physical storage ratio; best7_scale=42f543a0e25f9805\nMETA seed725105; controls256MiB zero/FP32one pattern/random/raw real NVFP4 code+scale/BF16 N(0,.02)/recoded bank; NT1recoded M1/8 and dense Q/O M1; 24AA+36AB/BA same3 inputs/routes; incumbent norm atomics can differ even AA: report raw bit failures; separate untimed W2/ordered-norm bit-exact control; no host mutation\nSUPPORT {'attribute_status': 0, 'attribute': 1, 'requested': 1, 'granularity_status': 0, 'create_status': 0, 'probe_bytes': 2097152, 'granularity': 2097152, 'properties_status': 0, 'granted': 1}\nCONTROL_ALLOC N/Cgrant=0/1 gran=2097152/2097152\nBW zero N/C=74.44/36.74us GB/s=3606/7306 gain=2.0265 aa=0.9994 ct/d=1056/16 bit=1 all=2.040,1.888,2.026\nBW pattern N/C=73.98/43.51us GB/s=3628/6170 gain=1.7008 aa=0.9990 ct/d=1056/16 bit=1 all=1.471,1.666,1.701\nBW random N/C=74.33/74.55us GB/s=3612/3601 gain=0.9971 aa=0.9945 ct/d=1056/16 bit=1 all=0.996,0.999,0.997\nBW raw_nvfp4 N/C=74.42/74.50us GB/s=3607/3603 gain=0.9991 aa=1.0027 ct/d=1056/16 bit=1 all=0.998,1.009,0.999\nBW bf16 N/C=74.47/74.31us GB/s=3605/3613 gain=1.0024 aa=0.9948 ct/d=1056/16 bit=1 all=1.003,0.997,1.002\nBW recoded_nvfp4 N/C=74.45/74.63us GB/s=3606/3597 gain=0.9977 aa=1.0042 ct/d=1056/16 bit=1 all=1.001,1.002,0.998\nBANK recoded weights=905978368 mapped=908066816 N/Cgrant=0/1; all w13p/w2p/global scales/postnorm byte-identical; counters normal\nMOE NT1recoded M=1 N/C=40.77/40.86us r=1.0025 aa=1.0018 bit=0 aa_bad=10/24 ab_bad=15/36 s=0.999,1.009,0.999 Ybit=1 ordered_bit=1 native_rel=4.18e-09\nMOE NT1recoded M=8 N/C=89.10/89.16us r=1.0009 aa=1.0018 bit=0 aa_bad=16/24 ab_bad=22/36 s=1.003,0.994,1.006 Ybit=1 ordered_bit=1 native_rel=3.21e-05\nDENSE qkv_gate M=1 choice=cublas N/C=21.25/21.24us r=0.9996 grant=0/1 aa=1.0023 bit=1 aa_bad=0/24 ab_bad=0/36 s=0.999,1.004,0.995\nDENSE o M=1 choice=cublas N/C=12.15/12.17us r=1.0024 grant=0/1 aa=1.0132 bit=1 aa_bad=0/24 ab_bad=0/36 s=0.991,0.985,1.032\nRESULT zero_BW_gain=2.0265 kernel_bit_exact=0; zero null is inconclusive on activation, not evidence real weights are incompressible\nEND controls=6 kernels=4 elapsed=31.5 left=125.5\n",
+  "dropin": null
+}

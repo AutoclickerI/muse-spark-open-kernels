@@ -1,0 +1,105 @@
+{
+  "checks": 36,
+  "rows": [
+    {
+      "tokens": 1,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 9.728267968966975e-07
+    },
+    {
+      "tokens": 1,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 9.99569465420791e-07
+    },
+    {
+      "tokens": 8,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.1226305787204183e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.0183035783484229e-06
+    },
+    {
+      "tokens": 16,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.1166733884238056e-06
+    },
+    {
+      "tokens": 16,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 4.359130616649054e-05
+    },
+    {
+      "tokens": 32,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.7553460338604054e-06
+    },
+    {
+      "tokens": 32,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 3.976426796725718e-06
+    },
+    {
+      "tokens": 128,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.6542197045055218e-05
+    },
+    {
+      "tokens": 128,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 2.6745477953227237e-05
+    },
+    {
+      "tokens": 256,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.5747005818411708e-05
+    },
+    {
+      "tokens": 256,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.2190909728815313e-05
+    }
+  ],
+  "max_l2": 8.787473780103028e-05,
+  "elapsed_s": 7.793441229965538,
+  "native_glue": true,
+  "route_flips": 0
+}

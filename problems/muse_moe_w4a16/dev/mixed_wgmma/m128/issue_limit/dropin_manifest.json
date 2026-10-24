@@ -1,0 +1,16 @@
+{
+  "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/issue_limit/dropin_nt1_lop.py",
+  "sha256": "cc9aa61514d2c38f7469835f058823ae33573fb23d60c855ff324f683b4c090e",
+  "ready": false,
+  "prepare": "m128_nt1lop_issue_nt_prepare(weights)",
+  "call": "m128_nt1lop_issue_nt_call(data,bank)",
+  "best7_rows": [
+    "(16,8,2048)",
+    "(16,8,0)"
+  ],
+  "reason": "H200 paired seed-mean win and final full-layer gate required",
+  "send_key": "a1762556e26931ef",
+  "judge_job": "dc3fea0a20a349bf",
+  "local_edge_checks": 42,
+  "local_gate": "standalone NT1lop and all five fused paths pass signed/zero/subnormal scales and real/empty/single/hot/balanced route transitions"
+}

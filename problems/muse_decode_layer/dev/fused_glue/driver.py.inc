@@ -108,7 +108,7 @@ def lab(deadline,weights,host_state):
            'AB/BA6 cold256MiB per replay; A:A; three changed-input graph draws; FP32 hi+lo router; no spin barriers']
     lines.append(f'SETUP seconds={time.monotonic()-started:.1f} remain={deadline-time.monotonic():.1f}')
     flush=torch.empty(256<<20,device=weights['w13'].device,dtype=torch.uint8)
-    FG_ROWS=[];worst=0.;total_flips=0
+    FG_ROWS=[];worst=0.;total_flips=0;disabled_cells=set()
     cases=[(b,q,w) for b,q in ((1,1),(1,8),(16,1),(32,1)) for w in (2048,0)]
     for case,(b,q,window) in enumerate(cases):
         if time.monotonic()>deadline-3:
@@ -123,6 +123,8 @@ def lab(deadline,weights,host_state):
         noise=dp_pair(a,a,flush)
         original_stream=data['stream'].clone()
         for cell in ('pool','tail','all','epi'):
+            if (t,cell) in disabled_cells:
+                lines.append(f'SKIP case={case} cell={cell} M={t}');continue
             if time.monotonic()>deadline-2:raise RuntimeError('lab budget before all glue cells')
             bg,bo=dp_graph(lambda cell=cell:fg_run(m,data,state,plan,cell))
             for seed in DP_SEEDS:
@@ -134,16 +136,32 @@ def lab(deadline,weights,host_state):
                 data['local_start'].fill_((start+32*(seed%3))%256)
                 state['_local_start']=int(data['local_start'].item())
                 a.replay();bg.replay()
-                error,flips=fg_layer_gate(ao,bo,data,state);worst=max(worst,error);total_flips+=flips
+                flips=int((ao[2]!=bo[2]).any(-1).sum());total_flips+=flips
+                if flips:
+                    detail=fg_flip_report(m,data,state,plan,bo[2],ao[2])
+                    FG_ROWS.append(dict(case=case,cell=cell,seed=seed,disabled=True,**detail))
+                    disabled_cells.add((t,cell))
+                    lines.append('DISABLED '+json.dumps(FG_ROWS[-1],separators=(',',':')))
+                    break
+                error,_=fg_layer_gate(ao,bo,data,state);worst=max(worst,error)
                 # The independent FP32 router checks the published layer score/count gates.
                 if cell in ('pool','all','epi'):
                     fg_route_gate(m,data,plan,bo[2],state,synthetic)
                 if not all(bool((op.counts==0).all()) for op in state['fused_glue_ops'].values()):
                     raise RuntimeError('counter did not return to zero')
-                pair=dp_pair(a,bg,flush);fg_layer_gate(ao,bo,data,state)
+                pair=dp_pair(a,bg,flush)
+                if not torch.equal(ao[2],bo[2]):
+                    detail=fg_flip_report(m,data,state,plan,bo[2],ao[2])
+                    FG_ROWS.append(dict(case=case,cell=cell,seed=seed,disabled=True,**detail))
+                    disabled_cells.add((t,cell))
+                    lines.append('DISABLED '+json.dumps(FG_ROWS[-1],separators=(',',':')))
+                    break
+                fg_layer_gate(ao,bo,data,state)
                 FG_ROWS.append(dict(case=case,load=f'{b}x{q}/'+('S' if window else 'F'),cell=cell,seed=seed,
                     error=error,flips=flips,noise_us=noise['b']-noise['a'],**pair))
-            rr=FG_ROWS[-3:]
+            rr=[r for r in FG_ROWS if r['case']==case and r['cell']==cell and not r.get('disabled')];
+            if not rr:
+                bg=bo=None;gc.collect();continue
             lines.append(f'G {b}x{q}{"S" if window else "F"} {cell} A/B_us='
                 f'{statistics.mean(r["a"] for r in rr):.2f}/{statistics.mean(r["b"] for r in rr):.2f} '
                 f'B:A={statistics.mean(r["ratio"] for r in rr):.4f} '

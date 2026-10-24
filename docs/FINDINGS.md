@@ -29,10 +29,22 @@ run allocation are owned by [decode FOCUS](../problems/muse_decode_layer/FOCUS.m
 
 **S2 integration (local):** `cand_r3_best7_scale_w2fix.py` SHA-256 `b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337` adds the exact raw-bank CTA1g2112 kernel/runtime from `97be11d4631b44d6` to S1, changing only the two M256 expert cells. Normal and forced screens each pass 13 tests/12 graphs/19 static, with both M256 layer types capturing CTA1g2112. Local prepare14.1 s normal/39.6 s forced; an initial cold-attention build took82.3 s. Raw-plane repacks were0.33/0.32/0.45 s. The integration gate reaches L2/row0.00380/0.00426. Three independent FP32 fixtures and six changed-route graph replays gate the new expert in prepare; failed admission raises instead of silently selecting another engine. H200 standalone385.2 vs Humming447.6 us is measured; whole-layer composition and cold H200 prepare are unmeasured. [Provenance and reproduction](../problems/muse_decode_layer/dev/s2/README.md).
 
-**M128 fused producer recode (H200 pending, `471f6d6216804dda`, send `def9bff54e82c1b0`):** the repaired packed-WGMMA producer now has an exact v9-format scale reader: sign/zero folded into E2M1 in prepare; four byte permutations replace scale lookup loads, and the per-CTA E4M3 conversion/table disappears. The paired MoE-host lab compares raw/recoded cfg3/4/5 at grid528 with actual board NT1-recoded, on12 public-router weight seeds x3 identical fresh fixtures, six cold128MiB graph orders and NT1 A:A samples. Local36 fixtures/216 producer graphs pass independent FP32 gates (L2<=0.004132,row<=0.004851), all4064 finite scale/code combinations are exact; wrapper5 tests/6 graph shapes/6 static checks pass. All12 native specializations have no spills/C7513, and20 K64 paths keep disjoint register-A banks. H200 ranking and any best7 promotion remain receipt-gated. [Frozen sources and evidence](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/manifest.json).
+**S3 integration (local):** `cand_r3_best7_scale_recoded_m256.py`, SHA-256 `cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7`, replaces S2's two raw M256 cells with the exact recoded C1g2112 source/packing/launch definitions from H200 `9e8a6a15f95748db`. The accepted wrapper contains the same payload SHA `d30f4a862fa0b882`; audit preserves156 S2 functions, changes only prepare/dispatch/admission and removes the replaced raw engine. Normal and forced each pass13 tests/12 scored-shape graphs/19 static, both M256 rows eager/captured with encoded bank. Local prepare9.180/40.954 s; M256 bank packing+recode0.534/0.322 s, under300 s. Three public fixtures, forward/reverse fresh-route graph replay, FP32 gate maxL2/row0.003803/0.004261. No expanded expert bank is retained. Standalone365.2 vs same-run raw386.1 us is measured; whole-layer H200 composition/cold prepare remain unmeasured. S3 is unsent; owner controls reset submissions. [Provenance and reproduction](../problems/muse_decode_layer/dev/s3/README.md).
 
-**M128 instruction limit (SASS measured; H200 pending `dc3fea0a20a349bf`, send `a1762556e26931ef`):** actual sm90a NT1-recoded K512 reader: 492 instructions/256 weights per lane, cut to476 by one explicit LOP3 blend (17 ->16 unpack instructions per16 weights). Its aggregate four-warp issue estimate is9.99TB/s before route rereads, so the count does not establish aggregate issue as NT1's sole binding limit. On36 local public-router fixtures, NT8/16/32/128 decode rereads are2.176/1.478/1.157/1.000 per touched expert; NT1's logical972.8MB reads would cost243.2us at4TB/s without L2 tile reuse, versus97.4us ideal aggregate issue. These are models on this lab's fixtures, not timings of the earlier full-layer283.6us draw. F128's N32 W13 static K loop is84.75 instructions/16 weights (unpack17,scale16,MMA2,load6.5,address37,control6.25): address work is44%. A reversible u16 exponent/mantissa scale word, single LOP3 and wider copies cut it to81.25; fixed D32/D16 loops take65/59 and reuse the free lane's distributed W2 finalizer. Word metadata costs one extra byte/block (+11.1% bank bytes), with no expert-weight expansion. Static loop counts include conditional paths and imply model estimates, not measured hardware ceilings. New MoE-host lab compares all paths on12 weight/router seeds x3 identical real routes, six cold128MiB orders/A:A, plus separate W13/W2 graph phases and NT1 per-CTA globaltimer distributions; automatically batched with the small-M instruction lab. Local252 graph checks +42 signed/zero/subnormal/route-transition checks,4064 exact values,17 native entries without spills/C7513 and16 safe K64 paths pass; wrapper5 tests/6 shapes/6 static checks,26.4s within78s. Prior471f6d62 had no receipt at this turn's one read and no phase timers in its payload. No H200 win or best7 dispatch change is claimed. [Full counts, limits and source hashes](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/issue_limit/EVIDENCE.md).
+**S4 integration (queued scored-only behind S1–S3 for 10-25 09:01 KST):** `cand_r3_best7_s4.py`, SHA-256 `9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e`, adds exact dc3fea0a one-LOP3 NT1 at M1/8/16/32 and D32g at M128 to frozen S3. The builder reads the payload strings in the accepted wrapper: small-M kernel SHA `752790e4440144fb`, exact idist kernel subsection SHA `1942a25f32bba908`, exact launch/packing functions;163 S3 functions and the M256 kernel/dispatch remain unchanged. Small-M uses stages2, grid264 clamped to residency and shares the identical S3 recoded bank. D32g uses prefix idist, which1, grid1056, lossless u16 scale words and distributed finalization. Normal+forced each pass13 tests/12 scored graphs/21 static including native SM90a compilation; both changed engines and retained C1g2112 capture at all12 shipped rows. Prepare49.149/57.516 s; new banks0.313/0.321 s. Mandatory three-fixture forward/reverse fresh-route FP32 gates: small-M maxL2/row0.001669/0.001727, D32g0.003817/0.004310; failures raise. Frozen source is queued via okc_run, progress `runs/detached/9b2b2a48337aa13b.log`. Whole-layer H200 composition, cold H200 prepare and new-seed performance remain unmeasured. The offline lever updater now recognizes S3 and refreshes PLAN Status when S1–S3 profiles land, with no repeated integrated corrections. [Provenance, admission and queue](../problems/muse_decode_layer/dev/s4/README.md).
 
+**S5 integration (queued scored-only behind S1–S4 for 10-25 09:01 KST):** `cand_r3_best7_s5.py`, SHA-256 `f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284`, replaces both M128 cells in frozen S4 with H_H from accepted770809cf159f41e2. Builder uses the accepted wrapper's exact payload `f3c2796944c60b77`, native idist/pmnt/metadata sections and pm_plan/pm_call;168 S4 functions, small-M LOP3 and M256 C1g2112 remain unchanged. S5 reuses the admitted recoded NT1 bank, retains the exact u16 scale-word bank, runs all route metadata inside the timed call, and dispatches both phases to NT1 for count<=16 / WGMMA32 which1/grid1056 above16. Removed standalone D32 engine; no expanded expert weights. The newly landed MoE H_H cell970663d44d993f8a has identical native bodies. Normal+forced each13 tests/12 graphs/21 static pass, both M128 layer types capture native H_H, prepare13.773/42.365 s, M128 bank0.310/0.333 s. Mandatory three-fixture forward/reverse fresh-route FP32 gate reachesL2/row0.003817/0.004310; failures raise. Standalone234.44 vs D32g272.70 us is measured on36 fixtures; whole-layer H200 composition/cold prepare remain unmeasured. Queue log `runs/detached/f7064fc0127e80a9.log`; S1–S4 entries remain unchanged. Lever updater now recognizes S4 profiles with no repeated corrections and refreshes PLAN Status on receipt. [Provenance, admission and queue](../problems/muse_decode_layer/dev/s5/README.md).
+
+**S6 integration (queued scored-only behind S1–S5 for 10-25 09:01 KST):** `cand_r3_best7_s6.py`, SHA-256 `4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f`, replaces both M256 cells in frozen S5 with the exact8483c0c6783a4df1 mixed_parallel source, packing and stream/event schedule (policy6/grid2112). Parallel N16 for counts<=16 and N32 above16 uses vector/LOP W13 decode with recoded W13 and W2, joined before the distributed W2/finalizer.167 S5 functions and all small-M/M128 MoE math remain unchanged. The supplied c42e9fcc M1 O/config6 cell fits the existing projection interface, so only the two decode1 O rows change; other projection roles stay S5. Normal+forced each13 tests/12 graphs/22 static pass, both new engines capture at S/F; six three-seed paired full-layer O checks preserve live routing IDs with error<=0.003,row<=0.015. Prepare10.203/50.812 s, M256 bank0.538/0.326 s; forced prepare includes added live comparisons. Expert FP32 gateL2/row0.003803/0.004261. The first driver attempt used an expert-only refresher on full-layer inputs, stopped before screening, and was corrected to local_eval.copy_into; full forced screen rerun, source unchanged. Standalone344.5 vs C1rec366.2 us is measured (12 seeds); O gain0.35 us is near noise, sliding/whole-layer H200 benefit and cold prepare remain unmeasured. Queue log `runs/detached/4c98f12fc7fab973.log`; prior entries unchanged. Lever updater now covers S1–S6, attributes the direct O role separately and counts parallel MoE durations with overlap caveats. [Source/admission/queue](../problems/muse_decode_layer/dev/s6/README.md).
+
+**M128 fused producer recode (H200 `471f6d6216804dda`, numerically correct but rejected for latency):** recoded cfg3/4/5 take1649.96/1738.80/1851.23 us against actual NT1-recoded291.70 us on12 weight/router seeds x3 identical real routes, six cold128MiB graph orders. Raw cfg3/4/5 take1667.68/1741.70/1861.61 us: recoding gains about1% and does not fix the dominant serialized W2 combine. All numeric gates pass, including the K64 register-lifetime repair; no candidate was promoted. The same-size lossless format and local exact-value proof remain valid, but performance work now starts with the distributed finalizer. [Frozen sources and result](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/sent.json).
+
+**M128 combine-first expert-wide reuse (H200 `640d67e7e56d42e5`, completed; all recipes lose):** on12 weight/router seeds x3 identical real routes, six cold128MiB orders and A:A, NT1-recoded290.83 us; RS64g528378.67, RS128g528425.03, RS64g2112361.16; shared-A SS64g528750.96, SS128g528785.54, SS128g1056678.86. All36/36 finite/FP32 gates pass, maxL2/row0.00413/0.00469. The copied per-token vector finalizer removes the old serialized defect, but best RS seed0/fixture0 route/W13+act/W2+SS/finish graph medians are8.0/235.4/124.6/12.6 us. Shared/shared WGMMA staging still costs much more. Logical packed-weight repeats are1.000 vs NT1's2.272, so removing rereads alone does not make these implementations faster; this does not prove which hardware counter binds NT1. No one-read cell is promoted. Hot129/257 shared reuse and the corrected strided norm writer retain their local proofs. [Results and source](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/README.md).
+
+**M128 instruction limit (SASS + completed H200 `dc3fea0a20a349bf`):** NT1-recoded290.07 us, one-LOP3 NT1280.70, D16word294.87, D32word302.08, D32g272.95 (mean paired ratio0.9465),36/36 fixtures across12 seeds. D32g uses exact reversible u16 block-scale words, wider Q/SF copies and the distributed finalizer; no expanded expert weights. MaxL2/row0.00413/0.00469. Its seed0/fixture0 standalone route/W13+act/W2+SS/finish medians are7.8/174.2/81.0/12.4 us. NT1 instrumented W13 per-CTA min/median/max113.2/130.7/161.8 us overlap across CTAs and cannot be treated as standalone phase wall times. Static instructions per16 weights: NT1 30.75 ->29.75 via one LOP3; fixed WGMMA32 W13 65 (16 unpack,12 scale,2 MMA,5.25 load/copy,25 address,4.75 control). The canonical issue model gives9.99/10.33/4.73TB/s, not measured bandwidth or a causal stall counter. The measured finalizer repair and small fixed tiles win; the wide producer loses. The D32g [standalone cell](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/d32g_cell.py), SHA-256 `a7afb63d9cb17c920412c8f3003640bf956599ab6caa874a9631f290798dce82`, is handed to decode FOCUS and already integrated in S4. Actual wrapper passes16 signed/zero/subnormal/route-transition graphs locally. Raw A:A samples include a1353us outlier (mean abs7.96); per-fixture medians and the next paired lab remain necessary. [Full counts, caveats and result](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/issue_limit/EVIDENCE.md).
+
+
+**M128 expert/phase composition (G1/G2; H200 `770809cf159f41e2`, complete; H_H wins):**12 weight/router seeds x3 identical real-route fixtures, six cold128MiB AB/BA orders and A:A. H_H234.44 us, H_D32238.89, D32g272.70, NT1rec289.62; H_H mean paired ratio0.8629 vsD32g, all36/36 gates pass, maxL2/row0.00413/0.00469. N_D32263.21, N_H258.50, all-NT1 split phases N_N269.12, one-read362.43. A:A signed/abs mean−0.621/1.580us, max8.832. **H_H for the M256/free lane:** in BOTH W13+SwiGLU and W2+norm partials, one-LOP3 recoded NT1 owns experts with count<=16; packed exact-u16-scale WGMMA32 config1/grid1056 owns count>16; common timed C/OFF/SLOTS/POS, disjoint GPU task prefixes, separate distributed per-token finalizer. No prepare-expanded expert weights. Seed0/fixture0 cold phase medians route/W13/W2/finish10.1/132.9/84.9/12.8us; H_D3210.1/133.0/82.5/12.7, N_D3210.2/147.0/82.0/12.8, one-read10.4/236.1/125.8/12.9. These are one-fixture diagnostics, not seed-mean phase times. Evidence supports an expert-size-dependent repeated-decode versus padded/transport-work tradeoff: heavy experts benefit from fewer NT8 redecodes, light experts benefit from avoiding WGMMA padding and producer overhead. The one-read loss rules out minimizing reads as sufficient; no counter identifies a unique hardware stall. W13 remains the main target,132.9 vs roughly75us unique touched-W13 byte model, while W2 is82–85. New H200 route counts give41.72% mean fewer groups (22.58–55.56%) and13.48% extra padding (2.50–25.00%); prior seed_sweep audit35.42%/+11.74% is a different fixture set. [Exact H_H cell](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/hh_cell.py), SHA-256 `970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f`, is published in decode FOCUS for S5; fixed wrapper25 changed-route/signed/zero/subnormal/separate-global graph gates pass locally. Whole-layer H200 gain unmeasured. Next proj-host snapshot `d8d3a89cb3436100` is scheduled for2026-10-25 09:01 KST (no judge job before release):25 threshold8/16/24/32 and heavy WGMMA32/64 recipes plus exact H_H, W13-only/W2-only/coupled sweeps and W2-all-NT1/all-WGMMA controls.12 seeds x3 fixtures, cold AB/BA/A:A; component phases averaged across12 seeds. Local936 graphs +575 edge gates and13 new SM90a entries without spills pass; proj9 tests/30 graphs/3 static, prepare19.83s,payload17.36s. A tested send-time gate holds it outside queue order and does not absorb other lanes into its delay. New H200 ranking pending. [Scheduled lab and validation](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/mix_sweep/README.md). [Result, recipe and provenance](../problems/muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/README.md).
 
 ## V9 tile reuse and router-seed sensitivity
 
@@ -62,15 +74,13 @@ run allocation are owned by [decode FOCUS](../problems/muse_decode_layer/FOCUS.m
 
 ## Grouped NVFP4 RS WGMMA (free lane)
 
-- **H200 result, M256:** `e8968e36ea98422a moe_fused_m256` passes all FP32 gates. Fastest fused12-seed mean is F7=1201.8us versus masked Humming448.5; unfused P128503.2, P256585.3. R0 W13 takes266–426us but W2+norm+combine1376–2644us. Main configurations allow3–5 native CTAs/SM with zero spills, so occupancy alone does not explain that phase. Older scalar/plane losses and pipeline R0 wins are retained in the receipts and “MoE real-routing labs.” No candidate/serving producer switched by free lane.
-- **W2 mechanism isolated locally:** `check_tail.py` uses exact R0 IDs (414pairs/21experts/hot119), fresh Y and independent FP32 output gates. Old complete tail costs510/950us at NT16/32; metadata hoisting lowers it to334/595; norm+completion tickets without combine takes9/12us (timing-only), while a vector CTA per token takes14.3/14.3us with agreement. The old tail runs on just40/28 group CTAs, serializes several complete4096-channel tokens per warp, and revisits metadata inside its channel loop. This isolates combine, rather than global atomics/fences, as the large local tail cost. H200 attribution awaits the phase-clock probe.
-- **Repair built:** `dev/mixed_wgmma/w2fix.cu` uses GPU route/reset, W13+SwiGLU, W2+weighted Y/tile sum-of-squares, then256threads/token for norm+vector combine. Metadata is hoisted; float4 Y loads and packed BF16 stores distribute the work across256CTAs. Corrected W2 and finalizer contain no global atomics or publication fences. The extra launch replaces the last-warp tail. N16/32, K128/four-stage cp.async/wait1 and grids528/1056/2112 are fixed contenders. W2 reads144KiB Q+SF/CTA; R0 requested bytes are377.5/264.2MB at N16/32 versus198.2MB unique. Throughput labels requested bytes, not measured DRAM.
-- **Precision and compiler boundaries:** E2M1/raw E4M3 stay packed until timed conversion; FP32 expert GS applies in epilogues, including distinct gate/up values. No expanded NVFP4 bank in prepare. The previous B128 alignment repair now passes H200 agreement: old local absolute-address emulation reproduces1.416 L2, aligned0.0004215; current B patterns and dynamic bases align1024. Non-unrolled K64 pairs avoid the earlier ptxas C7513/per-MMA wait0 issue. CUTLASS numeric GEMM remains quarantined; no further slot or omni integration.
-- **Local admission:** repaired raw-pointer graph glue passes78 independent changing-route/extreme-scale checks (L2<=0.004225,row<=0.004546), including Hopper-address emulation and local_start64. All five actual sm90a GEMMs plus route/finalizer audit with zero local-memory instructions; GEMMs retain wait1/wait1/finalwait0. `native_abi.py` removes PyTorch headers from CUDA and the pybind unit; Python resolves the current CUDA stream at each launch. This addresses cold compile overhead as well as respecting the payload's per-compile/per-seed deadline checks. The92s cold-build prototype that breached78s was not sent. Lean cold build14.5s; complete12-seed/nine-variant/R0 lab36.0s within78s locally.
-- **M256 lab protocol:** `prof/lab/moe_w2fix_m256.py` compares six fixed repairs against masked Humming/P16/P32 on12public weight/router seeds,3fresh fixtures each and8rotated/reversed cold128MiB graphs. Gates remain finite,L2<=1%,row<=5%; partial seeds never qualify. R0 diagnostics additionally gate full output and print phase times, native occupancy,144KiB/CTA requests and main/YSS/group-ticket/norm/token-ticket/combine cycles. MoE-host send key`602e2630309eb17c` is queued, batched with M128 K64 repair; immediate detached log says waiting for a slot. Final host5/5,static6/6,directstatic5/5; all12seed/nine-variant and3R0 gates pass locally; report2429chars. New H200 timing and the448.5us seed-mean target remain unverified. Current hashes, budget evidence and queue identity: [admission.json](../problems/muse_moe_w4a16/dev/mixed_wgmma/admission.json); [source/protocol](../problems/muse_moe_w4a16/dev/mixed_wgmma/README.md).
-
-- **Lossless recoded M256 variant built:** owner-approved joint recoding folds E4M3 sign/zero into packed FP4 and stores exponent/mantissa bytes. `recode/recoded.py` applies this directly to the existing bitplanes, then timed PRMT/shift/add constructs the BF16 multipliers. Raw and recoded share the same four-launch fixed-W2 producer and six N/grid choices. SM90a recoded bodies remove16 shared-load sites per K128 stage, with zero spills and wait1/wait1/finalwait0 intact. This is lossless weight representation, with no prepared expanded weight/scale bank.
-- **Recoded lab admitted and accepted:** `moe_recoded_m256` job`9e8a6a15f95748db`, send key`fdac893179c9f8ad`, MoE host. Main12public seeds use the actual shared-W13-GS contract so stock NT1-recoded is an exact control; each of14fixed variants sees the same3fresh real-router fixtures and8rotated/reversed cold128MiB graph replays. Independent gate/up GS remains a component stress. Exact65024 encoding cases and111 graph/scale checks pass (L2<=0.004132,row<=0.004714), including Hopper-address emulation, allocator churn and nonzero expert offset. Host5/5,static6/6,directstatic3/3; all12seed/14variant plus4R0 gates pass locally. Cache-disabled fresh build3.5s/full lab15.6s within78s; expired-deadline guards pass; report2934chars fits a batched share. New H200 means against masked448.5us and a best7 cell remain pending. [Protocol and hashes](../problems/muse_moe_w4a16/dev/mixed_wgmma/recode/admission.json).
+- **H200 M256 incumbents:** raw CTA1g2112 is **385.2 us mean / 366.5 median**, versus masked Humming447.6/438.9 (`97be11d4631b44d6`,12 seeds). The lossless recoded C1g2112 is **365.2/346.4 us**, versus same-run raw386.1 and Humming448.2 (`9e8a6a15f95748db`). Gates pass. Both are already handed to the decode lane and integrated in S2/S3; whole-layer results remain pending. Raw S2 path/SHA and exact source provenance: [manifest](../problems/muse_decode_layer/dev/s2/manifest.json); recoded: [S3](../problems/muse_decode_layer/dev/s3/README.md).
+- **W2 mechanism and shared repair:** the old final combine ran on28 NT32 group CTAs, serialized several4096-channel tokens per warp, and revisited metadata inside the channel loop. Local exact-R0 tail isolation gave950us original,595us metadata-hoisted,12us without combine (timing only),14.3us distributed vector combine with agreement. The shared producer now emits Y/tile sums, then a256-thread CTA per token reduces norms and combines float4 vectors. W2/finalizer have no completion atomics or publication fences. H200 NT16 phase timing falls866.4→161.6us; winning NT32 R0 W2=128.6us, finalizer14.7us. Source: `dev/mixed_wgmma/w2fix.{cu,py}`; M128 already reuses this finalizer.
+- **Measured W13 limit, correcting the N16 diagnostic:** winning raw NT32 R0 is **261.2us**, **528.5MB requested / 396.4MB unique**, or **2.02 / 1.52TB/s**. The301.1us/2.51TB/s figure is NT16, which requests755.0MB. Unique W13 alone has an82.6us floor at4.8TB/s; ~124us covers both GEMMs. Requested bandwidth includes repeated row blocks and is not a measured DRAM counter.
+- **Static SM90a instruction budget:** raw W13 K128 has286 instructions for64 weights/lane: **71.5 per16 weights** =17 unpack +20 scale conversion/multiply/lookup +3 WGMMA/fence/wait +5 other loads/copies +19 address math +7.5 control/scaffold. Recoded baseline is67.25. The raw4.47 instructions/weight exceeds the owner's approximate4-operation budget; the corresponding assumed128-lane-op/cycle,132SM,1.98GHz roof is4.21TB/s, versus measured requested2.02. This is a static issue model, not proof of a sole hardware stall; mutually exclusive paths, uniform instructions and predicated-off scaffold are counted. All bodies have zero spills, two wait1 sites and one finalwait0.
+- **Cuts under test:** typed1024-aligned shared pointers replace eight generic shared loads per stage with LDS; Q/SF16B copies reduce weight-copy warp operations32→9; one immediate LOP3 blends the bitplanes; quad-scale conversion replaces four redundant conversions per lane with one plus broadcasts. Fixed K128/S4/grid2112: vector raw68.5 and recoded63.5 instructions/16; quad raw62.5, recoded60.75; quad cold N16 is57.75. FP32 global scales remain epilogues; all weight/scale conversion stays timed. Native counts and limits: [model.json](../problems/muse_moe_w4a16/dev/mixed_wgmma/w13_issue/model.json).
+- **Concurrency and tile occupancy:** three prefetched4608B Q/SF stages × four resident CTAs give **55,296B nominal packed capacity/SM**,153,600B including X, not measured outstanding HBM traffic. Exact R0 has414 pairs/21 experts,28 N32 blocks:46.2% token fill and1.333x unique-weight requests. Mean19.7 rows hides median6;16 experts have<=16 rows (81 pairs,57.1% requested bytes). N16 for those experts and N32 otherwise preserves28 weight tiles while raising fill to64.7%; sequential and captured two-stream schedules are tested.
+- **New lab accepted, performance pending:** [moe_w13_issue_m256.py](../prof/lab/moe_w13_issue_m256.py), SHA`cb20858c5de9bfaca16ee289529cc2f46554ed575e32a7ce16dcccd31b1cd179`; MoE send`22da326e27940230`, judge`8483c0c6783a4df1`. Twelve fixed variants include raw CTA1g2112, full recoded C1g2112 and masked Humming,12 identical public weight/router seeds ×3 fresh fixtures ×8 rotated/reversed cold128MiB graph orders; finite/L2<=1%/row<=5%, plus exact-R0 phase gates. Local154 component checks, all12seed/12variant gates,5 host tests/6 static and3 direct static pass; nine actual SM90a kernels have no register-A lifetime violations across32 K-loop iterations;40,960 B128 addresses match. Fresh cache-disabled build7.0s/full lab22.8s within78s; short deadlines exit before compilation;3619-character report fits a batched share. [Admission and handoff](../problems/muse_moe_w4a16/dev/mixed_wgmma/w13_issue/admission.json). No new variant is promoted before the H200 seed means.
 
 ## MoE real-routing labs
 
@@ -92,13 +102,14 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 - **V9 variants at M=128/256, 12 seeds (`3a312224908a416e`):** at M=128 every variant is within 2% of the others (NT1 344.1, NT2 341.7, hotNT1 336.4, hotNT3s2 337.1 us mean; NT4 448.6). At M=256 hotNT3s2 is best at 520.9 (NT2 548.8, NT1 605.9), still behind humming_masked's 448 (de6a56fc). Seed spread is 1.5x max/min (180-306 local pairs at M=128), so a single run can't separate variants. The V9 family plateaus near 3x the ~108 us M=128 floor; the lever is a different mainloop, not another V9 tile.
 
 - **Recoded scales on the fused M=256 path (`9e8a6a15f95748db`, 12 seeds, 8 rotated cold graphs):** C1g2112 (exact exponent/mantissa scale recode, FP4 sign/zero fold) takes 365.2 us mean (346.4 median) against the same path on raw scales 386.1 (C:R 0.946), masked Humming 448.2 and NT1-recoded 500.4; gates pass. The recode gains 2.4-6.2% across grids, most at grid 2112.
-- **Fused M=256 path beats masked Humming (`97be11d4631b44d6`, 12 public seeds, 3 inputs, 8 rotated cold graphs, raw bank):** with the W2 combine moved from one serialized last warp to a vector CTA per token, CTA1g2112 takes 385.2 us mean (366.5 median) and CTA1g1056 391.0, against masked Humming 447.6 (438.9) and P32 396.7; gates pass (L2 0.0041). At R0 the fixed W2 phase drops 866.4 -> 161.6 us (0.44 -> 2.34 TB/s requested) and W13 runs 301 us at 2.51 TB/s. The old serialized combine (CTA0) is 463-492 us. Saving ~62 us x 62 layers is ~10% of the verify 32 load. The same run's M=128 K64 bank-rotation repair is correct but 1.7-1.9 ms (HOT128 path), not a candidate.
+- **Fused M=256 path beats masked Humming (`97be11d4631b44d6`, 12 public seeds, 3 inputs, 8 rotated cold graphs, raw bank):** with the W2 combine moved from one serialized last warp to a vector CTA per token, CTA1g2112 takes 385.2 us mean (366.5 median) and CTA1g1056 391.0, against masked Humming 447.6 (438.9) and P32 396.7; gates pass (L2 0.0041). At R0 the NT16 diagnostic W2 phase drops 866.4 -> 161.6 us (0.44 -> 2.34 TB/s requested), with W13 301.1 us at2.51 TB/s requested. The winning NT32 path instead has W13 261.2 us at2.02 requested/1.52 unique TB/s, W2 128.6 us and finish14.7 us. The old serialized combine (CTA0) is 463-492 us. Saving ~62 us x 62 layers is ~10% of the verify 32 load. The same run's M=128 K64 bank-rotation repair is correct but 1.7-1.9 ms (HOT128 path), not a candidate.
 - **M=128 fused WGMMA producer is 5.7-6.5x NT1-recoded (`471f6d6216804dda`, 12 seeds x 3 fixtures, cold, K64 repair kept):** configs 3/4/5 take 1,650-1,862 us (raw) and 1,650-1,851 (recoded; rec:raw 0.988-0.999) against NT1-recoded 291.7 us; gates pass. Its final W2/combine phase is the serialized one the M=256 lane replaced (466 -> 162 us at M=256 above); this path is not a candidate until that fix is ported.
 - **Humming at M=128/256 is bandwidth-starved (`896866402dc94112`, R0 + 12 seeds, eager event spans):** W13 streams the touched experts' unique NVFP4 bytes (16 MiB W13 + 8 MiB W2 per expert; 11-25 experts, 264-600 MiB) at 0.70-1.18 TB/s and W2 at 0.63-1.07 TB/s (M=128 R0: W13 261, W2 146 us for 432 MiB, whose read at 4 TB/s is ~113 us). Humming's own tiles (block [16|24,256,128], 4 stages, TMA, warp-specialized) leave ~4x of HBM bandwidth unused, so the M=128/256 lever is bytes in flight per SM, the same limit as the dense GEMVs (b63389f0). Its SM-count and block16 launch variants all failed the FP32 gate (0.37 relative error), a lab defect rather than a finding.
 
 - **V9 variants at M=1-32, seed means (`b68afb72b72542b4`, 7-8 public seeds each; the AGG lines were truncated):** NT1 is fastest at M=1/8/16 (49.0/84.4/94.1 us), hotNT1 at M=32 (136.8 vs NT1 140.8). NT2 costs +16% at M=1 and +28% at M=8, and NT4 +63-96%, so best6's NT1 stays below M=128. At M=1, NT1 spends 42-59 us on 2-4 local pairs, 2.5-4x one read of those experts (24 MiB each). The same run's real-routing payload died on a lab bug (`KeyError: (128, 'R')`); fixed, it ran in `8c73606710d94cde`: with the loaded decode router (R), V9 takes 42.0/65.4/76.3/105.5 us at M=1/8/16/32 (board routing B: 42.8/81.6/114.2/147.6) and every grouped/tile alternative that ran loses 2.5-4x; the rest ran out of time. With the scale encoding fixed (`b741f04aaf53479d`, banks exact), NT4 passes but loses to NT1: M=16 149.2 vs 93.7 us, M=32 141.4 vs 110.8.
 
-- **What binds NT1 by M (`dc3fea0a20a349bf`, 12 seeds, cold graphs; D* are non-equivalent diagnostics):** recoded NT1 (R2) / one-LOP3 decoder / no-decode (Ddecode) / no-MMA (Dmma) take 43.1/42.7/39.8/36.5 us at M=1, 74.5/73.8/70.4/65.9 at M=8, 81.2/79.2/70.2/64.0 at M=16, 117.2/113.6/89.9/82.1 at M=32; raw scales 46.5/80.3/89.4/131.4. So decode + MMA bind at M=32 (~27 and ~35 us) but not at M=1, where instrumented CTA cycles show route ~5.6K, W13 ~17.6K (~9 us, ~3.6 TB/s for two experts), grid wait + barrier ~9K, W2 ~18.9K (~9.6 us, ~1.7 TB/s) and norm ~1.4K: the M=1 lever is the fixed phases (route, the W13->W2 grid barrier) and W2's bandwidth. M=128 (`moe_m128_issue_limit`, 36 fixtures): NT1-recoded 290.1 us, NT1 with one-LOP3 blend 280.7, the fused producer with the distributed W2 finalizer D32g 273.0 (W13+act 174, W2+final 81, finish 12) and D16word 294.9; the old fused F128 1,631-1,693. NT1 per-CTA phases at M=128: W13 131 median (162 max), W2 66 (107), barrier 16 (61) us.
+- **What binds NT1 by M (`dc3fea0a20a349bf`, 12 seeds, cold graphs; D* are non-equivalent diagnostics):** recoded NT1 (R2) / one-LOP3 decoder / no-decode (Ddecode) / no-MMA (Dmma) take 43.1/42.7/39.8/36.5 us at M=1, 74.5/73.8/70.4/65.9 at M=8, 81.2/79.2/70.2/64.0 at M=16, 117.2/113.6/89.9/82.1 at M=32; raw scales 46.5/80.3/89.4/131.4. So decode + MMA bind at M=32 (~27 and ~35 us) but not at M=1, where instrumented CTA cycles show route ~5.6K, W13 ~17.6K (~9 us, ~3.6 TB/s for two experts), grid wait + barrier ~9K, W2 ~18.9K (~9.6 us, ~1.7 TB/s) and norm ~1.4K: the M=1 lever is repeated routing, global waits and W2's bandwidth. Source inspection shows W13 readiness is already per expert; the grid barrier is after W2/before combine, with a separate global zero-init wait. CTA medians are nonadditive; Dmma also removes its unused decoder, so these deltas do not isolate MMA or add to wall time. M=128 (`moe_m128_issue_limit`, 36 fixtures): NT1-recoded 290.1 us, NT1 with one-LOP3 blend 280.7, the fused producer with the distributed W2 finalizer D32g 273.0 (W13+act 174, W2+final 81, finish 12) and D16word 294.9; the old fused F128 1,631-1,693. NT1 per-CTA phases at M=128: W13 131 median (162 max), W2 66 (107), barrier 16 (61) us.
+- **Small-M fixed-phase follow-up accepted (`383ccc1fbbae41e2`, send `d52b02e0bc91d390`):** exact H200 one-LOP3 cell is handed to decode in FOCUS (42.74/73.75/79.20/113.61us at M1/8/16/32; SHA3f84a8a4). The widened-scale fold25 is retired as inadmissible; current banks use packed FP4/u8 scale storage only. A builds a2944B stable routing ABI once per timed call; B removes global zero-init/final-combine barriers via expert/slot completion tickets; C issues W2 L2 lookahead (TMA/vector loads are already wide). D64/D128 split128 producer threads doing in-kernel decode from256 MMA consumers, with double BF16 shared stages and a bank-conflict-free fragment/lane layout. ABC/ABCD are combined; K2 stages2/3 and capped L26 remain controls. One payload measures12 real-router seeds at M1/8/16/32 with per-arm cold AB/BA, independent A:A, FP32 and bit-exact SwiGLU/W2 checks; summaries last, host deadline<=280s. Local1008 graph gates/1584 exact stage comparisons/288 metadata checks/864 forced Hopper calls pass; max FP32 L2=0.002416. Twelve source families/20 sm90a entries have no spills/local ops. Wrapper5 public tests/6 static pass, payload7.2s/prepare9.3s locally. New-path local timings mostly lose; H200 ranking is pending. Immediate detached log confirms acceptance, no rejection. [ABI, source, hashes and reproduction](../problems/muse_decode_layer/dev/nt1_branches/README.md).
 - **M=1 streaming expert GEMV loses (`963515d3f0c04d91`, 12 real-route seeds, raw bank, cold graphs):** persistent W13 rows + W2 split-K with fused norm/sum, 14 grid/stage/PDL variants: best P2g264 57.1 us and S2g264 58.1 against NT1 44.2 and v9m1 44.6 (2-3 local experts; one-read floor 11.8-17.7 us). PDL and grid 264-528 barely matter; 8 stages and grid 132 are much worse. NT1 itself runs at 1.4-1.7 TB/s of unique bytes. Together with the scale-bank result (exact recode = 9-12% faster NT1), per-weight decode work, not bytes in flight alone, is a binding limit at small M.
 - **Small-M scale-contract failure resolved on H200 (`b741f04aaf53479d`):** the stale lab fed prepare-recoded E4M3 bytes into NT4/v9m1's raw reader (scale128: stored `0x70` became `0xe0`, interpreted as -32). That pairing reproduces locally at1.862656 relative error. The corrected lab checks192 inverse bank tiles and passes every H200 SwiGLU/W2/norm/output stage. NT1 takes47.44/89.49/93.68/110.75us at M1/8/16/32. M1 `newNT1` is `v9_small_nt1_kernel_fn` through the small NT4 module, hence the v9m1 body:48.00us versus47.44, ratio1.0118. It does not approach one read. NT4 loses at M16/M32 (149.18/141.39us); no promotion. Candidate keeps NT1 at M1/8/16 and hotNT1 at M32, with NT4/v9m1 explicit lab choices. `prof/lab/build_moe_small_debug.py` regenerates the raw bank/reader contract from the current candidate. Earlier failure receipts are3920d3f0/948044d4; this cause is distinct from the free lane's B128 addressing repair. Local logs: `runs/screen/moe_small_{debug,lab_entry,static}.*`.
 - **M1 scalar streamer closed on H200 (`963515d3f0c04d91`):** every valid stream recipe loses on12 real-router draws. Best P2g264 is57.07us versus NT1-raw44.17us and v9m144.61us (1.292x slower); one-read floors vary11.8–17.7us. PDL and grids264–528 barely change the outcome; split8 regresses to95us. All gates pass (~0.24% FP32 error). No dispatch promotion. The two-launch kernel's source and original720 native/160 forced local checks remain in `problems/muse_decode_layer/dev/small_m_gemv/`; its completed receipt supersedes the old pending state.
@@ -109,9 +120,10 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 - **M=256 12-seed means and the fused path (`e8968e36ea98422a`):** masked Humming 448.5 us stays best (P128 503.2, NT2 548.1, VFIX32 556.4, P256 585.3, NT1 606.7). The free lane's fused route/W13+SwiGLU/W2+norm+combine path (F0-F12) takes 1,138-3,159 us, with its W2 phase alone 1.38-2.64 ms at R0 (W13 266-426 us); implementation suspect. Humming at M=128 (R0 only): block-M 32 328.0 us vs default 355.3, TMA 341.3; 66/88 SMs 629/489; 2 stages is invalid (WGMMA needs 3). The M=128 one-read path on the same fused producer (`66133279d19145ad`, 12 seeds) has the same slow final phase: best A0 827.0 us vs NT1 344.3, NT2 340.5, masked 341.0; W2+final 557-1,369 us vs W13+SwiGLU 240-293; A4-A6 and A8 return non-finite output.
 
 
-- **M128 K64 register lifetime defect (local proof; H200 repair pending):** cfg3/cfg5 in `66133279` reuse af[0] while its WGMMA group remains live after wait1. Native SASS confirms this [PTX lifetime violation](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#asynchronous-warpgroup-level-matrix-instructions-wgmma-wait-group). Shared `fused.cu` now rotates two banks across paired K64 stages; W2/split-K epilogues are byte-identical. All10 K64 paths go from63 early overwrites per64-stage loop to zero;393,216 B128 addresses match the writer and remain in bounds. Local234 M128+210 shared gates and12 public seeds plus R0/HOT128 pass (M128 L2<=0.004132,row<=0.004948), with no native spills/C7513. The immediate SM120 reader cannot reproduce asynchronous UB, so the new receipt must confirm removal of the non-finite gates. Repair lab send **0ea82c48f2255889**, pointer-only sm90 build/load12.5s; its detached log says waiting for a slot with no rejection. Evidence: `problems/muse_moe_w4a16/dev/mixed_wgmma/m128/{REPAIR.md,repair_admission.json}`.
+- **M128 K64 register lifetime repair (H200 confirmed in97be11d4631b44d6):** the alternating register-A banks remove the non-finite gates on all12 public-router seeds plus R0/HOT128. Every affected cfg3/cfg5 grid and cfg4 control passes (maxL2<=0.00413,row<=0.00471); poisoned ACT/Y/INV/OUT contain no non-finite active entries. The prior source reused af[0] while wait1 left it live, a confirmed PTX lifetime violation. Fixed SASS has disjoint banks and393,216 matching B128 addresses. Latency remains poor until the serialized finalizer is replaced; the new expert-wide port is in `m128/one_read/`. Repair proof and frozen source remain in `m128/{REPAIR.md,repair_admission.json}`.
 
-- **Small-M recoded NT1 limit audit; new H200 lab queued:** unchanged sm90a NT1 uses124 registers with no spills, normally two36KiB stages/grid264. Per16-weight group, its production decode/scale path has17 integer extraction instructions +8 BF16 multiplies +2 amortized scale-building instructions =27 (isolated probe29 before scale amortization). Line-mapped SASS is in `runs/screen/nt1_decode/`; `prof/lab/audit_moe_nt1.py` reproduces it. Historical recoded H200 phase receiptac9dd461 at1980MHz gives W13/W2 CTA medians M1=8.91/9.08us, M8=53.97/30.57, M16=73.35/36.30, M32=82.20/40.64; these board-routing phases overlap, W2 includes wait/norm, and they are not new real-route cold timings. Confirmed small-M loss so far: the raw-scale conversion tax9–12% (58ae2e2c); the remaining primary limit awaits the new phase/ablation data. Valid variants: single-LOP3 mixed-word select (26 instructions/group;125 registers), lossless16-bit integer scale encoding (26/group, +11.1% bank bytes;128 registers), and earlier stage refill with half the activation cache moved to shared memory (128 registers). All eight native families compile sm90a without spills;432 native graphs/288 forced Hopper calls pass on3 public weight seeds, max L2=0.002416; full local twelve-seed entry39.22s passes. Changed early-stage2 and standard stage3 glue use supported-depth arithmetic stand-ins on SM120. Ddecode/Dmma are explicitly ineligible, non-equivalent lower bounds: SASS shows Dmma drops the unused decoder too, so it measures streaming/control rather than isolated MMA. MoE-host send **0ea5aeba5a3435bf**, immediate log waiting for a slot with no rejection; judge acceptance unverified. Source, drop-in and hashes: `problems/muse_decode_layer/dev/nt1_limit/{README.md,admission.json}`. Best7 is unchanged pending a valid H200 win.
+- **Small-M recoded NT1 audit; phase lab pending dc3fea0a20a349bf:** unchanged sm90a NT1 uses124 registers, no spills, normally two36KiB stages/grid264. The production decode/scale path is17 unpack +8 BF16 multiplies +2 amortized scale-building instructions =27 per16 weights (isolated probe29). Historical H200 ac9dd461 at1980MHz gives W13/W2 CTA medians M1=8.91/9.08us, M8=53.97/30.57, M16=73.35/36.30, M32=82.20/40.64. These board-routing phases overlap; W2 includes wait/norm, so they do not add to real-router cold latency. Scale recoding proves a9–12% raw-scale tax; the primary remaining limit is unresolved. The phase/ablation payload includes one-LOP3, u16 scales, early refill, stages1–3/grid132–264 and ineligible deletion bounds. Dmma also drops its unused decoder in SASS; it is a streaming/control ceiling, not isolated MMA. Local432 graphs/288 forced calls pass, max L2=0.002416. Original send0ea5aeba5a3435bf was merged with M128's issue lab into accepted **dc3fea0a20a349bf**, merged senda1762556e26931ef. This turn's one read found no receipt. [Sources and admission](../problems/muse_decode_layer/dev/nt1_limit/README.md).
+- **Small-M follow-up branches ready, unsent:** actual sm90a `fold25` has16 unpack +1 scale setup +8 BF16 multiply instructions/16 weights at124 registers; `lop26` has26/121 and keeps original bank bytes. The exact integer u16 scale descriptor costs11.1% more bank bytes; this version retains general BF16 multiplies, rather than claiming a multiply-free exponent fold. Occupancy branch halves tiles to18KiB/four warps, doubles independent K units, uses split-major activation reuse, FP32 arrival-ticket reductions before SwiGLU/norm, and stages2/3/4 with requested grid528 capped to residency. It uses127 registers. All five sm90a families have no spills/local memory. Local360 graph checks/480 forced Hopper calls and all4064 finite scale/code combinations pass; max FP32 L2=0.002416, signed/zero/subnormal scales, empty routes, start96 and reset tickets covered. All three decoder/occupancy/combined entries complete12 seeds x4 real-route shapes in under10s locally; standard stages3/4 use depth2 arithmetic stand-ins, while split2 executes all four depths natively. Local timings lose and are not H200 rankings. Receipt dc3fea0a selects decoder vs occupancy vs one combined MoE-host payload. No new send or best7 change. [Ready payloads, tradeoffs and hashes](../problems/muse_decode_layer/dev/nt1_branches/README.md).
 
 ## The judge's H200 (measured, 2026-10-23)
 
@@ -129,10 +141,10 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 | Lab host on a withdrawn run | `tools/h200_lab.py` picked the host as the best scored run, which for the decode layer was the withdrawn, inadmissible bf16moe `07d07d960b814b86` (1.461x): the batched GEMV+overlap lab `b63389f01e4741b9` runs on it (a check, not on the board; its host-function timings are not the incumbent's). Host selection now skips withdrawn runs (decode host: 0e94268) | tooling | measured | `tools/h200_lab.py` best_source |
 | Streaming GEMV vs a plain read (H200) | `feb7b287e3464e4a`, cold 256 MiB flush, 20 pairs: a plain one-launch read of each weight takes qkv 18.6 us (37.75 MB, 2.03 TB/s), o 11.3, pool+router 30.8, unpool slice 8.7, unpool full 28.4 us (0.96-2.45 TB/s; ~2.4-3.1 TB/s after a 5.2 us launch/ramp envelope). The streaming GEMV matches that read at M=1 (qkv 18.3, o 12.3, pool+router 29.6, unpool slice 9.3 us; 0.77-1.01x cuBLAS) and loses to cuBLAS at every M>=8 (1.1-1.7x at M=8-32, 2.3-4.9x at M=128-256). Drafter shapes lose too (1.12-1.80x) | Matched same-byte reads show the measured launch/ramp envelope; overlap is the next practical M1 lever, not a proven hardware ceiling. Best6 uses PDL but its small-M custom recipes explicitly disable own-weight prefetch | measured | `problems/muse_prefill_layer/lab/profiles/lab_streaming_gemv_lab.feb7b287e3464e4a.log` |
 | Persistent dense chain vs best7 (H200) | `87dc944bfd7944c7`, AB/BA, cold 256 MiB, changed inputs: best7's o -> boundary -> pool+router takes 38.3/39.2/39.4/39.8/43.6/56.3 us at M=1/8/16/32/128/256; the persistent chain 57.7/62.7/65.3/71.2/198.9/365.6 (1.51-6.49x). In the whole best7 layer the chain costs +21 us at M=1 (82.7 -> 104.0) and +24 at M=8. Errors 4-8e-5, no route flips. (The earlier 57.3 vs 76.1 us 'win', `9d223519`, was against torch.mm + an FP32 router, not best7.) | This chain implementation loses at every M; best7's segment moves 88 MB in 38 us (2.3 TB/s), so a persistent design still has room, but not this one | measured | `problems/muse_decode_layer/lab/profiles/lab_dense_chain_best7_compare.87dc944bfd7944c7.log` |
-| Small-M native glue fusion: rejection mechanism | H200 `80b70f7f20fa41c6`: every cell loses1.51–17.63x (M1 sliding pool559 vs105us; M32 all2784 vs167). Source grid pool72x8xceil(M/8) repeats an8192-column norm576 times per token; last-CTA epilogues leave only1/1/2/4 CTAs at M1/8/16/32, each up to8 rows in scalar warp loops. | Local causal ablations reproduce it: M32 pool3861.5 ->199.7us without the prologue; unpool466.9 ->119.8 without boundary2; o337.9 ->36.9 without boundary1. PDL on/off differs about3% or less; no spin/unresident-grid barrier; SM90a no spills. This closes the replicated-row/single-CTA mapping, not fusion generally. H200 phase attribution is inferred from identical-source local ablations. No new fusion variant sent. | `dev/fused_glue/audit/{README.md,mechanism.json,diagnose.py}`; H200 source/receipt pins retained |
-| QKV/attention KV-head-group overlap ceiling | Source-pinned best7_reset c0e74bed profiles; isolated qkv profiles resolve its main+reduce names. Two equal KV groups give ideal savings min(Q,A)/2: decode1 S/F4.95/7.05us, decode16 6.25/6.90, decode32 7.20/7.25. QKV times14.5/14.1,14.0/13.8,14.4/14.5; attention9.9/18.3,12.5/106.5,17.0/195.6. | FOCUS46/16 weighting +six-load geomean: isolated overall gains0.873%,0.522%,0.414%; together **1.820%** (1.857% using reset own denominators). It passes1% only in aggregate;50% realization gives0.897%. Assumes unchanged stage throughput during overlap, zero added launches/sync/tails; shared-SM/HBM contention makes it optimistic. No overlap kernel built. | `dev/qkv_overlap/{README.md,bound.py,bound.json}`; profile/source hashes and flow-shop formula included |
-| Route-only MoE prologue and verify glue (local admission; H200 pending) | Best7_reset c0e74bed profiles: boundary+route11.0/11.7us at M8 S/F,14.1/13.8 at M128,22.9/22.9 at M256 (activity includes PDL waits). New NT1 private-CTA top8/bias/pre-expert norm prologue keeps incumbent dense projections; M256 retains Humming and fuses routing into pooled/position prep. Independent pool-router last-CTA epilogue and M8/128/256 unpool+boundary2 cells compare all12 full layers, synthetic non-expert seed941732/real first32 experts,3 fresh graph draws, cold256MiB AB/BA6 and A:A. | Native route72 + Humming route/position54 replays pass with exact IDs; forced Hopper108 whole-layer comparisons pass, zero flips, maxL2 `.002728`; host5 tests/6 static,9 explicit SM90a kernels no spills (route NT1 uses128 registers). All local cells lose; no dispatch promotion. Send accepted, H200 pending. | `dev/route_glue/{README.md,admission.json}`, `prof/lab/best7_route_verify_glue.py` SHA `ded132cf8f7bbdf0`; send **81ee15ab3a2d29e0**, job **8a3d71811a324c36** |
-| Route cell emits shared small-M metadata | Current NT1 route prologue writes `MoERouteMeta` v1 (2944B/736int32, M<=32) from fresh inputs in CTA0: counts, offsets, blocks8, W13/W2 unit prefixes, token-local counts, expert-major pair list and inverse slot map. Reuses scheduler shared storage, no added launch/grid wait. It returns metadata beside MoE output/IDs. | Exact match to `nt1_branches/route_meta.cu.inc` in84 graph cases (M1/2/7/8/16/31/32; splits1/2/8/16; EP0/96/224; empty/zero); current forced Hopper108 whole-layer comparisons pass, zero flips, maxL2 .002728. SM90a128 registers/no spills. Unsent revision; pending8a3d7181 contains the older source. Table remains empty; consumer integration belongs to the small-M lane. | `dev/route_glue/{README.md,metadata_admission.json}`; cell SHA `d5674c8b85b64ff3d60108eb2e208f09bd58c72d448ebb08f9c5d770785986a3` |
+| Small-M native glue fusion: implementation bug, family open | H200 `80b70f7f20fa41c6` loses1.51–17.63x: pool grid repeats each8192-column norm576 times/token; last-CTA tails serialize on1/1/2/4 CTAs at M1/8/16/32. Local work-deletion probes reproduce the loss; PDL is neutral and there is no spin. | This is an implementation bug, not evidence against fusion or the +6.7% glue lever. Repaired cooperative cells compute each row RMS once and partition tails across8 CTAs/row, sharing normalized rows. Pool/tail/all/epi and once-per-row route metadata are in one reset-gated batch. No switch enabled before H200 whole-layer evidence. | `dev/fused_glue/audit/README.md`, `dev/coop_glue/{README.md,admission.json}` |
+| QKV/attention KV-head-group overlap ceiling and build | Pinned best7_reset profiles give ideal min(Q,A)/2 savings: decode1 S/F4.95/7.05us, decode16 6.25/6.90, decode32 7.20/7.25. FOCUS46/16 weighting and six-load geomean give **1.820%** overall; 50% realization gives0.897%. | The bound clears the aggregate bar. Built a two-stream CUDA-event pipeline: group0 attention beside group1 BF16 QKV GEMM, fused per-group QK prep/cache store/split attention, norm/gate combine. Existing native attention/Lt lacks group publication; Triton PDL overlaps independent prefetch, not this compute.36 native changed-input/cache graph cases pass (maxL2 .008683),18 forced-Hopper whole layers pass (zero flips,maxL2 .009706). Internal FP16 MMA fragments match incumbent; the first BF16-fragment prototype missed the unchanged layer gate at .010222. No H200 timing or dispatch promotion. | `dev/qkv_overlap/{README.md,bound.json,runtime.py,validation.json,layer_validation.json}`; cell SHA `e429b3630dcb099e046c9dcd866c08216b79eed193974fb7423a1ec7e3950c3b` |
+| Route/verify glue8a3d7181: flip aborted measurement | Receipt `8a3d71811a324c36` raised after74s on1/256 route flips: case10=M256 sliding, pool_epilogue, seed188741. The wrapper lost all accumulated timing lines. | Near-tie versus real error is **unresolved**: that receipt contains neither8th/9th score gap nor candidate score perturbation. Local exact-path reproduction has zero flips, minimum candidate gap .00010979; it cannot classify the H200 event. Every glue payload builder now records score-space evidence, disables the cell/M and continues. The reset-gated batch includes this exact legacy prefix as a diagnostic; no weakening of route/layer gates. | Frozen source `runs/muse_moe_w4a16/20261024T154402Z_check_8a3d71811a324c36.py`; `dev/fused_glue/flip_gate.py.inc`; new send **270212081442eff6** |
+| Cooperative glue and shared routing metadata v1 | One cooperative CTA per token computes top8/bias/pre-expert RMS; a resident grid barrier publishes IDs/weights/inverse RMS before packed expert work. M<=32 emits all736int32 of shared `MoERouteMeta` v1. Boundary rows use two actual once-only RMS reductions and distributed element tails. |36 native graph cases pass (zero flips,maxL2 .000088);180 forced-Hopper whole-layer comparisons pass (zero flips,maxL2 .004623), including24 exact metadata descriptors. Injected non-tie flip disables one cell/M and finishes174 timings.9 proj-host tests and3 static checks pass; SM90a glue56 registers (pool4B store/24B load spills), route128/no spills. One proj-host batch held until2026-10-25 09:00 KST; detached log confirms no early judge request. All switches empty. | `dev/coop_glue/{README.md,admission.json,sent.json}`; payload `da57e4ccf74a6d6559ae1e9de882de77201a72d68203740deca6c72c369a9f9f`; send **270212081442eff6** |
 | Side-stream L2 prefetch inside best6's layer (H200) | `d5a9025890a64141`, paired AB/BA, 3 seeds, decode 1/16/32 sliding+full: the best recipe slows the layer by 0.3-16.6% (decode 1 sliding 123.1 -> 143.5 us). The prefetch branch costs ~34 us and overlaps attention at most (9.5-18.3 us), never MoE, because those kernels hold every SM. With its weights in L2, o drops 8.2 -> 6.0 us and pool+router 26.4 -> 25.2 | A separate prefetch launch can't run beside full-grid kernels; any prefetch must be issued from inside the running kernels, and the measured ceiling is a few us per layer | measured | `problems/muse_prefill_layer/lab/profiles/lab_l2_overlap_lab.d5a9025890a64141.log` |
 | Verify dense split-K/stream-K WGMMA (H200) | `19f3a13b17b44b6f`, synthetic BF16 weights of the real shapes, cold 256 MiB, 27-32 configs per role: best7's cuBLAS/Lt takes qkv/o/pool+router/unpooler 21.7/11.8/28.1/23.7 us at M=128 (85.3 total) and 24.1/13.8/33.9/28.6 at M=256 (100.4); our weight-wide TMA/WGMMA's best per role is 1.34-2.06x slower (137.4 / 159.9 total, 0.76-2.12 TB/s), and every split-K>1 setting lost to split 1 | This implementation loses at every role; cuBLAS itself reaches only ~1.7-2.4 TB/s here (~3x the floor), so the verify-dense gap stays open | measured | `problems/muse_moe_w4a16/lab/profiles/lab_verify_streaming_synthetic_moe.19f3a13b17b44b6f.log` |
 | In-kernel PDL own-weight prefetch (H200) | `7426e17cd3bc4659`, best7_paired layer, synthetic non-expert weights, cold 128 MiB, 24 AB/BA pairs: decode 1 sliding whole layer 115.78 -> 115.58 us (0.9986); per role qkv 1.0017, o 1.0094, pool+router 0.9951, unpooler 0.9910. The other seven cases stopped on the lab's own whole-layer gate (0.0031-0.0033 against a 0.003 bound on synthetic weights), so they are unmeasured | With the L2-warm oracle above, own-weight prefetch is worth <=1% per role at M=1; the dense lever is the GEMVs' fixed cost | measured | `problems/muse_moe_w4a16/lab/profiles/lab_dense_pdl_prefetch.7426e17cd3bc4659.log` |
@@ -393,123 +405,23 @@ q/gate/KV layout; sm_120 forces the portable stand-in.
 
 | Prefill v11 (`6a9cd943fe404d74`) | check 1.367883x; scored 1.366811x (`965a9a816d4744ea`) | not on overall board | scored turn 1 / turn 4 / first turn: 1.227 / 1.356 / 1.534 | BN128 WGMMA below8192 tokens, timed dequant + grouped BF16 DeepGEMM above; submission is the exact checked source |
 
-### BF16-resident decode MoE hybrid (independent lane)
+### BF16-resident decode MoE hybrid (closed: inadmissible)
 
-**Inadmissible (CONSTRAINTS 5, boundary row):** the timed calls read a BF16 bank dequantized in prepare, and NVFP4 weights must stay NVFP4. Its decode run (07d07d96) was withdrawn before scoring and then ran anyway: 1.461x against 0e94268's 1.428x, off the board; the timings below stay as evidence of what dequant costs V9 at M=256 (the hybrid's ~59 us win is the dequant work it moved out of the timed call).
+CONSTRAINTS5 forbids timed reads of an NVFP4 bank dequantized to BF16/FP8 in prepare.
+`cand_r3_bf16moe` is parked; decode run07d07d96 was withdrawn before scoring but ran anyway
+(1.461x versus V9's1.428x, off the board). Its old dispatch, tuning and delivery instructions
+are retired. Current admissible free-lane work is the packed WGMMA producer above.
 
-**Decision:** build on `cand_r3_v9.py` (SHA `ba990a86...`, receipt
-`0e94268cf5654012`, 1.427904x). No newer merge has beaten it. Only lab payloads
-are submitted by this lane; Jihoon submits the layer candidate. The design uses
-resident BF16 hot experts and native V9 W4 cold experts, independently of TMA W4
-and V19. The first complete-path H200 result is a **modest M256 win**, not the
-200/120us target. Deliver the locally validated candidate with prepare-time
-selection; the optional resource-budget lab continues asynchronously in the
-local queue. Do not hold the reviewable candidate on that additional result.
+Historical H200 labs `f8e977320c3c4556` (GEMM ceiling) and `b37b93deb1b74f3a` (complete
+hybrid) used public seed5353, not the exact loaded router. Complete M128 V9/hybrid was
+237.63/238.13us; M256396.10/337.20us, FP32 L2=0.003704. The59us M256 gain measures work
+moved out of the timed call, not an admissible candidate improvement. Component timings and
+local proofs remain in those receipts and `dev/bf16moe/`; no BF16-resident policy is eligible.
 
-**Storage and arithmetic:** retain the packed NVFP4 bank. The additional
-3,221,225,472B BF16 bank stores E2M1 x E4M3 block products exactly. Apply each
-FP32 global scale in the SwiGLU/output epilogue, never in the BF16 bank. Fused
-post-expert RMSNorm uses FP32 global scale and routing weights. This one-layer
-G1 allocation is not proposed across all62 layers. Prepare drops
-unselected BMM layouts and the full derived bank if only subset BMMs win.
-
-**H200 evidence:** proj-host jobs `f8e977320c3c4556` (GEMM ceiling) and
-`b37b93deb1b74f3a` (complete hybrid) finished successfully. Both reconstruct the
-public decoder weight distribution with seed5353 and use the corrected
-`moe_tune.py` fixture: draft sharing within every8-token verify block. Device RNG
-produces M128:177 local pairs/hottest57; M256:341/hottest104. These are not the
-private loaded router from receipt `0e94268cf5654012`. The other loaded-weight
-lab `26d7e05ab97d4f96` has M128:209/55 and M256:414/119; its V9 paired times
-are279.0/478.5us. Final dispatch must compare engines using each run's actual
-loaded router in prepare.
-
-GEMM ceiling, CUDA-graph microseconds, W13 + activation + W2; **excludes routing,
-post-norm and combine**. Grouped MM uses padded contiguous rows; BMM pads each
-selected expert to M rows. BMM FP32 output keeps global13 in the activation
-(epilogue); the column below uses the NN layout.
-
-| M | Hot threshold | Experts / rows | PyTorch grouped | BMM FP32 | DeepGEMM masked | DeepGEMM psum |
-|---:|---:|---:|---:|---:|---:|---:|
-|128|16|3 /104|287.95|126.42|98.03|110.64|
-|128|32|1 /57|211.68|52.62|66.43|94.78|
-|256|16|8 /297|538.56|419.92|247.74|225.04|
-|256|32|3 /187|370.26|160.03|101.87|113.95|
-|256|64|1 /104|302.46|69.36|97.20|96.37|
-
-Complete hybrid includes partition/gather, cold V9 stream, both hot GEMMs,
-fused activation, norm and combine. Three independently refreshed routing
-fixtures, 128MiB cache flush, captured graphs; times from `b37b93deb1b74f3a`.
-The cold grid fraction describes CTAs, not an enforced SM partition. V9 uses
-two resident CTAs/SM on H200 (88,936/94,056B dynamic shared memory at M128/256).
-
-| M | V9 us | Best BF16 hybrid us | Policy | Decision |
-|---:|---:|---:|---|---|
-|128|237.63|238.13|BMM NN FP32, threshold32, serial|Keep V9|
-|256|396.10|337.20|DeepGEMM psum, threshold 16, quarter cold grid|14.87% less MoE time; retune in prepare|
-
-M256 global relative L2 is0.003704 against fully FP32 expert math; every timed
-policy also passes refreshed graph gates (global<=1%, row<=5%). Smaller cold
-grids are much slower: at M256/threshold 16 psum, one-eighth/quarter/half/serial
-are526.4/337.2/374.6/359.9us. Do not substitute the isolated GEMM floor for a
-full-path gain. The measured win alone cannot establish the ~1.68x layer goal. Applying its
-MoE ratio only to verify32 in receipt `0e94268cf5654012` models ~1.453x overall
-(weighted sliding/full load sums, then geomean over six loads), not a measured
-score or rank50 result.
-
-**Static bandwidth check:** public fixture0 touches19 M256 experts. Threshold16
-reads at least805.3MB of hot BF16 weights plus311.4MB of cold packed weights,
-~1.117GB total:233us at the [H2004.8TB/s spec](reference/hardware.md), before
-activation traffic and launches. This is conditional on that fixture and these
-layouts; it does not bound the three-fixture median or a higher-threshold design.
-The original ~70us estimate used a different, narrower expert set. BF16 storage
-is lossless and HBM capacity is available, but reading it costs bandwidth.
-
-A final lab varies one-stage native V9 buffering, DeepGEMM's public SM-budget
-API, and fixture-sized BMM row capacities (25% headroom). A GPU count exceeding
-the prepared capacity stays entirely on V9, preserving every row. The compact
-BMM prototype passes90 eager cases and36 refreshed graphs including overflow
-routing extremes (max FP32 L2 0.003755). Its lab replaces a locally waiting
-snapshot before judge admission; no run was consumed by that replacement. The
-current candidate admits these resource policies only through the same fresh
-FP32 checks and graph timing against V9. Their H200 resource-ablation table is
-still pending; the completed tables above measure the original resource settings.
-
-**Local verification (GPU0/sm120):** exhaustive finite E4M3 bit patterns x all16
-FP4 codes expand exactly. Engine passes240 eager cases and120 refreshed graphs
-across M32/128/256, three real-router fixtures and all-remote/one-hot/eight-hot/
-uniform extremes; max fully FP32 relative L2 0.003832, worst row0.004361.
-Masked expert strides must be padded128. FP32-output BMM max L2 is0.002813.
-`runs/screen/bf16-engine.json` records cases. The delivered candidate SHA
-`123bf83be45da22f1e72ac6f62d7c39c13caf79f3423362e24cdd4e6d9eb6fcf`
-passes 13/13 tests, 12/12 graphs and4/4 static checks (three embedded CUDA
-sources compile for sm90a); the same holds with Hopper selection forced through
-portable grouped stand-ins and real cuBLAS FP32 paths, including stage1, SM
-budgets and compact BMM capacities. Normal/forced prepare is1.37/12.23s.
-`check_prepare.py` also verifies production reclamation after BMM-only selection:
-6 eager plus6 refreshed graph cases,1,610,621,696 live derived-bank bytes. The one-stage/SM-budget
-prototype separately passes24 eager cases and16 refreshed graphs with actual
-DeepGEMM on GPU0; it restores the global SM setting after each call.
-
-| Tokens | Load | Dispatch |
-|---:|---|---|
-|1 /8 /16|decode1 /verify1 /decode16|V9 fixed|
-|32|decode32|Prepare compares V9 with admitted BF16 policies|
-|128|verify16|Prepare compares; public-seed H200 lab keeps V9|
-|256|verify32|Prepare compares; public-seed H200 lab selects psum threshold 16|
-|Other|nearby shapes|V9|
-
-The standalone candidate embeds the canonical `dev/bf16moe/hybrid.py` engine
-and independent prepare-only FP32 oracle. Selection uses three synthetic
-loaded-router fixtures, cold graph timing, refreshed graph agreement and a
-12-replay finalist comparison against V9. M256 is tuned first, then M128 and
-M32;8s of the270s overall budget is reserved for finalist gates. Row thresholds
-16/32/64, one/two V9 buffering stages, quarter/half/full resident grids or
-serial execution, and even quarter/half/full DeepGEMM SM counts are compared.
-BMM uses FP32 outputs in both layouts and a fixture-derived row capacity with
-25% headroom; overflow routes entirely through V9. No timed-input specialization. Only
-lab payloads were submitted. Full-layer H200 correctness, prepare selection,
-score, private-router performance and any TP8 serving integration remain
-unverified.
+The exact decode routing in26d7e05ab97d4f96 has209/414 local pairs at M128/256,18/21
+experts, hot55/119. Reading all21 M256 experts in BF16 costs~2.1GB,~440us at4.8TB/s,
+whereas packed weights plus scales cost~124us for both GEMMs. Capacity alone never established
+a win; that bandwidth calculation is a model. Conversion now stays inside the timed kernels.
 
 ### Decode large-load profile and round-3 dispatch (G1)
 
@@ -657,45 +569,130 @@ This motivated the held `cand_r3_merge_mega.py`; its persistent qkv producer lat
 
 ### Projection evidence and next experiment (G1, G2)
 
-PDL dense experiment (send **4abb8bc59fee7ae0**, payloadSHA **016706db77b05c32…**,
-MoE check **7426e17cd3bc4659**):
-`problems/muse_bf16_proj/dev/pdl_prefetch/README.md` freezes best7 pairedSHA3baaaa96,
-its measured dense dispatch and paired glue/attention/NT1 choices. Eight cold-L2
-whole-layer cases cover decode1/16/32 and verify1, sliding/full;16 standalone
-role/shape rows compare original-row bulk rings, lossless tile-packed bulk rings,
-512-thread GEMV and a matched528-CTA read. Early/late controls isolate the initial
-weight requests before `griddepcontrol.wait`; final24 AB/BA pairs use3 refreshed
-public streams, A/A controls and single-stage layer ablations. The host-independent
-payload synthesizes missing dense BF16/router FP32/norm tensors from per-name
-seed72140, and uses fixed public attention input, residual and FP8 KV fixtures.
-MoE supplies its first32 real packed experts/scales and post_norm_w. Every arm
-uses common baseline-derived route IDs/weights/localIDs; the routing/norm kernel
-remains timed. The protected output metadata names all synthetic tensors. The
-detached log confirms acceptance on MoE; prefill waiter3107409 was terminated,
-and its waiting file removed. No H200 result yet.
-Best7 remains unchanged. This tests the gap above our current1.2-2.4TB/s dense
-implementations; the3.80TB/s stream and historical4.04-4.25TB/s reads disprove
-an inferred2.5TB/s hardware envelope.
+P7 bulk-ring target selection (95ab383d raw producer graph times; 4233660b normal
+256MiB streaming control74.33us =3.61TB/s, rounded to3.6TB/s). Bytes below
+count one useful read of the resident BF16 bank; pool+router includes its
+BF16 hi+lo router rows. They exclude activations, output and split-partial
+traffic. These are useful achieved rates, not measured DRAM transactions.
+Graph times include replay/launch overhead, so the gap is an optimistic
+opportunity ceiling, not a forecast that all of it can be removed.
 
-Local evidence:2,060 native checks/708 captured graphs pass, max FP32 relative
-error4.7e-6 (unchanged native kernel); all8 layer/16 stage cases and5 MoE host
-tests pass with375 forced attn_main and150 FA3 glue calls. The512-thread GEMV
-and packed rings cover every M1/8/16/32 role; standalone times include the
-incumbent BF16 output boundary and identical activation banks.16 native sm90a kernels and12 Triton hint variants
-have no spills; SASS checks place weight requests before ACQBULK only in the
-early variants;4 BF16 output-boundary kernels also cross-compile. The first screen
-exposed an omitted BF16 output boundary (~0.35% layer drift): the timed reduction/
-cast now preserves the incumbent ABI. Matching M32 KS512 fixes the routing change
-from KS1024; exact IDs and the original1e-4 raw/router,1% BF16 and0.3% whole-layer
-A/B gates all pass for the screened portfolio. A synthetic verify1-sliding QKV
-cell exceeded the unchanged0.3% layer bound (0.372-0.379%): compound
-A0/A4/R0/P0/P2 retain the baseline QKV there, explicitly labelled `c6 Q=B`.
-`local_exclusions.json` preserves this rejection. Standalone QKV tests still
-cover every kernel. Fixed-route timing is a workload-controlled diagnostic;
-live-route candidate agreement remains required for promotion.
-Drop-in `dev/pdl_prefetch/projection.py`SHA5769cab895f35afd…;
-`manifest.json`, `native_validation.json`, `compile_sm90a.json`, `validation.json`
-and `sent.json` carry full source hashes. Local timings are not H200 claims.
+| M | Role | Weight bytes | best7 us | Useful TB/s | 3.6TB/s us | Gap us | Gap x62 layers us |
+|---:|---|---:|---:|---:|---:|---:|---:|
+| 1 | qkv_gate | 37,748,736 | 21.10 | 1.789 | 10.49 | 10.61 | 658.1 |
+| 1 | o | 16,777,216 | 12.07 | 1.390 | 4.66 | 7.41 | 459.4 |
+| 1 | pool_router | 75,497,472 | 30.80 | 2.451 | 20.97 | 9.83 | 609.4 |
+| 1 | unpooler_slice | 8,388,608 | 8.92 | 0.940 | 2.33 | 6.59 | 408.6 |
+| 8 | qkv_gate | 37,748,736 | 21.23 | 1.778 | 10.49 | 10.74 | 666.1 |
+| 8 | o | 16,777,216 | 12.08 | 1.389 | 4.66 | 7.42 | 460.0 |
+| 8 | pool_router | 75,497,472 | 31.27 | 2.414 | 20.97 | 10.30 | 638.5 |
+| 8 | unpooler_slice | 8,388,608 | 8.88 | 0.945 | 2.33 | 6.55 | 406.1 |
+| 16 | qkv_gate | 37,748,736 | 19.56 | 1.930 | 10.49 | 9.07 | 562.6 |
+| 16 | o | 16,777,216 | 12.05 | 1.392 | 4.66 | 7.39 | 458.2 |
+| 16 | pool_router | 75,497,472 | 31.49 | 2.398 | 20.97 | 10.52 | 652.1 |
+| 16 | unpooler | 67,108,864 | 28.30 | 2.371 | 18.64 | 9.66 | 598.8 |
+| 32 | qkv_gate | 37,748,736 | 21.57 | 1.750 | 10.49 | 11.08 | 687.2 |
+| 32 | o | 16,777,216 | 12.36 | 1.357 | 4.66 | 7.70 | 477.4 |
+| 32 | pool_router | 75,497,472 | 33.69 | 2.241 | 20.97 | 12.72 | 788.5 |
+| 32 | unpooler | 67,108,864 | 28.24 | 2.376 | 18.64 | 9.60 | 595.1 |
+
+Largest cell: M32 pool+router,12.72us/layer (~789us per62-layer load).
+QKV leads at M1/M8; pool+router leads at M16/M32 and in the sum over these
+four M values. That sum is diagnostic, not the six-load score geomean.
+Target the pool+router mainloop first; retain all16 role/M pairs in the lab.
+`dev/bulk_ring/bandwidth.json` binds the calculation to95ab383d.
+New experiment: lossless tile packing, an equal-work fixed grid,4/8-stage
+bulk-copy rings under mbarriers, explicit split1/2/4/8, and partial reduction
+inside the existing consumer. O/config6 rides in the same real-weight proj
+batch. No judge send before2026-10-25 09:00KST; local held snapshot uses09:02
+to leave the MoE lane's09:01 proj-host lab ahead of it.
+
+Hardware memory compression, P10 (**4233660b1bff4d18**, send
+**3110dc39be425573**): the H200 reports support1, cuMemCreate succeeds, and the
+queried allocation property grants type1. Normal and generic allocations use
+identical VMM mappings and identical bytes. Cold256MiB streaming AB/BA controls:
+
+| Data (256MiB) | Normal us | Compressed us | Effective BW gain |
+|---|---:|---:|---:|
+| zero | 74.44 | 36.74 | 2.0265x |
+| pattern | 73.98 | 43.51 | 1.7008x |
+| random | 74.33 | 74.55 | 0.9971x |
+| raw_nvfp4 | 74.42 | 74.50 | 0.9991x |
+| bf16 | 74.47 | 74.31 | 1.0024x |
+| recoded_nvfp4 | 74.45 | 74.63 | 0.9977x |
+
+Zero and pattern gains prove that this run enabled compression. Real raw and
+recoded NVFP4 and BF16 weights gain nothing under all three readers. These are
+bandwidth ratios, not physical-storage ratios: NVIDIA's ILC does not reduce the
+reserved allocation footprint. Primary sources: [Hopper inline compression](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html#inline-compression)
+and [allocation compression property](https://docs.nvidia.com/cuda/cuda-driver-api/cuda_driver_api/structCUmemAllocationProp__v1.html).
+
+| Exact incumbent kernel | Normal us | Compressed us | C:N time ratio | Raw output bit gate |
+|---|---:|---:|---:|---|
+| MOE NT1recoded M=1 | 40.77 | 40.86 | 1.0025 | fails even AA (10/24 AA, 15/36 AB) |
+| MOE NT1recoded M=8 | 89.10 | 89.16 | 1.0009 | fails even AA (16/24 AA, 22/36 AB) |
+| DENSE qkv_gate M=1 choice=cublas | 21.25 | 21.24 | 0.9996 | exact |
+| DENSE o M=1 choice=cublas | 12.15 | 12.17 | 1.0024 | exact |
+
+The incumbent's unordered FP32 norm atomics make even M1/M8 A:A nondeterministic
+on the H200. This is retained as a failed raw bit gate, not called bit-exact.
+Every mapped weight byte, all valid MoE W2 values, the separate untimed
+ordered-norm/combine control, and the dense outputs are bit-exact across
+allocations. The ordered control agrees with the incumbent within0.1% L2; it
+never replaces the timed incumbent. With no useful real-weight or kernel gain,
+**no compression drop-in was emitted or enabled**. This closes this hardware
+placement recipe on these banks, not lossless software coding generally.
+`problems/muse_bf16_proj/dev/memory_compression/h200_result.json` preserves the
+support statuses, all ratios, bit failures and raw receipt. Local admission was
+6 controls/4 kernels,5 host tests/6 static checks;3 native sm90a transports and2
+ordered-control specializations compile without native spills. The exact
+queued source is bound in `sent.json`.
+
+Dense fixed-cost experiment (**95ab383de42a4fae**, send **9d482af3171cb1e3**)
+landed.15 of16 unsplit register-MMA role finalists lose against frozen
+best7_scaleSHA42f543a0. Only M1 O/config6 is a small candidate: producer alone
+12.07->12.77us loses, but producer+consumer15.39->15.04us (ratio0.9783;
+three seeds0.968/0.984/0.983) and the O->boundary->pool/router segment
+41.95->41.29us (0.9846). Whole-layer H200 score gain is unmeasured and this small
+candidate should ride alongside a larger integration change, not spend its own
+scarce decode run. M8/16/32 best OP segments lose5.37%/20.97%/70.91%.
+
+M1 finalist decomposition (instrumented diagnostics; performance pairs exclude
+stamps/barriers; clock64 differences are within a CTA):
+
+| Role | Producer B:N us | With consumer B:N us | First issue / PDL wait / main / local reduction cycles | Last wave / p95 tail us |
+|---|---:|---:|---|---:|
+| qkv_gate cfg7 | 21.10:24.60 | 21.87:26.04 | 101/10/23869/2060 | 11.01/1.02 |
+| o cfg6 | 12.07:12.77 | 15.39:15.04 | 90/10/1155/848 | 7.68/0.26 |
+| pool_router cfg6 | 30.80:33.81 | 34.99:36.15 | 99/10/39068/339 | 26.62/0.51 |
+| unpooler_slice cfg7 | 8.92:12.62 | 12.59:14.72 | 92/10/7794/496 | 7.17/0.26 |
+
+Across all M, observed native entry-to-first-issue47-101cycles, PDL wait10-11,
+and GPU-marker-to-first-issue0.51-0.77us leave little observed prologue/wait to
+remove. cuBLAS interiors remain opaque; their rows are bracketed, not internally
+stamped. At M1 pool the actual consumer S>1->S1 pair saves9.40->6.91us, but the
+new producer costs30.80->33.81us, so the combination still loses3.4%. M16/M32
+mainloop costs are much worse. Per-CTA cycle counts reflect changed work
+partitioning, not whole-grid instruction-rate ratios. The evidence revises P7's
+method: removing splits/fewer CTAs alone is insufficient; recover efficient
+mainloop transport and weight reuse. Full16-role phase rows and the four
+segments are in `dev/gemv_fixed/h200_result.json`.
+
+The measured **M1 O/config6 BF16 cell** is ready for decode-lane integration:
+`problems/muse_bf16_proj/dev/gemv_fixed/projection.py`, SHA-256
+**c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe**.
+`handoff.json` specifies the existing stream-cell ABI and measured full key.
+`validate_winner.py` ran the actual kernel_fn with live routes on6 fresh full/
+sliding cases: exact IDs, at most0.1833% hidden A/B drift, all official reference
+gates pass,12 forced Hopper attention calls. Sliding latency and whole-layer
+H200 performance remain unmeasured. No scored dispatch was changed.
+
+Prior PDL lab **7426e17cd3bc4659** landed: only M1 sliding measured,115.78->115.58us
+(0.9986; per-role0.9910-1.0094, noise). The other7 layer cases and all standalone
+rows remain unmeasured after the unchanged0.3% synthetic whole-layer gate failed
+at0.305-0.333%. The receipt, not the earlier local admission, bounds this result.
+No PDL cell was promoted; oracle09d19813 and chain87dc944b motivate the fixed-cost
+pivot above. Source and rejection evidence remain in `dev/pdl_prefetch/`.
 
 Current priority is **put projection winners inside the decode layer**. The fitted
 overall model in “Boards” takes max(decode, component composite); standalone projection
@@ -1020,68 +1017,228 @@ attention lane moved to FlashInfer's page-1 paths (10-24 23:40).
 FlashInfer 0.7.0.post1 at the scored full-context shapes (ctx 80000, page 1, FP8 KV): tensor-core decode (q1) takes 45.5 / 195.2 / 371.9 us at B1/16/32 (1.68-1.76 TB/s), the same as FA3 (205.6/386.1 at B16/32) and ~1.8x our attn_main (108.0/199.7). The page-1 prefill path (fa2) at q8 takes 60.4 / 469.1 / 912.3 us, ~2.3x FA3's q8 (208/390). Errors 0.0023-0.0027; graphs capture; plan 0.2-0.3 ms outside the call (11 ms on first use). Not measured: every sliding case (FlashInfer asserted on the window setup), the fa3 backend (JIT build failed in the image), XQA (rejects page size 1 by contract) and the lab's own FA3 control (dtype bug). The run failed because the payload pushed prepare to 304 s (cap 300). FlashInfer's full-context paths are closed for the decode layer; its fa3 backend and sliding paths remain untested.
 
 
-## Single-launch sliding attention measurement candidate (2026-10-25)
+## Single-launch sliding receipt and decode-path audit (2026-10-25)
 
 Candidate `problems/muse_attention_decode/cand_sliding_singlelaunch.py`, SHA-256
-`68c50c706423f6d6cfe52cc4cd487840e9794a9c62664f7633d59bfd5cbdcb75`, was sent
-directly to the attention board with key `68c50c706423f6d6` (priority 2), accepted job `32f2f07acfe144c2`.
-The candidate changes all six sliding shapes; full q1 retains the fused
-`attn_main` control and full q8 retains stock FA3 on Hopper. It is a measurement
-candidate, with no H200 promotion yet. FlashInfer receipt `8ffbac2d68074a0b`
-(from send key `c96e0f89bcdcdf60`) became available in the shared files: FA2
-verify full is 469/912 us at B16/B32 and supplies no winner over FA3. Its
-sliding paths asserted and its FA3 backend failed to build; those remain
-unmeasured. Keep the candidate's FA3 full-verify choices.
+`68c50c706423f6d6cfe52cc4cd487840e9794a9c62664f7633d59bfd5cbdcb75`.
+Attention receipt `32f2f07acfe144c2` passes 16/16 tests and scores 1.213658x,
+below `d98ae45d7204438d`'s 1.402664x. Only verify1 sliding supplies a kernel
+win; keep the other sliding settings. Whole-call medians and kernel-profile
+GPU totals are distinct measurements (us):
 
-The new CUDA path performs Q/K RMSNorm, GPT-J RoPE at the task's theta,
-post-quantization FP8 KV store/attention, output RMSNorm and sigmoid gate in
-one launch. A two-stage pipeline stages 256 FP8 KV rows; each warp's MMA
-computes eight query-token rows at one query head for q8. For q1 B>1 the
-same eight rows are the whole GQA group, removing eight redundant KV streams.
-B1 uses eight splits per query head; q1 B16/B32 uses four/two splits per KV
-head; q8 B16/B32 uses one CTA per query head. Four warp partials merge in the
-CTA. The last split CTA merges global partials and applies norm/gate before
-returning; counters return to zero and no partial is reused by another call.
-Every CTA builds quantized new KV locally and reads global history only below
-`seq_lens`, eliminating cross-CTA cache-store races for q8.
+| B | q | layer | d98 call | 32f call | d98 profile | 32f profile | gate |
+|---|---|---|---:|---:|---:|---:|---|
+| 1 | 1 | sliding | 10.26 | 12.61 | 9.0 | 9.8 | P |
+| 1 | 1 | full | 19.30 | 18.98 | 15.5 | 15.2 | P |
+| 16 | 1 | sliding | 12.76 | 21.61 | 11.5 | 13.9 | P |
+| 16 | 1 | full | 105.69 | 104.69 | 103.6 | 104.3 | P |
+| 32 | 1 | sliding | 16.91 | 30.66 | 15.1 | 20.3 | P |
+| 32 | 1 | full | 197.14 | 196.48 | 193.3 | 198.2 | P |
+| 1 | 8 | sliding | 19.26 | 18.18 | 16.2 | 12.1 | P |
+| 1 | 8 | full | 37.00 | 36.47 | 32.1 | 32.4 | P |
+| 16 | 8 | sliding | 30.30 | 49.69 | 23.9 | 36.1 | P |
+| 16 | 8 | full | 205.98 | 204.35 | 209.6 | 204.3 | P |
+| 32 | 8 | sliding | 36.03 | 95.18 | 30.8 | 80.4 | P |
+| 32 | 8 | full | 391.03 | 388.87 | 390.4 | 395.8 | P |
 
-The layer adapter `problems/muse_decode_layer/dev/sliding_attention.py`, SHA-256
-`68fb992bd795b29a2257b88fc8c08363749a4446eaf1e1241e1961c1ae8264f6`, accepts
-BF16 QKV or the layer's `(partials, splits)` tuple. FP32 projection partials
-are summed and rounded to BF16 inside the kernel, avoiding an extra reduction
-or cast launch. `attention_dropin.with_sliding_attention(source)` adds the
-`('singlelaunch_sliding', None)` choice to an existing v9-derived portfolio;
-it does not select it. Keep best7 settings until the H200 row wins.
+The unchanged full-layer choices act as controls; their small cross-run
+changes do not supply new kernel wins. Verify1 sliding is 12.1 vs 16.2 us
+in profiles, but 18.18 vs 19.26 us in the scored call. Do not turn the 4.1 us
+profile gap into an established layer saving. The old control's kernel is
+`attn_main_twog<4>`, not FA3.
 
-Verified locally on sm120: 16/16 official tests, 12/12 fresh-input graph
-checks, undefined-name and call-signature checks, and sm90a compilation of
-both CUDA sources. The adapter passes all six scored sliding shapes and
-12 additional gates for 1/4 FP32 projection partials after changing captured
-input values. Its worst-row error is about 0.0012. CUDA profiling confirms
-one kernel at B1 q1/q8 for BF16 and split-projection inputs. The actual full
-q8 norm/store/epilogue Hopper glue passes graph replay with a tensor stand-in
-for FA3, including KV scale 1/64; the FA3 binary itself remains H200-only.
+The current decode candidate `cand_r3_best7_scale_recoded_m256.py` fixes
+`BEST7_SETTINGS[(1,8,2048)]` to `('layer', None)`. `_best7_attention` calls
+`_attn_port_variant`, whose Hopper `layer` branch executes `qk_prep` then
+`_attention_fa3_public`. That is a different path from the attention board's
+16.2 us `attn_main_twog<4>` control. No direct per-shape decode promotion is
+justified by this receipt, and no settings were enabled.
 
-Local screen timings (us, **not H200 evidence**, shared sm120):
+Ready **verify1-only comparison option**:
+`problems/muse_decode_layer/dev/verify1_sliding_pick.py`, SHA-256
+`46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e`.
+`attention_verify1_sliding(qkv,data)` rejects shapes other than B1/q8/window2048,
+accepts BF16 QKV or FP32 split-projection tuples, and returns `[8,1024]`.
+It embeds the exact `WINDOW_CUDA` measured in 32f2f07a. Three fresh-value
+adapter graph gates (BF16, one/four FP32 partials) pass the task's post-store
+reference, worst row about 0.0012. Handed to the decode lane as a disabled
+comparison cell against its actual public FA3 path; whole-layer/PDL timing
+is still required.
 
-| B | q1 sliding | q8 sliding | local gate | H200 |
-|---|---:|---:|---|---|
-| 1 | 9.2 | 13.3 | P | pending |
-| 16 | 16.4 | 81.9 | P | pending |
-| 32 | 26.6 | 122.9 | P | pending |
+The pending full-q8 candidate `be19da94dc534323` had no receipt at this
+turn's single initial check. No further judge query was made.
 
-Early scalar and broad Triton gather trials were correct but lost locally;
-serial gathers / excessive per-head work were the limiter. Staging plus MMA
-reduced B1 from roughly 48–70 us to 9–13 us. A short-context test also found
-`-inf - -inf` when every warp in a split is empty; the merger now keeps its
-partial exactly zero. Every corrected config was re-gated before sending.
-The larger q8 shapes remain slow locally; H200 must establish their viability,
-and they must not enter decode settings solely because they fuse launches.
 
-At the requested B1 target of 6 us, decode1 sliding attention would save
-`46*(14.8-6) = 404.8 us` per 62-layer load; verify1 would save
-`46*(19.4-6) = 616.4 us`. These are projections, not measured layer gains.
-Using best6 load times, decode1 alone would contribute about +1.04% overall;
-verify1 alone about +1.08%. Promotion requires a passing H200 gate and a
-same-shape incumbent win, then a full-layer check including projection
-partials, graph capture and the actual best7 projection scheduling.
+## Full-q8 FlashDecoding measurement candidate (2026-10-25)
+
+`problems/muse_attention_decode/cand_verify8_flashdecode.py`, SHA-256
+`2182717863236b53599288f2c383e6191ebb2db529bdd7269c67e2cb0ba1ff9d`, is
+accepted on the attention board as job `be19da94dc534323`, send key
+`2182717863236b53` (priority 2). The board is only a measurement vehicle for
+the decode layer. This candidate changes **full q8 only**; q1 keeps the
+measured attn_main gather, q8 sliding keeps attn_main at B1 and FA3 at B16/B32.
+The single-launch sliding receipt `32f2f07acfe144c2` supplies a verify1-only
+kernel option; its actual decode control differs and whole-layer comparison
+is pending. No settings were promoted and no commit was made.
+
+Structural changes from the parked FP8PV implementation:
+
+- Four warps each own 16 query-token/GQA rows on the MMA M side. QK uses
+  FP8 m16n8k32 with raw FP8 K and allowed normalized FP8 queries. A warp's
+  online max/sum and output accumulators remain FP32. Packed FP16x2 exp2
+  computes probabilities before their allowed FP8 conversion.
+- The 3/4-stage cp.async ring gathers scattered K/V pages. All 64 query rows
+  reuse each staged tile. For B16/B32 a handoff covers 128 keys, processed as
+  two warp-local 64-key math subtiles with no intermediate synchronization.
+  Softmax and PV require no block-wide barriers. The stage handoff has two
+  barriers: raw KV readiness, then the shared V-transpose readiness.
+- QK accumulators pack into P's FP8 MMA fragments in registers. V is
+  transposed once per stage for the CTA using packed 4x4 byte panels, then
+  all query warps load contiguous shared-memory B words. There are no scalar
+  per-byte V gathers and no per-query FP8-to-BF16 dequantization.
+- Producer CTAs write O/max/sum partials and return. A separate parallel
+  combine has 16 CTAs per request/KV head, each handling four query rows,
+  and includes output RMSNorm plus sigmoid gate. No last-CTA election or
+  counter state. The final split alone stores new FP8 KV and attends its
+  local quantized new rows; all historical reads stop below seq_lens.
+
+The exact 80K, 16Q/2KV, D64 accounting in `dev/flashdecode/floor.json`, using
+`sim.bound`, is 327.68/655.36 MB KV and 41.95/83.89 GFLOP at B16/B32.
+Including compulsory page indices and input/output bytes gives nominal
+69.5/139.0 us at 4.8 TB/s; both matrix products at allowed FP8 peak give
+21.2/42.4 us. TASK's 63.4/126.8 us floors use the shortest allowed agentic
+length (92.5% of 80K), rather than nominal 80K. The compute work is below the
+memory floor at peak, but scalar/transpose issue efficiency still matters.
+
+Frozen H200 defaults (splits, stages, stage keys): B1 `(128,3,64)`, B16
+`(17,3,128)`, B32 `(17,3,128)`. Producer CTA counts are 256/544/1088;
+combine counts are 32/512/1024. At nominal 80K a B16/B32 producer covers at
+most 4,736 keys, about 606 KB K+V. B16/B32 each carry 48 KiB raw staged KV,
+8 KiB transposed V and 8 KiB Q/new KV per CTA. Several independent CTA waves
+and the ring provide bytes in flight; the receipt must determine bandwidth.
+
+Local development isolated the old PV layout cost: direct register V
+transposes repeated in four query warps were replaced with a CTA-shared
+transpose. The initial wide score tile also reached 251-255 registers/thread
+on sm120. Narrow math subtiles and shared V preparation reduce issue work;
+local final B1/B16/B32 full q8 is 40.9/358.4/695.3 us. **These are sm120
+measurements, not H200 performance evidence**, and do not establish a win
+against FA3's H200 208/390 us. Local tuning is retained only as loose ranking.
+
+Validation of the exact sent SHA: 16/16 task tests, 12/12 fresh-input scored
+graphs, undefined names and call signatures, both CUDA sources compiled for
+sm90a. Every stage/tile choice passes four fresh-input graph fixtures: short
+contexts with empty splits, scaled KV, coherent values and edge keys,
+page sizes 1/64 and TP8/DP heads. Full-q8 global error is about 0.035 on
+coherent data and 0.079-0.089 on harder cases, tracking the allowed FP8 query
+error. Tests do not replace the post-store reference or relax its bound.
+Two forced FA3 sliding glue graphs also pass with a portable attention
+operation because the FA3 binary cannot run on sm120.
+
+Ready layer adapter: `problems/muse_decode_layer/dev/verify8_flashdecode.py`,
+SHA-256 `613e2e564d076fc83215202f41b2e8b3ef6d7a4e430e90844288632d2f31b161`.
+`attention_verify8(qkv, data, setting=None)` accepts BF16 QKV or the layer's
+FP32 `(partials, splits)` tuple and returns `[tokens,1024]`. Both producer
+and epilogue reduce relevant projection partials and round to BF16 in-kernel.
+All nine B1/16/32 x BF16/one/four-partial ABI graphs pass after changing
+captured values; profiling confirms exactly producer+combine, with no cast
+or reduction launch. `attention_dropin.with_verify8_flashdecode(source)`
+adds `('flashdecode_verify8', None)` (or an explicit three-value setting) to
+the layer portfolio. Combined injection with the sliding adapter passes
+undefined-name/signature checks and retains the exact screened CUDA source.
+
+The saved H200 receipt `be19da94dc534323` is now available and passes all
+16 tests, but the candidate scores only 1.1204x. It does not supply a promoted
+full-q8 cell. The per-shape comparison below separates scored call time from
+kernel profile time; FA3 remains the full-q8 decode-layer choice.
+
+
+
+
+## P5 conditional rescale and deferred-denominator switches (2026-10-25)
+
+One attention measurement candidate, `cand_p5_rescale_deferred.py`, SHA-256
+`acd77ec8d7a34384e9c7f47be209d0c4d7d25b982f19e3a1b1f3d2917a35c855`, is
+accepted as job `9828bfa041a143a9`, send key `acd77ec8d7a34384` (priority 2).
+The detached log names that job and has no rejection. Attention has no prepare;
+this send measures one chosen path at each shape, with no untimed tuner or
+extra diagnostic kernels in the call. q1 enables conditional rescale, full q8
+uses the next split producer with deferred denominator, B16/B32 sliding q8
+measures deferred-denominator xqa_group, B1 sliding q8 retains the measured
+window kernel. The group sliding cells are experiments, not decode selections.
+
+`Q1_CONDITIONAL` selects compiled modes of attn_main. After the query-head
+maximum reductions, a warp vote detects whether any of the eight rows changed
+maximum. O/l rescale is skipped only when none changed, so the branch is
+warp-uniform. All six local normal/coherent/edge x sliding/full fixtures are
+bitwise identical to the unchanged output **and cache** on fresh-value graphs.
+Whole-context B16/B32 and B1 sliding also match bitwise on 80K inputs.
+
+`Q8_DEFERRED_DENOM` selects both q8 modes. In `dev/xqa_group.cu`, each owner
+keeps a local l with the same shared max/alpha, postponing the eight-lane and
+four-warp denominator sum until after the final tile. It removes the per-tile
+sum's three shuffles per query and two consumer barriers; maxima and attention
+coverage are unchanged. The source file keeps `DEFER_DENOM=0` as its incumbent
+switch; this candidate embeds the on mode. The split FP8 family likewise
+postpones its four-lane l reduction until publishing partials. Deferred paths
+pass both positions of the official post-store FP32 gate; on/off output agrees
+within 2e-5, with some BF16 one-ULP changes from FP32 reduction ordering.
+
+Exact sent SHA passes 16/16 tests, 12/12 scored fresh-input graph checks, and
+six static checks: undefined names, own-function call signatures, sm90a builds
+of the four CUDA sources including native WGMMA. Additional on/off graph gates
+are 12 q1 + 12 group-q8 + 6 split-q8, plus three verify1-only adapter gates.
+All 33 pass. The candidate's switch caches and q1 occupancy cache include the
+mode, so a graph built for one switch does not alias another extension.
+
+Local cold-graph AB/BA on identical 80K inputs (**sm120, not H200**):
+
+| path | B | off us | on us | on/off | output on/off error |
+|---|---:|---:|---:|---:|---:|
+| q1 sliding | 1 | 10.24 | 10.24 | 1.000 | 0 |
+| q1 full | 16 | 222.21 | 222.19 | 1.000 | 0 |
+| q1 full | 32 | 437.25 | 439.30 | 1.005 | 0 |
+| group q8 sliding | 16 | 74.75 | 70.66 | 0.945 | 0.000005 |
+| group q8 sliding | 32 | 97.28 | 91.12 | 0.937 | 0 |
+| split q8 full | 16 | 346.11 | 345.10 | 0.997 | 0 |
+| split q8 full | 32 | 695.30 | 691.20 | 0.994 | 0.000005 |
+
+The group reduction shows a local 5-6% change; q1 and split-q8 differences
+are noise-sized locally. H200 decides each switch. No whole-layer win is
+claimed and no decode row was enabled. The previous `be19da94dc534323`
+receipt was absent at the single initial judge read, then its saved profile
+appeared locally. It was compared offline without a second judge query.
+`dev/p5_switches/compare_profiles.py` compares saved profiles against
+d98ae45d and separates producer and combine times; the complete 12-shape
+comparison is `dev/p5_switches/flashdecode_result.json`.
+
+### Full-q8 producer is the next target: be19da94
+
+All 12 scored shapes pass. Full-q8 timing from the saved receipts:
+
+| B | d98ae45d call us | be19da94 call us | producer us | combine us | profile total us |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 37.00 | 49.53 | 26.8 | 10.3 | 37.2 |
+| 16 | 205.98 | 431.15 | 427.8 | 6.3 | 434.1 |
+| 32 | 391.03 | 751.42 | 713.7 | 8.5 | 722.2 |
+
+The parallel combine is now 1.4%/1.2% of the B16/B32 profile; removing it
+entirely would still lose to FA3. This evidence changes the next step from
+combine work to producer phase profiling. Nominal K+V bytes / producer time
+are 0.77/0.92 TB/s (327.68/655.36 MB at B16/B32); these are logical-byte
+rates, not measured DRAM counters. Agentic lengths reduce actual logical
+bytes, so they do not establish HBM saturation. q1 control call times in
+this same receipt are 105.10/195.44 us, with unchanged q1 kernels.
+
+The selected next experiment is a producer phase split: cp.async wait and
+stage handoff; shared V transpose; QK; online max/exp/rescale plus P packing;
+PV. Keep the existing parallel combine. Compare 64/128-key stages, 3/4 ring
+stages and split counts with register/spill and resident-CTA data. Code
+inspection finds two CTA handoffs per 128-key stage and a max/exp/O-rescale
+plus P layout exchange per 64-key math subtile. The producer has 544/1088
+CTAs at B16/B32 and 64 KiB smem/CTA in the measured configuration; CTA count
+alone cannot identify occupancy or the binding phase. The kernel profile
+establishes producer dominance, **not** which inner phase binds. In
+particular, deferred denominator alone cannot explain a needed ~2x gain;
+job9828bfa041a143a9 measures that switch before any larger structural claim.
+No full-q8 custom path is promoted; retain FA3 and leave the adapter disabled.

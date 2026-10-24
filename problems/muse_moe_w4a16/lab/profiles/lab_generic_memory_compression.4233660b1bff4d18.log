@@ -1,0 +1,32 @@
+MOE_PHASE M=1 ctas=264 route=5392/5612/5774 p1=20205/24777/30865 wait=3905/11683/17197 barrier=1174/4833/9475 p2=22414/26609/31626 norm=1241/1863/3185 final=101/144/1937 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0794ms v12=0.0766ms v16=0.0961ms wide=0.4092ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5557/5698/5854 p1=106218/130408/147609 wait=811/6430/44665 barrier=1195/18938/57600 p2=58012/65979/103714 norm=8112/10180/13144 final=97/155/2403 p1_tiles=31/31/32 p2_tiles=15/16/16 atomics=120/128/128
+MOE_TIME M=16 v9=0.1744ms v12=0.1881ms v16=0.1926ms wide=0.2884ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5672/6011/6326 p1=141826/177285/196977 wait=818/5429/58008 barrier=1286/20771/73315 p2=79131/85485/137672 norm=11500/14225/18353 final=103/166/2790 p1_tiles=42/43/43 p2_tiles=21/21/22 atomics=168/168/176
+MOE_TIME M=32 v9=0.2157ms v12=0.2367ms v16=0.2430ms wide=0.3330ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5484/5770/6014 p1=79312/98495/112082 wait=708/7089/33660 barrier=1155/16099/46812 p2=45807/51592/80733 norm=6157/7654/10886 final=97/152/2482 p1_tiles=23/23/24 p2_tiles=11/12/12 atomics=88/96/96
+MOE_TIME M=8 v9=0.1381ms v12=0.1490ms v16=0.1672ms wide=0.2161ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7446/7790/8053 p1=257363/319410/355532 wait=795/6636/100619 barrier=1202/35932/129310 p2=140948/149507/242512 norm=21456/26532/32093 final=126/2066/4456 p1_tiles=77/78/78 p2_tiles=38/39/39 atomics=304/312/312
+MOE_TIME M=128 v9=0.3455ms v12=0.4046ms v16=0.3811ms wide=0.4692ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10367/10753/11032 p1=392984/486647/543081 wait=1048/8337/144336 barrier=1249/62061/195251 p2=213445/225019/360015 norm=32843/41105/48434 final=1074/3950/7614 p1_tiles=118/118/119 p2_tiles=59/59/60 atomics=472/472/480
+MOE_TIME M=256 v9=0.5005ms v12=0.5940ms v16=0.5659ms wide=0.5108ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.0793600007891655, 'v12': 0.07660800218582153, 'v16': 0.09609600156545639, 'wide': 0.4092479944229126}, 16: {'v9': 0.17440000176429749, 'v12': 0.18812799453735352, 'v16': 0.19260799884796143, 'wide': 0.28838399052619934}, 32: {'v9': 0.21571199595928192, 'v12': 0.236735999584198, 'v16': 0.24297599494457245, 'wide': 0.3330239951610565}, 8: {'v9': 0.13808000087738037, 'v12': 0.14899200201034546, 'v16': 0.16723200678825378, 'wide': 0.21606400609016418}, 128: {'v9': 0.3455039858818054, 'v12': 0.40460801124572754, 'v16': 0.381087988615036, 'wide': 0.469184011220932}, 256: {'v9': 0.5005120038986206, 'v12': 0.5940160155296326, 'v16': 0.5659199953079224, 'wide': 0.5108479857444763}}
+LAB_BEGIN generic_memory_compression bf0d4b38e1bc2826
+META generic driver compression vs normal VMM; bytes identical; 256MiB cold flush outside events; raw graph us; BW logical GB/s not physical storage ratio; best7_scale=42f543a0e25f9805
+META seed725105; controls256MiB zero/FP32one pattern/random/raw real NVFP4 code+scale/BF16 N(0,.02)/recoded bank; NT1recoded M1/8 and dense Q/O M1; 24AA+36AB/BA same3 inputs/routes; incumbent norm atomics can differ even AA: report raw bit failures; separate untimed W2/ordered-norm bit-exact control; no host mutation
+SUPPORT {'attribute_status': 0, 'attribute': 1, 'requested': 1, 'granularity_status': 0, 'create_status': 0, 'probe_bytes': 2097152, 'granularity': 2097152, 'properties_status': 0, 'granted': 1}
+CONTROL_ALLOC N/Cgrant=0/1 gran=2097152/2097152
+BW zero N/C=74.44/36.74us GB/s=3606/7306 gain=2.0265 aa=0.9994 ct/d=1056/16 bit=1 all=2.040,1.888,2.026
+BW pattern N/C=73.98/43.51us GB/s=3628/6170 gain=1.7008 aa=0.9990 ct/d=1056/16 bit=1 all=1.471,1.666,1.701
+BW random N/C=74.33/74.55us GB/s=3612/3601 gain=0.9971 aa=0.9945 ct/d=1056/16 bit=1 all=0.996,0.999,0.997
+BW raw_nvfp4 N/C=74.42/74.50us GB/s=3607/3603 gain=0.9991 aa=1.0027 ct/d=1056/16 bit=1 all=0.998,1.009,0.999
+BW bf16 N/C=74.47/74.31us GB/s=3605/3613 gain=1.0024 aa=0.9948 ct/d=1056/16 bit=1 all=1.003,0.997,1.002
+BW recoded_nvfp4 N/C=74.45/74.63us GB/s=3606/3597 gain=0.9977 aa=1.0042 ct/d=1056/16 bit=1 all=1.001,1.002,0.998
+BANK recoded weights=905978368 mapped=908066816 N/Cgrant=0/1; all w13p/w2p/global scales/postnorm byte-identical; counters normal
+MOE NT1recoded M=1 N/C=40.77/40.86us r=1.0025 aa=1.0018 bit=0 aa_bad=10/24 ab_bad=15/36 s=0.999,1.009,0.999 Ybit=1 ordered_bit=1 native_rel=4.18e-09
+MOE NT1recoded M=8 N/C=89.10/89.16us r=1.0009 aa=1.0018 bit=0 aa_bad=16/24 ab_bad=22/36 s=1.003,0.994,1.006 Ybit=1 ordered_bit=1 native_rel=3.21e-05
+DENSE qkv_gate M=1 choice=cublas N/C=21.25/21.24us r=0.9996 grant=0/1 aa=1.0023 bit=1 aa_bad=0/24 ab_bad=0/36 s=0.999,1.004,0.995
+DENSE o M=1 choice=cublas N/C=12.15/12.17us r=1.0024 grant=0/1 aa=1.0132 bit=1 aa_bad=0/24 ab_bad=0/36 s=0.991,0.985,1.032
+RESULT zero_BW_gain=2.0265 kernel_bit_exact=0; zero null is inconclusive on activation, not evidence real weights are incompressible
+END controls=6 kernels=4 elapsed=31.5 left=125.5
+LAB_END lab_s=31.6 prepare_s=159.6

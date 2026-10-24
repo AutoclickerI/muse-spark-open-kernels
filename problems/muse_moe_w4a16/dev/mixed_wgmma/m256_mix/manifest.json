@@ -1,0 +1,23 @@
+{
+  "payload": "prof/lab/moe_m256_mix.py",
+  "sha256": "3b289137416bdbf0f0c2db7e91156aec8e32ec01bb91bb299e70df7dd2b193cb",
+  "sources": {
+    "c1": "d2b741ca3aaaea833aa9b3fa313fdb8a3dbeac017235d3588fd0aebfee966650",
+    "nt": "bdda8494ec54b30df4df0c8b232883ad8873a58efe28ac1630d220797414c2f7",
+    "opt": "493461da82ca929277f549ef089c0d1970719eea02b44b6c4b552ee6a35f8833",
+    "meta": "f449b0f2680aec2357c99ea81a002851eca21916c933ee159b39f4b5378d65bb"
+  },
+  "baseline": "9e8a6a15 recoded C1g2112,365.2us",
+  "thresholds": [
+    8,
+    16,
+    32
+  ],
+  "heavy_tiles": [
+    32,
+    64
+  ],
+  "W13_decoder": "pending8483c0c6: baseline0,vector1,quad2 locally screened",
+  "not_before": "2026-10-25T09:01:00+09:00",
+  "status": "not sent; awaits W13 receipt and send-time gate"
+}

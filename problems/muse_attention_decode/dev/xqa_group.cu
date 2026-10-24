@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include <stdexcept>
 #define DI __device__ __forceinline__
+#ifndef DEFER_DENOM
+#define DEFER_DENOM 0
+#endif
 #ifndef USE_WGMMA
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == 900
 #define USE_WGMMA 1
@@ -101,7 +104,7 @@ DI void pv(float (&o)[8][4],const uint8_t* vh,const uint8_t* ph){
  done();protect(o);
 }
 struct State{float o[8][4],m[8][2],l[8][2];};
-template<bool ROPE>
+template<bool ROPE,bool DEFER=(DEFER_DENOM!=0)>
 DI void tile(State& st,const uint8_t* k,const uint8_t* v,const uint8_t* q,uint8_t* vh,uint8_t* ph,float* red,int kp,int hi,int seq,int window,float scale){
  int tid=threadIdx.x,w=tid>>5,lane=tid&31,g=lane>>2,t=lane&3;
  for(int i=tid;i<2048;i+=128){int row=i/32,col=(i%32)*2;uint16_t f=*reinterpret_cast<const uint16_t*>(v+off(row,col));*reinterpret_cast<uint32_t*>(vh+hoff(row,col))=halfpair(f);}
@@ -129,23 +132,31 @@ DI void tile(State& st,const uint8_t* k,const uint8_t* v,const uint8_t* q,uint8_
   st.m[n][e]=nm;st.l[n][e]*=alpha;st.o[n][e]*=alpha;st.o[n][e+2]*=alpha;
   float a=s[n][e]==-INFINITY?0.f:ex(s[n][e]-nm),b=s[n][e+2]==-INFINITY?0.f:ex(s[n][e+2]-nm);
   s[n][e]=a;s[n][e+2]=b;
-  float add=a+b;add+=__shfl_xor_sync(0xffffffff,add,4);add+=__shfl_xor_sync(0xffffffff,add,8);add+=__shfl_xor_sync(0xffffffff,add,16);local[n][e]=add;
+  float add=a+b;
+  if constexpr(DEFER)st.l[n][e]+=add;
+  else{
+   add+=__shfl_xor_sync(0xffffffff,add,4);add+=__shfl_xor_sync(0xffffffff,add,8);add+=__shfl_xor_sync(0xffffffff,add,16);local[n][e]=add;
+  }
  }
- bar();
- #pragma unroll
- for(int n=0;n<8;n++)for(int e=0;e<2;e++)if(g==0)red[w*64+n*8+2*t+e]=local[n][e];
- bar();
+ if constexpr(!DEFER){
+  bar();
+  #pragma unroll
+  for(int n=0;n<8;n++)for(int e=0;e<2;e++)if(g==0)red[w*64+n*8+2*t+e]=local[n][e];
+  bar();
+ }
  #pragma unroll
  for(int n=0;n<8;n++){
-  #pragma unroll
-  for(int e=0;e<2;e++){int query=n*8+2*t+e;st.l[n][e]+=red[query]+red[64+query]+red[128+query]+red[192+query];}
+  if constexpr(!DEFER){
+   #pragma unroll
+   for(int e=0;e<2;e++){int query=n*8+2*t+e;st.l[n][e]+=red[query]+red[64+query]+red[128+query]+red[192+query];}
+  }
   uint32_t p0=trans(hpack(s[n][0],s[n][1])),p1=trans(hpack(s[n][2],s[n][3]));
   *reinterpret_cast<uint32_t*>(ph+hoff(n*8+g,w*16+2*t))=p0;
   *reinterpret_cast<uint32_t*>(ph+hoff(n*8+g,w*16+2*t+8))=p1;
  }
  bar();pv(st.o,vh,ph);bar();
 }
-template<int ST,bool ROPE>
+template<int ST,bool ROPE,bool DEFER=(DEFER_DENOM!=0)>
 __global__ __launch_bounds__(256,1)void xqa(XP p){
  extern __shared__ __align__(1024)uint8_t sm[];
  uint8_t* sk=sm;uint8_t* sv=sk+ST*4096;uint8_t* nq=sv+ST*4096;
@@ -200,10 +211,26 @@ __global__ __launch_bounds__(256,1)void xqa(XP p){
  float scale=p.scale* *p.ks;
  for(int i=0;i<ntiles;i++){
   mb_wait(&full[i%ST],(i/ST)&1);bar();
-  tile<ROPE>(st,sk+(i%ST)*4096,sv+(i%ST)*4096,nq,vh,ph,red,begin+i*64,end,seq,p.window,scale);
+  tile<ROPE,DEFER>(st,sk+(i%ST)*4096,sv+(i%ST)*4096,nq,vh,ph,red,begin+i*64,end,seq,p.window,scale);
   bar();mb_arrive(&empty[i%ST]);
  }
- if(last)tile<ROPE>(st,nk,nv,nq,vh,ph,red,seq,seq+8,seq,p.window,scale);
+ if(last)tile<ROPE,DEFER>(st,nk,nv,nq,vh,ph,red,seq,seq+8,seq,p.window,scale);
+ if constexpr(DEFER){
+  // The maximum and its correction were shared by all partial-denominator owners.
+  // Sum the eight lane groups and four key warps only after the last tile.
+  bar();
+  #pragma unroll
+  for(int n=0;n<8;n++)for(int e=0;e<2;e++){
+   float v=st.l[n][e];
+   v+=__shfl_xor_sync(0xffffffff,v,4);v+=__shfl_xor_sync(0xffffffff,v,8);v+=__shfl_xor_sync(0xffffffff,v,16);
+   if(g==0)red[w*64+n*8+2*t+e]=v;
+  }
+  bar();
+  #pragma unroll
+  for(int n=0;n<8;n++)for(int e=0;e<2;e++){
+   int query=n*8+2*t+e;st.l[n][e]=red[query]+red[64+query]+red[128+query]+red[192+query];
+  }
+ }
  float* po=p.partial+((long long)(b*p.hkv+h)*p.ns+sp)*64*68;
  #pragma unroll
  for(int n=0;n<8;n++)for(int e=0;e<2;e++){

@@ -1,14 +1,41 @@
 {
-  "hardware": "H200 scalar measured loss; packed-fragment H200 unverified; arithmetic/host setup on SM120; actual SM90a cubins audited",
+  "hardware": "H20097be11d4631b44d6 confirms the distributed W2 repair: raw CTA1g2112 mean385.2us vs masked447.6. H2009e8a6a15 confirms full lossless recode C1g2112 mean365.2 vs same-run raw386.1. Both integrated in decode S2/S3; new W13-only issue lab8483c0c6783a4df1 accepted, timing pending.",
   "files": {
     "problems/muse_decode_layer/dev/parked/cand_r3_mixed_wgmma.py": "4b3753823bd6176bda1abc2b373e87ebeb32418c7e941e323525674081338dcb",
     "problems/muse_decode_layer/cand_r3_omni.py": "74e6e09d0164087d2431bf463f2b8cc7c1cae972934199d038ac21e665bafe01",
     "problems/muse_decode_layer/dev/omni/mixed.cu": "b221b640471eb9c67f8fe4a31b72aa7222ee3d966dd93c15d9070caa9a97341d",
-    "problems/muse_moe_w4a16/dev/mixed_wgmma/vector.cu": "d936444bf234d71d26847d7d3c9c3b46de62dfd3dcd1211ea41fc976a6740eaa",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/vector.cu": "514f74133891928601d92db92c163d923ab32c1223d4662dc8e004a06e855179",
     "prof/lab/moe_w13_ablation.py": "9f59d1687d40a27fe79d9921dbc7edf1abe0ece0815ec63c6264720681c33f11",
     "prof/lab/moe_vector_wgmma_seed.py": "de53e58b5071116bf97532654d0836dbea55a9297e2d9dbaef14d5f5d76cff2f",
     "prof/lab/moe_mixed_wgmma_planes.py": "224f4cdd6189de1d5db6e07e13bba6f125fac6292f0cbbfe3b3f90d02da67f6a",
-    "prof/lab/moe_mixed_wgmma_prefill.py": "042c8ef6d094439c2e3466b583bcff946143fc324e83906baf5d8ca7d9cbefd3"
+    "prof/lab/moe_mixed_wgmma_prefill.py": "042c8ef6d094439c2e3466b583bcff946143fc324e83906baf5d8ca7d9cbefd3",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/pipeline.cu": "c83cdbb4b3552972be9596f942df02eace0665ca7a1ad8219de28ef95cf0a09a",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/pipeline.py": "76b54d1accf2e1368f4f359638f89691cade4db3a756654119e754ea537a7dee",
+    "prof/lab/moe_pipeline_seed.py": "41b4eefee919f67fe2ce001544fc1061d0b3044c6933a72cd9464109ad36949b",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/vector.py": "7834e3b283c4429b960cbaf2cc7be9a4585a8c17a413014f7a28d42c3f13db82",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/fused.cu": "3f913653eef33eb6beca83e79d5722738daefe3892914b5b472a39a30c17def5",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/fused.py": "65943f94315e2f619358f5b493271d487833ad1bc9ce313b75fcb30d8bb05870",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/check_descriptor.py": "98864a9a5d174301eb8179d86959afc31ffcb4c87affa14ae16cbf9e82b10e14",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/check_fused.py": "989f0c1962a4fcb8cd22f081659305a38b6d8618210a833b84d703ad2435ffe9",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/dump_fused.py": "d21fa699c2a665cbe5f5bdc9007a9038c7ad2601dace4d3dc12d330e9feb6cce",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/build_fused_lab.py": "1350465402ae58f72158ae3c71d1ed7732c81d2cb9abcbd022e16c99996f775a",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/fused_driver.py.inc": "8370a6ee1cffeff13df47c2f96fc220ac347ad494e734f9711d9ba21426f8a2a",
+    "prof/lab/moe_fused_m256.py": "da5d2eb761eeb7705df822276abf7a8d7db394c2814e9fbaa4a4dcb270fc4d6a",
+    "problems/muse_moe_w4a16/lab/lab_moe_fused_m256.py": "a8305b5b7ebb0942b9f1721358f1c740d5a65568b826245e47862b80709ca9fe",
+    "problems/muse_moe_w4a16/lab/lab_moe_humming_m128+moe_fused_m256.py": "21b28ddbe14e119aa9a4ae58a54eea9deb3468036f9e98d1e56310f26a3b7be7",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/w2fix.cu": "5936461f1adc33b654ce749f52ad53fa232a08d1766e4f00b1c4ce9fc331d2bb",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/w2fix.py": "e4dcb4022c0e846446eb63210810577ff1a78f0b6abd061a5a938c059826dbbe",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/native_abi.py": "d4c161c7b5c1048956a20a2512ce645ead6eedf1933c2ce30dc243629eeaeb43",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/tail_probe.cu": "9c79227af859f495d81e03afd401dffc209b6c452f949e8e1ca80a8f5ee37e4b",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/check_tail.py": "e935d13640333edd00f839a8ddaa724ac12d8267b91262c3ce86b249b92c78bc",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/check_w2fix.py": "10bba11c80f83208d4e80e6396438b307f2745bd8a22ed7f5ea5ef6c1858867f",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/dump_w2fix.py": "bb3a34b941c02ecb75082df488375c62bd44f645ab35ece0d671f76ce864934b",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/build_w2fix_source.py": "a5e1f1c26324ee88af7bb6fffa8086081c2847f2b5dcc39a389802087d8f3a3b",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/build_w2fix_lab.py": "038651d58a360b4011c749aaf51d01a226aef01a4e999bb8c0e01c6bb6f002e5",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/w2fix_driver.py.inc": "a56b8069378550e5325ff0a7ab4e9912e31847f21ec2e25b6bab980860c97294",
+    "prof/lab/moe_w2fix_m256.py": "857ee3b1763f85af442cfcdf55ba285538808f3a4dee1580958976b1168adb11",
+    "problems/muse_moe_w4a16/lab/lab_moe_m128_k64_repair+moe_w2fix_m256.py": "602e2630309eb17c2f7db772996fe1ccd4d817e9fd10774089b7b7036d493f48",
+    "problems/muse_moe_w4a16/lab/lab_moe_w2fix_m256.py": "e68d8aebf695e2b06fa3f37a6030b341c6149cff093ffdc17a81d045dbbd5558"
   },
   "screens": {
     "decode_mixed_wgmma_planes": {
@@ -49,6 +76,35 @@
       "static": 6,
       "prepare_s": 90.10275668901158,
       "all_pass": true
+    },
+    "pipeline_seed_lab": {
+      "sha256": "d09865f8a530af41b6860a152afe7fef69e990c5cf0a0bc62690efc54a3abc50",
+      "prepare_s": 27.018461821018718,
+      "host_tests": 9,
+      "wrapper_static": 3,
+      "direct_payload_static": 6,
+      "all_pass": true,
+      "LAB_ERROR": false,
+      "seed_draws_plus_R0": 26,
+      "seed_rows": 24,
+      "aggregate_rows": 26,
+      "W13_diagnostics": 30,
+      "raw17_phase_gates": 2,
+      "LAB_characters": 8500
+    },
+    "fused_M256_lab": {
+      "sha256": "a8305b5b7ebb0942b9f1721358f1c740d5a65568b826245e47862b80709ca9fe",
+      "prepare_s": 25.211608415993396,
+      "host_tests": 5,
+      "wrapper_static": 6,
+      "direct_payload_static": 8,
+      "all_pass": true,
+      "seed_rows": 12,
+      "aggregate_rows": 19,
+      "LAB_characters": 4189,
+      "LAB_ERROR": false,
+      "batched_payloads_exact_match": true,
+      "batched_forbidden_words": []
     }
   },
   "forced_layer_graphs": 24,
@@ -63,9 +119,21 @@
     "planes": "01e74ee69c8845e1",
     "prefill_controls": "70206a2a501047eb",
     "w13_ablation_source_key": "4152e9ea747e0a07",
-    "vector_seed_source_key": "6649d92cf810f3c9"
+    "vector_seed_source_key": "6649d92cf810f3c9",
+    "w13_ablation": "276739d2f1d040f6",
+    "vector_seed": "4ee35d3dd5374c40",
+    "pipeline_seed_source_key": "d09865f8a530af41",
+    "vector_seed_status": "Every vector row rejected by FP32 gate, relL2 about1.415; wrong B128 phase reproduced locally.",
+    "pipeline_seed_rehost_source_key": "c686764c8d6fdc1f",
+    "fused_M256_source_key": "21b28ddbe14e119a",
+    "fused_M256_status": "All gates pass. Fastest fused F7 seed mean1201.8us; P128503.2 vs masked448.5. R0 W2+tail1376\u20132644us. Superseded experimentally by distributed W2 finalizer; not promoted.",
+    "fused_M256_payload_sha256": "da5d2eb761eeb7705df822276abf7a8d7db394c2814e9fbaa4a4dcb270fc4d6a",
+    "fused_M256": "e8968e36ea98422a",
+    "pipeline_seed": "7156d8d8b56a40d1",
+    "pipeline_seed_status": "R0 P5 wins~5%,313.4/415.5us at128/256. Seed means truncated; payload overran share, not a seed-mean win.",
+    "w2fix_M256_source_key": "602e2630309eb17c"
   },
-  "serving": "Audited current prepare: only raw NVFP4/E4M3 layout/bit repacks; no expanded weight bank. No producer switched by free lane; H200 win pending.",
+  "serving": "No producer switched by free lane. New producer keeps NVFP4 and raw E4M3 stored; no dequantized prepare bank. Serving port is below decode levers under R-20261024-4.",
   "stopped_unsent_sources": {
     "0b6ba26fdbb58537": "no-MMA conversion optimized away; replaced with live checksum",
     "64e749d828612486": "missing explicit90a target; rebuilt for90a and120"
@@ -456,7 +524,1008 @@
         "WARPGROUP.DEPBAR.LE": 1
       },
       "note": "Static instruction count includes both normal and subnormal branches; not dynamic executed instructions or measured cycles."
+    },
+    "fused": {
+      "sha256": "3f913653eef33eb6beca83e79d5722738daefe3892914b5b472a39a30c17def5",
+      "kernels": [
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi4ELi4ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi4ELi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi32ELi128ELi4ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi32ELi128ELi4ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 108,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi4ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi4ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi32ELi256ELi3ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 111,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi32ELi256ELi3ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 112,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi32ELi128ELi4ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 102,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi32ELi128ELi4ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 103,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi256ELi4ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 101,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi256ELi4ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 104,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi6ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi6ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi4ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        },
+        {
+          "name": "_ZN4mwft5fusedILi16ELi128ELi4ELi1ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iii",
+          "registers": 91,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ]
+        }
+      ]
     }
   },
-  "promotion": "No active mixed-WGMMA candidate. Scalar/plane adapter parked; CUTLASS mixed source, factory and dispatch removed from omni. New packed producer is lab-only."
+  "promotion": "New pipeline is lab-only, pending native agreement and a seed-mean win. CUTLASS remains quarantined; no candidate sends or commits by free lane.",
+  "pipeline_component": {
+    "refreshed_graph_checks": 120,
+    "worst_relative_L2": 0.0006349965115077794,
+    "independent_gate_up_global_scales": true,
+    "signed_zero_subnormal_scales": true,
+    "routes": [
+      "real_skewed",
+      "empty",
+      "hot",
+      "single_pair"
+    ],
+    "native_H200_math": "unverified"
+  },
+  "pipeline_sass": [
+    {
+      "config": [
+        16,
+        128,
+        4,
+        4,
+        true
+      ],
+      "registers": 89,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 40,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 13824
+    },
+    {
+      "config": [
+        32,
+        128,
+        4,
+        2,
+        true
+      ],
+      "registers": 103,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 48,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 13824
+    },
+    {
+      "config": [
+        16,
+        128,
+        4,
+        2,
+        true
+      ],
+      "registers": 89,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 40,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 13824
+    },
+    {
+      "config": [
+        32,
+        256,
+        3,
+        1,
+        true
+      ],
+      "registers": 126,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 72,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 9216,
+      "prologue_packed_Q_SF_bytes": 18432
+    },
+    {
+      "config": [
+        32,
+        128,
+        4,
+        1,
+        true
+      ],
+      "registers": 103,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 48,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 13824
+    },
+    {
+      "config": [
+        16,
+        256,
+        4,
+        1,
+        true
+      ],
+      "registers": 100,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 80,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 9216,
+      "prologue_packed_Q_SF_bytes": 27648
+    },
+    {
+      "config": [
+        16,
+        128,
+        6,
+        1,
+        true
+      ],
+      "registers": 102,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 60,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 23040
+    },
+    {
+      "config": [
+        16,
+        128,
+        4,
+        1,
+        false
+      ],
+      "registers": 72,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 40,
+      "waits": [
+        "gsb0, 0x0",
+        "gsb0, 0x0",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 13824
+    },
+    {
+      "config": [
+        16,
+        128,
+        4,
+        1,
+        true
+      ],
+      "registers": 88,
+      "local_load_store": 0,
+      "static_bf16_mma": 8,
+      "static_cp_async": 40,
+      "waits": [
+        "gsb0, 0x1",
+        "gsb0, 0x1",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 4608,
+      "prologue_packed_Q_SF_bytes": 13824
+    },
+    {
+      "config": [
+        16,
+        64,
+        4,
+        1,
+        false
+      ],
+      "registers": 66,
+      "local_load_store": 0,
+      "static_bf16_mma": 4,
+      "static_cp_async": 20,
+      "waits": [
+        "gsb0, 0x0",
+        "gsb0, 0x0"
+      ],
+      "static_CTA_barrier": 3,
+      "stage_packed_Q_SF_bytes": 2304,
+      "prologue_packed_Q_SF_bytes": 6912
+    }
+  ],
+  "pipeline_compiler_issue": {
+    "symptom": "C7513; first fully-unrolled K256 stage emitted wait0 after every MMA",
+    "repair": "input-only register keeps and non-unrolled loop over pairs of K64 chunks",
+    "verified": "Every native overlap specialization: two static wait1 sites plus final wait0, no local-memory instructions, no C7513"
+  },
+  "h200_scalar_W13_ablation_us": {
+    "128": {
+      "grid132": 2215.73,
+      "grid264": 1322.74,
+      "grid528": 911.39,
+      "reinterpret264": 574.3,
+      "constant264": 322.82,
+      "no_mma264": 1264.08
+    },
+    "256": {
+      "grid132": 3066.77,
+      "grid264": 1758.35,
+      "grid528": 1197.23,
+      "reinterpret264": 756.59,
+      "constant264": 462.91,
+      "no_mma264": 1669.63
+    }
+  },
+  "h200_plane_us": {
+    "128": {
+      "new": 1845.2,
+      "V9": 280.1,
+      "w13": 1196.4,
+      "w2": 678.0
+    },
+    "256": {
+      "new": 2361.0,
+      "V9": 479.3,
+      "w13": 1548.7,
+      "w2": 815.5
+    },
+    "753": {
+      "new": 3968.0,
+      "Marlin": 788.2
+    },
+    "16384": {
+      "new": 76051.2,
+      "Marlin": 14745.3,
+      "w13": 49236.1,
+      "pairs": 39491
+    }
+  },
+  "h200_prefill_raw17_us": {
+    "512": 399.6,
+    "753": 532.4,
+    "3012": 1454.8,
+    "16384": 7811.9
+  },
+  "target_seed_means_us": {
+    "128": 341.0,
+    "256": 448.0,
+    "comparison": "Same-draw masked Humming and V9 controls in new pipeline lab; no pipeline H200 win claimed"
+  },
+  "descriptor_agreement": {
+    "original_absolute_swizzle": [
+      1.4160422086715698,
+      1.4160422086715698,
+      1.4160422086715698
+    ],
+    "aligned_absolute_swizzle": [
+      0.0004214764339849353,
+      0.0004214764339849353,
+      0.0004214764339849353
+    ]
+  },
+  "fused_checks": {
+    "checks": 210,
+    "max_relative_L2": 0.004224671982228756,
+    "max_row": 0.004545415751636028,
+    "graph_route_transitions": 192,
+    "independent_gate_up_GS": true
+  },
+  "h200_vector_failed_us": {
+    "128": {
+      "vector_range": [
+        471,
+        501
+      ],
+      "NT2": 341
+    },
+    "256": {
+      "vector_range": [
+        660,
+        763
+      ],
+      "NT2": 548
+    }
+  },
+  "decode_M256": "No repair drop-in promoted. Await H20012-seed mean <=masked Humming448.5us and complete-layer agreement; serving-only work remains below decode.",
+  "superseded_waiting_fused_send": "59320669eef50770 replaced before acceptance to fit report within4500 characters; M128 payload preserved unchanged.",
+  "w2fix": {
+    "payload_sha256": "857ee3b1763f85af442cfcdf55ba285538808f3a4dee1580958976b1168adb11",
+    "tail_probe": {
+      "hardware": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+      "rows": [
+        {
+          "nt": 16,
+          "groups": 40,
+          "pairs": 414,
+          "experts": 21,
+          "old_us": 509.95200872421265,
+          "hoist_us": 333.8240087032318,
+          "cta_us": 14.336000196635723,
+          "norm_tickets_us": 9.215999860316515
+        },
+        {
+          "nt": 32,
+          "groups": 28,
+          "pairs": 414,
+          "experts": 21,
+          "old_us": 950.2720236778259,
+          "hoist_us": 594.9440002441406,
+          "cta_us": 14.336000196635723,
+          "norm_tickets_us": 12.28800043463707
+        }
+      ]
+    },
+    "arithmetic": {
+      "checks": 78,
+      "max_relative_L2": 0.004224671982228756,
+      "max_row": 0.004545415751636028,
+      "phase_order": [
+        "main",
+        "Y_SS",
+        "group_ticket",
+        "norm",
+        "token_ticket",
+        "combine"
+      ],
+      "clocks": [
+        {
+          "which": 0,
+          "mode": 0,
+          "grid": 528,
+          "cycles_median_max": [
+            [
+              63149.5,
+              82652
+            ],
+            [
+              1254.0,
+              3704
+            ],
+            [
+              1503.5,
+              7852
+            ],
+            [
+              2179.5,
+              4656
+            ],
+            [
+              2356.5,
+              11180
+            ],
+            [
+              166.0,
+              456021
+            ]
+          ],
+          "last_groups": 32
+        },
+        {
+          "which": 0,
+          "mode": 0,
+          "grid": 1056,
+          "cycles_median_max": [
+            [
+              85657.0,
+              109576
+            ],
+            [
+              1236.0,
+              17382
+            ],
+            [
+              4003.0,
+              30488
+            ],
+            [
+              3349.0,
+              16775
+            ],
+            [
+              5671.5,
+              28249
+            ],
+            [
+              161.0,
+              630212
+            ]
+          ],
+          "last_groups": 32
+        },
+        {
+          "which": 0,
+          "mode": 0,
+          "grid": 2112,
+          "cycles_median_max": [
+            [
+              90359.0,
+              114090
+            ],
+            [
+              1477.5,
+              15628
+            ],
+            [
+              3536.0,
+              30809
+            ],
+            [
+              4429.0,
+              15156
+            ],
+            [
+              10917.0,
+              35352
+            ],
+            [
+              161.0,
+              650053
+            ]
+          ],
+          "last_groups": 32
+        },
+        {
+          "which": 0,
+          "mode": 1,
+          "grid": 528,
+          "cycles_median_max": [
+            [
+              81988.0,
+              122675
+            ],
+            [
+              1503.0,
+              14971
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              76.0,
+              555
+            ]
+          ],
+          "last_groups": 0
+        },
+        {
+          "which": 0,
+          "mode": 1,
+          "grid": 1056,
+          "cycles_median_max": [
+            [
+              96539.5,
+              125782
+            ],
+            [
+              1316.0,
+              20915
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              76.0,
+              601
+            ]
+          ],
+          "last_groups": 0
+        },
+        {
+          "which": 0,
+          "mode": 1,
+          "grid": 2112,
+          "cycles_median_max": [
+            [
+              101663.5,
+              126682
+            ],
+            [
+              1379.0,
+              10508
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              76.0,
+              161
+            ]
+          ],
+          "last_groups": 0
+        },
+        {
+          "which": 1,
+          "mode": 1,
+          "grid": 528,
+          "cycles_median_max": [
+            [
+              59058.5,
+              62898
+            ],
+            [
+              1595.0,
+              3732
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              76.0,
+              76
+            ]
+          ],
+          "last_groups": 0
+        },
+        {
+          "which": 1,
+          "mode": 1,
+          "grid": 1056,
+          "cycles_median_max": [
+            [
+              58960.0,
+              62780
+            ],
+            [
+              1595.0,
+              3980
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              76.0,
+              76
+            ]
+          ],
+          "last_groups": 0
+        },
+        {
+          "which": 1,
+          "mode": 1,
+          "grid": 2112,
+          "cycles_median_max": [
+            [
+              58887.0,
+              61811
+            ],
+            [
+              1591.0,
+              2938
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              76.0,
+              76
+            ]
+          ],
+          "last_groups": 0
+        }
+      ]
+    },
+    "sass": {
+      "sha256": "5936461f1adc33b654ce749f52ad53fa232a08d1766e4f00b1c4ce9fc331d2bb",
+      "kernels": [
+        {
+          "name": "_ZN4mwfx6finishEPKiS1_PKfS1_S3_S3_P13__nv_bfloat16ii",
+          "registers": 32,
+          "local_memory": 0,
+          "mma": 0,
+          "waits": [],
+          "global_atomic": 0
+        },
+        {
+          "name": "_ZN4mwfx5fusedILi32ELi128ELi4ELi1ELb0ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 102,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "global_atomic": 0
+        },
+        {
+          "name": "_ZN4mwfx5fusedILi32ELi128ELi4ELi1ELb1ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 106,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "global_atomic": 0
+        },
+        {
+          "name": "_ZN4mwfx5fusedILi16ELi128ELi4ELi1ELb0ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 88,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "global_atomic": 0
+        },
+        {
+          "name": "_ZN4mwfx5fusedILi16ELi128ELi4ELi1ELb0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 96,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "global_atomic": 2
+        },
+        {
+          "name": "_ZN4mwfx5fusedILi16ELi128ELi4ELi1ELb1ELi1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 101,
+          "local_memory": 0,
+          "mma": 8,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "global_atomic": 0
+        },
+        {
+          "name": "_ZN4mwfx10route_initEPKiPiS2_S2_S2_S2_S2_S2_P13__nv_bfloat16iiii",
+          "registers": 22,
+          "local_memory": 0,
+          "mma": 0,
+          "waits": [],
+          "global_atomic": 5
+        }
+      ]
+    },
+    "cold_budget_s": 78.0,
+    "cold_used_s": 36.024687513010576,
+    "cold_build_line": "BUILD seconds=14.5 left=63.3",
+    "cold_all_12seed_9variant_gates": true,
+    "cold_R0_phases": [
+      "PH c=0 m=0 us=10.2,559.2,899.0 req_TBs13,2=1.35,0.42 e=0.0041",
+      "CY c=0 m=0 main,YSS,group,norm,token,combine=55251,1379,1645,2932,2332,419577 combine_max=829666",
+      "PH c=0 m=1 us=10.2,553.1,292.9,16.4 req_TBs13,2=1.37,1.29 e=0.0041",
+      "CY c=0 m=1 main,YSS,group,norm,token,combine=55236,1413,0,0,0,0 combine_max=374",
+      "PH c=1 m=1 us=10.2,677.9,350.2,14.4 req_TBs13,2=0.78,0.75 e=0.0041",
+      "CY c=1 m=1 main,YSS,group,norm,token,combine=58443,1610,0,0,0,0 combine_max=76"
+    ],
+    "send_key": "602e2630309eb17c",
+    "batched_wrapper_sha256": "602e2630309eb17c2f7db772996fe1ccd4d817e9fd10774089b7b7036d493f48",
+    "batched_with": "moe_m128_k64_repair0927bfa53e38d7b7",
+    "status": "Waiting for judge slot at immediate post-send local-log inspection; no H200 job ID assigned yet.",
+    "deadline_early_exits": {
+      "sha256": "857ee3b1763f85af442cfcdf55ba285538808f3a4dee1580958976b1168adb11",
+      "cases": [
+        {
+          "deadline_s": 0.0,
+          "used_s": 1.7309037502855062e-05,
+          "lines": [
+            "META M256;12 public weight/router seeds;3 fresh inputs,8 rotated cold128MiB graphs. finite/L2<=.01,row<=.05. CTA=W2 Y+SS then vector token CTA; m0=old,m1=CTA,m2=HOIST. Gates precede timing; partial n never qualifies.",
+            "ORDER masked,P16,P32,CTA0g528,CTA0g1056,CTA0g2112,CTA1g528,CTA1g1056,CTA1g2112",
+            "BUDGET before native compile left=-0.0",
+            "COMPLETE seeds=0/12 used=0.0 left=-0.0"
+          ]
+        },
+        {
+          "deadline_s": 20.0,
+          "used_s": 7.260008715093136e-06,
+          "lines": [
+            "META M256;12 public weight/router seeds;3 fresh inputs,8 rotated cold128MiB graphs. finite/L2<=.01,row<=.05. CTA=W2 Y+SS then vector token CTA; m0=old,m1=CTA,m2=HOIST. Gates precede timing; partial n never qualifies.",
+            "ORDER masked,P16,P32,CTA0g528,CTA0g1056,CTA0g2112,CTA1g528,CTA1g1056,CTA1g2112",
+            "BUDGET before native compile left=20.0",
+            "COMPLETE seeds=0/12 used=0.0 left=20.0"
+          ]
+        }
+      ]
+    },
+    "host_screen": {
+      "sha256": "e68d8aebf695e2b06fa3f37a6030b341c6149cff093ffdc17a81d045dbbd5558",
+      "prepare_s": 38.71904034598265,
+      "tests": 5,
+      "static": 6,
+      "all_pass": true,
+      "lab_characters": 2429,
+      "seed_rows": 12,
+      "aggregate_rows": 9,
+      "R0_phase_gates": 3
+    },
+    "direct_static": {
+      "sha256": "857ee3b1763f85af442cfcdf55ba285538808f3a4dee1580958976b1168adb11",
+      "checks": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PIPE_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "FX_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "WX_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ]
+    }
+  },
+  "recode_M256": {
+    "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/recode/admission.json",
+    "payload_sha256": "d30f4a862fa0b882529ba3b9ea9c37013f305559c707e27db62e10b4ff1a2bce",
+    "send_key": "fdac893179c9f8ad",
+    "job": "9e8a6a15f95748db",
+    "status": "Accepted; immediate detached log confirms no rejection; H200 result unverified."
+  }
 }

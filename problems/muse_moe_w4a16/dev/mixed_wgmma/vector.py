@@ -26,7 +26,8 @@ def vec_prepare(w):
         bank[name]=mw_repack_planes(w[name])
         e,n,k16=w[name+'_sf'].shape
         bank[name+'_sf']=w[name+'_sf'].view(torch.uint8).reshape(e,n//16,2,8,k16//2,2).permute(0,1,4,3,5,2).contiguous()
-        bank[name+'_gs']=w[name+'_gs'].float().contiguous()
+        bank[name+'_gs']=(torch.cat((w.get('w13_gs_gate',w['w13_gs']),w.get('w13_gs_up',w['w13_gs'])))
+                          if name=='w13' else w[name+'_gs']).float().contiguous()
     bank['pnw']=w.get('post_norm_w',w.get('post_expert_norm')).contiguous()
     bank['mod']=vec_module()
     return bank

@@ -1,0 +1,59 @@
+{
+  "send_key": "0a5efab4bc3396f8",
+  "judge_job": "640d67e7e56d42e5",
+  "host": "muse_moe_w4a16",
+  "mode": "check",
+  "priority": 0.4,
+  "detached_log": "runs/detached/0a5efab4bc3396f8.log",
+  "status": "completed; full H200 result in h200_result.json",
+  "issue_receipt_at_one_read": "dc3fea0a20a349bf completed; D32g272.95us vsNT1rec290.07",
+  "decision": "All one-read recipes rejected vs paired NT1rec; best RS64g2112 361.16us vs290.83; reused as experimental control in phase_mix770809cf159f41e2.",
+  "files": {
+    "prof/lab/moe_m128_no_reread.py": "416f70796445b3e960290a81c4fe50cdf0f77eae50b828893e91f96fc97efb5c",
+    "problems/muse_moe_w4a16/lab/lab_moe_m128_no_reread.py": "0a5efab4bc3396f82847bf55c89cf240291ea758d736a6a73b22a583803330b1",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/build.py": "035ade97c77c9c6075898c22a90bb0af14dd2ad83dc51a16e380090ade4c9ccd",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/driver.py.inc": "a8b557f68e5a7f13a2851b7f2f55b24699cb8e64ed128835ea7aca1752dbd8af",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/dropin.py": "a2c4000415c82a26004c300c27e52de907a4cf9af697a0a0dcbd56ea3fc92199",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/check.py": "1fea9adf7153f650c77f87dbf56ae7cead8ac882b3c17c79fa12db71f80907af",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/native.py": "2065e77fa38f7b2047a0f42bb7c3d3204dcf1ef7717cb3b8676baa44e7e8c0d5",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/check_edges.py": "738869c736fbbbf730e04048631f28b59741a4f230517e7d882d78da3f4b9d1d",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/one_read/check_dropin.py": "f4ab314c358de216a427ff220d170be348b6d7ad9ac2da7c83e88b874a6c1941"
+  },
+  "local": {
+    "fixtures": 36,
+    "producer_graph_checks": 216,
+    "NT1_graph_checks": 36,
+    "max_L2": 0.004128939472138882,
+    "max_row": 0.004846225026994944,
+    "edge_checks": 79,
+    "hot_counts": [
+      0,
+      1,
+      16,
+      32,
+      50,
+      64,
+      65,
+      80,
+      128,
+      129,
+      257
+    ],
+    "native_GEMMs": 19,
+    "native_local_memory_instructions": 0,
+    "RS_safe_K64_paths": 10,
+    "shared_A_layout": {
+      "unique_A_half_values": 4096,
+      "canonical_B128_addresses": 20480
+    },
+    "finalizer_body_byte_identical": true,
+    "finalizer_body_sha256": "f43c90ac22b8e9e77a0efd39a78b5ee166402621400221ba05a29097c61ae9d5",
+    "wrapper_tests": 5,
+    "wrapper_shapes": 6,
+    "wrapper_static": 6,
+    "lab_seconds": 23.58874525502324,
+    "lab_budget_seconds": 78,
+    "dropin_graphs": 8
+  },
+  "H200_result": "h200_result.json"
+}

@@ -1,0 +1,478 @@
+{
+  "receipt": "/home/jihoon/competitions/muse_kernel/runs/muse_moe_w4a16/20261024T152650Z_check_95ab383de42a4fae.json",
+  "payload_sha256": "e7399cfb21b14160347ea230166a89541d3252ca9d5aa52c9822dd011f95632e",
+  "projection": "problems/muse_bf16_proj/dev/gemv_fixed/projection.py",
+  "projection_sha256": "c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe",
+  "roles": [
+    {
+      "tokens": 1,
+      "role": "qkv_gate",
+      "config": 7,
+      "baseline_producer_us": 21.1,
+      "baseline_with_consumer_us": 21.87,
+      "producer_us": 24.6,
+      "with_consumer_us": 26.04,
+      "paired_ratio": 1.1917,
+      "seed_ratios": [
+        1.199,
+        1.186,
+        1.19
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 101,
+        "pdl_wait": 10,
+        "mainloop": 23869,
+        "local_k_reduce": 2060
+      },
+      "dispatch_first_us": 0.77,
+      "last_wave_us": 11.01,
+      "tail_p95_us": 1.02,
+      "baseline_diagnostic": "lib17.7",
+      "consumer_partial_load_cycles": 1411.0,
+      "consumer_split_us": 5.33,
+      "consumer_one_us": 5.26
+    },
+    {
+      "tokens": 1,
+      "role": "o",
+      "config": 6,
+      "baseline_producer_us": 12.07,
+      "baseline_with_consumer_us": 15.39,
+      "producer_us": 12.77,
+      "with_consumer_us": 15.04,
+      "paired_ratio": 0.9783,
+      "seed_ratios": [
+        0.968,
+        0.984,
+        0.983
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 90,
+        "pdl_wait": 10,
+        "mainloop": 1155,
+        "local_k_reduce": 848
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 7.68,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "lib8.6",
+      "consumer_partial_load_cycles": 2015.0,
+      "consumer_split_us": 7.17,
+      "consumer_one_us": 7.24
+    },
+    {
+      "tokens": 1,
+      "role": "pool_router",
+      "config": 6,
+      "baseline_producer_us": 30.8,
+      "baseline_with_consumer_us": 34.99,
+      "producer_us": 33.81,
+      "with_consumer_us": 36.15,
+      "paired_ratio": 1.034,
+      "seed_ratios": [
+        1.032,
+        1.033,
+        1.036
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 99,
+        "pdl_wait": 10,
+        "mainloop": 39068,
+        "local_k_reduce": 339
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 26.62,
+      "tail_p95_us": 0.51,
+      "baseline_diagnostic": "c157,4,28592",
+      "consumer_partial_load_cycles": 6508.0,
+      "consumer_split_us": 9.4,
+      "consumer_one_us": 6.91
+    },
+    {
+      "tokens": 1,
+      "role": "unpooler_slice",
+      "config": 7,
+      "baseline_producer_us": 8.92,
+      "baseline_with_consumer_us": 12.59,
+      "producer_us": 12.62,
+      "with_consumer_us": 14.72,
+      "paired_ratio": 1.1698,
+      "seed_ratios": [
+        1.178,
+        1.18,
+        1.151
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 92,
+        "pdl_wait": 10,
+        "mainloop": 7794,
+        "local_k_reduce": 496
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 7.17,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "c52,4,6500",
+      "consumer_partial_load_cycles": 2861.0,
+      "consumer_split_us": 7.63,
+      "consumer_one_us": 7.51
+    },
+    {
+      "tokens": 8,
+      "role": "qkv_gate",
+      "config": 6,
+      "baseline_producer_us": 21.23,
+      "baseline_with_consumer_us": 21.91,
+      "producer_us": 29.18,
+      "with_consumer_us": 31.05,
+      "paired_ratio": 1.4176,
+      "seed_ratios": [
+        1.424,
+        1.402,
+        1.427
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 94,
+        "pdl_wait": 10,
+        "mainloop": 29968,
+        "local_k_reduce": 579
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 19.97,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "lib17.8",
+      "consumer_partial_load_cycles": 1073.0,
+      "consumer_split_us": 5.4,
+      "consumer_one_us": 5.34
+    },
+    {
+      "tokens": 8,
+      "role": "o",
+      "config": 2,
+      "baseline_producer_us": 12.08,
+      "baseline_with_consumer_us": 15.53,
+      "producer_us": 12.93,
+      "with_consumer_us": 15.78,
+      "paired_ratio": 1.0166,
+      "seed_ratios": [
+        1.004,
+        0.998,
+        1.048
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 47,
+        "pdl_wait": 10,
+        "mainloop": 1619,
+        "local_k_reduce": 710
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 3.33,
+      "tail_p95_us": 0.51,
+      "baseline_diagnostic": "lib8.7",
+      "consumer_partial_load_cycles": 2106.0,
+      "consumer_split_us": 7.4,
+      "consumer_one_us": 7.55
+    },
+    {
+      "tokens": 8,
+      "role": "pool_router",
+      "config": 2,
+      "baseline_producer_us": 31.27,
+      "baseline_with_consumer_us": 35.74,
+      "producer_us": 39.49,
+      "with_consumer_us": 41.22,
+      "paired_ratio": 1.1542,
+      "seed_ratios": [
+        1.154,
+        1.173,
+        1.136
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 80,
+        "pdl_wait": 10,
+        "mainloop": 46170,
+        "local_k_reduce": 2395
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 31.49,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "c172,4,30758",
+      "consumer_partial_load_cycles": 5792.0,
+      "consumer_split_us": 10.22,
+      "consumer_one_us": 7.21
+    },
+    {
+      "tokens": 8,
+      "role": "unpooler_slice",
+      "config": 8,
+      "baseline_producer_us": 8.88,
+      "baseline_with_consumer_us": 12.8,
+      "producer_us": 14.0,
+      "with_consumer_us": 16.52,
+      "paired_ratio": 1.2905,
+      "seed_ratios": [
+        1.311,
+        1.292,
+        1.269
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 93,
+        "pdl_wait": 10,
+        "mainloop": 9954,
+        "local_k_reduce": 938
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 7.94,
+      "tail_p95_us": 0.0,
+      "baseline_diagnostic": "c60,4,8903",
+      "consumer_partial_load_cycles": 2815.0,
+      "consumer_split_us": 7.98,
+      "consumer_one_us": 7.48
+    },
+    {
+      "tokens": 16,
+      "role": "qkv_gate",
+      "config": 6,
+      "baseline_producer_us": 19.56,
+      "baseline_with_consumer_us": 22.97,
+      "producer_us": 32.14,
+      "with_consumer_us": 35.58,
+      "paired_ratio": 1.553,
+      "seed_ratios": [
+        1.533,
+        1.574,
+        1.551
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 97,
+        "pdl_wait": 10,
+        "mainloop": 33492,
+        "local_k_reduce": 539
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 22.27,
+      "tail_p95_us": 0.51,
+      "baseline_diagnostic": "c162,4,22329",
+      "consumer_partial_load_cycles": 6809.0,
+      "consumer_split_us": 9.68,
+      "consumer_one_us": 5.55
+    },
+    {
+      "tokens": 16,
+      "role": "o",
+      "config": 4,
+      "baseline_producer_us": 12.05,
+      "baseline_with_consumer_us": 16.41,
+      "producer_us": 13.97,
+      "with_consumer_us": 17.41,
+      "paired_ratio": 1.0621,
+      "seed_ratios": [
+        1.059,
+        1.066,
+        1.061
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 70,
+        "pdl_wait": 10,
+        "mainloop": 6046,
+        "local_k_reduce": 1335
+      },
+      "dispatch_first_us": 0.77,
+      "last_wave_us": 4.1,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "lib8.8",
+      "consumer_partial_load_cycles": 2245.0,
+      "consumer_split_us": 8.12,
+      "consumer_one_us": 8.16
+    },
+    {
+      "tokens": 16,
+      "role": "pool_router",
+      "config": 4,
+      "baseline_producer_us": 31.49,
+      "baseline_with_consumer_us": 35.68,
+      "producer_us": 49.82,
+      "with_consumer_us": 52.25,
+      "paired_ratio": 1.4653,
+      "seed_ratios": [
+        1.486,
+        1.501,
+        1.408
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 88,
+        "pdl_wait": 11,
+        "mainloop": 67371,
+        "local_k_reduce": 969
+      },
+      "dispatch_first_us": 0.77,
+      "last_wave_us": 41.47,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "c153,4,28904",
+      "consumer_partial_load_cycles": 7504.0,
+      "consumer_split_us": 11.28,
+      "consumer_one_us": 7.44
+    },
+    {
+      "tokens": 16,
+      "role": "unpooler",
+      "config": 3,
+      "baseline_producer_us": 28.3,
+      "baseline_with_consumer_us": 33.22,
+      "producer_us": 38.37,
+      "with_consumer_us": 42.55,
+      "paired_ratio": 1.2841,
+      "seed_ratios": [
+        1.263,
+        1.318,
+        1.272
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 83,
+        "pdl_wait": 10,
+        "mainloop": 48688,
+        "local_k_reduce": 1110
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 14.08,
+      "tail_p95_us": 0.51,
+      "baseline_diagnostic": "lib24.1",
+      "consumer_partial_load_cycles": 2422.0,
+      "consumer_split_us": 8.48,
+      "consumer_one_us": 8.35
+    },
+    {
+      "tokens": 32,
+      "role": "qkv_gate",
+      "config": 4,
+      "baseline_producer_us": 21.57,
+      "baseline_with_consumer_us": 23.95,
+      "producer_us": 43.1,
+      "with_consumer_us": 44.37,
+      "paired_ratio": 1.8535,
+      "seed_ratios": [
+        1.859,
+        1.863,
+        1.839
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 92,
+        "pdl_wait": 11,
+        "mainloop": 57296,
+        "local_k_reduce": 1545
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 35.07,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "lib18.3",
+      "consumer_partial_load_cycles": 1172.0,
+      "consumer_split_us": 5.67,
+      "consumer_one_us": 5.56
+    },
+    {
+      "tokens": 32,
+      "role": "o",
+      "config": 5,
+      "baseline_producer_us": 12.36,
+      "baseline_with_consumer_us": 16.62,
+      "producer_us": 17.07,
+      "with_consumer_us": 20.4,
+      "paired_ratio": 1.2277,
+      "seed_ratios": [
+        1.224,
+        1.243,
+        1.216
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 81,
+        "pdl_wait": 10,
+        "mainloop": 11972,
+        "local_k_reduce": 824
+      },
+      "dispatch_first_us": 0.77,
+      "last_wave_us": 6.91,
+      "tail_p95_us": 1.28,
+      "baseline_diagnostic": "lib9.0",
+      "consumer_partial_load_cycles": 2178.0,
+      "consumer_split_us": 8.43,
+      "consumer_one_us": 8.38
+    },
+    {
+      "tokens": 32,
+      "role": "pool_router",
+      "config": 5,
+      "baseline_producer_us": 33.69,
+      "baseline_with_consumer_us": 41.08,
+      "producer_us": 73.6,
+      "with_consumer_us": 75.73,
+      "paired_ratio": 1.845,
+      "seed_ratios": [
+        1.875,
+        1.845,
+        1.814
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 87,
+        "pdl_wait": 11,
+        "mainloop": 102669,
+        "local_k_reduce": 1099
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 59.9,
+      "tail_p95_us": 0.26,
+      "baseline_diagnostic": "c69,4,10805",
+      "consumer_partial_load_cycles": 8912.0,
+      "consumer_split_us": 12.58,
+      "consumer_one_us": 7.16
+    },
+    {
+      "tokens": 32,
+      "role": "unpooler",
+      "config": 5,
+      "baseline_producer_us": 28.24,
+      "baseline_with_consumer_us": 33.06,
+      "producer_us": 47.39,
+      "with_consumer_us": 50.8,
+      "paired_ratio": 1.5372,
+      "seed_ratios": [
+        1.531,
+        1.533,
+        1.547
+      ],
+      "observer_cycles": {
+        "entry_first_issue": 84,
+        "pdl_wait": 11,
+        "mainloop": 57766,
+        "local_k_reduce": 1088
+      },
+      "dispatch_first_us": 0.51,
+      "last_wave_us": 22.27,
+      "tail_p95_us": 0.51,
+      "baseline_diagnostic": "lib24.3",
+      "consumer_partial_load_cycles": 2445.0,
+      "consumer_split_us": 8.64,
+      "consumer_one_us": 8.72
+    }
+  ],
+  "segments": [
+    "SEG 1 O=41.95:41.29/0.9846,P=41.81:41.95/1.0038,OP=41.90:41.47/0.9901",
+    "SEG 8 O=41.84:41.54/0.9931,P=41.78:43.41/1.0393,OP=41.63:43.85/1.0537",
+    "SEG 16 O=43.00:44.01/1.0240,P=43.08:51.45/1.1946,OP=43.16:52.18/1.2097",
+    "SEG 32 O=44.80:48.14/1.0750,P=44.89:72.97/1.6257,OP=45.09:77.03/1.7091"
+  ],
+  "integration_cells": [
+    {
+      "tokens": 1,
+      "role": "o",
+      "config": 6,
+      "fp32": false,
+      "paired_ratio": 0.9783,
+      "seed_ratios": [
+        0.968,
+        0.984,
+        0.983
+      ],
+      "requires_live_layer_agreement": true
+    }
+  ],
+  "integration": "Construct Best7ProjectionCell outside capture; insert into state['best7_stream_ops'][(tokens, role, config, 1)] and set that plan's projection[role]=('stream', config, 1). Validate live whole-layer routing before dispatch."
+}

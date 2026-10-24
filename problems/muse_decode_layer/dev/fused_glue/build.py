@@ -11,7 +11,7 @@ cell='FG_CUDA='+repr((HERE/'kernel.cu').read_text())+'\n'+(HERE/'runtime.py.inc'
 (HERE/'best7_glue_cell.py').write_text(cell+'\n'+(HERE/'adapter.py.inc').read_text())
 if (HERE/'driver.py.inc').exists():
     helpers=(HERE.parent/'paired_lab/driver.py.inc').read_text().split('\ndef lab(deadline,weights,host_state):',1)[0]
-    body='BEST7_SOURCE='+repr(source.read_text())+'\n'+cell+'\n'+helpers+'\n'+(HERE/'driver.py.inc').read_text()
+    body='BEST7_SOURCE='+repr(source.read_text())+'\n'+cell+'\n'+helpers+'\n'+(HERE/'flip_gate.py.inc').read_text()+'\n'+(HERE/'driver.py.inc').read_text()
     sys.path.insert(0,str(ROOT/'tools'))
     from okc_run import rejected_words
     assert not rejected_words(body),rejected_words(body)

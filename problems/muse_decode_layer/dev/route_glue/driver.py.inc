@@ -83,7 +83,7 @@ def lab(deadline,weights,host_state):
            '12 full layers, AB/BA6 cold256MiB, AA, 3 changed input replays, route IDs must match exactly']
     lines.append(f'SETUP seconds={time.monotonic()-started:.1f} remain={deadline-time.monotonic():.1f}')
     flush=torch.empty(256<<20,device=weights['w13'].device,dtype=torch.uint8)
-    RG_ROWS=[];worst=0.;flips=0
+    RG_ROWS=[];worst=0.;flips=0;disabled_cells=set()
     cases=[(b,q,w) for q in (1,8) for b in (1,16,32) for w in (2048,0)]
     for case,(b,q,window) in enumerate(cases):
         if time.monotonic()>deadline-3:raise RuntimeError(f'budget before requested case{case}')
@@ -97,6 +97,8 @@ def lab(deadline,weights,host_state):
         a,ao=dp_graph(lambda:m._best7_run(data,state,plan));noise=dp_pair(a,a,flush)
         cells=('route','pool_epilogue','tail','both') if q==8 else ('route','pool_epilogue')
         for cell in cells:
+            if (t,cell) in disabled_cells:
+                lines.append(f'SKIP case={case} cell={cell} M={t}');continue
             if time.monotonic()>deadline-2:raise RuntimeError('budget before requested cell')
             bg,bo=dp_graph(lambda cell=cell:rg_run(m,data,state,plan,cell))
             for seed in DP_SEEDS:
@@ -106,7 +108,12 @@ def lab(deadline,weights,host_state):
                 data['local_start'].fill_((start+32*(seed%3))%256);state['_local_start']=int(data['local_start'].item())
                 a.replay();bg.replay()
                 n=int((ao[2]!=bo[2]).any(-1).sum());flips+=n
-                if n:raise RuntimeError(f'route flips {n}/{t} case={case} cell={cell} seed={seed}')
+                if n:
+                    detail=fg_flip_report(m,data,state,plan,bo[2],ao[2],state['route_pool_ops'][t].product if cell=='pool_epilogue' else None)
+                    RG_ROWS.append(dict(case=case,cell=cell,seed=seed,disabled=True,**detail))
+                    disabled_cells.add((t,cell))
+                    lines.append('DISABLED '+json.dumps(RG_ROWS[-1],separators=(',',':')))
+                    break
                 err,_=fg_layer_gate(ao,bo,data,state);worst=max(worst,err)
                 fg_route_gate(m,data,plan,bo[2],state,synthetic)
                 if not bool((state['route_moe_counts'][:34]==0).all()):raise RuntimeError('MoE counter reset')
@@ -114,10 +121,17 @@ def lab(deadline,weights,host_state):
                 if not all(bool((op.counts==0).all()) for op in (*state['route_pool_ops'].values(),*state['route_tail_ops'].values())):
                     raise RuntimeError('projection counter reset')
                 pair=dp_pair(a,bg,flush);fg_layer_gate(ao,bo,data,state)
-                if not torch.equal(ao[2],bo[2]):raise RuntimeError('route flip after timing')
+                if not torch.equal(ao[2],bo[2]):
+                    detail=fg_flip_report(m,data,state,plan,bo[2],ao[2])
+                    RG_ROWS.append(dict(case=case,cell=cell,seed=seed,disabled=True,**detail))
+                    disabled_cells.add((t,cell))
+                    lines.append('DISABLED '+json.dumps(RG_ROWS[-1],separators=(',',':')))
+                    break
                 RG_ROWS.append(dict(case=case,load=f'{b}x{q}/'+('S' if window else 'F'),cell=cell,seed=seed,
                     error=err,flips=n,noise_us=noise['b']-noise['a'],**pair))
-            rr=RG_ROWS[-3:]
+            rr=[r for r in RG_ROWS if r['case']==case and r['cell']==cell and not r.get('disabled')];
+            if not rr:
+                bg=bo=None;gc.collect();continue
             lines.append(f'G{case} {cell} A/B_us={statistics.mean(r["a"] for r in rr):.2f}/{statistics.mean(r["b"] for r in rr):.2f} '
                 f'B:A={statistics.mean(r["ratio"] for r in rr):.4f} AA_us={noise["b"]-noise["a"]:.2f} '
                 f'err={max(r["error"] for r in rr):.5f} flips=0')

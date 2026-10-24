@@ -275,6 +275,40 @@ def dp_compact(rows,lines):
             lines.append(f'{stage}{case}:{variant} {seeds} {a:.1f}/{b:.1f}'+noise)
 
 
+def fg_flip_report(m,data,state,plan,actual,want,product=None):
+    """Record score-space evidence. Every flipped cell is disabled by the caller."""
+    mask=(actual!=want).any(-1);n=int(mask.sum())
+    result=dict(flips=n,tokens=actual.shape[0],near_tie=False)
+    if not n:return result
+    qkv=m._best7_project(data['attn_input'],'qkv_gate',state,plan)
+    attn=m._best7_attention(qkv,data,state,plan)
+    branch=m._best7_project(attn,'o',state,plan)
+    sync=None
+    if plan['glue']=='best5':
+        t=data['config']['tokens'];raw=torch.zeros(15*t,device=branch[0].device,dtype=torch.int32)
+        sync=(raw[3*t:].view(torch.float32).view(3,t,4)[0],raw[:3*t].view(3,t)[0])
+    h,_=m._best7_boundary(branch,data['stream'],state,plan,'b1',sync)
+    pr,s=m._best7_project(h,'pool_router',state,plan,out_dtype=torch.float32)
+    ref=pr[:s].sum(0)
+    score=((ref[:,4096:4352]+ref[:,4352:4608])*.1767766952966369).sigmoid()+state['router_bias']
+    top=score.topk(9,-1).values;gap=top[:,7]-top[:,8]
+    shifted=score
+    if product is not None:
+        pp=product[:s].sum(0) if product.ndim==3 else product
+        shifted=((pp[:,4096:4352]+pp[:,4352:4608])*.1767766952966369).sigmoid()+state['router_bias']
+        result['product_l2']=dp_error(pp,ref)[0]
+    delta=(shifted-score).abs().amax(-1)
+    selected=score.gather(1,actual.long()).amin(-1)
+    # A small threshold alone is insufficient evidence: also print the actual
+    # output perturbation and the selected score's distance from the cutoff.
+    near=(gap<=2*delta+8*torch.finfo(torch.float32).eps)&(selected>=top[:,7]-2*delta-8*torch.finfo(torch.float32).eps)
+    if product is not None:near&=result['product_l2']<.005
+    rows=mask.nonzero().flatten()
+    result.update(near_tie=bool(near[mask].all()),gap8_9=gap[mask].tolist(),
+        max_score_delta=delta[mask].tolist(),cutoff_loss=(top[:,7]-selected)[mask].tolist(),
+        token_index=rows.tolist(),actual=actual[mask].tolist(),control=want[mask].tolist())
+    return result
+
 # The control freezes receipt c0e74bed's projection/attention choices, and uses
 # the current best7_scale glue table and exact recoded NT1 expert reader.
 FG_LOCAL_INSTALL=None
@@ -385,7 +419,7 @@ def lab(deadline,weights,host_state):
            'AB/BA6 cold256MiB per replay; A:A; three changed-input graph draws; FP32 hi+lo router; no spin barriers']
     lines.append(f'SETUP seconds={time.monotonic()-started:.1f} remain={deadline-time.monotonic():.1f}')
     flush=torch.empty(256<<20,device=weights['w13'].device,dtype=torch.uint8)
-    FG_ROWS=[];worst=0.;total_flips=0
+    FG_ROWS=[];worst=0.;total_flips=0;disabled_cells=set()
     cases=[(b,q,w) for b,q in ((1,1),(1,8),(16,1),(32,1)) for w in (2048,0)]
     for case,(b,q,window) in enumerate(cases):
         if time.monotonic()>deadline-3:
@@ -400,6 +434,8 @@ def lab(deadline,weights,host_state):
         noise=dp_pair(a,a,flush)
         original_stream=data['stream'].clone()
         for cell in ('pool','tail','all','epi'):
+            if (t,cell) in disabled_cells:
+                lines.append(f'SKIP case={case} cell={cell} M={t}');continue
             if time.monotonic()>deadline-2:raise RuntimeError('lab budget before all glue cells')
             bg,bo=dp_graph(lambda cell=cell:fg_run(m,data,state,plan,cell))
             for seed in DP_SEEDS:
@@ -411,16 +447,32 @@ def lab(deadline,weights,host_state):
                 data['local_start'].fill_((start+32*(seed%3))%256)
                 state['_local_start']=int(data['local_start'].item())
                 a.replay();bg.replay()
-                error,flips=fg_layer_gate(ao,bo,data,state);worst=max(worst,error);total_flips+=flips
+                flips=int((ao[2]!=bo[2]).any(-1).sum());total_flips+=flips
+                if flips:
+                    detail=fg_flip_report(m,data,state,plan,bo[2],ao[2])
+                    FG_ROWS.append(dict(case=case,cell=cell,seed=seed,disabled=True,**detail))
+                    disabled_cells.add((t,cell))
+                    lines.append('DISABLED '+json.dumps(FG_ROWS[-1],separators=(',',':')))
+                    break
+                error,_=fg_layer_gate(ao,bo,data,state);worst=max(worst,error)
                 # The independent FP32 router checks the published layer score/count gates.
                 if cell in ('pool','all','epi'):
                     fg_route_gate(m,data,plan,bo[2],state,synthetic)
                 if not all(bool((op.counts==0).all()) for op in state['fused_glue_ops'].values()):
                     raise RuntimeError('counter did not return to zero')
-                pair=dp_pair(a,bg,flush);fg_layer_gate(ao,bo,data,state)
+                pair=dp_pair(a,bg,flush)
+                if not torch.equal(ao[2],bo[2]):
+                    detail=fg_flip_report(m,data,state,plan,bo[2],ao[2])
+                    FG_ROWS.append(dict(case=case,cell=cell,seed=seed,disabled=True,**detail))
+                    disabled_cells.add((t,cell))
+                    lines.append('DISABLED '+json.dumps(FG_ROWS[-1],separators=(',',':')))
+                    break
+                fg_layer_gate(ao,bo,data,state)
                 FG_ROWS.append(dict(case=case,load=f'{b}x{q}/'+('S' if window else 'F'),cell=cell,seed=seed,
                     error=error,flips=flips,noise_us=noise['b']-noise['a'],**pair))
-            rr=FG_ROWS[-3:]
+            rr=[r for r in FG_ROWS if r['case']==case and r['cell']==cell and not r.get('disabled')];
+            if not rr:
+                bg=bo=None;gc.collect();continue
             lines.append(f'G {b}x{q}{"S" if window else "F"} {cell} A/B_us='
                 f'{statistics.mean(r["a"] for r in rr):.2f}/{statistics.mean(r["b"] for r in rr):.2f} '
                 f'B:A={statistics.mean(r["ratio"] for r in rr):.4f} '

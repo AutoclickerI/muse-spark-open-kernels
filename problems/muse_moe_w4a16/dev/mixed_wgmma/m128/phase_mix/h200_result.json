@@ -1,0 +1,151 @@
+{
+  "job": "770809cf159f41e2",
+  "receipt": "runs/muse_moe_w4a16/20261024T155440Z_check_770809cf159f41e2.json",
+  "complete": true,
+  "rows": [
+    {
+      "name": "D32g",
+      "fixtures": 36,
+      "total": 36,
+      "us": 272.7,
+      "paired_ratio_vs_D32": 1.0,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "NT1rec",
+      "fixtures": 36,
+      "total": 36,
+      "us": 289.62,
+      "paired_ratio_vs_D32": 1.0673,
+      "L2": 0.00025,
+      "row": 0.0018
+    },
+    {
+      "name": "OneRead",
+      "fixtures": 36,
+      "total": 36,
+      "us": 362.43,
+      "paired_ratio_vs_D32": 1.3309,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "N_D32",
+      "fixtures": 36,
+      "total": 36,
+      "us": 263.21,
+      "paired_ratio_vs_D32": 0.9689,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "N_D16",
+      "fixtures": 36,
+      "total": 36,
+      "us": 270.97,
+      "paired_ratio_vs_D32": 0.9983,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "N_Dlow",
+      "fixtures": 36,
+      "total": 36,
+      "us": 266.24,
+      "paired_ratio_vs_D32": 0.98,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "H_D32",
+      "fixtures": 36,
+      "total": 36,
+      "us": 238.89,
+      "paired_ratio_vs_D32": 0.8784,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "H_H",
+      "fixtures": 36,
+      "total": 36,
+      "us": 234.44,
+      "paired_ratio_vs_D32": 0.8629,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "N_H",
+      "fixtures": 36,
+      "total": 36,
+      "us": 258.5,
+      "paired_ratio_vs_D32": 0.9524,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "H_R",
+      "fixtures": 36,
+      "total": 36,
+      "us": 272.32,
+      "paired_ratio_vs_D32": 1.0016,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "R_D32",
+      "fixtures": 36,
+      "total": 36,
+      "us": 330.22,
+      "paired_ratio_vs_D32": 1.212,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "N_R",
+      "fixtures": 36,
+      "total": 36,
+      "us": 296.33,
+      "paired_ratio_vs_D32": 1.0909,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "N_N",
+      "fixtures": 36,
+      "total": 36,
+      "us": 269.12,
+      "paired_ratio_vs_D32": 0.9921,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "D16_D32",
+      "fixtures": 36,
+      "total": 36,
+      "us": 277.14,
+      "paired_ratio_vs_D32": 1.0185,
+      "L2": 0.00413,
+      "row": 0.00469
+    }
+  ],
+  "phase_lines": [
+    "PH OneRead route/W13_act/W2_SS/finish=10.4,236.1,125.8,12.9",
+    "PH N_D32 route/W13_act/W2_SS/finish=10.2,147.0,82.0,12.8",
+    "PH N_D16 route/W13_act/W2_SS/finish=10.4,147.2,91.3,12.8",
+    "PH N_Dlow route/W13_act/W2_SS/finish=10.0,147.6,87.6,13.0",
+    "PH H_D32 route/W13_act/W2_SS/finish=10.1,133.0,82.5,12.7",
+    "PH H_H route/W13_act/W2_SS/finish=10.1,132.9,84.9,12.8",
+    "PH N_H route/W13_act/W2_SS/finish=10.4,146.7,84.9,12.9",
+    "PH H_R route/W13_act/W2_SS/finish=10.1,133.1,125.8,12.7",
+    "PH R_D32 route/W13_act/W2_SS/finish=10.6,235.7,82.0,13.1",
+    "PH N_R route/W13_act/W2_SS/finish=10.3,147.4,125.2,12.9",
+    "PH N_N route/W13_act/W2_SS/finish=10.1,147.0,81.0,12.8",
+    "PH D16_D32 route/W13_act/W2_SS/finish=10.2,169.1,82.5,12.8"
+  ],
+  "other_lines": [
+    "ROUTES mix group_reduction mean/min/max=0.4172,0.2258,0.5556 extra_padding=0.1348,0.0250,0.2500",
+    "AA delta_mean/abs_mean/max_abs_us=-0.621/1.580/8.832"
+  ]
+}

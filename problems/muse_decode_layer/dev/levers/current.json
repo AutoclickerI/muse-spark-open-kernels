@@ -1,0 +1,2502 @@
+{
+  "mode": "reset",
+  "profile_source": "problems/muse_decode_layer/profiles/cand_r3_best7_reset.c0e74bedf7b74be5.json",
+  "profile_sha256": "f6335183987ed54687e03b965f767a2d7f40434f4a74c8cf76c3ce750eea509c",
+  "job": "c0e74bedf7b74be5",
+  "baseline_source_speedup": 1.4020263851172763,
+  "modeled_speedup": 1.4813794169903929,
+  "loads_us": {
+    "decode 1": 6681.5947782158455,
+    "decode 16": 12416.611912128721,
+    "decode 32": 15895.533644799762,
+    "verify 1": 9660.818108104873,
+    "verify 16": 27661.8736067808,
+    "verify 32": 37661.55998448715
+  },
+  "unadjusted_loads_us": {
+    "decode 1": 6681.5947782158455,
+    "decode 16": 12993.831912128722,
+    "decode 32": 16790.193644799758,
+    "verify 1": 10151.238108104873,
+    "verify 16": 30050.7336067808,
+    "verify 32": 41530.35998448715
+  },
+  "stage_gains": {
+    "qkv_gate": {
+      "estimate": 2.1480567169745206,
+      "minimum": 0.0,
+      "maximum": 14.538830941890104
+    },
+    "o": {
+      "estimate": 0.9397646506592647,
+      "minimum": 0.0,
+      "maximum": 18.2365497860193
+    },
+    "pool_router": {
+      "estimate": 1.831566844734088,
+      "minimum": 0.7444139072201224,
+      "maximum": 5.8536786329951065
+    },
+    "unpooler": {
+      "estimate": 1.3206664777264001,
+      "minimum": 0.0,
+      "maximum": 16.14678142850231
+    },
+    "attention": {
+      "estimate": 11.497752893314313,
+      "minimum": 11.497752893314313,
+      "maximum": 11.90824156510239
+    },
+    "moe": {
+      "estimate": 27.86258118060243,
+      "minimum": 27.86258118060243,
+      "maximum": 28.434413994522277
+    },
+    "boundaries": {
+      "estimate": 4.2808915173087065,
+      "minimum": 4.2808915173087065,
+      "maximum": 4.2808915173087065
+    },
+    "route": {
+      "estimate": 2.2182011844703595,
+      "minimum": 2.2182011844703595,
+      "maximum": 2.2182011844703595
+    }
+  },
+  "ranking": [
+    {
+      "lever": "Small-M MoE M1/8/16/32",
+      "owner": "small-M MoE",
+      "gain_pct": 13.20265300864992,
+      "gain_max_unreported_pct": 13.20265300864992,
+      "saved_weighted_us": 7826.1325037333345
+    },
+    {
+      "lever": "Attention, all scored shapes",
+      "owner": "attention",
+      "gain_pct": 11.497752893314313,
+      "gain_max_unreported_pct": 11.90824156510239,
+      "saved_weighted_us": 12565.205150166666
+    },
+    {
+      "lever": "Boundaries and route",
+      "owner": "glue",
+      "gain_pct": 6.714548557346528,
+      "gain_max_unreported_pct": 6.714548557346528,
+      "saved_weighted_us": 5482.618048
+    },
+    {
+      "lever": "Dense projections, all four roles",
+      "owner": "proj GEMV",
+      "gain_pct": 6.547805782653339,
+      "gain_max_unreported_pct": 6.547805782653339,
+      "saved_weighted_us": 5600.934122243883
+    },
+    {
+      "lever": "MoE M256",
+      "owner": "free M256",
+      "gain_pct": 6.37243852317311,
+      "gain_max_unreported_pct": 6.848162149918183,
+      "saved_weighted_us": 11664.537291516666
+    },
+    {
+      "lever": "MoE M128",
+      "owner": "MoE M128",
+      "gain_pct": 6.183673745764773,
+      "gain_max_unreported_pct": 6.183673745764773,
+      "saved_weighted_us": 8362.8600757
+    }
+  ],
+  "rows": [
+    {
+      "index": 0,
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "decode 1",
+        "page": 1,
+        "repeats": 60,
+        "seed": 5733800466747392665,
+        "weight": 46
+      },
+      "tokens": 1,
+      "stages_us": {
+        "qkv_gate": 15.092307692307694,
+        "o": 6.707692307692308,
+        "pool_router": 23.849999999999998,
+        "unpooler": 2.65,
+        "attention": 9.9,
+        "moe": 34.8,
+        "boundaries": 7.5,
+        "route": 4.5,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 1.7476266666666667,
+        "attention": 0.11093416666666667,
+        "moe": 14.747310833333323,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 2.4999999999999987,
+        "routes": 2.645,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 8388608
+        },
+        "attention_bytes": 532484.0,
+        "moe_bytes": 70787091.99999996
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          21.8
+        ],
+        "o": [
+          0.0,
+          21.8
+        ],
+        "pool_router": [
+          0.0,
+          26.5
+        ],
+        "unpooler": [
+          0.0,
+          26.5
+        ]
+      },
+      "estimated_roles": [
+        "pool_router",
+        "unpooler",
+        "qkv_gate",
+        "o"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "pool_router",
+            "unpooler"
+          ],
+          "us": 26.5,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "modeled proportional resource floor"
+        },
+        {
+          "roles": [
+            "qkv_gate",
+            "o"
+          ],
+          "us": 21.8,
+          "names": [
+            "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 104.9,
+      "reset_profile_total_after_deltas_us": 104.9,
+      "base_adjusted_us": 105.17609796175017,
+      "modeled_adjusted_us": 105.17609796175017,
+      "delta_scale_us": 0.0,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 34.8,
+      "benchmark_baseline_us": 172.20800276845694,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 34.8,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 26.5,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+          "us": 12.7,
+          "calls": 1
+        },
+        {
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 9.9,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 7.5,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+          "us": 7.3,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.5,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 1.8,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          1,
+          1,
+          2048
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "attn_main",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "cublas",
+          "o": [
+            "lt",
+            0
+          ],
+          "pool_router": "custom",
+          "unpooler_slice": "custom"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": 0.27609796175016754,
+      "stage_gain_pct": {
+        "qkv_gate": 0.5698433446340914,
+        "o": 0.25046940978679055,
+        "pool_router": 0.39587164254136403,
+        "unpooler": 0.04344866618432329,
+        "attention": 1.1655136760170388,
+        "moe": 1.9153789451326362,
+        "boundaries": 0.88479346094142,
+        "route": 0.5255921152988365
+      }
+    },
+    {
+      "index": 1,
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "decode 1",
+        "page": 1,
+        "repeats": 60,
+        "seed": 5733808115888352742,
+        "weight": 16
+      },
+      "tokens": 1,
+      "stages_us": {
+        "qkv_gate": 14.469230769230771,
+        "o": 6.430769230769231,
+        "pool_router": 23.759999999999998,
+        "unpooler": 2.6399999999999997,
+        "attention": 18.3,
+        "moe": 43.4,
+        "boundaries": 6.9,
+        "route": 4.1,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 1.7476266666666667,
+        "attention": 4.333388333333334,
+        "moe": 14.747310833333334,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 2.5,
+        "routes": 2.645,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 8388608
+        },
+        "attention_bytes": 20800264.0,
+        "moe_bytes": 70787092.0
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          20.900000000000002
+        ],
+        "o": [
+          0.0,
+          20.900000000000002
+        ],
+        "pool_router": [
+          0.0,
+          26.4
+        ],
+        "unpooler": [
+          0.0,
+          26.4
+        ]
+      },
+      "estimated_roles": [
+        "pool_router",
+        "unpooler",
+        "qkv_gate",
+        "o"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "pool_router",
+            "unpooler"
+          ],
+          "us": 26.4,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "modeled proportional resource floor"
+        },
+        {
+          "roles": [
+            "qkv_gate",
+            "o"
+          ],
+          "us": 20.900000000000002,
+          "names": [
+            "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 120.0,
+      "reset_profile_total_after_deltas_us": 120.0,
+      "base_adjusted_us": 115.21839199845857,
+      "modeled_adjusted_us": 115.21839199845857,
+      "delta_scale_us": 0.0,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 43.4,
+      "benchmark_baseline_us": 182.8960021957755,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 43.4,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 26.4,
+          "calls": 2
+        },
+        {
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 18.3,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+          "us": 12.3,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 6.9,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+          "us": 6.8,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.1,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 1.8,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          1,
+          1,
+          0
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "attn_main",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "cublas",
+          "o": [
+            "lt",
+            0
+          ],
+          "pool_router": "custom",
+          "unpooler_slice": "custom"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -4.781608001541429,
+      "stage_gain_pct": {
+        "qkv_gate": 0.17045751313036042,
+        "o": 0.07550811331347573,
+        "pool_router": 0.13283001530274985,
+        "unpooler": 0.014698076287459488,
+        "attention": 0.5146772687683939,
+        "moe": 1.0011384653166466,
+        "boundaries": 0.277166875158261,
+        "route": 0.16447667460570312
+      }
+    },
+    {
+      "index": 2,
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "decode 16",
+        "page": 1,
+        "seed": 5733815765029312820,
+        "spread": "agentic",
+        "weight": 46
+      },
+      "tokens": 16,
+      "stages_us": {
+        "qkv_gate": 12.351724137931036,
+        "o": 5.489655172413793,
+        "pool_router": 23.2,
+        "unpooler": 21.958620689655174,
+        "attention": 12.5,
+        "moe": 105.89,
+        "boundaries": 8.6,
+        "route": 4.4,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 13.981013333333333,
+        "attention": 1.7749466666666667,
+        "moe": 44.946308166666654,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 7.619999999999998,
+        "routes": 26.415,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 8519744.0,
+        "moe_bytes": 215742279.19999996
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          39.800000000000004
+        ],
+        "o": [
+          0.0,
+          39.800000000000004
+        ],
+        "pool_router": [
+          23.2,
+          23.2
+        ],
+        "unpooler": [
+          0.0,
+          39.800000000000004
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "unpooler"
+          ],
+          "us": 39.800000000000004,
+          "names": [
+            "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+            "nvjet_sm90_tst_64x16_64x16_4x1_v_bz_splitK_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        },
+        {
+          "roles": [
+            "pool_router"
+          ],
+          "us": 23.2,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 203.8,
+      "reset_profile_total_after_deltas_us": 194.49,
+      "base_adjusted_us": 186.09065181408272,
+      "modeled_adjusted_us": 176.78065181408272,
+      "delta_scale_us": 9.31,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 115.2,
+      "benchmark_baseline_us": 267.39200158044696,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 115.2,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+          "us": 25.8,
+          "calls": 2
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 23.2,
+          "calls": 1
+        },
+        {
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 12.5,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_4x1_v_bz_splitK_TNT",
+          "us": 12.3,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 8.6,
+          "calls": 2
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.4,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 1.7,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          16,
+          1,
+          2048
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "attn_main",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "cublas",
+          "o": "cublas",
+          "pool_router": "custom",
+          "unpooler": "custom"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -17.709348185917293,
+      "stage_gain_pct": {
+        "qkv_gate": 0.1320083212165789,
+        "o": 0.058519915745137464,
+        "pool_router": 0.1709889722449818,
+        "unpooler": 0.23553044907048773,
+        "attention": 0.6435948726955837,
+        "moe": 3.2753701980183245,
+        "boundaries": 0.5396884075516962,
+        "route": 0.27413609511958087
+      }
+    },
+    {
+      "index": 3,
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "decode 16",
+        "page": 1,
+        "seed": 5733823414170272899,
+        "spread": "agentic",
+        "weight": 16
+      },
+      "tokens": 16,
+      "stages_us": {
+        "qkv_gate": 12.227586206896552,
+        "o": 5.43448275862069,
+        "pool_router": 22.9,
+        "unpooler": 21.73793103448276,
+        "attention": 106.5,
+        "moe": 90.49,
+        "boundaries": 8.7,
+        "route": 4.5,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 13.981013333333333,
+        "attention": 69.33421333333334,
+        "moe": 43.884624666666696,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 7.440000000000004,
+        "routes": 26.415,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 332804224.0,
+        "moe_bytes": 210646198.40000013
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          39.400000000000006
+        ],
+        "o": [
+          0.0,
+          39.400000000000006
+        ],
+        "pool_router": [
+          22.9,
+          22.9
+        ],
+        "unpooler": [
+          0.0,
+          39.400000000000006
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "unpooler"
+          ],
+          "us": 39.400000000000006,
+          "names": [
+            "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+            "nvjet_sm90_tst_64x16_64x16_4x1_v_bz_splitK_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        },
+        {
+          "roles": [
+            "pool_router"
+          ],
+          "us": 22.9,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 281.8,
+      "reset_profile_total_after_deltas_us": 272.49,
+      "base_adjusted_us": 277.1038705425573,
+      "modeled_adjusted_us": 267.7938705425573,
+      "delta_scale_us": 9.31,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 99.8,
+      "benchmark_baseline_us": 441.7920056730509,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 106.5,
+          "calls": 1
+        },
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 99.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+          "us": 25.6,
+          "calls": 2
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 22.9,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_4x1_v_bz_splitK_TNT",
+          "us": 12.1,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 8.7,
+          "calls": 2
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.5,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 1.7,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          16,
+          1,
+          0
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "attn_main",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "cublas",
+          "o": "cublas",
+          "pool_router": "custom",
+          "unpooler": "custom"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -4.696129457442737,
+      "stage_gain_pct": {
+        "qkv_gate": 0.04310342813425075,
+        "o": 0.019141028326604498,
+        "pool_router": 0.052774471986283156,
+        "unpooler": 0.07671842579765525,
+        "attention": 0.35586656935914107,
+        "moe": 0.7368113464408168,
+        "boundaries": 0.1875955546414101,
+        "route": 0.09691903349604321
+      }
+    },
+    {
+      "index": 4,
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "decode 32",
+        "page": 1,
+        "seed": 5733831063311232979,
+        "spread": "agentic",
+        "weight": 46
+      },
+      "tokens": 32,
+      "stages_us": {
+        "qkv_gate": 12.724137931034482,
+        "o": 5.655172413793103,
+        "pool_router": 24.4,
+        "unpooler": 22.620689655172413,
+        "attention": 17.0,
+        "moe": 118.07,
+        "boundaries": 8.8,
+        "route": 6.7,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 13.981013333333333,
+        "attention": 3.5498933333333333,
+        "moe": 52.73198716666668,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 8.940000000000001,
+        "routes": 50.145,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 17039488.0,
+        "moe_bytes": 253113538.40000004
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          41.0
+        ],
+        "o": [
+          0.0,
+          41.0
+        ],
+        "pool_router": [
+          24.4,
+          24.4
+        ],
+        "unpooler": [
+          0.0,
+          41.0
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "pool_router"
+          ],
+          "us": 24.4,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "unpooler"
+          ],
+          "us": 41.0,
+          "names": [
+            "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
+            "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_112x64_64x9_4x1_v_bz_TNN",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 230.2,
+      "reset_profile_total_after_deltas_us": 215.76999999999998,
+      "base_adjusted_us": 230.3536728113808,
+      "modeled_adjusted_us": 215.92367281138078,
+      "delta_scale_us": 14.43,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 132.5,
+      "benchmark_baseline_us": 270.27201233431697,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 132.5,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 24.4,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
+          "us": 19.4,
+          "calls": 1
+        },
+        {
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 13.4,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
+          "us": 12.4,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 8.8,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_112x64_64x9_4x1_v_bz_TNN",
+          "us": 7.2,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 6.7,
+          "calls": 1
+        },
+        {
+          "name": "void (anonymous namespace)::attn_combine<1>((anonymous na...",
+          "us": 3.6,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 2.0,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          32,
+          1,
+          2048
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "layer",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": [
+            "lt",
+            0
+          ],
+          "o": [
+            "lt",
+            7
+          ],
+          "pool_router": "custom",
+          "unpooler": "cublas"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": 0.15367281138080102,
+      "stage_gain_pct": {
+        "qkv_gate": 0.1211158811802375,
+        "o": 0.05370262481779037,
+        "pool_router": 0.19193097907638984,
+        "unpooler": 0.2160313909695837,
+        "attention": 0.6101766659314521,
+        "moe": 2.611325310332728,
+        "boundaries": 0.4297586521968578,
+        "route": 0.32673532611690437
+      }
+    },
+    {
+      "index": 5,
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "decode 32",
+        "page": 1,
+        "seed": 5733838712452193060,
+        "spread": "agentic",
+        "weight": 16
+      },
+      "tokens": 32,
+      "stages_us": {
+        "qkv_gate": 12.693103448275862,
+        "o": 5.641379310344828,
+        "pool_router": 25.0,
+        "unpooler": 22.56551724137931,
+        "attention": 195.6,
+        "moe": 119.07,
+        "boundaries": 9.5,
+        "route": 6.7,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 13.981013333333333,
+        "attention": 138.66842666666668,
+        "moe": 53.43977616666657,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 9.059999999999985,
+        "routes": 50.145,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 665608448.0,
+        "moe_bytes": 256510925.59999955
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          40.9
+        ],
+        "o": [
+          0.0,
+          40.9
+        ],
+        "pool_router": [
+          25.0,
+          25.0
+        ],
+        "unpooler": [
+          0.0,
+          40.9
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "pool_router"
+          ],
+          "us": 25.0,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "unpooler"
+          ],
+          "us": 40.9,
+          "names": [
+            "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
+            "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_112x64_64x9_4x1_v_bz_TNN",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 411.2,
+      "reset_profile_total_after_deltas_us": 396.77,
+      "base_adjusted_us": 387.12029346726524,
+      "modeled_adjusted_us": 372.69029346726523,
+      "delta_scale_us": 14.43,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 133.5,
+      "benchmark_baseline_us": 625.0240094959736,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 195.6,
+          "calls": 1
+        },
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 133.5,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 25.0,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
+          "us": 19.2,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
+          "us": 12.5,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 9.5,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_112x64_64x9_4x1_v_bz_TNN",
+          "us": 7.2,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 6.7,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 2.0,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          32,
+          1,
+          0
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "attn_main",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": [
+            "lt",
+            0
+          ],
+          "o": [
+            "lt",
+            7
+          ],
+          "pool_router": "custom",
+          "unpooler": "cublas"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -24.079706532734747,
+      "stage_gain_pct": {
+        "qkv_gate": 0.04148879729930614,
+        "o": 0.018424594433031606,
+        "pool_router": 0.07658300585292895,
+        "unpooler": 0.07384133974020042,
+        "attention": 0.2595380755654446,
+        "moe": 0.8572126168468184,
+        "boundaries": 0.1598926981236593,
+        "route": 0.11280269237167423
+      }
+    },
+    {
+      "index": 6,
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "verify 1",
+        "page": 1,
+        "q_len": 8,
+        "seed": 5733846361593153142,
+        "weight": 46
+      },
+      "tokens": 8,
+      "stages_us": {
+        "qkv_gate": 17.220000000000002,
+        "o": 7.653333333333333,
+        "pool_router": 22.7,
+        "unpooler": 3.8266666666666667,
+        "attention": 20.299999999999997,
+        "moe": 70.29,
+        "boundaries": 6.8,
+        "route": 4.2,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 1.7476266666666667,
+        "attention": 0.11131333333333333,
+        "moe": 44.23851916666667,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 7.5,
+        "routes": 13.655,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 8388608
+        },
+        "attention_bytes": 534304.0,
+        "moe_bytes": 212344892.0
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          28.700000000000003
+        ],
+        "o": [
+          0.0,
+          28.700000000000003
+        ],
+        "pool_router": [
+          22.7,
+          22.7
+        ],
+        "unpooler": [
+          0.0,
+          28.700000000000003
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "pool_router"
+          ],
+          "us": 22.7,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "unpooler"
+          ],
+          "us": 28.700000000000003,
+          "names": [
+            "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 160.9,
+      "reset_profile_total_after_deltas_us": 152.99,
+      "base_adjusted_us": 157.89912423057453,
+      "modeled_adjusted_us": 149.98912423057453,
+      "delta_scale_us": 7.91,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 78.2,
+      "benchmark_baseline_us": 259.79199493303895,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 78.2,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 22.7,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+          "us": 18.0,
+          "calls": 2
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 10.0,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+          "us": 7.1,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 6.8,
+          "calls": 2
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.2,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 4.2,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 3.6,
+          "calls": 2
+        },
+        {
+          "name": "_qk_prep_kernel",
+          "us": 2.7,
+          "calls": 1
+        },
+        {
+          "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>(in...",
+          "us": 2.2,
+          "calls": 1
+        },
+        {
+          "name": "_norm_gate_kernel",
+          "us": 1.2,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          1,
+          8,
+          2048
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "layer",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "cublas",
+          "o": "cublas",
+          "pool_router": "custom",
+          "unpooler_slice": [
+            "lt",
+            2
+          ]
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -3.000875769425477,
+      "stage_gain_pct": {
+        "qkv_gate": 0.5662776660164764,
+        "o": 0.24891944953989983,
+        "pool_router": 0.1799033404234584,
+        "unpooler": 0.12391824612036444,
+        "attention": 1.695752921180843,
+        "moe": 1.0518569674862401,
+        "boundaries": 0.5482442265379489,
+        "route": 0.3370475979012314
+      }
+    },
+    {
+      "index": 7,
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "verify 1",
+        "page": 1,
+        "q_len": 8,
+        "seed": 5733854010734113225,
+        "weight": 16
+      },
+      "tokens": 8,
+      "stages_us": {
+        "qkv_gate": 17.459999999999997,
+        "o": 7.759999999999999,
+        "pool_router": 22.9,
+        "unpooler": 3.8799999999999994,
+        "attention": 31.300000000000004,
+        "moe": 78.89,
+        "boundaries": 7.3,
+        "route": 4.4,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 1.7476266666666667,
+        "attention": 4.3337675,
+        "moe": 44.23851916666667,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 7.5,
+        "routes": 13.655,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 8388608
+        },
+        "attention_bytes": 20802084.0,
+        "moe_bytes": 212344892.0
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          29.099999999999998
+        ],
+        "o": [
+          0.0,
+          29.099999999999998
+        ],
+        "pool_router": [
+          22.9,
+          22.9
+        ],
+        "unpooler": [
+          0.0,
+          29.099999999999998
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "pool_router"
+          ],
+          "us": 22.9,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "unpooler"
+          ],
+          "us": 29.099999999999998,
+          "names": [
+            "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 181.8,
+      "reset_profile_total_after_deltas_us": 173.89000000000001,
+      "base_adjusted_us": 180.49239959365278,
+      "modeled_adjusted_us": 172.58239959365278,
+      "delta_scale_us": 7.91,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 86.8,
+      "benchmark_baseline_us": 285.2479969151318,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 86.8,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 22.9,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 18.6,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+          "us": 18.4,
+          "calls": 2
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 7.3,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+          "us": 7.2,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 7.1,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.4,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 3.5,
+          "calls": 2
+        },
+        {
+          "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>(int...",
+          "us": 3.2,
+          "calls": 1
+        },
+        {
+          "name": "_qk_prep_kernel",
+          "us": 1.3,
+          "calls": 1
+        },
+        {
+          "name": "_norm_gate_kernel",
+          "us": 1.1,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          1,
+          8,
+          0
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "layer",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "cublas",
+          "o": "cublas",
+          "pool_router": "custom",
+          "unpooler_slice": [
+            "lt",
+            2
+          ]
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -1.307600406347234,
+      "stage_gain_pct": {
+        "qkv_gate": 0.2011538751781603,
+        "o": 0.08905256552919721,
+        "pool_router": 0.06786443179427337,
+        "unpooler": 0.044456923088800934,
+        "attention": 0.7265841594050444,
+        "moe": 0.6026584373884416,
+        "boundaries": 0.20231369205695157,
+        "route": 0.12190231526592527
+      }
+    },
+    {
+      "index": 8,
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "verify 16",
+        "page": 1,
+        "q_len": 8,
+        "seed": 5733861659875073309,
+        "spread": "agentic",
+        "weight": 46
+      },
+      "tokens": 128,
+      "stages_us": {
+        "qkv_gate": 13.92127659574468,
+        "o": 6.187234042553191,
+        "pool_router": 27.84255319148936,
+        "unpooler": 24.748936170212765,
+        "attention": 24.900000000000002,
+        "moe": 278.87,
+        "boundaries": 11.0,
+        "route": 3.1,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 13.981013333333333,
+        "attention": 1.7810133333333333,
+        "moe": 108.4113885,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 18.38,
+        "routes": 195.03,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 8548864.0,
+        "moe_bytes": 520374664.79999995
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          72.69999999999999
+        ],
+        "o": [
+          0.0,
+          72.69999999999999
+        ],
+        "pool_router": [
+          0.0,
+          72.69999999999999
+        ],
+        "unpooler": [
+          0.0,
+          72.69999999999999
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "pool_router",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "pool_router",
+            "unpooler"
+          ],
+          "us": 72.69999999999999,
+          "names": [
+            "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
+            "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
+            "nvjet_sm90_tst_96x64_64x10_4x2_h_bz_splitK_TNN",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 429.2,
+      "reset_profile_total_after_deltas_us": 390.66999999999996,
+      "base_adjusted_us": 441.7719405403916,
+      "modeled_adjusted_us": 403.2419405403916,
+      "delta_scale_us": 38.53,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 317.4,
+      "benchmark_baseline_us": 536.959994584322,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 317.4,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
+          "us": 28.3,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
+          "us": 25.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_96x64_64x10_4x2_h_bz_splitK_TNN",
+          "us": 15.5,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 14.6,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 11.0,
+          "calls": 2
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 3.9,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 3.1,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 3.1,
+          "calls": 1
+        },
+        {
+          "name": "_qk_prep_kernel",
+          "us": 3.1,
+          "calls": 1
+        },
+        {
+          "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>(in...",
+          "us": 2.1,
+          "calls": 1
+        },
+        {
+          "name": "_norm_gate_kernel",
+          "us": 1.2,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          16,
+          8,
+          2048
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "layer",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "custom",
+          "o": "cublas",
+          "pool_router": [
+            "short_lt",
+            0,
+            0
+          ],
+          "unpooler": "cublas"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": 12.571940540391665,
+      "stage_gain_pct": {
+        "qkv_gate": 0.10285228569268594,
+        "o": 0.04562077678507292,
+        "pool_router": 0.20644967297930206,
+        "unpooler": 0.18336312639049,
+        "attention": 0.6400458592587348,
+        "moe": 4.4382881818680655,
+        "boundaries": 0.30754055643930905,
+        "route": 0.08610823825802257
+      }
+    },
+    {
+      "index": 9,
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "verify 16",
+        "page": 1,
+        "q_len": 8,
+        "seed": 5733869309016033394,
+        "spread": "agentic",
+        "weight": 16
+      },
+      "tokens": 128,
+      "stages_us": {
+        "qkv_gate": 14.055319148936173,
+        "o": 6.2468085106382985,
+        "pool_router": 28.110638297872345,
+        "unpooler": 24.987234042553194,
+        "attention": 204.1,
+        "moe": 267.97,
+        "boundaries": 10.8,
+        "route": 3.0,
+        "other": 0.0
+      },
+      "floors_us": {
+        "qkv_gate": 7.86432,
+        "o": 3.4952533333333333,
+        "pool_router": 15.72864,
+        "unpooler": 13.981013333333333,
+        "attention": 69.34028,
+        "moe": 109.1191775,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 18.5,
+        "routes": 195.03,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 332833344.0,
+        "moe_bytes": 523772052.0
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          73.4
+        ],
+        "o": [
+          0.0,
+          73.4
+        ],
+        "pool_router": [
+          0.0,
+          73.4
+        ],
+        "unpooler": [
+          0.0,
+          73.4
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "pool_router",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "pool_router",
+            "unpooler"
+          ],
+          "us": 73.4,
+          "names": [
+            "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
+            "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
+            "nvjet_sm90_tst_96x64_64x10_4x2_h_bz_splitK_TNN",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 0.0,
+      "profile_total_us": 597.8,
+      "reset_profile_total_after_deltas_us": 559.27,
+      "base_adjusted_us": 608.0765213701741,
+      "modeled_adjusted_us": 569.5465213701741,
+      "delta_scale_us": 38.53,
+      "delta_m256_us": 0.0,
+      "base_moe_us": 306.5,
+      "benchmark_baseline_us": 706.0480210930109,
+      "kernels": [
+        {
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 306.5,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 193.1,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
+          "us": 29.0,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
+          "us": 26.1,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_96x64_64x10_4x2_h_bz_splitK_TNN",
+          "us": 15.1,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 10.8,
+          "calls": 2
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 3.9,
+          "calls": 1
+        },
+        {
+          "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>(int...",
+          "us": 3.5,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 3.2,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 3.0,
+          "calls": 1
+        },
+        {
+          "name": "_norm_gate_kernel",
+          "us": 2.0,
+          "calls": 1
+        },
+        {
+          "name": "_qk_prep_kernel",
+          "us": 1.6,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          16,
+          8,
+          0
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "layer",
+          null
+        ],
+        "moe": "v9nt1",
+        "projection": {
+          "qkv_gate": "custom",
+          "o": "cublas",
+          "pool_router": [
+            "short_lt",
+            0,
+            0
+          ],
+          "unpooler": "cublas"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": 10.276521370174123,
+      "stage_gain_pct": {
+        "qkv_gate": 0.03698631024712197,
+        "o": 0.016426541239259594,
+        "pool_router": 0.07406859260659913,
+        "unpooler": 0.06581976784317649,
+        "attention": 1.14293958994845,
+        "moe": 1.2704047335454014,
+        "boundaries": 0.10428008406441353,
+        "route": 0.028925873099002485
+      }
+    },
+    {
+      "index": 10,
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "verify 32",
+        "page": 1,
+        "q_len": 8,
+        "seed": 5733876958156993480,
+        "spread": "agentic",
+        "weight": 46
+      },
+      "tokens": 256,
+      "stages_us": {
+        "qkv_gate": 17.482978723404255,
+        "o": 7.770212765957448,
+        "pool_router": 34.96595744680851,
+        "unpooler": 31.08085106382979,
+        "attention": 24.0,
+        "moe": 352.4,
+        "boundaries": 18.9,
+        "route": 4.0,
+        "other": 11.0
+      },
+      "floors_us": {
+        "qkv_gate": 9.771159166835186,
+        "o": 4.342737407482305,
+        "pool_router": 19.542318333670373,
+        "unpooler": 17.37094962992922,
+        "attention": 3.5620266666666667,
+        "moe": 125.69323658333329,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 21.30999999999999,
+        "routes": 386.93,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 17097728.0,
+        "moe_bytes": 603327535.5999998
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          91.30000000000001
+        ],
+        "o": [
+          0.0,
+          91.30000000000001
+        ],
+        "pool_router": [
+          0.0,
+          91.30000000000001
+        ],
+        "unpooler": [
+          0.0,
+          91.30000000000001
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "pool_router",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "pool_router",
+            "unpooler"
+          ],
+          "us": 91.30000000000001,
+          "names": [
+            "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+            "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+            "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN"
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 11.0,
+      "profile_total_us": 564.0,
+      "reset_profile_total_after_deltas_us": 501.59999999999997,
+      "base_adjusted_us": 574.06547115373,
+      "modeled_adjusted_us": 511.6654711537299,
+      "delta_scale_us": 0.0,
+      "delta_m256_us": 62.400000000000034,
+      "base_moe_us": 414.8,
+      "benchmark_baseline_us": 714.4319764338434,
+      "kernels": [
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<2...",
+          "us": 253.9,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<2...",
+          "us": 138.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+          "us": 34.7,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+          "us": 33.6,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN",
+          "us": 23.0,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 20.0,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 18.9,
+          "calls": 2
+        },
+        {
+          "name": "_pf_swiglu_kernel",
+          "us": 11.4,
+          "calls": 1
+        },
+        {
+          "name": "_pf_combine_kernel",
+          "us": 6.8,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.0,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 4.0,
+          "calls": 1
+        },
+        {
+          "name": "_pf_gather_norm_kernel",
+          "us": 3.9,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          32,
+          8,
+          2048
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "layer",
+          null
+        ],
+        "moe": "humming_masked",
+        "projection": {
+          "qkv_gate": [
+            "short_lt",
+            0,
+            0
+          ],
+          "o": "custom",
+          "pool_router": "custom",
+          "unpooler": "custom"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": 10.065471153729959,
+      "stage_gain_pct": {
+        "qkv_gate": 0.09764769247394836,
+        "o": 0.04331663225901585,
+        "pool_router": 0.19596677516929745,
+        "unpooler": 0.1740596296270235,
+        "attention": 0.39983338575920213,
+        "moe": 4.471442877053484,
+        "boundaries": 0.3895472336144293,
+        "route": 0.0816087515301508
+      }
+    },
+    {
+      "index": 11,
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "dist": "soft",
+        "layer": "full",
+        "load": "verify 32",
+        "page": 1,
+        "q_len": 8,
+        "seed": 5733884607297953567,
+        "spread": "agentic",
+        "weight": 16
+      },
+      "tokens": 256,
+      "stages_us": {
+        "qkv_gate": 17.2531914893617,
+        "o": 7.6680851063829785,
+        "pool_router": 34.5063829787234,
+        "unpooler": 30.672340425531914,
+        "attention": 510.1,
+        "moe": 349.59999999999997,
+        "boundaries": 18.8,
+        "route": 4.1,
+        "other": 11.300000000000182
+      },
+      "floors_us": {
+        "qkv_gate": 9.771159166835186,
+        "o": 4.342737407482305,
+        "pool_router": 19.542318333670373,
+        "unpooler": 17.37094962992922,
+        "attention": 138.68056,
+        "moe": 126.10611350000008,
+        "boundaries": 0.017066666666666667,
+        "route": 0.00192,
+        "other": null
+      },
+      "work": {
+        "touched": 21.38000000000001,
+        "routes": 386.93,
+        "context": 80000,
+        "projection_bytes": {
+          "qkv_gate": 37748736,
+          "o": 16777216,
+          "pool_router": 75497472,
+          "unpooler": 67108864
+        },
+        "attention_bytes": 665666688.0,
+        "moe_bytes": 605309344.8000003
+      },
+      "role_bounds_us": {
+        "qkv_gate": [
+          0.0,
+          90.1
+        ],
+        "o": [
+          0.0,
+          90.1
+        ],
+        "pool_router": [
+          0.0,
+          90.1
+        ],
+        "unpooler": [
+          0.0,
+          90.1
+        ]
+      },
+      "estimated_roles": [
+        "qkv_gate",
+        "o",
+        "pool_router",
+        "unpooler"
+      ],
+      "projection_groups": [
+        {
+          "roles": [
+            "qkv_gate",
+            "o",
+            "pool_router",
+            "unpooler"
+          ],
+          "us": 90.1,
+          "names": [
+            "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+            "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+            "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN"
+          ],
+          "allocation": "modeled proportional resource floor"
+        }
+      ],
+      "unreported_us": 11.300000000000182,
+      "profile_total_us": 1046.4,
+      "reset_profile_total_after_deltas_us": 984.0,
+      "base_adjusted_us": 945.2092694634732,
+      "modeled_adjusted_us": 882.8092694634731,
+      "delta_scale_us": 0.0,
+      "delta_m256_us": 62.400000000000034,
+      "base_moe_us": 412.0,
+      "benchmark_baseline_us": 1074.7519601136446,
+      "kernels": [
+        {
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 505.8,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<2...",
+          "us": 250.5,
+          "calls": 1
+        },
+        {
+          "name": "void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<2...",
+          "us": 139.2,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+          "us": 34.4,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+          "us": 32.8,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN",
+          "us": 22.9,
+          "calls": 1
+        },
+        {
+          "name": "_boundary_fast",
+          "us": 18.8,
+          "calls": 2
+        },
+        {
+          "name": "_pf_swiglu_kernel",
+          "us": 10.8,
+          "calls": 1
+        },
+        {
+          "name": "_pf_combine_kernel",
+          "us": 7.1,
+          "calls": 1
+        },
+        {
+          "name": "_pf_gather_norm_kernel",
+          "us": 4.4,
+          "calls": 1
+        },
+        {
+          "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
+          "us": 4.3,
+          "calls": 1
+        },
+        {
+          "name": "_route_fast",
+          "us": 4.1,
+          "calls": 1
+        }
+      ],
+      "plan": {
+        "key": [
+          32,
+          8,
+          0
+        ],
+        "glue": "best6",
+        "geometry": {},
+        "attention": [
+          "fa3",
+          [
+            8,
+            true
+          ]
+        ],
+        "moe": "humming_masked",
+        "projection": {
+          "qkv_gate": [
+            "short_lt",
+            0,
+            0
+          ],
+          "o": "custom",
+          "pool_router": "custom",
+          "unpooler": "custom"
+        },
+        "l2_prefetch": 0,
+        "dense_chain": false
+      },
+      "profile_vs_adjusted_residual_us": -101.19073053652687,
+      "stage_gain_pct": {
+        "qkv_gate": 0.032257993303922726,
+        "o": 0.014327895412052951,
+        "pool_router": 0.06458896835078762,
+        "unpooler": 0.05739798446024397,
+        "attention": 2.5479107026903094,
+        "moe": 1.3787618643271757,
+        "boundaries": 0.1335806115754751,
+        "route": 0.0290423094092081
+      }
+    }
+  ],
+  "corrections": {
+    "scale_job": "58ae2e2cf8df45ef",
+    "scale_saved_us": {
+      "8": 7.91,
+      "16": 9.31,
+      "32": 14.43,
+      "128": 38.53
+    },
+    "m256_job": "97be11d4631b44d6",
+    "m256_saved_us": 62.400000000000034,
+    "m1": "no matched M1 delta; no invented gain"
+  },
+  "model_sources": {
+    "problems/muse_decode_layer/dev/levers/build.py": "279b7502127ad844b5144b01d5bd19d2728010a0d74f2c2d4c25708ee8cb53ac",
+    "sim/hw.py": "39b2b4bf81cfbd31c59074e40881c8fcaf9743033f3ce7999e940de5848dbe7a",
+    "sim/bound.py": "03009b092e3f9dad9c1780761c37ba8e4293fd276786a89f6cbd1ad5c2de058e",
+    "sim/muse.py": "344839c3bb4cf588858d8ce231f4381f9fdc1951a40d0b6de858f66a884fd864",
+    "sim/problems.py": "6b495e51291cd024fb08b7feabc1b9d5acc0e81a0b0160411bcb12de0650d19e"
+  },
+  "lab_receipts": [
+    {
+      "path": "runs/muse_decode_layer/20261024T141927Z_check_58ae2e2cf8df45ef.json",
+      "sha256": "2b12f8ebe8ec7e9e09b48750c96364e87900f35cbd0fe774b83ca633968216d6"
+    },
+    {
+      "path": "runs/muse_moe_w4a16/20261024T142924Z_check_97be11d4631b44d6.json",
+      "sha256": "640e4bf065f8ce2e96de4f54d77edd63c7856713874a2dc3b3a3026362dc3a2c"
+    }
+  ],
+  "verification": {
+    "shapes": 12,
+    "loads": 6,
+    "source_score_reproduced": true,
+    "projection_groups_close": true,
+    "corrections_applied_once": true,
+    "negative_gain_clamped": true,
+    "profile_rounding_tolerance_us": "0.05 * (visible rows + 1)"
+  }
+}

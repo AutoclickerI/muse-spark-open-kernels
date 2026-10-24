@@ -1,0 +1,55 @@
+{
+  "manifest": {
+    "payload": "prof/lab/decode_scale_bank.py",
+    "sha256": "e9b0e04ca74a063db131ad489194c8527c0abd84e460bfc4d4cad435f49e9cfc",
+    "raw_source_sha256": "4516cb979dac623a6b6a2347be54cb5ecb416be23d7631aeae092a403beb9528",
+    "best7_sha256": "b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a",
+    "host_source_sha256": "ba990a86f6f7f4985345cfc89a3bc56e36730d974ba47642a344c5c77d84279f",
+    "best7_identical_definitions": [
+      "V9_CUDA_SRC",
+      "V9_CPP_SRC",
+      "_repack",
+      "v9_prepare",
+      "v9_kernel_fn"
+    ],
+    "seeds": [
+      172903,
+      180822,
+      188741
+    ],
+    "cases": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "rounds": 6
+  },
+  "cold_payload_s": 56.380019020987675,
+  "fixtures": 24,
+  "rounds": 6,
+  "share_s": 80,
+  "exact_recode_scale_codes": 254,
+  "fp4_codes": 16,
+  "max_l2": 0.0016651605255901814,
+  "max_row": 0.0017564448062330484,
+  "reused_unchanged_reader_sm90a": [
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": ""
+    }
+  ],
+  "host_control_validation": "scale_bank_sent.json: serial-build revision passed 13 tests/12 graphs/5 static; only compile ordering changes",
+  "current_revision_sent": false,
+  "accepted_single_payload": {
+    "job": "58ae2e2cf8df45ef",
+    "send_key": "6edfaa87ad96a5ca",
+    "payload_sha256": "8e01adcec8da5a0f1caa873433c791dca6f8bb05b1934803c07b8edb71be736b"
+  },
+  "native_h200": "unmeasured; bank promotion waits for the accepted receipt"
+}

@@ -1,0 +1,99 @@
+{
+  "payload_sha256": "c437e136e7cf76ad528000c45ed4a89aad6beb64e9ef8e4267e14878fac58eca",
+  "kernel_sha256": "0a652546b6a4551a717a1616c46d6d9a55b0add17421a36c1966ce2e38cd2652",
+  "checks": 756,
+  "graphs": 252,
+  "max_relative_fp64": 9.502473403699696e-07,
+  "forced_hopper_grid": [
+    132,
+    264
+  ],
+  "large_smem_standins": {
+    "3": {
+      "requested": [
+        64,
+        128,
+        8,
+        1,
+        1
+      ],
+      "executed": [
+        64,
+        128,
+        4,
+        1,
+        1
+      ]
+    },
+    "4": {
+      "requested": [
+        64,
+        256,
+        4,
+        1,
+        1
+      ],
+      "executed": [
+        64,
+        256,
+        2,
+        1,
+        1
+      ]
+    },
+    "18": {
+      "requested": [
+        128,
+        64,
+        8,
+        4,
+        1
+      ],
+      "executed": [
+        128,
+        64,
+        4,
+        4,
+        1
+      ]
+    },
+    "19": {
+      "requested": [
+        64,
+        256,
+        4,
+        2,
+        1
+      ],
+      "executed": [
+        64,
+        256,
+        2,
+        2,
+        1
+      ]
+    },
+    "20": {
+      "requested": [
+        64,
+        128,
+        8,
+        4,
+        1
+      ],
+      "executed": [
+        64,
+        128,
+        4,
+        4,
+        1
+      ]
+    }
+  },
+  "native_stages_tested": [
+    2,
+    4,
+    8
+  ],
+  "elapsed_s": 1.1271496559493244
+}

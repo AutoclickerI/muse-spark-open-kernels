@@ -1,0 +1,61 @@
+{
+  "send_key": "0ea82c48f2255889",
+  "judge_job": "97be11d4631b44d6",
+  "host": "muse_moe_w4a16",
+  "priority": 0.8,
+  "status": "done; H200 numerical repair confirmed in combined receipt97be11d4631b44d6",
+  "detached_log": "runs/detached/0ea82c48f2255889.log",
+  "payload_sha256": "0927bfa53e38d7b7a8172f8a188dc7004854612c6d2ca6fd977fbbc9ef86cd15",
+  "wrapper_sha256": "0ea82c48f2255889bd69799802b6639f368257eadd7810d9e38b0c43e7967de8",
+  "files": {
+    "prof/lab/moe_m128_k64_repair.py": "0927bfa53e38d7b7a8172f8a188dc7004854612c6d2ca6fd977fbbc9ef86cd15",
+    "problems/muse_moe_w4a16/lab/lab_moe_m128_k64_repair.py": "0ea82c48f2255889bd69799802b6639f368257eadd7810d9e38b0c43e7967de8",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/fused.cu": "94b28211544b9d52cbbb3c252bb4f18e8e2715e7c5decf51f670ff2fcb5d382a",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/native_abi.py": "d4c161c7b5c1048956a20a2512ce645ead6eedf1933c2ce30dc243629eeaeb43",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/source.py": "a58b4b3bf5f821c7e16cc82c40c03b3a5899ed61a7bee2f0f38180d77b10bc50",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/build_repair_lab.py": "67d565563d2acc96beac288edc32b216e629c97f0053c6adbc4fc4922e481dbe",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/repair_driver.py.inc": "da89a5450b287a6491f6cc96c4096d24316ee8c1576286d35374f3238113b412",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/check_async.py": "9b66569d47fdb4762dd44b8c1a614e05d481a853dadfdc13abe81410b20ef073",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/k64_bank_rotation.patch": "e0efed5ecf056d16f01c525b92ceaf5f663167a1719d843c220810dcc5a3120e"
+  },
+  "scope": {
+    "before_shared_sha256": "3f913653eef33eb6beca83e79d5722738daefe3892914b5b472a39a30c17def5",
+    "after_shared_sha256": "94b28211544b9d52cbbb3c252bb4f18e8e2715e7c5decf51f670ff2fcb5d382a",
+    "epilogues_identical": true,
+    "change": "K64 register-A rotation across paired stages; source generator follows shared register index"
+  },
+  "cause": "K64 reuses register-A af[0] while its previous WGMMA group is pending after wait1. Confirmed PTX lifetime violation matches affected configurations; H200 numerical confirmation pending.",
+  "local_evidence": {
+    "M128_graphs": 234,
+    "shared_checks": 210,
+    "M128_max_L2": 0.004131368361413479,
+    "M128_max_row": 0.00494738481938839,
+    "seed_count": 12,
+    "configs": 7,
+    "R0": true,
+    "HOT128": true,
+    "poisoned_active_scratch_finite": true,
+    "Hopper_address_pairs": 393216,
+    "old_unsafe_native_paths": 10,
+    "fixed_safe_native_paths": 10,
+    "shared_native_specializations": 16,
+    "M128_native_specializations": 12,
+    "no_native_spills": true,
+    "wrapper_tests": 5,
+    "wrapper_static": 6,
+    "direct_python_static": 2,
+    "native_pointer_build_s": 12.499208873021416,
+    "pointer_abi": true
+  },
+  "remaining": "Numerical gates pass; old serialized-combine producer latency is rejected. Distributed-finalizer/expert-wide port is sent as640d67e7e56d42e5.",
+  "next": "Use m128/one_read/ for current performance work; retain this repair and its proof.",
+  "H200_result": {
+    "seeds": 12,
+    "R0": true,
+    "HOT128": true,
+    "all_affected_configs_pass": true,
+    "max_L2": 0.00413,
+    "max_row": 0.00471,
+    "poisoned_ACT_Y_INV_OUT_nonfinite": 0
+  }
+}

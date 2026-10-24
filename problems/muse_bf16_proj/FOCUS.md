@@ -1,31 +1,26 @@
 # Projection lane focus (P7 / G1)
-Serves: G1, G2.
+Serves: G1, G2. G0 is the overall decode-layer board score (R-20261025-1).
 
-G0 is the overall board score, i.e. the decode layer (R-20261025-1).
-The proj lane owns dense M1-32 GEMV efficiency; the glue lane owns boundary/route fusion and verify dense M128/256.
+P10 hardware-compression recipe closed on H2004233660b1bff4d18.
+Send3110dc39be425573; support1/create success/granted1.
+Zero/pattern BW2.0265x/1.7008x; real raw/recoded NVFP4 and BF16~1.00x.
+NT1 M1/M8 and QKV/O time ratios1.0025/1.0009/0.9996/1.0024: no gain.
+Mapped bytes, W2, ordered MoE and dense outputs bit-exact.
+Incumbent norm atomics vary even AA (M1 10/24, M8 16/24); raw failures retained.
+No compression drop-in emitted. `dev/memory_compression/h200_result.json` owns it.
 
-Current: `dev/pdl_prefetch/README.md`, payload `prof/lab/dense_pdl_prefetch.py`.
-Send **4abb8bc59fee7ae0**, MoE host ac9dd461, check **7426e17cd3bc4659**.
-Detached log confirms acceptance; prefill waiter3107409 terminated and removed.
-`dev/pdl_prefetch/sent.json` binds queued source/payload/drop-in hashes.
-Eight cold whole-layer best7 pairs: decode1/16/32 + verify1, sliding/full.
-Bulk L2 hints; early/late original-row and lossless tile-packed smem rings;
-512-thread GEMV and packed rings at all M1/8/16/32 roles; matched528-CTA read.
-24-pair layer finalists,3 refreshed streams, A/A and single-stage ablations.
-Local forced Hopper375 attn_main/150 FA3 calls,8 layers/16 stages,5 MoE tests;
-2,060 native numerical checks/708 graphs;16 sm90a native kernels +12 hints
-and4 BF16 boundary kernels compile. No native/hint spills; SASS ordering checked.
-Keep incumbent BF16 producer boundaries; M32 rings retain KS512 to keep IDs exact.
-Seed72140 fills missing tensors; real first32 host experts/norm retained.
-Identical baseline route IDs/weights/localIDs per stream; route kernel timed.
-Case6 QKV A0/A4/R0/P0/P2 failed .003 layer gate: retain baseline and label it;
-standalone QKV coverage unchanged. Live-route promotion still needs agreement.
-Drop-in `dev/pdl_prefetch/projection.py`, SHA5769cab895f35afd…; best7 unchanged
-until H200 whole-layer evidence lands. Local timing is not H200 evidence.
+P7 fixed-cost95ab383de42a4fae landed:15/16 role finalists lose.
+Native observer entry-first47-101cycles; PDLwait10-11; mainloops dominate.
+M1 pool removes2.49us from consumer but adds3.01us producer time: loses3.4%.
+Next implementation lever is mainloop transport/weight reuse, not fewer CTAs alone.
+Measured candidate: M1 O/config6, BF16, full key(1,1,0).
+Producer+consumer15.39->15.04us (r0.9783); O/boundary/pool41.95->41.29 (r0.9846).
+6 live full/sliding cases: exact routes and official gates; max hidden drift0.1833%.
+Cell: `dev/gemv_fixed/projection.py`, Best7ProjectionCell.
+SHA256 c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe
+Decode handoff: `dev/gemv_fixed/handoff.json`; no scored dispatch changed.
+Whole-layer H200 score gain/sliding latency unmeasured; bundle with larger change.
+Full decomposition: `dev/gemv_fixed/h200_result.json`; README owns reproduction.
 
-The2.0-2.5TB/s GEMV band (feb7b287) is an implementation result, not a roof:
-matched528-CTA stream3.80TB/s; historical52-61MB stream4.04-4.25TB/s.
-Earlier side-stream lab9367398c624b7796 remains receipt-gated and defaults off.
-L2 oracle09d19813 landed: PLAN/FINDINGS own its next-kernel implications.
-No path promoted. Native transport uses explicit
-CUDA global addresses. No L2 persistence or prepared NVFP4 expansion.
+Oracle09d19813 caps later-stage prefetch~2-4us; chain87dc944b loses38.3->57.7us M1.
+PDL7426e17c measured one M1 case, noise; remaining cases failed the0.3% gate.

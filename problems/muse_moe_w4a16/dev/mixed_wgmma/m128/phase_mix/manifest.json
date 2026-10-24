@@ -1,0 +1,16 @@
+{
+  "payload": "prof/lab/moe_m128_phase_mix.py",
+  "sha256": "f3c2796944c60b77aa5d63fd61e766a386bcdcfaf526b8ed01ab19e5367e5736",
+  "sources": {
+    "idist": "1942a25f32bba908bde7f6f210113a3cc821959a601c61bb440a0ec1f174dfb2",
+    "norig": "59b6105e3bb9342238fe981f62ddcd0496d24927ad3dc6de5e609eaaa009e2f5",
+    "or_rs": "d2154365abd8c646109a4fb12923338051a335db078e6ef33bb147e3cba2066f",
+    "pm_nt": "f13cd7011ac4d7ec8f8e6dc4244e908eeb369c5f971d9d29ec321336cea24278",
+    "pm_meta": "9dc2225b26ff05995f96289d9a538d2d4de1ff7d7cd8d0942c3d08513c9a3d7c"
+  },
+  "control": "exact dc3fea0a D32g, config1 grid1056",
+  "one_read_receipt": "640d67e7e56d42e5",
+  "one_read": "best RS64g2112 (361.16us; rejected vs290.83)",
+  "phase_layout": "one C/OFF/SLOTS/POS with padded32 expert rows; separate task prefixes for NT32 count>16 and NT128; no host route decisions",
+  "banks": "uint8 recoded NT1 and one-read; u16 exact descriptor D32; no prepare expanded weights"
+}

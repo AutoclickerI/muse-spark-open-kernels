@@ -1,0 +1,22 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_scale_w2fix.py",
+  "sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+  "base_sha256": "42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7",
+  "payload_sha256": "857ee3b1763f85af442cfcdf55ba285538808f3a4dee1580958976b1168adb11",
+  "fx_cuda_sha256": "5936461f1adc33b654ce749f52ad53fa232a08d1766e4f00b1c4ce9fc331d2bb",
+  "receipt": "97be11d4631b44d6",
+  "variant": "CTA1g2112",
+  "config": {
+    "which": 1,
+    "grid": 2112,
+    "mode": 1
+  },
+  "functions": [
+    "fx_call",
+    "fx_from_packed",
+    "fx_plan",
+    "fx_prepare",
+    "fx_work",
+    "mw_repack_planes"
+  ]
+}

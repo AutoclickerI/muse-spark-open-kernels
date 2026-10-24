@@ -1,0 +1,26 @@
+{
+  "sha256": "4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f",
+  "source": "problems/muse_decode_layer/cand_r3_best7_s6.py",
+  "scored_only": true,
+  "priority": 0,
+  "local_queue": {
+    "pid": 4045707,
+    "priority": 0.0,
+    "t": 1792859626.8169873,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/cand_r3_best7_s6.py",
+    "sha256": "4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f",
+    "note": "S6: S5 + exact 8483c0c6 mixed_parallel M256 policy6/grid2112, recoded W13+W2 (344.5 vs C1rec 366.2 us,12 seeds); M1 O/config6 role-only cell,6 live routing pairs exact; normal+forced 13 tests/12 graphs/22 static each,prepare10.20/50.81s",
+    "not_before": 0,
+    "until": 1792886460.0
+  },
+  "log": "runs/detached/4c98f12fc7fab973.log",
+  "frozen_snapshot": "runs/sent/4c98f12fc7fab973/cand_r3_best7_s6.py",
+  "behind": [
+    "42f543a0",
+    "b0805447",
+    "cadef19a",
+    "9b2b2a48",
+    "f7064fc0"
+  ]
+}

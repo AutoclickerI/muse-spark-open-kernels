@@ -88,8 +88,10 @@ template<int NT>__device__ __forceinline__ void load_stage(unsigned char*q,unsig
 }
 template<int NT>__global__ void __launch_bounds__(128,2) grouped(const int*Q,const unsigned char*S,const float*GS,
  const __nv_bfloat16*X,const int*C,const int*OFF,const int*ORDER,const int*TASK,const int*SLOTS,float*Y,int M,int N,int first){
- extern __shared__ __align__(128) unsigned char sm[];
- unsigned char*qs=sm,*ss=qs+2*QB;auto*bs=(__nv_bfloat16*)(ss+2*SB);
+ extern __shared__ __align__(128) unsigned char rawsm[];
+ unsigned char*sm=(unsigned char*)(((uintptr_t)rawsm+1023)&~(uintptr_t)1023);
+ unsigned char*qs=sm,*ss=qs+2*QB;
+ auto*bs=(__nv_bfloat16*)(sm+((2*QB+2*SB+1023)&~1023));
  __shared__ unsigned lut[256];int t=threadIdx.x,w=t>>5,l=t&31;
  lut[t]=sf_bits(t);lut[t+128]=sf_bits(t+128);__syncthreads();
  int total=TASK[32]*(N/64);
@@ -123,10 +125,10 @@ template<int NT>__global__ void __launch_bounds__(128,2) grouped(const int*Q,con
    __syncthreads();
    if(kk+2<64)load_stage<NT>(qs+stage*QB,ss+stage*SB,bs+stage*NT*BK,Q,S,X,SLOTS,e,mt,row,count,offset,M,N,kk+2,first);
   }
-  float gs=GS[e]*256.f;
   #pragma unroll
   for(int j=0;j<NT/2;++j){int r=row+(l&3)*2+(j&1)+(j>>2)*8;
    int c=mt*64+w*16+(l>>2)+((j>>1)&1)*8;
+   float gs=GS[e+(first&&c>=4096?32:0)]*256.f;
    if(r<count)Y[(size_t)(offset+r)*N+c]=acc[j]*gs;
   }
   __syncthreads();
@@ -136,7 +138,7 @@ template<int NT>__global__ void __launch_bounds__(128,2) grouped(const int*Q,con
 void vec_run(torch::Tensor q,torch::Tensor s,torch::Tensor gs,torch::Tensor x,torch::Tensor c,torch::Tensor off,
  torch::Tensor order,torch::Tensor task,torch::Tensor slots,torch::Tensor y,int64_t first,int64_t nt,int64_t grid,int64_t M){
  auto stream=at::cuda::getCurrentCUDAStream();int N=y.size(1);
- #define GO(NT) mwvec::grouped<NT><<<grid,128,2*mwvec::QB+2*mwvec::SB+2*NT*mwvec::BK*2,stream>>>(q.data_ptr<int>(),s.data_ptr<uint8_t>(),gs.data_ptr<float>(),(const __nv_bfloat16*)x.data_ptr(),c.data_ptr<int>(),off.data_ptr<int>(),order.data_ptr<int>(),task.data_ptr<int>(),slots.data_ptr<int>(),y.data_ptr<float>(),M,N,first)
+ #define GO(NT) mwvec::grouped<NT><<<grid,128,1023+((2*mwvec::QB+2*mwvec::SB+1023)&~1023)+2*NT*mwvec::BK*2,stream>>>(q.data_ptr<int>(),s.data_ptr<uint8_t>(),gs.data_ptr<float>(),(const __nv_bfloat16*)x.data_ptr(),c.data_ptr<int>(),off.data_ptr<int>(),order.data_ptr<int>(),task.data_ptr<int>(),slots.data_ptr<int>(),y.data_ptr<float>(),M,N,first)
  if(nt==16){GO(16);}else if(nt==32){GO(32);}else if(nt==64){GO(64);}else TORCH_CHECK(false,"NT must be16/32/64");
  #undef GO
  C10_CUDA_KERNEL_LAUNCH_CHECK();

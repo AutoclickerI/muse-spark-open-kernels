@@ -1,0 +1,465 @@
+{
+  "manifest": {
+    "source": "problems/muse_decode_layer/cand_r3_best7_scale_w2fix.py",
+    "sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+    "base_sha256": "42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7",
+    "payload_sha256": "857ee3b1763f85af442cfcdf55ba285538808f3a4dee1580958976b1168adb11",
+    "fx_cuda_sha256": "5936461f1adc33b654ce749f52ad53fa232a08d1766e4f00b1c4ce9fc331d2bb",
+    "receipt": "97be11d4631b44d6",
+    "variant": "CTA1g2112",
+    "config": {
+      "which": 1,
+      "grid": 2112,
+      "mode": 1
+    },
+    "functions": [
+      "fx_call",
+      "fx_from_packed",
+      "fx_plan",
+      "fx_prepare",
+      "fx_work",
+      "mw_repack_planes"
+    ]
+  },
+  "screens": {
+    "normal": {
+      "sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+      "prepare_s": 14.07537058001617,
+      "tests": 13,
+      "graphs": 12,
+      "static": 19,
+      "phases_s": {
+        "weights": 4.331636902003083,
+        "moe_nt": 3.2665449189953506,
+        "projections": 0.9593610049923882,
+        "attention": 4.117103526368737e-05,
+        "scale_recode": 0.31308374798391014,
+        "s2_repack": 0.32813244697172195,
+        "pdl_prefix": 4.8748816510196775
+      },
+      "cc": "12.0",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
+    },
+    "forced": {
+      "sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+      "prepare_s": 39.60286074801115,
+      "tests": 13,
+      "graphs": 12,
+      "static": 19,
+      "phases_s": {
+        "weights": 1.6052299580187537,
+        "moe_nt": 2.173430525988806,
+        "projections": 4.245137840975076,
+        "attention": 25.52899357001297,
+        "scale_recode": 0.3064645679551177,
+        "s2_repack": 0.32212786201853305,
+        "pdl_prefix": 4.567181984020863
+      },
+      "cc": "12.0",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
+    }
+  },
+  "source_audit": {
+    "sha256": "b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337",
+    "unchanged_base_functions": 155,
+    "changed_base_functions": [
+      "_best6_call",
+      "_best7_gate_moe",
+      "_best7_prepare_settings",
+      "prepare"
+    ],
+    "exact_measured_functions": [
+      "fx_call",
+      "fx_from_packed",
+      "fx_plan",
+      "fx_prepare",
+      "fx_work",
+      "mw_repack_planes"
+    ],
+    "native_source_exact": true,
+    "changed_table_rows": [
+      [
+        32,
+        8,
+        2048
+      ],
+      [
+        32,
+        8,
+        0
+      ]
+    ],
+    "humming_transform_unchanged": true,
+    "s1_recoded_nt1_unchanged": true,
+    "rejected_words": []
+  },
+  "forced_w2fix_calls": {
+    "calls": 11,
+    "captured_calls": 3,
+    "full_layer_rows": {
+      "(32, 8, 2048)": {
+        "eager": 3,
+        "captured": 1
+      },
+      "(32, 8, 0)": {
+        "eager": 3,
+        "captured": 1
+      }
+    }
+  },
+  "forced_gates": {
+    "('moe', 1, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016554509056732059,
+      "worst_row": 0.0016554509056732059
+    },
+    "('attention', 1, 2048, \"('attn_main', None)\", 'best6')": [
+      0.004936551209539175,
+      0.005189876537770033
+    ],
+    "('attention', 1, 0, \"('attn_main', None)\", 'best6')": [
+      0.005765494424849749,
+      0.003977565560489893
+    ],
+    "('moe', 16, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016594346379861236,
+      "worst_row": 0.001727238530293107
+    },
+    "('moe', 32, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016635659849271178,
+      "worst_row": 0.0017097427044063807
+    },
+    "('moe', 8, 'v9nt1')": {
+      "source": "three public streams, fresh graph replays",
+      "fp32": 0.0016685122391209006,
+      "worst_row": 0.00168683344963938
+    },
+    "('attention', 8, 2048, \"('layer', None)\", 'best6')": [
+      0.073316790163517,
+      0.08087240904569626
+    ],
+    "('attention', 8, 0, \"('layer', None)\", 'best6')": [
+      0.07193760573863983,
+      0.08714704215526581
+    ],
+    "('moe', 128, 'v9nt1')": {
+      "source": "best6 three-seed final gate",
+      "fp32": 0.001663,
+      "worst_row": 0.001728,
+      "seed_mean_us": [
+        349.232,
+        388.152,
+        392.224
+      ],
+      "mean_us": 376.536
+    },
+    "('moe', 256, 'w2fix_cta1g2112')": {
+      "source": "three public streams, forward/reverse fresh route graph replays",
+      "fp32": 0.0038027639966458082,
+      "worst_row": 0.0042609479278326035,
+      "which": 1,
+      "grid": 2112,
+      "mode": 1,
+      "bank": "raw NVFP4/E4M3"
+    }
+  },
+  "forced_plans": {
+    "other": {
+      "glue": "best6",
+      "geometry": {},
+      "attention": "auto",
+      "moe": "auto",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 1, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          16
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "attn_main",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 1, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          16
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "attn_main",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 1, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 1, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 1, 2048)": {
+      "glue": "best5",
+      "geometry": {},
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 1, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          8,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": "auto",
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 8, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          4
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(1, 8, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          4
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          16
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 8, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(16, 8, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          8,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "v9nt1",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 8, 2048)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "w2fix_cta1g2112",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    },
+    "(32, 8, 0)": {
+      "glue": "best6",
+      "geometry": {
+        "b1": [
+          16,
+          1
+        ],
+        "route": [
+          4,
+          1
+        ],
+        "b2": [
+          16,
+          1
+        ]
+      },
+      "attention": [
+        "layer",
+        null
+      ],
+      "moe": "w2fix_cta1g2112",
+      "projection": {},
+      "prefetch": 0,
+      "dense_chain": false
+    }
+  },
+  "sent": false,
+  "unverified": [
+    "whole-layer H200 composition",
+    "cold H200 prepare",
+    "new judge seeds"
+  ],
+  "cold_attention_attempt": {
+    "prepare_s": 82.30538142600562,
+    "checks": "13/12/19 pass",
+    "coverage_driver": "initial Python-counter assertion invalid; corrected driver and full screen rerun"
+  }
+}

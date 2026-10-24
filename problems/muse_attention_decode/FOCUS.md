@@ -1,20 +1,32 @@
-# Attention verify
-Serves: G1, G2.
+# Decode-layer attention (P5)
 
-Serves G1/G2. The q1 receipt `aff09765beaf429a` scored 1.3727x; board best remains
-1.384x. Decode is 1.877-2.075x, while verify is 0.952-0.995x.
+Goal: the overall-board score through decode-layer attention at its 12 shapes.
+Measured controls: q1 attn_main; full q8 FA3 (~206/391 us B16/B32).
+FlashInfer full paths and prior FP8PV/q1-split families lose (FINDINGS).
 
-Receipt limits: full verify B16/B32 FA3 main is 188.5/375.9 us of
-205.5/394.0 us; sliding totals are 19.4/25.1/30.1 us at B1/16/32 and
-mostly fixed combine/norm/store/gate work.
+Single-launch sliding `32f2f07a` passes, 1.2137x on the attention board.
+Only verify1 sliding supplies a kernel win: profile12.1 vs16.2 us;
+scored call18.18 vs19.26. Larger sliding cells lose. Decode best7 uses
+public FA3 for verify1, not d98ae45d's attn_main_twog control: do not promote.
+Ready disabled verify1-only comparator: `muse_decode_layer/dev/verify1_sliding_pick.py`,
+SHA46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e.
 
-`cand_attn_verify_stream2.py` keeps q1's page-1 gather, maps eight draft tokens
-and each GQA group to the stream math, and uses an independent FP32 reference
-for admission. It computes the FP8-query bound on a coherent synthetic case and
-requires global <=0.8x bound and worst row <=0.8x 5x bound. Failures are logged
-and rejected; FA3 remains the per-shape fallback.
+Full-q8 split job `be19da94dc534323` passes16 tests but loses: B16/B32
+call431.15/751.42 vs205.98/391.03 us. Producer427.8/713.7 us is98.6/98.8%
+of profiles; combine6.3/8.5 us is no longer the lever. Retain FA3. Next:
+phase-profile producer wait/transpose/QK/softmax+pack/PV, plus native register
+and occupancy data across stage/split choices. Inner binding phase remains
+unmeasured. Saved comparison: `dev/p5_switches/flashdecode_result.json`.
 
-Local sm_120: stream2 16/16 tests and 12/12 graph shapes pass; H200 stream2 remains
-unverified. FlashInfer's full-context page-1 paths lose (`8ffbac2d`); FP8PV is parked
-(`0812f097`). Next: single-launch sliding attention (fixed work 15-30 us/layer vs a
-0.1-3.7 us floor). See `docs/FINDINGS.md` and `dev/NEXT_CHECKS.md`.
+New combined measurement `cand_p5_rescale_deferred.py`, job9828bfa041a143a9,
+sendacd77ec8d7a34384. q1 uses warp-uniform conditional O/l rescale; larger
+sliding q8 measures xqa_group with the denominator reduced once at the end;
+full q8 uses the split FP8 producer with its four-lane denominator deferred.
+B1 sliding q8 keeps the measured window kernel. No decode rows selected.
+Local16 tests/12 graphs/6 static and33 on/off/adapter gates pass.
+q1 is bitwise identical; deferred output/control error <=0.000005 on 80K.
+Local group-q8 saves5-6%; q1/split changes are noise-sized. H200 decides.
+
+Promotion: task's post-store FP32 gate, a same-shape H200 win, then a paired
+whole-layer check with best7's projection/PDL path. Details: FINDINGS and
+`muse_decode_layer/dev/NEXT_CHECKS.md`; local sm120 times are not H200 wins.

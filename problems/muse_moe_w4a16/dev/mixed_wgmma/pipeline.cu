@@ -128,8 +128,10 @@ __global__ void __launch_bounds__(128,2) grouped(const int*Q,const unsigned char
  float*Y,int M,int N,int cap,int first){
  constexpr int QB=64*KT/2,SB=64*KT/16,NS=4096/KT/SPLIT;
  static_assert(S>=3&&S<=8&&NS>=1);
- extern __shared__ __align__(128) unsigned char sm[];
- unsigned char*qs=sm,*ss=qs+S*QB;auto*bs=(__nv_bfloat16*)(ss+S*SB);
+ extern __shared__ __align__(128) unsigned char rawsm[];
+ unsigned char*sm=(unsigned char*)(((uintptr_t)rawsm+1023)&~(uintptr_t)1023);
+ unsigned char*qs=sm,*ss=qs+S*QB;
+ auto*bs=(__nv_bfloat16*)(sm+((S*(QB+SB)+1023)&~1023));
  __shared__ unsigned lut[256];int t=threadIdx.x,w=t>>5,l=t&31;
  lut[t]=sf_bits(t);lut[t+128]=sf_bits(t+128);__syncthreads();
  int total=TASK[32]*(N/64)*SPLIT;
@@ -216,20 +218,20 @@ constexpr int CONFIGS=10;
 int64_t pipe_init(){
  int dev,opt;C10_CUDA_CHECK(cudaGetDevice(&dev));
  C10_CUDA_CHECK(cudaDeviceGetAttribute(&opt,cudaDevAttrMaxSharedMemoryPerBlockOptin,dev));
- #define INIT(ID,NT,KT,S,SK,OL) {constexpr int bytes=S*(64*KT/2+64*KT/16+NT*KT*2);TORCH_CHECK(bytes+1024<=opt,"pipeline config exceeds shared memory: ",ID);C10_CUDA_CHECK(cudaFuncSetAttribute(mwpipe::grouped<NT,KT,S,SK,OL>,cudaFuncAttributeMaxDynamicSharedMemorySize,bytes));}
+ #define INIT(ID,NT,KT,S,SK,OL) {constexpr int bytes=1023+((S*(64*KT/2+64*KT/16)+1023)&~1023)+S*NT*KT*2;TORCH_CHECK(bytes+1024<=opt,"pipeline config exceeds shared memory: ",ID);C10_CUDA_CHECK(cudaFuncSetAttribute(mwpipe::grouped<NT,KT,S,SK,OL>,cudaFuncAttributeMaxDynamicSharedMemorySize,bytes));}
  PIPE_CASES(INIT)
  #undef INIT
  return opt;
 }
 std::vector<int64_t> pipe_info(int64_t which){
- #define INFO(ID,NT,KT,S,SK,OL) case ID:{cudaFuncAttributes a{};int blocks;C10_CUDA_CHECK(cudaFuncGetAttributes(&a,mwpipe::grouped<NT,KT,S,SK,OL>));constexpr int bytes=S*(64*KT/2+64*KT/16+NT*KT*2);C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&blocks,mwpipe::grouped<NT,KT,S,SK,OL>,128,bytes));return {a.numRegs,(int64_t)a.localSizeBytes,(int64_t)a.sharedSizeBytes,bytes,blocks};}
+ #define INFO(ID,NT,KT,S,SK,OL) case ID:{cudaFuncAttributes a{};int blocks;C10_CUDA_CHECK(cudaFuncGetAttributes(&a,mwpipe::grouped<NT,KT,S,SK,OL>));constexpr int bytes=1023+((S*(64*KT/2+64*KT/16)+1023)&~1023)+S*NT*KT*2;C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&blocks,mwpipe::grouped<NT,KT,S,SK,OL>,128,bytes));return {a.numRegs,(int64_t)a.localSizeBytes,(int64_t)a.sharedSizeBytes,bytes,blocks};}
  switch(which){PIPE_CASES(INFO) default:TORCH_CHECK(false,"unknown pipeline configuration");}
  #undef INFO
 }
 void pipe_run(torch::Tensor q,torch::Tensor s,torch::Tensor gs,torch::Tensor x,torch::Tensor c,torch::Tensor off,
  torch::Tensor order,torch::Tensor task,torch::Tensor slots,torch::Tensor y,int64_t first,int64_t which,int64_t grid,int64_t M){
  auto stream=at::cuda::getCurrentCUDAStream();int cap=y.size(-2),N=y.size(-1);
- #define GO(ID,NT,KT,S,SK,OL) case ID: mwpipe::grouped<NT,KT,S,SK,OL><<<grid,128,S*(64*KT/2+64*KT/16+NT*KT*2),stream>>>(q.data_ptr<int>(),s.data_ptr<uint8_t>(),gs.data_ptr<float>(),(const __nv_bfloat16*)x.data_ptr(),c.data_ptr<int>(),off.data_ptr<int>(),order.data_ptr<int>(),task.data_ptr<int>(),slots.data_ptr<int>(),y.data_ptr<float>(),M,N,cap,first);break;
+ #define GO(ID,NT,KT,S,SK,OL) case ID: mwpipe::grouped<NT,KT,S,SK,OL><<<grid,128,1023+((S*(64*KT/2+64*KT/16)+1023)&~1023)+S*NT*KT*2,stream>>>(q.data_ptr<int>(),s.data_ptr<uint8_t>(),gs.data_ptr<float>(),(const __nv_bfloat16*)x.data_ptr(),c.data_ptr<int>(),off.data_ptr<int>(),order.data_ptr<int>(),task.data_ptr<int>(),slots.data_ptr<int>(),y.data_ptr<float>(),M,N,cap,first);break;
  switch(which){PIPE_CASES(GO) default:TORCH_CHECK(false,"unknown pipeline configuration");}
  #undef GO
  C10_CUDA_KERNEL_LAUNCH_CHECK();

@@ -3607,8 +3607,9 @@ def lab(deadline,weights):
     # Preserve a compact real-route fixture so later lab shards can use spare proj
     # quota if compilation prevents the complete matrix from fitting in this run.
     import base64,zlib
-    packed=b''.join(bytes(fixtures[m,'R'][0]['topk_ids'].byte().cpu().flatten().tolist()) for m in (8,16,32,128,256))
-    out.append('PACK_R ms=8,16,32,128,256 first_fixture zlib_u8='+base64.b64encode(zlib.compress(packed,9)).decode())
+    pack_ms=tuple(m for m in (8,16,32,128,256) if (m,'R') in fixtures)
+    packed=b''.join(bytes(fixtures[m,'R'][0]['topk_ids'].byte().cpu().flatten().tolist()) for m in pack_ms)
+    out.append('PACK_R ms='+','.join(map(str,pack_ms))+' first_fixture zlib_u8='+base64.b64encode(zlib.compress(packed,9)).decode())
     flush=lab_torch.zeros((128<<20)//4,device=device)
     states={};baselines={};rows={}
     def run_family(name,init,call,phases=None):

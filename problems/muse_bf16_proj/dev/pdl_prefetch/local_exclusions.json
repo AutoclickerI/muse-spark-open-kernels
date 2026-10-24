@@ -1,0 +1,22 @@
+{
+  "payload_sha256": "dcd1fcd832a427559d2b576ccee4960909f9b217f9193af92ea5ec8ac19b9823",
+  "gate": "whole layer .003; raw/router .0001 and BF16 .01 passed",
+  "cause": "QKV BF16 rounding amplified by FP8 attention; standalone/other roles pass",
+  "excluded_compound_qkv": [
+    {
+      "key": [
+        1,
+        8,
+        2048
+      ],
+      "rejections": [
+        "A0:RuntimeError:whole-layer: 0.00379/0.0102 bound=0.003",
+        "A4:RuntimeError:whole-layer: 0.00379/0.0102 bound=0.003",
+        "R0:RuntimeError:whole-layer: 0.00372/0.0102 bound=0.003",
+        "P0:RuntimeError:whole-layer: 0.00372/0.0102 bound=0.003",
+        "P2:RuntimeError:whole-layer: 0.00372/0.0102 bound=0.003"
+      ]
+    }
+  ],
+  "evidence": "runs/screen/pdl_debug_streams.log"
+}

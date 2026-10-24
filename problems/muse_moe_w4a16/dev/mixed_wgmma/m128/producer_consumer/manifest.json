@@ -1,0 +1,26 @@
+{
+  "payload": "prof/lab/moe_m128_producer_consumer.py",
+  "sha256": "8e4d7be1588a70363dc52c8ca1abf09988d928ee7df2790fbf76ffb341f3e586",
+  "CUDA_sha256": "d039e8ae59465e12a3df9ee0889b6e234bd47e66a115c421b703df3b37b53684",
+  "control_HH": "770809cf159f41e2",
+  "H_H_sha256": "970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f",
+  "small_cell_sha256": "3f84a8a4e12b41bd7257712d8656d3f417f6a9e238f00e481b3be526da69cc40",
+  "prerequisite_send": "d8d3a89cb3436100",
+  "state": "Ready only after local admission; no send until prerequisite lands.",
+  "N_limits": [
+    32,
+    64,
+    128
+  ],
+  "ring_stages": [
+    2,
+    3
+  ],
+  "producer_threads": 128,
+  "consumer_threads": 128,
+  "token_capacities": [
+    32,
+    128
+  ],
+  "bank": "same-size u8 recoded scales; producer dequantizes each expert/channel/K64 tile once; no prepared dequant bank"
+}

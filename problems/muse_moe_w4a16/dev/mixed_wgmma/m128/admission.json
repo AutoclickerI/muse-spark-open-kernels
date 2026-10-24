@@ -1,0 +1,83 @@
+{
+  "send_key": "bcdd62491805fba6",
+  "judge_job": "66133279d19145ad",
+  "host": "muse_moe_w4a16",
+  "priority": 0.8,
+  "status": "done: cfg3/cfg5 failed H200 gates; repair pending under repair_admission.json",
+  "detached_log": "runs/detached/bcdd62491805fba6.log",
+  "payload_sha256": "f9cf2a280e4c5d382fbe647edd1ddb715c55d420fa7fecb3283e863cbbf4e2b0",
+  "wrapper_sha256": "bcdd62491805fba6a04c1f8db7d4ba2553ce5a9e2abcf176dfb83c2fe749d55b",
+  "cuda_sha256": "14893c8304d7c9a9d0b0e382ced8f949c4429cf9c7e4e9af3091deec9c8be47f",
+  "configs": [
+    [
+      16,
+      256,
+      4,
+      1,
+      false
+    ],
+    [
+      64,
+      128,
+      4,
+      1,
+      false
+    ],
+    [
+      64,
+      128,
+      4,
+      1,
+      true
+    ],
+    [
+      128,
+      64,
+      4,
+      1,
+      true
+    ],
+    [
+      128,
+      128,
+      2,
+      1,
+      true
+    ],
+    [
+      128,
+      64,
+      4,
+      1,
+      false
+    ]
+  ],
+  "local_graph_checks": 234,
+  "local_max_L2": 0.004131368361413479,
+  "local_max_row": 0.00494738481938839,
+  "direct_payload_static": 5,
+  "wrapper_tests": 5,
+  "wrapper_static": 6,
+  "standalone_lab_seed_count": 12,
+  "standalone_lab_control_count": 3,
+  "standalone_lab_variant_count": 9,
+  "hardware": "Original frozen one-read lab: A0 mean827us vs NT1/NT2/masked344/341/341us. cfg3/cfg5 rejected; K64 A-register lifetime violation fixed in shared producer, H200 retest pending.",
+  "receipts_checked_once": [
+    "f3dea570bce0d7b9 (send key; no receipt)",
+    "7156d8d8b56a40d1 (no receipt)"
+  ],
+  "next": "Read the resulting judge job with python tools/h200_lab.py read <job> moe_m128_one_read; compare fixed seed means against paired NT1/NT2/masked controls before handing a winning choice to decode.",
+  "remaining": "Current repair and hashes: repair_admission.json",
+  "files_at_original_send": {
+    "prof/lab/moe_m128_one_read.py": "f9cf2a280e4c5d382fbe647edd1ddb715c55d420fa7fecb3283e863cbbf4e2b0",
+    "problems/muse_moe_w4a16/lab/lab_moe_m128_one_read.py": "bcdd62491805fba6a04c1f8db7d4ba2553ce5a9e2abcf176dfb83c2fe749d55b",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/source.py": "55becae783c907db9be1eea5afe6fd2af81400dd3cf96d4153b4023663396430",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/adapter.py": "2b522781f3209d6d6ce768d864e43545cf6a4f4075b0ddf81686d2b3e16266c8",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/build_lab.py": "a4192533bf2f246f9c4d7e108af67504178eb8d9eb1663b1eaaa2ebab6ff1077",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/driver.py.inc": "bc4a96b2bdeb47a829ed89d574f680a4feded2666b94a3e36800db0fe98deda0",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/check.py": "a512ab479d45ca90dc7b3178ab0ff5a3a4ef1d04570abfce9b439710c8134c1d",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/dump.py": "6502e659e7fdc630130977b70c51a383515f034bb2087619707c1fab62dd6ce2",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/fused.cu": "3f913653eef33eb6beca83e79d5722738daefe3892914b5b472a39a30c17def5",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/fused.py": "65943f94315e2f619358f5b493271d487833ad1bc9ce313b75fcb30d8bb05870"
+  }
+}

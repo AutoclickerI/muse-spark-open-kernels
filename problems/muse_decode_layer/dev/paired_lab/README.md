@@ -1,96 +1,70 @@
-# Paired decode stage lab
+# Paired decode measurements
 
-Payload: [prof/lab/decode_paired.py](../../../../prof/lab/decode_paired.py), SHA-256
-`e088cb961ed16f0b84ccb8e4ea8362226211eea90076718c02c17e6446850890`.
-Host wrapper: [lab_decode_paired.py](../../lab/lab_decode_paired.py), board control `0e94268cf5654012`.
-No best6 source change or promotion is made from local timing. The H200 result decides glue/attention
-promotion; best6's only submission hold remains the separate native expert-adapter safety result.
+The current E extension is [decode_scale_bank.py](../../../../prof/lab/decode_scale_bank.py),
+SHA-256 `e9b0e04ca74a063db131ad489194c8527c0abd84e460bfc4d4cad435f49e9cfc` (parallel cold builds).
+It needs board v9's decode-host state; the host source is `0e94268cf5654012`.
+[Manifest](scale_bank_manifest.json) pins the source, public seeds and exact best7/raw NT1 definitions.
+No prepared BF16/FP8 expert copy is made; both banks remain packed NVFP4 with scale sidecars.
+A lossless recode in prepare is allowed by CONSTRAINTS 5.
 
-## What is compared
+## E:C — isolate scale conversion
 
-One host prepare supplies the real dense weights and router. The payload creates three complete
-public `generate_input` draws for each of all 12 scored cases: ctx80000/page1, soft caches, fixed B1
-lengths, agentic B16/32 lengths, seeds 172903/180822/188741. The actual QKV/attention/O/residual prefix
-feeds the router. Its busiest EP range is selected once per fixture, and every expert alternative
-receives exactly those activations, routing IDs and weights. The same physical tensors feed both sides.
+A is best7's exact raw-E4M3 NT1 reader/bank; B calls the board host's own `v9_kernel_fn`
+with its actual prepare-recoded bank. Their input tensors, expert IDs and routing weights are
+identical. The payload checks each bank against its own packer and asserts matching NT1,
+8-token tile, stage count, grid and shared memory at M8/16/32/128. It leaves host state unchanged.
 
-- **G:** complete-layer old best5 glue versus new best5_glue launches. All projection, attention and
-  MoE kernels are held fixed; q8 uses the public `layer` FA3 call, q1 uses the native layer kernel,
-  and MoE uses NT1. Old global counters/clears and old QK preparation are included. New glue uses
-  all 18 geometries selected in H200 glue receipt `7370b18221964412`, frozen explicitly in the payload.
-  This measures PDL effects on the entire dependency chain rather than summing overlapping kernel durations.
-- **F:** q8 public `layer` scheduler path versus FA3 `(32, True)`, `(16, True)`, `(8, None)`, `(0, None)`,
-  `(32, None)`, `(64, None)`. These include both receipt-selected verify32-full settings, the older
-  verify16 winner, automatic explicit metadata and larger splits. Every setting is retimed on all three
-  public draws, including sliding layers. This is a declared shortlist, not the full 27-setting tuner.
-- **E:** NT1 versus NT2 at every load; raw17, humming_masked and dg_w8 additionally at M128/256.
-  The exact best6 adapters and native source are embedded. No expanded expert bank is prepared.
-  Alternative ABI conversion and in-call dequantization are included.
+The fixtures use public `generate_input` at ctx80000/page1/soft, agentic B16/32 lengths,
+seeds 172903/180822/188741 and both sliding/full layers. The real QKV/attention/O/residual/router
+prefix supplies activations and the busiest EP's routes. Eight cases × three seeds = 24 fixtures.
+Each has an independent FP32 gate before/after replay (<=1% L2, <=5% worst row), direct A/B
+agreement, six alternating AB/BA rounds, a cold 128 MiB L2 flush before every replay and A/A noise.
+Absolute times include equal graph-replay overhead. Every per-seed sample is retained locally;
+compact H200 lines report per-case seed ratios, mean us, routing counts and per-M means.
+Budget exhaustion prints INCOMPLETE and never supplies a complete verdict.
 
-The board host's packed V9 scale bytes use its older encoding; best6 NT1/NT2 consume raw E4M3.
-The lab builds their exact raw packed bank once, sharing it between those two variants. It reuses the
-host's dense/router state and leaves all host state/plans unchanged. It never calls best6's full prepare.
-Three native builds overlap; GPU adapter setup completes before graph capture.
+`E8:C`/`E9:C` are M128 sliding/full. B:A <1 favors recoding. Compare their matched-route
+microsecond savings with the unresolved board-profile gap (258.9 us versus raw NT1 317–320 us);
+separate-run profiles alone cannot establish causality. Promote only the supported bank per M,
+keeping the settled G/F/E choices. Read with `tools/h200_lab.py read <job> decode_scale_bank`.
 
-## Timing and gates
+## Settled G/F/E
 
-Each comparison has **six alternating AB/BA rounds**. Every individual replay first zeros a separate
-128 MiB buffer outside the timed events. Times include graph-replay overhead equally on both sides.
-A per-seed ratio is the mean of the six paired B/A ratios; the absolute A/B times are means over
-rounds, then means over all three seeds. Raw local evidence retains every paired sample.
+[decode_paired.py](../../../../prof/lab/decode_paired.py), payload `bf3fd04bd323d78a`, completed
+in H200 receipt **9c83cdb852fe4576**: 36/36 scored-case/seed fixtures, 216 comparisons,
+zero rejections and zero flipped tokens; 114.8 s payload, 160.7 s total host prepare.
+- G: fixed new glue wins at decode1/verify1; old glue wins at decode32 sliding; others retain new.
+- F: public `layer` q8 scheduling ties every split at large loads and beats explicit splits at verify1 full.
+- E: NT1 wins below M256 (M128 317–320 us vs Humming 346–353); Humming wins M256 (417–426 vs 537–547).
+The earlier failed receipts supply no stage verdict. [Glue receipts](GLUE_RECEIPT.md) explain
+why single-run best5/best5_glue scores were confounded. The frozen best7_paired candidate applies
+these supported changes; E:C has not yet established a bank choice.
 
-There are **36 G, 108 F and 72 E comparisons** (216 total), plus one six-round **A/A noise control**
-per fixture. Graphs are explicitly replayed after capture before their outputs are checked.
-Routing IDs match exactly between glue implementations and an independent FP32 router.
-Full-layer glue and FA3 outputs agree within 1% L2 / 5% worst row. Experts additionally pass the
-independent FP32 NVFP4 oracle before and after timing at the same limits. Rejected optional experts
-are named in the result rather than aborting Python; native C++ aborts remain a separate safety risk.
-
-Output fits one half of the batched log allowance. `G0:new`, `F6:sp32t` and `E11:H` identify stage,
-case and alternative. The three ratios follow seed order, then `mean_A_us/mean_B_us` across seeds.
-`G N=` is the mean A/A timing delta in us. Case IDs 0..5 are q1 at B1 sliding/full, B16 sliding/full,
-B32 sliding/full; 6..11 are q8 in the same order. `ROUTES` lists local start/pairs/experts/hottest
-count for each seed. Budget expiry and any rejection are explicit; fewer ratio entries mean a
-partial seed group and must not be treated as a complete winner.
-
-## Local evidence
-
-The empty-cache forced-Hopper run completes **all 36 fixtures and 216 comparisons**, with no
-rejections, under a **124-second** payload deadline (half the 248 seconds left after a 37-second host
-prepare). Payload setup **54.0 s**, total **115.283 s**. Output **3,982 characters**, under 4,500.
-Maximum expert relative L2 **0.679%**, worst row **0.778%**. DG/Humming native GEMMs use portable
-stand-ins; actual schema/transform/gather/normalization/epilogues execute. All six FA3 Python paths
-execute with portable attention launches. Native H200 safety and timing remain unverified.
-
-The complete host wrapper also passes **13 official tests, 12 fresh-input graph shapes and 5 host
-static checks**. Cold host+lab prepare is **156.215 s**. [validation.json](validation.json) pins their counts and cold prepare to the payload
-and wrapper hashes. [screen.py](screen.py) fails even if the host passes after a caught lab exception,
-and requires all 216 lab rows, all three seeds and all six rounds. Source provenance is pinned in
-[manifest.json](manifest.json): exact full best6 source and exact eight best5 glue helper ASTs.
-
-`tools/h200_lab.py` now excludes sources whose local receipts are marked withdrawn. Its earlier
-selection chose withdrawn BF16-bank job `07d07d96`; the corrected selection is valid board `0e94268`.
-This fixes host selection; it does not introduce a new project rule.
-
-The [glue receipt comparison](GLUE_RECEIPT.md) records best5 1.353449x versus glue 1.367496x.
-Its remainder differences and varying MoE/FA3 timings do not establish a glue speedup. Paired seed
-means, per-seed ratios and A/A noise are the evidence for a subsequent best6 decision.
-
-## Reproduce and send
+## Reproduce
 
 ```bash
-python problems/muse_decode_layer/dev/paired_lab/build.py
-python tools/h200_lab.py build prof/lab/decode_paired.py --host muse_decode_layer \
-  -o problems/muse_decode_layer/lab/lab_decode_paired.py
-CUDA_VISIBLE_DEVICES=0 tools/img env CCACHE_DISABLE=1 MAX_JOBS=2 TORCH_CUDA_ARCH_LIST=12.0 \
-  TORCH_EXTENSIONS_DIR=/tmp/muse-paired-e088-cold/extensions \
-  TRITON_CACHE_DIR=/tmp/muse-paired-e088-cold/triton \
-  CUDA_CACHE_PATH=/tmp/muse-paired-e088-cold/cuda \
-  python problems/muse_decode_layer/dev/paired_lab/screen.py --share-s 124 \
-  > problems/muse_decode_layer/dev/paired_lab/cold_screen.log 2>&1
+python problems/muse_decode_layer/dev/paired_lab/build_scale_bank.py
+python tools/h200_lab.py build prof/lab/decode_scale_bank.py --host muse_decode_layer \
+  -o problems/muse_decode_layer/lab/lab_decode_scale_bank.py
+CUDA_VISIBLE_DEVICES=0 tools/img env MAX_JOBS=2 TORCH_CUDA_ARCH_LIST=12.0 \
+  python problems/muse_decode_layer/dev/paired_lab/screen_scale_bank.py --share-s 80
+python tools/h200_lab.py send prof/lab/decode_scale_bank.py --host muse_decode_layer \
+  --note "E:C board recode vs best7 raw NT1, identical public routes M8/16/32/128"
 ```
 
-Use empty cache directories for a new cold run. Send with `tools/h200_lab.py send
-prof/lab/decode_paired.py [other-ready-decode-payload.py ...] --host muse_decode_layer --note "..."`.
-The payload packs all four open stage questions into one host run. This lane has no other unsent,
-screened decode-host payload to add; previously queued probes are not duplicated.
+The screen fails if the wrapper catches a lab exception, or if any fixture/seed/round is missing.
+Only unsupported Hopper attention launches use portable stand-ins; both MoE readers run natively
+on sm120. The first local pass completes all 24 comparisons in **4.4 s**, with **0.167% L2 /
+0.176% worst row**, plus **13 official tests, 12 graphs and 5 host static checks**. These are
+correctness and budget evidence, not H200 latency. Embedded raw NT1 is separately compiled for sm90a.
+
+## Send and cold-budget status
+
+Accepted **58ae2e2cf8df45ef**, send key **6edfaa87ad96a5ca**, section `decode_scale_bank`,
+contains payload **8e01adcec8da5a0f**. Its [send validation](scale_bank_sent.json) pins the screened
+24-fixture source. This payload rides alone, with the full remaining prepare budget. The subsequent
+empty-cache test exposed serial raw-MoE plus prefix-attention compilation taking **123.5 s**, too
+long for an 80 s batched slot. The current builder overlaps both builds before graph capture; its
+cold 80 s screen passes **24/24 fixtures in 56.4 s**, including all **254 × 16** finite scale/FP4
+represented-value checks. [Validation](scale_bank_validation.json) pins this revision. No duplicate check is queued. The arithmetic, fixtures, readers
+and timing protocol are identical between the sent and shared versions.

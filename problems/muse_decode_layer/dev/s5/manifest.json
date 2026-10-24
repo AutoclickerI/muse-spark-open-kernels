@@ -1,0 +1,31 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_s5.py",
+  "sha256": "f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284",
+  "base_sha256": "9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e",
+  "receipt": "770809cf159f41e2",
+  "accepted_wrapper": "runs/muse_moe_w4a16/20261024T155440Z_check_770809cf159f41e2.py",
+  "payload_sha256": "f3c2796944c60b77aa5d63fd61e766a386bcdcfaf526b8ed01ab19e5367e5736",
+  "native_sha256": "61eb4d547fdd4a7ac2ebf999a1c2bf3a8d8cf20db99c6b45530bf8ff2a6b74f0",
+  "native_sections": [
+    "idist",
+    "pmnt",
+    "pm_meta"
+  ],
+  "variant": "H_H",
+  "config": {
+    "first": "H",
+    "second": "H",
+    "small_expert_max_tokens": 16,
+    "large_expert_min_tokens": 17,
+    "nt1_stages": 2,
+    "wgmma_which": 1,
+    "wgmma_grid": 1056
+  },
+  "exact_functions": [
+    "pm_plan",
+    "pm_call",
+    "issue_prepare",
+    "issue_word_bank",
+    "mw_repack_planes"
+  ]
+}

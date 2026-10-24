@@ -1,0 +1,43 @@
+--- a/problems/muse_moe_w4a16/dev/mixed_wgmma/fused.cu
++++ b/problems/muse_moe_w4a16/dev/mixed_wgmma/fused.cu
+@@ -192,26 +192,34 @@
+   #pragma unroll
+   for(int i=0;i<min(S-1,NS);++i)
+    load_stage<NT,KT>(qs+i*QB,ss+i*SB,bs+i*NT*KT,Q,SCALE,X,src,e,mt,N,split*NS+i);
++  // K64 has one MMA group per stage. Alternate register-A banks across
++  // stages so wait1 retires a bank before its next conversion overwrites it.
++  // K128/K256 already alternate within each stage; their schedule is unchanged.
++  static_assert(KT>=128 || NS%2==0,"K64 paired stages require an even K count");
+   #pragma unroll 1
+-  for(int k=0;k<NS;++k){int st=k%S;cp_wait<S,NS>(k);__syncthreads();
++  for(int kbase=0;kbase<NS;kbase+=(KT==64?2:1)){
++   #pragma unroll
++   for(int ksub=0;ksub<(KT==64?2:1);++ksub){
++   int k=kbase+ksub,st=k%S;cp_wait<S,NS>(k);__syncthreads();
+ #if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
+    asm volatile("fence.proxy.async.shared::cta;":::"memory");
+ #endif
+    #pragma unroll 1
+-   for(int pair=0;pair<KT/128;++pair){
++   for(int pair=0;pair<(KT>=128?KT/128:1);++pair){
+     #pragma unroll
+-    for(int sub=0;sub<2;++sub){int chunk=pair*2+sub;
++    for(int sub=0;sub<(KT>=128?2:1);++sub){int chunk=pair*2+sub,reg=KT==64?ksub:sub;
+      #pragma unroll
+      for(int g=0;g<2;++g){int z=chunk*2+g;uint2 q=*(const uint2*)(qs+st*QB+(z*128+t)*8);
+-      unsigned sf=*(const unsigned*)(ss+st*SB+z*128+w*32+(l>>2)*4);dq(q.x,q.y,sf,lut,af[sub]+g*8);}
+-     keep(af[sub]);
++      unsigned sf=*(const unsigned*)(ss+st*SB+z*128+w*32+(l>>2)*4);dq(q.x,q.y,sf,lut,af[reg]+g*8);}
++     keep(af[reg]);
+ #if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
+      asm volatile("wgmma.fence.sync.aligned;":::"memory");
+ #endif
+-     mma_group<NT,true>(acc,af[sub],bs+st*NT*KT+chunk*NT*64);keep(af[sub^1]);
++     mma_group<NT,true>(acc,af[reg],bs+st*NT*KT+chunk*NT*64);keep(af[reg^1]);
+      if(chunk==0&&k+S-1<NS){int dst=(k+S-1)%S;
+       load_stage<NT,KT>(qs+dst*QB,ss+dst*SB,bs+dst*NT*KT,Q,SCALE,X,src,e,mt,N,split*NS+k+S-1);}
+     }
++   }
+    }
+   }
+ #if defined(__CUDA_ARCH__) && __CUDA_ARCH__==900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)

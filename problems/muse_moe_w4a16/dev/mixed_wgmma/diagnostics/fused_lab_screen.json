@@ -1,0 +1,73 @@
+{
+ "problem": "muse_moe_w4a16",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_moe_w4a16/lab/lab_moe_fused_m256.py",
+ "sha256": "a8305b5b7ebb0942b9f1721358f1c740d5a65568b826245e47862b80709ca9fe",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 25.211608415993396,
+ "tests": [
+  {
+   "case": "bs 4, sharding ep8",
+   "first_call_s": 0.0002602650201879442,
+   "ok": true,
+   "msg": "relative L2 error 2.587e-03 (worst row 2.624e-03)"
+  },
+  {
+   "case": "bs 33, sharding ep8",
+   "first_call_s": 0.00042944803135469556,
+   "ok": true,
+   "msg": "relative L2 error 2.569e-03 (worst row 2.744e-03)"
+  },
+  {
+   "case": "bs 257, sharding ep8",
+   "first_call_s": 0.10607224400155246,
+   "ok": true,
+   "msg": "relative L2 error 4.724e-03 (worst row 5.899e-03)"
+  },
+  {
+   "case": "bs 128, sharding ep8, dist skewed",
+   "first_call_s": 0.00045282201608642936,
+   "ok": true,
+   "msg": "relative L2 error 2.554e-03 (worst row 2.702e-03)"
+  },
+  {
+   "case": "bs 1, sharding ep8",
+   "first_call_s": 0.0001891689607873559,
+   "ok": true,
+   "msg": "relative L2 error 2.420e-03 (worst row 2.420e-03)"
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_GLUE_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_GLUE_CPP",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

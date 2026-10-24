@@ -38,20 +38,22 @@ import triton.language as tl
 # NT1 matches board v9; small-M seed means b68afb72 reject NT2 below M128.
 # M128 NT1: best6 three-seed gate/mean; M256 Humming: de6a56fc + 1b80ffc0.
 # Decode1 attention is best6's measured attn_main, not another tuner draw.
+# Paired 9c83cdb: freeze the measured glue geometries, old glue at decode32
+# sliding, public layer scheduling for every q8 row. Scale-bank choice awaits E:C.
 BEST7_SETTINGS = {
     'other':       ('best6', 'auto', 'auto', 'auto'),
-    (1,  1, 2048): ('best6', ('attn_main', None), 'v9nt1', 'auto'),
-    (1,  1,    0): ('best6', ('attn_main', None), 'v9nt1', 'auto'),
-    (16, 1, 2048): ('best6', 'auto', 'v9nt1', 'auto'),
-    (16, 1,    0): ('best6', 'auto', 'v9nt1', 'auto'),
-    (32, 1, 2048): ('best6', 'auto', 'v9nt1', 'auto'),
-    (32, 1,    0): ('best6', 'auto', 'v9nt1', 'auto'),
-    (1,  8, 2048): ('best6', 'auto', 'v9nt1', 'auto'),
-    (1,  8,    0): ('best6', 'auto', 'v9nt1', 'auto'),
-    (16, 8, 2048): ('best6', 'auto', 'v9nt1', 'auto'),
-    (16, 8,    0): ('best6', 'auto', 'v9nt1', 'auto'),
-    (32, 8, 2048): ('best6', 'auto', 'humming_masked', 'auto'),
-    (32, 8,    0): ('best6', 'auto', 'humming_masked', 'auto'),
+    (1,  1, 2048): (('best6', (16,16), (8,1), (8,16)), ('attn_main', None), 'v9nt1', 'auto'),
+    (1,  1,    0): (('best6', (16,16), (8,1), (8,16)), ('attn_main', None), 'v9nt1', 'auto'),
+    (16, 1, 2048): (('best6', (16,1), (8,1), (16,1)), 'auto', 'v9nt1', 'auto'),
+    (16, 1,    0): (('best6', (16,1), (8,1), (16,1)), 'auto', 'v9nt1', 'auto'),
+    (32, 1, 2048): ('best5', 'auto', 'v9nt1', 'auto'),
+    (32, 1,    0): (('best6', (16,1), (8,1), (16,1)), 'auto', 'v9nt1', 'auto'),
+    (1,  8, 2048): (('best6', (16,4), (4,1), (8,16)), ('layer', None), 'v9nt1', 'auto'),
+    (1,  8,    0): (('best6', (16,4), (4,1), (8,16)), ('layer', None), 'v9nt1', 'auto'),
+    (16, 8, 2048): (('best6', (16,1), (4,1), (8,1)), ('layer', None), 'v9nt1', 'auto'),
+    (16, 8,    0): (('best6', (16,1), (4,1), (8,1)), ('layer', None), 'v9nt1', 'auto'),
+    (32, 8, 2048): (('best6', (16,1), (4,1), (16,1)), ('layer', None), 'humming_masked', 'auto'),
+    (32, 8,    0): (('best6', (16,1), (4,1), (16,1)), ('layer', None), 'humming_masked', 'auto'),
 }
 
 # P7 persistent o -> boundary -> pool/router chain. Keep the switch in the same

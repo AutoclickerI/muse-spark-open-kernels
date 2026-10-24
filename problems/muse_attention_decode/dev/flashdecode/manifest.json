@@ -1,0 +1,79 @@
+{
+  "created_at": "2026-10-24T15:50:13.369210+00:00",
+  "goal": "decode-layer overall-board score",
+  "job": "be19da94dc534323",
+  "send_key": "2182717863236b53",
+  "status": "H200 complete; correct, full-q8 loses; producer diagnosis in ../producer_phases",
+  "files_sha256": {
+    "problems/muse_attention_decode/cand_verify8_flashdecode.py": "2182717863236b53599288f2c383e6191ebb2db529bdd7269c67e2cb0ba1ff9d",
+    "problems/muse_decode_layer/dev/verify8_flashdecode.py": "613e2e564d076fc83215202f41b2e8b3ef6d7a4e430e90844288632d2f31b161",
+    "problems/muse_decode_layer/dev/attention_dropin.py": "f5eb8bc35d98077aa9e09e3f6d2c9a08ad5739408b6cb038df577aec1140045c",
+    "problems/muse_attention_decode/dev/flashdecode/build.py": "75a78f5e52d8efe6aec7e1d48ea4055954a9671692d6f8047a7f88a7ff47eb24",
+    "problems/muse_attention_decode/dev/flashdecode/driver.py.inc": "1886400ac835382b8393e8188ff2c1c593704c78ee499ff0930e5b82826f9b88",
+    "problems/muse_attention_decode/dev/flashdecode/verify8.cu": "eb5c7c4595d62a2351fc58018ab3fd1145fa6a63268ad2ba341f9e66ff001eec",
+    "problems/muse_attention_decode/dev/flashdecode/check_configs.py": "048872e8dcf02ab04418cabf20c3a0fd99430649efd378a5e6c77f17fc898994",
+    "problems/muse_attention_decode/dev/flashdecode/check_glue.py": "fae77956f27af1c1221f96b6c74dd4d55ef5c061a687a7c2ee26005713c8c274",
+    "problems/muse_attention_decode/dev/flashdecode/tune.py": "a994f137c914cb530bdb021bf3ea18c8935f5b589dc39266a9cfd1be5326a125",
+    "problems/muse_attention_decode/dev/flashdecode/README.md": "6b0e69560ee1c8cba273932fec11fb0e995afd18c7332ab35e50406ba5d1ce41",
+    "problems/muse_attention_decode/dev/flashdecode/floor.json": "b2401162f6aee47aea58eaa8072bf29a7f5c5da2e97e297ad6b51d010ac5e2c2",
+    "problems/muse_attention_decode/FOCUS.md": "ce847381ad2cbeeca28aceea8e29281449b5ddd38a00cd698aced060560680f1",
+    "docs/FINDINGS.md": "4e4eceb604894c73d618935a5466135339e06ffa6662f77732f445975d9c30fa",
+    "problems/muse_decode_layer/dev/NEXT_CHECKS.md": "73a818e5faa653658197f9504bb87e30a1c86a832ec52dc552caf80bdb1cf04d"
+  },
+  "full_q8_h200_settings": {
+    "1": {
+      "splits": 128,
+      "stages": 3,
+      "stage_keys": 64,
+      "producer_ctas": 256,
+      "combine_ctas": 32
+    },
+    "16": {
+      "splits": 17,
+      "stages": 3,
+      "stage_keys": 128,
+      "producer_ctas": 544,
+      "combine_ctas": 512
+    },
+    "32": {
+      "splits": 17,
+      "stages": 3,
+      "stage_keys": 128,
+      "producer_ctas": 1088,
+      "combine_ctas": 1024
+    }
+  },
+  "unchanged_choices": "attn_main q1; attn_main B1 q8 sliding; FA3 B16/B32 q8 sliding on Hopper",
+  "local_validation": {
+    "task_tests": 16,
+    "scored_graphs": 12,
+    "static_checks": 4,
+    "config_fresh_graph_gates": 16,
+    "adapter_graph_gates": 9,
+    "forced_fa3_sliding_glue_graphs": 2,
+    "adapter_cuda_launches": 2,
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition"
+  },
+  "local_full_q8_us": {
+    "verify 1": 40.92800011858344,
+    "verify 16": 358.399988617748,
+    "verify 32": 695.2960207127035
+  },
+  "unverified": [
+    "inner producer H200 phase fractions; paired lab scheduled after reset"
+  ],
+  "h200_result": {
+    "job": "be19da94dc534323",
+    "speedup": 1.1204276369171589,
+    "tests_passed": 16,
+    "producer_us_B16_B32": [
+      427.8,
+      713.7
+    ],
+    "combine_us_B16_B32": [
+      6.3,
+      8.5
+    ],
+    "promoted": false
+  }
+}

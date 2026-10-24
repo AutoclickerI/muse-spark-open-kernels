@@ -1,0 +1,706 @@
+{
+  "producer": {
+    "payload_sha256": "5dfa189326b5795be28a8b7fc9974dc5c0cb8c095938810ff74c62ae0370afa2",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": [
+      12,
+      0
+    ],
+    "checks": [
+      {
+        "wide": false,
+        "setting": [
+          17,
+          3,
+          64
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          7,
+          3,
+          64
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          5,
+          3,
+          64
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          17,
+          4,
+          64
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          7,
+          4,
+          64
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          5,
+          4,
+          64
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          7,
+          3,
+          128
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          5,
+          3,
+          128
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          17,
+          4,
+          128
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          7,
+          4,
+          128
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": false,
+        "setting": [
+          5,
+          4,
+          128
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          17,
+          3,
+          64
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          7,
+          3,
+          64
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          5,
+          3,
+          64
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          17,
+          4,
+          64
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          7,
+          4,
+          64
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          5,
+          4,
+          64
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          7,
+          3,
+          128
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          5,
+          3,
+          128
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          17,
+          4,
+          128
+        ],
+        "ctx": 10,
+        "dist": "normal",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 5.232e-02 (worst row 8.209e-02) [bound 0.147: 2.5 x the reference's 0.053 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          7,
+          4,
+          128
+        ],
+        "ctx": 4099,
+        "dist": "coherent",
+        "scale": 1.0,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 6.252e-02 (worst row 7.835e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "wide": true,
+        "setting": [
+          5,
+          4,
+          128
+        ],
+        "ctx": 3077,
+        "dist": "edges",
+        "scale": 0.015625,
+        "gate": true,
+        "trace_gate": true,
+        "trace_relative": 0.0,
+        "msg": "relative L2 error 8.192e-02 (worst row 9.621e-02) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]",
+        "graph": true
+      },
+      {
+        "B": 16,
+        "wide": false,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "ctx": 80000,
+        "gate": true,
+        "official_gate": true,
+        "error": 0.029567107558250427,
+        "local_us": 368.6720132827759
+      },
+      {
+        "B": 16,
+        "wide": true,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "ctx": 80000,
+        "gate": true,
+        "official_gate": true,
+        "error": 0.029473699629306793,
+        "local_us": 499.7119903564453
+      },
+      {
+        "B": 16,
+        "wide": true,
+        "setting": [
+          34,
+          3,
+          64
+        ],
+        "ctx": 80000,
+        "gate": true,
+        "official_gate": true,
+        "error": 0.029473910108208656,
+        "local_us": 428.0639886856079
+      },
+      {
+        "B": 32,
+        "wide": false,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "ctx": 80000,
+        "gate": true,
+        "official_gate": true,
+        "error": 0.029351433739066124,
+        "local_us": 690.1760101318359
+      },
+      {
+        "B": 32,
+        "wide": true,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "ctx": 80000,
+        "gate": true,
+        "official_gate": true,
+        "error": 0.02929956465959549,
+        "local_us": 944.1279768943787
+      },
+      {
+        "B": 32,
+        "wide": true,
+        "setting": [
+          34,
+          3,
+          64
+        ],
+        "ctx": 80000,
+        "gate": true,
+        "official_gate": true,
+        "error": 0.02929900959134102,
+        "local_us": 827.3919820785522
+      }
+    ]
+  },
+  "verify1_pair": {
+    "payload_sha256": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9",
+    "fa3": "portable operation, exact layer glue; no FA3 timing claim",
+    "checks": [
+      {
+        "partials": 0,
+        "path": "single",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.000251542980549857,
+        "graph": true,
+        "msg": "relative L2 error 2.515e-04 (worst row 5.103e-04) [bound 0.150: 2.5 x the reference's 0.061 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 0,
+        "path": "current",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.06632592529058456,
+        "graph": true,
+        "msg": "relative L2 error 6.633e-02 (worst row 8.010e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 0,
+        "path": "best5",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.06691637635231018,
+        "graph": true,
+        "msg": "relative L2 error 6.692e-02 (worst row 7.923e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 1,
+        "path": "single",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.00031783321173861623,
+        "graph": true,
+        "msg": "relative L2 error 3.178e-04 (worst row 4.703e-04) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 1,
+        "path": "current",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.06524045765399933,
+        "graph": true,
+        "msg": "relative L2 error 6.524e-02 (worst row 8.488e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 1,
+        "path": "best5",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.06930815428495407,
+        "graph": true,
+        "msg": "relative L2 error 6.931e-02 (worst row 9.832e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 4,
+        "path": "single",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.00025767070474103093,
+        "graph": true,
+        "msg": "relative L2 error 2.577e-04 (worst row 5.612e-04) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 4,
+        "path": "current",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.06603043526411057,
+        "graph": true,
+        "msg": "relative L2 error 6.603e-02 (worst row 9.140e-02) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "partials": 4,
+        "path": "best5",
+        "gate": true,
+        "cached_gate": true,
+        "error": 0.0649300292134285,
+        "graph": true,
+        "msg": "relative L2 error 6.493e-02 (worst row 7.154e-02) [bound 0.150: 2.5 x the reference's 0.063 with FP8 E4M3 queries + 0.015]"
+      }
+    ]
+  },
+  "forced_sm90_lowering": {
+    "note": "sm120 with explicit sm90a FP8-mma lowering; not FA3 or H200 timing",
+    "cuda_sha256": "c73c2e8defb13b06e0f83dbe9dcf92a068d3c10eee729a97faa1cfee53f834cb",
+    "checks": [
+      {
+        "B": 16,
+        "wide": false,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "local_us": 415.74400663375854,
+        "gate": true,
+        "error": 0.029567111283540726
+      },
+      {
+        "B": 16,
+        "wide": true,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "local_us": 503.80802154541016,
+        "gate": true,
+        "error": 0.029473699629306793
+      },
+      {
+        "B": 16,
+        "wide": true,
+        "setting": [
+          34,
+          3,
+          64
+        ],
+        "local_us": 423.93600940704346,
+        "gate": true,
+        "error": 0.029473910108208656
+      },
+      {
+        "B": 32,
+        "wide": false,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "local_us": 788.4799838066101,
+        "gate": true,
+        "error": 0.029351409524679184
+      },
+      {
+        "B": 32,
+        "wide": true,
+        "setting": [
+          17,
+          3,
+          128
+        ],
+        "local_us": 946.1759924888611,
+        "gate": true,
+        "error": 0.02929956465959549
+      },
+      {
+        "B": 32,
+        "wide": true,
+        "setting": [
+          34,
+          3,
+          64
+        ],
+        "local_us": 823.2960104942322,
+        "gate": true,
+        "error": 0.02929900959134102
+      }
+    ]
+  },
+  "deadline": {
+    "verify8_producer_phases": {
+      "sha256": "2a78ceb3af7e2bc3a5e5edfe7bc0ca6672e39be824c24ec270caf02e6b47a514",
+      "elapsed_s": 4.788703561003786,
+      "chars": 3601,
+      "fa3": "portable operation; exact layer Python/Triton glue, PDL disabled locally"
+    },
+    "verify1_sliding_fa3_pair": {
+      "sha256": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9",
+      "elapsed_s": 0.2154136669705622,
+      "chars": 997,
+      "fa3": "portable operation; exact layer Python/Triton glue, PDL disabled locally"
+    }
+  },
+  "static": {
+    "prof/lab/verify8_producer_phases.py": {
+      "sha256": "2a78ceb3af7e2bc3a5e5edfe7bc0ca6672e39be824c24ec270caf02e6b47a514",
+      "checks": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PHASE_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "WIDE_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ]
+    },
+    "prof/lab/verify1_sliding_fa3_pair.py": {
+      "sha256": "a652ee6400e5c27b526bf69f8c47e895dcc4e10dc0f2ac7fc1bca2c919ad68a9",
+      "checks": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "WINDOW_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ]
+    }
+  }
+}

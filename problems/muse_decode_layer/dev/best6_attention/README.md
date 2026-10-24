@@ -7,9 +7,11 @@ synthetic-fixture metadata field and final diagnostic summary changed. All **114
 implementations and every native source literal are unchanged, including the entire expert portfolio,
 projections, glue and `kernel_fn`. [audit.py](audit.py) verifies the delta.
 
-The owner holds submission until `moe_decode_adapters` on the MoE host confirms native execution at
-M128/256. This lane did not send the candidate. Normal/forced local results do not establish native
-H200 adapter safety or an H200 speedup.
+Jihoon sent this source as H200 check **`1b80ffc037cc454c`**: **1.379716x**, 13/13 tests,
+prepare **161.009 s**. Its M256 choice is Humming (419.971 us vs NT2 511.784 us in prepare).
+Native alternatives passed the twelve-seed lab `de6a56fc38e9477d`; the earlier safety hold is resolved.
+The current integration is **[best7](../best7/README.md)**. The local evidence below applies to this
+frozen best6 source, while new table-dispatch composition remains to measure on H200.
 
 ## Selection
 

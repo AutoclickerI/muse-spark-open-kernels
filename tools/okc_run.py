@@ -209,10 +209,22 @@ def send_in_turn(entry: dict, priority: float, send, mode_now):
     signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGUSR1})  # before any thread starts: sigwait receives it
     me = WAITING / f"{os.getpid()}.json"
     mine = {"pid": os.getpid(), "priority": priority, "t": time.time(), **entry}
+    if float(mine.get("not_before", 0)) > time.time():
+        mine["until"] = float(mine["not_before"])
     me.write_text(json.dumps(mine))
     announced = False
     try:
         while True:
+            # An explicit owner-specified send time is not a judge poll. Stay
+            # outside queue order and make no service calls until that event.
+            not_before = float(mine.get("not_before", 0))
+            if not_before > time.time():
+                me.write_text(json.dumps({**mine, "until": not_before}))
+                wake_waiters()
+                print(f"held until {datetime.datetime.fromtimestamp(not_before, datetime.timezone.utc).isoformat()}; "
+                      "no judge request before this time", flush=True)
+                time.sleep(max(0, not_before - time.time()))
+                me.write_text(json.dumps(mine))
             # Only the head of the queue asks the judge (`okc jobs`) and watches its oldest run; the
             # rest read runs/waiting/ and sleep until the queue changes, so an event costs one API call.
             ahead = waiters()
@@ -388,7 +400,8 @@ def send(args):
             print(f"okc {mode}: daily cap reached; trying the next mode", flush=True)
         return None
 
-    mode, job = send_in_turn({"problem": problem, "file": rel, "sha256": sha, "note": args.note},
+    mode, job = send_in_turn({"problem": problem, "file": rel, "sha256": sha, "note": args.note,
+                             "not_before": getattr(args, "not_before", None) or 0},
                              priority, send, mode_now)
     print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
@@ -423,6 +436,16 @@ def adopt(args):
     finish(args.job)
 
 
+def parse_not_before(value):
+    try:
+        stamp = datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            raise ValueError("include a timezone offset")
+        return stamp.timestamp()
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"expected ISO8601 timestamp with timezone: {exc}") from exc
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -432,6 +455,7 @@ def main():
     p.add_argument("--force", action="store_true", help="send source the ledger already has")
     p.add_argument("--scored", action="store_true", help="only as a scored run: wait for the reset if none is left today")
     p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem)")
+    p.add_argument("--not-before", type=parse_not_before, help="hold this snapshot until an ISO8601 timestamp with timezone")
     p.set_defaults(run=send)
     p = sub.add_parser("collect", help="finish pending receipts (all of them if no job is named)")
     p.add_argument("jobs", nargs="*")

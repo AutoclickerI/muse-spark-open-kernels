@@ -1,0 +1,136 @@
+{
+  "payload": "prof/lab/dense_pdl_prefetch.py",
+  "sha256": "016706db77b05c325d4e07523673767909d0f130d7bf33cabffd715a120f3643",
+  "baseline": "problems/muse_decode_layer/cand_r3_best7_paired.py",
+  "baseline_sha256": "3baaaa9697825d527e0e451b3d1bbb79087987c54ffd01be3ac262d5b641c57a",
+  "kernel_sha256": "a92e799cb36978cf46cb4038b7ddea49d3a81c448b49eae54c9cdb6d9fcb0d34",
+  "receipt": "cand_r3_best6.1b80ffc037cc454c.log",
+  "choices": [
+    [
+      1,
+      1,
+      2048,
+      [
+        "attn_main",
+        null
+      ],
+      {
+        "qkv_gate": "cublas",
+        "o": "cublas",
+        "pool_router": "custom",
+        "unpooler_slice": "custom"
+      }
+    ],
+    [
+      1,
+      1,
+      0,
+      [
+        "attn_main",
+        null
+      ],
+      {
+        "qkv_gate": "cublas",
+        "o": "cublas",
+        "pool_router": "custom",
+        "unpooler_slice": "custom"
+      }
+    ],
+    [
+      1,
+      8,
+      2048,
+      [
+        "layer",
+        null
+      ],
+      {
+        "qkv_gate": "cublas",
+        "o": "cublas",
+        "pool_router": "custom",
+        "unpooler_slice": "custom"
+      }
+    ],
+    [
+      1,
+      8,
+      0,
+      [
+        "layer",
+        null
+      ],
+      {
+        "qkv_gate": "cublas",
+        "o": "cublas",
+        "pool_router": "custom",
+        "unpooler_slice": "custom"
+      }
+    ],
+    [
+      16,
+      1,
+      2048,
+      [
+        "layer",
+        null
+      ],
+      {
+        "qkv_gate": "custom",
+        "o": "cublas",
+        "pool_router": "custom",
+        "unpooler": "cublas"
+      }
+    ],
+    [
+      16,
+      1,
+      0,
+      [
+        "attn_main",
+        null
+      ],
+      {
+        "qkv_gate": "custom",
+        "o": "cublas",
+        "pool_router": "custom",
+        "unpooler": "cublas"
+      }
+    ],
+    [
+      32,
+      1,
+      2048,
+      [
+        "attn_main",
+        null
+      ],
+      {
+        "qkv_gate": "cublas",
+        "o": [
+          "lt",
+          2
+        ],
+        "pool_router": "custom",
+        "unpooler": "cublas"
+      }
+    ],
+    [
+      32,
+      1,
+      0,
+      [
+        "attn_main",
+        null
+      ],
+      {
+        "qkv_gate": "cublas",
+        "o": [
+          "lt",
+          2
+        ],
+        "pool_router": "custom",
+        "unpooler": "cublas"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "job": "640d67e7e56d42e5",
+  "receipt": "runs/muse_moe_w4a16/20261024T153316Z_check_640d67e7e56d42e5.json",
+  "status": "done",
+  "rows": [
+    {
+      "name": "NT1rec",
+      "fixtures": 36,
+      "total": 36,
+      "us": 290.83,
+      "paired_ratio": 1.0,
+      "L2": 0.00025,
+      "row": 0.0018
+    },
+    {
+      "name": "RS64g528",
+      "fixtures": 36,
+      "total": 36,
+      "us": 378.67,
+      "paired_ratio": 1.3124,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "RS128g528",
+      "fixtures": 36,
+      "total": 36,
+      "us": 425.03,
+      "paired_ratio": 1.4749,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "RS64g2112",
+      "fixtures": 36,
+      "total": 36,
+      "us": 361.16,
+      "paired_ratio": 1.2529,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "SS64g528",
+      "fixtures": 36,
+      "total": 36,
+      "us": 750.96,
+      "paired_ratio": 2.6005,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "SS128g528",
+      "fixtures": 36,
+      "total": 36,
+      "us": 785.54,
+      "paired_ratio": 2.7213,
+      "L2": 0.00413,
+      "row": 0.00469
+    },
+    {
+      "name": "SS128g1056",
+      "fixtures": 36,
+      "total": 36,
+      "us": 678.86,
+      "paired_ratio": 2.3545,
+      "L2": 0.00413,
+      "row": 0.00469
+    }
+  ],
+  "phase_lines": [
+    "PH RS64g528 route/W13_act/W2_SS/final=7.9,248.0,134.2,12.9",
+    "PH RS128g528 route/W13_act/W2_SS/final=7.8,283.6,162.0,12.7",
+    "PH RS64g2112 route/W13_act/W2_SS/final=8.0,235.4,124.6,12.6",
+    "PH SS64g528 route/W13_act/W2_SS/final=7.8,523.8,261.9,12.8",
+    "PH SS128g528 route/W13_act/W2_SS/final=7.9,517.6,311.3,13.0",
+    "PH SS128g1056 route/W13_act/W2_SS/final=7.7,403.9,295.1,13.2"
+  ],
+  "other_lines": [
+    "READS expert_wide=1.000 NT1=2.272 nominal logical tile repeats, not DRAM counters; AA abs_mean_us=1.784"
+  ],
+  "complete": true
+}

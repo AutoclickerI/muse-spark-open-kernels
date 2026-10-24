@@ -1,0 +1,42 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_s4.py",
+  "sha256": "9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e",
+  "base_sha256": "cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7",
+  "receipt": "dc3fea0a20a349bf",
+  "accepted_wrapper": "runs/muse_moe_w4a16/20261024T150834Z_check_dc3fea0a20a349bf.py",
+  "accepted_payloads": {
+    "moe_nt1_limit": "7014f33df86522d3f99803f3af5458f3c5875f9813f73f9998d48af99df81b93",
+    "moe_m128_issue_limit": "9ec548dc3883ffcdad5d2442e793e1bbf8e94b92733a68a78de56c8d1b1a6c0b"
+  },
+  "nt1_cuda_sha256": "752790e4440144fb3f4daf251f5f7fb7a33fb19212fcd84b8bcd5f9de060d97b",
+  "d32_cuda_sha256": "1942a25f32bba908bde7f6f210113a3cc821959a601c61bb440a0ec1f174dfb2",
+  "nt1": {
+    "kind": "lop3",
+    "stages": 2,
+    "grid": 264,
+    "clamp_to_residency": true,
+    "tokens": [
+      1,
+      8,
+      16,
+      32
+    ]
+  },
+  "m128": {
+    "prefix": "idist",
+    "which": 1,
+    "grid": 1056,
+    "scale_word_bits": 16
+  },
+  "exact_functions": [
+    "nt1_call",
+    "issue_word_bank",
+    "issue_plan",
+    "issue_call",
+    "mw_repack_planes"
+  ],
+  "renamed_functions": {
+    "issue_prepare": "_encode_scales -> _s4_encode_scales",
+    "_s4_encode_scales": "_encode_scales definition renamed"
+  }
+}

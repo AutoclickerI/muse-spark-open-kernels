@@ -1,0 +1,47 @@
+{
+  "sha256": "f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284",
+  "accepted_payload_exact": true,
+  "native_sections_exact": true,
+  "exact_functions": [
+    "pm_plan",
+    "pm_call",
+    "issue_prepare",
+    "issue_word_bank",
+    "mw_repack_planes"
+  ],
+  "unchanged_base_functions": 168,
+  "changed_base_functions": [
+    "_best6_call",
+    "_best7_gate_moe",
+    "_best7_prepare_settings",
+    "_s4_gate_moe",
+    "_s4_prepare_banks",
+    "prepare"
+  ],
+  "removed_d32_engine": [
+    "issue_call",
+    "issue_module",
+    "issue_plan"
+  ],
+  "changed_rows": [
+    [
+      16,
+      8,
+      2048
+    ],
+    [
+      16,
+      8,
+      0
+    ]
+  ],
+  "small_m_unchanged": true,
+  "m256_unchanged": true,
+  "shared_native_bank_unchanged": true,
+  "all_new_gate_failures_raise": true,
+  "rejected_words": [],
+  "landed_moe_cell_crosscheck": {
+    "sha256": "970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f",
+    "same_native_bodies": true
+  }
+}

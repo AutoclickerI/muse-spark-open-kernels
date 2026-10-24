@@ -1,111 +1,65 @@
-# Grouped NVFP4 RS WGMMA
+# Packed WGMMA MoE producer
 
-Free lane. The current experiment is `pipeline.cu` / `pipeline.py`; H200 performance is
-unverified. Candidate promotion and serving wiring wait for agreement and a seed-mean win.
-The scalar/plane adapter remains in decode `dev/parked/cand_r3_mixed_wgmma.py`.
+Free lane owns M256 inside the decode layer. Serving is parked. Owner sends layer candidates
+and commits; this lane sends labs. Current measured results and causes live in
+[docs/FINDINGS.md](../../../../docs/FINDINGS.md#grouped-nvfp4-rs-wgmma-free-lane).
 
-## What the receipts establish
+| H200 fixed M256 path | Seed mean, us | Receipt |
+|---|---:|---|
+| Raw CTA1g2112 |385.2|97be11d4631b44d6|
+| Lossless recoded C1g2112 |365.2|9e8a6a15f95748db|
+| Masked Humming, same respective runs |447.6 / 448.2|same|
 
-| Receipt / scope | M128 us | M256 us | Conclusion |
-|---|---:|---:|---|
-| Scalar296fdf45 |2060 vs V9280|2648 vs480|Correct, rejected|
-| Plane01e74ee6 |1845 vs V9280|2361 vs479|Correct, only~10% better than scalar|
-| Decode adaptersde6a56fc,12-seed means |masked~341, raw17647|masked448, raw17771, V9NT2545.5|Masked is the new M256 bar|
-| Vector4ee35d3dd5374c40 |pending|pending|Already accepted when this turn began; could not batch|
+Raw is integrated in decode S2 (`cand_r3_best7_scale_w2fix.py`, SHA256
+`b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337`);
+recoded in S3 (`cand_r3_best7_scale_recoded_m256.py`, SHA256
+`cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7`).
+Whole-layer H200 results remain pending. Exact sources/screens are in decode `dev/s2/` and `dev/s3/`.
 
-At16K, plane W13 takes49.2ms for39491 routed pairs (~54TFLOPS), so changing the packed
-representation did not repair the mainloop. Prefill controls70206a2a all pass: at512/753,
-raw17 costs400/532us against Marlin595/788; at3012/16384, masked and dg_w8 are the leaders.
-This lane does not replace those producers without a matched win.
+`w2fix.{cu,py}` is the shared producer: timed route, W13+SwiGLU, W2+weighted Y/tile sums,
+then a vector CTA per token for norm/combine. This replaces the serialized last-warp tail;
+W2/finalizer have no completion atomics or publication fences. Raw and lossless recoded
+weight/scale formats stay packed until in-kernel conversion; FP32 global scales stay in epilogues.
 
-W13-only ablation276739d2 uses exact R0 IDs, fresh public weights and cold128MiB graph replays:
+The old vector mismatch was a B128 base-phase error, fixed by1024-byte alignment and absolute
+Hopper-address emulation. Native register-A lifetime audits retain wait1 overlap without spills.
+`native_abi.py` supplies lean pointer-only bindings; plans retain scratch owners and obtain
+current streams at launch. `check_tail.py`, `check_w2fix.py` and `dump_w2fix.py` reproduce these checks.
 
-| Scalar W13 experiment | M128 us | M256 us |
-|---|---:|---:|
-| Grid132 |2215.7|3066.8|
-| Grid264 |1322.7|1758.4|
-| Grid528 |911.4|1197.2|
-| No conversion, grid264 |574.3|756.6|
-| Constant weights/no loads, grid264 |322.8|462.9|
-| No MMA, grid264 |1264.1|1669.6|
+Current work: [w13_issue/README.md](w13_issue/README.md), instruction/scale-copy cuts and
+N16-cold/N32-hot scheduling at fixed K128/S4/grid2112. New MoE-host lab8483c0c6783a4df1
+(send22da326e27940230) is accepted; performance pending. No new cell is promoted.
+Lossless scale format/provenance: [recode/README.md](recode/README.md).
+Older CUTLASS numeric GEMM stays quarantined and out of candidates.
 
-Conversion removal helps~2.3x; removing MMA helps only~5%. Strong grid dependence and the
-remaining no-load cost make latency hiding and mainloop synchronization the next targets.
-These are controlled timings; they do not isolate every remaining cycle to HBM latency.
-Original SASS has no spills and eight K16 MMAs per wait0, not one wait per MMA.
+## M128 K64 non-finite gates: shared register-bank repair
 
-## Pipeline change
+MoE lane owns this repair; free lane owns the W2/finalizer work above. The shared
+`fused.cu` now alternates A-register banks across paired K64 stages. Its split-K/W2
+epilogues are byte-identical to the old measured source; K128/K256 scheduling is
+unchanged. `m128/k64_bank_rotation.patch` is the exact scoped diff, and the M128
+source generator follows that shared register index.
 
-`pipeline.cu` retains the vector converter: E2M1 bit permutations and raw E4M3 layout
-permutations only in prepare, generic format lookup built inside each timed CTA, FP32 GS
-in epilogues. Gate/up GS can differ. No prepared expanded weight or scale bank exists.
+H20066133279's cfg3/cfg5 converted into af[0] again after wait1 left its WGMMA group
+live, violating the [PTX input-register lifetime requirement](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#asynchronous-warpgroup-level-matrix-instructions-wgmma-wait-group).
+Actual native SASS confirms the reuse. All10 K64 math paths go from63 premature
+register overwrites per64-stage loop to zero; new banks are disjoint.393,216 Hopper
+B128 addresses match the writer and remain inside the tile. The immediate local
+MMA stand-in hid asynchronous lifetime errors. This is a confirmed PTX violation
+matching the failed configurations; H200 removal of the non-finite gates is pending.
 
-- K64/128/256 stage sizes and3–6 stage cp.async rings. Preload S-1 stages, recycle the
-  previous stage after the newer group's wait1. Maximum packed Q+SF prologue is27648B/CTA,
-  versus4608B in vector's original two-stage K64 ring; gathered X is async too.
-- Gather source indices are computed once per task. One CTA barrier per K stage; no
-  barrier inside its K64 conversion/MMA chunks. Scale/weight loads arrive with the stage.
-- Two register-A banks overlap conversion and WGMMA. The last wait0 drains the task;
-  steady-state overlap uses wait1. The K128 wait0 control differs only in overlap.
-- Split-K2/4 partitions K without repeating its weight reads. Disjoint FP32 partials are
-  reduced before SwiGLU or norm; added partial-buffer traffic is included in full timings.
-- Grid264/528/1056 diagnostics and full seed comparisons. Work/offsets/hot order remain
-  GPU-derived on every replay. No inter-CTA spin barrier.
+After the fix:234 M128+210 shared FP32 checks pass; native12+16 specializations have
+zero spills/C7513. The pointer-only repair payload (reusing `native_abi.py`) passes
+seven cfg/grid choices on12 public-router seeds plus R0/HOT128, with poisoned
+ACT/Y/SS/INV fully written on active rows. Worst M128 L2<=0.004132,row<=0.004948.
+Its actual sm90 extension builds/loads locally in12.5s, without native math, and
+checks its deadline before compilation/every seed. W2 timing and H200 numeric
+confirmation remain open. No decode candidate was promoted.
 
-The first fully unrolled K256 version triggered ptxas **C7513** and silently serialized
-all16 MMAs. Input-only A-register keep points plus a non-unrolled loop over pairs of K64
-chunks avoid that allocator/pipeline interaction. The final simpler MMA wrapper has no
-C7513. `dump_pipeline.py` compiles every actual sm90a specialization and rejects spills,
-C7513 or unexpected wait0 instructions. All ten currently have zero spills; overlap
-variants contain two static wait1 sites plus the final wait0, and no per-MMA waits.
-Static CTA-barrier sites are LUT initialization, stage entry and task end.
-Native/portable images explicitly target sm90a/sm120. The sm120 math stand-in shares the
-loads, async ring, register fragment layout, GS epilogue and split-K reduction.
+Send key `0ea82c48f2255889` on MoE, priority0.8; immediate detached log says waiting
+for a judge slot without rejection. Full ownership/cause/reproduction and frozen
+hashes: `m128/REPAIR.md`, `m128/repair_admission.json`.
 
-| ID | N | K/stage | Stages | Split K | Overlap | Prologue packed Q+SF bytes |
-|---|---:|---:|---:|---:|---|---:|
-|P0|16|64|4|1|wait0|6912|
-|P1|16|128|4|1|wait1|13824|
-|P2|16|128|4|1|wait0 control|13824|
-|P3|16|128|6|1|wait1|23040|
-|P4|16|256|4|1|wait1|27648|
-|P5|32|128|4|1|wait1|13824|
-|P6|32|256|3|1|wait1|18432|
-|P7|16|128|4|2|wait1|13824|
-|P8|32|128|4|2|wait1|13824|
-|P9|16|128|4|4|wait1|13824|
-
-## Lab and validation
-
-`prof/lab/moe_pipeline_seed.py` packs stage/grid/W13 diagnostics and full12-seed comparisons
-into one proj-host run. The earlier vector run was already accepted and was left running.
-Controls come from the decode adapters' raw-E4M3 V9 NT1/NT2, masked Humming and raw17, with
-independent gate/up FP32 GS. R0 has exact209/414 pairs,18/21 experts,hot55/119; weights and
-activations are fresh public draws, not the captured host's unexported weights.
-
-Each variant is measured on the same three fresh inputs per seed and eight rotated/reversed
-cold128MiB graph replays. Reports give per-seed values and mean/median per fixed variant;
-no per-seed best is used as a winner. Gates: finite, relative L2<=1%, row<=5%. Rejected variants
-are labeled and excluded from timing. W13 additionally checks every active expert/channel.
-Raw17's R0 full-MoE timing and W13+SwiGLU phase use its actual swizzled input/output layout;
-the phase excludes gather. W13 B/s is nominal packed Q+SF requests/unique bytes divided by
-elapsed time, not hardware DRAM traffic. Split-K reduction is included in pipeline W13.
-
-`check_pipeline.py` passes120 refreshed graph checks against an independent FP32 oracle:
-all ten configurations at8/128/256 with distinct gate/up GS, plus signed/zero/subnormal
-scales and empty/hot/single-pair routing. Worst relative L2~0.000635. Native Hopper math and
-the341/448us mean targets remain unverified. Local timing ranks neither Hopper nor serving.
-
-Reproduce inside tools/img: `check_pipeline.py`, `dump_pipeline.py`, `build_pipeline_lab.py`;
-build the proj wrapper with tools/h200_lab.py, then screen with tools/local_eval.py. The wrapper
-catches lab exceptions, so inspect LAB_ERROR/INCOMPLETE and every gate in addition to the nine
-host tests. Static checks also run directly on the standalone payload because the batched
-wrapper embeds payload source strings. Current hashes/screens/queue identities: `admission.json`.
-
-The earlier canonical V6 and Humming layout inversion tests remain exact, including FP32 GS;
-see `check_layouts.py`. CUTLASS host TMA repairs pass locally but its mixed GEMM stays quarantined,
-out of omni and outside this experiment. No new CUTLASS slot or candidate was sent by this lane.
-
-A winner can replace serving expert GEMMs, gathering already-normalized input and retaining
-per-pair outputs and EP collectives. Separate gate/up GS are supported in the new epilogue.
-Serving and complete-layer pipeline agreement wait for an H200 producer win.
+Current lossless scale-bank experiment: [recode/README.md](recode/README.md).
+Paired raw/recoded WGMMA, NT1-recoded and masked Humming: job9e8a6a15f95748db,
+send keyfdac893179c9f8ad; H200 winner unverified. Both joint encodings are lossless.

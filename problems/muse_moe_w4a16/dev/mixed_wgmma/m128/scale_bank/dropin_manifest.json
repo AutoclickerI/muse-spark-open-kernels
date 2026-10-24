@@ -1,0 +1,31 @@
+{
+  "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/dropin.py",
+  "sha256": "dbd7b7b1c1dd57fec836c01570131fa04e73808fe785fc5cec23cad846a0632c",
+  "prepare": "m128_scales_scale_prepare(weights)",
+  "call": "m128_scales_scale_call(data, bank, which=3, grid=528)",
+  "payload_sha256": "30fc1ce60c08e6c746fe0b6e097f098f10f20d5e8eabea4652eb9fe8c7a4c632",
+  "ready": false,
+  "reason": "Rejected by paired H200471f6d6216804dda: cfg3 recoded1649.96 us versus NT1rec291.70 us; replaced by distributed-finalizer/expert-wide experiment in ../one_read.",
+  "best7_rows": [
+    "(16, 8, 2048)",
+    "(16, 8, 0)"
+  ],
+  "local_gate": {
+    "checks": 21,
+    "signed_zero_subnormal_scales": true,
+    "separate_gate_up_global_scales": true,
+    "routes": [
+      "real0",
+      "real1",
+      "real2",
+      "empty",
+      "single",
+      "hot",
+      "balanced"
+    ],
+    "max_L2": 0.004102156963199377,
+    "max_row": 0.004600831773132086
+  },
+  "judge_job": "471f6d6216804dda",
+  "send_key": "def9bff54e82c1b0"
+}

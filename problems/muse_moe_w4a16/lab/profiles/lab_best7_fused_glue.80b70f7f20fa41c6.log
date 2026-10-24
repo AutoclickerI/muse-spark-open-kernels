@@ -1,0 +1,51 @@
+MOE_PHASE M=1 ctas=264 route=5389/5697/5994 p1=12741/17424/20606 wait=2491/6349/11738 barrier=1275/4953/9827 p2=15826/17949/22438 norm=644/1334/1658 final=99/147/2136 p1_tiles=3/4/4 p2_tiles=1/2/2 atomics=8/16/16
+MOE_TIME M=1 v9=0.0707ms v12=0.0620ms v16=0.0874ms wide=0.5685ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5530/5759/6026 p1=115364/143432/164261 wait=943/5431/47960 barrier=1256/21867/64093 p2=64748/71856/110845 norm=9388/11720/15192 final=97/157/2294 p1_tiles=34/35/35 p2_tiles=17/17/18 atomics=136/136/144
+MOE_TIME M=16 v9=0.1893ms v12=0.2041ms v16=0.2113ms wide=0.2894ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5840/6100/6378 p1=154842/191345/214628 wait=844/5354/58862 barrier=1321/27054/80771 p2=85468/91549/144230 norm=12604/15521/19887 final=103/164/2939 p1_tiles=46/47/47 p2_tiles=23/23/24 atomics=184/184/192
+MOE_TIME M=32 v9=0.2323ms v12=0.2554ms v16=0.2635ms wide=0.3546ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5864/6091/6370 p1=79265/97802/110341 wait=649/6866/33001 barrier=1210/15011/44253 p2=45944/51993/79157 norm=6141/7628/10642 final=103/151/3045 p1_tiles=23/23/24 p2_tiles=11/12/12 atomics=88/96/96
+MOE_TIME M=8 v9=0.1440ms v12=0.1499ms v16=0.1771ms wide=0.2202ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7827/8125/8319 p1=250387/309970/345905 wait=791/5910/94029 barrier=1111/32208/121376 p2=137103/145172/231551 norm=20896/25760/31618 final=154/2010/4686 p1_tiles=75/76/76 p2_tiles=37/38/38 atomics=296/304/304
+MOE_TIME M=128 v9=0.3459ms v12=0.3920ms v16=0.3849ms wide=0.4748ms selected=v9
+MOE_PHASE M=256 ctas=264 route=11068/11314/11594 p1=393644/486253/543320 wait=772/7450/146248 barrier=1109/54369/189597 p2=216517/224532/359028 norm=33377/41554/50027 final=956/3946/8193 p1_tiles=118/118/119 p2_tiles=59/59/60 atomics=472/472/480
+MOE_TIME M=256 v9=0.5008ms v12=0.5911ms v16=0.5564ms wide=0.4929ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.07065600156784058, 'v12': 0.06201599910855293, 'v16': 0.08742400258779526, 'wide': 0.5684800148010254}, 16: {'v9': 0.18928000330924988, 'v12': 0.2040639966726303, 'v16': 0.2112639993429184, 'wide': 0.28940799832344055}, 32: {'v9': 0.23228800296783447, 'v12': 0.2553600072860718, 'v16': 0.26345598697662354, 'wide': 0.3546240031719208}, 8: {'v9': 0.14399999380111694, 'v12': 0.1499200016260147, 'v16': 0.17708800733089447, 'wide': 0.22022399306297302}, 128: {'v9': 0.34591999650001526, 'v12': 0.3919680118560791, 'v16': 0.38492798805236816, 'wide': 0.4747520089149475}, 256: {'v9': 0.5008320212364197, 'v12': 0.5911359786987305, 'v16': 0.5563840270042419, 'wide': 0.4928640127182007}}
+LAB_BEGIN best7_fused_glue 7dac5385f3d74121
+META best7_scale frozen; synthetic dense/norm/router seed941732, real NVFP4 experts; receipt c0e74bed projection/attention, current best7_scale glue; identical tensors per arm
+META B=pool(boundary1+pool/router+route),tail(unpool+boundary2),all,epi(o+boundary1,pool+route,tail); AB/BA6 cold256MiB per replay; A:A; three changed-input graph draws; FP32 hi+lo router; no spin barriers
+SETUP seconds=34.2 remain=123.7
+G 1x1S pool A/B_us=104.88/559.00 B:A=5.3375 AA_us=-0.81 err=0.00002 flips=0
+G 1x1S tail A/B_us=104.42/163.15 B:A=1.5633 AA_us=-0.81 err=0.00000 flips=0
+G 1x1S all A/B_us=104.75/617.79 B:A=5.9053 AA_us=-0.81 err=0.00001 flips=0
+G 1x1S epi A/B_us=104.75/284.57 B:A=2.7194 AA_us=-0.81 err=0.00423 flips=0
+G 1x1F pool A/B_us=114.08/567.21 B:A=4.9773 AA_us=-0.00 err=0.00000 flips=0
+G 1x1F tail A/B_us=113.85/172.28 B:A=1.5138 AA_us=-0.00 err=0.00000 flips=0
+G 1x1F all A/B_us=114.22/625.56 B:A=5.4826 AA_us=-0.00 err=0.00000 flips=0
+G 1x1F epi A/B_us=113.83/295.04 B:A=2.5941 AA_us=-0.00 err=0.00412 flips=0
+G 1x8S pool A/B_us=108.94/885.56 B:A=8.2180 AA_us=-0.70 err=0.00169 flips=0
+G 1x8S tail A/B_us=108.90/563.54 B:A=5.2256 AA_us=-0.70 err=0.00155 flips=0
+G 1x8S all A/B_us=108.92/1304.09 B:A=12.0957 AA_us=-0.70 err=0.00180 flips=0
+G 1x8S epi A/B_us=109.43/1181.91 B:A=10.9202 AA_us=-0.70 err=0.00416 flips=1
+G 1x8F pool A/B_us=115.20/895.54 B:A=7.8555 AA_us=0.31 err=0.00140 flips=0
+G 1x8F tail A/B_us=115.47/567.98 B:A=4.9689 AA_us=0.31 err=0.00146 flips=0
+G 1x8F all A/B_us=115.49/1313.77 B:A=11.5045 AA_us=0.31 err=0.00169 flips=0
+G 1x8F epi A/B_us=115.44/1188.81 B:A=10.4089 AA_us=0.31 err=0.00409 flips=0
+G 16x1S pool A/B_us=139.25/1265.44 B:A=9.1076 AA_us=0.01 err=0.00138 flips=0
+G 16x1S tail A/B_us=139.80/759.68 B:A=5.4455 AA_us=0.01 err=0.00162 flips=0
+G 16x1S all A/B_us=139.71/1872.91 B:A=13.4348 AA_us=0.01 err=0.00185 flips=0
+G 16x1S epi A/B_us=139.38/1383.84 B:A=9.9473 AA_us=0.01 err=0.00407 flips=0
+G 16x1F pool A/B_us=232.41/1333.15 B:A=5.7400 AA_us=-0.36 err=0.00135 flips=0
+G 16x1F tail A/B_us=233.00/844.62 B:A=3.6275 AA_us=-0.36 err=0.00162 flips=0
+G 16x1F all A/B_us=232.96/1944.71 B:A=8.3547 AA_us=-0.36 err=0.00179 flips=0
+G 16x1F epi A/B_us=232.82/1476.65 B:A=6.3473 AA_us=-0.36 err=0.00406 flips=0
+G 32x1S pool A/B_us=167.12/2122.45 B:A=13.4272 AA_us=0.00 err=0.00159 flips=0
+G 32x1S tail A/B_us=167.59/826.32 B:A=5.1810 AA_us=0.00 err=0.00165 flips=0
+G 32x1S all A/B_us=167.28/2784.30 B:A=17.6315 AA_us=0.00 err=0.00191 flips=0
+G 32x1S epi A/B_us=167.43/1487.75 B:A=9.3950 AA_us=0.00 err=0.00408 flips=0
+G 32x1F pool A/B_us=350.49/2303.56 B:A=6.6417 AA_us=0.34 err=0.00152 flips=0
+G 32x1F tail A/B_us=350.12/1006.11 B:A=2.8962 AA_us=0.34 err=0.00166 flips=0
+G 32x1F all A/B_us=350.57/2965.22 B:A=8.5524 AA_us=0.34 err=0.00188 flips=0
+G 32x1F epi A/B_us=349.88/1686.50 B:A=4.8696 AA_us=0.34 err=0.00405 flips=0
+END rows=96/96 maxL2=0.004234 flips=1 elapsed=67.7s remain=90.2s
+LAB_END lab_s=67.7 prepare_s=194.8

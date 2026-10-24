@@ -1,0 +1,117 @@
+{
+  "candidate": {
+    "path": "problems/muse_attention_decode/cand_p5_rescale_deferred.py",
+    "sha256": "acd77ec8d7a34384e9c7f47be209d0c4d7d25b982f19e3a1b1f3d2917a35c855",
+    "send_key": "acd77ec8d7a34384",
+    "job_id": "9828bfa041a143a9",
+    "detached_log": "runs/detached/acd77ec8d7a34384.log",
+    "accepted": true
+  },
+  "dispatch": [
+    {
+      "q_len": 1,
+      "batches": [
+        1,
+        16,
+        32
+      ],
+      "layers": [
+        "sliding",
+        "full"
+      ],
+      "path": "attn_main conditional rescale"
+    },
+    {
+      "q_len": 8,
+      "batches": [
+        1
+      ],
+      "layers": [
+        "sliding"
+      ],
+      "path": "measured window_mma"
+    },
+    {
+      "q_len": 8,
+      "batches": [
+        16,
+        32
+      ],
+      "layers": [
+        "sliding"
+      ],
+      "path": "xqa_group deferred denominator"
+    },
+    {
+      "q_len": 8,
+      "batches": [
+        1,
+        16,
+        32
+      ],
+      "layers": [
+        "full"
+      ],
+      "path": "split FP8 deferred denominator"
+    }
+  ],
+  "local_validation": {
+    "task_tests": 16,
+    "scored_graphs": 12,
+    "static_checks": 6,
+    "on_off_and_adapter_gates": 33,
+    "q1_control_bitwise": true,
+    "max_80k_deferred_control_relative_error": 4.990900379198138e-06,
+    "artifacts": {
+      "tests_local.json": {
+        "path": "problems/muse_attention_decode/dev/p5_switches/tests_local.json",
+        "sha256": "77fb6b0c05dd852c3e93a03db6f69f6d09743dd4b3f9aa335bd9036d8c875966"
+      },
+      "graphs_local.json": {
+        "path": "problems/muse_attention_decode/dev/p5_switches/graphs_local.json",
+        "sha256": "6da38574c0371f3af59a96bc2d7dfc36b6c60de22de7ecf77a8ea4f2b1b2a926"
+      },
+      "switches_local.json": {
+        "path": "problems/muse_attention_decode/dev/p5_switches/switches_local.json",
+        "sha256": "50ecefd98326d9c74ffcf087eb5a79607256d223efe6c37346b309dfd367f467"
+      },
+      "timings_local.json": {
+        "path": "problems/muse_attention_decode/dev/p5_switches/timings_local.json",
+        "sha256": "f7728ffbefb665955c30e6ba3b7ecc6b2f2b872a3ff62b3a84d31098ba3d4ba5"
+      }
+    }
+  },
+  "h200_receipts": {
+    "sliding": "32f2f07acfe144c2",
+    "full_q8": "be19da94dc534323",
+    "control": "d98ae45d7204438d",
+    "combined_switches": "9828bfa041a143a9"
+  },
+  "decisions": {
+    "decode_rows_changed": [],
+    "verify1_sliding": "Different decode control (public FA3 vs board attn_main_twog): disabled comparator only.",
+    "full_q8": "Retain FA3; producer accounts for 98.6/98.8% at B16/B32. Next: inner producer phase clocks and native resource/occupancy data; keep parallel combine."
+  },
+  "unverified": [
+    "9828bfa041a143a9 H200 correctness and per-shape speed",
+    "verify1 sliding whole-layer paired comparison against best7 public FA3",
+    "Native sm90a WGMMA runtime switch validation (local GPU is sm120)",
+    "Full-q8 producer inner binding phase"
+  ],
+  "files": {
+    "problems/muse_attention_decode/cand_p5_rescale_deferred.py": "acd77ec8d7a34384e9c7f47be209d0c4d7d25b982f19e3a1b1f3d2917a35c855",
+    "problems/muse_decode_layer/dev/verify1_sliding_pick.py": "46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e",
+    "problems/muse_attention_decode/dev/xqa_group.cu": "739cb9d5a44cf02de851f173e66d1571f60ca71b98f93f567236262435d43469",
+    "docs/FINDINGS.md": "2abcc7126d5765d08b2db501c5cb20702c1e7d16dd7797ca93709e34cfb10fbe",
+    "problems/muse_attention_decode/FOCUS.md": "8adf5f8b2fab2b9f097ee01abf22eab78866c243a2ce086773e637529d344afa",
+    "problems/muse_decode_layer/dev/NEXT_CHECKS.md": "d038da465a3b0edf6f150896fe3e99e4d10906f260c35540d2fe9386ef8a8a86",
+    "problems/muse_attention_decode/dev/p5_switches/build.py": "0941662c0774ff1de5b60fdcafb84a8d27ceca2b9f624657ffee98c02f80d4f0",
+    "problems/muse_attention_decode/dev/p5_switches/driver.py.inc": "f19be512b78be39bd468f43605e04bb5dcead965527c251d1bf62ab9c4e9af90",
+    "problems/muse_attention_decode/dev/p5_switches/check_switches.py": "5a91b0e5260f136a7541c581ce2e9ef9fb58d4ec420e8fe7d1bbfe854cd0c677",
+    "problems/muse_attention_decode/dev/p5_switches/bench_switches.py": "47a1e0a72ace0bb6b6722bae3808b0f57697f79f58e2b4372b183dc0f13f9da7",
+    "problems/muse_attention_decode/dev/p5_switches/compare_profiles.py": "57777f941ab9850bee47a4c3233b2daa62fd3078e3e1ab8959a9bcbfc35027a3",
+    "problems/muse_attention_decode/dev/p5_switches/README.md": "7b53d236a5733858bfd150c7d380e0aec870d005349929cab05ec3ed3bf8a661",
+    "problems/muse_attention_decode/dev/p5_switches/sliding_result.json": "b2075afbd2355107f210ec6bd08984f4ee254f9ae839a7014b5b7d4651b9d29b",
+    "problems/muse_attention_decode/dev/p5_switches/flashdecode_result.json": "45f28c177beb1ca8a20469b520abc9509e59e1154e2118839137ebf04069e057"
+  }
+}

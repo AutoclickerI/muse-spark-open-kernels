@@ -1,0 +1,19 @@
+{
+  "payload_sha256": "016706db77b05c325d4e07523673767909d0f130d7bf33cabffd715a120f3643",
+  "host_sha256": "4abb8bc59fee7ae07b01e88a5f69dd1ace9b3c8c682b00086541116006eb3f46",
+  "host": "muse_moe_w4a16",
+  "layers": 8,
+  "stages": 16,
+  "host_tests": 5,
+  "elapsed_s": 7.900717080978211,
+  "share_s": 80.0,
+  "forced_hopper": true,
+  "forced_hopper_calls": {
+    "native_attention": {
+      "attn_main": 375
+    },
+    "fa3": 150
+  },
+  "log_characters": 4187,
+  "provenance": "META seed=72140 synthetic=qkv_gate,o,pooler,unpooler,router,router_bias,attn_residual_gate,pre_ffn_norm,pre_expert_norm,post_ffn_norm,ffn_residual_gate,next_pre_attn_norm; host=post_expert_norm=post_norm_w,w13,w13_sf,w13_gs,w2,w2_sf,w2_gs; inputs=synthetic attn_input:BF16,stream:FP32,k/v_cache:E4M3,metadata; seeds=172903,180822,188741; routes=frozen baseline IDs/weights/localIDs per stream (route kernel timed); first32 experts; c6 Q=B for A0/A4/R0/P0/P2:local layer>.003; S=all; H=hint A=all R=row P=packed W=512thread; /early:late"
+}

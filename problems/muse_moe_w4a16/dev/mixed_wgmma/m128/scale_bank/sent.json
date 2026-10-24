@@ -1,0 +1,62 @@
+{
+  "send_key": "def9bff54e82c1b0",
+  "judge_job": "471f6d6216804dda",
+  "host": "muse_moe_w4a16",
+  "mode": "check",
+  "priority": 0.8,
+  "detached_log": "runs/detached/def9bff54e82c1b0.log",
+  "status": "done; numeric PASS, latency rejected",
+  "files": {
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/build.py": "6df6571749354addbe29a421a540feba9643123388532dc11f2c50e5da6c1cd1",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/driver.py.inc": "2a736d59df256363b9de521382e964f12cdcbae620cb2ef58323f5baddbaa2ac",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/check.py": "6d32cb1bdaae43a761591ef758cdf3fed4a29199a3bd2ba0e0a61b991d972be7",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/native.py": "ec6e3076838a6f0a939fdf573109178d6b7f1522f6faff6a3ed2dba909996a7d",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/dropin.py": "dbd7b7b1c1dd57fec836c01570131fa04e73808fe785fc5cec23cad846a0632c",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/build_dropin.py": "ec78989554e49c33af085860689e06b9fc73e2f907eb0c8cda01b4844fb134fa",
+    "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/scale_bank/check_dropin.py": "c0122b390e4dab3c25c512346bd6ba49c566e31f6beb45afcc834cc0283130f3",
+    "prof/lab/moe_m128_scale_bank.py": "30fc1ce60c08e6c746fe0b6e097f098f10f20d5e8eabea4652eb9fe8c7a4c632",
+    "problems/muse_moe_w4a16/lab/lab_moe_m128_scale_bank.py": "def9bff54e82c1b0572244462633bf043766df9b830dd93e8e5019cd6831342d"
+  },
+  "local": {
+    "fixtures": 36,
+    "producer_graph_checks": 216,
+    "max_L2": 0.004128939472138882,
+    "max_row": 0.004846225026994944,
+    "encoding": {
+      "finite_scale_patterns": 254,
+      "fp4_codes": 16,
+      "exact_values": 4064,
+      "retained_bytes_per_block": 9
+    },
+    "native_kernels": 12,
+    "K64_paths": 20,
+    "register_hazards": 0,
+    "wrapper_tests": 5,
+    "wrapper_shapes": 6,
+    "static_checks": 6,
+    "lab_elapsed_s": 44.33516900398536,
+    "standalone_dropin": {
+      "checks": 21,
+      "signed_zero_subnormal_scales": true,
+      "separate_gate_up_global_scales": true,
+      "routes": [
+        "real0",
+        "real1",
+        "real2",
+        "empty",
+        "single",
+        "hot",
+        "balanced"
+      ],
+      "max_L2": 0.004102156963199377,
+      "max_row": 0.004600831773132086
+    }
+  },
+  "result": {
+    "NT1_recoded_us": 291.7,
+    "recoded_config3_us": 1649.96,
+    "recoded_config4_us": 1738.8,
+    "recoded_config5_us": 1851.23,
+    "interpretation": "Recoding saves~1%; serialized W2 combine dominates. Replaced in the one_read experiment."
+  }
+}

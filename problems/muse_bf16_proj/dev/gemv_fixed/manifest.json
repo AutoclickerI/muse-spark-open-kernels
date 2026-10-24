@@ -1,0 +1,30 @@
+{
+  "payload": "prof/lab/dense_gemv_fixed.py",
+  "payload_sha256": "e7399cfb21b14160347ea230166a89541d3252ca9d5aa52c9822dd011f95632e",
+  "baseline": "problems/muse_decode_layer/cand_r3_best7_scale.py",
+  "baseline_sha256": "42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7",
+  "kernel_sha256": "c26e6f40e67bc82ec6c1395ca0674aeb993b4cfc1ba0f82ca38f2d1935c14962",
+  "projection_sha256": "c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe",
+  "receipt": "cand_r3_best6.1b80ffc037cc454c.log",
+  "choices": {
+    "1:qkv_gate": "cublas",
+    "1:o": "cublas",
+    "1:pool_router": "custom",
+    "1:unpooler_slice": "custom",
+    "8:qkv_gate": "cublas",
+    "8:o": "cublas",
+    "8:pool_router": "custom",
+    "8:unpooler_slice": "custom",
+    "16:qkv_gate": "custom",
+    "16:o": "cublas",
+    "16:pool_router": "custom",
+    "16:unpooler": "cublas",
+    "32:qkv_gate": "cublas",
+    "32:o": [
+      "lt",
+      2
+    ],
+    "32:pool_router": "custom",
+    "32:unpooler": "cublas"
+  }
+}
