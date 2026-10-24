@@ -1,0 +1,32 @@
+{
+  "canonical_down": {
+    "decoded_weights_exact": true,
+    "fp32_gemm_relative": 0.0,
+    "global_scales": [
+      1.2999999853491317e-05,
+      4.099999932805076e-05,
+      7.000000096013537e-06
+    ]
+  },
+  "canonical_gateup": {
+    "decoded_weights_exact": true,
+    "fp32_gemm_relative": 0.0,
+    "global_scales": [
+      1.2999999853491317e-05,
+      4.099999932805076e-05,
+      7.000000096013537e-06
+    ]
+  },
+  "humming_MMA": {
+    "codes_exact": true,
+    "raw_scales_exact": true,
+    "expert_global_scales_exact": true,
+    "fp32_gemm_relative": 0.0
+  },
+  "humming_WGMMA": {
+    "codes_exact": true,
+    "raw_scales_exact": true,
+    "expert_global_scales_exact": true,
+    "fp32_gemm_relative": 0.0
+  }
+}

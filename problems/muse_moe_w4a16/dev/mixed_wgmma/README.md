@@ -1,85 +1,105 @@
 # Grouped NVFP4 RS WGMMA
 
-Owner: the free lane. No H200 win is established yet. No commits or candidate sends by this lane.
+Free lane. No H200 win is established; no candidate was sent and no commit was made.
+The measured losing scalar/plane adapter is in decode `dev/parked/cand_r3_mixed_wgmma.py`.
+The packed producer is lab-only until the H200 seed comparison passes and wins.
 
-`engine.py` uses TileLang 0.1.12 to put output channels on WGMMA M and routed tokens on N.
-Two GPU routing kernels form a padded prefix and hot-first order; a persistent grid processes
-channel tiles and splits hot experts along N. There is no inter-CTA spin barrier. Both GEMMs
-convert E2M1 and raw E4M3 group16 scales inside their timed mainloops. FP32 per-expert global
-scales are applied after FP32 accumulation. SwiGLU rounds to BF16 before W2; norm/reduction
-keep FP32 arithmetic. Returned state contains only original or permuted packed weights/scales.
+## Structural diagnosis
 
-Two layouts are tested: ordinary nibbles with a PRMT lookup, and a bijective bit-plane permutation
-matching RS fragment ownership. The latter reuses the incumbent V9 extraction table, then uses
-packed BF16x2 multiplication. Its temporary 2^-8 scaling is undone in the FP32 GS epilogue.
-This changes the new WGMMA producer, not V9's dequant/schedule (the MoE lane owns that work).
+Actual sm90a cubins rebuilt by `dump_sass.py`, audited by `sass_audit.py`:
 
-## Evidence
+| Producer | K step | Static loop instructions | Instructions / packed weight byte | Registers | Spills | BF16x2 multiplies / step |
+|---|---:|---:|---:|---:|---:|---:|
+| Scalar |128|2046|63.94|122|0|64|
+| Plane, scalar conversion |128|1636|51.13|118|0|64|
+| Packed fragments, `vector.cu` N32 |64|212|13.25|78|0|16|
 
-- Scalar arithmetic: 130,048 finite packed-byte/E4M3/half combinations, bit exact, including
-  signed scales, zeros and subnormals. Plane arithmetic: 1,040,384 finite slot/code/scale cases,
-  bit exact. `validate.py` reproduces both.
-- Scalar producer: four configurations at M8/128/256; 12 eager +36 refreshed graph checks against
-  independent FP32, relative L2 <0.001. Empty routing and one-expert routing pass. Eight generated
-  W13/W2 kernels compile for sm_90a, with RS/SS WGMMA present in source.
-- `cand_r3_mixed_wgmma.py` SHA256
-  `4b3753823bd6176bda1abc2b373e87ebeb32418c7e941e323525674081338dcb`
-  passes 13/13 official layer tests and five static checks, prepare108.2s on SM120. Forcing two
-  plane producers through all four verify16/32 full/sliding cases passes24 fresh-input graphs
-  (three refreshes per case/producer). Its incumbent is the MoE lane's raw-E4M3 V9. The local
-  timing gate retains V9; no H200 ranking is inferred.
-- The scalar lab passes all six M sizes locally, every FP32 gate, 9/9 proj-host tests and five
-  static checks. Local prepare 238.2 s, including all lab experiments. The wrapper's optional
-  state parameter was made explicit to satisfy the call-signature check; runtime math is identical.
+These are static counts including skipped normal/subnormal branches, not executed instruction
+or cycle counts. Both old loops have 64 FLO/CLZ operations, 203 branches, 72 BSSY and 72 BSYNC.
+The scalar converter repeats E4M3 conversion once per scalar value and uses duplicated halves
+of BF16x2. Neither spills nor a wait after each MMA explains its loss: each K128 has eight K16
+WGMMA instructions and one group wait0. Weight/scales use two-stage cp.async; activations use
+synchronous LDG128/STS128. `diagnostics/sass_counts.json` has complete opcode counts.
 
-## H200 jobs and protocol
+`vector.cu` converts a whole packed register fragment at once. A generic 256-entry E4M3 format
+lookup is built inside each CTA; timed kernels read raw E4M3 bytes and original E2M1 values
+under bijective bit/layout permutations. There is no prepared dequantized weight/scale bank.
+It stages Q, raw SF and gathered activations with two cp.async groups, decodes 32 weights into
+16 BF16x2 registers per thread/K64, then issues four K16 RS WGMMA and one group wait0. The main
+loop has no FLO/CLZ; raw E4M3 lookup replaces repeated scale arithmetic. Temporary 2^-8 product
+scaling is undone by FP32 GS*256 in the epilogue. GPU routing/hot-first N splitting and
+post-GEMM arithmetic remain shared with the original engine. V9's kernel is unchanged.
 
-`prof/lab/moe_mixed_wgmma.py`, SHA256
-`9dca1a1e70e56716da341774ba6571ff1fae86dc9c5bd2dfb22080aa7c597090`,
-was sent through `h200_lab.py` on proj. Judge job **296fdf45382244dc**, source key
-`5d16a813364a8d20`. No receipt was polled or awaited after sending.
+The extension explicitly includes sm90a and sm120. Local sm120 executes identical
+loads, scale lookup, register layout and epilogue using MMA.sync; Hopper selects WGMMA.
+A local pass does not establish Hopper WGMMA math or timing.
 
-`prof/lab/moe_mixed_wgmma_planes.py`, SHA256
-`224f4cdd6189de1d5db6e07e13bba6f125fac6292f0cbbfe3b3f90d02da67f6a`,
-is queued on proj under source key`71c2f471b2e74efe`. It tests N16/N32 at core sizes and
-N64 at prefill sizes, every required M. The final payload passes all six M locally,9/9 host
-tests and five static checks; warm prepare31.7s. An earlier wider tile sweep exhausted the
-prepare budget before16K, so it was replaced before sending. No correctness gate was relaxed.
+## Measurements and pending labs
 
-The plane family independently passes12 eager +36 refreshed graph FP32 checks at M8/128/256,
-plus six extreme-routing graph refreshes; all eight W13/W2 kernels compile for sm_90a.
-Conversion and graph evidence are in `runs/screen/` and the local ignored logs beside this file.
+| H200 receipt | M128 | M256 | Larger M | Status |
+|---|---:|---:|---|---|
+| Scalar `296fdf45382244dc` |2060 us vs V9 280|2648 vs480|M3012 22950 vs Marlin2818; M16384 123615 vs14754|Correct, rejected|
+| Plane `01e74ee69c8845e1` |pending|pending|512/753/3012/16384|Receipt absent at turn's one check|
+| Prefill controls `70206a2a501047eb` |—|—|raw17/masked-Humming/dg_w8 vs plane/Marlin|Receipt absent at turn's one check|
 
-`prof/lab/moe_mixed_wgmma_prefill.py`, SHA256
-`042c8ef6d094439c2e3466b583bcff946143fc324e83906baf5d8ca7d9cbefd3`, source key
-`9176ba0035ba0564`, compares N64 with Marlin and the prefill lane's raw17, masked Humming and
-dg_w8 at512/753/3012/16384, on identical fresh inputs. `build_prefill_lab.py` extracts those
-producers from the source named/hashed in the payload, with gather-only adapters for normalized x.
-Local plane/raw17/masked arithmetic passes all12 three-input FP32 gates;9 host tests and6 static
-checks pass. DG's Hopper-only Python launch ABI is forced locally with an explicit zero-output
-stand-in, never a timing contender or arithmetic claim; the real DG path runs only on H200.
-Warm local prepare10.6s; H200 compile time and arithmetic remain unverified.
+`prof/lab/moe_w13_ablation.py` uses exact R0 IDs at128/256 (209/414 pairs,18/21 experts,
+hot55/119). It times W13 only: original, conversion replaced by raw bit reinterpret, constant
+weights with weight/scales loads removed, no MMA, and132/264/528 CTAs. Wrong-value variants
+are prepare-only and never returned as a candidate. SASS confirms conversion remains in no-MMA
+and loads disappear from constant. The no-MMA checksum adds31 XORs/K128 and one global store
+per thread/CTA to keep conversion live; it retains warpgroup synchronization. Reported B/s
+uses nominal Q+SF requests or unique expert bytes divided by time, not hardware DRAM counters.
 
-The lab uses exact fixture0 IDs exported by 26d7e05 for M128 (209 pairs/18 experts/hot55)
-and M256 (414/21/119). Its fresh activations and weights come from the complete public decode
-generator at seed5353; the original captured job's seed/weights are not claimed. Larger M512,
-753,3012,16384 use that public router with q_len1, not proj's iid router. Three fresh datasets,
-six alternating cold graph pairs, 128MiB L2 writes; FP32 gate L2<=1%, row<=5%, finite outputs.
-V9 and Marlin controls run in the same lab; only Marlin is used beyond V9's fused routing
-capacity. Raw GPU microseconds include graph overhead. Phase graphs are diagnostic and do not sum.
+`prof/lab/moe_vector_wgmma_seed.py` compares fixed N16/32/64 against current raw-E4M3 V9
+NT1/NT2 over12 public weight seeds5353+7919*i, plus exact R0 IDs at both M. Each draw uses
+three fresh real-router inputs,8 rotated/reversed cold graph timings and128MiB L2 writes.
+It prints each variant's mean/median over seeds; no per-seed best is used for a win claim.
+FP32 gates require finite outputs, L2<=1%, row<=5%. R0 uses fresh public weights/activations,
+not the original captured job's unexported weights. W13/W2 phase graphs are diagnostic.
+The old unsent build omitted the explicit90a target and was stopped before a judge job.
+The ablation queue source is `4152e9ea747e0a07`; the final dual-target vector source is
+`6649d92cf810f3c9`. Payload SHA256 values and screens are in `admission.json`.
 
-Build payloads with `build_lab.py` or `build_lab.py --planes`; screen/send via `tools/h200_lab.py`.
-`build_candidate.py` creates the standalone layer adapter, with shape-only choices admitted by
-three FP32 checks and cold paired ratio <0.98. The owner screens/sends candidates and commits.
-`read_receipt.py <job>` renders local H200 receipts without querying the API.
-The `*.py.inc` files are assembly fragments; undefined-name checks run on every standalone
-generated candidate/payload, where the imported/copied names are defined.
+The two earlier pending labs still cover prefill/serving512..16384. No serving producer changes
+until a legal kernel wins a matched H200 comparison. If it wins, replace only expert GEMMs in
+`muse_spark_moe._grouped_call`; keep gather-only normalized input, per-pair outputs and EP
+collectives. Serving may have distinct gate/up GS, so that epilogue must accept both FP32 scales.
 
-## Serving producer
+## Local evidence and reproduction
 
-If the new producer wins, it replaces the expert GEMMs inside `muse_spark_moe._grouped_call`.
-The serving hook receives already normalized x: use gather only. Export per-pair W2 outputs
-before local weighted reduction and retain the existing EP collectives and output-norm rounding.
-Serving gate/up GS can be independent, whereas the board's W13 GS is shared: expand the FP32
-epilogue GS vector by output row when porting, never fold it into E4M3 or packed codes.
-Serving wiring, TP agreement and H200 end-to-end performance remain unverified.
+- Original scalar/plane converters pass130048/1040384 finite format combinations bit exactly.
+- `check_vector.py`:27 refreshed graph checks at8/128/256 withN16/32/64 and independent FP32;
+  another18 graph checks use signed/zero/subnormal raw scales with all-remote and hot routing.
+- Vector seed payload: all26 core/R0 draws, five contenders and three fresh inputs pass FP32;
+  nine proj-host official tests and eight static checks pass. The explicit dual-target rebuild
+  is screened separately in the current admission manifest. Local timing is not an H200 claim.
+- `check_layouts.py` inverts canonical V6 gate/up and down banks (K4096) and image Humming's
+  actual MMA/WGMMA repacks in PyTorch. Codes/scales/FP32 per-expert GS recover exactly; FP32
+  GEMMs match exactly with varied independent GS, signed scales, zero and subnormals.
+
+The 401.5us `v11` in c8c89f9f comes from `hu__prepare_humming` in
+`prof/lab/moe_real_routing_driver.py:334`, not canonical V6 RS. Prefill `raw_v11` is another
+path, expanding canonical weights inside each timed call then using grouped BF16 GEMM.
+The recovered layouts rule out a general Python permutation/missing-GS error on tested data;
+they do not prove Hopper backend agreement or reconstruct the original decode weight seed.
+
+Build with `build_vector_lab.py` / `build_ablation.py` inside tools/img. Screen the assembled
+proj-host file with tools/local_eval.py before tools/h200_lab.py send. The .inc files are
+assembly fragments; static checks run on generated standalone payloads. Never poll the judge.
+
+## CUTLASS quarantine
+
+`check_cutlass_host.py` reproduces the original CuTe TMA abort on local sm120 even when all
+experts are nonempty. Grouped setup left an all-ones dummy shape and zero scale strides;
+fixing these exposed an independent eight-byte scale box, below TMA's16-byte minimum.
+`decode/dev/omni/mixed.cu` now uses capacity metadata, canonical strides and a16-row scale
+atom. The test calls both grouped Gemm::can_implement and real host TMA setup, including
+exact R0 counts and empty experts, and rejects malformed scales. It launches no mixed GEMM.
+The embedded engine/factory/dispatch are removed from cand_r3_omni, whose normal/forced
+screens pass13 official tests; the latter covers12 graph shapes and14 static checks.
+
+Stock CUTLASS directly names float_e2m1_t but broadcasts one scale per tileK64 and rejects
+group16. Bypassing that check cannot implement the required math. The prior grouped probe
+560d1adb was wrong and slow; it also passed host stride arrays as device data and omitted
+FP32 global scales in its alpha=1 epilogue. No new CUTLASS judge slot was spent. The private
+group16 specialization remains unvalidated numerically and stays out of candidates.

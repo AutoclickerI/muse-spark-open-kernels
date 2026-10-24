@@ -42,7 +42,7 @@ def experts_v9(x,wts,lids,state):
     parts=[base,(HERE/'engine.py').read_text(),namespace(fixture,'fx_'),oracle,
            driver,(HERE/'dropin_tail.py.inc').read_text()]
     src='\n\n'.join(parts)
-    out=ROOT/'problems/muse_decode_layer/cand_r3_mixed_wgmma.py'
+    out=ROOT/'problems/muse_decode_layer/dev/parked/cand_r3_mixed_wgmma.py'
     out.write_text(src)
     print(out.relative_to(ROOT),hashlib.sha256(out.read_bytes()).hexdigest(),len(src))
 
