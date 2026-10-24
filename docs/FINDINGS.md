@@ -5,6 +5,17 @@ from code, config or spec), **model** (an estimate under stated assumptions; num
 [ceiling](reference/ceiling.md)), **official** (published by the organizers). Per-shape tables:
 `python -m sim.calibrate`.
 
+## MoE real-routing lab (in progress)
+
+- **Static:** proj `generate_weights` makes an iid FP32 router at std `1/sqrt(8192)` and supplies no router bias or norms. It is not the decode router (`.045` noise, `.07` stream-mean alignment, `.055` bias). A proj-host timing with that matrix would not answer the real-routing question. `prof/lab/moe_real_routing.py` therefore labels generated fixtures separately and accepts the decode host’s full loaded weights.
+- **Decision:** one additional decode-host lab slot is necessary to measure the loaded real router; this overrides the default preference to reserve decode slots for candidates. The first proj-host run remains useful as a second router sample and board-routing comparison. Both use the lab tool, not candidate submissions.
+- **Fixture correction:** `moe_tune.make_fixture` now applies `DRAFT_SHARE=.6` to rows 1–7 of every verify block at M8/128/256, matching `reference.generate_input`; previously M128/256 incorrectly used decode-style sharing on every row. `q_len` is explicit for other shapes. Local default-vs-explicit checks preserve M16/32 decode routing and change M128/256 routing; the generated model moves M256 from 604 pairs/7 experts/hot256 to 558/22/hot235. Compressed routing export round-trips all 3,520 core slots in 1,176 characters, so a later lab can complete missing rows on proj quota.
+- **Queued evidence:** proj job `c8c89f9f111845af` is accepted (generated router, earlier sharing fixture). The corrected exact-router and library-reference runs are still in the local priority queue. No H200 winner has been inferred from local timings.
+- **Checked locally:** proj host 9/9 tests; decode host 13/13 tests; 126 forced native/grouped/Humming launch paths at M8/16/32/128/256/512/753, including grouped/Humming CUDA graph capture. H200 results are pending. The payload records graph GPU us including fixed graph cost, 128 MiB L2 flushes, six paired order-swapped repeats over three refreshed fixtures, and three-fixture agreement with V9.
+- **V19 static hazards:** this lab measures the native V19 path (`permute=0`, resident grid). Its optional `grid2` autotuner path multiplies the occupancy-limited grid by two (`cand_v19.py:821,1076`), while the CUDA kernel’s global barrier waits for all `gridDim.x` CTAs (`:544`): pending CTAs cannot become resident while resident CTAs spin. Its interleave map `(u*17+3)%total` (`:131`) is not a permutation when `total` is divisible by 17; for `total=512*17`, only 512 of 8,704 tasks are distinct. These options are not eligible from this lab; the original V19 autotuner needs repair before an H200 run. Evidence: `runs/screen/moe_v19_static_audit.json` (static proof, not an observed H200 hang).
+- **BF16 reference check:** local eager correctness passes at M8/16/32/128/256 (relative L2 0.22–0.40%). Local graph capture fails because sm_120 selects the CPU-assisted grouped fallback; H200 selects the GPU path, so this does not establish an H200 capture failure ([PyTorch source at the image commit](https://github.com/pytorch/pytorch/blob/5c4886908584029761b579af026dcfb627c84070/aten/src/ATen/native/cuda/GroupedBlas.cpp#L748)). The corrected reference uses 32 groups and GPU offsets ending at the local-pair count, avoiding GEMM work on remote routes. Earlier matrix snapshots contain a 33rd zero-weight remote expert; those BF16 numbers must be labeled as extra-work references, not the local-only ceiling.
+- **Static image inventory:** `sgl_kernel` Marlin supports BF16 x NVFP4; vLLM and Machete are absent. FlashInfer’s H200 W4A16 CUTLASS path uses E8M0/group32 MXFP4, which cannot losslessly store arbitrary E4M3/group16 NVFP4 scales; it is a reference only. BF16 `torch._grouped_mm` is also a reference-only dequantized weight bank. Lower-precision activations are excluded from dispatch ranking.
+
 ## The judge's H200 (measured, 2026-10-23)
 
 | Quantity | Value | Scope | Class | Receipt |
@@ -672,6 +683,55 @@ q/gate/KV layout; sm_120 forces the portable stand-in.
 
 | Prefill v11 (`6a9cd943fe404d74`) | check 1.367883x; scored 1.366811x (`965a9a816d4744ea`) | not on overall board | scored turn 1 / turn 4 / first turn: 1.227 / 1.356 / 1.534 | BN128 WGMMA below8192 tokens, timed dequant + grouped BF16 DeepGEMM above; submission is the exact checked source |
 
+### BF16-resident decode MoE hybrid (active independent lane)
+
+**Decision:** retain the decode board's V9 source (`ba990a86...`) as the base: the
+new union receipt `215cafaf8d674c7e` is 1.393820x, below V9's 1.428x. This lane owns
+`dev/bf16moe/` and the eventual `cand_r3_bf16moe.py`, independently of TMA W4 decoding
+and V19. Only lab payloads are submitted; Jihoon submits the layer candidate.
+
+**Storage interpretation:** the packed NVFP4 bank remains intact. The additional
+3,221,225,472-byte BF16 bank is a lossless derived layout of E2M1 x E4M3 block
+products, not a conversion of the FP32 global scale into BF16. Apply the global
+scales in FP32 SwiGLU/output epilogues. This is a one-layer G3 design; retaining
+this bank in all62 serving layers is not proposed.
+
+**Checked on GPU0/sm120:** every finite E4M3 bit pattern x all16 FP4 codes expands
+exactly to BF16. The isolated GPU-count partitioner, DeepGEMM masked/psum and cuBLAS batched interfaces,
+limited-grid V9 stream and combine pass195 eager cases and90 fresh graph replays.
+Three fresh corrected q_len8 real-router fixtures at M128/256 (q_len1 at M32),
+plus all-remote, one-hot, eight-hot and uniform routing give max fully FP32 relative L2 **0.003832**,
+worst measured row **0.004361**. Masked expert strides must be padded128; an M32
+fully-hot test caught cross-expert reads with the original unpadded stride.
+`runs/screen/bf16-engine.json` records the cases. These are correctness checks and
+local timings, not Hopper measurements.
+
+**Lab admission:** proj host9/9 tests pass for both self-contained payloads.
+`prof/lab/bf16_real_grouped.py` compares PyTorch grouped MM (both Lt preferences),
+BF16/FP32 batched GEMMs and both weight layouts against V9 on the reconstructed
+public decode-router distribution. `prof/lab/bf16_hybrid_full.py` compares masked/prefix-sum grouped GEMMs with
+fused FP32-scale SwiGLU, then times the complete hybrid on three fresh fixtures,
+including route partition, V9 streams, FP32-scale post-norm and combine. PyTorch grouped MM's
+sm120 path cannot capture because of an internal unpinned CPU-to-GPU copy; the
+DeepGEMM grouped APIs accept BF16 output only, despite FP32 support in their core.
+The initial local queue entries were interrupted before judge admission when the
+shared fixture correction landed: draft sharing now applies to every8-token block,
+not only M<=8. Corrected public-fixture M128/256 counts are264/545 local pairs,
+hottest78/144, versus the older q_len1-style318/676, hottest110/228. Both payloads
+are rebuilt with the correction; the second was expanded before judge admission
+to measure full-path performance and fresh-graph agreement, not only a GEMM ceiling. H200 ceiling and final thresholds remain pending.
+The standalone candidate `e9b25fad...` passes13/13 tests,12/12 fresh graphs and
+all3 embedded CUDA sources compile for sm90a. Forced execution substitutes a BF16
+Triton grouped kernel only, retaining actual routing, V9 streams and epilogues;
+its screen also forces real cuBLAS FP32-output paths at M32/256. Batched FP32 output
+reduces max isolated FP32 error to0.002813; its eligible expert set is selected only
+from prepare fixtures, and every other expert still runs through V9. Prepare
+compares rows16/32/64, grouped/batched formats and0/25/50% persistent V9 grids;
+it checks three fresh full-FP32 fixtures and refreshed graphs, then re-times the
+best two against V9. Unselected derived layouts are released. Final source may
+be pruned when the H200 ceiling identifies the useful engine families. Lab GEMM times exclude routing/post-norm/combine and
+must not be reported as complete hybrid times.
+
 ### Decode large-load profile and round-3 dispatch (G3 priority)
 
 The accepted decode control is `cand_moe7` (`66d5d4c9e4054fa9`, 1.354968x, CI [1.334644, 1.375293]); its exact source is frozen in `problems/muse_decode_layer/cand_moe7.py`. The H200 per-kernel profile identifies the limiting stages at the loads that carry the remaining board gap:
@@ -715,6 +775,27 @@ Final tiled sm_120 glue timings (regular→fused) are T=1 `77.8→81.9` us, T=8
 `81.9→86.0`, T=16 `81.9→109`, T=32 `84.0→123`, T=128 `92.2→303`, and T=256
 `137→522`. The fixed source passes 13/13 tests and 12/12 graphs but is parked; no H200 run is
 justified while the tuner selects regular at every shape.
+
+#### Union small-shape overhead and merge2 control (G3)
+
+The H200 union receipt `215cafaf8d674c7e` loses to the V9 control `0e94268cf5654012` by
+6.6/7.8 us at decode-1 sliding/full, 8.9/12.6 us at decode-16 sliding/full, and
+11.2/17.0 us at verify-1 sliding/full. The profile identifies a launch change, not a
+graph-replay artifact. At decode-1 sliding V9 has four `_gemv_kernel` launches totaling
+45.5 us; union has three `_gemv_kernel` launches totaling 28.1 us, then adds a 22.1 us
+`nvjet_sm90_tss_192x8_64x8_4x1_v_bz_splitK_TNT` cuBLAS pool/router kernel and a 1.7 us
+cuBLASLt split-K reduction. Verify-1 sliding shows the same replacement: 46.0 us of V9
+GEMV versus 29.0 + 22.0 + 1.7 us in union. The isolated projection timer favored cuBLAS,
+but the extra kernel and reduction cost 6--17 us in the complete graph. Decode-32's small
+apparent gain is MoE/profile variance; union still carries the extra projection family.
+
+`cand_r3_merge2.py` starts from the merged source but forces V9 custom GEMV at every scored
+token count, disables the unproven prefix/persistent paths, and leaves V9 attention/PDL/MoE
+as the control until pending receipts provide complete per-shape winners. Its sm_120 screen
+passes 13/13 tests and 12/12 graphs; prepare is 16.34 s. The H200 receipt behind every
+current choice is `0e94268cf5654012`; pending v9all/merge/cost/attention receipts remain
+queued and may replace a choice only when the complete-layer median beats V9 without adding
+a launch.
 
 #### Larger-load stage floors and non-MoE gap (G3)
 
@@ -803,12 +884,14 @@ results feed serving's 753–16K prefill path. The current H200 control is v11, 
 | First-turn stage rates | Scored 16K weighted profile: expert GEMM+dequant 917.137 ms over a 573.812 ms BF16-equivalent floor = 618.8 TFLOPS; dense/router 781.297 over 607.427 = 768.9 TFLOPS; attention 264.493 over 114.422 = 427.8 TFLOPS, using H200 dense BF16 989 TFLOPS | Expert has the largest excess, 343.325 ms; dequant and GEMM must overlap before chasing dense or FA3 fixed work | `problems/muse_prefill_layer/dev/v11_profile_ranking.json`, `V11_PROFILE.md`, scored profile receipt |
 | First-turn overlap candidate (sm120) | `cand_firstturn_overlap_grid4.py` adds grid-4 persistent grouped BF16 expert variants and a grid-4 overlapped W2 expansion variant to the routing-aware fused portfolio | 5/5 official tests pass; prepare 8.2 s; local sm120 timing is only a screen and leaves H200 choice unverified | SHA256 `a97aab65efeedad63f5d8c82aa47a0f85bb87f0d841dabb0136de1a2d1c283f5`, `runs/screen/muse_prefill_layer.cand_firstturn_overlap_grid4.json` |
 | Expert TMA/cluster candidate (sm120) | `cand_expert_tma_cluster.py` adds the raw17 persistent TMA/WGMMA producer-consumer choice, fused W13 SwiGLU, expert-load tile ordering, and a 2-CTA cluster-ready launch grid; NVFP4 remains packed at rest | 5/5 official tests pass. Full local screen passes all 8 shapes; first-turn load is 22.314 ms locally. Isolated one-local-route 16K measurement has 512 tokens/expert and 36.039 ms, or 85.0 TFLOPS equivalent against the 989-TFLOPS/3.096 ms model floor; sm120 is only a proxy and H200 WGMMA/multicast is unverified | SHA256 `00d91b14b74f899639b9978dde63b9d42bbca967051f98c0f231ea5bf90b784c`, `runs/screen/muse_prefill_layer.cand_expert_tma_cluster.full.json` |
+| Prefill expert H200 sweep (queued) | `prof/lab/prefill_experts_sweep.py` runs the prepared prefill router fixture at 753/3012/16384 rows and times raw17, humming_masked, dg_w8, dg_hint_w8, a 4x raw17 launch-grid cluster variant, exact-route Humming mid plans, and V9 chunks capped at 256 rows | The payload receives the host's already-prepared state so it does not rebuild the tuner; NVFP4 weights stay packed and routes use the busiest local EP8 group. The V9 adapter gets split W13 scale aliases from the fused prefill checkpoint and preserves remote routes as out-of-range IDs. The receipt is required before changing the 16K dispatch or serving bounds | Payload SHA `e827828470e0ff3c`; queued source SHA `eb0ccfc82bb78c1d03c7ac92b67859cdcb6ee246336af25829d8f8cf810b3501`; queued on `muse_prefill_layer` at priority 0.8 |
+| Prefill expert sweep candidate (sm120) | `cand_prefill_expert_sweep.py` starts from the screened `99820fa6e5c14fe1` portfolio, adds raw17's 4x cluster-grid choice and exact-route grouped-masked Humming plans for 753/3012; V9 remains an explicit <=256-row control. Variant build failures reject and fall back to the validated masked bank | 5/5 tests and 8/8 graph shapes pass; prepare 7.64 s. Portable load totals are turn1 240.835 ms, turn4 1.036 s, first turn 21.782 s, so these are admission results only; H200 variant ranking and scored latency are unverified | SHA256 `bd3b9a27fd4d454afb0e3261e2e671481c50dae39aaf8e56c62908840fb5cb4c`; `runs/screen/muse_prefill_layer.cand_prefill_expert_sweep.guard.json` |
 | Serving first-turn expert path | `run_v9_dense` now dispatches the persistent grouped canonical reader for chunks of 753 rows or more; smaller verify shapes retain V9 shared routing and global slot maps | Local graph screen passes all 10 routing cases; latest sm120 grouped path is 1.56/14.13/64.18 ms at 753/3012/16384 versus the prior V9 11.40/34.27/195.49 ms; H200 serving timing is open | `serving/sglang/python/sglang/srt/layers/muse_spark_serving.py`, `serving/tests/test_serving_v9_dispatch.py` |
 | Serving-owned expert adapter | New `muse_prefill_expert.py` exposes `PrefillExpertPlan`, `attach_prefill_expert`, and `prepare_prefill_expert`; it uses the grouped reader at >=753 rows and bounded V9 chunking below that threshold, returning dense slots plus the existing global map for finalization | Adapter shape smoke test passes at 8/256/753/3012 rows; serving lane wiring remains a short post-load hook on each NVFP4 expert layer | `serving/sglang/python/sglang/srt/layers/muse_prefill_expert.py` |
 | P9 note fold | Historical `RESULTS.md`, `PORTING.md`, and `dev/LIVE_STATUS.md` facts are represented here: v1–v17 local/graph admission, v11 H200 control, expert/attention/dense serving hook boundaries, resident-bank and scratch caveats, and no serving agreement run | Old per-problem notes are intentionally absent from the working tree; `FOCUS.md` is the ≤30-line lane entry point. The orchestrator owns sends/commits; no promotion handler or judge process is used | `problems/muse_prefill_layer/FOCUS.md`, `dev/NEXT_CHECKS.md`, `docs/reference/expert_layout.md` |
 | Serving KV need for prefill bank choices | Serving flags fix TP8/EP8 FP8 KV at 15,872 B per cached token/GPU, static budget 119.85 GB (`--mem-fraction-static 0.85`): c1/4/16/32 at 80K consume 1.270/5.079/20.316/40.632 GB/GPU; at the 131,072 cap consume 2.080/8.321/33.286/66.572 GB | A full alternate expert bank costs 54.358 GB/GPU (3,424,785 target-KV-token equivalent), so c32 already cannot retain one extra full bank before other allocations; partial per-shape copies remain a score resource only where the actual KV pool permits them. Chunk 16,384 adds 0.260 GB/request and 220 generated tokens add 3.492 MB/request | `serving/RULES.md`, `docs/reference/expert_layout.md`, `problems/muse_prefill_layer/dev/kv_budget.json` |
-| Prefill glue inventory /portfolio | Direct a30fb411/99820fa6 named profiles: first-turn boundary pair851.7–855.2us/call against671.1us traffic floor (159ms /125ms per load). Separate dequant633.6–651.3us, SwiGLU245.5–245.9us, combine133.7–134.0us, gather+norm97.8–99.5us, routing42.0us. Omitted top12 entries remain N/A | New full-layer `cand_glue_prefill.py` retains prior H200 controls and times last-CTA GEMM/residual/norm, pooler-norm with norm-free expert consumers, fused router GEMM/top8, vector boundary/topk choices. All78 trials/36 finalists reached in48.111s sm120;5/5 tests +8/8 graphs; forced all-fusion5/5 and60 direct configs pass;60 SM90 specializations compile. Local GEMM fusions lose; small vector/topk gains only, H200/serving gain unverified. O fusion cannot cross serving TP all-reduce | SHA2562a2e3914ea26756fc2df828f8c58cc88d0157171dcff880dec50c55290ebdbef; `docs/reference/prefill_glue.md`, `problems/muse_prefill_layer/dev/glue/README.md`, `runs/screen/glue_prefill/` |
-| Dense attribution corrected; stop tuning | Direct per-role H200 `SCORE_LAST_SUMMARY` at M16384: qkv766–806us (best~807TF/s,82%peak), pooler1.36–1.47ms, unpooler1.34–1.45ms, o338–406us, hi+lo router178–204us (one289us Lt outlier). Overall1.3632x versus V11~1.367x | The prior438TF/s /44% qkv and146.5ms recoverable-gap inference was wrong: identical kernel names aggregate different GEMMs. Dense is near its practical ceiling; no cache/root-cause claim follows. Prioritize MoE/overlap | `runs/muse_prefill_layer/20261023T221428Z_submit_dafbcad024fe4dcd.json`, `docs/reference/prefill_gemm.md` |
+| Prefill glue inventory /portfolio | Direct a30fb411/99820fa6 named profiles: first-turn boundary pair851.7–855.2us/call against671.1us traffic floor (159ms /125ms per load). Separate dequant633.6–651.3us, SwiGLU245.5–245.9us, combine133.7–134.0us, gather+norm97.8–99.5us, routing42.0us. Omitted top12 entries remain N/A | Parked by Jihoon under `dev/parked/` after~34ms ideal first-turn headroom (~1.5%), local fused-GEMM losses and a~2h queue. Full-layer `cand_glue_prefill.py` retains prior H200 controls and times last-CTA GEMM/residual/norm, pooler-norm with norm-free expert consumers, fused router GEMM/top8, vector boundary/topk choices. All78 trials/36 finalists reached in48.111s sm120;5/5 tests +8/8 graphs; forced all-fusion5/5 and60 direct configs pass;60 SM90 specializations compile. Local GEMM fusions lose; small vector/topk gains only, H200/serving gain unverified. O fusion cannot cross serving TP all-reduce | SHA2562a2e3914ea26756fc2df828f8c58cc88d0157171dcff880dec50c55290ebdbef; `docs/reference/prefill_glue.md`, `problems/muse_prefill_layer/dev/glue/README.md`, `runs/screen/glue_prefill/` |
+| Dense attribution corrected; stop tuning | Direct per-role H200 `SCORE_LAST_SUMMARY` at M16384: qkv766–806us (best~807TF/s,82%peak), pooler1.36–1.47ms, unpooler1.34–1.45ms, o338–406us, hi+lo router178–204us (one289us Lt outlier). Overall1.3632x versus V11~1.367x | The prior438TF/s /44% qkv and146.5ms recoverable-gap inference was wrong: identical kernel names aggregate different GEMMs. Dense is near its practical ceiling; no cache/root-cause claim follows. H200 `cand_v11_gemm` d318167eedfd4c19 closes this block:1.418854x (turn1/turn4/first1.226/1.453/1.603), below score portfolio1.434x (1.253/1.457/1.615). Do not wire `muse_prefill_gemm.py` into serving; dense prefill closed | `runs/muse_prefill_layer/20261023T221428Z_submit_dafbcad024fe4dcd.json`, `docs/reference/prefill_gemm.md` |
 | Dense fusion serving adapter | In `models/muse_spark.py`, `MuseSpark1xMoE._forward_experts` computes `pre_expert_proj` (pooler) and `gate.forward_split2`; combine these with the lossless mixed-output bank, preserving existing topk/expert dispatch and pre-expert norm. Serving already overlaps router/pooler on a side stream; the board's parallel path adds no new serving mechanism | `MuseSpark1xAttention.forward`/O projection and `MuseSpark1xDecoderLayer` fused boundaries are the projection+norm hooks. Keep attention TP all-reduce before nonlinear norm. `_reduce_and_unpool` owns expert reduction and `post_expert_proj`; expert/unpooler chunk overlap requires the same ordered TP/EP collectives per chunk, not the board's identity reductions. Keep aux inputs alive through join and give concurrent Lt calls separate workspaces. Serving agreement/reentrancy remains unverified | `serving/sglang/python/sglang/srt/models/muse_spark.py`; board `_dense_front`, `_dense_boundary`, `_dense_back` |
 | Local compiler/tuner failures | Large16K split4 constexpr capacity triggered a sm120 ptxas SIGSEGV; runtime capacity compiled and passed the identical case. A later local tuner OOM requested8GiB for uint8 torch.sum's int64 cast while split-K graph pools were resident | Runtime64-bit pointer arithmetic avoids giant immediates and reduces specializations. A persistent read-only1GiB L2 flush with small per-SM reduction scratch replaces only the synthetic tuner's reduction, outside events. Full admission rerun passes; judge timing is untouched | `problems/muse_prefill_layer/dev/fused_ptxas_failure.log`, `fused_expert_paths.py`, `round6_validation.json` |
 | Fused/overlap serving adapter | Current live hook is `srt/layers/muse_spark_moe.py` (`prepare_layer`, `_grouped_call`, `run_layer`), called by `MuseSpark1xFp4Experts._forward_marlin`; the old `_v4.py` file is gone. New kernels replace the grouped expert producer inside `_grouped_call` | SGLang applies pre-expert norm before the hook: replace the board gather+norm by gather-only. Export sorted `y` before `_combine_kernel`, scatter to dense `[T,8,4096]`, preserve separate gate/up/down GS and BF16 rounding; raw-DG down needs GS2 applied before export. Keep `_finalize_dense_expert_outputs` and EP collectives, avoiding duplicate norm/top-k weighting. Prepare selected lossless raw/interleaved banks from loaded ModelOpt tensors, budget duplicates against measured KV residency. Per-call stream forks must join before down/finalize; concurrent serving graph replay/reentrancy still needs validation | `serving/sglang/python/sglang/srt/layers/muse_spark_moe.py`, `muse_spark_fp4_moe.py`; new candidate helpers |
@@ -1012,6 +1095,7 @@ Failures whose cause was not obvious, so they are not repeated.
 
 | Symptom | Cause | Avoid / fix | Cost | Receipt |
 |---|---|---|---|---|
+| A decode run fails to compile on the H200 (`at::cuda` has no `getCurrentCUDAStream`), and another loses every XQA attention variant to `NameError: ATTN_X_CUDA` | Hopper-only branches (cuBLASLt extension; XQA ports) never build or run on sm_120, so local screens pass them: a missing `<ATen/cuda/CUDAContext.h>` and names never defined in the merged file | `tools/local_eval.py` static checks: ruff F821-F823 on the whole file and an sm_90a compile of every CUDA source string; both fail the screen | two decode runs (v9all failed; merge 1.359x with decode 32 full 581 vs 423 us), one more at the judge (moe_rt) | `83a8a755fece45e3`, `43a1f3a3d7ba46a9` |
 | Four decode checks fail on the judge with `AttributeError: 'tuple' object has no attribute 'device'` | The sm_90 branch received attention v3's `(partials, split_count)` tuple; only the Hopper branch reached that glue, so local tests passed | Force each Hopper branch's Python glue locally with a portable stand-in kernel | 4 checks | `2f3960c275774a20`, `69a655d3b2364fc4`, `a5ab4a2011f44321`, `b2a8999311034eb3` |
 | Queued proj wg/wg2 can score without running WGMMA | `kernel_fn` requires `state["wg_ok"]`, but their prepare never sets it | All/max/native portfolios explicitly tune and store selected branches; max/native directly activate multicast WGMMA | Those queued runs cannot measure WGMMA performance | `cand_wg.py`, `cand_wg2.py` |
 | TMA K128 BF16 descriptor rejected locally | A 256-byte inner box exceeds SWIZZLE_128B | Group two legal K64 transfers under one pipeline barrier; keep each WGMMA descriptor on a K64 swizzle atom | Local compile/test iteration | `cand_portfolio.py`; [CUDA tensor map documentation](https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__TENSOR__MEMORY.html) |
