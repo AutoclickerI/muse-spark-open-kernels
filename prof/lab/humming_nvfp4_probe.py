@@ -16,7 +16,7 @@ def lab(deadline, weights, state=None):
         from humming.layer import HummingMethod
         from humming.schema.modelopt import ModeloptNvfp4WeightSchema
         from sglang.kernels.ops.activation.activation import silu_and_mul
-        from sglang.kernels.ops.moe.fused_moe_triton import moe_align_block_size
+        from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
         if saved is None:
             __import__('os').environ.pop('HUMMING_DISABLE_PARALLEL_BUILD', None)
         else:

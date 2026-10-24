@@ -87,9 +87,43 @@ def best_source(problem: str) -> dict:
     return max(done, key=lambda r: r["speedup"])
 
 
+IMPORT_CHECK = '''
+import ast, importlib, importlib.util, sys
+bad = []
+for node in ast.walk(ast.parse(open(sys.argv[1]).read())):
+    if isinstance(node, ast.ImportFrom) and node.module and not node.level:
+        try:
+            mod = importlib.import_module(node.module)
+            bad += [f"{node.module}.{a.name}" for a in node.names if a.name != "*" and not hasattr(mod, a.name)
+                    and importlib.util.find_spec(f"{node.module}.{a.name}") is None]
+        except Exception as e:
+            bad.append(f"{node.module}: {type(e).__name__}: {e}")
+    elif isinstance(node, ast.Import):
+        for a in node.names:
+            try:
+                importlib.import_module(a.name)
+            except Exception as e:
+                bad.append(f"{a.name}: {type(e).__name__}: {e}")
+print("BAD " + " | ".join(bad) if bad else "OK")
+'''
+
+
+def check_imports(payload: Path) -> list[str]:
+    """Every import in the payload, nested ones included, resolved in the judge's image (tools/img):
+    humming_nvfp4_probe fbf64bd3 spent a judge slot on a wrong module path."""
+    p = subprocess.run([str(REPO / "tools/img"), "python", "-c", IMPORT_CHECK, str(payload.resolve())],
+                       cwd=REPO, capture_output=True, text=True, timeout=600)
+    line = next((l for l in p.stdout.splitlines() if l.startswith(("OK", "BAD "))), None)
+    if line is None:
+        return [f"import check did not run: {p.stderr[-400:]}"]
+    return [] if line == "OK" else line[4:].split(" | ")
+
+
 def build(payload: Path, host: str) -> tuple[str, str]:
     if bad := local_imports(payload):
         sys.exit(f"{payload}: imports modules the judge won't have: {sorted(bad)}")
+    if bad := check_imports(payload):
+        sys.exit(f"{payload}: imports that fail in the judge's image: {bad}")
     body = payload.read_text()
     if not re.search(r"^def lab\(", body, re.M):
         sys.exit(f"{payload}: must define lab(deadline, weights) -> list[str]")

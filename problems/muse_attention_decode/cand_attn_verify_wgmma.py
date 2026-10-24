@@ -2643,7 +2643,11 @@ def _wgmma_candidates():
 
 def _wgmma_portfolio_shape(batch,window,flush,start,end):
     import time
-    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')
+    # _next_input already constructs the q_len=8 gate case.  Keep the
+    # correctness probe on the same page-1/80K geometry as the timed input;
+    # the old ctx/dist keywords were copied from an earlier helper signature
+    # and made the Hopper-only prepare branch fail before timing any choice.
+    data=_next_input(batch,window); gate_data=_next_input(1,window)
     torch.cuda.synchronize(); timings=[]; choices=[]
     for label,setting in _wgmma_candidates():
       try:

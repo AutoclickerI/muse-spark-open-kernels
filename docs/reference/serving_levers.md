@@ -65,7 +65,7 @@ so it does not consume an already-flushed result twice. The completed-row admiss
 not only the early callback. A c32 trace caught31 finished rows with13 waiting
 requests selecting no work: prefill admission ran before decode filtering.
 `take_prepared` now removes completed DFlash rows before admission on either
-completion path; live prepared decode retains its normal path. All7 deterministic
+completion path; live prepared decode retains its normal path. All8 deterministic
 overlap tests pass, including the captured31/13 case and a partial completion;
 the new delivery, double-consume and ordinary-admission cases fail before their
 respective fixes.
@@ -168,12 +168,12 @@ The read-only harness was not edited. The regenerated patch retains every
 accepted path plus the KV lane's new modules:323217 bytes,32 files, maximum
 added line374 characters; pristine-base apply, syntax and whitespace checks pass.
 
-The expert layer screen uses a canonical-bank-only owner and a separate Marlin
-reference:15 cases including257/512/513/752/753 transitions, EP offsets0/64,
-and all-remote/all-local routing. Relative L2<=0.005963 and maxabs0.03125 versus
-Marlin; all30 graph equality replays are bit-exact, and all-remote outputs are
-exactly zero. `PrefillExpertPlan.from_layer` reuses the bank; a Marlin gap or a
-second implicit bank fails this test.
+The current expert storage screen uses the production Marlin loader and a
+separate stock-math reference at12 shapes M1..2048, including257/511/512/513/752/753.
+Relative L2<=4.43e-5, maxabs0.0078125; graph/eager is exact through753 and
+large-M differences match stock controls. All-remote routes return zero and
+only one packed bank remains. The earlier canonical-bank V9 screen is historical;
+its custom scale codes no longer meet the stored-E4M3 boundary.
 
 No receipt IDs or external measurement files are read at runtime. Admission is
 source policy. Unbound modules do not change the default or spend startup time.
@@ -216,7 +216,7 @@ the CUDA entry points with same-ABI torch stand-ins. The native portable tests a
 |---|---|---|
 | `all_gather_norm_residual.py:31,74-86` | SM90 clusters; `CustomAllReduceV2`, multicast, world >=2 | Portable norm/all-gather ABI; policy and tuple shapes pass. Actual multicast remains untested. |
 | `norm_residual.py:80,190-205` | SM90 cluster cap 8; auto cluster for M=1..128 | Portable norm module; all policies and output dtypes pass. |
-| `gemm_ag.py:48-98` | SM90 and M <=128, world 4/8, multicast | Portable gather ABI; exact full projection output. M=129 correctly falls back. |
+| `gemm_ag.py` | SM90, world4/8, multicast, pooler M<=512 / unpooler M<=64 | Portable gather ABI and width-specific policy tests pass; full output exact. Unpooler M128 correctly stays replicated. |
 | `muse_spark.py:257-264,840,939` | TP >1, M >=1024, no capture | Portable row-split policy; NCCL `test_rowsplit.py` max diff 0 at M=1024, 1027, 2049, 16384. |
 | `muse_spark_fp4_moe.py:59` | auto backend on SM90 | Portable backend selection; auto resolves to Marlin. |
 | `muse_spark.py:465-510` | FA3, FP8 KV pool, TARGET_VERIFY, no MLA/skip | Fake FA3 backend/cache ABI; cache tuple and physical locations pass. Native SM120 FA3 unit is eager/graph exact (max diff 0). |
@@ -226,7 +226,7 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
 
 ## In serving/patch.diff now (untested on H200)
 
-- #2 with H200 split at <= 128 tokens (`HOPPER_SPLIT_MAX_TOKENS`, `gemm_ag.py`; a modeled threshold), #4, and #5 with
+- #2 with separate H200 projection bounds (pooler512, unpooler64, `projection_max_tokens`), #4, and #5 with
   clusters capped at 8 on sm_90. Imports checked in the judge image; the cluster and all-gather-norm kernels compile for
   sm_90a locally (cluster 8/4/2). Nothing here has run on Hopper.
 
@@ -239,17 +239,12 @@ TP1 and TP2 margin harness runs both returned exactly 220 tokens at c=1 and c=4.
   74K-token first turn. Tested: `serving/tests/test_rowsplit.py` on 2 local GPUs over NCCL, bitwise equal to the
   replicated math (8-rank reduce-scatter order on the judge may differ in the last bit).
 
-- **MoE V9 single-bank path** (`layers/muse_spark_moe.py`, dispatch in
-  `muse_spark_fp4_moe.py`). V9 handles all verify rows including M256. The serving
-  adapter bounds every V9 call to256 through M752, and selects grouped at>=753.
-  The512-row diagnostic must win before larger V9 calls are admitted.
-  Both preserve global slot maps and remote -1s. Verify bypasses grouped after its in-layer H200 regression. The current M1..16,384 stock-Marlin layer screen has
-  relative L2<=0.005449 (bound0.015), maxabs0.03125 and exact fresh-input graph replay;
-  A bounded V11 Humming adapter now competes at M256 in layer1 only; it preserves separate FP32
-  gate/up scales via virtual expert records and disables BF16 Stream-K partial reductions. It admits
-  one0.906GB layout only after charging target/draft KV backing, graph-times actual routing, and
-  discards a losing copy. All remaining layers and prefill retain the existing producer. The MoE
-  lane source is unchanged. H200 V9/wide runtime and full-node memory remain unverified.
+- **Expert producer:** stock Marlin at every M, including513–752. The V9
+  dispatch gate is capped256, but its loader binder is disabled: its custom scale
+  encoding violates the new stored-E4M3 boundary and removes the Marlin tensors.
+  The MoE lane owns the legal shared-bank reader needed to restore V9 below256.
+  Grouped and Humming are never selected. Their modules and the MoE lane's
+  source are retained unbound; no second complete bank is allocated.
 
 ## Measured serving ranking
 
@@ -770,8 +765,8 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
-Current patch regenerated from `git -C serving/sglang diff a55ab7d5` after
-including source-only untracked additions: **316,495bytes**, **29files**,
+Historical projection-round patch (`ed4f618`), regenerated from the base with
+source-only additions, was **316,495bytes**, **29files**,
 longest added line **374**. Of31 accepted `ed4f618` file diffs,24 remain byte-identical and5 retain
 intentional/incoming updates. The failed prefill-attention module and the
 experimental attention-backend hunk are removed after `e789ab194eb7496c`
@@ -849,8 +844,8 @@ Current sm_120 checks:
 - Two NCCL ranks own four virtual TP8 slices each: pooler/unpooler gather math
   at M8/32/128 has relative L2<=0.003692 and exact graph replay; o AR ownership
   at M8/32/128/256/753 is bit-identical. This is not eight-GPU multicast coverage.
-- Humming admission still rejects wide when slower than V9 on local routing;
-  independent dense wide math remains within relative L2=0.005943.
+- Historical Humming admission math remains tested (relative L2<=0.005943),
+  but the current producer never calls Humming after real-weight H200 failures.
 
 Local sm_120/FlashInfer margin results (174 requests each, exactly220 tokens;
 all74 stock prefill graph sizes captured and prefill/verify replay observed):

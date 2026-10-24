@@ -1,0 +1,51 @@
+okc run fbf64bd39bde4bf6 on muse_moe_w4a16
+submission  /home/jihoon/competitions/muse_kernel/runs/sent/76fbb1203a02ff37/lab_humming_nvfp4_probe.py
+status      ok
+passed      true
+speedup     1.6697958411019393
+speedup_ci  [1.6447489034854101 1.6948427787184683]
+score_us    8053.978617604535
+tests       5/5 passed
+
+scored shapes (µs; speed of light is the reference's bound)
+case                                                         sglang      yours  speedup        sol  
+bs=1 load=decode 1 sharding=ep8                               80.51      37.31   2.158x      11.42  
+bs=16 load=decode 16 sharding=ep8                            192.26     113.21   1.698x      52.52  
+bs=32 load=decode 32 sharding=ep8                            210.51     152.15   1.384x      70.76  
+bs=8 load=verify 1 sharding=ep8                              151.73      84.24   1.801x      37.32  
+bs=128 load=verify 16 sharding=ep8                           466.26     287.52   1.622x     101.34  
+bs=256 load=verify 32 sharding=ep8                           624.37     426.63   1.463x     108.94  
+
+profile 0: bs=1 load=decode 1 sharding=ep8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      30.1 µs 100.0%      1
+total                                                             30.1 µs
+
+profile 1: bs=16 load=decode 16 sharding=ep8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      93.6 µs 100.0%      1
+total                                                             93.6 µs
+
+profile 2: bs=32 load=decode 32 sharding=ep8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     140.6 µs 100.0%      1
+total                                                            140.6 µs
+
+profile 3: bs=8 load=verify 1 sharding=ep8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...      83.5 µs 100.0%      1
+total                                                             83.5 µs
+
+profile 4: bs=128 load=verify 16 sharding=ep8
+kernel                                                           GPU time  share  calls
+void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...     282.7 µs 100.0%      1
+total                                                            282.7 µs
+
+profile 5: bs=256 load=verify 32 sharding=ep8
+kernel                                                           GPU time  share  calls
+void humming<MmaOpClass, Shape<0u, 8192u, 4096u>, Shape<2...     265.2 µs  61.7%      1
+void humming<MmaOpClass, Shape<0u, 4096u, 4096u>, Shape<2...     146.8 µs  34.1%      1
+route_kernel(int const*, int*, int*, int*, int*, int, int...       6.7 µs   1.6%      1
+_post_expert_norm_weighted_sum_kernel                              5.9 µs   1.4%      1
+void sglang::act_and_mul_kernel<__nv_bfloat16, (sglang::A...       5.6 µs   1.3%      1
+total                                                            430.1 µs

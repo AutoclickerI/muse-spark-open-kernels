@@ -4772,7 +4772,9 @@ void attn_forward(int64_t qkv, int64_t positions, int64_t cache_loc, int64_t pag
   p.row_bytes = hkv * 64;
   p.scale_log2 = (float)scale_log2;
   cudaStream_t s = reinterpret_cast<cudaStream_t>(stream);
-  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s) : launch_t<8, 3>(p, s);
+  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);
+  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s)
+                                  : ((prop.major == 9) ? launch_t<8, 4>(p, s) : launch_t<8, 3>(p, s));
   if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
 }
 
@@ -4788,10 +4790,16 @@ int occupancy_t() {
   return n;
 }
 
-int64_t occupancy(int64_t q_len) { return (q_len == 1) ? occupancy_t<1, 4>() : occupancy_t<8, 3>(); }
+int64_t occupancy(int64_t q_len) {
+  if (q_len == 1) return occupancy_t<1, 4>();
+  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);
+  return (prop.major == 9) ? occupancy_t<8, 4>() : occupancy_t<8, 3>();
+}
 
 int64_t max_cluster(int64_t q_len, int64_t cs) {
-  return (q_len == 1) ? max_cluster_t<1, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);
+  if (q_len == 1) return max_cluster_t<1, 4>((int)cs);
+  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);
+  return (prop.major == 9) ? max_cluster_t<8, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);
 }
 """
 

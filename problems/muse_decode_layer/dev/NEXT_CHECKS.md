@@ -148,3 +148,42 @@ Local sm120 host9/9+30/30, full-layer portable fixture13/13+12/12,9 static check
 all1152 Hopper ABI recipes forced. These validate glue/capture, not native H200 speed.
 Wait for the owner-supplied receipt; proj's `dev/cutlass/read_receipt.py` validates its
 payload hash and emits **H200-positive** recipes. Retime winners in the full layer.
+
+## H200 stage levers: V9 and cost receipts
+
+All values are microseconds. Each P/A/M cell is **profile time / modeled floor**; glue is boundary + routing + remaining elementwise kernels. V9 = receipt `0e94268cf5654012`; cost = `906ca5580aef4f86`. Source profiles are linked below. These are separate router seeds: compare scores to each run’s own baseline, rather than treating differences in absolute MoE time as kernel gains.
+
+Floors use one read of stored weights/cache, 4.8 TB/s HBM, 989 TF/s dense BF16, 1979 TF/s FP8 QK and the audited NVFP4 issue floor from `sim/bound.py`. Routing counts are inferred expected counts from the official layer floor, not exact counts recovered from these seeds. Full agentic attention uses its guaranteed 92.5% context minimum. No launch/PDL wait is charged to the floor. Per-stage floors cannot be summed into a whole-layer bound when resources overlap.
+
+| Load / context | Run | Whole layer | Projections / floor | Attention / floor | MoE / floor | Glue |
+|---|---|---:|---:|---:|---:|---:|
+| decode 1 sliding | V9 | 108.5 | 45.5 / 28.84 | 14.8 / 0.11 | 31.7 / 14.71 | 17.2 |
+| decode 1 sliding | cost | 112.2 | 52.1 / 28.84 | 11.4 / 0.11 | 31.7 / 14.71 | 15.2 |
+| decode 1 full | V9 | 128.6 | 44.8 / 28.84 | 33.9 / 4.33 | 32.3 / 14.77 | 17.7 |
+| decode 1 full | cost | 131.5 | 50.9 / 28.84 | 30.4 / 4.33 | 38.4 / 14.77 | 15.5 |
+| decode 16 sliding | V9 | 166.1 | 62.1 / 41.07 | 15.8 / 1.77 | 86.9 / 44.92 | 13.0 |
+| decode 16 sliding | cost | 174.7 | 64.2 / 41.07 | 13.7 / 1.77 | 85.3 / 44.92 | 12.4 |
+| decode 16 full | V9 | 278.9 | 62.4 / 41.07 | 124.8 / 64.13 | 77.3 / 43.94 | 18.2 |
+| decode 16 full | cost | 280.7 | 64.5 / 41.07 | 127.8 / 64.13 | 94.8 / 43.94 | 12.4 |
+| decode 32 sliding | V9 | 217.5 | 66.2 / 41.07 | 20.2 / 3.55 | 101.7 / 52.72 | 15.6 |
+| decode 32 sliding | cost | 207.3 | 66.0 / 41.07 | 16.8 / 3.55 | 118.1 / 52.72 | 12.4 |
+| decode 32 full | V9 | 422.9 | 73.4 / 41.07 | 228.5 / 128.27 | 114.2 / 53.44 | 24.9 |
+| decode 32 full | cost | 417.5 | 66.2 / 41.07 | 226.5 / 128.27 | 95.8 / 53.44 | 13.3 |
+| verify 1 sliding | V9 | 149.2 | 46.0 / 28.84 | 22.6 / 0.11 | 76.6 / 44.26 | 18.0 |
+| verify 1 sliding | cost | 156.4 | >=50.9 / 28.84 | >=19.1 / 0.11 | 77.2 / 44.26 | 15.7 + 3.7 unreported |
+| verify 1 full | V9 | 164.4 | 46.4 / 28.84 | 34.0 / 4.33 | 70.8 / 44.18 | 18.4 |
+| verify 1 full | cost | 172.7 | >=53.2 / 28.84 | >=29.2 / 4.33 | 77.1 / 44.18 | 15.3 + 3.6 unreported |
+| verify 16 sliding | V9 | 393.4 | 72.8 / 41.07 | 25.8 / 1.78 | 258.9 / 108.39 | 16.3 |
+| verify 16 sliding | cost | 392.5 | 72.4 / 41.07 | 25.7 / 1.78 | 305.6 / 108.39 | 15.6 |
+| verify 16 full | V9 | 566.6 | 72.5 / 41.07 | 202.6 / 64.14 | 280.4 / 109.15 | 15.7 |
+| verify 16 full | cost | 564.3 | 71.9 / 41.07 | 203.6 / 64.14 | 255.3 / 109.15 | 15.5 |
+| verify 32 sliding | V9 | 615.5 | 90.0 / 51.03 | 31.6 / 3.56 | 477.0 / 125.67 | 25.9 |
+| verify 32 sliding | cost | 592.2 | 91.2 / 51.03 | 32.2 / 3.56 | 443.0 / 125.67 | 26.8 |
+| verify 32 full | V9 | 979.6 | 90.7 / 51.03 | 389.9 / 128.28 | 449.5 / 126.13 | 25.8 |
+| verify 32 full | cost | 940.7 | 89.9 / 51.03 | 388.5 / 128.28 | 446.9 / 126.13 | 26.3 |
+
+P includes cuBLAS split-K reductions; A includes QK preparation, cache writes, FA3 scheduling and norm/gate kernels. Profile rows include PDL wait/overlap, so their sum can exceed the whole-layer time. The two cost verify-1 profiles truncate three small rows: their P/A entries are lower bounds and the unreported residual is shown explicitly, rather than assigned to a stage without evidence. Rounding of report rows is about 0.1 us.
+
+Largest levers: verify-32 MoE is 443–477 us; full attention (including preparation) is 389–390 us. At decode-32, full attention is 226–229 us. Small-load projection time remains roughly 45–66 us against a 29–41 us floor, while boundary/routing glue costs about 12–27 us. These justify packing mixed-input/reuse MoE, attention split-K and a few projection recipes into the same timed portfolio.
+
+[V9 profile](../profiles/cand_r3_v9.0e94268cf5654012.json) · [cost profile](../profiles/cand_r3_v9_cost_v9.906ca5580aef4f86.json) · [rebuild script](omni/lever_table.py)

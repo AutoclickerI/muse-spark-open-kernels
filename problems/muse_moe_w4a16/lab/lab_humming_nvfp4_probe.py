@@ -1228,7 +1228,7 @@ def lab(deadline, weights, state=None):
         from humming.layer import HummingMethod
         from humming.schema.modelopt import ModeloptNvfp4WeightSchema
         from sglang.kernels.ops.activation.activation import silu_and_mul
-        from sglang.kernels.ops.moe.fused_moe_triton import moe_align_block_size
+        from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
         if saved is None:
             __import__('os').environ.pop('HUMMING_DISABLE_PARALLEL_BUILD', None)
         else:
@@ -1309,7 +1309,7 @@ def lab(deadline, weights, state=None):
         out.append(f'HUMMING_PROBE_ERROR {type(e).__name__}: {e}')
     return out
 
-# ---- h200_lab wrapper: payload humming_nvfp4_probe sha256 e56b52b273edc817 on base ac9dd461f0294e34 ----
+# ---- h200_lab wrapper: payload humming_nvfp4_probe sha256 66668488ea62c2c8 on base ac9dd461f0294e34 ----
 _lab_base_prepare = prepare
 _lab_ran = False
 
@@ -1340,7 +1340,7 @@ def prepare(weights):
                 break
             _out.append(_l)
             _n += len(_l) + 1
-        print("LAB_BEGIN humming_nvfp4_probe e56b52b273edc817", flush=True)
+        print("LAB_BEGIN humming_nvfp4_probe 66668488ea62c2c8", flush=True)
         for _l in _out:
             print(_l, flush=True)
         print(f"LAB_END lab_s={_t.monotonic() - _t0:.1f} prepare_s={_t.monotonic() - _start:.1f}", flush=True)

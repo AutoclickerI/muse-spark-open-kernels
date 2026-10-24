@@ -1,11 +1,14 @@
 """Runtime-M finalize must match static-M math without unseen-shape JITs.
 
-The static control is the original pinned source copied to the evidence folder.
-New uncaptured prefill lengths previously compiled in the request's TTFT path.
+The static control is the original pinned source, materialized from git.
+Runtime M avoids shape-specific compilation; the fixture warms its lengths at
+startup, so this is a prepare-time saving rather than a measured TTFT saving.
 """
 import importlib.util
 import json
 import sys
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 from unittest.mock import patch
@@ -14,7 +17,14 @@ import torch
 from sglang.kernels.ops.muse_spark_v12 import fused_post_expert_norm_weighted_sum_trtllm as opmod
 from sglang.kernels.ops.muse_spark_v12 import fi_trtllm_moe_finalize_with_rmsnorm_cutedsl as dynamic
 
-CONTROL = Path('/data2/jihoon/muse_kernel/harness/results/upstream-r01-evidence/finalize_static_control.py')
+_control_dir = tempfile.TemporaryDirectory(prefix='muse-finalize-control-')
+CONTROL = Path(_control_dir.name) / 'finalize_static_control.py'
+_source = Path(__file__).resolve().parents[1] / 'sglang'
+CONTROL.write_bytes(subprocess.check_output([
+    'git', '-C', str(_source), 'show',
+    'a55ab7d5:python/sglang/kernels/ops/muse_spark_v12/'
+    'fi_trtllm_moe_finalize_with_rmsnorm_cutedsl.py',
+]))
 spec = importlib.util.spec_from_file_location('finalize_static_control', CONTROL)
 static = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = static
@@ -24,7 +34,7 @@ spec.loader.exec_module(static)
 def main():
     torch.manual_seed(2987)
     records = []
-    for h in (1024, 4096):
+    for h in (512, 1024, 4096):
         op = opmod.FusedPostExpertNormWeightedSumTRTLLM(
             topk=8, hidden_dim=h, eps=1e-8, weight_first=True)
         for m in (8, 32, 128, 256, 512, 753, 1537, 2509, 7939, 16384):

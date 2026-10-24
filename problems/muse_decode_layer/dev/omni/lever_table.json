@@ -1,0 +1,682 @@
+[
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "decode 1",
+      "page": 1,
+      "repeats": 60,
+      "seed": 6176333158215362649,
+      "weight": 46
+    },
+    "profile": {
+      "P": 45.5,
+      "A": 14.8,
+      "M": 31.7,
+      "G": 17.2,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 0.11093416666666667,
+      "M": 14.714315268454211
+    },
+    "partial": false,
+    "layer_us": 108.48817736866434
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "decode 1",
+      "page": 1,
+      "repeats": 60,
+      "seed": 6176353388629113436,
+      "weight": 16
+    },
+    "profile": {
+      "P": 44.8,
+      "A": 33.9,
+      "M": 32.3,
+      "G": 17.700000000000003,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 4.333388333333334,
+      "M": 14.77106195115581
+    },
+    "partial": false,
+    "layer_us": 128.56564477085962
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "decode 16",
+      "page": 1,
+      "seed": 6176373619042864224,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 62.1,
+      "A": 15.8,
+      "M": 86.9,
+      "G": 13.0,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 1.7749466666666667,
+      "M": 44.91710424730339
+    },
+    "partial": false,
+    "layer_us": 166.09656770912088
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "decode 16",
+      "page": 1,
+      "seed": 6176393849456615013,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 62.4,
+      "A": 124.80000000000001,
+      "M": 77.3,
+      "G": 18.2,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 64.13421333333334,
+      "M": 43.943621305559546
+    },
+    "partial": false,
+    "layer_us": 278.88447098834075
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "decode 32",
+      "page": 1,
+      "seed": 6176414079870365803,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 66.2,
+      "A": 20.2,
+      "M": 101.7,
+      "G": 15.6,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 3.5498933333333333,
+      "M": 52.72479356463396
+    },
+    "partial": false,
+    "layer_us": 217.51856546112148
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "decode 32",
+      "page": 1,
+      "seed": 6176434310284116594,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 73.4,
+      "A": 228.5,
+      "M": 114.2,
+      "G": 24.9,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 128.26842666666667,
+      "M": 53.44449510133343
+    },
+    "partial": false,
+    "layer_us": 422.94057170464697
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "verify 1",
+      "page": 1,
+      "q_len": 8,
+      "seed": 6176454540697867386,
+      "weight": 46
+    },
+    "profile": {
+      "P": 46.0,
+      "A": 22.6,
+      "M": 76.6,
+      "G": 18.0,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 0.11131333333333333,
+      "M": 44.25651028286153
+    },
+    "partial": false,
+    "layer_us": 149.16424288612046
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "verify 1",
+      "page": 1,
+      "q_len": 8,
+      "seed": 6176474771111618179,
+      "weight": 16
+    },
+    "profile": {
+      "P": 46.4,
+      "A": 34.0,
+      "M": 70.8,
+      "G": 18.4,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 4.3337675,
+      "M": 44.179923594553756
+    },
+    "partial": false,
+    "layer_us": 164.43946128808014
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "verify 16",
+      "page": 1,
+      "q_len": 8,
+      "seed": 6176495001525368973,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 72.8,
+      "A": 25.8,
+      "M": 258.9,
+      "G": 16.3,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 1.7810133333333333,
+      "M": 108.39210885010768
+    },
+    "partial": false,
+    "layer_us": 393.3576218735117
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "verify 16",
+      "page": 1,
+      "q_len": 8,
+      "seed": 6176515231939119768,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 72.49999999999999,
+      "A": 202.6,
+      "M": 280.4,
+      "G": 15.7,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 64.14028,
+      "M": 109.15195973148548
+    },
+    "partial": false,
+    "layer_us": 566.6202077179058
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "verify 32",
+      "page": 1,
+      "q_len": 8,
+      "seed": 6176535462352870564,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 90.0,
+      "A": 31.6,
+      "M": 477.0,
+      "G": 25.900000000000002,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 51.02716453791709,
+      "A": 3.5620266666666667,
+      "M": 125.6747875114535
+    },
+    "partial": false,
+    "layer_us": 615.5325710460387
+  },
+  {
+    "receipt": "cand_r3_v9.0e94268cf5654012",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "verify 32",
+      "page": 1,
+      "q_len": 8,
+      "seed": 6176555692766621361,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 90.69999999999999,
+      "A": 389.9,
+      "M": 449.5,
+      "G": 25.799999999999997,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 51.02716453791709,
+      "A": 128.28056,
+      "M": 126.12782230613429
+    },
+    "partial": false,
+    "layer_us": 979.6269786268571
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "decode 1",
+      "page": 1,
+      "repeats": 60,
+      "seed": 3758404370511189583,
+      "weight": 46
+    },
+    "profile": {
+      "P": 52.1,
+      "A": 11.399999999999999,
+      "M": 31.7,
+      "G": 15.2,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 0.11093416666666667,
+      "M": 14.714315268454211
+    },
+    "partial": false,
+    "layer_us": 112.19989082213785
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "decode 1",
+      "page": 1,
+      "repeats": 60,
+      "seed": 3758639631504593766,
+      "weight": 16
+    },
+    "profile": {
+      "P": 50.9,
+      "A": 30.4,
+      "M": 38.4,
+      "G": 15.5,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 4.333388333333334,
+      "M": 14.77106195115581
+    },
+    "partial": false,
+    "layer_us": 131.46726293322925
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "decode 16",
+      "page": 1,
+      "seed": 3758874892497997950,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 64.2,
+      "A": 13.700000000000001,
+      "M": 85.3,
+      "G": 12.4,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 1.7749466666666667,
+      "M": 44.91710424730339
+    },
+    "partial": false,
+    "layer_us": 174.73375758677392
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "decode 16",
+      "page": 1,
+      "seed": 3759110153491402135,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 64.5,
+      "A": 127.8,
+      "M": 94.8,
+      "G": 12.4,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 64.13421333333334,
+      "M": 43.943621305559546
+    },
+    "partial": false,
+    "layer_us": 280.7001264850838
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "decode 32",
+      "page": 1,
+      "seed": 3759345414484806321,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 66.00000000000001,
+      "A": 16.8,
+      "M": 118.1,
+      "G": 12.4,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 3.5498933333333333,
+      "M": 52.72479356463396
+    },
+    "partial": false,
+    "layer_us": 207.26846890161315
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "decode 32",
+      "page": 1,
+      "seed": 3759580675478210508,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 66.2,
+      "A": 226.5,
+      "M": 95.8,
+      "G": 13.3,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 128.26842666666667,
+      "M": 53.44449510133343
+    },
+    "partial": false,
+    "layer_us": 417.5060399823561
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "verify 1",
+      "page": 1,
+      "q_len": 8,
+      "seed": 3759815936471614696,
+      "weight": 46
+    },
+    "profile": {
+      "P": 50.89999999999999,
+      "A": 19.1,
+      "M": 77.2,
+      "G": 15.7,
+      "unreported": 3.6999999999999886
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 0.11131333333333333,
+      "M": 44.25651028286153
+    },
+    "partial": true,
+    "layer_us": 156.35030194946188
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 1,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "verify 1",
+      "page": 1,
+      "q_len": 8,
+      "seed": 3760051197465018885,
+      "weight": 16
+    },
+    "profile": {
+      "P": 53.2,
+      "A": 29.2,
+      "M": 77.1,
+      "G": 15.3,
+      "unreported": 3.5999999999999943
+    },
+    "floors": {
+      "P": 28.835839999999997,
+      "A": 4.3337675,
+      "M": 44.179923594553756
+    },
+    "partial": true,
+    "layer_us": 172.70803742388875
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "verify 16",
+      "page": 1,
+      "q_len": 8,
+      "seed": 3760286458458423075,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 72.4,
+      "A": 25.7,
+      "M": 305.6,
+      "G": 15.6,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 1.7810133333333333,
+      "M": 108.39210885010768
+    },
+    "partial": false,
+    "layer_us": 392.50637598123467
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 16,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "verify 16",
+      "page": 1,
+      "q_len": 8,
+      "seed": 3760521719451827266,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 71.9,
+      "A": 203.59999999999997,
+      "M": 255.3,
+      "G": 15.5,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 41.069226666666665,
+      "A": 64.14028,
+      "M": 109.15195973148548
+    },
+    "partial": false,
+    "layer_us": 564.2757568532138
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "sliding",
+      "load": "verify 32",
+      "page": 1,
+      "q_len": 8,
+      "seed": 3760756980445231458,
+      "spread": "agentic",
+      "weight": 46
+    },
+    "profile": {
+      "P": 91.19999999999999,
+      "A": 32.2,
+      "M": 443.0,
+      "G": 26.799999999999997,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 51.02716453791709,
+      "A": 3.5620266666666667,
+      "M": 125.6747875114535
+    },
+    "partial": false,
+    "layer_us": 592.164235839712
+  },
+  {
+    "receipt": "cand_r3_v9_cost_v9.906ca5580aef4f86",
+    "case": {
+      "batch": 32,
+      "ctx": 80000,
+      "dist": "soft",
+      "layer": "full",
+      "load": "verify 32",
+      "page": 1,
+      "q_len": 8,
+      "seed": 3760992241438635651,
+      "spread": "agentic",
+      "weight": 16
+    },
+    "profile": {
+      "P": 89.9,
+      "A": 388.5,
+      "M": 446.9,
+      "G": 26.299999999999997,
+      "unreported": 0.0
+    },
+    "floors": {
+      "P": 51.02716453791709,
+      "A": 128.28056,
+      "M": 126.12782230613429
+    },
+    "partial": false,
+    "layer_us": 940.7118956763943
+  }
+]

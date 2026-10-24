@@ -4015,7 +4015,11 @@ def _lab_input(batch, window, q_len, ctx):
     device = torch.device('cuda', torch.cuda.current_device())
     seed = 71231 + batch * 31 + q_len * 7 + int(bool(window))
     gen = torch.Generator(device=device).manual_seed(seed)
-    maxpages = ctx + 8
+    # Agentic spread moves B>1 sequences up to 1.075*ctx.  The old ctx+8
+    # allocation left page-table rows beyond 80,008 undefined, which made the
+    # post-store FP32 gate reject even FA3 and the layer control.  Match the
+    # screened decode inputs' allocation bound.
+    maxpages = 86008 if batch > 1 else ctx + 8
     seq = torch.full((batch,), ctx, dtype=torch.int32, device=device)
     if batch > 1:
         seq = (seq.float() * (1. + .075 * (2 * torch.rand(batch, device=device, generator=gen) - 1))).to(torch.int32)
@@ -4058,7 +4062,7 @@ def _lab_fp32_reference(data):
     q0 = qkv[..., :hq * d].reshape(bsz, length, hq, d)
     k0 = qkv[..., hq * d:(hq + hkv) * d].reshape(bsz, length, hkv, d)
     v0 = qkv[..., (hq + hkv) * d:(hq + 2 * hkv) * d].reshape(bsz, length, hkv, d)
-    gate = qkv[..., (hq + 2 * hkv) * d:].reshape(bsz, length, hq * d).float()
+    gate = qkv[..., (hq + 2 * hkv) * d:].reshape(bsz, length, hq, d).float()
     pos = data['seq_lens'].long()[:, None] + torch.arange(length, device=qkv.device)
     q = _lab_rms(q0) * float(cfg['qk_scale_factor'])
     knew = _lab_rope(_lab_rms(k0), pos, cfg['rope_theta']) if cfg['rope_theta'] else _lab_rms(k0)
@@ -4083,7 +4087,10 @@ def _lab_fp32_reference(data):
                 logits = torch.einsum('hgd,shd->hgs', q[bi, j].view(hkv, group, d), kk) * float(cfg['sm_scale'])
                 probs = torch.softmax(logits, dim=-1)
                 result[bi, j] = torch.einsum('hgs,shd->hgd', probs, vv).reshape(hq, d)
-    return (_lab_rms(result.reshape(bsz, length, hq * d)) * gate.sigmoid()).to(torch.bfloat16)
+    # The fused epilogue normalizes each head (head_dim is its norm width),
+    # then applies the gate.  Normalizing the flattened 1024-wide row makes
+    # every valid FA3/control result look wrong by ~40%.
+    return (_lab_rms(result) * gate.sigmoid()).reshape(bsz, length, hq * d).to(torch.bfloat16)
 
 
 def _lab_attn_main(data):
@@ -4155,7 +4162,7 @@ def _lab_fp32_reference_after_store(data, new_kv=None):
                 logits = torch.einsum('kgd,skd->kgs', q[bi, j].view(hkv, group, d), kk) * float(cfg['sm_scale'])
                 probs = torch.softmax(logits, dim=-1)
                 out[bi, j] = torch.einsum('kgs,skd->kgd', probs, vv).reshape(hq, d)
-    return (_lab_rms(out.reshape(bsz, length, hq * d)) * gate.reshape(bsz, length, hq * d).sigmoid()).to(torch.bfloat16)
+    return (_lab_rms(out) * gate.sigmoid()).reshape(bsz, length, hq * d).to(torch.bfloat16)
 
 
 def _lab_variant(label, setting):
@@ -4232,6 +4239,10 @@ def _compare_gate(data, actual):
     slots = data['cache_loc'].view(data['config']['batch'], data['config']['q_len'])
     kc = data['k_cache'].view(-1, 2, 64)[slots]
     vc = data['v_cache'].view(-1, 2, 64)[slots]
+    # `actual` has just performed the layer's store_cache operation.  Reading
+    # those exact FP8 bytes makes this the same post-store reference ordering
+    # used by local_eval, including quantized new K/V rather than pre-store
+    # BF16 values.
     ref = _lab_fp32_reference_after_store(data, new_kv=(kc, vc))
     err = float((actual.float() - ref.float()).norm() / ref.float().norm().clamp_min(1e-12))
     return ('P' if err <= .15 else 'F'), err
@@ -4265,12 +4276,15 @@ def lab(deadline, weights):
         if time.monotonic() >= deadline:
           lines.append(f'DEADLINE b{batch}w{window or "f"}'); continue
         tag=f'b{batch}w{window or "f"}'
-        timing=_next_input(batch,window,8)
-        gate_data=_next_input(1,window,8)
+        timing=_lab_input(batch, window, 8, 80000)
         choices=[('attn_main',lambda d:_lab_attn_main(d)),('fa3',lambda d:_fa3_verify(d,(0,None)))]
         accepted=[]
         for label,fn in choices:
           try:
+            # Each candidate owns a fresh cache so its store and the exact
+            # bytes consumed by the FP32 reference cannot bleed between
+            # comparisons.
+            gate_data=_lab_input(1, window, 8, 80000)
             actual=fn(gate_data)
             gate,err=_compare_gate(gate_data,actual)
             us=_compare_time(fn,timing,flush,start,end)
@@ -4282,13 +4296,13 @@ def lab(deadline, weights):
           best=min(accepted); winners.append((tag,best))
           lines.append(f'WIN {tag} {best[1]}={best[0]:.1f}')
         else: lines.append(f'WIN {tag} none')
-        del timing,gate_data
+        del timing
         torch.cuda.empty_cache()
     del flush
     lines.append('WINNERS '+ ';'.join(f'{t}={l}:{u:.1f}' for t,(u,l) in winners))
     return lines
 
-# ---- h200_lab wrapper: payload verify8_attn_compare sha256 07b58981bd136a3f on base f3786341611f4f1f ----
+# ---- h200_lab wrapper: payload verify8_attn_compare sha256 cc737f628b2623be on base f3786341611f4f1f ----
 _lab_base_prepare = prepare
 _lab_ran = False
 
@@ -4319,7 +4333,7 @@ def prepare(weights):
                 break
             _out.append(_l)
             _n += len(_l) + 1
-        print("LAB_BEGIN verify8_attn_compare 07b58981bd136a3f", flush=True)
+        print("LAB_BEGIN verify8_attn_compare cc737f628b2623be", flush=True)
         for _l in _out:
             print(_l, flush=True)
         print(f"LAB_END lab_s={_t.monotonic() - _t0:.1f} prepare_s={_t.monotonic() - _start:.1f}", flush=True)

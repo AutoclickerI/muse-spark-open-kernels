@@ -74,6 +74,29 @@ def _tune_prefix''',
 
 def build(output: Path = OUTPUT) -> Path:
     source = _remove_prefix_fusion(PORTFOLIO.read_text())
+    # The standalone q_len=8 port is the drop-in kernel measured by the lab.
+    # On Hopper its four-stage KV ring hides one more page-table/global-load
+    # round trip; keep sm_120 on the three-stage portable configuration.
+    source = source.replace(
+        "cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s) : launch_t<8, 3>(p, s);",
+        "cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);\n"
+        "  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s)\n"
+        "                                  : ((prop.major == 9) ? launch_t<8, 4>(p, s) : launch_t<8, 3>(p, s));",
+    )
+    source = source.replace(
+        "int64_t occupancy(int64_t q_len) { return (q_len == 1) ? occupancy_t<1, 4>() : occupancy_t<8, 3>(); }",
+        "int64_t occupancy(int64_t q_len) {\n"
+        "  if (q_len == 1) return occupancy_t<1, 4>();\n"
+        "  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);\n"
+        "  return (prop.major == 9) ? occupancy_t<8, 4>() : occupancy_t<8, 3>();\n"
+        "}",
+    )
+    source = source.replace(
+        "return (q_len == 1) ? max_cluster_t<1, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);",
+        "if (q_len == 1) return max_cluster_t<1, 4>((int)cs);\n"
+        "  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);\n"
+        "  return (prop.major == 9) ? max_cluster_t<8, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);",
+    )
     source = source.replace(
         "_measure_graph(lambda setting=setting: _fa3_call(q, gate, data, setting), flush, repeats=3)",
         "_measure_graph(lambda q=q, gate=gate, data=data, setting=setting: _fa3_call(q, gate, data, setting), flush, repeats=3)",
@@ -99,7 +122,33 @@ def build(output: Path = OUTPUT) -> Path:
     source += "\n\n# ---- embedded screened XQA/WGMMA source strings ----\n"
     for old, new in (("X_CUDA", "ATTN_X_CUDA"), ("X_CPP", "ATTN_X_CPP"),
                      ("G_CUDA", "ATTN_G_CUDA"), ("P8_CUDA", "ATTN_P8_CUDA")):
-        source += _assignment(wgmma, old, new) + "\n"
+        chunk = _assignment(wgmma, old, new)
+        if old == "X_CUDA":
+            # Hopper has enough dynamic shared memory for a fourth KV stage;
+            # the extra in-flight tile hides page-table/global latency. Keep
+            # the portable local stand-in at three stages because sm_120's
+            # dynamic-smem limit is smaller.
+            chunk = chunk.replace(
+                "cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s) : launch_t<8, 3>(p, s);",
+                "cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);\n"
+                "  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s)\n"
+                "                                  : ((prop.major == 9) ? launch_t<8, 4>(p, s) : launch_t<8, 3>(p, s));",
+            )
+            chunk = chunk.replace(
+                "int64_t occupancy(int64_t q_len) { return (q_len == 1) ? occupancy_t<1, 4>() : occupancy_t<8, 3>(); }",
+                "int64_t occupancy(int64_t q_len) {\n"
+                "  if (q_len == 1) return occupancy_t<1, 4>();\n"
+                "  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);\n"
+                "  return (prop.major == 9) ? occupancy_t<8, 4>() : occupancy_t<8, 3>();\n"
+                "}",
+            )
+            chunk = chunk.replace(
+                "return (q_len == 1) ? max_cluster_t<1, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);",
+                "if (q_len == 1) return max_cluster_t<1, 4>((int)cs);\n"
+                "  cudaDeviceProp prop; int dev = 0; cudaGetDevice(&dev); cudaGetDeviceProperties(&prop, dev);\n"
+                "  return (prop.major == 9) ? max_cluster_t<8, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);",
+            )
+        source += chunk + "\n"
 
     source += f"""
 
