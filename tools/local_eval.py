@@ -16,6 +16,7 @@ numbers come from `okc check` (tools/okc_run.py).
 """
 
 import argparse
+import ast
 import hashlib
 import importlib.util
 import inspect
@@ -239,6 +240,73 @@ def summarize(rows: list[dict]) -> dict:
     return out
 
 
+def hopper_compile(file: Path) -> list[dict]:
+    """Compile every CUDA source string in the file for sm_90a, whichever branch would build it.
+
+    Hopper-only extensions never build here, so their compile errors otherwise reach the judge
+    (cand_r3_v9all 83a8a755: a missing <ATen/cuda/CUDAContext.h>). A module-level string with an
+    #include and a kernel or torch's extension header counts; one the file fills in at run time
+    (.format/.replace/%) is skipped. Flags: torch's own for load_inline, plus the literal
+    extra_cuda_cflags and extra_include_paths of the load_inline call that names the string."""
+    import concurrent.futures as cf
+    import subprocess
+    import sysconfig
+    import tempfile
+    from torch.utils import cpp_extension
+
+    tree = ast.parse(file.read_text())
+    templated = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Attribute) and n.attr in ("format", "replace", "format_map") and isinstance(n.value, ast.Name):
+            templated.add(n.value.id)
+        elif isinstance(n, ast.BinOp) and isinstance(n.op, ast.Mod) and isinstance(n.left, ast.Name):
+            templated.add(n.left.id)
+    flags_of = {}
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Call) and getattr(n.func, "attr", getattr(n.func, "id", "")) == "load_inline":
+            kw = {k.arg: k.value for k in n.keywords}
+            src = kw.get("cuda_sources")
+            names = [e.id for e in (src.elts if isinstance(src, (ast.List, ast.Tuple)) else [src]) if isinstance(e, ast.Name)]
+            extra = []
+            for key, prefix in (("extra_cuda_cflags", ""), ("extra_include_paths", "-I")):
+                try:
+                    extra += [prefix + str(v) for v in ast.literal_eval(kw[key])]
+                except (KeyError, ValueError):
+                    pass
+            for nm in names:
+                flags_of[nm] = extra
+    sources = []
+    for n in tree.body:
+        if (isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
+                and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)):
+            name, text = n.targets[0].id, n.value.value
+            if "#include" in text and ("__global__" in text or "torch/extension.h" in text) and name not in templated:
+                sources.append((name, text))
+    base = (["-std=c++20", "-O0", "-gencode=arch=compute_90a,code=sm_90a", "--expt-relaxed-constexpr",
+             "-DTORCH_EXTENSION_NAME=hopper_check", "-DTORCH_API_INCLUDE_EXTENSION_H",
+             "-D__CUDA_NO_HALF_OPERATORS__", "-D__CUDA_NO_HALF_CONVERSIONS__",
+             "-D__CUDA_NO_BFLOAT16_CONVERSIONS__", "-D__CUDA_NO_HALF2_OPERATORS__",
+             "-isystem", sysconfig.get_paths()["include"]]
+            + [a for p in cpp_extension.include_paths(device_type="cuda") for a in ("-isystem", p)])
+    tmp = Path(tempfile.mkdtemp(prefix="hopper_compile_"))
+
+    def one(item):
+        name, text = item
+        cu = tmp / f"{name}.cu"
+        cu.write_text(text)
+        extra = [f for f in flags_of.get(name, []) if not f.startswith(("-gencode", "-arch", "--generate-code"))]
+        cmd = ["nvcc", *base, *extra, "-c", str(cu), "-o", str(cu.with_suffix(".o"))]
+        try:
+            p = subprocess.run(cmd, capture_output=True, text=True, timeout=900)
+        except subprocess.TimeoutExpired:
+            return {"name": name, "ok": False, "msg": "nvcc timed out (900 s)"}
+        errs = [l for l in (p.stdout + p.stderr).splitlines() if "error" in l]
+        return {"name": name, "ok": p.returncode == 0, "msg": " | ".join(errs[:3])[:400]}
+
+    with cf.ThreadPoolExecutor(8) as pool:
+        return list(pool.map(one, sources))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file", type=Path, help="the submission (first line '# okc: problem=<name>')")
@@ -326,9 +394,16 @@ def main():
             if "speedup" in result:
                 print(f"LOCAL speedup (geomean over loads): {result['speedup']:.3f}x  [not an H200 number]")
 
+    if (dev.major, dev.minor) != (9, 0):
+        result["hopper_compile"] = hopper_compile(file)
+        bad = [c for c in result["hopper_compile"] if not c["ok"]]
+        print(f"sm_90a compile of {len(result['hopper_compile'])} CUDA sources: "
+              + ("all pass" if not bad else "; ".join(f"FAIL {c['name']}: {c['msg']}" for c in bad)), flush=True)
+
     if args.json:
         args.json.write_text(json.dumps(result, indent=1, default=str))
-    ok = all(t["ok"] for t in result.get("tests", [])) and all(r.get("ok") for r in result.get("shapes", []))
+    ok = (all(t["ok"] for t in result.get("tests", [])) and all(r.get("ok") for r in result.get("shapes", []))
+          and all(c["ok"] for c in result.get("hopper_compile", [])))
     sys.exit(0 if ok else 1)
 
 
