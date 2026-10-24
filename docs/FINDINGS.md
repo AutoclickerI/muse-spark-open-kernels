@@ -5,6 +5,23 @@ from code, config or spec), **model** (an estimate under stated assumptions; num
 [ceiling](reference/ceiling.md)), **official** (published by the organizers). Per-shape tables:
 `python -m sim.calibrate`.
 
+## Decode integration: saved-board dispatch audit
+
+**Static + compiled:** board v9 `0e94268` always uses `moe_fused<1>` (8-token blocks, two stages,
+256 threads, grid264 on H200) at M32 and M128; it has no MoE cost portfolio. best5 introduced NT1/NT2
+selection; best6 `1b80ffc0` chose NT2/grid132 at M32 but **still NT1/grid264 at M128**. NT1's device-source
+diff from v9 is stored-E4M3 conversion and two call sites; the older prepare-time scale recoding is not
+reinstated. sm90a ptxas gives board NT1/current NT1/NT2 **124/121/194 registers**, no spills.
+[Source/dispatch evidence](../problems/muse_decode_layer/dev/best7/DISPATCH.md).
+
+**Measured + model:** v9 reruns are 1.428/1.422/1.432x; best6 is 1.380x. Reconstructing all four scores
+from saved benchmark medians and 46/16 layer weights gives mean v9 per-load speedups
+1.530/1.545/1.318/1.727/1.328/1.182 and best6 1.592/1.497/1.211/1.665/1.190/1.207.
+The stronger ratio per load models **1.4415x**, not a candidate prediction. M128's gap cannot be
+attributed to an NT choice change; conversion work, real routing and overlap remain unisolated.
+Best7 fixes NT1 below M256, Humming at M256 and best6 decode1 attention; its hash, admission and
+run allocation are owned by [decode FOCUS](../problems/muse_decode_layer/FOCUS.md).
+
 ## V9 tile reuse and router-seed sensitivity
 
 - **Current result and handoff:** `problems/muse_moe_w4a16/dev/v9_reuse/dropin.py` now contains the native V9 portfolio, with raw NVFP4/E4M3 storage, three-fixture independent FP32 agreement gate, and eight alternating cold graph pairs in prepare. It compares native NT2 with hot-first fused NT1/NT2, one/two weight stages and channel caps. Promotion also requires no paired sample slower than1.05x incumbent. Independent-tile register/shared reuse, separate-phase work queues and W2 split-K are excluded after losing. `moe_reuse_prepare(full_decode_weights)` / `moe_reuse_experts(x,scores,local_ids,state)` are unchanged. The complete-layer integration is `problems/muse_decode_layer/cand_r3_v9_reuse.py`. The owner sends candidates and commits; this lane sent labs only.
@@ -1405,6 +1422,8 @@ no 1.26x result is claimed. `dev/gap_table.py --write` regenerates the receipt-d
 ### Attention verify development (G2; evidence scopes distinguished)
 
 ### Decode attention drop-in (2026-10-24)
+
+**FP8 split decode attention loses (`366726675b5a42b2`, q1, ctx 80K):** vs our control attn_main (and FA3): B1 sliding 14.5 vs 14.7 (25.5), B1 full 25.0 vs 23.6 (38.9), B16 sliding 18.2 vs 17.0 (32.9), B16 full 237.8 vs 118.9 (208.8), B32 sliding 22.0 vs 21.2 (36.5), B32 full 388.1 vs 226.0 (391.9) us. The control beats FA3 everywhere at q1; at full context it is ~5.5x the KV floor at B1 and ~1.8-2x at B16/B32.
 
 **FP8-PV verify variants are accurate but 3-15x slow (`948044d4f32a4736`):** settings (3|5, 1|2) pass the gate (0.093-0.097) at b16 sliding 90.9-101.7, b16 full 1,253-1,294, b32 sliding 117-131 and b32 full 2,144-2,372 us vs FA3 ~372 us at b32 full; about 15x the b32-full KV floor (139 us). Implementation suspect, not closed. The same run's M=1 MoE path (v9m1) failed agreement on the H200 (1.889), like NT4 in `3920d3f0`; both passed on sm_120.
 
