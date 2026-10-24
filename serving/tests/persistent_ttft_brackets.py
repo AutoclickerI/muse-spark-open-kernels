@@ -55,7 +55,7 @@ def flush(server):
     assert r.status==200,(r.status,body[:200]);c.close()
 
 
-def workload(server,label,level,convs,turns):
+def workload(server,label,level,convs,turns,*,probe=True):
     output=DATA/'results'/label;output.mkdir(exist_ok=False)
     cfg=server['cfg'];tree=server['tree'];proc=server['proc'];log=server['out']/'server.log'
     items=run.build_workload(0,[level],{level:convs},turns,[2600,5200,18000,3900])
@@ -81,7 +81,8 @@ def workload(server,label,level,convs,turns):
         traffic=log.read_bytes()[offset:];(output/'traffic.log').write_bytes(traffic)
         traffic_info=run.scan_log(output/'traffic.log')
         assert traffic_info['decode_graph_replayed'] and traffic_info['prefill_graph_replayed'],traffic_info
-        collect(run,cfg,tree,output,server['port'])
+        if probe:
+            collect(run,cfg,tree,output,server['port'])
     except BaseException as exc:
         meta['failure']=repr(exc);raise
     finally:

@@ -447,6 +447,121 @@ index 3958da2..1bd27a1 100644
  }
  
  template <
+diff --git a/python/sglang/kernels/ops/moe/muse_marlin_v9_reader.py b/python/sglang/kernels/ops/moe/muse_marlin_v9_reader.py
+new file mode 100644
+index 0000000..692d11b
+--- /dev/null
++++ b/python/sglang/kernels/ops/moe/muse_marlin_v9_reader.py
+@@ -0,0 +1,109 @@
++"""V9 expert arithmetic reading stock Marlin's NVFP4 bank directly."""
++
++import hashlib
++
++from torch.utils.cpp_extension import load_inline
++
++
++_HELPERS = r'''
++// Marlin K16/N64 words: each word holds two rows and four K positions.
++__device__ __forceinline__ uint32_t marlin_pair(
++    const uint32_t* weights, int e, int row, int k, int n) {
++  size_t at = static_cast<size_t>(e) * n * 512;
++  at += ((k >> 4) * (n >> 6) + (row >> 6)) * 128;
++  at += ((row & 7) * 4 + ((k & 7) >> 1)) * 4 + ((row & 63) >> 4);
++  uint32_t word = __ldg(weights + at);
++  int v = ((row & 15) >> 3) * 4 + ((k & 15) >> 3) * 2;
++  int shift = (v >> 1) * 4;
++  uint32_t lo = (word >> shift) & 15, hi = (word >> (shift + 16)) & 15;
++  return ((lo & 7) << 6) | ((lo & 8) << 12) |
++         ((hi & 7) << 22) | ((hi & 8) << 28);
++}
++
++__device__ __forceinline__ uint32_t marlin_sf(
++    const uint8_t* bytes, int e, int row, int k, int n) {
++  int canonical = (k >> 4) * n + row;
++  int perm = (canonical & ~63) + (canonical & 7) * 8 + ((canonical & 63) >> 3);
++  int j = (perm & ~3) + ((perm & 3) >> 1) + (perm & 1) * 2;
++  size_t codes = static_cast<size_t>(32) * n * 2048;
++  uint32_t value = __ldg(bytes + codes + static_cast<size_t>(e) * n * 256 + j);
++  // Invert stock's FP16 exponent-bias byte encoding inside the kernel.
++  uint32_t raw = value >= 128 ? value - 120 :
++    value == 104 ? 1 : value == 112 ? 2 : value == 116 ? 3 :
++    value == 120 ? 4 : value == 122 ? 5 : value == 124 ? 6 : value == 126 ? 7 : 0;
++  return sf_bits(raw);
++}
++'''
++
++_READ = r'''
++      float acc[NT][4];
++#pragma unroll
++      for (int j = 0; j < NT; ++j) acc[j][0] = acc[j][1] = acc[j][2] = acc[j][3] = 0.f;
++      const uint8_t* bank = pass ? w2p : w13p;
++      const uint32_t* weights = reinterpret_cast<const uint32_t*>(bank);
++      const int width = pass ? 4096 : 8192;
++      const int r0 = (pass ? m * 16 : m * 8) + (lane >> 2);
++      const int r1 = r0 + (pass ? 8 : 4096);
++#pragma unroll
++      for (int g = 0; g < 8; ++g) {
++        const int k = warp * 512 + g * 64 + q * 16;
++        const uint32_t s0 = marlin_sf(bank, e, r0, k, width);
++        const uint32_t s1 = marlin_sf(bank, e, r1, k, width);
++#pragma unroll
++        for (int s = 0; s < 4; ++s) {
++          const uint32_t a0 = hmul2(marlin_pair(weights,e,r0,k+s*4,width),s0);
++          const uint32_t a1 = hmul2(marlin_pair(weights,e,r1,k+s*4,width),s1);
++          const uint32_t a2 = hmul2(marlin_pair(weights,e,r0,k+s*4+2,width),s0);
++          const uint32_t a3 = hmul2(marlin_pair(weights,e,r1,k+s*4+2,width),s1);
++#pragma unroll
++          for (int j = 0; j < NT; ++j)
++            mma16816(acc[j],a0,a1,a2,a3,Bf[j][g][2*s],Bf[j][g][2*s+1]);
++        }
++      }
++'''
++
++
++def reader_source(source):
++    """Derive only the weight reader; routing, reductions and outputs stay V9."""
++    start = source.index('__device__ __forceinline__ void prefetch_one(')
++    body = source.index('{', start)
++    end = source.index('\ntemplate <int NT>', body)
++    source = source[:body] + '{ }\n' + source[end:]
++    point = source.index('struct PrefetchState {')
++    source = source[:point] + _HELPERS + source[point:]
++    start = source.index('      mbar_wait(&fullb[st], ph);')
++    end = source.index('      __syncwarp();', start)
++    source = source[:start] + _READ + source[end:]
++    line = '      if (lane == 0) mbar_arrive(&emptyb[st]);'
++    assert source.count(line) == 1
++    return source.replace(line, '')
++
++
++class MarlinV9Module:
++    """Keep V9's Python launch ABI; the direct reader uses no staged bank."""
++
++    def __init__(self, module):
++        self.module = module
++        self.smem_optin = module.max_smem_attr()
++
++    def smem_needed(self, nt, stages, tokens):
++        return self.module.smem_needed(nt, 0, tokens)
++
++    def resident_blocks(self, nt, stages, tokens):
++        return self.module.resident_blocks(nt, 0, tokens)
++
++    def run(self, *args):
++        args = list(args)
++        args[-2] = 0
++        return self.module.run(*args)
++
++
++def compile_reader(cuda_source, cpp_source):
++    source = reader_source(cuda_source)
++    tag = hashlib.sha256(source.encode()).hexdigest()[:12]
++    module = load_inline(
++        name=f'muse_marlin_v9_reader_{tag}', cpp_sources=cpp_source, cuda_sources=source,
++        functions=['max_smem_attr', 'smem_needed', 'resident_blocks', 'run'],
++        extra_cuda_cflags=['-O3', '-std=c++20', '-lineinfo'], verbose=False,
++    )
++    return MarlinV9Module(module)
 diff --git a/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py b/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
 index 2b6940e..90dec27 100644
 --- a/python/sglang/kernels/ops/muse_spark_v12/all_gather_norm_residual.py
@@ -1656,10 +1771,10 @@ index e6cf0dd..ecfa3c8 100644
      )
 diff --git a/python/sglang/srt/layers/muse_dflash.py b/python/sglang/srt/layers/muse_dflash.py
 new file mode 100644
-index 0000000..3b6d421
+index 0000000..8bf336d
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_dflash.py
-@@ -0,0 +1,373 @@
+@@ -0,0 +1,375 @@
 +"""DFlash2 local compute, preserving released weights and stock rounding.
 +
 +The serving owner wires these helpers; no collective, drafter architecture or
@@ -1670,6 +1785,7 @@ index 0000000..3b6d421
 +
 +import logging
 +import time
++from typing import ClassVar
 +
 +import torch
 +import torch.nn.functional as F
@@ -1939,7 +2055,7 @@ index 0000000..3b6d421
 +    plan independently for every role and draft-token count.
 +    """
 +
-+    ROLE_SHAPES = {
++    ROLE_SHAPES: ClassVar = {
 +        "qkv": (1280, 8192, 8, False),
 +        "o": (8192, 1024, 8, False),
 +        "gate_up": (7168, 8192, 8, False),
@@ -1949,7 +2065,7 @@ index 0000000..3b6d421
 +        "context_kv": (1280, 8192, 8, True),
 +        "draft_head": (25256, 8192, 7, False),
 +    }
-+    ALIASES = {"fc": "context_fc", "lm_head": "draft_head", "qkv_gate": "qkv"}
++    ALIASES: ClassVar = {"fc": "context_fc", "lm_head": "draft_head", "qkv_gate": "qkv"}
 +
 +    def __init__(self, weights=None, *, tokens=(8, 32, 128, 256), budget_s=10):
 +        self.tokens = tuple(int(m) for m in tokens)
@@ -1971,21 +2087,22 @@ index 0000000..3b6d421
 +            raise RuntimeError("DFlash drafter preparation must precede capture")
 +        for name, weight in weights.items():
 +            role = self._role(name)
-+            n, k, _mult, stock_nn = self.ROLE_SHAPES[role]
++            n, k, mult, stock_nn = self.ROLE_SHAPES[role]
 +            expected = (k, n) if stock_nn else (n, k)
 +            if tuple(weight.shape) != expected:
 +                raise ValueError(
 +                    f"{role} expects released TP8 shape {expected}, got {tuple(weight.shape)}"
 +                )
++            role_tokens = tuple(int(m * mult // 8) for m in self.tokens)
 +            op = DFlashLinear(
 +                weight,
-+                tokens=self.tokens,
++                tokens=role_tokens,
 +                budget_s=self.budget_s,
 +                stock_nn=stock_nn,
 +            )
 +            self.ops[role] = op
 +            if role == "context_fc":
-+                for m in self.tokens:
++                for m in role_tokens:
 +                    self._concat_buffers[m] = torch.empty(
 +                        (m, k), device=weight.device, dtype=weight.dtype
 +                    )
@@ -2035,11 +2152,17 @@ index 0000000..3b6d421
 +        return dflash_conv2(x, coefficients, self.base[1], self.block_size)
 diff --git a/python/sglang/srt/layers/muse_prefill_dense.py b/python/sglang/srt/layers/muse_prefill_dense.py
 new file mode 100644
-index 0000000..84121b4
+index 0000000..61c9354
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_prefill_dense.py
-@@ -0,0 +1,207 @@
+@@ -0,0 +1,213 @@
 +"""Prepared pooler/router plan for Muse prefill.
++
++Contract: ``plan(hidden) -> (pooled, logits)`` accepts contiguous CUDA BF16
++``hidden[T,8192]`` and returns BF16 ``pooled[T,4096]`` plus FP32 router
++``logits[T,256]``. The pooler and router weights are BF16/FP32
++``[4096,8192]`` and ``[256,8192]`` respectively. Prepare runs before graph
++capture; the serving MoE dispatch owns top-k and expert routing.
 +
 +The pooler stays BF16, while the router keeps its lossless BF16 hi/lo split
 +and FP32 accumulation.  Plans are selected before CUDA graph capture and are
@@ -2248,18 +2371,25 @@ index 0000000..84121b4
 +        return self._run(hidden, self.plans.get(hidden.shape[0], "separate"))
 diff --git a/python/sglang/srt/layers/muse_prefill_expert.py b/python/sglang/srt/layers/muse_prefill_expert.py
 new file mode 100644
-index 0000000..cac4f05
+index 0000000..9f5be4a
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_prefill_expert.py
-@@ -0,0 +1,94 @@
-+"""Drop-in TP8/EP8 prefill expert adapter.
+@@ -0,0 +1,269 @@
++"""Graph-safe prefill expert producers over one resident canonical V9 bank.
 +
-+The compiled producer/consumer kernel lives in ``muse_spark_moe``.  This
-+module owns the prefill shape policy so the model wiring can stay separate:
-+large chunks use the persistent grouped TMA/WGMMA reader (fused W13
-+SwiGLU), while the caller keeps smaller batches on receipt-backed V9 calls <=256.  The input is
-+the BF16 pooler output after pre-expert norm; the returned dense slots and map
-+are consumed by the model's existing post-expert norm/finalize operation.
++Contract: ``dense, local_map = plan(hidden_states, topk_scores, topk_ids,
++workspace=None)``. Inputs are already pre-expert-normalized BF16
++``hidden_states[T,4096]``, FP32 ``topk_scores[T,8]`` and global int32/int64
++``topk_ids[T,8]``. The result is BF16 dense slots ``[T,8,4096]`` and an int32
++flat map ``[T,8]``; remote routes have map ``-1``. The existing serving
++finalizer applies route weights and post-expert RMSNorm. ``workspace`` is an
++optional caller-owned scratch dictionary; omitted scratch is capture-owned.
++
++Policy is receipt-backed: raw17/V9 for T <= 753, and per-call canonical-layout
++unpack/dequant plus DeepGEMM W8 for T >= 3012. Humming is intentionally omitted:
++a resident alternate bank does not fit beside KV, and its per-call repack margin
++has not been measured. NVFP4 remains packed in the resident bank; BF16 expert
++weights below are temporary timed-call scratch.
 +"""
 +
 +from __future__ import annotations
@@ -2267,33 +2397,166 @@ index 0000000..cac4f05
 +import logging
 +
 +import torch
++import triton
++import triton.language as tl
 +
 +logger = logging.getLogger(__name__)
-+
 +HIDDEN = 4096
 +LOCAL_EXPERTS = 32
 +TOP_K = 8
-+PREFILL_ROWS = 753
++MIN_PREFILL_ROWS = 512
++MAX_PREFILL_ROWS = 16384
++TILE_BYTES = 36864
++
++
++@triton.jit
++def _unpack_canonical(C, W, S, BITS, ROWS: tl.constexpr, GATED: tl.constexpr,
++                      EXPERTS: tl.constexpr, BLOCK: tl.constexpr):
++    blocks = (ROWS * 4096 + BLOCK - 1) // BLOCK
++    pid = tl.program_id(0)
++    e = pid // blocks
++    v = (pid % blocks) * BLOCK + tl.arange(0, BLOCK)
++    r, k = v // 4096, v % 4096
++    if GATED:
++        tile, ri, rr = (r % 4096) // 8, r // 4096, r % 8
++    else:
++        tile, ri, rr = r // 16, (r // 8) % 2, r % 8
++    w, g, q = k // 512, (k // 64) % 8, (k // 16) % 4
++    p, sl, j, h = (k // 8) % 2, (k // 4) % 2, (k // 2) % 2, k % 2
++    lane = rr * 4 + q
++    word = (((w * 8 + g) * 32 + lane) * 2 + p) * 2
++    tile_stride = 512 if GATED else 256
++    a = tl.load(C + e * tile_stride * 9216 + tile * 9216 + word, r < ROWS, 0).to(tl.uint32)
++    b = tl.load(C + e * tile_stride * 9216 + tile * 9216 + word + 1, r < ROWS, 0).to(tl.uint32)
++    slot = sl * 4 + j * 2 + ri
++    code = tl.full((BLOCK,), 0, tl.uint32)
++    for bit in tl.static_range(4):
++        entry = tl.load(BITS + slot * 8 + h * 4 + bit)
++        code |= ((tl.where(entry >= 32, b, a) >> (entry % 32)) & 1) << bit
++    other = tl.gather(code, tl.arange(0, BLOCK) ^ 1, 0)
++    tl.store(W + e * ROWS * 2048 + v // 2, code | (other << 4), (r < ROWS) & (k % 2 == 0))
++    scale_idx = 32768 + ((((w * 8 + rr) * 4 + q) * 8 + g) * 2 + ri)
++    encoded = tl.load(C.to(tl.pointer_type(tl.uint8)) + e * tile_stride * 36864 + tile * 36864 + scale_idx, r < ROWS, 0)
++    scale = tl.exp2((encoded.to(tl.int32) >> 3).to(tl.float32) - 21) * (
++        1 + (encoded & 7).to(tl.float32) / 8
++    )
++    tl.store(S + e * ROWS * 256 + v // 16, encoded, (r < ROWS) & (k % 16 == 0))
++
++
++@triton.jit
++def _e2m1(code):
++    mag = code & 7
++    ex = mag >> 1
++    man = mag & 1
++    nrm = (((ex + 126) << 23) | (man << 22)).to(tl.float32, bitcast=True)
++    val = tl.where(ex == 0, man.to(tl.float32) * 0.5, nrm)
++    return tl.where((code & 8) != 0, -val, val)
++
++
++@triton.jit
++def _e4m3(raw):
++    sign = (raw >> 7) & 1
++    exp = (raw >> 3) & 15
++    mant = raw & 7
++    normal = (1.0 + mant.to(tl.float32) / 8.0) * tl.exp2(exp.to(tl.float32) - 7.0)
++    subnormal = (mant.to(tl.float32) / 8.0) * tl.exp2(-6.0)
++    val = tl.where(exp == 0, subnormal, normal)
++    return tl.where(sign != 0, -val, val)
++
++
++@triton.jit
++def _dequant_raw(W, S, OUT, COUNTS, ROWS: tl.constexpr, K: tl.constexpr, BR: tl.constexpr, BK: tl.constexpr):
++    e = tl.program_id(0)
++    if tl.load(COUNTS + e) == 0:
++        return
++    r = tl.program_id(1) * BR + tl.arange(0, BR)
++    base = e.to(tl.int64) * ROWS + r.to(tl.int64)
++    for j0 in tl.static_range(0, K // 2, BK):
++        j = j0 + tl.arange(0, BK)
++        p = tl.load(W + base[:, None] * (K // 2) + j[None, :]).to(tl.int32)
++        sf = _e4m3(tl.load(S + base[:, None] * (K // 16) + j[None, :] // 8).to(tl.int32))
++        val = tl.join(_e2m1(p & 15) * sf, _e2m1(p >> 4) * sf).reshape(BR, 2 * BK)
++        k = 2 * j0 + tl.arange(0, 2 * BK)
++        tl.store(OUT + base[:, None] * K + k[None, :], val.to(tl.bfloat16))
++
++
++@triton.jit
++def _gather_sorted(X, PAIRS, OFFSETS, STARTS, OUT, ROW_MAP, H: tl.constexpr, BLOCK: tl.constexpr):
++    j = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
++    total = tl.load(OFFSETS + 32)
++    valid = j < total
++    pair = tl.load(PAIRS + j, valid, 0)
++    e = tl.zeros((BLOCK,), tl.int32)
++    for i in tl.static_range(1, 32):
++        e = tl.where(j >= tl.load(OFFSETS + i), i, e)
++    local = j - tl.load(OFFSETS + e)
++    dst = tl.load(STARTS + e) + local
++    token = pair // 8
++    c = tl.arange(0, H)
++    value = tl.load(X + token[:, None] * H + c[None, :], valid[:, None], 0)
++    tl.store(OUT + dst[:, None] * H + c[None, :], value, valid[:, None])
++    tl.store(ROW_MAP + pair, dst, valid)
++
++
++@triton.jit
++def _swiglu(H, OUT, STARTS, COUNTS, GS_GATE, GS_UP, D: tl.constexpr, BR: tl.constexpr):
++    e = tl.program_id(0)
++    n = tl.load(COUNTS + e)
++    r0 = tl.program_id(1) * BR
++    if r0 >= n:
++        return
++    r = r0 + tl.arange(0, BR)
++    valid = r < n
++    row = (tl.load(STARTS + e) + r).to(tl.int64)
++    c = tl.arange(0, D)
++    gate = tl.load(H + row[:, None] * (2 * D) + c[None, :], valid[:, None], 0).to(tl.float32)
++    up = tl.load(H + row[:, None] * (2 * D) + D + c[None, :], valid[:, None], 0).to(tl.float32)
++    gate = (gate * tl.load(GS_GATE + e)).to(tl.bfloat16).to(tl.float32)
++    up = (up * tl.load(GS_UP + e)).to(tl.bfloat16).to(tl.float32)
++    tl.store(OUT + row[:, None] * D + c[None, :], (gate * tl.sigmoid(gate) * up).to(tl.bfloat16), valid[:, None])
++
++
++@triton.jit
++def _scale_down(Y, STARTS, COUNTS, GS2, TOTAL_PTR, D: tl.constexpr, BLOCK: tl.constexpr):
++    r = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
++    total = tl.load(TOTAL_PTR)
++    e = tl.zeros((BLOCK,), tl.int32)
++    for i in tl.static_range(1, 32):
++        e = tl.where(r >= tl.load(STARTS + i), i, e)
++    valid = (r < total) & ((r - tl.load(STARTS + e)) < tl.load(COUNTS + e))
++    c = tl.arange(0, D)
++    value = tl.load(Y + r[:, None] * D + c[None, :], valid[:, None], 0).to(tl.float32)
++    value *= tl.load(GS2 + e)[:, None]
++    tl.store(Y + r[:, None] * D + c[None, :], value.to(tl.bfloat16), valid[:, None])
++
++
++def _bits(device):
++    from sglang.srt.layers.muse_spark_moe import _TABLE
++    return torch.tensor(
++        [pos + (32 if word == "B" else 0) for _, _, _, word, pos in _TABLE],
++        dtype=torch.int32, device=device,
++    )
 +
 +
 +def prefill_expert_supported(hidden_states: torch.Tensor, topk_ids: torch.Tensor) -> bool:
 +    return bool(
-+        hidden_states.is_cuda
-+        and hidden_states.dtype == torch.bfloat16
-+        and hidden_states.ndim == 2
-+        and hidden_states.shape[1] == HIDDEN
-+        and PREFILL_ROWS <= hidden_states.shape[0] <= 16384
-+        and topk_ids.is_cuda
-+        and topk_ids.dtype in (torch.int32, torch.int64)
++        hidden_states.is_cuda and hidden_states.dtype == torch.bfloat16
++        and hidden_states.ndim == 2 and hidden_states.shape[1] == HIDDEN
++        and MIN_PREFILL_ROWS <= hidden_states.shape[0] <= MAX_PREFILL_ROWS
++        and topk_ids.is_cuda and topk_ids.dtype in (torch.int32, torch.int64)
 +        and tuple(topk_ids.shape) == (hidden_states.shape[0], TOP_K)
 +    )
 +
 +
 +class PrefillExpertPlan:
-+    """Prepared canonical NVFP4 bank and graph-safe prefill dispatch."""
++    """Receipt-backed raw17/DG-W8 producers over a canonical V9 bank."""
 +
 +    def __init__(self, state: dict):
 +        self.state = state
++        self.state.setdefault("_prefill_bits", _bits(state["w13p"].device))
++        if "grouped_mod" not in self.state:
++            from sglang.srt.layers.muse_spark_moe import _grouped_module
++            self.state["grouped_mod"] = _grouped_module()
 +
 +    @classmethod
 +    def from_layer(cls, layer) -> "PrefillExpertPlan":
@@ -2302,57 +2565,101 @@ index 0000000..cac4f05
 +            raise ValueError("prefill experts require the already-prepared canonical bank")
 +        return cls(state)
 +
-+    def __call__(self, hidden_states, topk_scores, topk_ids):
++    def _dg(self, hidden_states, topk_ids):
++        import deep_gemm
++        state = self.state
++        m = hidden_states.shape[0]
++        dev = hidden_states.device
++        ids = topk_ids.to(torch.int32).contiguous()
++        count = m * TOP_K
++        counts = torch.empty((LOCAL_EXPERTS,), dtype=torch.int32, device=dev)
++        offsets = torch.empty((LOCAL_EXPERTS + 1,), dtype=torch.int32, device=dev)
++        cursors = torch.empty_like(counts)
++        pairs = torch.empty((count,), dtype=torch.int32, device=dev)
++        positions = torch.empty_like(pairs)
++        tasks = torch.empty((5 * (LOCAL_EXPERTS + 1),), dtype=torch.int32, device=dev)
++        state["grouped_mod"].route(ids, counts, offsets, cursors, pairs, positions, tasks, state["local_start"], 0)
++        cap = count + LOCAL_EXPERTS * 128
++        padded = ((counts + 127) // 128) * 128
++        starts = (torch.cumsum(padded, dim=0, dtype=torch.int32) - padded).to(torch.int32)
++        total = starts[-1] + padded[-1]
++        psum = starts + counts
++        routed = torch.empty((cap, HIDDEN), dtype=torch.bfloat16, device=dev)
++        _gather_sorted[(triton.cdiv(count, 128),)](hidden_states, pairs, offsets, starts, routed, positions, H=HIDDEN, BLOCK=128)
++        bits = state["_prefill_bits"]
++        raw13 = torch.empty((LOCAL_EXPERTS * 8192, 2048), dtype=torch.uint8, device=dev)
++        raw13s = torch.empty((LOCAL_EXPERTS * 8192, 256), dtype=torch.uint8, device=dev)
++        raw2 = torch.empty((LOCAL_EXPERTS * 4096, 2048), dtype=torch.uint8, device=dev)
++        raw2s = torch.empty((LOCAL_EXPERTS * 4096, 256), dtype=torch.uint8, device=dev)
++        _unpack_canonical[(triton.cdiv(LOCAL_EXPERTS * 8192 * 4096, 256),)](state["w13p"].view(torch.int32), raw13, raw13s, bits, 8192, True, LOCAL_EXPERTS, 256)
++        _unpack_canonical[(triton.cdiv(LOCAL_EXPERTS * 4096 * 4096, 256),)](state["w2p"].view(torch.int32), raw2, raw2s, bits, 4096, False, LOCAL_EXPERTS, 256)
++        w13 = torch.empty((LOCAL_EXPERTS, 8192, 4096), dtype=torch.bfloat16, device=dev)
++        w2 = torch.empty((LOCAL_EXPERTS, 4096, 4096), dtype=torch.bfloat16, device=dev)
++        _dequant_raw[(LOCAL_EXPERTS, 1024)](raw13, raw13s, w13, counts, ROWS=8192, K=4096, BR=8, BK=512)
++        _dequant_raw[(LOCAL_EXPERTS, 512)](raw2, raw2s, w2, counts, ROWS=4096, K=4096, BR=8, BK=512)
++        h = torch.empty((cap, 8192), dtype=torch.bfloat16, device=dev)
++        inter = routed
++        y = torch.empty((cap, HIDDEN), dtype=torch.bfloat16, device=dev)
++        deep_gemm.m_grouped_bf16_gemm_nt_contiguous(routed, w13, h, psum, use_psum_layout=True)
++        _swiglu[(LOCAL_EXPERTS, triton.cdiv(m, 4))](h, inter, starts, counts, state["gs13_gate"], state["gs13_up"], D=HIDDEN, BR=4)
++        deep_gemm.m_grouped_bf16_gemm_nt_contiguous(inter, w2, y, psum, use_psum_layout=True)
++        _scale_down[(triton.cdiv(cap, 128),)](y, starts, counts, state["gs2"], total, D=HIDDEN, BLOCK=128)
++        safe = positions.clamp_min(0)
++        dense = y.index_select(0, safe).view(m, TOP_K, HIDDEN)
++        dense = torch.where((positions >= 0).view(m, TOP_K, 1), dense, torch.zeros_like(dense))
++        return dense, positions.view(m, TOP_K)
++
++    def __call__(self, hidden_states, topk_scores, topk_ids, workspace=None):
++        del workspace
 +        if not prefill_expert_supported(hidden_states, topk_ids):
 +            raise ValueError("unsupported Muse prefill expert shape or dtype")
-+        from sglang.srt.layers.muse_spark_moe import H, NLOC, _grouped_call
-+
++        from sglang.srt.layers.muse_spark_moe import _v9_call
 +        data = {
 +            "hidden_states": hidden_states.contiguous(),
 +            "topk_ids": topk_ids.to(torch.int32).contiguous(),
-+            "config": {
-+                "local_count": NLOC,
-+                "d_hidden": H,
-+                "d_expert": H,
-+                "local_start": self.state["local_start"],
-+            },
++            "topk_weights": topk_scores.to(torch.float32).contiguous(),
++            "config": {"local_count": LOCAL_EXPERTS, "d_hidden": HIDDEN, "d_expert": HIDDEN, "local_start": self.state["local_start"]},
 +        }
-+        return _grouped_call(data, self.state)
++        if hidden_states.shape[0] <= 753:
++            return _v9_call(data, self.state, return_dense=True)
++        return self._dg(hidden_states, topk_ids)
 +
 +
 +def prepare_prefill_expert(layer) -> PrefillExpertPlan | None:
-+    """Prepare after weights load; failures leave the caller's stock path intact."""
++    """Bind after the resident bank is prepared; no expanded bank is retained."""
 +    try:
 +        return PrefillExpertPlan.from_layer(layer)
 +    except Exception:
-+        logger.warning(
-+            "Muse prefill expert preparation failed; retaining stock expert dispatch",
-+            exc_info=True,
-+        )
++        logger.warning("Muse prefill expert preparation failed", exc_info=True)
 +        return None
 +
 +
 +def attach_prefill_expert(layer) -> PrefillExpertPlan | None:
-+    """Serving-lane wiring hook: bind the plan without editing model code here."""
 +    plan = prepare_prefill_expert(layer)
 +    layer._muse_prefill_expert_plan = plan
 +    return plan
 +
 +
 +__all__ = [
-+    "PREFILL_ROWS",
-+    "PrefillExpertPlan",
-+    "attach_prefill_expert",
-+    "prefill_expert_supported",
-+    "prepare_prefill_expert",
++    "MAX_PREFILL_ROWS", "MIN_PREFILL_ROWS", "PrefillExpertPlan",
++    "attach_prefill_expert", "prefill_expert_supported", "prepare_prefill_expert",
 +]
 diff --git a/python/sglang/srt/layers/muse_prefill_gemm.py b/python/sglang/srt/layers/muse_prefill_gemm.py
 new file mode 100644
-index 0000000..a2e74c6
+index 0000000..3e12351
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_prefill_gemm.py
-@@ -0,0 +1,780 @@
+@@ -0,0 +1,789 @@
 +"""Prepared Muse TP8 prefill GEMMs; standalone portfolio block as well as serving code.
++
++Contract: ``prefill_gemm_run(x, plan, role)`` (or ``plan(x, role)``) accepts
++contiguous CUDA BF16 ``x[M,K]`` and returns the role's stock-compatible
++activation. Roles are ``qkv_gate`` -> ``[M,2304]``, ``o`` -> ``[M,8192]``,
++``pooler`` -> ``[M,4096]``, ``unpooler`` -> ``[M,8192]``, ``router`` -> FP32
++``[M,256]``, and ``pool_router`` -> the BF16 pooler/FP32 router tuple. The
++optional ``pool_router_norm`` role returns the normalized pooler plus router.
++Weights remain their loaded BF16/FP32 forms; prepare-time layouts and
++cuBLASLt metadata are reused by CUDA-graph calls.
 +
 +Weights keep their released formats. This module owns local GEMMs only; retain
 +all collectives and model norms. Prepare before capture. One shared workspace
@@ -3848,8 +4155,73 @@ index 0000000..deb230d
 +  return status==CUBLAS_STATUS_SUCCESS ? 0 : lean_fail("Lt matmul",(int)status);
 +}
 +"""
+diff --git a/python/sglang/srt/layers/muse_spark_expert_bank.py b/python/sglang/srt/layers/muse_spark_expert_bank.py
+new file mode 100644
+index 0000000..65abf08
+--- /dev/null
++++ b/python/sglang/srt/layers/muse_spark_expert_bank.py
+@@ -0,0 +1,59 @@
++"""One resident Marlin NVFP4 bank shared by the V9 verify reader."""
++
++import torch
++
++from sglang.srt.runtime_context import get_buffer
++
++# The direct reader changes memory access, so V9's old timing cannot admit it.
++# The pending shared-reader H200 lab decides this gate; stock stays default.
++MARLIN_READER_ADMITTED = False
++
++
++def shared_bank_supported(layer):
++    return (
++        MARLIN_READER_ADMITTED
++        and layer.gate_up_proj.is_cuda
++        and torch.cuda.get_device_capability(layer.gate_up_proj.device) == (9, 0)
++        and layer.params_dtype == torch.bfloat16
++        and layer.num_local_experts == 32
++        and layer.hidden_size == layer.intermediate_size_per_partition == 4096
++    )
++
++
++def make_marlin_reader_state(layer, norm_weight, *, local_start=0):
++    """Join stock codes/scales losslessly; both producers alias that storage.
++
++    Marlin sees exactly its existing contiguous tensor views. V9 obtains the
++    scale offset from the joined bank and converts its byte encoding in-kernel.
++    There is no second resident layout or per-call weight conversion.
++    """
++    from sglang.kernels.ops.moe.muse_marlin_v9_reader import compile_reader
++    from sglang.srt.layers.muse_spark_moe import CUDA_SRC, CPP_SRC
++
++    banks = []
++    for name in ("w13", "w2"):
++        weight = getattr(layer, name + "_weight")
++        scale = getattr(layer, name + "_weight_scale")
++        joined = torch.cat((weight.view(torch.uint8).flatten(), scale.view(torch.uint8).flatten()))
++        count = weight.nbytes
++        setattr(layer, name + "_weight", torch.nn.Parameter(
++            joined[:count].view(torch.int32).view_as(weight), requires_grad=False))
++        setattr(layer, name + "_weight_scale", torch.nn.Parameter(
++            joined[count:].view(torch.float8_e4m3fn).view_as(scale), requires_grad=False))
++        banks.append(joined)
++    device = banks[0].device
++    mod = get_buffer(f"muse_marlin_v9_reader_{device.index}", lambda: compile_reader(CUDA_SRC, CPP_SRC))
++    # Invert stock Marlin's exact power-of-two global-scale bias. Its globals
++    # have already rounded to BF16 and share the gate scale between both halves.
++    gate = layer.w13_weight_scale_2.float() * (2.0 ** -119)
++    down = layer.w2_weight_scale_2.float() * (2.0 ** -119)
++    return dict(bank_layout="marlin_shared", w13p=banks[0], w2p=banks[1],
++                gs13_gate=gate, gs13_up=gate, gs2=down, pnw=norm_weight,
++                local_start=local_start, mod=mod,
++                grid=torch.cuda.get_device_properties(device).multi_processor_count)
++
++
++def prepare_shared_bank(layer):
++    layer._muse_v4_state = make_marlin_reader_state(
++        layer, layer.post_expert_norm.weight.detach(), local_start=layer.local_expert_offset)
++    return layer._muse_v4_state
 diff --git a/python/sglang/srt/layers/muse_spark_fp4_moe.py b/python/sglang/srt/layers/muse_spark_fp4_moe.py
-index 97b1474..71891e1 100644
+index 97b1474..a4662a0 100644
 --- a/python/sglang/srt/layers/muse_spark_fp4_moe.py
 +++ b/python/sglang/srt/layers/muse_spark_fp4_moe.py
 @@ -17,14 +17,12 @@ from __future__ import annotations
@@ -3901,19 +4273,18 @@ index 97b1474..71891e1 100644
          from sglang.kernels.ops.activation.activation import silu_and_mul
          from sglang.kernels.ops.moe.moe_wna16_marlin import moe_wna16_marlin_gemm
          from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
-@@ -573,6 +567,11 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -573,6 +567,10 @@ class MuseSpark1xFp4Experts(nn.Module):
              is_zp_float=False,
          ).view(num_tokens, topk, size_k), local_topk_ids
  
 +    def _use_muse_v4(self, num_tokens: int) -> bool:
-+        # Large prefills must use the stock Marlin producer. A future admitted
-+        # V9 bank must retain stored E4M3 scales and coexist with that one bank.
++        # The admitted direct reader aliases stock Marlin's single packed bank.
 +        return num_tokens <= 256 and getattr(self, "_muse_v4_state", None) is not None
 +
      def _forward_marlin(
          self,
          hidden_states: torch.Tensor,
-@@ -580,6 +579,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -580,6 +578,7 @@ class MuseSpark1xFp4Experts(nn.Module):
          topk_ids: torch.Tensor,
          post_expert_norm: Optional[nn.Module],
          pre_expert_norm: Optional[nn.Module] = None,
@@ -3921,7 +4292,7 @@ index 97b1474..71891e1 100644
      ) -> torch.Tensor:
          if post_expert_norm is None:
              raise ValueError(
-@@ -592,14 +592,70 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -592,14 +591,70 @@ class MuseSpark1xFp4Experts(nn.Module):
                  "outputs are mis-scaled per expert. Run this checkpoint on "
                  "SM100+ with --moe-runner-backend flashinfer_trtllm instead."
              )
@@ -3993,7 +4364,7 @@ index 97b1474..71891e1 100644
              return fused_post_expert_norm_weighted_sum(
                  expert_outputs,
                  topk_scores,
-@@ -607,13 +663,29 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -607,13 +662,29 @@ class MuseSpark1xFp4Experts(nn.Module):
                  eps=self._post_expert_norm_eps,
                  weight_first=self._post_expert_norm_weight_first,
                  slot_expert_ids=local_topk_ids,
@@ -4029,7 +4400,7 @@ index 97b1474..71891e1 100644
  
      def prepare_input(
          self,
-@@ -701,6 +773,7 @@ class MuseSpark1xFp4Experts(nn.Module):
+@@ -701,6 +772,7 @@ class MuseSpark1xFp4Experts(nn.Module):
                  topk_ids,
                  post_expert_norm,
                  pre_expert_norm=pre_expert_norm,
@@ -5887,7 +6258,7 @@ index bebfac6..98510d5 100755
          else:
              layer.w2_blockscale_swizzled = Parameter(
 diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-index f6d450a..442874b 100644
+index f6d450a..31a4210 100644
 --- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 +++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 @@ -2,6 +2,7 @@
@@ -5907,17 +6278,22 @@ index f6d450a..442874b 100644
  
  def _align_fp4_moe_weights_for_flashinfer_trtllm(layer) -> None:
      """Align Muse's ``[w1, w3]`` checkpoint layout in-place.
-@@ -126,6 +129,10 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
+@@ -126,9 +129,15 @@ class MuseSparkNvFp4FusedMoEMethod(ModelOptNvFp4FusedMoEMethod):
      )
  
      def _process_weights_for_marlin(self, layer):
-+        # V9 now preserves raw E4M3 scales, but its single-bank loader omits
-+        # Marlin's packed parameters. Keep one stock bank until both producers
-+        # can share a layout or a bounded extra layout is admitted.
++        from sglang.srt.layers.muse_spark_expert_bank import prepare_shared_bank, shared_bank_supported
++
++        bind_reader = shared_bank_supported(layer)
 +        layer._muse_v4_state = None
          for alias, native in self._MARLIN_PARAM_ALIASES:
              setattr(layer, alias, getattr(layer, native))
          result = super().process_weights_after_loading(layer)
++        if bind_reader:
++            prepare_shared_bank(layer)
+         # Marlin repacks into freshly allocated parameters. Drop the native
+         # names so the unpacked originals are freed instead of being kept
+         # alive at full size alongside the repacked copies.
 diff --git a/python/sglang/srt/managers/dflash_kv_graph.py b/python/sglang/srt/managers/dflash_kv_graph.py
 new file mode 100644
 index 0000000..0b8631f

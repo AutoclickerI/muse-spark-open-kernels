@@ -1,6 +1,7 @@
 """Raw E4M3 handoff: global scales are applied once in timed epilogues."""
 
 import json
+import sys
 
 import torch
 import triton
@@ -64,4 +65,21 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[1:] == ['--compile-sm90']:
+        from triton.backends.compiler import GPUTarget
+        from triton.compiler import ASTSource
+
+        cases = [
+            (_swiglu, {'H': '*bf16', 'OUT': '*bf16', 'STARTS': '*i32',
+                       'COUNTS': '*i32', 'GS_GATE': '*fp32', 'GS_UP': '*fp32'},
+             {'D': 4096, 'BR': 4}),
+            (_scale_down, {'Y': '*bf16', 'STARTS': '*i32', 'COUNTS': '*i32',
+                          'GS2': '*fp32', 'TOTAL_PTR': '*i32'},
+             {'D': 4096, 'BLOCK': 128}),
+        ]
+        for kernel, signature, constants in cases:
+            triton.compile(ASTSource(kernel, signature=signature, constexprs=constants),
+                           target=GPUTarget('cuda', 90, 32))
+            print(kernel.__name__, 'sm90 compile PASS', flush=True)
+    else:
+        main()

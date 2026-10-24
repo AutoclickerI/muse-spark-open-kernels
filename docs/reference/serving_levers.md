@@ -48,26 +48,30 @@ extrapolated and 1.812741x capped; it is a receipt composition, not a judge run 
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
 | Long prefill attention | **FA3 retained**; failed module and experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all 6 shapes; no new path admitted |
 
-Current TTFT gate uses `shared-bank-r03` source and `shared-bank-r05` resident
-server brackets. All three servers (stock/native/portable) stay loaded; only
-one receives traffic. Per rung, cache flushes precede stock A, native, stock B,
-portable, stock C, so each patch mode is checked against both adjacent stock
-controls. Every server uses mem-fraction0.3 and actual300000 KV slots. TP1 is
-GPU0; TP2 uses GPUs0/1. This addresses the noisy sequential stock controls
-without dropping any failed run or changing the workload/checks.
+Current TTFT gate combines `shared-bank-r05` resident-server brackets
+(`shared-bank-r03` timing source) and `shared-bank-r11-full-history` TP2 brackets
+(final `shared-bank-r08-final` source). In r05, stock/native/portable stay loaded
+and cache flushes precede stock A, native, stock B, portable, stock C per rung.
+Each patch mode is checked against both adjacent controls. R11 uses separate
+stockA/patch/stockB servers with independent c1→c4→c16→c32 cache histories;
+no intermediate flush or probe. Native/portable run in separate three-model
+phases to leave GPU1 memory for its other project. These are temporal controls,
+not exclusive-GPU measurements. TP1 uses GPU0; TP2 uses0/1; every server uses
+mem-fraction0.3 and actual300000 KV slots.
 
-All four patch modes return174/174 exact220-token responses with all74 prefill
-graph shapes and target/draft verify graphs, with actual replay checked in
-every bracket. Probe2615-position and8-generated-token mean/max drift is0.
-The current direct-reader source differs only on an unadmitted Hopper path;
-its real-arithmetic server gates use the separate full-width fixture below.
+Each mode/protocol returns174/174 exact220-token responses,1044 unique patch
+responses overall. All74 prefill graph shapes and target/draft verify captures
+are checked, with actual replay in every bracket. Probe2615-position and8-token
+mean/max drift is0. The table takes the **worst matched ratio across both
+protocols**; TP2 counts both runs. The direct reader changes an unadmitted
+Hopper path relative to the timing source and is separately forced below.
 
 | sm120 mode | Exact 220 | Worst p50 ratio c1 / c4 / c16 / c32 | Worst p90 ratio |
 |---|---:|---|---|
 | TP1 native |174/174|0.833 / 0.601 / 0.542 / 0.292|0.880 / 0.317 / 0.235 / 0.225|
 | TP1 portable |174/174|0.858 / 0.596 / 0.720 / 0.321|0.855 / 0.428 / 0.248 / 0.249|
-| TP2 native |174/174|0.812 / 0.319 / 0.611 / 0.283|0.819 / 0.385 / 0.098 / 0.416|
-| TP2 portable |174/174|0.727 / 0.694 / 0.143 / 0.308|0.655 / 0.290 / 0.317 / 0.394|
+| TP2 native |348/348|0.817 / 0.319 / 0.611 / 0.283|0.875 / 0.385 / 0.422 / 0.416|
+| TP2 portable |348/348|0.794 / 0.694 / 0.488 / 0.308|0.831 / 0.290 / 0.326 / 0.394|
 
 **The matched local p50 and p90 margin passes at every rung/mode.** No new
 production scheduling change was needed after interleaving: the ready-prefill
@@ -86,9 +90,25 @@ proof for hidden H200 conversations. The preceding diagnostic c16 trace
 
 The envelope includes communication and launch waits. These diagnostic traces
 do not establish an isolated total-speedup claim. Current gate JSON is under
-`/data2/jihoon/muse_kernel/harness/results/shared-bank-r05-evidence`; source,
+`/data2/jihoon/muse_kernel/harness/results/shared-bank-r05-evidence` and
+`shared-bank-r11-full-history-evidence`; source,
 tests and summary are in `shared-bank-r01-evidence`. Prior failed brackets and
 per-request traces remain in `upstream-r01-evidence`.
+
+Fresh full-grid trace `shared-bank-r09-trace` keeps a c16 p90 failure2.071x
+against its second stock bracket (c1 p50/p90=1.568/1.561). GPU1 changed from
+100% utilization with a30.95GB foreign job at patch startup to idle at stockB;
+stock controls themselves differ5.346x at c16 p90. Mean c16 Q/P/emit is
+stockA1653.99/105.81/738.89ms, patch673.08/108.04/6.22,
+stockB333.39/80.11/106.47. At c32 it is4854.08/162.19/580.72,
+1666.00/147.51/8.78 and1471.72/94.09/242.15. Every request still sums to
+wire TTFT; all174 patch outputs are exact. The tail is initial admission/chunk
+waiting, not delayed emit. The patch executes620/707 and583/726-row prefills;
+stock Marlin handles all of them. The completed full-history resident TP2 test
+passes: native p50 .817/.318/.382/.209, p90 .875/.171/.422/.364; portable
+p50 .794/.300/.488/.182, p90 .831/.247/.326/.381. All348 patch responses are
+exact220, final probes have0 drift. The differing-load trace failure remains
+recorded; it is not turned into a passing comparison.
 
 The main new prefill fix coalesces staged HiCache copies within a registered
 host allocation. With page size 1, stock sends one host API call per K/V page;
@@ -100,17 +120,20 @@ and planning, and standalone dense finalize keeps stock Triton at M>=32 rather
 than extending CuTe across prefill. The later H200 copy receipt is recorded in
 FINDINGS (`3828ee433f0f43c3`); it does not establish full serving TTFT.
 
-Final regeneration also preserves the projection lane's newly added, unbound
-`DFlashDrafterPortfolio`. Three GPU0 sm120 tests pass (eight roles plus
-changed-input graph/FC concat); all previously tested AST nodes are unchanged
-and there are no production imports. Direct-reader test source is
-`shared-bank-r06`; admitted sm120 paths are identical to the r03 timing source.
+Final regeneration preserves the projection lane's unbound
+`DFlashDrafterPortfolio`, including its role-token-count update; there are no
+production imports or new speed credits. Direct-reader test source is r06;
+`shared-bank-r08-final` additionally preserves three incoming unbound prefill-
+module updates. Two are module-docstrings only; the raw-scale epilogue correction
+passes eager/three fresh graphs (SwiGLU maxabs3.73e-9,down0) and sm90 compilation.
+Admitted paths on the standard512-wide fixture match the r03 timing source.
 
-Patch size and preservation checks are updated at final regeneration. All
-accepted paths, incoming MoE raw-scale changes and all five worker hunks must
-remain. No full-model H200 result or judge TTFT admission is claimed.
+The regenerated patch is **359061 bytes /38 source files /374 maximum added
+characters and bytes**. All36 accepted paths remain,30 byte-identical. The
+owned MoE source, five worker hunks and router handoff are preserved; clean-base
+apply, AST, Ruff F821–F823 and whitespace checks pass. No full-model H200 result or judge TTFT admission is claimed.
 The following longer TTFT discussion records the preceding integration's
-controlled cases, not a replacement for the current failing margin result.
+controlled cases, not a replacement for the matched current gate above.
 
 The prefill attention receipt landed during integration. `e789ab194eb7496c`
 passes correctness but selects FA3 at all6 shapes. For q_len16K, FA3 versus the
@@ -285,6 +308,7 @@ the CUDA entry points with same-ABI torch stand-ins. The native portable tests a
 | `gemm_ag.py` | SM90, world4/8, multicast, pooler M<=512 / unpooler M<=64 | Portable gather ABI and width-specific policy tests pass; full output exact. Unpooler M128 correctly stays replicated. |
 | `muse_spark.py:257-264,840,939` | TP >1, M >=1024, no capture | Portable row-split policy; NCCL `test_rowsplit.py` max diff 0 at M=1024, 1027, 2049, 16384. |
 | `muse_spark_fp4_moe.py:59` | auto backend on SM90 | Portable backend selection; auto resolves to Marlin. |
+| `muse_spark_expert_bank.py:13`; `muse_marlin_v9_reader.py` | Admission + SM90 BF16, local32, H=I=4096; V9 M<=256 | Factory forced in production layer tests and TP1/TP2 real-reader fixtures on sm120. Same20-argument launch ABI, joined-bank aliases and EP offsets pass;348/348 exact margin outputs, changed-input graphs and sm90a compile pass. No stand-in arithmetic; H200 performance admission remains off. |
 | `muse_spark.py:465-510` | FA3, FP8 KV pool, TARGET_VERIFY, no MLA/skip | Fake FA3 backend/cache ABI; cache tuple and physical locations pass. Native SM120 FA3 unit is eager/graph exact (max diff 0). |
 | `muse_spark.py:1260-1302` | TP4/8 = EP, no DP attention, SM90, multicast custom-AR | Predicate and workspace ABI are structurally valid; two-rank finalize-AR eager/graph max diff 0. Actual custom-AR multicast remains untested. |
 
@@ -988,6 +1012,24 @@ It includes all20 verify graph buckets plus512/753/16K prefill. Local preparatio
 is5.66s and all shapes pass, but M256 direct/native/Marlin is2490/678/550us on
 sm120. That local loss and the changed reader prevent reusing the old H200
 V9 timing as a serving gain. `MARLIN_READER_ADMITTED=False` until the receipt.
+
+Actual-reader server tests use a separate six-layer fixture with4096-wide
+experts,32 local experts/rank and hidden width512 (not the released checkpoint).
+The hook runs the real direct reader on sm120. TP1/TP2 are each174/174 exact220,
+first divergence220/token agreement1, with full graph checks. Random gates use
+30 requests, three stock controls and220 canonical forced continuation positions:
+
+| TP | Stock mean-drift p50/p90 | Patch mean-drift p50/p90 | Stock max-drift p90 | Patch max-drift p50 |
+|---|---|---|---:|---:|
+| 1 |0.172189/0.181281|0.175243/0.222008|0.756927|0.668917|
+| 2 |0.179670/0.194040|0.183148/0.213330|0.797136|0.696103|
+
+Both unchanged stock-spread gates pass; tails are wider. Random output agreement
+is still0 for both stock-self and patch. The forced API scores via prefill, so
+it does not isolate V9 verify-logit drift; layer and unforced tests exercise
+verify, while full-checkpoint/H200 verify agreement remains required. All actual-
+reader margin p50/p90 ratios are<=.985 at every rung; these single-control
+runs supplement the primary interleaved TTFT gate. Evidence: `shared-bank-r07`.
 
 The earlier serialized one-layer V9-to-Marlin bridge was correct but rejected:
 13*220/4.05=706.17 decode steps,16 prefills/conversation and c32 imply a
