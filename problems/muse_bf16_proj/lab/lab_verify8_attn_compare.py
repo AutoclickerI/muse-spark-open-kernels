@@ -1199,12 +1199,19 @@ struct WarpState {
   float l[MTW][2];                               // running sum (thread-partial)
 };
 
+DEVI void profile_stamp(uint64_t* stamps, int profile_tiles, long long base, int tile, int phase) {
+  const int warp = threadIdx.x >> 5;
+  if (stamps && tile < profile_tiles && warp < 4)
+    stamps[base + (long long)warp * 8 + phase] = clock64();
+}
+
 // One tile of keys for one warp: tokens tb .. tb + 8*NTC - 1 of the smem tile.
 // Rows of m-tile mt: (L==1) row g = query head g (rows 8..15 padding);
 //                    (L==8) row g -> token 2*mta, row g+8 -> token 2*mta+1 (query head g).
 template <int L, int NTC, int MTW_OVERRIDE = -1>
 DEVI void compute_tile(WarpState<L, MTW_OVERRIDE>& st, const uint8_t* Ks, const uint8_t* Vs, int tb, int h, int wh,
-                       int kp0, int k_hi, int seq, int window, bool need_mask, float scale_log2, int mbase = 0) {
+                       int kp0, int k_hi, int seq, int window, bool need_mask, float scale_log2, int mbase = 0,
+                       uint64_t* stamps = nullptr, int profile_tiles = 0, long long profile_base = 0, int profile_tile = -1) {
   constexpr int MTW = WarpState<L, MTW_OVERRIDE>::MTW;
   constexpr int KK = NTC / 2;
   const int lane = threadIdx.x & 31;
@@ -1218,6 +1225,7 @@ DEVI void compute_tile(WarpState<L, MTW_OVERRIDE>& st, const uint8_t* Ks, const 
 #pragma unroll
       for (int e = 0; e < 4; ++e) s[mt][n][e] = 0.f;
 
+  profile_stamp(stamps, profile_tiles, profile_base, profile_tile, 2);
   // S = Q K^T. B fragment (K^T, k = dims, n = tokens): thread holds token g of the n-tile,
   // dims 16*q4 + 4*ks .. +3 for k-step ks (a dim permutation shared with Q's fragments).
 #pragma unroll
@@ -1234,6 +1242,7 @@ DEVI void compute_tile(WarpState<L, MTW_OVERRIDE>& st, const uint8_t* Ks, const 
     }
   }
 
+  profile_stamp(stamps, profile_tiles, profile_base, profile_tile, 3);
   if (need_mask) {
 #pragma unroll
     for (int mt = 0; mt < MTW; ++mt) {
@@ -1299,6 +1308,7 @@ DEVI void compute_tile(WarpState<L, MTW_OVERRIDE>& st, const uint8_t* Ks, const 
     }
   }
 
+  profile_stamp(stamps, profile_tiles, profile_base, profile_tile, 4);
   // O += P V. B fragment (V, k = tokens, n = dims): n-tile jn column g is dim 8*g + jn, so a
   // thread reads 8 contiguous bytes (dims 8g..8g+7) of four tokens and byte-transposes them.
 #pragma unroll
@@ -1323,6 +1333,7 @@ DEVI void compute_tile(WarpState<L, MTW_OVERRIDE>& st, const uint8_t* Ks, const 
         for (int mt = 0; mt < MTW; ++mt) mma16816(st.o[mt][4 * jj + x], pa[mt][kk], b0[x], b1[x]);
     }
   }
+  profile_stamp(stamps, profile_tiles, profile_base, profile_tile, 5);
 }
 
 template <int L, int STAGES, bool PROFILE = false>
@@ -1344,14 +1355,7 @@ __global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
   const int h = warp & 1, wh = warp >> 1;
   const bool last = split == p.ns - 1;
 
-  auto stamp = [&](int tile, int phase) {
-    if constexpr (PROFILE) {
-      if (p.stamps && tile < p.profile_tiles && warp < 4) {
-        const long long rec = ((((long long)b * (p.hkv / 2) + kvg) * p.ns + split) * p.profile_tiles + tile) * 32 + warp * 8;
-        p.stamps[rec + phase] = clock64();
-      }
-    }
-  };
+  const long long profile_base = ((((long long)b * (p.hkv / 2) + kvg) * p.ns + split) * p.profile_tiles) * 32;
 
   const int seq = p.seq_lens[b];
   const int lo = p.window ? max(0, seq - p.window + 1) : 0;
@@ -1537,21 +1541,19 @@ __global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
   const int win_edge = p.window ? (seq + L - p.window) : -2147483647;  // keys below need per-row masks
 
   for (int i = 0; i < ntiles; ++i) {
-    stamp(i, 0);
+    if constexpr (PROFILE) profile_stamp(p.stamps, p.profile_tiles, profile_base, i, 0);
     cp_wait<STAGES - 2>();
     __syncthreads();
-    stamp(i, 1);
+    if constexpr (PROFILE) profile_stamp(p.stamps, p.profile_tiles, profile_base, i, 1);
     const int nxt = i + STAGES - 1;
     if (nxt < ntiles) issue(nxt % STAGES, rows_next);
     cp_commit();
-    stamp(i, 2);
     load_rows(nxt + 1, rows_next);
     const int slot = i % STAGES;
     const int kp0 = c_lo + i * T;
     const bool need_mask = (kp0 + T > c_hi) || (L > 1 && kp0 < win_edge);
     compute_tile<L, NT>(st, sK + slot * TILE_BYTES, sV + slot * TILE_BYTES, tb, h, wh, kp0, c_hi, seq, p.window,
-                        need_mask, scale_log2);
-    stamp(i, 3);
+                        need_mask, scale_log2, 0, p.stamps, p.profile_tiles, profile_base, i);
   }
   cp_wait<0>();
   if (last && (L > 1 || wh == 0)) {
@@ -1575,6 +1577,7 @@ __global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
   constexpr int NSL = (L == 1) ? 2 : 1;
   constexpr int PR = 68;
   __syncthreads();  // every warp is done with the stage buffers
+  if constexpr (PROFILE) profile_stamp(p.stamps, p.profile_tiles, profile_base, 0, 6);
   const int KVG = p.hkv / 2;
   float* sP = p.dsmem ? reinterpret_cast<float*>(smem)
                       : p.part1 + ((long long)(b * KVG + kvg) * p.ns + split) * (NSL * ROWS * PR);
@@ -1663,7 +1666,10 @@ __global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
     }
   }
   if (p.dsmem) cluster_sync_all();  // no CTA leaves while its shared memory may still be read
-  if (nc == 1) return;
+  if (nc == 1) {
+    if constexpr (PROFILE) profile_stamp(p.stamps, p.profile_tiles, profile_base, 0, 7);
+    return;
+  }
 
   // Level 2: the last cluster to arrive at rank r merges rows r, r + CS, ... over the clusters.
   __shared__ int s_last;
@@ -1674,7 +1680,10 @@ __global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
     s_last = (prev == nc - 1);
   }
   __syncthreads();
-  if (!s_last) return;
+  if (!s_last) {
+    if constexpr (PROFILE) profile_stamp(p.stamps, p.profile_tiles, profile_base, 0, 7);
+    return;
+  }
   __threadfence();
   for (int k = warp; rank + k * cs < ROWS; k += 4) {
     const int rr = rank + k * cs;
@@ -1710,6 +1719,7 @@ __global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
     finalize(rr, k, o0 * sc, o1 * sc);
   }
   if (tid == 0) p.counters[(b * KVG + kvg) * cs + rank] = 0;
+  if constexpr (PROFILE) profile_stamp(p.stamps, p.profile_tiles, profile_base, 0, 7);
 }
 
 template <int L, int STAGES>
@@ -1955,8 +1965,9 @@ void attn_forward_vmath_profile(int64_t qkv, int64_t positions, int64_t cache_lo
   int dev = 0;
   cudaGetDevice(&dev);
   cudaGetDeviceProperties(&prop, dev);
-  cudaError_t e = (prop.major >= 12) ? launch_t<8, 3, true>(p, reinterpret_cast<cudaStream_t>(stream))
-                                    : launch_t<8, 4, true>(p, reinterpret_cast<cudaStream_t>(stream));
+  cudaError_t e = (q_len == 1) ? launch_t<1, 4, true>(p, reinterpret_cast<cudaStream_t>(stream))
+                               : ((prop.major == 9) ? launch_t<8, 4, true>(p, reinterpret_cast<cudaStream_t>(stream))
+                                                    : launch_t<8, 3, true>(p, reinterpret_cast<cudaStream_t>(stream)));
   if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
 }
 """
@@ -2000,7 +2011,7 @@ _TWOG_KERNEL = _TWOG_KERNEL.replace(
     "const int mta = (L == 1) ? 0 : (2 * wh + mt);",
     "const int mta = (L == 1) ? 0 : (group * 2 + wh + mt);")
 _TWOG_KERNEL = _TWOG_KERNEL.replace(
-    "compute_tile<L, NT>(st, sK + slot * TILE_BYTES, sV + slot * TILE_BYTES, tb, h, wh, kp0, c_hi, seq, p.window,\n                        need_mask, scale_log2);",
+    "compute_tile<L, NT>(st, sK + slot * TILE_BYTES, sV + slot * TILE_BYTES, tb, h, wh, kp0, c_hi, seq, p.window,\n                        need_mask, scale_log2, 0, p.stamps, p.profile_tiles, profile_base, i);",
     "compute_tile<L, NT, 1>(st, sK + slot * TILE_BYTES, sV + slot * TILE_BYTES, tb, h, wh, kp0, c_hi, seq, p.window,\n                        need_mask, scale_log2, group * 2);")
 _TWOG_KERNEL = _TWOG_KERNEL.replace(
     "compute_tile<L, 2>(st, sNK, sNV, 0, h, wh, seq, seq + L, seq, p.window, true, scale_log2);",
@@ -2232,7 +2243,14 @@ def _vmath_verify(data: Inputs, factor=1) -> torch.Tensor:
     # Keep the decode producer's occupancy/split geometry.  This is the
     # apples-to-apples memory-bandwidth experiment; the L=8 math is the sole
     # intentional difference.
-    ns, cs = _plan(batch, kvg, max_keys, 1, window, _num_sms(device), _occ(1, device))
+    if q_len == 8:
+        # Match the drop-in's two-wave split target rather than the q8
+        # occupancy result, which can leave B16 underfilled on Hopper.
+        ns = max(1, min(128, (2 * _num_sms(device) + batch * kvg - 1) // (batch * kvg),
+                       (max_keys + 63) // 64))
+        cs = 1
+    else:
+        ns, cs = _plan(batch, kvg, max_keys, 1, window, _num_sms(device), _occ(1, device))
     if int(factor) > 1:
         max_tiles = max(1, (max_keys + 63) // 64)
         ns = min(max_tiles, ns * int(factor))
@@ -2259,17 +2277,21 @@ def _vmath_verify(data: Inputs, factor=1) -> torch.Tensor:
 
 
 def _vmath_profile(data: Inputs):
-    """Run the exact Hopper vmath launch with clock64 phase stamps."""
+    """Run q_len 1 or 8 with clock64 phase stamps."""
     cfg = data['config']
     batch, q_len = cfg['batch'], cfg['q_len']
-    assert q_len == 8
     hq, hkv, d, ps = cfg['num_q_heads'], cfg['num_kv_heads'], cfg['head_dim'], cfg['page_size']
     device = data['qkv'].device
     kvg = hkv // 2
     max_pages = data['page_table'].shape[1]
     window = cfg['window']
     max_keys = min(max_pages * ps, window) if window else max_pages * ps
-    ns, cs = _plan(batch, kvg, max_keys, 1, window, _num_sms(device), _occ(1, device))
+    if q_len == 8:
+        ns = max(1, min(128, (2 * _num_sms(device) + batch * kvg - 1) // (batch * kvg),
+                       (max_keys + 63) // 64))
+        cs = 1
+    else:
+        ns, cs = _plan(batch, kvg, max_keys, 1, window, _num_sms(device), _occ(1, device))
     nc = ns // cs
     rows = batch * kvg * (nc if nc > 1 else 0) * q_len * 16
     part_o = torch.empty((max(rows, 1) * 64,), dtype=torch.float32, device=device)
@@ -2278,7 +2300,9 @@ def _vmath_profile(data: Inputs):
     part1 = part_o if DSMEM else torch.empty((batch * kvg * ns * q_len * 16 * 68,),
                                              dtype=torch.float32, device=device)
     out = torch.empty((batch, q_len, hq * d), dtype=torch.bfloat16, device=device)
-    max_tiles = (max_keys + 63) // 64
+    # Each split owns roughly max_keys/ns keys.  Keep two guard tiles for the
+    # 16-token chunk rounding while avoiding a 1,250-tile stamp allocation.
+    max_tiles = (max_keys + ns * 64 - 1) // (ns * 64) + 2
     stamps = torch.zeros((batch * kvg * ns * max_tiles * 32,), dtype=torch.int64, device=device)
     inv_freq = _inv_freq(cfg['rope_theta'], device) if cfg['rope_theta'] else None
     scale_log2 = cfg['sm_scale'] * cfg['qk_scale_factor'] * 1.4426950408889634
@@ -2291,6 +2315,24 @@ def _vmath_profile(data: Inputs):
         data['qkv'].shape[-1], hq, hkv, max_pages, ps, window, ns, cs, scale_log2,
         torch.cuda.current_stream(device).cuda_stream, stamps.data_ptr(), max_tiles)
     return out, stamps, max_tiles, ns
+
+
+def _profile_stats(stamps, batch, ns, max_tiles):
+    """Collapse per-CTA/per-warp clock stamps to wall-clock phase samples."""
+    import numpy as np
+    a = stamps.cpu().view(batch, 1, ns, max_tiles, 4, 8).numpy()
+    names = ('kv_wait', 'qk_mma', 'softmax', 'pv_mma', 'combine')
+    pairs = ((0, 1), (2, 3), (3, 4), (4, 5), (6, 7))
+    result = {}
+    for name, (lo, hi) in zip(names, pairs):
+        d = a[..., hi] - a[..., lo]
+        valid = (a[..., lo] > 0) & (a[..., hi] > 0) & (d > 0)
+        # Warps execute the phase concurrently; the CTA wall time is the
+        # slowest participating warp, then summarize tiles across CTAs.
+        d = np.where(valid, d, 0).max(axis=-1)
+        vals = d[d > 0]
+        result[name] = (float(np.median(vals)), float(np.percentile(vals, 90)), int(vals.size)) if vals.size else None
+    return result
 
 
 def _vmath_twog_verify(data: Inputs, factor=1) -> torch.Tensor:
@@ -4119,7 +4161,12 @@ def _lab_attn_main(data):
     max_pages = data['page_table'].shape[1]
     window = cfg['window']; max_keys = max_pages * ps
     if window: max_keys = min(max_keys, window)
-    ns, cs = _plan(batch, kvg, max_keys, q_len, window, _num_sms(device), _occ(q_len, device))
+    if q_len == 8:
+        ns = max(1, min(128, (2 * _num_sms(device) + batch * kvg - 1) // (batch * kvg),
+                       (max_keys + 63) // 64))
+        cs = 1
+    else:
+        ns, cs = _plan(batch, kvg, max_keys, q_len, window, _num_sms(device), _occ(q_len, device))
     nc = ns // cs
     rows = batch * kvg * (nc if nc > 1 else 0) * q_len * 16
     part_o = torch.empty((max(rows, 1) * 64,), dtype=torch.float32, device=device)
@@ -4283,43 +4330,38 @@ def _compare_time(fn, data, flush, start, end):
 
 def lab(deadline, weights):
     import time
-    device=torch.device('cuda',torch.cuda.current_device())
-    flush=torch.empty(256 << 20,dtype=torch.uint8,device=device)
-    start,end=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
-    lines=['META q8 verify ctx=80000 page=1 spread=agentic; gate=post-store FP32 P<=15pct; us=median3']
-    winners=[]
-    for batch in (1,16,32):
-      for window in (2048,0):
+    device = torch.device('cuda', torch.cuda.current_device())
+    flush = torch.empty(256 << 20, dtype=torch.uint8, device=device)
+    start, end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+    lines = [
+        'META phase_clock q1_vs_q8 ctx=80000 page=1 spread=agentic full only; '
+        'clock64 cycles median/p90 over CTA tiles; phases=kv_wait,qk_mma,softmax,pv_mma,combine',
+        'META q8 gate=post-store FP32 P<=15pct; timing=unprofiled attn_main median3',
+    ]
+    for batch in (16, 32):
         if time.monotonic() >= deadline:
-          lines.append(f'DEADLINE b{batch}w{window or "f"}'); continue
-        tag=f'b{batch}w{window or "f"}'
-        timing=_lab_input(batch, window, 8, 80000)
-        choices=[('attn_main',lambda d:_lab_attn_main(d)),('fa3',lambda d:_fa3_verify(d,(0,None)))]
-        accepted=[]
-        for label,fn in choices:
-          try:
-            # Each candidate owns a fresh cache so its store and the exact
-            # bytes consumed by the FP32 reference cannot bleed between
-            # comparisons.
-            gate_data=_lab_input(1, window, 8, 80000)
-            actual=fn(gate_data)
-            gate,err=_compare_gate(gate_data,actual)
-            us=_compare_time(fn,timing,flush,start,end)
-            lines.append(f'{tag}/{label}={us:.1f}{gate}{err:.3f}')
-            if gate=='P': accepted.append((us,label))
-          except BaseException as exc:
-            lines.append(f'{tag}/{label}=ERR')
-        if accepted:
-          best=min(accepted); winners.append((tag,best))
-          lines.append(f'WIN {tag} {best[1]}={best[0]:.1f}')
-        else: lines.append(f'WIN {tag} none')
-        del timing
-        torch.cuda.empty_cache()
+            lines.append(f'DEADLINE b{batch}'); continue
+        for q_len in (1, 8):
+            data = _lab_input(batch, 0, q_len, 80000)
+            us = _compare_time(_lab_attn_main, data, flush, start, end)
+            gate_data = _lab_input(1, 0, q_len, 80000)
+            gate_out = _lab_attn_main(gate_data)
+            torch.cuda.synchronize()
+            gate, err = _compare_gate(gate_data, gate_out)
+            prof_out, stamps, max_tiles, ns = _vmath_profile(data)
+            stats = _profile_stats(stamps, batch, ns, max_tiles)
+            parts = ';'.join(
+                f'{name}={v[0]:.0f}/{v[1]:.0f}/{v[2]}' for name, v in stats.items() if v is not None)
+            lines.append(f'PROFILE b{batch} q{q_len} us={us:.1f} gate={gate}{err:.3f} '
+                         f'ns={ns} tiles={max_tiles} {parts}')
+            del data, gate_data, gate_out, prof_out, stamps
+            torch.cuda.empty_cache()
+        # The per-phase run uses a single request to keep the stamp tensor and
+        # the reduction trace readable; timing above uses the target batch.
     del flush
-    lines.append('WINNERS '+ ';'.join(f'{t}={l}:{u:.1f}' for t,(u,l) in winners))
     return lines
 
-# ---- h200_lab wrapper: payload verify8_attn_compare sha256 2adee96d8f725881 on base f3786341611f4f1f ----
+# ---- h200_lab wrapper: payload verify8_attn_compare sha256 1d932e7e164ecf49 on base f3786341611f4f1f ----
 _lab_base_prepare = prepare
 _lab_ran = False
 
@@ -4350,7 +4392,7 @@ def prepare(weights):
                 break
             _out.append(_l)
             _n += len(_l) + 1
-        print("LAB_BEGIN verify8_attn_compare 2adee96d8f725881", flush=True)
+        print("LAB_BEGIN verify8_attn_compare 1d932e7e164ecf49", flush=True)
         for _l in _out:
             print(_l, flush=True)
         print(f"LAB_END lab_s={_t.monotonic() - _t0:.1f} prepare_s={_t.monotonic() - _start:.1f}", flush=True)

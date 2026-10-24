@@ -1,0 +1,67 @@
+FUSED_SELECT router m=128 incumbent_us=22.976 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.232 top=[(15.00799972563982, (64, 64, 4, 1, 8, 160)), (15.807999297976494, (64, 64, 4, 1, 16, 160)), (16.224000602960587, (64, 64, 4, 1, 16, 128)), (19.61600035429001, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.488 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.448 top=[(16.35199971497059, (64, 64, 4, 1, 8, 160)), (16.383999958634377, (64, 64, 4, 1, 8, 256)), (17.44000054895878, (64, 64, 4, 1, 8, 128)), (26.976000517606735, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=24.928 chosen=None chosen_us=24.928 top=[(30.559999868273735, (128, 64, 3, 1, 4, 160)), (34.304000437259674, (64, 64, 4, 1, 2, 256)), (35.77600046992302, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.024 chosen=None chosen_us=29.024 top=[(36.896001547575, (128, 64, 4, 1, 2, 256)), (39.84000161290169, (128, 128, 2, 1, 2, 256)), (40.28800129890442, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=30.656 chosen=None chosen_us=30.656 top=[(30.46399913728237, ('lt', 0)), (32.44800120592117, ('lt_nn', 1)), (32.92800113558769, ('lt_nn', 6)), (33.08799862861633, ('lt', 1)), (33.31200033426285, ('lt_nn', 5))]
+FUSED_SELECT pooler m=256 incumbent_us=39.360 chosen=('lt_nn', 0) chosen_us=36.992 top=[(36.12799942493439, ('lt_nn', 0)), (37.248000502586365, ('lt_nn', 4)), (38.62399980425835, ('lt', 5)), (38.68800029158592, ('lt_nn', 2)), (38.91199827194214, ('lt', 2))]
+FUSED_SELECT unpooler m=128 incumbent_us=29.888 chosen=('lt_nn', 0) chosen_us=28.992 top=[(29.632000252604485, ('lt_nn', 1)), (30.01599945127964, ('lt', 0)), (30.271999537944794, ('lt_nn', 0)), (30.527999624609947, ('lt_nn', 4)), (30.7839997112751, ('lt', 3))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.696 chosen=('lt', 0) chosen_us=33.088 top=[(34.11199897527695, ('lt_nn', 0)), (34.65599939227104, ('lt', 0)), (35.679999738931656, ('lt', 2)), (36.959998309612274, ('lt', 3)), (37.18400001525879, ('lt_nn', 2))]
+FUSED_SELECT o m=128 incumbent_us=13.248 chosen=('lt_nn', 0) chosen_us=12.960 top=[(12.703999876976013, ('lt_nn', 0)), (12.864000163972378, ('lt_nn', 5)), (12.927999719977379, ('lt', 1)), (12.959999963641167, ('lt', 5)), (13.055999763309956, ('lt_nn', 1))]
+FUSED_SELECT o m=256 incumbent_us=14.048 chosen=None chosen_us=14.048 top=[(14.14399966597557, ('lt', 0)), (14.208000153303146, ('lt_nn', 0)), (14.720000326633453, ('lt', 2)), (14.783999882638454, ('lt_nn', 4)), (14.879999682307243, ('lt_nn', 1))]
+FUSED_SELECT prepare_s=8.02
+LAB_BEGIN moe_v9_seed 1b70108e6e471861
+META native seed portfolio: raw cold graph GPU us, 8 rotated orders, FP32 gate<=.01; R0 exact captured IDs with refreshed x/tw; S public generate_weights(seed,fields={}), real-router moe_tune fixture (not full attention front); fields={} because published benchmarks omit router_load. Physical grid fixed for graph; hot path active grid uses device row-block counts.
+ORDER NT1,NT2,NT4,NT2s1,hotNT1,hotNT2s1,hotNT2s2
+T NT1 M=128 R0 us=333.1 ratio=1.0000 fp32=0.00034 PASS
+T NT2 M=128 R0 us=349.6 ratio=1.0504 fp32=0.00034 PASS
+T NT4 M=128 R0 us=483.2 ratio=1.4559 fp32=0.00034 PASS
+T NT2s1 M=128 R0 us=377.9 ratio=1.1348 fp32=0.00034 PASS
+T hotNT1 M=128 R0 us=325.2 ratio=0.9771 fp32=0.00034 PASS
+T hotNT2s1 M=128 R0 us=388.9 ratio=1.1669 fp32=0.00034 PASS
+T hotNT2s2 M=128 R0 us=355.6 ratio=1.0690 fp32=0.00034 PASS
+S seed=5353 M=128 P=166 E=17 hot=51 us=296.9,323.2,443.6,350.6,301.0,358.8,324.6 fp32=0.00031 PASS
+T NT1 M=256 R0 us=574.0 ratio=1.0000 fp32=0.00033 PASS
+T NT2 M=256 R0 us=550.4 ratio=0.9588 fp32=0.00033 PASS
+T NT4 M=256 R0 us=670.2 ratio=1.1678 fp32=0.00033 PASS
+T NT2s1 M=256 R0 us=591.2 ratio=1.0304 fp32=0.00033 PASS
+T hotNT1 M=256 R0 us=560.6 ratio=0.9766 fp32=0.00033 PASS
+T hotNT2s1 M=256 R0 us=623.6 ratio=1.0856 fp32=0.00033 PASS
+T hotNT2s2 M=256 R0 us=553.6 ratio=0.9648 fp32=0.00033 PASS
+S seed=5353 M=256 P=342 E=18 hot=95 us=485.3,460.3,557.1,499.8,476.6,513.4,466.1 fp32=0.00031 PASS
+S seed=13272 M=128 P=180 E=13 hot=65 us=309.2,310.3,402.8,338.6,305.9,352.4,312.5 fp32=0.00036 PASS
+S seed=13272 M=256 P=389 E=20 hot=120 us=551.9,526.6,624.8,565.7,542.4,584.8,522.8 fp32=0.00031 PASS
+S seed=21191 M=128 P=202 E=15 hot=76 us=310.3,310.9,412.2,340.4,306.4,355.9,317.5 fp32=0.00038 PASS
+S seed=21191 M=256 P=395 E=18 hot=158 us=559.5,515.2,604.1,559.5,547.3,571.9,521.7 fp32=0.00035 PASS
+S seed=29110 M=128 P=240 E=16 hot=84 us=347.6,324.8,404.2,349.3,341.0,357.5,327.2 fp32=0.00035 PASS
+S seed=29110 M=256 P=457 E=16 hot=159 us=597.5,546.0,621.7,587.1,587.4,603.2,551.2 fp32=0.00032 PASS
+S seed=37029 M=128 P=306 E=18 hot=51 us=428.0,401.5,501.6,432.0,421.7,444.7,404.7 fp32=0.00035 PASS
+S seed=37029 M=256 P=653 E=23 hot=133 us=801.1,680.4,765.3,769.4,784.4,774.8,688.7 fp32=0.00036 PASS
+S seed=44948 M=128 P=230 E=20 hot=44 us=374.9,388.6,483.4,417.5,368.3,426.9,387.9 fp32=0.00035 PASS
+S seed=44948 M=256 P=503 E=20 hot=116 us=705.7,641.1,729.1,695.0,695.2,718.6,646.9 fp32=0.00035 PASS
+S seed=52867 M=128 P=270 E=16 hot=74 us=408.1,389.6,489.5,419.6,397.4,432.6,392.5 fp32=0.00038 PASS
+S seed=52867 M=256 P=565 E=14 hot=143 us=725.2,603.7,673.5,663.1,709.8,682.8,614.7 fp32=0.00034 PASS
+S seed=60786 M=128 P=184 E=11 hot=69 us=281.3,270.6,334.7,292.1,271.6,297.5,275.1 fp32=0.00031 PASS
+S seed=60786 M=256 P=349 E=20 hot=154 us=498.7,477.1,602.7,515.6,480.5,538.6,480.4 fp32=0.00031 PASS
+S seed=68705 M=128 P=193 E=20 hot=56 us=348.2,374.7,510.0,408.7,339.7,417.7,383.7 fp32=0.00035 PASS
+S seed=68705 M=256 P=380 E=25 hot=110 us=567.8,544.4,668.7,589.4,562.3,608.3,546.5 fp32=0.00031 PASS
+S seed=76624 M=128 P=210 E=12 hot=65 us=334.3,322.0,393.6,345.5,320.5,353.9,323.6 fp32=0.00032 PASS
+S seed=76624 M=256 P=451 E=19 hot=145 us=599.0,516.7,613.8,558.7,596.9,581.3,522.3 fp32=0.00034 PASS
+S seed=84543 M=128 P=200 E=15 hot=55 us=308.6,310.6,412.3,338.2,304.0,343.5,311.9 fp32=0.00030 PASS
+S seed=84543 M=256 P=417 E=19 hot=110 us=542.4,501.6,615.5,561.6,532.2,564.0,507.9 fp32=0.00034 PASS
+S seed=92462 M=128 P=222 E=17 hot=41 us=350.9,350.8,487.9,376.8,339.4,391.3,354.6 fp32=0.00035 PASS
+S seed=92462 M=256 P=405 E=21 hot=75 us=569.1,516.6,657.5,562.1,558.8,576.7,522.3 fp32=0.00032 PASS
+AGG NT1 M=128 seeds=12 mean=341.5 min=281.3 max=428.0 max/min=1.5218 max/mean=1.2533
+AGG NT2 M=128 seeds=12 mean=339.8 min=270.6 max=401.5 max/min=1.4840 max/mean=1.1816
+AGG NT4 M=128 seeds=12 mean=439.7 min=334.7 max=510.0 max/min=1.5238 max/mean=1.1601
+AGG NT2s1 M=128 seeds=12 mean=367.4 min=292.1 max=432.0 max/min=1.4788 max/mean=1.1756
+AGG hotNT1 M=128 seeds=12 mean=334.7 min=271.6 max=421.7 max/min=1.5524 max/mean=1.2597
+AGG hotNT2s1 M=128 seeds=12 mean=377.7 min=297.5 max=444.7 max/min=1.4951 max/mean=1.1774
+AGG hotNT2s2 M=128 seeds=12 mean=343.0 min=275.1 max=404.7 max/min=1.4712 max/mean=1.1799
+AGG NT1 M=256 seeds=12 mean=600.3 min=485.3 max=801.1 max/min=1.6508 max/mean=1.3346
+AGG NT2 M=256 seeds=12 mean=544.1 min=460.3 max=680.4 max/min=1.4782 max/mean=1.2505
+AGG NT4 M=256 seeds=12 mean=644.5 min=557.1 max=765.3 max/min=1.3737 max/mean=1.1874
+AGG NT2s1 M=256 seeds=12 mean=593.9 min=499.8 max=769.4 max/min=1.5394 max/mean=1.2954
+AGG hotNT1 M=256 seeds=12 mean=589.5 min=476.6 max=784.4 max/min=1.6459 max/mean=1.3306
+AGG hotNT2s1 M=256 seeds=12 mean=609.9 min=513.4 max=774.8 max/min=1.5090 max/mean=1.2704
+AGG hotNT2s2 M=256 seeds=12 mean=549.3 min=466.1 max=688.7 max/min=1.4775 max/mean=1.2538
+LAB_END lab_s=71.7 prepare_s=79.7

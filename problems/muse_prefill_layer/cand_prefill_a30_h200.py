@@ -1733,10 +1733,10 @@ def prepare(weights):
     # Keep these as the safe incumbent even if prepare-time trials are cut short.
     st['dense_choices']={
         ('pooler',16384):('lt',5), ('unpooler',16384):('lt',6),
-        ('qkv',16384):('lt',1), ('o',16384):('lt',6), ('router_cat',16384):('cublas_nn'),
+        ('qkv',16384):('lt',1), ('o',16384):('lt',6), ('router_cat',16384):('cublas_nn',),
         ('pooler',3012):('lt',1), ('unpooler',3012):('lt',1),
         ('qkv',3012):('lt',2), ('o',3012):('lt',0), ('router_cat',3012):('lt',0),
-        ('pooler',753):('dg'), ('unpooler',753):('dg'),
+        ('pooler',753):('dg',), ('unpooler',753):('dg',),
         ('qkv',753):('lt',0), ('o',753):('lt',2), ('router_cat',753):('lt',6),
     }
     st['expert_dispatch']={753:'raw17',3012:'humming_masked',16384:'dg_w8'}
@@ -1868,7 +1868,6 @@ def _tune_score_dense(st,flush):
                 check=lambda out:_judge_floor(out,oracle[0],f'dense {key} {T}')
                 selected,record=_score_select(choices,('cublas',),lambda c:_score_dense_run(x,st,key,c),check,refresh,flush,st,f'dense {key} {T}')
                 st['dense_choices'][(key,T)]=selected;st['_measurements']['dense'][str((key,T))]=record
-                del y,x,oracle
             except Exception as error:_score_reject(f'dense shape {key} {T}',error)
 
 
@@ -1913,7 +1912,6 @@ def _tune_score_experts(st,flush):
             control='raw11' if T<8192 else 'raw_v11'
             selected,record=_score_select(_EXPERT_CHOICES,control,run,verify,refresh,flush,st,f'expert {T}')
             st['expert_dispatch'][T]=selected;st['_measurements']['expert'][T]=record
-            del data,cache
         except Exception as error:_score_reject(f'expert shape {T}',error)
 
 
@@ -1937,7 +1935,6 @@ def _tune_score_attention(st,flush):
                 return dict(fa3_diagnostic_relative_l2=_score_error(out,ref,0,'attention'))
             chosen,record=_score_select(_SCORE_ATTENTION_CHOICES,'fa3',lambda n:_score_attention_path(data,q8,st,n),verify,refresh,flush,st,f'attention {T} {window} {prefix}')
             key=_score_attention_key(data);st['attention_choices'][key]=chosen;st['_measurements']['attention'][str(key)]=record
-            del data,cache,q8
         except Exception as error:_score_reject(f'attention shape {T} {window} {prefix}',error)
 
 
@@ -2060,7 +2057,6 @@ def _tune_score_experts(st, flush):
             synthetic_selected, synthetic_record = _score_select(
                 _EXPERT_CHOICES, control, run_synthetic, verify_synthetic,
                 refresh_synthetic, flush, st, f'expert synthetic {T}')
-            del synthetic, cache
         except Exception as error:
             _score_reject(f'expert synthetic shape {T}', error)
 
@@ -2100,7 +2096,6 @@ def _tune_score_experts(st, flush):
                 synthetic_us=synthetic_record.get('us', []),
                 realistic_us=realistic_record.get('us', []),
                 route_total=route_total, route_distinct=route_distinct)), flush=True)
-            del realistic, cache
         except Exception as error:
             _score_reject(f'expert realistic shape {T}', error)
             st['expert_dispatch'][T] = synthetic_selected
