@@ -7,15 +7,33 @@ step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sg
 and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published H200 numbers (FINDINGS
 "Serving track").
 
-## Current best (2026-10-24 12:30 KST; overall rank 115 of 722)
+## Leaderboard (snapshot `runs/boards/20261024T112455Z`, 2026-10-24 20:24 KST)
+
+**Overall board (openkernelchallenge.dev/leaderboard): rank 164 of 811.** The API gives overall ranks only;
+our modeled overall score is **1.429** (FINDINGS "Boards": max(decode, 0.351 + 0.312 MoE + 0.268 proj +
+0.105 attention); top 50 exact on this snapshot too). Every top-50 team's score is its decode-layer
+speedup: their component composites are 1.57-1.72, below their decode runs. So the overall board is the
+decode-layer board.
+
+| Overall rank | Team | Modeled score (= decode layer) | MoE | Proj | Attention |
+|---|---|---|---|---|---|
+| 1 | Lurrobert | 2.101 | 2.349 | 1.425 | 2.399 |
+| 2 | accountforgoofystuff | 2.084 | 2.209 | 1.549 | 2.520 |
+| 3 | yousefarifalarif | 2.061 | 2.313 | 1.442 | 2.507 |
+| 10 | Maher4Ever | 1.927 | 2.162 | 1.311 | 2.150 |
+| 50 | | 1.704 | | | |
+| 100 | | 1.555 | | | |
+| **164** | **AutoclickerI (us)** | **1.429** | 1.687 | 1.184 | 1.403 |
+
+At 12:30 KST the 50th score was 1.625 and we were rank 115 of 722: the field gains ~0.08x at rank 50 in eight hours.
 
 | Problem | Our best H200 run | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
-| muse_bf16_proj | 1.184x lab verify_tma `6b72087f64584258` on fused_select (scored) | 1.184x (rank 286) | 1.454x (0daycloud) | 1.415x | 1.290x | 611 |
-| muse_attention_decode | 1.403x verify_stream `d98ae45d7204438d` (scored; stream kernel wins only verify-1 sliding) | 1.403x (rank 211) | 2.726x (pjmullin3) | 2.221x | 1.881x | 425 |
-| muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (rank 122) | 2.335x (Lurrobert) | 2.162x | 1.899x | 474 |
-| muse_decode_layer | 1.429x lab moe_real_routing `26d7e05ab97d4f96` on r3_v9 (scored; same kernels as `0e94268cf5654012`) | 1.429x (rank 112) | 2.101x (Lurrobert) | 1.860x | 1.625x | 379 |
-| muse_prefill_layer | 1.451x cand_prefill_a30_h200 `cb8939d0980a4cc3` (scored; receipt-backed dense/attention picks; its prepare tuner still chose humming_masked@753 and dg_hint_w8@16K over the static picks) | 1.434x (rank 58) | 1.745x (nl-alonso) | 1.641x | 1.461x | 213 |
+| muse_decode_layer | 1.429x r3_v9 `0e94268cf5654012` (scored; a favourable router seed: the same kernels at the 12-seed MoE mean model ~1.35; best5 1.353x, best5_glue 1.367x as checks) | 1.429x (162) | 2.101x (Lurrobert) | 1.927x | 1.704x | 455 |
+| muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (158) | 2.349x (Lurrobert) | 2.267x | 1.972x | 540 |
+| muse_attention_decode | 1.403x verify_stream `d98ae45d7204438d` (scored) | 1.403x (266) | 2.726x (pjmullin3) | 2.343x | 1.968x | 498 |
+| muse_bf16_proj | 1.184x lab verify_tma `6b72087f64584258` on fused_select (scored) | 1.184x (349) | 1.549x (accountforgoofystuff) | 1.436x | 1.323x | 698 |
+| muse_prefill_layer | 1.451x cand_prefill_a30_h200 `cb8939d0980a4cc3` (scored) | 1.451x (73) | 1.767x (accountforgoofystuff) | 1.701x | 1.530x | 261 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
 top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
