@@ -1,31 +1,30 @@
-# Projection lane focus (P10 / G1)
+# Projection lane focus (P7 / G3)
 
-Solo, GPU0 only. Do not poll the judge; send one H200 lab, then build while it runs.
-The scored projection host remains `f3786341611f4f1f`.
+Solo, GPU0. Decode-layer projections rank above all serving-only work until
+the kernel close. Target >=3.5 TB/s cold on qkv/o/pool+router/unpooler, M=1-256.
 
-## Closed evidence
+## Active
 
-The stock CUTLASS split-K/Stream-K recipe set lost at M=128/256 (`45f58e7009c440eb`).
-The GEMV glue fusion also lost on H200 (`479aab3038c6407c`): b1 1.06–7.8x,
-pool 2.04–11.36x, b2 1.09–9.02x, PREFIX 1.88–9.74x, chains 1.04–9.60x;
-`picks=0`. Fusing norms/routing costs skinny-GEMV parallelism. The implementation
-is closed; removing glue remains a serving design question.
+`dev/streaming_gemv_lab.py` is queued on the clean proj host `f3786341611f4f1f`;
+send key `d962f665f754dea0`, payload SHA256
+`1d9b7badc0cb09ad9b6d9cfb1fcae4b234f8d841b9253a24ca951229d653e622`.
+It compares 16-byte register rings and 2-4-stage cp.async/MMA against cuBLAS,
+with one-launch split-K, FP32 gates, cold L2 and same-protocol read controls.
+All decode roles precede DFlash roles. Check the receipt once on resume;
+`dev/streaming/read_receipt.py <job>` emits the decode handoff from local evidence.
 
-## Active experiment
+Local: 537 configuration gates, 135 fresh-input graphs, 9/9 host tests; H200
+build has no spills. SASS verifies 4/8/16 weight loads before the first FMA.
+H200 bandwidth and shape winners remain unverified. No decode dispatch changed.
 
-P10 is the serving DFlash drafter: TP8 dense shapes at M=8/32/128/256 for
-qkv/fc, attention o, gate_up, down, convolution coefficients, context fc/kv,
-and the borrowed LM head (7/28/112/224 draft slots). Compare stock PyTorch/cuBLAS,
-cuBLASLt heuristics, skinny GEMV, and a concat-aware fc path in one H200 lab.
-The serving module is `serving/sglang/python/sglang/srt/layers/muse_dflash.py`;
-the lane wires it after the receipt. Agreement and CUDA-graph tests stay exact.
+Next variant: `dev/streaming_gemv_vector_lab.py` uses 16-byte shared loads for
+two MMA steps at a time. Locally checked; not sent while the first lab waits.
+Source/build/validation and the drop-in ABI: `dev/streaming/README.md`.
 
-Lab payload: `problems/muse_bf16_proj/dev/dflash_tp8_lab.py`, SHA256
-`deeb1d446fdc7262a74511f19c4cc9a70da1349586ea5dbcb5217688b3792699`, sent at priority 0.8.
-The old judge waiter for `cand_dflash_diag.py` was killed before this lab was sent.
-Keep the lab request ID and read its receipt once; do not submit another diagnostic.
+## Closed / constraints
 
-## Constraints
-
-No prepared BF16/FP8 copy of NVFP4 weights. Hopper-only Python branches execute
-through a portable stand-in locally. Tuner failures reject and log; incumbent holds.
+The unsafe overlap payload was dropped after b63389f0's sticky address-space
+failure; historical generated runs are evidence only. Revisit overlap after GEMV.
+Stock won the old drafter Lt sweep (`610cd1779d274631`); glue fusion
+`479aab3038c6407c` and the stock CUTLASS recipes `45f58e7009c440eb` lost.
+No prepared BF16/FP8 NVFP4 copy; keep router hi/lo outputs FP32.

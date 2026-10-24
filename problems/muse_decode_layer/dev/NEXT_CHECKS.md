@@ -142,11 +142,11 @@ claim of idle SMs):
 | decode 16 sliding/full | 42.5 / 42.9 | 177.7 / 282.8 | 135.2 / 239.9 |
 | decode 32 sliding/full | 46.9 / 53.7 | 203.6 / 441.0 | 156.7 / 387.3 |
 
-Overlap payload `dev/overlap_lab.py`, SHA256
-`dbfbdc774a428f2ca16e034dd7bb1b62c8acf9411f82ebb51ac78d43baac626e`, is sent
-to the decode host at priority 0.8. It compares o-only, unpooler-only and both
-side-stream read-ahead against the six decode loads with 20 paired graph
-medians. The local sm_120 path is a no-op stand-in; only H200 can admit it.
+The overlap payload was dropped after b63389f0's sticky
+`cudaErrorInvalidAddressSpace` on the withdrawn bf16moe host. Its active
+`dev/overlap_lab.py` is deleted; historical generated runs are evidence only.
+No safe Hopper overlap path is established. Revisit after the streaming GEMV
+lab (proj send key `d962f665f754dea0`) has H200 evidence.
 
 Drop-in experiment: `cand_r3_overlap.py`, SHA256
 `9a4f59f5463605cf522207384a209827f6089bf4b9578cb70402a695d7b63feb`.
