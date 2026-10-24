@@ -1400,6 +1400,8 @@ no 1.26x result is claimed. `dev/gap_table.py --write` regenerates the receipt-d
 
 ### Decode attention drop-in (2026-10-24)
 
+**FP8-PV verify variants are accurate but 3-15x slow (`948044d4f32a4736`):** settings (3|5, 1|2) pass the gate (0.093-0.097) at b16 sliding 90.9-101.7, b16 full 1,253-1,294, b32 sliding 117-131 and b32 full 2,144-2,372 us vs FA3 ~372 us at b32 full; about 15x the b32-full KV floor (139 us). Implementation suspect, not closed. The same run's M=1 MoE path (v9m1) failed agreement on the H200 (1.889), like NT4 in `3920d3f0`; both passed on sm_120.
+
 **Our q8 verify kernel loses and fails at full context (`b02a42ce75dc44d4`, phase clocks, ctx 80K):** b16/b32 sliding q8 81.6/88.1 us (gate pass) vs q1 16.7/21.1; full q8 412.5/761.1 us and the post-store FP32 gate fails (1.252) vs FA3's ~372 us at b32 full. Its per-tile combine phase dominates (38-44K cycles median vs 0.6-1.4K for QK/softmax/PV). Closed for this kernel; the FP8 split variants (labs 948044d4, 5068f5e6) replace it.
 
 `problems/muse_decode_layer/dev/cand_r3_v9_attention_dropin.py` is a generated drop-in from the
