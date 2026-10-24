@@ -34,9 +34,42 @@ def read(ref):
     return dict(receipt=str(p.relative_to(ROOT)),job=p.stem.split('_')[-1],sha256=hashlib.sha256(source.encode()).hexdigest() if source else receipt.get('content_hash'),loaded='exact_loaded_decode_weights' in body,captured_from=captured[1] if captured else None,verify_corrected='tokens // q_len' in source,bf16_remote_work=remote_ref,rows=rows,log=body[:body.index('LAB_END')]+body[body.index('LAB_END'):].splitlines()[0])
 
 
+def select_dispatch(records):
+    exact=[r for r in records if r['loaded']]
+    if not exact:raise ValueError('exact loaded decode router receipt is required for dispatch')
+    rec=exact[-1]
+    if not rec.get('verify_corrected'):
+        raise ValueError('the exact-router receipt must include per-block verify draft sharing')
+    captured=[r for r in records if r.get('captured_from')==rec['job']]
+    core=captured[-1] if captured else rec
+    plan={1:'v9'}
+    measured={}
+    for m in MS:
+        evidence=core if m<=256 else rec
+        times=[(r['us'],r['kernel']) for r in evidence['rows'] if r['m']==m and r['routing']=='R' and 'ref' not in r['kernel']]
+        if not times:raise ValueError(f'no admissible result for M={m}')
+        best,kernel=min(times)
+        measured[m]=dict(kernel=kernel,us=best,job=evidence['job'],routing='captured_R0' if evidence.get('captured_from') else 'loaded_three_fixtures')
+        v9=next((us for us,k in times if k=='v9'),None)
+        # Native differences below 1% do not establish a speedup with six samples.
+        # Avoid copying a second persistent engine for an unmeasured practical gain.
+        plan[m]='v9' if v9 is not None and v9<=best*1.01 else kernel
+    return rec,core,plan,measured
+
+
 def render(records):
     out=['# MoE H200 lab measurements','',
          'Times are GPU microseconds from cold-L2 CUDA graph replay, anchored by median paired ratios against V9. The judge’s roughly 4 us fixed graph cost is included. R uses the decode-style fixture; B uses the standalone MoE board generator. `exact loaded` means the lab received the decode host’s router, bias, norms, pooler, and packed experts.','']
+    if any(r['loaded'] for r in records):
+        loaded,core,plan,measured=select_dispatch(records)
+        out += ['## Selected decode dispatch','',
+                'Core R uses captured loaded-router fixture0 IDs with varied FP32 expert scales (job '+core['job']+'); M512/753 use all three loaded-weight fixtures (job '+loaded['job']+'). Native minima within 1% are coalesced to V9 for this batch. These are expert microbenchmarks; complete-layer H200 and serving are unverified.','',
+                '| M | Kernel | R us | B us |','|---:|---|---:|---:|']
+        for m in MS:
+            evidence=core if m<=256 else loaded
+            cells=[next(r['us'] for r in evidence['rows'] if r['kernel']==plan[m] and r['m']==m and r['routing']==route) for route in ('R','B')]
+            out.append(f'| {m} | {plan[m]} | {cells[0]:.1f} | {cells[1]:.1f} |')
+        out += ['', 'H7 passes all H200 agreement checks on the varied-scale bank and uses MMA with 16-row tile alignment. At M256 it is 2.9% faster than its same-run V9 R control (462.8 vs 476.4 us), but slower on B (465.7 vs 448.2 us). All other Humming variants in that run fail agreement by 20–31%. No 200/120 us core result was found.','']
     for rec in sorted(records,key=lambda r:(not r['loaded'],not bool(r.get('captured_from')))):
         scope='exact loaded' if rec['loaded'] else (f"loaded route IDs from {rec['captured_from']}, fixture 0" if rec.get('captured_from') else 'generated router model / reference')
         out += [f"## {rec['job']} — {scope}",'',f"Receipt: `{rec['receipt']}`",'', '| Kernel / routing | '+' | '.join(map(str,MS))+' |','|---|'+'---:|'*len(MS)]

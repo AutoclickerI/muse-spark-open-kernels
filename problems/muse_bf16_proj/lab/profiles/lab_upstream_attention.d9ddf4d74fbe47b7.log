@@ -1,0 +1,58 @@
+FUSED_SELECT router m=128 incumbent_us=22.976 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.040 top=[(14.592000283300877, (64, 64, 4, 1, 8, 160)), (15.615999698638916, (64, 64, 4, 1, 16, 160)), (16.127999871969223, (64, 64, 4, 1, 16, 128)), (19.29599978029728, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.552 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.352 top=[(16.224000602960587, (64, 64, 4, 1, 8, 160)), (16.256000846624374, (64, 64, 4, 1, 8, 256)), (18.624000251293182, (64, 64, 4, 1, 8, 128)), (26.43200010061264, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.184 chosen=None chosen_us=25.184 top=[(29.983999207615852, (128, 64, 3, 1, 4, 160)), (33.72799977660179, (64, 64, 4, 1, 2, 256)), (35.77600046992302, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.120 chosen=None chosen_us=29.120 top=[(38.27200084924698, (128, 64, 4, 1, 2, 256)), (39.96799886226654, (128, 64, 4, 1, 2, 160)), (40.41599854826927, (128, 128, 2, 1, 2, 256))]
+FUSED_SELECT pooler m=128 incumbent_us=32.096 chosen=('lt_nn', 1) chosen_us=31.616 top=[(31.42400085926056, ('lt_nn', 1)), (31.679999083280563, ('lt', 0)), (32.3840007185936, ('lt_nn', 0)), (33.40800106525421, ('lt_nn', 5)), (33.72799977660179, ('lt', 1))]
+FUSED_SELECT pooler m=256 incumbent_us=38.816 chosen=('lt_nn', 0) chosen_us=36.768 top=[(37.11999952793121, ('lt_nn', 4)), (38.40000182390213, ('lt_nn', 0)), (38.784001022577286, ('lt', 2)), (38.84800150990486, ('lt_nn', 1)), (38.91199827194214, ('lt', 1))]
+FUSED_SELECT unpooler m=128 incumbent_us=29.696 chosen=('lt_nn', 0) chosen_us=29.472 top=[(29.983999207615852, ('lt_nn', 1)), (30.047999694943428, ('lt_nn', 0)), (30.14400042593479, ('lt', 2)), (30.14400042593479, ('lt', 3)), (30.271999537944794, ('lt_nn', 2))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.472 chosen=('lt', 0) chosen_us=33.440 top=[(33.535998314619064, ('lt', 0)), (33.56799855828285, ('lt_nn', 0)), (36.0959991812706, ('lt', 2)), (36.67199984192848, ('lt_nn', 1)), (36.99199855327606, ('lt', 3))]
+FUSED_SELECT o m=128 incumbent_us=13.248 chosen=('lt_nn', 0) chosen_us=12.864 top=[(12.896000407636166, ('lt', 2)), (12.927999719977379, ('lt', 1)), (12.992000207304955, ('lt_nn', 0)), (13.024000450968742, ('lt', 0)), (13.151999562978745, ('lt_nn', 5))]
+FUSED_SELECT o m=256 incumbent_us=13.696 chosen=None chosen_us=13.696 top=[(14.14399966597557, ('lt', 0)), (14.560000039637089, ('lt', 2)), (14.720000326633453, ('lt_nn', 0)), (14.783999882638454, ('lt', 6)), (14.84800036996603, ('lt', 4))]
+FUSED_SELECT prepare_s=10.24
+LAB_BEGIN upstream_attention 5cb388e2ea0a6380
+UPSTREAM_ATTN gpu=NVIDIA H200 sm=(9, 0)
+SWA B=1 qlen=8 page=1 window=2048 splits=2 BN=64 stages=2 us=42.688 relL2=0.002213
+SWA B=1 qlen=8 page=1 window=2048 splits=4 BN=64 stages=2 us=27.328 relL2=0.002173
+SWA B=1 qlen=8 page=1 window=2048 splits=8 BN=64 stages=2 us=19.232 relL2=0.002144
+SWA B=1 qlen=8 page=1 window=2048 splits=16 BN=64 stages=2 us=15.008 relL2=0.002133
+SWA B=1 qlen=8 page=1 window=2048 splits=32 BN=64 stages=2 us=13.376 relL2=0.0021
+SWA B=1 qlen=8 page=1 window=2048 splits=8 BN=128 stages=2 us=19.712 relL2=0.002183
+SWA_FA3 B=1 page=1 us=16.256
+SWA B=4 qlen=8 page=1 window=2048 splits=2 BN=64 stages=2 us=45.056 relL2=0.002216
+SWA B=4 qlen=8 page=1 window=2048 splits=4 BN=64 stages=2 us=29.088 relL2=0.002188
+SWA B=4 qlen=8 page=1 window=2048 splits=8 BN=64 stages=2 us=20.128 relL2=0.002155
+SWA B=4 qlen=8 page=1 window=2048 splits=16 BN=64 stages=2 us=17.120 relL2=0.002132
+SWA B=4 qlen=8 page=1 window=2048 splits=32 BN=64 stages=2 us=19.584 relL2=0.002101
+SWA B=4 qlen=8 page=1 window=2048 splits=8 BN=128 stages=2 us=20.704 relL2=0.002205
+SWA_FA3 B=4 page=1 us=17.088
+SWA B=16 qlen=8 page=1 window=2048 splits=2 BN=64 stages=2 us=45.824 relL2=0.002255
+SWA B=16 qlen=8 page=1 window=2048 splits=4 BN=64 stages=2 us=33.088 relL2=0.002204
+SWA B=16 qlen=8 page=1 window=2048 splits=8 BN=64 stages=2 us=35.040 relL2=0.00218
+SWA B=16 qlen=8 page=1 window=2048 splits=16 BN=64 stages=2 us=32.128 relL2=0.002155
+SWA B=16 qlen=8 page=1 window=2048 splits=32 BN=64 stages=2 us=38.624 relL2=0.002147
+SWA B=16 qlen=8 page=1 window=2048 splits=8 BN=128 stages=2 us=33.120 relL2=0.002199
+SWA_FA3 B=16 page=1 us=20.640
+SWA B=32 qlen=8 page=1 window=2048 splits=2 BN=64 stages=2 us=54.848 relL2=0.002236
+SWA B=32 qlen=8 page=1 window=2048 splits=4 BN=64 stages=2 us=57.216 relL2=0.002202
+SWA B=32 qlen=8 page=1 window=2048 splits=8 BN=64 stages=2 us=54.720 relL2=0.002169
+SWA B=32 qlen=8 page=1 window=2048 splits=16 BN=64 stages=2 us=54.656 relL2=0.002146
+SWA B=32 qlen=8 page=1 window=2048 splits=32 BN=64 stages=2 us=66.528 relL2=0.00212
+SWA B=32 qlen=8 page=1 window=2048 splits=8 BN=128 stages=2 us=54.496 relL2=0.002187
+SWA_FA3 B=32 page=1 us=26.912
+DFLASH B=1 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=1 us=131.232 relL2=0.005818
+DFLASH B=1 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=2 us=131.200 relL2=0.005818
+DFLASH B=1 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=1 us=142.656 relL2=0
+DFLASH B=1 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=2 us=142.688 relL2=0
+DFLASH B=4 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=1 us=131.104 relL2=0.005281
+DFLASH B=4 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=2 us=130.624 relL2=0.005281
+DFLASH B=4 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=1 us=146.336 relL2=0
+DFLASH B=4 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=2 us=146.368 relL2=0
+DFLASH B=16 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=1 us=126.400 relL2=0.0054
+DFLASH B=16 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=2 us=125.664 relL2=0.0054
+DFLASH B=16 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=1 us=146.080 relL2=0
+DFLASH B=16 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=2 us=144.768 relL2=0
+DFLASH B=32 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=1 us=131.360 relL2=0.00559
+DFLASH B=32 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=16 stages=2 us=131.360 relL2=0.00559
+DFLASH B=32 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=1 us=182.208 relL2=0
+DFLASH B=32 qlen=8 Hq=8 Hkv=1 D=128 fp8kv BM=64 stages=2 us=183.296 relL2=0
+LAB_END lab_s=23.0 prepare_s=33.2

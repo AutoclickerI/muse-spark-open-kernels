@@ -2,6 +2,22 @@
 
 Times are GPU microseconds from cold-L2 CUDA graph replay, anchored by median paired ratios against V9. The judge’s roughly 4 us fixed graph cost is included. R uses the decode-style fixture; B uses the standalone MoE board generator. `exact loaded` means the lab received the decode host’s router, bias, norms, pooler, and packed experts.
 
+## Selected decode dispatch
+
+Core R uses captured loaded-router fixture0 IDs with varied FP32 expert scales (job 907004cbcc7c4b82); M512/753 use all three loaded-weight fixtures (job 26d7e05ab97d4f96). Native minima within 1% are coalesced to V9 for this batch. These are expert microbenchmarks; complete-layer H200 and serving are unverified.
+
+| M | Kernel | R us | B us |
+|---:|---|---:|---:|
+| 8 | v9 | 63.6 | 80.9 |
+| 16 | v9 | 75.7 | 112.8 |
+| 32 | v9 | 105.0 | 146.1 |
+| 128 | v9 | 278.7 | 277.4 |
+| 256 | h7 | 462.8 | 465.7 |
+| 512 | marlin | 563.3 | 771.9 |
+| 753 | marlin | 715.9 | 949.7 |
+
+H7 passes all H200 agreement checks on the varied-scale bank and uses MMA with 16-row tile alignment. At M256 it is 2.9% faster than its same-run V9 R control (462.8 vs 476.4 us), but slower on B (465.7 vs 448.2 us). All other Humming variants in that run fail agreement by 20–31%. No 200/120 us core result was found.
+
 ## 26d7e05ab97d4f96 — exact loaded
 
 Receipt: `runs/muse_decode_layer/20261024T015934Z_submit_26d7e05ab97d4f96.json`
