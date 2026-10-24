@@ -14,7 +14,7 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 7. **Every key.** [hard] Whole window (sliding) and whole context (full); no top-k, sparse or block-skipping attention, no skipping values by weight. [external: llms.txt:109-110]
 8. **Kernel submission.** [hard] One Python file with `kernel_fn` and `prepare` (untimed, up to 300 s), run in the image without network; anything in the image, `load_inline`/nvcc and JITs allowed; 15 minutes per run with compilation. Rejected: patching timing, reading harness frames, touching harness I/O or secrets, editing loaded modules, importing the reference, starting processes, network. [external: llms.txt:88-98; TASK.md:78, 97]
 9. **Quotas** are enforced by the server (`okc problems`). [hard] [external: llms.txt:84, 102]
-10. **Credentials and shared machines.** [hard] Never print or commit the okc token (`~/.config/okc/config.json`); don't touch the shared Docker daemon or others' processes. [hard: protects the owner's account and shared resources]
+10. **Credentials and shared machines.** [hard] Never print or commit the okc token (`~/.config/okc/config.json`); don't touch the shared Docker daemon or others' processes. [hard: protects the account and shared machines]
 
 ## Jihoon's rules (below G0)
 

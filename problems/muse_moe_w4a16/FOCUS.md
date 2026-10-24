@@ -2,30 +2,30 @@
 Serves: G1, G2.
 
 G1/G2: the decode-layer score (R-20261025-1). Own M128 MoE.
-Incumbent is NT1 on v9's lossless recoded scale bank:283.6us versus raw322.2us
-on identical routes (58ae2e2cf8df45ef); one-read floor~106us. The old344us bar
-and raw-only bank restriction are stale. Free lane owns M256 and W2/final latency.
+Bar: NT1-recoded 283.6 us on paired H200 routes (58ae2e2c); floor ~106 us.
+Free lane owns M256/W2, whose distributed finalizer is reused in this lane.
+Current lab accepted on MoE: send a1762556e26931ef, judge dc3fea0a20a349bf.
+Automatically batched with the small-M instruction-limit lab, priority 0.4.
+Detached log inspected. Payload: prof/lab/moe_m128_issue_limit.py.
+Sources, SASS counts, hashes and model: dev/mixed_wgmma/m128/issue_limit/.
 
-Sent M128 raw/recoded fused-WGMMA comparison on MoE: send def9bff54e82c1b0,
-judge471f6d6216804dda; detached log confirms accepted. Payload:
-`prof/lab/moe_m128_scale_bank.py`; frozen hashes/protocol in
-`dev/mixed_wgmma/m128/scale_bank/manifest.json`. No decode dispatch promoted.
+Measured sm90a SASS: NT1 unrolled K512 is 492 -> 476 instructions/256 weights
+with a single LOP3 blend. F128 adaptive N32 W13 is 84.75 -> 81.25 instructions
+per16 weights; address work is37/84.75. Smaller D32/D16 loops use65/59.
+At the supplied four-warp issue budget, canonical-byte estimates are NT1
+9.99 TB/s before rereads; F128 N32 3.62 -> 3.78 TB/s. Static body counts include
+conditional paths; these are model estimates, not measured H200 ceilings.
+Real-route tile decode rereads NT8/16/32/128 =2.176/1.478/1.157/1.000.
+NT1's logical972.8 MB reads cost243.2 us at4 TB/s without L2 reuse, versus
+97.4 us ideal aggregate issue. NT1's binding hardware limit remains unresolved.
 
-Recoded producer reads the same9 bytes/block: E2M1 codes plus uint8 exponent/
-mantissa scale; sign/zero folded into codes in prepare. Four byte permutations
-replace four shared scale-table reads; no CTA E4M3 conversion/table remains.
-K64 register-bank repair retained. Configs3/4/5, grid528, paired against actual
-board NT1-recoded;12 public-router weight seeds x3 fresh inputs, six reversed/
-rotated cold128MiB graph orders, NT1 A:A samples, independent FP32 gates.
-
-Local: all36 fixtures/216 forced producer graphs pass; maxL2<=0.004132,
-row<=0.004851; all4064 finite E4M3/E2M1 combinations exact. Wrapper5 tests,
-6 scored graph shapes and6 static checks pass. Native12 kernels: no spills/
-C7513; all20 K64 paths retain disjoint A banks. H200 ranking is unverified.
-Recoded-only best7 drop-in passes21 graph gates with signed/zero/subnormal
-scales and changing routes; H200 winner alone gets path+SHA handoff.
-
-Prior K64 repair send0ea82c48f2255889 still has no receipt at this turn's one
-read. It is independent of the scale-bank lab; no waiting/polling was added.
-Next resume: read471f6d6216804dda once, require every numeric gate and complete
-seed means, then hand the decode lane a winning M128 cell or reject it.
+The lab pairs actual NT1-recoded, one-LOP3 NT1, F128 recode/word scales and
+D16/D32 word scales with distributed W2 against identical real routes.
+Twelve weight/router seeds x3 fixtures, six cold128MiB orders, A:A noise;
+separate W13/W2 phase graphs and NT1 per-CTA globaltimer distributions.
+Local252 graph checks +42 signed/zero/subnormal/route-transition gates pass;
+4064 scale/code values exact;17 native entries no spills/C7513,16 safe K64 paths.
+Wrapper5 tests/6 scored graph shapes/6 static checks pass; full lab26.4s/78s.
+Prior471f6d6216804dda had no receipt at this turn's read and has no phase timers.
+Next resume: read dc3fea0a20a349bf once. Promote only a complete paired H200
+winner; locally gated NT1lop drop-in and SHA are in issue_limit/dropin_manifest.json.

@@ -16,10 +16,10 @@ the score and every other kernel counts only inside it.
 | 2 | G2 | H200-verified stage kernels inside the decode layer at its 12 scored shapes (M = 1-256): MoE, attention, projections, glue | G1 is built from them | Each beats the incumbent in a whole-layer paired lab and passes the gates |
 
 ## Optimize vs spend (R-20261024-2)
-Optimize two things: the board score and the speed of our experiment loop, whose bottleneck is the judge
-starting our runs one at a time (pack new information into each run). Anything else
-no hard limit bounds is a resource to spend, never a second objective: GPU memory, power, SMs, `prepare` and
-compile time, daily quotas, local GPUs, agent time.
+The board score is the only target. The experiment loop's speed is optimized only because it buys score: its
+bottleneck is the judge starting our runs one at a time, so pack new information into each run. Everything no
+hard limit bounds is a resource to spend, never minimized: GPU memory, power, SMs, `prepare` and compile time,
+quotas, local GPUs, agent time.
 
 ## Non-goals
 - Serving (the SGLang patch, the serving board, prefill, the DFlash drafter): not studied until the serving
