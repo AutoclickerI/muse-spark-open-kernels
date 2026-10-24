@@ -383,6 +383,176 @@ or32, `--burst 8 --one-step-reps 4 --layers 62 --reps 6 --out <json>`;
 log, producer agreement, model inputs and summaries live in
 `/data2/jihoon/muse_kernel/harness/results/prefill-overlap/` (`report.json`, `sources/`).
 
+### KV residency and long-context capacity (2026-10-24)
+
+**Decision: bound Muse's SWA reservation by live windows and share router scratch.**
+With the receipt-selected projection layouts, the old patch leaves34.110GB before
+dynamic allocations; c32/80K needs37.880GB under the default0.8 SWA/full split.
+It cannot fit even with zero graph overhead. This audit uses the requested nominal
+141GB decimal H200 and0.85 fraction:119.850GB. Actual CUDA-visible capacity and
+pre-load CUDA/NCCL occupancy still require a full-node measurement.
+
+**Source-count residency, GB/GPU at TP8/EP8.** The frozen source is
+`harness/trees/kv-audit-r0`; the candidate is `kv-audit-cap-r2`, both under
+`/data2/jihoon/muse_kernel/`. `prof/kv_capacity_report.py` reuses the weight count in
+`serving/tests/muse_residency.py` and adds every active layout and scratch category.
+The released target configuration remains gated; vision/audio defaults and distinct
+target RoPE tables are assumptions, not measured checkpoint residency.
+
+| Resident component | Stock GB | Patch before GB | After router handoff GB |
+|---|---:|---:|---:|
+| 60 NVFP4 expert banks, codes + FP8 block scales |54.358|54.358|54.358|
+| Two BF16 expert layers |6.442|6.442|6.442|
+| Target QKV/gate/O, pooler/unpooler, FP32 router and vocab |13.050|13.050|13.050|
+| Router hi/lo weights |0.520|0.520|0.520|
+| DFlash attention/MLP + FC |1.741|1.153|1.153|
+| DFlash dynamic convs, selector tables, norms |0.547|0.547|0.547|
+| Vision + replicated audio defaults |0.721|0.721|0.721|
+| Target norm/gate weights and effective caches |0.018|0.018|0.018|
+| One target + one draft FP32 RoPE table |0.805|0.805|0.805|
+| Existing TP push/pull plane and graph pointer table |0.159|0.159|0.159|
+| Selected full pooler NN + O128 NN transposes |0|5.201|5.201|
+| Router split-K scratch, all20 verify capture sizes,62 layers |0|2.763|0.00446 per routing stream|
+| **Subtotal for those selected plans** |**78.363**|**85.740**|**82.981**|
+| Additional selected NN layouts: full unpooler / two local TP slices |0|0–4.161 /0–1.040|same|
+| One Humming candidate bank, only if its warmup selects it |0|0–0.906|same|
+| Unbound `muse_prefill_dense`, `muse_prefill_gemm`, `muse_dflash` |0|0|0|
+| Removed experimental verify/prefill attention paths |0|0|0|
+
+These are selected-plan scenarios: startup tuning may choose fewer transposes. No
+unselected NN layout survives `MuseProjection.prepare`. Its source/detached weights
+alias loaded parameters. The32MiB Lt workspace is temporary and reused by the graph
+allocator; it is not32MiB times62 layers or74 prefill shapes. The router's high/low
+views alias its pair allocation and the model reuses those views. Stock already
+reserves the8MiB collective push slots; fused finalization aliases that plane.
+
+The full-width local bank census corrects a tempting but false source inference:
+Marlin temporarily converts scales to BF16, then `nvfp4_marlin_process_scales`
+returns FP8. Stock and canonical banks are both0.906GB/layer; there is **no6.04GB
+scale saving**. The patch's steady weight saving is chiefly the0.587GB sharded
+DFlash FC. Production deletes the native NVFP4 tensors after canonical repacking;
+the measurement proxy intentionally retains both representations for comparison.
+
+**Dynamic residency must also be charged.** The following allocations are additional
+to the subtotal; call their aggregate U, avoiding double-counting graph outputs:
+
+| Component | Source / local measurement and H200-shape implication |
+|---|---|
+| Target prefill/verify graph pools, MoE scratch and five hidden taps |62-layer full-width local proxy: stock9.278GB, patch8.022GB reserved in one shared pool; verify32 adds no reservation. Includes five1.342GB total taps, layer outputs and scratch. Uses one immutable NVFP4 layer bank, identity collectives and portable attention; the two BF16 edge-layer graph peaks are not measured full-width. This is not the H200 breakable-graph total. Do not multiply by62 or74.|
+| Draft graph pool and graph I/O |Tiny server target/draft/aux graph pools total2.640GB stock and2.621GB patch; these totals must not be substituted for H200. Both models share the main global capture pool; draft extension and committed-context graphs may own separate pools.|
+| Prefill shared I/O |One `[16384,8192]` BF16 input-embedding buffer0.268GB; shared output holds final hidden plus five taps,1.611GB. Those returned taps may already be counted in a graph-pool measurement. Verify output logits are TP-sharded.|
+| DFlash KV helper and graph inputs |Full-width flat KV weight copy0.02097GB;16K helper projection/K/V workspaces0.08389GB; pinned old M256 workspace0.00131GB; committed-context graph hidden input0.02097GB plus small index/length tensors. Keep pinned references: prefills replace the helper workspace while captured graphs retain its old addresses. Private graph-pool reservation remains dynamic.|
+| Request maps, allocator free lists and eager input slots |Local request map `[33,131084]` int32 =0.01730GB. Full-to-SWA map and free lists scale with pool rows; eager IDs/positions/locations/mRoPE buffers also scale with full capacity. Source baseline is about64B/full row +8B/SWA row, in addition to the request map. Recompute after changing full capacity.|
+| FA3 metadata and library storage |Target full/SWA plus draft32x131072 int32 page tables alone are about0.050GB. cuBLAS, CUDA graph driver state, NCCL and alignment/allocator slack need actual TP8 measurement. Local FlashInfer's workspace and KV-index arrays are not H200 FA3 allocations.|
+| Additional distinct target RoPE theta |0.268GB per distinct64-wide FP32 table.|
+
+The Humming admission guard charges pending VMM KV backing, but a selected copy still
+uses memory at post-capture resizing. Its0.906GB is conditional, not free. Keep its
+selected speed path and all projection winners; the window split removes the larger
+capacity risk without removing kernels.
+
+**Pool policy and need.** Actual stock and old-patch runs confirm a hybrid SWA pool
+with0.8 SWA rows per full row. `SWAChunkCapPoolConfigurator` does not apply while the
+judge's prefix/hierarchical cache is enabled. Thus the real default cell includes
+`16*256 +0.8*46*256 +1280 =14796.8 B/full row`, counting DFlash. Charging every
+target layer for full history instead gives15872B target +1280B draft; that is a
+different, more conservative scenario, not the allocator's implemented split.
+
+The new `MuseKVPoolConfigurator` keeps the standard live-request cap, including
+eviction interval128, two prefill chunks in flight and speculative preallocation,
+plus two cached-fragment windows per request. Under current flags it reserves262657
+SWA rows =**3.093GB/GPU**, independently of full history capacity. The cache frees
+out-of-window request rows and can evict unlocked SWA branches independently of full
+history; a match locks fragments until they cover the trailing window. Its boundary
+fragment can overhang by another window. The extra64 windows cover both cached
+fragments while extensions run. Explicit operator SWA ratios remain honored.
+Muse exposes2047 previous positions (2048 including the current position); the
+page-size-one padding in the cap covers the current position. The full side
+charges **4096+1280 =5376 B/row**, including every private DFlash row.
+The generic existing chunk-cap arithmetic omits `_draft_cell_size`; reusing it
+unchanged would overallocate DFlash memory. The new configurator explicitly charges it.
+
+| c | Default split need80K /131072, GB | Bounded split need80K /131072, GB | Maximum U that fits after router sharing,80K /131072, GB |
+|---:|---:|---:|---:|
+|1|1.184 /1.939|3.523 /3.798|33.346 /33.071|
+|4|4.735 /7.758|4.813 /5.912|32.056 /30.957|
+|16|18.940 /31.031|9.974 /14.367|26.895 /22.502|
+|32|37.880 /62.062|16.856 /25.642|20.013 /11.227|
+
+The bounded need includes the entire262657-row SWA reservation even at c1. At80K
+history plus753 new and220 output tokens, c32 bounded need is17.023GB. The131072
+column includes generation. Without the router handoff, subtract2.759GB from the U
+allowance; if all optional NN layouts survive tuning subtract another5.201GB, and
+subtract0.906GB if Humming is selected. These allowances are capacity conditions,
+not proof that all32 maximum-length contexts fit on H200.
+
+Before U, stock's default pool upper bound is2.804M full rows; the old patch's is
+2.305M. With the bounded split and router sharing, the patch's upper bound is6.283M
+full rows, decreasing by0.186M per GB of U. Required full rows at c1/4/16/32 are
+0.080/0.320/1.280/2.560M for80K, or0.131/0.524/2.097/4.194M at131072. Post-capture
+resizing measures actual free memory, reserves the static-fraction headroom and
+rebuilds target/draft pools; it does not assume that U is zero.
+
+**GPU0 local verification.** All use the tiny model, TP1, native FlashInfer, the
+judge's other flags and an explicit4.3M full-row test cap. This cap makes runs
+comparable; it is not an H200 pool-size observation. The hook synchronizes at census
+boundaries, so these timings are checks rather than a serving speed claim.
+
+| Snapshot after capture / resizing | Stock | Old patch | Bounded patch |
+|---|---:|---:|---:|
+| Full rows / SWA rows |4.3M /3.44M|4.3M /3.44M|4.3M /262657|
+| Target logical KV, GB |7.485|7.485|2.605|
+| Draft logical KV, GB |5.504|5.504|5.504|
+| Torch allocated / reserved, GB |18.029 /20.867|18.067 /20.883|13.185 /15.991|
+
+The bounded two-turn80K run completes106/106 responses at220 tokens; every response
+is exact against matched stock. All53 second turns reuse80008 cached prompt tokens;
+there are no retractions and logged SWA use peaks at41%. TTFT p50 patch/stock is
+1.052 /1.062 /1.032 /1.078 at c1/4/16/32. All four rungs stay below the2x gate.
+P90 ratios are1.017 /1.003 /1.005 /0.858. The final near-cap run completes32/32
+requests at220 tokens with130848 prompt tokens (131068 total), no retractions,
+and36% peak logged SWA use. The rejected earlier edge test requested130852+220;
+stock's `context_len-2` response clamp legitimately shortened those to218. Its
+failed220-token check is retained in `kv-capacity-cap-131k-r1`; it is not a KV failure.
+The final teacher-forced probe matches the retained stock repeats
+`margin-lp-tp1-stock-a/b`:2615 non-null input logprobs and8 forced continuation
+logprobs have mean/max drift0, versus stock-repeat max0. It uses a2608-token
+prompt on the Triton backend; it is separate from the native FlashInfer80K run.
+
+The router allocation census runs all20 capture sizes through62 real full-width
+router instances: scratch is2,763,037,440B before and4,456,512B per stream after.
+All eager outputs and changed-input graph replays agree exactly. Two capture streams
+run concurrently with separate scratch, and completion counters return to zero.
+The current Hopper source accepts the two-hunk handoff with `git apply --check`:
+`prof/kv_capacity_router.patch`; it has not been edited in the live kernel lane.
+The native sm120 pipeline ran; native sm90a WGMMA remains unverified.
+
+Production changes: new `srt/model_executor/muse_kv_capacity.py`; one four-line
+factory hunk in `srt/model_executor/pool_configurator.py`; new
+`srt/managers/muse_workspace.py`. The live kernel file is untouched. The router
+handoff has exactly two hunks in `kernels/ops/muse_spark_v12/projection_hopper.py`:
+delete instance `self.scratch`, then replace per-M allocations with the shared
+workspace call. Both hunks are applied only in the tested frozen candidate.
+No worker/model/expert-kernel hunks were made. The live owned files match the
+final candidate byte-for-byte. `capacity-source.patch`, `router-handoff.patch`
+and `source-manifest.json` preserve this boundary in the evidence directory.
+
+Reproducers: `prof/kv_capacity_hook/sitecustomize.py`, `prof/kv_capacity_components.py`,
+`prof/kv_capacity_report.py`, `serving/tests/test_muse_kv_capacity.py`. Evidence is in
+`harness/results/kv-capacity-components/`, `kv-capacity-stock-r2/r3`,
+`kv-capacity-patch-r2`, `kv-capacity-cap-r2`, `kv-capacity-cap-131k-r3` and the teacher-forced labels.
+The smaller197121-row prototypes are retained as `kv-capacity-cap-r1` and
+`kv-capacity-cap-131k-r2`; the final cap includes radix-fragment overhang.
+All paths are under `/data2/jihoon/muse_kernel/`; local launcher logs are in
+`runs/screen/kv-capacity-*`. No judge run, commit or GPU1 computation was used.
+The required upstream refresh also records the organizers' check-quota change
+20→10/day for attention, decode layer and prefill; serving flags did not change.
+
+**Unverified:** full-checkpoint H200 TP8/EP8 non-KV and graph-pool residency, actual
+automatically sized pool capacity, startup-selected optional layouts/Humming bank,
+FA3 and NCCL memory, and held-out full-model agreement/TTFT. The80K c32 capacity
+margin is substantially larger; the131K margin still depends on measured U.
+
 ## Boards (snapshot 2026-10-23T18:28:17Z)
 
 All six public reads were taken sequentially from `18:28:17.076989Z` through
@@ -653,75 +823,11 @@ The frozen source order and local evidence live in `problems/muse_prefill_layer/
 The obsolete promotion handler was stopped and deleted: `send` chooses a scored run while a slot
 remains, otherwise a check, and the board retains our best. The orchestrator sends the ready queue.
 
-Serving KV accounting from the judge's flags (`serving/RULES.md`): TP8/EP8, FP8 KV,
-`--mem-fraction-static 0.85`, chunked prefill16384, context limit131072, max-running32 and
-hierarchical cache enabled. At15,872B/token/GPU, with no shared-prefix or sliding-cache savings:
-
-| Concurrent requests | KV at80K tokens/request, GB/GPU | KV at131072 tokens/request, GB/GPU (GiB) |
-|---:|---:|---:|
-| 1 | 1.270 | 2.080 (1.9375) |
-| 4 | 5.079 | 8.321 (7.75) |
-| 16 | 20.316 | 33.286 (31) |
-| 32 | 40.632 | 66.572 (62) |
-
-These are capacity scenarios, not observed simultaneous lengths: the judge's conversations are hidden.
-The131072 cap includes generation; do not add220 beyond it. At80K history plus753 new tokens plus220
-generated tokens, each request needs1.285GB/GPU; concurrency32 needs41.127GB. A new16K chunk alone
-adds0.260GB/request/GPU, and220 generation tokens add3.492MB. A full bank across 60 layers costs 54.358 GB/GPU, equivalent to 3,424,785 target KV tokens.
-The 119.850 GB static budget must also fund the allocations below. All GB here are decimal.
-
-**TP8/EP8 non-KV accounting (static count, not an H200 allocation measurement).** Reproducer:
-`serving/tests/muse_residency.py`; output:
-`/data2/jihoon/muse_kernel/harness/results/ar-norm-evidence/residency.json`.
-The saved target HF config is an access-denied response, so these counts use the pinned Muse
-configuration/model implementation and public kernel shapes, plus the public released DFlash2
-config. Vision/audio defaults and the target RoPE schedule need full-checkpoint confirmation.
-
-| Resident component per GPU | GB | Basis |
-|---|---:|---|
-| Canonical NVFP4 bank, 60 layers | 54.358 | exact shape count, codes + scales; no second Marlin bank |
-| Two BF16 expert layers | 6.442 | `2*32*3*4096^2*2` |
-| Target QKV/gate/O, pooler/unpooler, FP32 router, vocab | 13.050 | dense shape count; pooler/unpooler remain replicated storage |
-| Router BF16 hi/lo cache | 0.520 | FP32 router retained, two BF16 copies after prefill |
-| DFlash attention/MLP + split FC | 1.153 | 5 layers; released weights unchanged; target head/embedding borrowed |
-| DFlash dynamic convs + selector tables + norms | 0.547 | ten replicated dynamic projections; two `[202048,256]` tables |
-| Vision + replicated audio defaults | 0.721 | source shape count; audio meta construction = 235,680,768 bytes |
-| Target norm/gate params and effective caches | 0.018 | includes FP32 gate coefficients; views may alias |
-| One target + one draft FP32 RoPE table | 0.805 | `1048576*(64+128)*4`; additional distinct target theta adds 0.268 |
-| Existing TP push/pull plane + graph pointer table | 0.159 | 8 MiB slots reserved by projection path; fusion adds zero storage |
-| **Counted non-KV total** | **77.776** | includes bank; source-count estimate, not measured allocation |
-| **Spare before KV and dynamic allocations** | **42.074** | `119.850-77.776` |
-
-Graph pools are **not determined by checkpoint config**: `GraphPoolPrecarve.measure` uses actual
-reserved-byte high water; cuBLAS/FA3 workspaces, graph liveness, request maps, allocator slack,
-CUDA/NCCL allocations and prepare-time transient copies require a full-node measurement. Call
-these additional bytes U; every spare below is **upper bound minus U**. The existing grouped
-prefill allocates `inter`, `y` and dense gather, each `16384*8*4096*2 = 1.074 GB` before
-finalize/scratch; their lifetimes overlap. Five captured target hidden taps add 1.342 GB live at
-16K, plus their concatenation/projection. It would be false precision to call U zero or infer it
-from sm_120 tiny-model free-memory logs (another process changes those logs).
-
-The drafter also stores FP8 KV: conservative full-capacity `5*2*128 = 1,280 B/token/GPU`, in
-addition to the supplied target 15,872 B/token. No prefix sharing or SWA capacity reduction:
-
-| c | context/request | Target KV GB | Draft KV GB | Spare GB before U | Extra 0.906 GB layer banks before U |
-|---:|---:|---:|---:|---:|---:|
-| 1 | 80K / 131072 | 1.270 / 2.080 | 0.102 / 0.168 | 40.702 / 39.826 | 44 / 43 |
-| 4 | 80K / 131072 | 5.079 / 8.321 | 0.410 / 0.671 | 36.586 / 33.082 | 40 / 36 |
-| 16 | 80K / 131072 | 20.316 / 33.286 | 1.638 / 2.684 | 20.120 / 6.104 | 22 / 6 |
-| 32 | 80K / 131072 | 40.632 / 66.572 | 3.277 / 5.369 | -1.835 / -29.866 | 0 / 0 |
-
-A full second bank already exceeds the static budget by 12.284 GB **before KV and U**.
-Partial hot-layer layouts remain spendable: at c16/80K, at most 22 layer copies before U;
-at c16/131K, at most six. These are upper bounds, not layout limits to optimize against.
-At c32 the conservative fully resident scenarios need sharing/SWA savings or hierarchical
-spills even with one bank. With the sim schedule of 46 sliding/16 full layers and resident
-sliding rows capped at 2048, target+draft KV would be only 11.341 / 18.036 GB at c32,
-leaving 30.733 / 24.039 GB minus U; actual SGLang SWA allocation policy must establish
-whether that discount is realized. Judge simultaneous lengths and prefix reuse are hidden.
-Measure post-load allocated/reserved bytes, each target/draft prefill/verify graph pool,
-post-capture KV capacity and peak resident tokens before allocating partial copies.
-
+Current TP8/EP8 residency and KV-capacity accounting, including stock comparison,
+active projection layouts, graph/scratch measurements and the bounded-SWA fix, is in
+[Serving track: KV residency and long-context capacity](#kv-residency-and-long-context-capacity-2026-10-24).
+The earlier77.8GB weight subtotal omitted selected transposes and router scratch;
+it was not a full non-KV residency measurement.
 
 ### Projection evidence and next experiment (G3, G2)
 

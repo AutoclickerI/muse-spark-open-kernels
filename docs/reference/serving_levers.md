@@ -34,7 +34,8 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
-| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; next-turn prefill priority fixed after a completion | H200 host latency and full-node TTFT |
+| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; next-turn prefill priority and completed-prefill first-token delivery fixed | H200 host latency and full-node TTFT |
+| KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch sharing is a tested two-hunk handoff in `prof/kv_capacity_router.patch` | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
 | Expert producer | V9 calls<=256 for M<=752; `PrefillExpertPlan` grouped>=753; one canonical bank | Queued `cand_serving_prefill_diag` decides512-row calls;513–752 currently splits256+256+tail; grouped full-model H200 agreement/TTFT |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
@@ -49,60 +50,82 @@ fastest gather variant is36.8/80.8us (empty full context),65.184/115.168us
 prefill dispatch therefore stays removed; the whole-layer score does not
 justify replacing a faster attention component.
 
-The TTFT audit found a concrete scheduler priority bug: the lookahead callback
-processes the previous result, publishes a completed turn, then prepares decode
-before the next loop ingests that conversation's new turn. With other requests
-still running, `take_prepared` bypasses prefill selection for a whole verify
-step. After any completion, the callback now keeps early result processing but
-defers batch selection until ingress. `take_prepared` then filters completed
-rows before prefill admission counts them, including a full32-request batch;
-otherwise the slot budget would still force one extra decode. The deterministic
-two-request/full-slot regression
-fails before this fix and passes after it; all4 overlap-plan tests pass.
-KV host graphs and the early length relay remain enabled:96 changed-input FP8
-cache graph replays across all32 batch sizes and100 publish/resolve cycles are
-byte-exact, including unchanged cache guards and the GPU-only FA3 relay.
+The TTFT margin audit found a delivery barrier missing at the end of prefill:
+with overlap enabled, a completed first token remained in `result_queue` while
+the next prefill or DFlash draft/verify launch ran. The scheduler now consumes
+that result before launching more work. Only batches containing a completed
+prefill trigger this barrier; middle chunks and steady-state decode retain
+overlap. The lookahead callback tests queue ownership instead of `last_batch`,
+so it does not consume an already-flushed result twice. The previous completed-row
+admission/next-turn priority fix remains. All6 deterministic overlap tests pass;
+the launch-before-first-token and double-consume cases fail on the old code.
 
-The original2.06x forced TP2 c32 result is not a reproducible2.06x code effect:
-unchanged `q16` source rerun `r01` is1.48x against the old stock run, and0.85x
-against fresh `r04`; the two stock runs themselves differ1.73x at c32.
-The valid host-group ablation `r05` (scheduler/length relay/KV graphs removed)
-is174/174 exact with0 logprob drift and TTFT ratios0.98/1.13/1.89/0.44 versus
-`r04`. Those serial runs were exposed to different external GPU loads, so this
-does not measure the priority fix's isolated speedup. `r02` is rejected: external
-allocation during capture shrank KV from300,000 to25,356 tokens and caused
-retraction. `r09` is exact but excluded from timing because it was stack-sampled;
-it completed and showed HiCache backups/FlashInfer planning, not a deadlock.
-The old failure and all rejected runs remain in the evidence directory.
-`r12` is rejected for an18,044-token pool, OOM retractions and incomplete
-outputs. `r14` is a startup-only test-control failure: its old snapshot predates
-`muse_prefill_expert.py`. Final controls use the same integration source minus
-only the priority guard. The external test wrapper now rejects a shrunken KV
-pool before workload traffic; it does not resize pools or change the metric.
+The old native TP2 c16 p50 ratio1.955 is not a reproducible2x compute regression:
+unchanged-before source in a fresh full-grid trace is1.157x at c16. Native tiny
+sm_120 uses stock Marlin/FlashInfer rather than the Hopper-only expert ports;
+its c16 before-fix prefills have M871..16384, with no513–752 dispatch. This
+rules out that expert gap as the observed local cause, not as a future H200
+performance risk. The fresh stock brackets themselves differ up to1.722x.
+Do not assign the entire old ratio or a Hopper speedup to this scheduling hunk.
 
-Final local sm_120/FlashInfer gates use174 requests per run at exactly220
-tokens, all74 prefill graph sizes, runtime prefill/verify replay, no tracebacks,
-unchanged source provenance and300,000 actual KV slots. Every row below is
-174/174 exact, first divergence220, token agreement1. The matched margin
-teacher-forced probe (2,615 prompt plus8 generated logprobs) has mean/max drift0
-on all three final patch runs. This is a probe, not a new30x220 near-tie drift
-study; full-model Hopper numerical agreement is still unverified.
+Full-grid TP2 native traces (`ttft-full-stock-tp2`, `ttft-full-before-tp2`,
+`ttft-full-after-tp2`) preserve c1/c4 warmup before c16. The before/after source
+trees use the fixed one-cached-window KV prototype and differ only in `managers/dflash_overlap.py` and `managers/scheduler.py`.
+The request-ID-keyed trace uses CUDA events anchored during startup warmup;
+subsequent events are read after the existing result synchronization. Queue
+includes ingress, admission, chunk gaps and time waiting for GPU execution.
+Prefill is the CUDA execution envelope, including target, prompt-to-drafter KV,
+stream waits and host launch gaps; it is not a sum of busy kernel durations.
+Emit runs from the final prefill GPU event to the client's first token.
+Each request's three intervals sum to its wire TTFT. Arithmetic means below
+are milliseconds; all48 paired c16 rows are in
+`/data2/jihoon/muse_kernel/harness/results/ttft-g1-evidence/per_request_ttft.csv`.
 
-| Run / control | Mode | TTFT p50 patch/stock c1 / c4 / c16 / c32 | Gate |
-|---|---|---|---|
-| `r19` / fresh `r28` | Before priority fix, same exact-shape portable ABIs |0.670 /0.484 /0.930 /1.151|all<=2x|
-| `r25` / fresh `r28` | Final priority fix, TP2 portable ABIs |1.059 /0.848 /0.986 /1.214|all<=2x|
-| `r26` / `r21` | Final priority fix, TP1 portable ABIs |0.914 /1.013 /0.345 /1.026|all<=2x|
-| `r27` / fresh `r28` | Final priority fix, native TP2 |1.158 /1.241 /1.955 /0.942|all<=2x|
+| TP2 native c16 cohort | Queue | Prefill execution | First-token emit | TTFT |
+|---|---:|---:|---:|---:|
+| Stock, all48 |239.30|45.63|120.59|405.52|
+| Before fix, all48 |255.19|58.63|120.55|434.37|
+| After fix, all48 |291.83|44.30|14.39|350.52|
+| Stock,32 follow-ups |40.22|22.60|42.24|105.06|
+| Before fix,32 follow-ups |43.04|33.59|46.76|123.39|
+| After fix,32 follow-ups |59.09|24.19|10.89|94.17|
 
-Before/after snapshots differ only in `managers/dflash_overlap.py`; current
-live runtime ASTs match the final snapshot; the later attention receipt removes
-only an unbound module and a backend comment. P90 ratios are also below2x, maximum1.606. The original
-2.06x failure is retained, but these controls do **not** prove a speedup or
-attribute that old value to one hunk: against the same fresh stock, forced c32
-is1.151 before versus1.214 after. The deterministic admission bug is fixed;
-shared-device timing and changed batch composition still limit causal latency
-claims. No H200 speed credit is assigned to this scheduler change.
+Delivery wait falls120.55->14.39ms overall and46.76->10.89ms on follow-ups.
+Queue and execution change with arrival/batch composition and shared-device
+load; the observed total reduction is not an isolated kernel speed claim.
+Both traced patch variants remain174/174 exact at220 tokens. The traced c32
+p50 ratio is1.888 before versus1.335 after; traces are diagnostic, not the gate.
+
+The timing gate is uninstrumented: four stock runs bracket native and
+portable TP1/TP2 runs, all with174 requests, exactly220 tokens, all74 prefill
+graph shapes, actual prefill/verify graph replay, stable source fingerprints,
+300000 actual full-KV slots and no tracebacks. TP1 uses GPU0 at0.85; TP2 uses
+GPUs0/1 at0.3. These are local sm_120/FlashInfer results. Each table entry is
+the worse p50 patch/stock ratio against either stock bracket, using the normal
+`compare.py` median. All16 mode/load entries pass the1.5x margin target.
+
+| Mode | c1 | c4 | c16 | c32 |
+|---|---:|---:|---:|---:|
+| TP1 native |1.071|0.796|0.917|1.018|
+| TP1 portable Hopper ABIs |1.281|1.022|0.615|1.054|
+| TP2 native |1.355|0.963|1.282|1.278|
+| TP2 portable Hopper ABIs |0.909|0.861|1.232|1.152|
+
+Every patch run is174/174 exact: first divergence220, token agreement1.
+The teacher-forced probe's2615 scored input positions (including8 forced
+continuation tokens) have mean/max drift0, as do the first8 generated-token
+comparisons. This is the margin fixture and a probe, not a new30x220 near-tie
+study. P90 ratios reach1.705, below2x but not uniformly below1.5x; the margin
+claim is for the existing p50 gate. Full-model H200/FA3 latency, hidden-context
+TTFT and numerical agreement remain unverified.
+
+Reproduce with `serving/tests/run_ttft_gate.py --tree <frozen-tree> --prefix <new-label>`;
+`run_ttft_trace.py` and `analyze_ttft.py` produce the separate timeline audit.
+Evidence, both stock brackets, per-request CSV, source-isolation proof and
+patch checks are under `/data2/jihoon/muse_kernel/harness/results/ttft-g1-evidence/`.
+The read-only harness was not edited. The regenerated patch retains every
+accepted path plus the KV lane's new modules:323121 bytes,32 files, maximum
+added line374 characters; pristine-base apply, syntax and whitespace checks pass.
 
 The expert layer screen uses a canonical-bank-only owner and a separate Marlin
 reference:15 cases including257/512/513/752/753 transitions, EP offsets0/64,
@@ -746,14 +769,17 @@ M256; their N512/N1024 slices tune8..128, avoiding unused full-path NN layouts.
 A45s model-wide new-trial budget shares plans by actual shape; expired-budget
 cache reuse is now validated rather than dropped. Weight values and parameter
 registration are unchanged; BF16 outputs and FP32 GEMM accumulators remain.
-Only selected lossless NN transposes persist. The receipt choices would retain
-about6.24GB/GPU (62 o + full pooler + both local slices); an NN winner for every
-full unpooler would raise this to10.40GB. These are dense layout copies, not
-expert banks. They reduce KV capacity:6.24GB equals about393,216 target KV slots
-(15,872bytes/slot), before draft KV. Actual selected bytes, graph pools and KV
-capacity still require an H200 allocation measurement; the conservative c32
-fully resident scenario has no spare even before these copies. SWA/hierarchical
-cache behavior determines whether actual judge loads fit without added spills.
+Only selected lossless NN transposes persist. The receipt-backed full pooler and
+O layouts cost5.20GB/GPU; selected local-slice layouts add up to1.04GB, and full
+unpooler NN winners could add4.16GB. These dense copies and the router's2.763GB
+of per-layer/per-shape scratch made the old default0.8 SWA/full split fail the
+c32/80K capacity bound even before graph pools. The new Muse pool configurator
+reserves262657 SWA rows (3.093GB at TP8), then funds full-attention history plus
+every DFlash KV row from the remainder. The tested router handoff shares4.46MB
+per routing stream, recovering2.759GB without changing kernels or layouts.
+See FINDINGS "KV residency and long-context capacity" for source counts, local
+measurements and explicit H200 dynamic-memory allowances. Actual startup plan
+selection and full-node graph/NCCL residency still need H200 measurement.
 
 The old `projection_hook`/`projection_harness.py` padded tiny router is deleted.
 Production router and QKV predicates reject tiny fixture shapes; a new regression

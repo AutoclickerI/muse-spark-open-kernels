@@ -5794,10 +5794,10 @@ index 0000000..0b8631f
 +        self.graphs[bs].replay()
 diff --git a/python/sglang/srt/managers/dflash_overlap.py b/python/sglang/srt/managers/dflash_overlap.py
 new file mode 100644
-index 0000000..c489f79
+index 0000000..13fc2aa
 --- /dev/null
 +++ b/python/sglang/srt/managers/dflash_overlap.py
-@@ -0,0 +1,80 @@
+@@ -0,0 +1,96 @@
 +"""Prepare the following DFlash batch while target verification is on device."""
 +
 +from copy import copy
@@ -5808,6 +5808,20 @@ index 0000000..c489f79
 +        self.scheduler = scheduler
 +        self.prepared = None
 +        self.processed_previous = False
++
++    def needs_first_token_flush(self, last_batch):
++        # Prefill's first token is ready, but launching the next forward before
++        # processing its result holds that token behind another whole batch.
++        # Middle chunks have no token to deliver; keep their normal pipeline.
++        return bool(
++            last_batch
++            and not self.scheduler.require_mlp_sync
++            and last_batch.spec_algorithm.is_dflash()
++            and last_batch.forward_mode.is_extend()
++            and last_batch.contains_last_prefill_chunk
++            and self.scheduler.result_queue
++            and not self.processed_previous
++        )
 +
 +    def take_prepared(self):
 +        plan, self.prepared = self.prepared, None
@@ -5862,7 +5876,9 @@ index 0000000..c489f79
 +                # GPU allocation writes wait for its read-done event; CPU
 +                # allocation and request bookkeeping can proceed immediately.
 +                s._apply_war_barrier()
-+                if s.last_batch:
++                # A first-token/grammar barrier may already have consumed the
++                # previous result even though last_batch still names its batch.
++                if s.result_queue:
 +                    previous_batch, previous_result = s.result_queue.popleft()
 +                    s.process_batch_result(previous_batch, previous_result)
 +                    self.processed_previous = True
@@ -5878,6 +5894,35 @@ index 0000000..c489f79
 +                )
 +
 +        return prepare
+diff --git a/python/sglang/srt/managers/muse_workspace.py b/python/sglang/srt/managers/muse_workspace.py
+new file mode 100644
+index 0000000..efe959a
+--- /dev/null
++++ b/python/sglang/srt/managers/muse_workspace.py
+@@ -0,0 +1,23 @@
++"""Stream-owned scratch for the serial Muse router launches and graph replays."""
++
++import torch
++
++
++_router_workspaces = {}
++
++
++def router_workspace(device):
++    """A fixed M256 workspace; never grow buffers referenced by CUDA graphs.
++
++    Muse uses one routing stream across layers. CUDA graph capture uses that
++    same side stream, and its router kernels reset the completion counters.
++    Different routing streams retain independent buffers.
++    """
++    stream = torch.cuda.current_stream(device)
++    key = (stream.device.index, stream.cuda_stream)
++    if key not in _router_workspaces:
++        _router_workspaces[key] = (
++            torch.empty(16 * 17 * 64 * 64, device=device, dtype=torch.float32),
++            torch.zeros(16, device=device, dtype=torch.uint32),
++        )
++    return _router_workspaces[key]
 diff --git a/python/sglang/srt/managers/overlap_utils.py b/python/sglang/srt/managers/overlap_utils.py
 index 4fb1981..25019e3 100644
 --- a/python/sglang/srt/managers/overlap_utils.py
@@ -5928,7 +5973,7 @@ index 4fb1981..25019e3 100644
              self.confidence_relay.issue_ring_copy(
                  stream=self.fwd_prepare_d2h_stream,
 diff --git a/python/sglang/srt/managers/scheduler.py b/python/sglang/srt/managers/scheduler.py
-index dad4a86..208cc55 100644
+index dad4a86..4f3dad1 100644
 --- a/python/sglang/srt/managers/scheduler.py
 +++ b/python/sglang/srt/managers/scheduler.py
 @@ -1937,6 +1937,9 @@ class Scheduler(
@@ -5969,7 +6014,20 @@ index dad4a86..208cc55 100644
                      pop_and_process()
              elif batch is None:
                  # When the server is idle, do self-check and re-init some states
-@@ -4400,6 +4406,12 @@ class Scheduler(
+@@ -2045,7 +2051,11 @@ class Scheduler(
+         # via the grammar barrier (overlapping the target forward), which resolves
+         # whatever result is still pending in the queue — including the
+         # extend->decode boundary — so no grammar-specific overlap disable is needed.
+-        return disable_overlap_for_batch or need_grammar_sync
++        first_token_flush = (
++            hasattr(self, "dflash_overlap")
++            and self.dflash_overlap.needs_first_token_flush(last_batch)
++        )
++        return disable_overlap_for_batch or need_grammar_sync or first_token_flush
+ 
+     def _advance_pending_grammar(self):
+         """Grammar barrier (spec-v2 overlap): advance the FSM over any not-yet
+@@ -4400,6 +4410,12 @@ class Scheduler(
                      # post-forward must not un-consume staging.
                      resolve_forward_inputs(batch, self.future_map)
  
@@ -5982,7 +6040,7 @@ index dad4a86..208cc55 100644
                      with self._forward_isolation(batch, overlap=True):
                          future_indices = batch.req_pool_indices
  
-@@ -4411,6 +4423,8 @@ class Scheduler(
+@@ -4411,6 +4427,8 @@ class Scheduler(
                              fwd_kwargs["on_publish"] = partial(
                                  self.future_map.publish, future_indices
                              )
@@ -5991,6 +6049,91 @@ index dad4a86..208cc55 100644
                              # Grammar-overlap-capable workers advance the grammar FSM
                              # inside verify() before building the bitmask; hand them the
                              # barrier that resolves the previous batch's committed
+diff --git a/python/sglang/srt/model_executor/muse_kv_capacity.py b/python/sglang/srt/model_executor/muse_kv_capacity.py
+new file mode 100644
+index 0000000..a177938
+--- /dev/null
++++ b/python/sglang/srt/model_executor/muse_kv_capacity.py
+@@ -0,0 +1,64 @@
++"""Size Muse's sliding pool for live windows, leaving history in the full pool."""
++
++from sglang.srt.model_executor.pool_configurator import (
++    HybridSWAPoolConfigurator,
++    compute_swa_request_cap,
++)
++from sglang.srt.runtime_context import get_memory, get_schedule
++from sglang.srt.utils.common import ceil_align
++
++
++class MuseKVPoolConfigurator(HybridSWAPoolConfigurator):
++    """Keep active windows, cached resume fragments per request, and prefill.
++
++    The prefix cache can evict an unlocked SWA branch without evicting its full
++    attention history. A live match walks fragments until it covers a window;
++    its boundary fragment can extend the locked span by another window. Reserve
++    two cached windows per request while its extension runs. The standard
++    request cap includes decode preallocation and chunks in flight.
++    """
++
++    @staticmethod
++    def is_applicable(kvc):
++        architectures = kvc.model_config.hf_config.architectures or []
++        return (
++            any(a in architectures for a in (
++                "MuseSpark1xForCausalLM", "MuseSparkForConditionalGeneration"
++            ))
++            and not kvc.is_draft_worker
++            and not get_memory().enable_unified_memory
++            and get_schedule().max_running_requests is not None
++            and get_schedule().chunked_prefill_size is not None
++            and not get_schedule()._swa_full_tokens_ratio_explicitly_set
++            and kvc.sliding_window_size is not None
++            and len(kvc.layer_info.full_attention_layer_ids) > 0
++        )
++
++    def __init__(self, kvc):
++        super().__init__(kvc)
++        requests = get_schedule().max_running_requests // kvc.attn_dp_size
++        self._swa_cap = compute_swa_request_cap(
++            page_size=kvc.page_size,
++            window=kvc.sliding_window_size,
++            attn_dp_size=kvc.attn_dp_size,
++        ) + 2 * requests * (kvc.sliding_window_size + kvc.page_size)
++
++    def calculate_pool_sizes(self, available_bytes, page_size):
++        swa_tokens = ceil_align(self._swa_cap, page_size)
++        # The private DFlash cache indexes full-pool locations. Charge all its
++        # layers, even though the target's sliding pool is bounded separately.
++        full_cell = (
++            self._full_cell_bytes()
++            + self._swa_per_token * self._draft_swa_full_layers_num
++            + self._draft_cell_size
++        )
++        full_tokens = (
++            (available_bytes - swa_tokens * self._swa_cell_bytes())
++            // full_cell // page_size * page_size
++        )
++        return self._make_pool_config(full_tokens, swa_tokens)
++
++    def calculate_pool_sizes_from_max_tokens(self, max_total_num_tokens, page_size):
++        full_tokens = max_total_num_tokens // page_size * page_size
++        swa_tokens = min(ceil_align(self._swa_cap, page_size), full_tokens)
++        return self._make_pool_config(full_tokens, swa_tokens)
+diff --git a/python/sglang/srt/model_executor/pool_configurator.py b/python/sglang/srt/model_executor/pool_configurator.py
+index a68cf10..ebbf7cd 100644
+--- a/python/sglang/srt/model_executor/pool_configurator.py
++++ b/python/sglang/srt/model_executor/pool_configurator.py
+@@ -1608,6 +1608,10 @@ def create_memory_pool_configurator(
+     if is_deepseek_v4(kvc.model_config.hf_config) and kvc.is_hybrid_swa:
+         return DSV4PoolConfigurator(kvc)
+     if kvc.is_hybrid_swa:
++        from sglang.srt.model_executor.muse_kv_capacity import MuseKVPoolConfigurator
++
++        if MuseKVPoolConfigurator.is_applicable(kvc):
++            return MuseKVPoolConfigurator(kvc)
+         if SWAChunkCapPoolConfigurator.is_applicable(kvc):
+             return SWAChunkCapPoolConfigurator(kvc)
+         return HybridSWAPoolConfigurator(kvc)
 diff --git a/python/sglang/srt/models/dflash.py b/python/sglang/srt/models/dflash.py
 index 62f823b..f649f30 100644
 --- a/python/sglang/srt/models/dflash.py

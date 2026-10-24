@@ -116,6 +116,56 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(calls, ["fence", "output"])
         self.assertTrue(pipeline.processed_previous)
 
+    def test_first_token_flush_does_not_pop_result_twice(self):
+        pipeline, scheduler, batch, req, calls = self.setup_pipeline()
+        # The loop drained the prefill result before starting this decode.
+        # last_batch still names prefill until this iteration finishes.
+        scheduler.process_batch_result(*scheduler.result_queue.popleft())
+        pipeline.callback(batch)()
+        self.assertEqual(calls, ["output", "fence", "build"])
+        self.assertFalse(pipeline.processed_previous)
+        self.assertIsNotNone(pipeline.take_prepared())
+
+    def test_first_token_precedes_next_forward(self):
+        """A finished prefill must not wait for the following expensive forward."""
+        import ast
+        source = (path.parent / "scheduler.py").read_text()
+        method = next(n for n in ast.walk(ast.parse(source))
+                      if isinstance(n, ast.FunctionDef) and n.name == "is_disable_overlap_for_batch")
+        method.decorator_list = []
+        namespace = dict(ScheduleBatch=object, Optional=__import__('typing').Optional,
+                         envs=NS(SGLANG_DISABLE_CONSECUTIVE_PREFILL_OVERLAP=NS(get=lambda: False)))
+        exec(compile(ast.Module(body=[method], type_ignores=[]), '<scheduler-policy>', 'exec'), namespace)
+        pipeline, scheduler, batch, req, calls = self.setup_pipeline()
+        scheduler.require_mlp_sync = False
+        scheduler.dflash_overlap = pipeline
+        batch.forward_mode = NS(is_decode=lambda: True, is_extend=lambda: False)
+        batch.spec_algorithm.is_none = lambda: False
+        batch.grammar_needs_sync = lambda: False
+        last = NS(forward_mode=NS(is_extend=lambda: True),
+                  spec_algorithm=NS(is_dflash=lambda: True), contains_last_prefill_chunk=True)
+        # Model the actual loop order: launch-next used to precede emit-first.
+        flush = namespace['is_disable_overlap_for_batch'](scheduler, batch, last)
+        actions = []
+        if flush:
+            actions.append('emit-first')
+        actions.append('launch-next')
+        if not flush:
+            actions.append('emit-first')
+        self.assertEqual(actions[0], 'emit-first')
+        # No user-visible token on a middle chunk; decode keeps pipelining.
+        last.contains_last_prefill_chunk = False
+        self.assertFalse(namespace['is_disable_overlap_for_batch'](scheduler, batch, last))
+        last.forward_mode = NS(is_extend=lambda: False)
+        self.assertFalse(namespace['is_disable_overlap_for_batch'](scheduler, batch, last))
+        last.forward_mode = NS(is_extend=lambda: True)
+        last.contains_last_prefill_chunk = True
+        scheduler.require_mlp_sync = True
+        self.assertFalse(pipeline.needs_first_token_flush(last))
+        scheduler.require_mlp_sync = False
+        scheduler.result_queue.clear()
+        self.assertFalse(namespace['is_disable_overlap_for_batch'](scheduler, batch, last))
+
     def test_boundaries_keep_normal_scheduling(self):
         for change in (lambda s, b: setattr(b, "has_grammar", True),
                        lambda s, b: setattr(s, "waiting_queue", [object()]),

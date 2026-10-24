@@ -1,0 +1,29 @@
+--- a/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py
++++ b/python/sglang/kernels/ops/muse_spark_v12/projection_hopper.py
+@@ -145,7 +145,6 @@
+         self.pair = torch.cat((high, low), dim=1).contiguous()
+         self.high = self.pair[:, : weight.shape[1]]
+         self.low = self.pair[:, weight.shape[1] :]
+-        self.scratch = {}
+         _module()
+ 
+     def __call__(self, x):
+@@ -163,15 +162,9 @@
+             _module().skinny(x, self.high, self.low, out, cfg)
+         else:
+             cfg = (64, 64, 4, 1, 8, 160 if m <= 128 else 256)
+-            tiles = (n // 64) * ((m + 63) // 64)
+-            if m not in self.scratch:
+-                self.scratch[m] = (
+-                    torch.empty(
+-                        tiles * 17 * 64 * 64, device=x.device, dtype=torch.float32
+-                    ),
+-                    torch.zeros(tiles, device=x.device, dtype=torch.uint32),
+-                )
+-            _module().pair(x, self.pair, out, self.scratch[m], cfg)
++            from sglang.srt.managers.muse_workspace import router_workspace
++
++            _module().pair(x, self.pair, out, router_workspace(x.device), cfg)
+         return out
+ 
+ 

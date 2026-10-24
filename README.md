@@ -16,8 +16,8 @@ Goal, rules and plan: [AGENTS.md](AGENTS.md) and [docs/](docs/). Prizes are paid
 | serving track closes | Nov 19 23:59 | Nov 20 17:00 |
 | daily caps reset | 00:00 UTC | 09:00 |
 
-Daily caps: each kernel problem allows 10 scored runs and 20 checks. Serving allows 1 scored
-run and 3 checks.
+Daily caps (live: `okc problems`, `upstream/api/problems.json`): 10 scored runs per kernel problem; checks 10 for
+decode, attention and prefill (cut from 20 on 10-24), 20 for MoE and proj. Serving allows 1 scored run and 3 checks.
 
 ## The two tracks
 
