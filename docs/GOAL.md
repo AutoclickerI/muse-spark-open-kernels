@@ -5,8 +5,8 @@ By the kernel close (2026-11-05 16:59 KST): the highest score on the overall ker
 (openkernelchallenge.dev/leaderboard), aiming for 1st place; the only goal (R-20261025-1). Final places are
 medians of reruns (CONSTRAINTS 2), so choose by seed means and paired labs, not one lucky run.
 
-Every top-50 team's overall score is its `muse_decode_layer` speedup (FINDINGS "Boards"), so the decode layer is
-the score and every other kernel counts only inside it.
+The organizers publish ranks only. Our fit of those ranks (FINDINGS "Boards") makes every top-50 team's overall
+score its `muse_decode_layer` speedup, so the decode layer is the score and every other kernel counts only inside it.
 
 ## Subgoals (ranked)
 
@@ -24,8 +24,7 @@ quotas, local GPUs, agent time.
 ## Non-goals
 - Serving (the SGLang patch, the serving board, prefill, the DFlash drafter): not studied until the serving
   round opens (R-20261025-1). Its material is parked in [serving/](serving/README.md); no lane works on it.
-- The component boards (MoE, projection, attention) and the prefill board for their own sake: the overall
-  board ignores them for every top-50 team.
+- The component and prefill boards for their own sake: they don't move a top-50 team's overall score.
 - Renting an H200. H200 numbers come only from the judge (R-20261023-3).
 
 ## Decision rights
@@ -37,4 +36,5 @@ quotas, local GPUs, agent time.
 - **decode load** `decode N`: N requests, q_len 1. **verify load** `verify N`: N requests x 8 tokens.
   A load is 46 sliding + 16 full layers; the score is the geomean over the six loads.
 - **check / scored run**: `okc check` (off the board) / `okc submit` (on the board).
-- **floor**: the judge's bound in TASK.md (4.8 TB/s or 989 TFLOP/s).
+- **floor**: the judge's bound in TASK.md (4.8 TB/s or 989 TFLOP/s) on the bytes as given; a lossless smaller
+  encoding of the weights (CONSTRAINTS boundary cases) lowers it.

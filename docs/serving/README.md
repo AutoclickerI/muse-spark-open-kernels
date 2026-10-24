@@ -18,6 +18,10 @@ binds or ranks work.
 - [Reference sections](reference_notes.md) and [lane sections](lane_notes.md): source text removed from mixed live docs. Historical goal tags and next steps in these archives do not apply to current work.
 - [Prefill send notes](prefill_dev/NEXT_CHECKS.md), [V11 profile](prefill_dev/V11_PROFILE.md), [glue](prefill_dev/glue/README.md), [CUTLASS dense](prefill_dev/cutlass_dense/README.md), [A30 dense](prefill_dev/dense_a30/README.md), [mid dense](prefill_dev/mid_dense/README.md), and [expert dispatch](prefill_dev/sweep_dispatch/README.md): prefill-only lane notes. Code and receipts remain at their original paths.
 
+## Candidates for the serving round
+- From a code review of `69f31a6` (2026-10-25): a KV page size of 16 or 64 inside the patch (FA3 at page 1 is
+  gather-bound, FINDINGS "FlashInfer page-1"), and rebalancing which experts each EP8 rank owns.
+
 ## Serving rules (bind serving submissions only)
 Source: `upstream/llms.txt` "Serving" and `serving/RULES.md`.
 - **Serving patch.** A git diff against SGLang `a55ab7d5`: only source files and JSON under `python/sglang/`,

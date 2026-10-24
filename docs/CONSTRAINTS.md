@@ -9,7 +9,7 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 2. **Real speedups only.** [hard] No tampering with timing or harness, no work outside the timed calls, no caching or replaying outputs, nothing below the allowed precision. Final places are medians of reruns on held-out data and nearby shapes (much slower nearby shapes get a closer look); follow the spirit (upstreamable speedups). [external: llms.txt:112, 135-139]
 3. **Withdraw reward-hacky runs** with `okc withdraw <job>` and tell Jihoon. [hard] [external: llms.txt:137]
 4. **CUDA-graph capturable.** [hard] No host sync, no allocations or control flow that depend on input values; branching on shapes and `config` is fine. [external: llms.txt:106]
-5. **Weights keep their precision.** [hard] Lossless repacking only (NVFP4 stays NVFP4, BF16 stays BF16; in-kernel dequant is fine). The FP32 router may run as BF16 hi + lo with FP32 accumulation. [external: llms.txt:107]
+5. **Weights keep their precision.** [hard] Lossless repacking only (NVFP4 stays NVFP4, BF16 stays BF16). The FP32 router may run as BF16 hi + lo with FP32 accumulation. [external: llms.txt:107]
 6. **Activations and KV.** [hard] Activations stay BF16 wherever SGLang's kernel keeps them BF16; the KV cache stays FP8; queries may round to FP8 E4M3, nothing coarser. [external: llms.txt:108]
 7. **Every key.** [hard] Whole window (sliding) and whole context (full); no top-k, sparse or block-skipping attention, no skipping values by weight. [external: llms.txt:109-110]
 8. **Kernel submission.** [hard] One Python file with `kernel_fn` and `prepare` (untimed, up to 300 s), run in the image without network; anything in the image, `load_inline`/nvcc and JITs allowed; 15 minutes per run with compilation. Rejected: patching timing, reading harness frames, touching harness I/O or secrets, editing loaded modules, importing the reference, starting processes, network. [external: llms.txt:88-98; TASK.md:78, 97]
@@ -22,6 +22,7 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 12. **Codex models.** [owner] Lanes run on gpt-6.1-sol or gpt-6-astra only; a lane stopped by a capacity error is resumed on gpt-6.1-sol. [Jihoon, R-20261023-9]
 
 ## Boundary cases (what the rules allow)
+"Allowed" is our reading or Jihoon's risk decision, not an organizer ruling; the review (2) can still drop a run.
 
 | Rule | Case | Reading | Status |
 |---|---|---|---|
@@ -31,8 +32,8 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 | 6 | FP8 softmax probabilities in the PV MMA with an FP8 cache | SGLang's FA3 does it | allowed |
 | 2, 8 | Our own cubin or hand-edited SASS in a kernel submission | Accepted and not banned; review risk (2) | allowed (R-20261023-6) |
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
-| 5 | A lossless re-encoding of the NVFP4 bank in `prepare()` (e.g. E4M3 scales as exponent/mantissa bytes, sign/zero folded into the FP4 codes): same values, same size | Same values: lossless repacking | allowed (FINDINGS "Scale bank") |
-| 5 | A dequantized copy (BF16, FP8) of NVFP4 weights made in `prepare()` for the timed calls to read, even beside the packed bank | Dequantizing is allowed only inside the kernels; a copy moves timed work into prepare | forbidden (`cand_r3_bf16moe` withdrawn, job 07d07d96) |
+| 5 | Lossless re-encoding or compression of the weights in `prepare()`, decoded inside the timed kernels: the recoded scale bank (FINDINGS "Scale bank"), hardware generic memory compression, coded BF16 exponents | llms.txt:107: "compress them losslessly ... or smaller, losslessly" | allowed |
+| 5 | A dequantized (BF16, FP8) copy of NVFP4 weights made in `prepare()`, even beside the packed bank | Moves timed dequant work into prepare | forbidden (withdrawn job 07d07d96) |
 | 2 | L2 persistence (access-policy windows, set-aside L2) to keep weights through the judge's per-replay L2 flush | Defeats the judge's cold-cache protocol | forbidden |
 | 2 | Streaming a later stage's weights into L2 while an earlier dependent stage runs, inside one timed call | Overlap within the call; nothing survives the flush | allowed |
 | 2, 8 | Lab runs: timing any other kernel or shape inside `prepare()` (`tools/h200_lab.py`); the run scores the base kernel | Computes nothing the timed calls return | allowed (R-20261024-3) |

@@ -12,9 +12,7 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 ## Practice
 
 - Next work: the highest-ranked `active` or `next` row in [PLAN](docs/PLAN.md) "Ranked work" that no lane owns.
-- Every change is judged by its effect on the decode layer's score: whole-layer H200 time at the 12 scored
-  shapes, weighted 46 sliding + 16 full per load, geomean over the six loads (sensitivity:
-  `problems/muse_decode_layer/FOCUS.md`).
+- Judge every change by the decode layer's score (GOAL "Terms"; sensitivity: `problems/muse_decode_layer/FOCUS.md`).
 - The critical path is judge latency (PLAN "Critical path"): never idle on it; use idle GPUs, caches, other lanes' outputs.
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon if unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
