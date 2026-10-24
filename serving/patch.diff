@@ -5725,7 +5725,7 @@ index bebfac6..98510d5 100755
          else:
              layer.w2_blockscale_swizzled = Parameter(
 diff --git a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
-index f6d450a..efbe26c 100644
+index f6d450a..442874b 100644
 --- a/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 +++ b/python/sglang/srt/layers/quantization/muse_spark_nvfp4_moe.py
 @@ -2,6 +2,7 @@
@@ -5749,7 +5749,7 @@ index f6d450a..efbe26c 100644
      )
  
      def _process_weights_for_marlin(self, layer):
-+        # V9 now preserves raw E4M3 scales, but its preparation still replaces
++        # V9 now preserves raw E4M3 scales, but its single-bank loader omits
 +        # Marlin's packed parameters. Keep one stock bank until both producers
 +        # can share a layout or a bounded extra layout is admitted.
 +        layer._muse_v4_state = None
@@ -6015,7 +6015,7 @@ index 4fb1981..25019e3 100644
              self.confidence_relay.issue_ring_copy(
                  stream=self.fwd_prepare_d2h_stream,
 diff --git a/python/sglang/srt/managers/scheduler.py b/python/sglang/srt/managers/scheduler.py
-index dad4a86..adfaec5 100644
+index dad4a86..c2ad145 100644
 --- a/python/sglang/srt/managers/scheduler.py
 +++ b/python/sglang/srt/managers/scheduler.py
 @@ -1937,6 +1937,9 @@ class Scheduler(
@@ -6028,19 +6028,28 @@ index dad4a86..adfaec5 100644
          self.result_queue: Deque[
              Tuple[ScheduleBatch, Union[GenerationBatchResult, EmbeddingBatchResult]]
          ] = deque()
-@@ -1956,15 +1959,24 @@ class Scheduler(
-                 self._record_scheduler_state_for_paused_engine()
-                 continue
+@@ -1950,6 +1953,14 @@ class Scheduler(
+             if self.gracefully_exit:
+                 break
  
--            # Get the next batch to run
--            plan = self.get_next_batch_to_run(
--                running_batch=self.running_batch, last_batch=self.last_batch
-+            # Planning may reuse last_batch as the next decode batch and mutate
-+            # its forward_mode. Preserve completed-prefill delivery beforehand.
++            # Deliver a completed prefill before ingress/planning can wait on
++            # another TP collective or reuse its batch as a decode batch.
 +            flush_first_token = self.dflash_overlap.needs_first_token_flush(
 +                self.last_batch
-             )
-+            # Get the next batch to run
++            )
++            if flush_first_token:
++                pop_and_process()
++
+             # Receive requests
+             self.ingest_requests()
+             if self._engine_paused:
+@@ -1957,20 +1968,25 @@ class Scheduler(
+                 continue
+ 
+             # Get the next batch to run
+-            plan = self.get_next_batch_to_run(
+-                running_batch=self.running_batch, last_batch=self.last_batch
+-            )
 +            plan = self.dflash_overlap.take_prepared()
 +            if plan is None:
 +                plan = self.get_next_batch_to_run(
@@ -6058,7 +6067,15 @@ index dad4a86..adfaec5 100644
              )
  
              # If we do not need to overlap the current batch with the last batch,
-@@ -1992,7 +2004,7 @@ class Scheduler(
+             # we can process the last batch immediately.
+             if disable_overlap_for_batch:
+-                pop_and_process()
++                if not flush_first_token:
++                    pop_and_process()
+                 # Opportunistic flush at the disable_overlap sync boundary:
+                 # forward_stream is idle (prev forward drained, next not launched),
+                 # so `_flush`'s non-urgent guard compacts freely. Sync-free, best-effort.
+@@ -1992,7 +2008,7 @@ class Scheduler(
  
              # Process the last batch
              if self.last_batch:
@@ -6067,7 +6084,7 @@ index dad4a86..adfaec5 100644
                      pop_and_process()
              elif batch is None:
                  # When the server is idle, do self-check and re-init some states
-@@ -2045,7 +2057,11 @@ class Scheduler(
+@@ -2045,7 +2061,11 @@ class Scheduler(
          # via the grammar barrier (overlapping the target forward), which resolves
          # whatever result is still pending in the queue — including the
          # extend->decode boundary — so no grammar-specific overlap disable is needed.
@@ -6080,7 +6097,7 @@ index dad4a86..adfaec5 100644
  
      def _advance_pending_grammar(self):
          """Grammar barrier (spec-v2 overlap): advance the FSM over any not-yet
-@@ -3797,9 +3813,10 @@ class Scheduler(
+@@ -3797,9 +3817,10 @@ class Scheduler(
          running_bs: int,
          beam_width: Optional[int] = None,
          running_batch: Optional[ScheduleBatch] = None,
@@ -6092,7 +6109,7 @@ index dad4a86..adfaec5 100644
  
          active_batch = running_batch or self.running_batch
          available = max(
-@@ -3979,16 +3996,21 @@ class Scheduler(
+@@ -3979,16 +4000,21 @@ class Scheduler(
              candidate_beam_width = (
                  req.beam_group.beam_width if req.beam_group is not None else None
              )
@@ -6115,7 +6132,7 @@ index dad4a86..adfaec5 100644
                      running_batch.batch_is_full = True
  
              if running_batch.batch_is_full:
-@@ -4400,6 +4422,12 @@ class Scheduler(
+@@ -4400,6 +4426,12 @@ class Scheduler(
                      # post-forward must not un-consume staging.
                      resolve_forward_inputs(batch, self.future_map)
  
@@ -6128,7 +6145,7 @@ index dad4a86..adfaec5 100644
                      with self._forward_isolation(batch, overlap=True):
                          future_indices = batch.req_pool_indices
  
-@@ -4411,6 +4439,8 @@ class Scheduler(
+@@ -4411,6 +4443,8 @@ class Scheduler(
                              fwd_kwargs["on_publish"] = partial(
                                  self.future_map.publish, future_indices
                              )

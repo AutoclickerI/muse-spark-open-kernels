@@ -1,0 +1,70 @@
+{
+  "base": "problems/muse_prefill_layer/cand_mid_dense.py",
+  "base_sha256": "1a341fc725dece4677ecbacbc399643fcc4d03f426e590387498765ed88d11ad",
+  "candidate": "problems/muse_prefill_layer/cand_mid_sweep.py",
+  "sha256": "1de6c32c7a5337dc539a5b6feb24a479bed217cb794a92a32760f9fcda82e075",
+  "sweep_job": "b964cb5d180a463b",
+  "cutlass_queue_key": "63aa77388930a37e",
+  "cutlass_receipt": null,
+  "prepare_s": 7.45772887498606,
+  "tests": 5,
+  "graphs": 8,
+  "static": [
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "GROUPED_SRC",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": ""
+    }
+  ],
+  "default_experts": {
+    "753": "raw17",
+    "3012": "humming_masked",
+    "16384": "dg_w8"
+  },
+  "expert_pairs": {
+    "753": [
+      "raw17",
+      "tma_cluster",
+      "humming_masked"
+    ],
+    "3012": [
+      "humming_masked",
+      "humming_mid"
+    ],
+    "16384": [
+      "dg_w8",
+      "humming_masked",
+      "dg_hint_w8"
+    ]
+  },
+  "paired_repeats": 20,
+  "fresh_fixtures_per_T": 3,
+  "fp32_sample_rows": 64,
+  "extra_whole_layer_graphs": 6,
+  "screen": "runs/screen/muse_prefill_layer.cand_mid_sweep.json",
+  "glue": "runs/screen/mid_sweep_glue.json",
+  "scope_check": "problems/muse_prefill_layer/dev/sweep_dispatch/scope_check.json",
+  "unverified": [
+    "new H200 expert selection and whole-layer gain",
+    "separate causal attribution of753 ranking reversal",
+    "CUTLASS dense lab pending at single local receipt check",
+    "serving integration/performance"
+  ],
+  "candidate_sent": false,
+  "committed": false
+}

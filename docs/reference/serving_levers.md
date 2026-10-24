@@ -34,7 +34,7 @@ extrapolated and1.812741x capped; it is a receipt composition, not a judge run o
 
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
-| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill first-token delivery fixed | H200 host latency and full-node TTFT |
+| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill result drained before ingress/planning;8 deterministic regressions pass | Final upstream-r19 TTFT gate and H200 host latency |
 | KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch handoff applied; one4.46MB workspace per routing stream replaces per-layer/per-shape scratch | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
 | Expert producer | **Stock Marlin at all M**; V9 gate capped256 but loader leaves it unbound. No grouped/Humming call sites | Incoming V9 now preserves E4M3 bytes, but the single-bank binder omits Marlin tensors. Need a shared packed-bank reader or an admitted bounded extra layout; no second full bank |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
@@ -58,7 +58,7 @@ justify replacing a faster attention component.
 The TTFT margin audit found a delivery barrier missing at the end of prefill:
 with overlap enabled, a completed first token remained in `result_queue` while
 the next prefill or DFlash draft/verify launch ran. The scheduler now consumes
-that result before launching more work. Only batches containing a completed
+that result before ingress and planning, so neither can hold a ready first token. Only batches containing a completed
 prefill trigger this barrier; middle chunks and steady-state decode retain
 overlap. The lookahead callback tests queue ownership instead of `last_batch`,
 so it does not consume an already-flushed result twice. The completed-row admission fix now also handles ordinary result processing,

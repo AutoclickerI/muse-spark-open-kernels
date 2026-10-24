@@ -1,82 +1,62 @@
 # Routed NVFP4 MoE serving port
 
-Serves: G1, G2. Read with `expert_layout.md` for the physical bank and memory count.
+Serves G1/G2. Read with [expert_layout.md](expert_layout.md) for bank geometry.
+The current serving producer is **stock Marlin at every M**. V9 is retained
+unbound; grouped and Humming have no serving dispatch call sites.
 
-The serving hook is `MuseSparkNvFp4FusedMoEMethod.process_weights_after_loading`. On the
-patch path it repacks the loaded ModelOpt NVFP4 tensors once into the canonical V6 canonical bank,
-then drops the large serialized tensors. Marlin's repack is not run and no Marlin bank is
-resident. `SGLANG_MUSE_MOE_FORCE_STOCK=1` selects the stock Marlin path for A/B runs.
+## Producer admission
 
-## One-bank state
+Real-weight H200 lab `26d7e05ab97d4f96` gives V9/Marlin931/563us at M512 and
+1332/716us at753. Humming/V11 fail agreement (relative0.11–0.32). These replace
+the earlier synthetic routing decisions. The desired policy is V9 through256
+and Marlin above;257–511 is explicitly assigned to Marlin as well.
 
-For each EP8 rank and routed layer the state owns:
+The requested hybrid is blocked by layout ownership. The old V9-only loader
+omits Marlin packed parameters, so merely changing the large-M branch would
+read missing tensors. The current hook
+`MuseSparkNvFp4FusedMoEMethod._process_weights_for_marlin` runs stock Marlin
+preparation, releases serialized aliases and sets `_muse_v4_state=None`.
 
-```text
-w13p       [32, 512, 36864] uint8  (576 MiB)
-w2p        [32, 256, 36864] uint8  (288 MiB)
-gs13_gate  [32] float32
-gs13_up   [32] float32
-gs2        [32] float32
-pnw        [4096] bfloat16
-```
+The incoming MoE-lane source now preserves raw E4M3 scale bytes and converts
+them in-kernel, resolving the earlier encoding boundary. This lane did not
+edit that source. A V9 reader over the Marlin bank, or an admitted bounded
+additional layout, is still needed to bind the hybrid. Another full bank costs
+54.358GB/GPU and cannot be retained. A single-layer layout is0.906GB and is
+permitted if its measured speed and actual KV/graph headroom justify it; no
+such copy is currently selected. There is no prepared dequantized weight bank.
 
-The two W13 global scales are captured before any ModelOpt/Marlin processing. They remain
-separate because the released checkpoint has distinct gate and up scales. E2M1 codes and
-E4M3 block scales are repacked bijectively; the resident bank never expands to BF16.
-The sidecars are negligible beside the 864 MiB tile bank.
+## Output and collective ownership
 
-The exact per-GPU expert-bank count is:
+Any producer may return dense `[T,topk,H]` expert rows. The finalize interface
+uses an identity index for local slots and `-1` for remote experts. It preserves
+separate gate/up global scales, every post-expert norm and BF16 activations.
 
-```text
-32 * (512 + 256) * 36864 = 905,969,664 B = 864 MiB per local layer
-905,969,664 B * 60 routed NVFP4 layers = 54,358,179,840 B
-                                        = 54.358 GB = 50.625 GiB per GPU
-```
+At M<32, CuTe replaces stock's Torch finalize sequence. At M>=32, standalone
+dense finalize retains stock's already-fused Triton implementation. Extending
+CuTe across all prefill sizes was locally slower and added index-map launches.
+A supplied fused-AR workspace always owns the reduction: the caller may skip
+the outer all-reduce only after that ownership transfers.
 
-The two BF16 MoE layers are excluded. At TP8, two KV heads, head dimension 64, FP8 K/V,
-and 62 layers, one cached token is 15,872 bytes/GPU. A second full expert bank would cost
-3,424,785 cached-token equivalents and leaves only 11.13 GB under the 119.85 GB static
-budget before dense weights, drafter, workspaces and graph pools. The patch keeps one bank.
+The future V9 adapter calls `_v9_call` directly through M256, independent of the
+standalone kernel's grouped dispatch. It bounds routing scratch from compiled
+shared-memory limits and keeps chunk maps global. The cooperative V9 counters
+are per-call; streams must not share generations. A legal load-time repack may
+change layout only; scales remain stored E4M3 and dequantization stays in-kernel.
+No model-loader source is changed.
 
-## Dispatch and output ABI
+## Checks and remaining evidence
 
-`MuseSpark1xFp4Experts._forward_marlin` calls the serving adapter in
-`muse_spark_serving.py`, leaving the MoE lane's standalone dispatch unchanged.
-V9 supplies all verify rungs (M8/32/128/256). Larger calls use bounded V9 chunks:
-the adapter derives the maximum routing rows from the compiled shared-memory
-formula and caps each chunk at512 rows, below int16 routing limits. Chunk slot maps remain global
-and preserve -1 for remote experts. The serving path does not invoke the grouped
-reader at M>=256: its H200 in-layer verify32 result regressed to0.549/0.647x,
-whereas V9 held1.216/1.136x (`2ad75c19cb514f5c` vs `0e94268cf5654012`).
+The production Marlin storage test covers12 shapes M1..2048, including all
+257–753 boundaries,72 fresh graph replays and all-remote routing. M128..753 is
+bit-exact against stock; larger graph/eager variation is within stock controls.
+`test_dense_finalize_dispatch.py` checks28 shapes/norm forms,84 fresh graph
+replays and explicit fused-AR ownership. Standalone runtime-M CuTe matches the
+pinned static-M kernel at30 shapes/90 fresh replays; standalone/AR sm90a compile
+checks pass.
 
-One candidate layer may admit the lossless Humming layout after charging pending
-KV backing, and keeps it only if graph timing on actual routing beats V9. This is
-one0.906GB partial copy, not a second full bank. Distinct gate/up scales and FP32
-K accumulation remain mandatory. All producers read the same canonical state.
-
-Both producers return the stock dense expert interface `[T, topk, H]` plus a local-slot map.
-The existing fused finalize in `muse_spark_fp4_moe.py` remains the sole post-expert norm and
-routing-weight combine. A reduced `[T, H]` form is retained for the standalone layer check.
-
-The V9 persistent kernel uses a native grid barrier. Its counters are allocated per call so
-concurrent streams cannot share generations, and the launch uses
-`cudaLaunchCooperativeKernel` with occupancy-bounded resident CTAs per SM. A non-cooperative launch is not
-used. CUDA graph capture is therefore checked at the verify shapes.
-
-Preparation is load-time only; request execution performs no weight repack or compilation.
-The loader under `srt/model_loader` is unchanged.
-
-## Verification
-
-The current sm120 layer screen (`serving/tests/test_serving_v9_dispatch.py`) runs
-M1/8/128/256/272/753/3012/16384 against stock Marlin plus post-expert norm and
-weighted sum. Worst relative L2 is0.005449 (bound0.015), max absolute error0.03125;
-eager/fresh-input graph replay is bit-identical. Chunk-global maps and remote
-masking are exact. The previous grouped reader's standalone results do not
-establish in-layer speed and are not the serving selection.
-
-Full-graph TP1/TP2 harness and current projection integration receipts are recorded
-in `serving_levers.md`. Tiny models use a same-ABI Marlin producer stand-in to reach
-the dispatch branch; the real4096-wide V9 arithmetic is checked independently.
-Actual H200 cooperative launch, full-checkpoint memory, TP8/EP8 FA3 agreement,
-bounded-V9 prefill TTFT and all four judge loads remain unverified.
+The full TP1/TP2 native/forced-ABI margin, random and teacher-forced gates are
+recorded in [serving_levers.md](serving_levers.md). No local result establishes
+new raw-scale V9 performance on H200, eight-rank multicast arithmetic, the full
+released checkpoint's memory, or hidden-workload TTFT. The old parked prefill
+diagnostic embeds the retired scale encoder and is not admitted under the new
+stored-E4M3 boundary.

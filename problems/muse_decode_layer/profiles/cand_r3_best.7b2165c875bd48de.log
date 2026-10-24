@@ -1,0 +1,138 @@
+me=unpooler best=custom us=31.30 all=[('custom', 31.295999884605408), ('cublas', 33.63199904561043), (('lt', 0), 33.11999887228012), (('lt', 1), 33.85600075125694), (('lt', 2), 32.03200176358223), (('lt', 3), 35.26400029659271), (('lt', 4), 33.02399814128876), (('lt', 5), 37.05599904060364), (('lt', 6), 35.360001027584076), (('lt', 7), 37.79200091958046)]
+PROJ_TUNE t=256 name=qkv_gate best=('lt', 0) us=27.01 all=[('custom', 27.615999802947044), ('cublas', 27.23200060427189), (('lt', 0), 27.008000761270523), (('lt', 1), 30.46399913728237), (('lt', 2), 31.679999083280563), (('lt', 3), 30.527999624609947), (('lt', 4), 29.503999277949333), (('lt', 5), 30.7839997112751), (('lt', 6), 30.14400042593479), (('lt', 7), 30.01599945127964)]
+PROJ_TUNE t=256 name=o best=custom us=24.32 all=[('custom', 24.320000782608986), ('cublas', 24.320000782608986), (('lt', 0), 24.383999407291412), (('lt', 1), 25.50400048494339), (('lt', 2), 25.37599951028824), (('lt', 3), 26.655999943614006), (('lt', 4), 26.496000587940216), (('lt', 5), 24.512000381946564), (('lt', 6), 25.631999596953392), (('lt', 7), 26.208000257611275)]
+PROJ_TUNE t=256 name=pool_router best=custom us=42.40 all=[('custom', 42.399998754262924), ('cublas', 42.7200011909008)]
+PROJ_TUNE t=256 name=unpooler best=('lt', 0) us=39.36 all=[('custom', 40.28800129890442), ('cublas', 39.583999663591385), (('lt', 0), 39.36000168323517), (('lt', 1), 42.14400053024292), (('lt', 2), 43.168000876903534), (('lt', 3), 43.68000105023384), (('lt', 4), 46.720001846551895), (('lt', 5), 48.70399832725525), (('lt', 6), 50.49600079655647), (('lt', 7), 46.879999339580536)]
+MEASURED_LT t=256 name=pool_router recipe=('short_lt', 0, 0) paired=1.01026 best=custom
+MEASURED_LT t=256 name=qkv_gate recipe=('short_lt', 0, 0) paired=0.99530 best=('short_lt', 0, 0)
+MEASURED_LT t=256 name=unpooler recipe=('short_lt', 0, 0) paired=1.00715 best=('lt', 0)
+MEASURED_LT t=128 name=pool_router recipe=('short_lt', 0, 0) paired=1.01859 best=cublas
+MEASURED_LT t=128 name=qkv_gate recipe=('short_lt', 1, 23) paired=1.01941 best=custom
+MEASURED_LT t=128 name=unpooler recipe=('short_lt', 1, 0) paired=0.94768 best=('short_lt', 1, 0)
+MEASURED_LT t=128 name=o recipe=('short_lt', 1, 0) paired=0.99232 best=('short_lt', 1, 0)
+ATTN_PORT_ADMIT q=1 choice=('layer', None) error=[0.00577, 0.00554]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (0, None)) error=[0.08341, 0.10715]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (0, True)) error=[0.08341, 0.10715]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (0, False)) error=[0.08341, 0.10768]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (1, None)) error=[0.08341, 0.10801]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (1, True)) error=[0.08341, 0.10801]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (1, False)) error=[0.08341, 0.10801]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (2, None)) error=[0.08343, 0.10778]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (2, True)) error=[0.08343, 0.10778]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (2, False)) error=[0.08343, 0.10778]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (4, None)) error=[0.08333, 0.10709]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (4, True)) error=[0.08333, 0.10709]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (4, False)) error=[0.08333, 0.10709]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (8, None)) error=[0.08333, 0.10715]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (8, True)) error=[0.08333, 0.10715]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (8, False)) error=[0.08333, 0.10768]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (16, None)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (16, True)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (16, False)) error=[0.08333, 0.10768]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (32, None)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (32, True)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (32, False)) error=[0.08333, 0.10768]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (64, None)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (64, True)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (64, False)) error=[0.08333, 0.10768]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (128, None)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (128, True)) error=[0.08333, 0.10565]
+ATTN_PORT_ADMIT q=1 choice=('fa3', (128, False)) error=[0.08333, 0.10768]
+ATTN_PORT_ADMIT q=1 choice=('attn_main', None) error=[0.00577, 0.00553]
+ATTN_PORT_PLAN b=32 q=1 window=0 best=('attn_main', None) us=223.744
+ATTN_PORT_PLAN b=32 q=1 window=2048 best=('attn_main', None) us=22.336
+ATTN_PORT_PLAN b=16 q=1 window=0 best=('attn_main', None) us=119.328
+ATTN_PORT_PLAN b=16 q=1 window=2048 best=('layer', None) us=19.296
+ATTN_PORT_PLAN b=1 q=1 window=0 best=('attn_main', None) us=24.736
+ATTN_PORT_PLAN b=1 q=1 window=2048 best=('attn_main', None) us=16.576
+ATTN_PORT_ADMIT q=8 choice=('layer', None) error=[0.07269, 0.08091]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (0, None)) error=[0.07352, 0.08313]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (0, True)) error=[0.07352, 0.08313]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (0, False)) error=[0.07352, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (1, None)) error=[0.07352, 0.08323]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (1, True)) error=[0.07352, 0.08323]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (1, False)) error=[0.07352, 0.08323]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (2, None)) error=[0.07352, 0.08312]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (2, True)) error=[0.07352, 0.08312]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (2, False)) error=[0.07352, 0.08312]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (4, None)) error=[0.07282, 0.08321]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (4, True)) error=[0.07282, 0.08321]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (4, False)) error=[0.07282, 0.08321]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (8, None)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (8, True)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (8, False)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (16, None)) error=[0.07282, 0.08313]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (16, True)) error=[0.07282, 0.08313]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (16, False)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (32, None)) error=[0.07282, 0.08309]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (32, True)) error=[0.07282, 0.08309]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (32, False)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (64, None)) error=[0.07282, 0.08309]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (64, True)) error=[0.07282, 0.08309]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (64, False)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (128, None)) error=[0.07282, 0.08309]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (128, True)) error=[0.07282, 0.08309]
+ATTN_PORT_ADMIT q=8 choice=('fa3', (128, False)) error=[0.07282, 0.08306]
+ATTN_PORT_ADMIT q=8 choice=('port_verify', None) error=[0.00473, 0.00532]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 5, 1)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 5, 2)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 5, 4)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 5, 8)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 7, 1)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 7, 2)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 7, 4)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_group', ('group', 7, 8)) error=[0.07249, 0.08292]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 3, 1)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 3, 2)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 3, 4)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 3, 8)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 4, 1)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 4, 2)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 4, 4)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_warp', ('warp', 4, 8)) error=[0.07252, 0.08289]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (3, 1)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (3, 2)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (3, 4)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (3, 8)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (5, 1)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (5, 2)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (5, 4)) error=[0.07279, 0.08296]
+ATTN_PORT_ADMIT q=8 choice=('xqa_fp8_pv', (5, 8)) error=[0.07279, 0.08296]
+ATTN_PORT_PLAN b=32 q=8 window=0 best=('fa3', (32, None)) us=383.456
+ATTN_PORT_PLAN b=32 q=8 window=2048 best=('layer', None) us=34.304
+ATTN_PORT_PLAN b=16 q=8 window=0 best=('fa3', (64, None)) us=204.352
+ATTN_PORT_PLAN b=16 q=8 window=2048 best=('fa3', (4, None)) us=29.312
+ATTN_PORT_PLAN b=1 q=8 window=0 best=('layer', None) us=35.520
+ATTN_PORT_PLAN b=1 q=8 window=2048 best=('layer', None) us=23.936
+PDL_TUNE t=1 phase=b1 best=False us=11.78 all=[(False, 11.776000261306763), (True, 12.44799979031086)]
+PDL_TUNE t=1 phase=b2 best=True us=11.74 all=[(False, 12.000000104308128), (True, 11.744000017642975)]
+PDL_TUNE t=8 phase=b1 best=True us=12.35 all=[(False, 12.44799979031086), (True, 12.35199999064207)]
+PDL_TUNE t=8 phase=b2 best=False us=11.97 all=[(False, 11.96799986064434), (True, 12.032000347971916)]
+PDL_TUNE t=16 phase=b1 best=False us=10.56 all=[(False, 10.56000031530857), (True, 11.168000288307667)]
+PDL_TUNE t=16 phase=b2 best=True us=10.75 all=[(False, 12.095999903976917), (True, 10.751999914646149)]
+PDL_TUNE t=32 phase=b1 best=False us=10.30 all=[(False, 10.304000228643417), (True, 10.528000071644783)]
+PDL_TUNE t=32 phase=b2 best=False us=11.84 all=[(False, 11.839999817311764), (True, 12.223999947309494)]
+PDL_TUNE t=128 phase=b1 best=True us=11.62 all=[(False, 12.06399966031313), (True, 11.615999974310398)]
+PDL_TUNE t=128 phase=b2 best=False us=11.87 all=[(False, 11.872000060975552), (True, 12.000000104308128)]
+PDL_TUNE t=256 phase=b1 best=True us=15.39 all=[(False, 15.615999698638916), (True, 15.39199985563755)]
+PDL_TUNE t=256 phase=b2 best=True us=16.42 all=[(False, 17.216000705957413), (True, 16.416000202298164)]
+PREFIX_TUNE t=1 best=('regular', False) us=45.280 all=[(45.27999833226204, ('regular', False)), (62.55999952554703, ('fused', False)), (62.55999952554703, ('fused', True))]
+PREFIX_TUNE t=8 best=('regular', True) us=43.264 all=[(43.2640016078949, ('regular', True)), (65.43999910354614, ('fused', False)), (67.87200272083282, ('fused', True))]
+PREFIX_TUNE t=16 best=('regular', False) us=43.264 all=[(43.2640016078949, ('regular', False)), (66.75200164318085, ('fused', False)), (65.43999910354614, ('fused', True))]
+PREFIX_TUNE t=32 best=('regular', False) us=47.776 all=[(47.775998711586, ('regular', False)), (99.32799637317657, ('fused', False)), (96.92800045013428, ('fused', True))]
+PREFIX_TUNE t=128 best=('regular', True) us=49.760 all=[(49.75999891757965, ('regular', True)), (229.40799593925476, ('fused', False)), (224.5440036058426, ('fused', True))]
+PREFIX_TUNE t=256 best=('regular', True) us=63.936 all=[(63.93600255250931, ('regular', True)), (402.14401483535767, ('fused', False)), (398.81598949432373, ('fused', True))]
+BEST_PREPARE elapsed=130.547s hard_limit=300s
+BEST_PHASES seconds={'weights': 30.537160211009905, 'projections': 40.14057335595135, 'attention': 48.96219208999537, 'pdl_prefix': 10.907428210019134}
+BEST_SHAPE b=1 q=1 window=2048 attn=('attn_main', None) proj={'qkv_gate': 'cublas', 'o': 'cublas', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', False) pdl=(False, True) moe=v9
+BEST_SHAPE b=1 q=1 window=0 attn=('attn_main', None) proj={'qkv_gate': 'cublas', 'o': 'cublas', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', False) pdl=(False, True) moe=v9
+BEST_SHAPE b=1 q=8 window=2048 attn=('layer', None) proj={'qkv_gate': 'cublas', 'o': 'cublas', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', True) pdl=(True, False) moe=v9
+BEST_SHAPE b=1 q=8 window=0 attn=('layer', None) proj={'qkv_gate': 'cublas', 'o': 'cublas', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', True) pdl=(True, False) moe=v9
+BEST_SHAPE b=16 q=1 window=2048 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'cublas', 'pool_router': 'custom', 'unpooler': 'custom'} prefix=('regular', False) pdl=(False, True) moe=v9
+BEST_SHAPE b=16 q=1 window=0 attn=('attn_main', None) proj={'qkv_gate': 'custom', 'o': 'cublas', 'pool_router': 'custom', 'unpooler': 'custom'} prefix=('regular', False) pdl=(False, True) moe=v9
+BEST_SHAPE b=16 q=8 window=2048 attn=('fa3', (4, None)) proj={'qkv_gate': 'custom', 'o': ('short_lt', 1, 0), 'pool_router': 'cublas', 'unpooler': ('short_lt', 1, 0)} prefix=('regular', True) pdl=(True, False) moe=v9
+BEST_SHAPE b=16 q=8 window=0 attn=('fa3', (64, None)) proj={'qkv_gate': 'custom', 'o': ('short_lt', 1, 0), 'pool_router': 'cublas', 'unpooler': ('short_lt', 1, 0)} prefix=('regular', True) pdl=(True, False) moe=v9
+BEST_SHAPE b=32 q=1 window=2048 attn=('attn_main', None) proj={'qkv_gate': 'cublas', 'o': ('lt', 0), 'pool_router': 'custom', 'unpooler': 'cublas'} prefix=('regular', False) pdl=(False, False) moe=v9
+BEST_SHAPE b=32 q=1 window=0 attn=('attn_main', None) proj={'qkv_gate': 'cublas', 'o': ('lt', 0), 'pool_router': 'custom', 'unpooler': 'cublas'} prefix=('regular', False) pdl=(False, False) moe=v9
+BEST_SHAPE b=32 q=8 window=2048 attn=('layer', None) proj={'qkv_gate': ('short_lt', 0, 0), 'o': 'custom', 'pool_router': 'custom', 'unpooler': ('lt', 0)} prefix=('regular', True) pdl=(True, True) moe=v9
+BEST_SHAPE b=32 q=8 window=0 attn=('fa3', (32, None)) proj={'qkv_gate': ('short_lt', 0, 0), 'o': 'custom', 'pool_router': 'custom', 'unpooler': ('lt', 0)} prefix=('regular', True) pdl=(True, True) moe=v9

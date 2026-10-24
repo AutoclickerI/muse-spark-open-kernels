@@ -207,23 +207,36 @@ class PlanTests(unittest.TestCase):
             mode = NS(is_decode=lambda: False, is_extend=lambda: True)
             algo = NS(is_dflash=lambda: True, is_none=lambda: False)
             previous = NS(forward_mode=mode, spec_algorithm=algo,
-                          contains_last_prefill_chunk=final_chunk)
+                          contains_last_prefill_chunk=final_chunk,
+                          grammar_needs_sync=lambda: False)
+            previous.copy = lambda: copy(previous)
             next_batch = NS(forward_mode=NS(is_decode=lambda: True, is_extend=lambda: False),
                             spec_algorithm=algo, grammar_needs_sync=lambda: False)
             next_batch.copy = lambda: copy(next_batch)
             s = NS(device="cuda", require_mlp_sync=False, gracefully_exit=False,
-                   _engine_paused=False, enable_unified_memory=False, is_generation=False)
+                   _engine_paused=False, enable_unified_memory=False, is_generation=False,
+                   last_batch=None, running_batch=NS(spec_algorithm=algo, reqs=[]))
+            ingests, plans = 0, 0
 
             def ingest():
-                s.last_batch = previous
-                s.running_batch = NS(spec_algorithm=algo, reqs=[])
-                s.result_queue.append((copy(previous), object()))
+                nonlocal ingests
+                ingests += 1
+                if ingests == 2:
+                    actions.append("ingest-next")
 
             def choose(**kwargs):
+                nonlocal plans
+                plans += 1
+                if plans == 1:
+                    return NS(batch_to_run=previous, running_batch=s.running_batch)
+                actions.append("plan-next")
                 previous.forward_mode = next_batch.forward_mode
                 return NS(batch_to_run=next_batch, running_batch=s.running_batch)
 
             def launch(batch):
+                if batch is previous:
+                    actions.append("launch-prefill")
+                    return object()
                 actions.append("launch-next")
                 s.gracefully_exit = True
                 return object()
@@ -237,8 +250,10 @@ class PlanTests(unittest.TestCase):
                 'is_disable_overlap_for_batch'](s, batch, last_batch)
             with patch.dict(sys.modules, {"sglang.srt.managers.dflash_overlap": module}):
                 namespace['event_loop_overlap'](s)
-            self.assertEqual(actions, ["process-prefill", "launch-next"] if final_chunk
-                             else ["launch-next", "process-prefill"])
+            self.assertEqual(actions,
+                ["launch-prefill", "process-prefill", "ingest-next", "plan-next", "launch-next"]
+                if final_chunk else
+                ["launch-prefill", "ingest-next", "plan-next", "launch-next", "process-prefill"])
             self.assertEqual(len(s.result_queue), 1, "next result consumed twice")
 
     def test_boundaries_keep_normal_scheduling(self):

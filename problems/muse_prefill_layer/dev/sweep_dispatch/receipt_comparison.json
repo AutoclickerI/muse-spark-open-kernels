@@ -1,0 +1,170 @@
+{
+  "mid_receipt": "runs/muse_prefill_layer/20261024T043516Z_submit_0d738799802340fd.json",
+  "mid_selected": [
+    {
+      "T": 753,
+      "selected": "humming_masked",
+      "us": {
+        "raw17": 523.2,
+        "humming_masked": 485.86,
+        "humming_mid": 528.74,
+        "dg_w8": 879.2,
+        "dg_hint_w8": 881.12
+      }
+    },
+    {
+      "T": 3012,
+      "selected": "humming_masked",
+      "us": {
+        "raw17": 1086.08,
+        "humming_masked": 960.45,
+        "humming_mid": 1005.63,
+        "dg_w8": 1304.1,
+        "dg_hint_w8": 1307.84
+      }
+    },
+    {
+      "T": 16384,
+      "selected": "dg_hint_w8",
+      "us": {
+        "raw17": 5010.66,
+        "humming_masked": 4358.53,
+        "humming_mid": 4353.41,
+        "dg_w8": 4351.87,
+        "dg_hint_w8": 4356.99
+      }
+    }
+  ],
+  "mid_expert_SCORE_SELECT_retained": false,
+  "selection_evidence": [
+    "SCORE_COMPLETE_TABLE",
+    "SCORE_PREPARE",
+    "SCORE_LAST_SUMMARY"
+  ],
+  "helper_ast_sha256": [
+    "d39ec6c06db1c3ab82958b9432a2394dbf123668121325cb452ba41cf6a1c5a8",
+    "d39ec6c06db1c3ab82958b9432a2394dbf123668121325cb452ba41cf6a1c5a8"
+  ],
+  "same_fixture_algorithm": true,
+  "sweep_receipt": "runs/muse_prefill_layer/20261024T051856Z_submit_b964cb5d180a463b.json",
+  "sweep_times": {
+    "753": {
+      "raw17": {
+        "us": 577.7599811553955,
+        "status": "ok"
+      },
+      "humming_masked": {
+        "us": 635.7759833335876,
+        "status": "ok"
+      },
+      "dg_w8": {
+        "us": 991.3600087165833,
+        "status": "ok"
+      },
+      "dg_hint_w8": {
+        "us": 984.8319888114929,
+        "status": "ok"
+      },
+      "tma_cluster": {
+        "us": 581.5039873123169,
+        "status": "ok"
+      },
+      "humming_mid": {
+        "us": 708.2880139350891,
+        "status": "ok"
+      },
+      "v9_le256": {
+        "us": null,
+        "status": "RuntimeError:v9 unavailable"
+      }
+    },
+    "3012": {
+      "raw17": {
+        "us": 1379.4879913330078,
+        "status": "ok"
+      },
+      "humming_masked": {
+        "us": 1254.91201877594,
+        "status": "ok"
+      },
+      "dg_w8": {
+        "us": 1591.647982597351,
+        "status": "ok"
+      },
+      "dg_hint_w8": {
+        "us": 1587.87202835083,
+        "status": "ok"
+      },
+      "tma_cluster": {
+        "us": 1377.6960372924805,
+        "status": "ok"
+      },
+      "humming_mid": {
+        "us": 1277.567982673645,
+        "status": "ok"
+      },
+      "v9_le256": {
+        "us": null,
+        "status": "RuntimeError:v9 unavailable"
+      }
+    },
+    "16384": {
+      "raw17": {
+        "us": 5950.079917907715,
+        "status": "ok"
+      },
+      "humming_masked": {
+        "us": 5191.328048706055,
+        "status": "ok"
+      },
+      "dg_w8": {
+        "us": 5167.232036590576,
+        "status": "ok"
+      },
+      "dg_hint_w8": {
+        "us": 5425.312042236328,
+        "status": "ok"
+      },
+      "tma_cluster": {
+        "us": 7101.183891296387,
+        "status": "ok"
+      },
+      "humming_mid": {
+        "us": 5800.191879272461,
+        "status": "ok"
+      },
+      "v9_le256": {
+        "us": null,
+        "status": "RuntimeError:v9 unavailable"
+      }
+    }
+  },
+  "sweep_routes": {
+    "753": {
+      "local_routes": 1451,
+      "experts": 13
+    },
+    "3012": {
+      "local_routes": 5925,
+      "experts": 14
+    },
+    "16384": {
+      "local_routes": 31771,
+      "experts": 15
+    }
+  },
+  "protocols": {
+    "mid": "Cold CUDA graphs; fixed cost subtracted; coarse3/final6 alternate samples; changing pooled values on fixed route map.",
+    "sweep": "One eager warmup, minimum of two eager event samples; fixed pooled/routing fixture; no L2 flush or paired control."
+  },
+  "explanation": {
+    "753": "Ranking reversal is not isolated causally. Same router-fixture algorithm, different RNG state and potentially per-run router; warm eager vs cold graph protocol also differs. No actual scored-input routes were replayed in either prepare fixture.",
+    "3012": "Both choose humming_masked.",
+    "16384": "Old coarse dg_w8=4351.87, dg_hint_w8=4356.99, masked=4358.53us: all within0.16%; selected hint came from paired finalists. Sweep dg vs masked differs0.4663%; close ordering is compatible with timing noise and route differences, not a stable lead."
+  },
+  "cutlass": {
+    "local_receipt": false,
+    "queue_key": "63aa77388930a37e",
+    "judge_id": null
+  }
+}

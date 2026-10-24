@@ -1,6 +1,8 @@
 """Run immutable source snapshots with all admitted serving Python ABIs forced."""
 import sys
 import re
+import json
+import subprocess
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'serving/tests'))
@@ -27,6 +29,15 @@ original_ready = run.wait_ready
 def ready(proc, port, log, timeout):
     elapsed = original_ready(proc, port, log, timeout)
     capacities = set(re.findall(r"max_total_num_tokens=(\d+)", Path(log).read_text()))
+    resources = {"actual_kv_slots": sorted(capacities)}
+    for name, query in (
+        ("gpus", "--query-gpu=index,memory.used,memory.total,utilization.gpu"),
+        ("processes", "--query-compute-apps=pid,gpu_uuid,used_memory"),
+    ):
+        resources[name] = subprocess.check_output(
+            ["nvidia-smi", query, "--format=csv,noheader"], text=True
+        ).splitlines()
+    (Path(log).parent / "resources_start.json").write_text(json.dumps(resources, indent=2))
     if capacities != {"300000"}:
         raise RuntimeError(f"controlled workload requires300000 actual KV slots, got {capacities}")
     return elapsed
