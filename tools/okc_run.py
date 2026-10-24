@@ -314,6 +314,19 @@ def rejected_words(src: str) -> list:
             for why, pat in REJECTED_WORDS.items() for m in re.finditer(pat, src, re.M)]
 
 
+def supersede(file: str):
+    """A newer send of the same file replaces any still waiting for a slot: a lane that fixes a lab and sends it
+    again meant the new one (five copies of one MoE lab once queued for five judge runs, 10-24)."""
+    with LOCK.open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)  # a waiter sends under this lock, so it can't be mid-send
+        for p, w in entries():
+            if w.get("file") == file and w["pid"] != os.getpid():
+                os.kill(w["pid"], signal.SIGTERM)
+                while p.exists():
+                    time.sleep(0.1)
+                print(f"replaced the waiting send of {file} (pid {w['pid']})", flush=True)
+
+
 def send(args):
     src = args.file.read_bytes()
     if hits := rejected_words(src.decode(errors="replace")):
@@ -337,6 +350,8 @@ def send(args):
     snap.parent.mkdir(parents=True, exist_ok=True)
     snap.write_bytes(src)
     priority = args.priority if args.priority is not None else PRIORITY.get(problem, 3)
+    rel = os.path.relpath(args.file.resolve(), REPO)
+    supersede(rel)
 
     log = REPO / "runs" / "detached" / f"{sha[:16]}.log"
     log.parent.mkdir(exist_ok=True)
@@ -373,7 +388,7 @@ def send(args):
             print(f"okc {mode}: daily cap reached; trying the next mode", flush=True)
         return None
 
-    mode, job = send_in_turn({"problem": problem, "file": str(args.file), "sha256": sha, "note": args.note},
+    mode, job = send_in_turn({"problem": problem, "file": rel, "sha256": sha, "note": args.note},
                              priority, send, mode_now)
     print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)
