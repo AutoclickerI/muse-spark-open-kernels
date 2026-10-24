@@ -1,0 +1,22 @@
+FUSED_SELECT router m=128 incumbent_us=22.464 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.168 top=[(14.944000169634819, (64, 64, 4, 1, 16, 160)), (15.424000099301338, (64, 64, 4, 1, 16, 128)), (15.807999297976494, (64, 64, 4, 1, 8, 160)), (18.624000251293182, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=24.160 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.352 top=[(16.1920003592968, (64, 64, 4, 1, 8, 256)), (16.383999958634377, (64, 64, 4, 1, 8, 160)), (17.472000792622566, (64, 64, 4, 1, 8, 128)), (28.095999732613564, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=24.832 chosen=None chosen_us=24.832 top=[(29.440000653266907, (128, 64, 3, 1, 4, 160)), (34.84800085425377, (64, 64, 4, 1, 2, 256)), (35.13599932193756, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=28.960 chosen=None chosen_us=28.960 top=[(37.9519984126091, (128, 64, 4, 1, 2, 256)), (39.5519994199276, (128, 128, 2, 1, 2, 256)), (39.744000881910324, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.776 chosen=None chosen_us=31.776 top=[(31.360000371932983, ('lt_nn', 1)), (32.3840007185936, ('lt_nn', 0)), (33.63199904561043, ('lt_nn', 5)), (33.76000002026558, ('lt', 0)), (34.2399999499321, ('lt', 1))]
+FUSED_SELECT pooler m=256 incumbent_us=39.552 chosen=('lt_nn', 0) chosen_us=36.288 top=[(37.087999284267426, ('lt_nn', 0)), (37.47199848294258, ('lt_nn', 4)), (38.336001336574554, ('lt', 1)), (38.46399858593941, ('lt_nn', 1)), (39.23200070858002, ('lt', 0))]
+FUSED_SELECT unpooler m=128 incumbent_us=29.888 chosen=('lt_nn', 0) chosen_us=28.960 top=[(28.831999748945236, ('lt_nn', 0)), (29.664000496268272, ('lt', 0)), (30.751999467611313, ('lt', 1)), (30.848000198602676, ('lt', 2)), (31.168000772595406, ('lt_nn', 1))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.152 chosen=None chosen_us=33.152 top=[(33.952001482248306, ('lt_nn', 0)), (34.2399999499321, ('lt', 0)), (35.51999852061272, ('lt_nn', 1)), (35.77600046992302, ('lt', 2)), (37.408001720905304, ('lt', 1))]
+FUSED_SELECT o m=128 incumbent_us=12.960 chosen=('lt_nn', 0) chosen_us=12.800 top=[(12.319999746978283, ('lt_nn', 0)), (12.736000120639801, ('lt', 5)), (12.768000364303589, ('lt', 1)), (12.799999676644802, ('lt', 6)), (12.927999719977379, ('lt_nn', 5))]
+FUSED_SELECT o m=256 incumbent_us=14.016 chosen=('lt_nn', 0) chosen_us=13.984 top=[(14.015999622642994, ('lt', 0)), (14.240000396966934, ('lt_nn', 0)), (14.495999552309513, ('lt_nn', 4)), (14.911999925971031, ('lt', 6)), (14.944000169634819, ('lt', 2))]
+FUSED_SELECT prepare_s=9.70
+LAB_BEGIN hicache_coalesced 7094d943847dafd4
+KV_COPY bytes=128 L=16 P=753 exact=1 graph=pass planned_copies=1506/2 stock_enqueue_us=2.85e+03 new_enqueue_us=9.57 stock_complete_us=3.33e+03 new_complete_us=73.5
+KV_COPY bytes=128 L=16 P=4096 exact=1 graph=skip planned_copies=8192/2 stock_enqueue_us=1.57e+04 new_enqueue_us=12 stock_complete_us=1.8e+04 new_complete_us=332
+KV_COPY bytes=128 L=16 P=16384 exact=1 graph=skip planned_copies=32768/2 stock_enqueue_us=7.37e+04 new_enqueue_us=19.7 stock_complete_us=7.6e+04 new_complete_us=1.27e+03
+KV_COPY bytes=128 L=46 P=753 exact=1 graph=pass planned_copies=1506/2 stock_enqueue_us=2.83e+03 new_enqueue_us=9.79 stock_complete_us=3.53e+03 new_complete_us=187
+KV_COPY bytes=128 L=46 P=4096 exact=1 graph=skip planned_copies=8192/2 stock_enqueue_us=1.76e+04 new_enqueue_us=11.7 stock_complete_us=2e+04 new_complete_us=922
+KV_COPY bytes=128 L=46 P=16384 exact=1 graph=skip planned_copies=32768/2 stock_enqueue_us=7.95e+04 new_enqueue_us=20.3 stock_complete_us=8.2e+04 new_complete_us=3.62e+03
+KV_COPY bytes=320 L=2 P=753 exact=1 graph=pass planned_copies=1506/2 stock_enqueue_us=2.86e+03 new_enqueue_us=9.5 stock_complete_us=3.22e+03 new_complete_us=34.7
+KV_COPY bytes=320 L=2 P=4096 exact=1 graph=skip planned_copies=8192/2 stock_enqueue_us=1.54e+04 new_enqueue_us=11.9 stock_complete_us=1.72e+04 new_complete_us=113
+KV_COPY bytes=320 L=2 P=16384 exact=1 graph=skip planned_copies=32768/2 stock_enqueue_us=6.66e+04 new_enqueue_us=19.6 stock_complete_us=6.87e+04 new_complete_us=408
+LAB_END lab_s=35.9 prepare_s=45.6

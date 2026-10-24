@@ -582,13 +582,7 @@ incoming MoE raw-scale repair; this lane did not edit that owned file. New
 Hopper, FA3, TP8/EP8 full-model agreement, graph residency and hidden-workload
 TTFT remain unverified. No commit or H200 serving run was launched; one authorized component lab was queued below.
 
-The independent H200 copy diagnostic was locally screened (nine byte-exact
-cases, three fresh graphs, static checks) and queued at priority 0.9. Payload:
-`prof/lab/hicache_coalesced.py`, SHA256
-`7094d943847dafd40a30b737de84dcc643791ba08ff14079d1e0323b4cefd08d`.
-Queued source key **344269fe51a18208** is not a judge job ID; its detached log is
-`runs/detached/344269fe51a18208.log`. Base scored path remains f3786341611f4f1f.
-No judge polling or waiting was performed after this send.
+H200 copy diagnostic `3828ee433f0f43c3` (payload `prof/lab/hicache_coalesced.py` `7094d943`): every case byte-exact. Coalesced copies complete in 73.5 us / 1.27 ms at P=753 / 16384 pages (L=16) and 187 us / 3.62 ms (L=46), against stock's 3.33 / 76.0 ms and 3.53 / 82.0 ms; enqueue drops from 2.8-80 ms to 10-20 us. Measured on the judge.
 
 ### KV residency and long-context capacity (2026-10-24)
 
