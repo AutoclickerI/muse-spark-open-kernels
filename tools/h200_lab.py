@@ -39,6 +39,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -242,6 +243,16 @@ def read(ref: str, name: str | None = None):
     print("\n".join(parts) if parts else f"no LAB_BEGIN{' ' + name if name else ''} in {p} (log_tail {len(tail)} chars):\n{tail[-2000:]}")
 
 
+def quota() -> dict:
+    """Today's (scored, check) runs left per problem from `okc problems`, or {} if okc can't say."""
+    okc = shutil.which("okc") or str(Path.home() / ".okc" / "bin" / "okc")
+    try:
+        d = json.loads(subprocess.run([okc, "problems", "--json"], capture_output=True, text=True, timeout=60).stdout)
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return {}
+    return {p["name"]: (p["limits"]["scored"]["left"], p["limits"]["checks"]["left"]) for p in d.get("problems", [])}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -266,6 +277,12 @@ def main():
         src, base = build(embedded, args.host)
         args.o.write_text(src)
         return print(f"{args.o}: {len(src)} bytes, base {base}")
+    left = quota()
+    if left and not sum(left.get(args.host, (0, 0))):
+        spare = ", ".join(f"{h} {r}+{c}" for h, (r, c) in left.items() if h in HOSTS and r + c)
+        print(f"WARNING: {args.host} has no runs left until 00:00 UTC, so this lab waits for the reset. "
+              f"Hosts with scored+check runs left: {spare or 'none'}. A payload that needs only its own "
+              f"synthetic data or the MoE experts can go on --host muse_moe_w4a16.", file=sys.stderr)
     note = f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"
     embedded, priority, note = absorb_waiting(args.host, embedded, args.priority, note)
     src, base = build(embedded, args.host)
