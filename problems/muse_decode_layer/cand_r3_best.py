@@ -1,5 +1,5 @@
 # okc: problem=muse_decode_layer
-"""Round-3 whole-layer candidate: judge-side autotune over V7/V9/grouped MoE, FA3, projections, and PDL.
+"""V9 decode layer with receipt-guided cost and attention portfolios.
 
 Muse Spark Open decoder layer (decode / verify), one GPU of TP8/EP8.
 
@@ -7,7 +7,7 @@ Stages (each a swappable function):
   qkv_gate GEMV -> qk_prep (QK-norm, RoPE, KV-cache store, query cast) -> attention (+ norm-gate)
   -> o GEMV -> boundary 1 (post-attn norm, residual gate, pre-FFN norm)
   -> pooler + router GEMV (router as BF16 hi+lo rows, FP32 out)
-  -> routing + pre-expert norm -> experts (Marlin W4A16) -> unpooler GEMV
+  -> routing + pre-expert norm -> experts (V9 NVFP4) -> unpooler GEMV
   -> boundary 2 (post-FFN norm, residual gate, next layer's pre-attn norm).
 
 v1: split-K GEMVs (Triton, tensor cores, swap-AB) leave FP32 partial sums that the next kernel
@@ -17,7 +17,6 @@ predecessor (all writes come after the wait)."""
 
 from typing import TypedDict
 
-import types
 
 import torch
 from torch.utils.cpp_extension import load_inline
@@ -372,29 +371,7 @@ def _norm_gate_kernel(X, GATE, OUT, eps, HQ: tl.constexpr, D: tl.constexpr, USE_
     tl.store(OUT + t * (HQ * D) + off, (o * tl.sigmoid(g)).to(tl.bfloat16))
 
 
-def attention_fa3(q, gate, data, state):
-    from sgl_kernel.flash_attn import flash_attn_with_kvcache
-    cfg = data["config"]
-    batch, L, tokens = cfg["batch"], cfg["q_len"], cfg["tokens"]
-    window = cfg["window"]
-    descale = {}
-    if cfg["kv_scale"] != 1.0:
-        descale = dict(k_descale=data["k_scale"].reshape(1, 1).expand(batch, HKV),
-                       v_descale=data["v_scale"].reshape(1, 1).expand(batch, HKV))
-    out = flash_attn_with_kvcache(
-        q=q, k_cache=data["k_cache"], v_cache=data["v_cache"], page_table=data["page_table"],
-        cache_seqlens=data["cache_seqlens"], cu_seqlens_q=data["cu_seqlens_q"], max_seqlen_q=L,
-        softmax_scale=cfg["sm_scale"] * cfg["qk_scale_factor"], causal=True,
-        window_size=(window - 1, 0) if window else (-1, -1),
-        scheduler_metadata=data["scheduler_metadata"], **descale)
-    if isinstance(out, tuple):
-        out = out[0]
-    o = torch.empty((tokens, Q_SIZE), device=q.device, dtype=torch.bfloat16)
-    _launch(_norm_gate_kernel, (tokens,), out, gate, o, RMS_EPS, HQ=HQ, D=HD, num_warps=4)
-    return o
-
-
-def stage_attention(qkv, data, state):
+def _attention_base(qkv, data, state):
     if ATTN_BACKEND == "fa3":
         q, gate = qk_prep(qkv, data, state, q_fp8=True)
         return attention_fa3(q, gate, data, state)
@@ -554,91 +531,12 @@ def route_and_norm(pr, state, data, sync):
 # --------------------------------------------------------------------------------------------
 # Post-expert norm and weighted sum: out[t] = sum over local slots of w * rmsnorm(y * (1 + pw)).
 # --------------------------------------------------------------------------------------------
-@triton.jit
-def _post_expert_kernel(Y, WTS, LIDS, PW, OUT, eps, K: tl.constexpr, D: tl.constexpr, USE_PDL: tl.constexpr):
-    t = tl.program_id(0)
-    _pdl_start(USE_PDL)
-    offs = tl.arange(0, D)
-    pw = tl.load(PW + offs).to(tl.float32)
-    _pdl_wait(USE_PDL)
-    acc = tl.zeros((D,), tl.float32)
-    for k in tl.static_range(K):
-        lid = tl.load(LIDS + t * K + k)
-        wk = tl.load(WTS + t * K + k)
-        y = tl.load(Y + (t * K + k) * D + offs, mask=(offs < D) & (lid >= 0), other=0.0).to(tl.float32) * pw
-        r = tl.rsqrt(tl.sum(y * y, 0) / D + eps)
-        acc += tl.where(lid >= 0, wk * r, 0.0) * y
-    tl.store(OUT + t * D + offs, acc.to(tl.bfloat16))
-
-
-def post_expert(y, wts, lids, state):
-    tokens = y.shape[0]
-    out = torch.empty((tokens, D_EXPERT), device=y.device, dtype=torch.bfloat16)
-    _launch(_post_expert_kernel, (tokens,), y, wts, lids, state["post_expert_w"], out, POST_EPS,
-            K=TOP_K, D=D_EXPERT, num_warps=8)
-    return out
 
 
 # --------------------------------------------------------------------------------------------
 # Experts: SGLang's Marlin W4A16 path (moe_align, two Marlin GEMMs, silu_and_mul, post-norm sum).
 # --------------------------------------------------------------------------------------------
-def _marlin_bank(weights):
-    from sglang.srt.layers.quantization.marlin_utils import marlin_make_workspace
-    from sglang.srt.layers.quantization.marlin_utils_fp4 import prepare_moe_nvfp4_layer_for_marlin
-    device = weights["w13"].device
-    layer = types.SimpleNamespace(
-        quant_config=types.SimpleNamespace(group_size=16),
-        moe_runner_config=types.SimpleNamespace(is_gated=True),
-        intermediate_size_per_partition=weights["w13"].shape[1] // 2,
-        params_dtype=torch.bfloat16,
-        w13_weight=weights["w13"].contiguous(), w2_weight=weights["w2"].contiguous(),
-        w13_weight_scale=weights["w13_sf"].contiguous(), w2_weight_scale=weights["w2_sf"].contiguous(),
-        w13_weight_scale_2=weights["w13_gs"].contiguous(), w2_weight_scale_2=weights["w2_gs"].contiguous(),
-    )
-    prepare_moe_nvfp4_layer_for_marlin(layer)
-    return {
-        "w13": layer.w13_weight.data, "w13_s": layer.w13_weight_scale.data, "w13_gs": layer.w13_weight_scale_2.data,
-        "w2": layer.w2_weight.data, "w2_s": layer.w2_weight_scale.data, "w2_gs": layer.w2_weight_scale_2.data,
-        "size_n": layer.intermediate_size_per_partition,
-        "workspace": marlin_make_workspace(device, max_blocks_per_sm=4),
-    }
-
-
-def experts_marlin(x, wts, lids, state):
-    from sgl_kernel.scalar_type import scalar_types
-    from sglang.kernels.ops.activation.activation import silu_and_mul
-    from sglang.kernels.ops.moe.moe_wna16_marlin import moe_wna16_marlin_gemm
-    from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
-    bank = state["bank"]
-    num_tokens, size_k = x.shape
-    size_n = bank["size_n"]
-    gemm1_n = 2 * size_n
-    for block_size_m in BLOCK_SIZE_M_CANDIDATES:
-        if num_tokens * TOP_K / LOCAL_EXPERTS / block_size_m < 0.9:
-            break
-    sorted_ids, block_experts, n_padded = moe_align_block_size(lids, block_size_m, N_EXPERTS)
-    cache2 = torch.empty((num_tokens * TOP_K, size_n), device=x.device, dtype=x.dtype)
-    cache13 = torch.empty((num_tokens * TOP_K * max(gemm1_n, size_k),), device=x.device, dtype=x.dtype)
-    cache1 = cache13[: num_tokens * TOP_K * gemm1_n].view(-1, gemm1_n)
-    cache3 = cache13[: num_tokens * TOP_K * size_k].view(-1, size_k)
-    common = dict(moe_block_size=block_size_m, mul_topk_weights=False, is_ep=True,
-                  b_q_type=scalar_types.float4_e2m1f, is_k_full=True, use_atomic_add=False,
-                  use_fp32_reduce=True, is_zp_float=False)
-    ws = bank["workspace"]
-    cache1 = moe_wna16_marlin_gemm(
-        x, cache1, bank["w13"], None, bank["w13_s"], bank["w13_gs"], None, None, None, ws,
-        sorted_ids, block_experts, n_padded, wts, top_k=TOP_K,
-        size_m=num_tokens, size_n=gemm1_n, size_k=size_k, **common)
-    silu_and_mul(cache1.view(-1, gemm1_n), cache2, expert_ids=lids.view(-1), expert_step=1)
-    y = moe_wna16_marlin_gemm(
-        cache2, cache3, bank["w2"], None, bank["w2_s"], bank["w2_gs"], None, None, None, ws,
-        sorted_ids, block_experts, n_padded, wts, top_k=1,
-        size_m=num_tokens * TOP_K, size_n=size_k, size_k=size_n, **common).view(num_tokens, TOP_K, size_k)
-    return post_expert(y, wts, lids, state)
-
-
-# --------------------------------------------------------------------------------------------
-def prepare(weights):
+def _prepare_weights(weights):
     dev = weights["qkv_gate"].device
     f32 = lambda w: w.float().contiguous()  # noqa: E731
 
@@ -669,38 +567,9 @@ def prepare(weights):
         "next_pre_attn_w": 1.0 + f32(weights["next_pre_attn_norm"]),
         "inv_freq": (1.0 / (ROPE_THETA ** (torch.arange(0, HD, 2, device=dev).float() / HD))).contiguous(),
         "moe_bank": v9_prepare({**weights, "post_norm_w": weights["post_expert_norm"]}),
-        "moe_bank_v7": v7_prepare({**weights, "post_norm_w": weights["post_expert_norm"]}),
     }
     torch.cuda.synchronize()
     return state
-
-
-def kernel_fn(data, state):
-    cfg = data["config"]
-    tokens = cfg["tokens"]
-    dev = data["stream"].device
-    # per-call barrier counters and norm sums for the multi-program row kernels (zeroed here)
-    sync = (torch.empty if _chunks(tokens) == 1 else torch.zeros)((15 * tokens,), device=dev, dtype=torch.int32)
-    sync_i = sync[: 3 * tokens].view(3, tokens)
-    sync_f = sync[3 * tokens:].view(torch.float32).view(3, tokens, 4)
-    # attention block
-    qkv = project(data["attn_input"], state["qkv_gate"], "qkv_gate", state)
-    attn = stage_attention(qkv, data, state)
-    a = project(attn, state["o"], "o", state)  # all-reduce: identity
-    h, stream1 = boundary(a, data["stream"], state["alpha1"], state["beta1"], state["pre_ffn_w"],
-                          (sync_f[0], sync_i[0]), use_pdl=state.get("pdl_plan", {}).get((tokens, "b1"), True))
-    # MoE block
-    pr = project(h, state["pool_router"], "pool_router", state, out_dtype=torch.float32)
-    x, ids, wts, lids = route_and_norm(pr, state, data, (sync_f[1], sync_i[1]))
-    moe = experts_v4(x, wts, lids, state)  # all-reduce: identity
-    if tokens <= SLICED_MAX_TOKENS:
-        f = project(moe, state["unpooler_slice"], "unpooler_slice", state)  # all-gather: identity (zeros elsewhere)
-    else:
-        f = project(moe, state["unpooler"], "unpooler", state)
-    hidden, stream2 = boundary(f, stream1, state["alpha2"], state["beta2"], state["next_pre_attn_w"],
-                               (sync_f[2], sync_i[2]), postw=state["post_ffn_w"],
-                               use_pdl=state.get("pdl_plan", {}).get((tokens, "b2"), True))
-    return hidden, stream2, ids
 
 
 # MoE V9: persistent resident expert kernel from muse_moe_w4a16/cand_v9.py.
@@ -771,6 +640,16 @@ __device__ __forceinline__ uint32_t hmul2(uint32_t a, uint32_t b) {
   uint32_t d;
   asm("mul.rn.bf16x2 %0, %1, %2;" : "=r"(d) : "r"(a), "r"(b));
   return d;
+}
+// E4M3 -> two equal BF16 lanes scaled by 2^118. dq8 supplies 2^-126;
+// the existing GEMM epilogue supplies 2^8. Preserve zeros, signs and subnormals.
+__device__ __forceinline__ uint32_t scale_e4m3(uint32_t raw) {
+  const uint32_t a = raw & 127u;
+  uint32_t b = a >= 8 ? 0x7700u + (a << 4) :
+               a >= 4 ? 0x7680u + (a << 5) :
+               a >= 2 ? 0x7600u + (a << 6) : a ? 0x7600u : 0u;
+  b |= (raw & 128u) << 8;
+  return b | (b << 16);
 }
 __device__ __forceinline__ void mma16816(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
                                          uint32_t b0, uint32_t b1) {
@@ -1076,8 +955,8 @@ __global__ void __launch_bounds__(NTHR, 2) moe_fused(
         for (int g = 0; g < 8; ++g) {
           const uint4 wv = wq[g * 32];
           const uint32_t sw = scw[g >> 1];
-          const uint32_t Sr = __byte_perm(sw, 0u, (g & 1) ? 0x4242u : 0x4040u) * 16u + 0x70007000u;
-          const uint32_t Sr8 = __byte_perm(sw, 0u, (g & 1) ? 0x4343u : 0x4141u) * 16u + 0x70007000u;
+          const uint32_t Sr = scale_e4m3((sw >> ((g & 1) * 16)) & 255u);
+          const uint32_t Sr8 = scale_e4m3((sw >> (8 + (g & 1) * 16)) & 255u);
           uint32_t o[16];
           dq8(wv.x, wv.y, o);
           dq8(wv.z, wv.w, o + 8);
@@ -1270,7 +1149,8 @@ def _v9_module():
             cpp_sources=V9_CPP_SRC,
             cuda_sources=V9_CUDA_SRC,
             functions=["max_smem_attr", "smem_needed", "resident_blocks", "run"],
-            extra_cuda_cflags=["-O3", "-std=c++20", "-lineinfo"],
+            extra_cuda_cflags=["-O3", "-std=c++20", "-lineinfo",
+                *( ["-gencode=arch=compute_90a,code=sm_90a"] if IS_HOPPER else [] )],
             verbose=False,
         )
         _V9_MOD.smem_optin = _V9_MOD.max_smem_attr()
@@ -1304,34 +1184,13 @@ def _bit_table():
 _TABLE = _bit_table()
 
 
-def _encode_scales(sf: torch.Tensor):
-    """E4M3 block scales -> (u8 code, neg mask, zero mask). Code: |s| = 2^(e5 - 21) * (1 + m/8),
-    byte = e5 << 3 | m; the kernel builds BF16 bits 0x7000 | byte << 4 = |s| * 2^118. Exact for
-    every nonzero finite E4M3 value (subnormals included)."""
-    s = sf.float()
-    if not torch.isfinite(s).all():
-        raise ValueError("non-finite NVFP4 block scale")
-    a = s.abs()
-    nz = a > 0
-    m, e = torch.frexp(torch.where(nz, a, torch.ones_like(a)))
-    mant = ((m * 2 - 1) * 8).round().to(torch.int32)
-    e5 = (e - 1 + 21).to(torch.int32)
-    assert int(e5[nz].min()) >= 0 and int(e5[nz].max()) <= 30 and int(mant.max()) <= 7
-    code = torch.where(nz, (e5 << 3) | mant, torch.zeros_like(e5))
-    back = torch.exp2((code >> 3).float() - 21) * (1 + (code & 7).float() / 8)
-    assert torch.equal(torch.where(nz, back, torch.zeros_like(back)), a)
-    return code.to(torch.uint8), s < 0, ~nz
-
-
 def _repack(wq: torch.Tensor, sf: torch.Tensor, rowmap: torch.Tensor) -> torch.Tensor:
     """One expert: packed E2M1 [R, K/2] u8 + E4M3 scales [R, K/16] -> [T, 36864] u8 tiles."""
     R, K = wq.shape[0], wq.shape[1] * 2
     assert K == 4096
     T = rowmap.shape[0]
     codes = torch.stack((wq & 0xF, wq >> 4), -1).reshape(R, K // 16, 16)
-    u, neg, zero = _encode_scales(sf)
-    codes = torch.where(neg[..., None], codes ^ 8, codes)                  # sign moved into the codes
-    codes = torch.where(zero[..., None], torch.zeros_like(codes), codes)   # 0 * anything stays 0
+    u = sf.contiguous().view(torch.uint8)  # exact stored E4M3 bytes
     codes = codes.reshape(R, K)[rowmap.reshape(-1)]
     # k = 512 w + 64 g + 16 q + 4 (2 p + sl) + 2 j + h ; tile row = 8 ri + rr
     ct = codes.view(T, 2, 8, 8, 8, 4, 2, 2, 2, 2)                           # T ri rr w g q p sl j h
@@ -2026,7 +1885,7 @@ def _layer_attn_ext():
     global _LAYER_ATTN_EXT
     if _LAYER_ATTN_EXT is None:
         major, minor = torch.cuda.get_device_capability()
-        arch = f"{major}{minor}"
+        arch = "90a" if major == 9 else f"{major}{minor}"
         _LAYER_ATTN_EXT = load_inline(
             name=f"muse_decode_attn_split_{arch}",
             cpp_sources=CPP_SRC,
@@ -2068,8 +1927,6 @@ def _splits(batch, kvg, max_keys, q_len, sms):
     return max(1, ns)
 
 
-
-
 def _layer_attention_custom(qkv, data):
     qkv, splits = qkv
     cfg = data["config"]
@@ -2095,700 +1952,20 @@ def _layer_attention_custom(qkv, data):
     return out.view(-1, hq * d)
 
 
-_attention_fallback = stage_attention
-
-def stage_attention(qkv, data, state):
+def _layer_stage_attention(qkv, data, state):
     # Portable CUDA path is deliberately tested locally too.
     cfg = data["config"]
     if cfg["q_len"] == 1:
         return _layer_attention_custom(qkv, data)
-    return _attention_fallback(qkv, data, state)
+    return _attention_base(qkv, data, state)
 
-
-
-
-# MoE V7: alternate persistent expert bank retained for judge-side autotune.
-
-
-import torch
-
-v7_H = 4096          # hidden width = expert intermediate width here
-v7_NLOC = 32         # local experts (ep8)
-v7_TOPK = 8
-v7_TILE_BYTES = 36864
-v7_NT1, v7_NT2 = 512, 256   # m16 tiles per expert in W13 / W2
-v7_NCNT = 64             # persistent counters (int32)
-
-v7_CUDA_SRC = r"""
-#include <torch/extension.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <cuda_bf16.h>
-#include <stdint.h>
-
-namespace {
-
-constexpr int HD = 4096;
-constexpr int NLOC = 32;
-constexpr int TILE_BYTES = 36864;
-constexpr int TILE_W_BYTES = 32768;
-constexpr int NT1 = 512;
-constexpr int NT2 = 256;
-constexpr int NCW = 8;                 // consumer warps
-constexpr int NCT = NCW * 32;          // consumer threads
-constexpr int NTHR = NCT + 32;         // + producer warp
-constexpr uint32_t DQ_MASK = 0x81C081C0u;
-constexpr uint32_t LA_MASK = 0x60306030u;
-// persistent counters
-enum { C_DONE = 0, C_ZERO = 32, C_BAR = 33, C_GEN = 34 };
-
-__device__ __forceinline__ uint32_t smem_u32(const void* p) {
-  return static_cast<uint32_t>(__cvta_generic_to_shared(p));
-}
-__device__ __forceinline__ void mbar_init(uint64_t* b, int cnt) {
-  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" :: "r"(smem_u32(b)), "r"(cnt));
-}
-__device__ __forceinline__ bool mbar_try(uint64_t* b, uint32_t parity) {
-  uint32_t ok;
-  asm volatile("{\n .reg .pred p;\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\n selp.u32 %0, 1, 0, p;\n}\n"
-               : "=r"(ok) : "r"(smem_u32(b)), "r"(parity) : "memory");
-  return ok != 0;
-}
-__device__ __forceinline__ void mbar_wait(uint64_t* b, uint32_t parity) {
-  while (!mbar_try(b, parity)) {}
-}
-__device__ __forceinline__ void mbar_arrive(uint64_t* b) {
-  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" :: "r"(smem_u32(b)) : "memory");
-}
-__device__ __forceinline__ void mbar_expect_tx(uint64_t* b, uint32_t bytes) {
-  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" :: "r"(smem_u32(b)), "r"(bytes) : "memory");
-}
-__device__ __forceinline__ void bulk_g2s(void* dst, const void* src, uint32_t bytes, uint64_t* b, uint64_t pol) {
-  asm volatile("cp.async.bulk.shared::cluster.global.mbarrier::complete_tx::bytes.L2::cache_hint [%0], [%1], %2, [%3], %4;"
-               :: "r"(smem_u32(dst)), "l"(src), "r"(bytes), "r"(smem_u32(b)), "l"(pol) : "memory");
-}
-__device__ __forceinline__ void bar_consumers() {
-  asm volatile("bar.sync 1, %0;" :: "n"(NCT) : "memory");
-}
-__device__ __forceinline__ int ld_acquire(const int* p) {
-  int v;
-  asm volatile("ld.acquire.gpu.global.s32 %0, [%1];" : "=r"(v) : "l"(p) : "memory");
-  return v;
-}
-__device__ __forceinline__ uint32_t rotr(uint32_t x, int s) { return __funnelshift_r(x, x, s); }
-__device__ __forceinline__ uint32_t hmul2(uint32_t a, uint32_t b) {
-  uint32_t d;
-  asm("mul.rn.bf16x2 %0, %1, %2;" : "=r"(d) : "r"(a), "r"(b));
-  return d;
-}
-__device__ __forceinline__ void mma16816(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
-                                         uint32_t b0, uint32_t b1) {
-  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
-               : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
-               : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
-}
-// 16 E2M1 codes (two words) -> 8 BF16x2 registers holding value * 2^-126 (exact).
-__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {
-  o[0] = A & DQ_MASK;
-  o[1] = rotr(A, 4) & DQ_MASK;
-  o[2] = rotr(A, 10) & DQ_MASK;
-  o[3] = rotr(B, 2) & DQ_MASK;
-  o[4] = rotr(B, 6) & DQ_MASK;
-  o[5] = rotr(B, 12) & DQ_MASK;
-  const uint32_t W = (A & LA_MASK) | (B & ~LA_MASK);
-  o[6] = rotr(W, 24) & DQ_MASK;
-  o[7] = rotr(W, 30) & DQ_MASK;
-}
-
-struct Route {        // shared-memory routing summary
-  int n[NLOC];        // pairs per local expert
-  int off[NLOC];      // first sorted position
-  int nblk[NLOC];     // token blocks
-  int us1[NLOC + 1];  // phase-1 unit prefix
-  int us2[NLOC + 1];  // phase-2 unit prefix
-  int c1, c2;         // m-chunk sizes
-  int run[NLOC];
-  int wc[NCW][NLOC];
-};
-
-// unit -> (expert, token block, m tile); order (e, m-chunk, block, m)
-__device__ __forceinline__ void decode_unit(int u, const int* us, const int* nblk, int cc, int ntile,
-                                            int& e, int& nb, int& m) {
-  e = 0;
-#pragma unroll
-  for (int d = 16; d > 0; d >>= 1) {
-    if (us[e + d] <= u) e += d;
-  }
-  const int rel = u - us[e];
-  const int nbk = nblk[e];
-  const int nfull = ntile / cc;
-  const int span = cc * nbk;
-  if (rel < nfull * span) {
-    const int mc = rel / span;
-    const int r2 = rel - mc * span;
-    nb = r2 / cc;
-    m = mc * cc + (r2 - nb * cc);
-  } else {
-    const int L = ntile - nfull * cc;
-    const int r3 = rel - nfull * span;
-    nb = r3 / L;
-    m = nfull * cc + (r3 - nb * L);
-  }
-}
-
-__device__ __forceinline__ void advance_unit(int& e, int& nb, int& m, int& mb, int& me,
-                                               const int* nblk, int cc, int ntile) {
-  if (++m == me) {
-    if (++nb == nblk[e]) {
-      nb = 0;
-      mb += cc;
-      if (mb >= ntile) {
-        ++e;
-        while (e < NLOC && nblk[e] == 0) ++e;
-        mb = 0;
-      }
-      me = min(ntile, mb + cc);
-    }
-    m = mb;
-  }
-}
-
-template <int NT>
-__global__ void __launch_bounds__(NTHR, 1) moe_fused(
-    const __nv_bfloat16* __restrict__ x, const int* __restrict__ ids, const float* __restrict__ tw,
-    const __nv_bfloat16* __restrict__ pnw, const uint8_t* __restrict__ w13p, const uint8_t* __restrict__ w2p,
-    const float* __restrict__ gs13, const float* __restrict__ gs2, __nv_bfloat16* __restrict__ inter,
-    float* __restrict__ y, float* __restrict__ ss, int* __restrict__ cnt, __nv_bfloat16* __restrict__ out,
-    int M, int local_start, int nstage) {
-  constexpr int NB = 8 * NT;
-  constexpr int RED = NT * 4;
-  const int npairs = M * 8;
-  extern __shared__ __align__(128) uint8_t smem[];
-  uint8_t* stages = smem;
-  float* red = reinterpret_cast<float*>(smem + nstage * TILE_BYTES);        // [2][NCW][32][RED]
-  uint64_t* fullb = reinterpret_cast<uint64_t*>(red + 2 * NCW * 32 * RED);
-  uint64_t* emptyb = fullb + nstage;
-  Route* rt = reinterpret_cast<Route*>(emptyb + nstage);
-  int8_t* eflat = reinterpret_cast<int8_t*>(rt + 1);                        // [npairs] local expert or -1
-  int16_t* pos_of = reinterpret_cast<int16_t*>(eflat + ((npairs + 15) & ~15));  // [npairs]
-  int16_t* pair_of = pos_of + npairs;                                        // [npairs] sorted pos -> flat
-
-  const int tid = threadIdx.x, lane = tid & 31, warp = tid >> 5;
-  const int G = gridDim.x, c = blockIdx.x;
-  int bar_gen0 = 0;
-
-  // ---------------- routing: counts ----------------
-  if (tid < NLOC) rt->n[tid] = 0;
-  if (tid == 0) {
-    for (int s = 0; s < nstage; ++s) { mbar_init(&fullb[s], 1); mbar_init(&emptyb[s], NCW); }
-    asm volatile("fence.mbarrier_init.release.cluster;" ::: "memory");
-    bar_gen0 = ld_acquire(cnt + C_GEN);
-  }
-  __syncthreads();
-  for (int i = tid; i < npairs; i += NTHR) {
-    int e = __ldg(ids + i) - local_start;
-    if (e < 0 || e >= NLOC) e = -1;
-    eflat[i] = static_cast<int8_t>(e);
-    if (e >= 0) atomicAdd(&rt->n[e], 1);
-  }
-  __syncthreads();
-  if (warp == 0) {
-    const int n = rt->n[lane];
-    const int nb = (n + NB - 1) / NB;
-    int off = n, u1 = nb * NT1, u2 = nb * NT2;
-#pragma unroll
-    for (int d = 1; d < 32; d <<= 1) {
-      const int a = __shfl_up_sync(~0u, off, d), b = __shfl_up_sync(~0u, u1, d), e2 = __shfl_up_sync(~0u, u2, d);
-      if (lane >= d) { off += a; u1 += b; u2 += e2; }
-    }
-    rt->off[lane] = off - n;
-    rt->run[lane] = off - n;
-    rt->nblk[lane] = nb;
-    rt->us1[lane + 1] = u1;
-    rt->us2[lane + 1] = u2;
-    if (lane == 0) { rt->us1[0] = 0; rt->us2[0] = 0; }
-    const int U1 = __shfl_sync(~0u, u1, 31), U2 = __shfl_sync(~0u, u2, 31);
-    if (lane == 0) {
-      rt->c1 = min(NT1, max(1, (U1 + G / 2) / G));
-      rt->c2 = min(NT2, max(1, (U2 + G / 2) / G));
-    }
-  }
-  __syncthreads();
-
-  const int U1 = rt->us1[NLOC], U2 = rt->us2[NLOC];
-  const int a1 = static_cast<int>((long long)U1 * c / G), b1 = static_cast<int>((long long)U1 * (c + 1) / G);
-  const int a2 = static_cast<int>((long long)U2 * c / G), b2 = static_cast<int>((long long)U2 * (c + 1) / G);
-
-  if (warp == NCW) {  // ---------------- producer ----------------
-    if (lane == 0) {
-      uint64_t pol_first, pol_normal;
-      asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;" : "=l"(pol_first));
-      asm volatile("createpolicy.fractional.L2::evict_normal.b64 %0, 1.0;" : "=l"(pol_normal));
-      int st = 0;
-      uint32_t ph = 0;
-      for (int pass = 0; pass < 2; ++pass) {
-        const int ua = pass ? a2 : a1, ub = pass ? b2 : b1;
-        const int* us = pass ? rt->us2 : rt->us1;
-        const int cc = pass ? rt->c2 : rt->c1;
-        const int ntile = pass ? NT2 : NT1;
-        const uint8_t* base = pass ? w2p : w13p;
-        int e=0, nb=0, m=0, mb=0, me=0;
-        if (ua < ub) {
-          decode_unit(ua, us, rt->nblk, cc, ntile, e, nb, m);
-          mb = (m / cc) * cc;
-          me = min(ntile, mb + cc);
-        }
-        for (int u = ua; u < ub; ++u) {
-          const uint8_t* src = base + (static_cast<size_t>(e) * ntile + m) * TILE_BYTES;
-          mbar_wait(&emptyb[st], ph ^ 1u);
-          mbar_expect_tx(&fullb[st], TILE_BYTES);
-          // a tile read by several token blocks stays in L2 for its neighbours; others stream through
-          bulk_g2s(stages + st * TILE_BYTES, src, TILE_BYTES, &fullb[st], rt->nblk[e] > 1 ? pol_normal : pol_first);
-          if (++st == nstage) { st = 0; ph ^= 1u; }
-          advance_unit(e, nb, m, mb, me, rt->nblk, cc, ntile);
-        }
-      }
-    }
-    return;
-  }
-
-  // ---------------- consumers: deterministic token lists ----------------
-  for (int base = 0; base < npairs; base += NCT) {
-    rt->wc[warp][lane] = 0;
-    bar_consumers();
-    const int i = base + tid;
-    const int e = i < npairs ? eflat[i] : -1;
-    const unsigned mk = __match_any_sync(~0u, e);
-    const int rank = __popc(mk & ((1u << lane) - 1u));
-    if (e >= 0 && rank == 0) rt->wc[warp][e] = __popc(mk);
-    bar_consumers();
-    if (tid < NLOC) {
-      int s = rt->run[tid];
-      for (int w = 0; w < NCW; ++w) { const int t = rt->wc[w][tid]; rt->wc[w][tid] = s; s += t; }
-      rt->run[tid] = s;
-    }
-    bar_consumers();
-    if (i < npairs) {
-      if (e >= 0) {
-        const int pos = rt->wc[warp][e] + rank;
-        pos_of[i] = static_cast<int16_t>(pos);
-        pair_of[pos] = static_cast<int16_t>(i);
-      } else {
-        pos_of[i] = -1;
-      }
-    }
-  }
-  // zero this CTA's slice of the sum-of-squares accumulators, then publish
-  {
-    const int P = rt->us1[NLOC] > 0 ? rt->off[NLOC - 1] + rt->n[NLOC - 1] : 0;
-    const int z0 = static_cast<int>((long long)P * c / G), z1 = static_cast<int>((long long)P * (c + 1) / G);
-    for (int i = z0 + tid; i < z1; i += NCT) ss[i] = 0.f;
-    __threadfence();
-    bar_consumers();
-    if (tid == 0) atomicAdd(cnt + C_ZERO, 1);
-  }
-
-  const int q = lane & 3;
-  uint32_t Bf[NT][8][8];
-  int st = 0;
-  uint32_t ph = 0;
-  int buf = 0;
-  int cur_pass = -1, cur_e = -1, cur_nb = -1, seg_tiles = 0;
-  float fw[2];   // (1 + post_norm_w) for this thread's phase-2 epilogue row, refreshed per tile
-
-  for (int pass = 0; pass < 2; ++pass) {
-    const int ua = pass ? a2 : a1, ub = pass ? b2 : b1;
-    const int* us = pass ? rt->us2 : rt->us1;
-    const int cc = pass ? rt->c2 : rt->c1;
-    const int ntile = pass ? NT2 : NT1;
-    int e=0, nb=0, m=0, mb=0, me=0;
-    if (ua < ub) {
-      decode_unit(ua, us, rt->nblk, cc, ntile, e, nb, m);
-      mb = (m / cc) * cc;
-      me = min(ntile, mb + cc);
-    }
-    for (int u = ua; u < ub; ++u) {
-      const int ne = rt->n[e], off = rt->off[e];
-      if (pass != cur_pass || e != cur_e || nb != cur_nb) {
-        if (cur_pass == 0 && seg_tiles > 0) {  // publish the finished phase-1 segment
-          __threadfence();
-          bar_consumers();
-          if (tid == 0) atomicAdd(cnt + C_DONE + cur_e, seg_tiles);
-        }
-        cur_pass = pass; cur_e = e; cur_nb = nb; seg_tiles = 0;
-        if (pass == 1) {
-          const int target = NT1 * rt->nblk[e];
-          while (ld_acquire(cnt + C_DONE + e) < target) __nanosleep(64);
-          while (ld_acquire(cnt + C_ZERO) < G) __nanosleep(64);
-        }
-#pragma unroll
-        for (int j = 0; j < NT; ++j) {
-          const int idx = nb * NB + j * 8 + (lane >> 2);
-          const __nv_bfloat16* row = nullptr;
-          if (idx < ne) {
-            const int pos = off + idx;
-            row = pass ? inter + static_cast<size_t>(pos) * HD : x + static_cast<size_t>(pair_of[pos] >> 3) * HD;
-          }
-#pragma unroll
-          for (int g = 0; g < 8; ++g) {
-            uint4 v0 = make_uint4(0, 0, 0, 0), v1 = v0;
-            if (row) {
-              const uint4* p = reinterpret_cast<const uint4*>(row + warp * 512 + g * 64 + q * 16);
-              if (pass) { v0 = __ldcg(p); v1 = __ldcg(p + 1); }
-              else { v0 = __ldg(p); v1 = __ldg(p + 1); }
-            }
-            Bf[j][g][0] = v0.x; Bf[j][g][1] = v0.y; Bf[j][g][2] = v0.z; Bf[j][g][3] = v0.w;
-            Bf[j][g][4] = v1.x; Bf[j][g][5] = v1.y; Bf[j][g][6] = v1.z; Bf[j][g][7] = v1.w;
-          }
-        }
-      }
-      if (pass == 1 && tid < 16 * NB) fw[0] = 1.f + __bfloat162float(pnw[m * 16 + (tid & 15)]);
-
-      mbar_wait(&fullb[st], ph);
-      const uint8_t* tile = stages + st * TILE_BYTES;
-      float acc[NT][4];
-#pragma unroll
-      for (int j = 0; j < NT; ++j) acc[j][0] = acc[j][1] = acc[j][2] = acc[j][3] = 0.f;
-      {
-        const uint4* wq = reinterpret_cast<const uint4*>(tile) + warp * 8 * 32 + lane;
-        const uint4 scv = *(reinterpret_cast<const uint4*>(tile + TILE_W_BYTES) + warp * 32 + lane);
-        const uint32_t scw[4] = {scv.x, scv.y, scv.z, scv.w};
-#pragma unroll
-        for (int g = 0; g < 8; ++g) {
-          const uint4 wv = wq[g * 32];
-          const uint32_t sw = scw[g >> 1];
-          const uint32_t Sr = __byte_perm(sw, 0u, (g & 1) ? 0x4242u : 0x4040u) * 16u + 0x70007000u;
-          const uint32_t Sr8 = __byte_perm(sw, 0u, (g & 1) ? 0x4343u : 0x4141u) * 16u + 0x70007000u;
-          uint32_t o[16];
-          dq8(wv.x, wv.y, o);
-          dq8(wv.z, wv.w, o + 8);
-#pragma unroll
-          for (int s = 0; s < 4; ++s) {
-            const uint32_t* os = o + (s >> 1) * 8 + (s & 1) * 4;
-            const uint32_t a0 = hmul2(os[0], Sr), a1 = hmul2(os[1], Sr8);
-            const uint32_t a2 = hmul2(os[2], Sr), a3 = hmul2(os[3], Sr8);
-#pragma unroll
-            for (int j = 0; j < NT; ++j) mma16816(acc[j], a0, a1, a2, a3, Bf[j][g][2 * s], Bf[j][g][2 * s + 1]);
-          }
-        }
-      }
-      __syncwarp();
-      if (lane == 0) mbar_arrive(&emptyb[st]);
-      if (++st == nstage) { st = 0; ph ^= 1u; }
-
-      float* rp = red + ((buf * NCW + warp) * 32 + lane) * RED;
-#pragma unroll
-      for (int j = 0; j < NT; ++j) reinterpret_cast<float4*>(rp)[j] = make_float4(acc[j][0], acc[j][1], acc[j][2], acc[j][3]);
-      bar_consumers();
-      const float* rb = red + buf * NCW * 32 * RED;
-      if (pass == 0) {
-        const float sc = gs13[e] * 256.f;
-        if (tid < 8 * NB) {
-          const int i = tid & 7, n = tid >> 3, j = n >> 3, col = n & 7;
-          const int ls = i * 4 + (col >> 1), rg = j * 4 + (col & 1);
-          float G1 = 0.f, U = 0.f;
-#pragma unroll
-          for (int w = 0; w < NCW; ++w) {
-            G1 += rb[(w * 32 + ls) * RED + rg];
-            U += rb[(w * 32 + ls) * RED + rg + 2];
-          }
-          const int idx = nb * NB + n;
-          if (idx < ne) {
-            G1 *= sc;
-            U *= sc;
-            const float h = G1 / (1.f + __expf(-G1)) * U;
-            inter[static_cast<size_t>(off + idx) * HD + m * 8 + i] = __float2bfloat16(h);
-          }
-        }
-      } else {
-        const float sc = gs2[e] * 256.f;
-        if (tid < 16 * NB) {
-          const int i = tid & 15, n = tid >> 4, j = n >> 3, col = n & 7;
-          const int ls = (i & 7) * 4 + (col >> 1), rg = j * 4 + (col & 1) + ((i >> 3) << 1);
-          float v = 0.f;
-#pragma unroll
-          for (int w = 0; w < NCW; ++w) v += rb[(w * 32 + ls) * RED + rg];
-          v *= sc;
-          const int idx = nb * NB + n;
-          const bool ok = idx < ne;
-          if (ok) y[static_cast<size_t>(off + idx) * HD + m * 16 + i] = v;
-          float t2 = ok ? (v * fw[0]) * (v * fw[0]) : 0.f;
-#pragma unroll
-          for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);   // 16 rows of one token
-          if (ok && i == 0) atomicAdd(ss + off + idx, t2);
-        }
-      }
-      buf ^= 1;
-      ++seg_tiles;
-      advance_unit(e, nb, m, mb, me, rt->nblk, cc, ntile);
-    }
-  }
-  if (cur_pass == 0 && seg_tiles > 0) {
-    __threadfence();
-    bar_consumers();
-    if (tid == 0) atomicAdd(cnt + C_DONE + cur_e, seg_tiles);
-  }
-
-  // ---------------- grid barrier ----------------
-  __threadfence();
-  bar_consumers();
-  if (tid == 0) {
-    if (atomicAdd(cnt + C_BAR, 1) == G - 1) {
-      for (int i = 0; i < NLOC; ++i) cnt[C_DONE + i] = 0;   // every CTA is past its waits
-      cnt[C_ZERO] = 0;
-      cnt[C_BAR] = 0;
-      __threadfence();
-      atomicAdd(cnt + C_GEN, 1);
-    } else {
-      while (ld_acquire(cnt + C_GEN) == bar_gen0) __nanosleep(64);
-    }
-  }
-  bar_consumers();
-
-  // ---------------- combine: item = (token, half of the columns) ----------------
-  for (int it = c; it < 2 * M; it += G) {
-    const int t = it >> 1;
-    const int c0 = (it & 1) * 2048 + tid * 8;
-    float f[8];
-    {
-      const uint4 wv = *reinterpret_cast<const uint4*>(pnw + c0);
-      const __nv_bfloat16* wb = reinterpret_cast<const __nv_bfloat16*>(&wv);
-#pragma unroll
-      for (int k = 0; k < 8; ++k) f[k] = 1.f + __bfloat162float(wb[k]);
-    }
-    float acc[8];
-#pragma unroll
-    for (int k = 0; k < 8; ++k) acc[k] = 0.f;
-#pragma unroll
-    for (int j = 0; j < 8; ++j) {
-      const int pos = pos_of[t * 8 + j];
-      if (pos >= 0) {
-        const float sc = tw[t * 8 + j] * rsqrtf(__ldcg(ss + pos) * (1.f / HD) + 1e-8f);
-        const float4* p = reinterpret_cast<const float4*>(y + static_cast<size_t>(pos) * HD + c0);
-        const float4 u0 = __ldcg(p), u1 = __ldcg(p + 1);
-        acc[0] += sc * u0.x * f[0]; acc[1] += sc * u0.y * f[1]; acc[2] += sc * u0.z * f[2]; acc[3] += sc * u0.w * f[3];
-        acc[4] += sc * u1.x * f[4]; acc[5] += sc * u1.y * f[5]; acc[6] += sc * u1.z * f[6]; acc[7] += sc * u1.w * f[7];
-      }
-    }
-    uint4 ov;
-    __nv_bfloat16* ob = reinterpret_cast<__nv_bfloat16*>(&ov);
-#pragma unroll
-    for (int k = 0; k < 8; ++k) ob[k] = __float2bfloat16(acc[k]);
-    *reinterpret_cast<uint4*>(out + static_cast<size_t>(t) * HD + c0) = ov;
-  }
-}
-
-size_t smem_bytes(int nt, int nstage, int M) {
-  const int npairs = M * 8;
-  return static_cast<size_t>(nstage) * TILE_BYTES + 2 * NCW * 32 * nt * 4 * sizeof(float) + 2 * nstage * 8 +
-         sizeof(Route) + ((npairs + 15) & ~15) + 4 * npairs;
-}
-
-}  // namespace
-
-int64_t max_smem_attr() {
-  int dev, optin;
-  C10_CUDA_CHECK(cudaGetDevice(&dev));
-  C10_CUDA_CHECK(cudaDeviceGetAttribute(&optin, cudaDevAttrMaxSharedMemoryPerBlockOptin, dev));
-  C10_CUDA_CHECK(cudaFuncSetAttribute(moe_fused<1>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin));
-  C10_CUDA_CHECK(cudaFuncSetAttribute(moe_fused<2>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin));
-  return optin;
-}
-
-int64_t smem_needed(int64_t nt, int64_t nstage, int64_t M) { return (int64_t)smem_bytes(nt, nstage, M); }
-
-void run(torch::Tensor x, torch::Tensor ids, torch::Tensor tw, torch::Tensor pnw, torch::Tensor w13p,
-         torch::Tensor w2p, torch::Tensor gs13, torch::Tensor gs2, torch::Tensor inter, torch::Tensor y,
-         torch::Tensor ss, torch::Tensor cnt, torch::Tensor out, int64_t local_start, int64_t nt, int64_t nstage,
-         int64_t grid) {
-  auto stream = at::cuda::getCurrentCUDAStream();
-  const int M = static_cast<int>(x.size(0));
-  const size_t smem = smem_bytes(nt, nstage, M);
-  auto* xp = reinterpret_cast<const __nv_bfloat16*>(x.data_ptr());
-  auto* pp = reinterpret_cast<const __nv_bfloat16*>(pnw.data_ptr());
-  auto* ip = reinterpret_cast<__nv_bfloat16*>(inter.data_ptr());
-  auto* op = reinterpret_cast<__nv_bfloat16*>(out.data_ptr());
-#define LAUNCH(NTV)                                                                                          \
-  moe_fused<NTV><<<grid, NTHR, smem, stream>>>(xp, ids.data_ptr<int>(), tw.data_ptr<float>(), pp,               \
-      w13p.data_ptr<uint8_t>(), w2p.data_ptr<uint8_t>(), gs13.data_ptr<float>(), gs2.data_ptr<float>(), ip,     \
-      y.data_ptr<float>(), ss.data_ptr<float>(), cnt.data_ptr<int>(), op, M, static_cast<int>(local_start),     \
-      static_cast<int>(nstage))
-  if (nt == 1) LAUNCH(1); else LAUNCH(2);
-#undef LAUNCH
-  C10_CUDA_KERNEL_LAUNCH_CHECK();
-}
-"""
-
-v7_CPP_SRC = r"""
-#include <torch/extension.h>
-int64_t max_smem_attr();
-int64_t smem_needed(int64_t nt, int64_t nstage, int64_t M);
-void run(torch::Tensor x, torch::Tensor ids, torch::Tensor tw, torch::Tensor pnw, torch::Tensor w13p,
-         torch::Tensor w2p, torch::Tensor gs13, torch::Tensor gs2, torch::Tensor inter, torch::Tensor y,
-         torch::Tensor ss, torch::Tensor cnt, torch::Tensor out, int64_t local_start, int64_t nt, int64_t nstage,
-         int64_t grid);
-"""
-
-v7__MOD = None
-
-
-def v7__module():
-    global v7__MOD
-    if v7__MOD is None:
-        import hashlib
-
-        from torch.utils.cpp_extension import load_inline
-
-        tag = hashlib.sha1(v7_CUDA_SRC.encode()).hexdigest()[:12]
-        v7__MOD = load_inline(
-            name=f"muse_moe_w4a16_v7_{tag}",
-            cpp_sources=v7_CPP_SRC,
-            cuda_sources=v7_CUDA_SRC,
-            functions=["max_smem_attr", "smem_needed", "run"],
-            extra_cuda_cflags=["-O3", "-std=c++20", "-lineinfo"],
-            verbose=False,
-        )
-        v7__MOD.smem_optin = v7__MOD.max_smem_attr()
-    return v7__MOD
-
-
-# ------------------------------------------------------------------------------------------------
-# Lossless repacking (prepare only)
-
-v7__DQ_SLOTS = (("A", 0), ("A", 4), ("A", 10), ("B", 2), ("B", 6), ("B", 12), ("W", 24), ("W", 30))
-v7__LA_MASK = 0x60306030
-
-
-def v7__bit_table():
-    """(slot, half, code bit, word, bit position) for the kernel's dq8 decode."""
-    dbit = {3: 15, 2: 8, 1: 7, 0: 6}
-    la = {p for p in range(32) if (v7__LA_MASK >> p) & 1}
-    table, used = [], {"A": set(), "B": set()}
-    for k, (src, rot) in enumerate(v7__DQ_SLOTS):
-        for h in (0, 1):
-            for b in range(4):
-                p = (dbit[b] + 16 * h + rot) % 32
-                w = src if src != "W" else ("A" if p in la else "B")
-                assert p not in used[w]
-                used[w].add(p)
-                table.append((k, h, b, w, p))
-    assert len(used["A"]) == 32 and len(used["B"]) == 32
-    return table
-
-
-v7__TABLE = v7__bit_table()
-
-
-def v7__encode_scales(sf: torch.Tensor):
-    """E4M3 block scales -> (u8 code, neg mask, zero mask). Code: |s| = 2^(e5 - 21) * (1 + m/8),
-    byte = e5 << 3 | m; the kernel builds BF16 bits 0x7000 | byte << 4 = |s| * 2^118. Exact for
-    every nonzero finite E4M3 value (subnormals included)."""
-    s = sf.float()
-    if not torch.isfinite(s).all():
-        raise ValueError("non-finite NVFP4 block scale")
-    a = s.abs()
-    nz = a > 0
-    m, e = torch.frexp(torch.where(nz, a, torch.ones_like(a)))
-    mant = ((m * 2 - 1) * 8).round().to(torch.int32)
-    e5 = (e - 1 + 21).to(torch.int32)
-    assert int(e5[nz].min()) >= 0 and int(e5[nz].max()) <= 30 and int(mant.max()) <= 7
-    code = torch.where(nz, (e5 << 3) | mant, torch.zeros_like(e5))
-    back = torch.exp2((code >> 3).float() - 21) * (1 + (code & 7).float() / 8)
-    assert torch.equal(torch.where(nz, back, torch.zeros_like(back)), a)
-    return code.to(torch.uint8), s < 0, ~nz
-
-
-def v7__repack(wq: torch.Tensor, sf: torch.Tensor, rowmap: torch.Tensor) -> torch.Tensor:
-    """One expert: packed E2M1 [R, K/2] u8 + E4M3 scales [R, K/16] -> [T, 36864] u8 tiles."""
-    R, K = wq.shape[0], wq.shape[1] * 2
-    assert K == 4096
-    T = rowmap.shape[0]
-    codes = torch.stack((wq & 0xF, wq >> 4), -1).reshape(R, K // 16, 16)
-    u, neg, zero = v7__encode_scales(sf)
-    codes = torch.where(neg[..., None], codes ^ 8, codes)                  # sign moved into the codes
-    codes = torch.where(zero[..., None], torch.zeros_like(codes), codes)   # 0 * anything stays 0
-    codes = codes.reshape(R, K)[rowmap.reshape(-1)]
-    # k = 512 w + 64 g + 16 q + 4 (2 p + sl) + 2 j + h ; tile row = 8 ri + rr
-    ct = codes.view(T, 2, 8, 8, 8, 4, 2, 2, 2, 2)                           # T ri rr w g q p sl j h
-    ct = ct.permute(0, 3, 4, 2, 5, 6, 7, 8, 1, 9).reshape(T, 8, 8, 32, 2, 8, 2).to(torch.int64)
-    words = torch.zeros((2, T, 8, 8, 32, 2), dtype=torch.int64, device=wq.device)
-    for k, h, b, w, p in v7__TABLE:
-        words[0 if w == "A" else 1] |= ((ct[..., k, h] >> b) & 1) << p
-    words = words.permute(1, 2, 3, 4, 5, 0).contiguous()                    # T w g lane p {A,B}
-    wbytes = words.view(torch.uint8).view(T, 8, 8, 32, 2, 2, 8)[..., :4].reshape(T, 32768)
-    us = u[rowmap.reshape(-1)].view(T, 2, 8, 8, 8, 4)                       # T ri rr w g q
-    sbytes = us.permute(0, 3, 2, 5, 4, 1).reshape(T, 4096)                  # T w (rr q) g ri
-    return torch.cat((wbytes, sbytes), 1).contiguous()
-
-
-def v7_prepare(weights):
-    dev = weights["w13"].device
-    t = torch.arange(v7_NT1, device=dev)
-    i = torch.arange(8, device=dev)
-    rowmap1 = torch.cat((8 * t[:, None] + i, v7_H + 8 * t[:, None] + i), 1)    # gate rows, then up rows
-    rowmap2 = torch.arange(v7_H, device=dev).view(v7_NT2, 16)
-    w13p = torch.empty((v7_NLOC, v7_NT1, v7_TILE_BYTES), dtype=torch.uint8, device=dev)
-    w2p = torch.empty((v7_NLOC, v7_NT2, v7_TILE_BYTES), dtype=torch.uint8, device=dev)
-    for e in range(v7_NLOC):
-        w13p[e] = v7__repack(weights["w13"][e], weights["w13_sf"][e], rowmap1)
-        w2p[e] = v7__repack(weights["w2"][e], weights["w2_sf"][e], rowmap2)
-    mod = v7__module()
-    props = torch.cuda.get_device_properties(dev)
-    torch.cuda.synchronize()
-    return {
-        "w13p": w13p, "w2p": w2p,
-        "gs13": weights["w13_gs"][:v7_NLOC].float().contiguous(),
-        "gs2": weights["w2_gs"][:v7_NLOC].float().contiguous(),
-        "pnw": weights["post_norm_w"].contiguous(),
-        # synchronization counters only (they return to zero at the end of every call)
-        "cnt": torch.zeros((v7_NCNT,), dtype=torch.int32, device=dev),
-        "grid": props.multi_processor_count,
-        "mod": mod,
-    }
-
-
-def v7_kernel_fn(data, state):
-    cfg = data["config"]
-    assert cfg["local_count"] == v7_NLOC and cfg["d_hidden"] == v7_H and cfg["d_expert"] == v7_H
-    mod = state["mod"]
-    x = data["hidden_states"].contiguous()
-    ids = data["topk_ids"].to(torch.int32).contiguous()
-    tw = data["topk_weights"].to(torch.float32).contiguous()
-    M = x.shape[0]
-    npairs = M * v7_TOPK
-    nt = 1 if M <= 64 else 2
-    nstage = 5
-    while nstage > 1 and mod.smem_needed(nt, nstage, M) > mod.smem_optin:
-        nstage -= 1
-    if mod.smem_needed(nt, nstage, M) > mod.smem_optin:
-        raise ValueError(f"batch {M} too large for the fused kernel's shared-memory routing")
-    dev = x.device
-    inter = torch.empty((npairs, v7_H), dtype=torch.bfloat16, device=dev)
-    y = torch.empty((npairs, v7_H), dtype=torch.float32, device=dev)
-    ss = torch.empty((npairs,), dtype=torch.float32, device=dev)
-    out = torch.empty((M, v7_H), dtype=torch.bfloat16, device=dev)
-    mod.run(x, ids, tw, state["pnw"], state["w13p"], state["w2p"], state["gs13"], state["gs2"], inter, y, ss,
-            state["cnt"], out, cfg["local_start"], nt, nstage, state["grid"])
-    return out
-
-# LIDS already encodes the current input's device-resident local_start. Passing
-# these local IDs with origin zero avoids a host read and also handles wrapping.
-def experts_v7(x, wts, lids, state):
-    return v7_kernel_fn({"hidden_states": x, "topk_ids": lids,
-                          "topk_weights": wts,
-                          "config": {"local_count": 32, "d_hidden": 4096,
-                                     "d_expert": 4096, "local_start": 0}}, state["moe_bank_v7"])
-
-
-
-
-
-# --------------------------------------------------------------------------------------------
 _GEMV_CHOICES = {}
 
 # Projection portfolio: custom split-K GEMV, cuBLAS, and cuBLASLt heuristic algorithms.
 # --------------------------------------------------------------------------------------------
 LT_CUDA_SRC = r"""
 #include <torch/extension.h>
+#include <ATen/cuda/CUDAContext.h>
 #include <cublasLt.h>
 #include <cstring>
 namespace decode_lt {
@@ -2856,6 +2033,12 @@ def _dense_project(x, w, out_dtype):
 
 
 def _project_variant(x, w, name, state, variant, out_dtype=torch.bfloat16):
+    if isinstance(variant,tuple) and variant[0]=='short_lt':
+        _,nn,ordinal=variant
+        bank=state['measured_lt'];weight,codes=bank['layouts'][(x.shape[0],name,nn)]
+        out=torch.empty((x.shape[0],w.shape[0]),device=x.device,dtype=out_dtype)
+        bank['mod'].run(x,weight,out,bank['workspace'],codes,ordinal,nn,out_dtype==torch.float32)
+        return out.unsqueeze(0),1
     if variant == "custom":
         return gemv(x, w, out_dtype=out_dtype)
     if variant == "cublas":
@@ -2889,358 +2072,6 @@ def _measure_graph(fn, flush, repeats=3):
     del graph, out
     return float(__import__('statistics').median(vals))
 
-# Canonical-bank grouped alternative, copied from the verified RS128 path.
-# It consumes the exact same V9-packed w13p/w2p bank; no second bank is retained.
-import os
-import triton
-import triton.language as tl
-
-GROUPED_SRC = r"""// Canonical V6 36 KiB expert tiles -> exact BF16 register-A WGMMA.
-// No persistent converted or alternative-layout weight bank.
-#include <torch/extension.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAException.h>
-#include <cuda_bf16.h>
-#include <stdint.h>
-#include <stdio.h>
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == 900 && defined(__CUDA_ARCH_FEAT_SM90_ALL)
-#define USE_WGMMA 1
-#else
-#define USE_WGMMA 0
-#endif
-namespace canonical {
-constexpr int H=4096, TB=36864, WB=32768;
-constexpr uint32_t DQ_MASK=0x81C081C0u, LA_MASK=0x60306030u;
-__device__ __forceinline__ uint32_t rotr(uint32_t x,int s){return __funnelshift_r(x,x,s);}
-__device__ __forceinline__ uint32_t hmul2(uint32_t x,uint32_t y){uint32_t z;asm("mul.rn.bf16x2 %0,%1,%2;":"=r"(z):"r"(x),"r"(y));return z;}
-__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {
-  o[0] = A & DQ_MASK;
-  o[1] = rotr(A, 4) & DQ_MASK;
-  o[2] = rotr(A, 10) & DQ_MASK;
-  o[3] = rotr(B, 2) & DQ_MASK;
-  o[4] = rotr(B, 6) & DQ_MASK;
-  o[5] = rotr(B, 12) & DQ_MASK;
-  const uint32_t W = (A & LA_MASK) | (B & ~LA_MASK);
-  o[6] = rotr(W, 24) & DQ_MASK;
-  o[7] = rotr(W, 30) & DQ_MASK;
-}
-
-__device__ __forceinline__ uint32_t sptr(const void* p){return (uint32_t)__cvta_generic_to_shared(p);}
-__device__ __forceinline__ void wfence(){
-#if USE_WGMMA
- asm volatile("wgmma.fence.sync.aligned;":::"memory");
-#endif
-}
-__device__ __forceinline__ void wcommit(){
-#if USE_WGMMA
- asm volatile("wgmma.commit_group.sync.aligned;":::"memory");
-#endif
-}
-template<int G> __device__ __forceinline__ void wwait(){
-#if USE_WGMMA
- asm volatile("wgmma.wait_group.sync.aligned %0;"::"n"(G):"memory");
-#endif
-}
-template<int N> __device__ __forceinline__ void protect(float (&a)[N/2]){
-#pragma unroll
- for(int j=0;j<N/2;++j)asm volatile("":"+f"(a[j])::"memory");
-}
-__device__ __forceinline__ void keep(uint32_t (&a)[4]){asm volatile(""::"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]));}
-template<int N> __device__ __forceinline__ void atom(float (&d)[N/2],uint32_t (&a)[4],const uint8_t* xs,int s){
-#if USE_WGMMA
- const uint64_t desc=((uint64_t)(sptr(xs)>>4))|((uint64_t)64<<32)|((uint64_t)1<<62);
- const uint64_t base=desc+(s*2);
- { const uint64_t desc=base;
-   if constexpr (N == 8) {
-    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n8k16.f32.bf16.bf16 {%0, %1, %2, %3}, {%4, %5, %6, %7}, %8, p, 1, 1, 0; }\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3])
-      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
-  }
-  else if constexpr (N == 16) {
-    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n16k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7}, {%8, %9, %10, %11}, %12, p, 1, 1, 0; }\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7])
-      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
-  }
-  else if constexpr (N == 32) {
-    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n32k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15}, {%16, %17, %18, %19}, %20, p, 1, 1, 0; }\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15])
-      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
-  }
-  else if constexpr (N == 64) {
-    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n64k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31}, {%32, %33, %34, %35}, %36, p, 1, 1, 0; }\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]), "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31])
-      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
-  }
-  else if constexpr (N == 128) {
-    asm volatile("{ .reg .pred p; setp.ne.b32 p, 1, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n128k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31, %32, %33, %34, %35, %36, %37, %38, %39, %40, %41, %42, %43, %44, %45, %46, %47, %48, %49, %50, %51, %52, %53, %54, %55, %56, %57, %58, %59, %60, %61, %62, %63}, {%64, %65, %66, %67}, %68, p, 1, 1, 0; }\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]), "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31]), "+f"(d[32]), "+f"(d[33]), "+f"(d[34]), "+f"(d[35]), "+f"(d[36]), "+f"(d[37]), "+f"(d[38]), "+f"(d[39]), "+f"(d[40]), "+f"(d[41]), "+f"(d[42]), "+f"(d[43]), "+f"(d[44]), "+f"(d[45]), "+f"(d[46]), "+f"(d[47]), "+f"(d[48]), "+f"(d[49]), "+f"(d[50]), "+f"(d[51]), "+f"(d[52]), "+f"(d[53]), "+f"(d[54]), "+f"(d[55]), "+f"(d[56]), "+f"(d[57]), "+f"(d[58]), "+f"(d[59]), "+f"(d[60]), "+f"(d[61]), "+f"(d[62]), "+f"(d[63])
-      : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "l"(desc));
-  }
- }
-#else
- const int lane=threadIdx.x&31,c=lane&3,g=lane>>2;
-#pragma unroll
- for(int i=0;i<N/8;++i){
-  const int n=8*i+g,k=s*32+c*4;
-  const uint8_t* r=xs+n*128;
-  uint32_t b0=*(const uint32_t*)(r+(((k>>4)^(n&7))<<4)+(k&15));
-  uint32_t b1=*(const uint32_t*)(r+((((k+16)>>4)^(n&7))<<4)+((k+16)&15));
-  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
-   :"+f"(d[i*4]),"+f"(d[i*4+1]),"+f"(d[i*4+2]),"+f"(d[i*4+3])
-   :"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]),"r"(b0),"r"(b1));
- }
-#endif
-}
-__global__ void histogram(const int* ids,int* counts,int P,int start){
- __shared__ int local[32];int t=threadIdx.x;
- if(t<32)local[t]=0;__syncthreads();
- int j=blockIdx.x*blockDim.x+t;
- if(j<P){int e=ids[j]-start;if((unsigned)e<32)atomicAdd(local+e,1);}
- __syncthreads();if(t<32)atomicAdd(counts+t,local[t]);
-}
-__global__ void plan(const int* counts,int* offsets,int* cursors,int* tasks,int fixed_n){
- int e=threadIdx.x,c=counts[e],sum=c;
-#pragma unroll
- for(int d=1;d<32;d<<=1){int a=__shfl_up_sync(~0u,sum,d);if(e>=d)sum+=a;}
- offsets[e]=sum-c;if(e==31)offsets[32]=sum;cursors[e]=0;
- int chosen=fixed_n?fixed_n:(c<=8?8:c<=16?16:c<=32?32:c<=64?64:128);
-#pragma unroll
- for(int i=0;i<5;++i){int n=8<<i,v=chosen==n?(c+n-1)/n:0,z=v;
-#pragma unroll
-  for(int d=1;d<32;d<<=1){int a=__shfl_up_sync(~0u,z,d);if(e>=d)z+=a;}
-  tasks[i*33+e]=z-v;if(e==31)tasks[i*33+32]=z;
- }
-}
-__global__ void scatter(const int* ids,const int* offsets,int* cursors,int* pairs,int* positions,int P,int start){
- int j=blockIdx.x*blockDim.x+threadIdx.x;
- if(j<P){int e=ids[j]-start,p=-1;if((unsigned)e<32){p=offsets[e]+atomicAdd(cursors+e,1);pairs[p]=j;}positions[j]=p;}
-}
-template<int N,int MODE> __device__ __forceinline__ void load_x(uint8_t* dst,const __nv_bfloat16* x,const int* pairs,int off,int ne,int nb,int kg){
- for(int j=threadIdx.x;j<N*32;j+=128){
-  int row=j/32,l=j%32,idx=nb*N+row;
-  // Native A's K permutation: logical pair 8*s+4*j+q -> physical pair 8*q+2*s+j.
-  int physical=8*(l&3)+2*(l>>3)+((l>>2)&1);
-  int pos=off+idx, xr=idx<ne?(MODE?pairs[pos]>>3:pos):0;
-  const void* src=x+(size_t)xr*H+kg*64+physical*2;
-  void* out=dst+row*128+(((l>>2)^(row&7))*4+(l&3))*4;
-  int bytes=idx<ne?4:0;
-  asm volatile("cp.async.ca.shared.global [%0], [%1], 4, %2;"::"r"(sptr(out)),"l"(src),"r"(bytes):"memory");
- }
- asm volatile("cp.async.commit_group;":::"memory");
-}
-template<int N,int MODE,int STAGES>
-__global__ void __launch_bounds__(128,2) grouped(const uint8_t* weights,const float* gs,const __nv_bfloat16* x,__nv_bfloat16* out,
- const int* pairs,const int* offsets,const int* tasks){
- extern __shared__ __align__(1024) uint8_t shared[];
- constexpr int XBYTES=N*128, MTILES=MODE?512:256, RB=2, NFB=MTILES/(4*RB);
- const int t=threadIdx.x,warp=t>>5,lane=t&31;
- const int total=tasks[32]*NFB;
- for(int item=blockIdx.x;item<total;item+=gridDim.x){
-  int ti=item/NFB,fb=item%NFB,e=0;
-#pragma unroll
-  for(int d=16;d;d>>=1)if(tasks[e+d]<=ti)e+=d;
-  int nb=ti-tasks[e],off=offsets[e],ne=offsets[e+1]-off;
-  const uint8_t* wt=weights+((size_t)e*MTILES+fb*(4*RB)+warp)*TB;
-  float acc[RB][N/2];
-#pragma unroll
-  for(int rb=0;rb<RB;++rb)
-#pragma unroll
-  for(int j=0;j<N/2;++j)acc[rb][j]=0.f;
-#pragma unroll
-  for(int k=0;k<STAGES;++k)load_x<N,MODE>(shared+k*XBYTES,x,pairs,off,ne,nb,k);
-  uint32_t A[2][RB][4] = {};
-  for(int kg=0;kg<64;++kg){
-   int st=kg%STAGES;
-   // At the tail, fewer than STAGES groups remain: wait for every outstanding copy.
-   if(kg+STAGES<=64)asm volatile("cp.async.wait_group %0;"::"n"(STAGES-1):"memory");
-   else asm volatile("cp.async.wait_group 0;":::"memory");
-   __syncthreads();
-   asm volatile("fence.proxy.async.shared::cta;":::"memory");
-   uint32_t o[RB][16],sr[RB],su[RB];
-#pragma unroll
-   for(int rb=0;rb<RB;++rb){
-    const uint8_t* wp=wt+rb*4*TB;
-    uint4 w=*(const uint4*)(wp+(kg*32+lane)*16);
-    uint16_t sw=*(const uint16_t*)(wp+WB+(kg/8)*512+lane*16+(kg%8)*2);
-    sr[rb]=0x70007000u+(uint32_t)(sw&255)*0x100010u;
-    su[rb]=0x70007000u+(uint32_t)(sw>>8)*0x100010u;
-    dq8(w.x,w.y,o[rb]);dq8(w.z,w.w,o[rb]+8);
-   }
-#pragma unroll
-   for(int k=0;k<4;++k){
-#pragma unroll
-    for(int rb=0;rb<RB;++rb){
-     const uint32_t* os=o[rb]+(k>>1)*8+(k&1)*4;
-     uint32_t* a=A[k&1][rb];
-     a[0]=hmul2(os[0],sr[rb]);a[1]=hmul2(os[1],su[rb]);a[2]=hmul2(os[2],sr[rb]);a[3]=hmul2(os[3],su[rb]);
-     protect<N>(acc[rb]);
-    }
-    wfence();
-#pragma unroll
-    for(int rb=0;rb<RB;++rb)atom<N>(acc[rb],A[k&1][rb],shared+st*XBYTES,k);
-    wcommit();
-#pragma unroll
-    for(int rb=0;rb<RB;++rb)protect<N>(acc[rb]);
-    wwait<1>();
-#pragma unroll
-    for(int rb=0;rb<RB;++rb)keep(A[(k&1)^1][rb]);
-   }
-   wwait<0>();
-#pragma unroll
-   for(int rb=0;rb<RB;++rb){protect<N>(acc[rb]);keep(A[1][rb]);}
-   __syncthreads();
-   if(kg+STAGES<64)load_x<N,MODE>(shared+st*XBYTES,x,pairs,off,ne,nb,kg+STAGES);
-  }
-  const float sc=gs[e]*256.f;
-#pragma unroll
-  for(int rb=0;rb<RB;++rb)
-#pragma unroll
-  for(int j=0;j<N/8;++j){
-#pragma unroll
-   for(int q=0;q<2;++q){int col=8*j+2*(lane&3)+q,idx=nb*N+col;
-    if(idx<ne){int pos=off+idx;
-     if constexpr(MODE){
-      float g=__bfloat162float(__float2bfloat16_rn(acc[rb][4*j+q]*sc));
-      float u=__bfloat162float(__float2bfloat16_rn(acc[rb][4*j+2+q]*sc));
-      out[(size_t)pos*H+(fb*RB+rb)*32+warp*8+(lane>>2)]=__float2bfloat16_rn((g/(1.f+__expf(-g)))*u);
-     }else{
-#pragma unroll
-      for(int h=0;h<2;++h)out[(size_t)pos*H+(fb*RB+rb)*64+warp*16+(lane>>2)+8*h]=__float2bfloat16_rn(acc[rb][4*j+2*h+q]*sc);
-     }
-    }
-   }
-  }
-  __syncthreads();
- }
-}
-} // namespace canonical
-void route(torch::Tensor ids,torch::Tensor counts,torch::Tensor offsets,torch::Tensor cursors,torch::Tensor pairs,torch::Tensor positions,torch::Tensor tasks,int64_t local_start,int64_t fixed_n){
- auto s=at::cuda::getCurrentCUDAStream();int P=ids.numel();cudaMemsetAsync(counts.data_ptr(),0,128,s);
- canonical::histogram<<<(P+255)/256,256,0,s>>>(ids.data_ptr<int>(),counts.data_ptr<int>(),P,local_start);
- canonical::plan<<<1,32,0,s>>>(counts.data_ptr<int>(),offsets.data_ptr<int>(),cursors.data_ptr<int>(),tasks.data_ptr<int>(),fixed_n);
- canonical::scatter<<<(P+255)/256,256,0,s>>>(ids.data_ptr<int>(),offsets.data_ptr<int>(),cursors.data_ptr<int>(),pairs.data_ptr<int>(),positions.data_ptr<int>(),P,local_start);
- C10_CUDA_KERNEL_LAUNCH_CHECK();
-}
-void gemm(torch::Tensor w,torch::Tensor gs,torch::Tensor x,torch::Tensor out,torch::Tensor pairs,torch::Tensor offsets,torch::Tensor tasks,int64_t mode,int64_t fixed_n,int64_t grid,int64_t stages){
- auto stream=at::cuda::getCurrentCUDAStream();
-#define RUN(N,M,S) canonical::grouped<N,M,S><<<grid,128,N*128*S,stream>>>(w.data_ptr<uint8_t>(),gs.data_ptr<float>(),(const __nv_bfloat16*)x.data_ptr(),(__nv_bfloat16*)out.data_ptr(),pairs.data_ptr<int>(),offsets.data_ptr<int>(),tasks.data_ptr<int>()+(__builtin_ctz(N)-3)*33)
-#define WIDTH(N,M,S) if(fixed_n==0||fixed_n==N){RUN(N,M,S);}
-#define SET(M,S) WIDTH(8,M,S);WIDTH(16,M,S);WIDTH(32,M,S);WIDTH(64,M,S);WIDTH(128,M,S)
- if(mode){if(stages==2){SET(1,2);}else{SET(1,3);}}
- else{if(stages==2){SET(0,2);}else{SET(0,3);}}
-#undef SET
-#undef WIDTH
-#undef RUN
- C10_CUDA_KERNEL_LAUNCH_CHECK();
-}
-"""
-import os
-import triton
-import triton.language as tl
-
-_GROUPED_DP_MOD = None
-
-
-def _grouped_module():
-    global _GROUPED_DP_MOD
-    if _GROUPED_DP_MOD is None:
-        import hashlib
-        from torch.utils.cpp_extension import load_inline
-        arch = torch.cuda.get_device_capability()
-        previous = os.environ.get('TORCH_CUDA_ARCH_LIST')
-        os.environ['TORCH_CUDA_ARCH_LIST'] = '9.0a' if arch == (9, 0) else f'{arch[0]}.{arch[1]}'
-        try:
-            _GROUPED_DP_MOD = load_inline(
-                name='muse_canonical_rs_' + hashlib.sha1(GROUPED_SRC.encode()).hexdigest()[:12],
-                cpp_sources='void route(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t);\n'
-                            'void gemm(torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,torch::Tensor,int64_t,int64_t,int64_t,int64_t);',
-                cuda_sources=GROUPED_SRC, functions=['route', 'gemm'],
-                extra_cuda_cflags=['-O3', '-std=c++20', '-lineinfo', '--ptxas-options=-v'], verbose=False)
-        finally:
-            if previous is None:
-                os.environ.pop('TORCH_CUDA_ARCH_LIST', None)
-            else:
-                os.environ['TORCH_CUDA_ARCH_LIST'] = previous
-    return _GROUPED_DP_MOD
-
-
-@triton.jit
-def _combine_canonical(Y, POS, WEIGHTS, NORM, OUT, HIDDEN: tl.constexpr):
-    token = tl.program_id(0)
-    col = tl.arange(0, HIDDEN)
-    # Preserve the effective BF16 norm weight used by the serving baseline.
-    norm = (1.0 + tl.load(NORM + col).to(tl.float32)).to(tl.bfloat16).to(tl.float32)
-    acc = tl.full((HIDDEN,), 0, tl.float32)
-    for slot in range(8):
-        pos = tl.load(POS + token * 8 + slot)
-        y = tl.load(Y + pos.to(tl.int64) * HIDDEN + col, pos >= 0, 0).to(tl.float32) * norm
-        inv = tl.rsqrt(tl.sum(y * y, 0) / HIDDEN + 1e-8)
-        acc += tl.load(WEIGHTS + token * 8 + slot) * (y * inv)
-    tl.store(OUT + token * HIDDEN + col, acc.to(tl.bfloat16))
-
-
-
-def _grouped_call(data, state, fixed_n=0, stages=2):
-    x = data['hidden_states'].contiguous()
-    ids = data['topk_ids'].to(torch.int32).contiguous()
-    weights = data['topk_weights'].to(torch.float32).contiguous()
-    cfg = data['config']
-    assert cfg['local_count'] == 32 and cfg['d_hidden'] == 4096 and cfg['d_expert'] == 4096
-    m, hidden = x.shape
-    count = m * 8
-    dev = x.device
-    counts = torch.empty((32,), dtype=torch.int32, device=dev)
-    offsets = torch.empty((33,), dtype=torch.int32, device=dev)
-    cursors = torch.empty((32,), dtype=torch.int32, device=dev)
-    pairs = torch.empty((count,), dtype=torch.int32, device=dev)
-    positions = torch.empty((count,), dtype=torch.int32, device=dev)
-    tasks = torch.empty((5 * 33,), dtype=torch.int32, device=dev)
-    inter = torch.empty((count, hidden), dtype=torch.bfloat16, device=dev)
-    y = torch.empty_like(inter)
-    out = torch.empty_like(x)
-    mod = state['grouped_mod']
-    mod.route(ids, counts, offsets, cursors, pairs, positions, tasks, cfg['local_start'], fixed_n)
-    grid = state['grid'] * 4
-    mod.gemm(state['w13p'], state['gs13'], x, inter, pairs, offsets, tasks, 1, fixed_n, grid, stages)
-    mod.gemm(state['w2p'], state['gs2'], inter, y, pairs, offsets, tasks, 0, fixed_n, grid, stages)
-    _combine_canonical[(m,)](y, positions, weights, state['pnw'], out, HIDDEN=hidden, num_warps=8)
-    return out
-
-
-
-def _time_variant(fn, data, repeats=1):
-    """Return one CUDA-event measurement in milliseconds after one warmup."""
-    try:
-        fn(data)
-        torch.cuda.synchronize(data["hidden_states"].device)
-        start = torch.cuda.Event(enable_timing=True)
-        end = torch.cuda.Event(enable_timing=True)
-        start.record()
-        for _ in range(repeats):
-            fn(data)
-        end.record()
-        end.synchronize()
-        return float(start.elapsed_time(end)) / repeats
-    except Exception:
-        # A grouped failure is recorded as unavailable and the V9 path remains eligible.
-        torch.cuda.synchronize(data["hidden_states"].device)
-        return float("inf")
-
-
-
-
-
-
-
-
-# --------------------------------------------------------------------------------------------
-# Judge-side shape autotune. All retained values are shape-only launch choices.
-# --------------------------------------------------------------------------------------------
 _TUNE_TOKENS = (1, 8, 16, 32, 128, 256)
 _FA3_SPLITS = (0, 1, 2, 4, 8, 16, 32, 64, 128)
 _FA3_PACK = (None, True, False)
@@ -3281,56 +2112,6 @@ def attention_fa3(q, gate, data, state):
     return _fa3_call(q, gate, data, setting)
 
 
-def _fa3_synthetic(batch, window, device):
-    L, max_pages = 8, (80000 + 8 if batch == 1 else 86000 + 8)
-    seq = torch.full((batch,), 80000, dtype=torch.int32, device=device)
-    pages = torch.arange(batch * max_pages, dtype=torch.int32, device=device).view(batch, max_pages)
-    positions = (seq[:, None].long() + torch.arange(L, device=device)).reshape(-1)
-    cache_loc = pages.gather(1, positions.view(batch, L)).reshape(-1).long()
-    shape = (batch * max_pages, 1, HKV, HD)
-    k = torch.randn(shape, device=device, dtype=torch.float16).to(FP8)
-    v = torch.randn(shape, device=device, dtype=torch.float16).to(FP8)
-    q = torch.randn((batch * L, HQ, HD), device=device, dtype=torch.float16).to(FP8)
-    gate = torch.randn((batch * L, Q_SIZE), device=device, dtype=torch.float32)
-    data = {"cache_seqlens": seq + L, "cu_seqlens_q": torch.arange(0, batch * L + 1, L, device=device, dtype=torch.int32),
-            "page_table": pages, "k_cache": k, "v_cache": v, "k_scale": torch.ones((), device=device),
-            "v_scale": torch.ones((), device=device), "config": {"batch": batch, "q_len": L, "page_size": 1,
-            "window": window, "sm_scale": 0.125, "qk_scale_factor": 5.473, "kv_scale": 1.0}}
-    return q, gate, data
-
-
-def _tune_fa3(flush, device):
-    plan = {}
-    if not _fa3_on_device(device):
-        for b in (1, 16, 32):
-            for w in (2048, 0): print(f"FA3_TUNE batch={b} window={w} skipped=Hopper_only", flush=True)
-        return plan
-    for b in (1, 16, 32):
-        for w in (2048, 0):
-            q, gate, data = _fa3_synthetic(b, w, device)
-            reference = _fa3_call(q, gate, data, (0, None)); torch.cuda.synchronize()
-            measured=[]
-            for setting in ((s,p) for s in _FA3_SPLITS for p in _FA3_PACK):
-                try:
-                    result = _fa3_call(q, gate, data, setting); torch.cuda.synchronize()
-                    rel = ((result.float()-reference.float()).norm()/reference.float().norm().clamp_min(1e-12)).item()
-                    # the judge allows 3-15% vs FP32 (TASK.md); a 0.5% bar vs the default dropped valid splits on H200
-                    if not torch.isfinite(result).all().item() or rel > 0.03:
-                        print(f"FA3_TUNE_REJECT batch={b} window={w} setting={setting} rel={rel:.4g}", flush=True); continue
-                    us = _measure_graph(lambda setting=setting, q=q, gate=gate, data=data: _fa3_call(q, gate, data, setting), flush, repeats=3)
-                    measured.append((us, setting))
-                except Exception as exc:
-                    print(f"FA3_TUNE_REJECT batch={b} window={w} setting={setting} reason={str(exc).splitlines()[0][:100]}", flush=True)
-            if not measured:
-                print(f"FA3_TUNE_REJECT batch={b} window={w} reason=no_valid_setting fallback=(0,None)", flush=True)
-                plan[(b,w)] = (0, None)
-                continue
-            best=min(measured, key=lambda z:z[0]); plan[(b,w)]=best[1]
-            print(f"FA3_TUNE batch={b} window={w} best={best[1]} us={best[0]:.2f} all={measured}", flush=True)
-            # Keep closure-captured tensors alive; deleting them triggers F821 and is unnecessary.
-    return plan
-
-
 def _tune_projections(state, flush, device):
     plan={}
     if _fa3_on_device(device):
@@ -3343,8 +2124,21 @@ def _tune_projections(state, flush, device):
     for t in _TUNE_TOKENS:
         for name in names:
             if name == "unpooler_slice" and t > 8 or name == "unpooler" and t <= 8: continue
+            if name == "pool_router" and t <= 32:
+                plan[(t, name)] = "custom"
+                print(f"PROJ_TUNE t={t} name={name} best=custom receipt=V9_union", flush=True)
+                continue
             w=state[name]; out_dtype=torch.float32 if name == "pool_router" else torch.bfloat16
             x=torch.randn((t,w.shape[1]), device=device, dtype=torch.bfloat16)
+            state['_proj_stream']=torch.randn((t,HIDDEN),device=device,dtype=torch.float32)
+            state['_proj_data']={
+                'positions':torch.arange(t,device=device,dtype=torch.int64),
+                'cache_loc':torch.arange(t,device=device,dtype=torch.int64),
+                'k_cache':torch.empty((t,1,HKV,HD),device=device,dtype=FP8),
+                'v_cache':torch.empty((t,1,HKV,HD),device=device,dtype=FP8),
+                'k_scale':torch.ones((),device=device),'v_scale':torch.ones((),device=device),
+                'local_start':torch.zeros((),device=device,dtype=torch.int32),
+                'config':dict(tokens=t,rope_theta=ROPE_THETA,qk_scale_factor=5.4730064863875)}
             variants=["custom", "cublas"]
             if _fa3_on_device(device) and state.get("lt_mod") is not None and name != "pool_router":
                 try:
@@ -3363,7 +2157,9 @@ def _tune_projections(state, flush, device):
                     rel=((y.float()-want).norm()/want.norm().clamp_min(1e-12)).item()
                     if not torch.isfinite(y).all().item() or rel > 0.01:
                         print(f"PROJ_REJECT name={name} t={t} variant={variant} rel={rel:.4g}", flush=True); continue
-                    scores.append((variant,_measure_graph(fn,flush,repeats=3)))
+                    scores.append((variant,_measure_graph(
+                        lambda variant=variant: _projection_consumer(x,w,name,state,variant,out_dtype),
+                        flush,repeats=3)))
                 except Exception as exc:
                     print(f"PROJ_REJECT name={name} t={t} variant={variant} reason={str(exc).splitlines()[0][:100]}", flush=True)
             if not scores:
@@ -3402,19 +2198,6 @@ def _tune_pdl(state, flush, device):
     return plan
 
 
-def _tune_moe(state, device):
-    # V9 at every token count, from in-layer H200 receipts: pure V9 cand_r3_v9 (0e94268cf5654012) 1.428x holds
-    # 1.216/1.136x at 256 tokens, above V7 (1.105/1.071x, 85e67f5d6ef945c9) and grouped (0.549/0.647x,
-    # 2ad75c19cb514f5c), which synthetic-routing timing preferred.
-    plan = {m: "v9" for m in _TUNE_TOKENS}
-    print(f"MOE_PLAN fixed {plan}", flush=True)
-    return plan
-
-
-_BASE_PREPARE = prepare
-
-
-
 # Fused prefix: O projection, first residual/norm, pooler and router.
 @triton.jit
 def _publish_fence():
@@ -3427,9 +2210,11 @@ def _publish_fence():
 def _o_stats_kernel(X,W,STREAM,ALPHA,BETA,A,STATS,COEFF,CNT,T:tl.constexpr,
                     TB:tl.constexpr,BN:tl.constexpr,BK:tl.constexpr,USE_PDL:tl.constexpr):
     pn=tl.program_id(0)
+    pt=tl.program_id(1)
     _pdl_start(USE_PDL)
     n=pn*BN+tl.arange(0,BN)
-    t=tl.arange(0,TB)
+    t=pt*TB+tl.arange(0,TB)
+    ti=tl.arange(0,TB)
     k=tl.arange(0,BK)
     alpha=tl.load(ALPHA+n)
     beta=tl.load(BETA+n)
@@ -3449,18 +2234,19 @@ def _o_stats_kernel(X,W,STREAM,ALPHA,BETA,A,STATS,COEFF,CNT,T:tl.constexpr,
     ast=alpha[:,None]*s
     bb=beta[:,None]*a
     NTILES:tl.constexpr=8192//BN
-    tl.store(STATS+(0*NTILES+pn)*TB+t,tl.sum(a*a,0))
-    tl.store(STATS+(1*NTILES+pn)*TB+t,tl.sum(ast*ast,0))
-    tl.store(STATS+(2*NTILES+pn)*TB+t,tl.sum(ast*bb,0))
-    tl.store(STATS+(3*NTILES+pn)*TB+t,tl.sum(bb*bb,0))
+    base=pt*4*NTILES*TB
+    tl.store(STATS+base+(0*NTILES+pn)*TB+ti,tl.sum(a*a,0))
+    tl.store(STATS+base+(1*NTILES+pn)*TB+ti,tl.sum(ast*ast,0))
+    tl.store(STATS+base+(2*NTILES+pn)*TB+ti,tl.sum(ast*bb,0))
+    tl.store(STATS+base+(3*NTILES+pn)*TB+ti,tl.sum(bb*bb,0))
     _publish_fence()
-    previous=tl.atomic_add(CNT,1,sem='acq_rel')
+    previous=tl.atomic_add(CNT+pt,1,sem='acq_rel')
     if previous==NTILES-1:
         r=tl.arange(0,NTILES)
-        sb=tl.sum(tl.load(STATS+(0*NTILES+r[:,None])*TB+t[None,:]),0)
-        sa=tl.sum(tl.load(STATS+(1*NTILES+r[:,None])*TB+t[None,:]),0)
-        sab=tl.sum(tl.load(STATS+(2*NTILES+r[:,None])*TB+t[None,:]),0)
-        sbb=tl.sum(tl.load(STATS+(3*NTILES+r[:,None])*TB+t[None,:]),0)
+        sb=tl.sum(tl.load(STATS+base+(0*NTILES+r[:,None])*TB+ti[None,:]),0)
+        sa=tl.sum(tl.load(STATS+base+(1*NTILES+r[:,None])*TB+ti[None,:]),0)
+        sab=tl.sum(tl.load(STATS+base+(2*NTILES+r[:,None])*TB+ti[None,:]),0)
+        sbb=tl.sum(tl.load(STATS+base+(3*NTILES+r[:,None])*TB+ti[None,:]),0)
         rb=tl.rsqrt(sb/8192+1e-8)
         rh=tl.rsqrt((sa+2*rb*sab+rb*rb*sbb)/8192+1e-5)
         tl.store(COEFF+t,rb,mask=t<T)
@@ -3471,10 +2257,10 @@ def _o_stats_kernel(X,W,STREAM,ALPHA,BETA,A,STATS,COEFF,CNT,T:tl.constexpr,
 def _pool_boundary_kernel(A,COEFF,STREAM,STREAM1,ALPHA,BETA,PREW,W,P,T:tl.constexpr,
                           TB:tl.constexpr,BN:tl.constexpr,KS:tl.constexpr,BK:tl.constexpr,
                           USE_PDL:tl.constexpr):
-    pn=tl.program_id(0);ps=tl.program_id(1)
+    pn=tl.program_id(0);ps=tl.program_id(1);pt=tl.program_id(2)
     _pdl_start(USE_PDL)
     n=pn*BN+tl.arange(0,BN)
-    t=tl.arange(0,TB)
+    t=pt*TB+tl.arange(0,TB)
     k=tl.arange(0,BK)
     k0=ps*KS
     # Pooler and both hi/lo router matrices are known before the residual is ready.
@@ -3502,29 +2288,24 @@ def _pool_boundary_kernel(A,COEFF,STREAM,STREAM1,ALPHA,BETA,PREW,W,P,T:tl.conste
 
 def o_and_pool(attn,stream,state,counter,use_pdl=True):
     t=attn.shape[0];dev=attn.device
-    tb=max(16,triton.next_power_of_2(t));bn=64
+    tb=min(32,max(16,triton.next_power_of_2(t)));bn=64
+    tiles=triton.cdiv(t,tb)
     a=torch.empty((t,8192),device=dev,dtype=torch.bfloat16)
-    stats=torch.empty((4,8192//bn,tb),device=dev,dtype=torch.float32)
+    stats=torch.empty((tiles,4,8192//bn,tb),device=dev,dtype=torch.float32)
     coeff=torch.empty((2,t),device=dev,dtype=torch.float32)
     stream1=torch.empty_like(stream)
     pr=torch.empty((4,t,4608),device=dev,dtype=torch.float32)
-    _launch(_o_stats_kernel,(8192//bn,),attn,state['o'],stream,state['alpha1'],state['beta1'],
-      a,stats,coeff,counter,T=t,TB=tb,BN=bn,BK=128,num_warps=4,num_stages=3,use_pdl=use_pdl)
-    _launch(_pool_boundary_kernel,(4608//64,4),a,coeff,stream,stream1,state['alpha1'],state['beta1'],
+    _launch(_o_stats_kernel,(8192//bn,tiles),attn,state['o'],stream,state['alpha1'],state['beta1'],
+      a,stats,coeff,counter,T=t,TB=tb,BN=bn,BK=128,num_warps=4,num_stages=2,use_pdl=use_pdl)
+    _launch(_pool_boundary_kernel,(4608//64,4,tiles),a,coeff,stream,stream1,state['alpha1'],state['beta1'],
       state['pre_ffn_w'],state['pool_router'],pr,T=t,TB=tb,BN=64,KS=2048,BK=128,
-      num_warps=4,num_stages=3,use_pdl=use_pdl)
+      num_warps=4,num_stages=2,use_pdl=use_pdl)
     return (pr,4),stream1
-
-
-_BASE_PREPARE = prepare
-
-
-
 
 def _prefix_variant(attn, stream, state, data, kind, use_pdl):
     t = attn.shape[0]; dev = attn.device
     if kind == "fused":
-        counter = torch.zeros((1,), device=dev, dtype=torch.int32)
+        counter = torch.zeros((triton.cdiv(t,32),), device=dev, dtype=torch.int32)
         pr, stream1 = o_and_pool(attn, stream, state, counter, use_pdl=use_pdl)
     else:
         sync = torch.zeros((15 * t,), device=dev, dtype=torch.int32)
@@ -3538,1619 +2319,6 @@ def _prefix_variant(attn, stream, state, data, kind, use_pdl):
     si2 = sync2[:3 * t].view(3, t); sf2 = sync2[3 * t:].view(torch.float32).view(3, t, 4)
     return route_and_norm(pr, state, data, (sf2[1], si2[1])) + (stream1,)
 
-
-def _tune_prefix(state, flush, device):
-    plan = {}
-    for t in _TUNE_TOKENS:
-        attn = torch.randn((t, 1024), device=device, dtype=torch.bfloat16)
-        stream = torch.randn((t, HIDDEN), device=device, dtype=torch.float32)
-        data = {"local_start": torch.zeros((1,), device=device, dtype=torch.int32),
-                "config": {"tokens": t}}
-        choices = []
-        for kind in ("regular", "fused"):
-            for pdl in (False, True):
-                fn = lambda kind=kind, pdl=pdl: _prefix_variant(attn, stream, state, data, kind, pdl)
-                try:
-                    choices.append(((kind, pdl), _measure_graph(fn, flush, repeats=3)))
-                except Exception as exc:
-                    print(f"PREFIX_REJECT t={t} kind={kind} pdl={pdl} reason={str(exc).splitlines()[0][:100]}", flush=True)
-        if not choices:
-            plan[t] = ("regular", True)
-            continue
-        best = min(choices, key=lambda z: z[1]); plan[t] = best[0]
-        print(f"PREFIX_TUNE t={t} best={best[0]} us={best[1]:.2f} all={choices}", flush=True)
-    return plan
-
-
-# Optional persistent dense islands for small token counts. The path is compiled and timed
-# in prepare(); resource or correctness failures reject it and retain the regular graph.
-PERSIST_CUDA = r"""
-#include <torch/extension.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <cuda_bf16.h>
-#include <stdint.h>
-namespace persistent {
-// Weight stream: read once, keep out of L1. LD 0: 256B L2 prefetch, 1: none, 2: 128B.
-template <int LD>
-__device__ __forceinline__ uint4 ld_stream(const void* p) {
-  uint4 r;
-  if (LD == 0)
-    asm volatile("ld.global.nc.L1::no_allocate.L2::256B.v4.u32 {%0,%1,%2,%3}, [%4];"
-                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  else if (LD == 1)
-    asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
-                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  else
-    asm volatile("ld.global.nc.L1::no_allocate.L2::128B.v4.u32 {%0,%1,%2,%3}, [%4];"
-                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  return r;
-}
-
-// Activations: shared by the CTA's warps through L1.
-__device__ __forceinline__ uint4 ld_act(const void* p) {
-  uint4 r;
-  asm volatile("ld.global.cg.v4.u32 {%0,%1,%2,%3}, [%4];"
-               : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  return r;
-}
-
-__device__ __forceinline__ void mma16816(float (&c)[4], uint32_t a0, uint32_t a1, uint32_t a2,
-                                         uint32_t a3, uint32_t b0, uint32_t b1) {
-  asm volatile(
-      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, "
-      "{%8,%9}, {%0,%1,%2,%3};"
-      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
-      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
-}
-
-// One CTA: BR = WN*TR*16 weight rows x BT = 8*NT tokens x KB of K (its cluster rank's slice).
-// Warp (wn, wk): TR row tiles of 16 x the wk-th 1/WK of the CTA's K slice, in steps of 32*U.
-// Lane (g = lane/4, t = lane%4) loads 16 bytes at k = k0 + 8t of rows g and g+8 (and of
-// token g for activations); the first mma takes k-slots {8t..8t+3}, the second {8t+4..8t+7}.
-// NA = 2: a second weight matrix (the router's lo half) at the same offsets, same accumulators.
-// XP: activations prefetched one batch ahead with the weights (else loaded at compute time).
-template <int NT, int TR, int U, int NA, int XP, int LD>
-__device__ __forceinline__ void dense_tile(
-    const __nv_bfloat16* __restrict__ W0, const __nv_bfloat16* __restrict__ W1,
-    const __nv_bfloat16* __restrict__ X, void* __restrict__ Out, int M, int N, int K, int KB,
-    int WN, int WK, int pn, int ps, int pt, float* sred) {
-  constexpr bool OUTF32 = true;
-  constexpr int XU = XP ? U : 1;
-  constexpr int XN = XP ? NT : 1;
-  constexpr int BT = 8 * NT;
-  const int BR = WN * TR * 16;
-  const int S = BR + 4;  // padded token stride of the reduction tile (bank spread)
-  const int lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
-  const int g = lane >> 2, t = lane & 3;
-  const int wn = warp % WN, wk = warp / WN;
-  const int row_cta = pn * BR;
-  const int rowbase = row_cta + wn * TR * 16;
-  const int tok0 = pt * BT;
-  const int KW = KB / WK;
-  const int kbeg = ps * KB + wk * KW;
-  const int nsteps = KW / (32 * U);
-
-  float acc[TR][NT][4];
-#pragma unroll
-  for (int r = 0; r < TR; ++r)
-#pragma unroll
-    for (int j = 0; j < NT; ++j)
-#pragma unroll
-      for (int q = 0; q < 4; ++q) acc[r][j][q] = 0.f;
-
-  const size_t off = (size_t)(rowbase + g) * K + kbeg + 8 * t;
-  const __nv_bfloat16* wp0 = W0 + off;
-  const __nv_bfloat16* wp1 = W1 + off;
-  const size_t rs8 = (size_t)8 * K;
-  const size_t rs16 = (size_t)16 * K;
-  const __nv_bfloat16* xp[NT];
-#pragma unroll
-  for (int j = 0; j < NT; ++j) {
-    int tok = tok0 + j * 8 + g;
-    tok = tok < M ? tok : M - 1;  // padded tokens read a real row; their outputs are dropped
-    xp[j] = X + (size_t)tok * K + kbeg + 8 * t;
-  }
-
-  uint4 a0[U][NA][TR][2], a1[U][NA][TR][2];
-  uint4 b0[XU][XN], b1[XU][XN];
-
-  auto load = [&](uint4 (&a)[U][NA][TR][2], uint4 (&b)[XU][XN], int s) {
-    const int koff = s * 32 * U;
-#pragma unroll
-    for (int u = 0; u < U; ++u)
-#pragma unroll
-      for (int na = 0; na < NA; ++na)
-#pragma unroll
-        for (int r = 0; r < TR; ++r) {
-          const __nv_bfloat16* p = (na == 0 ? wp0 : wp1) + r * rs16 + koff + u * 32;
-          a[u][na][r][0] = ld_stream<LD>(p);
-          a[u][na][r][1] = ld_stream<LD>(p + rs8);
-        }
-    if (XP) {
-#pragma unroll
-      for (int u = 0; u < XU; ++u)
-#pragma unroll
-        for (int j = 0; j < XN; ++j) b[u][j] = ld_act(xp[j] + koff + u * 32);
-    }
-  };
-  auto compute = [&](uint4 (&a)[U][NA][TR][2], uint4 (&bp)[XU][XN], int s) {
-    const int koff = s * 32 * U;
-    uint4 bl[U][NT];
-#pragma unroll
-    for (int u = 0; u < U; ++u)
-#pragma unroll
-      for (int j = 0; j < NT; ++j) {
-        if (XP)
-          bl[u][j] = bp[u < XU ? u : 0][j < XN ? j : 0];
-        else
-          bl[u][j] = ld_act(xp[j] + koff + u * 32);
-      }
-#pragma unroll
-    for (int u = 0; u < U; ++u)
-#pragma unroll
-      for (int na = 0; na < NA; ++na)
-#pragma unroll
-        for (int r = 0; r < TR; ++r)
-#pragma unroll
-          for (int j = 0; j < NT; ++j) {
-            const uint4& lo = a[u][na][r][0];
-            const uint4& hi = a[u][na][r][1];
-            mma16816(acc[r][j], lo.x, hi.x, lo.y, hi.y, bl[u][j].x, bl[u][j].y);
-            mma16816(acc[r][j], lo.z, hi.z, lo.w, hi.w, bl[u][j].z, bl[u][j].w);
-          }
-  };
-
-  if (nsteps > 0) load(a0, b0, 0);
-  for (int s = 0; s < nsteps; s += 2) {
-    if (s + 1 < nsteps) load(a1, b1, s + 1);
-    compute(a0, b0, s);
-    if (s + 1 < nsteps) {
-      if (s + 2 < nsteps) load(a0, b0, s + 2);
-      compute(a1, b1, s + 1);
-    }
-  }
-
-  // Warp partials -> shared tile [WK][BT][S] (token-major so the output stores coalesce).
-#pragma unroll
-  for (int r = 0; r < TR; ++r)
-#pragma unroll
-    for (int j = 0; j < NT; ++j) {
-      const int row = wn * TR * 16 + r * 16 + g;
-      const int tok = j * 8 + 2 * t;
-      float* p = sred + (size_t)(wk * BT + tok) * S + row;
-      p[0] = acc[r][j][0];
-      p[S] = acc[r][j][1];
-      p[8] = acc[r][j][2];
-      p[S + 8] = acc[r][j][3];
-    }
-  __syncthreads();
-  const int E = BT * BR;
-  if (WK > 1) {
-    for (int e = threadIdx.x; e < E; e += blockDim.x) {
-      const int tok = e / BR, row = e - tok * BR;
-      float v = 0.f;
-      for (int w = 0; w < WK; ++w) v += sred[(w * BT + tok) * S + row];
-      sred[tok * S + row] = v;
-    }
-    __syncthreads();
-  }
-
-  auto store = [&](int tok, int row, float v) {
-    const size_t idx = ((size_t)ps * M + tok0 + tok) * N + row_cta + row;
-    if (OUTF32)
-      reinterpret_cast<float*>(Out)[idx] = v;
-    else
-      reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
-  };
-
-  for (int e = threadIdx.x; e < E; e += blockDim.x) {
-    const int tok = e / BR, row = e - tok * BR;
-    if (tok0 + tok < M) store(tok, row, sred[tok * S + row]);
-  }
-  __syncthreads();
-}
-
-
-__device__ __forceinline__ void release_dependents(bool pdl) {
-#if __CUDA_ARCH__ >= 900
-  if (pdl) asm volatile("griddepcontrol.launch_dependents;" ::: "memory");
-#endif
-}
-__device__ __forceinline__ void wait_predecessor(bool pdl) {
-#if __CUDA_ARCH__ >= 900
-  if (pdl) asm volatile("griddepcontrol.wait;" ::: "memory");
-#endif
-}
-__device__ __forceinline__ int acquire(const int* p) {
-  int x;
-  asm volatile("ld.acquire.gpu.global.s32 %0, [%1];" : "=r"(x) : "l"(p) : "memory");
-  return x;
-}
-// Grid is bounded by measured occupancy. Every thread publishes its global stores before
-// its CTA arrives. Counter pairs are private to this invocation and start at zero.
-__device__ __forceinline__ void grid_barrier(int* cnt, int phase) {
-  __threadfence();
-  __syncthreads();
-  if (threadIdx.x == 0) {
-    const int old = phase;
-    if (atomicAdd(cnt, 1) == gridDim.x - 1) {
-      cnt[0] = 0;
-      __threadfence();
-      atomicExch(cnt + 1, old + 1);
-    } else {
-      while (acquire(cnt + 1) == old) {}
-    }
-  }
-  __syncthreads();
-}
-__device__ __forceinline__ void prefetch_weights(const __nv_bfloat16* w, int bytes) {
-#if __CUDA_ARCH__ == 900
-  if (threadIdx.x == 0) {
-    for (int off = blockIdx.x * 4096; off < bytes; off += gridDim.x * 4096) {
-      const int size = min(4096, bytes - off);
-      asm volatile("cp.async.bulk.prefetch.L2.global [%0], %1;" :: "l"((const char*)w + off), "r"(size) : "memory");
-    }
-  }
-#else
-  for (int off = (blockIdx.x * blockDim.x + threadIdx.x) * 128; off < bytes;
-       off += gridDim.x * blockDim.x * 128)
-    asm volatile("prefetch.global.L2 [%0];" :: "l"((const char*)w + off) : "memory");
-#endif
-}
-__device__ __forceinline__ float sum_block(float v, float* tmp) {
-  for (int d = 16; d; d >>= 1) v += __shfl_xor_sync(~0u, v, d);
-  if ((threadIdx.x & 31) == 0) tmp[threadIdx.x >> 5] = v;
-  __syncthreads();
-  v = threadIdx.x < 8 ? tmp[threadIdx.x] : 0.f;
-  for (int d = 16; d; d >>= 1) v += __shfl_xor_sync(~0u, v, d);
-  if (threadIdx.x == 0) tmp[8] = v;
-  __syncthreads();
-  return tmp[8];
-}
-
-// Small batches distribute one residual row across several resident CTAs. Four
-// sufficient statistics give both norms with one token-local synchronization.
-template<int C>
-__device__ __forceinline__ void norm_chunks(const float* p,int splits,int m,int n,
-    const float* stream,float* stream_out,__nv_bfloat16* hidden,const float* alpha,
-    const float* beta,const float* prew,const float* postw,int tok,int chunk,
-    float* tmp,int* counts,float* sums) {
-  constexpr int J=32/C;
-  float b[J],as[J],bb[J],v[4]={0.f,0.f,0.f,0.f};
-#pragma unroll
-  for(int j=0;j<J;++j) {
-    const int d=chunk*(8192/C)+threadIdx.x+j*256;
-    float z=0.f;
-    if(d<n) for(int k=0;k<splits;++k) z+=p[((size_t)k*m+tok)*n+d];
-    z=__bfloat162float(__float2bfloat16_rn(z));
-    if(postw)z*=postw[d];
-    b[j]=z;as[j]=alpha[d]*stream[(size_t)tok*8192+d];bb[j]=beta[d]*z;
-    v[0]+=z*z;v[1]+=as[j]*as[j];v[2]+=as[j]*bb[j];v[3]+=bb[j]*bb[j];
-  }
-#pragma unroll
-  for(int k=0;k<4;++k) {
-    for(int d=16;d;d>>=1)v[k]+=__shfl_xor_sync(~0u,v[k],d);
-    if((threadIdx.x&31)==0)tmp[k*8+(threadIdx.x>>5)]=v[k];
-  }
-  __syncthreads();
-  if(threadIdx.x<32) {
-#pragma unroll
-    for(int k=0;k<4;++k) {
-      float z=threadIdx.x<8?tmp[k*8+threadIdx.x]:0.f;
-      for(int d=16;d;d>>=1)z+=__shfl_xor_sync(~0u,z,d);
-      if(threadIdx.x==0)atomicAdd(sums+tok*4+k,z);
-    }
-  }
-  __threadfence();__syncthreads();
-  if(threadIdx.x==0) {
-    atomicAdd(counts+tok,1);
-    while(acquire(counts+tok)<C){}
-  }
-  __syncthreads();
-  const volatile float* f=sums+tok*4;
-  const float rb=rsqrtf(f[0]*(1.f/8192)+1e-8f);
-  const float rh=rsqrtf((f[1]+2.f*rb*f[2]+rb*rb*f[3])*(1.f/8192)+1e-5f);
-#pragma unroll
-  for(int j=0;j<J;++j) {
-    const int d=chunk*(8192/C)+threadIdx.x+j*256;
-    const float st=as[j]+bb[j]*rb;
-    stream_out[(size_t)tok*8192+d]=st;
-    hidden[(size_t)tok*8192+d]=__float2bfloat16_rn(st*rh*prew[d]);
-  }
-  __syncthreads();
-}
-
-// Pooler norm and router are independent consumers of the same concatenated dense product.
-__device__ __forceinline__ void route_norm(const float* pr, int m, int tok, const float* bias,
-    const float* prew, const int* local_start, __nv_bfloat16* x, int* ids, float* wts,
-    int* lids, float* tmp) {
-  const int tid = threadIdx.x;
-  const float* row = pr + (size_t)tok * 4608;
-  float v[16], ss = 0.f;
-#pragma unroll
-  for (int j = 0; j < 16; ++j) {
-    const int d = tid + j * 256;
-    v[j] = __bfloat162float(__float2bfloat16_rn(row[d]));
-    ss += v[j] * v[j];
-  }
-  const float r = rsqrtf(sum_block(ss, tmp) * (1.f / 4096) + 1e-5f);
-#pragma unroll
-  for (int j = 0; j < 16; ++j) {
-    const int d = tid + j * 256;
-    x[(size_t)tok * 4096 + d] = __float2bfloat16_rn(v[j] * r * prew[d]);
-  }
-  if (tid < 32) {
-    float scores[8], biased[8], selected[8];
-#pragma unroll
-    for (int j=0;j<8;++j) {
-      const int e=tid+j*32;
-      scores[j]=1.f/(1.f+__expf(-(row[4096+e]+row[4352+e])*0.1767766952966369f));
-      biased[j]=scores[j]+bias[e];
-    }
-    float total=0.f;
-#pragma unroll
-    for (int slot=0;slot<8;++slot) {
-      float best=-INFINITY; int idx=256;
-#pragma unroll
-      for(int j=0;j<8;++j) {
-        const int e=tid+j*32;
-        if(biased[j]>best || (biased[j]==best && e<idx)) { best=biased[j];idx=e; }
-      }
-#pragma unroll
-      for(int d=16;d;d>>=1) {
-        const float v=__shfl_xor_sync(~0u,best,d);
-        const int i=__shfl_xor_sync(~0u,idx,d);
-        if(v>best || (v==best && i<idx)) {best=v;idx=i;}
-      }
-      float chosen=0.f;
-#pragma unroll
-      for(int j=0;j<8;++j) if(tid+j*32==idx) { chosen=scores[j];biased[j]=-INFINITY; }
-      chosen=__shfl_sync(~0u,chosen,idx&31);
-      selected[slot]=chosen;total+=chosen;
-      if(tid==0) {
-        ids[tok*8+slot]=idx;
-        const int local=(idx-*local_start+256)%256;
-        lids[tok*8+slot]=local<32?local:-1;
-      }
-    }
-    if(tid==0) for(int j=0;j<8;++j) wts[tok*8+j]=selected[j]/(total+1e-15f);
-  }
-  __syncthreads();
-}
-
-struct Params {
-  const __nv_bfloat16 *input, *o, *pr, *unpool;
-  const float *stream, *alpha, *beta, *prew, *postw, *bias, *expertw;
-  const int* local_start;
-  float *partial, *pr_out, *stream_out;
-  __nv_bfloat16 *h, *x;
-  int *ids, *lids, *cnt;
-  float *wts;
-  int m, n, splits, prefetch;
-  bool pdl;
-  uint64_t* stamps;
-};
-
-__device__ __forceinline__ void mark(const Params& p, int phase) {
-  if (p.stamps && blockIdx.x==0 && threadIdx.x==0) {
-    uint64_t t; asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(t));
-    p.stamps[phase]=t;
-  }
-}
-
-template <int NT, bool PREFIX>
-__global__ void __launch_bounds__(256, 1) dense_island(Params p) {
-  extern __shared__ float sh[];
-  const int blocks = gridDim.x, cta = blockIdx.x;
-  constexpr int BT = 8 * NT;
-  release_dependents(p.pdl);
-  if (p.prefetch) prefetch_weights(PREFIX ? p.o : p.unpool, p.prefetch);
-  wait_predecessor(p.pdl);
-  mark(p,0);
-  const int n = PREFIX ? 8192 : p.n, k = PREFIX ? 1024 : 4096;
-  const int splits = PREFIX ? 1 : p.splits;
-  const int rows = n / 16;
-  const int groups = (p.m + BT - 1) / BT;
-  for (int unit = cta; unit < rows * splits * groups; unit += blocks) {
-    const int pn = unit % rows, ps = (unit / rows) % splits, pt = unit / (rows * splits);
-    dense_tile<NT,1,4,1,1,0>(PREFIX ? p.o : p.unpool, PREFIX ? p.o : p.unpool,
-        p.input, p.partial, p.m, n, k, k/splits, 1, 8, pn, ps, pt, sh);
-  }
-  grid_barrier(p.cnt, 0);
-  mark(p,1);
-  constexpr int C=16/NT;
-  for(int unit=cta;unit<p.m*C;unit+=blocks)
-    norm_chunks<C>(p.partial,splits,p.m,n,p.stream,p.stream_out,p.h,p.alpha,p.beta,p.prew,
-      PREFIX?nullptr:p.postw,unit/C,unit%C,sh,p.cnt+2,reinterpret_cast<float*>(p.cnt+2+p.m));
-  if (PREFIX) {
-    grid_barrier(p.cnt, 1);
-    mark(p,2);
-    for (int unit = cta; unit < 288 * groups; unit += blocks)
-      dense_tile<NT,1,4,1,1,0>(p.pr, p.pr, p.h, p.pr_out, p.m, 4608, 8192, 8192,
-                              1, 8, unit % 288, 0, unit / 288, sh);
-    grid_barrier(p.cnt, 2);
-    mark(p,3);
-    for (int t = cta; t < p.m; t += blocks)
-      route_norm(p.pr_out, p.m, t, p.bias, p.expertw, p.local_start, p.x, p.ids, p.wts, p.lids, sh);
-  }
-  mark(p,4);
-}
-
-template <int NT, bool PREFIX>
-void launch(Params p, int grid) {
-  constexpr size_t smem = 8 * (8 * NT) * 20 * sizeof(float);
-  auto kernel = dense_island<NT, PREFIX>;
-  int device, active, sms;
-  C10_CUDA_CHECK(cudaGetDevice(&device));
-  C10_CUDA_CHECK(cudaDeviceGetAttribute(&sms, cudaDevAttrMultiProcessorCount, device));
-  C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&active, kernel, 256, smem));
-  TORCH_CHECK(active > 0, "persistent dense island cannot reside");
-  grid = std::min(grid, sms * active);
-  TORCH_CHECK(p.m*(16/NT)<=grid,"normalization chunks must be simultaneously resident");
-  cudaLaunchConfig_t cfg = {};
-  cfg.gridDim = dim3(grid); cfg.blockDim = dim3(256); cfg.dynamicSmemBytes = smem;
-  cfg.stream = at::cuda::getCurrentCUDAStream();
-  cudaLaunchAttribute attr{};
-  if (p.pdl) {
-    attr.id = cudaLaunchAttributeProgrammaticStreamSerialization;
-    attr.val.programmaticStreamSerializationAllowed = 1;
-    cfg.attrs = &attr; cfg.numAttrs = 1;
-  }
-  C10_CUDA_CHECK(cudaLaunchKernelEx(&cfg, kernel, p));
-}
-} // namespace persistent
-
-void island(std::vector<torch::Tensor> a, int64_t m, int64_t n, int64_t splits, int64_t nt,
-            int64_t grid, int64_t prefetch, bool prefix, bool pdl) {
-  using namespace persistent;
-  Params p{};
-#define BF(I) reinterpret_cast<const __nv_bfloat16*>(a[I].data_ptr())
-#define FP(I) a[I].data_ptr<float>()
-#define IP(I) a[I].data_ptr<int>()
-  p.input=BF(0); p.o=BF(1); p.pr=BF(2); p.unpool=BF(3);
-  p.stream=FP(4); p.alpha=FP(5); p.beta=FP(6); p.prew=FP(7); p.postw=FP(8);
-  p.bias=FP(9); p.expertw=FP(10); p.local_start=a[11].data_ptr<int>();
-  p.partial=FP(12); p.pr_out=FP(13); p.stream_out=FP(14);
-  p.h=reinterpret_cast<__nv_bfloat16*>(a[15].data_ptr());
-  p.x=reinterpret_cast<__nv_bfloat16*>(a[16].data_ptr());
-  p.ids=IP(17); p.lids=IP(18); p.cnt=IP(19); p.wts=FP(20);
-  p.stamps=a.size()>21 ? reinterpret_cast<uint64_t*>(a[21].data_ptr()) : nullptr;
-  p.m=m; p.n=n; p.splits=splits; p.prefetch=prefetch; p.pdl=pdl;
-#define CASE(NT, PRE) if (nt==NT && prefix==PRE) { launch<NT,PRE>(p, grid); return; }
-  CASE(1,true); CASE(2,true); CASE(4,true); CASE(1,false); CASE(2,false); CASE(4,false);
-  TORCH_CHECK(false, "unsupported persistent tile");
-}
-
-"""
-PERSIST_CPP = '''
-#include <torch/extension.h>
-void island(std::vector<torch::Tensor> a, int64_t m, int64_t n, int64_t splits, int64_t nt,
-            int64_t grid, int64_t prefetch, bool prefix, bool pdl);
-'''
-_PERSIST_MOD = None
-PERSIST_PREFETCH = True
-PERSIST_MAX_T = 32
-
-
-def _persistent_module():
-    global _PERSIST_MOD
-    if _PERSIST_MOD is None:
-        import hashlib
-        tag = hashlib.sha256(PERSIST_CUDA.encode()).hexdigest()[:12]
-        _PERSIST_MOD = load_inline(name='muse_dense_islands_' + tag,
-            cpp_sources=PERSIST_CPP, cuda_sources=PERSIST_CUDA, functions=['island'],
-            extra_cuda_cflags=['-O3', '-std=c++20', '-lineinfo'], verbose=False)
-    return _PERSIST_MOD
-
-
-def _island(inp, stream, state, data, counters, prefix, stamps=None, pdl=None):
-    t = inp.shape[0]
-    dev = inp.device
-    n = HIDDEN if prefix or t > 8 else UNPOOL_SLICE
-    splits = 1 if prefix or n == HIDDEN else 4
-    nt = 1 if t <= 8 else 2 if t <= 16 else 4
-    partial = torch.empty((splits,t,n), dtype=torch.float32, device=dev)
-    # Prefix's pooler and router partials remain FP32 until their independent consumers.
-    pr = torch.empty((t,4608) if prefix else (0,), dtype=torch.float32, device=dev)
-    stream_out = torch.empty_like(stream)
-    hidden = torch.empty((t,HIDDEN), dtype=torch.bfloat16, device=dev)
-    x = torch.empty((t,D_EXPERT) if prefix else (0,), dtype=torch.bfloat16, device=dev)
-    ids = torch.empty((t,TOP_K) if prefix else (0,), dtype=torch.int32, device=dev)
-    lids = torch.empty_like(ids)
-    wts = torch.empty(ids.shape, dtype=torch.float32, device=dev)
-    pref_bytes = min(n * (1024 if prefix else 4096) * 2, 16 << 20) if PERSIST_PREFETCH else 0
-    args = [inp,state['o'],state['pool_router'],state['unpooler'],
-        stream,state['alpha1' if prefix else 'alpha2'],state['beta1' if prefix else 'beta2'],
-        state['pre_ffn_w' if prefix else 'next_pre_attn_w'],state['post_ffn_w'],
-        state['router_bias'],state['pre_expert_w'],data['local_start'],partial,pr,stream_out,
-        hidden,x,ids,lids,counters,wts]
-    if stamps is not None: args.append(stamps)
-    state['persistent_mod'].island(args,t,n,splits,nt,state['dense_grid'],pref_bytes,prefix,PDL if pdl is None else pdl)
-    return (x,ids,wts,lids,stream_out) if prefix else (hidden,stream_out)
-
-
-
-
-def _tune_persistent(state, flush, device):
-    plan = {}
-    state["persistent_ready"] = False
-    try:
-        mod = _persistent_module()
-        state["persistent_mod"] = mod
-        state["dense_grid"] = torch.cuda.get_device_properties(device).multi_processor_count
-        if state["dense_grid"] < 128:
-            print(f"PERSIST_REJECT reason=occupancy dense_grid={state['dense_grid']}", flush=True)
-            return plan
-        state["persistent_ready"] = True
-    except Exception as exc:
-        print(f"PERSIST_REJECT reason=compile {str(exc).splitlines()[0][:100]}", flush=True)
-        return plan
-    for t in (1, 8, 16, 32):
-        attn = torch.randn((t, 1024), device=device, dtype=torch.bfloat16)
-        stream = torch.randn((t, HIDDEN), device=device, dtype=torch.float32)
-        data = {"local_start": torch.zeros((1,), device=device, dtype=torch.int32), "config": {"tokens": t}}
-        def regular():
-            x, ids, wts, lids, stream1 = _prefix_variant(attn, stream, state, data, "regular", True)
-            moe = experts_v4(x, wts, lids, state)
-            uname = "unpooler_slice" if t <= SLICED_MAX_TOKENS else "unpooler"
-            f = project(moe, state[uname], uname, state)
-            return boundary(f, stream1, state["alpha2"], state["beta2"], state["next_pre_attn_w"],
-                            (torch.zeros((t,4),device=device),torch.zeros((t,),device=device,dtype=torch.int32)),
-                            postw=state["post_ffn_w"], use_pdl=True)
-        def persistent():
-            counters=torch.zeros((2*(2+5*t),),device=device,dtype=torch.int32)
-            x,ids,wts,lids,stream1=_island(attn,stream,state,data,counters[:2+5*t],True,pdl=True)
-            moe=experts_v4(x,wts,lids,state)
-            hidden,stream2=_island(moe,stream1,state,data,counters[2+5*t:],False,pdl=True)
-            return hidden,stream2
-        choices=[]
-        try: choices.append(("regular",_measure_graph(regular,flush,repeats=3)))
-        except Exception as exc: print(f"PERSIST_BASE_REJECT t={t} reason={str(exc).splitlines()[0][:100]}",flush=True)
-        try: choices.append(("persistent",_measure_graph(persistent,flush,repeats=3)))
-        except Exception as exc: print(f"PERSIST_REJECT t={t} reason={str(exc).splitlines()[0][:100]}",flush=True)
-        if choices:
-            best=min(choices,key=lambda z:z[1]); plan[t]=(best[0]=="persistent")
-            print(f"PERSIST_TUNE t={t} best={best[0]} us={best[1]:.2f} all={choices}",flush=True)
-        else:
-            plan[t]=False
-    return plan
-
-def prepare(weights):
-    state=_BASE_PREPARE(weights)
-    device=weights["qkv_gate"].device
-    flush=torch.empty((256<<20,),dtype=torch.uint8,device=device)
-    state["proj_plan"]=_tune_projections(state,flush,device)
-    state["fa3_plan"]=_tune_fa3(flush,device)
-    state["pdl_plan"]=_tune_pdl(state,flush,device)
-    state["moe_plan"]=_tune_moe(state,device)
-    state["prefix_plan"]=_tune_prefix(state,flush,device)
-    state["persistent_plan"]=_tune_persistent(state,flush,device)
-    del flush
-    torch.cuda.synchronize(device)
-    return state
-
-
-def experts_v4(x,wts,lids,state):
-    bank=state["moe_bank"]
-    variant=state.get("moe_plan",{}).get(x.shape[0],"v9")
-    data={"hidden_states":x,"topk_ids":lids,"topk_weights":wts,
-          "config":{"local_count":32,"d_hidden":4096,"d_expert":4096,"local_start":0}}
-    if variant == "v7": return experts_v7(x,wts,lids,state)
-    if variant == "grouped": return _grouped_call(data,bank)
-    return experts_v9(x,wts,lids,state)
-
-
-# Keep the original fully general path available as the regular portfolio member.
-_kernel_regular = kernel_fn
-
-
-def kernel_fn(data, state):
-    tokens = data["config"]["tokens"]
-    if state.get("persistent_plan", {}).get(tokens, False):
-        dev=data["stream"].device
-        counters=torch.zeros((2*(2+5*tokens),),device=dev,dtype=torch.int32)
-        qkv=project(data["attn_input"],state["qkv_gate"],"qkv_gate",state)
-        attn=stage_attention(qkv,data,state)
-        x,ids,wts,lids,stream1=_island(attn,data["stream"],state,counters[:2+5*tokens],True,pdl=True)
-        moe=experts_v4(x,wts,lids,state)
-        hidden,stream2=_island(moe,stream1,state,data,counters[2+5*tokens:],False,pdl=True)
-        return hidden,stream2,ids
-    prefix = state.get("prefix_plan", {}).get(tokens, ("regular", True))
-    if prefix[0] == "regular":
-        return _kernel_regular(data, state)
-    dev = data["stream"].device
-    sync = (torch.empty if _chunks(tokens) == 1 else torch.zeros)((15 * tokens,), device=dev, dtype=torch.int32)
-    sync_i = sync[:3 * tokens].view(3, tokens)
-    sync_f = sync[3 * tokens:].view(torch.float32).view(3, tokens, 4)
-    qkv = project(data["attn_input"], state["qkv_gate"], "qkv_gate", state)
-    attn = stage_attention(qkv, data, state)
-    pdl = prefix[1]
-    pr, stream1 = o_and_pool(attn, data["stream"], state, sync_i[0], use_pdl=pdl)
-    x, ids, wts, lids = route_and_norm(pr, state, data, (sync_f[1], sync_i[1]))
-    moe = experts_v4(x, wts, lids, state)
-    uname = "unpooler_slice" if tokens <= SLICED_MAX_TOKENS else "unpooler"
-    f = project(moe, state[uname], uname, state)
-    hidden, stream2 = boundary(f, stream1, state["alpha2"], state["beta2"], state["next_pre_attn_w"],
-                               (sync_f[2], sync_i[2]), postw=state["post_ffn_w"],
-                               use_pdl=state.get("pdl_plan", {}).get((tokens, "b2"), True))
-    return hidden, stream2, ids
-
-
-
-# -------------------------------------------------------------------------------------------------
-# Projection-lane port.  This keeps every validated projection layout and
-# consumer variant from cand_r3_proj.py while leaving that source untouched.
-# The merge's stage dispatcher uses the same project() entry point, so all
-# prefix, island, and ordinary layer paths see the selected per-shape plan.
-
-# Embedded in cand_r3_proj.py. Only shape choices and weight layouts survive prepare.
-import time as _dp_time
-import statistics as _dp_stats
-_DP_MOD=None
-
-
-class _DPModule:
-    def __init__(self,path):
-        import ctypes as ct
-        self.ct=ct;self.lib=ct.CDLL(path);P,I,L,S=ct.c_void_p,ct.c_int,ct.c_int64,ct.c_size_t
-        self.lib.lean_error_string.restype=ct.c_char_p
-        self.lib.lean_algo_bytes.restype=I
-        self.lib.dp_skin.argtypes=[P]*4+[I]*16+[P]
-        self.lib.lean_pair.argtypes=[P]*5+[I]*13+[L,L,P]
-        self.lib.all_lt_options.argtypes=[I]*7+[S,P,I,ct.POINTER(I),ct.POINTER(I)]
-        self.lib.all_lt_run.argtypes=[P]*5+[I]*9+[S,P]
-        self.algo_bytes=self.lib.lean_algo_bytes()
-
-    def _check(self,status,context):
-        if status:raise RuntimeError(f'{context}: status {status}: {self.lib.lean_error_string().decode()}')
-
-    def skin(self,w,lo,x,out,cfg,dual=False,mix=False,zero_tail=False):
-        nt,tr,u,wn,wk,ks,xp,ld=cfg
-        self._check(self.lib.dp_skin(w.data_ptr(),lo.data_ptr(),x.data_ptr(),out.data_ptr(),x.shape[0],out.shape[1],x.shape[1],
-            nt,tr,u,wn,wk,ks,2 if dual else 1,xp,ld,int(out.dtype==torch.float32),int(mix),out.stride(0),int(zero_tail),
-            torch.cuda.current_stream(x.device).cuda_stream),'projection skinny/mix')
-
-    def hop(self,w,x,out,scratch,cfg,zero_tail=False):
-        bt,bk,st,mode,split,threads=cfg;work,counts=scratch
-        self._check(self.lib.lean_pair(w.data_ptr(),x.data_ptr(),out.data_ptr(),work.data_ptr(),counts.data_ptr(),
-            x.shape[0],out.shape[1],x.shape[1],w.shape[1],int(out.dtype==torch.float32),bt,bk,st,mode,split,threads,
-            out.stride(0),int(zero_tail),work.numel(),counts.numel(),torch.cuda.current_stream(x.device).cuda_stream),'projection TMA')
-
-    def options(self,w,x,out,nn,workspace):
-        count=self.ct.c_int();h=self.ct.c_int();cap=65536
-        codes=torch.empty((cap,self.algo_bytes),dtype=torch.uint8,device='cpu')
-        self._check(self.lib.all_lt_options(out.shape[1],x.shape[0],x.shape[1],w.stride(0),nn,int(out.dtype==torch.float32),out.stride(0),
-            workspace.numel(),codes.data_ptr(),cap,self.ct.byref(count),self.ct.byref(h)),'projection Lt options')
-        return codes[:count.value].clone()
-
-    def lt(self,w,x,out,workspace,codes,index,nn):
-        if not 0<=index<codes.shape[0]:raise RuntimeError('projection Lt index outside prepared table')
-        self._check(self.lib.all_lt_run(w.data_ptr(),x.data_ptr(),out.data_ptr(),workspace.data_ptr(),codes.data_ptr(),
-            out.shape[1],x.shape[0],x.shape[1],w.stride(0),nn,int(out.dtype==torch.float32),out.stride(0),index,0,
-            workspace.numel(),torch.cuda.current_stream(x.device).cuda_stream),'projection Lt run')
-
-
-def _dp_module():
-    global _DP_MOD
-    if _DP_MOD is None:
-        import hashlib,os
-        from torch.utils.cpp_extension import load_inline
-        arch='9.0a' if IS_HOPPER else '12.0';old=os.environ.get('TORCH_CUDA_ARCH_LIST')
-        os.environ['TORCH_CUDA_ARCH_LIST']=arch
-        try:
-            tag=hashlib.sha1(_DP_CUDA_SRC.encode()).hexdigest()[:12]
-            path=load_inline(name=f'muse_decode_proj_{tag}_{arch.replace(chr(46),chr(95))}',cpp_sources='',cuda_sources=_DP_CUDA_SRC,
-                functions=None,is_python_module=False,no_implicit_headers=True,
-                extra_cuda_cflags=['-O3','-std=c++20','--expt-relaxed-constexpr','--split-compile=16','-Xptxas=--split-compile=16'],
-                extra_ldflags=['-lcublasLt'],verbose=False)
-        finally:
-            if old is None:os.environ.pop('TORCH_CUDA_ARCH_LIST',None)
-            else:os.environ['TORCH_CUDA_ARCH_LIST']=old
-        _DP_MOD=_DPModule(path)
-    return _DP_MOD
-
-
-class _DPGraph:
-    def __init__(self):
-        import ctypes
-        self.runtime=torch.cuda.cudart();ptr=ctypes.c_void_p()
-        result=self.runtime.cudaStreamCreate(ctypes.addressof(ptr))
-        if int(result):raise RuntimeError(f'tuning stream create: {result}')
-        self.handle=ptr.value;self.stream=torch.cuda.ExternalStream(self.handle);self.graph=torch.cuda.CUDAGraph()
-
-    def replay(self):self.graph.replay()
-
-    def __del__(self):
-        if hasattr(self,'handle'):
-            self.graph.reset();self.runtime.cudaStreamDestroy(self.handle)
-
-
-def _dp_measure_graph(fn,flush,repeats=3):
-    graph=_DPGraph();graph.stream.wait_stream(torch.cuda.current_stream())
-    with torch.cuda.stream(graph.stream):fn()
-    graph.stream.synchronize()
-    with torch.cuda.graph(graph.graph,stream=graph.stream):out=fn()
-    graph.replay();torch.cuda.synchronize()
-    vals=[]
-    for _ in range(repeats):
-        flush.add_(1);a,b=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
-        a.record();graph.replay();b.record();b.synchronize();vals.append(a.elapsed_time(b)*1000)
-    return float(_dp_stats.median(vals))
-
-
-def _dp_left(state,seconds=0):return _dp_time.monotonic()+seconds<state.get('_tune_deadline',float('inf'))
-
-
-def _dp_reject(family,key,variant,exc):
-    print(f'{family}_REJECT key={key} variant={variant} reason={str(exc).splitlines()[0][:180]}',flush=True)
-
-
-def _dp_agree(value,control,limit=0.01):
-    if isinstance(value,(tuple,list)):
-        return len(value)==len(control) and all(_dp_agree(x,y,limit) for x,y in zip(value,control))
-    if value.shape!=control.shape or not bool(torch.isfinite(value).all()):return False
-    x,y=value.float(),control.float();den=y.norm().clamp_min(1e-12)
-    if float((x-y).norm()/den)>limit:return False
-    if x.ndim>=2:
-        a=(x-y).reshape(x.shape[0],-1).norm(dim=1);b=y.reshape(y.shape[0],-1).norm(dim=1)
-        if float((a/b.clamp_min(b.mean()*0.1+1e-12)).max())>5*limit:return False
-    return True
-
-
-def _dp_skin_cfg(name,t):
-    layer={'pool_router':'pooler','unpooler_slice':'unpooler'}.get(name,name)
-    nt=1 if t<=8 else 2 if t<=16 else 4 if t<=32 else 8
-    bucket=t if t in (1,8,16,32) else 64
-    tr,u,wn,wk,ks,xp=DP_SKIN_CONFIGS.get((layer,bucket),(1,2,2,4,1,0))
-    return nt,tr,u,wn,wk,ks,xp,0
-
-
-def _project_variant(x,w,name,state,variant,out_dtype=torch.bfloat16):
-    if variant=='custom':return gemv(x,w,out_dtype=out_dtype)
-    if variant=='cublas':return _dense_project(x,w,out_dtype).unsqueeze(0),1
-    mod=state['dp_mod'];t=x.shape[0]
-    out=torch.empty((t,w.shape[0]),device=x.device,dtype=out_dtype)
-    tag=variant[0]
-    if tag=='skin':mod.skin(w,w,x,out,variant[1])
-    elif tag=='mix':mod.skin(state['dp_mix_hi'],state['dp_router_lo'],x,out,variant[1],dual=True,mix=True)
-    elif tag=='hop':mod.hop(w,x,out,state['dp_scratch'][(t,name)],variant[1])
-    elif tag=='lt':
-        nn,index=variant[1:];weight=state['dp_transposed'][name] if nn else w
-        mod.lt(weight,x,out,state['dp_workspace'],state['dp_codes'][(t,name,nn)],index,nn)
-    elif tag=='pool_split':
-        nn,index,router_kind,cfg=variant[1:]
-        pool=out[:,:D_EXPERT];router=out[:,D_EXPERT:D_EXPERT+N_EXPERTS]
-        weight=state['dp_pool_t'] if nn else state['dp_pool']
-        mod.lt(weight,x,pool,state['dp_workspace'],state['dp_codes'][(t,'pool_only',nn)],index,nn)
-        if router_kind=='skin':mod.skin(state['dp_router_hi'],state['dp_router_lo'],x,router,cfg,dual=True,zero_tail=True)
-        else:mod.hop(state['dp_router_pair'],x,router,state['dp_scratch'][(t,'router')],cfg,zero_tail=True)
-    else:raise RuntimeError(f'unknown projection path {variant}')
-    return out.unsqueeze(0),1
-
-
-def _dp_canonical(value,name):
-    y=_materialize(value).float()
-    if name=='pool_router':return y[:,:D_EXPERT],y[:,D_EXPERT:D_EXPERT+N_EXPERTS]+y[:,D_EXPERT+N_EXPERTS:]
-    return y
-
-
-def _dp_consumer(x,w,name,state,variant,stream,data):
-    projected=_project_variant(x,w,name,state,variant,torch.float32 if name=='pool_router' else torch.bfloat16)
-    t=x.shape[0];sync=(torch.zeros((t,4),device=x.device),torch.zeros((t,),device=x.device,dtype=torch.int32))
-    if name=='qkv_gate':return qk_prep(projected,data,state,q_fp8=True)
-    if name=='o':return boundary(projected,stream,state['alpha1'],state['beta1'],state['pre_ffn_w'],sync)
-    if name=='pool_router':return route_and_norm(projected,state,data,sync)
-    return boundary(projected,stream,state['alpha2'],state['beta2'],state['next_pre_attn_w'],sync,postw=state['post_ffn_w'])
-
-
-def _dp_variants(state,name,t,w,x):
-    yield 'cublas';yield 'custom'
-    if state.get('dp_mod') is None:return
-    cfg=_dp_skin_cfg(name,t)
-    yield ('skin',cfg)
-    if name=='pool_router':
-        nt,u,xp=1 if t<=8 else 2 if t<=16 else 4 if t<=32 else 8,4 if t<=32 else 2,1 if t<=16 else 0
-        for wn,wk,ks in ((1,4,1),(2,4,8),(1,8,4),(2,2,4)):
-            if x.shape[1]%(wk*32*u*ks)==0:yield ('mix',(nt,1,u,wn,wk,ks,xp,0))
-    else:
-        for bt,bk,st,_,_,th in DP_PAIR_CONFIGS:
-            if bt>max(64,t):continue
-            shared=max(st*(64+bt)*bk*2+st*16,bt*68*4)
-            if shared>torch.cuda.get_device_properties(x.device).shared_memory_per_block_optin:continue
-            for mode,split in ((0,1),(0,4),(1,2),(1,4),(2,132)):
-                yield ('hop',(bt,bk,st,mode,split,th))
-    for nn in (0,1):
-        for index in range(state['dp_codes'].get((t,name,nn),torch.empty(0)).shape[0]):yield ('lt',nn,index)
-    if name=='pool_router':
-        bucket=t if t in (1,8,16,32) else 64
-        tr,u,wn,wk,ks,xp=DP_SKIN_CONFIGS.get(('router',bucket),(1,2,2,4,8,0))
-        rskin=(1 if t<=8 else 2 if t<=16 else 4 if t<=32 else 8,tr,u,wn,wk,ks,xp,0)
-        for nn in (0,1):
-            # All pooler algorithms also compete as a strided-output combined path.
-            for index in range(state['dp_codes'].get((t,'pool_only',nn),torch.empty(0)).shape[0]):
-                yield ('pool_split',nn,index,'skin',rskin)
-                if t>=128:yield ('pool_split',nn,index,'hop',(64,64,4,1,8,160 if t==128 else 256))
-
-
-def _tune_projections(state,flush,device):
-    plan={};state.update(dp_codes={},dp_scratch={},dp_transposed={})
-    names=('qkv_gate','o','pool_router','unpooler_slice','unpooler')
-    for t in _TUNE_TOKENS:
-        for name in names:
-            if name=='unpooler_slice' and t>8 or name=='unpooler' and t<=8:continue
-            plan[(t,name)]='cublas'
-    if not _dp_left(state,8):return plan
-    try:
-        state['dp_mod']=_dp_module()
-        state['dp_workspace']=torch.empty(512<<20,device=device,dtype=torch.uint8)
-        state['dp_transposed']={name:state[name].T.contiguous() for name in names}
-        state['dp_pool']=state['pool_router'][:D_EXPERT].contiguous()
-        state['dp_pool_t']=state['dp_pool'].T.contiguous()
-        state['dp_router_hi']=state['pool_router'][D_EXPERT:D_EXPERT+N_EXPERTS].contiguous()
-        state['dp_router_lo']=state['pool_router'][D_EXPERT+N_EXPERTS:].contiguous()
-        state['dp_mix_hi']=state['pool_router'][:D_EXPERT+N_EXPERTS].contiguous()
-        state['dp_router_pair']=torch.cat((state['dp_router_hi'],state['dp_router_lo']),1).contiguous()
-    except Exception as exc:
-        _dp_reject('PROJ_MODULE','all','native',exc);state['dp_mod']=None
-    stop=min(state['_tune_deadline'],_dp_time.monotonic()+75)
-    for t in _TUNE_TOKENS:
-        for name in names:
-            if (t,name) not in plan:continue
-            if _dp_time.monotonic()>=stop:
-                print('PROJ_BUDGET exhausted; remaining shapes retain validated cuBLAS',flush=True);return plan
-            w=state[name];out_dtype=torch.float32 if name=='pool_router' else torch.bfloat16
-            x=torch.randn((t,w.shape[1]),device=device,dtype=torch.bfloat16)
-            stream=torch.randn((t,HIDDEN),device=device,dtype=torch.float32)
-            data={'positions':torch.arange(t,device=device),'cache_loc':torch.arange(t,device=device),
-                  'k_cache':torch.empty((t,1,HKV,HD),device=device,dtype=FP8),'v_cache':torch.empty((t,1,HKV,HD),device=device,dtype=FP8),
-                  'k_scale':torch.ones((),device=device),'v_scale':torch.ones((),device=device),'local_start':torch.zeros((),device=device,dtype=torch.int32),
-                  'config':dict(tokens=t,rope_theta=ROPE_THETA,qk_scale_factor=5.4730064863875)}
-            if state.get('dp_mod') is not None:
-                for label,n in ((name,w.shape[0]),)+( (('router',N_EXPERTS),) if name=='pool_router' else () ):
-                    state['dp_scratch'][(t,label)]=(torch.empty(((t+63)//64)*64*n*17,device=device,dtype=torch.float32),torch.zeros(((t+63)//64)*(n//64),device=device,dtype=torch.uint32))
-                for label,weight,n,kind in ((name,w,w.shape[0],out_dtype),)+( (('pool_only',state['dp_pool'],D_EXPERT,torch.float32),) if name=='pool_router' else () ):
-                    out=torch.empty((t,w.shape[0]),device=device,dtype=kind)[:,:n]
-                    for nn in (0,1):
-                        try:
-                            wt=(state['dp_pool_t'] if label=='pool_only' else state['dp_transposed'][name]) if nn else weight
-                            state['dp_codes'][(t,label,nn)]=state['dp_mod'].options(wt,x,out,nn,state['dp_workspace'])
-                        except Exception as exc:_dp_reject('PROJ_LT',(t,label),nn,exc)
-            scores=[]
-            for variant in _dp_variants(state,name,t,w,x):
-                if _dp_time.monotonic()>=stop:break
-                try:
-                    # cuBLAS is the independent H200-proven control, not the first custom trial.
-                    for seed in range(2):
-                        if seed:x.copy_(torch.randn_like(x))
-                        want=_dp_canonical(_project_variant(x,w,name,state,'cublas',out_dtype),name)
-                        y=_dp_canonical(_project_variant(x,w,name,state,variant,out_dtype),name)
-                        if not _dp_agree(y,want):raise ValueError('projection exceeds 1% proven-control guard')
-                    fn=lambda v=variant:_dp_consumer(x,w,name,state,v,stream,data)
-                    scores.append((variant,_dp_measure_graph(fn,flush,repeats=2)))
-                except Exception as exc:_dp_reject('PROJ',(t,name),variant,exc)
-            if scores:
-                finalists=sorted(scores,key=lambda q:q[1])[:3];paired=[]
-                for variant,_ in finalists:
-                    if _dp_time.monotonic()>=stop:break
-                    try:
-                        paired.append((variant,_dp_measure_graph(lambda v=variant:_dp_consumer(x,w,name,state,v,stream,data),flush,repeats=5)))
-                    except Exception as exc:_dp_reject('PROJ_FINAL',(t,name),variant,exc)
-                if paired:plan[(t,name)]=min(paired,key=lambda q:q[1])[0]
-            print(f'PROJ_TUNE t={t} name={name} best={plan[(t,name)]} consumer_us={min((v for _,v in scores),default=float("inf")):.3f} accepted={len(scores)}',flush=True)
-    return plan
-
-
-
-_DP_CUDA_SRC = r'''#include <cuda_runtime.h>
-#include <cuda.h>
-#include <cudaTypedefs.h>
-#include <cuda_bf16.h>
-#include <cooperative_groups.h>
-#include <cublasLt.h>
-#include <stdint.h>
-#include <algorithm>
-#include <cstring>
-#include <cstdio>
-namespace cg=cooperative_groups;
-static thread_local char lean_error[512];
-extern "C" const char* lean_error_string(){return lean_error;}
-static int lean_fail(const char* where,int code){std::snprintf(lean_error,sizeof(lean_error),"%s: status %d",where,code);return code ? code : -1;}
-#define LEAN_CUDA(call) do{auto e=(call);if(e!=cudaSuccess)return lean_fail(#call,(int)e);}while(0)
-#define LEAN_LT(call) do{auto e=(call);if(e!=CUBLAS_STATUS_SUCCESS)return lean_fail(#call,(int)e);}while(0)
-
-
-
-#include <cuda_bf16.h>
-#include <cooperative_groups.h>
-#include <stdint.h>
-
-
-
-namespace muse_proj {
-
-// Weight stream: read once, keep out of L1. LD 0: 256B L2 prefetch, 1: none, 2: 128B.
-template <int LD>
-__device__ __forceinline__ uint4 ld_stream(const void* p) {
-  uint4 r;
-  if (LD == 0)
-    asm volatile("ld.global.nc.L1::no_allocate.L2::256B.v4.u32 {%0,%1,%2,%3}, [%4];"
-                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  else if (LD == 1)
-    asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
-                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  else
-    asm volatile("ld.global.nc.L1::no_allocate.L2::128B.v4.u32 {%0,%1,%2,%3}, [%4];"
-                 : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  return r;
-}
-
-// Activations: shared by the CTA's warps through L1.
-__device__ __forceinline__ uint4 ld_act(const void* p) {
-  uint4 r;
-  asm volatile("ld.global.nc.v4.u32 {%0,%1,%2,%3}, [%4];"
-               : "=r"(r.x), "=r"(r.y), "=r"(r.z), "=r"(r.w) : "l"(p));
-  return r;
-}
-
-__device__ __forceinline__ void mma16816(float (&c)[4], uint32_t a0, uint32_t a1, uint32_t a2,
-                                         uint32_t a3, uint32_t b0, uint32_t b1) {
-  asm volatile(
-      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, "
-      "{%8,%9}, {%0,%1,%2,%3};"
-      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
-      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
-}
-
-// One CTA: BR = WN*TR*16 weight rows x BT = 8*NT tokens x KB of K (its cluster rank's slice).
-// Warp (wn, wk): TR row tiles of 16 x the wk-th 1/WK of the CTA's K slice, in steps of 32*U.
-// Lane (g = lane/4, t = lane%4) loads 16 bytes at k = k0 + 8t of rows g and g+8 (and of
-// token g for activations); the first mma takes k-slots {8t..8t+3}, the second {8t+4..8t+7}.
-// NA = 2: a second weight matrix (the router's lo half) at the same offsets, same accumulators.
-// XP: activations prefetched one batch ahead with the weights (else loaded at compute time).
-template <int NT, int TR, int U, int NA, int XP, int LD, bool OUTF32, bool MIX>
-__global__ void __launch_bounds__(256) skinny_kernel(
-    const __nv_bfloat16* __restrict__ W0, const __nv_bfloat16* __restrict__ W1,
-    const __nv_bfloat16* __restrict__ X, void* __restrict__ Out, int M, int N, int K, int KB,
-    int WN, int WK, int LDOUT, int ZERO_TAIL) {
-
-  constexpr int XU = XP ? U : 1;
-  constexpr int XN = XP ? NT : 1;
-  extern __shared__ float sred[];
-  constexpr int BT = 8 * NT;
-  const int BR = WN * TR * 16;
-  const int S = BR + 4;  // padded token stride of the reduction tile (bank spread)
-  const int lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
-  const int g = lane >> 2, t = lane & 3;
-  const int wn = warp % WN, wk = warp / WN;
-  const int row_cta = blockIdx.x * BR;
-  const int rowbase = row_cta + wn * TR * 16;
-  const int tok0 = blockIdx.z * BT;
-  if constexpr(MIX) {
-    if(row_cta>=4352) {
-      if(blockIdx.y==0)for(int e=threadIdx.x;e<BT*BR;e+=blockDim.x){int t=e/BR,r=e%BR;if(tok0+t<M)reinterpret_cast<float*>(Out)[(size_t)(tok0+t)*LDOUT+row_cta+r]=0.f;}
-      return;
-    }
-  }
-  const bool use_lo = !MIX || row_cta>=4096;
-
-  const int KW = KB / WK;
-  const int kbeg = blockIdx.y * KB + wk * KW;
-  const int nsteps = KW / (32 * U);
-
-  float acc[TR][NT][4];
-#pragma unroll
-  for (int r = 0; r < TR; ++r)
-#pragma unroll
-    for (int j = 0; j < NT; ++j)
-#pragma unroll
-      for (int q = 0; q < 4; ++q) acc[r][j][q] = 0.f;
-
-  const size_t off = (size_t)(rowbase + g) * K + kbeg + 8 * t;
-  const __nv_bfloat16* wp0 = W0 + off;
-  const __nv_bfloat16* wp1 = MIX ? (use_lo ? W1+off-(size_t)4096*K : W0+off) : W1+off;
-  const size_t rs8 = (size_t)8 * K;
-  const size_t rs16 = (size_t)16 * K;
-  const __nv_bfloat16* xp[NT];
-#pragma unroll
-  for (int j = 0; j < NT; ++j) {
-    int tok = tok0 + j * 8 + g;
-    tok = tok < M ? tok : M - 1;  // padded tokens read a real row; their outputs are dropped
-    xp[j] = X + (size_t)tok * K + kbeg + 8 * t;
-  }
-
-  uint4 a0[U][NA][TR][2], a1[U][NA][TR][2];
-  uint4 b0[XU][XN], b1[XU][XN];
-
-  auto load = [&](uint4 (&a)[U][NA][TR][2], uint4 (&b)[XU][XN], int s) {
-    const int koff = s * 32 * U;
-#pragma unroll
-    for (int u = 0; u < U; ++u)
-#pragma unroll
-      for (int na = 0; na < NA; ++na)
-#pragma unroll
-        for (int r = 0; r < TR; ++r) {
-          if constexpr(MIX) if(na==1 && !use_lo)continue;
-          const __nv_bfloat16* p = (na == 0 ? wp0 : wp1) + r * rs16 + koff + u * 32;
-          a[u][na][r][0] = ld_stream<LD>(p);
-          a[u][na][r][1] = ld_stream<LD>(p + rs8);
-        }
-    if (XP) {
-#pragma unroll
-      for (int u = 0; u < XU; ++u)
-#pragma unroll
-        for (int j = 0; j < XN; ++j) b[u][j] = ld_act(xp[j] + koff + u * 32);
-    }
-  };
-  auto compute = [&](uint4 (&a)[U][NA][TR][2], uint4 (&bp)[XU][XN], int s) {
-    const int koff = s * 32 * U;
-    uint4 bl[U][NT];
-#pragma unroll
-    for (int u = 0; u < U; ++u)
-#pragma unroll
-      for (int j = 0; j < NT; ++j) {
-        if (XP)
-          bl[u][j] = bp[u < XU ? u : 0][j < XN ? j : 0];
-        else
-          bl[u][j] = ld_act(xp[j] + koff + u * 32);
-      }
-#pragma unroll
-    for (int u = 0; u < U; ++u)
-#pragma unroll
-      for (int na = 0; na < NA; ++na)
-#pragma unroll
-        for (int r = 0; r < TR; ++r)
-#pragma unroll
-          for (int j = 0; j < NT; ++j) {
-            if constexpr(MIX) if(na==1 && !use_lo)continue;
-            const uint4& lo = a[u][na][r][0];
-            const uint4& hi = a[u][na][r][1];
-            mma16816(acc[r][j], lo.x, hi.x, lo.y, hi.y, bl[u][j].x, bl[u][j].y);
-            mma16816(acc[r][j], lo.z, hi.z, lo.w, hi.w, bl[u][j].z, bl[u][j].w);
-          }
-  };
-
-  if (nsteps > 0) load(a0, b0, 0);
-  for (int s = 0; s < nsteps; s += 2) {
-    if (s + 1 < nsteps) load(a1, b1, s + 1);
-    compute(a0, b0, s);
-    if (s + 1 < nsteps) {
-      if (s + 2 < nsteps) load(a0, b0, s + 2);
-      compute(a1, b1, s + 1);
-    }
-  }
-
-  // Warp partials -> shared tile [WK][BT][S] (token-major so the output stores coalesce).
-#pragma unroll
-  for (int r = 0; r < TR; ++r)
-#pragma unroll
-    for (int j = 0; j < NT; ++j) {
-      const int row = wn * TR * 16 + r * 16 + g;
-      const int tok = j * 8 + 2 * t;
-      float* p = sred + (size_t)(wk * BT + tok) * S + row;
-      p[0] = acc[r][j][0];
-      p[S] = acc[r][j][1];
-      p[8] = acc[r][j][2];
-      p[S + 8] = acc[r][j][3];
-    }
-  __syncthreads();
-  const int E = BT * BR;
-  if (WK > 1) {
-    for (int e = threadIdx.x; e < E; e += blockDim.x) {
-      const int tok = e / BR, row = e - tok * BR;
-      float v = 0.f;
-      for (int w = 0; w < WK; ++w) v += sred[(w * BT + tok) * S + row];
-      sred[tok * S + row] = v;
-    }
-    __syncthreads();
-  }
-
-  auto store = [&](int tok, int row, float v) {
-    const size_t idx = (size_t)(tok0 + tok) * LDOUT + row_cta + row;
-    if (OUTF32)
-      {reinterpret_cast<float*>(Out)[idx] = v;if(ZERO_TAIL)reinterpret_cast<float*>(Out)[idx+N]=0.f;}
-    else
-      reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
-  };
-
-  const int KS = gridDim.y;
-  if (KS == 1) {
-    for (int e = threadIdx.x; e < E; e += blockDim.x) {
-      const int tok = e / BR, row = e - tok * BR;
-      if (tok0 + tok < M) store(tok, row, sred[tok * S + row]);
-    }
-  } else {
-    cg::cluster_group cluster = cg::this_cluster();
-    cluster.sync();
-    const int rank = (int)cluster.block_rank();
-    const int per = (E + KS - 1) / KS;
-    const int e0 = rank * per;
-    const int e1 = min(E, e0 + per);
-    for (int e = e0 + (int)threadIdx.x; e < e1; e += blockDim.x) {
-      const int tok = e / BR, row = e - tok * BR;
-      if (tok0 + tok >= M) continue;
-      float v = 0.f;
-      for (int q = 0; q < KS; ++q) v += cluster.map_shared_rank(sred, q)[tok * S + row];
-      store(tok, row, v);
-    }
-    cluster.sync();  // keep this CTA's shared tile alive until every rank has read it
-  }
-}
-
-
-} // namespace muse_proj
-
-
-#include <cuda.h>
-#include <cudaTypedefs.h>
-#ifndef MP_SPIN_LIMIT
-#define MP_SPIN_LIMIT (1u << 26)
-#endif
-#if defined(__CUDA_ARCH__) && defined(__CUDA_ARCH_FEAT_SM90_ALL)
-#define MP_SM90A 1
-#endif
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 900
-#define MP_TMA 1  // TMA, mbarriers, clusters: sm_90 and later (wgmma itself needs sm_90a)
-#endif
-
-namespace muse_pair {
-
-__device__ __forceinline__ uint32_t su32(const void* p) { return (uint32_t)__cvta_generic_to_shared(p); }
-
-#ifdef MP_TMA
-__device__ __forceinline__ void mbar_init(uint64_t* bar, uint32_t count) {
-  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" ::"r"(su32(bar)), "r"(count));
-}
-__device__ __forceinline__ void mbar_expect_tx(uint64_t* bar, uint32_t bytes) {
-  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" ::"r"(su32(bar)), "r"(bytes) : "memory");
-}
-__device__ __forceinline__ void mbar_arrive(uint64_t* bar) {
-  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" ::"r"(su32(bar)) : "memory");
-}
-// Bounded: a pipeline bug yields wrong numbers (caught by tests) instead of a hung GPU.
-__device__ __forceinline__ void mbar_wait(uint64_t* bar, uint32_t parity) {
-  uint32_t done = 0;
-  uint32_t tries = 0;
-  do {
-    if (++tries > (uint32_t)MP_SPIN_LIMIT) {
-#ifdef MP_DEBUG
-      printf("mbar_wait timeout block (%d,%d,%d) thread %d parity %u\n", blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, parity);
-#endif
-      asm volatile("trap;");
-    }
-    asm volatile(
-        "{\n .reg .pred p;\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\n selp.u32 %0, 1, 0, p;\n}\n"
-        : "=r"(done) : "r"(su32(bar)), "r"(parity) : "memory");
-  } while (!done);
-}
-// Same box into this CTA and every CTA in mask (same smem offsets, each one's own mbarrier).
-__device__ __forceinline__ void tma_load_2d_mc(void* dst, const CUtensorMap* map, uint64_t* bar, int c0, int c1,
-                                               uint16_t mask) {
-  asm volatile(
-      "cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes.multicast::cluster"
-      " [%0], [%1, {%3, %4}], [%2], %5;"
-      ::"r"(su32(dst)), "l"(reinterpret_cast<uint64_t>(map)), "r"(su32(bar)), "r"(c0), "r"(c1), "h"(mask)
-      : "memory");
-}
-__device__ __forceinline__ void mbar_arrive_remote(uint64_t* bar, uint32_t cta_rank) {
-  asm volatile(
-      "{\n .reg .b32 ra;\n mapa.shared::cluster.u32 ra, %0, %1;\n"
-      " mbarrier.arrive.release.cluster.shared::cluster.b64 _, [ra];\n}\n"
-      ::"r"(su32(bar)), "r"(cta_rank) : "memory");
-}
-__device__ __forceinline__ void tma_load_2d(void* dst, const CUtensorMap* map, uint64_t* bar, int c0, int c1) {
-  asm volatile(
-      "cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes [%0], [%1, {%3, %4}], [%2];"
-      ::"r"(su32(dst)), "l"(reinterpret_cast<uint64_t>(map)), "r"(su32(bar)), "r"(c0), "r"(c1) : "memory");
-}
-template <int N_>
-__device__ __forceinline__ void acc_fence(float (&d)[N_]) {
-#pragma unroll
-  for (int i = 0; i < N_; ++i) asm volatile("" : "+f"(d[i])::"memory");
-}
-#endif
-#ifdef MP_SM90A
-__device__ __forceinline__ void wgmma_fence() { asm volatile("wgmma.fence.sync.aligned;" ::: "memory"); }
-__device__ __forceinline__ void wgmma_commit() { asm volatile("wgmma.commit_group.sync.aligned;" ::: "memory"); }
-template <int N_>
-__device__ __forceinline__ void wgmma_wait() { asm volatile("wgmma.wait_group.sync.aligned %0;" ::"n"(N_) : "memory"); }
-// K-major operand, 128-byte swizzle, 8-row atoms 1024 bytes apart.
-__device__ __forceinline__ uint64_t make_desc(const void* p, int bk) {
-  const uint64_t a = su32(p);
-  return ((a & 0x3FFFF) >> 4) | ((uint64_t)1 << 16) | ((uint64_t)(1024 >> 4) << 32) | ((uint64_t)1 << 62);
-}
-__device__ __forceinline__ void wgmma_m64n64(float (&d)[32], uint64_t da, uint64_t db, int scale_d) {
-  asm volatile("{\n"
-      ".reg .pred p;\n"
-      "setp.ne.b32 p, %34, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n64k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31}, %32, %33, p, 1, 1, 0, 0;\n"
-      "}\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]), "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31])
-      : "l"(da), "l"(db), "r"(scale_d));
-}
-__device__ __forceinline__ void wgmma_m64n128(float (&d)[64], uint64_t da, uint64_t db, int scale_d) {
-  asm volatile("{\n"
-      ".reg .pred p;\n"
-      "setp.ne.b32 p, %66, 0;\n"
-      "wgmma.mma_async.sync.aligned.m64n128k16.f32.bf16.bf16 {%0, %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %11, %12, %13, %14, %15, %16, %17, %18, %19, %20, %21, %22, %23, %24, %25, %26, %27, %28, %29, %30, %31, %32, %33, %34, %35, %36, %37, %38, %39, %40, %41, %42, %43, %44, %45, %46, %47, %48, %49, %50, %51, %52, %53, %54, %55, %56, %57, %58, %59, %60, %61, %62, %63}, %64, %65, p, 1, 1, 0, 0;\n"
-      "}\n"
-      : "+f"(d[0]), "+f"(d[1]), "+f"(d[2]), "+f"(d[3]), "+f"(d[4]), "+f"(d[5]), "+f"(d[6]), "+f"(d[7]), "+f"(d[8]), "+f"(d[9]), "+f"(d[10]), "+f"(d[11]), "+f"(d[12]), "+f"(d[13]), "+f"(d[14]), "+f"(d[15]), "+f"(d[16]), "+f"(d[17]), "+f"(d[18]), "+f"(d[19]), "+f"(d[20]), "+f"(d[21]), "+f"(d[22]), "+f"(d[23]), "+f"(d[24]), "+f"(d[25]), "+f"(d[26]), "+f"(d[27]), "+f"(d[28]), "+f"(d[29]), "+f"(d[30]), "+f"(d[31]), "+f"(d[32]), "+f"(d[33]), "+f"(d[34]), "+f"(d[35]), "+f"(d[36]), "+f"(d[37]), "+f"(d[38]), "+f"(d[39]), "+f"(d[40]), "+f"(d[41]), "+f"(d[42]), "+f"(d[43]), "+f"(d[44]), "+f"(d[45]), "+f"(d[46]), "+f"(d[47]), "+f"(d[48]), "+f"(d[49]), "+f"(d[50]), "+f"(d[51]), "+f"(d[52]), "+f"(d[53]), "+f"(d[54]), "+f"(d[55]), "+f"(d[56]), "+f"(d[57]), "+f"(d[58]), "+f"(d[59]), "+f"(d[60]), "+f"(d[61]), "+f"(d[62]), "+f"(d[63])
-      : "l"(da), "l"(db), "r"(scale_d));
-}
-
-#elif defined(MP_TMA)
-// Off sm_90a: the same swizzled tiles through ldmatrix + mma.sync (validates the pipeline).
-__device__ __forceinline__ void ldsm_x4(const void* p, uint32_t& a0, uint32_t& a1, uint32_t& a2, uint32_t& a3) {
-  asm volatile("ldmatrix.sync.aligned.m8n8.x4.shared.b16 {%0,%1,%2,%3}, [%4];"
-               : "=r"(a0), "=r"(a1), "=r"(a2), "=r"(a3) : "r"(su32(p)));
-}
-__device__ __forceinline__ void ldsm_x2(const void* p, uint32_t& b0, uint32_t& b1) {
-  asm volatile("ldmatrix.sync.aligned.m8n8.x2.shared.b16 {%0,%1}, [%2];" : "=r"(b0), "=r"(b1) : "r"(su32(p)));
-}
-__device__ __forceinline__ void mma_emu(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
-                                        uint32_t b0, uint32_t b1) {
-  asm volatile(
-      "mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"
-      : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
-      : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));
-}
-#endif
-
-
-// Each block owns a contiguous K interval. No CTA waits for another CTA to be scheduled.
-// Mode 0: split-K + last-CTA merge; mode 1: DSMEM cluster; mode 2: balanced Stream-K.
-template <int BT, int BK, int ST, bool OUTF32, int THREADS, bool HIER>
-__global__ void __launch_bounds__(THREADS) hop_kernel(
-    const __grid_constant__ CUtensorMap tmW, const __grid_constant__ CUtensorMap tmX,
-    void* __restrict__ Out, volatile float* __restrict__ Work, unsigned* __restrict__ Counts,
-    int M, int N, int nkb, int kx, int mode, int split, int chunk, int total, int ldout, int zero_tail) {
-#ifdef MP_TMA
-  // A 128-byte TMA swizzle admits at most 64 BF16 elements in its inner box.
-  // BK=128 groups two legal K64 boxes under one pipeline barrier.
-  constexpr int BR = 64, AB = BR * 64 * 2, XB = AB * (OUTF32 ? 2 : 1);
-  constexpr int CB = (BR * (OUTF32 ? 2 : 1) + BT) * 64 * 2, SB = CB * (BK/64);
-  extern __shared__ __align__(1024) unsigned char smem[];
-  uint64_t* full = reinterpret_cast<uint64_t*>(smem + ST * SB);
-  uint64_t* empty = full + ST;
-  __shared__ unsigned last;
-  const int tid = threadIdx.x, consumer = tid < 128;
-  const int begin = mode == 2 ? blockIdx.x * chunk : 0;
-  const int end = mode == 2 ? min(total, begin + chunk) : 1;
-  int pos = begin;
-  while (pos < end) {
-    const int tile = mode == 2 ? pos / nkb : (int)blockIdx.x;
-    const int first = mode == 2 ? tile * nkb / chunk : 0;
-    const int parts = mode == 2 ? ((tile + 1) * nkb - 1) / chunk - first + 1 : split;
-    const int slot = mode == 2 ? (int)blockIdx.x - first : (int)blockIdx.y;
-    const int kb0 = mode == 2 ? pos - tile * nkb : slot * nkb / split;
-    const int kb1 = mode == 2 ? min(nkb, end - tile * nkb) : (slot + 1) * nkb / split;
-    const int steps = kb1 - kb0;
-    const int row0 = (tile % (N / BR)) * BR, tok0 = (tile / (N / BR)) * BT;
-    if (tid == 0) {
-      for (int s = 0; s < ST; ++s) { mbar_init(full + s, 1); mbar_init(empty + s, 1); }
-      asm volatile("fence.mbarrier_init.release.cluster;" ::: "memory");
-      asm volatile("fence.proxy.async.shared::cta;" ::: "memory");
-    }
-    __syncthreads();
-    float acc[BT / 2];
-#pragma unroll
-    for (int i = 0; i < BT / 2; ++i) acc[i] = 0.f;
-    // One warpgroup owns both the TMA ring and WGMMA; no idle producer warpgroup.
-    auto prefetch = [&](int s) {
-      int stage=s%ST, kc=(kb0+s)*BK;
-      unsigned char* a=smem+stage*SB;
-      mbar_expect_tx(full+stage,SB);
-#pragma unroll
-      for (int chunk_k=0;chunk_k<BK/64;++chunk_k) {
-        tma_load_2d(a+chunk_k*CB,&tmW,full+stage,kc+chunk_k*64,row0);
-        if constexpr(OUTF32) tma_load_2d(a+chunk_k*CB+AB,&tmW,full+stage,kc+chunk_k*64+kx,row0);
-        tma_load_2d(a+chunk_k*CB+XB,&tmX,full+stage,kc+chunk_k*64,tok0);
-      }
-    };
-    if constexpr(THREADS==128) { if(tid==0) for(int s=0;s<ST && s<steps;++s) prefetch(s); }
-    if (THREADS>128 && tid == 128) {
-      for (int s = 0; s < steps; ++s) {
-        int stage = s % ST;
-        if (s >= ST) mbar_wait(empty + stage, ((s / ST) & 1) ^ 1);
-        unsigned char* a = smem + stage * SB;
-        mbar_expect_tx(full + stage, SB);
-        int kc = (kb0 + s) * BK;
-#pragma unroll
-        for (int chunk_k=0; chunk_k<BK/64; ++chunk_k) {
-          tma_load_2d(a+chunk_k*CB, &tmW, full + stage, kc+chunk_k*64, row0);
-          if constexpr (OUTF32) tma_load_2d(a+chunk_k*CB+AB, &tmW, full + stage, kc+chunk_k*64+kx, row0);
-          tma_load_2d(a+chunk_k*CB+XB, &tmX, full + stage, kc+chunk_k*64, tok0);
-        }
-      }
-    } else if (consumer) {
-      for (int s = 0; s < steps; ++s) {
-        int stage = s % ST;
-        mbar_wait(full + stage, (s / ST) & 1);
-        unsigned char* a = smem + stage * SB;
-#ifdef MP_SM90A
-        acc_fence(acc);
-        wgmma_fence();
-#pragma unroll
-        for (int kk = 0; kk < BK / 16; ++kk) {
-          const uint64_t db = make_desc(a+(kk/4)*CB+XB,64);
-          { const uint64_t da = make_desc(a+(kk/4)*CB,64); if constexpr(BT==64) wgmma_m64n64(acc,da+2*(kk%4),db+2*(kk%4),1); else if constexpr(BT==128) wgmma_m64n128(acc,da+2*(kk%4),db+2*(kk%4),1); }
-          if constexpr (OUTF32) { const uint64_t da = make_desc(a+(kk/4)*CB+AB,64); if constexpr(BT==64) wgmma_m64n64(acc,da+2*(kk%4),db+2*(kk%4),1); else if constexpr(BT==128) wgmma_m64n128(acc,da+2*(kk%4),db+2*(kk%4),1); }
-        }
-        wgmma_commit();
-        wgmma_wait<0>();
-        acc_fence(acc);
-#else
-        const int warp = tid >> 5, ln = tid & 31;
-#pragma unroll
-        for (int kk = 0; kk < BK / 16; ++kk) {
-          unsigned char* chunk_a=a+(kk/4)*CB;
-          int ar = warp * 16 + (ln & 15), ac = (kk%4) * 2 + (ln >> 4);
-          uint32_t a0,a1,a2,a3,lo0,lo1,lo2,lo3;
-          ldsm_x4(chunk_a + ar * 128 + ((ac ^ (ar & 7)) << 4), a0,a1,a2,a3);
-          if constexpr (OUTF32) ldsm_x4(chunk_a + AB + ar * 128 + ((ac ^ (ar & 7)) << 4),lo0,lo1,lo2,lo3);
-#pragma unroll
-          for (int j = 0; j < BT / 8; ++j) {
-            int br = j * 8 + (ln & 7), bc = (kk%4) * 2 + ((ln >> 3) & 1);
-            uint32_t b0,b1;
-            ldsm_x2(chunk_a + XB + br * 128 + ((bc ^ (br & 7)) << 4), b0,b1);
-            mma_emu(&acc[4*j],a0,a1,a2,a3,b0,b1);
-            if constexpr (OUTF32) mma_emu(&acc[4*j],lo0,lo1,lo2,lo3,b0,b1);
-          }
-        }
-        asm volatile("bar.sync 1, 128;" ::: "memory");
-#endif
-        if constexpr(THREADS==128) {
-          if(tid==0 && s+ST<steps) prefetch(s+ST);
-        } else {
-          if (tid == 0) mbar_arrive(empty + stage);
-        }
-      }
-    }
-    __syncthreads();
-    auto store = [&](int token, int row, float v) {
-      if (tok0 + token < M) {
-        size_t idx = (size_t)(tok0 + token) * ldout + row0 + row;
-        if constexpr (OUTF32) {reinterpret_cast<float*>(Out)[idx] = v;if(zero_tail)reinterpret_cast<float*>(Out)[idx+N]=0.f;}
-        else reinterpret_cast<__nv_bfloat16*>(Out)[idx] = __float2bfloat16_rn(v);
-      }
-    };
-    // Same WGMMA accumulator layout as mma.sync emulation.
-    if (consumer) {
-      int warp = tid >> 5, lane = tid & 31, row = warp * 16 + (lane >> 2), col = 2 * (lane & 3);
-#pragma unroll
-      for (int j = 0; j < BT / 8; ++j) {
-#pragma unroll
-        for (int q = 0; q < 4; ++q) {
-          int r = row + (q >= 2 ? 8 : 0), t = j * 8 + col + (q & 1);
-          if (parts == 1) store(t, r, acc[j*4+q]);
-          else if (mode == 1 || mode == 3) reinterpret_cast<float*>(smem)[t * 68 + r] = acc[j*4+q];
-          else Work[((size_t)tile * 17 + slot) * BT * BR + t * BR + r] = acc[j*4+q];
-        }
-      }
-    }
-    if (parts > 1) {
-      if constexpr (HIER) {
-        // Hierarchical split-K: each 16-CTA cluster reduces its K interval in DSMEM.
-        // Only the last completed cluster merges the 2/4 global partials, distributed
-        // over all 16 resident CTAs. There is no cross-cluster spin or second kernel.
-        constexpr int CK=16;
-        auto cluster=cg::this_cluster();
-        const int rank=slot%CK, group=slot/CK, groups=parts/CK;
-        cluster.sync();
-        for(int e=rank*THREADS+tid;e<BT*BR;e+=CK*THREADS) {
-          int t=e/BR,r=e%BR; float v=0.f;
-          for(int p=0;p<CK;++p) v+=cluster.map_shared_rank(reinterpret_cast<float*>(smem),p)[t*68+r];
-          Work[((size_t)tile*17+group)*BT*BR+e]=v;
-        }
-        __threadfence();
-        cluster.sync();
-        if(rank==0 && tid==0) last=atomicAdd(Counts+tile,1u)==(unsigned)(groups-1);
-        cluster.sync();
-        const bool elected=*cluster.map_shared_rank(&last,0)!=0;
-        if(elected) {
-          for(int e=rank*THREADS+tid;e<BT*BR;e+=CK*THREADS) {
-            float v=0.f;
-            for(int p=0;p<groups;++p) v+=Work[((size_t)tile*17+p)*BT*BR+e];
-            store(e/BR,e%BR,v);
-          }
-        }
-        cluster.sync();
-        if(elected && rank==0 && tid==0) atomicExch(Counts+tile,0u);
-      } else if (mode == 1) {
-        auto cluster = cg::this_cluster();
-        cluster.sync();
-        for (int e = slot * THREADS + tid; e < BT * BR; e += parts * THREADS) {
-          int t = e / BR, r = e % BR;
-          float v = 0.f;
-          for (int p = 0; p < parts; ++p) v += cluster.map_shared_rank(reinterpret_cast<float*>(smem), p)[t*68+r];
-          store(t,r,v);
-        }
-        cluster.sync();
-      } else {
-        // Release each writer's global stores before publishing this block's ticket.
-        __threadfence();
-        __syncthreads();
-        if (tid == 0) last = atomicAdd(Counts + tile, 1u) == (unsigned)(parts - 1);
-        __syncthreads();
-        if (last) {
-          for (int e = tid; e < BT * BR; e += THREADS) {
-            float v = 0.f;
-            for (int p = 0; p < parts; ++p) v += Work[((size_t)tile*17+p)*BT*BR+e];
-            store(e/BR,e%BR,v);
-          }
-          __syncthreads();
-          if (tid == 0) atomicExch(Counts + tile, 0u);
-        }
-      }
-    }
-    __syncthreads();
-    pos = mode == 2 ? tile * nkb + kb1 : end;
-  }
-#endif
-}
-
-
-} // namespace muse_pair
-
-template<int NT,int TR,int U,int NA,int XP,int LD,bool OF,bool MIX>
-int dp_skin_launch(const void* w,const void* lo,const void* x,void* out,int M,int N,int K,int wn,int wk,int ks,int ldout,int zero_tail,cudaStream_t stream){
-  constexpr int BT=8*NT;int BR=wn*TR*16;
-  if(N%BR || K%ks || (K/ks)%(wk*32*U) || wn*wk>8 || ks>16)return lean_fail("skinny shape",-1);
-  auto kernel=muse_proj::skinny_kernel<NT,TR,U,NA,XP,LD,OF,MIX>;
-  size_t shared=(size_t)wk*BT*(BR+4)*4;
-  if(shared>48*1024)return lean_fail("skinny shared memory",-1);
-  static bool init=false;if(!init){LEAN_CUDA(cudaFuncSetAttribute(kernel,cudaFuncAttributeNonPortableClusterSizeAllowed,1));init=true;}
-  cudaLaunchConfig_t cfg={};cfg.gridDim=dim3(N/BR,ks,(M+BT-1)/BT);cfg.blockDim=dim3(wn*wk*32);cfg.dynamicSmemBytes=shared;cfg.stream=stream;
-  cudaLaunchAttribute attr={};if(ks>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=ks;attr.val.clusterDim.z=1;cfg.attrs=&attr;cfg.numAttrs=1;}
-  return (int)cudaLaunchKernelEx(&cfg,kernel,(const __nv_bfloat16*)w,(const __nv_bfloat16*)lo,(const __nv_bfloat16*)x,out,M,N,K,K/ks,wn,wk,ldout,zero_tail);
-}
-extern "C" int dp_skin(const void* w,const void* lo,const void* x,void* out,int M,int N,int K,
-                       int nt,int tr,int u,int wn,int wk,int ks,int na,int xp,int ld,int of,int mix,int ldout,int zero_tail,void* stream){
-#define DP_SKIN(NT,TR,U,NA,XP,LD,OF,MIX) if(nt==NT && tr==TR && u==U && na==NA && xp==XP && ld==LD && of==OF && mix==MIX)return dp_skin_launch<NT,TR,U,NA,XP,LD,OF,MIX>(w,lo,x,out,M,N,K,wn,wk,ks,ldout,zero_tail,(cudaStream_t)stream);
-  DP_SKIN(1,1,2,1,1,0,false,false) DP_SKIN(1,1,2,1,1,0,true,false) DP_SKIN(1,1,4,1,1,0,false,false) DP_SKIN(1,1,4,1,1,0,true,false) DP_SKIN(1,1,4,2,1,0,true,false) DP_SKIN(1,1,4,2,1,0,true,true) DP_SKIN(1,2,4,1,1,0,false,false) DP_SKIN(1,2,4,1,1,0,true,false) DP_SKIN(2,1,2,1,1,0,false,false) DP_SKIN(2,1,2,1,1,0,true,false) DP_SKIN(2,1,4,1,0,0,false,false) DP_SKIN(2,1,4,1,0,0,true,false) DP_SKIN(2,1,4,1,1,0,false,false) DP_SKIN(2,1,4,1,1,0,true,false) DP_SKIN(2,1,4,2,1,0,true,false) DP_SKIN(2,1,4,2,1,0,true,true) DP_SKIN(2,2,4,1,1,0,false,false) DP_SKIN(2,2,4,1,1,0,true,false) DP_SKIN(4,1,2,1,1,0,false,false) DP_SKIN(4,1,2,1,1,0,true,false) DP_SKIN(4,1,4,1,0,0,false,false) DP_SKIN(4,1,4,1,0,0,true,false) DP_SKIN(4,1,4,1,1,0,false,false) DP_SKIN(4,1,4,1,1,0,true,false) DP_SKIN(4,1,4,2,0,0,true,false) DP_SKIN(4,1,4,2,0,0,true,true) DP_SKIN(8,1,2,1,1,0,false,false) DP_SKIN(8,1,2,1,1,0,true,false) DP_SKIN(8,1,2,2,0,0,true,false) DP_SKIN(8,1,2,2,0,0,true,true)
-  return lean_fail("skinny specialization",-1);
-}
-static int lean_map(CUtensorMap* m,const void* ptr,int rows,int cols,int box_rows){
-  static PFN_cuTensorMapEncodeTiled_v12000 fn=nullptr;
-  if(!fn){void* p=nullptr;cudaDriverEntryPointQueryResult q;LEAN_CUDA(cudaGetDriverEntryPoint("cuTensorMapEncodeTiled",&p,cudaEnableDefault,&q));if(!p)return lean_fail("tensor map function",-1);fn=(PFN_cuTensorMapEncodeTiled_v12000)p;}
-  cuuint64_t dims[2]={(cuuint64_t)cols,(cuuint64_t)rows},strides[1]={(cuuint64_t)cols*2};
-  cuuint32_t box[2]={64,(cuuint32_t)box_rows},es[2]={1,1};
-  auto e=fn(m,CU_TENSOR_MAP_DATA_TYPE_BFLOAT16,2,const_cast<void*>(ptr),dims,strides,box,es,
-            CU_TENSOR_MAP_INTERLEAVE_NONE,CU_TENSOR_MAP_SWIZZLE_128B,CU_TENSOR_MAP_L2_PROMOTION_L2_256B,CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE);
-  return e==CUDA_SUCCESS ? 0 : lean_fail("tensor map encode",(int)e);
-}
-template<int BT,int BK,int ST,int THREADS,bool OF,bool HH>
-int lean_pair_launch(const void* w,const void* x,void* out,float* work,unsigned* counts,
-                     int M,int N,int K,int KW,int mode,int split,int ldout,int zero_tail,int64_t work_elems,int64_t count_elems,cudaStream_t stream){
-  if(N%64 || K%BK || KW%BK || K<1 || split<1)return lean_fail("pair shape",-1);
-  int nkb=K/BK,tiles=(N/64)*((M+BT-1)/BT),total=tiles*nkb;
-  if(mode!=2 && (split>64 || split>nkb || (mode==1 && split>16) || (mode==3 && split%16)))return lean_fail("pair split",-1);
-  int target=std::min(split,tiles*16),chunk=(total+target-1)/target,blocks=mode==2 ? (total+chunk-1)/chunk : tiles;
-  if(work_elems<(int64_t)tiles*17*BT*64 || count_elems<tiles)return lean_fail("pair workspace",-1);
-  auto kern=muse_pair::hop_kernel<BT,BK,ST,OF,THREADS,HH>;
-  size_t shared=std::max((size_t)ST*(64*(OF ? 2 : 1)+BT)*BK*2+ST*16,(size_t)BT*68*4);
-  int device=0,optin=0;LEAN_CUDA(cudaGetDevice(&device));LEAN_CUDA(cudaDeviceGetAttribute(&optin,cudaDevAttrMaxSharedMemoryPerBlockOptin,device));
-  if(shared>(size_t)optin)return lean_fail("pair shared memory",-1);
-  static bool initialized=false;if(!initialized){LEAN_CUDA(cudaFuncSetAttribute(kern,cudaFuncAttributeMaxDynamicSharedMemorySize,shared));LEAN_CUDA(cudaFuncSetAttribute(kern,cudaFuncAttributeNonPortableClusterSizeAllowed,1));initialized=true;}
-  CUtensorMap mw,mx;int err=lean_map(&mw,w,N,KW,64);if(err)return err;err=lean_map(&mx,x,M,K,BT);if(err)return err;
-  cudaLaunchConfig_t c={};c.gridDim=dim3(blocks,mode==2 ? 1 : split);c.blockDim=dim3(THREADS);c.dynamicSmemBytes=shared;c.stream=stream;
-  cudaLaunchAttribute attr={};if((mode==1 || mode==3) && split>1){attr.id=cudaLaunchAttributeClusterDimension;attr.val.clusterDim.x=1;attr.val.clusterDim.y=mode==3 ? 16 : split;attr.val.clusterDim.z=1;c.attrs=&attr;c.numAttrs=1;}
-  auto e=cudaLaunchKernelEx(&c,kern,mw,mx,out,work,counts,M,N,nkb,K,mode,split,chunk,total,ldout,zero_tail);
-  return e==cudaSuccess ? 0 : lean_fail("pair launch",(int)e);
-}
-extern "C" int lean_pair(const void* w,const void* x,void* out,void* work,void* counts,
-                        int M,int N,int K,int KW,int of,int bt,int bk,int st,int mode,int split,int threads,int ldout,int zero_tail,
-                        int64_t work_elems,int64_t count_elems,void* stream){
-#define LPAIR(BT,BK,ST,TH,OF,HH) if(bt==BT && bk==BK && st==ST && threads==TH && of==OF && (mode==3)==HH)return lean_pair_launch<BT,BK,ST,TH,OF,HH>(w,x,out,(float*)work,(unsigned*)counts,M,N,K,KW,mode,split,ldout,zero_tail,work_elems,count_elems,(cudaStream_t)stream);
-  LPAIR(64,64,4,160,false,false) LPAIR(64,64,4,160,true,false) LPAIR(64,64,4,256,false,false) LPAIR(64,64,4,256,true,false) LPAIR(128,64,3,160,false,false) LPAIR(128,64,4,256,false,false) LPAIR(128,128,2,256,false,false)
-  return lean_fail("pair specialization",-1);
-}
-
-
-static cublasLtHandle_t lean_lt_handle=nullptr;
-static int lean_lt_init(){if(!lean_lt_handle)LEAN_LT(cublasLtCreate(&lean_lt_handle));return 0;}
-extern "C" int lean_algo_bytes(){return sizeof(cublasLtMatmulAlgo_t);}
-// All returned cuBLASLt heuristics, plus checked explicit split-K configurations.
-#include <cstdlib>
-struct AllLtStorage {void* rows=nullptr;void* algorithms=nullptr;~AllLtStorage(){std::free(rows);std::free(algorithms);}};
-struct AllLtLayout {
-  cublasLtMatmulDesc_t op=nullptr;
-  cublasLtMatrixLayout_t a=nullptr,b=nullptr,c=nullptr;
-  int init(int n,int m,int k,int stride,int nn,int kind,int ldout) {
-    cudaDataType_t in=kind==2 ? CUDA_R_32F : CUDA_R_16BF;
-    cudaDataType_t out=kind ? CUDA_R_32F : CUDA_R_16BF;
-    LEAN_LT(cublasLtMatmulDescCreate(&op,kind==2 ? CUBLAS_COMPUTE_32F_PEDANTIC : CUBLAS_COMPUTE_32F,CUDA_R_32F));
-    cublasOperation_t ta=nn ? CUBLAS_OP_N : CUBLAS_OP_T;
-    LEAN_LT(cublasLtMatmulDescSetAttribute(op,CUBLASLT_MATMUL_DESC_TRANSA,&ta,sizeof(ta)));
-    LEAN_LT(cublasLtMatrixLayoutCreate(&a,in,nn ? n : k,nn ? k : n,stride));
-    LEAN_LT(cublasLtMatrixLayoutCreate(&b,in,k,m,k));
-    LEAN_LT(cublasLtMatrixLayoutCreate(&c,out,n,m,ldout));
-    return 0;
-  }
-  ~AllLtLayout(){if(op)cublasLtMatmulDescDestroy(op);if(a)cublasLtMatrixLayoutDestroy(a);if(b)cublasLtMatrixLayoutDestroy(b);if(c)cublasLtMatrixLayoutDestroy(c);}
-};
-extern "C" int all_lt_options(int n,int m,int k,int stride,int nn,int kind,int ldout,size_t workspace,
-                              void* codes,int capacity,int* count,int* heuristic_count) {
-  int err=lean_lt_init();if(err)return err;
-  AllLtLayout l;err=l.init(n,m,k,stride,nn,kind,ldout);if(err)return err;
-  cublasLtMatmulPreference_t pref;LEAN_LT(cublasLtMatmulPreferenceCreate(&pref));
-  auto s=cublasLtMatmulPreferenceSetAttribute(pref,CUBLASLT_MATMUL_PREF_MAX_WORKSPACE_BYTES,&workspace,sizeof(workspace));
-  if(s!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt preference",(int)s);}
-  int requested=64,got=0;
-  AllLtStorage storage;
-  storage.rows=std::calloc(capacity,sizeof(cublasLtMatmulHeuristicResult_t));
-  storage.algorithms=std::calloc(capacity,sizeof(cublasLtMatmulAlgo_t));
-  if(!storage.rows || !storage.algorithms){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt host storage",-1);}
-  auto rows=(cublasLtMatmulHeuristicResult_t*)storage.rows;
-  auto valid=(cublasLtMatmulAlgo_t*)storage.algorithms;
-  int valid_count=0;bool overflow=false;
-  do {
-
-    s=cublasLtMatmulAlgoGetHeuristic(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,pref,requested,rows,&got);
-    if(s!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt heuristics",(int)s);}
-    if(got<requested)break;
-    requested*=2;
-    if(requested>capacity){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt heuristic capacity",-1);}
-  }while(true);
-  cublasLtMatmulPreferenceDestroy(pref);
-
-  auto add=[&](const cublasLtMatmulAlgo_t& algo) {
-    for(int i=0;i<valid_count;++i)if(std::memcmp(valid+i,&algo,sizeof(algo))==0)return;
-    cublasLtMatmulHeuristicResult_t checked={};
-    auto status=cublasLtMatmulAlgoCheck(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,&algo,&checked);
-    if(status==CUBLAS_STATUS_SUCCESS && checked.state==CUBLAS_STATUS_SUCCESS && checked.workspaceSize<=workspace)
-      {if(valid_count==capacity)overflow=true;else valid[valid_count++]=algo;}
-  };
-  for(int i=0;i<got;++i)if(rows[i].state==CUBLAS_STATUS_SUCCESS && rows[i].workspaceSize<=workspace)add(rows[i].algo);
-  *heuristic_count=valid_count;
-  // Preserve every returned heuristic; add supported swizzles and FP32 split-K reductions.
-  const int base_count=valid_count;
-  for(int bi=0;bi<base_count;++bi) {
-    const auto base=valid[bi];
-    int32_t split_support=0;uint32_t mask=0,swizzle=0;size_t written=0;
-    LEAN_LT(cublasLtMatmulAlgoCapGetAttribute(&base,CUBLASLT_ALGO_CAP_SPLITK_SUPPORT,&split_support,sizeof(split_support),&written));
-    LEAN_LT(cublasLtMatmulAlgoCapGetAttribute(&base,CUBLASLT_ALGO_CAP_REDUCTION_SCHEME_MASK,&mask,sizeof(mask),&written));
-    LEAN_LT(cublasLtMatmulAlgoCapGetAttribute(&base,CUBLASLT_ALGO_CAP_CTA_SWIZZLING_SUPPORT,&swizzle,sizeof(swizzle),&written));
-    for(uint32_t sw=0;sw<=swizzle;++sw) {
-      auto plain=base;
-      if(cublasLtMatmulAlgoConfigSetAttribute(&plain,CUBLASLT_ALGO_CONFIG_CTA_SWIZZLING,&sw,sizeof(sw))!=CUBLAS_STATUS_SUCCESS)continue;
-      add(plain);
-      if(split_support && (mask&CUBLASLT_REDUCTION_SCHEME_COMPUTE_TYPE)) {
-        for(uint32_t split:{2u,4u,8u,16u,32u}) {
-          auto algo=plain;uint32_t scheme=CUBLASLT_REDUCTION_SCHEME_COMPUTE_TYPE;
-          if(cublasLtMatmulAlgoConfigSetAttribute(&algo,CUBLASLT_ALGO_CONFIG_SPLITK_NUM,&split,sizeof(split))!=CUBLAS_STATUS_SUCCESS)continue;
-          if(cublasLtMatmulAlgoConfigSetAttribute(&algo,CUBLASLT_ALGO_CONFIG_REDUCTION_SCHEME,&scheme,sizeof(scheme))!=CUBLAS_STATUS_SUCCESS)continue;
-          add(algo);
-        }
-      }
-    }
-  }
-  if(overflow)return lean_fail("all Lt option capacity",-1);
-  for(int i=0;i<valid_count;++i)std::memcpy((char*)codes+i*sizeof(cublasLtMatmulAlgo_t),&valid[i],sizeof(cublasLtMatmulAlgo_t));
-  *count=valid_count;return 0;
-}
-extern "C" int all_lt_run(const void* w,const void* x,void* out,void* workspace,const void* codes,
-                          int n,int m,int k,int stride,int nn,int kind,int ldout,int index,int accumulate,
-                          size_t workspace_bytes,void* stream) {
-  int err=lean_lt_init();if(err)return err;
-  AllLtLayout l;err=l.init(n,m,k,stride,nn,kind,ldout);if(err)return err;
-  cublasLtMatmulAlgo_t algo;std::memcpy(&algo,(const char*)codes+index*sizeof(algo),sizeof(algo));
-  float alpha=1.f,beta=accumulate ? 1.f : 0.f;
-  auto status=cublasLtMatmul(lean_lt_handle,l.op,&alpha,w,l.a,x,l.b,&beta,out,l.c,out,l.c,&algo,
-                            workspace,workspace_bytes,(cudaStream_t)stream);
-  return status==CUBLAS_STATUS_SUCCESS ? 0 : lean_fail("all Lt run",(int)status);
-}
-
-'''
-DP_PAIR_CONFIGS = ((64, 64, 4, 0, 1, 160), (64, 64, 4, 0, 1, 256), (128, 64, 3, 0, 1, 160), (128, 64, 4, 0, 1, 256), (128, 128, 2, 0, 1, 256))
-DP_SKIN_CONFIGS = {('qkv_gate', 1): (1, 4, 4, 1, 8, 1), ('qkv_gate', 8): (2, 4, 1, 8, 1, 1), ('qkv_gate', 16): (1, 4, 4, 1, 8, 1), ('qkv_gate', 32): (1, 2, 4, 1, 8, 1), ('qkv_gate', 64): (1, 2, 2, 4, 1, 1), ('o', 1): (1, 4, 1, 4, 1, 1), ('o', 8): (1, 2, 1, 4, 1, 1), ('o', 16): (1, 4, 2, 4, 1, 0), ('o', 32): (1, 4, 2, 4, 1, 0), ('o', 64): (1, 2, 2, 4, 1, 1), ('pooler', 1): (1, 4, 1, 4, 1, 1), ('pooler', 8): (1, 4, 1, 4, 1, 1), ('pooler', 16): (2, 4, 1, 8, 1, 1), ('pooler', 32): (1, 4, 2, 4, 1, 1), ('pooler', 64): (1, 2, 2, 4, 1, 1), ('unpooler', 1): (1, 4, 1, 8, 1, 1), ('unpooler', 8): (1, 4, 1, 8, 1, 1), ('unpooler', 16): (1, 2, 2, 4, 1, 1), ('unpooler', 32): (1, 2, 2, 4, 1, 1), ('unpooler', 64): (1, 2, 2, 4, 1, 1), ('router', 1): (1, 4, 2, 4, 8, 1), ('router', 8): (1, 4, 2, 4, 8, 1), ('router', 16): (1, 4, 1, 8, 4, 1), ('router', 32): (1, 4, 1, 8, 4, 0)}
-DP_PARENT_SHA256 = '099ee216693f890b1bc6b737de5d3441e5f210baa2cca0c8fbb0b4fd65ecbc6e'
-
-# -------------------------------------------------------------------------------------------------
-# Attention-lane portfolio port.  The layer's qkv_gate output has the same raw
-# [Q,K,V,gate] layout as muse_attention_decode, but arrives as split-K partials.
-# We materialize that layout inside the candidate call, then run the standalone
-# FA3/XQA/WGMMA/q1 gather kernels.  The existing layer path remains the portable
-# incumbent and the sm_120 stand-in; Hopper chooses per scored shape.
 
 ATTN_PORT_CUDA_SRC = r"""
 #include <cuda_runtime.h>
@@ -5907,13 +3075,11 @@ int64_t occupancy(int64_t q_len);
 # of K/V in flight) and the same page-1 row gather.  Only the template's
 # L=8 consumer work changes, so the benchmark below can separate extra math
 # from the memory path.
-_EXT = None
 
 
 # Corrected standalone XQA families, with the layer raw-qkv ABI.  These are
 # timed and guarded in prepare; invalid families are rejected without raising.
 ATTN_X_CUDA = r"""
-
 
 
 #include <cuda_runtime.h>
@@ -6246,7 +3412,6 @@ void xforward(int64_t qkv,int64_t pos,int64_t loc,int64_t pt,int64_t seq,int64_t
  }
  auto err=cudaGetLastError();if(err!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(err));
 }
-
 
 
 """
@@ -6789,25 +3954,6 @@ _ATTN_PORT_EXT = None
 _ATTN_PORT_X_EXT = {}
 _ATTN_PORT_P8_EXT = {}
 _ATTN_PORT_COUNTERS = {}
-_ATTN_PORT_X_FAMILY = 'matrix'
-_ATTN_PORT_X_STAGES = 3
-_ATTN_PORT_X_WAVES = 2
-_ATTENTION_PLAN = {}
-_ATTENTION_READY = False
-
-
-_ROPE_CACHE = {}
-_ROPE_POSITIONS = 1 << 21
-
-def _cos_sin(theta, d, device):
-    key = (float(theta), int(d), str(device))
-    cache = _ROPE_CACHE.get(key)
-    if cache is None:
-        inv = 1.0 / (float(theta) ** (torch.arange(0, d, 2, device=device, dtype=torch.float32) / d))
-        freq = torch.einsum("i,j->ij", torch.arange(_ROPE_POSITIONS, device=device, dtype=torch.float32), inv)
-        cache = torch.cat((freq.cos(), freq.sin()), dim=-1)
-        _ROPE_CACHE[key] = cache
-    return cache
 
 
 def _attn_port_hopper(device):
@@ -6822,15 +3968,14 @@ def _attn_port_ext():
         _ATTN_PORT_EXT = load_inline(
             name=f'muse_decode_attn_port_{arch}', cpp_sources=ATTN_PORT_CPP_SRC,
             cuda_sources=ATTN_PORT_CUDA_SRC,
-            functions=['attn_forward', 'attn_forward_vmath', 'max_cluster', 'occupancy'],
+            functions=['attn_forward', 'max_cluster', 'occupancy'],
             extra_cuda_cflags=['-O3', '-std=c++20', '--expt-relaxed-constexpr',
                                f'-gencode=arch=compute_{arch},code=sm_{arch}', '-lineinfo'],
             verbose=False)
     return _ATTN_PORT_EXT
 
 
-def _attn_port_xext():
-    family = _ATTN_PORT_X_FAMILY
+def _attn_port_xext(family):
     if family not in _ATTN_PORT_X_EXT:
         major, minor = torch.cuda.get_device_capability()
         arch = '90a' if major == 9 else f'{major}{minor}'
@@ -6875,66 +4020,25 @@ def _attn_port_raw(qkv, data):
 
 
 def _attn_port_fa3(raw, data, setting):
-    from sgl_kernel.flash_attn import flash_attn_with_kvcache, get_scheduler_metadata
-    from sglang.kernels.ops.kvcache.kvcache import store_cache
-    from sglang.kernels.ops.muse_spark_v12.fused_qk_norm import FusedQKNorm
-    from sglang.kernels.ops.muse_spark_v12.norm_gate import rms_norm_gate
-    cfg = data['config']; batch, length = cfg['batch'], cfg['q_len']
-    hq, hkv, d = HQ, HKV, HD
-    qkv = raw.view(batch * length, -1)
-    device = raw.device
-    if cfg['rope_theta']:
-        q, k = FusedQKNorm(head_dim=d, num_q_heads=hq, num_kv_heads=hkv, eps=RMS_EPS)(
-            qkv, data['positions'], _cos_sin(cfg['rope_theta'], d, device))
-    else:
-        q, k = FusedQKNorm(head_dim=d, num_q_heads=hq, num_kv_heads=hkv, eps=RMS_EPS)(qkv)
-    v = qkv[:, (hq + hkv) * d:(hq + 2 * hkv) * d]
-    scaled = cfg['kv_scale'] != 1.0
-    if scaled:
-        k, v = k.reshape(batch * length, hkv * d) / data['k_scale'], v / data['v_scale']
-    else:
-        k = k.reshape(batch * length, hkv * d)
-    store_cache(k.to(FP8).view(torch.uint8), v.to(FP8).view(torch.uint8),
-                data['k_cache'].view(-1, hkv * d).view(torch.uint8),
-                data['v_cache'].view(-1, hkv * d).view(torch.uint8),
-                data['cache_loc'], reserved_skip_index=-1)
-    splits, pack = setting
-    query = q.view(batch * length, hq, d).to(FP8)
-    metadata = get_scheduler_metadata(
-        batch_size=batch, max_seqlen_q=length,
-        max_seqlen_k=data['page_table'].shape[1] * cfg['page_size'],
-        num_heads=hq, num_heads_k=hkv, headdim=d,
-        cache_seqlens=data['cache_seqlens'], qkv_dtype=query.dtype,
-        cu_seqlens_q=data['cu_seqlens_q'], page_size=cfg['page_size'], causal=True,
-        window_size=(cfg['window'] - 1, 0) if cfg['window'] else (-1, -1),
-        num_splits=splits, pack_gqa=pack)
-    descale = {}
-    if scaled:
-        descale = dict(k_descale=data['k_scale'].reshape(1, 1).expand(batch, hkv),
-                       v_descale=data['v_scale'].reshape(1, 1).expand(batch, hkv))
-    out = flash_attn_with_kvcache(
-        q=query, k_cache=data['k_cache'], v_cache=data['v_cache'], page_table=data['page_table'],
-        cache_seqlens=data['cache_seqlens'], cu_seqlens_q=data['cu_seqlens_q'],
-        max_seqlen_q=length, softmax_scale=cfg['sm_scale'] * cfg['qk_scale_factor'],
-        causal=True, window_size=(cfg['window'] - 1, 0) if cfg['window'] else (-1, -1),
-        scheduler_metadata=metadata, num_splits=splits, pack_gqa=pack, **descale)
-    if isinstance(out, tuple):
-        out = out[0]
-    gate = qkv[:, (hq + 2 * hkv) * d:]
-    return rms_norm_gate(out.reshape(batch * length, hq * d).to(torch.bfloat16), gate, None,
-                         head_dim=d, eps=RMS_EPS, has_norm=True)
+    # Use the layer's QK prep, including its own theta and cache-scale handling.
+    partial = raw.reshape(-1, QKV_SIZE).unsqueeze(0)
+    state = {"inv_freq": _inv_freq(data["config"]["rope_theta"] or ROPE_THETA, raw.device)}
+    q, gate = qk_prep((partial, 1), data, state, q_fp8=True)
+    return _fa3_call(q, gate, data, setting)
 
 
-def _attn_port_forward(raw, data, vmath=False):
+def _attn_port_forward(raw, data):
     """Run the standalone four-stage q1 gather or its L=8 sibling."""
     cfg = data['config']; batch, length = cfg['batch'], cfg['q_len']; device = raw.device
     max_pages = data['page_table'].shape[1]; ps = cfg['page_size']; window = cfg['window']
     max_keys = min(max_pages * ps, window) if window else max_pages * ps
     # One cluster per KV group is a safe ABI for both standalone families.  The
     # layer's own q/gate/KV layout is passed directly; no hidden attention state.
-    ns = _splits(batch, HKV // 2, max_keys, length, _num_sms(device))
-    cs = 1
-    rows = batch * (HKV // 2) * ns * length * 16
+    ext = _attn_port_ext()
+    occ = (max(1, ext.occupancy(length)),
+           {cs: ext.max_cluster(length, cs) for cs in range(1, 17)})
+    ns, cs = _attn_main_plan(batch, HKV // 2, max_keys, length, window, _num_sms(device), occ)
+    rows = batch * (HKV // 2) * max(1, ns // cs) * length * 16
     part_o = torch.empty((max(rows, 1) * 64,), dtype=torch.float32, device=device)
     part_ml = torch.empty((max(rows, 1) * 2,), dtype=torch.float32, device=device)
     counters = _attn_port_counters(batch * (HKV // 2) * cs, device)
@@ -6943,8 +4047,7 @@ def _attn_port_forward(raw, data, vmath=False):
     inv_freq = _inv_freq(cfg['rope_theta'], device) if cfg['rope_theta'] else None
     scale_log2 = cfg['sm_scale'] * cfg['qk_scale_factor'] * 1.4426950408889634
     ext = _attn_port_ext()
-    launch = ext.attn_forward_vmath if vmath else ext.attn_forward
-    launch(raw.data_ptr(), data['positions'].data_ptr(), data['cache_loc'].data_ptr(),
+    ext.attn_forward(raw.data_ptr(), data['positions'].data_ptr(), data['cache_loc'].data_ptr(),
            data['page_table'].data_ptr(), data['seq_lens'].data_ptr(), data['k_cache'].data_ptr(),
            data['v_cache'].data_ptr(), data['k_scale'].data_ptr(), data['v_scale'].data_ptr(),
            inv_freq.data_ptr() if inv_freq is not None else 0, part_o.data_ptr(), part_ml.data_ptr(),
@@ -6955,9 +4058,7 @@ def _attn_port_forward(raw, data, vmath=False):
 
 
 def _attn_port_xqa(raw, data, setting):
-    global _ATTN_PORT_X_FAMILY, _ATTN_PORT_X_STAGES, _ATTN_PORT_X_WAVES
     family, stages, waves = setting
-    _ATTN_PORT_X_FAMILY, _ATTN_PORT_X_STAGES, _ATTN_PORT_X_WAVES = family, stages, waves
     cfg = data['config']; batch, hq, hkv, ps = cfg['batch'], HQ, HKV, cfg['page_size']
     window = cfg['window']; maxpages = data['page_table'].shape[1]
     maxkeys = min(maxpages * ps, window) if window else maxpages * ps
@@ -6968,7 +4069,7 @@ def _attn_port_xqa(raw, data, setting):
     part = torch.empty((batch * hkv * ns * 64 * 68,), dtype=torch.float32, device=raw.device)
     counts = _attn_port_counters(batch * hkv, raw.device)
     freq = _inv_freq(cfg['rope_theta'], raw.device) if cfg['rope_theta'] else None
-    _attn_port_xext().xforward(
+    _attn_port_xext(family).xforward(
         raw.data_ptr(), data['positions'].data_ptr(), data['cache_loc'].data_ptr(),
         data['page_table'].data_ptr(), data['seq_lens'].data_ptr(), data['k_cache'].data_ptr(),
         data['v_cache'].data_ptr(), data['k_scale'].data_ptr(), data['v_scale'].data_ptr(),
@@ -7001,13 +4102,13 @@ def _attn_port_p8(raw, data, setting):
     return out.view(batch * 8, Q_SIZE)
 
 
-def _attn_port_synthetic(batch, q_len, window, device):
+def _attn_port_synthetic(batch, q_len, window, device, ctx=80000):
     gen = torch.Generator(device=device).manual_seed(0xD3C0 + batch * 17 + q_len + window)
-    maxpages = 80008 if batch == 1 else 86008
-    seq = torch.full((batch,), 80000, dtype=torch.int32, device=device)
+    maxpages = ctx + 8 if batch == 1 else (ctx * 1075 + 999) // 1000 + 8
+    seq = torch.full((batch,), ctx, dtype=torch.int32, device=device)
     if batch > 1:
         seq = (seq.float() * (1. + .075 * (2 * torch.rand(batch, device=device, generator=gen) - 1))).to(torch.int32)
-    pages = torch.arange(batch * maxpages, dtype=torch.int32, device=device).view(batch, maxpages)
+    pages = torch.randperm(batch * maxpages, generator=gen, device=device).to(torch.int32).view(batch, maxpages)
     positions = (seq[:, None].long() + torch.arange(q_len, device=device)).reshape(-1)
     loc = torch.gather(pages.long(), 1, positions.view(batch, q_len)).reshape(-1)
     shape = (batch * maxpages, 1, HKV, HD)
@@ -7025,10 +4126,11 @@ def _attn_port_synthetic(batch, q_len, window, device):
 
 
 def _attn_port_candidates(q_len):
-    out = [('layer', None), ('fa3', (0, None))]
+    out = [('layer', None)] + [('fa3', (sp, pack)) for sp, pack in
+        ((sp, pack) for sp in _FA3_SPLITS for pack in _FA3_PACK)]
     if q_len == 1:
-        return out + [('port_decode', None)]
-    return out + [('port_verify', None), ('port_vmath', None)] + \
+        return out + [('attn_main', None)]
+    return out + [('port_verify', None)] + \
         [('xqa_group', ('group', st, w)) for st in (5, 7) for w in (1, 2, 4, 8)] + \
         [('xqa_warp', ('warp', st, w)) for st in (3, 4) for w in (1, 2, 4, 8)] + \
         [('xqa_fp8_pv', (st, w)) for st in (3, 5) for w in (1, 2, 4, 8)]
@@ -7041,276 +4143,484 @@ def _attn_port_variant(qkv, data, state, choice):
     raw = _attn_port_raw(qkv, data)
     if label == 'fa3':
         return _attn_port_fa3(raw, data, setting)
-    if label == 'port_decode' or label == 'port_verify':
-        return _attn_port_forward(raw, data, vmath=False)
-    if label == 'port_vmath':
-        return _attn_port_forward(raw, data, vmath=True)
+    if label in ('attn_main', 'port_verify'):
+        return _attn_port_forward(raw, data)
     if label.startswith('xqa_group') or label.startswith('xqa_warp'):
         return _attn_port_xqa(raw, data, setting)
     return _attn_port_p8(raw, data, setting)
+def _attn_main_plan(batch, kvg, max_keys, q_len, window, sms, occ):
+    """(splits per request, cluster size). One wave: every CTA resident at once, since each
+    carries ~microseconds of fixed latency (page-table and query loads, the merge). Each split
+    gets at least one 64-token tile. A request's splits form clusters (size <= 16) that merge
+    through the cluster; more than one cluster per request merge through global memory (at
+    most 32 clusters). Sliding layers (<= 2,048 keys) use one cluster per request."""
+    per_sm, clusters = occ
+    groups = batch * kvg
+    fit = max(1, sms * per_sm // groups)
+    fit = min(fit, -(-max_keys // 64), 16 if window else 512)
+    sizes = [cs for cs in range(1, 17) if clusters.get(cs, 0) >= 1] or [1]
+    best = None
+    for cs in sizes:
+        if cs > fit:
+            continue
+        nc = min(fit // cs, 32)
+        while nc > 0 and clusters[cs] < groups * nc:
+            nc -= 1
+        if nc == 0:
+            continue
+        key = (nc * cs, -nc, cs)  # most CTAs, then fewest clusters per request
+        if best is None or key > best[0]:
+            best = (key, nc * cs, cs)
+    if best is None:  # more groups than resident clusters: one CTA per group and wave
+        return 1, 1
+    return best[1], best[2]
 
 
-def _tune_attention_portfolio(state, flush, device):
-    plan = {}
-    if not _attn_port_hopper(device):
-        for b in (1, 16, 32):
-            for q_len in (1, 8):
-                for window in (2048, 0):
-                    key = (b, q_len, bool(window)); plan[key] = ('layer', None)
-                    print(f'ATTN_PORT_TUNE batch={b} q_len={q_len} window={window} '
-                          'selected=layer portable_sm120_standin', flush=True)
-        return plan
-    import time
-    started = time.monotonic()
-    deadline = min(started + 285, state.get('_merge_deadline', float('inf')))
-    for batch in (1, 16, 32):
-        for q_len in (1, 8):
-            for window in (2048, 0):
-                if time.monotonic() > deadline:
-                    print(f'ATTN_PORT_TUNE_STOP elapsed={time.monotonic()-started:.1f}s', flush=True)
-                    return plan
-                qkv, data = _attn_port_synthetic(batch, q_len, window, device)
-                try:
-                    reference = _attn_port_variant(qkv, data, state, ('fa3', (0, None)))
-                    torch.cuda.synchronize(device)
-                except Exception as exc:
-                    print(f'ATTN_PORT_REFERENCE_REJECT batch={batch} q_len={q_len} window={window} '
-                          f'reason={str(exc).splitlines()[0][:120]}', flush=True)
-                    reference = None
-                timings = []
-                for label, setting in _attn_port_candidates(q_len):
-                    choice = (label, setting)
-                    try:
-                        fn = lambda choice=choice: _attn_port_variant(qkv, data, state, choice)
-                        actual = fn(); torch.cuda.synchronize(device)
-                        if reference is not None:
-                            rel = float(((actual.float() - reference.float()).norm() /
-                                         reference.float().norm().clamp_min(1e-12)).item())
-                        else:
-                            rel = 0.0
-                        if not torch.isfinite(actual).all().item() or rel > .03:
-                            print(f'ATTN_PORT_REJECT batch={batch} q_len={q_len} window={window} '
-                                  f'choice={choice} rel={rel:.5g}', flush=True)
-                            continue
-                        us = _measure_graph(fn, flush, repeats=3)
-                        timings.append((us, choice, rel))
-                        print(f'ATTN_PORT_SHAPE batch={batch} q_len={q_len} window={window} '
-                              f'choice={choice} us={us:.2f} rel={rel:.5g}', flush=True)
-                    except Exception as exc:
-                        print(f'ATTN_PORT_REJECT batch={batch} q_len={q_len} window={window} '
-                              f'choice={choice} reason={str(exc).splitlines()[0][:140]}', flush=True)
-                key = (batch, q_len, bool(window))
-                if timings:
-                    best = min(timings, key=lambda z: z[0]); plan[key] = best[1]
-                    print(f'ATTN_PORT_PLAN batch={batch} q_len={q_len} window={window} '
-                          f'best={best[1]} us={best[0]:.2f} accepted={len(timings)} '
-                          f'candidates={len(_attn_port_candidates(q_len))}', flush=True)
-                else:
-                    plan[key] = ('layer', None)
-                    print(f'ATTN_PORT_PLAN batch={batch} q_len={q_len} window={window} '
-                          'fallback=layer reason=no_valid_variant', flush=True)
-                # Preserve tensors captured by the per-choice graph closures.
-                torch.cuda.empty_cache()
-    return plan
+# The control and optional portfolios share one state and one timed layer graph.
 
 
-# Save the cost candidate's complete path; this final dispatcher only changes the
-# attention choice and leaves the MoE/projection/glue portfolio intact.
-_layer_stage_attention = stage_attention
-_cost_prepare = prepare
-_cost_kernel = kernel_fn
-
-
-def stage_attention(qkv, data, state):
-    cfg = data['config']
-    key = (cfg['batch'], cfg['q_len'], bool(cfg['window']))
-    choice = state.get('attention_plan', {}).get(key, ('layer', None))
-    return _attn_port_variant(qkv, data, state, choice)
-
-
-def prepare(weights):
-    started = _dp_time.monotonic()
-    state = _BASE_PREPARE(weights)
-    device = weights['qkv_gate'].device
-    state['_merge_deadline'] = started + 285.0
-    flush = torch.empty((256 << 20,), dtype=torch.uint8, device=device)
-    # One combined prepare budget: attention owns the large Hopper sweep, then
-    # the projection port gets a bounded window and the remaining glue families
-    # either tune or retain their validated defaults.
-    state['attention_plan'] = _tune_attention_portfolio(state, flush, device)
-    state['_tune_deadline'] = min(state['_merge_deadline'], _dp_time.monotonic() + 75.0)
-    state['proj_plan'] = _tune_projections(state, flush, device)
-    remaining = state['_merge_deadline'] - _dp_time.monotonic()
-    if remaining > 12.0:
-        state['pdl_plan'] = _tune_pdl(state, flush, device)
-    else:
-        state['pdl_plan'] = {}
-        print(f'MERGE_BUDGET skip=PDL remaining={remaining:.1f}s', flush=True)
-    state['moe_plan'] = _tune_moe(state, device)
-    remaining = state['_merge_deadline'] - _dp_time.monotonic()
-    if remaining > 20.0:
-        state['prefix_plan'] = _tune_prefix(state, flush, device)
-    else:
-        state['prefix_plan'] = {}
-        print(f'MERGE_BUDGET skip=PREFIX remaining={remaining:.1f}s', flush=True)
-    remaining = state['_merge_deadline'] - _dp_time.monotonic()
-    if remaining > 20.0:
-        state['persistent_plan'] = _tune_persistent(state, flush, device)
-    else:
-        state['persistent_plan'] = {}
-        print(f'MERGE_BUDGET skip=PERSIST remaining={remaining:.1f}s', flush=True)
-    del flush
-    torch.cuda.synchronize(device)
-    print(f'MERGE_PREPARE elapsed={_dp_time.monotonic()-started:.2f}s remaining={state["_merge_deadline"]-_dp_time.monotonic():.1f}s', flush=True)
-    return state
-
-# merge2: preserve the V9 small-shape critical path.  The union receipt showed that
-# cuBLAS/cuBLASLt pool_router at T<=32 adds a separate nvjet + split-K reduction launch
-# (+~24 us) even when its isolated projection timer is lower.  The layer-level V9 GEMV
-# path is the H200-proven control for these shapes.
-_MERGE2_BASE_PREPARE = prepare
-_MERGE2_BASE_KERNEL = kernel_fn
-
-
-def prepare(weights):
-    state = _MERGE2_BASE_PREPARE(weights)
-    # Per-shape H200 evidence currently available: V9 is the control for every shape.
-    # Keep the merged source's kernels resident for receipt-guided additions, but do
-    # not dispatch an unverified variant into the scored graph.
-    names = ('qkv_gate', 'o', 'pool_router', 'unpooler_slice', 'unpooler')
-    for t in (1, 8, 16, 32, 128, 256):
-        for name in names:
-            if name == 'unpooler_slice' and t > 8 or name == 'unpooler' and t <= 8:
-                continue
-            state.setdefault('proj_plan', {})[(t, name)] = 'custom'
-    # The union profile found no accepted prefix/persistent winner that beats V9.
-    # Leave optional paths out until pending receipts prove a complete-layer gain.
-    state['prefix_plan'] = {}
-    state['persistent_plan'] = {}
-    state['pdl_plan'] = {}
-    # Until pending receipts land, use the V9 attention path at every scored shape.
-    state['attention_plan'] = {}
-    print('MERGE2_V9_CONTROL projections=custom T=1,8,16,32,128,256 prefix=off persistent=off attention=V9', flush=True)
-    return state
-
-# --------------------------------------------------------------------------------------------
-# Best-of-measured portfolio (final dispatcher).
-#
-# The old merge2 wrapper ran the prefix/persistent experiments after the cost
-# tuner and could dispatch an unverified branch.  This candidate starts from
-# the V9 state, keeps the cost projection tuner and corrected attention
-# portfolio, and leaves the proven V9 graph as the fallback at every shape.
-# --------------------------------------------------------------------------------------------
-_BEST_BASE_PREPARE = _BASE_PREPARE
-_BEST_TOKENS = (1, 8, 16, 32, 128, 256)
-_BEST_NAMES = ("qkv_gate", "o", "pool_router", "unpooler_slice", "unpooler")
-_BEST_PREFIX_SMEM_LIMIT = 232448
-
-# The Lt extension is compiled on Hopper as well as the portable screen image.
-# getCurrentCUDAStream is declared by this header; without it the judge's
-# sm_90a compile fails before prepare can reject Lt.
-LT_CUDA_SRC = LT_CUDA_SRC.replace(
-    "#include <torch/extension.h>\n#include <cublasLt.h>",
-    "#include <torch/extension.h>\n#include <ATen/cuda/CUDAContext.h>\n#include <cublasLt.h>",
-    1,
-)
+def _projection_consumer(x, w, name, state, variant, out_dtype):
+    """Time the projection with its real reduction/norm consumer."""
+    p = _project_variant(x, w, name, state, variant, out_dtype)
+    t = x.shape[0]
+    if name == 'qkv_gate':
+        return qk_prep(p, state['_proj_data'], state, q_fp8=True)
+    sync = (torch.zeros((t, 4), device=x.device), torch.zeros((t,), device=x.device, dtype=torch.int32))
+    if name == 'pool_router':
+        return route_and_norm(p, state, state['_proj_data'], sync)
+    if name == 'o':
+        return boundary(p, state['_proj_stream'], state['alpha1'], state['beta1'], state['pre_ffn_w'], sync)
+    return boundary(p, state['_proj_stream'], state['alpha2'], state['beta2'], state['next_pre_attn_w'],
+                    sync, postw=state['post_ffn_w'])
 
 
 def _seed_v9_gemv_choices(state):
-    """Restore V9's measured custom tile choices before proxy tuning.
-
-    The projection tuner may replace these entries with cublas/Lt per shape;
-    retaining the seed matters when a proxy is rejected and the V9 path is the
-    fallback.  Pool/router stays custom for T <= 32 because the union profile
-    showed an extra nvjet + split-K reduction launch in the complete graph.
-    """
+    # V9 receipt 0e94268: these are the tile winners, before optional cost tuning.
     _GEMV_CHOICES.clear()
-    for t in _BEST_TOKENS:
-        for name in _BEST_NAMES:
-            if name == "unpooler_slice" and t > SLICED_MAX_TOKENS:
+    for t in (1, 8, 16, 32):
+        for name in ('qkv_gate', 'o', 'pool_router', 'unpooler_slice', 'unpooler'):
+            if name == 'unpooler_slice' and t > 8 or name == 'unpooler' and t <= 8:
                 continue
-            if name == "unpooler" and t <= SLICED_MAX_TOKENS:
-                continue
-            w = state[name]
-            n, k = w.shape
-            if t > GEMV_MAX_T:
-                continue
-            if name == "qkv_gate":
+            n, k = state[name].shape
+            if name == 'qkv_gate':
                 choice = (32, 1024, 128, False) if t <= 16 else (64, 512, 128, False)
-            elif name == "o":
-                choice = (64, 512, 128, False)
-            elif name == "pool_router":
-                choice = (32, 1024, 128, False) if t <= 8 else (64, 512, 128, False)
-            elif name == "unpooler_slice":
-                choice = (64, 512, 128, False)
+            elif name == 'pool_router':
+                choice = (32, 1024, 128, False) if t <= 16 else (64, 512, 128, False)
+            elif name == 'unpooler':
+                choice = 'cublas'
             else:
-                choice = "cublas" if t <= 32 else (64, 2048, 128, False)
+                choice = (64, 512, 128, False)
             _GEMV_CHOICES[(t, n, k)] = choice
 
 
-def _best_prefix_plan():
-    # The fused prefix's largest tiles exceeded the judge's 232,448-byte
-    # opt-in limit in the prior merge.  Keep the regular graph until a tiled
-    # implementation is measured; this is a shape-safe choice, not a silent
-    # fallback in kernel_fn.
-    print(f"PREFIX_LIMIT bytes={_BEST_PREFIX_SMEM_LIMIT} fused=disabled reason=tile_not_fit", flush=True)
-    return {}
+def _attention_reference(qkv, data, fp8_query=False):
+    """Independent FP32 attention after cache store, used only on synthetic prepare inputs."""
+    raw = _attn_port_raw(qkv, data).float()
+    cfg = data['config']; batch, length = cfg['batch'], cfg['q_len']
+    q = raw[..., :Q_SIZE].reshape(batch, length, HQ, HD)
+    q = q * torch.rsqrt(q.square().mean(-1, keepdim=True) + RMS_EPS)
+    if cfg['rope_theta']:
+        angle = data['positions'].float().reshape(batch, length, 1, 1) * _inv_freq(cfg['rope_theta'], raw.device)
+        even, odd = q[..., ::2], q[..., 1::2]
+        q = torch.stack((even * angle.cos() - odd * angle.sin(),
+                         even * angle.sin() + odd * angle.cos()), -1).flatten(-2)
+    if fp8_query:
+        q = q.to(FP8).float() * cfg['qk_scale_factor']
+    else:
+        q = (q * cfg['qk_scale_factor']).to(torch.bfloat16).float()
+    gate = raw[..., GATE_OFF:].reshape(batch, length, HQ, HD).sigmoid()
+    out = torch.empty_like(q)
+    kflat = data['k_cache'].view(-1, HKV, HD)
+    vflat = data['v_cache'].view(-1, HKV, HD)
+    # All synchronization and input-dependent indexing here are on prepare's own synthetic data.
+    for b in range(batch):
+        seq = int(data['seq_lens'][b].item())
+        for j in range(length):
+            end = seq + j + 1
+            begin = max(0, end - cfg['window']) if cfg['window'] else 0
+            at = torch.arange(begin, end, device=raw.device)
+            rows = data['page_table'][b, at // cfg['page_size']].long() * cfg['page_size'] + at % cfg['page_size']
+            k = kflat[rows].float() * data['k_scale']
+            v = vflat[rows].float() * data['v_scale']
+            logits = torch.einsum('hgd,shd->hgs', q[b,j].view(HKV, HQ // HKV, HD), k) * cfg['sm_scale']
+            y = torch.einsum('hgs,shd->hgd', logits.softmax(-1), v).reshape(HQ, HD)
+            out[b,j] = y * torch.rsqrt(y.square().mean(-1, keepdim=True) + RMS_EPS) * gate[b,j]
+    return out.reshape(batch * length, Q_SIZE).to(torch.bfloat16)
 
 
-def _best_attention_plan(state, flush, device):
-    # The portfolio itself is Hopper-only; local sm_120 gets the tested layer
-    # stand-in and never attempts a Hopper extension.
-    try:
-        return _tune_attention_portfolio(state, flush, device)
-    except Exception as exc:
-        print(f"ATTN_PORTFOLIO_REJECT reason={str(exc).splitlines()[0][:140]}", flush=True)
-        plan = {}
-        for b in (1, 16, 32):
-            for q_len in (1, 8):
-                for window in (2048, 0):
-                    plan[(b, q_len, bool(window))] = ("layer", None)
+def _attention_agrees(actual, ref, rounded):
+    ref = ref.float(); got = actual.float()
+    norm = ref.norm().clamp_min(1e-12)
+    round_error = (rounded.float() - ref).norm() / norm
+    # Same query-rounding principle as the external checker, with 20% margin.
+    bound = .8 * max(.03, min(.15, 2.5 * float(round_error)))
+    err = float((got - ref).norm() / norm)
+    row_norm = ref.norm(dim=-1).clamp_min(.1 * float(ref.norm(dim=-1).mean()))
+    worst = float(((got - ref).norm(dim=-1) / row_norm.clamp_min(1e-12)).max())
+    return bool(torch.isfinite(got).all()) and err <= bound and worst <= 5 * bound, err, bound
+
+
+def _attention_store_agrees(qkv, data):
+    raw = _attn_port_raw(qkv,data).float()
+    cfg = data['config']
+    k = raw[...,Q_SIZE:Q_SIZE+KV_SIZE].reshape(-1,HKV,HD)
+    k = k * torch.rsqrt(k.square().mean(-1,keepdim=True) + RMS_EPS)
+    if cfg['rope_theta']:
+        angle = data['positions'].float()[:,None,None] * _inv_freq(cfg['rope_theta'],raw.device)
+        even,odd = k[...,::2],k[...,1::2]
+        k = torch.stack((even*angle.cos()-odd*angle.sin(),even*angle.sin()+odd*angle.cos()),-1).flatten(-2)
+    v = raw[...,Q_SIZE+KV_SIZE:GATE_OFF].reshape(-1,HKV,HD)
+    for name,value,scale in (('k_cache',k,data['k_scale']),('v_cache',v,data['v_scale'])):
+        expected=(value/scale).to(FP8).float()
+        actual=data[name].view(-1,HKV,HD)[data['cache_loc']].float()
+        err=float((actual-expected).norm()/expected.norm().clamp_min(1e-12))
+        if not torch.isfinite(actual).all() or err>.08:
+            raise ValueError(f'{name} store error {err:.5f} exceeds 8%')
+
+
+def _tune_attention_portfolio(state, flush, device):
+    plan = {(b,l,w): ('layer',None) for b in (1,16,32) for l in (1,8) for w in (True,False)}
+    if not _attn_port_hopper(device):
+        print('ATTN_PORT portable control; Hopper families exercised by dev/verify_best.py', flush=True)
         return plan
+    # Compile each native family once. No missing function can disappear behind an optional reject.
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        compiles = (pool.submit(_attn_port_ext), pool.submit(_attn_port_xext,'warp'),
+                    pool.submit(_attn_port_xext,'group'), pool.submit(_attn_port_p8ext))
+        for result in compiles:
+            result.result()
+    # Validate each setting at both short and window-crossing contexts. Reference
+    # reads the entries written by that variant, matching the judge's store ordering.
+    for length in (1,8):
+        admitted = []
+        for choice in _attn_port_candidates(length):
+            try:
+                errors = []
+                for window, ctx in ((0,257),(2048,2305)):
+                    qkv, data = _attn_port_synthetic(1,length,window,device,ctx)
+                    got = _attn_port_variant(qkv,data,state,choice)
+                    _attention_store_agrees(qkv,data)
+                    ref = _attention_reference(qkv,data)
+                    rounded = _attention_reference(qkv,data,True)
+                    ok, err, bound = _attention_agrees(got,ref,rounded)
+                    if not ok:
+                        raise ValueError(f'FP32 err={err:.5f} bound={bound:.5f} window={window}')
+                    errors.append(round(err,5))
+                admitted.append(choice)
+                print(f'ATTN_PORT_ADMIT q={length} choice={choice} error={errors}',flush=True)
+            except Exception as exc:
+                print(f'ATTN_PORT_REJECT q={length} choice={choice} reason={str(exc).splitlines()[0][:150]}',flush=True)
+        if ('layer',None) not in admitted:
+            raise RuntimeError(f'V9 attention control failed independent FP32 gate at q={length}')
+        for batch in (32,16,1):
+            for window in (0,2048):
+                qkv,data = _attn_port_synthetic(batch,length,window,device)
+                scores=[]
+                for choice in admitted:
+                    fn=lambda qkv=qkv,data=data,choice=choice: _attn_port_variant(qkv,data,state,choice)
+                    us=_measure_graph(fn,flush,repeats=3)
+                    scores.append((us,choice))
+                us, choice=min(scores,key=lambda x:x[0])
+                plan[(batch,length,bool(window))]=choice
+                print(f'ATTN_PORT_PLAN b={batch} q={length} window={window} best={choice} us={us:.3f}',flush=True)
+    return plan
+
+
+def _tune_prefix(state,flush,device):
+    plan={}
+    for t in _TUNE_TOKENS:
+        stream=torch.randn((t,HIDDEN),device=device,dtype=torch.float32)
+        attn=torch.randn((t,Q_SIZE),device=device,dtype=torch.bfloat16)
+        data={'local_start':torch.zeros((),device=device,dtype=torch.int32),'config':{'tokens':t}}
+        pdl=state['pdl_plan'].get((t,'b1'),True)
+        regular=lambda: _prefix_variant(attn,stream,state,data,'regular',pdl)
+        ref=regular()
+        scores=[(_measure_graph(regular,flush),('regular',pdl))]
+        for enabled in (False,True):
+            fn=lambda enabled=enabled: _prefix_variant(attn,stream,state,data,'fused',enabled)
+            try:
+                for seed in range(2):
+                    if seed:
+                        attn.copy_(torch.randn_like(attn));stream.copy_(torch.randn_like(stream));ref=regular()
+                    got=fn()
+                    for i,(a,b) in enumerate(zip(got,ref)):
+                        if not a.is_floating_point():
+                            if not torch.equal(a,b):raise ValueError(f'route ids differ at field {i}')
+                        elif not torch.isfinite(a).all() or float((a.float()-b.float()).norm()/b.float().norm().clamp_min(1e-12))>.01:
+                            raise ValueError(f'prefix field {i} exceeds 1% control guard')
+                scores.append((_measure_graph(fn,flush),('fused',enabled)))
+            except Exception as exc:
+                print(f'PREFIX_REJECT t={t} pdl={enabled} reason={str(exc).splitlines()[0][:130]}',flush=True)
+        us,choice=min(scores,key=lambda x:x[0]);plan[t]=choice
+        print(f'PREFIX_TUNE t={t} best={choice} us={us:.3f} all={scores}',flush=True)
+    return plan
+
+
+def stage_attention(qkv,data,state):
+    cfg=data['config'];key=(cfg['batch'],cfg['q_len'],bool(cfg['window']))
+    return _attn_port_variant(qkv,data,state,state['attention_plan'].get(key,('layer',None)))
+
+
+def kernel_fn(data,state):
+    t=data['config']['tokens'];dev=data['stream'].device
+    sync=(torch.empty if _chunks(t)==1 else torch.zeros)((15*t,),device=dev,dtype=torch.int32)
+    si=sync[:3*t].view(3,t);sf=sync[3*t:].view(torch.float32).view(3,t,4)
+    qkv=project(data['attn_input'],state['qkv_gate'],'qkv_gate',state)
+    attn=stage_attention(qkv,data,state)
+    prefix,pdl=state['prefix_plan'].get(t,('regular',state['pdl_plan'].get((t,'b1'),True)))
+    if prefix=='fused':
+        counters=torch.zeros((triton.cdiv(t,32),),device=dev,dtype=torch.int32)
+        pr,stream1=o_and_pool(attn,data['stream'],state,counters,use_pdl=pdl)
+    else:
+        a=project(attn,state['o'],'o',state)
+        h,stream1=boundary(a,data['stream'],state['alpha1'],state['beta1'],state['pre_ffn_w'],(sf[0],si[0]),use_pdl=pdl)
+        pr=project(h,state['pool_router'],'pool_router',state,out_dtype=torch.float32)
+    x,ids,wts,lids=route_and_norm(pr,state,data,(sf[1],si[1]))
+    moe=experts_v9(x,wts,lids,state)
+    name='unpooler_slice' if t<=SLICED_MAX_TOKENS else 'unpooler'
+    f=project(moe,state[name],name,state)
+    hidden,stream2=boundary(f,stream1,state['alpha2'],state['beta2'],state['next_pre_attn_w'],
+                           (sf[2],si[2]),postw=state['post_ffn_w'],use_pdl=state['pdl_plan'].get((t,'b2'),True))
+    return hidden,stream2,ids
 
 
 def prepare(weights):
-    started = _dp_time.monotonic()
-    state = _BEST_BASE_PREPARE(weights)
-    device = weights["qkv_gate"].device
+    import time
+    started=time.monotonic()
+    state=_prepare_weights(weights)
+    phases={'weights':time.monotonic()-started}
+    device=weights['qkv_gate'].device
     _seed_v9_gemv_choices(state)
-    # Keep a 220-second soft budget so compiles and the final validation sync
-    # have headroom under the judge's 300-second prepare limit.
-    state["_merge_deadline"] = started + 220.0
-    state["_tune_deadline"] = min(state["_merge_deadline"], _dp_time.monotonic() + 75.0)
-    flush = torch.empty((256 << 20,), dtype=torch.uint8, device=device)
-    state["proj_plan"] = _tune_projections(state, flush, device)
-    # Union's complete-graph evidence overrides isolated proxy timings only for
-    # pool/router at small T.  Other cost_v9 choices remain eligible.
-    for t in (1, 8, 16, 32):
-        state["proj_plan"][(t, "pool_router")] = "custom"
-    state["attention_plan"] = _best_attention_plan(state, flush, device)
-    # V9's PDL is the correctness-proven default.  Keep the cost tuner's
-    # per-boundary plan only when its local test produced an entry.
-    try:
-        state["pdl_plan"] = _tune_pdl(state, flush, device)
-    except Exception as exc:
-        print(f"PDL_TUNE_REJECT reason={str(exc).splitlines()[0][:120]}", flush=True)
-        state["pdl_plan"] = {}
-    state["moe_plan"] = {m: "v9" for m in _BEST_TOKENS}
-    state["prefix_plan"] = _best_prefix_plan()
-    state["persistent_plan"] = {}
-    del flush
+    flush=torch.empty(256<<20,device=device,dtype=torch.uint8)
+    state['proj_plan']=_tune_projections(state,flush,device)
+    _tune_measured_lt(state,flush,device)
+    phases['projections']=time.monotonic()-started-sum(phases.values())
+    state.pop('_proj_data',None);state.pop('_proj_stream',None)
+    state['attention_plan']=_tune_attention_portfolio(state,flush,device)
+    phases['attention']=time.monotonic()-started-sum(phases.values())
+    state['pdl_plan']=_tune_pdl(state,flush,device)
+    state['prefix_plan']=_tune_prefix(state,flush,device)
+    phases['pdl_prefix']=time.monotonic()-started-sum(phases.values())
     torch.cuda.synchronize(device)
-    elapsed = _dp_time.monotonic() - started
-    print(f"BEST_PREPARE elapsed={elapsed:.2f}s budget=220.0s", flush=True)
-    # Last lines are intentionally compact: a receipt's log_tail retains the
-    # selected path for every scored shape.
-    for b in (1, 16, 32):
-        for q_len in (1, 8):
-            for window in (2048, 0):
-                key = (b, q_len, bool(window))
-                print(f"BEST_SHAPE b={b} q={q_len} window={window} attention={state['attention_plan'].get(key, ('layer', None))}", flush=True)
-    for t in _BEST_TOKENS:
-        proj = {name: state["proj_plan"].get((t, name), "n/a") for name in _BEST_NAMES
-                if not (name == "unpooler_slice" and t > 8 or name == "unpooler" and t <= 8)}
-        print(f"BEST_PROJ t={t} {proj} moe=v9 prefix=off", flush=True)
+    elapsed=time.monotonic()-started
+    print(f'BEST_PREPARE elapsed={elapsed:.3f}s hard_limit=300s',flush=True)
+    print(f'BEST_PHASES seconds={phases}',flush=True)
+    for batch in (1,16,32):
+        for length in (1,8):
+            t=batch*length
+            proj={name:state['proj_plan'].get((t,name),'custom') for name in
+                  ('qkv_gate','o','pool_router','unpooler_slice' if t<=8 else 'unpooler')}
+            for window in (2048,0):
+                key=(batch,length,bool(window))
+                print(f'BEST_SHAPE b={batch} q={length} window={window} attn={state["attention_plan"].get(key,("layer",None))} '
+                      f'proj={proj} prefix={state["prefix_plan"][t]} '
+                      f'pdl={tuple(state["pdl_plan"][(t,p)] for p in ("b1","b2"))} moe=v9',flush=True)
     return state
+
+
+# Projection shortlist from H200 lab 596b2a5d436e4fee. Exact layouts and algorithm order.
+import ctypes as ct
+class _PgNative:
+    def __init__(self, path):
+        self.lib = ct.CDLL(path)
+        P, I, S = ct.c_void_p, ct.c_int, ct.c_size_t
+        self.lib.lean_error_string.restype = ct.c_char_p
+        self.lib.pg_algo_bytes.restype = I
+        self.algo_bytes = self.lib.pg_algo_bytes()
+        self.lib.all_lt_options.argtypes = [I] * 6 + [S, P, I, ct.POINTER(I), ct.POINTER(I)]
+        self.lib.all_lt_run.argtypes = [P] * 5 + [I] * 8 + [S, P]
+
+    def check(self, status):
+        if status:
+            raise RuntimeError(self.lib.lean_error_string().decode())
+
+    def options(self, m, n, k, nn, fp32, workspace):
+        codes = torch.empty((65536, self.algo_bytes), dtype=torch.uint8)
+        count, heuristics = ct.c_int(), ct.c_int()
+        self.check(self.lib.all_lt_options(n, m, k, n if nn else k, nn, int(fp32),
+                    workspace, codes.data_ptr(), len(codes), ct.byref(count), ct.byref(heuristics)))
+        return codes[:count.value].clone(), heuristics.value
+
+    def run(self, x, w, out, workspace, codes, index, nn, fp32):
+        if not 0 <= index < len(codes):
+            raise ValueError('unprepared Lt ordinal')
+        self.check(self.lib.all_lt_run(w.data_ptr(), x.data_ptr(), out.data_ptr(),
+                    workspace.data_ptr(), codes.data_ptr(), out.shape[1], x.shape[0], x.shape[1],
+                    w.stride(0), nn, int(fp32), index, 0, workspace.numel(),
+                    torch.cuda.current_stream(x.device).cuda_stream))
+
+
+PG_RAW = r'''
+
+#include <cuda_runtime.h>
+#include <cublasLt.h>
+#include <cstring>
+#include <string>
+#include <initializer_list>
+static thread_local std::string pg_error;
+extern "C" const char* lean_error_string(){return pg_error.c_str();}
+static int lean_fail(const char* msg,int code){pg_error=std::string(msg)+": "+std::to_string(code);return code ? code : -1;}
+#define LEAN_LT(expr) do {auto s=(expr);if(s!=CUBLAS_STATUS_SUCCESS)return lean_fail(#expr,(int)s);} while(0)
+static thread_local cublasLtHandle_t lean_lt_handle=nullptr;
+static int lean_lt_init(){if(!lean_lt_handle){LEAN_LT(cublasLtCreate(&lean_lt_handle));}return 0;}
+extern "C" int pg_algo_bytes(){return sizeof(cublasLtMatmulAlgo_t);}
+// All returned cuBLASLt heuristics, plus checked explicit split-K configurations.
+#include <cstdlib>
+struct AllLtStorage {void* rows=nullptr;void* algorithms=nullptr;~AllLtStorage(){std::free(rows);std::free(algorithms);}};
+struct AllLtLayout {
+  cublasLtMatmulDesc_t op=nullptr;
+  cublasLtMatrixLayout_t a=nullptr,b=nullptr,c=nullptr;
+  int init(int n,int m,int k,int stride,int nn,int kind) {
+    cudaDataType_t in=kind==2 ? CUDA_R_32F : CUDA_R_16BF;
+    cudaDataType_t out=kind ? CUDA_R_32F : CUDA_R_16BF;
+    LEAN_LT(cublasLtMatmulDescCreate(&op,kind==2 ? CUBLAS_COMPUTE_32F_PEDANTIC : CUBLAS_COMPUTE_32F,CUDA_R_32F));
+    cublasOperation_t ta=nn ? CUBLAS_OP_N : CUBLAS_OP_T;
+    LEAN_LT(cublasLtMatmulDescSetAttribute(op,CUBLASLT_MATMUL_DESC_TRANSA,&ta,sizeof(ta)));
+    LEAN_LT(cublasLtMatrixLayoutCreate(&a,in,nn ? n : k,nn ? k : n,stride));
+    LEAN_LT(cublasLtMatrixLayoutCreate(&b,in,k,m,k));
+    LEAN_LT(cublasLtMatrixLayoutCreate(&c,out,n,m,n));
+    return 0;
+  }
+  ~AllLtLayout(){if(op)cublasLtMatmulDescDestroy(op);if(a)cublasLtMatrixLayoutDestroy(a);if(b)cublasLtMatrixLayoutDestroy(b);if(c)cublasLtMatrixLayoutDestroy(c);}
+};
+extern "C" int all_lt_options(int n,int m,int k,int stride,int nn,int kind,size_t workspace,
+                              void* codes,int capacity,int* count,int* heuristic_count) {
+  int err=lean_lt_init();if(err)return err;
+  AllLtLayout l;err=l.init(n,m,k,stride,nn,kind);if(err)return err;
+  cublasLtMatmulPreference_t pref;LEAN_LT(cublasLtMatmulPreferenceCreate(&pref));
+  auto s=cublasLtMatmulPreferenceSetAttribute(pref,CUBLASLT_MATMUL_PREF_MAX_WORKSPACE_BYTES,&workspace,sizeof(workspace));
+  if(s!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt preference",(int)s);}
+  int requested=64,got=0;
+  AllLtStorage storage;
+  storage.rows=std::calloc(capacity,sizeof(cublasLtMatmulHeuristicResult_t));
+  storage.algorithms=std::calloc(capacity,sizeof(cublasLtMatmulAlgo_t));
+  if(!storage.rows || !storage.algorithms){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt host storage",-1);}
+  auto rows=(cublasLtMatmulHeuristicResult_t*)storage.rows;
+  auto valid=(cublasLtMatmulAlgo_t*)storage.algorithms;
+  int valid_count=0;bool overflow=false;
+  do {
+
+    s=cublasLtMatmulAlgoGetHeuristic(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,pref,requested,rows,&got);
+    if(s!=CUBLAS_STATUS_SUCCESS){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt heuristics",(int)s);}
+    if(got<requested)break;
+    requested*=2;
+    if(requested>capacity){cublasLtMatmulPreferenceDestroy(pref);return lean_fail("all Lt heuristic capacity",-1);}
+  }while(true);
+  cublasLtMatmulPreferenceDestroy(pref);
+
+  auto add=[&](const cublasLtMatmulAlgo_t& algo) {
+    for(int i=0;i<valid_count;++i)if(std::memcmp(valid+i,&algo,sizeof(algo))==0)return;
+    cublasLtMatmulHeuristicResult_t checked={};
+    auto status=cublasLtMatmulAlgoCheck(lean_lt_handle,l.op,l.a,l.b,l.c,l.c,&algo,&checked);
+    if(status==CUBLAS_STATUS_SUCCESS && checked.state==CUBLAS_STATUS_SUCCESS && checked.workspaceSize<=workspace)
+      {if(valid_count==capacity)overflow=true;else valid[valid_count++]=algo;}
+  };
+  for(int i=0;i<got;++i)if(rows[i].state==CUBLAS_STATUS_SUCCESS && rows[i].workspaceSize<=workspace)add(rows[i].algo);
+  *heuristic_count=valid_count;
+  // Preserve every returned heuristic; add supported swizzles and FP32 split-K reductions.
+  const int base_count=valid_count;
+  for(int bi=0;bi<base_count;++bi) {
+    const auto base=valid[bi];
+    int32_t split_support=0;uint32_t mask=0,swizzle=0;size_t written=0;
+    LEAN_LT(cublasLtMatmulAlgoCapGetAttribute(&base,CUBLASLT_ALGO_CAP_SPLITK_SUPPORT,&split_support,sizeof(split_support),&written));
+    LEAN_LT(cublasLtMatmulAlgoCapGetAttribute(&base,CUBLASLT_ALGO_CAP_REDUCTION_SCHEME_MASK,&mask,sizeof(mask),&written));
+    LEAN_LT(cublasLtMatmulAlgoCapGetAttribute(&base,CUBLASLT_ALGO_CAP_CTA_SWIZZLING_SUPPORT,&swizzle,sizeof(swizzle),&written));
+    for(uint32_t sw=0;sw<=swizzle;++sw) {
+      auto plain=base;
+      if(cublasLtMatmulAlgoConfigSetAttribute(&plain,CUBLASLT_ALGO_CONFIG_CTA_SWIZZLING,&sw,sizeof(sw))!=CUBLAS_STATUS_SUCCESS)continue;
+      add(plain);
+      if(split_support && (mask&CUBLASLT_REDUCTION_SCHEME_COMPUTE_TYPE)) {
+        for(uint32_t split:{2u,4u,8u,16u,32u}) {
+          auto algo=plain;uint32_t scheme=CUBLASLT_REDUCTION_SCHEME_COMPUTE_TYPE;
+          if(cublasLtMatmulAlgoConfigSetAttribute(&algo,CUBLASLT_ALGO_CONFIG_SPLITK_NUM,&split,sizeof(split))!=CUBLAS_STATUS_SUCCESS)continue;
+          if(cublasLtMatmulAlgoConfigSetAttribute(&algo,CUBLASLT_ALGO_CONFIG_REDUCTION_SCHEME,&scheme,sizeof(scheme))!=CUBLAS_STATUS_SUCCESS)continue;
+          add(algo);
+        }
+      }
+    }
+  }
+  if(overflow)return lean_fail("all Lt option capacity",-1);
+  for(int i=0;i<valid_count;++i)std::memcpy((char*)codes+i*sizeof(cublasLtMatmulAlgo_t),&valid[i],sizeof(cublasLtMatmulAlgo_t));
+  *count=valid_count;return 0;
+}
+extern "C" int all_lt_run(const void* w,const void* x,void* out,void* workspace,const void* codes,
+                          int n,int m,int k,int stride,int nn,int kind,int index,int accumulate,
+                          size_t workspace_bytes,void* stream) {
+  int err=lean_lt_init();if(err)return err;
+  AllLtLayout l;err=l.init(n,m,k,stride,nn,kind);if(err)return err;
+  cublasLtMatmulAlgo_t algo;std::memcpy(&algo,(const char*)codes+index*sizeof(algo),sizeof(algo));
+  float alpha=1.f,beta=accumulate ? 1.f : 0.f;
+  auto status=cublasLtMatmul(lean_lt_handle,l.op,&alpha,w,l.a,x,l.b,&beta,out,l.c,out,l.c,&algo,
+                            workspace,workspace_bytes,(cudaStream_t)stream);
+  return status==CUBLAS_STATUS_SUCCESS ? 0 : lean_fail("all Lt run",(int)status);
+}
+
+'''
+
+
+
+_MEASURED_LT = {(256,'pool_router'):(0,0),(256,'qkv_gate'):(0,0),(256,'unpooler'):(0,0),
+                (128,'pool_router'):(0,0),(128,'qkv_gate'):(1,23),(128,'unpooler'):(1,0),(128,'o'):(1,0)}
+
+
+def _tune_measured_lt(state,flush,device):
+    if not _fa3_on_device(device):
+        return
+    import hashlib
+    import statistics
+    major,minor=torch.cuda.get_device_capability(device)
+    arch='90a' if major==9 else f'{major}{minor}'
+    tag=hashlib.sha256(PG_RAW.encode()).hexdigest()[:12]
+    path=load_inline(name=f'muse_decode_measured_lt_{tag}_{arch}',cpp_sources='',cuda_sources=PG_RAW,
+                     functions=None,is_python_module=False,no_implicit_headers=True,
+                     extra_cuda_cflags=['-O3','-std=c++20',f'-gencode=arch=compute_{arch},code=sm_{arch}'],
+                     extra_ldflags=['-lcublasLt'],verbose=False)
+    bank={'mod':_PgNative(path),'layouts':{},'workspace':torch.empty(4<<30,device=device,dtype=torch.uint8)}
+    state['measured_lt']=bank
+    for (t,name),(nn,ordinal) in _MEASURED_LT.items():
+        w=state[name];n,k=w.shape;dtype=torch.float32 if name=='pool_router' else torch.bfloat16
+        x=torch.randn((t,k),device=device,dtype=torch.bfloat16)
+        codes,_=bank['mod'].options(t,n,k,nn,dtype==torch.float32,bank['workspace'].numel())
+        if ordinal>=len(codes):
+            print(f'MEASURED_LT_REJECT t={t} name={name} nn={nn} ordinal={ordinal} unavailable',flush=True)
+            continue
+        key=(t,name,nn);bank['layouts'][key]=(w.T.contiguous() if nn else w,codes)
+        choice=('short_lt',nn,ordinal);control=state['proj_plan'][(t,name)]
+        # Three fresh independent FP32 GEMMs, plus the existing 1% projection guard.
+        try:
+            for _ in range(3):
+                x.copy_(torch.randn_like(x))
+                actual=_materialize(_project_variant(x,w,name,state,choice,dtype)).float()
+                want=torch.mm(x.float(),w.float().T)
+                if not torch.isfinite(actual).all() or float((actual-want).norm()/want.norm().clamp_min(1e-12))>.01:
+                    raise ValueError('measured Lt recipe exceeds 1% FP32 guard')
+            state['_proj_stream']=torch.randn((t,HIDDEN),device=device,dtype=torch.float32)
+            state['_proj_data']={
+                'positions':torch.arange(t,device=device,dtype=torch.int64),'cache_loc':torch.arange(t,device=device,dtype=torch.int64),
+                'k_cache':torch.empty((t,1,HKV,HD),device=device,dtype=FP8),
+                'v_cache':torch.empty((t,1,HKV,HD),device=device,dtype=FP8),
+                'k_scale':torch.ones((),device=device),'v_scale':torch.ones((),device=device),
+                'local_start':torch.zeros((),device=device,dtype=torch.int32),
+                'config':dict(tokens=t,rope_theta=ROPE_THETA,qk_scale_factor=5.4730064863875)}
+            old=lambda: _projection_consumer(x,w,name,state,control,dtype)
+            new=lambda: _projection_consumer(x,w,name,state,choice,dtype)
+            ratios=[]
+            for repeat in range(4):
+                x.copy_(torch.randn_like(x))
+                if repeat%2:
+                    after=_measure_graph(new,flush);before=_measure_graph(old,flush)
+                else:
+                    before=_measure_graph(old,flush);after=_measure_graph(new,flush)
+                ratios.append(after/before)
+            ratio=statistics.median(ratios)
+            if ratio<1.0:state['proj_plan'][(t,name)]=choice
+            print(f'MEASURED_LT t={t} name={name} recipe={choice} paired={ratio:.5f} '
+                  f'best={state["proj_plan"][(t,name)]}',flush=True)
+        except Exception as exc:
+            print(f'MEASURED_LT_REJECT t={t} name={name} reason={str(exc).splitlines()[0][:120]}',flush=True)
+    keep={(t,name,choice[1]) for (t,name),choice in state['proj_plan'].items()
+          if isinstance(choice,tuple) and choice[0]=='short_lt'}
+    bank['layouts']={key:value for key,value in bank['layouts'].items() if key in keep}
+    if not keep:
+        state.pop('measured_lt')

@@ -20,6 +20,7 @@ TARGETS = {
     "sglang.srt.speculative.dflash_worker_v2",
     "sglang.srt.managers.tp_worker",
     "sglang.srt.models.dflash",
+    "sglang.kernels.ops.muse_spark_v12.fi_trtllm_moe_finalize_with_rmsnorm_cutedsl",
 }
 active = None
 
@@ -78,6 +79,21 @@ class Loader(importlib.abc.Loader):
             ):
                 setattr(cls, name, gpu_span(name, getattr(cls, name)))
             return
+        if module.__name__.endswith("fi_trtllm_moe_finalize_with_rmsnorm_cutedsl"):
+            original = module._get_compiled_kernel
+
+            def compiled(*args, **kwargs):
+                size = len(module._compile_cache)
+                start = time.perf_counter()
+                result = original(*args, **kwargs)
+                if len(module._compile_cache) > size:
+                    log({"kind": "finalize_compile", "before": start, "tokens": args[1],
+                         "hidden": args[2], "seconds": time.perf_counter() - start,
+                         "ar_world": kwargs.get("ar_world_size", 0)})
+                return result
+
+            module._get_compiled_kernel = compiled
+            return
         cls = module.Scheduler
         original_run, original_process = cls.run_batch, cls.process_batch_result
         pending = {}
@@ -126,6 +142,7 @@ class Loader(importlib.abc.Loader):
                 a,
                 b,
                 spans,
+                batch.contains_last_prefill_chunk,
             )
             return result
 
@@ -134,12 +151,13 @@ class Loader(importlib.abc.Loader):
             enter = time.perf_counter()
             output = original_process(self, batch, result, *args, **kwargs)
             if item is not None:
-                before, launched, reqs, tokens, a, b, spans = item
+                before, launched, reqs, tokens, a, b, spans, final_prefill = item
                 # Original result processing already waits on copy_done.
                 assert b.query()
                 log(
                     {
                         "kind": "prefill",
+                    "contains_last_prefill_chunk": final_prefill,
                         "before": before,
                         "launched": launched,
                         "process_enter": enter,
@@ -178,11 +196,17 @@ class Loader(importlib.abc.Loader):
             running_count = len(running_batch.reqs)
             finished_count = sum(r.finished() for r in running_batch.reqs)
             full = running_batch.batch_is_full
+            last_mode = None if last_batch is None else str(last_batch.forward_mode)
+            queued = None if not self.result_queue else pending.get(id(self.result_queue[0][1]))
+            final_pending = queued is not None and queued[-1]
             plan = original_choose(self, running_batch, last_batch)
             batch = plan.batch_to_run
             log(
                 {
                     "kind": "choose",
+                    "last_mode_before": last_mode,
+                    "last_mode_after": None if last_batch is None else str(last_batch.forward_mode),
+                    "pending_final_prefill": final_pending,
                     "before": before,
                     "after": time.perf_counter(),
                     "waiting": waiting,

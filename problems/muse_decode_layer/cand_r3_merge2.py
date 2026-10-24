@@ -2789,6 +2789,7 @@ _GEMV_CHOICES = {}
 # --------------------------------------------------------------------------------------------
 LT_CUDA_SRC = r"""
 #include <torch/extension.h>
+#include <ATen/cuda/CUDAContext.h>
 #include <cublasLt.h>
 #include <cstring>
 namespace decode_lt {

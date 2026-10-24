@@ -82,8 +82,8 @@ def build_lab():
     chunks=['"""V9 reuse lab: exact captured router IDs plus public generator seed/fields. No decode quota."""\n',
             namespace(wide_v9(raw_v9(v)),'base_'),namespace(raw_v9(ph),'phase_'),namespace(REUSE.read_text(),'rr_'),
             namespace(fx,'fx_'),reference_generator(),f'CAPTURED_R0={pack!r}\n',
-            (HERE/'moe_v9_reuse_driver.py').read_text()]
-    out=HERE/'moe_v9_reuse.py';out.write_text('\n'.join(chunks))
+            (HERE/'moe_v9_reuse_driver.py.inc').read_text()]
+    out=HERE/'moe_v9_reuse_v2.py';out.write_text('\n'.join(chunks))
     print(out.relative_to(ROOT),hashlib.sha256(out.read_bytes()).hexdigest())
 
 
@@ -92,7 +92,7 @@ def build_candidate():
     native=namespace(wide_v9(raw_v9((ROOT/'problems/muse_moe_w4a16/cand_v9.py').read_text())),'rv_')
     extra=namespace(REUSE.read_text(),'rr_')
     fixture=namespace((ROOT/'problems/muse_decode_layer/moe_tune.py').read_text().split('\ndef _graph_time')[0],'fx_')
-    tail=(HERE/'moe_v9_reuse_dropin.py').read_text()
+    tail=(HERE/'moe_v9_reuse_dropin.py.inc').read_text()
     tail=tail.replace('_reuse_original_prepare=prepare','').replace('_reuse_original_experts=experts_v9','')
     tail=tail.replace('def prepare(weights):','def moe_reuse_prepare(weights):')
     tail=tail.replace("state=_reuse_original_prepare(weights)","state=dict(moe_bank=rv_prepare(dict(weights,post_norm_w=weights['post_expert_norm'])))")

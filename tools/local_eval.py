@@ -293,7 +293,8 @@ def hopper_compile(file: Path) -> list[dict]:
 
     Hopper-only extensions never build here, so their compile errors otherwise reach the judge
     (cand_r3_v9all 83a8a755: a missing <ATen/cuda/CUDAContext.h>). A module-level string with an
-    #include and a kernel or torch's extension header counts; one the file fills in at run time
+    #include that feeds load_inline, contains a kernel, or includes torch's extension header counts;
+    a source the file fills in at run time
     (.format/.replace/%) is skipped. Flags: torch's own for load_inline, plus the literal
     extra_cuda_cflags and extra_include_paths of the load_inline call that names the string."""
     import concurrent.futures as cf
@@ -328,7 +329,7 @@ def hopper_compile(file: Path) -> list[dict]:
         if (isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name)
                 and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)):
             name, text = n.targets[0].id, n.value.value
-            if "#include" in text and ("__global__" in text or "torch/extension.h" in text) and name not in templated:
+            if "#include" in text and (name in flags_of or "__global__" in text or "torch/extension.h" in text) and name not in templated:
                 sources.append((name, text))
     base = (["-std=c++20", "-O0", "-gencode=arch=compute_90a,code=sm_90a", "--expt-relaxed-constexpr",
              "-DTORCH_EXTENSION_NAME=hopper_check", "-DTORCH_API_INCLUDE_EXTENSION_H",

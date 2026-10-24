@@ -1,0 +1,106 @@
+{
+  "status": "awaiting_H200_receipts_not_complete",
+  "artifacts": {
+    "problems/muse_moe_w4a16/dev/v9_reuse/reuse.py": "5c45bf788450d7f9cd3cd9485712a1239a9d756ac8c5af734688067af520c229",
+    "problems/muse_moe_w4a16/dev/v9_reuse/dropin.py": "800263d7643190809210e51704540950350b97a44c8b6e3b8da30a29d2f82588",
+    "problems/muse_moe_w4a16/dev/v9_reuse/serving_raw_scales.patch": "05e14e638df3f8f2be450cb06deae6e5a9f9e60f02477fc82040ee816d3a5f1c",
+    "problems/muse_decode_layer/cand_r3_v9_reuse.py": "da9db7a5517a8aaf9c4c079f67389d9866fc99fc79ec66e9ad3db0fce7afb876",
+    "prof/lab/build_moe_v9_reuse.py": "2ba85ef763aea6be9d65f6b9e745eba56f3dd770772571681ee3f6406a437f7e",
+    "prof/lab/moe_v9_reuse_driver.py.inc": "a22b3de3cd238d1fe62f68cd0fd4a1ac8a50dbc58fa39b814d40cbb7b5bb5dc0",
+    "prof/lab/moe_v9_reuse_dropin.py.inc": "9c805235f782adcdc079b88af0b0c16aafc0d37a3000c8ad2558dd59859750d5",
+    "prof/lab/read_moe_v9_reuse.py": "64466b59f493dad289e68850721d05216007aa13eb171894bbec1befabfafa93",
+    "prof/lab/moe_v9_reuse_v1.py": "6fef39b39321b17d089e62ba41ee394a5ad1b601ebc40efaed1508c284d82b00",
+    "prof/lab/moe_v9_reuse_v2.py": "451b33dddbbd70984b591658764f9e576ba677ea60e05299c97e9bda24cbaae8",
+    "prof/lab/check_moe_v9_reuse.py": "ec1084924dc078716e7642ce4f7801066b6982513f990fcb6f9d6212e1dd2d24",
+    "prof/lab/check_moe_reuse_full_glue.py": "01d567e63148979f7a73aea5d5e4ea8afb8e6259becb24c4f9268cd7151df2f5",
+    "prof/lab/check_moe_reuse_forced_layer.py": "ed6debbc5c79f46684a9ca1b68e002a2526e4444fd7de8968e1b6b814a9dc33a",
+    "prof/lab/check_moe_router_generator.py": "44a0bfa1fc81ebcb56ea377c8d7a084e0d88fa8eebb61786f3ff2b011670e09f",
+    "prof/lab/check_moe_v9_trace.py": "5e810c0bfb32afba50ab442982c49e3216952ed4928c7c84e8d812d1ca4f959f",
+    "prof/lab/check_moe_serving_raw_scales.py": "3ddcc8cfe633b157b92bec6746e04da5b43fee21922aa0cb86b763ddc43a8565",
+    "serving/sglang/python/sglang/srt/layers/muse_spark_moe.py": "5177060dc5daa558a2580c499169957eed5fb6df9f8f1500d532aba517f945d6",
+    "serving/patch.diff": "e06b20188448804c37c5fb4bd74d4e4109fc3c0ac60b950bd58e57e9449320aa"
+  },
+  "queued_labs": [
+    {
+      "payload": "prof/lab/moe_v9_reuse_v1.py",
+      "payload_sha256": "6fef39b39321b17d089e62ba41ee394a5ad1b601ebc40efaed1508c284d82b00",
+      "host": "muse_bf16_proj",
+      "source": "problems/muse_bf16_proj/lab/lab_moe_v9_reuse_v1.py",
+      "source_sha256": "8f516be7bb7c5c00c3c3ef487c9c4c80aff4eef9bee39ab470235888d5f16023",
+      "submission_queue_key": "8f516be7bb7c5c00",
+      "judge_job_id": null,
+      "receipt_checked_after_send": false
+    },
+    {
+      "payload": "prof/lab/moe_v9_reuse_v2.py",
+      "payload_sha256": "451b33dddbbd70984b591658764f9e576ba677ea60e05299c97e9bda24cbaae8",
+      "host": "muse_bf16_proj",
+      "source": "problems/muse_bf16_proj/lab/lab_moe_v9_reuse_v2.py",
+      "source_sha256": "370b07e5e40e5ad01457eff5c5f409eca7d28634efe21adc5b6339408bea4d5c",
+      "submission_queue_key": "370b07e5e40e5ad0",
+      "judge_job_id": null,
+      "receipt_checked_after_send": false
+    }
+  ],
+  "humming_job": "fbf64bd39bde4bf6",
+  "humming_receipt_last_check": "absent_this_turn",
+  "local": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "tests": "13/13",
+    "graphs": "12/12 with 20 replays/3 inputs",
+    "static": "7/7",
+    "prepare_s": 2.9940811580163427,
+    "selected": {
+      "128": [
+        2,
+        3,
+        1
+      ],
+      "256": [
+        2,
+        3,
+        1
+      ]
+    },
+    "layer_result": "runs/screen/v9_reuse/final_layer.json",
+    "forced_reuse_result": "runs/screen/v9_reuse/final_forced.json",
+    "full_shared_glue": "4 captures/12 fresh replays, portable native stand-in",
+    "generator": "all 19 tensors byte-identical to public generate_weights(5353,router_seed=5353)",
+    "serving": "5 official tests/6 graph cases/5 static; 10 serving layer sizes 1..16384, max relative L2 0.00696, graph delta 0",
+    "trace_glue": "V9 trace14 fields, three fresh FP32-checked graphs, four register/shared phase diagnostic lines executed locally",
+    "forced_reuse": "4 scored verify layer graph cases, 20 replays/3 inputs each, same final candidate SHA"
+  },
+  "routing": {
+    "R0": "captured job26d7e05 fixture0 IDs; original generator fields were not exported",
+    "G": {
+      "weights_seed": 5353,
+      "fields": {
+        "router_seed": 5353
+      }
+    },
+    "R0_shape_metrics": {
+      "128": {
+        "pairs": 209,
+        "experts": 18,
+        "hot": 55,
+        "rowblocks8": 35,
+        "rowblocks16": 25
+      },
+      "256": {
+        "pairs": 414,
+        "experts": 21,
+        "hot": 119,
+        "rowblocks8": 62,
+        "rowblocks16": 40
+      }
+    }
+  },
+  "kernel_strings_identical_between_payload_component_candidate": true,
+  "unverified": [
+    "H200 timings/winners",
+    "full-K shared CUDA arithmetic on H200",
+    "Humming WGMMA scale cause",
+    "H200 complete-layer and serving agreement/performance"
+  ]
+}
