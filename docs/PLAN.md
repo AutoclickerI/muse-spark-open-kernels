@@ -1,6 +1,6 @@
 # Plan
 
-## Status (2026-10-24 23:50 KST)
+## Status (2026-10-24 23:35 KST)
 - G0 until the kernel close (11-05 17:00 KST, day 2 of 14): 1st on the overall kernel board (R-20261024-4). The overall
   score of every top-50 team is its decode-layer speedup, so the decode layer is the whole game until then.
 - Board (SOTA "Leaderboard", 20:24 KST): we are overall rank 164 of 811 at 1.429x (0e94268, reproduced at 1.422/1.432x on two new router seeds;

@@ -25,7 +25,7 @@ decode-layer board.
 | 100 | | 1.555 | | | |
 | **164** | **AutoclickerI (us)** | **1.429** | 1.687 | 1.184 | 1.403 |
 
-Decode board at 10-25 00:05 KST: leader 2.146x (accountforgoofystuff), 10th 1.967x, 20th 1.857x, 50th 1.734x, 100th 1.581x; we are 178th of 478 at 1.429x. At 10-24 12:30 KST the 50th score was 1.625: the field gains ~0.1x at rank 50 in twelve hours.
+Decode board at 10-24 23:35 KST: leader 2.146x (accountforgoofystuff), 10th 1.967x, 20th 1.857x, 50th 1.734x, 100th 1.581x; we are 178th of 478 at 1.429x. At 10-24 12:30 KST the 50th score was 1.625: the field gains ~0.1x at rank 50 in eleven hours.
 
 | Problem | Our best H200 run | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
