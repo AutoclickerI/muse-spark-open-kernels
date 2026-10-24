@@ -1,4 +1,29 @@
-# Decode checks — glue-only best5 handoff
+# Decode checks — best6 expert portfolio
+
+## Best6 adapter portfolio — owner holds for native H200 lab
+
+[cand_r3_best6.py](../cand_r3_best6.py), SHA-256
+`c582f3427684b69b67b13be3f1bcb9f43c68fc8b32e9556bffe4377687d85491`.
+Exact glue `99120569` plus raw17 / humming_masked / dg_w8 at M128/256 beside V9 NT1/NT2.
+Three fresh loaded-router synthetic routings, independent FP32 gates before/after cold graphs,
+and mean of three seed means choose the backend. Every optional construction, admission, timing or
+final-gate RuntimeError rejects that backend and retains measured V9 by default.
+The prefill adapter ASTs/native source are unchanged; their own packed NVFP4 layouts and reversible
+scale-byte encoding are retained. No prepared BF16/FP8 expert bank. ABI conversion and route layout
+costs are included in timing; pre-expert normalization happens exactly once.
+
+Normal final source: **13 tests, 12 graph shapes, 14 static checks** pass; raw17 gates at ~0.45% error.
+Normal and cold forced screens each pass **13 tests, 12 fresh graph shapes and 14 static checks**.
+Cold candidate prepare **174.799 s**, **176.472 s** including extra forced-family checks, below ~240 s.
+All five three-seed gates pass; maximum relative L2 **0.5432%**, worst row **0.5946%**. Full-layer target graphs
+force every alternative at both M. DeepGEMM/Humming native GEMMs use portable stand-ins; native safety is pending. **18 injected RuntimeErrors**, all setup rejection paths and expired defaults pass.
+[Best6 handoff](best6/README.md). This lane did not send it. **Owner's hold: no best6 send until the
+separate H200 R0 + 12-seed adapter lab proves native M128/256 safety**; a native abort kills the run.
+
+Receipt read this turn: best5 is check **`691bff0bcff44e99`**, still pending locally; glue **`99120569`**
+was sent by the owner at priority 0 and still has a waiting marker. Neither had stage timings to fold in.
+Glue lab queue key **`bd66426465d8b072`** remains pending at the one read. Read the landed receipts once
+on owner resume; compare per-stage values and seed means rather than one routing realization.
 
 ## P7 overlap reopen (H200 receipt 0e94268)
 
@@ -47,11 +72,25 @@ prepared stream/event path for an H200-positive o-prefetch plan. Local sm_120
 screen: 13/13 tests, 12/12 graph loads, 11/11 static checks; no overlap claim
 is made until the lab's H200 paired medians select a plan.
 
+## Standalone GEMV bandwidth lab
+
+Payload `dev/gemv_standalone_lab.py`, SHA256
+`7e3d1a522c7edfe87d3f6fc15262267fe10310d095b6214edbae18dc09c227b6`, is sent
+at priority 0.8. It measures the exact decode-1/decode-16 shapes at T=1/8/16
+with cold-L2 graph replay, cublas, every returned cuBLASLt heuristic, the
+incumbent split-K GEMV, and a 4x-CTA/8x-wave split-K control. Each compact line
+prints bytes/s, CTA count and waves. Local sm_120 is only a screen; no kernel
+winner is promoted until the H200 receipt.
+
+Local sm_120 reference points (TB/s; cublas / incumbent / more-CTA): qkv T1
+1.08/1.12/1.02, o T1 1.02/0.91/0.82, pool+router T1 1.32/1.32/1.32,
+unpool slice T1 0.68/0.68/0.59, and full unpool T16 1.17/1.24/1.17.
+
 ## Current glue candidate (owner screens/sends)
 
 [cand_r3_best5_glue.py](../cand_r3_best5_glue.py), SHA-256
 `9912056970eef92aea847fd1cb68e7426ce73df738eef739e2f63ca1837fb714`.
-This lane has **not sent this candidate**. Base is exact best5 `a651af25`.
+This lane did not send this candidate; **the owner sent it as a priority-0 decode check**. Base is exact best5 `a651af25`.
 Three PDL launches cover residual/norm boundary 1, routing + pre-expert norm, and residual/norm boundary 2.
 They replace the small-load global atomic rendezvous and eliminate the glue counter-clear launch.
 Each residual CTA owns both reductions; optional replicated statistics expose small-M parallelism without a barrier.
@@ -64,7 +103,7 @@ an independent FP32 oracle gate. NVFP4/E4M3 stays packed; no expanded expert ban
 Normal screen: **13/13 tests, 12/12 fresh graph shapes, 13/13 static checks**, prepare **7.869 s** (warm local caches).
 Forced-Hopper cold screen: **13/13 tests, 12/12 fresh graphs, 13/13 static checks**; candidate prepare **224.516 s**,
 **226.144 s** including extra forced attention-family checks. All 18 three-seed geometry comparisons completed.
-Final [glue handoff](glue/README.md) and [SHA-pinned evidence](glue/validation.json). Ready for the owner's check.
+Final [glue handoff](glue/README.md) and [SHA-pinned evidence](glue/validation.json). Sent by the owner; receipt pending at this turn's read.
 All **68** tested Hopper glue specializations compile for sm90, at most **1,024 B** shared memory.
 The separate lab gate passes three changed inputs for each geometry on sm120.
 H200 lab queue key **`bd66426465d8b072`**, source `prof/lab/decode_glue.py`, priority 1, was sent by this lane.
@@ -84,13 +123,13 @@ Full [board glue inventory](glue/PROFILE.md): board `0e94268` (1.428x), aggregat
 These include boundary x2, route/norm, separate QK preparation, norm/gate and clear, where present;
 FA3 scheduler launches are listed separately in the inventory. [Weight-storage audit](glue/BOUNDARY_AUDIT.md) also flags an unused legacy Humming scale decoder, outside the active serving dispatch. PDL GPU durations include waits and can overlap
 compute, so their sum is not exposed latency. The older cost-receipt lever table below uses different measurements and is not this board inventory.
-Best5 `a651af25` had no receipt at this turn’s one read (still local waiting row `1047930`); its stage timing
+Best5 `a651af25`, check job `691bff0bcff44e99`, had no receipt at this turn’s one read; its stage timing
 cannot yet be folded in. Read its landed receipt on the next owner resume and replace that missing evidence.
 
 ## Base best5 candidate
 
 [cand_r3_best5.py](../cand_r3_best5.py), SHA-256
-`a651af25cb44550932f497b57eb82fb32c0fbe07c1f21a8592bd0982f937c150`. This lane did not send it; **Jihoon sends it as a decode check**.
+`a651af25cb44550932f497b57eb82fb32c0fbe07c1f21a8592bd0982f937c150`. This lane did not send it; **Jihoon sent it as check `691bff0bcff44e99`**.
 Base: exact best `812f5f36`. Only MoE M32/128/256 gains a per-run V9 NT1/NT2 choice, using the loaded
 router on three fresh inputs, an independent FP32 gate before/after timing, and 12 alternating paired
 cold graph replays. The pair, ratio, gate errors and routing summary print once per M at prepare’s end.
@@ -222,7 +261,9 @@ only its H200 phase receipt remains.
 
 ## Send order
 
-For this task, the owner sends `cand_r3_best5_glue.py` at the hash above as a decode check; both final local screens pass.
+For this task, the owner sends `cand_r3_best6.py` at the hash above **only after** the separate native H200
+M128/256 R0 + twelve-seed adapter lab passes. Both final local screens pass. Base glue has already been sent
+by the owner as a priority-0 check; do not duplicate that send.
 Base best5 `a651af25` has already been re-sent by the owner as a priority-0 check; it is not being held for reset.
 The failed omni is closed. Existing holds on
 `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, both megakernel sources and overlap remain unchanged.
