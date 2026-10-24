@@ -128,7 +128,18 @@ def dp_fixture(m,old,data,state):
     picked=scores.gather(1,want_ids.long());want_wts=picked/(picked.sum(-1,keepdim=True)+1e-15)
     want_x=(m._best5_rms(p[:,:4096])*state['pre_expert_w']).bfloat16()
     want_lids=(want_ids-start)%256;want_lids=torch.where(want_lids<32,want_lids,-1).int()
-    dp_close((x,ids,wts,lids),(want_x,want_ids,want_wts,want_lids),'router FP32')
+    # The kernel sums the split-K partials in another order than this oracle, so an 8th/9th-expert near-tie
+    # can flip (the H200 run 7307be78 did): allow a flip only where those biased scores are within 1e-4.
+    # Near-ties inside the top 8 only reorder it, so compare each token's expert set with weights matched by id.
+    top9=(scores+state['router_bias']).topk(9,-1).values;gap=top9[:,7]-top9[:,8]
+    got_o=ids.long().sort(-1);want_o=want_ids.long().sort(-1)
+    same=(got_o.values==want_o.values).all(-1);flip=~same
+    if bool((flip&(gap>=1e-4)).any()):
+        raise RuntimeError(f'router FP32 route IDs differ: {int(flip.sum())}/{t} tokens, min gap among them {float(gap[flip].min()):.2e}')
+    dp_close((x,),(want_x,),'router FP32')
+    if bool(same.any()):
+        sel=lambda v,o:v.gather(1,o.indices)[same]
+        dp_close((sel(ids,got_o),sel(wts,got_o),sel(lids,got_o)),(sel(want_ids,want_o),sel(want_wts,want_o),sel(want_lids,want_o)),'router FP32')
     counts=torch.bincount(lids[lids>=0],minlength=32)
     expert=dict(hidden_states=x,topk_ids=lids,topk_weights=wts,pool_partials=pr[0],pool_splits=pr[1],
                 config=dict(local_count=32,d_hidden=4096,d_expert=4096,local_start=0))

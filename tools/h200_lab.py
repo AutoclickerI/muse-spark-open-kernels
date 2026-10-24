@@ -23,7 +23,7 @@ in a lab still waiting for a judge slot on the same host (up to MERGE_MAX payloa
 the same name is replaced by the new one), so lanes that send separately still share runs. The judge calls
 prepare once per run (llms.txt) and keeps the last 16,000 characters of output, followed by up to ~6 KB
 of profiler lines, so all lab lines together are capped at LIMIT characters, split evenly; each payload
-prints between its own LAB_BEGIN and LAB_END. An exception in a payload becomes its LAB_ERROR lines; a sticky
+prints between its own LAB_BEGIN and LAB_END; over its share, the middle lines go (the first two and the last are kept). An exception in a payload becomes its LAB_ERROR lines; a sticky
 CUDA error (lab b63389f0) still fails the run after printing them and kills the payloads after it, so put a
 risky payload last.
 
@@ -90,13 +90,18 @@ def prepare(weights):
                 torch.cuda.empty_cache()
             except BaseException as _e:  # the error is the result; a sticky CUDA error still fails the run after
                 _lines += [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
-            _out, _n = [], 0
-            for _l in _lines:
-                if _n + len(_l) + 1 > {limit} // len(_LAB_PAYLOADS):
-                    _out.append(f"LAB_TRUNCATED {{len(_lines) - len(_out)}} lines")
-                    break
-                _out.append(_l)
-                _n += len(_l) + 1
+            # Over the cap, keep the first two lines (META) and the last lines (summaries, errors) and drop the middle.
+            _cap = {limit} // len(_LAB_PAYLOADS)
+            _head, _tail, _n = _lines[:2], [], sum(len(_l) + 1 for _l in _lines[:2]) + 40
+            if sum(len(_l) + 1 for _l in _lines) > _cap:
+                for _l in reversed(_lines[2:]):
+                    if _n + len(_l) + 1 > _cap:
+                        break
+                    _tail.insert(0, _l)
+                    _n += len(_l) + 1
+                _out = _head + [f"LAB_TRUNCATED {{len(_lines) - 2 - len(_tail)}} middle lines"] + _tail
+            else:
+                _out = _lines
             print(f"LAB_BEGIN {{_name}} {{_sha}}", flush=True)
             for _l in _out:
                 print(_l, flush=True)
