@@ -1,30 +1,30 @@
 # Projection lane focus (P7 / G3)
 
-GPU0. Decode-layer projections and glue rank above serving-only work until
-the close. Target >=3.5 TB/s cold projections and <=6 us glue, M=1-256.
+GPU0 owns decode M1-32 and glue. Serving lane owns verify dense M64-256,
+with M8 control; its handoff is `dev/verify_streaming/README.md`.
 
-## Pending H200 evidence
 
-`dev/streaming_glue_lab.py`: send key **552621abdd6a86a3**, prefill host
-cb8939d0980a4cc3, priority 0.5. Thirty stage keys and twelve dependent-chain
-pairs cover scalar/vector consumers, direct/distributed RMS, both pre-FFN
-placements and split-K1/2/4. One launch per fused projection; FP32 router hi/lo.
-Compare against cuBLAS+glue and identical GEMV+separate glue, cold256MiB/20 pairs.
-Payload SHA256: `8ec41783b2300e77a48e456124aa7502a89731c0dcbad3bdfd643d45b7feb188`.
+H200 `feb7b287e3464e4a`: M1 streaming GEMV matches its plain-read control
+(~2.0-2.5TB/s raw), beats cuBLAS only at M1, loses at every M>=8. This shifts
+P7 toward overlap; it is a measured implementation envelope, not a proof.
+Best6's small-M custom recipes explicitly disable own-weight prefetch, despite
+its global True default; PDL is on. `dev/l2_overlap/PROFILE_MAP.md` maps roles,
+activity durations/floors, grouped-profile ambiguities and missing M1 geometry.
 
-Earlier standalone `dev/streaming_gemv_lab.py` was rehosted on prefill with
-send key b1047d984f6c5437; no receipt at this turn's lookup. Original proj
-send d962f665 was quota-blocked. Do not duplicate either experiment.
+`dev/l2_overlap_lab.py`, send key **9367398c624b7796**, prefill host cb8939d0,
+priority0.5. Thirteen normal-load/bulk-hint recipes; <=40MiB front/24MiB tail,
+captured side-stream forks/joins, unchanged best6 arithmetic/dispatch. Six
+M1/16/32 sliding/full cases, three refreshed public streams, cold128MiB AB/BA,
+24-round finalists, A/A timing and numerical controls, native activity stages.
+Local: all78 coarse recipe/cases,12 finalists,6 stage profiles,5 host tests pass;
+12.0s cached payload in an80s share. Raw/router FP32 gate1e-4, mixed-BF16
+layer0.3%, exact A/B IDs, independent V9/attention/norm gates. Native sm90a:
+real128-bit loads + UBLKPF.L2, no spills,44/18 registers; no architecture skip.
+Best7 projection cell `{'l2_prefetch': recipe_id}` is implemented and defaults
+off. H200 whole-layer gains decide each decode row; local timing does not.
+`dev/l2_overlap/read_receipt.py <job>` reads only landed SHA-matched evidence.
 
-## Verified / handoff
-
-Fused: 6,105 local configuration/edge gates, 510 captured fresh-input graphs;
-5/5 official prefill host tests, all 30 lab keys and 12 chains, no rejection.
-Native sm90a: 33 kernels, no entry/device spills, max240 registers. Local
-rankings lose to cuBLAS; no H200 gain or decode dispatch is claimed.
-`dev/streaming_glue/README.md` documents ABI/protocol; `read_receipt.py <job>`
-emits a SHA-pinned decode handoff only from a landed local receipt.
-
-Unsafe overlap payload remains deleted after b63389f0's address-space crash;
-no overlap code rides either lab. BF16 projections retain BF16; no prepared
-BF16/FP8 NVFP4 bank is used. Keep E4M3 expert scales outside this dense path.
+Prior glue+verify dense receipt **5535d2f171b34d72**: all fused/WGMMA variants
+lost; none promoted. Historical unsafe overlap
+stays deleted. New transport uses explicit CUDA global addresses and executes
+both paths locally. No prepared NVFP4 expansion or L2 persistence is used.
