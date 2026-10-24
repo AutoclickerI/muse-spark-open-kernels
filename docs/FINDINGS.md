@@ -116,7 +116,7 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 | best6 vs best5_glue, per stage | `1b80ffc037cc454c` 1.380x: prepare picked humming_masked at M=256 (V9 NT1 at M=128); verify 32 MoE (W13 262 + W2 146 us + swiglu/combine/gather 25 us) vs V9 503/490 us, layer 648->583 (sliding) and 986->884 us (full); FA3 at verify-32 full 376 us. Other loads moved with the router seed | decode_layer | measured | `problems/muse_decode_layer/profiles/cand_r3_best6.1b80ffc0*.{txt,log}` |
 | Lab host on a withdrawn run | `tools/h200_lab.py` picked the host as the best scored run, which for the decode layer was the withdrawn, inadmissible bf16moe `07d07d960b814b86` (1.461x): the batched GEMV+overlap lab `b63389f01e4741b9` runs on it (a check, not on the board; its host-function timings are not the incumbent's). Host selection now skips withdrawn runs (decode host: 0e94268) | tooling | measured | `tools/h200_lab.py` best_source |
 | Streaming GEMV vs a plain read (H200) | `feb7b287e3464e4a`, cold 256 MiB flush, 20 pairs: a plain one-launch read of each weight takes qkv 18.6 us (37.75 MB, 2.03 TB/s), o 11.3, pool+router 30.8, unpool slice 8.7, unpool full 28.4 us (0.96-2.45 TB/s; ~2.4-3.1 TB/s after a 5.2 us launch/ramp envelope). The streaming GEMV matches that read at M=1 (qkv 18.3, o 12.3, pool+router 29.6, unpool slice 9.3 us; 0.77-1.01x cuBLAS) and loses to cuBLAS at every M>=8 (1.1-1.7x at M=8-32, 2.3-4.9x at M=128-256). Drafter shapes lose too (1.12-1.80x) | Matched same-byte reads show the measured launch/ramp envelope; overlap is the next practical M1 lever, not a proven hardware ceiling. Best6 uses PDL but its small-M custom recipes explicitly disable own-weight prefetch | measured | `problems/muse_prefill_layer/lab/profiles/lab_streaming_gemv_lab.feb7b287e3464e4a.log` |
-| Persistent dense chain vs a naive base (H200) | `9d2235190b8d40d7`: o -> boundary -> pool+router in one persistent launch takes 57.3/62.9/196.5/367.4 us at M=1/8/128/256 against 76.1/99.0/135.7/197.3 us for torch.mm + an FP32 router matmul; errors 4e-5 (h), 1.7e-3 (pool). That base is not best6, whose own o + boundary + pool/router at decode 1 profile at ~37 us | Unresolved until compared with best6's own stage kernels in the layer | measured | `problems/muse_prefill_layer/lab/profiles/lab_lab_persistent_dense_chain.9d2235190b8d40d7.log` |
+| Persistent dense chain vs best7 (H200) | `87dc944bfd7944c7`, AB/BA, cold 256 MiB, changed inputs: best7's o -> boundary -> pool+router takes 38.3/39.2/39.4/39.8/43.6/56.3 us at M=1/8/16/32/128/256; the persistent chain 57.7/62.7/65.3/71.2/198.9/365.6 (1.51-6.49x). In the whole best7 layer the chain costs +21 us at M=1 (82.7 -> 104.0) and +24 at M=8. Errors 4-8e-5, no route flips. (The earlier 57.3 vs 76.1 us 'win', `9d223519`, was against torch.mm + an FP32 router, not best7.) | This chain implementation loses at every M; best7's segment moves 88 MB in 38 us (2.3 TB/s), so a persistent design still has room, but not this one | measured | `problems/muse_decode_layer/lab/profiles/lab_dense_chain_best7_compare.87dc944bfd7944c7.log` |
 | Side-stream L2 prefetch inside best6's layer (H200) | `d5a9025890a64141`, paired AB/BA, 3 seeds, decode 1/16/32 sliding+full: the best recipe slows the layer by 0.3-16.6% (decode 1 sliding 123.1 -> 143.5 us). The prefetch branch costs ~34 us and overlaps attention at most (9.5-18.3 us), never MoE, because those kernels hold every SM. With its weights in L2, o drops 8.2 -> 6.0 us and pool+router 26.4 -> 25.2 | A separate prefetch launch can't run beside full-grid kernels; any prefetch must be issued from inside the running kernels, and the measured ceiling is a few us per layer | measured | `problems/muse_prefill_layer/lab/profiles/lab_l2_overlap_lab.d5a9025890a64141.log` |
 | L2-warm oracle for the dense stages (H200) | `09d19813094842b1`, best6 layer, each projection's weights read into L2 before the timed graph, cold 128 MiB flush otherwise, decode 1/16/32 sliding+full: activity time cold -> warm: qkv (36 MiB) 15.0-20.6 -> 9.8-14.9 us (5-6 us saved), o (16 MiB) 6.8-9.3 -> 6.7-8.2, pool+router (72 MiB) 25.5-29.2 -> 24.9-29.6 (0-2.3), unpooler 0-1.3. Whole-layer ratios 0.93-0.97 for qkv, 0.95-1.0 for the rest (A:A spread ~3 us). Warm qkv still takes 9.8-14.9 us (2.4-3.7 TB/s from L2) and warm o 6.7-8.2 us | Prefetch can only help stages after the first; their warm gain is <=~2-4 us per layer. qkv, the one stage that gains, opens the layer, so nothing in the layer can prefetch it. Even L2-resident, the dense kernels are bound by per-launch fixed cost and issue, not HBM: the dense lever is the GEMV kernels' own efficiency (the proj board field is ~30% faster), not overlap | measured | `problems/muse_prefill_layer/lab/profiles/lab_lab_l2_oracle_ceiling.09d19813094842b1.log` |
 | Fused glue GEMVs and verify-load WGMMA (H200) | `5535d2f171b34d72`: fusing norms/residual/routing into the streaming GEMV costs 2.3-21x cuBLAS at every M (o at M=1 69 vs 17.8 us; 0.03-0.7 TB/s). The weight-wide WGMMA for the verify loads loses 1.28-2.18x to best6's own Lt/cuBLAS choices: dense total M=8 102.3 vs 64.9 us, M=128 128.0 vs 84.4, M=256 161.3 vs 99.6. best6 already streams the dense weights at 2.0-2.3 TB/s (138-197 MB), near the ~2.5 TB/s one launch reaches at these sizes | Standalone dense kernels are at their per-launch limit; the dense lever at every load is overlap across launches, not a new mainloop | measured | `problems/muse_prefill_layer/lab/profiles/lab_streaming_glue_lab+verify_streaming_lab.5535d2f171b34d72.log` |
@@ -1319,28 +1319,43 @@ it was not a full non-KV residency measurement.
 
 ### Projection evidence and next experiment (G3, G2)
 
-PDL dense experiment (send **b2044c78f90cabfd**, payloadSHA **6bed960f0c6aac1d…**):
+PDL dense experiment (send **4abb8bc59fee7ae0**, payloadSHA **016706db77b05c32…**,
+MoE check **7426e17cd3bc4659**):
 `problems/muse_bf16_proj/dev/pdl_prefetch/README.md` freezes best7 pairedSHA3baaaa96,
 its measured dense dispatch and paired glue/attention/NT1 choices. Eight cold-L2
 whole-layer cases cover decode1/16/32 and verify1, sliding/full;16 standalone
 role/shape rows compare original-row bulk rings, lossless tile-packed bulk rings,
 512-thread GEMV and a matched528-CTA read. Early/late controls isolate the initial
 weight requests before `griddepcontrol.wait`; final24 AB/BA pairs use3 refreshed
-public streams, A/A controls and single-stage layer ablations. No H200 result yet:
-the detached log confirms prefill quota exhaustion, dispatch10-25 09:01KST.
+public streams, A/A controls and single-stage layer ablations. The host-independent
+payload synthesizes missing dense BF16/router FP32/norm tensors from per-name
+seed72140, and uses fixed public attention input, residual and FP8 KV fixtures.
+MoE supplies its first32 real packed experts/scales and post_norm_w. Every arm
+uses common baseline-derived route IDs/weights/localIDs; the routing/norm kernel
+remains timed. The protected output metadata names all synthetic tensors. The
+detached log confirms acceptance on MoE; prefill waiter3107409 was terminated,
+and its waiting file removed. No H200 result yet.
 Best7 remains unchanged. This tests the gap above our current1.2-2.4TB/s dense
 implementations; the3.80TB/s stream and historical4.04-4.25TB/s reads disprove
 an inferred2.5TB/s hardware envelope.
 
 Local evidence:2,060 native checks/708 captured graphs pass, max FP32 relative
-error4.7e-6; all8 layer/16 stage cases and5 host tests pass with360 forced
-attn_main and144 FA3 glue calls.16 native sm90a kernels and12 Triton hint variants
+error4.7e-6 (unchanged native kernel); all8 layer/16 stage cases and5 MoE host
+tests pass with375 forced attn_main and150 FA3 glue calls. The512-thread GEMV
+and packed rings cover every M1/8/16/32 role; standalone times include the
+incumbent BF16 output boundary and identical activation banks.16 native sm90a kernels and12 Triton hint variants
 have no spills; SASS checks place weight requests before ACQBULK only in the
 early variants;4 BF16 output-boundary kernels also cross-compile. The first screen
 exposed an omitted BF16 output boundary (~0.35% layer drift): the timed reduction/
 cast now preserves the incumbent ABI. Matching M32 KS512 fixes the routing change
 from KS1024; exact IDs and the original1e-4 raw/router,1% BF16 and0.3% whole-layer
-A/B gates all pass. Drop-in `dev/pdl_prefetch/projection.py`SHA5769cab895f35afd…;
+A/B gates all pass for the screened portfolio. A synthetic verify1-sliding QKV
+cell exceeded the unchanged0.3% layer bound (0.372-0.379%): compound
+A0/A4/R0/P0/P2 retain the baseline QKV there, explicitly labelled `c6 Q=B`.
+`local_exclusions.json` preserves this rejection. Standalone QKV tests still
+cover every kernel. Fixed-route timing is a workload-controlled diagnostic;
+live-route candidate agreement remains required for promotion.
+Drop-in `dev/pdl_prefetch/projection.py`SHA5769cab895f35afd…;
 `manifest.json`, `native_validation.json`, `compile_sm90a.json`, `validation.json`
 and `sent.json` carry full source hashes. Local timings are not H200 claims.
 

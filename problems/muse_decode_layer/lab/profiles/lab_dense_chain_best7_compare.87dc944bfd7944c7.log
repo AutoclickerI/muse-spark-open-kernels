@@ -1,0 +1,29 @@
+STAGE_TUNE qkv_gate T=1: 19.33 us (32, 1024, 128, False); all=[(22.175999358296394, (64, 1024, 128, True)), (19.328000023961067, (32, 1024, 128, False)), (19.840000197291374, (64, 512, 128, False)), (21.215999498963356, 'cublas')]
+STAGE_TUNE o T=1: 11.52 us (64, 512, 128, False); all=[(12.768000364303589, (64, 512, 128, True)), (11.776000261306763, (32, 512, 128, False)), (11.52000017464161, (64, 512, 128, False)), (12.223999947309494, 'cublas')]
+STAGE_TUNE pool_router T=1: 30.85 us (32, 1024, 128, False); all=[(39.07199949026108, (64, 2048, 128, True)), (30.848000198602676, (32, 1024, 128, False)), (31.295999884605408, (64, 512, 128, False)), (32.70399942994118, 'cublas')]
+STAGE_TUNE unpooler_slice T=1: 8.96 us (64, 512, 128, False); all=[(9.344000369310379, (64, 512, 128, True)), (9.568000212311745, (32, 1024, 128, False)), (8.960000239312649, (64, 512, 128, False)), (11.58399973064661, 'cublas')]
+STAGE_TUNE qkv_gate T=8: 19.33 us (32, 1024, 128, False); all=[(22.112000733613968, (64, 1024, 128, True)), (19.328000023961067, (32, 1024, 128, False)), (20.06400004029274, (64, 512, 128, False)), (21.088000386953354, 'cublas')]
+STAGE_TUNE o T=8: 11.74 us (64, 512, 128, False); all=[(13.088000006973743, (64, 512, 128, True)), (11.935999616980553, (32, 512, 128, False)), (11.744000017642975, (64, 512, 128, False)), (12.128000147640705, 'cublas')]
+STAGE_TUNE pool_router T=8: 31.04 us (32, 1024, 128, False); all=[(39.423998445272446, (64, 2048, 128, True)), (31.039999797940254, (32, 1024, 128, False)), (31.936001032590866, (64, 512, 128, False)), (32.92800113558769, 'cublas')]
+STAGE_TUNE unpooler_slice T=8: 8.96 us (64, 512, 128, False); all=[(9.535999968647957, (64, 512, 128, True)), (9.696000255644321, (32, 1024, 128, False)), (8.960000239312649, (64, 512, 128, False)), (11.680000461637974, 'cublas')]
+STAGE_TUNE qkv_gate T=16: 19.49 us (32, 1024, 128, False); all=[(22.016000002622604, (64, 1024, 128, True)), (19.487999379634857, (32, 1024, 128, False)), (20.191999152302742, (64, 512, 128, False)), (21.15200087428093, 'cublas')]
+STAGE_TUNE o T=16: 11.71 us (64, 512, 128, False); all=[(13.055999763309956, (64, 512, 128, True)), (11.96799986064434, (32, 512, 128, False)), (11.711999773979187, (64, 512, 128, False)), (12.095999903976917, 'cublas')]
+STAGE_TUNE pool_router T=16: 31.46 us (32, 1024, 128, False); all=[(39.583999663591385, (64, 2048, 128, True)), (31.456001102924347, (32, 1024, 128, False)), (31.775999814271927, (64, 512, 128, False)), (33.15199911594391, 'cublas')]
+STAGE_TUNE unpooler T=16: 28.03 us cublas; all=[(33.47200155258179, (64, 2048, 128, True)), (30.97599931061268, (32, 1024, 128, False)), (29.311999678611755, (64, 512, 128, False)), (28.031999245285988, 'cublas')]
+STAGE_TUNE qkv_gate T=32: 21.34 us (64, 512, 128, False); all=[(23.264000192284584, (64, 1024, 128, True)), (22.592000663280487, (32, 1024, 128, False)), (21.344000473618507, (64, 512, 128, False)), (21.695999428629875, 'cublas')]
+STAGE_TUNE o T=32: 12.03 us (64, 512, 128, False); all=[(13.75999953597784, (64, 512, 128, True)), (12.608000077307224, (32, 512, 128, False)), (12.032000347971916, (64, 512, 128, False)), (12.319999746978283, 'cublas')]
+STAGE_TUNE pool_router T=32: 33.06 us (64, 512, 128, False); all=[(40.44799879193306, (64, 2048, 128, True)), (35.711999982595444, (32, 1024, 128, False)), (33.055998384952545, (64, 512, 128, False)), (33.79200026392937, 'cublas')]
+STAGE_TUNE unpooler T=32: 28.03 us cublas; all=[(34.2399999499321, (64, 2048, 128, True)), (29.952000826597214, (32, 1024, 128, False)), (30.239999294281006, (64, 512, 128, False)), (28.031999245285988, 'cublas')]
+LAB_BEGIN dense_chain_best7_compare dd6f0b41c891390b
+META best7_reset embedded; A=best7 project(o)->boundary->project(pool_router), B=deterministic persistent chain; graph AB/BA, cold 256MiB flush, changed inputs; full=best7 v9nt1 layer with chain switch
+BEST7_SOURCE sha256=b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a bytes=458441
+SEG M=1 base_us=38.29 chain_us=57.67 ratio=1.5068 err_h=6.2484e-05 err_pool=5.4206e-05 base_samples=38.8,39.0,37.3,38.8,38.2,37.6 chain_samples=58.8,56.6,58.5,57.2,56.6,58.2
+SEG M=8 base_us=39.17 chain_us=62.68 ratio=1.6014 err_h=6.3304e-05 err_pool=5.9405e-05 base_samples=41.1,38.6,39.2,38.5,39.5,38.1 chain_samples=62.0,63.1,62.5,62.5,62.6,63.5
+SEG M=16 base_us=39.39 chain_us=65.29 ratio=1.6587 err_h=3.9599e-05 err_pool=3.953e-05 base_samples=40.6,38.8,40.0,38.2,40.3,38.3 chain_samples=64.5,66.0,65.5,64.3,65.4,66.0
+SEG M=32 base_us=39.76 chain_us=71.23 ratio=1.7929 err_h=7.7943e-05 err_pool=7.8761e-05 base_samples=42.0,39.1,38.9,39.4,40.1,38.9 chain_samples=70.3,72.6,70.2,70.0,72.3,71.9
+SEG M=128 base_us=43.56 chain_us=198.87 ratio=4.5678 err_h=6.7197e-05 err_pool=6.7859e-05 base_samples=44.8,43.9,42.8,42.8,44.4,42.8 chain_samples=196.4,199.6,199.6,200.0,198.9,198.7
+SEG M=256 base_us=56.30 chain_us=365.55 ratio=6.4940 err_h=7.4078e-05 err_pool=7.4173e-05 base_samples=57.1,55.5,56.5,55.3,56.4,57.0 chain_samples=365.0,366.5,365.5,364.3,367.4,364.6
+FULL M=1 base_us=82.74 chain_us=104.00 ratio=1.2570 err_hidden=4.3136e-05 route_flips=0 base_samples=84.1,82.9,82.4,81.1,82.7,83.2 chain_samples=104.4,105.5,102.5,103.7,104.1,103.7
+FULL M=8 base_us=158.17 chain_us=181.74 ratio=1.1491 err_hidden=0.0012451 route_flips=0 base_samples=160.1,156.7,157.1,157.7,158.1,159.3 chain_samples=182.0,180.8,182.2,181.3,182.0,182.1
+END elapsed=103.8s left=136.1s
+LAB_END lab_s=103.8 prepare_s=148.9
