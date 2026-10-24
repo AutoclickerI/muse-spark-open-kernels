@@ -3,7 +3,7 @@ Serves: G1. Read before touching `serving/sglang`: what the patch can change on 
 
 What our SGLang patch (`serving/sglang`, base `a55ab7d5`; rules in `serving/RULES.md`) can change on
 the judge's 8x H200, ranked by expected gain. Gains are modeled ([CEILING](ceiling.md), `sim.serving`)
-unless marked measured; nothing here has run on an H200 node yet. The serving track opens
+unless marked measured; the complete serving patch has not run on an H200 node yet. The serving track opens
 2026-11-06 05:00 KST with 3 checks and 1 scored run a day.
 
 ## From our kernels (the bulk of the score)
@@ -40,7 +40,7 @@ extrapolated and 1.745x capped; it is a receipt composition, not a judge run.
 | `muse_prefill_gemm.py` | Retained, unbound | `cand_v11_gemm` |
 | `muse_dflash.py` | Retained, unbound; existing DFlash compute stays active | `cand_dflash_diag` |
 | TARGET_VERIFY attention | FA3; experimental dispatch removed | `verify_stream` |
-| Long prefill attention | **FA3 retained**; experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all6 shapes; no new path admitted |
+| Long prefill attention | **FA3 retained**; failed module and experimental q_len>=2048 dispatch removed | `cand_v11_attn` receipt `e789ab194eb7496c` selects FA3 at all6 shapes; no new path admitted |
 
 The prefill attention receipt landed during integration. `e789ab194eb7496c`
 passes correctness but selects FA3 at all6 shapes. For q_len16K, FA3 versus the
@@ -74,6 +74,42 @@ allocation during capture shrank KV from300,000 to25,356 tokens and caused
 retraction. `r09` is exact but excluded from timing because it was stack-sampled;
 it completed and showed HiCache backups/FlashInfer planning, not a deadlock.
 The old failure and all rejected runs remain in the evidence directory.
+`r12` is rejected for an18,044-token pool, OOM retractions and incomplete
+outputs. `r14` is a startup-only test-control failure: its old snapshot predates
+`muse_prefill_expert.py`. Final controls use the same integration source minus
+only the priority guard. The external test wrapper now rejects a shrunken KV
+pool before workload traffic; it does not resize pools or change the metric.
+
+Final local sm_120/FlashInfer gates use174 requests per run at exactly220
+tokens, all74 prefill graph sizes, runtime prefill/verify replay, no tracebacks,
+unchanged source provenance and300,000 actual KV slots. Every row below is
+174/174 exact, first divergence220, token agreement1. The matched margin
+teacher-forced probe (2,615 prompt plus8 generated logprobs) has mean/max drift0
+on all three final patch runs. This is a probe, not a new30x220 near-tie drift
+study; full-model Hopper numerical agreement is still unverified.
+
+| Run / control | Mode | TTFT p50 patch/stock c1 / c4 / c16 / c32 | Gate |
+|---|---|---|---|
+| `r19` / fresh `r28` | Before priority fix, same exact-shape portable ABIs |0.670 /0.484 /0.930 /1.151|all<=2x|
+| `r25` / fresh `r28` | Final priority fix, TP2 portable ABIs |1.059 /0.848 /0.986 /1.214|all<=2x|
+| `r26` / `r21` | Final priority fix, TP1 portable ABIs |0.914 /1.013 /0.345 /1.026|all<=2x|
+| `r27` / fresh `r28` | Final priority fix, native TP2 |1.158 /1.241 /1.955 /0.942|all<=2x|
+
+Before/after snapshots differ only in `managers/dflash_overlap.py`; current
+live runtime ASTs match the final snapshot; the later attention receipt removes
+only an unbound module and a backend comment. P90 ratios are also below2x, maximum1.606. The original
+2.06x failure is retained, but these controls do **not** prove a speedup or
+attribute that old value to one hunk: against the same fresh stock, forced c32
+is1.151 before versus1.214 after. The deterministic admission bug is fixed;
+shared-device timing and changed batch composition still limit causal latency
+claims. No H200 speed credit is assigned to this scheduler change.
+
+The expert layer screen uses a canonical-bank-only owner and a separate Marlin
+reference:15 cases including257/512/513/752/753 transitions, EP offsets0/64,
+and all-remote/all-local routing. Relative L2<=0.005963 and maxabs0.03125 versus
+Marlin; all30 graph equality replays are bit-exact, and all-remote outputs are
+exactly zero. `PrefillExpertPlan.from_layer` reuses the bank; a Marlin gap or a
+second implicit bank fails this test.
 
 No receipt IDs or external measurement files are read at runtime. Admission is
 source policy. Unbound modules do not change the default or spend startup time.
@@ -92,7 +128,7 @@ No Muse kernel is built Blackwell-only: `load_jit` compiles for the local GPU (`
 
 | # | Gate | Feature | Verdict | Modeled saving per step (c=1 / c=32) | Risk to agreement |
 |---|---|---|---|---|---|
-| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented V9 glue; Hopper runtime pending**: Marlin and the V9 single-bank producer expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer. Local sm_120 native/eager+graph finalize is exact (max diff 0); the bounded V9 layer screen at 1..16,384 tokens stays within rel L2 0.005449 (bound 0.015), and the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
+| 1 | `layers/muse_spark_fp4_moe.py:59,165-168`; `muse_spark_v12/fused_post_expert_norm_weighted_sum_trtllm.py` | **Implemented V9 glue; Hopper runtime pending**: Marlin and the V9 single-bank producer expose dense `[T, topk, H]` rows; the shared CuTeDSL finalize receives an identity index map and `-1` for EP-remote experts. The interface is independent of the producer. Local sm_120 native/eager+graph finalize is exact (max diff 0); the V9/grouped layer screen at 1..16,384 tokens stays within rel L2 0.005963 (bound 0.015), and the CuTeDSL standalone sm_90a compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`. Actual H200 execution remains unverified. | 0.7-1.5 ms / ~0-0.1 ms | Low to moderate (FP32 reduction order; Hopper runtime and V9 raw-row conversion) |
 | 2 | `models/muse_spark.py:587, 849`; `kernels/ops/muse_spark_v12/gemm_ag.py:73` | Pooler column split + multicast all-gather (`gemm_ag`); unpooler split above 8 tokens | Enable as-is if `has_multicast` (`multimem.st` etc. are sm_90). Gate by token count: our model says it loses at c=32 | 0.46 ms / about -0.4 ms (audit's estimate: 0.55-0.6 / 0.45-1.0) | Low (sliced cuBLAS may round differently; GB300 stock uses it) |
 | 3 | `models/muse_spark.py:1177`; `fi_trtllm_moe_finalize_with_rmsnorm_cutedsl.py` | **Implemented glue; Hopper runtime pending** after #1 for Hopper/Blackwell TP4/8 with EP=TP and no DP attention. Marlin and V9 now consume `ar_workspace`; `_forward_tp` skips the outer all-reduce only after the expert path owns it, avoiding the old `ar_workspace` trap. The CuTeDSL AR path is selected through the existing custom-AR push workspace for small verify batches (including TP8 up to 16 tokens). The sm_90a AR compile passes under `override_jit_cuda_arch(9, 0, suffix='a')`; the two-rank NCCL native AR test is exact in eager and graph replay (max diff 0); sm_120 glue is exact in the margin harness at TP1 and TP2. H200 arithmetic and custom-AR workspace availability remain unverified. | 0.12-0.24 ms / 0 | Moderate (rank accumulation order and custom-AR workspace availability) |
 | 4 | `kernels/ops/muse_spark_v12/all_gather_norm_residual.py:31` | Unpooler all-gather fused into the post-MoE norm-residual | Enable as-is: `>= 10` to `>= 9` | 0.12-0.25 ms / 0.12-0.25 ms (c=32 needs #2) | Low |
@@ -672,12 +708,12 @@ same-ABI Marlin stand-in, with real Humming tested independently at full4096-wid
 Actual H200 serving, TP8/EP8 FA3 agreement, adapted Humming speed, full-node capture memory,
 prepare budget and TTFT at all four judge loads remain unverified. No judge run or commit.
 Current patch regenerated from `git -C serving/sglang diff a55ab7d5` after
-including source-only untracked additions: **329,413bytes**, **31files**,
-longest added line **374**. All31 paths in accepted `ed4f618` remain, including
-all pending kernel modules and the unchanged MoE lane source. The two unproven
-attention dispatches are removed, pending dense/router tuning is unbound,
-prefill shares the canonical bank, and the host priority fix preserves all
-five accepted worker hunks. Size, line limit,
+including source-only untracked additions: **316,495bytes**, **29files**,
+longest added line **374**. Of31 accepted `ed4f618` file diffs,24 remain byte-identical and5 retain
+intentional/incoming updates. The failed prefill-attention module and the
+experimental attention-backend hunk are removed after `e789ab194eb7496c`
+selects FA3 everywhere. All unrelated accepted changes remain, including the
+MoE lane source, Hopper gates, row split and all five worker hunks.  Size, line limit,
 source/type/path, Python AST, whitespace and clean-base apply checks pass.
 Owned manager/worker/attention/drafter changes are preserved. The pinned
 harness snapshot isolates this lane's collective source while other lanes
@@ -827,7 +863,7 @@ glue prevent crediting that as a serving gain; it quantifies avoiding a known
 regression. No extra speedup is subtracted from the earlier45.679ms composed
 step, which did not model the bad grouped dispatch.
 
-Actual H200 TP8/EP8 FA3 agreement, bounded-V9 prefill TTFT, actual shape-plan
+Actual H200 TP8/EP8 FA3 agreement, V9/grouped prefill TTFT, actual shape-plan
 selection, memory/KV capacity and all four judge TTFT loads remain unverified.
 
 ## Other levers found

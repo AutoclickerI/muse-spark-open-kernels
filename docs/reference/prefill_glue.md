@@ -12,13 +12,13 @@ Router uses sigmoid plus top8 weight renormalization, not softmax.
 | Kernel | turn1 us | floor | turn4 us | floor | first-turn us | floor |
 |---|---:|---:|---:|---:|---:|---:|
 | _boundary_kernel | 41.53–42.75 | 30.84 | 163.45–164.72 | 123.37 | 851.67–855.25 | 671.09 |
-| _canonical_expand_coalesced | N/A | 26.87–859.83 | N/A | 26.87–859.83 | 633.59–651.27 | 26.87–859.83 |
-| _portfolio_swiglu | N/A | 3.86–30.84 | N/A | 15.42–123.37 | 245.49–245.90 | 83.89–671.09 |
-| _swiglu_kernel | 14.75–14.77 | 3.86–30.84 | 44.03–44.91 | 15.42–123.37 | N/A | 83.89–671.09 |
+| _canonical_expand_coalesced | N/A | 0.00 | N/A | 0.00 | 633.59–651.27 | 26.87–859.83 |
+| _portfolio_swiglu | N/A | 0.00 | N/A | 0.00 | 245.49–245.90 | 83.89–671.09 |
+| _swiglu_kernel | 14.75–14.77 | 3.86–30.84 | 44.03–44.91 | 15.42–123.37 | N/A | 0.00 |
 | _combine_kernel | 10.27–10.30 | 2.57–11.57 | 28.50–29.76 | 10.28–46.26 | 133.74–133.95 | 55.92–251.66 |
 | _gather_norm_kernel | 6.67–6.67 | 2.57–11.57 | N/A | 10.28–46.26 | 97.81–99.52 | 55.92–251.66 |
 | _routing_kernel | N/A | 0.34–0.35 | N/A | 1.37–1.41 | 42.03–42.03 | 7.45–7.65 |
-| _pre_expert_norm_kernel | N/A | 2.57 | N/A | 10.28 | N/A | 55.92 |
+| _pre_expert_norm_kernel | N/A | 0.00 | N/A | 0.00 | N/A | 0.00 |
 | _norm_gate_kernel | N/A | 0.96 | N/A | 3.86 | N/A | 20.97 |
 | _qk_prep_kernel | N/A | 0.65 | N/A | 2.58 | N/A | 14.04 |
 | _offsets_kernel | N/A | 0.00 | N/A | 0.00 | N/A | 0.00 |
