@@ -24,8 +24,7 @@ question-tool label is Jihoon's word; the question and option text are agent con
 
 - Source: transcript:5061.
 - Effect: CONSTRAINTS "Boundary cases" take the widest reading. Any ordering is allowed. Approximation
-  is allowed at the allowed formats. Prebuilt image binaries and JIT builds are allowed. The bound
-  (PLAN P6) also reports an "outside the rules" column, labelled inadmissible.
+  is allowed at the allowed formats. Prebuilt image binaries and JIT builds are allowed.
 - Conflict: approximation below the allowed precision (FP8/FP4 activations, fewer experts, skipped
   keys) breaks hard limits 2 and 5-7. The hard limits win (llms.txt:107-110, 137). Our own cubins and
   SASS on the kernel boards: R-20261023-6.
@@ -82,15 +81,6 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Effect: GOAL "Optimize vs spend". "submit regularly" was carried out once: `okc_run.py send` takes a
   scored run while the day's last.
 
-## Dropped agent rules (do not reintroduce)
-
-| Rule an agent introduced | Dropped | Match |
-|---|---|---|
-| Stop opening new optimization branches after two failed ideas in a row (prefill lane) | 2026-10-23: a self-imposed stop; no owner or external source | `no new optimization branches` |
-| "Keep a portable fallback path where that's cheap" (old AGENTS) | 2026-10-23: replaced by the practice of local stand-ins that test Hopper glue | `portable fallback path` |
-| proj is "worth only enough work to keep rank" (old CEILING) | 2026-10-23: an effort cap with no source | `worth only enough work` |
-| Lanes wait for queued judge receipts before starting new work | 2026-10-23: idle waiting; `okc_run.py collect` lands receipts on its own | `no new checks will be sent` |
-
 ## R-20261024-3 — 2026-10-24 10:40 KST — H200 lab runs in prepare()
 > Allowed (Recommended)
 
@@ -119,3 +109,12 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Effect: G0 is the highest score on the overall kernel board until the kernel close; the subgoals are the
   decode-layer speedup and its stage kernels (GOAL). Serving goals, rules and work leave the live docs; their
   material and Jihoon's serving answers are parked in `docs/serving/` until the serving round opens.
+
+## Dropped agent rules (do not reintroduce)
+
+| Rule an agent introduced | Dropped | Match |
+|---|---|---|
+| Stop opening new optimization branches after two failed ideas in a row (prefill lane) | 2026-10-23: a self-imposed stop; no owner or external source | `no new optimization branches` |
+| "Keep a portable fallback path where that's cheap" (old AGENTS) | 2026-10-23: replaced by the practice of local stand-ins that test Hopper glue | `portable fallback path` |
+| proj is "worth only enough work to keep rank" (old CEILING) | 2026-10-23: an effort cap with no source | `worth only enough work` |
+| Lanes wait for queued judge receipts before starting new work | 2026-10-23: idle waiting; `okc_run.py collect` lands receipts on its own | `no new checks will be sent` |
