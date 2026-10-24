@@ -22,7 +22,7 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
   or prefill), synthetic weights where it lacks them; batch labs per host. Decode's runs go to candidates.
 - Local timing (sm_120) ranks loosely; H200 claims come only from `runs/` receipts.
 - Hopper-only paths can't run here: force each Hopper branch's glue locally with a stand-in kernel.
-- Run `tools/sync_upstream.sh` before starting; read the diff if official files changed.
+- Run `tools/sync_upstream.sh` first; read the diff if official files changed.
 - Delegate per CONSTRAINTS 11-12 (resume command: RESOURCES "Inventory").
 
 ## Commands
