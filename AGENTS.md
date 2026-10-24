@@ -22,8 +22,8 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
   `tools/screen_all.py --send` screens every unsent candidate in parallel and sends each pass.
 - Time any kernel on the H200 without a candidate or the target problem's quota: `tools/h200_lab.py send <payload> [more ...]`
   (runs in the prepare of a host problem's best source: proj by default, MoE or prefill when proj's quota is spent;
-  prefill is off the overall board). One judge run carries every payload
-  given, so batch labs for one host. Decode's 20 runs a day go to candidates.
+  prefill is off the overall board; a payload can synthesize weights its host lacks, since timing rarely depends on
+  values, so a spent host never holds a lab). One judge run carries every payload given, so batch labs for one host. Decode's 20 runs a day go to candidates.
 - Local timing (sm_120) ranks loosely; H200 claims come only from `runs/` receipts.
 - Hopper-only paths can't run here. Force each Hopper branch's Python glue locally with a portable stand-in kernel.
 - Write kernels so they drop into `serving/sglang/python/sglang/`. Serving runs only verify loads and prefill.
