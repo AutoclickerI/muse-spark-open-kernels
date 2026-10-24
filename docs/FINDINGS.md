@@ -58,6 +58,10 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 - **V19 static hazards:** only native `permute=0` with a resident grid was measured. Optional `grid2` doubles the occupancy-limited grid while a global barrier waits for every CTA, so it can deadlock. `(u*17+3)%total` repeats/drops work when total is divisible by 17: only 512 of 8,704 tasks are distinct at total 512×17. Source: `problems/muse_moe_w4a16/dev/parked/cand_v19.py`; proof: `runs/screen/moe_v19_static_audit.json`. This is a static proof, not an observed H200 hang.
 - **Image inventory:** Marlin and Humming expose BF16×NVFP4 on H200; vLLM/Machete are absent. FlashInfer BF16/FP4 GEMMs and Prims-TS target SM100+; its Hopper MonoMoE has FP8 weights and fixed K2048/N512/M≤8. SGLang Triton W4A16 decodes affine integer4; its ROCm Muse file is an aligner shim. DeepGEMM FP4 APIs take FP8/FP4 activations, and its BF16 grouped APIs take BF16 weights. No additional eligible BF16×NVFP4 H200 path was found. Inventory: `runs/screen/moe_image_kernel_files.txt`.
 
+- **V9 variants at M=128/256, 12 seeds (`3a312224908a416e`):** at M=128 every variant is within 2% of the others (NT1 344.1, NT2 341.7, hotNT1 336.4, hotNT3s2 337.1 us mean; NT4 448.6). At M=256 hotNT3s2 is best at 520.9 (NT2 548.8, NT1 605.9), still behind humming_masked's 448 (de6a56fc). Seed spread is 1.5x max/min (180-306 local pairs at M=128), so a single run can't separate variants. The V9 family plateaus near 3x the ~108 us M=128 floor; the lever is a different mainloop, not another V9 tile.
+
+- **Humming at M=128/256 is bandwidth-starved (`896866402dc94112`, R0 + 12 seeds, eager event spans):** W13 streams the touched experts' unique NVFP4 bytes (16 MiB W13 + 8 MiB W2 per expert; 11-25 experts, 264-600 MiB) at 0.70-1.18 TB/s and W2 at 0.63-1.07 TB/s (M=128 R0: W13 261, W2 146 us for 432 MiB, whose read at 4 TB/s is ~113 us). Humming's own tiles (block [16|24,256,128], 4 stages, TMA, warp-specialized) leave ~4x of HBM bandwidth unused, so the M=128/256 lever is bytes in flight per SM, the same limit as the dense GEMVs (b63389f0). Its SM-count and block16 launch variants all failed the FP32 gate (0.37 relative error), a lab defect rather than a finding.
+
 ## The judge's H200 (measured, 2026-10-23)
 
 | Quantity | Value | Scope | Class | Receipt |
@@ -500,7 +504,9 @@ sm90a compile) but adds serial traffic. At c32,13 turns,220 tokens,tau4.05,
 per conversation. Copy break-even per layer is
 `706.17*(561-478)/(32*16)=114.48us`. Ideal packed read+write at4.8TB/s already
 costs`2*905969664/4.8e12=377.49us`; launch/traffic inefficiency worsens it, and
-no overlap is assumed. It is removed from shipping source. Diagnostic source
+no overlap is assumed. Even that floor needs69.7% hiding to break even.
+No overlapped conversion is implemented or credited. The serial bridge is
+removed from shipping source. Diagnostic source
 `cb2c40fb27780d2d` remains queued; retained implementation is
 `prof/lab/v9_marlin_bridge.py`, frozen runtime `shared-bank-r03`.
 
@@ -535,10 +541,11 @@ unchanged harness quantile. No harness files or thresholds changed.
 |---|---:|---|---|
 | TP1 native |174/174|0.833/0.601/0.542/0.292|0.880/0.317/0.235/0.225|
 | TP1 portable |174/174|0.858/0.596/0.720/0.321|0.855/0.428/0.248/0.249|
-| TP2 native |174/174|0.812/0.319/0.611/0.283|0.819/0.385/0.098/0.416|
-| TP2 portable |174/174|0.727/0.694/0.143/0.308|0.655/0.290/0.317/0.394|
+| TP2 native |348/348|0.817/0.319/0.611/0.283|0.875/0.385/0.422/0.416|
+| TP2 portable |348/348|0.794/0.694/0.488/0.308|0.831/0.290/0.326/0.394|
 
-All696 patch responses are exact;2615-position and8-generated-token probes
+The table takes the worse of r05 and full-history r11 matched ratios (below);
+there are1044 unique exact patch responses.2615-position and8-generated-token probes
 have mean/max drift0. Worst p50/p90 ratio is0.880, below1.5. This is a passing
 matched local gate, not exclusive-node evidence: resource logs retain other
 GPU jobs. No extra production queue change was justified by these brackets.
@@ -574,12 +581,25 @@ the patch queue is between the two stock controls, while prefill envelope is
 and583/726 at c32; all select stock Marlin, with no producer gap. Raw CSVs are
 in `shared-bank-r09-trace-evidence`.
 
-A full-history resident TP2 bracket is running before the final latency status:
-separate stockA/patch/stockB servers each retain their own c1→c4→c16→c32 cache
-history, with no intermediate flush/probe; native/portable phases use three
-resident models to leave GPU1 room for its other project. A five-server setup
-was stopped before traffic to avoid growing aggregate GPU1 residency; no test
-pass was claimed. Current controller is `full_history_ttft_brackets.py`.
+**Full-history TP2 bracket passes** (`shared-bank-r11-full-history`): separate
+stockA/patch/stockB servers retain independent c1→c4→c16→c32 cache histories,
+with no intermediate flush/probe. Native/portable phases each use three resident
+models to leave GPU1 memory for its other project. Each patch mode passes
+against both controls at every rung:
+
+| Full-history mode | Worst p50 c1/c4/c16/c32 | Worst p90 c1/c4/c16/c32 |
+|---|---|---|
+| Native |.817/.318/.382/.209|.875/.171/.422/.364|
+| Portable |.794/.300/.488/.182|.831/.247/.326/.381|
+
+All348 patch responses are exact220, final2615-position/eight-token probes
+have0 drift, actual300K capacity/full graph checks pass and source stays stable.
+The combined standard-margin count is1044, and the worst matched ratio across
+both protocols is.880. This does not discard r09's changing-load failure or
+claim an isolated H200 latency result. No new runtime queue hunk was justified.
+The five-server setup r10 was stopped during warmup to limit aggregate GPU1
+residency; no test pass was claimed. Reproduce with
+`full_history_ttft_brackets.py`; `final_gate_summary.json` joins both protocols.
 
 **Real-reader server agreement passes:** a separate six-layer fixture has real
 4096-wide NVFP4 experts,32 local experts per rank, nonzero random packed
@@ -1230,6 +1250,7 @@ results feed serving's 753–16K prefill path. The current H200 control is v11, 
 | Mid-experts2 + dense merge (local admission) | `cand_mid_dense.py` is based on exact **0d738799802340fd / 1.438402x**, retaining all34 expert choices and all attention paths, with the gated 16K dense/router search from `cand_dense_router_a30`. The new base's per-load speedups are **1.2412/1.4829/1.6169x**; named first-turn dense GEMMs total **731.502 ms**. Starting expert controls match that receipt: masked753/3012, dg_hint_w8 at16K | **5/5 tests,8/8 graphs, all3 static checks** (undefined names, call signatures, sm90a expert CUDA source); local prepare **6.310s**. Actual SM90a Lt wrapper/ABI and **168** forced fresh dense/routing graph replays pass. Optional exact-route build failures reject. Scheduling selections remain prepare-only and correctness/speed gated, including the20-pair real routing consumer. Sweep `b964cb5d180a463b` has landed; its new defaults and paired expert selection are folded into mid_sweep below. H200 dense gain/prepare and the direct16K CUTLASS lab remain unverified | SHA256 `1a341fc725dece4677ecbacbc399643fcc4d03f426e590387498765ed88d11ad`; `dev/mid_dense/{README.md,admission.json,base_profile.json}`; `runs/screen/muse_prefill_layer.cand_mid_dense.json` |
 | Prefill sweep dispatch (local admission) | `cand_mid_sweep.py` on frozen mid_dense defaults to **raw17 at753 / masked Humming at3012 / dg_w8 at16K**. It gates/compares the sweep's top two per T, retaining the prior masked753 and hinted16K winners too:3/2/3 contenders. Three fresh full route maps (IDs/probabilities/counts/positions/pooled values),64 spread FP32 oracle rows,20 cold alternating graph repeats, then fresh post-timing gates select entirely in prepare; metadata prints in `EXPERT_SWEEP_LAST` near the receipt tail | **5/5 tests,8/8 graphs,all4 static checks** (F821–F823, call signatures, GROUPED_SRC and PG_RAW compiled SM90a), local prepare **7.458s**. Forced Hopper prepare runs all eight shortlisted paths using real SM120 math; six fresh full-layer graphs at753/3012/16384 pass with the resulting local selections. Launch/fixture exceptions with empty messages and budget rejection pass. Only expert dispatch/prepare/error logging changed; dense/attention and both CUDA source strings are identical to mid_dense. No H200 ranking is inferred from the local selections | SHA256 `1de6c32c7a5337dc539a5b6feb24a479bed217cb794a92a32760f9fcda82e075`; `dev/sweep_dispatch/{README.md,admission.json,receipt_comparison.json,scope_check.json}`. Old0d738 chose masked/masked/hinted: expert SCORE_SELECT was truncated, final tables retained the exact choices. Both runs use generated router fixtures;753 is confounded by changed RNG/possible run router plus warm eager vs cold graph protocol.16K old leaders were within0.16%, compatible with paired-timing noise. CUTLASS queue key63aa77388930a37e had no receipt at the single check; no dense recipe merged. New full-layer H200 and serving results remain unverified |
 | A30 sweep-backed dispatch candidate | `cand_prefill_a30_h200.py` starts from scored `a30fb411b0c74ffb` and installs the H200 lab winners directly: raw17 at753 (**577.760us**), masked Humming at3012 (**1254.912us**), and dg_w8 at16K (**5167.232us**). It also installs the a30 H200 dense Lt choices, materializes their heuristic tables, and keeps expert NVFP4 expansion per-call | `tools/img python tools/local_eval.py ... --json` passes **5/5 tests, 8/8 graph shapes, F821–F823, call signatures, and every SM90a CUDA-string compile**; sm120 prepare is 5.1s. A `WeightScale2Type`/`WeightScaleType` compatibility alias fixes the current image import, and five closure-invalidating tuner `del`s were removed. No dequantized expert bank is retained in prepare | Candidate SHA256 `df5073b032d3eeddf10993dcb49a9d38d849146578a9cce84c97c5bc511c62b3`; H200 sweep receipt `b964cb5d180a463b`, `dev/dense_a30/decomposition.json`, and the local screen output |
+| a30_overlap (scored) | `af7065a73e5f4abf` 1.428x (CI 1.407-1.450) vs board a30_h200 1.451x: turn 1 1.256/1.177, turn 4 1.530/1.329, 16K 1.650/1.690/1.490/1.403 | No gain over a30_h200; prefill is paused until the close (PLAN P2) | `problems/muse_prefill_layer/profiles/cand_prefill_a30_overlap.af7065a73e5f4abf.txt` |
 | cand_v11_gemm versus 0d738799 | The newer `471645dc` per-shape speedups are **1.231/1.143/1.435/1.236** at the four 753-token loads and **1.683/1.666/1.400/1.327** at first-turn 16K ctx0/32K sliding/32K full/64K full; board `0d738799` is **1.285/1.188/1.522/1.349** and **1.704/1.654/1.531/1.431** on the same ordering | V11 wins only the 32K-sliding 16K case; it loses the other seven, so its dense/expert choices are not reused over the 0d738/a30 dispatch | `problems/muse_prefill_layer/profiles/cand_v11_gemm.471645dc489f4b26.json`, `cand_mid_experts2.0d738799802340fd.json` |
 | Prefill CUTLASS dense search (closed) | H200 lab `d67168de5b1a4e0e` tested 2,208 CUTLASS recipe/shape cases at M753/3012/16384 for pooler, unpooler, QKV, O and router. **No recipe beat the incumbent**: selected controls were already about 760–780 TFLOPS at M16384 (77–79% of the 989 TFLOPS reference); best candidate ratios remained 1.01–1.36x slower. Pooler/unpooler remain the largest dense excess, but this route has no measured fix | Close the CUTLASS dense path for prefill. Retain incumbent Lt/cuBLAS/DG dispatch and focus the lane on expert execution; no dense/router or serving change is justified by this lab. The router is also near its practical ceiling, so do not spend another prefill run on speculative dense fusion without a new mechanism | Receipt `runs/muse_bf16_proj/20261024T081916Z_check_d67168de5b1a4e0e.json`, payload `prof/lab/prefill_dense_cutlass.py`, `dev/cutlass_dense/{README.md,admission.json}` |
 | Serving prefill stage triage | At the a30 first-turn profiles, dense/router GEMMs are **3981us vs ~4243us stock** (ctx0), **3971 vs ~4230us** (ctx32 sliding), **3983 vs ~4358us** (ctx32 full), and **3974 vs ~4356us** (ctx64 full): 260–382us saved, only **1.4–1.6% of whole prefill**. FA3-contiguous saves **31/22/194/363us** at those same loads, **0.2–1.4%**. Glue remains roughly 1.1–2.1ms and its boundary/dequant/SwiGLU/combine/gather changes are below 3% of the layer | Experts are the only remaining stage above the handoff threshold. `muse_prefill_dense.py` and `muse_prefill_gemm.py` are validated serving entry points for stock-compatible dense/router GEMMs, but no attention/glue module is justified by these receipts; the serving lane should wire dense only if its integration cost is acceptable | a30 profile `problems/muse_prefill_layer/profiles/cand_score_portfolio_routing.a30fb411b0c74ffb.json`, baseline profile `runs/calibration/profiles/muse_prefill_layer_sglang.499cbe8c9d784741.txt`, decomposition `dev/dense_a30/decomposition.json` |
@@ -1435,6 +1456,15 @@ full decode drop-in passes 13/13 tests plus 15/15 static checks. A replacement f
 phase lab is queued at priority 0.8 with payload SHA256
 `8047ce325de2bfbf63e0305f0ee59c09aaecd0626d12aa3b3685aeb818b72e6e`; its H200 correctness and
 timings are the only remaining verification.
+
+For the next full-layer attention trial, the existing raw-FP8 probability/PV path is now gated
+through the decode-layer ABI at verify B16/B32 full for waves 1 and 2: all four local cases pass,
+with attention-input relative L2 0.0385--0.0403 and update relative L2 0.0667--0.0698. It uses
+FP8 QK, FP8 probabilities/V, split-K over the full context, and one FP32 combine. Payload
+`prof/lab/verify8_attn_compare.py` (SHA256 `dbb0b99e8d16d51d71756e5ae9cb6f6c2e67e6c18340400728e37a8cecab0182`)
+is queued on the off-quota prefill host at priority 0.6 under send key `dee678ffa7175feb`.
+Promotion requires each setting to pass the FP32 gate and beat FA3 at verify-16 and verify-32
+full without regressing the q1/q8 control rows; otherwise FA3 remains selected for G0.
 
 The landed diagnostic profiles contain only the selected FA3 path: full B16 main189.2us of206.7us total, B32 main373.0us of391.2us; combine4.4us each. They do not profile the losing custom variants. Their XQA prepare timing lines provide custom totals. The nominal P8 gather-only times for327.68/655.36MB are128.1/256.2us, versus FA3 roughly207/391 and K128617/1174. These comparisons establish unused throughput, not a measured TLB or tensor-pipe cause.
 
