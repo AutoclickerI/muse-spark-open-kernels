@@ -6,7 +6,7 @@ Each rule is `[hard]` (external, or protects others, shared resources, safety or
 ## Hard limits (bind above G0)
 
 1. **Rules acceptance is a person's act.** [hard] Never run `okc login` for anyone; never call `POST /rules/accept`. [external: llms.txt:65]
-2. **Real speedups only.** [hard] No tampering with timing or harness, no work outside the timed calls, no caching or replaying outputs, nothing below the allowed precision. Final places come from reruns on held-out data and nearby shapes; follow the spirit (upstreamable speedups). [external: llms.txt:112, 135-139]
+2. **Real speedups only.** [hard] No tampering with timing or harness, no work outside the timed calls, no caching or replaying outputs, nothing below the allowed precision. Final places are the medians of reruns on held-out data and nearby shapes, so judge variants by seed means; follow the spirit (upstreamable speedups). [external: llms.txt:112, 135-139]
 3. **Withdraw reward-hacky runs** with `okc withdraw <job>` and tell Jihoon. [hard] [external: llms.txt:137]
 4. **CUDA-graph capturable.** [hard] No host sync, no allocations or control flow that depend on input values; branching on shapes and `config` is fine. [external: llms.txt:106]
 5. **Weights keep their precision.** [hard] Lossless repacking only (NVFP4 stays NVFP4, BF16 stays BF16; in-kernel dequant is fine). The FP32 router may run as BF16 hi + lo with FP32 accumulation. [external: llms.txt:107]

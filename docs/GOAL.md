@@ -16,8 +16,8 @@ The ranks change at the kernel close, 2026-11-05 17:00 KST (R-20261024-1).
 
 ## Optimize vs spend (R-20261024-2)
 Optimize two things: the score (board speedup at scored shapes; serving throughput) and the speed of
-our experiment loop, whose bottleneck is the judge's ~11 runs of ours per hour (pack new information into
-each run). Anything else no hard limit bounds is a resource to spend,
+our experiment loop, whose bottleneck is the judge starting our runs one at a time (FINDINGS "Judge
+queue"; pack new information into each run). Anything else no hard limit bounds is a resource to spend,
 never a second objective: GPU memory, power, SMs, `prepare` and compile time, daily quotas, local GPUs,
 agent time. In serving, HBM costs only the KV pool the judge's loads use.
 
