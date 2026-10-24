@@ -1,0 +1,66 @@
+PROJ_LT_REJECT module reason=Error building extension 'muse_decode_lt_bfa94020ea43': [1/3] ccache /usr/local/cuda/bin/nvcc -MD -M
+PROJ_TUNE t=1 name=qkv_gate best=cublas us=18.50 all=[('custom', 23.77600036561489), ('cublas', 18.49599927663803)]
+PROJ_TUNE t=1 name=o best=cublas us=10.46 all=[('custom', 15.424000099301338), ('cublas', 10.463999584317207)]
+PROJ_TUNE t=1 name=pool_router best=cublas us=27.90 all=[('custom', 37.087999284267426), ('cublas', 27.904000133275986)]
+PROJ_TUNE t=1 name=unpooler_slice best=cublas us=10.69 all=[('custom', 11.711999773979187), ('cublas', 10.688000358641148)]
+PROJ_TUNE t=8 name=qkv_gate best=cublas us=18.43 all=[('custom', 23.32800067961216), ('cublas', 18.432000651955605)]
+PROJ_TUNE t=8 name=o best=cublas us=10.50 all=[('custom', 16.095999628305435), ('cublas', 10.495999827980995)]
+PROJ_TUNE t=8 name=pool_router best=cublas us=28.22 all=[('custom', 37.567999213933945), ('cublas', 28.224000707268715)]
+PROJ_TUNE t=8 name=unpooler_slice best=cublas us=10.88 all=[('custom', 12.319999746978283), ('cublas', 10.879999957978725)]
+PROJ_TUNE t=16 name=qkv_gate best=cublas us=18.02 all=[('custom', 23.96799996495247), ('cublas', 18.015999346971512)]
+PROJ_TUNE t=16 name=o best=cublas us=10.43 all=[('custom', 16.00000075995922), ('cublas', 10.432000271975994)]
+PROJ_TUNE t=16 name=pool_router best=cublas us=26.85 all=[('custom', 36.99199855327606), ('cublas', 26.847999542951584)]
+PROJ_TUNE t=16 name=unpooler best=cublas us=21.95 all=[('custom', 32.51200169324875), ('cublas', 21.95199951529503)]
+PROJ_TUNE t=32 name=qkv_gate best=cublas us=18.21 all=[('custom', 25.919999927282333), ('cublas', 18.20800080895424)]
+PROJ_TUNE t=32 name=o best=cublas us=10.59 all=[('custom', 17.311999574303627), ('cublas', 10.591999627649784)]
+PROJ_TUNE t=32 name=pool_router best=cublas us=29.02 all=[('custom', 39.903998374938965), ('cublas', 29.023999348282814)]
+PROJ_TUNE t=32 name=unpooler best=cublas us=22.05 all=[('custom', 33.08799862861633), ('cublas', 22.048000246286392)]
+PROJ_TUNE t=128 name=qkv_gate best=cublas us=21.15 all=[('custom', 22.112000733613968), ('cublas', 21.15200087428093)]
+PROJ_TUNE t=128 name=o best=cublas us=11.04 all=[('custom', 11.264000087976456), ('cublas', 11.04000024497509)]
+PROJ_TUNE t=128 name=pool_router best=custom us=26.88 all=[('custom', 26.87999978661537), ('cublas', 28.416000306606293)]
+PROJ_TUNE t=128 name=unpooler best=cublas us=23.04 all=[('custom', 23.391999304294586), ('cublas', 23.04000034928322)]
+PROJ_TUNE t=256 name=qkv_gate best=cublas us=23.20 all=[('custom', 24.480000138282776), ('cublas', 23.19999970495701)]
+PROJ_TUNE t=256 name=o best=cublas us=13.02 all=[('custom', 13.088000006973743), ('cublas', 13.024000450968742)]
+PROJ_TUNE t=256 name=pool_router best=custom us=33.79 all=[('custom', 33.79200026392937), ('cublas', 34.17599946260452)]
+PROJ_TUNE t=256 name=unpooler best=custom us=27.90 all=[('custom', 27.904000133275986), ('cublas', 28.960000723600388)]
+FA3_TUNE batch=1 window=2048 best=(0, True) us=19.52 all=[(20.287999883294106, (0, None)), (19.519999623298645, (0, True)), (20.416000857949257, (0, False)), (33.92000123858452, (1, None)), (34.01599824428558, (1, True)), (33.47200155258179, (1, False)), (27.83999964594841, (2, None)), (28.384000062942505, (2, True)), (27.295999228954315, (2, False)), (23.231999948620796, (4, None)), (22.784000262618065, (4, True)), (22.911999374628067, (4, False)), (21.95199951529503, (8, None)), (20.927999168634415, (8, True)), (22.272000089287758, (8, False)), (21.088000386953354, (16, None)), (20.031999796628952, (16, True)), (21.407999098300934, (16, False)), (19.711999222636223, (32, None)), (19.7759997099638, (32, True)), (21.15200087428093, (32, False)), (19.807999953627586, (64, None)), (19.711999222636223, (64, True)), (21.15200087428093, (64, False)), (20.22399939596653, (128, None)), (19.807999953627586, (128, True)), (20.54399996995926, (128, False))]
+FA3_TUNE batch=1 window=0 best=(128, None) us=32.42 all=[(33.1839993596077, (0, None)), (32.70399942994118, (0, True)), (93.40800344944, (0, False)), (686.6239905357361, (1, None)), (688.9600157737732, (1, True)), (691.8079853057861, (1, False)), (344.2879915237427, (2, None)), (345.12001276016235, (2, True)), (344.67199444770813, (2, False)), (178.5919964313507, (4, None)), (177.18400061130524, (4, True)), (179.9039989709854, (4, False)), (96.6079980134964, (8, None)), (96.96000069379807, (8, True)), (96.92800045013428, (8, False)), (59.61599946022034, (16, None)), (60.63999980688095, (16, True)), (96.99200093746185, (16, False)), (40.352001786231995, (32, None)), (40.352001786231995, (32, True)), (100.35199671983719, (32, False)), (32.735999673604965, (64, None)), (32.76799991726875, (64, True)), (93.98400038480759, (64, False)), (32.416000962257385, (128, None)), (32.70399942994118, (128, True)), (95.58399766683578, (128, False))]
+FA3_TUNE batch=16 window=2048 best=(4, None) us=24.70 all=[(25.087999179959297, (0, None)), (25.05600079894066, (0, True)), (34.65599939227104, (0, False)), (33.76000002026558, (1, None)), (33.663999289274216, (1, True)), (34.432001411914825, (1, False)), (28.863999992609024, (2, None)), (30.33600002527237, (2, True)), (36.448001861572266, (2, False)), (24.70399998128414, (4, None)), (25.567999109625816, (4, True)), (34.36800092458725, (4, False)), (24.831999093294144, (8, None)), (24.960000067949295, (8, True)), (35.10399907827377, (8, False)), (25.407999753952026, (16, None)), (24.70399998128414, (16, True)), (34.52799841761589, (16, False)), (25.248000398278236, (32, None)), (26.335999369621277, (32, True)), (35.10399907827377, (32, False)), (25.66399984061718, (64, None)), (25.34399926662445, (64, True)), (34.591998904943466, (64, False)), (25.37599951028824, (128, None)), (25.82399919629097, (128, True)), (34.52799841761589, (128, False))]
+FA3_TUNE batch=16 window=0 best=(0, None) us=182.43 all=[(182.43199586868286, (0, None)), (183.26400220394135, (0, True)), (656.3199758529663, (0, False)), (652.0320177078247, (1, None)), (652.6079773902893, (1, True)), (648.8000154495239, (1, False)), (339.32799100875854, (2, None)), (340.4160141944885, (2, True)), (647.1999883651733, (2, False)), (182.43199586868286, (4, None)), (182.75199830532074, (4, True)), (648.6719846725464, (4, False)), (182.6239973306656, (8, None)), (182.97599256038666, (8, True)), (648.0000019073486, (8, False)), (183.20000171661377, (16, None)), (183.1360012292862, (16, True)), (656.0320258140564, (16, False)), (182.97599256038666, (32, None)), (182.52800405025482, (32, True)), (655.7120084762573, (32, False)), (182.68799781799316, (64, None)), (184.64000523090363, (64, True)), (650.7840156555176, (64, False)), (183.55199694633484, (128, None)), (183.4239959716797, (128, True)), (646.3040113449097, (128, False))]
+FA3_TUNE batch=32 window=2048 best=(16, None) us=28.90 all=[(29.56799976527691, (0, None)), (29.08799983561039, (0, True)), (34.94400158524513, (0, False)), (35.64799949526787, (1, None)), (34.272000193595886, (1, True)), (34.40000116825104, (1, False)), (29.791999608278275, (2, None)), (29.472000896930695, (2, True)), (34.33600068092346, (2, False)), (29.08799983561039, (4, None)), (30.30399978160858, (4, True)), (35.711999982595444, (4, False)), (30.559999868273735, (8, None)), (29.440000653266907, (8, True)), (34.46400165557861, (8, False)), (28.896000236272812, (16, None)), (30.719999223947525, (16, True)), (35.26400029659271, (16, False)), (30.81599995493889, (32, None)), (29.7279991209507, (32, True)), (35.45600175857544, (32, False)), (29.759999364614487, (64, None)), (30.912000685930252, (64, True)), (34.272000193595886, (64, False)), (30.81599995493889, (128, None)), (30.592000111937523, (128, True)), (35.392001271247864, (128, False))]
+FA3_TUNE batch=32 window=0 best=(8, None) us=344.22 all=[(344.7679877281189, (0, None)), (345.0239896774292, (0, True)), (657.151997089386, (0, False)), (665.120005607605, (1, None)), (656.6399931907654, (1, True)), (655.4880142211914, (1, False)), (346.6559946537018, (2, None)), (346.49598598480225, (2, True)), (651.3919830322266, (2, False)), (344.60800886154175, (4, None)), (345.4720079898834, (4, True)), (650.7200002670288, (4, False)), (344.2240059375763, (8, None)), (345.12001276016235, (8, True)), (664.8640036582947, (8, False)), (344.543993473053, (16, None)), (346.3999927043915, (16, True)), (651.6159772872925, (16, False)), (346.2719917297363, (32, None)), (347.3280072212219, (32, True)), (656.063973903656, (32, False)), (345.0559973716736, (64, None)), (346.3999927043915, (64, True)), (650.4960060119629, (64, False)), (346.43200039863586, (128, None)), (347.29599952697754, (128, True)), (650.9760022163391, (128, False))]
+PDL_TUNE t=1 phase=b1 best=True us=11.42 all=[(False, 11.839999817311764), (True, 11.42400037497282)]
+PDL_TUNE t=1 phase=b2 best=False us=12.19 all=[(False, 12.191999703645706), (True, 12.256000190973282)]
+PDL_TUNE t=8 phase=b1 best=False us=12.42 all=[(False, 12.415999546647072), (True, 12.480000033974648)]
+PDL_TUNE t=8 phase=b2 best=True us=11.81 all=[(False, 12.992000207304955), (True, 11.807999573647976)]
+PDL_TUNE t=16 phase=b1 best=True us=10.05 all=[(False, 10.495999827980995), (True, 10.048000141978264)]
+PDL_TUNE t=16 phase=b2 best=True us=10.37 all=[(False, 10.784000158309937), (True, 10.367999784648418)]
+PDL_TUNE t=32 phase=b1 best=True us=10.37 all=[(False, 10.71999967098236), (True, 10.367999784648418)]
+PDL_TUNE t=32 phase=b2 best=True us=10.40 all=[(False, 10.495999827980995), (True, 10.400000028312206)]
+PDL_TUNE t=128 phase=b1 best=False us=12.03 all=[(False, 12.032000347971916), (True, 12.768000364303589)]
+PDL_TUNE t=128 phase=b2 best=True us=12.06 all=[(False, 12.640000320971012), (True, 12.06399966031313)]
+PDL_TUNE t=256 phase=b1 best=True us=15.65 all=[(False, 16.00000075995922), (True, 15.647999942302704)]
+PDL_TUNE t=256 phase=b2 best=True us=16.10 all=[(False, 16.767999157309532), (True, 16.095999628305435)]
+MOE_PLAN fixed {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'v9'}
+PREFIX_REJECT t=1 kind=fused pdl=False reason=name 'o_and_pool' is not defined
+PREFIX_REJECT t=1 kind=fused pdl=True reason=name 'o_and_pool' is not defined
+PREFIX_TUNE t=1 best=('regular', True) us=44.54 all=[(('regular', False), 45.21600157022476), (('regular', True), 44.544000178575516)]
+PREFIX_REJECT t=8 kind=fused pdl=False reason=name 'o_and_pool' is not defined
+PREFIX_REJECT t=8 kind=fused pdl=True reason=name 'o_and_pool' is not defined
+PREFIX_TUNE t=8 best=('regular', False) us=45.89 all=[(('regular', False), 45.88799923658371), (('regular', True), 46.1760014295578)]
+PREFIX_REJECT t=16 kind=fused pdl=False reason=name 'o_and_pool' is not defined
+PREFIX_REJECT t=16 kind=fused pdl=True reason=name 'o_and_pool' is not defined
+PREFIX_TUNE t=16 best=('regular', False) us=44.38 all=[(('regular', False), 44.38399896025658), (('regular', True), 45.85599899291992)]
+PREFIX_REJECT t=32 kind=fused pdl=False reason=name 'o_and_pool' is not defined
+PREFIX_REJECT t=32 kind=fused pdl=True reason=name 'o_and_pool' is not defined
+PREFIX_TUNE t=32 best=('regular', False) us=45.63 all=[(('regular', False), 45.632001012563705), (('regular', True), 46.39999940991402)]
+PREFIX_REJECT t=128 kind=fused pdl=False reason=name 'o_and_pool' is not defined
+PREFIX_REJECT t=128 kind=fused pdl=True reason=name 'o_and_pool' is not defined
+PREFIX_TUNE t=128 best=('regular', True) us=49.28 all=[(('regular', False), 50.11200159788132), (('regular', True), 49.27999898791313)]
+PREFIX_REJECT t=256 kind=fused pdl=False reason=name 'o_and_pool' is not defined
+PREFIX_REJECT t=256 kind=fused pdl=True reason=name 'o_and_pool' is not defined
+PREFIX_TUNE t=256 best=('regular', True) us=63.26 all=[(('regular', False), 63.29599767923355), (('regular', True), 63.26399743556976)]
+PERSIST_TUNE t=1 best=regular us=92.96 all=[('regular', 92.96000003814697), ('persistent', 109.63200032711029)]
+PERSIST_TUNE t=8 best=regular us=128.70 all=[('regular', 128.7039965391159), ('persistent', 144.99199390411377)]
+PERSIST_TUNE t=16 best=regular us=160.90 all=[('regular', 160.89600324630737), ('persistent', 196.44799828529358)]
+PERSIST_TUNE t=32 best=regular us=227.49 all=[('regular', 227.48799622058868), ('persistent', 285.43999791145325)]
