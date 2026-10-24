@@ -11,7 +11,7 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Source: transcript:147. Answered "What is the real goal? The prizes are only on the serving board
   (Nov 5–19). The kernel boards pay nothing, but they lead into serving through queue priority and
   kernels we can port into SGLang."
-- Effect: G0 (GOAL).
+- Effect: G0 from the kernel close (2026-11-05 17:00 KST); until then R-20261024-4 (GOAL).
 
 ## R-20261023-2 — 2026-10-23 14:37 KST — private GitHub repo
 > Private GitHub repo (Recommended)
@@ -85,14 +85,15 @@ question-tool label is Jihoon's word; the question and option text are agent con
 - Effect: rule 16.
 - Confirmed: the answer to the standing-rule question.
 
-## R-20261024-1 — 2026-10-24 00:30 KST — G3 above G2 until the kernel close
+## R-20261024-1 — 2026-10-24 00:30 KST — G1 above G2 after the kernel close
 > G3 first until 11-05
 
 - Source: `/home/jihoon/.claude/projects/-home-jihoon/70737187-e5b5-4d2f-a79a-2ce9414b9a0a.jsonl`:6780
   (question-tool label, asked from the jihoon-a5 session). Answered "when they conflict, does G2 (H200
   kernels at serving's shapes) rank above G3 (top 50 on the overall kernel board by 11-05, which only
   moves our serving runs to the front of the queue)?"
-- Effect: GOAL subgoal ranking G1 > G3 > G2 until 2026-11-05 17:00 KST, then G1 > G2.
+- Effect: after the kernel close (2026-11-05 17:00 KST), G1 ranks above G2. The ranking until the close is
+  R-20261024-4's.
 
 ## R-20261024-2 — 2026-10-24 03:09 KST — optimize the score, spend everything else
 > Ok. aware of that quota. submit regularly. and please carefully discriminate the things to optimize and things to spend. for example, if there is no constraint about the memory, we can just freely spend the resources. if power not specified, we can use more power. just focus on our optimization and treat everything else as a resource. do not treat it as a resource and try to minimize it together.
@@ -122,4 +123,16 @@ question-tool label is Jihoon's word; the question and option text are agent con
   inside prepare() of a proj/MoE submission via `tools/h200_lab.py`, given llms.txt's "do work outside the timed
   calls"; the reading offered: that clause targets moving the timed computation out of the timed calls, and a lab
   computes nothing the timed calls return).
+
+## R-20261024-4 — 2026-10-24 20:30 KST — 1st on the overall kernel board is G0 until the close
+> our goal is to reach 1st place in the leaderboard. https://openkernelchallenge.dev/leaderboard. so in SOTA docs, include the result in the leaderboard-based score as well. so, what is needed more to reach much higher score?
+
+> Kernel #1 replaces G0
+
+- Source: transcript:19287 (message) and transcript:19398 (question-tool label). Answered ""1st place in the
+  leaderboard": which board do you mean, and should it change the goal tree?" The chosen option read:
+  "1st on the overall kernel board becomes the ultimate goal until 11-05. Serving-only work (prefill port,
+  TTFT margin, HiCache) drops below every decode-layer lever until the kernel close."
+- Effect: G0 until 2026-11-05 17:00 KST is 1st place on the overall kernel board; GOAL ranks G3 > G2 > G1
+  until then. SOTA keeps a leaderboard section (overall rank and modeled overall score).
 
