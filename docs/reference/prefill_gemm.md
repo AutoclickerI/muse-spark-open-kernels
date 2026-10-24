@@ -200,6 +200,7 @@ Current hashes, commands and evidence live in
 `problems/muse_bf16_proj/dev/NEXT_CHECKS.md`, `runs/screen/prefill_gemm/`.
 The actual single-file candidate is `problems/muse_prefill_layer/cand_v11_gemm.py`; its
 V11 integration preserves the original router/routing/pooler group as incumbent.
-Direct dense rates from dafbcad0 are established above. This candidate's H200 selections,
-whole-layer effect and cold prepare, full TP8 serving agreement/capacity and TTFT remain
-unverified. Dense tuning stopped; this lane moved to M128/256 grouped MoE.
+Direct dense rates from dafbcad0 are established above. `cand_v11_gemm` has no H200 result yet:
+receipt `d318167eedfd4c19` (1.419x) was `cand_expert_tma_cluster`'s run, which okc_run wrongly
+credited to this file (FINDINGS "Failures"); it was re-sent on 2026-10-24. Dense prefill stays open
+until its receipt lands.

@@ -1,113 +1,59 @@
-# Queued: V11 dense portfolio; dense work stopped
+# Decode verify projection handoff: wait for H200, then select
 
-Jihoon screened this source and queued it at2.0. Do not resend or edit it.
+Solo/GPU0 only/no commits. Proj lab sends authorized this round; no decode sends.
+Do not resend these sources. Best scored pathf3786341611f4f1f stays in each host.
 
-Solo, GPU0 only. Jihoon/orchestrator sends and commits; no send/commit was launched here.
+|Order|Payload|Payload SHA256|State|
+|---|---|---|---|
+|1|`prof/lab/verify_proj_library.py`|`4afe98071d4e2cb84cbe7219d5b2ab9f4d2ff3b480dba364247a6e1b73cfbff0`|landed596b2a5d436e4fee; H200 shortlist embedded|
+|2|`prof/lab/verify_proj_tma_v2.py`|`b0cfbb95563cfec323155067fa4b6a2b6e1183fcaf8f60d364e367e5d53244f7`|priority0 local queue; detached PID2590197|
 
-**`problems/muse_prefill_layer/cand_v11_gemm.py`**
+Host `lab/lab_verify_proj_library.py` SHA
+`4985f1abaabb2357013a5020e322c43cf16b41ce1dedbeaff8123084b4ba2a9a`.
+Host `lab/lab_verify_proj_tma_v2.py` SHA
+`da5dc4b017a5d0bdfcc2d0c2d8b2b1875c3e757355506c0ddae1960034c0e37f`.
+Both9/9 correctness+30/30 graph shapes on sm120; prepare4.873s/2.091s with caches.
+CUDA sources compile SM90a. Library H200 total prepare14.1s/lab4.3s; native cold
+prepare/execution/speed and the whole-layer H200 effect remain unverified.
 
-Frozen SHA256: **`1b30690ad9e4c6d67f9efc70d8a8cb8e7395765380ba75774b377f701ccfd390`**.
-First line: `# okc: problem=muse_prefill_layer`.
-Parent `cand_v11.py` SHA5162da15f86b3ab5d28fe9cd4db9d0dbce778e1bdace526ab87e7f69acfc643e;
-its full attention, expert and norm/residual code remains intact. This thread owns only
-this new prefill candidate; other lane candidates and serving sources were not edited.
+**Invalid diagnostic**: native v1 job6b72087f64584258, payloadfe4c63e5…,
+hostdcbbd88d… reinitializes live mbarriers between persistent tiles. It reached the
+judge before cancellation; the CLI has no execution cancellation. Never use its
+selection or resend it. Its scored kernel_fn remains the original incumbent.
+V2 fixes barrier lifetime and cluster acquire; read_results.py refuses the v1 job.
 
-| Final local admission, sm_120 / GPU0 | Result |
-|---|---|
-| `tools/local_eval.py` | **5/5 official tests,8/8 fresh-input graph shapes**, **173.161s prepare**, exact frozen hash |
-| New QKV numerical/timing suite | **57 configurations**,171 fresh admission replays +1140 cold timed pairs, all within incumbent guards |
-| Forced Hopper Python/ABI | **136 actual emitted configurations /7 QKV families**, strict signature stubs; shape/stride/dtype checks; no invented entrypoints |
-| Failure isolation | **12** attribute/tuple group failures rejected; original V11 group retained at all3 shapes; injected block failure returns original prepared V11 state |
-| Hopper profiler glue | Hopper-only branch forced with real portable BF16 GEMMs and CUDA profiler; actual CUDA kernel names/durations returned for all5 roles |
-| SM90 compile | **18** swapped WGMMA specializations +**12** packing layouts build; Lt wrapper builds SM90a; existing WGMMA math body unchanged |
-| Receipt tail | All**50** local compact lines fit in the last16K (4731 characters); H200 stock-kernel names add roughly1.3K |
+Corrected native:37 compiled tile/ring specializations; Kgroup1/2/4 and SM-sized grids.
+sm120:342 executable configs/output dtype,2148 fresh checks (maxrel0.001680),8 target keys.
+Force full Hopper lab:73 emitted families/1247 calls,8 keys,4 real PDL chains and
+AttributeError rejection. Actual PDL M128/256×bothflags×fresh3 pass.4781 compact chars.
+Real multicast separately passed24 target cases but takes seconds on sm120; the final
+portable transport stand-in uses ordinary TMA. This is not an H200 timing claim.
 
-Evidence directory: `runs/screen/prefill_gemm/`:
-`muse_prefill_layer.cand_v11_gemm.json`, `cand_v11_gemm.log`, `qkv_layouts.json`,
-`qkv_sm90.log`, `v11_gemm_glue4.log`, `qkv_geometry.json`.
-The glue fixture is byte-identical to the final candidate (SHA above). The official
-screen JSON records that hash; no final source edit followed it.
+Self-contained drop-in: `dev/verify/projection_dropin.py` SHA
+`97c874743a23ab6eef0beee32cbd153e436b193e811eaaaaab5dea78dac8450a`.
+Interface, integration and shape table: `dev/verify/README.md`.
+`verify_proj_bind(incumbent)` returns the unchanged5-argument project ABI before prepare.
+`verify_proj_prepare(state, incumbent, prepare_entry+240, recipes=None)` defaults to the
+embedded7 H200-positive Lt choices and times only a measured
+shortlist; module construction precedes fair per-key budgets. All optional Exceptions
+reject; the incumbent holds elsewhere. PDL is measured in the lab, disabled in the block.
+Full-layer forced integration:13/13 tests+12/12 graphs,3.264s prepare;10 static checks pass.
+Shortlist/dispatch:32 actual native/library trials+140 fresh/stride/replacement-weight
+cases, expired/short budgets, unknown family and missing module rejection pass.
+Evidence: `runs/screen/verify_proj/` (`grouped_validation_v2.log`, `grouped_lab_glue_v2.log`,
+`install_validation.log`, `integration_fixture.json`, `lab_tma_v2.json`).
 
-## What the run measures
+Library measured: M128 qkv21.104->20.224us (NN23,paired0.9549), unpooler
+24.000->22.960us (NN0,0.9574); remaining shapes near parity, M256 o retains cuBLAS.
+Full H200-recipe fixture forces all7 layouts:13/13 tests+12/12 graphs,4.877s prepare,
+default20 replays/3 fresh inputs, all10 static checks pass. Final block AST matches
+the tested fixture; C++ strings are byte-identical and source lines<=267.
+Next: read the corrected v2 receipt when it lands.
+`dev/verify/read_results.py <receipts> --recipes /tmp/recipes.py` emits H200-positive
+recipes only. Retime them in the decode layer; add selected times to its NEXT_CHECKS.
+The isolated M128 gains are verified; whole-layer H200 speed and TP8 serving agreement
+are unverified. All current H200 raw times/paired ratios are in dev/verify/README.md.
 
-V11's original matmuls control qkv_gate/o/pooler/unpooler. Its original concatenated
-512-wide FP32 router, unchanged512-wide routing consumer, counts and pooler order control
-the **whole** router/pooler group. Choices are V11; V11 router +tuned pooler; tuned router
-+V11 pooler; both tuned separately; mixed pooler/router. The actual routing consumer is
-included in every group timing, so a spare add/packing launch cannot bias the comparison.
-Raw logits/pooler admission uses1e-4 FP32 /1% BF16; routing checks permit only the layer's
-near-tie score differences. IDs remain int32 and route weights FP32. Final selected paths
-also pass the complete-layer official tests and graph checks locally.
-
-The block retains all returned Lt heuristics with1GiB workspace, supported swizzles and
-FP32 split-K, TN/NN lossless layouts, persistent WGMMA and in-kernel last-CTA Stream-K.
-New qkv families target N2304/K8192 at M16384:
-
-- `qkv_chunk`:512/1024/2048/4096/8192 token chunks, stock cuBLAS or Lt TN/NN; writes
-  directly into final contiguous BF16 output slices, no concat/copy launch.
-- `qkv_pad`: lossless zero padding to N2560/3072/4096, every returned TN/NN Lt heuristic;
-  timed BF16 packing restores the exact2304-column interface.
-- `qkv_swap`: computes W@X.T in the alternate physical output orientation, then a timed
-  transpose; the NN activation transpose is timed too.
-- `qkv_swap_persistent`: same swapped orientation with persistent/Stream-K WGMMA.
-
-M16384 qkv gets four shares of the dense budget. Each successful QKV family has a cold
-20-pair finalist before selection where budget permits; compact `PG_QKV` lines retain
-both losing and winning families. All variants/finalists reject **any Exception**. Block
-or diagnostic failure retains V11. The incumbent remains eligible; no output is cached.
-
-Dense trial deadline210s and group deadline225s are measured from prepare entry, including
-V11 setup. Early synthetic H200 profiling consumes that same budget. An in-flight JIT
-cannot be preempted; the remaining margin is below the requested~240s/official300s limit.
-`PGC_KERNEL` identifies actual stock op/tactic attribution at M16384; `PG_PICK`, `PG_QKV`,
-`PGC_TRIAL`, `PGC_GROUP` and `PGC_END` print last after all compiler/rejection chatter.
-
-## QKV attribution corrected
-
-[Direct H200 evidence](../../../docs/reference/prefill_gemm.md#direct-h200-measurements-dense-tuning-stopped).
-Receipt dafbcad024fe4dcd directly times M16384 qkv at766–806us, about80% peak.
-The old437.7TF/s /44.3% and146.5ms recoverable-gap allocation was wrong: identical kernel
-names aggregate different GEMMs. The naive-traffic/tile model does not establish a cache
-cause. Stop dense tuning; the queued experiment remains frozen for its receipt.
-
-Focused shared **sm_120**20-pair result: new chunk4096 NN **2380.86->2286.14us**, paired
-ratio0.96352. The complete candidate under heavier shared load selected the same variant,
-ratio0.99357; local timing is noisy and is not an H200 prediction. Padding/swap alternatives
-are retained for H200 selection even where they lost locally. At M3012 no new layout beats
-the local incumbent in the focused test; the tuner retains its existing eligible controls.
-
-## Block/serving source handoff
-
-Serving `layers/muse_prefill_gemm.py`: SHA256 **`d0414cd4d1742c67e5ebb45b952bea105f37eeaceeaf09e9941090dfd8bdd7d6`**.
-Copyable `dev/prefill_gemm_block.py`: SHA256 **`75d47832592cd4d50636cd9e179d89922dc44b2ce5115533adbf54f3952d1fd2`**.
-The candidate embeds the block, with no imports of our repository modules. V11 provenance
-and candidate generation are in `dev/build_v11_gemm.py`; it refuses to overwrite changed
-sources. Future revisions need a new output filename after this send.
-
-The original block interface remains `prefill_gemm_prepare`/`prefill_gemm_run`, BF16 dense
-and summed FP32[M,256] router output. Serving integration retains all collectives and norms.
-Only selected padded/NN copies remain after tuning. The candidate's true V11 group control
-is stronger than the earlier local fixture's generic two-product-router control.
-
-Reproduce:
-
-```sh
-CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py problems/muse_prefill_layer/cand_v11_gemm.py --json runs/screen/prefill_gemm/muse_prefill_layer.cand_v11_gemm.json
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/validate_v11_gemm.py problems/muse_prefill_layer/cand_v11_gemm.py
-CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/test_qkv_prefill_layouts.py
-CUDA_VISIBLE_DEVICES=0 tools/img env PYTHONPATH=$PWD/serving/sglang/python python serving/tests/compile_qkv_prefill_layouts.py
-python problems/muse_bf16_proj/dev/qkv_geometry.py
-```
-
-## Existing queues and what remains
-
-Jihoon applied the triage in991e838:14 subsumed singles withdrawn/deleted. Only
-`cand_reduce_hier.py` (extra hierarchical tiles) and `cand_tile.py` (distinct staged MMA)
-remain queued. No additional cancellation is needed. Do not recreate the deleted singles.
-The owner-fixed `cand_portfolio_all.py` retry remains the orchestrator's source.
-`cand_dflash_diag.py` is frozen9b4fae2fc29251d8279112f2cd1ff65899b2a249c7618af3fdd97132aa28715a
-and queued; Jihoon will provide its receipt. No queued source was changed here.
-
-Next: read the already queued candidate's H200 selections and layer score when it lands.
-Active work is the distinct M128/256 persistent grouped TMA MoE candidate. No further dense
-work is justified. Full TP8 serving agreement/KV capacity/TTFT remain unverified.
+Open: denseV11 cand_v11_gemm re-sent 10-24 (d318167e was tma_cluster's run, misattributed by okc_run).
+Glue parked; tile721290f2278841d2=.808x closed. MoE lane owns tma_grouped work.
+Owner-fixed portfolio_all, dflash_diag, reduce_hier remain queued and untouched.

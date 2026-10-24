@@ -10,11 +10,18 @@ from code, config or spec), **model** (an estimate under stated assumptions; num
 - **Static:** proj `generate_weights` makes an iid FP32 router at std `1/sqrt(8192)` and supplies no router bias or norms. It is not the decode router (`.045` noise, `.07` stream-mean alignment, `.055` bias). A proj-host timing with that matrix would not answer the real-routing question. `prof/lab/moe_real_routing.py` therefore labels generated fixtures separately and accepts the decode host’s full loaded weights.
 - **Decision:** one additional decode-host lab slot is necessary to measure the loaded real router; this overrides the default preference to reserve decode slots for candidates. The first proj-host run remains useful as a second router sample and board-routing comparison. Both use the lab tool, not candidate submissions.
 - **Fixture correction:** `moe_tune.make_fixture` now applies `DRAFT_SHARE=.6` to rows 1–7 of every verify block at M8/128/256, matching `reference.generate_input`; previously M128/256 incorrectly used decode-style sharing on every row. `q_len` is explicit for other shapes. Local default-vs-explicit checks preserve M16/32 decode routing and change M128/256 routing; the generated model moves M256 from 604 pairs/7 experts/hot256 to 558/22/hot235. Compressed routing export round-trips all 3,520 core slots in 1,176 characters, so a later lab can complete missing rows on proj quota.
-- **Queued evidence:** proj job `c8c89f9f111845af` is accepted (generated router, earlier sharing fixture); corrected exact loaded-router job `26d7e05ab97d4f96` is accepted on decode. The corrected library-reference run remains in the local priority queue. No H200 winner has been inferred from local timings.
-- **Checked locally:** proj host 9/9 tests; decode host 13/13 tests; 126 forced native/grouped/Humming launch paths at M8/16/32/128/256/512/753, including grouped/Humming CUDA graph capture. H200 results are pending. The payload records graph GPU us including fixed graph cost, 128 MiB L2 flushes, six paired order-swapped repeats over three refreshed fixtures, and three-fixture agreement with V9.
-- **V19 static hazards:** this lab measures the native V19 path (`permute=0`, resident grid). Its optional `grid2` autotuner path multiplies the occupancy-limited grid by two (`cand_v19.py:821,1076`), while the CUDA kernel’s global barrier waits for all `gridDim.x` CTAs (`:544`): pending CTAs cannot become resident while resident CTAs spin. Its interleave map `(u*17+3)%total` (`:131`) is not a permutation when `total` is divisible by 17; for `total=512*17`, only 512 of 8,704 tasks are distinct. These options are not eligible from this lab; the original V19 autotuner needs repair before an H200 run. Evidence: `runs/screen/moe_v19_static_audit.json` (static proof, not an observed H200 hang).
+- **Exact loaded-weight result (critical):** `26d7e05ab97d4f96` completed 252 timings in 174.9 s (prepare 211.7 s). R fixture0 M256 is 414 pairs/21 experts/hot119; the loaded router is real but differs from the earlier 672/8/221 sample. **V11 and original Humming fail agreement on every M/routing** (typically relative L2 ~28%, per-row ~40–65%). The generated bank used constant GS across experts; loaded decode weights vary GS by expert. Local tests with decode-generated weights and varied GS pass all 30 refreshed Humming-vs-Marlin graphs (0.59–0.66% relative L2), so GS variation alone does not reproduce the failure on sm120. The H200 path remains under investigation; the c8c89 Humming speedup must not be treated as an admissible loaded-weight win. Valid native minima are effectively V9 at M8/16/32/128/256 = 73.8/76.9/113.4/279.0/478.5 us; V19/V9_phase differ within noise. Marlin wins M512/753 at 563.3/715.9 us, while every grouped/TMA path loses. Full table includes both receipts; Humming's missing rows are explicit correctness errors.
+- **Humming failure follow-up (primary source, not a diagnosis):** upstream [issue31](https://github.com/vllm-project/humming/issues/31) and [PR52](https://github.com/vllm-project/humming/pull/52) describe indexed Stream-K repeatedly rounding partials through BF16 output, specifically for MXFP4A8/H20. That report does not establish the cause of our NVFP4A16/H200 error. H8 already disables Stream-K for every M in this sweep, so the queued extra-family lab tests that alternative directly without editing the installed library.
+- **Bound changes with routing (inference):** loaded-router fixture0 touches18/21 experts at M128/256, versus8 in the earlier 0e942 profile sample. Reading one NVFP4 bank per touched expert is509.6/594.5 MB; at the assumed4.8 TB/s rate the weight-only lower bounds are106/124 us. Its209/414 local pairs require21.0/41.7 GFLOP. These are fixture0 bounds, not bounds on the median over three routing fixtures; the earlier~70 us estimate does not apply to every router seed.
+- **H200 result:** proj lab `c8c89f9f111845af` completed all 280 graph timings in 204.9 s (prepare 212.7 s, 72.3 s left). It uses generated-router weights and the earlier verify-sharing fixture. R-model minima at M8/16/32/128/256 are V19 73.9 / V19 95.0 / V9_phase 133.4 / Marlin 284.7 / V11 401.5 us. V9 is 74.0/96.6/135.1/292.5/543.2 us. All 12 TMA choices lose; best M128/256 is 554.0/835.7 us. Prefill M512/753 favors original Humming at 510.9/658.1 us vs V9 993.3/1440.6. Full table: `prof/lab/moe_real_routing_h200.md`; numeric data beside it. Native comparisons pass three-fixture V9 agreement. V11 phase probes had an AttributeError (bank has no expert_map); end-to-end timings are unaffected and the probe is repaired locally (168 launch/phase paths, 12 static checks).
+- **Remaining Humming coverage:** `907004cbcc7c4b82` is accepted on the proj host. `build_moe_humming_real_routing.py` consumes job26d7e05’s compressed route export: H2/H4/H5/H6/H6k/H7/H8, the earlier per-M native winners, corrected local-only BF16 reference, and repaired V11 phases, at all five core M values. H3 is the same timed TMA/warp-specialized route/combine path as V11. The follow-up uses independent log-normal FP32 GS per expert (seed555), rather than the constant GS that hid the H200 failure. Local coverage passes35 additional forced Hopper Humming graphs plus168 common launch/phase paths,9/9 host tests,and26 static checks. A separate arithmetic run passes210 refreshed SM120 graphs across H2/H4/H5/H6/H6k/H7/H8, all five M values and both routings, with varied FP32 expert scales; H200 agreement remains pending. No candidate was submitted by this lane.
+- **Library-reference H200 result:** `897a1606858d444a` completed all28 timings in61.6s (prepare69.4s). The corrected32-group local-only BF16 reference at M8/16/32/128/256 is R381.8/408.0/490.3/723.8/934.3 us and B396.9/507.8/684.7/990.4/1107.2 us. It uses the generated router with corrected verify sharing; it is not the loaded-router sample. FlashInfer MXFP4/no-postnorm reference is R143.0/167.1/200.8/368.4/559.2 us and B152.7/195.3/258.5/395.4/539.4 us. Neither is an admissible NVFP4 dispatch bank. The receipt also has V9 phase clock64 counters (per-CTA median/max); those counters come from single instrumented eager launches without an explicit prelaunch flush, so they are diagnostic rather than paired cold-graph phase wall times. The measured graph timing rows retain the correct cold-L2 paired protocol. The current supplement was rebuilt with the shared phase/V19 helper fixes and an explicit graph-closure bank binding; its host9/9 tests,168 forced paths,and12 static checks pass. The immutable receipt predates those glue/lint repairs; its measured reference functions are unchanged.
+- **Neighboring reference evidence:** `f8e977320c3c4556` tests both `prefer_cublaslt_grouped_gemm` settings on hot-expert subsets: M128/3 experts is288.064/287.952 us and M256/8 experts is538.560/539.312 us. The preference does not materially change those measurements. Its routing and hot-only work differ from our full32-group reference, so those values are not merged into the end-to-end table.
+- **Checked locally:** proj host 9/9 tests; decode host 13/13 tests; 168 forced native/grouped/Humming launch/phase paths at M8/16/32/128/256/512/753, including grouped/Humming CUDA graph capture. The two main H200 receipts are complete. The payload records graph GPU us including fixed graph cost, 128 MiB L2 flushes, six paired order-swapped repeats over three refreshed fixtures, and three-fixture agreement with V9.
+- **Dispatch decision:** `build_moe_lab_dispatch.py` creates `cand_r3_moe_lab.py` over frozen V9. Core M8/16/32/128/256 keep V9: the V19/phase minima differ by less than 1%, an unestablished gain with six samples, and would duplicate the same persistent engine. M512/753 select Marlin from loaded-weight H200 evidence (1.65x/1.86x versus V9). Native calls add no GPU conversion/launch; only library calls remap negative local IDs to valid remote ID255. This candidate has not been submitted. Local validation passes 13/13 complete-layer tests,12/12 scored-shape graph cases,4 static checks, and12 additional fresh graphs at M383/385/512/753 against FP32 expert math (relative L2 0.23% native /0.52% Marlin).
+- **V19 static hazards:** this lab measures the native V19 path (`permute=0`, resident grid). Its optional `grid2` autotuner path multiplies the occupancy-limited grid by two (`dev/parked/cand_v19.py:821,1076`), while the CUDA kernel’s global barrier waits for all `gridDim.x` CTAs (`:544`): pending CTAs cannot become resident while resident CTAs spin. Its interleave map `(u*17+3)%total` (`:131`) is not a permutation when `total` is divisible by 17; for `total=512*17`, only 512 of 8,704 tasks are distinct. These options are not eligible from this lab; the original V19 autotuner needs repair before an H200 run. Evidence: `runs/screen/moe_v19_static_audit.json` (static proof, not an observed H200 hang).
 - **BF16 reference check:** local eager correctness passes at M8/16/32/128/256 (relative L2 0.22–0.40%). Local graph capture fails because sm_120 selects the CPU-assisted grouped fallback; H200 selects the GPU path, so this does not establish an H200 capture failure ([PyTorch source at the image commit](https://github.com/pytorch/pytorch/blob/5c4886908584029761b579af026dcfb627c84070/aten/src/ATen/native/cuda/GroupedBlas.cpp#L748)). The corrected reference uses 32 groups and GPU offsets ending at the local-pair count, avoiding GEMM work on remote routes. Earlier matrix snapshots contain a 33rd zero-weight remote expert; those BF16 numbers must be labeled as extra-work references, not the local-only ceiling.
-- **Static image inventory:** `sgl_kernel` Marlin supports BF16 x NVFP4; vLLM and Machete are absent. FlashInfer’s H200 W4A16 CUTLASS path uses E8M0/group32 MXFP4, which cannot losslessly store arbitrary E4M3/group16 NVFP4 scales; it is a reference only. BF16 `torch._grouped_mm` is also a reference-only dequantized weight bank. Lower-precision activations are excluded from dispatch ranking.
+- **Static image inventory:** `sgl_kernel` Marlin supports BF16 x NVFP4; vLLM and Machete are absent. FlashInfer’s H200 W4A16 CUTLASS path uses E8M0/group32 MXFP4, which cannot losslessly store arbitrary E4M3/group16 NVFP4 scales; it is a reference only. BF16 `torch._grouped_mm` is also a reference-only dequantized weight bank. Lower-precision activations are excluded from dispatch ranking. Additional image-source audit: FlashInfer Prims-TS FP4/BF16 helpers load the SM100 module (its BF16 mode is MXFP4); its Hopper MonoMoE is FP8-weight-only and fixed to K2048/N512/M<=8. SGLang’s Triton W4A16 path decodes affine integer4, not E2M1; its ROCm Muse NVFP4 file is a TRT-LLM aligner shim. DeepGEMM’s FP4 grouped APIs take FP8/FP4 activations, while its BF16 grouped APIs require BF16 weights. None adds an admissible BF16xNVFP4 H200 path. File inventory: `runs/screen/moe_image_kernel_files.txt`.
 
 ## The judge's H200 (measured, 2026-10-23)
 
@@ -686,68 +693,92 @@ q/gate/KV layout; sm_120 forces the portable stand-in.
 
 | Prefill v11 (`6a9cd943fe404d74`) | check 1.367883x; scored 1.366811x (`965a9a816d4744ea`) | not on overall board | scored turn 1 / turn 4 / first turn: 1.227 / 1.356 / 1.534 | BN128 WGMMA below8192 tokens, timed dequant + grouped BF16 DeepGEMM above; submission is the exact checked source |
 
-### BF16-resident decode MoE hybrid (active independent lane)
+### BF16-resident decode MoE hybrid (independent lane)
 
-**Decision:** retain the decode board's V9 source (`ba990a86...`) as the base: the
-new union receipt `215cafaf8d674c7e` is 1.393820x, below V9's 1.428x. This lane owns
-`dev/bf16moe/` and `cand_r3_bf16moe.py`, independently of TMA W4 decoding
-and V19. Only lab payloads are submitted; Jihoon submits the layer candidate.
+**Decision:** build on `cand_r3_v9.py` (SHA `ba990a86...`, receipt
+`0e94268cf5654012`, 1.427904x). No newer merge has beaten it. Only lab payloads
+are submitted by this lane; Jihoon submits the layer candidate. The design uses
+resident BF16 hot experts and native V9 W4 cold experts, independently of TMA W4
+and V19. The first complete-path H200 result is a **modest M256 win**, not the
+200/120us target. One resource-budget follow-up is being measured before finalizing.
 
-**Storage interpretation:** the packed NVFP4 bank remains intact. The additional
-3,221,225,472-byte BF16 bank is a lossless derived layout of E2M1 x E4M3 block
-products, not a conversion of the FP32 global scale into BF16. Apply the global
-scales in FP32 SwiGLU/output epilogues. This is a one-layer G3 design; retaining
-this bank in all62 serving layers is not proposed.
+**Storage and arithmetic:** retain the packed NVFP4 bank. The additional
+3,221,225,472B BF16 bank stores E2M1 x E4M3 block products exactly. Apply each
+FP32 global scale in the SwiGLU/output epilogue, never in the BF16 bank. Fused
+post-expert RMSNorm uses FP32 global scale and routing weights. This one-layer
+G3 allocation is not proposed across all62 serving layers. Prepare drops
+unselected BMM layouts and the full derived bank if only subset BMMs win.
 
-**Checked on GPU0/sm120:** every finite E4M3 bit pattern x all16 FP4 codes expands
-exactly to BF16. The isolated GPU-count partitioner, DeepGEMM masked/psum and cuBLAS batched interfaces,
-limited-grid V9 stream and combine pass240 eager cases and120 fresh graph replays.
-Three fresh corrected q_len8 real-router fixtures at M128/256 (q_len1 at M32),
-plus all-remote, one-hot, eight-hot and uniform routing give max fully FP32 relative L2 **0.003832**,
-worst measured row **0.004361**. Masked expert strides must be padded128; an M32
-fully-hot test caught cross-expert reads with the original unpadded stride.
-`runs/screen/bf16-engine.json` records the cases. These are correctness checks and
-local timings, not Hopper measurements.
+**H200 evidence:** proj-host jobs `f8e977320c3c4556` (GEMM ceiling) and
+`b37b93deb1b74f3a` (complete hybrid) finished successfully. Both reconstruct the
+public decoder weight distribution with seed5353 and use the corrected
+`moe_tune.py` fixture: draft sharing within every8-token verify block. Device RNG
+produces M128:177 local pairs/hottest57; M256:341/hottest104. These are not the
+private loaded router from receipt `0e94268cf5654012`. The other loaded-weight
+lab `26d7e05ab97d4f96` has M128:209/55 and M256:414/119; its V9 paired times
+are279.0/478.5us. Final dispatch must compare engines using each run's actual
+loaded router in prepare.
 
-**Lab admission:** proj host9/9 tests pass for both self-contained payloads.
-`prof/lab/bf16_real_grouped.py` compares PyTorch grouped MM (both Lt preferences),
-BF16/FP32 batched GEMMs and both weight layouts against V9 on the reconstructed
-public decode-router distribution. `prof/lab/bf16_hybrid_full.py` compares masked/prefix-sum grouped GEMMs with
-fused FP32-scale SwiGLU, then times the complete hybrid on three fresh fixtures,
-including route partition, V9 streams, FP32-scale post-norm and combine. PyTorch grouped MM's
-sm120 path cannot capture because of an internal unpinned CPU-to-GPU copy; the
-DeepGEMM grouped APIs accept BF16 output only, despite FP32 support in their core.
-The initial local queue entries were interrupted before judge admission when the
-shared fixture correction landed: draft sharing now applies to every8-token block,
-not only M<=8. Corrected public-fixture M128/256 counts are264/545 local pairs,
-hottest78/144, versus the older q_len1-style318/676, hottest110/228. Both payloads
-are rebuilt with the correction; the second was expanded before judge admission
-to measure full-path performance and fresh-graph agreement, not only a GEMM ceiling. H200 ceiling and final thresholds remain pending.
-The standalone candidate `1fa613d8...` passes13/13 tests,12/12 fresh graphs and
-all3 embedded CUDA sources compile for sm90a. Forced execution substitutes a BF16
-Triton grouped kernel only, retaining actual routing, V9 streams and epilogues;
-its screen also forces real cuBLAS FP32-output paths at M32/256. Batched FP32 output
-reduces max isolated FP32 error to0.002813; its eligible expert set is selected only
-from prepare fixtures, and every other expert still runs through V9. Prepare
-compares rows16/32/64, grouped/batched formats and0/12.5/25/50% persistent V9 grids;
-it checks three fresh full-FP32 fixtures and refreshed graphs, then re-times the
-best two against V9. Unselected derived layouts are released. Final source may
-be pruned when the H200 ceiling identifies the useful engine families.
+GEMM ceiling, CUDA-graph microseconds, W13 + activation + W2; **excludes routing,
+post-norm and combine**. Grouped MM uses padded contiguous rows; BMM pads each
+selected expert to M rows. BMM FP32 output keeps global13 in the activation
+(epilogue); the column below uses the NN layout.
 
-| Tokens | Load | Candidate dispatch before measured H200 admission |
+| M | Hot threshold | Experts / rows | PyTorch grouped | BMM FP32 | DeepGEMM masked | DeepGEMM psum |
+|---:|---:|---:|---:|---:|---:|---:|
+|128|16|3 /104|287.95|126.42|98.03|110.64|
+|128|32|1 /57|211.68|52.62|66.43|94.78|
+|256|16|8 /297|538.56|419.92|247.74|225.04|
+|256|32|3 /187|370.26|160.03|101.87|113.95|
+|256|64|1 /104|302.46|69.36|97.20|96.37|
+
+Complete hybrid includes partition/gather, cold V9 stream, both hot GEMMs,
+fused activation, norm and combine. Three independently refreshed routing
+fixtures,128MiB cache flush, captured graphs; times from `b37b93deb1b74f3a`.
+The cold grid fraction describes CTAs, not an enforced SM partition. V9 uses
+two resident CTAs/SM on H200 (88,936/94,056B dynamic shared memory at M128/256).
+
+| M | V9 us | Best BF16 hybrid us | Policy | Decision |
+|---:|---:|---:|---|---|
+|128|237.63|238.13|BMM NN FP32, threshold32, serial|Keep V9|
+|256|396.10|337.20|DeepGEMM psum, threshold16, quarter cold grid|14.87% less MoE time; retune in prepare|
+
+M256 global relative L2 is0.003704 against fully FP32 expert math; every timed
+policy also passes refreshed graph gates (global<=1%, row<=5%). Smaller cold
+grids are much slower: at M256/threshold16 psum, one-eighth/quarter/half/serial
+are526.4/337.2/374.6/359.9us. Do not substitute the isolated GEMM floor for a
+full-path gain. The measured win alone cannot establish the ~1.68x layer goal.
+A final lab varies one-stage native V9 buffering and DeepGEMM's public SM-budget
+API; the candidate remains frozen until that result is available.
+
+**Local verification (GPU0/sm120):** exhaustive finite E4M3 bit patterns x all16
+FP4 codes expand exactly. Engine passes240 eager cases and120 refreshed graphs
+across M32/128/256, three real-router fixtures and all-remote/one-hot/eight-hot/
+uniform extremes; max fully FP32 relative L2 0.003832, worst row0.004361.
+Masked expert strides must be padded128. FP32-output BMM max L2 is0.002813.
+`runs/screen/bf16-engine.json` records cases. The frozen candidate SHA
+`1fa613d8589f635c655cc3bd84637ccc910d81d6f6cce63805862c9ab9d8b0c1`
+passes13/13 tests,12/12 graphs and4/4 static checks (three embedded CUDA
+sources compile for sm90a); the same holds with Hopper selection forced through
+portable grouped stand-ins and real cuBLAS FP32 paths. The one-stage/SM-budget
+prototype separately passes24 eager cases and16 refreshed graphs with actual
+DeepGEMM on GPU0; it restores the global SM setting after each call.
+
+| Tokens | Load | Dispatch |
 |---:|---|---|
-|1/8/16|decode1 / verify1 / decode16|Incumbent V9 fixed|
-|32|decode32|Prepare compares V9 with valid BF16 hybrid choices|
-|128|verify16|Prepare compares V9 with valid BF16 hybrid choices|
-|256|verify32|Prepare compares V9 with valid BF16 hybrid choices|
-|Other|nearby shapes|Incumbent V9|
+|1 /8 /16|decode1 /verify1 /decode16|V9 fixed|
+|32|decode32|Prepare compares V9 with admitted BF16 policies|
+|128|verify16|Prepare compares; public-seed H200 lab keeps V9|
+|256|verify32|Prepare compares; public-seed H200 lab selects psum threshold16|
+|Other|nearby shapes|V9|
 
-The one-eighth persistent-grid option was added before lab admission: V9's
-Hopper register/shared-memory budget can admit two CTAs/SM, so a quarter of the
-full resident grid can occupy half the SMs. The lab prints actual native
-residency; fractions describe CTA count, not an enforced SM partition.
- Lab GEMM times exclude routing/post-norm/combine and
-must not be reported as complete hybrid times.
+The standalone candidate embeds the canonical `dev/bf16moe/hybrid.py` engine
+and independent prepare-only FP32 oracle. Selection uses three synthetic
+loaded-router fixtures, cold graph timing, refreshed graph agreement and a
+12-replay finalist comparison against V9. No timed-input specialization. Only
+lab payloads were submitted. Full-layer H200 correctness, prepare selection,
+score, private-router performance and any TP8 serving integration remain
+unverified.
 
 ### Decode large-load profile and round-3 dispatch (G3 priority)
 
@@ -943,7 +974,8 @@ by the better-fitting max model in “Boards”.
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |
 |---|---|---|---|
 | Decode verify projection control | Union `215cafaf8d674c7e`, M128/M256 raw graph us: qkv **24.320/27.328**, pool_router **32.320/37.120**, unpooler **27.392/32.032**, o **13.920/15.680** | At M>64 `custom` GEMV delegates to cuBLAS, so those two choices do not compare independent kernels. FP32 pool_router is explicitly excluded from Lt. The inherited Lt source fails SM90a compilation without `ATen/cuda/CUDAContext.h`; optional rejection can leave a passing run with no Lt trials. Raw graph times include replay overhead and cannot be subtracted directly from pure byte/FLOP floors | Receipt `UNION_SUMMARY.projection`; `cand_r3_union.py`; `runs/screen/verify_proj/inherited_lt_failure.json` |
-| Verify projection search, authorized decision | Library lab `596b2a5d436e4fee` accepted: every returned Lt TN/NN heuristic plus checked FP32 split-K/swizzles,4GiB workspace, full FP32[N4608] pool/router. Corrected `verify_proj_tma_v2` queued priority0: persistent async TMA/WGMMA,2–6stages,K64/K128/K256 commit groups,160/288threads, multicast2, in-kernel DSMEM K merge and real PDL chains | Keep incumbent outside M128/256. Fill the demonstrated missing library search and measure the distinct native design; no new H200 receipt/win yet. Source hashes and the exact project ABI are frozen in the handoff. Dense prefill closed; glue parked; MoE remains with its lane | `prof/lab/verify_proj_library.py`, `prof/lab/verify_proj_tma_v2.py`; `problems/muse_bf16_proj/dev/NEXT_CHECKS.md` |
+| Decode verify Lt search landed | H200596b2a5d436e4fee, cold128MiB/fresh3/20-pair finalists: M128 qkv **21.104→20.224us** (NN23,paired ratio **0.9549**), unpooler **24.000→22.960us** (NN0, **0.9574**). M128 pool/router27.664→27.264us (0.9785), o11.408→11.168us (0.9853). M256 qkv23.248→23.168us (0.9979), pool/router33.248→32.960us (0.9942), unpooler27.968→27.808us (0.9881); o NN0 loses13.168→13.200us (1.0036), so retain incumbent | This revises the missing-search hypothesis: only small gains, not the large floor gap. Earlier union controls are slower than this run; do not count run-to-run clock/overhead differences as gains. All expanded candidates checked without rejection. H200 total prepare14.1s/lab4.3s. Embedded7-key shortlist retimes against the layer incumbent; full forced-recipe sm120 fixture13/13+12/12,4.877s, all10 static checks. Module SHA97c874743a23…; final formatting is AST-identical to the tested body and max267chars/line | `runs/muse_bf16_proj/*596b2a5d436e4fee.json`; `dev/verify/{projection_dropin.py,README.md,h200_recipes.py}`; `runs/screen/verify_proj/{integration_h200_fixture,block_admission}.json` |
+| Verify projection search, authorized decision | Library lab `596b2a5d436e4fee` landed: every returned Lt TN/NN heuristic plus checked FP32 split-K/swizzles,4GiB workspace, full FP32[N4608] pool/router. Corrected `verify_proj_tma_v2` queued priority0: persistent async TMA/WGMMA,2–6stages,K64/K128/K256 commit groups,160/288threads, multicast2, in-kernel DSMEM K merge and real PDL chains | Keep incumbent outside M128/256. Fill the demonstrated missing library search and measure the distinct native design; library gains above; corrected native H200 remains pending. Source hashes and the exact project ABI are frozen in the handoff. Dense prefill closed; glue parked; MoE remains with its lane | `prof/lab/verify_proj_library.py`, `prof/lab/verify_proj_tma_v2.py`; `problems/muse_bf16_proj/dev/NEXT_CHECKS.md` |
 | Corrected native projection local admission | **sm120**:2148 fresh checks,342 executable configs per output dtype; all8 target keys. Full Hopper lab forced73 tile/ring/K-group families,1247 calls and4 PDL chains; injected AttributeError rejects. Lab host9/9 tests+30/30 graph cases,2.091s cached prepare; full-layer fixture13/13+12/12,3.264s. Shortlist32 trials+140 fresh/stride/weight cases and expired/short/module rejection pass; all SM90a static builds pass | Local reader uses mma.sync and ordinary TMA as the multicast transport stand-in; actual native multicast also passed24 target cases but is extremely slow on sm120. Isolated MC1 controls are68–80us versus MC2~1.9–2.7s at M128 pool/router; wait/scope changes do not fix that timing. NVIDIA documents multicast as optimized for sm90a. No inference of Hopper latency from this local penalty | `runs/screen/verify_proj/{grouped_validation_v2,grouped_lab_glue_v2,cluster_contrast,poll_probe}.log`; `integration_fixture.json`, `lab_tma_v2.json`; [CUDA TMA guide](https://docs.nvidia.com/cuda/archive/13.1.1/cuda-programming-guide/04-special-topics/async-copies.html) |
 | Persistent projection barrier lifetime | Native v1 `6b72087f64584258` reached the judge before cancellation and is **invalid for dispatch selection**: persistent tiles reinitialize valid barriers. Local numerical passes did not expose that contract violation. Scored kernel_fn remains the frozen incumbent | V2 invalidates full/empty barriers after cluster/CTA users finish, before reinitialization, and uses cluster-scope acquire for remote releases. The [PTX lifetime requirement](https://docs.nvidia.com/cuda/parallel-thread-execution/#parallel-synchronization-and-communication-instructions-mbarrier-init) establishes the defect; it does not explain the sm120 multicast timing penalty (invalidation alone did not fix it). No execution cancellation API exists; the result reader rejects v1 | `dev/verify/build_tma.py`; `runs/screen/verify_proj/barrier_lifetime_probe.log`; corrected v2 admission above |
 | Decode projection port | `cand_r3_proj.py`, SHA256 `235434b35d1407cdb61ff79f291b9a962fa4a56369f60277fb666863f5b1174e`; 24 projection keys at T1/8/16/32/128/256, including the layer's FP32 4608-row pool/router | Skinny/GEMV winners, mixed pooler/router with hi+lo in the same FP32 accumulator, strided pooler Lt + fused router, TMA/WGMMA direct/last-CTA/DSMEM/Stream-K, and all checked Lt TN/NN/split-K algorithms. Trials time the next consumer, validate two fresh inputs within 1% of cuBLAS and reject/log failures; FA3's 27 settings and PDL remain tunable under a shared 240 s deadline | `problems/muse_decode_layer/cand_r3_proj.py`; projection-owned `dev/build_decode_proj.py` and embedded templates |
@@ -1116,6 +1148,7 @@ Failures whose cause was not obvious, so they are not repeated.
 
 | Symptom | Cause | Avoid / fix | Cost | Receipt |
 |---|---|---|---|---|
+| Two files' receipts carry the same job; one of them never ran | When `okc submit --no-wait`'s reply named no job, `okc_run.py` took "our newest job of that problem since the send", which was the previous send's job seconds earlier | Removed the guess: a reply without a job id now fails the send. Corrected ledger rows: `d318167e` ran cand_expert_tma_cluster (1.419x; cand_v11_gemm never ran, re-sent), `f7579d53` ran cand_retire (not cand_ready), `5f402fe4` ran cand_chain_nopf (not cand_chain6), `907004cb` ran lab_moe_humming_real_routing (the attention sweep re-sent) | a false closure of dense prefill (cand_v11_gemm) and three wrong attributions | `d318167eedfd4c19`, `f7579d5311914b25`, `5f402fe4b1224a08`, `907004cbcc7c4b82`; judge duplicate verdict `9f738e2261164c30` |
 | A decode run fails to compile on the H200 (`at::cuda` has no `getCurrentCUDAStream`), and another loses every XQA attention variant to `NameError: ATTN_X_CUDA` | Hopper-only branches (cuBLASLt extension; XQA ports) never build or run on sm_120, so local screens pass them: a missing `<ATen/cuda/CUDAContext.h>` and names never defined in the merged file | `tools/local_eval.py` static checks: ruff F821-F823 on the whole file and an sm_90a compile of every CUDA source string; both fail the screen | two decode runs (v9all failed; merge 1.359x with decode 32 full 581 vs 423 us), one more at the judge (moe_rt) | `83a8a755fece45e3`, `43a1f3a3d7ba46a9` |
 | Four decode checks fail on the judge with `AttributeError: 'tuple' object has no attribute 'device'` | The sm_90 branch received attention v3's `(partials, split_count)` tuple; only the Hopper branch reached that glue, so local tests passed | Force each Hopper branch's Python glue locally with a portable stand-in kernel | 4 checks | `2f3960c275774a20`, `69a655d3b2364fc4`, `a5ab4a2011f44321`, `b2a8999311034eb3` |
 | Queued proj wg/wg2 can score without running WGMMA | `kernel_fn` requires `state["wg_ok"]`, but their prepare never sets it | All/max/native portfolios explicitly tune and store selected branches; max/native directly activate multicast WGMMA | Those queued runs cannot measure WGMMA performance | `cand_wg.py`, `cand_wg2.py` |

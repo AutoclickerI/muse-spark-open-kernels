@@ -92,14 +92,6 @@ def git_rev() -> str:
     return (rev or "none") + ("+dirty" if dirty else "")
 
 
-def newest_job(problem: str, mode: str, since: float):
-    """The job okc accepted for us if --no-wait's reply didn't name it: our newest of that problem and mode."""
-    jobs, _ = okc_json("jobs")
-    jobs = [j for j in (jobs or []) if isinstance(j, dict) and j.get("problem") == problem
-            and j.get("mode") == OKC_MODE[mode] and float(j.get("submitted_at") or 0) >= since - 5]
-    return max(jobs, key=lambda j: float(j["submitted_at"]))["job_id"] if jobs else None
-
-
 def known(sha: str):
     """The modes this source already ran in (ledger), and a pending or waiting entry for it, if any."""
     ran = {row["mode"] for line in (LEDGER.read_text().splitlines() if LEDGER.exists() else [])
@@ -321,12 +313,12 @@ def send(args):
 
     def send(mode):
         stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        sent_at = time.time()
         result, proc = okc_json(mode, problem, str(snap), "--no-wait")
+        # Only okc's own reply names our job. Guessing "our newest job" once gave this send another
+        # file's job (cand_v11_gemm took cand_expert_tma_cluster's d318167e, FINDINGS "Failures").
         job = pick(result, *JOB_KEYS) if isinstance(result, dict) else None
-        job = job or newest_job(problem, mode, sent_at)
         if not job:
-            sys.exit(f"okc {mode} failed ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
+            sys.exit(f"okc {mode} named no job ({proc.returncode}):\n{proc.stdout}{proc.stderr}")
         start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)))
         return mode, job
 

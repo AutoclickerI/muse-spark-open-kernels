@@ -1,28 +1,29 @@
-# Prefill glue portfolio ready (G1)
+# Decode verify projections: M128/256 (G3, serving)
 
-Read GOAL/CONSTRAINTS; solo, GPU0 only. Orchestrator sends/commits; none launched here.
-Ready `../muse_prefill_layer/cand_glue_prefill.py`, frozen2a2e3914ea26….
-Full SHA/interface/evidence: `../muse_prefill_layer/dev/glue/README.md`.
-Direct H200 inventory: `docs/reference/prefill_glue.md` (all three loads).
-Board-best controls are a30fb411 /99820fa6; glue profile entries hidden below top12 stay N/A.
-Boundary pair:851.7–855.2us at16K,671.1us byte floor;159ms per first turn /125ms floor.
-Separate dequant633.6–651.3us is expert-stage work; no double-counting its bytes/time.
+Solo; GPU0 only; no commits. Jihoon authorizes proj/lab sends this round.
+Decode candidates remain owned by that lane; only a local integration fixture was built.
+Control union215cafaf8d674c7e, M128/M256 raw graph us:
+qkv24.320/27.328; pool_router32.320/37.120; unpooler27.392/32.032; o13.920/15.680.
+Union custom at M>64 is cuBLAS; FP32 pool_router excludes Lt; Lt lacks CUDAContext.h.
+Do not subtract pure device floors from raw graph replay time.
 
-New choices: GEMM last-CTA residual/two-RMS epilogues; pooler RMSNorm epilogue with
-normalized expert consumers; router hi+lo GEMM/top8 epilogue; vector boundary and topk.
-The full original producer+consumer is always eligible. H200 dense/expert/attention
-controls seed from a30fb411, leaving230s prepare budget for new glue trials.
-Three fresh banks, cold128MiB, CUDA graphs,20-pair finalists, independent FP32 gate;
-all optional exceptions reject. Compact114-row summary is6906 chars and survives tail.
-Final sm120:5/5 official tests +8/8 graphs,48.111s prepare, all78 trials/36 finalists.
-Direct M33/16384:60 configs /540 fresh checks /1200 timed pairs /18 counter resets.
-Forced all-fusion integration5/5; forced Hopper prepare/library/router branches pass.
-60 SM90 specializations compile (48 WGMMA); H200 execution/speed remains unverified.
-Local only small vector/topk gains; full GEMM epilogues lose, pooler keeps stock.
-O serving fusion cannot cross TP all-reduce; vector boundary remains usable after it.
+Library596b2a5d436e4fee landed: M128 qkv21.10->20.22us/unpool24.00->22.96us.
+Other Lt choices near parity; default7-key shortlist embedded. Native v2 queued priority0:
+prof/lab/verify_proj_tma_v2.py, payloadb0cfbb95563cfec3…; NEXT_CHECKS has full hashes.
+It combines K64/K128/K256 commit groups,2–6stage TMA ring,160/288threads,
+activation multicast2, DSMEM in-kernel K merge,132SM persistent grids and PDL chains.
+Native v1 accepted6b72087f64584258 is INVALID for selection: reinitialized live barriers.
+No execution cancellation API. V2 invalidates before reinit and uses cluster acquire.
+Native multicast is extremely slow on sm120 (NVIDIA documents other-target penalties).
+Final local transport stand-in uses ordinary TMA; Hopper keeps real multicast/WGMMA.
 
-Dense tuning stopped: direct H200 dafbcad0 refutes44%/146ms qkv inference.
-`cand_v11_gemm.py` stays frozen1b30690a…, queued2.0. Do not edit/resend.
-`cand_tma_grouped.py` stays frozenb1209b2a…, queued MoE reset priority.
-`cand_dflash_diag.py` stays frozen9b4fae2f…, queued; receipt pending from Jihoon.
-Projection triage applied:14 subsumed singles deleted; reduce_hier/tile stay queued.
+V2 sm120:2148 fresh checks,342 configs/dtype;73 Hopper families forced/1247 calls.
+PDL chains M128/256×bothflags×fresh3 pass; host9/9+30/30 graphs,2.091s prepare.
+Full drop-in fixture13/13+12/12 graphs,3.264s prepare; all SM90a static checks pass.
+Shortlist/dispatch32 trials+140 fresh cases; module/unknown-family/budget rejection passes.
+Block dev/verify/projection_dropin.py, SHA97c874743a23…; exact ABI/H200 table in README.
+All7 H200 layouts pass layer13/13+12/12 locally,4.877s; full H200 layer effect pending.
+
+Dense prefill: cand_v11_gemm has no H200 result yet (d318167e was tma_cluster's run, misattributed); re-sent 10-24.
+Glue parked; tile721290f2=.808x closed. MoE belongs to its lane until receipts.
+Owner-fixed portfolio_all, dflash_diag and reduce_hier remain frozen/queued.
