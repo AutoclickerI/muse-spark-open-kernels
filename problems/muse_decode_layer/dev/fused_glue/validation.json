@@ -1,0 +1,200 @@
+{
+  "checks": 72,
+  "rows": [
+    {
+      "tokens": 1,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 9.728267968966975e-07
+    },
+    {
+      "tokens": 1,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 9.99569465420791e-07
+    },
+    {
+      "tokens": 1,
+      "recipe": 0,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.0106801937581622e-06
+    },
+    {
+      "tokens": 1,
+      "recipe": 1,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.028433416649932e-06
+    },
+    {
+      "tokens": 1,
+      "recipe": 1,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.008441927297099e-06
+    },
+    {
+      "tokens": 1,
+      "recipe": 1,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.008519120659912e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 8.716979209566489e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.0138994639419252e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 0,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 2.1460114112414885e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 1,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 7.875175469962414e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 1,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.1456171478130273e-06
+    },
+    {
+      "tokens": 8,
+      "recipe": 1,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.0144468660655548e-06
+    },
+    {
+      "tokens": 16,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 2.8886865948152263e-06
+    },
+    {
+      "tokens": 16,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.0859295798582025e-05
+    },
+    {
+      "tokens": 16,
+      "recipe": 0,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.087197415472474e-05
+    },
+    {
+      "tokens": 16,
+      "recipe": 1,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 3.0427734145632712e-06
+    },
+    {
+      "tokens": 16,
+      "recipe": 1,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 2.1142874174984172e-05
+    },
+    {
+      "tokens": 16,
+      "recipe": 1,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.2304460142331664e-05
+    },
+    {
+      "tokens": 32,
+      "recipe": 0,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 1.9557561245164834e-05
+    },
+    {
+      "tokens": 32,
+      "recipe": 0,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 9.31683462113142e-06
+    },
+    {
+      "tokens": 32,
+      "recipe": 0,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.14474260044517e-05
+    },
+    {
+      "tokens": 32,
+      "recipe": 1,
+      "splits": 1,
+      "dtype": "torch.bfloat16",
+      "draws": 3,
+      "pool_l2": 8.686582987138536e-06
+    },
+    {
+      "tokens": 32,
+      "recipe": 1,
+      "splits": 2,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.74225806404138e-05
+    },
+    {
+      "tokens": 32,
+      "recipe": 1,
+      "splits": 16,
+      "dtype": "torch.float32",
+      "draws": 3,
+      "pool_l2": 1.0545892337177065e-06
+    }
+  ],
+  "max_l2": 6.554924038937315e-05,
+  "elapsed_s": 8.648011384997517,
+  "native_glue": true
+}

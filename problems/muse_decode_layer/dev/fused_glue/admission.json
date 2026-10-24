@@ -1,0 +1,235 @@
+{
+  "job": "80b70f7f20fa41c6",
+  "send_key": "e4a1f1e29a7bf810",
+  "status": "accepted; receipt pending",
+  "source_sha256": "42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7",
+  "payload_sha256": "7dac5385f3d7412118eb1eb844547bc60e60af576bd092a0b95bb092135f9a4d",
+  "wrapper_sha256": "e4a1f1e29a7bf810802c37937901a5fc7c499441f7fd4408e1f2ad1361f89822",
+  "files": {
+    "kernel.cu": "a93e5640659655d9fc8a7901e62b7b93825397480356c18eb5449f7487e083dd",
+    "runtime.py.inc": "98c0938116e8b331091f84a4616f6d695c81114b0c2c89389e1f4cb5b6eef72f",
+    "dropin.py": "7e6c36ded526e03b283279d1b36dd87c421fe46bd2e44ff862e515a43031c569",
+    "adapter.py.inc": "5d84d02f71f0f90aeaabc9925d37dc01662307019c70da377df36469b25cc59b",
+    "best7_glue_cell.py": "c3b8cbdef207890a41bffe2a513be1fef134b420a1e537d88735484a98c31ec3",
+    "driver.py.inc": "73d46775fcdb291a26ac3a9ed091088922f5ecb20fe01add98dbe46323132d54",
+    "build.py": "0e58694e94fd20e517eb427e927b3867ca173ba3e0d6c3a020985a10309ae683",
+    "validate.py": "0d259da8535f220e8a34ea34854a643ada23b38b705f642b5933feed11dd90dc",
+    "screen.py": "1ff22464a792d55e2eb7bfceb92499ba260735b3863939fb91b4602b34c57727"
+  },
+  "validation": {
+    "checks": 72,
+    "rows": [
+      {
+        "tokens": 1,
+        "recipe": 0,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 9.728267968966975e-07
+      },
+      {
+        "tokens": 1,
+        "recipe": 0,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 9.99569465420791e-07
+      },
+      {
+        "tokens": 1,
+        "recipe": 0,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.0106801937581622e-06
+      },
+      {
+        "tokens": 1,
+        "recipe": 1,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 1.028433416649932e-06
+      },
+      {
+        "tokens": 1,
+        "recipe": 1,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.008441927297099e-06
+      },
+      {
+        "tokens": 1,
+        "recipe": 1,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.008519120659912e-06
+      },
+      {
+        "tokens": 8,
+        "recipe": 0,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 8.716979209566489e-06
+      },
+      {
+        "tokens": 8,
+        "recipe": 0,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.0138994639419252e-06
+      },
+      {
+        "tokens": 8,
+        "recipe": 0,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 2.1460114112414885e-06
+      },
+      {
+        "tokens": 8,
+        "recipe": 1,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 7.875175469962414e-06
+      },
+      {
+        "tokens": 8,
+        "recipe": 1,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.1456171478130273e-06
+      },
+      {
+        "tokens": 8,
+        "recipe": 1,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.0144468660655548e-06
+      },
+      {
+        "tokens": 16,
+        "recipe": 0,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 2.8886865948152263e-06
+      },
+      {
+        "tokens": 16,
+        "recipe": 0,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.0859295798582025e-05
+      },
+      {
+        "tokens": 16,
+        "recipe": 0,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.087197415472474e-05
+      },
+      {
+        "tokens": 16,
+        "recipe": 1,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 3.0427734145632712e-06
+      },
+      {
+        "tokens": 16,
+        "recipe": 1,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 2.1142874174984172e-05
+      },
+      {
+        "tokens": 16,
+        "recipe": 1,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.2304460142331664e-05
+      },
+      {
+        "tokens": 32,
+        "recipe": 0,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 1.9557561245164834e-05
+      },
+      {
+        "tokens": 32,
+        "recipe": 0,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 9.31683462113142e-06
+      },
+      {
+        "tokens": 32,
+        "recipe": 0,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.14474260044517e-05
+      },
+      {
+        "tokens": 32,
+        "recipe": 1,
+        "splits": 1,
+        "dtype": "torch.bfloat16",
+        "draws": 3,
+        "pool_l2": 8.686582987138536e-06
+      },
+      {
+        "tokens": 32,
+        "recipe": 1,
+        "splits": 2,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.74225806404138e-05
+      },
+      {
+        "tokens": 32,
+        "recipe": 1,
+        "splits": 16,
+        "dtype": "torch.float32",
+        "draws": 3,
+        "pool_l2": 1.0545892337177065e-06
+      }
+    ],
+    "max_l2": 6.554924038937315e-05,
+    "elapsed_s": 8.648011384997517,
+    "native_glue": true
+  },
+  "whole_layer": {
+    "comparisons": 96,
+    "max_relative_l2": 0.004514160566031933,
+    "route_flips": 0,
+    "forced_calls": {
+      "attn_main": 125
+    },
+    "elapsed_s": 19.025414622970857,
+    "comparisons_per_cell": {
+      "pool": 24,
+      "tail": 24,
+      "all": 24,
+      "epi": 24
+    }
+  },
+  "enabled_cells": {}
+}
