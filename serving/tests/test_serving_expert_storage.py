@@ -54,6 +54,8 @@ def main():
     owner._expert_map[:32] = torch.arange(32, device='cuda')
     owner._post_expert_norm = post_norm
     owner._post_expert_norm_weight = (1 + weights['post_norm_w'].float()).bfloat16()
+    owner._post_expert_norm_eps = 1e-8
+    owner._post_expert_norm_weight_first = True
     owner._fused_finalize_op = FusedPostExpertNormWeightedSumTRTLLM(
         topk=8, hidden_dim=4096, eps=1e-8, weight_first=True)
     for name in ('_use_muse_v4', '_marlin_expert_outputs', '_finalize_dense_expert_outputs'):

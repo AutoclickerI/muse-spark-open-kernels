@@ -1807,7 +1807,12 @@ void attn_forward(int64_t qkv, int64_t positions, int64_t cache_loc, int64_t pag
   p.stamps = nullptr;
   p.profile_tiles = 0;
   cudaStream_t s = reinterpret_cast<cudaStream_t>(stream);
-  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s) : launch_t<8, 3>(p, s);
+  cudaDeviceProp prop;
+  int dev = 0;
+  cudaGetDevice(&dev);
+  cudaGetDeviceProperties(&prop, dev);
+  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s)
+                               : ((prop.major == 9) ? launch_t<8, 4>(p, s) : launch_t<8, 3>(p, s));
   if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
 }
 
@@ -1823,10 +1828,22 @@ int occupancy_t() {
   return n;
 }
 
-int64_t occupancy(int64_t q_len) { return (q_len == 1) ? occupancy_t<1, 4>() : occupancy_t<8, 3>(); }
+int64_t occupancy(int64_t q_len) {
+  if (q_len == 1) return occupancy_t<1, 4>();
+  cudaDeviceProp prop;
+  int dev = 0;
+  cudaGetDevice(&dev);
+  cudaGetDeviceProperties(&prop, dev);
+  return (prop.major == 9) ? occupancy_t<8, 4>() : occupancy_t<8, 3>();
+}
 
 int64_t max_cluster(int64_t q_len, int64_t cs) {
-  return (q_len == 1) ? max_cluster_t<1, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);
+  if (q_len == 1) return max_cluster_t<1, 4>((int)cs);
+  cudaDeviceProp prop;
+  int dev = 0;
+  cudaGetDevice(&dev);
+  cudaGetDeviceProperties(&prop, dev);
+  return (prop.major == 9) ? max_cluster_t<8, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);
 }
 """
 
@@ -4302,7 +4319,7 @@ def lab(deadline, weights):
     lines.append('WINNERS '+ ';'.join(f'{t}={l}:{u:.1f}' for t,(u,l) in winners))
     return lines
 
-# ---- h200_lab wrapper: payload verify8_attn_compare sha256 cc737f628b2623be on base f3786341611f4f1f ----
+# ---- h200_lab wrapper: payload verify8_attn_compare sha256 2adee96d8f725881 on base f3786341611f4f1f ----
 _lab_base_prepare = prepare
 _lab_ran = False
 
@@ -4333,7 +4350,7 @@ def prepare(weights):
                 break
             _out.append(_l)
             _n += len(_l) + 1
-        print("LAB_BEGIN verify8_attn_compare cc737f628b2623be", flush=True)
+        print("LAB_BEGIN verify8_attn_compare 2adee96d8f725881", flush=True)
         for _l in _out:
             print(_l, flush=True)
         print(f"LAB_END lab_s={_t.monotonic() - _t0:.1f} prepare_s={_t.monotonic() - _start:.1f}", flush=True)

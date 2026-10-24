@@ -1226,6 +1226,16 @@ FP32 gate: B16 full passed at 0.0058 relative L2 and B32 full at 0.0072. The H20
 `prof/lab/verify8_attn_compare.py` is queued on the proj host; it measures B1/16/32 sliding/full
 against FA3 and records the gate per variant.
 
+The first q8 comparison receipt (`59e53e746df341a9`) marked every row F because its lab reference
+flattened the 16 heads before RMS normalization and its B>1 agentic page table stopped at 80,008
+rows. The reference now follows the layer's per-head 64-wide post-store FP32 gate, and the lab
+allocates 86,008 rows for the +/-7.5% agentic spread. A local replay of the same control gives
+relative errors 0.0068 (B1), 0.0062 (B16), and 0.0058 (B32). The packed port's Hopper path now
+uses a four-stage KV ring (three-stage sm_120 stand-in), with `_splits` targeting two waves of
+the 132 H200 SMs: 17 splits at B16 and 9 at B32 before cluster combine. The replacement lab is
+queued at priority 0.8 with payload SHA256 `2adee96d8f72588134aa1d21520f051b8c451906ed8b34cc5e82b15d33775dde`;
+its H200 timings and winner choices remain unverified.
+
 The landed diagnostic profiles contain only the selected FA3 path: full B16 main189.2us of206.7us total, B32 main373.0us of391.2us; combine4.4us each. They do not profile the losing custom variants. Their XQA prepare timing lines provide custom totals. The nominal P8 gather-only times for327.68/655.36MB are128.1/256.2us, versus FA3 roughly207/391 and K128617/1174. These comparisons establish unused throughput, not a measured TLB or tensor-pipe cause.
 
 | Finding | Result / scope | Mechanism or remaining limit | Evidence |

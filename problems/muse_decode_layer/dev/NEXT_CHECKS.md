@@ -1,9 +1,32 @@
-# Decode checks — next send order after 18a5f4e
+# Decode checks — current omni handoff
+
+## Current omni candidate
+
+[cand_r3_omni.py](../cand_r3_omni.py), SHA-256
+`6774eceabbbb2c81b2baeb281866d7c533ad93e7711462d85eb1a96db9d6cbf1`.
+This lane did not send it; **Jihoon sends**. Base: best `812f5f36`.
+Normal and forced-Hopper screens both pass **13/13 tests, 12/12 fresh graph shapes and 15/15 static checks**.
+Cold candidate prepare is **147.341 s**, including **84.377 s** for all 11 concurrent extension builds;
+extra forced checks bring the wrapper prepare to **149.695 s**. Extension/Triton/CUDA caches were empty
+and ccache disabled. Every eligible alternative was measured; none was skipped for the 230-second tuning deadline.
+
+The portfolio adds loaded-weight FP32-gated NT2/NT4 and CUTLASS mixed-input MoE at M128/256,
+two CUTLASS projection recipes per large role, four-stage `port_verify`, all 24 XQA settings and
+receipt-shortlisted FA3 recipes. Small pool/router keeps V9 GEMV. The mixed collective explicitly loads
+four E4M3 scale columns per K64 tile and widens before multiplication; weights stay packed NVFP4.
+The final 12 per-shape lines contain every alternative’s time/rejection and the selected plans in 8,647 bytes.
+See [omni handoff](omni/README.md) and [validation / per-shape timings](omni/validation.json).
+Native Hopper execution and selections remain unverified; portable stand-ins exercise Hopper glue locally.
+The stage lever table from V9/cost receipts is below.
+
+Attention sweep `59e53e746df341a9` is now available in shared receipt files. It again marks every
+variant F, including FA3; no correctness winner can be promoted from it. Its timing shortlist is included
+behind Omni’s independent post-store FP32 gate. No extra judge query or submission was made.
 
 MoE handoff: `../muse_moe_w4a16/dev/v9_reuse/dropin.py` (SHA256800263d7643190809210e51704540950350b97a44c8b6e3b8da30a29d2f82588) exposes `moe_reuse_prepare(full_weights)` / `moe_reuse_experts(x,scores,local_ids,state)`, with raw E4M3/NVFP4 storage and a three-input FP32 gate before cold paired graph selection at M128/256. `cand_r3_v9_reuse.py` (SHA256da9db7a5517a8aaf9c4c079f67389d9866fc99fc79ec66e9ad3db0fce7afb876) is the full-layer integration:13/13 tests,12/12 fresh graph cases,7 static checks pass; NT2 wins locally, which does not establish H200 speed. Proj lab queue keys8f516be7bb7c5c00/370b07e5e40e5ad0 (not judge IDs) carry the exact captured414-pair routing plus a separately seed-reproduced router, native NT2/4, register/shared reuse, hot-first channel CTAs, and clocks. Await their receipts and Humming fbf64bd39bde4bf6 for the H200 ranking; the owner screens/sends candidates. Preserve this component's raw-scale bank when merging; the new kernel's scale bytes are incompatible with old E5M3-encoded banks. Full details and commands are in FINDINGS; free lane keeps CUTLASS/TileLang ownership.
 
-Current task handoff: **[cand_r3_best.py](../cand_r3_best.py)**, SHA-256
-`812f5f369d042c9bb7f80c4e7198bc4883922539c619c10f1e49622f1fe7aad2`. This version was **not sent**; Jihoon owns its screening/submission.
+Previous base handoff: **[cand_r3_best.py](../cand_r3_best.py)**, SHA-256
+`812f5f369d042c9bb7f80c4e7198bc4883922539c619c10f1e49622f1fe7aad2`. This lane did not send it; Jihoon owns its screening/submission.
 It supersedes the older best/best2 construction for this task. Normal and forced-Hopper screens each pass
 13/13 tests, 12/12 fresh graph cases and 11/11 static checks. Cold prepare including native attention
 compiles and all tuners is **175.121 s locally**, with **177.152 s** including extra forced-family checks.
@@ -51,7 +74,7 @@ The current [per-shape table](BEST.md#per-shape-normal-local-selection) is diagn
 H200 control is V9 `0e94268cf5654012`. Resolved follow-ups: cost_v9 `906ca5580aef4f86` **1.415x**,
 merge `43a1f3a3d7ba46a9` **1.359x**, attention portfolio `c30ff2cae95e428e` **1.347x**;
 v9all `83a8a755fece45e3` and moe_rt `19f9683f` failed at the missing Lt include.
-The stage plans of this rebuilt SHA need an H200 receipt; the attention sweep remains pending.
+The stage plans of the rebuilt sources need an H200 receipt. Sweep `59e53e746df341a9` landed with a faulty reference gate; its timings only inform the independently gated shortlist.
 
 | `cand_r3_attention_v2.py` | `e5414acdac7ae3a56f860369b88d0866567db6230e4ebe89d758e8f13a17cc15` | 13/13 tests, 12/12 graphs; parked after its 3% FA3 proxy gate rejected faster verify variants | **parked; do not send** |
 | `cand_r3_v9_glue.py` | `0bd8624b275b597b5485daf85a45ac7e6d68d9467b01bcf1a5c1be48df96d7cd` | **13/13 tests, 12/12 graphs; prepare 4.386 s on sm_120**; tiled TB≤32 path runs M=128/256 but `GLUE_TUNE` selects regular everywhere; Nsight measured pool-boundary ~81 us + stats ~11.8 us | **parked; do not send**; four split-K weight rereads and second consumer dominate |
@@ -72,21 +95,28 @@ Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`
 
 ## Attention drop-in status
 
-`dev/cand_r3_v9_attention_dropin.py` is locally admitted at 13/13 tests and 14/14 static checks
+`dev/cand_r3_v9_attention_dropin.py` is locally admitted at 13/13 tests and 15/15 static checks
 (including sm_90a CUDA compilation), generated SHA256
-`bc86dd5f2fc0807cba9244b217f0e433c10beaeb48516eddf004e8c00f39ad8c`. It has a prepare-time
+`7c750ea1f495be9373eb4d8129cd08309ea2ce73af118e69725eca2b6f1ca31b`. It has a prepare-time
 attention choice for all twelve decode-layer shapes (B1/16/32 × q_len1/8 × sliding/full).
-The corrected H200 sweep is job `59e53e746df341a9`; do not promote any H200 choice until its
-post-store FP32 gate receipt lands. The first sweep's gate rejected every variant, so only its raw
-timings are diagnostic: B16 q1 sliding/full attn_main 16.9/107.6 us versus best FA3 31.5/205.7 us.
+H200 sweep `59e53e746df341a9` again rejects every variant, FA3 included; its gate is still faulty.
+No correctness winner is promoted; its raw timings are diagnostic: B16 q1 sliding/full attn_main 16.9/107.6 us versus best FA3 31.5/205.7 us.
 B16 q1 sliding/full are provisional changes; the other ten shapes remain unverified. The attention
 WGMMA candidate's dead `_vmath_verify`/`_vmath_twog_verify` branches are removed and its static
 checks pass.
 
+The q8 lab gate was corrected after receipt `59e53e746df341a9`: the old reference normalized a
+flattened 1,024-wide row instead of each 64-wide head, and its agentic B>1 page table was too
+short. The fixed local control errors are 0.0068/0.0062/0.0058 at B1/B16/B32. The port now uses
+four KV pipeline stages on Hopper (three on sm_120), and `_splits` supplies 17/9 splits at B16/B32
+for two waves of 132 SMs. Replacement lab payload `prof/lab/verify8_attn_compare.py` (SHA256
+`2adee96d8f72588134aa1d21520f051b8c451906ed8b34cc5e82b15d33775dde`) is queued at priority 0.8;
+only its H200 receipt remains.
+
 ## Send order
 
-For this task, the owner screens/sends the current `cand_r3_best.py` hash above; this lane did not send it.
-The former best2-first ordering is superseded by this requested consolidated build. Existing holds on
+For this task, the owner sends `cand_r3_omni.py` at the hash above; this lane did not send it.
+The previous best/best2-first construction is superseded by this requested portfolio build. Existing holds on
 `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, both megakernel sources and overlap remain unchanged.
 
 The merged and megakernel logs are intentionally part of the scored receipt: `ATTN_PORT_*`, `PROJ_TUNE`, `PROJ_REJECT`, `PDL_TUNE`, `MOE_PLAN`, `PREFIX_TUNE`, `PERSIST_TUNE`, `MERGE_BUDGET`, `MEGA_TUNE`, `MEGA_REJECT`, the final compact `MEGA_SUMMARY`, and the attention candidate's final compact `ATTN_PORT_SUMMARY` record every accepted timing and selected plan. The local screen uses sm_120; H200 attention, projection, and megakernel choices remain unverified.
