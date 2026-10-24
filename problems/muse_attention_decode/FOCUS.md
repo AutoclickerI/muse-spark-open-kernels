@@ -13,10 +13,15 @@ SHA46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e.
 
 Full-q8 split job `be19da94dc534323` passes16 tests but loses: B16/B32
 call431.15/751.42 vs205.98/391.03 us. Producer427.8/713.7 us is98.6/98.8%
-of profiles; combine6.3/8.5 us is no longer the lever. Retain FA3. Next:
-phase-profile producer wait/transpose/QK/softmax+pack/PV, plus native register
-and occupancy data across stage/split choices. Inner binding phase remains
-unmeasured. Saved comparison: `dev/p5_switches/flashdecode_result.json`.
+of profiles; combine6.3/8.5 us is no longer the lever. Retain FA3.
+SASS: its FP8 mma.sync lowers to12 converts+2 FP16 HMMAs on Hopper,
+versus one native QMMA on sm120.223 registers, no spills, two CTAs/SM.
+[Producer evidence](dev/producer_phases/README.md) includes grid/bytes and
+an explicit stage-widening variant (133 registers, three CTAs at64 keys).
+Local widened variants have not established a speed win; no new candidate.
+Proj batch send e0712c33ab1cb715 is held until2026-10-25 09:00:20 KST:
+producer phase clocks/FA3 plus verify1 sliding vs exact layer FA3 glue.
+Native phase fractions and paired timing await H200. No judge ID before dispatch.
 
 New combined measurement `cand_p5_rescale_deferred.py`, job9828bfa041a143a9,
 sendacd77ec8d7a34384. q1 uses warp-uniform conditional O/l rescale; larger

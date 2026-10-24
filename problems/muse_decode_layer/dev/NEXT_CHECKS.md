@@ -115,3 +115,16 @@ For a selected stage set, `dS/dF = sum(max(0, time - 1.3*floor))` within each sh
 ## Closed inputs to the next integration
 
 Current negative receipts: FlashInfer full context `8ffbac2d`, persistent chain `87dc944b` (1.5–6.5x slower), verify split-K WGMMA `19f3a13b` (1.6x slower), and M128 fused producer `471f6d62` (5.7–6.5x recoded NT1). None supplies a promoted cell. S3 instead integrates the M256 recoded C1g2112 win `9e8a6a15f95748db` (365.2 vs raw386.1 us, 12 seeds); S4 adds D32g at M128 and one-LOP3 NT1 at M1–32 from `dc3fea0a20a349bf`; S5 replaces M128 with H_H from `770809cf159f41e2` (234.44 vs D32g272.70 us, 36 fixtures). S6 adds M256 mixed_parallel from8483c0c6 (344.5 vs C1rec366.2 us,12 seeds) and the M1 O/config6 cell (near timing noise). This table retains its reset + raw-M256 composition basis until the S1–S6 whole-layer profiles land. Existing source holds remain on `dev/parked/cand_r3_attention_v2.py`, `dev/parked/cand_r3_v9_glue.py`, both `dev/parked/cand_r3_merge_mega*.py` builds and the old overlap candidate. Detailed evidence remains in [FINDINGS](../../../docs/FINDINGS.md); [FOCUS](../FOCUS.md) owns candidate paths and reset allocation.
+
+
+## P5 attention: producer diagnosis and paired verify1 check
+
+Retain FA3 at full q8 and the current verify1 sliding setting. be19da94
+producer427.8/713.7us loses; combine6.3/8.5us is small. SASS proves FP8
+mma.sync lowers to FP16 HMMA+conversion on Hopper;223 registers give two
+CTAs/SM with no spills. A stage-widening variant is gated but not promoted.
+Proj lab batch e0712c33ab1cb715 is held until2026-10-25 09:00:20 KST;
+sections `verify8_producer_phases` and `verify1_sliding_fa3_pair`. The pair
+uses the guarded verify1 adapter vs exact public FA3 current/best5 glue and
+BF16/1/4-partial ABIs; whole-layer PDL composition remains unmeasured.
+[Source, hashes, gates and decisions](../../muse_attention_decode/dev/producer_phases/HANDOFF.md).

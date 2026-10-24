@@ -40,3 +40,11 @@ adds the `('singlelaunch_sliding', None)` choice without promoting it. Once the
 H200 receipt clears a shape, set only that shape's `attention_plan` row in the
 decode lane's measured settings. Full-layer end-to-end performance remains a
 separate integration check.
+
+
+Receipt32f2f07a is complete:1.2137x, all16 tests pass. Only verify1 sliding
+wins against the board control (kernel12.1vs16.2us; whole call18.18vs19.26).
+Larger sliding cells lose. Decode best7 uses public FA3 for verify1, so
+only the guarded `verify1_sliding_pick.py` comparator is retained, disabled.
+Its paired current/best5 FA3-glue measurement is scheduled in the proj-host
+batch e0712c33ab1cb715 after09:00 KST; see ../producer_phases/HANDOFF.md.

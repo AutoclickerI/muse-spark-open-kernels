@@ -1242,3 +1242,79 @@ establishes producer dominance, **not** which inner phase binds. In
 particular, deferred denominator alone cannot explain a needed ~2x gain;
 job9828bfa041a143a9 measures that switch before any larger structural claim.
 No full-q8 custom path is promoted; retain FA3 and leave the adapter disabled.
+
+
+## P5 producer mechanism: Hopper FP8 mma.sync lowering (2026-10-25)
+
+The exact CUDA string archived with `be19da94dc534323` was compiled with the
+image's CUDA13.0.88 for both sm90 (the submitted flags) and sm90a, then read
+with cuobjdump. **The supposed FP8 tensor path executes FP16 HMMA on Hopper.**
+An isolated copy of its `mma.sync.m16n8k32...e4m3` becomes12 FP8-to-FP16 unpack
+instructions plus two FP16 `HMMA.16816.F32`; identical PTX on local sm120
+becomes one native `QMMA.16832...E4M3`. This revises the earlier FP8-peak
+argument: this producer gets neither native FP8 issue nor that peak. Native
+WGMMA is a distinct design. The whole producer has408 unpack/160 HMMA static
+instructions across prologue, mask branches and tail; these are not dynamic
+counts, and compiler reuse means the isolated12-conversion count cannot be
+multiplied by every logical MMA.
+
+The measured `(17,3,128)` producer uses223 registers/thread, zero stack/spill
+bytes, and zero SASS LDL/STL. Rounded224 x128-thread CTAs allow two resident
+CTAs/SM: eight warps,12.5% of64. Its64KiB dynamic shared memory plus CUDA's
+1KiB reservation would allow three CTAs; registers bind this occupancy model.
+The [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/)
+supports the resource limits; the lab also prints runtime CUDA occupancy.
+
+| full q8 B | producer grid | occupancy waves on132 SMs | nominal max keys/CTA | nominal max KV bytes/CTA | logical KV TB/s from H200 producer |
+|---:|---:|---:|---:|---:|---:|
+| 16 | 544 | 2.06 | 4736 | 606208 | 0.77 |
+| 32 | 1088 | 4.12 | 4736 | 606208 | 0.92 |
+
+Agentic max86K raises a CTA to5120 keys/655360 bytes. The grid fills132 SMs;
+it does not prove enough resident issue/latency capacity. No counter yet
+identifies gather latency versus QK/softmax/PV as the dominant phase. Spills
+and the separate combine are ruled out as the large B16/B32 cost. The
+remaining clock breakdown is a real H200 dependency, not a claim inferred
+from local sm120 clocks.
+
+Built and screened `prof/lab/verify8_producer_phases.py`: same synthetic
+80K/coherent/agentic/page1 FP8 data at B16/B32, same-input public FA3 control,
+plain/clocked wall times, and per-warp clock64 medians/p90 for gather issue,
+gather wait/handoff, shared transpose, QK, softmax/rescale, P conversion and
+PV/layout. Prologue and whole-CTA cycles print separately. The instrumented
+baseline still has two resident CTAs and no spills. Its clocked output is
+bitwise equal locally; timing overhead/resources print beside plain timing.
+
+The next implementation in that payload widens K/V once per stage for all
+four query warps, preloads widened E4M3 query fragments, packs FP16 P once
+for all PV MMAs, and reuses query scratch after the stage barrier. It keeps
+the global cache FP8 and adds no persistent dequantized cache/weight copy.
+sm90a registers fall223->141 at128 keys and133 at64 keys; dynamic smem is
+84/44KiB at three stages. The64-key form permits three CTAs/SM. It passes
+all local gates but is not a measured performance winner: explicit Hopper
+MMA lowering on sm120 is roughly tied at B16 and4% slower at B32;128 keys
+loses. Native sm120 also loses. No next attention candidate was sent.
+H200 phase evidence and the same-input FA3 comparison decide the next fix;
+conditional-rescale/deferred switches stay receipt-gated on9828bfa0.
+
+Paired second payload `prof/lab/verify1_sliding_fa3_pair.py` embeds the guarded
+verify1 adapter verbatim and compares against decode's public FA3, with both
+current/best5 QK glue and output norm/gate, BF16 and1/4 FP32 partial ABIs.
+It checks changed captured values against the task's own post-store ordering.
+Projection GEMV and the whole-layer PDL schedule remain outside this pair.
+
+Batch send `e0712c33ab1cb715` on proj at priority0.8 is held with
+`--not-before 2026-10-25T09:00:20+09:00`; detached log confirms no early judge
+request and no rejection. No judge ID exists until dispatch. Source SHA-256:
+`e0712c33ab1cb7150fecd9cfd99b4847352ff3c09f62afc22dec1593f8e922c3`.
+Local30 producer fixtures (24 fresh graphs+6 exact80K cold graphs), their
+clocked gates, nine verify1 ABI graphs, undefined-name/signature checks and
+all three CUDA source sm90a builds pass. Cached lab gates agree with the
+unchanged official gate. Native FA3 runtime is unverified locally: forced
+Python/Triton glue uses a portable attention operation. Complete warm lab
+exercises take4.8s/0.22s and print3601/997 characters within80s/4500-char
+shares; cold H200 compilation remains unmeasured.
+
+Reproducible [SASS/resources, admission and handoff](../problems/muse_attention_decode/dev/producer_phases/README.md).
+No decode setting changed. FA3 remains the full-q8 incumbent; verify1 sliding
+still needs the paired FA3 receipt and then whole-layer composition evidence.

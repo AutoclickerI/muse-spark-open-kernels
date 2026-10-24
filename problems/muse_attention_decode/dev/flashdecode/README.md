@@ -40,8 +40,8 @@ cover the exact CUDA source. Local timing is not H200 performance evidence.
 
 The candidate changes full q8 only. Other shapes retain measured incumbents:
 attn_main q1, attn_main B1 q8 sliding, FA3 B16/B32 q8 sliding on Hopper.
-The previous single-launch sliding experiment remains a separate queued
-measurement until its H200 receipt clears a shape.
+The single-launch sliding receipt clears only verify1 against the board control;
+the actual decode FA3 comparison is scheduled in producer_phases.
 
 Frozen H200 launch policy: B1 `(splits=128, stages=3, tile=64)`,
 B16 `(17,3,128)`, B32 `(17,3,128)`. Splits scale from four waves of the
@@ -57,4 +57,7 @@ Final local gates: 16 task tests, 12 scored graphs, 4 static checks, 16
 stage/tile fixtures with fresh captured input values, 9 adapter ABI graphs,
 and 2 forced FA3 sliding glue graphs (normal and 1/64 KV scales). Profiling
 confirms the adapter performs exactly two kernels even with split projection
-inputs. H200 timing and whole-layer promotion remain pending.
+inputs. H200 be19da94 passes16 tests but full-q8 B16/B32 producers lose at
+427.8/713.7us, combine6.3/8.5us. No adapter row is promoted. sm90a SASS
+shows FP8 mma.sync lowering to FP16; see ../producer_phases/README.md for
+the mechanism, resources, screened next variant and scheduled diagnostic pair.
