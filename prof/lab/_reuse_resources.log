@@ -1,0 +1,42 @@
+
+Fatbin elf code:
+================
+arch = sm_120
+code version = [1,8]
+host = linux
+compile_size = 64bit
+identifier = /data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/muse_v9_reuse_8e1788cc38b5/cuda.cu
+
+Resource usage:
+ Common:
+  GLOBAL:28 CONSTANT[4]:224
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi16ELi0EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:104 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi8ELi0EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:70 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi4ELi0EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:52 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi2ELi0EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:43 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi1ELi0EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:42 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi16ELi1EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:128 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi8ELi1EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:80 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi4ELi1EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:56 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae116gemm_kILi32ELi2EEEvPKhPKfPK13__nv_bfloat16PS5_PfPKiSB_SB_SB_SB_iiPy:
+  REG:40 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:992 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN39_GLOBAL__N__accd0dd5_7_cuda_cu_8618ae117route_kEPKiPiS2_S2_S2_S2_S2_iii:
+  REG:40 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:964 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+Fatbin ptx code:
+================
+arch = sm_120
+code version = [9,0]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/muse_v9_reuse_8e1788cc38b5/cuda.cu
+ptxasOptions =  --generate-line-info 

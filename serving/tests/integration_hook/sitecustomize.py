@@ -13,7 +13,7 @@ exec(compile((ROOT / 'serving/harness/pyhook/sitecustomize.py').read_text(),
              'harness_hook', 'exec'))
 AR = 'sglang.kernels.ops.muse_spark_v12.all_reduce_norm_residual'
 ADAPTER = 'sglang.srt.layers.muse_spark_serving'
-MODEL = 'sglang.srt.models.muse_spark'
+DRAFT = 'sglang.srt.models.dflash'
 
 
 class Loader(importlib.abc.Loader):
@@ -41,7 +41,6 @@ class Loader(importlib.abc.Loader):
             module.all_reduce_norm_residual = portable
         elif module.__name__ == ADAPTER:
             import torch.nn.functional as F
-            from sglang.srt.layers.muse_prefill_expert import PrefillExpertPlan
 
             class Projection:
                 def __init__(self, weight, kind, **kw):
@@ -57,32 +56,26 @@ class Loader(importlib.abc.Loader):
                                        dtype=torch.int32).view_as(ids)
                 return rows, torch.where(local >= 0, mapping, -1)
 
-            def prefill(plan, x, scores, ids):
-                assert x.shape[0] >= 753
-                return dense(plan.state, x, scores, ids)
-
-            PrefillExpertPlan.__call__ = prefill
             module.MuseProjection = Projection
             module.projection_supported = lambda x, w, kind: (
                 x.is_cuda and x.dtype == w.dtype == torch.bfloat16
                 and x.ndim == w.ndim == 2 and x.shape[1] == w.shape[1]
                 and 0 < x.shape[0] <= 256)
-            module.run_v9_dense = lambda state, x, scores, ids: (
-                PrefillExpertPlan(state)(x, scores, ids) if x.shape[0] >= 753
-                else dense(state, x, scores, ids))
-        elif module.__name__ == MODEL:
-            from sglang.srt.layers.muse_spark_fp4_moe import MuseSpark1xFp4Experts
-            original = MuseSpark1xFp4Experts._use_muse_v4
-            seen = set()
+            module.run_v9_dense = dense
+        elif module.__name__ == DRAFT:
+            from sglang.srt.runtime_context import get_parallel
 
-            def use(layer, n):
-                if getattr(layer, '_humming_candidate', False):
-                    layer._muse_v4_state = {'portable_layer': layer}
-                admitted = original(layer, n)
-                if getattr(layer, '_humming_candidate', False) and n not in seen:
-                    seen.add(n)
-                    path = ('grouped' if n >= 753 else 'V9') if admitted else 'Marlin'
-                    print('SERVING_INTEGRATION expert', n, path, flush=True)
+            def supported(comm, *, num_tokens, n, device, dtype):
+                return (get_parallel().tp_size > 1 and 0 < num_tokens <= 64
+                        and dtype == torch.bfloat16)
+
+            def gather(comm, local, out):
+                out.copy_(get_parallel().tp_group.all_gather(local, dim=-1))
+                return out
+
+            module.all_gather_supported = supported
+            module.projection_all_gather = gather
+        print('SERVING_INTEGRATION expert', n, path, flush=True)
                 return admitted
 
             MuseSpark1xFp4Experts._use_muse_v4 = use
@@ -91,7 +84,7 @@ class Loader(importlib.abc.Loader):
 
 class Finder(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
-        if fullname in (AR, ADAPTER, MODEL):
+        if fullname in (AR, ADAPTER, DRAFT):
             spec = importlib.machinery.PathFinder.find_spec(fullname, path)
             spec.loader = Loader(spec.loader)
             return spec

@@ -37,4 +37,9 @@ run.wait_ready = ready
 
 wrapper.launch = launch
 if __name__ == '__main__':
-    run.main()
+    if '--forced' in sys.argv:
+        sys.argv.remove('--forced')
+        import teacher_forced_workload
+        teacher_forced_workload.main()
+    else:
+        run.main()

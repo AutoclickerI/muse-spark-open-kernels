@@ -2651,8 +2651,6 @@ def _wgmma_portfolio_shape(batch,window,flush,start,end):
         elif label=='fa3': fn=lambda d,s=setting:_fa3_verify(d,s)
         elif label=='fa3_struct': fn=lambda d,w=setting:_fa3_struct_verify(d,w)
         elif label=='xqa_fp8_pv': fn=lambda d,s=setting:_p8_verify(d,s)
-        elif label=='decode_math': fn=lambda d,f=setting[0]:_vmath_verify(d,f)
-        elif label=='decode_math_twog': fn=lambda d,f=setting[0]:_vmath_twog_verify(d,f)
         else: _next_set(setting); fn=_xqa_verify
         actual=fn(data); gated=fn(gate_data)
         if not torch.isfinite(actual).all().item() or not torch.isfinite(gated).all().item(): raise RuntimeError('non-finite')

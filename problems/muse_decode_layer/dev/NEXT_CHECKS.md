@@ -1,6 +1,9 @@
 # Decode checks — next send order after 18a5f4e
 
-`cand_r3_merge2.py` is the next candidate: it removes the union's measured small-shape
+`cand_r3_best.py` is the next candidate: it repairs the Hopper Lt/XQA static failures,
+keeps the union's measured small-shape protection, and tunes the cost/projection and
+attention portfolios from one V9 state. `cand_r3_merge2.py` is retained as the previous
+V9-control candidate. The union's measured small-shape
 cuBLAS/cuBLASLt launch overhead and uses V9 as the complete-layer control. `cand_r3_union.py`
 is retained as the diagnostic receipt. It packs all round-3 attention, projection,
 router-aware MoE, and PDL choices into one H200 prepare-time selection. `cand_r3_v9all.py`
@@ -41,10 +44,16 @@ BF16 bank dequantized in prepare (CONSTRAINTS 5 boundary row); H200 labs f8e9773
 
 | Source | SHA-256 | Local validation | Role |
 |---|---|---:|---|
+| `cand_r3_best.py` | `82f54e676a0b62d720847a051d6793fb7fb5a57bb4f5f15984224ba8473dfc0f` | **sm_120: 13/13 tests, 12/12 graphs; prepare 16.560 s**; 14 static checks pass (including sm_90a CUDA compilation); V9 MoE, pool/router custom at T≤32, prefix off | **ready; send first; H200 V9 control `0e94268cf5654012`, cost-v9 receipt `906ca5580aef4f86`, attention sweep `59e53e746df341a9` pending** |
 | `cand_r3_merge2.py` | `c7716ba073e9fa92661a2c2463062ee44f8221bccc3aa5a1cc1d41488eed926` | **sm_120: 13/13 tests, 12/12 graphs; prepare 16.344 s**; all 12 timed shapes pass; V9 custom GEMV forced at T=1/8/16/32/128/256; prefix/persistent paths disabled | **ready; choices backed by V9 receipt `0e94268cf5654012` until pending receipts improve a complete shape** |
 | `cand_r3_union.py` | `32bdf65385b8e0b6955f7135908cdb36bedba7d40015d8a8021d53168c569f4f` | **sm_120: 13/13 tests, 12/12 graphs; prepare 9.314 s**; all 12 timed shapes pass; full FP32 combination gate passes; Hopper attention and router-aware MoE paths retained behind portable stand-ins | **ready first at reset**; one per-shape union tuner; H200 selection and score unverified |
 
-`cand_r3_merge2.py` current per-shape table: all 12 scored shapes use the V9 layer path,
+`cand_r3_best.py` current local per-shape table: all 12 scored shapes use the V9 layer stand-in,
+the cost/projection portfolio (pool/router forced custom at T≤32), V9 MoE, and the regular prefix
+path. On H200, the V9 layer/MoE fallback is backed by receipt `0e94268cf5654012`; projection
+choices come from cost-v9 receipt `906ca5580aef4f86`, and attention choices are selected inside
+prepare from corrected sweep job `59e53e746df341a9` when it lands. Until those H200 choices are
+observed, the local sm_120 selections are diagnostic. `cand_r3_merge2.py` current per-shape table: all 12 scored shapes use the V9 layer path,
 custom GEMV projections, V9 MoE, and the regular PDL boundary. The backing H200 receipt for
 each row is `0e94268cf5654012` (decode 1/16/32 and verify 1/16/32, sliding and full). Pending
 receipts `83a8a755fece45e3` (v9all), `43a1f3a3d7ba46a9` (merge), `906ca5580aef4f86`
@@ -67,9 +76,22 @@ its complete-layer median beats this V9 row and its profile has no added launch.
 
 Structural sources remain frozen for later diagnostics: `cand_layer_sweep.py` (`08015a0aede234527989a100bb661461dbee843b459844003bb8de59c128d096`), `cand_epilogue.py` (`2c585251f289b140b50d4c0465ec50cf4996bdf8d870ce19c1cb903b1d320598`), `cand_chain6.py` (`6e88cfa39935592a081bb95461ee82610c17b0cd7689209c4ea4e07cc72caf11`), `cand_chain.py` (`0d545fb6fe330e24dbf99f8f21bbb6444a342d945776ab5708f64d447faac4b9`), `cand_chain_occ2.py` (`96cf5ecc7141c2aa2df95ff0724d3dcb79a1cc7a38b5565b0374edfa3e9b5581`), and `cand_chain_nopf.py` (`486356e4e552ebcd4ffca1ead3f808be7144b7c53438009bca4f5374cd554e52`). Their local structural round regressed the complete layer, so they are not production checks until a packed diagnostic finds a neutral stage pair.
 
+## Attention drop-in status
+
+`dev/cand_r3_v9_attention_dropin.py` is locally admitted at 13/13 tests and 14/14 static checks
+(including sm_90a CUDA compilation), generated SHA256
+`bc86dd5f2fc0807cba9244b217f0e433c10beaeb48516eddf004e8c00f39ad8c`. It has a prepare-time
+attention choice for all twelve decode-layer shapes (B1/16/32 × q_len1/8 × sliding/full).
+The corrected H200 sweep is job `59e53e746df341a9`; do not promote any H200 choice until its
+post-store FP32 gate receipt lands. The first sweep's gate rejected every variant, so only its raw
+timings are diagnostic: B16 q1 sliding/full attn_main 16.9/107.6 us versus best FA3 31.5/205.7 us.
+B16 q1 sliding/full are provisional changes; the other ten shapes remain unverified. The attention
+WGMMA candidate's dead `_vmath_verify`/`_vmath_twog_verify` branches are removed and its static
+checks pass.
+
 ## Send order
 
-Send `cand_r3_merge2.py` first at reset. Do not send `cand_r3_union.py` until its small-shape projection dispatch is replaced by a receipt-backed winner. Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
+Send `cand_r3_best.py` first at reset. Keep `cand_r3_merge2.py` as the V9-control fallback. Do not send `cand_r3_union.py` until its small-shape projection dispatch is replaced by a receipt-backed winner. Do not send `cand_r3_attention_v2.py`, `cand_r3_v9_glue.py`, either megakernel source
 (`cand_r3_merge_mega.py` or `cand_r3_merge_mega_fix.py`), `cand_r3_merge_ovl.py`,
 `cand_r3_v9all.py`, `cand_r3_merge.py`, `cand_r3_v9_attention_portfolio.py`,
 `cand_r3_v9_cost_v9.py`, `cand_r3_proj.py`, or the withdrawn synthetic-tuned originals again.

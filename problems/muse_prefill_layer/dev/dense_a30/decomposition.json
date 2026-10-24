@@ -1,0 +1,177 @@
+{
+  "job": "a30fb411b0c74ffb",
+  "classification": "H200 receipts; selected tuner microbenchmarks vs separate profile calls",
+  "rows": [
+    {
+      "role": "qkv",
+      "choice": [
+        "lt",
+        1
+      ],
+      "us": 764.46,
+      "tensor_floor_us": 625.3541866774519,
+      "tflops": 809.0355160819402,
+      "percent_peak": 81.80338888593934,
+      "weighted_ms": 142.18956,
+      "excess_ms": 25.873681277993946
+    },
+    {
+      "role": "o",
+      "choice": [
+        "lt",
+        6
+      ],
+      "us": 339.28,
+      "tensor_floor_us": 277.93519407886754,
+      "tflops": 810.1801077104458,
+      "percent_peak": 81.91912110317955,
+      "weighted_ms": 63.10607999999999,
+      "excess_ms": 11.410133901330633
+    },
+    {
+      "role": "pooler",
+      "choice": [
+        "lt",
+        5
+      ],
+      "us": 1359.15,
+      "tensor_floor_us": 1111.7407763154702,
+      "tflops": 808.9700384622741,
+      "percent_peak": 81.79676829749991,
+      "weighted_ms": 252.80190000000002,
+      "excess_ms": 46.01811560532257
+    },
+    {
+      "role": "unpooler",
+      "choice": [
+        "lt",
+        6
+      ],
+      "us": 1345.42,
+      "tensor_floor_us": 1111.7407763154702,
+      "tflops": 817.2255710306075,
+      "percent_peak": 82.63150364313523,
+      "weighted_ms": 250.24812,
+      "excess_ms": 43.46433560532257
+    },
+    {
+      "role": "router_cat",
+      "choice": [
+        "cublas"
+      ],
+      "us": 178.29,
+      "tensor_floor_us": 138.96759703943377,
+      "tflops": 770.8730353469068,
+      "percent_peak": 77.94469518168926,
+      "weighted_ms": 33.16194,
+      "excess_ms": 7.313966950665317
+    }
+  ],
+  "weighted_selected_dense_ms": 741.5076,
+  "weighted_dense_tensor_floor_ms": 607.427366659365,
+  "weighted_profile_dense_ms": 739.0432000000001,
+  "weighted_profile_boundary_ms": 159.077,
+  "weighted_profile_dequant_ms": 117.84840000000001,
+  "profiles": [
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 0,
+        "dist": "soft",
+        "layer": "full",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 4371611854504229081,
+        "weight": 16
+      },
+      "known": {
+        "dense_gemm_us": 3980.8999999999996,
+        "_boundary_kernel": {
+          "total_us": 856.8,
+          "calls": 2
+        },
+        "_canonical_expand_coalesced": {
+          "total_us": 584.4,
+          "calls": 2
+        }
+      }
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 32768,
+        "dist": "soft",
+        "layer": "sliding",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 4371685675969375512,
+        "weight": 138
+      },
+      "known": {
+        "dense_gemm_us": 3971.2000000000003,
+        "_boundary_kernel": {
+          "total_us": 855.7,
+          "calls": 2
+        },
+        "_canonical_expand_coalesced": {
+          "total_us": 650.6,
+          "calls": 2
+        }
+      }
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 32768,
+        "dist": "soft",
+        "layer": "full",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 4371759497434521944,
+        "weight": 16
+      },
+      "known": {
+        "dense_gemm_us": 3983.2999999999997,
+        "_boundary_kernel": {
+          "total_us": 857.1,
+          "calls": 2
+        },
+        "_canonical_expand_coalesced": {
+          "total_us": 482.8,
+          "calls": 2
+        }
+      }
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 65536,
+        "dist": "soft",
+        "layer": "full",
+        "load": "first turn",
+        "page": 1,
+        "q_len": 16384,
+        "repeats": 6,
+        "seed": 4371907140364814811,
+        "weight": 16
+      },
+      "known": {
+        "dense_gemm_us": 3974.3999999999996,
+        "_boundary_kernel": {
+          "total_us": 848.0,
+          "calls": 2
+        },
+        "_canonical_expand_coalesced": {
+          "total_us": 686.9,
+          "calls": 2
+        }
+      }
+    }
+  ]
+}

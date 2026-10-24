@@ -3,7 +3,7 @@
 ## Status (2026-10-24 10:00 KST)
 - Kernel track day 2 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST (1 scored run a day, 3 checks at c=16).
 - Boards (SOTA, 12:30 KST): decode 1.429x (rank 112 of 379; 50th 1.625x, 10th 1.860x, leader 2.101x), MoE 1.687x,
-  prefill 1.434x (rank 58), attention 1.403x, proj 1.184x. The field moved ~+0.1x in half a day. The overall board is max(decode, component composite); our composite is below decode.
+  prefill 1.438x (cand_mid_experts2 `0d738799`; was rank 58 at 1.434x), attention 1.403x, proj 1.184x. The field moved ~+0.1x in half a day. The overall board is max(decode, component composite); our composite is below decode.
 - Daily caps since 10-24: decode, attention and prefill 10 scored + 10 checks; MoE and proj 10 + 20. `tools/h200_lab.py`
   times anything on the H200 inside proj's prepare, so decode/attention/prefill runs go to candidates only.
 - The decode layer's MoE (V9) takes 477/450 us at verify 32 and 259/280 us at verify 16 against a ~70 us floor under its

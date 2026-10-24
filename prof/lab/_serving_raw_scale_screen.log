@@ -1,0 +1,23 @@
+muse_moe_w4a16: prof/lab/_serving_raw_scale_screen.py
+LOCAL screen on NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (sm_120); the judge runs an H200 (sm_90), so these timings are not its timings
+prepare: 75.0 s
+tests (5):
+  PASS  bs 4, sharding ep8: relative L2 error 5.122e-03 (worst row 5.782e-03)
+  PASS  bs 33, sharding ep8: relative L2 error 5.229e-03 (worst row 6.228e-03)
+  PASS  bs 257, sharding ep8: relative L2 error 5.826e-03 (worst row 7.303e-03)
+  PASS  bs 128, sharding ep8, dist skewed: relative L2 error 5.434e-03 (worst row 6.924e-03)
+  PASS  bs 1, sharding ep8: relative L2 error 4.682e-03 (worst row 4.682e-03)
+timing 6 shapes, 20 replays a side, 3 input sets (graph replay fixed cost 2.0 us, subtracted):
+  ok    [decode 1] bs 1, sharding ep8: 97.3 us
+  ok    [decode 16] bs 16, sharding ep8: 252.9 us
+  ok    [decode 32] bs 32, sharding ep8: 406.5 us
+  ok    [verify 1] bs 8, sharding ep8: 220.2 us
+  ok    [verify 16] bs 128, sharding ep8: 488.9 us
+  ok    [verify 32] bs 256, sharding ep8: 1197.1 us
+  load decode 1: 5836.8 us
+  load decode 16: 15175.7 us
+  load decode 32: 24391.7 us
+  load verify 1: 13209.6 us
+  load verify 16: 29333.8 us
+  load verify 32: 71823.4 us
+static checks (5: undefined names, sm_90a compile of each CUDA source): all pass

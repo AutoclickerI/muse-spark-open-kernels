@@ -100,8 +100,8 @@ def test_sm90_policies_and_standins() -> None:
             max_push_size=1 << 30, config=SimpleNamespace(num_push_blocks=8), obj=obj,
         )
         w = torch.randn(4096, 2048, device=device, dtype=torch.bfloat16)
-        assert ga.split_projection_supported(device, 128)
-        assert not ga.split_projection_supported(device, 129)
+        assert ga.projection_max_tokens(8, 4096, device) == 512
+        assert ga.projection_max_tokens(8, 8192, device) == 64
         old_gather = ga._jit_module
         old_linear = __import__(
             "sglang.srt.layers.quantization.unquant", fromlist=["bf16_gemm_dispatch"]

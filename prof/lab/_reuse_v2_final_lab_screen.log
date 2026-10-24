@@ -1,0 +1,52 @@
+muse_bf16_proj: prof/lab/_screen_v9_reuse_v2_final.py
+LOCAL screen on NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (sm_120); the judge runs an H200 (sm_90), so these timings are not its timings
+FUSED_SELECT router m=128 incumbent_us=24.576 chosen=(64, 64, 4, 1, 16, 160) chosen_us=18.432 top=[(18.432000651955605, (64, 64, 4, 1, 16, 160)), (20.479999482631683, (64, 64, 4, 1, 8, 160)), (22.52800017595291, (64, 64, 4, 1, 16, 128)), (24.57600086927414, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=26.624 chosen=(64, 64, 4, 1, 8, 160) chosen_us=22.528 top=[(22.52800017595291, (64, 64, 4, 1, 8, 160)), (22.52800017595291, (64, 64, 4, 1, 8, 256)), (28.672000393271446, (64, 64, 4, 1, 8, 128)), (43.007999658584595, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=36.480 chosen=None chosen_us=36.480 top=[(38.91199827194214, (64, 64, 4, 1, 2, 256)), (38.91199827194214, (128, 64, 3, 1, 4, 160)), (40.95999896526337, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=61.440 chosen=(128, 128, 2, 1, 2, 256) chosen_us=59.392 top=[(57.34400078654289, (128, 128, 2, 1, 2, 256)), (59.39200147986412, (128, 64, 4, 1, 2, 256)), (61.47199869155884, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=57.344 chosen=('lt', 4) chosen_us=55.296 top=[(56.96000158786774, ('lt', 4)), (57.34400078654289, ('lt', 0)), (57.34400078654289, ('lt_nn', 0)), (57.34400078654289, ('lt_nn', 2)), (57.34400078654289, ('lt_nn', 3))]
+FUSED_SELECT pooler m=256 incumbent_us=86.048 chosen=('lt_nn', 0) chosen_us=81.920 top=[(81.91999793052673, ('lt_nn', 0)), (86.01599931716919, ('lt', 3)), (86.01599931716919, ('lt_nn', 2)), (86.01599931716919, ('lt_nn', 4)), (86.07999980449677, ('lt', 0))]
+FUSED_SELECT unpooler m=128 incumbent_us=65.536 chosen=('lt_nn', 0) chosen_us=53.248 top=[(53.247999399900436, ('lt_nn', 0)), (59.39200147986412, ('lt', 3)), (59.39200147986412, ('lt', 4)), (59.39200147986412, ('lt_nn', 1)), (63.48799914121628, ('lt', 2))]
+FUSED_SELECT unpooler m=256 incumbent_us=81.952 chosen=('lt', 1) chosen_us=77.824 top=[(79.8719972372055, ('lt', 1)), (79.9039974808693, ('lt_nn', 1)), (81.91999793052673, ('lt_nn', 0)), (81.95199817419052, ('lt', 0)), (83.96799862384796, ('lt', 2))]
+FUSED_SELECT o m=128 incumbent_us=18.432 chosen=None chosen_us=18.432 top=[(18.0479995906353, ('lt', 0)), (20.06400004029274, ('lt', 2)), (22.52800017595291, ('lt', 1)), (22.52800017595291, ('lt', 3)), (22.52800017595291, ('lt_nn', 0))]
+FUSED_SELECT o m=256 incumbent_us=26.624 chosen=None chosen_us=26.624 top=[(26.1439997702837, ('lt', 3)), (26.176000013947487, ('lt_nn', 1)), (26.623999699950218, ('lt', 1)), (26.623999699950218, ('lt_nn', 2)), (28.672000393271446, ('lt', 0))]
+FUSED_SELECT prepare_s=1.05
+LAB_BEGIN moe_v9_reuse_v2 451b33dddbbd7098
+META cold graph paired medians n=6 flush128MiB; per-phase clocks are diagnostic; R0=captured 26d7e05 fixture0 exact IDs, refreshed x/tw; G=public decode generator seed5353 fields={router_seed:5353}; original R0 router seed/fields were not printed, so G is separate
+GEN router sha256=236c43618090d88b
+GEN router_bias sha256=6889a8d874b8995c
+GEN pre_ffn_norm sha256=10ae867170bb27a9
+GEN pre_expert_norm sha256=da1f1f894308f43e
+ROUTE M=128 R0 P=209 E=18 hot=55 nb8=35 counts=1,2,5,0,2,3,2,0,16,0,0,0,0,6,6,0,0,9,0,55,3,3,0,0,0,8,4,33,47,0,4,0
+T v9nt2 M=128 R0 us=392.2 V9=381.0 ratio=1.0267 fp32=0.00028 PASS
+T v9nt4 M=128 R0 us=566.3 V9=380.0 ratio=1.4917 fp32=0.00028 PASS
+T r32g2 M=128 R0 us=751.5 V9=381.0 ratio=1.9777 fp32=0.00029 PASS
+T s128g2 M=128 R0 us=2287.1 V9=522.3 ratio=4.3811 fp32=0.00029 PASS
+ROUTE M=128 G P=255 E=11 hot=84 nb8=38 counts=0,1,0,0,0,3,0,38,0,1,4,0,0,84,0,42,0,0,22,3,2,55,0,0,0,0,0,0,0,0,0,0
+T v9nt2 M=128 G us=384.0 V9=405.5 ratio=0.9777 fp32=0.00032 PASS
+T v9nt4 M=128 G us=450.6 V9=344.1 ratio=1.3093 fp32=0.00032 PASS
+T r32g2 M=128 G us=666.3 V9=395.3 ratio=1.6728 fp32=0.00033 PASS
+T s128g2 M=128 G us=1489.9 V9=346.2 ratio=4.3039 fp32=0.00033 PASS
+ROUTE M=256 R0 P=414 E=21 hot=119 nb8=62 counts=4,3,6,0,2,11,2,0,21,0,2,0,0,6,12,0,1,19,1,118,5,4,0,0,0,8,9,56,119,0,5,0
+T v9nt2 M=256 R0 us=668.6 V9=735.2 ratio=0.9083 fp32=0.00031 PASS
+T v9nt4 M=256 R0 us=759.8 V9=603.1 ratio=1.2641 fp32=0.00031 PASS
+T r32g2 M=256 R0 us=1051.6 V9=603.1 ratio=1.7437 fp32=0.00033 PASS
+T s128g2 M=256 R0 us=3191.8 V9=603.1 ratio=5.2829 fp32=0.00033 PASS
+ROUTE M=256 G P=540 E=13 hot=159 nb8=75 counts=0,4,0,1,0,4,0,99,0,3,3,0,0,159,0,81,0,0,58,6,3,114,0,0,0,0,0,0,0,5,0,0
+T v9nt2 M=256 G us=546.8 V9=618.5 ratio=0.8531 fp32=0.00031 PASS
+T v9nt4 M=256 G us=671.7 V9=615.5 ratio=1.1023 fp32=0.00031 PASS
+T r32g2 M=256 G us=983.0 V9=618.5 ratio=1.5953 fp32=0.00032 PASS
+T s128g2 M=256 G us=2603.0 V9=613.4 ratio=4.0080 fp32=0.00032 PASS
+LAB_END lab_s=3.9 prepare_s=5.0
+prepare: 5.0 s
+tests (9):
+  PASS  m 1, layer qkv_gate: relative L2 error 1.631e-04 (worst row 1.631e-04)
+  PASS  m 7, layer pooler: relative L2 error 1.139e-04 (worst row 1.730e-04); 2 probe rows exact to 0.0e+00
+  PASS  m 33, layer o: relative L2 error 6.717e-05 (worst row 1.961e-04); 2 probe rows exact to 0.0e+00
+  PASS  m 130, layer unpooler: relative L2 error 3.034e-03 (worst row 3.399e-03); 19 probe rows exact to 0.0e+00
+  PASS  m 5, layer unpooler: relative L2 error 6.824e-06 (worst row 1.564e-05)
+  PASS  m 8, layer router: relative L2 error 2.546e-06 (worst row 2.795e-06); 2 probe rows exact to 2.7e-06
+  PASS  m 9, layer router, dist outliers: relative L2 error 2.530e-06 (worst row 2.701e-06); 2 probe rows exact to 2.6e-06
+  PASS  m 512, layer qkv_gate, dist outliers: relative L2 error 3.361e-03 (worst row 3.776e-03); 55 probe rows exact to 0.0e+00
+  PASS  m 1000, layer unpooler, dist outliers: relative L2 error 2.236e-03 (worst row 2.664e-03); 121 probe rows exact to 0.0e+00
+static checks (8: undefined names, sm_90a compile of each CUDA source): all pass

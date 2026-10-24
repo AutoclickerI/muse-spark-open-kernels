@@ -253,6 +253,41 @@ def undefined_names(file: Path) -> list[dict]:
     return [{"name": "undefined_names", "ok": p.returncode == 0, "msg": " | ".join(found[:8])[:400]}]
 
 
+def call_signatures(file: Path) -> list[dict]:
+    """Calls to the file's own module-level functions that pass an argument they don't take: a
+    Hopper-only branch raises TypeError only on the judge (cand_attn_verify_wgmma 05fe4997:
+    _next_input(..., ctx=2048)). Names bound more than once at module level are skipped."""
+    tree = ast.parse(file.read_text())
+    bound: dict[str, int] = {}
+    defs: dict[str, ast.FunctionDef | ast.AsyncFunctionDef] = {}
+    for node in tree.body:
+        for target in (node.targets if isinstance(node, ast.Assign) else []):
+            if isinstance(target, ast.Name):
+                bound[target.id] = bound.get(target.id, 0) + 1
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            bound[node.name] = bound.get(node.name, 0) + 1
+            defs[node.name] = node
+    found = []
+    for call in ast.walk(tree):
+        if not (isinstance(call, ast.Call) and isinstance(call.func, ast.Name)):
+            continue
+        fn = defs.get(call.func.id)
+        if fn is None or bound[fn.name] > 1 or any(isinstance(d, ast.Name) and d.id != "staticmethod"
+                                                    for d in fn.decorator_list):
+            continue
+        a = fn.args
+        names = {x.arg for x in a.posonlyargs + a.args + a.kwonlyargs}
+        positional = len(a.posonlyargs + a.args)
+        if any(isinstance(x, ast.Starred) for x in call.args) or any(k.arg is None for k in call.keywords):
+            continue
+        bad = [str(k.arg) for k in call.keywords if a.kwarg is None and k.arg not in names]
+        if a.vararg is None and len(call.args) > positional:
+            bad.append(f"{len(call.args)} positional > {positional}")
+        if bad:
+            found.append(f"line {call.lineno}: {fn.name}() {', '.join(bad)}")
+    return [{"name": "call_signatures", "ok": not found, "msg": " | ".join(found[:8])[:400]}]
+
+
 def hopper_compile(file: Path) -> list[dict]:
     """Compile every CUDA source string in the file for sm_90a, whichever branch would build it.
 
@@ -408,9 +443,9 @@ def main():
                 print(f"LOCAL speedup (geomean over loads): {result['speedup']:.3f}x  [not an H200 number]")
 
     # Static checks for code no local run reaches: Hopper-only branches and their names.
-    result["static"] = undefined_names(file) + (hopper_compile(file) if (dev.major, dev.minor) != (9, 0) else [])
+    result["static"] = undefined_names(file) + call_signatures(file) + (hopper_compile(file) if (dev.major, dev.minor) != (9, 0) else [])
     bad = [c for c in result["static"] if not c["ok"]]
-    print(f"static checks ({len(result['static'])}: undefined names, sm_90a compile of each CUDA source): "
+    print(f"static checks ({len(result['static'])}: undefined names, call signatures, sm_90a compile of each CUDA source): "
           + ("all pass" if not bad else "; ".join(f"FAIL {c['name']}: {c['msg']}" for c in bad)), flush=True)
 
     if args.json:

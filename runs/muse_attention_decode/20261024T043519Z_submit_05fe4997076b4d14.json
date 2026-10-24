@@ -1,0 +1,312 @@
+{
+ "board": "muse_attention_decode",
+ "call_id": "nyc3:kc-05fe4997076b4d14",
+ "cluster": "nyc3",
+ "content_hash": "415794df1c18cb4b4f3b25feafe09194e86c9b437d016a550930cdbbfd580db6",
+ "created_at": 1792816520.9432814,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792820776.4804316,
+ "id": "05fe4997076b4d14",
+ "mode": "run",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/749f7c265cb253ee/profiles/cand_attn_verify_wgmma.05fe4997076b4d14.log"
+ },
+ "payload_ref": "muse_attention_decode/415794df1c18cb4b4f3b25feafe09194e86c9b437d016a550930cdbbfd580db6.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "1d519ebf2014fef91b41ffea9bcd7e9c5066784ef5a2a5e2cf06a8cec554d188",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_attention_decode/baseline.py": "37f51207283f85a65eb393b1dfb1344759d7df0bdec5450e34d24e7139f56ecc",
+    "problems/muse_attention_decode/reference.py": "386f7f67a1d788501e8fb9005d340423d098a0946e23810ba10878228c11a37b",
+    "problems/muse_attention_decode/task.yml": "645f889fbbd52d1d731bf5eb53356aa7ef6eea8fab3073f0a2a3dd582fe6e4bb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "ion_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\nWGMMA_LIMITER receipt=verify32_full_481us_vs_fa3_391us; FP8_tensor_math_and_PV_are_target\nTraceback (most recent call last):\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 484, in child_main\n    out = kernel()(state.get(\"data\"))\n          ^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/worker.py\", line 408, in kernel\n    sub = importlib.import_module(module)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/importlib/__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 995, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2712, in <module>\n    _counters(1<<16,torch.device('cuda',torch.cuda.current_device())); prepare()\n                                                                       ^^^^^^^^^\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2704, in prepare\n    _wgmma_portfolio_shape(b,w,flush,start,end)\n  File \"/tmp/muse_attention_decode-rlh087l1/run/submission.py\", line 2646, in _wgmma_portfolio_shape\n    data=_next_input(batch,window); gate_data=_next_input(1,window,8,ctx=2048,dist='coherent')\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _next_input() got an unexpected keyword argument 'ctx'\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 127.53,
+    "power.limit": 700,
+    "temperature.gpu": 39
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 149.1,
+    "power.limit": 700,
+    "temperature.gpu": 39
+   },
+   "node": "n-qtqz4qekgtq37epqb5xaarah6h"
+  },
+  "passed": false,
+  "records": [
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 10,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 8036012203947264899
+    },
+    "event": "test",
+    "index": 0,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 2047,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 8036259125987752381
+    },
+    "event": "test",
+    "index": 1,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 5,
+     "ctx": 5000,
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 8036506048028239864,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 2,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 3000,
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 8036752970068727348
+    },
+    "event": "test",
+    "index": 3,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 8,
+     "ctx": 8192,
+     "heads": "dp",
+     "layer": "full",
+     "seed": 8036999892109214833,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 4,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 100000,
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "q_len": 8,
+     "seed": 8037246814149702319
+    },
+    "event": "test",
+    "index": 5,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "seed": 8037493736190189806
+    },
+    "event": "test",
+    "index": 6,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 8037740658230677294
+    },
+    "event": "test",
+    "index": 7,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 1048576,
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 8037987580271164783
+    },
+    "event": "test",
+    "index": 8,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 4000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 8039469112514089738
+    },
+    "event": "test",
+    "index": 9,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 9000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "full",
+     "seed": 8039716034554577234
+    },
+    "event": "test",
+    "index": 10,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 8038234502311652273,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 11,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 8038481424352139764
+    },
+    "event": "test",
+    "index": 12,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "soft",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 8038728346392627256
+    },
+    "event": "test",
+    "index": 13,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "coherent",
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "seed": 8038975268433114749,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 14,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "coherent",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 8039222190473602243
+    },
+    "event": "test",
+    "index": 15,
+    "message": "TypeError: _next_input() got an unexpected keyword argument 'ctx'",
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792820744.0042658,
+ "status": "done",
+ "team": "AutoclickerI"
+}

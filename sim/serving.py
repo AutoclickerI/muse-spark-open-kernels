@@ -12,7 +12,7 @@ The workload is modeled on LMSYS's OpenHands simulation for Muse (day-0 blog, 20
 conversation is ~13 turns, a ~74K-token first turn, then ~753 new tokens per turn, 220 output tokens
 per turn. The judge's conversations are hidden; prefill is served in line with decode (no overlap).
 
-    python -m sim.serving [--tau 4.16] [--turns 13] [--allreduce-us 5.5] [--host-us 0] [--interactivity e2e|itl]
+    python -m sim.serving [--tau 4.05] [--turns 13] [--allreduce-us 5.5] [--host-us 0] [--interactivity e2e|itl]
 """
 
 import argparse
@@ -24,6 +24,7 @@ from sim.problems import layer_routing, shape_bounds, spec, task_floors
 
 RUNGS = (1, 4, 16, 32)
 BLOCK = 8              # --speculative-num-draft-tokens 8
+DEFAULT_TAU = 4.05  # InferenceX DFlash2, seven drafts plus the current token.
 OUTPUT_TOKENS = 220    # every request returns exactly 220 tokens
 CTX = 80_000
 BF16_EXPERT_LAYERS = 2   # layers 0 and 61 keep BF16 experts (srt/layers/muse_spark_bf16_moe.py)
@@ -147,7 +148,7 @@ def score(ours: dict, stock: dict, capped: bool = False) -> tuple[float, dict[in
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tau", type=float, default=4.16, help="tokens accepted per verify step (LMSYS: 4.16 on AgentX)")
+    ap.add_argument("--tau", type=float, default=DEFAULT_TAU, help="tokens per verify step (InferenceX DFlash2, seven drafts plus current token)")
     ap.add_argument("--turns", type=int, default=13, help="turns per conversation (LMSYS's OpenHands simulation)")
     ap.add_argument("--allreduce-us", type=float, default=hw.EFF["allreduce_us"], help="all-reduce latency (sim.hw)")
     ap.add_argument("--host-us", type=float, default=0.0, help="host time per step not hidden by overlap")

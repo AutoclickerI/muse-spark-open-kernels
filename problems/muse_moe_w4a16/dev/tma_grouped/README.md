@@ -1,6 +1,6 @@
 # Persistent grouped TMA experiment
 
-Ready single file: `problems/muse_moe_w4a16/cand_tma_grouped.py`.
+Closed H200 experiment; withdrawn and parked at `dev/parked/cand_tma_grouped.py`.
 SHA256 **b1209b2ac260654999c11a915606dcfb784dc3373c6e3a26da001a3b2c9e163c**.
 The complete `cand_v9_phase.py` source is its unchanged prefix; original prepare and
 forward remain the incumbent. No repository imports, judge launch or commit by this lane.
@@ -20,7 +20,7 @@ Choices `(max_token_tile, ring_stages, SM_grid_fraction, minimum_token_tile)` ar
 32/64,3/5,1 or.5,8/16 (12 combinations). Four SM90a native specializations compile and
 contain m64n8/16/32/64 WGMMA and bulk TMA. Explicit accumulator initialization removes
 unnecessary initial stack traffic: SM90a frame528->56B at max64,272->64/72B at max32.
-The remaining stack traffic and barriers have not been timed on H200.
+All12 configurations lose on H200 lab c8c89f9f111845af. Best synthetic-real M128554.0us vs V9292.5; M256835.7 vs543.2. Board-routing best833.2/995.0us vs280.4/453.4. Whole-kernel timings do not isolate stack, barrier or decode costs, so no causal mechanism is established. The local Humming incumbent below is not a valid real-decode control: exact-weight lab26d7e05ab97d4f96 rejects Humming/V11 agreement.
 
 Only M128/256 acquire new per-shape dispatch entries. Original small-M winners and unknown
 shapes retain V9_phase. Tuning embeds `moe_tune.py`'s real-router fixture exactly: if full
@@ -72,7 +72,7 @@ Evidence: `runs/screen/tma_grouped/` (ignored):
 
 Reproduce with `CUDA_VISIBLE_DEVICES=0 tools/img python` and:
 
-- `tools/local_eval.py problems/muse_moe_w4a16/cand_tma_grouped.py --json <output>`
+- `tools/local_eval.py problems/muse_moe_w4a16/dev/parked/cand_tma_grouped.py --json <output>`
 - `problems/muse_moe_w4a16/dev/tma_grouped/validate.py`
 - `problems/muse_moe_w4a16/dev/tma_grouped/tuner_safety.py`
 - `env TORCH_CUDA_ARCH_LIST=9.0a python problems/muse_moe_w4a16/dev/tma_grouped/validate.py --compile90`
@@ -81,3 +81,12 @@ Do not regenerate the frozen candidate after handoff; future variants need a new
 H200 execution/cold prepare/choices/speed, decode-layer integration, concurrent serving
 replays and serving agreement remain unverified. The serving adapter needs per-lane
 counter/workspaces, existing expert precision/norm semantics and EP collectives retained.
+
+Precision audit (2026-10-24): raw17 banks retain packed NVFP4 bytes and E4M3 scale bytes, only permuted; no BF16/FP8 expanded weight bank is prepared. FP32 dequant in `_tg_reference` is diagnostic-only and not returned in state or read by timed kernels. `cand_v11_gemm` likewise retains packed/scaled expert weights in prepare and expands inside `_experts_dequant` on every timed call. The owned serving `muse_proj`, `muse_dflash`, `muse_prefill_gemm` modules handle BF16 dense weights and have no NVFP4 weight bank.
+
+The inherited V9 prefix is different: `_encode_scales` rebiases scales into uint8
+exponent/mantissa codes and folds sign/zero into FP4 nibbles. It is exact and has
+no floating-point expanded bank, but it is not a permutation of the stored E4M3
+bytes. Only the new raw17 bank passes that stricter literal byte-preservation
+audit. This withdrawn candidate is not cleared for resubmission under the newer
+scale-layout instruction; do not copy its inherited encoder into new work.

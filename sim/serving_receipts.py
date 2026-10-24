@@ -202,7 +202,7 @@ def accounting_sensitivity(decode: list[dict], prefill: list[dict]) -> dict:
                 + gathers
                 + replay
             )
-            window = c * pf + 13 * serving.OUTPUT_TOKENS / 4.16 * step
+            window = c * pf + 13 * serving.OUTPUT_TOKENS / serving.DEFAULT_TAU * step
             curve[c] = {
                 "step_us": step,
                 "per_gpu": 13 * serving.OUTPUT_TOKENS * c / window * 1e6 / 8,
@@ -257,7 +257,7 @@ def main() -> None:
             step_us = layer_stack(c, candidate) + sum(
                 serving.extras_us(design, c, 0.0).values()
             )
-            window = c * prefill_us + 13 * serving.OUTPUT_TOKENS / 4.16 * step_us
+            window = c * prefill_us + 13 * serving.OUTPUT_TOKENS / serving.DEFAULT_TAU * step_us
             out[c] = {
                 "step_us": step_us,
                 "per_gpu": 13 * serving.OUTPUT_TOKENS * c / window * 1e6 / 8,

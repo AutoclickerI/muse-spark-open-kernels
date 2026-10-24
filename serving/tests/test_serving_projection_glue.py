@@ -70,13 +70,15 @@ def main():
         patch("sglang.srt.distributed.get_tp_group", return_value=group),
         patch.object(adapter, "projection_supported", side_effect=gate),
         patch.object(adapter, "MuseProjection", side_effect=construct),
+        patch.object(adapter, "projection_max_tokens",
+                     side_effect=lambda world, n, device: 512 if n == 4096 else 64),
     ):
         adapter.prepare_projections(root)
     assert isinstance(attn.o_proj.quant_method, adapter.ProjectionMethod)
-    assert ("pooler", (4096, 8192), (256,)) in prepared
-    assert ("unpooler", (8192, 4096), (256,)) in prepared
-    assert ("pooler", (512, 8192), (8, 16, 32, 64, 128)) in prepared
-    assert ("unpooler", (1024, 4096), (8, 16, 32, 64, 128)) in prepared
+    assert ("pooler", (4096, 8192), ()) in prepared
+    assert ("unpooler", (8192, 4096), (128, 256)) in prepared
+    assert ("pooler", (512, 8192), (8, 16, 32, 64, 128, 256)) in prepared
+    assert ("unpooler", (1024, 4096), (8, 16, 32, 64)) in prepared
     gathers = []
     current = {}
 
@@ -98,7 +100,6 @@ def main():
     )
     with (
         patch.object(model, "get_tp_group", return_value=group),
-        patch.object(model, "split_projection_supported", return_value=True),
         patch.object(model, "gemm_ag_supported", return_value=True),
         patch.object(model, "projection_all_gather", side_effect=gather),
         patch.object(model, "_use_split_bf16_router", return_value=False),

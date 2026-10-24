@@ -4124,18 +4124,18 @@ index 0000000..98c0f99
 +    return None if wide is None else wide(x, ids)
 diff --git a/python/sglang/srt/layers/muse_spark_moe.py b/python/sglang/srt/layers/muse_spark_moe.py
 new file mode 100644
-index 0000000..623ce05
+index 0000000..ed66eec
 --- /dev/null
 +++ b/python/sglang/srt/layers/muse_spark_moe.py
-@@ -0,0 +1,1140 @@
+@@ -0,0 +1,1135 @@
 +"""Serving kernel for Muse Spark routed NVFP4 experts (V9 native + canonical grouped wide path).
 +
 +This file is a drop-in source boundary: a newer kernel can replace this module
 +
 +prepare_layer() repacks each local expert losslessly into 36 KB "m16 tiles" (16 weight rows x 4096):
-+E2M1 nibbles placed so a rotate + AND gives BF16 bits (value * 2^-126, exact), E4M3 block
-+scales re-encoded bijectively as an 8-bit E5M3-with-offset code so a byte-permute + IMAD gives
-+the BF16 scale (* 2^118). W13 tiles pair 8 gate rows with the matching 8 up rows.
++E2M1 nibbles placed so a rotate + AND gives BF16 bits (value * 2^-126, exact).
++E4M3 block-scale bytes are only rearranged; CUDA converts them to BF16 (* 2^118).
++No prepared BF16/FP8 weight copy is retained. W13 tiles pair 8 gate rows with 8 up rows.
 +
 +The kernel (grid = #SMs, one CTA per SM, 8 consumer warps + 1 producer warp):
 + 1. Routing in shared memory: per-expert counts (the producer starts streaming weights as soon
@@ -4241,6 +4241,14 @@ index 0000000..623ce05
 +  const uint32_t W = (A & LA_MASK) | (B & ~LA_MASK);
 +  o[6] = rotr(W, 24) & DQ_MASK;
 +  o[7] = rotr(W, 30) & DQ_MASK;
++}
++
++// Raw E4M3 -> BF16(s * 2^118), including zero, sign and finite subnormals.
++__device__ __forceinline__ uint32_t sf_bits(uint32_t raw){
++ uint32_t mag=raw&127, exp=mag>>3, m=mag&7, b=0;
++ if(exp) b=((exp+238)<<7)|(m<<4);
++ else if(m){int k=31-__clz(m);b=((236+k)<<7)|((m<<(7-k))&127);}
++ b|=(raw&128)<<8; return b|(b<<16);
 +}
 +
 +struct PrefetchState {
@@ -4530,8 +4538,8 @@ index 0000000..623ce05
 +        for (int g = 0; g < 8; ++g) {
 +          const uint4 wv = wq[g * 32];
 +          const uint32_t sw = scw[g >> 1];
-+          const uint32_t Sr = __byte_perm(sw, 0u, (g & 1) ? 0x4242u : 0x4040u) * 16u + 0x70007000u;
-+          const uint32_t Sr8 = __byte_perm(sw, 0u, (g & 1) ? 0x4343u : 0x4141u) * 16u + 0x70007000u;
++          const uint32_t Sr = sf_bits((sw >> ((g & 1)*16)) & 255u);
++          const uint32_t Sr8 = sf_bits((sw >> ((g & 1)*16+8)) & 255u);
 +          uint32_t o[16];
 +          dq8(wv.x, wv.y, o);
 +          dq8(wv.z, wv.w, o + 8);
@@ -4770,34 +4778,13 @@ index 0000000..623ce05
 +_TABLE = _bit_table()
 +
 +
-+def _encode_scales(sf: torch.Tensor):
-+    """E4M3 block scales -> (u8 code, neg mask, zero mask). Code: |s| = 2^(e5 - 21) * (1 + m/8),
-+    byte = e5 << 3 | m; the kernel builds BF16 bits 0x7000 | byte << 4 = |s| * 2^118. Exact for
-+    every nonzero finite E4M3 value (subnormals included)."""
-+    s = sf.float()
-+    if not torch.isfinite(s).all():
-+        raise ValueError("non-finite NVFP4 block scale")
-+    a = s.abs()
-+    nz = a > 0
-+    m, e = torch.frexp(torch.where(nz, a, torch.ones_like(a)))
-+    mant = ((m * 2 - 1) * 8).round().to(torch.int32)
-+    e5 = (e - 1 + 21).to(torch.int32)
-+    assert int(e5[nz].min()) >= 0 and int(e5[nz].max()) <= 30 and int(mant.max()) <= 7
-+    code = torch.where(nz, (e5 << 3) | mant, torch.zeros_like(e5))
-+    back = torch.exp2((code >> 3).float() - 21) * (1 + (code & 7).float() / 8)
-+    assert torch.equal(torch.where(nz, back, torch.zeros_like(back)), a)
-+    return code.to(torch.uint8), s < 0, ~nz
-+
-+
 +def _repack(wq: torch.Tensor, sf: torch.Tensor, rowmap: torch.Tensor) -> torch.Tensor:
 +    """One expert: packed E2M1 [R, K/2] u8 + E4M3 scales [R, K/16] -> [T, 36864] u8 tiles."""
 +    R, K = wq.shape[0], wq.shape[1] * 2
 +    assert K == 4096
 +    T = rowmap.shape[0]
 +    codes = torch.stack((wq & 0xF, wq >> 4), -1).reshape(R, K // 16, 16)
-+    u, neg, zero = _encode_scales(sf)
-+    codes = torch.where(neg[..., None], codes ^ 8, codes)                  # sign moved into the codes
-+    codes = torch.where(zero[..., None], torch.zeros_like(codes), codes)   # 0 * anything stays 0
++    u = sf.view(torch.uint8)  # E4M3 bytes stay E4M3
 +    codes = codes.reshape(R, K)[rowmap.reshape(-1)]
 +    # k = 512 w + 64 g + 16 q + 4 (2 p + sl) + 2 j + h ; tile row = 8 ri + rr
 +    ct = codes.view(T, 2, 8, 8, 8, 4, 2, 2, 2, 2)                           # T ri rr w g q p sl j h
@@ -4827,6 +4814,14 @@ index 0000000..623ce05
 +#define USE_WGMMA 0
 +#endif
 +namespace canonical {
++// Raw E4M3 -> BF16(s * 2^118), including zero, sign and finite subnormals.
++__device__ __forceinline__ uint32_t sf_bits(uint32_t raw){
++ uint32_t mag=raw&127, exp=mag>>3, m=mag&7, b=0;
++ if(exp) b=((exp+238)<<7)|(m<<4);
++ else if(m){int k=31-__clz(m);b=((236+k)<<7)|((m<<(7-k))&127);}
++ b|=(raw&128)<<8; return b|(b<<16);
++}
++
 +constexpr int H=4096, TB=36864, WB=32768;
 +constexpr uint32_t DQ_MASK=0x81C081C0u, LA_MASK=0x60306030u;
 +__device__ __forceinline__ uint32_t rotr(uint32_t x,int s){return __funnelshift_r(x,x,s);}
@@ -5007,8 +5002,8 @@ index 0000000..623ce05
 +   asm volatile("fence.proxy.async.shared::cta;":::"memory");
 +   uint4 w=*(const uint4*)(wt+(kg*32+lane)*16);
 +   uint16_t sw=*(const uint16_t*)(wt+WB+(kg/8)*512+lane*16+(kg%8)*2);
-+   uint32_t sr=0x70007000u+(uint32_t)(sw&255)*0x100010u;
-+   uint32_t su=0x70007000u+(uint32_t)(sw>>8)*0x100010u;
++   uint32_t sr=sf_bits(sw&255u);
++   uint32_t su=sf_bits((sw>>8)&255u);
 +   uint32_t o[16];dq8(w.x,w.y,o);dq8(w.z,w.w,o+8);
 +#pragma unroll
 +   for(int s=0;s<4;++s){

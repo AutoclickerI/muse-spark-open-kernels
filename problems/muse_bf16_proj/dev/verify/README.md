@@ -59,7 +59,9 @@ The receipt reader emits **positive paired H200 results only**, then this block
 retimes them against the layer's own H200-proven incumbent. The default embedded shortlist is from H200 receipt596b2a5d436e4fee. M128 qkv uses
 NN ordinal23 and unpooler NN0; these give the strongest paired reductions4.5%/4.3%.
 Other positive choices are near parity and are retimed; M256 o keeps the incumbent.
-There are no default native choices before their corrected H200 lab lands.
+There are no default native choices: corrected v2 H200 lab92e7802783a54212 loses
+all8 keys (1.21–1.95x). The next independent experiment is CUTLASS's shipped
+cooperative Stream-K implementation in `../cutlass/`, not this native reader.
 
 The caller's deadline includes its original prepare. Modules compile before the
 remaining trial time is divided across keys. A10s Lt/60s native compile reservation and early
@@ -95,7 +97,12 @@ while source lines are wrapped to max267 characters (serving limit400). Evidence
 
 Corrected native lab:
 `prof/lab/verify_proj_tma_v2.py`, payloadb0cfbb95563cfec323155067fa4b6a2b6e1183fcaf8f60d364e367e5d53244f7,
-hostda5dc4b017a5d0bdfcc2d0c2d8b2b1875c3e757355506c0ddae1960034c0e37f, priority0.
+hostda5dc4b017a5d0bdfcc2d0c2d8b2b1875c3e757355506c0ddae1960034c0e37f,
+landed92e7802783a54212. M256 control/native us: qkv23.49/37.73,
+pool33.39/65.55, unpool28.19/44.85, o13.34/20.51; M12821.20/25.55,
+27.66/40.40,23.47/32.29,11.57/16.46. PDL chains lose1.32–1.62x too.
+No native v2 recipe should be selected. These are implementation results, not a
+closure of TMA/WGMMA or CUTLASS Stream-K.
 Native v1 job6b72087f64584258 is **invalid for selection**: it reinitialized valid
 mbarriers between persistent tiles. It reached the judge before cancellation; the
 CLI has no execution cancellation. The scored path itself remains proj's incumbent.
