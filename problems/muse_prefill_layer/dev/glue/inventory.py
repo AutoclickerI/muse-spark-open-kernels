@@ -27,7 +27,11 @@ def byte_bounds(name,case):
     if name=='_qk_prep_kernel':return t*(3*1280+16+256),t*(3*1280+16+256)
     if name=='_offsets_kernel':return 32*12,32*12
     if name=='_gather_cache_kernel':
-        b=case['batch']*(case['ctx']+case['q_len'])*512
+        if t==753 and case['layer']=='sliding':return 0,0 # Proven FA3 path, no gather.
+        capacity=case['ctx']+case['q_len']
+        if case['layer']=='sliding':capacity=min(capacity,2048+case['q_len']-1)
+        capacity=((capacity+127)//128)*128
+        b=case['batch']*capacity*512
         return b,b # selected fa3_contiguous uses FP8 output
     raise KeyError(name)
 
@@ -45,8 +49,9 @@ def main():
                 for p in profs:
                     case=p['case'];w=case['weight']
                     match=re.search(r'^'+re.escape(name)+r'\s+([\d.]+) µs',p['report'],re.M)
-                    times.append(float(match[1]) if match else None)
-                    b0,b1=byte_bounds(name,case);lo+=w*b0/4.8e6;hi+=w*b1/4.8e6
+                    b0,b1=byte_bounds(name,case)
+                    times.append(float(match[1]) if match else 0. if b1==0 else None)
+                    lo+=w*b0/4.8e6;hi+=w*b1/4.8e6
                 # A missing top-12 entry is unknown, not zero.
                 measured=(sum(t*p['case']['weight'] for t,p in zip(times,profs))/weight
                           if all(t is not None for t in times) else None)
@@ -58,7 +63,8 @@ def main():
     lines=['# Prefill glue: direct H200 inventory','',
         'Named-kernel times from board-best a30fb411b0c74ffb and99820fa6e5c14fe1.',
         'Each column is the official multiplicity-weighted mean us per layer call for that load.',
-        'Multiply by62/62/186 to get full-load us. Reports contain only12 kernels: absent is N/A.',
+        'Multiply by62/62/186 to get full-load us. Reports contain only12 kernels: omitted is N/A.',
+        'Zero is used only where the receipt-selected path does not execute that kernel.',
         'Byte floors use4.8TB/s and compulsory activation read/write traffic; cached vectors/metadata',
         'are omitted where small. They do not model SFU/reduction/atomic work or launch latency.',
         'For expert-dependent rows, R local pairs is bounded by T..8T; touched experts E by1..32.',
@@ -71,9 +77,22 @@ def main():
         for load in ('turn 1','turn 4','first turn'):
             rs=[r for r in result if r['kernel']==name and r['load']==load]
             ts=[r['mean_us'] for r in rs if r['mean_us'] is not None]
-            us='N/A' if not ts else f'{min(ts):.2f}–{max(ts):.2f}'
+            us='N/A' if not ts else f'{min(ts):.2f}' if abs(min(ts)-max(ts))<1e-8 else f'{min(ts):.2f}–{max(ts):.2f}'
             lo,hi=rs[0]['floor_us'];floor=f'{lo:.2f}' if abs(lo-hi)<1e-8 else f'{lo:.2f}–{hi:.2f}'
             vals.extend((us,floor))
+        lines.append('| '+name+' | '+' | '.join(vals)+' |')
+    lines+=['','Full-load totals, ms (H200 /byte floor):','',
+        '| Kernel | turn1 | turn4 | first turn |','|---|---:|---:|---:|']
+    for name in NAMES:
+        vals=[]
+        for load in ('turn 1','turn 4','first turn'):
+            rs=[r for r in result if r['kernel']==name and r['load']==load]
+            times=[r['weighted_ms'] for r in rs if r['weighted_ms'] is not None]
+            us='N/A' if not times else f'{min(times):.3f}' if abs(min(times)-max(times))<1e-8 else f'{min(times):.3f}–{max(times):.3f}'
+            weight=186 if load=='first turn' else 62
+            lo,hi=(v*weight/1000 for v in rs[0]['floor_us'])
+            floor=f'{lo:.3f}' if abs(lo-hi)<1e-8 else f'{lo:.3f}–{hi:.3f}'
+            vals.append(us+' /'+floor)
         lines.append('| '+name+' | '+' | '.join(vals)+' |')
     lines+=['','The two boundaries move24*T*8192 bytes combined: at16K,3.221GB and671.09us.',
         'A single16Kx8192 BF16 read OR write is268.44MB /55.92us; a read+write is111.85us.',
@@ -81,6 +100,11 @@ def main():
         'The earlier235ms remainder comes from a different run/stage accounting; this inventory uses',
         'the named kernels in the current best and does not subtract separately-counted dequant twice.',
         'Detailed per-receipt/per-profile values: runs/screen/glue_prefill/inventory.json.','']
+    lines+=['Byte formulas: boundaries24TH; separate dequant2.5625E(3D²); SwiGLU6RD;',
+        'combine/gather2D(R+T); router2176T+8R; attention-gate6T*1024; QK-prep4112T.',
+        'H=8192,D=4096. Cache gather uses the actual selected sliding/full capacity rule,',
+        'rounded to128 rows;753-token sliding uses FA3 directly and has no gather.',
+        'Candidate, interface and verification: [glue README](../../problems/muse_prefill_layer/dev/glue/README.md).','']
     (ROOT/'docs/reference/prefill_glue.md').write_text('\n'.join(lines))
     print('\n'.join(lines))
 

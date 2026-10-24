@@ -21,7 +21,11 @@ def load(name,path):
 
 
 class PortableLt:
-    def __init__(self):self.options=[];self.calls=[]
+    def __init__(self,native):
+        self.options=[];self.calls=[]
+        # These are the actual pre-existing native entry points, never invented stubs.
+        self.gemm=native.gemm;self.moe_gemm=native.moe_gemm
+        self.raw11_gemm=native.raw11_gemm;self.raw15_gemm=native.raw15_gemm;self.raw17_gemm=native.raw17_gemm
     def lt_options(self,w,x,y):
         assert w.ndim==x.ndim==y.ndim==2 and x.shape[1]==w.shape[1]
         assert y.shape==(x.shape[0],w.shape[0])
@@ -56,7 +60,7 @@ def main():
         st=g._glue_base_prepare(weights)
         st.update(glue_choices={},glue_scratch={},_glue_router_original=weights['router'])
         # The new Hopper-only control seed is forced with a signature-only library shim.
-        native=st['grouped_mod'];portable=PortableLt()
+        native=st['grouped_mod'];portable=PortableLt(native)
         saved_loader=g._grouped_module
         g._grouped_module=lambda:portable
         g.IS_HOPPER=True
@@ -67,7 +71,7 @@ def main():
         summary['forced_hopper_prepare']=True
         g.IS_HOPPER=False;g._grouped_module=saved_loader
         del forced
-        portable=PortableLt();st['grouped_mod']=portable
+        portable=PortableLt(native);st['grouped_mod']=portable
         g._glue_seed_controls(st)
         for role,m in g.GLUE_H200_DENSE:
             x=torch.randn(m,st[role].shape[1],device=dev,dtype=torch.bfloat16)

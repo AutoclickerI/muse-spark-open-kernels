@@ -1,30 +1,28 @@
-# Dense tuning stopped; grouped MoE next (G1/G3)
+# Prefill glue portfolio ready (G1)
 
-Read [GOAL](../../docs/GOAL.md) and [CONSTRAINTS](../../docs/CONSTRAINTS.md).
-Solo, GPU0 only. Jihoon/orchestrator sends and commits; this thread did neither.
-Queued at priority2.0: **`../muse_prefill_layer/cand_v11_gemm.py`**, frozen **`1b30690ad9e4…`**.
-Full SHA and commands: [NEXT_CHECKS](dev/NEXT_CHECKS.md). New owned candidate only;
-V11 experts/attention/norms unchanged; no other lane source or queued source edited.
+Read GOAL/CONSTRAINTS; solo, GPU0 only. Orchestrator sends/commits; none launched here.
+Ready `../muse_prefill_layer/cand_glue_prefill.py`, frozen2a2e3914ea26….
+Full SHA/interface/evidence: `../muse_prefill_layer/dev/glue/README.md`.
+Direct H200 inventory: `docs/reference/prefill_glue.md` (all three loads).
+Board-best controls are a30fb411 /99820fa6; glue profile entries hidden below top12 stay N/A.
+Boundary pair:851.7–855.2us at16K,671.1us byte floor;159ms per first turn /125ms floor.
+Separate dequant633.6–651.3us is expert-stage work; no double-counting its bytes/time.
 
-Single file embeds the dense block; V11's exact concatenated router +routing +pooler
-is always the group incumbent. Real consumer graphs compare four hybrid/fused choices.
-Dense controls are V11 matmuls; any failing variant logs/rejects, retaining V11.
-Three fresh probes; cold128MiB;20-pair finalists; shared210s dense/225s group deadlines.
-Optional early H200 profiler identifies the actual stock kernel per dense role.
-Every compact selection prints last: local tail50 lines /4731 chars, all retained.
-Local **sm_120**: **5/5 official tests,8/8 graph shapes,173.16s prepare**.
-Strict Hopper stand-ins:136 QKV configs /7 families;12 group faults +wrapper fault rejected.
-18 new swapped WGMMA specializations +12 packing layouts compile SM90; Lt builds SM90a.
+New choices: GEMM last-CTA residual/two-RMS epilogues; pooler RMSNorm epilogue with
+normalized expert consumers; router hi+lo GEMM/top8 epilogue; vector boundary and topk.
+The full original producer+consumer is always eligible. H200 dense/expert/attention
+controls seed from a30fb411, leaving230s prepare budget for new glue trials.
+Three fresh banks, cold128MiB, CUDA graphs,20-pair finalists, independent FP32 gate;
+all optional exceptions reject. Compact114-row summary is6906 chars and survives tail.
+Final sm120:5/5 official tests +8/8 graphs,48.111s prepare, all78 trials/36 finalists.
+Direct M33/16384:60 configs /540 fresh checks /1200 timed pairs /18 counter resets.
+Forced all-fusion integration5/5; forced Hopper prepare/library/router branches pass.
+60 SM90 specializations compile (48 WGMMA); H200 execution/speed remains unverified.
+Local only small vector/topk gains; full GEMM epilogues lose, pooler keeps stock.
+O serving fusion cannot cross TP all-reduce; vector boundary remains usable after it.
 
-New QKV: token chunks512/1024/2048/4096/8192 (direct output), NN/TN layouts;
-zero-padded N2560/3072/4096, and operand-swapped Lt/persistent paths with timed packing.
-M16384 focused20-pair sm_120 best: chunk4096 NN **2380.9->2286.1us** (local only).
-Direct H200 dafbcad0 supersedes the44%/146ms qkv inference: library qkv766–806us,
-pooler/unpooler1.34–1.47ms, o338–406us, router178–204us, all near80%peak.
-Profile-name attribution was wrong; no cache-cause evidence remains. Stop dense tuning.
-[Corrected evidence](../../docs/reference/prefill_gemm.md). This thread now owns a distinct
-M128/256 persistent grouped TMA MoE design, separate from the MoE lane's V19.
-
-Serving module `layers/muse_prefill_gemm.py`; copyable `dev/prefill_gemm_block.py` updated.
-Jihoon applied triage991e838:14 singles withdrawn/deleted; reduce_hier and tile remain queued.
-`cand_dflash_diag.py` remains frozen/queued (9b4fae2f); its receipt is pending from Jihoon.
+Dense tuning stopped: direct H200 dafbcad0 refutes44%/146ms qkv inference.
+`cand_v11_gemm.py` stays frozen1b30690a…, queued2.0. Do not edit/resend.
+`cand_tma_grouped.py` stays frozenb1209b2a…, queued MoE reset priority.
+`cand_dflash_diag.py` stays frozen9b4fae2f…, queued; receipt pending from Jihoon.
+Projection triage applied:14 subsumed singles deleted; reduce_hier/tile stay queued.

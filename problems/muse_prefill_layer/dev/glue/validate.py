@@ -29,6 +29,7 @@ def compile90(g):
                 n=4096 if mode==0 else 8192;k=1024 if mode==1 else 8192 if mode==0 else 4096
                 sig=dict(X='*bf16',W='*bf16',RAW='*bf16',OUT='*bf16',S='*fp32',NEW='*fp32',
                     POST='*fp32',ALPHA='*fp32',BETA='*fp32',PRE='*fp32',SQ='*fp32',COUNT='*i32')
+                if mode==0:sig.update(S='*bf16',NEW='*bf16')
                 const=dict(M=m,N=n,K=k,MODE=mode,BM=bm,BN=bn,BK=bk)
                 kernel=triton.compile(ASTSource(g._glue_gemm_norm,sig,const),target=GPUTarget('cuda',90,32),
                     options=dict(num_warps=warps,num_stages=stages))
