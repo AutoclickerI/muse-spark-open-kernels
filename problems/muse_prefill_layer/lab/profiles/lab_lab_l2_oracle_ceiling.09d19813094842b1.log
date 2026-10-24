@@ -1,0 +1,40 @@
+pe":"(753, 2048, 80000)","winner":"fa3","catalog":3,"us":["32.6","32.4","39.2","66.6","58.7","55"]},{"stage":"attention","shape":"(753, 0, 80000)","winner":"fa3_contiguous","catalog":3,"us":["418","414","838","2.22e+03","1.78e+03","1.57e+03"]},{"stage":"attention","shape":"(3012, 2048, 80000)","winner":"fa3_contiguous","catalog":3,"us":["62.1","62.4","67.2","188","167","161"]},{"stage":"attention","shape":"(3012, 0, 80000)","winner":"fa3_contiguous","catalog":3,"us":["1.63e+03","1.57e+03","1.68e+03","6.61e+03","6.1e+03","5.13e+03"]},{"stage":"attention","shape":"(16384, 0, 0)","winner":"fa3_contiguous","catalog":3,"us":["897","857","892","2.84e+03","2.8e+03","2.61e+03"]},{"stage":"attention","shape":"(16384, 2048, 32768)","winner":"fa3_contiguous","catalog":3,"us":["303","288","317","925","822","825"]},{"stage":"attention","shape":"(16384, 0, 32768)","winner":"fa3_contiguous","catalog":3,"us":["4.5e+03","4.27e+03","4.47e+03","1.39e+04","1.35e+04","1.25e+04"]},{"stage":"attention","shape":"(16384, 0, 65536)","winner":"fa3_contiguous","catalog":3,"us":["8.03e+03","7.61e+03","8.05e+03","2.51e+04","2.42e+04","2.23e+04"]}]}
+GLUE_GEOMETRY {'t': 1, 'phase': 'b1', 'selected': (16, 16), 'producer_glue_mean_us': 13.664, 'trials': [(14.411, 8, 1, [14.56, 14.496, 14.176]), (13.803, 8, 4, [13.792, 13.952, 13.664]), (13.771, 8, 16, [13.76, 13.728, 13.824]), (14.389, 16, 1, [14.368, 14.592, 14.208]), (13.867, 16, 4, [13.952, 13.92, 13.728]), (13.664, 16, 16, [13.6, 13.728, 13.664])]}
+GLUE_GEOMETRY {'t': 1, 'phase': 'b2', 'selected': (8, 16), 'producer_glue_mean_us': 11.648, 'trials': [(12.501, 8, 1, [12.32, 12.512, 12.672]), (11.883, 8, 4, [12.032, 11.84, 11.776]), (11.648, 8, 16, [11.648, 11.712, 11.584]), (13.28, 16, 1, [13.216, 13.376, 13.248]), (12.416, 16, 4, [12.224, 12.576, 12.448]), (12.085, 16, 16, [12.32, 11.968, 11.968])]}
+GLUE_GEOMETRY {'t': 1, 'phase': 'route', 'selected': (4, 1), 'producer_glue_mean_us': 30.069, 'trials': [(30.069, 4, 1, [29.984, 29.824, 30.4]), (30.731, 8, 1, [31.136, 31.104, 29.952])]}
+LAB_BEGIN lab_l2_oracle_ceiling a4997ab7a8486f9f
+ORACLE_META best6=4516cb97/1b80ffc0; completed .L2 read before timed graph; no in-call prefetch; cold flush=128MiB
+ORACLE_META rows report whole-layer cold/warm and activity stage cold/warm/delta; ceiling=sum positive target projection deltas
+ORACLE_SETUP seconds=42.1 left=125.9
+ORACLE_STAGE c=0 m=1 layer=sliding target=qkv whole=111.86/105.01us ratio=0.92852 stage=16.80/12.19us delta=4.61 bytes=36.0MiB
+ORACLE_STAGE c=0 m=1 layer=sliding target=o whole=117.31/116.98us ratio=0.99936 stage=9.28/8.22us delta=1.06 bytes=16.0MiB
+ORACLE_STAGE c=0 m=1 layer=sliding target=pool_router whole=117.26/111.94us ratio=0.95100 stage=27.01/25.44us delta=1.57 bytes=72.0MiB
+ORACLE_STAGE c=0 m=1 layer=sliding target=unpooler_slice whole=117.87/117.95us ratio=0.99852 stage=5.22/5.15us delta=0.06 bytes=8.0MiB
+ORACLE_LAYER c=0 m=1 layer=sliding cold_activity_sum=112.61us
+ORACLE_STAGE c=1 m=16 layer=sliding target=qkv whole=178.80/173.52us ratio=0.96137 stage=15.01/9.79us delta=5.22 bytes=36.0MiB
+ORACLE_STAGE c=1 m=16 layer=sliding target=o whole=182.78/176.10us ratio=0.99740 stage=7.90/7.39us delta=0.51 bytes=16.0MiB
+ORACLE_STAGE c=1 m=16 layer=sliding target=pool_router whole=184.56/171.01us ratio=0.95732 stage=28.26/25.95us delta=2.30 bytes=72.0MiB
+ORACLE_STAGE c=1 m=16 layer=sliding target=unpooler whole=182.82/171.89us ratio=0.97032 stage=19.17/19.33us delta=0.00 bytes=64.0MiB
+ORACLE_LAYER c=1 m=16 layer=sliding cold_activity_sum=177.12us
+ORACLE_STAGE c=2 m=32 layer=sliding target=qkv whole=238.16/231.95us ratio=0.97016 stage=16.90/11.62us delta=5.28 bytes=36.0MiB
+ORACLE_STAGE c=2 m=32 layer=sliding target=o whole=239.60/239.71us ratio=0.99749 stage=8.32/7.10us delta=1.22 bytes=16.0MiB
+ORACLE_STAGE c=2 m=32 layer=sliding target=pool_router whole=239.18/234.88us ratio=0.97366 stage=29.15/29.57us delta=0.00 bytes=72.0MiB
+ORACLE_STAGE c=2 m=32 layer=sliding target=unpooler whole=238.27/231.55us ratio=0.97152 stage=19.39/19.07us delta=0.32 bytes=64.0MiB
+ORACLE_LAYER c=2 m=32 layer=sliding cold_activity_sum=233.57us
+ORACLE_STAGE c=3 m=1 layer=full target=qkv whole=127.86/119.01us ratio=0.92687 stage=16.55/11.36us delta=5.19 bytes=36.0MiB
+ORACLE_STAGE c=3 m=1 layer=full target=o whole=128.26/127.15us ratio=0.98927 stage=8.10/7.23us delta=0.86 bytes=16.0MiB
+ORACLE_STAGE c=3 m=1 layer=full target=pool_router whole=128.43/121.20us ratio=0.94544 stage=25.82/24.86us delta=0.96 bytes=72.0MiB
+ORACLE_STAGE c=3 m=1 layer=full target=unpooler_slice whole=128.03/127.70us ratio=0.99011 stage=5.15/5.18us delta=0.00 bytes=8.0MiB
+ORACLE_LAYER c=3 m=1 layer=full cold_activity_sum=131.71us
+ORACLE_STAGE c=4 m=16 layer=full target=qkv whole=273.84/263.06us ratio=0.96793 stage=20.61/14.91us delta=5.70 bytes=36.0MiB
+ORACLE_STAGE c=4 m=16 layer=full target=o whole=272.96/271.98us ratio=0.99752 stage=6.75/6.72us delta=0.03 bytes=16.0MiB
+ORACLE_STAGE c=4 m=16 layer=full target=pool_router whole=272.77/266.64us ratio=0.97294 stage=25.47/25.57us delta=0.00 bytes=72.0MiB
+ORACLE_STAGE c=4 m=16 layer=full target=unpooler whole=273.33/267.94us ratio=0.97343 stage=20.58/19.26us delta=1.31 bytes=64.0MiB
+ORACLE_LAYER c=4 m=16 layer=full cold_activity_sum=256.96us
+ORACLE_STAGE c=5 m=32 layer=full target=qkv whole=458.24/450.35us ratio=0.98043 stage=17.25/11.81us delta=5.44 bytes=36.0MiB
+ORACLE_STAGE c=5 m=32 layer=full target=o whole=459.17/460.06us ratio=0.99979 stage=7.17/6.94us delta=0.23 bytes=16.0MiB
+ORACLE_STAGE c=5 m=32 layer=full target=pool_router whole=459.25/455.04us ratio=0.98922 stage=27.97/28.16us delta=0.00 bytes=72.0MiB
+ORACLE_STAGE c=5 m=32 layer=full target=unpooler whole=460.59/453.74us ratio=0.98513 stage=19.90/19.33us delta=0.58 bytes=64.0MiB
+ORACLE_LAYER c=5 m=32 layer=full cold_activity_sum=468.26us
+ORACLE_END elapsed=47.0s left=121.0s
+LAB_END lab_s=47.0 prepare_s=164.0

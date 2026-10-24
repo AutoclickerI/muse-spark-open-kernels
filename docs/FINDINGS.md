@@ -114,6 +114,7 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 | Streaming GEMV vs a plain read (H200) | `feb7b287e3464e4a`, cold 256 MiB flush, 20 pairs: a plain one-launch read of each weight takes qkv 18.6 us (37.75 MB, 2.03 TB/s), o 11.3, pool+router 30.8, unpool slice 8.7, unpool full 28.4 us (0.96-2.45 TB/s; ~2.4-3.1 TB/s after a 5.2 us launch/ramp envelope). The streaming GEMV matches that read at M=1 (qkv 18.3, o 12.3, pool+router 29.6, unpool slice 9.3 us; 0.77-1.01x cuBLAS) and loses to cuBLAS at every M>=8 (1.1-1.7x at M=8-32, 2.3-4.9x at M=128-256). Drafter shapes lose too (1.12-1.80x) | Matched same-byte reads show the measured launch/ramp envelope; overlap is the next practical M1 lever, not a proven hardware ceiling. Best6 uses PDL but its small-M custom recipes explicitly disable own-weight prefetch | measured | `problems/muse_prefill_layer/lab/profiles/lab_streaming_gemv_lab.feb7b287e3464e4a.log` |
 | Persistent dense chain vs a naive base (H200) | `9d2235190b8d40d7`: o -> boundary -> pool+router in one persistent launch takes 57.3/62.9/196.5/367.4 us at M=1/8/128/256 against 76.1/99.0/135.7/197.3 us for torch.mm + an FP32 router matmul; errors 4e-5 (h), 1.7e-3 (pool). That base is not best6, whose own o + boundary + pool/router at decode 1 profile at ~37 us | Unresolved until compared with best6's own stage kernels in the layer | measured | `problems/muse_prefill_layer/lab/profiles/lab_lab_persistent_dense_chain.9d2235190b8d40d7.log` |
 | Side-stream L2 prefetch inside best6's layer (H200) | `d5a9025890a64141`, paired AB/BA, 3 seeds, decode 1/16/32 sliding+full: the best recipe slows the layer by 0.3-16.6% (decode 1 sliding 123.1 -> 143.5 us). The prefetch branch costs ~34 us and overlaps attention at most (9.5-18.3 us), never MoE, because those kernels hold every SM. With its weights in L2, o drops 8.2 -> 6.0 us and pool+router 26.4 -> 25.2 | A separate prefetch launch can't run beside full-grid kernels; any prefetch must be issued from inside the running kernels, and the measured ceiling is a few us per layer | measured | `problems/muse_prefill_layer/lab/profiles/lab_l2_overlap_lab.d5a9025890a64141.log` |
+| L2-warm oracle for the dense stages (H200) | `09d19813094842b1`, best6 layer, each projection's weights read into L2 before the timed graph, cold 128 MiB flush otherwise, decode 1/16/32 sliding+full: activity time cold -> warm: qkv (36 MiB) 15.0-20.6 -> 9.8-14.9 us (5-6 us saved), o (16 MiB) 6.8-9.3 -> 6.7-8.2, pool+router (72 MiB) 25.5-29.2 -> 24.9-29.6 (0-2.3), unpooler 0-1.3. Whole-layer ratios 0.93-0.97 for qkv, 0.95-1.0 for the rest (A:A spread ~3 us). Warm qkv still takes 9.8-14.9 us (2.4-3.7 TB/s from L2) and warm o 6.7-8.2 us | Prefetch can only help stages after the first; their warm gain is <=~2-4 us per layer. qkv, the one stage that gains, opens the layer, so nothing in the layer can prefetch it. Even L2-resident, the dense kernels are bound by per-launch fixed cost and issue, not HBM: the dense lever is the GEMV kernels' own efficiency (the proj board field is ~30% faster), not overlap | measured | `problems/muse_prefill_layer/lab/profiles/lab_lab_l2_oracle_ceiling.09d19813094842b1.log` |
 | Fused glue GEMVs and verify-load WGMMA (H200) | `5535d2f171b34d72`: fusing norms/residual/routing into the streaming GEMV costs 2.3-21x cuBLAS at every M (o at M=1 69 vs 17.8 us; 0.03-0.7 TB/s). The weight-wide WGMMA for the verify loads loses 1.28-2.18x to best6's own Lt/cuBLAS choices: dense total M=8 102.3 vs 64.9 us, M=128 128.0 vs 84.4, M=256 161.3 vs 99.6. best6 already streams the dense weights at 2.0-2.3 TB/s (138-197 MB), near the ~2.5 TB/s one launch reaches at these sizes | Standalone dense kernels are at their per-launch limit; the dense lever at every load is overlap across launches, not a new mainloop | measured | `problems/muse_prefill_layer/lab/profiles/lab_streaming_glue_lab+verify_streaming_lab.5535d2f171b34d72.log` |
 | Standalone projection GEMVs on the H200 | Cold-L2 graph replays, decode-layer shapes (`b63389f01e4741b9`): qkv 37.75 MB in 20.7-21.9 us (1.73-1.82 TB/s), o 16.78 MB in 11.9-13.9 us (1.2-1.4), pool+router 75.5 MB in 32.3-34.4 us (2.2-2.3), unpooler 67.1 MB in 27.6 us (2.4), unpooler slice 8.4 MB in 11.2 us (0.75), at M=1/8/16 alike. cuBLAS, every Lt heuristic, our GEMV and a 4x-CTA split all land within a few percent, while a plain 52-61 MB read stream reaches 4.04-4.25 TB/s. The initial comparison used a different read size/protocol; the matched-read feb7b287 result above supersedes its unused-bandwidth inference. The same run's overlap payload hit a sticky `cudaErrorInvalidAddressSpace` (on the withdrawn bf16moe host) and failed the run | decode-layer projections | measured | `tools/h200_lab.py read b63389f01e4741b9 gemv_standalone_lab` |
 | Decode projection side-stream L2 prefetch | `l2_overlap_lab.py`, payload `e62b6b087adeb0c5`, prefill send key **9367398c624b7796**. Thirteen completed-load/bulk-hint recipes, bounded40MiB front/24MiB tail, captured forks/joins during attention/o/MoE. Exact best6 arithmetic and receipt dispatch at M1/16/32 sliding/full; missing historical M1 glue geometry retuned by its original selector. Cold128MiB per replay, three refreshed public streams,24 finalist AB/BA rounds, A/A noise and native activity profiles. | Local: all78 coarse recipe/cases,12 finalists,6 profiles,5 host tests/3 static checks pass; cached payload12.0s of80s. FP32 raw/router1e-4 plus independent attention/V9/norm gates; final mixed-BF16 A/B0.3%, exact IDs. Native sm90a128-bit loads and UBLKPF.L2, zero spills. Frozen best7 transport test08bbc928:13 official/12 graphs/16 static,6 real prefetch instances. Switch off pending paired H200 whole-layer gain; no prepared expert expansion or cache persistence. | local admission; H200 pending | `problems/muse_bf16_proj/dev/l2_overlap/{PROFILE_MAP.md,README.md,validation.json,best7_admission.json}` |
@@ -1314,6 +1315,31 @@ it was not a full non-KV residency measurement.
 
 ### Projection evidence and next experiment (G3, G2)
 
+PDL dense experiment (send **b2044c78f90cabfd**, payloadSHA **6bed960f0c6aac1d…**):
+`problems/muse_bf16_proj/dev/pdl_prefetch/README.md` freezes best7 pairedSHA3baaaa96,
+its measured dense dispatch and paired glue/attention/NT1 choices. Eight cold-L2
+whole-layer cases cover decode1/16/32 and verify1, sliding/full;16 standalone
+role/shape rows compare original-row bulk rings, lossless tile-packed bulk rings,
+512-thread GEMV and a matched528-CTA read. Early/late controls isolate the initial
+weight requests before `griddepcontrol.wait`; final24 AB/BA pairs use3 refreshed
+public streams, A/A controls and single-stage layer ablations. No H200 result yet:
+the detached log confirms prefill quota exhaustion, dispatch10-25 09:01KST.
+Best7 remains unchanged. This tests the gap above our current1.2-2.4TB/s dense
+implementations; the3.80TB/s stream and historical4.04-4.25TB/s reads disprove
+an inferred2.5TB/s hardware envelope.
+
+Local evidence:2,060 native checks/708 captured graphs pass, max FP32 relative
+error4.7e-6; all8 layer/16 stage cases and5 host tests pass with360 forced
+attn_main and144 FA3 glue calls.16 native sm90a kernels and12 Triton hint variants
+have no spills; SASS checks place weight requests before ACQBULK only in the
+early variants;4 BF16 output-boundary kernels also cross-compile. The first screen
+exposed an omitted BF16 output boundary (~0.35% layer drift): the timed reduction/
+cast now preserves the incumbent ABI. Matching M32 KS512 fixes the routing change
+from KS1024; exact IDs and the original1e-4 raw/router,1% BF16 and0.3% whole-layer
+A/B gates all pass. Drop-in `dev/pdl_prefetch/projection.py`SHA5769cab895f35afd…;
+`manifest.json`, `native_validation.json`, `compile_sm90a.json`, `validation.json`
+and `sent.json` carry full source hashes. Local timings are not H200 claims.
+
 Current priority is **put projection winners inside decode and serving**. The fitted
 overall model in “Boards” takes max(decode, component composite); standalone projection
 improvement currently cannot change our overall rank. The earlier standalone 1.26x goal
@@ -1657,3 +1683,21 @@ H200 result (`0812f09758da4fa5`): the fast combine changes almost nothing. B16/B
 ~570 cycles in QK MMA, ~2,200-2,700 in softmax and ~2,800-3,100 in PV, serialized, so the
 per-tile producer/softmax path binds, not the combine. This kernel family stays parked; the
 attention lane moved to FlashInfer's page-1 paths (10-24 23:40).
+
+## FlashInfer page-1 attention sweep queued (2026-10-24)
+
+Local image inspection confirms FlashInfer 0.7.0.post1 APIs:
+`BatchDecodeWithPagedKVCacheWrapper.plan/run` accepts page size 1 and FP8
+E4M3 K/V with `use_tensor_cores` true/false; `BatchPrefillWithPagedKVCacheWrapper`
+accepts page size 1 with FA2/FA3 backends. `flashinfer.xqa` rejects page size 1
+at the API boundary (only 16/32/64/128), so XQA is ruled out for this cache
+layout. Local page-1 decode gates are ~0.0025 relative error and prefill FA2
+q8 is ~0.0024 after using normalized BF16 Q and applying the QK scale through
+`sm_scale`.
+
+Payload `prof/lab/flashinfer_attention_compare.py` (SHA-256
+`a090768195e77114b36503fcc50a2cd66bb4dd361783bfbd8d8d7e897ad4337f`) covers all
+12 shapes, separate plan and plan+run timing, graph capture, FP32 reference
+error, visible K+V TB/s, FA3 controls, and XQA acceptance. It is queued on
+`muse_moe_w4a16` as detached send key `c96e0f89bcdcdf60`, position 2/2; the
+prefill-host duplicate `145a2ba570cea719` waits for the UTC reset.
