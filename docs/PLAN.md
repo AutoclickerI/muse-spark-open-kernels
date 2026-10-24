@@ -2,12 +2,12 @@
 
 ## Status (2026-10-24 10:00 KST)
 - Kernel track day 2 of 14 (closes 11-05 17:00 KST); serving opens 11-06 05:00 KST (1 scored run a day, 3 checks at c=16).
-- Boards (SOTA "Current best"): decode 1.428x (overall rank 85; rank 50 needs ~1.54x), MoE 1.687x, prefill 1.434x
-  (rank 48), attention 1.403x, proj 1.182x. The overall board is max(decode, component composite); our composite is below decode.
+- Boards (SOTA, 12:30 KST): decode 1.429x (rank 112 of 379; 50th 1.625x, 10th 1.860x, leader 2.101x), MoE 1.687x,
+  prefill 1.434x (rank 58), attention 1.403x, proj 1.184x. The field moved ~+0.1x in half a day. The overall board is max(decode, component composite); our composite is below decode.
 - Daily caps since 10-24: decode, attention and prefill 10 scored + 10 checks; MoE and proj 10 + 20. `tools/h200_lab.py`
   times anything on the H200 inside proj's prepare, so decode/attention/prefill runs go to candidates only.
 - The decode layer's MoE (V9) takes 477/450 us at verify 32 and 259/280 us at verify 16 against a ~70 us floor under its
-  real router (672 pairs, 8 experts, hot 221 rows at M=256; receipt 0e94268). MoE at ~200/120 us lifts the layer to ~1.68x,
+  real router (672 pairs, 8 experts, hot 221 rows at M=256; receipt 0e94268). MoE at ~200/120 us lifts the layer to ~1.68x (rank 50 is now 1.625x),
   and the same MoE is 62% of serving's c=32 decode step: the top G3 lever and a top G1 lever.
 - Serving model (`sim.serving_receipts` on receipts 0e94268 + a30fb411): 1.807x capped (1.710x in its accounting sensitivity).
   Prefill takes 26-30% of the time at c=1 and 70-78% at c=16/32: the top G1 lever.

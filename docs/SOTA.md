@@ -7,15 +7,15 @@ step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sg
 and where they go are in [FINDINGS](FINDINGS.md). Stock serving has no published H200 numbers (FINDINGS
 "Serving track").
 
-## Current best (2026-10-24 08:25 KST)
+## Current best (2026-10-24 12:30 KST; overall rank 115 of 722)
 
 | Problem | Our best H200 run | Ours on the board (rank) | Leader | 10th | 50th | Entries |
 |---|---|---|---|---|---|---|
-| muse_bf16_proj | 1.182x fused_select `f3786341611f4f1f` (scored) | 1.182x (fused_select scored `f3786341611f4f1f`; rank 233) | 1.447x (colinlikescode) | 1.330x | 1.264x | 465 |
-| muse_attention_decode | 1.403x verify_stream `d98ae45d7204438d` (scored; stream kernel wins only verify-1 sliding) | 1.403x (verify_stream scored `d98ae45d7204438d`; rank 195) | 2.726x | 2.145x | 1.867x | 398 |
-| muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (v9_phase scored `ac9dd461f0294e34`) | 2.326x (colinlikescode) | 2.040x | 1.811x | 365 |
-| muse_decode_layer | 1.428x r3_v9 `0e94268cf5654012` (scored) | 1.428x (r3_v9 scored `0e94268cf5654012`; rank 81; overall rank 85) | 1.862x (colinlikescode) | 1.744x | 1.523x | 275 |
-| muse_prefill_layer | 1.434x score_portfolio_routing `a30fb411b0c74ffb` (scored; turn 1 1.253, turn 4 1.457, first turn 1.615) | 1.434x (scored `a30fb411b0c74ffb`; rank 48) | 1.745x | 1.607x | 1.420x | 183 |
+| muse_bf16_proj | 1.184x lab verify_tma `6b72087f64584258` on fused_select (scored) | 1.184x (rank 286) | 1.454x (0daycloud) | 1.415x | 1.290x | 611 |
+| muse_attention_decode | 1.403x verify_stream `d98ae45d7204438d` (scored; stream kernel wins only verify-1 sliding) | 1.403x (rank 211) | 2.726x (pjmullin3) | 2.221x | 1.881x | 425 |
+| muse_moe_w4a16 | 1.687x v9_phase `ac9dd461f0294e34` (scored) | 1.687x (rank 122) | 2.335x (Lurrobert) | 2.162x | 1.899x | 474 |
+| muse_decode_layer | 1.429x lab moe_real_routing `26d7e05ab97d4f96` on r3_v9 (scored; same kernels as `0e94268cf5654012`) | 1.429x (rank 112) | 2.101x (Lurrobert) | 1.860x | 1.625x | 379 |
+| muse_prefill_layer | 1.434x score_portfolio_routing `a30fb411b0c74ffb` (scored; turn 1 1.253, turn 4 1.457, first turn 1.615) | 1.434x (rank 58) | 1.745x (nl-alonso) | 1.641x | 1.461x | 213 |
 
 Receipts are in `runs/<problem>/`; the boards come from `okc leaderboard <problem> --json`. Overall board and the
 top-50 cut: FINDINGS "Boards". Modeled ceilings: `python -m sim` (definitions: [ceiling](reference/ceiling.md)).
