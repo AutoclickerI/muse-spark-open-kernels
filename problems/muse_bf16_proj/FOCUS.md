@@ -20,7 +20,8 @@ cuBLASLt heuristics, skinny GEMV, and a concat-aware fc path in one H200 lab.
 The serving module is `serving/sglang/python/sglang/srt/layers/muse_dflash.py`;
 the lane wires it after the receipt. Agreement and CUDA-graph tests stay exact.
 
-Lab payload: `problems/muse_bf16_proj/dev/dflash_tp8_lab.py` (send at priority 0.8).
+Lab payload: `problems/muse_bf16_proj/dev/dflash_tp8_lab.py`, SHA256
+`deeb1d446fdc7262a74511f19c4cc9a70da1349586ea5dbcb5217688b3792699`, sent at priority 0.8.
 The old judge waiter for `cand_dflash_diag.py` was killed before this lab was sent.
 Keep the lab request ID and read its receipt once; do not submit another diagnostic.
 

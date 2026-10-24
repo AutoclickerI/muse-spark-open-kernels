@@ -379,8 +379,9 @@ selects stock/cuBLASLt/skinny plans for the TP8 dense calls: qkv `[1280,8192]`, 
 gate_up `[7168,8192]`, down `[8192,3584]`, conv coefficients `[2048,8192]`, context FC
 `[1024,40960]`, context KV `[8192,1280]` (transposed source), and draft head `[25256,8192]`.
 Its FC concat helper copies two context halves into a preallocated graph buffer. The proj-host
-H200 lab `dflash_tp8_lab` measures M=8/32/128/256 (draft head M=7/28/112/224) against stock;
-its receipt is the gate for any serving credit. The full inventory gives all four per-rank shapes,
+H200 lab `dflash_tp8_lab` (payload SHA `deeb1d446fdc7262a74511f19c4cc9a70da1349586ea5dbcb5217688b3792699`,
+sent at priority 0.8) measures M=8/32/128/256 (draft head M=7/28/112/224) against stock; its
+receipt is the gate for any serving credit. The full inventory gives all four per-rank shapes,
 bytes and hardware floors, including retained TP8 collectives.
 
 ### Eight-node tree acceptance screen

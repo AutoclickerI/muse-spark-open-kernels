@@ -127,6 +127,12 @@ for two waves of 132 SMs. Replacement lab payload `prof/lab/verify8_attn_compare
 `2adee96d8f72588134aa1d21520f051b8c451906ed8b34cc5e82b15d33775dde`) is queued at priority 0.8;
 only its H200 receipt remains.
 
+The exact `sim/bound.py` cache floor is 69.33 us for B16 full and 138.67 us for B32 full at
+4.8 TB/s (HQ=16, HKV=2, D=64, FP8 K/V). A replacement proj lab payload now clocks q1 and q8
+at B16/B32 full by phase (KV wait, QK MMA, softmax, PV MMA, combine), using 17/9 q8 splits for
+two H200 waves. Payload SHA256 `1d932e7e164ecf497c32a6c77a3589a17d5a2a0450324e5361657e575afa3055`;
+only its H200 phase receipt remains.
+
 ## Send order
 
 For this task, the owner sends `cand_r3_best5.py` at the hash above as a decode check; this lane did not send it.
