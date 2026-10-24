@@ -5794,10 +5794,10 @@ index 0000000..0b8631f
 +        self.graphs[bs].replay()
 diff --git a/python/sglang/srt/managers/dflash_overlap.py b/python/sglang/srt/managers/dflash_overlap.py
 new file mode 100644
-index 0000000..13fc2aa
+index 0000000..f17efe5
 --- /dev/null
 +++ b/python/sglang/srt/managers/dflash_overlap.py
-@@ -0,0 +1,96 @@
+@@ -0,0 +1,99 @@
 +"""Prepare the following DFlash batch while target verification is on device."""
 +
 +from copy import copy
@@ -5825,14 +5825,17 @@ index 0000000..13fc2aa
 +
 +    def take_prepared(self):
 +        plan, self.prepared = self.prepared, None
-+        if plan is None and self.processed_previous:
-+            # A completion deferred selection until after ingress. Remove its
-+            # row before the normal prefill admission counts running requests;
-+            # otherwise a full batch would still force another decode step.
++        if plan is None:
++            # Ordinary result processing can finish rows as well as the early
++            # callback. Remove those rows before prefill admission; otherwise
++            # their occupied slots force another decode before the next turn.
 +            running = self.scheduler.running_batch
-+            old_size = len(running.reqs)
-+            running.filter_batch()
-+            if len(running.reqs) < old_size:
++            if (
++                running.spec_algorithm is not None
++                and running.spec_algorithm.is_dflash()
++                and any(req.finished() for req in running.reqs)
++            ):
++                running.filter_batch()
 +                running.batch_is_full = False
 +        if plan is not None and plan.batch_to_run is not None:
 +            # Control messages are ingested after preparation. In particular an

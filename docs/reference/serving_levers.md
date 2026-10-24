@@ -34,7 +34,7 @@ extrapolated and 1.807x capped; it is a receipt composition, not a judge run.
 
 | Component | Production dispatch | Evidence still required |
 |---|---|---|
-| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; next-turn prefill priority and completed-prefill first-token delivery fixed | H200 host latency and full-node TTFT |
+| Scheduler overlap, early length relay, committed-context KV graphs | Wired; all five worker hunks reverse-apply cleanly; ordinary/early completion admission and completed-prefill first-token delivery fixed | H200 host latency and full-node TTFT |
 | KV capacity | Muse live-window SWA sizing wired;262657 sliding rows under current flags, full-indexed DFlash KV charged. Router scratch sharing is a tested two-hunk handoff in `prof/kv_capacity_router.patch` | Actual H200 TP8 graph/layout residency and automatically sized pool; see FINDINGS "KV residency and long-context capacity" |
 | Expert producer | V9 calls<=256 for M<=752; `PrefillExpertPlan` grouped>=753; one canonical bank | Queued `cand_serving_prefill_diag` decides512-row calls;513–752 currently splits256+256+tail; grouped full-model H200 agreement/TTFT |
 | `muse_prefill_dense.py` | Retained, unbound; no mixed pooler/router startup tuning | `cand_v11_gemm` H200 winners, then full-model agreement/TTFT |
@@ -56,9 +56,14 @@ the next prefill or DFlash draft/verify launch ran. The scheduler now consumes
 that result before launching more work. Only batches containing a completed
 prefill trigger this barrier; middle chunks and steady-state decode retain
 overlap. The lookahead callback tests queue ownership instead of `last_batch`,
-so it does not consume an already-flushed result twice. The previous completed-row
-admission/next-turn priority fix remains. All6 deterministic overlap tests pass;
-the launch-before-first-token and double-consume cases fail on the old code.
+so it does not consume an already-flushed result twice. The completed-row admission fix now also handles ordinary result processing,
+not only the early callback. A c32 trace caught31 finished rows with13 waiting
+requests selecting no work: prefill admission ran before decode filtering.
+`take_prepared` now removes completed DFlash rows before admission on either
+completion path; live prepared decode retains its normal path. All7 deterministic
+overlap tests pass, including the captured31/13 case and a partial completion;
+the new delivery, double-consume and ordinary-admission cases fail before their
+respective fixes.
 
 The old native TP2 c16 p50 ratio1.955 is not a reproducible2x compute regression:
 unchanged-before source in a fresh full-grid trace is1.157x at c16. Native tiny
@@ -96,27 +101,58 @@ load; the observed total reduction is not an isolated kernel speed claim.
 Both traced patch variants remain174/174 exact at220 tokens. The traced c32
 p50 ratio is1.888 before versus1.335 after; traces are diagnostic, not the gate.
 
-The timing gate is uninstrumented: four stock runs bracket native and
-portable TP1/TP2 runs, all with174 requests, exactly220 tokens, all74 prefill
-graph shapes, actual prefill/verify graph replay, stable source fingerprints,
+A final full-grid native trace of the shipping source (`ttft-final-*`) includes
+both fixes and the final two-window reserve. Its48 c16 requests decompose as
+follows (mean milliseconds); raw rows are in `final_per_request_ttft.csv` in
+the evidence directory. Every waiting-request admission sees zero completed
+rows in its running batch. All174 traced responses are exact at220 tokens.
+
+| Final TP2 native c16 | Queue | Prefill execution | First-token emit | TTFT |
+|---|---:|---:|---:|---:|
+| Stock |415.80|97.80|152.20|665.79|
+| Patched |362.98|61.35|26.55|450.88|
+
+These are a fresh diagnostic pair, separate from the uninstrumented gates.
+The prior fixed-reserve study above establishes the delivery mechanism; the
+varying execution/queue times again prevent a pure kernel-speed attribution.
+
+Timing gates are uninstrumented, with174 requests per run, exactly220 tokens,
+all74 prefill graph shapes, actual prefill/verify replay, stable fingerprints,
 300000 actual full-KV slots and no tracebacks. TP1 uses GPU0 at0.85; TP2 uses
-GPUs0/1 at0.3. These are local sm_120/FlashInfer results. Each table entry is
-the worse p50 patch/stock ratio against either stock bracket, using the normal
-`compare.py` median. All16 mode/load entries pass the1.5x margin target.
+GPUs0/1 at0.3. These are local sm_120/FlashInfer results. Final `g3` patch runs
+include both scheduler fixes and the KV lane's two-cached-window reserve.
+The earlier controlled trace above isolates the first-token barrier at a fixed
+one-cached-window reserve, before the ordinary-admission fix.
+
+TP2 columns below use the worse ratio against fresh stock controls `g3`/`g4`,
+which bracket the final patch runs. TP1 uses all three controls (`g1-a`, `g1-b`,
+`g4`); it passes against each. Ratios use the normal `compare.py` median.
+Every entry in this matched final table is<=1.5x.
 
 | Mode | c1 | c4 | c16 | c32 |
 |---|---:|---:|---:|---:|
-| TP1 native |1.071|0.796|0.917|1.018|
-| TP1 portable Hopper ABIs |1.281|1.022|0.615|1.054|
-| TP2 native |1.355|0.963|1.282|1.278|
-| TP2 portable Hopper ABIs |0.909|0.861|1.232|1.152|
+| TP1 native |0.949|0.705|1.073|1.104|
+| TP1 portable Hopper ABIs |1.264|0.994|0.836|1.166|
+| TP2 native |0.983|0.548|0.858|1.037|
+| TP2 portable Hopper ABIs |0.923|0.564|1.019|1.164|
 
-Every patch run is174/174 exact: first divergence220, token agreement1.
+The1.5x margin is **not uniform across saved controls**. Against earlier TP2
+stock runs, final portable c32 is1.686x and native c32 is1.502x; those strict
+historical-control assertions remain failed in `all_completions_results.json`.
+The preceding reserve-only run reached1.715x. Neither failure was discarded:
+replaying its unchanged source with diagnostic tracing gave0.841x at c32, and
+fresh stock itself moved from roughly0.322s to0.469s and then0.568s there.
+This is strong workload/coalescing/shared-host variation, not evidence that a
+new stock baseline fixes code. The two concrete queueing bugs are fixed; the
+paired final p50 gate passes, but a robust1.5x margin across shared-node states
+and on H200 is not established. No H200 speed credit is assigned here.
+
+Every final patch mode is174/174 exact: first divergence220, token agreement1.
 The teacher-forced probe's2615 scored input positions (including8 forced
 continuation tokens) have mean/max drift0, as do the first8 generated-token
 comparisons. This is the margin fixture and a probe, not a new30x220 near-tie
-study. P90 ratios reach1.705, below2x but not uniformly below1.5x; the margin
-claim is for the existing p50 gate. Full-model H200/FA3 latency, hidden-context
+study. Final matched P90 ratios reach1.687, below2x but not uniformly below1.5x;
+the passing margin claim is for p50. Full-model H200/FA3 latency, hidden-context
 TTFT and numerical agreement remain unverified.
 
 Reproduce with `serving/tests/run_ttft_gate.py --tree <frozen-tree> --prefix <new-label>`;
@@ -124,7 +160,7 @@ Reproduce with `serving/tests/run_ttft_gate.py --tree <frozen-tree> --prefix <ne
 Evidence, both stock brackets, per-request CSV, source-isolation proof and
 patch checks are under `/data2/jihoon/muse_kernel/harness/results/ttft-g1-evidence/`.
 The read-only harness was not edited. The regenerated patch retains every
-accepted path plus the KV lane's new modules:323121 bytes,32 files, maximum
+accepted path plus the KV lane's new modules:323217 bytes,32 files, maximum
 added line374 characters; pristine-base apply, syntax and whitespace checks pass.
 
 The expert layer screen uses a canonical-bank-only owner and a separate Marlin

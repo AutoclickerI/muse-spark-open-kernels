@@ -1,0 +1,28 @@
+FUSED_SELECT router m=128 incumbent_us=21.312 chosen=(64, 64, 4, 1, 8, 160) chosen_us=14.560 top=[(14.816000126302242, (64, 64, 4, 1, 8, 160)), (15.32800029963255, (64, 64, 4, 1, 16, 160)), (15.32800029963255, (64, 64, 4, 1, 16, 128)), (19.487999379634857, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.744 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.096 top=[(15.776000916957855, (64, 64, 4, 1, 8, 256)), (16.1920003592968, (64, 64, 4, 1, 8, 160)), (17.664000391960144, (64, 64, 4, 1, 8, 128)), (27.03999914228916, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.312 chosen=None chosen_us=25.312 top=[(30.112000182271004, (128, 64, 3, 1, 4, 160)), (34.55999866127968, (64, 64, 4, 1, 2, 256)), (35.360001027584076, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.024 chosen=None chosen_us=29.024 top=[(38.55999931693077, (128, 64, 4, 1, 2, 256)), (39.45599868893623, (128, 128, 2, 1, 2, 256)), (40.352001786231995, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.968 chosen=('lt_nn', 1) chosen_us=31.744 top=[(31.136000528931618, ('lt_nn', 1)), (32.67199918627739, ('lt_nn', 0)), (32.80000016093254, ('lt', 0)), (33.984001725912094, ('lt_nn', 4)), (33.984001725912094, ('lt_nn', 6))]
+FUSED_SELECT pooler m=256 incumbent_us=39.232 chosen=('lt_nn', 0) chosen_us=37.088 top=[(37.02399879693985, ('lt_nn', 4)), (37.28000074625015, ('lt_nn', 0)), (38.336001336574554, ('lt', 3)), (38.46399858593941, ('lt', 1)), (38.62399980425835, ('lt', 2))]
+FUSED_SELECT unpooler m=128 incumbent_us=29.920 chosen=('lt_nn', 0) chosen_us=28.832 top=[(29.40800040960312, ('lt_nn', 2)), (30.46399913728237, ('lt', 3)), (30.527999624609947, ('lt_nn', 0)), (30.848000198602676, ('lt', 0)), (31.039999797940254, ('lt_nn', 1))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.664 chosen=('lt', 0) chosen_us=33.312 top=[(33.663999289274216, ('lt', 0)), (34.623999148607254, ('lt_nn', 0)), (35.19999980926514, ('lt', 2)), (35.2960005402565, ('lt_nn', 1)), (37.696000188589096, ('lt_nn', 2))]
+FUSED_SELECT o m=128 incumbent_us=12.800 chosen=('lt', 0) chosen_us=12.576 top=[(12.640000320971012, ('lt_nn', 0)), (12.703999876976013, ('lt', 0)), (12.768000364303589, ('lt_nn', 5)), (12.799999676644802, ('lt', 5)), (12.83199992030859, ('lt', 4))]
+FUSED_SELECT o m=256 incumbent_us=13.952 chosen=None chosen_us=13.952 top=[(13.887999579310417, ('lt', 0)), (14.431999996304512, ('lt', 2)), (14.62399959564209, ('lt', 6)), (14.783999882638454, ('lt_nn', 4)), (14.84800036996603, ('lt_nn', 0))]
+FUSED_SELECT prepare_s=10.11
+LAB_BEGIN upstream_draft 588b942a7dcdd9c8
+UPSTREAM_DRAFT gpu=NVIDIA H200 sm=(9, 0) dualgemm_glue_only=False
+DUAL_BASE M=8 K=8192 I=3584 us=45.568
+DUAL M=8 K=8192 I=3584 tactic=1 us=50.080 relL2=0.0003339
+DUAL M=8 K=8192 I=3584 tactic=2 us=49.408 relL2=0.0003339
+DUAL_BASE M=16 K=8192 I=3584 us=45.600
+DUAL M=16 K=8192 I=3584 tactic=1 us=50.848 relL2=0.0002414
+DUAL M=16 K=8192 I=3584 tactic=2 us=50.528 relL2=0.0002414
+VERIFY_TOPK rows=8 vocab=202048 topk=64 name=torch_scaled us=97.440 exact=pass
+VERIFY_TOPK rows=8 vocab=202048 topk=64 name=radix_raw us=65.696 exact=pass
+VERIFY_TOPK rows=32 vocab=202048 topk=64 name=torch_scaled us=166.656 exact=pass
+VERIFY_TOPK rows=32 vocab=202048 topk=64 name=radix_raw us=76.384 exact=pass
+VERIFY_TOPK rows=128 vocab=202048 topk=64 name=torch_scaled us=543.552 exact=pass
+VERIFY_TOPK rows=128 vocab=202048 topk=64 name=radix_raw us=135.552 exact=pass
+VERIFY_TOPK rows=256 vocab=202048 topk=64 name=torch_scaled us=900.704 exact=pass
+VERIFY_TOPK rows=256 vocab=202048 topk=64 name=radix_raw us=232.864 exact=pass
+LAB_END lab_s=6.6 prepare_s=16.8

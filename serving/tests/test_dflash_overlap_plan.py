@@ -116,6 +116,26 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(calls, ["fence", "output"])
         self.assertTrue(pipeline.processed_previous)
 
+    def test_normal_result_completion_releases_admission_slot(self):
+        """Ordinary completions must release slots before prefill admission."""
+        # The31/13 case is the captured c32 idle pass. The partial case must
+        # keep a surviving decode row while admitting the next conversation.
+        for done, live, waiting, cap in ((31, 0, 13, 32), (1, 1, 1, 2)):
+            with self.subTest(done=done, live=live):
+                pipeline, scheduler, batch, req, calls = self.setup_pipeline()
+                batch.reqs = [NS(aborted=False, finished=lambda: True) for _ in range(done)]
+                batch.reqs += [NS(aborted=False, finished=lambda: False) for _ in range(live)]
+                batch.batch_is_full = True
+                scheduler.waiting_queue = [object() for _ in range(waiting)]
+                # This was the ordinary end-of-loop pop, not the callback.
+                scheduler.result_queue.popleft()
+                self.assertFalse(pipeline.processed_previous)
+                self.assertIsNone(pipeline.take_prepared())
+                self.assertGreaterEqual(cap - len(batch.reqs), waiting,
+                                        "stale rows block queued prefills")
+                self.assertEqual(len(batch.reqs), live)
+                self.assertFalse(batch.batch_is_full)
+
     def test_first_token_flush_does_not_pop_result_twice(self):
         pipeline, scheduler, batch, req, calls = self.setup_pipeline()
         # The loop drained the prefill result before starting this decode.

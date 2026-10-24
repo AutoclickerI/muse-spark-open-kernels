@@ -10,6 +10,9 @@ Each run leaves, under runs/<problem>/, <utc>_<mode>_<job>.py (the exact source 
 also writes profiles/<file>.<job>.txt and .log beside the file. What goes is the source as it was
 when queued (a snapshot in runs/sent/), so the file can be edited while the run waits.
 
+`send` checks the file, then detaches (a new session, output in runs/detached/<sha16>.log) and
+returns, so a send waiting for a slot outlives its caller's exit or a tool's timeout.
+
 The judge's queue can take an hour or more. The source receipt and runs/pending/<job>.json are
 written as soon as the judge accepts the job, before waiting, so a killed process loses nothing:
 `collect` (no arguments: every pending job) waits on each with `okc status --wait` and writes the
@@ -130,6 +133,11 @@ def in_flight() -> list:
         time.sleep(15)
         jobs, proc = okc_json("jobs")
     live = [j for j in jobs if isinstance(j, dict) and j.get("status") in ("queued", "running")]
+    # `okc jobs` lags a send by seconds, so a run sent just now counts by its pending receipt until the
+    # judge lists it; without this, four waiters woken together all saw room and sent (8 at once, 10-24).
+    listed = {j.get("job_id") for j in jobs if isinstance(j, dict)}
+    live += [{"job_id": p.stem, "submitted_at": p.stat().st_mtime} for p in PENDING.glob("*.json")
+             if p.stem not in listed and time.time() - p.stat().st_mtime < 600]
     return sorted(live, key=lambda j: float(j.get("submitted_at") or 0))
 
 
@@ -306,6 +314,20 @@ def send(args):
     snap = SENT / sha[:16] / args.file.name
     snap.parent.mkdir(parents=True, exist_ok=True)
     snap.write_bytes(src)
+    priority = args.priority if args.priority is not None else PRIORITY.get(problem, 3)
+
+    log = REPO / "runs" / "detached" / f"{sha[:16]}.log"
+    log.parent.mkdir(exist_ok=True)
+    sys.stdout.flush()
+    if os.fork():
+        print(f"queued {args.file} at priority {priority}; progress in {log.relative_to(REPO)}, "
+              f"the receipt in runs/ when the judge finishes")
+        return
+    os.setsid()
+    out = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
+    os.dup2(out, 1)
+    os.dup2(out, 2)
+    os.dup2(os.open(os.devnull, os.O_RDONLY), 0)
 
     def mode_now():
         left = runs_left(problem)
@@ -322,7 +344,6 @@ def send(args):
         start_receipt(problem, mode, job, src, args.file, args.note, stamp, snapshot=str(snap.relative_to(REPO)))
         return mode, job
 
-    priority = args.priority if args.priority is not None else PRIORITY.get(problem, 3)
     mode, job = send_in_turn({"problem": problem, "file": str(args.file), "sha256": sha}, priority, send, mode_now)
     print(f"okc {mode} {problem} {args.file}: job {job} accepted; waiting for the result "
           f"(if this process dies, `tools/okc_run.py collect {job}` finishes the receipt)", flush=True)

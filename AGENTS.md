@@ -17,7 +17,7 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon when unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
 - Remote runs only via `tools/okc_run.py send <file> --note "<what changed>"` (default): a scored run while the
-  day's last (the board keeps our best), receipts in `runs/`, priority queue. Launch it detached; `collect` finishes orphans.
+  day's last (the board keeps our best), receipts in `runs/`, priority queue. It detaches itself (log in `runs/detached/`); `collect` finishes orphans.
 - Screen with `tools/local_eval.py` first; a candidate that fails a local test doesn't go remote (default).
   `tools/screen_all.py --send` screens every unsent candidate in parallel and sends each pass.
 - Time any kernel on the H200 without a candidate or the target problem's quota: `tools/h200_lab.py send <payload>`

@@ -39,9 +39,12 @@ def _basis(device: torch.device) -> tuple[torch.Tensor, torch.Tensor]:
     return mean, shared
 
 
-def make_fixture(weights: dict[str, torch.Tensor], tokens: int, seed: int, *, mode: str = "real") -> dict:
+def make_fixture(weights: dict[str, torch.Tensor], tokens: int, seed: int, *, mode: str = "real",
+                 q_len: int | None = None) -> dict:
     """Return an expert-call fixture with real router or controlled route IDs.
 
+    `q_len` defaults to 8 for the verify loads (8/128/256 tokens), otherwise 1.
+    Pass it explicitly for other loads. Draft sharing applies within every verify block.
     `real` uses the layer router and chooses the busiest 32-expert range. `matched_uniform` keeps
     the real local/remote mask but replaces local expert IDs uniformly. `uniform` routes every
     slot to a uniformly chosen local expert, matching older synthetic tuners.
@@ -50,9 +53,13 @@ def make_fixture(weights: dict[str, torch.Tensor], tokens: int, seed: int, *, mo
     gen = torch.Generator(device=device).manual_seed(seed)
     mean, shared = _basis(device)
     coef = torch.randn((tokens, STREAM_RANK), generator=gen, device=device)
-    scale = torch.ones((tokens, 1), device=device)
-    if 1 < tokens <= 8:
-        scale[1:] = DRAFT_SHARE
+    q_len = (8 if tokens in (8, 128, 256) else 1) if q_len is None else int(q_len)
+    if q_len < 1 or tokens % q_len:
+        raise ValueError(f"tokens={tokens} must be divisible by q_len={q_len}")
+    scale = torch.ones((tokens // q_len, q_len, 1), device=device)
+    if 1 < q_len <= 8:
+        scale[:, 1:] = DRAFT_SHARE
+    scale = scale.reshape(tokens, 1)
     stream = (scale * (STREAM_MEAN * mean + math.sqrt(STREAM_SHARED / STREAM_RANK) * (coef @ shared))
               + (1 - STREAM_SHARED * scale.square()).sqrt()
               * torch.randn((tokens, HIDDEN), generator=gen, device=device))
