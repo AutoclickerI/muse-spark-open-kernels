@@ -1,7 +1,10 @@
-# Decode best6 — verified prefill adapters beside V9
+# Best6 expert portfolio — frozen construction
 
-Candidate: [cand_r3_best6.py](../../cand_r3_best6.py), SHA-256
-`c582f3427684b69b67b13be3f1bcb9f43c68fc8b32e9556bffe4377687d85491`.
+Current candidate and attention sampling fix: **[best6_attention/README.md](../best6_attention/README.md)**.
+This directory reproduces the original expert-portfolio construction, SHA-256
+`c582f3427684b69b67b13be3f1bcb9f43c68fc8b32e9556bffe4377687d85491`, preserved in git commit
+`313a282b8d1393bfdad928716becb53986f4dd1a`. Its validation applies to that frozen base.
+Rebuilding this directory overwrites the current attention fix; use the attention builder for the current candidate.
 Base is exact glue `9912056970eef92aea847fd1cb68e7426ce73df738eef739e2f63ca1837fb714`.
 Prefill adapter source is `cand_mid_sweep.py` at SHA
 `1de6c32c7a5337dc539a5b6feb24a479bed217cb794a92a32760f9fcda82e075`.
@@ -67,8 +70,9 @@ Each run continues with a gated V9 choice. All three setup failures and the expi
 are also checked. Failure tests use real V9 calculations only as computational stand-ins for the
 backend being deliberately failed; they are not timing evidence.
 
-Neither best5 `691bff0bcff44e99` nor glue had a receipt at this turn's single read. Their H200 stage times
-remain pending. The glue lab queue key remains `bd66426465d8b072`. No judge polling or waiting was used.
+Best5 `691bff0bcff44e99` is resolved at **1.353449x**, H200 prepare **158.992 s**; its stage times are
+in [BEST5_STAGES.md](../best6_attention/BEST5_STAGES.md). Glue H200 timing remains unverified here;
+its lab queue key is `bd66426465d8b072`. The owner's native-adapter submission hold remains in effect.
 
 ## Reproduce
 

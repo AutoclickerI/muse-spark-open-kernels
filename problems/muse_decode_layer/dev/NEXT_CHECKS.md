@@ -1,9 +1,14 @@
-# Decode checks — best6 expert portfolio
+# Decode checks — best6 attention and expert portfolio
 
 ## Best6 adapter portfolio — owner holds for native H200 lab
 
 [cand_r3_best6.py](../cand_r3_best6.py), SHA-256
-`c582f3427684b69b67b13be3f1bcb9f43c68fc8b32e9556bffe4377687d85491`.
+`4516cb979dac623a6b6a2347be54cb5ecb416be23d7631aeae092a403beb9528`.
+Attention revision of best6 `c582f342`: three exact public input draws for every q1/q8 setting,
+mean cold timing, and the exact board FA3 `layer` control at q8 with the public scheduler field.
+All **114** other helper implementations and all native literals are unchanged.
+[Attention handoff / SHA-pinned validation](best6_attention/README.md).
+
 Exact glue `99120569` plus raw17 / humming_masked / dg_w8 at M128/256 beside V9 NT1/NT2.
 Three fresh loaded-router synthetic routings, independent FP32 gates before/after cold graphs,
 and mean of three seed means choose the backend. Every optional construction, admission, timing or
@@ -12,18 +17,61 @@ The prefill adapter ASTs/native source are unchanged; their own packed NVFP4 lay
 scale-byte encoding are retained. No prepared BF16/FP8 expert bank. ABI conversion and route layout
 costs are included in timing; pre-expert normalization happens exactly once.
 
-Normal final source: **13 tests, 12 graph shapes, 14 static checks** pass; raw17 gates at ~0.45% error.
 Normal and cold forced screens each pass **13 tests, 12 fresh graph shapes and 14 static checks**.
-Cold candidate prepare **174.799 s**, **176.472 s** including extra forced-family checks, below ~240 s.
-All five three-seed gates pass; maximum relative L2 **0.5432%**, worst row **0.5946%**. Full-layer target graphs
-force every alternative at both M. DeepGEMM/Humming native GEMMs use portable stand-ins; native safety is pending. **18 injected RuntimeErrors**, all setup rejection paths and expired defaults pass.
-[Best6 handoff](best6/README.md). This lane did not send it. **Owner's hold: no best6 send until the
-separate H200 R0 + 12-seed adapter lab proves native M128/256 safety**; a native abort kills the run.
+Normal warm prepare **10.469 s**. Cold candidate prepare **196.634 s**, **198.312 s** including extra
+forced-family checks, below ~240 s. All 12 attention shapes complete three public draws and time `layer`.
+All **36 full public fixtures match bitwise**; q1/q8 lengths agree for equal batch/seed. Regression tests
+reject a split that wins one draw but loses the mean, and reject incomplete trials. Scheduler metadata
+is forwarded by identity, including q8 None. All five three-seed expert gates pass, maximum relative L2
+**0.5432%**, worst row **0.5946%**. Full-layer graphs force every alternative at both M. DG/Humming native
+GEMMs use portable stand-ins; native safety is pending. The unchanged expert helpers retain the prior
+**18 injected RuntimeError** checks, setup rejection paths and expired defaults from [the original portfolio](best6/README.md).
+This lane did not send it. **Owner's hold: no best6 send until the separate H200 R0 + 12-seed adapter lab
+proves native M128/256 safety**; a native abort kills the run.
 
-Receipt read this turn: best5 is check **`691bff0bcff44e99`**, still pending locally; glue **`99120569`**
-was sent by the owner at priority 0 and still has a waiting marker. Neither had stage timings to fold in.
-Glue lab queue key **`bd66426465d8b072`** remains pending at the one read. Read the landed receipts once
-on owner resume; compare per-stage values and seed means rather than one routing realization.
+## Best5 H200 receipt — resolved; attention fix in best6
+
+Check **`691bff0bcff44e99`** scored **1.353449x** (board `0e94268`: **1.427904x**),
+13/13 tests, H200 prepare **158.992 s**. The full [stage comparison](best6_attention/BEST5_STAGES.md)
+and [every non-compute kernel by load](best6_attention/BEST5_GLUE.md) come from the organizer's profiles.
+Aggregate GPU durations per layer (us; PDL waits can overlap producer compute):
+
+| Load | Layer | Projection | Attention | MoE | Glue | Scheduler | Misc reduce/cast | Attention control → best5 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| decode 1 | sliding | 49.8 | 9.8 | 35.4 | 15.2 | 0.0 | 0.8 | 14.8 → 9.8 |
+| decode 1 | full | 47.4 | 18.9 | 35.5 | 15.8 | 0.0 | 0.7 | 33.9 → 18.9 |
+| decode 16 | sliding | 63.1 | 15.8 | 88.4 | 12.6 | 0.0 | 0.0 | 15.8 → 15.8 |
+| decode 16 | full | 61.1 | 105.9 | 71.1 | 12.6 | 0.0 | 5.2 | 124.8 → 105.9 |
+| decode 32 | sliding | 66.2 | 16.8 | 116.1 | 14.7 | 0.0 | 0.0 | 20.2 → 16.8 |
+| decode 32 | full | 64.6 | 197.8 | 117.7 | 14.9 | 0.0 | 0.0 | 228.5 → 197.8 |
+| verify 1 | sliding | 48.0 | 14.1 | 87.4 | 21.6 | 2.0 | 0.7 | 14.1 → 14.1 |
+| verify 1 | full | 47.9 | 26.2 | 96.7 | 19.7 | 3.0 | 0.7 | 26.2 → 26.2 |
+| verify 16 | sliding | 70.8 | 18.3 | 340.6 | 20.5 | 2.2 | 0.0 | 18.8 → 18.3 |
+| verify 16 | full | 70.1 | 191.5 | 293.4 | 19.9 | 3.1 | 0.0 | 195.6 → 191.5 |
+| verify 32 | sliding | 90.8 | 24.5 | 527.2 | 30.1 | 2.1 | 0.0 | 24.3 → 24.5 |
+| verify 32 | full | 90.0 | 505.9 | 530.3 | 28.9 | 3.5 | 0.0 | 382.2 → 505.9 |
+
+Verify-32 full FA3's main kernel regressed **377.9 -> 501.5 us** (+123.6 us), while SGLang's same-load
+baseline moved **1113.06 -> 1095.01 us** (-1.6%). Best5 picked `(32, True)` at 386.432 us on one
+synthetic sample. Its old length envelope was already +/-7.5%; the mismatch was one fixed draw,
+cache/input distribution, and an explicit scheduler control. Public q8 metadata is **None** and the
+board forwards that value, letting FA3 schedule internally. Best6 restores that exact `layer` call
+and compares every setting over three complete public load draws by mean cold timing. The same
+sampling policy covers q1. The harness-generated scheduler field is retained on full q1 inputs;
+q1's existing kernel choices remain unchanged.
+
+MoE values at verify16/32 match the twelve-seed distribution: sliding **258.9 -> 340.6 us** at
+verify16, **477.0 -> 527.2 us** at verify32, and full **449.5 -> 530.3 us** at verify32.
+The per-run routers differ; those are routing variance, not matched-route regressions.
+Decode full attention improves **33.9 -> 18.9 us** at B1 and **228.5 -> 197.8 us** at B32.
+Best5 chooses NT1 at M32/128 and NT2 at M256, with ~0.17% FP32-gate error.
+Reclaiming the FA3 regression alone implies about **+0.7%** geometric score by accounting;
+the revised candidate has no measured H200 speedup yet.
+
+The owner sent glue `99120569` as a priority-0 check. Its H200 timing and the glue lab
+`bd66426465d8b072` remain unverified in this handoff. The separate `moe_decode_adapters`
+lab has no locally readable receipt at this turn's one lookup; its actual MoE-host job ID was not
+provided here. **The owner's hold on sending best6 remains until native M128/256 safety is established.**
 
 ## P7 overlap reopen (H200 receipt 0e94268)
 
@@ -123,8 +171,8 @@ Full [board glue inventory](glue/PROFILE.md): board `0e94268` (1.428x), aggregat
 These include boundary x2, route/norm, separate QK preparation, norm/gate and clear, where present;
 FA3 scheduler launches are listed separately in the inventory. [Weight-storage audit](glue/BOUNDARY_AUDIT.md) also flags an unused legacy Humming scale decoder, outside the active serving dispatch. PDL GPU durations include waits and can overlap
 compute, so their sum is not exposed latency. The older cost-receipt lever table below uses different measurements and is not this board inventory.
-Best5 `a651af25`, check job `691bff0bcff44e99`, had no receipt at this turn’s one read; its stage timing
-cannot yet be folded in. Read its landed receipt on the next owner resume and replace that missing evidence.
+Best5 `a651af25`, check `691bff0bcff44e99`, is resolved above at 1.353449x. Its glue durations are
+15.2/15.8 us at decode1 and 30.1/28.9 us at verify32; scheduler and miscellaneous Torch work are listed separately.
 
 ## Base best5 candidate
 
@@ -143,7 +191,8 @@ to **192.029 s**. Extension/Triton/CUDA caches were empty and ccache disabled. E
 240-second deadline measured from prepare entry. All three MoE comparisons completed; their gate errors
 are ~0.17% locally. The expired-deadline audit verifies all six tuners return without GPU allocation or compilation.
 See [best5 handoff](best5/README.md) and [validation / per-M timings](best5/validation.json).
-Local NT2 choices do not predict H200 selection; the complete best5 build remains unverified on H200.
+H200 check `691bff0bcff44e99` passes at 1.353449x, prepare 158.992 s; NT1 wins M32/128 and NT2 wins M256.
+The stage table above supersedes local timing as evidence for best5.
 
 ## Resolved predecessor runs
 
@@ -170,7 +219,7 @@ Previous base handoff: **[cand_r3_best.py](../cand_r3_best.py)**, SHA-256
 It supersedes the older best/best2 construction for this task. Normal and forced-Hopper screens each pass
 13/13 tests, 12/12 fresh graph cases and 11/11 static checks. Cold prepare including native attention
 compiles and all tuners is **175.121 s locally**, with **177.152 s** including extra forced-family checks.
-Best’s H200 prepare is 130.547 s and its score is 1.351x in `7b2165c8`; the current source is best5 above.
+Best’s H200 prepare is 130.547 s and its score is 1.351x in `7b2165c8`; the current source is best6 above.
 See [BEST](BEST.md) for the prior local selections and resource metadata.
 The current source keeps V9 MoE at every T, preserves small pool/router GEMV, restores XQA/attn_main,
 and repairs PREFIX with TB≤32 instead of disabling it. The cost receipt selected regular persistent
