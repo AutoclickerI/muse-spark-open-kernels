@@ -91,6 +91,7 @@ Full kernel × M × routing tables, phase probes, errors, and source receipts: [
 
 - **V9 variants at M=128/256, 12 seeds (`3a312224908a416e`):** at M=128 every variant is within 2% of the others (NT1 344.1, NT2 341.7, hotNT1 336.4, hotNT3s2 337.1 us mean; NT4 448.6). At M=256 hotNT3s2 is best at 520.9 (NT2 548.8, NT1 605.9), still behind humming_masked's 448 (de6a56fc). Seed spread is 1.5x max/min (180-306 local pairs at M=128), so a single run can't separate variants. The V9 family plateaus near 3x the ~108 us M=128 floor; the lever is a different mainloop, not another V9 tile.
 
+- **Recoded scales on the fused M=256 path (`9e8a6a15f95748db`, 12 seeds, 8 rotated cold graphs):** C1g2112 (exact exponent/mantissa scale recode, FP4 sign/zero fold) takes 365.2 us mean (346.4 median) against the same path on raw scales 386.1 (C:R 0.946), masked Humming 448.2 and NT1-recoded 500.4; gates pass. The recode gains 2.4-6.2% across grids, most at grid 2112.
 - **Fused M=256 path beats masked Humming (`97be11d4631b44d6`, 12 public seeds, 3 inputs, 8 rotated cold graphs, raw bank):** with the W2 combine moved from one serialized last warp to a vector CTA per token, CTA1g2112 takes 385.2 us mean (366.5 median) and CTA1g1056 391.0, against masked Humming 447.6 (438.9) and P32 396.7; gates pass (L2 0.0041). At R0 the fixed W2 phase drops 866.4 -> 161.6 us (0.44 -> 2.34 TB/s requested) and W13 runs 301 us at 2.51 TB/s. The old serialized combine (CTA0) is 463-492 us. Saving ~62 us x 62 layers is ~10% of the verify 32 load. The same run's M=128 K64 bank-rotation repair is correct but 1.7-1.9 ms (HOT128 path), not a candidate.
 - **M=128 fused WGMMA producer is 5.7-6.5x NT1-recoded (`471f6d6216804dda`, 12 seeds x 3 fixtures, cold, K64 repair kept):** configs 3/4/5 take 1,650-1,862 us (raw) and 1,650-1,851 (recoded; rec:raw 0.988-0.999) against NT1-recoded 291.7 us; gates pass. Its final W2/combine phase is the serialized one the M=256 lane replaced (466 -> 162 us at M=256 above); this path is not a candidate until that fix is ported.
 - **Humming at M=128/256 is bandwidth-starved (`896866402dc94112`, R0 + 12 seeds, eager event spans):** W13 streams the touched experts' unique NVFP4 bytes (16 MiB W13 + 8 MiB W2 per expert; 11-25 experts, 264-600 MiB) at 0.70-1.18 TB/s and W2 at 0.63-1.07 TB/s (M=128 R0: W13 261, W2 146 us for 432 MiB, whose read at 4 TB/s is ~113 us). Humming's own tiles (block [16|24,256,128], 4 stages, TMA, warp-specialized) leave ~4x of HBM bandwidth unused, so the M=128/256 lever is bytes in flight per SM, the same limit as the dense GEMVs (b63389f0). Its SM-count and block16 launch variants all failed the FP32 gate (0.37 relative error), a lab defect rather than a finding.
@@ -1012,3 +1013,67 @@ attention lane moved to FlashInfer's page-1 paths (10-24 23:40).
 ## FlashInfer page-1 attention (H200, `8ffbac2d68074a0b`, 2026-10-25)
 
 FlashInfer 0.7.0.post1 at the scored full-context shapes (ctx 80000, page 1, FP8 KV): tensor-core decode (q1) takes 45.5 / 195.2 / 371.9 us at B1/16/32 (1.68-1.76 TB/s), the same as FA3 (205.6/386.1 at B16/32) and ~1.8x our attn_main (108.0/199.7). The page-1 prefill path (fa2) at q8 takes 60.4 / 469.1 / 912.3 us, ~2.3x FA3's q8 (208/390). Errors 0.0023-0.0027; graphs capture; plan 0.2-0.3 ms outside the call (11 ms on first use). Not measured: every sliding case (FlashInfer asserted on the window setup), the fa3 backend (JIT build failed in the image), XQA (rejects page size 1 by contract) and the lab's own FA3 control (dtype bug). The run failed because the payload pushed prepare to 304 s (cap 300). FlashInfer's full-context paths are closed for the decode layer; its fa3 backend and sliding paths remain untested.
+
+
+## Single-launch sliding attention measurement candidate (2026-10-25)
+
+Candidate `problems/muse_attention_decode/cand_sliding_singlelaunch.py`, SHA-256
+`68c50c706423f6d6cfe52cc4cd487840e9794a9c62664f7633d59bfd5cbdcb75`, was sent
+directly to the attention board with key `68c50c706423f6d6` (priority 2).
+The candidate changes all six sliding shapes; full q1 retains the fused
+`attn_main` control and full q8 retains stock FA3 on Hopper. It is a measurement
+candidate, with no H200 promotion yet. FlashInfer `c96e0f89bcdcdf60` had no
+receipt at the turn's initial check; do not poll it.
+
+The new CUDA path performs Q/K RMSNorm, GPT-J RoPE at the task's theta,
+post-quantization FP8 KV store/attention, output RMSNorm and sigmoid gate in
+one launch. A two-stage pipeline stages 256 FP8 KV rows; each warp's MMA
+computes eight query-token rows at one query head for q8. For q1 B>1 the
+same eight rows are the whole GQA group, removing eight redundant KV streams.
+B1 uses eight splits per query head; q1 B16/B32 uses four/two splits per KV
+head; q8 B16/B32 uses one CTA per query head. Four warp partials merge in the
+CTA. The last split CTA merges global partials and applies norm/gate before
+returning; counters are reset and no input-derived state survives the call.
+Every CTA builds quantized new KV locally and reads global history only below
+`seq_lens`, eliminating cross-CTA cache-store races for q8.
+
+The layer adapter `problems/muse_decode_layer/dev/sliding_attention.py`, SHA-256
+`68fb992bd795b29a2257b88fc8c08363749a4446eaf1e1241e1961c1ae8264f6`, accepts
+BF16 QKV or the layer's `(partials, splits)` tuple. FP32 projection partials
+are summed and rounded to BF16 inside the kernel, avoiding an extra reduction
+or cast launch. `attention_dropin.with_sliding_attention(source)` adds the
+`('singlelaunch_sliding', None)` choice to an existing v9-derived portfolio;
+it does not select it. Keep best7 settings until the H200 row wins.
+
+Verified locally on sm120: 16/16 official tests, 12/12 fresh-input graph
+checks, undefined-name and call-signature checks, and sm90a compilation of
+both CUDA sources. The adapter passes all six scored sliding shapes and
+12 additional gates for 1/4 FP32 projection partials after changing captured
+input values. Its worst-row error is about 0.0012. CUDA profiling confirms
+one kernel at B1 q1/q8 for BF16 and split-projection inputs. The actual full
+q8 norm/store/epilogue Hopper glue passes graph replay with a tensor stand-in
+for FA3, including KV scale 1/64; the FA3 binary itself remains H200-only.
+
+Local screen timings (us, **not H200 evidence**, shared sm120):
+
+| B | q1 sliding | q8 sliding | local gate | H200 |
+|---|---:|---:|---|---|
+| 1 | 9.2 | 13.3 | P | pending |
+| 16 | 16.4 | 81.9 | P | pending |
+| 32 | 26.6 | 122.9 | P | pending |
+
+Early scalar and broad Triton gather trials were correct but lost locally;
+serial gathers / excessive per-head work were the limiter. Staging plus MMA
+reduced B1 from roughly 48–70 us to 9–13 us. A short-context test also found
+`-inf - -inf` when every warp in a split is empty; the merger now keeps its
+partial exactly zero. Every corrected config was re-gated before sending.
+The larger q8 shapes remain slow locally; H200 must establish their viability,
+and they must not enter decode settings solely because they fuse launches.
+
+At the requested B1 target of 6 us, decode1 sliding attention would save
+`46*(14.8-6) = 404.8 us` per 62-layer load; verify1 would save
+`46*(19.4-6) = 616.4 us`. These are projections, not measured layer gains.
+Using best6 load times, decode1 alone would contribute about +1.04% overall;
+verify1 alone about +1.08%. Promotion requires a passing H200 gate and a
+same-shape incumbent win, then a full-layer check including projection
+partials, graph capture and the actual best7 projection scheduling.
