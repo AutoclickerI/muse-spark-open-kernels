@@ -24,6 +24,16 @@ idle time. The 16.78 MB o bank fits beside a 50 MB L2; pool/router (75.50 MB)
 and full unpooler (67.11 MB) do not, so the experiment prefetches o first and
 keeps the larger banks as an explicit reject/diagnostic.
 
+The six profile envelopes quantify the surrounding work (the last column is
+wall time outside the aggregate GEMV row; it is overlap opportunity, not a
+claim of idle SMs):
+
+| Load | GEMV row us | Profile total us | Outside GEMV us |
+|---|---:|---:|---:|
+| decode 1 sliding/full | 45.5 / 44.8 | 109.2 / 128.5 | 63.7 / 83.7 |
+| decode 16 sliding/full | 42.5 / 42.9 | 177.7 / 282.8 | 135.2 / 239.9 |
+| decode 32 sliding/full | 46.9 / 53.7 | 203.6 / 441.0 | 156.7 / 387.3 |
+
 Overlap payload `dev/overlap_lab.py`, SHA256
 `dbfbdc774a428f2ca16e034dd7bb1b62c8acf9411f82ebb51ac78d43baac626e`, is sent
 to the decode host at priority 0.8. It compares o-only, unpooler-only and both
@@ -31,7 +41,7 @@ side-stream read-ahead against the six decode loads with 20 paired graph
 medians. The local sm_120 path is a no-op stand-in; only H200 can admit it.
 
 Drop-in experiment: `cand_r3_overlap.py`, SHA256
-`0385b4e02a95b777f66931a2158b3fc6db3235bafd405cf3be28cb6bd18b338f`.
+`9a4f59f5463605cf522207384a209827f6089bf4b9578cb70402a695d7b63feb`.
 It preserves the incumbent by default (`overlap_plan=False`) and contains the
 prepared stream/event path for an H200-positive o-prefetch plan. Local sm_120
 screen: 13/13 tests, 12/12 graph loads, 11/11 static checks; no overlap claim
