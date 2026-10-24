@@ -253,6 +253,13 @@ for two waves of 132 SMs. Replacement lab payload `prof/lab/verify8_attn_compare
 `2adee96d8f72588134aa1d21520f051b8c451906ed8b34cc5e82b15d33775dde`) is queued at priority 0.8;
 only its H200 receipt remains.
 
+Receipt `0467893d28a84f53` showed the two-wave q8 launcher was invalid on Hopper: odd 17/9
+split counts produced F1.252 and combine 44,096 cycles versus q1's 7,678. The drop-in now uses
+one q8 wave (floor 8/4 splits at B16/B32), passes the local post-store gate at 0.00616/0.00583,
+and passes 13/13 tests plus 15/15 static checks. Replacement full+sliding phase lab payload
+SHA256 `8047ce325de2bfbf63e0305f0ee59c09aaecd0626d12aa3b3685aeb818b72e6e` is queued at priority
+0.8; only its H200 receipt remains.
+
 The exact `sim/bound.py` cache floor is 69.33 us for B16 full and 138.67 us for B32 full at
 4.8 TB/s (HQ=16, HKV=2, D=64, FP8 K/V). A replacement proj lab payload now clocks q1 and q8
 at B16/B32 full by phase (KV wait, QK MMA, softmax, PV MMA, combine), using 17/9 q8 splits for

@@ -1232,9 +1232,10 @@ def _vmath_verify(data: Inputs, factor=1) -> torch.Tensor:
     # apples-to-apples memory-bandwidth experiment; the L=8 math is the sole
     # intentional difference.
     if q_len == 8:
-        # Match the drop-in's two-wave split target rather than the q8
-        # occupancy result, which can leave B16 underfilled on Hopper.
-        ns = max(1, min(128, (2 * _num_sms(device) + batch * kvg - 1) // (batch * kvg),
+        # Match the drop-in's one-wave q8 split target; the all-row CTA makes
+        # the second wave pure combine traffic and the odd split counts break
+        # the Hopper q8 reduction path.
+        ns = max(1, min(128, _num_sms(device) // (batch * kvg),
                        (max_keys + 63) // 64))
         cs = 1
     else:
@@ -1275,7 +1276,7 @@ def _vmath_profile(data: Inputs):
     window = cfg['window']
     max_keys = min(max_pages * ps, window) if window else max_pages * ps
     if q_len == 8:
-        ns = max(1, min(128, (2 * _num_sms(device) + batch * kvg - 1) // (batch * kvg),
+        ns = max(1, min(128, _num_sms(device) // (batch * kvg),
                        (max_keys + 63) // 64))
         cs = 1
     else:
@@ -3150,7 +3151,7 @@ def _lab_attn_main(data):
     window = cfg['window']; max_keys = max_pages * ps
     if window: max_keys = min(max_keys, window)
     if q_len == 8:
-        ns = max(1, min(128, (2 * _num_sms(device) + batch * kvg - 1) // (batch * kvg),
+        ns = max(1, min(128, _num_sms(device) // (batch * kvg),
                        (max_keys + 63) // 64))
         cs = 1
     else:
@@ -3322,29 +3323,30 @@ def lab(deadline, weights):
     flush = torch.empty(256 << 20, dtype=torch.uint8, device=device)
     start, end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
     lines = [
-        'META phase_clock q1_vs_q8 ctx=80000 page=1 spread=agentic full only; '
+        'META phase_clock q1_vs_q8 ctx=80000 page=1 spread=agentic sliding/full; '
         'clock64 cycles median/p90 over CTA tiles; phases=kv_wait,qk_mma,softmax,pv_mma,combine',
         'META q8 gate=post-store FP32 P<=15pct; timing=unprofiled attn_main median3',
     ]
     for batch in (16, 32):
         if time.monotonic() >= deadline:
             lines.append(f'DEADLINE b{batch}'); continue
-        for q_len in (1, 8):
-            data = _lab_input(batch, 0, q_len, 80000)
-            us = _compare_time(_lab_attn_main, data, flush, start, end)
-            gate_data = _lab_input(1, 0, q_len, 80000)
-            gate_out = _lab_attn_main(gate_data)
-            torch.cuda.synchronize()
-            gate, err = _compare_gate(gate_data, gate_out)
-            prof_out, stamps, max_tiles, ns = _vmath_profile(data)
-            stats = _profile_stats(stamps, batch, ns, max_tiles)
-            parts = ';'.join(
-                f'{name}={v[0]:.0f}/{v[1]:.0f}/{v[2]}' for name, v in stats.items() if v is not None)
-            lines.append(f'PROFILE b{batch} q{q_len} us={us:.1f} gate={gate}{err:.3f} '
-                         f'ns={ns} tiles={max_tiles} {parts}')
-            del data, gate_data, gate_out, prof_out, stamps
-            torch.cuda.empty_cache()
-        # The per-phase run uses a single request to keep the stamp tensor and
-        # the reduction trace readable; timing above uses the target batch.
+        for window in (2048, 0):
+            for q_len in (1, 8):
+                data = _lab_input(batch, window, q_len, 80000)
+                us = _compare_time(_lab_attn_main, data, flush, start, end)
+                gate_data = _lab_input(1, window, q_len, 80000)
+                gate_out = _lab_attn_main(gate_data)
+                torch.cuda.synchronize()
+                gate, err = _compare_gate(gate_data, gate_out)
+                prof_out, stamps, max_tiles, ns = _vmath_profile(data)
+                stats = _profile_stats(stamps, batch, ns, max_tiles)
+                parts = ';'.join(
+                    f'{name}={v[0]:.0f}/{v[1]:.0f}/{v[2]}' for name, v in stats.items() if v is not None)
+                lines.append(f'PROFILE b{batch} w{window or "f"} q{q_len} us={us:.1f} gate={gate}{err:.3f} '
+                             f'ns={ns} tiles={max_tiles} {parts}')
+                del data, gate_data, gate_out, prof_out, stamps
+                torch.cuda.empty_cache()
+            # The per-phase run uses the target batch so split/occupancy effects
+            # are visible; the gate uses a fresh single-request input.
     del flush
     return lines

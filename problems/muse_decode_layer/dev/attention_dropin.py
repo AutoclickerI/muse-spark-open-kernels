@@ -74,6 +74,15 @@ def _tune_prefix''',
 
 def build(output: Path = OUTPUT) -> Path:
     source = _remove_prefix_fusion(PORTFOLIO.read_text())
+    # q_len=8 keeps all eight rows in each CTA, so the Hopper combine is the
+    # limiter at the two-wave target. Use one resident wave for q8 and floor
+    # the per-request split count (B16/B32 => 8/4 on a 132-SM H200); q1 keeps
+    # the original two-wave ceiling.
+    source = source.replace(
+        "    target = 2 * sms\n    ns = -(-target // (batch * kvg))",
+        "    target = sms if q_len == 8 else 2 * sms\n"
+        "    ns = (target // (batch * kvg)) if q_len == 8 else -(-target // (batch * kvg))",
+    )
     # The standalone q_len=8 port is the drop-in kernel measured by the lab.
     # On Hopper its four-stage KV ring hides one more page-table/global-load
     # round trip; keep sm_120 on the three-stage portable configuration.
