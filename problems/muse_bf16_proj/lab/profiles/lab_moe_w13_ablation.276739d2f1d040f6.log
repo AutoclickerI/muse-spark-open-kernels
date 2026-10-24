@@ -1,0 +1,26 @@
+FUSED_SELECT router m=128 incumbent_us=23.040 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.328 top=[(15.263999812304974, (64, 64, 4, 1, 8, 160)), (15.359999611973763, (64, 64, 4, 1, 16, 128)), (15.39199985563755, (64, 64, 4, 1, 16, 160)), (19.58400011062622, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.904 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.480 top=[(16.3199994713068, (64, 64, 4, 1, 8, 256)), (16.448000445961952, (64, 64, 4, 1, 8, 160)), (17.59999990463257, (64, 64, 4, 1, 8, 128)), (26.59199945628643, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.760 chosen=None chosen_us=25.760 top=[(30.719999223947525, (128, 64, 3, 1, 4, 160)), (34.46400165557861, (64, 64, 4, 1, 2, 256)), (35.51999852061272, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.376 chosen=None chosen_us=29.376 top=[(38.68800029158592, (128, 64, 4, 1, 2, 256)), (40.57599976658821, (128, 128, 2, 1, 2, 256)), (40.832001715898514, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.808 chosen=('lt', 0) chosen_us=31.584 top=[(32.416000962257385, ('lt', 0)), (32.6399989426136, ('lt_nn', 0)), (32.99200162291527, ('lt_nn', 1)), (33.376000821590424, ('lt', 1)), (33.984001725912094, ('lt', 7))]
+FUSED_SELECT pooler m=256 incumbent_us=39.264 chosen=('lt_nn', 0) chosen_us=37.600 top=[(38.27200084924698, ('lt_nn', 0)), (38.62399980425835, ('lt', 3)), (38.656000047922134, ('lt_nn', 4)), (39.23200070858002, ('lt', 2)), (39.583999663591385, ('lt', 1))]
+FUSED_SELECT unpooler m=128 incumbent_us=30.464 chosen=('lt_nn', 0) chosen_us=29.472 top=[(29.184000566601753, ('lt_nn', 0)), (30.047999694943428, ('lt_nn', 1)), (30.14400042593479, ('lt', 0)), (30.33600002527237, ('lt', 1)), (30.912000685930252, ('lt_nn', 2))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.792 chosen=None chosen_us=33.792 top=[(33.85600075125694, ('lt', 0)), (34.33600068092346, ('lt_nn', 0)), (34.88000109791756, ('lt', 2)), (37.47199848294258, ('lt_nn', 1)), (38.07999938726425, ('lt_nn', 2))]
+FUSED_SELECT o m=128 incumbent_us=13.344 chosen=('lt_nn', 5) chosen_us=13.216 top=[(13.120000250637531, ('lt', 2)), (13.151999562978745, ('lt_nn', 5)), (13.279999606311321, ('lt', 6)), (13.311999849975109, ('lt', 0)), (13.311999849975109, ('lt', 1))]
+FUSED_SELECT o m=256 incumbent_us=14.016 chosen=None chosen_us=14.016 top=[(14.14399966597557, ('lt', 0)), (14.14399966597557, ('lt_nn', 0)), (14.816000126302242, ('lt', 6)), (14.879999682307243, ('lt', 2)), (15.168000012636185, ('lt_nn', 2))]
+FUSED_SELECT prepare_s=9.72
+LAB_BEGIN moe_w13_ablation 9f59d1687d40a27f
+META W13 ONLY, R0 exact IDs, cold128MiB,6 graph replays/3 fresh x. Wrong-value ablations are timing-only. B/s is nominal requested Q+SF bytes, not measured DRAM traffic.
+AB M=128 kind=base grid=132 us=2215.73 nominal_GBs=178.89 unique_GBs=153.33 req_MB=396.36 fp32=0.000001 PASS
+AB M=128 kind=base grid=264 us=1322.74 nominal_GBs=299.65 unique_GBs=256.85 req_MB=396.36 fp32=0.000001 PASS
+AB M=128 kind=base grid=528 us=911.39 nominal_GBs=434.90 unique_GBs=372.77 req_MB=396.36 fp32=0.000001 PASS
+AB M=128 kind=reinterpret grid=264 us=574.30 nominal_GBs=690.16 unique_GBs=591.57 req_MB=396.36 fp32=0.000000 TIMING_ONLY
+AB M=128 kind=constant grid=264 us=322.82 nominal_GBs=1227.83 unique_GBs=1052.42 req_MB=396.36 fp32=0.000000 TIMING_ONLY
+AB M=128 kind=no_mma grid=264 us=1264.08 nominal_GBs=313.56 unique_GBs=268.76 req_MB=396.36 fp32=0.000000 TIMING_ONLY
+AB M=256 kind=base grid=132 us=3066.77 nominal_GBs=172.33 unique_GBs=129.24 req_MB=528.48 fp32=0.000001 PASS
+AB M=256 kind=base grid=264 us=1758.35 nominal_GBs=300.56 unique_GBs=225.42 req_MB=528.48 fp32=0.000001 PASS
+AB M=256 kind=base grid=528 us=1197.23 nominal_GBs=441.42 unique_GBs=331.07 req_MB=528.48 fp32=0.000001 PASS
+AB M=256 kind=reinterpret grid=264 us=756.59 nominal_GBs=698.50 unique_GBs=523.88 req_MB=528.48 fp32=0.000000 TIMING_ONLY
+AB M=256 kind=constant grid=264 us=462.91 nominal_GBs=1141.65 unique_GBs=856.24 req_MB=528.48 fp32=0.000000 TIMING_ONLY
+AB M=256 kind=no_mma grid=264 us=1669.63 nominal_GBs=316.53 unique_GBs=237.39 req_MB=528.48 fp32=0.000000 TIMING_ONLY
+LAB_END lab_s=50.3 prepare_s=60.0
