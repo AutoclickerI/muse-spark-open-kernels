@@ -1,0 +1,38 @@
+FUSED_SELECT router m=128 incumbent_us=23.008 chosen=(64, 64, 4, 1, 8, 160) chosen_us=14.912 top=[(14.911999925971031, (64, 64, 4, 1, 8, 160)), (15.296000055968761, (64, 64, 4, 1, 16, 160)), (16.127999871969223, (64, 64, 4, 1, 16, 128)), (19.231999292969704, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.616 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.448 top=[(16.3199994713068, (64, 64, 4, 1, 8, 160)), (16.383999958634377, (64, 64, 4, 1, 8, 256)), (17.75999926030636, (64, 64, 4, 1, 8, 128)), (26.815999299287796, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=24.960 chosen=None chosen_us=24.960 top=[(29.632000252604485, (128, 64, 3, 1, 4, 160)), (33.02399814128876, (64, 64, 4, 1, 2, 256)), (35.679999738931656, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.056 chosen=None chosen_us=29.056 top=[(38.43199834227562, (128, 64, 4, 1, 2, 256)), (39.39199820160866, (128, 128, 2, 1, 2, 256)), (40.44799879193306, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.808 chosen=('lt', 0) chosen_us=31.744 top=[(32.127998769283295, ('lt_nn', 1)), (32.51200169324875, ('lt', 0)), (32.76799991726875, ('lt_nn', 0)), (33.440001308918, ('lt', 2)), (33.63199904561043, ('lt_nn', 2))]
+FUSED_SELECT pooler m=256 incumbent_us=38.592 chosen=('lt_nn', 0) chosen_us=37.600 top=[(37.76000067591667, ('lt_nn', 0)), (38.2080003619194, ('lt_nn', 4)), (38.816001266241074, ('lt', 2)), (38.84800150990486, ('lt', 0)), (38.88000175356865, ('lt', 1))]
+FUSED_SELECT unpooler m=128 incumbent_us=30.368 chosen=('lt_nn', 0) chosen_us=29.248 top=[(29.152000322937965, ('lt_nn', 0)), (30.047999694943428, ('lt_nn', 1)), (30.46399913728237, ('lt', 0)), (30.49599938094616, ('lt', 1)), (30.592000111937523, ('lt', 3))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.152 chosen=None chosen_us=33.152 top=[(34.04799848794937, ('lt_nn', 0)), (34.591998904943466, ('lt', 0)), (35.00799834728241, ('lt_nn', 1)), (35.64799949526787, ('lt', 2)), (38.27200084924698, ('lt', 3))]
+FUSED_SELECT o m=128 incumbent_us=13.280 chosen=('lt_nn', 0) chosen_us=12.864 top=[(12.575999833643436, ('lt_nn', 0)), (12.896000407636166, ('lt', 1)), (12.927999719977379, ('lt_nn', 5)), (13.024000450968742, ('lt_nn', 1)), (13.088000006973743, ('lt', 0))]
+FUSED_SELECT o m=256 incumbent_us=14.144 chosen=None chosen_us=14.144 top=[(14.08000010997057, ('lt_nn', 0)), (14.112000353634357, ('lt', 0)), (14.368000440299511, ('lt', 2)), (14.751999638974667, ('lt_nn', 4)), (14.816000126302242, ('lt', 6))]
+FUSED_SELECT prepare_s=9.80
+LAB_BEGIN verify_proj_library 4afe98071d4e2cb8
+VP_META sms=132 workspace_gb=4.29 cold128MiB graph fresh3; raw_us includes replay overhead
+VP_ALGOS 256 pool_router nn=0 h=8 expanded=44
+VP_ALGOS 256 pool_router nn=1 h=8 expanded=46
+VP_LT 256 pool_router best=(0.994232536393075, (0, 0), (33.24799984693527, 32.96000137925148)) tried=90 rejected=0 finals=0.0:33.25/32.96/0.9942,1.0:33.25/37.28/1.1188,0.2:33.46/37.39/1.1190
+VP_ALGOS 256 qkv_gate nn=0 h=8 expanded=44
+VP_ALGOS 256 qkv_gate nn=1 h=8 expanded=46
+VP_LT 256 qkv_gate best=(0.9979192741400884, (0, 0), (23.24800007045269, 23.16799946129322)) tried=90 rejected=0 finals=0.0:23.25/23.17/0.9979,1.0:23.30/24.30/1.0336,0.4:23.47/24.59/1.0451
+VP_ALGOS 256 unpooler nn=0 h=8 expanded=48
+VP_ALGOS 256 unpooler nn=1 h=8 expanded=48
+VP_LT 256 unpooler best=(0.988114489024057, (0, 0), (27.96800062060356, 27.807999402284622)) tried=96 rejected=0 finals=1.0:27.94/28.18/1.0079,0.0:27.97/27.81/0.9881,1.1:28.11/29.84/1.0603
+VP_ALGOS 256 o nn=0 h=8 expanded=48
+VP_ALGOS 256 o nn=1 h=8 expanded=48
+VP_LT 256 o best=(1.0, 'torch', None) tried=96 rejected=0 finals=1.0:13.17/13.20/1.0036,1.1:13.15/13.86/1.0590,0.0:12.99/13.02/1.0080
+VP_ALGOS 128 pool_router nn=0 h=8 expanded=44
+VP_ALGOS 128 pool_router nn=1 h=8 expanded=45
+VP_LT 128 pool_router best=(0.9785454857669289, (0, 0), (27.66399923712015, 27.263999916613102)) tried=89 rejected=0 finals=0.0:27.66/27.26/0.9785,1.0:27.34/28.06/1.0249,1.6:27.55/30.59/1.1104
+VP_ALGOS 128 qkv_gate nn=0 h=8 expanded=44
+VP_ALGOS 128 qkv_gate nn=1 h=8 expanded=47
+VP_LT 128 qkv_gate best=(0.9549067485765916, (1, 23), (21.104000508785248, 20.22399939596653)) tried=91 rejected=0 finals=1.5:21.14/21.22/0.9985,1.2:21.02/20.69/0.9748,1.23:21.10/20.22/0.9549,0.3:21.25/20.94/0.9895
+VP_ALGOS 128 unpooler nn=0 h=8 expanded=47
+VP_ALGOS 128 unpooler nn=1 h=8 expanded=46
+VP_LT 128 unpooler best=(0.9574487283021699, (1, 0), (24.000000208616257, 22.95999974012375)) tried=93 rejected=0 finals=1.0:24.00/22.96/0.9574,1.3:23.94/23.68/0.9877,0.0:23.87/23.78/0.9895
+VP_ALGOS 128 o nn=0 h=8 expanded=48
+VP_ALGOS 128 o nn=1 h=8 expanded=48
+VP_LT 128 o best=(0.9852517370312425, (1, 0), (11.408000253140926, 11.168000288307667)) tried=96 rejected=0 finals=1.3:11.23/11.95/1.0638,1.0:11.41/11.17/0.9853,0.1:11.44/11.90/1.0417
+LAB_END lab_s=4.3 prepare_s=14.1
