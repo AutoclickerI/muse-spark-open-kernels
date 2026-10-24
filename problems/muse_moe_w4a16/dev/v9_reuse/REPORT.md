@@ -73,3 +73,23 @@ The layer passes13/13 tests,12/12 fresh graphs,7 static checks. Standalone check
 Both M128 and M256 hot-first branches also pass when forced into four scored verify
 layer cases (20replays/3fresh inputs each). The native seed lab passes9/9 host tests,
 7 static checks, and resolves every nested import inside the judge image.
+
+## NT3 row-block probe
+
+`nt3_dropin.py` adds a hot-first NT=3 specialization, which processes 24 routed rows per
+CTA while preserving packed NVFP4/E4M3 storage and in-kernel dequantization. The 12-seed
+sm120 sweep (`runs/screen/v9_seed/nt3_12.json`) measured means of 370.7 us (M128) and
+507.6 us (M256); the native controls in the same sweep were 377.7 and 515.8 us. The
+independent gate passed 144 captured configurations and 576 fresh route/input replays;
+maximum relative L2 was 0.001333. The full-layer port is `cand_r3_v9_nt3.py` (13/13
+tests and 7/7 static checks). SHA256: drop-in
+`6db13c849f2e8b968725b6728a8b26ff9115fb6bace5612f4b6179d76ff6699d`, layer
+`e6bd2092e1dc512a5ad7714c4f8801cff63cd9e25fc8c6f8d3f14ea525aa9ec1`.
+
+sm90a ptxas resource output is the causal diagnostic: NT1/2/3/4 use 125/219/255/255
+registers; NT3 has an 8-byte stack frame with 20 spill stores and 12 loads, while NT4 has
+288 bytes with 500 stores and 344 loads. The local ncu attempt is blocked by the machine's
+`ERR_NVGPUCTRPERM`, so SASS/resource output and graph timing are the available local evidence.
+The H200 payload is `prof/lab/moe_nt3_seed.py` (SHA256
+`4813990b81915b0889f6e91ef9475c174ade247782a66cf283dbc28334cd319c`), queued as
+`711370966a58ac2b`; no receipt has landed yet.

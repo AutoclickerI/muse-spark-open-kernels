@@ -25,6 +25,11 @@ on random hidden states and applies the same 1% gate before choosing a path.
 Serving remains V9 native through M=128 plus grouped wide from M=256, 864 MiB/GPU; no serving
 port change is justified until the decode-layer H200 result validates router-aware selection.
 
-Separate TMA design ready: `cand_tma_grouped.py`, frozen b1209b2ac260…; see
-[design and evidence](dev/tma_grouped/README.md). One launch; real-router tuning, FP32 gate.
-sm1205/5 tests +6/6 graphs,7.94s prepare; SM90a compiled, H200 speed unverified.
+The new V9 NT3 (24-row block) specialization is in `dev/v9_reuse/nt3_dropin.py` and
+`cand_r3_v9_nt3.py`; its 12-seed sm120 means are 370.7/507.6 us at M=128/256, and
+144 captured configurations plus 576 fresh route/input replays pass the FP32 gate (max L2
+0.001333). sm90a ptxas reports NT1/2/3/4 at 125/219/255/255 registers; NT3 has only
+8-byte spills versus NT4's 288-byte frame. H200 lab `711370966a58ac2b` is pending.
+
+The corrected Humming probe `376ef26ba9bb46a0` is incomplete: it timed bs=1 then failed
+on `shape_m is not within any range`, so it provides no decode-weight agreement evidence.
