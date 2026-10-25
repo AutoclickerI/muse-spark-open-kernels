@@ -6,7 +6,6 @@ Files (one entry per retained direct file):
 
 - [README.md](README.md): Current working set and resume instructions.
 - [build.py](build.py): Offline, source-pinned 12-shape lever model; refresh from source-verified incumbent profiles.
-- [check.py](check.py): Offline regression checks against immutable H200 profiles; no CUDA or judge calls.
 - [current.json](current.json): Current identity, measurement or validation data consumed by retained code.
 - [scenarios.py](scenarios.py): Decode-layer score against stage floors (docs/reference/bound.md "Score vs floor").
 

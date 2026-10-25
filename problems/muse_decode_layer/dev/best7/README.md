@@ -1,6 +1,6 @@
 # best7
 
-Dependency working set retained for `problems/muse_attention_decode/dev/early_history/check_lab.py`, `problems/muse_bf16_proj/dev/public_nf/check_layer.py`, `problems/muse_bf16_proj/dev/public_nf/check_layer_lab.py`.
+Dependency working set retained for `problems/muse_attention_decode/dev/early_history/check_lab.py`, `problems/muse_decode_layer/dev/s15/screen_lab.py`, `problems/muse_decode_layer/dev/s9/audit.py`.
 
 Files (one entry per retained direct file):
 

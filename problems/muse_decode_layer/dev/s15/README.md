@@ -5,7 +5,6 @@ Combined S15 admission; candidate 60254883 on S14 f1c77ce6.
 Files (one entry per retained direct file):
 
 - [.gitignore](.gitignore): Generated-output exclusions.
-- [PRECISION.md](PRECISION.md): Dependency retained by the live reference graph.
 - [README.md](README.md): Current working set and resume instructions.
 - [ab_build.py](ab_build.py): Pack exact sources and independently composed off arms into one reset lab.
 - [ab_lab.py.inc](ab_lab.py.inc): Device source or payload template used by retained code.
@@ -15,10 +14,8 @@ Files (one entry per retained direct file):
 - [audit_layouts.py](audit_layouts.py): Materialize every selected NF weight layout, including Hopper-only local launch rows.
 - [build.py](build.py): Asserted S15 composition on exact S14 final; no runtime fallback or source checkout.
 - [dependencies.json](dependencies.json): Current identity, measurement or validation data consumed by retained code.
-- [hopper_layout_inventory.json](hopper_layout_inventory.json): Current identity, measurement or validation data consumed by retained code.
 - [last_decode1.patch](last_decode1.patch): Pinned integration patch.
 - [local_standins.py](local_standins.py): Explicit local-only launch stand-ins; never embedded or shipped to the judge.
-- [manifest.json](manifest.json): Current identity, measurement or validation data consumed by retained code.
 - [patch.py](patch.py): Experimental S15 handoff on exact S14; promotion awaits paired reset receipt.
 - [queue.json](queue.json): Current identity, measurement or validation data consumed by retained code.
 - [regmax_full_verify.patch](regmax_full_verify.patch): Pinned integration patch.

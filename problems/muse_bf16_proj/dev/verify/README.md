@@ -1,6 +1,6 @@
 # verify
 
-Dependency working set retained for `docs/serving/lane_notes.md`.
+Dependency working set retained for the parked serving round.
 
 Files (one entry per retained direct file):
 

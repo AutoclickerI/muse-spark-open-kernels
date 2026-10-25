@@ -62,36 +62,3 @@ def install(m,cold,exercise_table,exercise_prefetch=False):
         return state
     m.prepare=prepare
     return records
-
-
-def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--cold-native',action='store_true')
-    parser.add_argument('--exercise-table',action='store_true')
-    parser.add_argument('--candidate',type=Path,default=ROOT/'problems/muse_decode_layer/cand_r3_best7.py')
-    parser.add_argument('--output-prefix',default='')
-    parser.add_argument('--exercise-prefetch',action='store_true');args=parser.parse_args()
-    if args.exercise_prefetch and not args.exercise_table:parser.error('--exercise-prefetch requires --exercise-table')
-    load=local_eval.load_module;records={}
-    def loader(name,path):
-        m=load(name,path)
-        if name=='submission':records['forced']=install(m,args.cold_native,args.exercise_table,args.exercise_prefetch)
-        return m
-    local_eval.load_module=loader
-    prefix=args.output_prefix+('forced' if args.exercise_table else 'forced_default')
-    sys.argv=[sys.argv[0],str(args.candidate),'--no-baseline',
-        '--json',str(HERE/(prefix+'_local.json'))]
-    try:local_eval.main()
-    except SystemExit as exc:
-        if exc.code==0:
-            if args.exercise_table:
-                assert all(count>0 for row in records['forced']['full_layer_experts'].values() for count in row.values())
-            else:
-                for key,plan in records['forced']['plans'].items():
-                    if key=='other':continue
-                    assert plan['moe']==('humming_masked' if key.startswith('(32, 8,') else 'v9nt1'),(key,plan)
-                assert records['forced']['native_calls']['humming']>0
-            (HERE/(prefix+'_dispatch_local.json')).write_text(json.dumps(records,indent=2)+'\n')
-        raise
-
-
-if __name__=='__main__':main()

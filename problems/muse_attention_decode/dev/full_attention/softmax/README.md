@@ -28,11 +28,9 @@ Files (one entry per retained direct file):
 - [ping25.py](ping25.py): Driver for vq8 (q_len 8 attention, both KV heads per CTA, stream-K, native FP8 WGMMA on sm_90a).
 - [ref.cu](ref.cu): Device source or payload template used by retained code.
 - [ref.py](ref.py): Driver for vq8 (q_len 8 attention, both KV heads per CTA, stream-K, native FP8 WGMMA on sm_90a).
-- [reset_admission.json](reset_admission.json): Current identity, measurement or validation data consumed by retained code.
 - [softmax_mix_lab.py](softmax_mix_lab.py): Self-contained H200 measurement payload.
 - [tc25.cu](tc25.cu): Device source or payload template used by retained code.
 - [tc25.py](tc25.py): Driver for vq8 (q_len 8 attention, both KV heads per CTA, stream-K, native FP8 WGMMA on sm_90a).
-- [validation.json](validation.json): Current identity, measurement or validation data consumed by retained code.
 
 Handoff: [build_patch.py](build_patch.py), SHA256 `3f13695b454606e23d86fec43d8c454a3983973375894c946cf24630981ff5ee`, applies onto S14 f1c77ce6, VQ8 CUDA c262e4c5.
 Base source: [S14 final](../../../../muse_decode_layer/cand_r3_best7_s14_final.py), SHA256 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.

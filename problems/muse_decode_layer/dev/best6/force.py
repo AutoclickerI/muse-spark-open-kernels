@@ -105,24 +105,3 @@ def install(mod,cold):
         return state
     mod.prepare=prepare
     return record
-
-
-def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--cold-native',action='store_true');args=ap.parse_args()
-    old=local_eval.load_module;records={}
-    def load(name,path):
-        m=old(name,path)
-        if name=='submission':records['forced']=install(m,args.cold_native)
-        return m
-    local_eval.load_module=load
-    sys.argv=[sys.argv[0],str(ROOT/'problems/muse_decode_layer/cand_r3_best6.py'),'--no-baseline',
-              '--json',str(ROOT/'problems/muse_decode_layer/dev/best6_forced_local.json')]
-    try:local_eval.main()
-    except SystemExit as exc:
-        if exc.code==0:
-            record=records['forced']
-            assert all(v>0 for row in record['cycle']['choices'].values() for v in row.values()),record
-            (Path(__file__).parent/'forced_families_local.json').write_text(json.dumps(record,indent=2)+'\n')
-            print('BEST6_FORCED_COMPLETE',json.dumps(record),flush=True)
-        raise
-if __name__=='__main__':main()

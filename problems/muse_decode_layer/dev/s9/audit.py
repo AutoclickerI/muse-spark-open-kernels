@@ -22,7 +22,7 @@ H = Path(__file__).parent
 sys.path.insert(0, str(R / 'tools'))
 import local_eval  # noqa: E402
 
-CAND = R / 'problems/muse_decode_layer/cand_r3_best7_s9.py'
+CAND = R / 'problems/muse_decode_layer/cand_r3_best7_s14_final.py'
 
 
 def inventory(torch, state, weights):

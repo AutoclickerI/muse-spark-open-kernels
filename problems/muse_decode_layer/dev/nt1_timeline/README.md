@@ -17,7 +17,6 @@ Files (one entry per retained direct file):
 - [check_epilogue_pair.py](check_epilogue_pair.py): Validate changed reduction ownership, delayed atomics, producer handoff and replay epochs.
 - [epib_cell.py](epib_cell.py): Standalone kernel cell used by the retained builders or validation.
 - [epilogue_lab.py.inc](epilogue_lab.py.inc): Device source or payload template used by retained code.
-- [epilogue_queue.json](epilogue_queue.json): Current identity, measurement or validation data consumed by retained code.
 - [epilogue_s14_norm.cell.py](epilogue_s14_norm.cell.py): Standalone kernel cell used by the retained builders or validation.
 - [epilogue_s14_norm.patch](epilogue_s14_norm.patch): Pinned integration patch.
 - [epilogue_s14_pair.cell.py](epilogue_s14_pair.cell.py): Standalone kernel cell used by the retained builders or validation.
@@ -27,7 +26,6 @@ Files (one entry per retained direct file):
 - [epit.cu](epit.cu): Device source or payload template used by retained code.
 - [epit_cell.py](epit_cell.py): Standalone kernel cell used by the retained builders or validation.
 - [epiv_cell.py](epiv_cell.py): Standalone kernel cell used by the retained builders or validation.
-- [force_epilogue.py](force_epilogue.py): Force shipped S14 Hopper attention glue; keep native NT1/NF math and all reference/dispatch checks.
 - [inc.cu](inc.cu): Device source or payload template used by retained code.
 - [patch_s14.py](patch_s14.py): Replace S14's small-M cell with a checked epilogue variant; preserve the complete95/69 map.
 - [reuse.cu](reuse.cu): Device source or payload template used by retained code.
@@ -44,6 +42,8 @@ Files (one entry per retained direct file):
 
 Handoff: [epilogue_s14_pair.patch](epilogue_s14_pair.patch), SHA256 `786a5ecb50cabc7f555f75836d105073958c48507bd21b5f04453827f49c32f5`, applies onto S14 f1c77ce6.
 
-Pending H200 senders: none owned here; follow the consuming lane.
+Pending H200 senders (not judge-accepted at handoff):
+
+- PID 3360739, wrapper `917e79f37f28b5c1`, [lab_moe_nt1_epilogue.py](../../../muse_moe_w4a16/lab/lab_moe_nt1_epilogue.py); [sender log](../../../../runs/detached/917e79f37f28b5c1.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3360739.json`.
 
 Next: Read the reset epilogue batch; reject losses and require paired whole-layer S14 evidence before integration. Evidence: e4ad355e013844f1, 360810b110a44d36.

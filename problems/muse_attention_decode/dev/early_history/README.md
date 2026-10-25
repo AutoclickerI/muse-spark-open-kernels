@@ -6,22 +6,14 @@ Files (one entry per retained direct file):
 
 - [.gitignore](.gitignore): Generated-output exclusions.
 - [README.md](README.md): Current working set and resume instructions.
-- [board_admission.json](board_admission.json): Current identity, measurement or validation data consumed by retained code.
 - [build_lab.py](build_lab.py): One immutable attention candidate with one batched exact-S14 whole-layer history lab.
 - [check.py](check.py): Fresh data, strided producer partials and repeated captured counter reset.
 - [check_lab.py](check_lab.py): Execute the exact batched payload locally with forced Hopper glue and two fresh seeds.
-- [component_validation.json](component_validation.json): Current identity, measurement or validation data consumed by retained code.
-- [forced_admission.json](forced_admission.json): Current identity, measurement or validation data consumed by retained code.
 - [history_build.py](history_build.py): One-tile sliding history, retained before PDL wait; compact shared-memory lifetime.
 - [lab_body.inc](lab_body.inc): Device source or payload template used by retained code.
-- [normal_admission.json](normal_admission.json): Current identity, measurement or validation data consumed by retained code.
 - [patch.py](patch.py): Experimental compact early-history last-CTA on exact S14 final.
-- [payload_admission.json](payload_admission.json): Current identity, measurement or validation data consumed by retained code.
-- [residency.json](residency.json): Current identity, measurement or validation data consumed by retained code.
 - [sass_audit.py](sass_audit.py): Rebuild sm90a artifacts and retain bounded instruction-order/resource evidence.
-- [sass_proof.json](sass_proof.json): Current identity, measurement or validation data consumed by retained code.
 - [screen.py](screen.py): Normal and forced-Hopper whole-layer glue through local_eval, actual compact tile math on sm120.
-- [validation.json](validation.json): Current identity, measurement or validation data consumed by retained code.
 - [out/p5_early_history_board.py](out/p5_early_history_board.py): Muse verify stream portfolio: one paged KV pass per split and KV head.
 - [out/s14_early_history.py](out/s14_early_history.py): Runtime or source-generation dependency.
 

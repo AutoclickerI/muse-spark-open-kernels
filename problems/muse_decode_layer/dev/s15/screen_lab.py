@@ -7,11 +7,9 @@ from pathlib import Path
 
 H=Path(__file__).resolve().parent
 R=H.parents[3]
-sys.path[:0]=[str(H),str(R/'tools'),str(H.parent/'s12')]
+sys.path[:0]=[str(H),str(R/'tools')]
 import local_eval
-import compile_cache
 import local_standins
-compile_cache.install(local_eval)
 forced='--forced' in sys.argv
 original_loader=local_eval.load_module
 records=[]

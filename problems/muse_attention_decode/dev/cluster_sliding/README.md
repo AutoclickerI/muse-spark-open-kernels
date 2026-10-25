@@ -5,7 +5,6 @@ Last-CTA decode-1 sliding handoff plus pending DSM scheduling experiments.
 Files (one entry per retained direct file):
 
 - [.gitignore](.gitignore): Generated-output exclusions.
-- [HANDOFF_LAST.md](HANDOFF_LAST.md): Dependency retained by the live reference graph.
 - [README.md](README.md): Current working set and resume instructions.
 - [build.py](build.py): Generate compact sliding-only, native FP8 attention with cluster/DSM output reduction.
 - [build_attention_board.py](build_attention_board.py): Attention-board validation when every whole-layer host quota is exhausted.
@@ -33,7 +32,6 @@ Files (one entry per retained direct file):
 - [patch_dsm.py](patch_dsm.py): Add public-shape fixed-cluster verify sliding to the qualified B1 sliding and full-verify wins.
 - [patch_last.py](patch_last.py): Build the last-CTA sliding candidate on frozen S11.
 - [s11_last_decode1.patch](s11_last_decode1.patch): Pinned integration patch.
-- [screen_attention.py](screen_attention.py): local_eval with the explicit N64 launch stand-in for the Hopper-only N128 persistent ring.
 - [screen_dsm_lab.py](screen_dsm_lab.py): Run exact wrapper lab and production host through local_eval/audit, including forced host glue.
 - [warp_sliding.cu](warp_sliding.cu): Device source or payload template used by retained code.
 - [out/p5_dsm_board.py](out/p5_dsm_board.py): Muse verify stream portfolio: one paged KV pass per split and KV head.

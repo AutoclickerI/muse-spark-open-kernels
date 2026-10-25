@@ -116,19 +116,3 @@ def install(mod,cold_native):
         return state
     mod.prepare=prepare
     return calls
-
-
-def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--cold-native',action='store_true');args=ap.parse_args()
-    original=local_eval.load_module
-    def load(name,path):
-        mod=original(name,path)
-        if name=='submission':install(mod,args.cold_native)
-        return mod
-    local_eval.load_module=load
-    sys.argv=[sys.argv[0],str(ROOT/'problems/muse_decode_layer/cand_r3_best.py'),'--no-baseline',
-              '--json',str(ROOT/'problems/muse_decode_layer/dev/best_forced_local.json')]
-    local_eval.main()
-
-
-if __name__=='__main__':main()

@@ -5,17 +5,13 @@ Register-fold N128 full-verify stage4 handoff; changed-full host correctness is 
 Files (one entry per retained direct file):
 
 - [.gitignore](.gitignore): Generated-output exclusions.
-- [HANDOFF.md](HANDOFF.md): Dependency retained by the live reference graph.
 - [README.md](README.md): Current working set and resume instructions.
 - [build.py](build.py): Native N128 cached tiles, two KV heads per stream-K CTA, N64 virtual tile and unchanged combine.
-- [build_winner_lab.py](build_winner_lab.py): Official last-CTA candidate validation plus the corrected register-only N128 experiment in prepare.
 - [check_tile.py](check_tile.py): Validate the exact N128 QK/softmax/RS-PV helpers with FP8 data on the portable GPU.
 - [full128.cu](full128.cu): Device source or payload template used by retained code.
 - [patch_full128.py](patch_full128.py): Replace only frozen S11's full-verify native vq8 cell; paired H200 evidence must select the row settings.
 - [s11_regmax_full_verify.patch](s11_regmax_full_verify.patch): Pinned integration patch.
-- [screen_lab.py](screen_lab.py): Normal/forced local_eval audit of the exact wrapped decode lab, with the Hopper-only ring's launch stand-in.
 - [smoke.py](smoke.py): Exercise the exact embedded layer/timeline payload on the portable GPU before H200.
-- [smoke_diag.py](smoke_diag.py): Exercise the exact embedded layer/timeline payload on the portable GPU before H200.
 - [tile.cu.inc](tile.cu.inc): Device source or payload template used by retained code.
 
 Handoff: [s11_regmax_full_verify.patch](s11_regmax_full_verify.patch), SHA256 `ca730e6102aa245709f908f56fe7d4df2d527e51b79ad54e9e8ae45e78ed2a76`, applies onto S11 acda6c62.

@@ -29,3 +29,7 @@ runs/detached/
 /problems/*/dev/local_*.json
 /problems/*/dev/verify_*.json
 /problems/*/dev/upstream_sync/
+
+# Per-run profile duplicates; canonical judge receipts remain in runs/.
+/problems/*/profiles/
+/problems/*/lab/profiles/

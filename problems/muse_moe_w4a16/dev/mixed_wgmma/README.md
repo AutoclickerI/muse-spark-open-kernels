@@ -10,7 +10,6 @@ Files (one entry per retained direct file):
 - [engine.py](engine.py): Grouped NVFP4/BF16 RS WGMMA.
 - [pipeline.cu](pipeline.cu): Device source or payload template used by retained code.
 - [pipeline.py](pipeline.py): Deeper packed Q/SF/X async ring with overlapping register-A groups and split-K.
-- [prefill_driver.py.inc](prefill_driver.py.inc): Device source or payload template used by retained code.
 - [m128/.gitignore](m128/.gitignore): Generated-output exclusions.
 - [branches/README.md](branches/README.md): Dependency working set and resume instructions.
 - [m128/phase_mix/README.md](m128/phase_mix/README.md): Dependency working set and resume instructions.

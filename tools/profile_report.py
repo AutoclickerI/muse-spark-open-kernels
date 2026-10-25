@@ -121,13 +121,15 @@ def classify(us, work, calls=1):
 
 
 def read_profile(receipt):
-    job = receipt['id']
-    stored = (receipt.get('profile') or {}).get('json')
-    paths = ([(ROOT / stored).resolve()] if stored else []) + list((ROOT/'problems'/receipt['board']/'profiles').glob(f'*.{job}.json')) + list((ROOT/'runs/calibration/profiles').glob(f'*.{job}.json'))
-    for p in paths:
-        if p.is_file():
-            return p.resolve(), json.loads(p.read_text())
-    return None, None
+    """The canonical receipt contains the same profile records as okc's duplicate files."""
+    paths = list((ROOT / 'runs' / receipt['board']).glob('*_' + receipt['id'] + '.json'))
+    if len(paths) != 1:
+        raise ValueError(f"{receipt['id']}: expected exactly one saved receipt")
+    records = receipt['result'].get('records', [])
+    profiles = [record for record in records if record.get('event') == 'profile']
+    if not profiles:
+        return None, None
+    return paths[0], dict(profiles=profiles)
 
 
 def receipts(problem):
@@ -142,14 +144,11 @@ def receipts(problem):
 
 
 def source_path(j):
-    _, p = read_profile(j)
-    if p and p.get('submission'):
-        return p['submission']
     for line in reversed((ROOT / 'runs/ledger.jsonl').read_text().splitlines()):
         entry = json.loads(line)
-        if entry.get('job') == j['id'] and entry.get('file'):
+        if entry.get('job') == j['id']:
             return entry['file']
-    return j.get('payload_ref', '')
+    raise ValueError(f"{j['id']}: receipt has no ledger source identity")
 
 
 def choose(problem):
