@@ -68,7 +68,7 @@ def lab(deadline, weights, state):
             ns[name]['_s4_prepare_banks'](st, weights)
             bank_states[code] = st
         states[name] = bank_states[code]
-    results, incomplete = {}, []
+    results, seed_times, incomplete = {}, {}, []
     for key in AB_CASES:
         if time.monotonic() > deadline - 6:
             incomplete.append(ab_label(key));continue
@@ -101,7 +101,9 @@ def lab(deadline, weights, state):
                 if name != 'A' and (reason := ab_gate(output, graphs['A'][1])):gates.setdefault(name, reason)
             times = ab_time(graphs, AB_ROUNDS)
             per_seed.append({name: statistics.mean(values) for name, values in times.items()})
-        if per_seed:results[key] = (ab_summary(per_seed), gates)
+        if per_seed:
+            results[key] = (ab_summary(per_seed), gates)
+            seed_times[key] = per_seed
         for name, (ratio, se, delta, a_us, count) in sorted(results.get(key, ({}, {}))[0].items()):
             lines.append(f'L {ab_label(key)} {name} r={ratio:.4f} se={se:.4f} d={delta:+.2f} A={a_us:.1f} n={count}'
                          + (f' FAIL {gates[name]}' if name in gates else ''))
@@ -112,6 +114,12 @@ def lab(deadline, weights, state):
     for (b, q), load in AB_LOADS.items():
         keys = [(b, q, 2048), (b, q, 0)]
         if not all(k in results for k in keys):continue
+        aa = []
+        for left, right in zip(*(seed_times[k] for k in keys)):
+            aa.append((46 * left['A2'] + 16 * right['A2']) / (46 * left['A'] + 16 * right['A']))
+        aa_se = statistics.stdev(aa) / math.sqrt(len(aa)) if len(aa) > 1 else float('nan')
+        lines.append(f'AA {load} mean={statistics.mean(aa):.6f} lo={min(aa):.6f} hi={max(aa):.6f} '
+                     f'se={aa_se:.6f} n={len(aa)}')
         for name in ['A2'] + list(S12_VARIANTS):
             if all(name not in results[k][0] for k in keys):continue
             rows = [results[k][0].get(name, (1., 0., 0., results[k][0]['A2'][3], 0)) for k in keys]

@@ -28,13 +28,19 @@ def main():
     complete = receipt['result'].get('passed') and 'END shapes=12/12' in log and not failures and not short
     active = set(manifest['arms']['S11']['active_tokens'])
     unchanged = [load for load in loads if int(load.split()[1]) * (8 if load.startswith('verify') else 1) not in active]
-    all_win = complete and all(loads[load].get('S11', 0) > 1 for load in loads) and not unchanged
+    noise = {load: dict(mean=float(mean), lo=float(lo), hi=float(hi), se=float(se), n=int(n))
+             for load, mean, lo, hi, se, n in re.findall(
+                 r'^AA ((?:decode|verify) \d+) mean=([\d.]+) lo=([\d.]+) hi=([\d.]+) se=([\d.]+) n=(\d+)$', log, re.M)}
+    controls_pass = all(load in noise and noise[load]['n'] == 16 and
+                        loads[load].get('S11', 0) >= min(1., noise[load]['lo']) for load in unchanged)
+    changed_win = all(loads[load].get('S11', 0) > 1 for load in loads if load not in unchanged)
     piece_losses = {load: {arm: ratio for arm, ratio in values.items() if arm not in ('S11', 'A2') and ratio <= 1}
                     for load, values in loads.items()}
     piece_losses = {load: values for load, values in piece_losses.items() if values}
     report = dict(job=receipt['id'], source_sha256=manifest['host_sha256'], complete=bool(complete),
         loads=loads, unchanged_control_loads=unchanged, failures=failures, short_seeds=short,
-        piece_losses=piece_losses, strict_freeze_gate=bool(all_win and not piece_losses))
+        A_A_spread=noise, controls_pass=controls_pass, changed_loads_win=changed_win,
+        piece_losses=piece_losses, freeze_gate=bool(complete and controls_pass and changed_win and not piece_losses))
     if all('S11' in row for row in loads.values()):
         report['six_load_S11_over_S12'] = math.exp(sum(math.log(row['S11']) for row in loads.values()) / 6)
     (H / (receipt['id'][:8] + '_report.json')).write_text(json.dumps(report, indent=2) + '\n')

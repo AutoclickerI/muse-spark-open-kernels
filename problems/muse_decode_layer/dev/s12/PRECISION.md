@@ -2,8 +2,11 @@
 
 `audit.py` runs `tools/local_eval.py` through S9's dispatch audit, recursively inventories the complete retained
 state (including adapter objects and closures), and independently decodes every coded dense bank bit-for-bit.
-`normal/precision_inventory.json` records all 78 tensors of candidate `7d4216dd`; the forced screen adds the
-Hopper adapter layouts. Aliases are marked rather than counted as different encodings.
+`normal/precision_inventory.json` records all 78 tensors of candidate `7d4216dd`;
+`forced/precision_inventory.json` records 118, including Hopper adapter layouts. Both full screens pass
+13 tests, 12 scored-shape graph captures, and 23 static checks. Aliases are marked rather than counted as
+different encodings. Humming's global weight_scale_2 tensors remain FP32, its weight_scale tensors remain
+E4M3, and its int32 words hold packed E2M1 nibbles. CPU int64 kernel configurations are launch metadata.
 
 | State tensors | Contents and precision |
 |---|---|

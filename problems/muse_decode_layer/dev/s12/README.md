@@ -22,14 +22,27 @@ Incoming pieces:
 Whole-layer protocol: 16 seeds x 8 rotating rounds; cold L2 before every replay; A:A; each piece removed;
 all S11 back. Promotion requires complete normal/forced local screens, precision inventory, all 12 H200
 shapes and six weighted loads, no failed correctness arm, S12 better than S11 at every load, no losing piece.
-If the fixed pieces leave an unchanged load, its S11 arm is an A:A control, not evidence of a speedup.
+Orchestrator's clarified promotion gate: unchanged decode-16/32 must have no regression beyond measured A:A
+spread; every changed load and every retained piece at each affected load must win. The lab reports A:A's
+16-seed whole-load min/max and SE explicitly. An unchanged load is a control, not evidence of a speedup.
 
 Current candidate: `cand_r3_best7_s12.py` **7d4216dd**, three frozen patch snapshots in this directory. The
 dense lane fixed its original pointer-keyed global code bank: the admitted patch ccb512c3 stores codes in state,
 so judge tensor clones retain valid weights. Gate split bypasses coded qkv at T=1; pool_router still runs coded
 there, while T=8 uses both coded roles. The first (coded-only) local attempt exhausted GPU0 memory amid concurrent
 lane screens and was discarded. The assembled candidate passed normal 13 tests and 12 graph captures;
-all 23 static checks pass. Forced screen is pending. [Precision audit](PRECISION.md).
+all 23 static checks pass. Forced also passes 13 tests, 12 graph captures and 23 static checks, with 118 retained
+tensors inventoried. [Precision audit](PRECISION.md). The first complete local A/B wrapper passes 13 tests,
+all 12 shapes at 16 seeds x8 rounds, no correctness gates failed, and 23 static checks. Its sm120 ratios are
+not H200 evidence. The final wrapper adds explicit A:A load-spread lines for the clarified promotion gate.
+
+`patch.py` is the aggregate repository handoff: asserts exact **acda6c62**, composes the hash-pinned snapshots,
+and returns **7d4216dd**. `build.py --without <name>` generates a piece's removal; the A/B manifest pins each
+arm's complete source hash. The source and builders were committed/pushed in **99f1ede**; no freeze yet.
+
+Coded cleanup H200 **3239a2ea** confirms scope (qkv -0.96/-0.44 us, pool_router -2.33/-1.07 at T1/8).
+Small-M **17512d86** RND/ROT lose; S11 flags stay {1:95, 8/16/32:69}. Verify-dense **f65e843f** is a screen,
+not admitted to S12. No co-residency patch is applied.
 
 Local wrapper admission found a fixture-generator issue before sending: the candidate's embedded public
 `_ap_generate_input` calls FA3's Hopper scheduler for full decode inputs even on sm120. The lab now does what
