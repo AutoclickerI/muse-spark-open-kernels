@@ -1,7 +1,64 @@
 # P3a small-M MoE: current work
 
 Base S14 final `f1c77ce6`; flags `{1:95,8:69,16:69,32:69}`. No new kernel promoted.
-The reset batch is unchanged. Its result is not required to send the independent second batch.
+Three independent payloads are queued for the reset; all performance conclusions await H200 receipts.
+
+## Pipe identification and conditional rebuilds
+
+[PIPE.md](PIPE.md) gives the per-pipe SASS counts, nominal limits, Little's-law model and diagnostic design.
+The old 58.7 us math/activation clock belongs to ONCE, not S14. The diagnostic measures matched S14
+phase clocks before comparing schedules. Static counts alone have not identified the H200 bound.
+
+`prof/lab/moe_nt1_pipe.py` **d5319603** is queued on MoE: sender **1805785**, wrapper
+**875038058dfb252d**, priority **1.2**, not before **1792972800** (2026-10-26 09:00 KST).
+`pipe_queue.json` pins the wrapper and unchanged earlier senders. No judge job ID exists yet.
+It pairs exact S14 flags69 with a spill-free math-removed cell at M8/16/32, measures matched phases,
+and isolates cold/L2/shared math, load depth, warp occupancy, MMA chains and extra-block activation
+gathers. It measures 36 KiB TMA completion under load and reports Little's-law coverage.
+All 96 pipe probes, 66 work rows and six latency rows survive the output cap in a lossless packed
+record. After `h200_lab.py read <job>`, `read_pipe.py runs/<receipt>.json` prints the complete matrix.
+
+Four unsent responses are built against S14 and preserve its M1 path:
+
+| Arm | Cell SHA256[:8] | Change | Send after reset only if |
+|---|---|---|---|
+| FLIGHT | `db750fa3` | Bulk L2 prefetch beyond the two raw stages | Cold/hot and depth contrasts isolate insufficient weight flight |
+| ILP | `809bef8e` | Two independent MMA accumulator chains | Shared-only math gains with independent chains, without a saturated pipe |
+| K16/r64 | `32d2d058` | K256/warp, 16 warps/CTA, timed shared B cache, two H200 CTAs/SM | Work-normalized shared math gains at 32 versus 16 active warps |
+| LUT | `95d67b20` | FP4 code-pair lookup; timed scale HMUL2 unchanged | Integer/PRMT reaches its measured limit while projected shared/PRMT service has headroom |
+
+If shared gather or epilogue serialization dominates, use the already-queued PAIR/TREE results.
+If no contrast isolates a limit, send none of these as a claimed fix. A selected cell still needs a
+paired kernel win and integration's many-seed whole-layer pair. `pipe_ready_manifest.json` pins all
+candidate, cell and patch hashes, S14 base and full flag map. `patch_s14.py --kind <arm> -o <file>`
+reproduces each verified patch; all four apply cleanly onto S14 `f1c77ce6`.
+
+The follow-up payload is already built: `prof/lab/moe_nt1_pipe_rebuild.py` **caa59593**, **unsent**.
+It packs all four arms with exact S14, 32 seeds at each M, ABBA read flush, A:A, native TASK gates
+before/after, consumer nodes and unique-byte rates. Decision: send this one batch when the diagnostic
+isolates a bound supported by an arm in the table; otherwise hold it. Its exact payload passed all
+32 local seeds and 192 K16 forced ABI calls (`pipe_rebuild_validation.json`), in 51.5 s with warm builds.
+`build_pipe_rebuild_lab.py` and `run_pipe_rebuild_local.py` reproduce it. No new payload assembly is
+needed after the diagnostic receipt. Local ratios are retained as local evidence only.
+
+Verification: each cell passed **528 component checks + six forced ABI launches**; each normal and
+forced whole-layer screen passed **13 cases, 12 dispatch shapes and 25 static checks** through
+`tools/local_eval.py` in the judge image. Worst TASK L2 is .0024375. K16's H200 two-stage shared size
+exceeds local sm120 capacity, so an explicit test-only one-stage native-math stand-in checks its glue;
+Hopper-only attention glue also uses the existing stand-ins. The original two-stage K16 is compiled
+sm90a and has 64 registers, 16-byte stack, zero spills, and room for two CTAs/SM at M32.
+LUT's independent full-bank proof covers 1,610,612,736 weights plus all scale codes (`pipe_lut_proof.json`).
+
+The final diagnostic passed all 16 local seeds, eight phase seeds per M, four microkernel seeds per M,
+and all 96 pipe probes (`pipe_lab_validation.json`). Its D4 copy uses an explicit local D2 stand-in
+for 36 ABI launches; native D4 compiles sm90a. The packed local result is 5,832 characters, below the
+9,000-character wrapper cap. Native audits check seven full images and 14 math/copy specializations;
+PDIA retains activation/weight loads with zero HMMA/HMUL2, 120 registers and zero spills.
+
+Recovery after the disk-full interruption: all source/JSON files parse, the pre-interruption component
+and whole-layer receipts match current hashes, and the exact final payload was rerun after fixing
+PDIA spills and receipt truncation. Nothing from the interrupted attempt had been committed or queued
+for this diagnostic. Only the newly verified payload was sent; both earlier reset wrappers are byte-exact.
 
 ## Reset queue (unchanged)
 

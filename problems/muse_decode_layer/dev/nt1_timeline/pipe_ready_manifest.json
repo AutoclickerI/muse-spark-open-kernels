@@ -1,0 +1,146 @@
+{
+  "flight": {
+    "kind": "flight",
+    "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+    "candidate_sha256": "4bbb4c9dacbdb6bf4d7b16fe55542bc7fd60cb1f6b82b88f02175989befc6c19",
+    "cell_sha256": "db750fa3af490563a262877885ed74ef3592a9523d13417169f72040b496979c",
+    "patch_sha256": "b2f460382eb69341815834087692731ca23972a57ce5179ad1db5334f8a35238",
+    "flag_map": {
+      "1": 95,
+      "8": 69,
+      "16": 69,
+      "32": 69
+    },
+    "promoted": false,
+    "cell_path": "problems/muse_decode_layer/dev/nt1_timeline/pfly_cell.py",
+    "candidate_path": "runs/screen/nt1_pipe_flight.py",
+    "patch_path": "runs/screen/nt1_pipe_flight.patch",
+    "screen_counts": {
+      "normal": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "forced": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      }
+    },
+    "component": {
+      "checks": 528,
+      "worst_task_l2": 0.0024374923668801785,
+      "max_rel_vs_inc": 8.394819451496005e-05,
+      "forced_glue": 6,
+      "cell_sha256": "db750fa3af490563a262877885ed74ef3592a9523d13417169f72040b496979c"
+    }
+  },
+  "ilp": {
+    "kind": "ilp",
+    "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+    "candidate_sha256": "f71a020685ab1f33e91e2cf1694e951fa1fea716ddf5d3c480258fd68177468d",
+    "cell_sha256": "809bef8e6721f2ac7dd873349edca127cc9547c4f008e2adca1d707fa32efc1c",
+    "patch_sha256": "b55c2970a7737c3708b0e5f251ab24b31ef1888bdae55f812c8e155d9eac230d",
+    "flag_map": {
+      "1": 95,
+      "8": 69,
+      "16": 69,
+      "32": 69
+    },
+    "promoted": false,
+    "cell_path": "problems/muse_decode_layer/dev/nt1_timeline/pilp_cell.py",
+    "candidate_path": "runs/screen/nt1_pipe_ilp.py",
+    "patch_path": "runs/screen/nt1_pipe_ilp.patch",
+    "screen_counts": {
+      "normal": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "forced": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      }
+    },
+    "component": {
+      "checks": 528,
+      "worst_task_l2": 0.0024374923668801785,
+      "max_rel_vs_inc": 0.00042559579014778137,
+      "forced_glue": 6,
+      "cell_sha256": "809bef8e6721f2ac7dd873349edca127cc9547c4f008e2adca1d707fa32efc1c"
+    }
+  },
+  "k16": {
+    "kind": "k16",
+    "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+    "candidate_sha256": "859835856ea5e6c5f8de6c5fcfb67343f13820962287ebe20824e73aceb022a0",
+    "cell_sha256": "32d2d058e918c10b62845a83ba25257f50c22f9bd3a369bf56054da8c57f5637",
+    "patch_sha256": "f37c5990db8843278aaabb0a60d1919065f848d3e6fba5d9ed12bce6f5d70318",
+    "flag_map": {
+      "1": 95,
+      "8": 69,
+      "16": 69,
+      "32": 69
+    },
+    "promoted": false,
+    "cell_path": "problems/muse_decode_layer/dev/nt1_timeline/pk16_cell.py",
+    "candidate_path": "runs/screen/nt1_pipe_k16.py",
+    "patch_path": "runs/screen/nt1_pipe_k16.patch",
+    "screen_counts": {
+      "normal": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "forced": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      }
+    },
+    "component": {
+      "checks": 528,
+      "worst_task_l2": 0.0024374923668801785,
+      "max_rel_vs_inc": 0.0003523061750456691,
+      "forced_glue": 6,
+      "cell_sha256": "32d2d058e918c10b62845a83ba25257f50c22f9bd3a369bf56054da8c57f5637"
+    }
+  },
+  "lut": {
+    "kind": "lut",
+    "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+    "candidate_sha256": "b1537afd7d36e9cebae0ee74135b429014d949ae8f55be81acbb8d6cecdab012",
+    "cell_sha256": "95d67b20eb0d27383e49c8fcc995b6372bb8ec7e9dded108ee49aa6eab0f182a",
+    "patch_sha256": "2378f8593f4f76fd00530e960904942fe250718b890d518ac0e09a52ecbefe3a",
+    "flag_map": {
+      "1": 95,
+      "8": 69,
+      "16": 69,
+      "32": 69
+    },
+    "promoted": false,
+    "cell_path": "problems/muse_decode_layer/dev/nt1_timeline/plut_cell.py",
+    "candidate_path": "runs/screen/nt1_pipe_lut.py",
+    "patch_path": "runs/screen/nt1_pipe_lut.patch",
+    "screen_counts": {
+      "normal": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "forced": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      }
+    },
+    "component": {
+      "checks": 528,
+      "worst_task_l2": 0.0024374923668801785,
+      "max_rel_vs_inc": 8.394819451496005e-05,
+      "forced_glue": 6,
+      "cell_sha256": "95d67b20eb0d27383e49c8fcc995b6372bb8ec7e9dded108ee49aa6eab0f182a"
+    }
+  }
+}

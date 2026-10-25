@@ -1,0 +1,208 @@
+{
+  "base": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "clock_assumed_GHz": 1.98,
+  "cycles_per_unique_group_at4TBs": 18.81792,
+  "rows": [
+    {
+      "class_": "integer_L0",
+      "per_requested16": 17.583333333333332,
+      "per_unique16": {
+        "8": 17.583333333333332,
+        "16": 21.1172385620915,
+        "32": 27.966594827586203
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 2,
+      "budget_at_4TBs": 37.63584,
+      "load_M32_at_target": 0.7430841141737823,
+      "caveat": "64 scalar integer results/SM/clock;LEA/LOP3/SHF routing is an operational grouping,not a published SASS port map"
+    },
+    {
+      "class_": "FP32_epi",
+      "per_requested16": 0.4791666666666667,
+      "per_unique16": {
+        "8": 0.4791666666666667,
+        "16": 0.5754697712418301,
+        "32": 0.7621228448275862
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 4,
+      "budget_at_4TBs": 75.27168,
+      "load_M32_at_target": 0.010124961271325233,
+      "caveat": "normal finite-path epilogue arithmetic;rare divide helper excluded"
+    },
+    {
+      "class_": "SFU_epi",
+      "per_requested16": 0.020833333333333332,
+      "per_unique16": {
+        "8": 0.020833333333333332,
+        "16": 0.025020424836601305,
+        "32": 0.033135775862068964
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 0.5,
+      "budget_at_4TBs": 9.40896,
+      "load_M32_at_target": 0.0035217256595913857,
+      "caveat": "16 scalar results/SM/clock"
+    },
+    {
+      "class_": "F2FP_BF16_epi",
+      "per_requested16": 0.010416666666666666,
+      "per_unique16": {
+        "8": 0.010416666666666666,
+        "16": 0.012510212418300653,
+        "32": 0.016567887931034482
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 0.25,
+      "budget_at_4TBs": 4.70448,
+      "load_M32_at_target": 0.0035217256595913857,
+      "caveat": "Packed two-result conversion conservatively charged against16 scalar conversions/SM/clock;not a published SASS-port rate"
+    },
+    {
+      "class_": "SHFL_epi",
+      "per_requested16": 0.041666666666666664,
+      "per_unique16": {
+        "8": 0.041666666666666664,
+        "16": 0.05004084967320261,
+        "32": 0.06627155172413793
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 1,
+      "budget_at_4TBs": 18.81792,
+      "load_M32_at_target": 0.0035217256595913857,
+      "caveat": "32 scalar results/SM/clock"
+    },
+    {
+      "class_": "PRMT",
+      "per_requested16": 1.0,
+      "per_unique16": {
+        "8": 1.0,
+        "16": 1.2009803921568627,
+        "32": 1.5905172413793103
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": null,
+      "budget_at_4TBs": null,
+      "load_M32_at_target": null,
+      "caveat": "No public same-op H200 throughput limit;lab measures independent and dependent chains"
+    },
+    {
+      "class_": "HMUL2_BF16",
+      "per_requested16": 8.0,
+      "per_unique16": {
+        "8": 8.0,
+        "16": 9.607843137254902,
+        "32": 12.724137931034482
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 4,
+      "budget_at_4TBs": 75.27168,
+      "load_M32_at_target": 0.1690428316603865,
+      "caveat": "NVIDIA f16x2 table gives128 packed results;BF16-specific effective rate measured"
+    },
+    {
+      "class_": "HMMA16816",
+      "per_requested16": 2.0,
+      "per_unique16": {
+        "8": 2.0,
+        "16": 2.4019607843137254,
+        "32": 3.1810344827586206
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 1,
+      "budget_at_4TBs": 18.81792,
+      "load_M32_at_target": 0.1690428316603865,
+      "caveat": "Dense BF16 TC upper bound4096FLOP/SM/clock /4096FLOP per instruction;mma.sync effective rate measured,not WGMMA peak assumed"
+    },
+    {
+      "class_": "LDS128_weight_and_scale",
+      "per_requested16": 0.5625,
+      "per_unique16": {
+        "8": 0.5625,
+        "16": 0.6755514705882353,
+        "32": 0.894665948275862
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 0.25,
+      "budget_at_4TBs": 4.70448,
+      "load_M32_at_target": 0.1901731856179348,
+      "caveat": "512 bytes/full warp instruction,128B/SM/clock shared-bank envelope"
+    },
+    {
+      "class_": "shared_bank_service_bytes_total",
+      "per_requested16": 448.0,
+      "per_unique16": {
+        "8": 448.0,
+        "16": 538.0392156862745,
+        "32": 712.551724137931
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": 128,
+      "budget_at_4TBs": 2408.69376,
+      "load_M32_at_target": 0.2958249554056764,
+      "caveat": "288 weight/scale bytes+128 bank-service reduction bytes+32 partial-store bytes per requested group;address model"
+    },
+    {
+      "class_": "activation_LDG128_fill",
+      "per_requested16": 1.0,
+      "per_unique16": {
+        "8": 1.0,
+        "16": 1.2009803921568627,
+        "32": 1.5905172413793103
+      },
+      "max_warp_instr_or_bytes_per_SM_cycle": null,
+      "budget_at_4TBs": null,
+      "load_M32_at_target": null,
+      "caveat": "Per segment,divide byrun length;512B/fullwarp load. Not part of457-instruction math marker"
+    }
+  ],
+  "rhos_from_local32seeds": {
+    "8": 1.0,
+    "16": 1.2009803921568627,
+    "32": 1.5905172413793103
+  },
+  "little_law": {
+    "stage_bytes": 36864,
+    "capacity_2CTA_2stages_B": 147456,
+    "one_active_consumed_slot_excluded_lookahead_B": 73728,
+    "target_unique_B_per_SM_us": 30303.030303030304,
+    "latency_supported_by_lookahead_us": 2.433024,
+    "M32_all_reloads_cold_latency_supported_us": 1.5297061463414634,
+    "illustrative_not_measured_H200": [
+      {
+        "latency_us_assumed": 0.25,
+        "unique_4TB_required_B_per_SM": 7575.757575757576,
+        "M32_all_reloads_cold_required_B_per_SM": 12049.37304075235
+      },
+      {
+        "latency_us_assumed": 0.5,
+        "unique_4TB_required_B_per_SM": 15151.515151515152,
+        "M32_all_reloads_cold_required_B_per_SM": 24098.7460815047
+      },
+      {
+        "latency_us_assumed": 0.75,
+        "unique_4TB_required_B_per_SM": 22727.272727272728,
+        "M32_all_reloads_cold_required_B_per_SM": 36148.119122257056
+      },
+      {
+        "latency_us_assumed": 1.0,
+        "unique_4TB_required_B_per_SM": 30303.030303030304,
+        "M32_all_reloads_cold_required_B_per_SM": 48197.4921630094
+      },
+      {
+        "latency_us_assumed": 1.5,
+        "unique_4TB_required_B_per_SM": 45454.545454545456,
+        "M32_all_reloads_cold_required_B_per_SM": 72296.23824451411
+      },
+      {
+        "latency_us_assumed": 2.0,
+        "unique_4TB_required_B_per_SM": 60606.06060606061,
+        "M32_all_reloads_cold_required_B_per_SM": 96394.9843260188
+      }
+    ],
+    "measured_H200_latency": null
+  },
+  "limits": [
+    "58.7us is ONCE math/activation;S14 instruction normalization is a different schedule",
+    "Integer,PRMT,FP32,BF16,LSU pipelines may share execution resources;isolated peak loads cannot simply be added",
+    "Published math limits are upper envelopes,not empirical same-SASS opcode limits",
+    "Stage capacity is not a measured time-average outstanding count;the lab varies depth and measures TMA completion underload",
+    "Repeated block factor is logical TMA traffic;L2 hits mean it is not the HBM byte multiplier"
+  ],
+  "primary_sources": [
+    "https://docs.nvidia.com/cuda/archive/13.0.0/cuda-c-best-practices-guide/index.html#arithmetic-instructions",
+    "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html#shared-memory-5",
+    "https://arxiv.org/html/2501.12084v2"
+  ]
+}

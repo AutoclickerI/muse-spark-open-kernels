@@ -1,0 +1,2506 @@
+{
+  "flight": {
+    "normal": {
+      "sha256": "4bbb4c9dacbdb6bf4d7b16fe55542bc7fd60cb1f6b82b88f02175989befc6c19",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.013801839028019458,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0039199989987537265,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.00956374901579693,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.02377321699168533,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.031605158001184464,
+          "ok": true,
+          "msg": "update relative L2 error 3.325e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.418e-03 (worst row 2.992e-03) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.03654260095208883,
+          "ok": true,
+          "msg": "update relative L2 error 3.422e-03 (worst row 3.694e-03) [bound 0.150]; attention input relative L2 error 3.075e-03 (worst row 3.429e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.012105754984077066,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.010592871985863894,
+          "ok": true,
+          "msg": "update relative L2 error 3.388e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.963e-03 (worst row 3.274e-03) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.010413555020932108,
+          "ok": true,
+          "msg": "update relative L2 error 3.357e-03 (worst row 3.657e-03) [bound 0.150]; attention input relative L2 error 2.788e-03 (worst row 3.078e-03) [bound 0.135]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.008811349980533123,
+          "ok": true,
+          "msg": "update relative L2 error 3.437e-03 (worst row 3.665e-03) [bound 0.150]; attention input relative L2 error 3.046e-03 (worst row 3.334e-03) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.0025800549774430692,
+          "ok": true,
+          "msg": "update relative L2 error 5.441e-03 (worst row 5.441e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.006624634028412402,
+          "ok": true,
+          "msg": "update relative L2 error 3.458e-03 (worst row 3.623e-03) [bound 0.150]; attention input relative L2 error 3.070e-03 (worst row 3.361e-03) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.002939093974418938,
+          "ok": true,
+          "msg": "update relative L2 error 6.657e-03 (worst row 8.841e-03) [bound 0.150]; attention input relative L2 error 4.814e-03 (worst row 6.320e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 157.69599517807364,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 173.88799926266074,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 267.77599891647696,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 567.2959997318685,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 399.856002535671,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 3205.1199986599386,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 292.8639962337911,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 346.86400135979056,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 570.4000010155141,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 858.1600203178823,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 2405.8879925869405,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 3365.888030733913,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PFLY_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ]
+    },
+    "forced": {
+      "sha256": "4bbb4c9dacbdb6bf4d7b16fe55542bc7fd60cb1f6b82b88f02175989befc6c19",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.013025902968365699,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.002050669048912823,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.0017689119558781385,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.018993954989127815,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.0216916169738397,
+          "ok": true,
+          "msg": "update relative L2 error 6.547e-02 (worst row 9.872e-02) [bound 0.150]; attention input relative L2 error 3.456e-02 (worst row 5.136e-02) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.03216053801588714,
+          "ok": true,
+          "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.870e-02) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.015770160011015832,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.0053405179642140865,
+          "ok": true,
+          "msg": "update relative L2 error 7.540e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.112e-02 (worst row 6.990e-02) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.0076584440539591014,
+          "ok": true,
+          "msg": "update relative L2 error 8.249e-02 (worst row 9.637e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.016e-02) [bound 0.136]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.004316039965488017,
+          "ok": true,
+          "msg": "update relative L2 error 6.472e-02 (worst row 9.080e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.502e-02) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.0011222779867239296,
+          "ok": true,
+          "msg": "update relative L2 error 5.442e-03 (worst row 5.442e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.0057476459769532084,
+          "ok": true,
+          "msg": "update relative L2 error 6.003e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.066e-02 (worst row 5.827e-02) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.00127669598441571,
+          "ok": true,
+          "msg": "update relative L2 error 6.636e-03 (worst row 8.842e-03) [bound 0.150]; attention input relative L2 error 4.803e-03 (worst row 6.331e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 155.1200016401708,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 176.3999997638166,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 291.8400033377111,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 551.4239980839193,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 346.62398835644126,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 3393.023998942226,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 304.12800749763846,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 358.383999671787,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 577.5680257938802,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 847.9039981029928,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 1187.3280121944845,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 2430.4960086010396,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PFLY_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ],
+      "coverage": {
+        "native_math_calls": {
+          "NT1:1": {
+            "eager": 11,
+            "captured": 3
+          },
+          "NT1:16": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NT1:32": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NT1:8": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NF:128": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NF:256": {
+            "eager": 8,
+            "captured": 3
+          }
+        },
+        "attention_standins": {
+          "attn_main": 133,
+          "xqa": 1392
+        }
+      }
+    }
+  },
+  "ilp": {
+    "normal": {
+      "sha256": "f71a020685ab1f33e91e2cf1694e951fa1fea716ddf5d3c480258fd68177468d",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.014670850010588765,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0026080060051754117,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.007373952015768737,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.01570386701496318,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.03299850400071591,
+          "ok": true,
+          "msg": "update relative L2 error 3.325e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.418e-03 (worst row 2.992e-03) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.026786941045429558,
+          "ok": true,
+          "msg": "update relative L2 error 3.422e-03 (worst row 3.694e-03) [bound 0.150]; attention input relative L2 error 3.075e-03 (worst row 3.429e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.009852588002104312,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.009116152010392398,
+          "ok": true,
+          "msg": "update relative L2 error 3.388e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.964e-03 (worst row 3.274e-03) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.013958972005639225,
+          "ok": true,
+          "msg": "update relative L2 error 3.357e-03 (worst row 3.657e-03) [bound 0.150]; attention input relative L2 error 2.790e-03 (worst row 3.086e-03) [bound 0.135]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.006223110016435385,
+          "ok": true,
+          "msg": "update relative L2 error 3.437e-03 (worst row 3.665e-03) [bound 0.150]; attention input relative L2 error 3.046e-03 (worst row 3.334e-03) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.005746359995100647,
+          "ok": true,
+          "msg": "update relative L2 error 5.441e-03 (worst row 5.441e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.004801731032785028,
+          "ok": true,
+          "msg": "update relative L2 error 3.457e-03 (worst row 3.623e-03) [bound 0.150]; attention input relative L2 error 3.070e-03 (worst row 3.361e-03) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.004890704003628343,
+          "ok": true,
+          "msg": "update relative L2 error 6.658e-03 (worst row 8.841e-03) [bound 0.150]; attention input relative L2 error 4.815e-03 (worst row 6.320e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 147.4560066126287,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 174.08000072464347,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 270.8480074070394,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 561.152012553066,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 338.94400438293815,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 3328.5121037624776,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 295.93600472435355,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 332.80000230297446,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 567.3280074261129,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 849.9520136974752,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 1153.023989405483,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 1706.0000016354024,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PILP_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ]
+    },
+    "forced": {
+      "sha256": "f71a020685ab1f33e91e2cf1694e951fa1fea716ddf5d3c480258fd68177468d",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.010888335993513465,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0008644419722259045,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.001052836945746094,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.028016648953780532,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.03187330800574273,
+          "ok": true,
+          "msg": "update relative L2 error 6.547e-02 (worst row 9.872e-02) [bound 0.150]; attention input relative L2 error 3.456e-02 (worst row 5.136e-02) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.023940893006511033,
+          "ok": true,
+          "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.870e-02) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.01522069500060752,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.008053908008150756,
+          "ok": true,
+          "msg": "update relative L2 error 7.540e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.112e-02 (worst row 6.990e-02) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.007931269996333867,
+          "ok": true,
+          "msg": "update relative L2 error 8.249e-02 (worst row 9.637e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.013e-02) [bound 0.136]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.0065127069829031825,
+          "ok": true,
+          "msg": "update relative L2 error 6.472e-02 (worst row 9.080e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.502e-02) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.0008887189906090498,
+          "ok": true,
+          "msg": "update relative L2 error 5.441e-03 (worst row 5.441e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.008159952994901687,
+          "ok": true,
+          "msg": "update relative L2 error 6.003e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.066e-02 (worst row 5.827e-02) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.0032145970035344362,
+          "ok": true,
+          "msg": "update relative L2 error 6.637e-03 (worst row 8.845e-03) [bound 0.150]; attention input relative L2 error 4.803e-03 (worst row 6.335e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 155.26400646194816,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 181.05600168928504,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 278.5440101288259,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 670.7199825905263,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 1013.7600167654455,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 2744.8159768246114,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 314.3519922159612,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 355.2799983881414,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 626.5759780071676,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 849.9520136974752,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 3492.8800179623067,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 3056.1440302990377,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PILP_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ],
+      "coverage": {
+        "native_math_calls": {
+          "NT1:1": {
+            "eager": 11,
+            "captured": 3
+          },
+          "NT1:16": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NT1:32": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NT1:8": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NF:128": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NF:256": {
+            "eager": 8,
+            "captured": 3
+          }
+        },
+        "attention_standins": {
+          "attn_main": 133,
+          "xqa": 1392
+        }
+      }
+    }
+  },
+  "lut": {
+    "normal": {
+      "sha256": "b1537afd7d36e9cebae0ee74135b429014d949ae8f55be81acbb8d6cecdab012",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.016673219040967524,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0020931350300088525,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.007912458968348801,
+          "ok": true,
+          "msg": "update relative L2 error 6.797e-03 (worst row 9.304e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.017077693017199636,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.03561329300282523,
+          "ok": true,
+          "msg": "update relative L2 error 3.325e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.418e-03 (worst row 2.992e-03) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.027312999998684973,
+          "ok": true,
+          "msg": "update relative L2 error 3.422e-03 (worst row 3.694e-03) [bound 0.150]; attention input relative L2 error 3.075e-03 (worst row 3.429e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.016422050015535206,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.011107466008979827,
+          "ok": true,
+          "msg": "update relative L2 error 3.388e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.964e-03 (worst row 3.276e-03) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.014271845982875675,
+          "ok": true,
+          "msg": "update relative L2 error 3.357e-03 (worst row 3.657e-03) [bound 0.150]; attention input relative L2 error 2.788e-03 (worst row 3.078e-03) [bound 0.135]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.007033036032225937,
+          "ok": true,
+          "msg": "update relative L2 error 3.437e-03 (worst row 3.665e-03) [bound 0.150]; attention input relative L2 error 3.045e-03 (worst row 3.334e-03) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.0023797270259819925,
+          "ok": true,
+          "msg": "update relative L2 error 5.442e-03 (worst row 5.442e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.008386055997107178,
+          "ok": true,
+          "msg": "update relative L2 error 3.458e-03 (worst row 3.623e-03) [bound 0.150]; attention input relative L2 error 3.069e-03 (worst row 3.361e-03) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.0017958080279640853,
+          "ok": true,
+          "msg": "update relative L2 error 6.657e-03 (worst row 8.841e-03) [bound 0.150]; attention input relative L2 error 4.814e-03 (worst row 6.320e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 144.38400557264686,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 174.08000072464347,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 268.2879879139364,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 561.152012553066,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 346.11201426014304,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 1221.1200310848653,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 300.0160022638738,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 340.9920050762594,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 567.3440112732351,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 847.9039981029928,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 1179.66398736462,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 1643.0080248974264,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PLUT_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ]
+    },
+    "forced": {
+      "sha256": "b1537afd7d36e9cebae0ee74135b429014d949ae8f55be81acbb8d6cecdab012",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.015332753013353795,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0008583859889768064,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.0031067559611983597,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.024572779017034918,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.029879901034291834,
+          "ok": true,
+          "msg": "update relative L2 error 6.547e-02 (worst row 9.872e-02) [bound 0.150]; attention input relative L2 error 3.456e-02 (worst row 5.136e-02) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.027230381034314632,
+          "ok": true,
+          "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.870e-02) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.007704328978434205,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.006599381973501295,
+          "ok": true,
+          "msg": "update relative L2 error 7.540e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.112e-02 (worst row 6.990e-02) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.0053517629858106375,
+          "ok": true,
+          "msg": "update relative L2 error 8.249e-02 (worst row 9.637e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.016e-02) [bound 0.136]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.004830556048545986,
+          "ok": true,
+          "msg": "update relative L2 error 6.472e-02 (worst row 9.080e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.502e-02) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.004299834021367133,
+          "ok": true,
+          "msg": "update relative L2 error 5.442e-03 (worst row 5.442e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.00730957998894155,
+          "ok": true,
+          "msg": "update relative L2 error 6.003e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.066e-02 (worst row 5.827e-02) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.0017903950065374374,
+          "ok": true,
+          "msg": "update relative L2 error 6.636e-03 (worst row 8.842e-03) [bound 0.150]; attention input relative L2 error 4.803e-03 (worst row 6.331e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 157.34399994835258,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 187.39200523123145,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 284.6719934605062,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 683.0079867504537,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 365.5839874409139,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 3355.13606807217,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 310.27199467644095,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 360.15999456867576,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 604.2079939506948,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 1111.0880090855062,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 3455.007941927761,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 3933.6959435604513,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PLUT_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ],
+      "coverage": {
+        "native_math_calls": {
+          "NT1:1": {
+            "eager": 11,
+            "captured": 3
+          },
+          "NT1:16": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NT1:32": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NT1:8": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NF:128": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NF:256": {
+            "eager": 8,
+            "captured": 3
+          }
+        },
+        "attention_standins": {
+          "attn_main": 133,
+          "xqa": 1392
+        }
+      }
+    }
+  },
+  "k16": {
+    "normal": {
+      "sha256": "859835856ea5e6c5f8de6c5fcfb67343f13820962287ebe20824e73aceb022a0",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.00732161698397249,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0010602750116959214,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.004090926027856767,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.010646430018823594,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.013273418007884175,
+          "ok": true,
+          "msg": "update relative L2 error 3.325e-03 (worst row 3.669e-03) [bound 0.150]; attention input relative L2 error 2.418e-03 (worst row 2.992e-03) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.011424912954680622,
+          "ok": true,
+          "msg": "update relative L2 error 3.422e-03 (worst row 3.694e-03) [bound 0.150]; attention input relative L2 error 3.075e-03 (worst row 3.429e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.0060869979788549244,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.006517270987387747,
+          "ok": true,
+          "msg": "update relative L2 error 3.388e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.964e-03 (worst row 3.274e-03) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.0097795239998959,
+          "ok": true,
+          "msg": "update relative L2 error 3.358e-03 (worst row 3.657e-03) [bound 0.150]; attention input relative L2 error 2.789e-03 (worst row 3.086e-03) [bound 0.135]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.0033653780119493604,
+          "ok": true,
+          "msg": "update relative L2 error 3.437e-03 (worst row 3.665e-03) [bound 0.150]; attention input relative L2 error 3.046e-03 (worst row 3.334e-03) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.0009438630077056587,
+          "ok": true,
+          "msg": "update relative L2 error 5.442e-03 (worst row 5.442e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.004723843012470752,
+          "ok": true,
+          "msg": "update relative L2 error 3.458e-03 (worst row 3.623e-03) [bound 0.150]; attention input relative L2 error 3.070e-03 (worst row 3.361e-03) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.0013104269746690989,
+          "ok": true,
+          "msg": "update relative L2 error 6.658e-03 (worst row 8.841e-03) [bound 0.150]; attention input relative L2 error 4.815e-03 (worst row 6.320e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 145.40800591930747,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 173.05600037798285,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 270.3360035084188,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 560.1280047558248,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 346.62400325760245,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 845.8240046165884,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 294.91201182827353,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 335.55199345573783,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 565.2799918316305,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 847.920001950115,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 883.7120248936117,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 3856.384070124477,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PK16_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ]
+    },
+    "forced": {
+      "sha256": "859835856ea5e6c5f8de6c5fcfb67343f13820962287ebe20824e73aceb022a0",
+      "tests": [
+        {
+          "case": "batch 1, ctx 10, layer sliding",
+          "first_call_s": 0.02341947500826791,
+          "ok": true,
+          "msg": "update relative L2 error 7.662e-03 (worst row 7.662e-03) [bound 0.085]; attention input relative L2 error 4.353e-03 (worst row 4.353e-03) [bound 0.042]"
+        },
+        {
+          "case": "batch 1, ctx 3000, layer full",
+          "first_call_s": 0.0011775240418501198,
+          "ok": true,
+          "msg": "update relative L2 error 7.193e-03 (worst row 7.193e-03) [bound 0.150]; attention input relative L2 error 5.009e-03 (worst row 5.009e-03) [bound 0.108]"
+        },
+        {
+          "case": "batch 8, ctx 2047, layer sliding",
+          "first_call_s": 0.0010114909964613616,
+          "ok": true,
+          "msg": "update relative L2 error 6.796e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.278e-03) [bound 0.098]"
+        },
+        {
+          "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+          "first_call_s": 0.03017862600972876,
+          "ok": true,
+          "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+        },
+        {
+          "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+          "first_call_s": 0.027810704021248966,
+          "ok": true,
+          "msg": "update relative L2 error 6.547e-02 (worst row 9.872e-02) [bound 0.150]; attention input relative L2 error 3.456e-02 (worst row 5.136e-02) [bound 0.086]"
+        },
+        {
+          "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+          "first_call_s": 0.034748498001135886,
+          "ok": true,
+          "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.870e-02) [bound 0.116]"
+        },
+        {
+          "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+          "first_call_s": 0.008470066997688264,
+          "ok": true,
+          "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+        },
+        {
+          "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+          "first_call_s": 0.012959946994669735,
+          "ok": true,
+          "msg": "update relative L2 error 7.540e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.112e-02 (worst row 6.990e-02) [bound 0.128]"
+        },
+        {
+          "case": "batch 1, ctx 1048576, layer full, q_len 8",
+          "first_call_s": 0.009804293047636747,
+          "ok": true,
+          "msg": "update relative L2 error 8.249e-02 (worst row 9.637e-02) [bound 0.150]; attention input relative L2 error 5.440e-02 (worst row 7.014e-02) [bound 0.136]"
+        },
+        {
+          "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+          "first_call_s": 0.008435494033619761,
+          "ok": true,
+          "msg": "update relative L2 error 6.472e-02 (worst row 9.080e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.502e-02) [bound 0.109]"
+        },
+        {
+          "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+          "first_call_s": 0.0042997029959224164,
+          "ok": true,
+          "msg": "update relative L2 error 5.441e-03 (worst row 5.441e-03) [bound 0.118]; attention input relative L2 error 4.001e-03 (worst row 4.001e-03) [bound 0.075]"
+        },
+        {
+          "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+          "first_call_s": 0.007363377953879535,
+          "ok": true,
+          "msg": "update relative L2 error 6.003e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.066e-02 (worst row 5.827e-02) [bound 0.101]"
+        },
+        {
+          "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+          "first_call_s": 0.001192963041830808,
+          "ok": true,
+          "msg": "update relative L2 error 6.636e-03 (worst row 8.842e-03) [bound 0.150]; attention input relative L2 error 4.802e-03 (worst row 6.331e-03) [bound 0.097]"
+        }
+      ],
+      "shapes": [
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+          "load": "decode 1",
+          "weight": 46,
+          "us": 158.351996447891,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+          "load": "decode 1",
+          "weight": 16,
+          "us": 175.10400107130408,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 46,
+          "us": 303.10401460155845,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 16",
+          "weight": 16,
+          "us": 532.4639989994466,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 46,
+          "us": 383.50398978218436,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+          "load": "decode 32",
+          "weight": 16,
+          "us": 2114.5600392483175,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 46,
+          "us": 312.3359992168844,
+          "ok": true
+        },
+        {
+          "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+          "load": "verify 1",
+          "weight": 16,
+          "us": 364.5440055988729,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 46,
+          "us": 563.7439801357687,
+          "ok": true
+        },
+        {
+          "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 16",
+          "weight": 16,
+          "us": 839.7119953297079,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 46,
+          "us": 3354.112060274929,
+          "ok": true
+        },
+        {
+          "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+          "load": "verify 32",
+          "weight": 16,
+          "us": 3470.8639695309103,
+          "ok": true
+        }
+      ],
+      "static": [
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "GLUE_CL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "LT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_PORT_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_X_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_G_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "ATTN_P8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PG_RAW",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CUDA_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "V9_NT2_CPP_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "_pf_GROUPED_SRC",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SP_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "P7_PREFETCH_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "DENSE_CHAIN_CPP",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "SMALLM_VAR_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "PK16_CUDA",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "NF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "GF_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "VQ8_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        },
+        {
+          "name": "PARTIAL_CUDA",
+          "ok": true,
+          "msg": "identical CUDA and flags to verified 2dd12463"
+        }
+      ],
+      "coverage": {
+        "native_math_calls": {
+          "NT1:1": {
+            "eager": 11,
+            "captured": 3
+          },
+          "NT1:16": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NT1:32": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NT1:8": {
+            "eager": 9,
+            "captured": 3
+          },
+          "NF:128": {
+            "eager": 8,
+            "captured": 3
+          },
+          "NF:256": {
+            "eager": 8,
+            "captured": 3
+          }
+        },
+        "attention_standins": {
+          "attn_main": 133,
+          "xqa": 1392
+        }
+      }
+    }
+  }
+}

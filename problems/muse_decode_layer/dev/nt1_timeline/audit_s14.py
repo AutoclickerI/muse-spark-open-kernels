@@ -30,6 +30,9 @@ def main():
     def loader(name, path):
         m = original_loader(name, path)
         if name == 'submission':
+            if getattr(m,'PIPE_KIND',None)=='k16':
+                import k16_standin
+                m._k16_local_abi_calls=k16_standin.install(m.__dict__)
             module.append(m)
             if hasattr(m, 'cd_gemv'):
                 gemv = m.cd_gemv
@@ -66,6 +69,17 @@ def main():
             assert torch.equal(c['origin'],(c['base']>>1)*0x01010101)
             assert torch.equal(module[0].dcp_decode(c).view(torch.int16),state[name].view(torch.int16)),name
         rows, per = original_inventory(torch, state, weights)
+        if 'lut' in state['s4_nt1_bank'].get('banks',{}):
+            import lut_audit
+            proof=lut_audit.verify(torch,state)
+            (out/'lut_layout_proof.json').write_text(json.dumps(proof,indent=2)+'\n')
+            # Original cap counted all duplicate layouts as one; enforce it separately after bit proof.
+            for role in ('w13','w2'):
+                old=per.pop('s4_nt1_bank:'+role)
+                assert old==18.0,(role,old)
+                per['s4_nt1_bank:lop3:'+role]=9.0
+                per['s4_nt1_bank:lut:'+role]=9.0
+
         tensors, seen, objects = {}, {}, set()
         def walk(path, value):
             if isinstance(value, torch.Tensor):

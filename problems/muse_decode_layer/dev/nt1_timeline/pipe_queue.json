@@ -1,0 +1,30 @@
+{
+  "diagnostic": {
+    "pid": 1805785,
+    "priority": 1.2,
+    "t": 1792954254.9582713,
+    "problem": "muse_moe_w4a16",
+    "file": "problems/muse_moe_w4a16/lab/lab_moe_nt1_pipe.py",
+    "sha256": "875038058dfb252d2c8517f3c4eac71970d1091655948cd43bbae51826170e74",
+    "note": "h200_lab prof/lab/moe_nt1_pipe.py: P3a bound identification: exact S14 f1c77ce6 flags69 versus spill-free math-removed PDIA, matched S14 phase clocks. 16 router/weight seeds M8/16/32 readflush ABBA+A:A;96 same-op ILP/occupancy probes,66 matched-byte-range work rows across cold/L2/shared math,4/8/16 warps,1/2/4 TMA depths,NB2/NB4 activation gathers+B-only controls;36KiB immediate-wait TMA completion latency under load and Little-law coverage. Full lossless packed matrix under receipt cap. Local final payload16seeds+all phase/native gates pass in judge image;D4 native sm90a compile plus explicit local D2 ABI stand-in36calls. Native7images14math/copy templates checked;PDIA120regs0spill retains LDS/LDG,0HMMA/HMUL2. Existing epilogue batches unchanged. Four screened rebuilds ready UNSENT pending this result.",
+    "not_before": 1792972800.0,
+    "until": 1792972800.0
+  },
+  "payload_sha256": "d53196031b271014911dde560636ce38715d52938e73be15dd9b601cb6b24268",
+  "earlier_queues_unchanged": [
+    {
+      "pid": 3360739,
+      "sha256": "917e79f37f28b5c1215cfd346d829baa768d0f5afea3dbb2f66073556639d028",
+      "priority": 1.0,
+      "not_before": 1792972800.0
+    },
+    {
+      "pid": 1005738,
+      "sha256": "e23854aca7a11da1272db413d863504c76f812d5d9b6508342c674b3d92254eb",
+      "priority": 1.1,
+      "not_before": 1792972800.0
+    }
+  ],
+  "judge_job": null,
+  "ready_variants_sent": false
+}

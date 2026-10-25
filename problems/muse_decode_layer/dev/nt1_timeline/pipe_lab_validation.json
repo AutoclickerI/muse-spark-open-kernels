@@ -1,0 +1,30 @@
+{
+  "payload": "prof/lab/moe_nt1_pipe.py",
+  "sha256": "d53196031b271014911dde560636ce38715d52938e73be15dd9b601cb6b24268",
+  "log": "runs/screen/nt1_pipe_lab_local_final.log",
+  "log_sha256": "63e297653959358faf71262eb35960416c370d19c11a506ecc7af8f6b8bb1e8f",
+  "receipt_chars": 5832,
+  "receipt_cap": 9000,
+  "decoded_counts": {
+    "BUILD": 1,
+    "PIPE": 96,
+    "ROUTE": 3,
+    "WORK": 66,
+    "LATENCY": 6
+  },
+  "seeds": 16,
+  "phase_seeds_per_M": 8,
+  "micro_seeds_per_M": 4,
+  "M": [
+    8,
+    16,
+    32
+  ],
+  "device": "local sm120 GPU0 in judge image",
+  "D4_forced_nativeD2_abi_calls": 36,
+  "D4_native_sm90a_compile": true,
+  "H200_measurement": false,
+  "gates": [
+    "GATE S14 worst=(0.002386117586866021, 0.0024374392814934254);wrong-math PDIA deliberately ungated;END seeds=16 seconds=30.0 left=245.0"
+  ]
+}
