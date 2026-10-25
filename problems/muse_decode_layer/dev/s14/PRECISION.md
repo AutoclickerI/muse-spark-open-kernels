@@ -15,7 +15,7 @@ including adapter objects and closure cells. Existing S13 NVFP4/BF16/FP8 formats
 | nf_streams, scratch | Five stream/event handles; timed route/scratch/output buffers overwritten on every replay |
 
 The direct banks and their BF16 source tensors are independently cloned to change addresses. The audit then
-checks every reconstructed BF16 bit, exact integer origin/base relation, escape field bounds/dtypes, and the
+checks every reconstructed BF16 bit, exact integer origin/base relation, escape field dtypes, and the
 full retained inventory before running local_eval. Direct decode is also asserted in production prepare.
 
 Light experts with 9..16 tokens use the measured N16G4 W13/W2 kernels on a third stream. NT1 handles <=8,

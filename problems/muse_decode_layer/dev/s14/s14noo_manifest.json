@@ -1,0 +1,76 @@
+{
+  "source": "problems/muse_decode_layer/lab/lab_decode_s14noo.py",
+  "sha256": "7834177eb780928510a8b3a5edfbd91de7b755813ee27ceed6caf4d7a264be65",
+  "host_sha256": "054147b0cdb19f80abd6945bc133e0069a710794e207925c298c308598063882",
+  "payload_sha256": "20db398c3ba7a928a2c6bbe388da1f2f4b7d14aed91c6b9621b412d6c93b7e0b",
+  "source_bytes": 916636,
+  "seeds": 16,
+  "rounds": 8,
+  "decode1_rounds": 32,
+  "arms": {
+    "light": {
+      "active_tokens": [
+        128,
+        256
+      ],
+      "sha256": "7f7c31004db2ca08b5086def4c5f67588f678df015ae0d9eb08f53134c660a79"
+    },
+    "qkv3": {
+      "active_tokens": [
+        1
+      ],
+      "sha256": "17f692a55b76c2e7b80249eb1c2adc42fa094a2fb7b1670f18bd52a5ec10dfa2"
+    },
+    "bal2": {
+      "active_tokens": [
+        8,
+        16,
+        32
+      ],
+      "sha256": "ad5a6afe7df31e37a4ff9545dbdd233845b8dcf003e6367387513907f998bd87"
+    },
+    "S13": {
+      "active_tokens": [
+        1,
+        8,
+        16,
+        32,
+        128,
+        256
+      ],
+      "sha256": "958f1258908f44834ec6cf0c33af00ff6c08ea62b2f5cc483a36f0a91f39d0b6"
+    }
+  },
+  "patches": [
+    {
+      "name": "light",
+      "path": "problems/muse_decode_layer/dev/s14/patch_light.py",
+      "sha256": "76e242b6177086cea6c69860e53c39b1cfabb9c552ad82255fbd6721a28ee56d",
+      "active_tokens": [
+        128,
+        256
+      ],
+      "out_sha256": "c7d63639ae632dc7e32b4df5c9e73dd1184408791b0d59a6c186a215bc99b896"
+    },
+    {
+      "name": "qkv3",
+      "path": "problems/muse_decode_layer/dev/s14/patch_direct_qkv3.py",
+      "sha256": "2a4b14c9a0c5909e11c2cc2dc4192c7248b540767331491a9a64c071c9b335c0",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "ad5a6afe7df31e37a4ff9545dbdd233845b8dcf003e6367387513907f998bd87"
+    },
+    {
+      "name": "bal2",
+      "path": "problems/muse_decode_layer/dev/s14/patch_bal2.py",
+      "sha256": "715f16073ec7870c2db6a67d0bcc37cd603257df8b7f7b44b30b6cccf9b487e1",
+      "active_tokens": [
+        8,
+        16,
+        32
+      ],
+      "out_sha256": "054147b0cdb19f80abd6945bc133e0069a710794e207925c298c308598063882"
+    }
+  ]
+}

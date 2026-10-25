@@ -24,6 +24,8 @@ untouched loads must stay within A:A. The old split-QKV dictionary bug stays fix
 plans restore the original S13 stream-O in no-O/base arms; original MoE banks and three handles are
 restored in the no-light/base arms. Separate native modules remain bound to each source namespace.
 
-The decode check is queued through okc_run.py; source/arm/admission hashes are pinned in manifest.json,
+Decode check **0441f9fc583c42be** is accepted through okc_run.py; source/arm/admission hashes are pinned in manifest.json,
 s14ab_manifest.json, admission.json. No S14 promotion before the whole-layer result. The no-O candidate
 is being screened while the judge runs. S15's incoming projection port will be evaluated separately.
+
+No-O conditional source passes normal/forced 13/12/24; its A/B wrapper is built as `s14noo`. The no-direct projection variant is also being admitted while the first judge check runs.
