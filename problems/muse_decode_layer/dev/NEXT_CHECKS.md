@@ -2,116 +2,144 @@
 
 ## Ranking: one lane at 1.3x its floor
 
-**Basis:** H200 profile `43049b80dbd34a08`; mode **S10**. Current **S10** profile; already-integrated deltas are not applied again.
+**Basis:** H200 profile `863f502c62e54d7b`; **S11** timed source `acda6c62`. All integrated changes are already measured; no extra deltas.
 
-| Rank | Lever | Owning lane | Overall score gain |
-|---|---|---|---:|
-| 1 | Attention, all scored shapes | attention | +11.75% |
-| 2 | Small-M MoE M1/8/16/32 | small-M MoE | +7.33% |
-| 3 | Dense projections, all four roles | proj GEMV | +6.75% |
-| 4 | Boundaries and route | glue | +6.08% |
-| 5 | MoE M256 | free M256 | +4.59% |
-| 6 | MoE M128 | MoE M128 | +3.88% |
+| Rank | Lever | Owning lane | Gain at 1.5x | Gain at 1.3x | Gain at 1.15x |
+|---|---|---|---:|---:|---:|
+| 1 | Small-M MoE M1/8/16/32 | small-M MoE | +7.85% | +11.70% | +14.94% |
+| 2 | Attention, all scored shapes | attention | +9.89% | +11.35% | +12.66% |
+| 3 | Boundaries and route | glue | +9.42% | +9.43% | +9.43% |
+| 4 | Dense projections, all four roles | proj GEMV | +4.55% | +7.67% | +11.13% |
+| 5 | MoE M256 | free M256 | +2.91% | +4.07% | +5.00% |
+| 6 | MoE M128 | MoE M128 | +1.87% | +3.16% | +4.21% |
 
-Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/stages; gains are independent counterfactuals and must not be added. Projection totals and the lane ranking do not depend on the modeled per-role split. MoE/attention gains use visible rows only; unreported rows can raise them (bounds below). These are optimistic profile-duration headrooms, not measured speedups. Ranks3-6 span 2.87 percentage points: treat them as close priorities under router/profile/overlap uncertainty, not a resolved performance ordering.
+Ranked at 1.3x. Each row caps only that lane’s stages and shapes; gains are independent counterfactuals and must not be added. These are optimistic profile-duration headrooms, not measured wins. Shared projection attribution does not affect total projection time, but per-role clamping can affect its gain. PDL waits and routing seed variation can change the ordering.
 
 ## What is measured and what is modeled
 
-- Source: [12-shape profile](../profiles/cand_r3_best7_s10.43049b80dbd34a08.json) and [source log](../profiles/cand_r3_best7_s10.43049b80dbd34a08.log). The adjusted benchmark fields reproduce **1.621438x** exactly. The corrected six-load accounting gives **1.621438x**, a composition model rather than a new score.
-- Scale bank: paired receipt `58ae2e2cf8df45ef`; subtract 7.91/9.31/14.43/38.53 us at M8/16/32/128 from MoE and adjusted layer latency. No paired M1 delta exists, so M1 keeps its measured time. M256: `97be11d4631b44d6`, masked447.6 minus CTA1g2112 385.2 = **62.4 us**, subtracted once on S/F. These deltas transfer across router seeds and whole-layer overlap only as a model. Paired glue/FA3 setting changes from reset to S1 are not assigned extra savings; their composition needs the S1–S6 profiles. [Scale receipt](../../../runs/muse_decode_layer/20261024T141927Z_check_58ae2e2cf8df45ef.json) · [M256 receipt](../../../runs/muse_moe_w4a16/20261024T142924Z_check_97be11d4631b44d6.json).
-- **Projection role attribution:** the judge merges repeated kernel names. Only a unique custom GEMV role can be timed directly. Other roles in the same custom/library group are allocated in proportion to their one-read resource floors and marked **~**. This is an estimate, not recovered per-role telemetry. Exact group totals and mathematical attribution ranges are retained in JSON.
-- **Overlap:** profile rows include PDL dependency waits and, in S6, parallel W13 execution; sums can be above or below the paired benchmark median. The signed residual is shown separately, never called spare/idle time or added to a stage. Savings below assume the removed duration was exposed on the critical path; the profiles alone cannot prove that.
-- **Truncation:** six small rows are omitted in each M256 report. The visible MoE and attention times are lower bounds; their combined omitted mass is in Other. No hidden timing is fabricated. Other therefore has no defensible single stage floor/target and receives **n/a**, not a zero-cost win.
-- **Floors:** ideal cold single read at4.8 TB/s, max with dense BF16 at989 TF/s and legal FP8 QK at1979 TF/s (QK/PV tensor times add). Intermediate activations may remain on chip. Dense role shapes/counts and lossless BF16-hi+lo router come from the frozen source. MoE expected touched experts/routes are inferred from that receipt's exact official `speed_of_light_ns`; they are not its hidden actual routes. Attention uses nominal ctx80000, page1, full key coverage, shared q8 KV reads; agentic actual lengths vary±7.5%. No replay, launch or measured issue penalty is charged to the ideal floor. Glue reads five original 8192-wide BF16 vectors and the route stage's 4096-wide pre-expert vector+bias once, with fused activation IO. Those tiny floors express fusion headroom, not achievable isolated launch latencies. [Formula source](../../../sim/bound.py), [hardware rates](../../../sim/hw.py), [official shapes and scoring](../TASK.md).
+- Source: [12-shape profile](../lab/profiles/lab_decode_s11ab.863f502c62e54d7b.json), [source log](../lab/profiles/lab_decode_s11ab.863f502c62e54d7b.log), [receipt](../../../runs/muse_decode_layer/20261025T034235Z_check_863f502c62e54d7b.json). The immutable submitted wrapper `04a4859d` contains a byte-verified base `acda6c62`. Per-load sums reproduce **1.706767423x**; the model is **1.706767423x**. This is the host profile’s score, not a new submission.
+- **Integrated:** scale bank, M256 recoding, small-M flags, N_swap, BF16 front, balanced split-K GEMVs, gate split, late glue, LI_swap N_full, vq8 verify 16/32 full. Scale-bank and raw-M256 corrections are zero at every shape. No balanced-GEMV, gate, vq8, LI_swap, F4 or coded savings are subtracted from measured times.
+- **Projection attribution:** repeated names are merged. Balanced `_gb_kernel`, plain `_gemv_kernel`, coded `cdg::coded_gemv`, library and split-K groups are kept separate. Shared groups are split by their one-read floors and marked **~**. With gate split, the balanced QKV3 share uses 5/9 of the QKV+gate bytes; `_gate_split_kernel` contributes its full duration to QKV+gate (the other 4/9). Its gate application is fused there; attention retains sum/cast, main and combine.
+- **Overlap:** profile durations include PDL waits. For forked N_full, the report’s total-minus-GPU-busy overlap is deducted from MoE, following the existing attribution convention; it can also contain PDL overlap outside MoE. It is not a recovered MoE critical-path measurement. Other shapes retain their PDL durations. Signed layer-minus-profile residuals remain explicit. No residual is labeled idle time or assigned to a stage.
+- **Truncation:** omitted rows remain in Other. Visible attention and MoE are lower bounds where rows are omitted; upper attribution bounds assign all omitted mass to either one, never both. Other has no defensible floor or gain.
+- **Floors:** `sim/bound.py` work counts, ideal one-read bytes at 4.8 TB/s, BF16 at 989 TF/s, FP8 QK at 1979 TF/s; QK/PV tensor times add. These resource floors exclude fixed launch/issue costs and intermediate activation IO. Routing expectations are inferred from the profile’s official `speed_of_light_ns`, not hidden actual routes. Attention uses nominal context 80000 and all keys; actual agentic lengths vary. Glue floors count fused compulsory vector IO and express fusion headroom, not isolated-kernel latency.
+- **Measured stream roof:** **2.36 us + bytes / 4.58 TB/s**, from `7b6c96b5` ([FINDINGS](../../../docs/FINDINGS.md), cold read). JSON keeps this separately for each data stage (max with its resource floor); the 1.5/1.3/1.15 targets use the ideal floor. The fixed intercept is not another replay correction or a guaranteed overlap saving. A split stage can pay multiple intercepts. [Work formulas](../../../sim/bound.py) · [rates](../../../sim/hw.py) · [scoring](../TASK.md).
 
 ## Twelve shapes: times / one-read resource floors (us)
 
+Cells show **time / floor (ratio)**. **†** marks time above 1.3x floor; the excess tables below rank absolute headroom, since tiny glue floors create very large ratios.
+
 | Shape | QKV+gate | O | Pool+router | Unpool | Proj sum | Attention | MoE | Boundaries x2 | Route+norm | Other |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| decode 1 S | 14.3 / 7.864 | 7.4 / 3.495 | ~24.5 / 15.729 | ~2.7 / 1.748 | 48.9 / 28.84 | 9.8 / 0.111 | 33.3 / 14.747 | 5.3 / 0.017 | 3.6 / 0.002 | 0.0 / n/a |
-| decode 1 F | 13.8 / 7.864 | 6.8 / 3.495 | ~24.2 / 15.729 | ~2.7 / 1.748 | 47.5 / 28.84 | 19.4 / 4.333 | 32.6 / 14.747 | 5.2 / 0.017 | 3.6 / 0.002 | 0.0 / n/a |
-| decode 16 S | ~11.8 / 7.864 | ~5.3 / 3.495 | ~23.5 / 15.729 | ~21.4 / 13.981 | 62.0 / 41.07 | 12.8 / 1.775 | 70.8 / 44.946 | 5.6 / 0.017 | 3.9 / 0.002 | 1.4 / n/a |
-| decode 16 F | ~12.2 / 7.864 | ~5.4 / 3.495 | ~24.4 / 15.729 | ~21.4 / 13.981 | 63.4 / 41.07 | 105.5 / 69.334 | 79.7 / 43.885 | 5.8 / 0.017 | 4.1 / 0.002 | 1.6 / n/a |
-| decode 32 S | ~12.7 / 7.864 | ~5.6 / 3.495 | 24.7 / 15.729 | ~22.5 / 13.981 | 65.5 / 41.07 | 16.6 / 3.550 | 94.6 / 52.732 | 6.7 / 0.017 | 6.1 / 0.002 | 0.0 / n/a |
-| decode 32 F | ~12.7 / 7.864 | ~5.6 / 3.495 | 27.9 / 15.729 | ~22.6 / 13.981 | 68.8 / 41.07 | 198.2 / 138.668 | 103.8 / 53.440 | 7.0 / 0.017 | 9.2 / 0.002 | 0.0 / n/a |
-| verify 1 S | ~14.8 / 7.864 | ~6.6 / 3.495 | ~23.7 / 15.729 | ~2.6 / 1.748 | 47.7 / 28.84 | 20.3 / 0.111 | 64.4 / 44.239 | 5.4 / 0.017 | 3.8 / 0.002 | 0.0 / n/a |
-| verify 1 F | ~14.7 / 7.864 | ~6.6 / 3.495 | ~24.4 / 15.729 | ~2.7 / 1.748 | 48.4 / 28.84 | 31.7 / 4.334 | 72.7 / 44.239 | 8.5 / 0.017 | 3.7 / 0.002 | 0.0 / n/a |
-| verify 16 S | 14.5 / 7.864 | ~5.8 / 3.495 | ~26.2 / 15.729 | ~23.3 / 13.981 | 69.9 / 41.07 | >=22.8 / 1.781 | >=207.9 / 108.411 | 11.4 / 0.017 | 0.0 / 0.002 | 8.3 / n/a |
-| verify 16 F | 14.6 / 7.864 | ~5.8 / 3.495 | ~26.1 / 15.729 | ~23.2 / 13.981 | 69.7 / 41.07 | >=199.3 / 69.340 | >=231.7 / 109.119 | 11.3 / 0.017 | 0.0 / 0.002 | 8.9 / n/a |
-| verify 32 S | ~17.3 / 9.771 | ~7.7 / 4.343 | ~34.7 / 19.542 | ~30.8 / 17.371 | 90.5 / 51.03 | >=24.2 / 3.562 | >=286.3 / 125.693 | 20.3 / 0.017 | 4.3 / 0.002 | 9.3 / n/a |
-| verify 32 F | ~17.2 / 9.771 | ~7.7 / 4.343 | ~34.5 / 19.542 | ~30.6 / 17.371 | 90.0 / 51.03 | >=381.0 / 138.681 | >=281.0 / 126.106 | 18.8 / 0.017 | 0.0 / 0.002 | 9.4 / n/a |
+| decode 1 S | ~15.9 / 7.864 (2.03x)† | 7.2 / 3.495 (2.06x)† | ~21.8 / 15.729 (1.38x)† | 4.0 / 1.748 (2.29x)† | 48.9 / 28.84 (1.70x) | 11.4 / 0.111 (102.76x)† | 34.1 / 14.747 (2.31x)† | 5.3 / 0.017 (310.55x)† | 3.7 / 0.002 (1927.08x)† | 0.0 / n/a |
+| decode 1 F | ~15.5 / 7.864 (1.97x)† | 6.9 / 3.495 (1.97x)† | ~22.4 / 15.729 (1.42x)† | 4.1 / 1.748 (2.35x)† | 48.9 / 28.84 (1.70x) | 19.8 / 4.333 (4.57x)† | 33.9 / 14.747 (2.30x)† | 5.0 / 0.017 (292.97x)† | 3.6 / 0.002 (1875.00x)† | 0.0 / n/a |
+| decode 16 S | ~16.4 / 7.864 (2.09x)† | 6.4 / 3.495 (1.83x)† | ~22.1 / 15.729 (1.41x)† | ~19.7 / 13.981 (1.41x)† | 64.6 / 41.07 (1.57x) | 13.8 / 1.775 (7.77x)† | 65.8 / 44.946 (1.46x)† | 15.9 / 0.017 (931.64x)† | 3.9 / 0.002 (2031.25x)† | 0.0 / n/a |
+| decode 16 F | ~10.8 / 7.864 (1.37x)† | 58.0 / 3.495 (16.59x)† | ~21.5 / 15.729 (1.37x)† | ~19.1 / 13.981 (1.37x)† | 109.4 / 41.07 (2.66x) | 106.1 / 69.334 (1.53x)† | 74.1 / 43.885 (1.69x)† | 31.6 / 0.017 (1851.56x)† | 4.4 / 0.002 (2291.67x)† | 0.0 / n/a |
+| decode 32 S | ~11.2 / 7.864 (1.43x)† | 6.6 / 3.495 (1.89x)† | ~22.5 / 15.729 (1.43x)† | ~20.0 / 13.981 (1.43x)† | 60.3 / 41.07 (1.47x) | 18.3 / 3.550 (5.16x)† | 103.8 / 52.732 (1.97x)† | 24.7 / 0.017 (1447.27x)† | 4.2 / 0.002 (2187.50x)† | 0.0 / n/a |
+| decode 32 F | ~16.7 / 7.864 (2.13x)† | 6.5 / 3.495 (1.86x)† | ~23.8 / 15.729 (1.51x)† | ~21.2 / 13.981 (1.51x)† | 68.2 / 41.07 (1.66x) | 196.8 / 138.668 (1.42x)† | 122.8 / 53.440 (2.30x)† | 25.6 / 0.017 (1500.00x)† | 4.2 / 0.002 (2187.50x)† | 0.0 / n/a |
+| verify 1 S | ~10.9 / 7.864 (1.39x)† | ~7.2 / 3.495 (2.06x)† | ~21.8 / 15.729 (1.39x)† | ~3.6 / 1.748 (2.06x)† | 43.5 / 28.84 (1.51x) | 21.6 / 0.111 (194.05x)† | 94.7 / 44.239 (2.14x)† | 8.3 / 0.017 (486.33x)† | 3.7 / 0.002 (1927.08x)† | 0.0 / n/a |
+| verify 1 F | ~11.0 / 7.864 (1.40x)† | ~7.1 / 3.495 (2.04x)† | ~22.0 / 15.729 (1.40x)† | ~3.6 / 1.748 (2.04x)† | 43.7 / 28.84 (1.52x) | 33.0 / 4.334 (7.61x)† | 73.5 / 44.239 (1.66x)† | 8.3 / 0.017 (486.33x)† | 3.7 / 0.002 (1927.08x)† | 0.0 / n/a |
+| verify 16 S | 14.4 / 7.864 (1.83x)† | ~5.7 / 3.495 (1.64x)† | ~25.7 / 15.729 (1.64x)† | ~22.9 / 13.981 (1.64x)† | 68.7 / 41.07 (1.67x) | >=18.6 / 1.781 (10.44x)† | >=194.7 / 108.411 (1.80x)† | 11.4 / 0.017 (667.97x)† | 0.0 / 0.002 (0.00x) | 12.1 / n/a |
+| verify 16 F | 14.5 / 7.864 (1.84x)† | ~5.5 / 3.495 (1.58x)† | ~24.9 / 15.729 (1.58x)† | ~22.1 / 13.981 (1.58x)† | 67.1 / 41.07 (1.63x) | >=168.8 / 69.340 (2.43x)† | >=206.8 / 109.119 (1.90x)† | 11.2 / 0.017 (656.25x)† | 0.0 / 0.002 (0.00x) | 4.9 / n/a |
+| verify 32 S | ~17.3 / 9.771 (1.77x)† | ~7.7 / 4.343 (1.77x)† | ~34.5 / 19.542 (1.77x)† | ~30.7 / 17.371 (1.77x)† | 90.1 / 51.03 (1.77x) | >=24.0 / 3.562 (6.74x)† | >=270.4 / 125.693 (2.15x)† | 17.5 / 0.017 (1025.39x)† | 4.2 / 0.002 (2187.50x)† | 9.3 / n/a |
+| verify 32 F | ~17.1 / 9.771 (1.75x)† | ~7.6 / 4.343 (1.75x)† | ~34.2 / 19.542 (1.75x)† | ~30.4 / 17.371 (1.75x)† | 89.4 / 51.03 (1.75x) | >=284.9 / 138.681 (2.05x)† | >=237.0 / 126.106 (1.88x)† | 16.6 / 0.017 (972.66x)† | 3.9 / 0.002 (2031.25x)† | 2.0 / n/a |
 
-S/F=sliding/full; decode M=B, verify M=8B. QKV includes the gate rows; Pool+router includes the FP32 router's BF16 hi+lo products. Attention includes QK/cache preparation, main, combine, FA3 scheduler and norm/gate. MoE includes expert gather/activation/norm/combine where visible. Boundaries and route are separate. Split-K reductions belong to their projection group.
+S/F=sliding/full; decode M=B, verify M=8B. QKV includes gate, Pool+router includes the FP32 router’s BF16 hi+lo products. Attention includes prep, main, combine, scheduler and norm/gate except the fused gate split charged above. N_full’s LI_swap heavy and NT1 branches, metadata and finalizer belong to MoE. Boundaries and route remain separate.
+
+### Stages furthest above 1.3x, across the six loads
+
+Excess per load is `46*max(0,tS-1.3*fS) + 16*max(0,tF-1.3*fF)` in us. The sum gives each of the six loads one step; score ranking instead uses relative load savings and a geomean. These are stage-duration estimates subject to the overlap caveat above.
+
+| Stage | decode 1 | decode 16 | decode 32 | verify 1 | verify 16 | verify 32 | Six-load sum us |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| MoE | 922.4 | 611.8 | 2474.7 | 1966.6 | 3512.3 | 6090.9 | **15578.7** |
+| Attention | 744.4 | 784.1 | 894.0 | 1424.8 | 2007.6 | 2564.8 | **8419.8** |
+| Boundaries x2 | 322.4 | 1235.6 | 1544.4 | 513.2 | 702.2 | 1069.2 | **5387.1** |
+| O | 159.9 | 940.7 | 125.9 | 163.6 | 69.8 | 124.4 | **1584.3** |
+| QKV+gate | 347.8 | 294.6 | 150.6 | 43.5 | 260.5 | 280.0 | **1377.0** |
+| Pool+router | 91.2 | 93.5 | 147.4 | 87.1 | 314.1 | 560.0 | **1293.2** |
+| Route+norm | 227.6 | 249.6 | 260.2 | 229.2 | 0.0 | 255.4 | **1222.2** |
+| Unpool | 108.7 | 83.1 | 131.0 | 81.8 | 279.2 | 497.8 | **1181.6** |
+
+Largest individual shape/stage excesses (us per layer):
+
+| Shape | Stage | Time us | Floor us | Above 1.3x us |
+|---|---|---:|---:|---:|
+| verify 32 S | MoE | 270.40 | 125.693 | 107.00 |
+| verify 32 F | Attention | 284.90 | 138.681 | 104.62 |
+| verify 16 F | Attention | 168.80 | 69.340 | 78.66 |
 
 ## Overall-score gain per shape/stage at 1.3x floor
 
-A cell changes that one stage in that one shape, retaining the other eleven. **All shapes** changes the indicated stage at every shape simultaneously. ~projection cells use the estimated allocation above; each role's source-attribution gain range is shown below.
+Each cell changes one stage in one shape. All shapes changes that stage everywhere. ~ marks modeled projection allocation; attribution bounds follow.
 
 | Shape | QKV+gate | O | Pool+router | Unpool | Proj sum | Attention | MoE | Boundaries x2 | Route+norm | Other |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| decode 1 S | +0.51% | +0.36% | ~+0.51% | ~+0.06% | +1.48% | +1.24% | +1.85% | +0.66% | +0.45% | n/a |
-| decode 1 F | +0.15% | +0.10% | ~+0.16% | ~+0.02% | +0.44% | +0.60% | +0.59% | +0.22% | +0.15% | n/a |
-| decode 16 S | ~+0.11% | ~+0.05% | ~+0.21% | ~+0.22% | +0.61% | +0.74% | +0.88% | +0.39% | +0.27% | n/a |
-| decode 16 F | ~+0.05% | ~+0.02% | ~+0.10% | ~+0.08% | +0.24% | +0.37% | +0.55% | +0.14% | +0.10% | n/a |
-| decode 32 S | ~+0.12% | ~+0.06% | +0.22% | ~+0.22% | +0.63% | +0.62% | +1.39% | +0.34% | +0.31% | n/a |
-| decode 32 F | ~+0.04% | ~+0.02% | +0.13% | ~+0.08% | +0.28% | +0.32% | +0.62% | +0.12% | +0.16% | n/a |
-| verify 1 S | ~+0.40% | ~+0.17% | ~+0.28% | ~+0.03% | +0.90% | +1.82% | +0.60% | +0.46% | +0.33% | n/a |
-| verify 1 F | ~+0.13% | ~+0.06% | ~+0.12% | ~+0.01% | +0.33% | +0.79% | +0.46% | +0.25% | +0.11% | n/a |
-| verify 16 S | +0.15% | ~+0.04% | ~+0.20% | ~+0.18% | +0.58% | +0.73% | +2.53% | +0.40% | +0.00% | n/a |
-| verify 16 F | +0.05% | ~+0.02% | ~+0.07% | ~+0.06% | +0.20% | +1.38% | +1.12% | +0.14% | +0.00% | n/a |
-| verify 32 S | ~+0.11% | ~+0.05% | ~+0.22% | ~+0.20% | +0.59% | +0.48% | +3.31% | +0.50% | +0.10% | n/a |
-| verify 32 F | ~+0.04% | ~+0.02% | ~+0.08% | ~+0.07% | +0.20% | +1.79% | +1.01% | +0.16% | +0.00% | n/a |
-| **All shapes** | +1.89% | +0.97% | +2.33% | +1.23% | +6.75% | +11.75% | +16.61% | +3.89% | +2.02% | n/a |
+| decode 1 S | ~+0.76% | +0.35% | ~+0.17% | +0.22% | +1.56% | +1.53% | +2.07% | +0.70% | +0.49% | n/a |
+| decode 1 F | ~+0.24% | +0.11% | ~+0.09% | +0.08% | +0.52% | +0.65% | +0.68% | +0.23% | +0.16% | n/a |
+| decode 16 S | ~+0.44% | +0.13% | ~+0.12% | ~+0.10% | +0.80% | +0.82% | +0.52% | +1.14% | +0.27% | n/a |
+| decode 16 F | ~+0.01% | +1.35% | ~+0.03% | ~+0.02% | +1.41% | +0.39% | +0.42% | +0.78% | +0.11% | n/a |
+| decode 32 S | ~+0.05% | +0.10% | ~+0.10% | ~+0.09% | +0.36% | +0.71% | +1.91% | +1.31% | +0.22% | n/a |
+| decode 32 F | ~+0.12% | +0.03% | ~+0.06% | ~+0.05% | +0.26% | +0.30% | +0.98% | +0.46% | +0.07% | n/a |
+| verify 1 S | ~+0.06% | ~+0.24% | ~+0.12% | ~+0.12% | +0.54% | +2.05% | +3.75% | +0.76% | +0.33% | n/a |
+| verify 1 F | ~+0.02% | ~+0.08% | ~+0.05% | ~+0.04% | +0.19% | +0.87% | +0.50% | +0.26% | +0.11% | n/a |
+| verify 16 S | +0.16% | ~+0.04% | ~+0.20% | ~+0.18% | +0.58% | +0.62% | +2.15% | +0.43% | +0.00% | n/a |
+| verify 16 F | +0.06% | ~+0.01% | ~+0.06% | ~+0.05% | +0.18% | +1.05% | +0.87% | +0.15% | +0.00% | n/a |
+| verify 32 S | ~+0.12% | ~+0.05% | ~+0.25% | ~+0.22% | +0.65% | +0.53% | +3.20% | +0.48% | +0.11% | n/a |
+| verify 32 F | ~+0.04% | ~+0.02% | ~+0.08% | ~+0.07% | +0.22% | +1.01% | +0.70% | +0.16% | +0.04% | n/a |
+| **All shapes** | +2.10% | +2.55% | +1.33% | +1.27% | +7.67% | +11.35% | +19.92% | +7.18% | +1.94% | n/a |
 
 Gain ranges from unresolved attribution (not confidence intervals):
 
 | Stage | Central all-shape gain | Source-attribution range |
 |---|---:|---:|
-| QKV+gate | +1.89% | 0.87..10.20% |
-| O | +0.97% | 0.46..13.83% |
-| Pool+router | +2.33% | 0.35..7.94% |
-| Unpool | +1.23% | 0.00..15.49% |
-| Attention | +11.75% | 11.75..12.66% |
-| MoE | +16.61% | 16.61..17.66% |
-| Boundaries x2 | +3.89% | 3.89..3.89% |
-| Route+norm | +2.02% | 2.02..2.02% |
+| QKV+gate | +2.10% | 0.22..22.50% |
+| O | +2.55% | 2.09..9.28% |
+| Pool+router | +1.33% | 0.00..13.29% |
+| Unpool | +1.27% | 0.31..12.30% |
+| Attention | +11.35% | 11.35..12.33% |
+| MoE | +19.92% | 19.92..21.09% |
+| Boundaries x2 | +7.18% | 7.18..7.18% |
+| Route+norm | +1.94% | 1.94..1.94% |
 
-Ranges permit a shared kernel group to belong entirely to one of its roles; such extrema cannot happen for all roles at once. Attention/MoE maxima each assign all M256 omitted mass to that stage; again these maxima are mutually exclusive. They do not bound PDL critical-path exposure.
+Shared-group extrema cannot occur for all roles at once. Attention/MoE maxima each consume all omitted mass and are mutually exclusive. These ranges do not bound critical-path exposure.
 
 ## Latency anchor, corrections and overlap residual
 
 | Shape | Receipt layer | Scale saving | M256 saving | Model layer | Profile sum after deltas | Layer minus profile |
 |---|---:|---:|---:|---:|---:|---:|
-| decode 1 S | 98.94 | 0.00 | 0.00 | 98.94 | 100.90 | -1.96 |
-| decode 1 F | 104.88 | 0.00 | 0.00 | 104.88 | 108.40 | -3.52 |
-| decode 16 S | 154.37 | 0.00 | 0.00 | 154.37 | 156.60 | -2.23 |
-| decode 16 F | 251.80 | 0.00 | 0.00 | 251.80 | 260.10 | -8.30 |
-| decode 32 S | 195.92 | 0.00 | 0.00 | 195.92 | 189.50 | 6.42 |
-| decode 32 F | 377.86 | 0.00 | 0.00 | 377.86 | 387.00 | -9.14 |
-| verify 1 S | 142.16 | 0.00 | 0.00 | 142.16 | 141.60 | 0.56 |
-| verify 1 F | 155.27 | 0.00 | 0.00 | 155.27 | 165.10 | -9.83 |
-| verify 16 S | 313.23 | 0.00 | 0.00 | 313.23 | 320.30 | -7.07 |
-| verify 16 F | 483.65 | 0.00 | 0.00 | 483.65 | 520.90 | -37.25 |
-| verify 32 S | 424.33 | 0.00 | 0.00 | 424.33 | 434.90 | -10.57 |
-| verify 32 F | 772.10 | 0.00 | 0.00 | 772.10 | 780.20 | -8.10 |
+| decode 1 S | 93.30 | 0.00 | 0.00 | 93.30 | 103.40 | -10.10 |
+| decode 1 F | 102.77 | 0.00 | 0.00 | 102.77 | 111.20 | -8.43 |
+| decode 16 S | 154.37 | 0.00 | 0.00 | 154.37 | 164.10 | -9.73 |
+| decode 16 F | 249.61 | 0.00 | 0.00 | 249.61 | 325.50 | -75.89 |
+| decode 32 S | 197.61 | 0.00 | 0.00 | 197.61 | 211.40 | -13.79 |
+| decode 32 F | 374.17 | 0.00 | 0.00 | 374.17 | 417.50 | -43.33 |
+| verify 1 S | 134.91 | 0.00 | 0.00 | 134.91 | 171.70 | -36.79 |
+| verify 1 F | 151.25 | 0.00 | 0.00 | 151.25 | 162.20 | -10.95 |
+| verify 16 S | 301.06 | 0.00 | 0.00 | 301.06 | 305.50 | -4.44 |
+| verify 16 F | 423.50 | 0.00 | 0.00 | 423.50 | 458.80 | -35.30 |
+| verify 32 S | 399.30 | 0.00 | 0.00 | 399.30 | 415.50 | -16.20 |
+| verify 32 F | 640.36 | 0.00 | 0.00 | 640.36 | 633.80 | 6.56 |
 
-| Load | Adjusted receipt load us | Modeled load us |
-|---|---:|---:|
-| decode 1 | 6229.42 | 6229.42 |
-| decode 16 | 11129.76 | 11129.76 |
-| decode 32 | 15057.96 | 15057.96 |
-| verify 1 | 9023.64 | 9023.64 |
-| verify 16 | 22146.73 | 22146.73 |
-| verify 32 | 31872.98 | 31872.98 |
+| Load | SGLang load us | Adjusted receipt load us | Modeled load us | SGLang/model |
+|---|---:|---:|---:|---:|
+| decode 1 | 10718.175952 | 5936.117368 | 5936.117368 | 1.805586933 |
+| decode 16 | 18553.600229 | 11094.568321 | 11094.568321 | 1.672313847 |
+| decode 32 | 21924.639762 | 15076.832619 | 15076.832619 | 1.454194015 |
+| verify 1 | 16524.703554 | 8625.874825 | 8625.874825 | 1.915713350 |
+| verify 16 | 35221.919579 | 20624.928715 | 20624.928715 | 1.707735336 |
+| verify 32 | 49239.103464 | 28613.678907 | 28613.678907 | 1.720823933 |
 
-For a selected stage set, `dS/dF = sum(max(0, time - 1.3*floor))` within each shape. Then `gain% = 100 * (product_load[T / (T - 46*dS - 16*dF)]^(1/6) - 1)`. Use adjusted `median_ns` anchors above, never the sum of PDL durations. No regression is assumed if a stage already beats the target.
+For target `f`, `dS/dF = sum(max(0,time-f*floor))` within each shape. `gain% = 100*(product_load[T/(T-46*dS-16*dF)]^(1/6)-1)`. Use adjusted benchmark `median_ns` anchors, never summed PDL durations. A stage already below target is unchanged.
 
 ## Refresh and checks
 
-`python problems/muse_decode_layer/dev/levers/build.py` reads local profiles only: chooses frozen S6 `4c98f12f` first, then S5 `f7064fc0`, S4 `9b2b2a48`, S3 `cadef19a`, S2 `b0805447`, S1 `42f543a0`, otherwise reset. It hashes the immutable submitted source beside the accepted receipt and verifies the known candidate SHA. Reset gets both measured corrections; S1 only raw M256; S2–S6 neither. Use `--receipt problems/muse_decode_layer/profiles/<file>.json` for a named profile. Run this once when resumed after the09:01 KST receipts land; it makes no judge calls, watches or timers.
+`python3 problems/muse_decode_layer/dev/levers/build.py` selects the incumbent S11 final lab profile by default. `--receipt problems/muse_decode_layer/lab/profiles/lab_decode_s12ab.937801feb77b4302.json` selects S12 revision a92b6619 explicitly. Both wrapper SHA and the complete embedded timed source SHA are verified. Other submitted sources must match a registered candidate SHA. Historical reset gets scale and raw-M256 corrections, S1 gets only raw-M256, S2 and later get neither.
 
-[Machine-readable rows, floors, attribution and validation](levers/current.json) · [Rebuild and accounting assertions](levers/build.py)
+The builder verifies twelve shapes, six loads, exact score reproduction, stage accounting, kernel call counts, projection groups and correction ownership. `python3 problems/muse_decode_layer/dev/levers/check.py` checks both new profiles and source rejection, attribution, stream and target monotonicity. No judge calls.
 
-## Closed inputs to the next integration
+[Machine-readable evidence](levers/current.json) · [Builder](levers/build.py)
 
-Current negative receipts: FlashInfer full context `8ffbac2d`, persistent chain `87dc944b` (1.5–6.5x slower), verify split-K WGMMA `19f3a13b` (1.6x slower), and M128 fused producer `471f6d62` (5.7–6.5x recoded NT1). None supplies a promoted cell. S3 instead integrates the M256 recoded C1g2112 win `9e8a6a15f95748db` (365.2 vs raw386.1 us, 12 seeds); S4 adds D32g at M128 and one-LOP3 NT1 at M1–32 from `dc3fea0a20a349bf`; S5 replaces M128 with H_H from `770809cf159f41e2` (234.44 vs D32g272.70 us, 36 fixtures). S6 adds M256 mixed_parallel from8483c0c6 (344.5 vs C1rec366.2 us,12 seeds) and the M1 O/config6 cell (near timing noise). This table retains its reset + raw-M256 composition basis until the S1–S6 whole-layer profiles land. Existing source holds remain on `dev/parked/cand_r3_attention_v2.py`, `dev/parked/cand_r3_v9_glue.py`, both `dev/parked/cand_r3_merge_mega*.py` builds and the old overlap candidate. Detailed evidence remains in [FINDINGS](../../../docs/FINDINGS.md); [FOCUS](../FOCUS.md) owns candidate paths and reset allocation.
+## Inputs to the next integration
+
+S11 final is the incumbent. S12 a92b6619 is supported as an experiment: its paired `937801fe` leave-one-out finds coded-off +3.9% at decode 1 (A:A +1.1%), F4-off +0.60/+0.73% at verify 16/32, and wide-off -0.04/+0.15% (noise). Cross-job host scores do not rank candidates. Future promotions need paired whole-layer measurements; these modeled caps are priorities for the lanes. [FINDINGS](../../../docs/FINDINGS.md).

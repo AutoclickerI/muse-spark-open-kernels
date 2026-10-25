@@ -5,12 +5,12 @@ Reads current.json (build.py's per-shape stage model of the latest landed S-cand
 paired-lab stage wins that profile does not contain yet, and prints the six-load score:
   - the model and the model plus those pending wins ("pending");
   - each stage's time as a multiple of its one-read floor, per shape;
-  - per lever: that lever's stages capped at 1.5x / 1.3x their floor (independent; they don't add);
+  - per lever: that lever's stages capped at 1.5x / 1.3x / 1.15x their floor (independent; they don't add);
   - every stage capped at 2.0x / 1.5x / 1.3x / 1.15x its floor (the judge's stream roof is above 3.61 TB/s: our sweep
-    reached 4.04-4.25 TB/s);
+    fits 2.36 us + bytes / 4.58 TB/s);
   - the projections with 25% fewer dense bytes (lossless BF16 exponent coding) at a fixed 0 / 2 / 4 us per call;
   - each component sped up by a leader-match factor (--match);
-  - each decode-1 / verify-1 layer's time above a one-read stream at the measured 3.61 TB/s.
+  - each decode-1 / verify-1 layer's time above 2.36 us + bytes / 4.58 TB/s per data stage.
 
     python3 problems/muse_decode_layer/dev/levers/scenarios.py [current.json] [--match attention=1.8,...]
 
@@ -26,11 +26,9 @@ import math
 from pathlib import Path
 
 LAYERS = {'sliding': 46, 'full': 16}
-ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R', 'S8', 'S9', 'S10')
+ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R', 'S8', 'S9', 'S10', 'S11', 'S12')
 PROJ = ('qkv_gate', 'o', 'pool_router', 'unpooler')
 GLUE = ('boundaries', 'route')
-# 4233660b: a plain cold 256 MiB read takes 74.33 us on the judge, 3.61 TB/s = the 4.8 TB/s floor x 1.329.
-STREAM_FACTOR = 4.8e12 / (256 * 2**20 / 74.33e-6)
 # Leaders' component speed over ours, 2026-10-24 top 3 (attention 2.40-2.52 vs 1.40; MoE discounted for our
 # newer in-layer kernels; projections 1.43-1.55 vs 1.18); glue /3 is an assumption, no board measures it.
 MATCH = {'attention': 1.8, 'moe': 1.2, 'proj': 1.25, 'glue': 3.0}
@@ -142,17 +140,17 @@ def main() -> None:
         print(f'  {label(r):11s} ' + ' '.join(f"{r['stages_us'][k] / r['floors_us'][k]:8.1f}" for k in ratio)
               + ' ' + ' '.join(f"{r['stages_us'][k]:11.1f}" for k in GLUE))
 
-    print('\nper lever, capped at 1.5x / 1.3x its floor (independent counterfactuals; they do not add)')
+    print('\nper lever, capped at 1.5x / 1.3x / 1.15x its floor (independent counterfactuals; they do not add)')
     for name, sel in LEVERS.items():
-        s15, s13 = score(model, cap(rows, sel, 1.5)), score(model, cap(rows, sel, 1.3))
-        print(f'  {name:32s} {s15:.3f} ({(s15 / est - 1) * 100:+5.1f}%)  {s13:.3f} ({(s13 / est - 1) * 100:+5.1f}%)')
+        values = [score(model, cap(rows, sel, target)) for target in (1.5, 1.3, 1.15)]
+        print(f'  {name:32s} ' + '  '.join(f'{v:.3f} ({(v/est-1)*100:+5.1f}%)' for v in values))
     every = lambda r, k: True
     print('\nevery stage capped at ' + ', '.join(f'{f}x floor: {score(model, cap(rows, every, f)):.3f}' for f in (2.0, 1.5, 1.3, 1.15)))
 
     # Lossless BF16 exponent coding of the dense weights (P10): 25% fewer dense bytes; a projection's time beyond a
     # fixed part (launch, tail, activation IO) scales with its bytes.
     proj = lambda r, k: k in PROJ
-    print('\ndense bytes -25% (projection time = fixed + (t - fixed) x 0.75): ' + ', '.join(
+    print('\nadditional dense bytes -25% from current encoding (projection time = fixed + (t - fixed) x 0.75): ' + ', '.join(
         f"fixed {f:g} us {(v := score(model, edit(rows, proj, lambda t, _, f=f: min(t, f + (t - f) * 0.75)))):.3f} ({(v / est - 1) * 100:+.1f}%)"
         for f in (0.0, 2.0, 4.0)))
 
@@ -165,13 +163,13 @@ def main() -> None:
         combined = edit(combined, sel, lambda v, _, f=f: v / f)
     print(f"  {'all':10s} {score(model, combined):.3f}")
 
-    print(f'\nlayer time above a one-read stream at {4.8 / STREAM_FACTOR:.2f} TB/s: adjusted graph and the sum of '
+    print('\nlayer time above a stream at 2.36 us + bytes / 4.58 TB/s per data stage: adjusted graph and the sum of '
           'per-stage excess (kernel durations include PDL waits)')
     for r0, r in zip(model['rows'], rows):
         if r['tokens'] in (1, 8):
-            stream = STREAM_FACTOR * sum(r['floors_us'][k] for k in stages)
+            stream = sum(r['stream_roof_us'].get(k, r['floors_us'][k]) for k in stages)
             graph = r0['modeled_adjusted_us'] - sum(r0['stages_us'].values()) + sum(r['stages_us'].values())
-            excess = sum(max(0.0, r['stages_us'][k] - STREAM_FACTOR * r['floors_us'][k]) for k in stages)
+            excess = sum(max(0.0, r['stages_us'][k] - r['stream_roof_us'].get(k, r['floors_us'][k])) for k in stages)
             print(f'  {label(r):11s} graph {graph:6.1f} us, one-read {stream:5.1f}, above {graph - stream:5.1f}; '
                   f'stage-sum excess {excess:5.1f} us')
 
