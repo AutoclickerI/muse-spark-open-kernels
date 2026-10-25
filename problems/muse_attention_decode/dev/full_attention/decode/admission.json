@@ -1,0 +1,227 @@
+{
+  "base": "S14 final f1c77ce6",
+  "board_sha256": "06e39759a67ca29741597a259f5e608f3ddd14c9cf704b0e7569c2b80ad1fe58",
+  "payload_sha256": "43a990ab58371b2428d68b9aaa4eed541aa1f8733fc3aa216043f3154f0155d9",
+  "input_helper_sha256": "660d50eae8f59aa92bbfe70cf028b1b6b4b54844bd758bc186edccb2f3ee441e",
+  "variants": [
+    "ref",
+    "mix25",
+    "mix50",
+    "tc",
+    "tc25",
+    "wgref",
+    "wg25",
+    "wg50",
+    "ping",
+    "ping25"
+  ],
+  "native_units": 20,
+  "all_no_spills": true,
+  "all_no_C75": true,
+  "fixtures": 80,
+  "normal_and_forced_screen": [
+    {
+      "arm": "normal",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {}
+    },
+    {
+      "arm": "ref",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "mix25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "mix50",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "tc",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "tc25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "wgref",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "wg25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "wg50",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "ping",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "ping25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    }
+  ],
+  "host": {
+    "problem": "muse_bf16_proj",
+    "base": "f3786341611f4f1f",
+    "tests": 9,
+    "static": 3,
+    "full_payload_cases": 2,
+    "seeds_per_case": 8,
+    "cold_rotating_replays": 8,
+    "prepare_lab_seconds": 26.4
+  },
+  "verify_reset_unchanged": {
+    "sender_pid": 3171016,
+    "sha256": "030864131ce8d08f238ea779fd7df676ca553ef0e7defff848844c23c0d929b3",
+    "priority": 2.0,
+    "not_before": 1792972800.0
+  },
+  "not_before": 1792972800,
+  "priority": 2.5,
+  "results_pending": true,
+  "depends_on_verify_result": false,
+  "queued_file": "problems/muse_bf16_proj/lab/lab_decode_softmax_lab.py",
+  "sender_pid": 949154,
+  "dispatch": "06e39759a67ca297",
+  "job": null,
+  "status": "held until reset; no judge request before1792972800"
+}

@@ -1,0 +1,183 @@
+{
+  "passed": true,
+  "records": [
+    {
+      "arm": "normal",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {}
+    },
+    {
+      "arm": "ref",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "mix25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "mix50",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "tc",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "tc25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "wgref",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "wg25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "wg50",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "ping",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    },
+    {
+      "arm": "ping25",
+      "sha256": "a05b878d6b06da9c4050b8e39e29d9f1f14322ec9d998c46a8f9df74031e2295",
+      "tests": 16,
+      "shapes": 4,
+      "static": 7,
+      "calls": {
+        "(16, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        },
+        "(32, 1, 0)": {
+          "eager": 3,
+          "captured": 1
+        }
+      }
+    }
+  ]
+}

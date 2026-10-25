@@ -1,0 +1,82 @@
+{
+ "problem": "muse_bf16_proj",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/full_attention/decode/reset_board.py",
+ "sha256": "06e39759a67ca29741597a259f5e608f3ddd14c9cf704b0e7569c2b80ad1fe58",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 31.639083720976487,
+ "tests": [
+  {
+   "case": "m 1, layer qkv_gate",
+   "first_call_s": 0.0005250819958746433,
+   "ok": true,
+   "msg": "relative L2 error 1.631e-04 (worst row 1.631e-04)"
+  },
+  {
+   "case": "m 7, layer pooler",
+   "first_call_s": 0.0048879560199566185,
+   "ok": true,
+   "msg": "relative L2 error 1.139e-04 (worst row 1.730e-04); 2 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 33, layer o",
+   "first_call_s": 0.0016089329728856683,
+   "ok": true,
+   "msg": "relative L2 error 6.717e-05 (worst row 1.961e-04); 2 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 130, layer unpooler",
+   "first_call_s": 0.001353188999928534,
+   "ok": true,
+   "msg": "relative L2 error 3.034e-03 (worst row 3.399e-03); 19 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 5, layer unpooler",
+   "first_call_s": 0.0010808720253407955,
+   "ok": true,
+   "msg": "relative L2 error 6.824e-06 (worst row 1.564e-05)"
+  },
+  {
+   "case": "m 8, layer router",
+   "first_call_s": 0.0033702190266922116,
+   "ok": true,
+   "msg": "relative L2 error 2.546e-06 (worst row 2.795e-06); 2 probe rows exact to 2.7e-06"
+  },
+  {
+   "case": "m 9, layer router, dist outliers",
+   "first_call_s": 0.004265760013367981,
+   "ok": true,
+   "msg": "relative L2 error 2.530e-06 (worst row 2.701e-06); 2 probe rows exact to 2.6e-06"
+  },
+  {
+   "case": "m 512, layer qkv_gate, dist outliers",
+   "first_call_s": 0.003440881962887943,
+   "ok": true,
+   "msg": "relative L2 error 3.361e-03 (worst row 3.776e-03); 55 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 1000, layer unpooler, dist outliers",
+   "first_call_s": 0.001210034010000527,
+   "ok": true,
+   "msg": "relative L2 error 2.236e-03 (worst row 2.664e-03); 121 probe rows exact to 0.0e+00"
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "RAW_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+  "sent": false,
+  "kind": "GPU0 capacity exhaustion under concurrent local jobs",
+  "own_process_GiB": 1.58,
+  "allocation_MiB": 512,
+  "free_MiB": 361,
+  "first_check": "check.log after completing ref,mix25,mix50,tc,tc25,wgref and part of wg25",
+  "first_host_lab": "host_screen.log reported LAB_ERROR before R rows; official host TASK pass was not accepted as payload admission",
+  "fix": "Use8192-row generation chunks instead of1048576, retain full80K contexts and both seeds, rerun80 independent cases and the complete exact payload.",
+  "other_processes_touched": false
+}

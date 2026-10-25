@@ -1,19 +1,24 @@
-# full attention
+# P5b full attention
 
-Dependency working set retained for the parked serving round.
+Active kernel-round work: full decode16/32 and full verify16/32. Base S14 final
+**f1c77ce6**; no variant from this lane is promoted. P5 owns sliding and decode1.
+This directory is not parked serving work.
 
-Files (one entry per retained direct file):
+Two independent, screened batches are held for **2026-10-26 09:00 KST**
+(epoch1792972800), on the proj host:
 
-- [.gitignore](.gitignore): Generated-output exclusions.
-- [README.md](README.md): Current working set and resume instructions.
-- [phases_lab.py](phases_lab.py): Self-contained H200 measurement payload.
-- [vq_runtime.py](vq_runtime.py): Driver for vq8 (q_len 8 attention, both KV heads per CTA, stream-K, native FP8 WGMMA on sm_90a).
-- [softmax/README.md](softmax/README.md): Dependency working set and resume instructions.
+| Batch | Wrapper /sender PID | Priority | Working set |
+|---|---|---:|---|
+|Full verify softmax, eight arms|030864131ce8d08f /3171016|2.0|[softmax](softmax/README.md)|
+|Full decode softmax, ten arms ×eight seeds|06e39759a67ca297 /949154|2.5|[decode](decode/README.md)|
 
-Handoff: No independent integration handoff..
+The verify sender and its frozen bytes remain unchanged. Decode tests mixed
+MUFU/FMA exponentials and FP16-P tensor-core sums directly in attn_main, plus
+the native two-warpgroup q_len1 reference/splits/ping-pong. Every arm has local
+TASK/cache/capture coverage and strict native proofs. The decode batch does not
+depend on which verify arm wins; its README gives the integration decision rule.
 
-Pending H200 senders (not judge-accepted at handoff):
-
-- PID 3171016, wrapper `030864131ce8d08f`, [lab_softmax_mix_lab.py](../../../muse_bf16_proj/lab/lab_softmax_mix_lab.py); [sender log](../../../../runs/detached/030864131ce8d08f.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3171016.json`.
-
-Next: Resume from the consuming lane; this directory has no separate pending experiment or promoted patch.
+No judge job IDs exist before acceptance. Sender logs are under runs/detached,
+and the processes collect canonical receipts into runs/ after their sends.
+Read both receipts, then screen and pair a supported winner in the whole layer
+on identical inputs and fresh seeds. Component or sm120 timing does not promote.

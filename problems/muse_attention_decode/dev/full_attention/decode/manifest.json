@@ -1,0 +1,81 @@
+{
+  "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "reset_unchanged_sha256": "030864131ce8d08f238ea779fd7df676ca553ef0e7defff848844c23c0d929b3",
+  "variants": [
+    {
+      "name": "ref",
+      "kind": "attn_main",
+      "mix": 0,
+      "tc": false,
+      "cuda_sha256": "686c80c5830fc1ef96882242410efa9a240550865c158909b0b736cdf2af6c9a",
+      "driver_sha256": "b721895b7c086b3af1f7c140c76a5d9865e2c0fb2d58598ed4d6c68cdf780ffd"
+    },
+    {
+      "name": "mix25",
+      "kind": "attn_main",
+      "mix": 25,
+      "tc": false,
+      "cuda_sha256": "6765cfbfd7893b80ac87ed3aac3b0e3f2f961b5912a7a439f3390d8a54536f29",
+      "driver_sha256": "537897252e23d3c538f438061e107f9f9024f0eadc3d07e2b885e9c136953f0d"
+    },
+    {
+      "name": "mix50",
+      "kind": "attn_main",
+      "mix": 50,
+      "tc": false,
+      "cuda_sha256": "f4a38d8aa0b58b9accb266bb4398677bca5f79fc55613d1e407b668e72afe986",
+      "driver_sha256": "d8b7ac2afe52d0d9cf20db2cab642e7295b48feacb2c7c8be133b419182909a0"
+    },
+    {
+      "name": "tc",
+      "kind": "attn_main",
+      "mix": 0,
+      "tc": true,
+      "cuda_sha256": "8c1c7c203b81140d5eb712e8435de877ef4939f00a5292bc99a10932bd7e1e6a",
+      "driver_sha256": "3d056dc3dc05e8a3efe4cf47851c072a529ea29138aafd392706065dd6c87ec9"
+    },
+    {
+      "name": "tc25",
+      "kind": "attn_main",
+      "mix": 25,
+      "tc": true,
+      "cuda_sha256": "206898a3ed91190cbb486ea3cc027e9f49c5305033f429f52861ac737c062cae",
+      "driver_sha256": "c795a730ee3e43c148e47476ff644a39301e945fb6849f867acfb8168a03f392"
+    },
+    {
+      "name": "wgref",
+      "kind": "two_WG",
+      "reset_arm": "ref",
+      "cuda_sha256": "b578a22a17d702fe909f5b8c25f869b8317842b92c8330870478d9ff623775ac",
+      "driver_sha256": "96c7ce4288a292cd2455639d0baa9513134691aa53f8b661072d1827fcabe6fc"
+    },
+    {
+      "name": "wg25",
+      "kind": "two_WG",
+      "reset_arm": "mix25",
+      "cuda_sha256": "a446ec88fbff745e2aceaf8625707f70fb1975aa95d804b0db60676680e430aa",
+      "driver_sha256": "288d28ebf2b77c353446bfa98c4ddfe46633b822d2d7b607a4748e7c7997f22b"
+    },
+    {
+      "name": "wg50",
+      "kind": "two_WG",
+      "reset_arm": "mix50",
+      "cuda_sha256": "7f0c8e5b2794e6fe4aa6daf06fd8d67c47065ce191182d42a7bc6f6652e00316",
+      "driver_sha256": "6e4bb716a89329fcb18ba38c37589a2d20c794d2612f1f63a0cfebef964bcd5e"
+    },
+    {
+      "name": "ping",
+      "kind": "two_WG",
+      "reset_arm": "ping",
+      "cuda_sha256": "b1f98ea1a28dad1f2085a283d33b880a68b518e8bd33100d5faefe076885d907",
+      "driver_sha256": "cab3c85e86576d32f2787fcb85cdce24c281abb054c64d2b695dc43b3472ce21"
+    },
+    {
+      "name": "ping25",
+      "kind": "two_WG",
+      "reset_arm": "ping25",
+      "cuda_sha256": "9cbaf38798cf09d62a6facaa7e2e64967b27a9c99f1c964672ba002316757812",
+      "driver_sha256": "31afe7670772ec4b3d4956adfda3a9381ac758da7dedcd77645d2ea04af78474"
+    }
+  ]
+}
