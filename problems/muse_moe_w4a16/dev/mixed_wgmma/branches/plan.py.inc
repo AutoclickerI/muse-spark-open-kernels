@@ -83,6 +83,18 @@ def br_ilv_bank(weights):
     return {k: bank[k] for k in ('w13', 'w13_sf')}
 
 
+def br_wide(bank):
+    # Wide-bank layout (kinds with VEC flag 4): per 16-row group, codes [K32 block][thread][8B] -> [K64 pair][thread][2][8B]
+    # and scales [K32 block][row8][4B] -> [K128 stage][row8][4 blocks][4B]; a permutation of the same u8 bytes.
+    out = {}
+    for k in ('w13', 'w2'):
+        q, sf = bank[k], bank[k + '_sf']
+        e, ng = sf.shape[0], sf.shape[1]
+        out[k] = q.view(torch.uint8).reshape(e, ng, 64, 2, 32, 8).transpose(3, 4).contiguous().view(q.dtype).reshape(q.shape)
+        out[k + '_sf'] = sf.reshape(e, ng, 32, 4, 8, 4).transpose(3, 4).contiguous().reshape(sf.shape)
+    return out
+
+
 def br_prepare(weights):
     hh = hh_prepare(weights)
     dev = hh['base']['w13'].device
@@ -90,6 +102,8 @@ def br_prepare(weights):
               sms=torch.cuda.get_device_properties(dev).multi_processor_count)
     if BR_SET == 'tune':
         hh['base_ilv'] = br_ilv_bank(weights)
+        wide = br_wide(dict(hh['base'], w13=hh['base_ilv']['w13'], w13_sf=hh['base_ilv']['w13_sf']))
+        hh['base_wide'] = dict(hh['base'], **wide)
     elif BR_M == 128:
         hh['u16_sf'] = {k: ((hh['base'][k].to(torch.int32) << 4) + 0x7000).to(torch.int16) for k in ('w13_sf', 'w2_sf')}
     else:
@@ -112,27 +126,39 @@ BR_ARMS = {
     'N_full': (('n',), (0,), ('n',), (1,), 'full'),
     'N_swap': ((0,), ('n',), (1,), ('n',), 'full'),
     'L_swap': ((20,), ('n',), (21,), ('n',), 'full'),
+    'LI_swap': ((26,), ('n',), (21,), ('n',), 'full'),
     'NR_full': (('n', 5), (4,), ('n', 9), (8,), 'full'),
     'NRm_full': (('n',), (4, 5), ('n',), (8, 9), 'full'),
     'B8_full': (('n',), (0,), ('n8', 12), (1,), 'full'),
     'B8R_full': (('n', 5), (4,), ('n8', 12, 9), (8,), 'full'),
 }
 BR_GRID = 1056 if BR_M == 128 else 2112
-# Heavy-kernel lab (control L_swap: nf_cell's N_full with the lean K loop, heavy launched first on the side stream).
-# LI: gate/up rows interleaved by 8 in prepare, SwiGLU in registers; L_g: heavy grid /2, x2.
+# Heavy-kernel lab vs LI_swap (701d2867 winner: L_swap with gate/up rows interleaved by 8 in prepare, SwiGLU in registers).
+# F<s>: finalizer split over s blocks per token (bit-equal). Probes (BR_PROBES; timing only, TASK fails by design except LF):
+# LIF = LI_swap without the per-stage fence.proxy.async (its bit count vs control is the race diagnostic); P_heavy /
+# P_nt1 = one branch alone; P_nofin = no finalizer.
+LI = ((26,), ('n',), (21,), ('n',), 'full')
 BR_TUNE = {
-    'LI_swap': ((26,), ('n',), (21,), ('n',), 'full'),
-    'L_g' + str(BR_GRID // 2): ((20,), ('n',), (21,), ('n',), 'full', dict(grid=BR_GRID // 2)),
-    'L_g' + str(BR_GRID * 2): ((20,), ('n',), (21,), ('n',), 'full', dict(grid=BR_GRID * 2)),
+    'LIF_swap': ((29,), ('n',), (28,), ('n',), 'full'),
+    'F4': LI + (dict(fin=4),),
+    'F8': LI + (dict(fin=8),),
+    'F16': LI + (dict(fin=16),),
+    'LIW_swap': ((30,), ('n',), (31,), ('n',), 'full'),
+    'LIT_swap': ((32,), ('n',), (33,), ('n',), 'full'),
+    'LT2_swap': ((26,), ('n',), (33,), ('n',), 'full'),
+    'P_heavy': ((26,), (), (21,), (), 'full'),
+    'P_nt1': ((), ('n',), (), ('n',), 'full'),
+    'P_nofin': LI + (dict(nofin=True),),
 }
+BR_PROBES = ('LIF_swap', 'P_heavy', 'P_nt1', 'P_nofin')
 BR_ARMS.update(BR_TUNE)
 BR_ONLY = {'S6': 256, 'R_s6': 256, 'U16': 128}
 if BR_SET == 'tune':
-    BR_CONTROL = 'L_swap'
+    BR_CONTROL = 'LI_swap'
     BR_NAMES = [BR_CONTROL] + list(BR_TUNE)
 else:
     BR_CONTROL = 'HH' if BR_M == 128 else 'S6'
-    BR_NAMES = [BR_CONTROL] + [a for a in BR_ARMS if a not in (BR_CONTROL, 'N_swap', 'L_swap') and a not in BR_TUNE and BR_ONLY.get(a, BR_M) == BR_M]
+    BR_NAMES = [BR_CONTROL] + [a for a in BR_ARMS if a not in (BR_CONTROL, 'N_swap', 'L_swap', 'LI_swap') and a not in BR_TUNE and BR_ONLY.get(a, BR_M) == BR_M]
 
 
 def br_cur():
@@ -162,7 +188,7 @@ def br_s6_plan(data, hh, spec):
     q13 = [bank['w13_rec'], bank['w13_rec_sf']] + [v13[i] for i in (2, 3, 4, 5, 6, 7, 8, 14, 9, 15, 16)]
     q2 = [bank['w2_rec'], bank['w2_rec_sf']] + [v2[i] for i in (2, 3, 4, 5, 6, 7, 8, 14, 9, 15, 16)]
     p13, p2 = [t.data_ptr() for t in q13], [t.data_ptr() for t in q2]
-    rp = [v2[i].data_ptr() for i in (11, 4, 5, 6, 7, 8, 13, 7, 7, 7)]
+    rp = [v2[i].data_ptr() for i in (11, 4, 5, 6, 7, 8, 13, 7, 7)]
     fp = [v2[i].data_ptr() for i in (5, 11, 12, 13, 15, 16, 19)]
     owners = (q13, q2, v13, v2, plan)
 
@@ -177,7 +203,7 @@ def br_s6_plan(data, hh, spec):
 
     def finish():
         _ = owners
-        mod.br_finish(fp, m, start, br_cur())
+        mod.br_finish(fp, m, start, 1, br_cur())
         return v2[19]
     return dict(plan, steps=(route, body, finish))
 
@@ -192,7 +218,7 @@ def br_plan(data, hh, arm):
         return plan
     mod, hmod = hh['mod'], m128_hh_pm_module()
     v13, tasks = plan['v13'], plan['tasks']
-    t8, t64 = torch.empty_like(tasks[0]), torch.empty_like(tasks[0])
+    t8 = torch.empty_like(tasks[0])
     x, c, off, order, slots, act = v13[3], v13[4], v13[5], v13[6], v13[8], v13[9]
     ids, tw, pos, y, ss, out = v13[11], v13[12], v13[13], v13[15], v13[16], v13[19]
     m = x.shape[0]
@@ -200,14 +226,15 @@ def br_plan(data, hh, arm):
     h13 = [base['w13'], base['w13_sf'], base['w13_gs'], x, c, off, order, tasks[1], slots, base['pnw'], act, y, ss]
     h2 = [base['w2'], base['w2_sf'], base['w2_gs'], act, c, off, order, tasks[1], slots, base['pnw'], act, y, ss]
     h28 = h2[:7] + [t8] + h2[8:]
-    h1364, h264 = h13[:7] + [t64] + h13[8:], h2[:7] + [t64] + h2[8:]
     h13i = [hh['base_ilv']['w13'], hh['base_ilv']['w13_sf']] + h13[2:] if 'base_ilv' in hh else h13
+    wb = hh.get('base_wide', base)
+    h13w, h2w = [wb['w13'], wb['w13_sf']] + h13[2:], [wb['w2'], wb['w2_sf']] + h2[2:]
     nv = [x, base['pnw'], native['w13p'], native['w2p'], base['w13_gs'], base['w2_gs'], c, off, slots, act, y, ss]
-    p13, p2, p28, p1364, p264, p13i, pn = ([t.data_ptr() for t in v] for v in (h13, h2, h28, h1364, h264, h13i, nv))
-    rp = [t.data_ptr() for t in (ids, c, off, order, tasks[0], slots, pos, tasks[1], t8, t64)]
+    p13, p2, p28, p13i, p13w, p2w, pn = ([t.data_ptr() for t in v] for v in (h13, h2, h28, h13i, h13w, h2w, nv))
+    rp = [t.data_ptr() for t in (ids, c, off, order, tasks[0], slots, pos, tasks[1], t8)]
     fp = [t.data_ptr() for t in (off, ids, tw, pos, y, ss, out)]
-    owners = (plan, h13, h2, h28, h1364, h264, h13i, nv, t8, t64)
-    plan = dict(plan, tasks=list(tasks) + [t8, t64])
+    owners = (plan, h13, h2, h28, h13i, h13w, h2w, nv, t8)
+    plan = dict(plan, tasks=list(tasks) + [t8])
     ostages = 2
     while ostages > 1 and hmod.pm_nt_smem(ostages, m) > M128_HH_ISSUE_OPTS['pm_nt']:
         ostages -= 1
@@ -252,7 +279,7 @@ def br_plan(data, hh, arm):
             if k in ('n', 'n8'):
                 mod.pmz_run(pn, first, 16 if k == 'n' else 8, m, stages, grids[first], stream)
             else:
-                ptr = p28 if k == 12 else (p1364 if first else p264) if k in (24, 25) else p13i if k == 26 else p13 if first else p2
+                ptr = p28 if k == 12 else p13w if k == 30 else p2w if k == 31 else p13i if k in (26, 29, 32) else p13 if first else p2
                 mod.br_run(ptr, k, hgrid, m, stream)
 
     def route():
@@ -261,7 +288,8 @@ def br_plan(data, hh, arm):
 
     def finish():
         _ = owners
-        mod.br_finish(fp, m, start, br_cur())
+        if not opts.get('nofin'):
+            mod.br_finish(fp, m, start, opts.get('fin', 1), br_cur())
         return out
 
     if mode == 'full':

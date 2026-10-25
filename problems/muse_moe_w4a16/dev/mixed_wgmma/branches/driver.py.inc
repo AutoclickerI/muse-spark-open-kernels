@@ -35,9 +35,11 @@ def br_phases(data, bank, arm, ev0, ev1):
     return vals
 
 
-BR_META_TUNE = ('META heavy-kernel lab at M%d vs L_swap (858ff2fa winner: N_full, heavy N32 with the lean K loop, grid %d, '
-                'launched first on the side stream || NT1<=16; live route; one join). LI_swap: gate/up rows interleaved by 8 in '
-                'prepare, SwiGLU in registers (bit-equal); L_g<grid>: heavy grid. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
+BR_META_TUNE = ('META heavy-kernel lab at M%d vs LI_swap (701d2867 winner: N_full, heavy N32 lean K loop, W13 gate/up rows '
+                'interleaved by 8 in prepare with SwiGLU in registers, grid %d, launched first on the side stream || NT1<=16; live '
+                'route; one join). F<s>: finalizer split over s blocks per token (bit-equal). Probes, timing only: LIF_swap = '
+                'LI_swap without the per-stage fence.proxy.async (bit = race diagnostic); P_heavy / P_nt1 = one branch alone; '
+                'P_nofin = no finalizer (TASK FAIL by design). 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
 BR_META = {
     128: 'META M128 vs HH = exact S7 H_H (u8 codes; route128 zero-fill + pm_meta SS clear; NT1<=16 then WGMMA32>16 per phase; finish). '
          'U16 = exact u16-word H_H (S6). ',

@@ -2,6 +2,8 @@
 // (sign/zero folded into the codes); scales convert to BF16 inside the timed kernel.
 // One task = one 32-row group of one expert x one 64-channel M tile (route NT=32 numbering).
 // A kernel instance owns the groups whose expert count (FM=1) or rows-in-group (FM=2) lies in (LO,HI].
+#include <cuda.h>
+#include <cudaTypedefs.h>
 #include <cuda_runtime.h>
 #include <cuda_bf16.h>
 #include <stdint.h>
@@ -49,15 +51,6 @@ template<int NT>__device__ __forceinline__ void mma(float*c,const unsigned*a,con
  asm volatile("{ .reg .pred p; setp.ne.b32 p,1,0; wgmma.mma_async.sync.aligned.m64n16k16.f32.bf16.bf16 "
  "{%0,%1,%2,%3,%4,%5,%6,%7},{%8,%9,%10,%11},%12,p,1,1,0;}"
  :"+f"(c[0]),"+f"(c[1]),"+f"(c[2]),"+f"(c[3]),"+f"(c[4]),"+f"(c[5]),"+f"(c[6]),"+f"(c[7])
- :"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]),"l"(d));
- }else if constexpr(NT==64){
- asm volatile("{ .reg .pred p; setp.ne.b32 p,1,0; wgmma.mma_async.sync.aligned.m64n64k16.f32.bf16.bf16 "
- "{%0,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13,%14,%15,%16,%17,%18,%19,%20,%21,%22,%23,%24,%25,%26,%27,%28,%29,%30,%31},"
- "{%32,%33,%34,%35},%36,p,1,1,0;}"
- :"+f"(c[0]),"+f"(c[1]),"+f"(c[2]),"+f"(c[3]),"+f"(c[4]),"+f"(c[5]),"+f"(c[6]),"+f"(c[7]),
-  "+f"(c[8]),"+f"(c[9]),"+f"(c[10]),"+f"(c[11]),"+f"(c[12]),"+f"(c[13]),"+f"(c[14]),"+f"(c[15]),
-  "+f"(c[16]),"+f"(c[17]),"+f"(c[18]),"+f"(c[19]),"+f"(c[20]),"+f"(c[21]),"+f"(c[22]),"+f"(c[23]),
-  "+f"(c[24]),"+f"(c[25]),"+f"(c[26]),"+f"(c[27]),"+f"(c[28]),"+f"(c[29]),"+f"(c[30]),"+f"(c[31])
  :"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]),"l"(d));
  }else{
  static_assert(NT==32,"tile width");
@@ -127,26 +120,44 @@ template<int NS>__device__ __forceinline__ void cp_wait(int k){
  else asm volatile("cp.async.wait_group %0;"::"n"(S-2):"memory");
 }
 template<int NT>constexpr int smem_bytes(){return 1023+((S*(64*KT/2+64*KT/16)+1023)&~1023)+S*NT*KT*2;}
+__device__ __forceinline__ void mb_wait(unsigned mb,unsigned parity){
+ asm volatile("{ .reg .pred p; MB_WAIT%=: mbarrier.try_wait.parity.shared::cta.b64 p,[%0],%1; @!p bra MB_WAIT%=; }"::"r"(mb),"r"(parity):"memory");
+}
+__device__ __forceinline__ void tma2d(unsigned dst,const CUtensorMap*map,int x,int y,unsigned mb){
+ asm volatile("cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes [%0],[%1,{%2,%3}],[%4];"
+  ::"r"(dst),"l"(map),"r"(x),"r"(y),"r"(mb):"memory");
+}
 
 template<int NT,bool FIRST,int VEC,int FM,int LO,int HI>
 __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC,const float*GS,
  const __nv_bfloat16*X,const int*C,const int*OFF,const int*ORDER,const int*TASK,const int*SLOTS,
- const __nv_bfloat16*PNW,__nv_bfloat16*ACT,float*Y,float*SS,int M){
+ const __nv_bfloat16*PNW,__nv_bfloat16*ACT,float*Y,float*SS,int M,const __grid_constant__ CUtensorMap tmx){
  constexpr int QB=64*KT/2,SB=64*KT/16,NS=4096/KT,N=FIRST?8192:4096,MT=N/64,NJ=NT>=16?NT/16:1;
+ // Lean-loop flags (VEC-2): 1 = W13 gate/up interleave (SwiGLU in registers), 2 = no per-stage proxy fence (timing
+ // probe), 4 = wide banks (nf_wide: 3 LDS.128 per stage), 8 = X tile by TMA (tmx, mbarrier per stage; no proxy fence).
+ constexpr int FL=VEC>=2?VEC-2:0;constexpr bool ILV=FL&1,NOFENCE=FL&2,WIDE=FL&4,TMA=FL&8;
  constexpr int BS=((S*(QB+SB)+1023)&~1023);
  extern __shared__ __align__(1024) unsigned char typed_sm[];
  unsigned char*qs=typed_sm,*ss=qs+S*QB;auto*bs=(__nv_bfloat16*)(typed_sm+BS);
  __shared__ __nv_bfloat16 epi[FIRST?64*NT:1];__shared__ float rowsum[FIRST?1:4*NT];
  int t=threadIdx.x,w=t>>5,l=t&31;
+ __shared__ __align__(8) unsigned long long fullb[S];
+ if constexpr(TMA){
+  if(t==0){
+   #pragma unroll
+   for(int s=0;s<S;++s)asm volatile("mbarrier.init.shared::cta.b64 [%0],1;"::"r"(smaddr(&fullb[s])):"memory");
+   asm volatile("fence.mbarrier_init.release.cluster;":::"memory");
+  }
+  __syncthreads();
+ }
  int total=TASK[32]*MT;
  for(int unit=blockIdx.x;unit<total;unit+=gridDim.x){
   int group=unit/MT,mt=unit%MT,ix=0;
   #pragma unroll
   for(int d=16;d;d>>=1)if(TASK[ix+d]<=group)ix+=d;
-  int e=ORDER[ix],row=(group-TASK[ix])*(NT==64?64:32),count=C[e],offset=OFF[e];
+  int e=ORDER[ix],row=(group-TASK[ix])*32,count=C[e],offset=OFF[e];
   if constexpr(FM==1){if(count<=LO||count>HI)continue;}
   if constexpr(FM==2){int rem=min(count-row,32);if(rem<=LO||rem>HI)continue;}
-  static_assert(NT!=64||FM!=2,"N64 tiles run whole 64-row groups");
   int src[NJ];
   #pragma unroll
   for(int j=0;j<NJ;++j){int rl=t/8+j*16,r=row+rl;src[j]=(rl<NT&&r<count)?(FIRST?SLOTS[e*M+r]/8:offset+r):-1;}
@@ -157,23 +168,42 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
    // Lean K loop (same smem layout, copies and math as VEC==1): per-unit global pointers advanced by a fixed
    // stride, one commit group per stage (empty past the end) so the wait count is a constant, and the stage
    // ring unrolled so every shared offset and WGMMA descriptor is a compile-time constant.
+   // Wide banks: one LDS.128 brings a thread's codes for two K32 blocks and one its four scale words per stage
+   // (smem codes [K64 pair][thread][2][8B], scales [warp][row8][4][4B]).
    static_assert(NS%S==0,"stage ring");
    const int*qg=Q;const unsigned char*sg=SC;const __nv_bfloat16*xg[NJ];bool xv[NJ];
    const bool wq=t<64,ws=t>=64&&t<64+KT/4;
    if(wq){unsigned gp=t>>4,ln=t&15;qg=Q+((unsigned)e*(N/16)+mt*4+gp)*128*64+ln*4;}
-   if(ws){unsigned i=t-64,g=i/8,gp=(i%8)/2,hf=i%2;sg=SC+((((unsigned)e*(N/16)+mt*4+gp)*128+g)*32+hf*16);}
-   unsigned qd=smaddr(qs+t*16),sd=0;
-   if(ws){unsigned i=t-64,g=i/8,gp=(i%8)/2,hf=i%2;sd=smaddr(ss+g*128+gp*32+hf*16);}
+   unsigned qd=smaddr(qs+(WIDE?(t>>4)*512+(t&15)*16:t*16)),sd=0;
+   if(ws){unsigned i=t-64;
+    if constexpr(WIDE){sg=SC+(((unsigned)e*(N/16)+mt*4+i/8)*128*32+(i%8)*16);sd=smaddr(ss+i*16);}
+    else{unsigned g=i/8,gp=(i%8)/2,hf=i%2;sg=SC+((((unsigned)e*(N/16)+mt*4+gp)*128+g)*32+hf*16);sd=smaddr(ss+g*128+gp*32+hf*16);}}
    unsigned bd[NJ];
    #pragma unroll
    for(int j=0;j<NJ;++j){int r=t/8+j*16,k=(t&7)*8;xv[j]=src[j]>=0;xg[j]=X+(size_t)max(src[j],0)*4096+k;
     bd[j]=smaddr(bs+r*64+(k^((r&7)*8)));}
+   // TMA: warp 0 issues the stage's X tile (W13: one 64x1 box per row and K half, gathered rows, invalid rows out of
+   // bounds -> zeros; W2: one 64x32 box per K half over the expert's contiguous rows); lane 0 arms the stage barrier.
+   int kx=0,xrow=FIRST?(l<NT&&row+l<count?SLOTS[e*M+row+l]/8:M):offset+row;
    auto issue=[&](int slot){
+    if constexpr(TMA){
+     if(w==0){unsigned mb=smaddr(&fullb[slot]),dst=smaddr(bs+slot*NT*KT);
+      if(l==0)asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _,[%0],%1;"::"r"(mb),"r"(NT*KT*2):"memory");
+      __syncwarp();
+      #pragma unroll
+      for(int c=0;c<KT/64;++c){
+       if constexpr(FIRST){if(l<NT)tma2d(dst+(c*NT*64+l*64)*2,&tmx,kx+c*64,xrow,mb);}
+       else if(l==0)tma2d(dst+c*NT*64*2,&tmx,kx+c*64,xrow,mb);
+      }
+     }
+     kx+=KT;
+    }
     if(wq){
      #pragma unroll
-     for(int g=0;g<KT/32;++g)asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(qd+slot*QB+g*1024),"l"(qg+g*64):"memory");
+     for(int g=0;g<KT/32;++g)asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(qd+slot*QB+(WIDE?(g>>1)*2048+(g&1)*256:g*1024)),"l"(qg+g*64):"memory");
      qg+=(KT/32)*64;}
     if(ws){asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(sd+slot*SB),"l"(sg):"memory");sg+=(KT/32)*32;}
+    if constexpr(!TMA){
     #pragma unroll
     for(int c=0;c<KT/64;++c){
      #pragma unroll
@@ -181,6 +211,7 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
     }
     #pragma unroll
     for(int j=0;j<NJ;++j)xg[j]+=KT;
+    }
    };
    #pragma unroll
    for(int i=0;i<S-1;++i){issue(i);asm volatile("cp.async.commit_group;":::"memory");}
@@ -188,15 +219,22 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
    for(int k0=0;k0<NS;k0+=S){
     #pragma unroll
     for(int st=0;st<S;++st){
-     asm volatile("cp.async.wait_group %0;"::"n"(S-2):"memory");__syncthreads();
+     asm volatile("cp.async.wait_group %0;"::"n"(S-2):"memory");
+     if constexpr(TMA)mb_wait(smaddr(&fullb[st]),(k0/S)&1);
+     __syncthreads();
 #if BR_HOPPER
-     asm volatile("fence.proxy.async.shared::cta;":::"memory");
+     if constexpr(!NOFENCE&&!TMA)asm volatile("fence.proxy.async.shared::cta;":::"memory");
 #endif
+     uint4 sv;
+     if constexpr(WIDE)sv=*(const uint4*)(ss+st*SB+(w*8+(l>>2))*16);
      #pragma unroll
      for(int sub=0;sub<2;++sub){
+      if constexpr(WIDE){uint4 q=*(const uint4*)(qs+st*QB+sub*2048+t*16);
+       dq(q.x,q.y,sub?sv.z:sv.x,af[sub]);dq(q.z,q.w,sub?sv.w:sv.y,af[sub]+8);}
+      else{
       #pragma unroll
       for(int g=0;g<2;++g){int z=sub*2+g;uint2 q=*(const uint2*)(qs+st*QB+(z*128+t)*8);
-       unsigned sf=*(const unsigned*)(ss+st*SB+z*128+w*32+(l>>2)*4);dq(q.x,q.y,sf,af[sub]+g*8);}
+       unsigned sf=*(const unsigned*)(ss+st*SB+z*128+w*32+(l>>2)*4);dq(q.x,q.y,sf,af[sub]+g*8);}}
       keep(af[sub]);
 #if BR_HOPPER
       asm volatile("wgmma.fence.sync.aligned;":::"memory");
@@ -234,7 +272,7 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
   asm volatile("wgmma.wait_group.sync.aligned 0;":::"memory");
 #endif
   keep(af[0]);keep(af[1]);
-  if constexpr(FIRST&&VEC==3){
+  if constexpr(FIRST&&ILV){
    // Gate/up rows interleaved by 8 in prepare (per 64-row tile: G0-7,U0-7,G8-15,U8-15,...): accumulator j holds gate
    // and j+2 the up row of the same channel, so SwiGLU finishes in registers (same BF16 roundings as below).
    float gg=GS[e]*256.f,gu=GS[e+32]*256.f;int ch=mt*32+w*8+(l>>2);
@@ -283,9 +321,9 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
 
 // Routing only: no output fill, no readiness state. One CTA owns every pair (same as the
 // original CTA 0); with META it also writes the heavy-only (count>16) 32-row task prefix T32, the
-// one-group-per-expert prefix T8 of experts with 8<count<=16 and the 64-row prefix T64 of experts with count>32.
+// one-group-per-expert prefix T8 of experts with 8<count<=16.
 template<bool META>__global__ void __launch_bounds__(256) route_live(const int*ids,int*C,int*OFF,int*ORDER,int*TASK,int*SLOTS,int*POS,int*T32,
- int*T8,int*T64,int M,int NT,int start){
+ int*T8,int M,int NT,int start){
  int t=threadIdx.x;
  __shared__ int count[32];if(t<32)count[t]=0;__syncthreads();
  // All eight cold id loads per thread are issued before the first shared atomic.
@@ -316,15 +354,16 @@ template<bool META>__global__ void __launch_bounds__(256) route_live(const int*i
   #pragma unroll
   for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,ends,d);if(t>=d)ends+=a;}
   TASK[t+1]=ends;if(t==0)TASK[0]=0;
-  if constexpr(META){int ns=key/32,v=ns>16?(ns+31)/32:0,u=ns>8&&ns<=16,h=ns>32?(ns+63)/64:0;
+  if constexpr(META){int ns=key/32,v=ns>16?(ns+31)/32:0,u=ns>8&&ns<=16;
    #pragma unroll
-   for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,v,d),b=__shfl_up_sync(~0u,u,d),c=__shfl_up_sync(~0u,h,d);if(t>=d){v+=a;u+=b;h+=c;}}
-   T32[t+1]=v;T8[t+1]=u;T64[t+1]=h;if(t==0){T32[0]=0;T8[0]=0;T64[0]=0;}}
+   for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,v,d),b=__shfl_up_sync(~0u,u,d);if(t>=d){v+=a;u+=b;}}
+   T32[t+1]=v;T8[t+1]=u;if(t==0){T32[0]=0;T8[0]=0;}}
  }
 }
 
-__global__ void finish(const int*__restrict__ OFF,const int*__restrict__ IDS,const float*__restrict__ TW,const int*__restrict__ POS,const float*__restrict__ Y,const float*__restrict__ SS,__nv_bfloat16*__restrict__ OUT,int M,int start){
- int tok=blockIdx.x,t=threadIdx.x,w=t/32,l=t%32;__shared__ int base[8];__shared__ float alpha[8];
+// SPLIT blocks per token, each owning 4096/SPLIT channels; per-element math and order are the same for every SPLIT.
+template<int SPLIT>__global__ void finish(const int*__restrict__ OFF,const int*__restrict__ IDS,const float*__restrict__ TW,const int*__restrict__ POS,const float*__restrict__ Y,const float*__restrict__ SS,__nv_bfloat16*__restrict__ OUT,int M,int start){
+ constexpr int W=4096/SPLIT;int tok=blockIdx.x/SPLIT,c0=blockIdx.x%SPLIT*W,t=threadIdx.x,w=t/32,l=t%32;__shared__ int base[8];__shared__ float alpha[8];
  int e=IDS[tok*8+w]-start,p=-1;float sum=0;
  if(e>=0&&e<32){p=OFF[e]+POS[tok*8+w];sum=SS[(size_t)p*64+l]+SS[(size_t)p*64+l+32];}
  for(int d=16;d;d/=2)sum+=__shfl_down_sync(~0u,sum,d);
@@ -332,7 +371,7 @@ __global__ void finish(const int*__restrict__ OFF,const int*__restrict__ IDS,con
  __syncthreads();int pp[8];float aa[8];
  #pragma unroll
  for(int j=0;j<8;++j){pp[j]=base[j];aa[j]=alpha[j];}
- for(int c=t*4;c<4096;c+=1024){float4 sum=make_float4(0,0,0,0);
+ for(int c=c0+t*4;c<c0+W;c+=1024){float4 sum=make_float4(0,0,0,0);
   #pragma unroll
   for(int j=0;j<8;++j)if(pp[j]>=0){float4 v=*(const float4*)(Y+(size_t)pp[j]*4096+c);float a=aa[j];sum.x+=v.x*a;sum.y+=v.y*a;sum.z+=v.z*a;sum.w+=v.w*a;}
   __nv_bfloat162 a=__floats2bfloat162_rn(sum.x,sum.y),b=__floats2bfloat162_rn(sum.z,sum.w);
@@ -344,7 +383,17 @@ __global__ void finish(const int*__restrict__ OFF,const int*__restrict__ IDS,con
 // Pointer ABI for gemm: Q,SC,GS,X,C,OFF,ORDER,TASK,SLOTS,PNW,ACT,Y,SS.
 #define BR_ARGS(v) (const int*)v[0],(const unsigned char*)v[1],(const float*)v[2],(const __nv_bfloat16*)v[3],(const int*)v[4],(const int*)v[5],(const int*)v[6],(const int*)v[7],(const int*)v[8],(const __nv_bfloat16*)v[9],(__nv_bfloat16*)v[10],(float*)v[11],(float*)v[12]
 #define BR_INIT(ID,NT,F,V,FM,LO,HI) BR_CUDA_CHECK(cudaFuncSetAttribute(mwbr::gemm<NT,F,V,FM,LO,HI>,cudaFuncAttributeMaxDynamicSharedMemorySize,mwbr::smem_bytes<NT>()));
-#define BR_GO(ID,NT,F,V,FM,LO,HI) case ID:mwbr::gemm<NT,F,V,FM,LO,HI><<<grid,128,mwbr::smem_bytes<NT>(),(cudaStream_t)stream>>>(BR_ARGS(v),(int)M);break;
+// X tensor map for TMA kinds: W13 reads hidden_states [M,4096] one row per box, W2 the ACT buffer [M*8+32*128,4096] 32 rows per box.
+static CUtensorMap br_tmap(void*ptr,uint64_t rows,uint32_t box_rows){
+ static PFN_cuTensorMapEncodeTiled_v12000 enc=nullptr;
+ if(!enc){cudaDriverEntryPointQueryResult q;BR_CUDA_CHECK(cudaGetDriverEntryPoint("cuTensorMapEncodeTiled",(void**)&enc,cudaEnableDefault,&q));BR_REQUIRE(q==cudaDriverEntryPointSuccess&&enc);}
+ CUtensorMap m;cuuint64_t dims[2]={4096,rows},strides[1]={8192};cuuint32_t box[2]={64,box_rows},es[2]={1,1};
+ BR_REQUIRE(enc(&m,CU_TENSOR_MAP_DATA_TYPE_BFLOAT16,2,ptr,dims,strides,box,es,CU_TENSOR_MAP_INTERLEAVE_NONE,CU_TENSOR_MAP_SWIZZLE_128B,
+  CU_TENSOR_MAP_L2_PROMOTION_L2_128B,CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE)==CUDA_SUCCESS);
+ return m;
+}
+#define BR_GO(ID,NT,F,V,FM,LO,HI) case ID:{CUtensorMap m{};if((V)>=2&&(((V)-2)&8))m=br_tmap((void*)v[3],F?(uint64_t)M:(uint64_t)(M*8+32*128),F?1:32);\
+ mwbr::gemm<NT,F,V,FM,LO,HI><<<grid,128,mwbr::smem_bytes<NT>(),(cudaStream_t)stream>>>(BR_ARGS(v),(int)M,m);}break;
 #define BR_INFO(ID,NT,F,V,FM,LO,HI) case ID:{cudaFuncAttributes a{};int n;BR_CUDA_CHECK(cudaFuncGetAttributes(&a,mwbr::gemm<NT,F,V,FM,LO,HI>));BR_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n,mwbr::gemm<NT,F,V,FM,LO,HI>,128,mwbr::smem_bytes<NT>()));return {a.numRegs,(int64_t)a.localSizeBytes,(int64_t)a.sharedSizeBytes,(int64_t)mwbr::smem_bytes<NT>(),n};}
 int64_t br_init(){BR_KINDS(BR_INIT) return 0;}
 std::vector<int64_t> br_info(int64_t kind){switch(kind){BR_KINDS(BR_INFO) default:BR_REQUIRE(false);}return {};}
@@ -353,16 +402,18 @@ void br_run(std::vector<int64_t>v,int64_t kind,int64_t grid,int64_t M,int64_t st
  switch(kind){BR_KINDS(BR_GO) default:BR_REQUIRE(false);}
  BR_CUDA_CHECK(cudaGetLastError());
 }
-// v: ids,C,OFF,ORDER,TASK,SLOTS,POS,T32,T8,T64 (T32/T8/T64 written only with meta)
+// v: ids,C,OFF,ORDER,TASK,SLOTS,POS,T32,T8 (T32/T8 written only with meta)
 void br_route(std::vector<int64_t>v,int64_t M,int64_t start,int64_t meta,int64_t stream){
- BR_REQUIRE(v.size()==10);
- if(meta)mwbr::route_live<true><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int*)v[9],(int)M,32,(int)start);
- else mwbr::route_live<false><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int*)v[9],(int)M,32,(int)start);
+ BR_REQUIRE(v.size()==9);
+ if(meta)mwbr::route_live<true><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int)M,32,(int)start);
+ else mwbr::route_live<false><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int)M,32,(int)start);
  BR_CUDA_CHECK(cudaGetLastError());
 }
 // v: OFF,IDS,TW,POS,Y,SS,OUT
-void br_finish(std::vector<int64_t>v,int64_t M,int64_t start,int64_t stream){
+void br_finish(std::vector<int64_t>v,int64_t M,int64_t start,int64_t split,int64_t stream){
  BR_REQUIRE(v.size()==7);
- mwbr::finish<<<M,256,0,(cudaStream_t)stream>>>((const int*)v[0],(const int*)v[1],(const float*)v[2],(const int*)v[3],(const float*)v[4],(const float*)v[5],(__nv_bfloat16*)v[6],(int)M,(int)start);
+#define BR_FIN(S) case S:mwbr::finish<S><<<M*S,256,0,(cudaStream_t)stream>>>((const int*)v[0],(const int*)v[1],(const float*)v[2],(const int*)v[3],(const float*)v[4],(const float*)v[5],(__nv_bfloat16*)v[6],(int)M,(int)start);break;
+ switch(split){BR_FIN(1) BR_FIN(2) BR_FIN(4) BR_FIN(8) BR_FIN(16) default:BR_REQUIRE(false);}
+#undef BR_FIN
  BR_CUDA_CHECK(cudaGetLastError());
 }

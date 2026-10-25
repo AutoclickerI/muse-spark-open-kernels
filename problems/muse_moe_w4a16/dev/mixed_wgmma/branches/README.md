@@ -8,12 +8,29 @@ flight, no fills; META adds the heavy-only T32 and 8<count<=16 T8 lists) and the
 
 ## Handoff (current)
 
-`nf_cell.py` fd04d8c4a100d2181051a8ab385f6dffc62b6ad32bb3236794006685342d3500: N_full at M=128 and M=256 (live route; heavy
-N32 W13->W2 launched first on the side stream || NT1 <=16 W13->W2; one join; own buffers; reads S7's H_H u8 base + NT1
-banks). On S7R: `problems/muse_decode_layer/cand_r3_best7_s7n.py` 2c9de5e57b8ea617c1c913d3738e4d0a1130e7b5b88f2669a6c2ffadbb18651c
-(`dev/s7n/`: 72/72 bit-equal to the timed arm at both M, normal + forced 13 PASS). S9/S10 take it from `dev/s7n/build.py`.
-Next lever: dequant instructions per weight (heavy path ~71 SASS / 16 weights; N_full is 2.1x / 2.8x the active-expert
-HBM floor at M=128 / 256).
+`nf_cell.py` e86f6fb36a467233b2460c18689456d0108f37ef52a68eb7536de0a2da91ebdd: N_full at M=128 and M=256 (live route; heavy
+N32 W13->W2 with the lean K loop, W13 kind 26 = gate/up rows interleaved by 8 (`nf_ilv` in prepare) with SwiGLU in
+registers, W2 kind 21, launched first on the side stream || NT1 <=16 W13->W2; one join; own buffers; reads S7's H_H u8
+base + NT1 banks). On S7R: `problems/muse_decode_layer/cand_r3_best7_s7n.py`
+795497c8feabe97dd711857c1f3456efffaa76a3a6387b384b5aaf3fcff7b578 (`dev/s7n/`: 72/72 bit-equal to the timed arm LI_swap at
+both M, normal 13 PASS + 21 static, forced 13 PASS). S11 applies `dev/s7n/nf_patch_e200b0ee.py` b22421b2 (cell block +
+the nf_ilv prepare edit); the earlier lean-K patch `nf_patch.py` 686e5025 stays as S11 loaded it. The lab kinds 30-33
+(wide banks, TMA-fed X) came after this cell.
+
+## Landed: gate/up interleave, H200 job 701d2867 (send 8007df6c; read flush)
+
+vs L_swap (M=128 196.15, M=256 279.62 us), 12 seeds x3, all TASK PASS: LI_swap (W13 rows interleaved by 8 in prepare so
+SwiGLU finishes in registers, kind 26) 0.9923 / 0.9838 (bit-equal; one M=256 fixture differs in the last bit in every arm
+including the control: NT1 W2 norm partials are float atomics). Heavy grid /2, x2: 1.0043 / 1.0005, 1.0048 / 1.0024 (closed).
+
+## Landed: lean K loop, H200 job 858ff2fa (send eeffa0cb; read flush)
+
+vs N_swap (M=128 205.19, M=256 296.72 us), 12 seeds x3, all TASK PASS, bit-equal 36/36: L_swap (lean K loop) 197.16 /
+279.38 (0.9613 / 0.9426). Decode once per 64-row expert tile loses: L64_swap 1.0233 / 0.9803, L64r_swap 1.0097 / 0.9983
+(N64 kinds deleted). Phases (route/body/finish, us, isolated graphs): L_swap 6.5/183.4/12.9 at M=128, 6.6/266.6/13.6 at
+M=256. SASS sm_90a per KT=128 stage: 254 -> 207 instructions; dequant core 128 (per 16 weights LOP3 9, SHF 7, HMUL2 8,
+PRMT 4, LEA 4); the rest: fence.proxy.async (MEMBAR.ALL.CTA + FENCE.VIEW.ASYNC + 4 dummy LDS), BAR, 8 LDS, 9 LDGSTS,
+descriptor UMOV/ULOP3 ~15, 64-bit pointer increments, IMAD.MOV operand copies.
 
 ## Landed: M=256, H200 job 110599ba6b6144d4 (send a45ff19d; zero_()-flushed, paired ratios only)
 

@@ -1,4 +1,4 @@
-"""S7N's M=128/256 MoE (nf_call on S7's own H_H base + recoded NT1 banks) vs the lab arm L_swap that H200 858ff2fa timed
+"""S7N's M=128/256 MoE (nf_call on S7's own H_H base + recoded NT1 banks) vs the lab arm LI_swap that H200 701d2867 timed
 (prof/lab/moe_nf_tune_m{M}.py on hh_cell's banks). Usage: equiv.py M [seeds]: same inputs, outputs compared bit for bit (the NT1 W2 norm partials
 are float atomics, so a rare last-bit difference is counted, not failed), and both gated against the FP32 oracle."""
 import hashlib
@@ -35,7 +35,7 @@ def main():
     for seed in range(seeds):
         w = lab['dc_weights'](5353 + 7919 * seed, 'cuda')
         wp = dict(w, post_norm_w=w['post_expert_norm'])
-        state = dict(s5_hh_base=cand.issue_prepare(wp), moe_bank=cand._prepare_recoded_bank(w, cand.v9_prepare(wp), cand._v9_recoded_module()),
+        state = dict(s5_hh_base=cand.issue_prepare(cand.nf_ilv(wp)), moe_bank=cand._prepare_recoded_bank(w, cand.v9_prepare(wp), cand._v9_recoded_module()),
                      nf_streams=streams)
         assert all(state['s5_hh_base'][k].dtype == torch.uint8 for k in ('w13_sf', 'w2_sf'))
         hh = lab['br_prepare'](w)
@@ -51,7 +51,7 @@ def main():
         wants = lab['dc_oracles'](cases[:-1] + [real[1]], w)
         for d, want in zip(cases, wants):
             oc = cand.nf_call(d, state).clone()
-            ol = lab['br_call'](d, hh, 'L_swap').clone()
+            ol = lab['br_call'](d, hh, 'LI_swap').clone()
             torch.cuda.synchronize()
             e, r = lab['br_error'](oc, want)
             el, rl = lab['br_error'](ol, want)

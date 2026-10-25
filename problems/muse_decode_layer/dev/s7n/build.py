@@ -23,7 +23,7 @@ sys.path[:0] = [str(BR), str(R / 'tools')]
 import sources  # noqa: E402
 from okc_run import rejected_words  # noqa: E402
 
-KINDS = ((20, 32, 1, 2, 0, 0, 0), (21, 32, 0, 2, 0, 0, 0))  # W13 / W2 N32, lean K loop, on the heavy-only T32 list
+KINDS = ((26, 32, 1, 3, 0, 0, 0), (21, 32, 0, 2, 0, 0, 0))  # W13 (gate/up interleaved, SwiGLU in registers) / W2 N32, lean K loop, on the heavy-only T32 list
 DEAD = ('pm_plan', 'pm_module', 'S5_HH_CUDA', 'S5_HH_CPP', 'S5_HH_FUNCTIONS', 'ISSUE_OPTS', 'FX_CUDA', 'FX_CPP', 'FX_CONFIGS', 'WI_CPP', 'fx_module', 'fx_prepare', 'fx_from_packed', 'fx_plan', 'wi_prepare',
         'wi_plan', 'wi_call', 'pm_call', 'RF_CUDA', 'RF_CPP', 'rf_module', 'rf_plan', 'rf_call', 'rc_masks', 'RC_SIGNS', 'RC_ZEROS', 'rc_repack')
 COMMENTS = ('# H200 770809cf159f41e2: exact H_H expert/phase mix at M128.\n','# H200 8483c0c6783a4df1: exact M256 mixed_parallel policy6/grid2112.\n',
@@ -32,7 +32,8 @@ CELL = '''
 
 # MoE lane H200 c01b1916e2c74af8 / 14f942d57e764ebf / 880c388117ed4e16: N_full at M=128 (paired 0.8842 vs S7's H_H,
 # bit-equal) and M=256 (0.8701 vs mixed_parallel); heavy on the side stream, launched first: a further 0.9799 / 0.9882;
-# heavy kernel's lean K loop (858ff2fa): a further 0.9613 / 0.9426.
+# heavy kernel's lean K loop (858ff2fa): a further 0.9613 / 0.9426; W13 gate/up rows interleaved by 8 in prepare with
+# SwiGLU in registers (701d2867): a further 0.9923 / 0.9838.
 NF_CUDA={cuda!r}
 NF_CPP={cpp!r}
 NF_OPTS={{}}
@@ -45,10 +46,19 @@ def nf_module():
     mod.br_init();NF_OPTS['pmz']=mod.pmz_init()
     return mod
 
+def nf_ilv(w):
+    # W13 rows reordered so issue_prepare leaves each 64-row tile as G0-7,U0-7,...,G24-31,U24-31 of its 32 channels (kind 26)
+    perm=torch.empty(8192,dtype=torch.long)
+    for i in range(128):
+        for q,pos in enumerate((32*i,32*i+16,4096+32*i,4096+32*i+16)):
+            perm[pos:pos+16]=torch.tensor([32*i+8*q+k for k in range(8)]+[4096+32*i+8*q+k for k in range(8)])
+    perm=perm.to(w['w13'].device)
+    return dict(w,w13=w['w13'].index_select(1,perm),w13_sf=w['w13_sf'].index_select(1,perm))
+
 def nf_plan(data,base,native,streams):
     x=data['hidden_states'];m=x.shape[0];dev=x.device;cap=m*8+32*128;mod=nf_module()
     c=torch.empty(32,device=dev,dtype=torch.int32);off=torch.empty(33,device=dev,dtype=torch.int32);order=torch.empty_like(c)
-    tasks=[torch.empty_like(off) for _ in range(4)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
+    tasks=[torch.empty_like(off) for _ in range(3)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
     ids=data['topk_ids'].int().contiguous();tw=data['topk_weights'].float().contiguous();pos=torch.empty_like(ids)
     act=torch.empty((cap,4096),device=dev,dtype=torch.bfloat16);y=torch.empty((cap,4096),device=dev);ss=torch.empty((cap,64),device=dev)
     out=torch.empty_like(x);start=data['config'].get('local_start',0)
@@ -56,7 +66,7 @@ def nf_plan(data,base,native,streams):
     h2=[base['w2'],base['w2_sf'],base['w2_gs'],act,c,off,order,tasks[1],slots,base['pnw'],act,y,ss]
     nv=[x,base['pnw'],native['w13p'],native['w2p'],base['w13_gs'],base['w2_gs'],c,off,slots,act,y,ss]
     p13,p2,pn=([t.data_ptr() for t in v] for v in (h13,h2,nv))
-    rp=[t.data_ptr() for t in (ids,c,off,order,tasks[0],slots,pos,tasks[1],tasks[2],tasks[3])]
+    rp=[t.data_ptr() for t in (ids,c,off,order,tasks[0],slots,pos,tasks[1],tasks[2])]
     fp=[t.data_ptr() for t in (off,ids,tw,pos,y,ss,out)]
     owners=(h13,h2,nv,ids,tw,pos,tasks)
     stages=2
@@ -70,11 +80,11 @@ def nf_plan(data,base,native,streams):
         _=owners;parent=torch.cuda.current_stream()
         fork.record(parent);side.wait_event(fork)
         with torch.cuda.stream(side):  # heavy first: launched ahead of NT1 it takes the SMs it needs (880c3881 N_swap)
-            mod.br_run(p13,20,grid,m,side.cuda_stream);mod.br_run(p2,21,grid,m,side.cuda_stream);join.record()
+            mod.br_run(p13,26,grid,m,side.cuda_stream);mod.br_run(p2,21,grid,m,side.cuda_stream);join.record()
         mod.pmz_run(pn,1,16,m,stages,grids[1],parent.cuda_stream);mod.pmz_run(pn,0,16,m,stages,grids[0],parent.cuda_stream)
         parent.wait_event(join)
     def finish():
-        _=owners;mod.br_finish(fp,m,start,torch.cuda.current_stream().cuda_stream);return out
+        _=owners;mod.br_finish(fp,m,start,1,torch.cuda.current_stream().cuda_stream);return out
     return dict(steps=(route,body,finish),out=out,owners=owners)
 
 def nf_call(data,state):
@@ -82,7 +92,8 @@ def nf_call(data,state):
     return out
 '''
 CELL_HEAD = ('"""M=128/256 N_full drop-in cell (H200 c01b1916, 14f942d5): paste into a best7 candidate after _s4_prepare_banks.\n'
-             "Needs the host's functools, hashlib, torch and load_inline; state['s5_hh_base'] (H_H u8 base bank),\n"
+             "Needs the host's functools, hashlib, torch and load_inline; state['s5_hh_base'] (H_H u8 base bank, W13 built as\n"
+             "issue_prepare(nf_ilv(weights)) in kind 26's interleaved row order),\n"
              "state['moe_bank'] (recoded NT1 bank) and state['nf_streams']=(torch.cuda.Stream(), torch.cuda.Event(), torch.cuda.Event())\n"
              'made in prepare. Call nf_call(data, state) at M=128 and M=256. dev/s7n/build.py shows the full integration on S7R."""\n')
 ANCHOR = '\ndef _s4_gate_moe('
@@ -102,6 +113,9 @@ PY_EDITS = (
     ("    s6_started=time.monotonic()\n    state['s6_bank']=wi_prepare(weights)\n    torch.cuda.synchronize(device)\n    phases['s6_repack']=time.monotonic()-s6_started\n",
      "    state['nf_streams']=(torch.cuda.Stream(device=device),torch.cuda.Event(),torch.cuda.Event())\n", 1),
 )
+PREP_EDITS = (("    state['s5_hh_base']=issue_prepare(dict(weights,post_norm_w=weights['post_expert_norm']))\n",
+               "    state['s5_hh_base']=issue_prepare(nf_ilv(dict(weights,post_norm_w=weights['post_expert_norm'])))\n"),)  # W13 base bank in kind 26's interleaved row order
+PY_EDITS = PY_EDITS + tuple(e + (1,) for e in PREP_EDITS)
 
 
 PATCH_START = '# MoE lane H200 c01b1916e2c74af8'
@@ -111,6 +125,7 @@ Written by dev/s7n/build.py together with branches/nf_cell.py; the block runs fr
 BODY = {body}
 START = {start}
 END = {end}
+EDITS = {edits}  # outside the block (prepare); each applied once
 
 
 def patch(src):
@@ -118,7 +133,12 @@ def patch(src):
     assert src.count(START) == 1 and src.count(END) == 1
     j = src.index(END) + len(END)
     assert i < j
-    return src[:i] + BODY + src[j:]
+    src = src[:i] + BODY + src[j:]
+    for a, b in EDITS:
+        if b not in src:
+            assert src.count(a) == 1, a
+            src = src.replace(a, b)
+    return src
 """
 
 
@@ -152,7 +172,10 @@ def main():
     (BR / 'nf_cell.py').write_text(CELL_HEAD + cell.lstrip('\n'))
     body = cell.lstrip('\n')
     assert body.startswith(PATCH_START) and body.endswith(PATCH_END)
-    (H / 'nf_patch.py').write_text(PATCH.format(body=repr(body), start=repr(PATCH_START), end=repr(PATCH_END)))
+    # One immutable module per cell version (S11's builder loads nf_patch.py = cell 97dcd77b by path).
+    patch_path = H / ('nf_patch.py' if hashlib.sha256((CELL_HEAD + body).encode()).hexdigest().startswith('97dcd77b')
+                      else f'nf_patch_{hashlib.sha256(body.encode()).hexdigest()[:8]}.py')
+    patch_path.write_text(PATCH.format(body=repr(body), start=repr(PATCH_START), end=repr(PATCH_END), edits=repr(PREP_EDITS)))
     assert s.count(ANCHOR) == 1
     s = s.replace(ANCHOR, cell + ANCHOR, 1)
     s = re.sub(r'\n{4,}', '\n\n\n', s)

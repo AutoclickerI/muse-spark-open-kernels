@@ -32,9 +32,10 @@ KINDS_HH = (  # on H_H's buffers: 0/1 and 4/5/8/9 run the heavy-only T32 list, 1
     (4, 32, 1, 1, 2, 16, 32), (5, 16, 1, 1, 2, 0, 16), (8, 32, 0, 1, 2, 16, 32), (9, 16, 0, 1, 2, 0, 16),
     (12, 16, 0, 1, 1, 8, 16),
     (20, 32, 1, 2, 0, 0, 0), (21, 32, 0, 2, 0, 0, 0),  # 20/21 = 0/1 with the lean K loop (VEC==2)
-    (22, 32, 1, 2, 1, 16, 32), (23, 32, 0, 2, 1, 16, 32),  # lean N32 for 16<count<=32 (T32 list)
-    (24, 64, 1, 2, 0, 0, 0), (25, 64, 0, 2, 0, 0, 0),  # lean N64 on the count>32 T64 list: one decode per 64 rows
-    (26, 32, 1, 3, 0, 0, 0))  # 20 with gate/up rows interleaved by 8 in prepare: SwiGLU in registers
+    (26, 32, 1, 3, 0, 0, 0),  # 20 with gate/up rows interleaved by 8 in prepare: SwiGLU in registers
+    (28, 32, 0, 4, 0, 0, 0), (29, 32, 1, 5, 0, 0, 0),  # timing probe: 21/26 without the per-stage proxy fence
+    (30, 32, 1, 7, 0, 0, 0), (31, 32, 0, 6, 0, 0, 0),  # 26/21 on the wide banks (nf_wide): 3 LDS.128 per stage instead of 8
+    (32, 32, 1, 11, 0, 0, 0), (33, 32, 0, 10, 0, 0, 0))  # 26/21 with the X tile by TMA (no per-stage proxy fence)
 KINDS_S6 = ((4, 32, 1, 1, 2, 16, 32), (5, 16, 1, 1, 2, 0, 16), (8, 32, 0, 0, 2, 16, 32), (9, 16, 0, 0, 2, 0, 16))  # R_full of 110599ba
 
 
@@ -96,7 +97,7 @@ def sources():
     decl = ('#include <pybind11/pybind11.h>\n#include <pybind11/stl.h>\n#include <vector>\n#include <cstdint>\nint64_t br_init();std::vector<int64_t> br_info(int64_t);'
             'void br_run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t);'
             'void br_route(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t);'
-            'void br_finish(std::vector<int64_t>,int64_t,int64_t,int64_t);')
+            'void br_finish(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t);')
     decl_hh = decl + ('int64_t pmz_init();int64_t pmz_smem(int64_t,int64_t);int64_t pmz_resident(int64_t,int64_t,int64_t);'
                       'void pmz_run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);')
     return dict(cu_s6=cu_s6, cpp_s6=decl, cu_hh=cu_hh, cpp_hh=decl_hh)

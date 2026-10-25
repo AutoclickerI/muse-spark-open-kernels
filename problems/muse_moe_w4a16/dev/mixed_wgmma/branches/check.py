@@ -24,7 +24,7 @@ def main():
     M = int(sys.argv[1])
     p = R / (f'prof/lab/moe_br_m{M}.py' if len(sys.argv) < 5 else f'prof/lab/moe_nf_tune_m{M}.py')
     m = runpy.run_path(str(p), init_globals=dict(lab_cold_l2=lab_cold_l2))
-    arms = m['BR_NAMES']
+    arms = [a for a in m['BR_NAMES'] if a not in m.get('BR_PROBES', ())]  # probes are timing-only
     ctl = m['BR_CONTROL']
     checks = bit = 0
     worst = [0., 0.]
