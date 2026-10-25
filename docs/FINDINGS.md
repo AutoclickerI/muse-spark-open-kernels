@@ -538,6 +538,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Verify dense at a kernel running max(read, compute) would save ~12 us per verify-16 layer and ~10 per verify-32
   (~+1% score; cuBLAS GEMM-only at M=128 runs +41-97% over the read, M=256 near its ~700 TFLOP/s compute floor);
   Triton split-K and DeepGEMM only tie cuBLAS apart from M=128 qkv (inferred from `b15a3bde` and `9cd95e72`).
+- Own TMA GEMM with a BF16 epilogue plus the boundary norm statistics vs F.linear + S11's boundary glue (`f65e843f`,
+  screen, 3 seeds, not yet against S11's Lt choice): M=128 o 0.942 (-1.0 of 17.1 us), unpooler 0.993; M=256 o and
+  unpooler lose 1.02-1.09 at every tile config. `problems/muse_bf16_proj/dev/verify_epilogue/`.
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;
   at M=256 qkv / pooler / unpooler are tensor-bound and o narrowly HBM-bound.
 - A fused FP32 router (hi + lo staged into the same FP32 accumulators per real-K tile, one kernel instead of five)
@@ -604,6 +607,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   LOP3 + 4 PRMT per 8), decoded once and fed to every n8 token tile; the NT1 loop uses ~21% of the issue slots a
   4.58 TB/s stream needs, so it isn't issue-bound. The t-dependence was the activation path (per-token guarded LDS,
   zeroing, addressing; two-group cp.async staging with a CTA-wide stall); v3's 64-70 registers (v1 47) cost waves. `problems/muse_bf16_proj/dev/coded_dense/`.
+- Cleaned coded kernels V3/V4, k-major and row layouts (`3239a2ea`, 3 seeds x 12 cold ABBA rounds, exact) vs the
+  balanced GEMV: t = 1 / 8 qkv -0.96 / -0.44, pool_router -2.33 / -1.07 us; o even / +0.47, slice +0.37 / +0.29;
+  t = 16 / 32 qkv +0.58 / +1.57, pool_router +1.31 / +3.19, o +1.45 / +2.51. The cleanup gains on v3 only at t >= 16
+  (o at t=32 0.77x v3), not enough to pass balanced: coded GEMVs stay at qkv + pool_router, t <= 8.
 - Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
   samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
   cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
