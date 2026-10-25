@@ -402,6 +402,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   429-450 us, 2.2x attn_main's 199 us on the same bytes). A timed model (consumer 1,300, producer 1,400 cycles,
   4,500-cycle loads) reproduces it and predicts ~1,400 cycles (the slower side) for publish-first with LAG <= ST-2
   (model). A page-table lookahead unrolled 6-8x costs ~30 us at B32 full; PD stays 4.
+- vq8 with the publish order fixed (LAG = ST-2; `44aa67ba`, decode ABI, 4 FP32 partials after a projection stand-in,
+  PDL, read flush, TASK gate passes) vs qk_prep + FA3 + norm_gate, us: verify 16 full st6mt1 153.9 vs 192.2 (-20%),
+  verify 32 full 278.5 vs 381.4 (-27%), verify 1 sliding st4mt1 15.30 vs 16.83; loses at verify 1 full (29.5 vs 28.5)
+  and verify 16 sliding (18.6 vs 16.0), ties verify 32 sliding (21.8). B32 full ~1,800 cycles per tile (was 2,883;
+  model floor 1,400). Cell `problems/muse_attention_decode/dev/vq8/patch_vq8_verify.py` b6125185 (rows 1s/16f/32f).
 - vq8 on the decode ABI (`5d54b589`, `f0a79d79`; after a 37.7 MB projection stand-in, PDL, vs qk_prep + FA3 +
   norm_gate): only verify-1 sliding (B1, q_len 8) wins, st4mt1 14.40 vs 17.47 us (at decode-1 sliding attn_main 14.0 vs
   vq8 19.8 us, `d5bcbc7d`); verify B16 / B32 sliding 19.4 / 26.6 vs 15.7 / 21.0; B1 / B16 /
