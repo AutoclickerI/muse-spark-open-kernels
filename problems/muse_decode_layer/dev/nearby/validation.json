@@ -1,0 +1,60 @@
+{
+  "candidate_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "gpu": "GPU0 only; sm120 in pinned judge image",
+  "modes": {
+    "normal": {
+      "fixtures": 143,
+      "task_checks": 286,
+      "scored": 24,
+      "nearby": 106,
+      "official": 13,
+      "eager_pass": 143,
+      "graph_pass": 143,
+      "static_pass": 25,
+      "report_sha256": "d71c4991d33bea74975fc8bed6ad72b3ace309fc252e65795ba53c1218ea9957"
+    },
+    "forced": {
+      "fixtures": 143,
+      "task_checks": 286,
+      "scored": 24,
+      "nearby": 106,
+      "official": 13,
+      "eager_pass": 143,
+      "graph_pass": 143,
+      "static_pass": 25,
+      "report_sha256": "7f8ab8ea728f02a69cde3ada853c4c872fac0a8dd7f9ca2eb83ac265d453def9"
+    }
+  },
+  "local_helpers": {
+    "problems/muse_decode_layer/dev/verify_best.py": "487d9a8a0c3c68f58f403fb9a003b150d0c7364f31db114c396102f9831b787a",
+    "problems/muse_decode_layer/dev/s15/local_standins.py": "0bb8921cbeabaf08f13a91d980671f9ad339cd70e2e97dcca60414c839926ec8",
+    "problems/muse_decode_layer/cand_r3_best7_s14_final.py": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac"
+  },
+  "limitations": [
+    "Hopper native runtime unverified; explicit launch stand-ins locally",
+    "local timing is not H200 evidence",
+    "final review has no numeric nearby slowdown cutoff"
+  ],
+  "lab_screens": {
+    "normal": {
+      "wrapper_sha256": "a357ab6f8bc5a74b2b6cd9f4b4c1e56626aeb0393ad99b16fd5b6bfcc0d8d4c8",
+      "shapes": 65,
+      "seeds": 2,
+      "rounds": 8,
+      "schema_finite_pass": 65,
+      "official_tests": 13,
+      "static": 2,
+      "elapsed_s": 134.15
+    },
+    "forced": {
+      "wrapper_sha256": "a357ab6f8bc5a74b2b6cd9f4b4c1e56626aeb0393ad99b16fd5b6bfcc0d8d4c8",
+      "shapes": 65,
+      "seeds": 2,
+      "rounds": 8,
+      "schema_finite_pass": 65,
+      "official_tests": 13,
+      "static": 2,
+      "elapsed_s": 67.53
+    }
+  }
+}

@@ -1,0 +1,3800 @@
+{
+  "mode": "forced",
+  "candidate_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "seeds": [
+    419731,
+    427650
+  ],
+  "tests": [
+    {
+      "label": "TASK-0",
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "layer": "sliding"
+      },
+      "seed": 90000,
+      "seq_range": [
+        10,
+        10
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.624e-03 (worst row 7.624e-03) [bound 0.085]; attention input relative L2 error 4.359e-03 (worst row 4.359e-03) [bound 0.042]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.624e-03 (worst row 7.624e-03) [bound 0.085]; attention input relative L2 error 4.359e-03 (worst row 4.359e-03) [bound 0.042]",
+      "ok": true
+    },
+    {
+      "label": "TASK-1",
+      "case": {
+        "batch": 1,
+        "ctx": 3000,
+        "layer": "full"
+      },
+      "seed": 90001,
+      "seq_range": [
+        3000,
+        3000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.020e-03 (worst row 7.020e-03) [bound 0.150]; attention input relative L2 error 4.975e-03 (worst row 4.975e-03) [bound 0.108]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.020e-03 (worst row 7.020e-03) [bound 0.150]; attention input relative L2 error 4.971e-03 (worst row 4.971e-03) [bound 0.108]",
+      "ok": true
+    },
+    {
+      "label": "TASK-2",
+      "case": {
+        "batch": 8,
+        "ctx": 2047,
+        "layer": "sliding"
+      },
+      "seed": 90002,
+      "seq_range": [
+        2047,
+        2047
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.451e-03 (worst row 9.351e-03) [bound 0.148]; attention input relative L2 error 4.612e-03 (worst row 6.244e-03) [bound 0.094]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.451e-03 (worst row 9.351e-03) [bound 0.148]; attention input relative L2 error 4.612e-03 (worst row 6.244e-03) [bound 0.094]",
+      "ok": true
+    },
+    {
+      "label": "TASK-3",
+      "case": {
+        "batch": 9,
+        "ctx": 5000,
+        "layer": "sliding",
+        "spread": "mixed",
+        "page": 1
+      },
+      "seed": 90003,
+      "seq_range": [
+        1158,
+        20000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.332e-03 (worst row 9.991e-03) [bound 0.150]; attention input relative L2 error 5.305e-03 (worst row 7.280e-03) [bound 0.134]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.332e-03 (worst row 9.991e-03) [bound 0.150]; attention input relative L2 error 5.304e-03 (worst row 7.280e-03) [bound 0.134]",
+      "ok": true
+    },
+    {
+      "label": "TASK-4",
+      "case": {
+        "batch": 3,
+        "ctx": 6000,
+        "layer": "full",
+        "q_len": 8,
+        "dist": "outliers"
+      },
+      "seed": 90004,
+      "seq_range": [
+        6000,
+        6000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.618e-02 (worst row 1.017e-01) [bound 0.150]; attention input relative L2 error 3.469e-02 (worst row 5.184e-02) [bound 0.087]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.618e-02 (worst row 1.017e-01) [bound 0.150]; attention input relative L2 error 3.469e-02 (worst row 5.184e-02) [bound 0.087]",
+      "ok": true
+    },
+    {
+      "label": "TASK-5",
+      "case": {
+        "batch": 5,
+        "ctx": 5000,
+        "layer": "sliding",
+        "q_len": 8,
+        "spread": "mixed",
+        "page": 1
+      },
+      "seed": 90005,
+      "seq_range": [
+        877,
+        6105
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.705e-02 (worst row 9.976e-02) [bound 0.150]; attention input relative L2 error 4.483e-02 (worst row 6.240e-02) [bound 0.112]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.705e-02 (worst row 9.976e-02) [bound 0.150]; attention input relative L2 error 4.483e-02 (worst row 6.240e-02) [bound 0.112]",
+      "ok": true
+    },
+    {
+      "label": "TASK-6",
+      "case": {
+        "batch": 33,
+        "ctx": 20000,
+        "layer": "full",
+        "spread": "mixed",
+        "page": 1
+      },
+      "seed": 90006,
+      "seq_range": [
+        1566,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.214e-03 (worst row 8.436e-03) [bound 0.150]; attention input relative L2 error 5.243e-03 (worst row 6.737e-03) [bound 0.114]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.214e-03 (worst row 8.436e-03) [bound 0.150]; attention input relative L2 error 5.243e-03 (worst row 6.737e-03) [bound 0.114]",
+      "ok": true
+    },
+    {
+      "label": "TASK-7",
+      "case": {
+        "batch": 2,
+        "ctx": 300000,
+        "layer": "sliding",
+        "q_len": 8
+      },
+      "seed": 90007,
+      "seq_range": [
+        300000,
+        300000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.034e-02 (worst row 1.018e-01) [bound 0.150]; attention input relative L2 error 4.786e-02 (worst row 7.012e-02) [bound 0.120]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.034e-02 (worst row 1.018e-01) [bound 0.150]; attention input relative L2 error 4.786e-02 (worst row 7.012e-02) [bound 0.120]",
+      "ok": true
+    },
+    {
+      "label": "TASK-8",
+      "case": {
+        "batch": 1,
+        "ctx": 1048576,
+        "layer": "full",
+        "q_len": 8
+      },
+      "seed": 90008,
+      "seq_range": [
+        1048576,
+        1048576
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 8.267e-02 (worst row 1.032e-01) [bound 0.150]; attention input relative L2 error 5.408e-02 (worst row 6.676e-02) [bound 0.135]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 8.267e-02 (worst row 1.032e-01) [bound 0.150]; attention input relative L2 error 5.408e-02 (worst row 6.676e-02) [bound 0.135]",
+      "ok": true
+    },
+    {
+      "label": "TASK-9",
+      "case": {
+        "batch": 4,
+        "ctx": 7000,
+        "layer": "sliding",
+        "q_len": 8,
+        "page": 1,
+        "kv_scale": 0.015625
+      },
+      "seed": 90009,
+      "seq_range": [
+        7000,
+        7000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.913e-02 (worst row 1.071e-01) [bound 0.150]; attention input relative L2 error 4.550e-02 (worst row 7.139e-02) [bound 0.114]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.913e-02 (worst row 1.071e-01) [bound 0.150]; attention input relative L2 error 4.550e-02 (worst row 7.139e-02) [bound 0.114]",
+      "ok": true
+    },
+    {
+      "label": "TASK-10",
+      "case": {
+        "batch": 1,
+        "ctx": 80000,
+        "layer": "full",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 90010,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.361e-03 (worst row 7.361e-03) [bound 0.138]; attention input relative L2 error 6.099e-03 (worst row 6.099e-03) [bound 0.105]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.361e-03 (worst row 7.361e-03) [bound 0.138]; attention input relative L2 error 6.099e-03 (worst row 6.099e-03) [bound 0.105]",
+      "ok": true
+    },
+    {
+      "label": "TASK-11",
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "layer": "sliding",
+        "q_len": 8,
+        "dist": "soft"
+      },
+      "seed": 90011,
+      "seq_range": [
+        6000,
+        6000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.987e-02 (worst row 8.378e-02) [bound 0.149]; attention input relative L2 error 4.032e-02 (worst row 5.770e-02) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.987e-02 (worst row 8.378e-02) [bound 0.149]; attention input relative L2 error 4.032e-02 (worst row 5.770e-02) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "TASK-12",
+      "case": {
+        "batch": 16,
+        "ctx": 20000,
+        "layer": "full",
+        "spread": "mixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 90012,
+      "seq_range": [
+        4813,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 9.646e-03 (worst row 2.832e-02) [bound 0.145]; attention input relative L2 error 5.922e-03 (worst row 1.298e-02) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 9.646e-03 (worst row 2.832e-02) [bound 0.145]; attention input relative L2 error 5.922e-03 (worst row 1.298e-02) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "scored-d1-s",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.838e-03 (worst row 5.838e-03) [bound 0.150]; attention input relative L2 error 4.665e-03 (worst row 4.665e-03) [bound 0.110]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.838e-03 (worst row 5.838e-03) [bound 0.150]; attention input relative L2 error 4.665e-03 (worst row 4.665e-03) [bound 0.110]",
+      "ok": true
+    },
+    {
+      "label": "scored-d1-s",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.461e-03 (worst row 6.461e-03) [bound 0.125]; attention input relative L2 error 4.876e-03 (worst row 4.876e-03) [bound 0.082]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.461e-03 (worst row 6.461e-03) [bound 0.125]; attention input relative L2 error 4.876e-03 (worst row 4.876e-03) [bound 0.082]",
+      "ok": true
+    },
+    {
+      "label": "scored-d1-f",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.891e-03 (worst row 6.891e-03) [bound 0.150]; attention input relative L2 error 5.367e-03 (worst row 5.367e-03) [bound 0.118]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.891e-03 (worst row 6.891e-03) [bound 0.150]; attention input relative L2 error 5.367e-03 (worst row 5.367e-03) [bound 0.118]",
+      "ok": true
+    },
+    {
+      "label": "scored-d1-f",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.333e-03 (worst row 7.333e-03) [bound 0.145]; attention input relative L2 error 5.318e-03 (worst row 5.318e-03) [bound 0.096]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.333e-03 (worst row 7.333e-03) [bound 0.145]; attention input relative L2 error 5.318e-03 (worst row 5.318e-03) [bound 0.096]",
+      "ok": true
+    },
+    {
+      "label": "scored-d16-s",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.734e-03 (worst row 9.449e-03) [bound 0.136]; attention input relative L2 error 4.886e-03 (worst row 6.060e-03) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.734e-03 (worst row 9.449e-03) [bound 0.136]; attention input relative L2 error 4.886e-03 (worst row 6.060e-03) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "scored-d16-s",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.871e-03 (worst row 1.202e-02) [bound 0.150]; attention input relative L2 error 4.842e-03 (worst row 6.972e-03) [bound 0.098]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.871e-03 (worst row 1.202e-02) [bound 0.150]; attention input relative L2 error 4.842e-03 (worst row 6.972e-03) [bound 0.098]",
+      "ok": true
+    },
+    {
+      "label": "scored-d16-f",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.371e-03 (worst row 8.068e-03) [bound 0.150]; attention input relative L2 error 4.721e-03 (worst row 6.039e-03) [bound 0.099]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.371e-03 (worst row 8.068e-03) [bound 0.150]; attention input relative L2 error 4.722e-03 (worst row 6.039e-03) [bound 0.099]",
+      "ok": true
+    },
+    {
+      "label": "scored-d16-f",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.459e-03 (worst row 7.680e-03) [bound 0.150]; attention input relative L2 error 4.643e-03 (worst row 5.504e-03) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.459e-03 (worst row 7.680e-03) [bound 0.150]; attention input relative L2 error 4.643e-03 (worst row 5.504e-03) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "scored-d32-s",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 8.225e-03 (worst row 2.871e-02) [bound 0.134]; attention input relative L2 error 5.486e-03 (worst row 1.657e-02) [bound 0.086]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 8.225e-03 (worst row 2.871e-02) [bound 0.134]; attention input relative L2 error 5.486e-03 (worst row 1.657e-02) [bound 0.086]",
+      "ok": true
+    },
+    {
+      "label": "scored-d32-s",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74103,
+        85953
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 9.854e-03 (worst row 4.161e-02) [bound 0.150]; attention input relative L2 error 6.949e-03 (worst row 2.790e-02) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 9.854e-03 (worst row 4.161e-02) [bound 0.150]; attention input relative L2 error 6.949e-03 (worst row 2.790e-02) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "scored-d32-f",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.049e-03 (worst row 1.155e-02) [bound 0.147]; attention input relative L2 error 5.090e-03 (worst row 8.190e-03) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.049e-03 (worst row 1.155e-02) [bound 0.147]; attention input relative L2 error 5.090e-03 (worst row 8.190e-03) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "scored-d32-f",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74103,
+        85953
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.773e-03 (worst row 9.639e-03) [bound 0.150]; attention input relative L2 error 5.027e-03 (worst row 6.416e-03) [bound 0.107]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.773e-03 (worst row 9.639e-03) [bound 0.150]; attention input relative L2 error 5.027e-03 (worst row 6.416e-03) [bound 0.107]",
+      "ok": true
+    },
+    {
+      "label": "scored-v1-s",
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.433e-02 (worst row 6.486e-02) [bound 0.135]; attention input relative L2 error 3.613e-02 (worst row 4.535e-02) [bound 0.090]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.433e-02 (worst row 6.486e-02) [bound 0.135]; attention input relative L2 error 3.613e-02 (worst row 4.535e-02) [bound 0.090]",
+      "ok": true
+    },
+    {
+      "label": "scored-v1-s",
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.621e-02 (worst row 8.000e-02) [bound 0.150]; attention input relative L2 error 4.183e-02 (worst row 5.218e-02) [bound 0.104]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.621e-02 (worst row 8.000e-02) [bound 0.150]; attention input relative L2 error 4.183e-02 (worst row 5.218e-02) [bound 0.104]",
+      "ok": true
+    },
+    {
+      "label": "scored-v1-f",
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.841e-02 (worst row 6.857e-02) [bound 0.146]; attention input relative L2 error 3.877e-02 (worst row 4.557e-02) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.841e-02 (worst row 6.857e-02) [bound 0.146]; attention input relative L2 error 3.877e-02 (worst row 4.557e-02) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "scored-v1-f",
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        80000,
+        80000
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.690e-02 (worst row 8.184e-02) [bound 0.150]; attention input relative L2 error 4.421e-02 (worst row 5.181e-02) [bound 0.111]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.690e-02 (worst row 8.184e-02) [bound 0.150]; attention input relative L2 error 4.421e-02 (worst row 5.181e-02) [bound 0.111]",
+      "ok": true
+    },
+    {
+      "label": "scored-v16-s",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.351e-02 (worst row 8.259e-02) [bound 0.132]; attention input relative L2 error 3.580e-02 (worst row 5.680e-02) [bound 0.088]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.351e-02 (worst row 8.259e-02) [bound 0.132]; attention input relative L2 error 3.580e-02 (worst row 5.680e-02) [bound 0.088]",
+      "ok": true
+    },
+    {
+      "label": "scored-v16-s",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.076e-02 (worst row 9.559e-02) [bound 0.150]; attention input relative L2 error 4.054e-02 (worst row 6.464e-02) [bound 0.100]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.076e-02 (worst row 9.559e-02) [bound 0.150]; attention input relative L2 error 4.054e-02 (worst row 6.464e-02) [bound 0.100]",
+      "ok": true
+    },
+    {
+      "label": "scored-v16-f",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.152e-02 (worst row 9.233e-02) [bound 0.150]; attention input relative L2 error 4.142e-02 (worst row 6.450e-02) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.152e-02 (worst row 9.233e-02) [bound 0.150]; attention input relative L2 error 4.142e-02 (worst row 6.450e-02) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "scored-v16-f",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.447e-02 (worst row 8.995e-02) [bound 0.150]; attention input relative L2 error 4.273e-02 (worst row 5.857e-02) [bound 0.106]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.447e-02 (worst row 8.995e-02) [bound 0.150]; attention input relative L2 error 4.273e-02 (worst row 5.857e-02) [bound 0.106]",
+      "ok": true
+    },
+    {
+      "label": "scored-v32-s",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.534e-02 (worst row 9.491e-02) [bound 0.134]; attention input relative L2 error 3.685e-02 (worst row 6.772e-02) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.534e-02 (worst row 9.491e-02) [bound 0.134]; attention input relative L2 error 3.685e-02 (worst row 6.772e-02) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "scored-v32-s",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74103,
+        85953
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.126e-02 (worst row 9.675e-02) [bound 0.150]; attention input relative L2 error 4.061e-02 (worst row 6.877e-02) [bound 0.099]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.126e-02 (worst row 9.675e-02) [bound 0.150]; attention input relative L2 error 4.061e-02 (worst row 6.877e-02) [bound 0.099]",
+      "ok": true
+    },
+    {
+      "label": "scored-v32-f",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.329e-02 (worst row 9.925e-02) [bound 0.150]; attention input relative L2 error 4.202e-02 (worst row 6.299e-02) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.329e-02 (worst row 9.925e-02) [bound 0.150]; attention input relative L2 error 4.202e-02 (worst row 6.299e-02) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "scored-v32-f",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74103,
+        85953
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.504e-02 (worst row 9.363e-02) [bound 0.150]; attention input relative L2 error 4.343e-02 (worst row 6.495e-02) [bound 0.107]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.504e-02 (worst row 9.363e-02) [bound 0.150]; attention input relative L2 error 4.343e-02 (worst row 6.495e-02) [bound 0.107]",
+      "ok": true
+    },
+    {
+      "label": "near-d2-s",
+      "case": {
+        "batch": 2,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        84035,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.871e-03 (worst row 6.269e-03) [bound 0.111]; attention input relative L2 error 4.398e-03 (worst row 4.920e-03) [bound 0.073]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.871e-03 (worst row 6.269e-03) [bound 0.111]; attention input relative L2 error 4.398e-03 (worst row 4.920e-03) [bound 0.073]",
+      "ok": true
+    },
+    {
+      "label": "near-d2-s",
+      "case": {
+        "batch": 2,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        77222,
+        82061
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.854e-03 (worst row 7.144e-03) [bound 0.150]; attention input relative L2 error 5.160e-03 (worst row 5.480e-03) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.854e-03 (worst row 7.144e-03) [bound 0.150]; attention input relative L2 error 5.160e-03 (worst row 5.480e-03) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "near-d2-f",
+      "case": {
+        "batch": 2,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        84035,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.616e-03 (worst row 7.053e-03) [bound 0.146]; attention input relative L2 error 4.770e-03 (worst row 5.331e-03) [bound 0.094]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.616e-03 (worst row 7.053e-03) [bound 0.146]; attention input relative L2 error 4.770e-03 (worst row 5.331e-03) [bound 0.094]",
+      "ok": true
+    },
+    {
+      "label": "near-d2-f",
+      "case": {
+        "batch": 2,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        77222,
+        82061
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.075e-03 (worst row 6.639e-03) [bound 0.121]; attention input relative L2 error 4.779e-03 (worst row 5.253e-03) [bound 0.083]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.075e-03 (worst row 6.639e-03) [bound 0.121]; attention input relative L2 error 4.779e-03 (worst row 5.253e-03) [bound 0.083]",
+      "ok": true
+    },
+    {
+      "label": "near-d8-s",
+      "case": {
+        "batch": 8,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74532,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.369e-03 (worst row 8.343e-03) [bound 0.133]; attention input relative L2 error 4.714e-03 (worst row 5.700e-03) [bound 0.088]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.369e-03 (worst row 8.343e-03) [bound 0.133]; attention input relative L2 error 4.714e-03 (worst row 5.700e-03) [bound 0.088]",
+      "ok": true
+    },
+    {
+      "label": "near-d8-s",
+      "case": {
+        "batch": 8,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        82061
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.485e-03 (worst row 7.362e-03) [bound 0.150]; attention input relative L2 error 4.674e-03 (worst row 5.390e-03) [bound 0.098]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.485e-03 (worst row 7.362e-03) [bound 0.150]; attention input relative L2 error 4.674e-03 (worst row 5.390e-03) [bound 0.098]",
+      "ok": true
+    },
+    {
+      "label": "near-d8-f",
+      "case": {
+        "batch": 8,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74532,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.461e-03 (worst row 7.206e-03) [bound 0.144]; attention input relative L2 error 4.809e-03 (worst row 5.267e-03) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.461e-03 (worst row 7.206e-03) [bound 0.144]; attention input relative L2 error 4.809e-03 (worst row 5.267e-03) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "near-d8-f",
+      "case": {
+        "batch": 8,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        82061
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.265e-03 (worst row 7.265e-03) [bound 0.144]; attention input relative L2 error 4.574e-03 (worst row 5.413e-03) [bound 0.093]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.265e-03 (worst row 7.265e-03) [bound 0.144]; attention input relative L2 error 4.574e-03 (worst row 5.413e-03) [bound 0.093]",
+      "ok": true
+    },
+    {
+      "label": "near-d24-s",
+      "case": {
+        "batch": 24,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.626e-03 (worst row 1.458e-02) [bound 0.130]; attention input relative L2 error 4.829e-03 (worst row 9.680e-03) [bound 0.086]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.626e-03 (worst row 1.458e-02) [bound 0.130]; attention input relative L2 error 4.829e-03 (worst row 9.680e-03) [bound 0.086]",
+      "ok": true
+    },
+    {
+      "label": "near-d24-s",
+      "case": {
+        "batch": 24,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.338e-03 (worst row 1.152e-02) [bound 0.148]; attention input relative L2 error 4.622e-03 (worst row 8.065e-03) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.338e-03 (worst row 1.152e-02) [bound 0.148]; attention input relative L2 error 4.622e-03 (worst row 8.065e-03) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "near-d24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.993e-03 (worst row 1.851e-02) [bound 0.146]; attention input relative L2 error 4.922e-03 (worst row 7.128e-03) [bound 0.094]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.993e-03 (worst row 1.851e-02) [bound 0.146]; attention input relative L2 error 4.922e-03 (worst row 7.128e-03) [bound 0.094]",
+      "ok": true
+    },
+    {
+      "label": "near-d24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.690e-03 (worst row 8.996e-03) [bound 0.150]; attention input relative L2 error 4.899e-03 (worst row 5.840e-03) [bound 0.105]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.690e-03 (worst row 8.996e-03) [bound 0.150]; attention input relative L2 error 4.899e-03 (worst row 5.840e-03) [bound 0.105]",
+      "ok": true
+    },
+    {
+      "label": "near-d48-s",
+      "case": {
+        "batch": 48,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.291e-03 (worst row 9.025e-03) [bound 0.130]; attention input relative L2 error 4.614e-03 (worst row 6.891e-03) [bound 0.085]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.291e-03 (worst row 9.026e-03) [bound 0.130]; attention input relative L2 error 4.614e-03 (worst row 6.899e-03) [bound 0.085]",
+      "ok": true
+    },
+    {
+      "label": "near-d48-s",
+      "case": {
+        "batch": 48,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74044,
+        85953
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.438e-03 (worst row 9.425e-03) [bound 0.144]; attention input relative L2 error 4.704e-03 (worst row 6.099e-03) [bound 0.092]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.438e-03 (worst row 9.425e-03) [bound 0.144]; attention input relative L2 error 4.704e-03 (worst row 6.099e-03) [bound 0.092]",
+      "ok": true
+    },
+    {
+      "label": "near-d48-f",
+      "case": {
+        "batch": 48,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.996e-03 (worst row 3.143e-02) [bound 0.146]; attention input relative L2 error 5.746e-03 (worst row 2.237e-02) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.996e-03 (worst row 3.143e-02) [bound 0.146]; attention input relative L2 error 5.746e-03 (worst row 2.237e-02) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "near-d48-f",
+      "case": {
+        "batch": 48,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74044,
+        85953
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.395e-03 (worst row 7.702e-03) [bound 0.150]; attention input relative L2 error 4.682e-03 (worst row 6.000e-03) [bound 0.105]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.395e-03 (worst row 7.702e-03) [bound 0.150]; attention input relative L2 error 4.682e-03 (worst row 6.000e-03) [bound 0.105]",
+      "ok": true
+    },
+    {
+      "label": "near-v2-s",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        84035,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.068e-02 (worst row 6.313e-02) [bound 0.126]; attention input relative L2 error 3.426e-02 (worst row 4.238e-02) [bound 0.085]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.068e-02 (worst row 6.313e-02) [bound 0.126]; attention input relative L2 error 3.426e-02 (worst row 4.238e-02) [bound 0.085]",
+      "ok": true
+    },
+    {
+      "label": "near-v2-s",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        77222,
+        82061
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.864e-02 (worst row 8.025e-02) [bound 0.146]; attention input relative L2 error 3.968e-02 (worst row 5.405e-02) [bound 0.099]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.864e-02 (worst row 8.025e-02) [bound 0.146]; attention input relative L2 error 3.968e-02 (worst row 5.405e-02) [bound 0.099]",
+      "ok": true
+    },
+    {
+      "label": "near-v2-f",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        84035,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.071e-02 (worst row 7.540e-02) [bound 0.150]; attention input relative L2 error 4.179e-02 (worst row 5.385e-02) [bound 0.104]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.071e-02 (worst row 7.540e-02) [bound 0.150]; attention input relative L2 error 4.179e-02 (worst row 5.385e-02) [bound 0.104]",
+      "ok": true
+    },
+    {
+      "label": "near-v2-f",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        77222,
+        82061
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.348e-02 (worst row 8.587e-02) [bound 0.150]; attention input relative L2 error 4.189e-02 (worst row 5.903e-02) [bound 0.105]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.348e-02 (worst row 8.587e-02) [bound 0.150]; attention input relative L2 error 4.189e-02 (worst row 5.903e-02) [bound 0.105]",
+      "ok": true
+    },
+    {
+      "label": "near-v24-s",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.541e-02 (worst row 9.138e-02) [bound 0.136]; attention input relative L2 error 3.669e-02 (worst row 5.625e-02) [bound 0.090]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.541e-02 (worst row 9.138e-02) [bound 0.136]; attention input relative L2 error 3.669e-02 (worst row 5.625e-02) [bound 0.090]",
+      "ok": true
+    },
+    {
+      "label": "near-v24-s",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.051e-02 (worst row 8.838e-02) [bound 0.150]; attention input relative L2 error 4.044e-02 (worst row 6.207e-02) [bound 0.100]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.051e-02 (worst row 8.838e-02) [bound 0.150]; attention input relative L2 error 4.044e-02 (worst row 6.208e-02) [bound 0.100]",
+      "ok": true
+    },
+    {
+      "label": "near-v24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        74143,
+        85912
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.240e-02 (worst row 9.279e-02) [bound 0.150]; attention input relative L2 error 4.133e-02 (worst row 5.980e-02) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.240e-02 (worst row 9.279e-02) [bound 0.150]; attention input relative L2 error 4.133e-02 (worst row 5.980e-02) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "near-v24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 80000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        74270,
+        85282
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.392e-02 (worst row 9.437e-02) [bound 0.150]; attention input relative L2 error 4.219e-02 (worst row 5.766e-02) [bound 0.104]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.392e-02 (worst row 9.437e-02) [bound 0.150]; attention input relative L2 error 4.219e-02 (worst row 5.766e-02) [bound 0.104]",
+      "ok": true
+    },
+    {
+      "label": "edge-d7-s",
+      "case": {
+        "batch": 7,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3816,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.483e-03 (worst row 7.860e-03) [bound 0.122]; attention input relative L2 error 4.301e-03 (worst row 5.247e-03) [bound 0.071]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.483e-03 (worst row 7.860e-03) [bound 0.122]; attention input relative L2 error 4.301e-03 (worst row 5.247e-03) [bound 0.071]",
+      "ok": true
+    },
+    {
+      "label": "edge-d7-s",
+      "case": {
+        "batch": 7,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3810,
+        4202
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.357e-03 (worst row 8.084e-03) [bound 0.149]; attention input relative L2 error 4.833e-03 (worst row 6.419e-03) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.357e-03 (worst row 8.084e-03) [bound 0.149]; attention input relative L2 error 4.833e-03 (worst row 6.419e-03) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "edge-d9-s",
+      "case": {
+        "batch": 9,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3816,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.766e-03 (worst row 8.372e-03) [bound 0.134]; attention input relative L2 error 4.754e-03 (worst row 5.598e-03) [bound 0.084]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.766e-03 (worst row 8.372e-03) [bound 0.134]; attention input relative L2 error 4.754e-03 (worst row 5.598e-03) [bound 0.084]",
+      "ok": true
+    },
+    {
+      "label": "edge-d9-s",
+      "case": {
+        "batch": 9,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3803,
+        4202
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.295e-03 (worst row 7.316e-03) [bound 0.150]; attention input relative L2 error 4.738e-03 (worst row 5.266e-03) [bound 0.104]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.295e-03 (worst row 7.316e-03) [bound 0.150]; attention input relative L2 error 4.738e-03 (worst row 5.266e-03) [bound 0.104]",
+      "ok": true
+    },
+    {
+      "label": "edge-d15-s",
+      "case": {
+        "batch": 15,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3816,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.701e-03 (worst row 1.771e-02) [bound 0.131]; attention input relative L2 error 5.463e-03 (worst row 9.782e-03) [bound 0.085]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.701e-03 (worst row 1.771e-02) [bound 0.131]; attention input relative L2 error 5.463e-03 (worst row 9.782e-03) [bound 0.085]",
+      "ok": true
+    },
+    {
+      "label": "edge-d15-s",
+      "case": {
+        "batch": 15,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3803,
+        4367
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.172e-03 (worst row 7.515e-03) [bound 0.143]; attention input relative L2 error 4.573e-03 (worst row 5.481e-03) [bound 0.093]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.172e-03 (worst row 7.515e-03) [bound 0.143]; attention input relative L2 error 4.573e-03 (worst row 5.481e-03) [bound 0.093]",
+      "ok": true
+    },
+    {
+      "label": "edge-d17-s",
+      "case": {
+        "batch": 17,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.810e-03 (worst row 9.638e-03) [bound 0.128]; attention input relative L2 error 5.030e-03 (worst row 6.841e-03) [bound 0.085]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.810e-03 (worst row 9.638e-03) [bound 0.128]; attention input relative L2 error 5.030e-03 (worst row 6.841e-03) [bound 0.085]",
+      "ok": true
+    },
+    {
+      "label": "edge-d17-s",
+      "case": {
+        "batch": 17,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3803,
+        4367
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.519e-03 (worst row 8.076e-03) [bound 0.137]; attention input relative L2 error 4.833e-03 (worst row 5.799e-03) [bound 0.092]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.519e-03 (worst row 8.076e-03) [bound 0.137]; attention input relative L2 error 4.833e-03 (worst row 5.799e-03) [bound 0.092]",
+      "ok": true
+    },
+    {
+      "label": "edge-d31-s",
+      "case": {
+        "batch": 31,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.433e-03 (worst row 1.260e-02) [bound 0.131]; attention input relative L2 error 5.351e-03 (worst row 9.052e-03) [bound 0.086]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.433e-03 (worst row 1.260e-02) [bound 0.131]; attention input relative L2 error 5.351e-03 (worst row 9.052e-03) [bound 0.086]",
+      "ok": true
+    },
+    {
+      "label": "edge-d31-s",
+      "case": {
+        "batch": 31,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3795,
+        4367
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.484e-03 (worst row 9.663e-03) [bound 0.150]; attention input relative L2 error 4.948e-03 (worst row 7.756e-03) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.484e-03 (worst row 9.663e-03) [bound 0.150]; attention input relative L2 error 4.948e-03 (worst row 7.756e-03) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "edge-d33-s",
+      "case": {
+        "batch": 33,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.612e-03 (worst row 1.305e-02) [bound 0.128]; attention input relative L2 error 5.596e-03 (worst row 8.524e-03) [bound 0.086]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.612e-03 (worst row 1.305e-02) [bound 0.128]; attention input relative L2 error 5.596e-03 (worst row 8.524e-03) [bound 0.086]",
+      "ok": true
+    },
+    {
+      "label": "edge-d33-s",
+      "case": {
+        "batch": 33,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3795,
+        4401
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.749e-03 (worst row 1.686e-02) [bound 0.148]; attention input relative L2 error 4.941e-03 (worst row 1.122e-02) [bound 0.098]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.749e-03 (worst row 1.686e-02) [bound 0.148]; attention input relative L2 error 4.942e-03 (worst row 1.122e-02) [bound 0.098]",
+      "ok": true
+    },
+    {
+      "label": "edge-d63-s",
+      "case": {
+        "batch": 63,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.134e-03 (worst row 1.321e-02) [bound 0.131]; attention input relative L2 error 5.126e-03 (worst row 8.839e-03) [bound 0.085]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.134e-03 (worst row 1.321e-02) [bound 0.131]; attention input relative L2 error 5.126e-03 (worst row 8.839e-03) [bound 0.085]",
+      "ok": true
+    },
+    {
+      "label": "edge-d63-s",
+      "case": {
+        "batch": 63,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3791,
+        4401
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.620e-03 (worst row 1.446e-02) [bound 0.145]; attention input relative L2 error 4.822e-03 (worst row 8.263e-03) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.620e-03 (worst row 1.446e-02) [bound 0.145]; attention input relative L2 error 4.822e-03 (worst row 8.263e-03) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "edge-d64-s",
+      "case": {
+        "batch": 64,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 9.125e-03 (worst row 2.676e-02) [bound 0.133]; attention input relative L2 error 6.500e-03 (worst row 1.954e-02) [bound 0.088]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 9.125e-03 (worst row 2.676e-02) [bound 0.133]; attention input relative L2 error 6.500e-03 (worst row 1.954e-02) [bound 0.088]",
+      "ok": true
+    },
+    {
+      "label": "edge-d64-s",
+      "case": {
+        "batch": 64,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3791,
+        4401
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.481e-03 (worst row 9.338e-03) [bound 0.144]; attention input relative L2 error 4.743e-03 (worst row 6.384e-03) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.481e-03 (worst row 9.338e-03) [bound 0.144]; attention input relative L2 error 4.743e-03 (worst row 6.384e-03) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "edge-d65-s",
+      "case": {
+        "batch": 65,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 8.160e-03 (worst row 1.393e-02) [bound 0.126]; attention input relative L2 error 5.804e-03 (worst row 1.030e-02) [bound 0.082]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 8.160e-03 (worst row 1.393e-02) [bound 0.126]; attention input relative L2 error 5.804e-03 (worst row 1.030e-02) [bound 0.082]",
+      "ok": true
+    },
+    {
+      "label": "edge-d65-s",
+      "case": {
+        "batch": 65,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3791,
+        4401
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.846e-03 (worst row 1.284e-02) [bound 0.147]; attention input relative L2 error 5.676e-03 (worst row 1.001e-02) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.846e-03 (worst row 1.284e-02) [bound 0.147]; attention input relative L2 error 5.676e-03 (worst row 1.001e-02) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "edge-v15-s",
+      "case": {
+        "batch": 15,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3816,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.674e-02 (worst row 8.705e-02) [bound 0.138]; attention input relative L2 error 3.736e-02 (worst row 6.290e-02) [bound 0.091]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.674e-02 (worst row 8.705e-02) [bound 0.138]; attention input relative L2 error 3.736e-02 (worst row 6.290e-02) [bound 0.091]",
+      "ok": true
+    },
+    {
+      "label": "edge-v15-s",
+      "case": {
+        "batch": 15,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3803,
+        4367
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.267e-02 (worst row 1.168e-01) [bound 0.150]; attention input relative L2 error 4.186e-02 (worst row 8.017e-02) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.267e-02 (worst row 1.168e-01) [bound 0.150]; attention input relative L2 error 4.186e-02 (worst row 8.017e-02) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "edge-v17-s",
+      "case": {
+        "batch": 17,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.553e-02 (worst row 8.189e-02) [bound 0.135]; attention input relative L2 error 3.655e-02 (worst row 5.487e-02) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.553e-02 (worst row 8.189e-02) [bound 0.135]; attention input relative L2 error 3.655e-02 (worst row 5.487e-02) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "edge-v17-s",
+      "case": {
+        "batch": 17,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3803,
+        4367
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.006e-02 (worst row 9.572e-02) [bound 0.149]; attention input relative L2 error 3.996e-02 (worst row 6.933e-02) [bound 0.099]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.006e-02 (worst row 9.572e-02) [bound 0.149]; attention input relative L2 error 3.996e-02 (worst row 6.933e-02) [bound 0.099]",
+      "ok": true
+    },
+    {
+      "label": "edge-v31-s",
+      "case": {
+        "batch": 31,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.487e-02 (worst row 8.219e-02) [bound 0.133]; attention input relative L2 error 3.648e-02 (worst row 5.637e-02) [bound 0.088]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.487e-02 (worst row 8.219e-02) [bound 0.133]; attention input relative L2 error 3.648e-02 (worst row 5.637e-02) [bound 0.088]",
+      "ok": true
+    },
+    {
+      "label": "edge-v31-s",
+      "case": {
+        "batch": 31,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3795,
+        4367
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.977e-02 (worst row 1.005e-01) [bound 0.148]; attention input relative L2 error 3.976e-02 (worst row 6.942e-02) [bound 0.098]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.977e-02 (worst row 1.005e-01) [bound 0.148]; attention input relative L2 error 3.976e-02 (worst row 6.942e-02) [bound 0.098]",
+      "ok": true
+    },
+    {
+      "label": "edge-v33-s",
+      "case": {
+        "batch": 33,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.545e-02 (worst row 9.636e-02) [bound 0.135]; attention input relative L2 error 3.675e-02 (worst row 6.637e-02) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.545e-02 (worst row 9.636e-02) [bound 0.135]; attention input relative L2 error 3.675e-02 (worst row 6.637e-02) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "edge-v33-s",
+      "case": {
+        "batch": 33,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        3795,
+        4401
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.000e-02 (worst row 9.026e-02) [bound 0.149]; attention input relative L2 error 4.051e-02 (worst row 6.359e-02) [bound 0.100]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.000e-02 (worst row 9.026e-02) [bound 0.149]; attention input relative L2 error 4.051e-02 (worst row 6.359e-02) [bound 0.100]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-1x1-s",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        65536,
+        65536
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.426e-03 (worst row 5.426e-03) [bound 0.100]; attention input relative L2 error 4.344e-03 (worst row 4.344e-03) [bound 0.069]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.426e-03 (worst row 5.426e-03) [bound 0.100]; attention input relative L2 error 4.344e-03 (worst row 4.344e-03) [bound 0.069]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-1x1-s",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        65536,
+        65536
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.576e-03 (worst row 6.576e-03) [bound 0.150]; attention input relative L2 error 4.756e-03 (worst row 4.756e-03) [bound 0.115]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.576e-03 (worst row 6.576e-03) [bound 0.150]; attention input relative L2 error 4.756e-03 (worst row 4.756e-03) [bound 0.115]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-1x1-f",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        65536,
+        65536
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.588e-03 (worst row 6.588e-03) [bound 0.132]; attention input relative L2 error 5.108e-03 (worst row 5.108e-03) [bound 0.093]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.588e-03 (worst row 6.588e-03) [bound 0.132]; attention input relative L2 error 5.107e-03 (worst row 5.107e-03) [bound 0.093]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-1x1-f",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        65536,
+        65536
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.374e-03 (worst row 7.374e-03) [bound 0.150]; attention input relative L2 error 5.207e-03 (worst row 5.207e-03) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.374e-03 (worst row 7.374e-03) [bound 0.150]; attention input relative L2 error 5.207e-03 (worst row 5.207e-03) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x1-s",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.925e-03 (worst row 1.158e-02) [bound 0.129]; attention input relative L2 error 4.908e-03 (worst row 8.132e-03) [bound 0.081]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.925e-03 (worst row 1.158e-02) [bound 0.129]; attention input relative L2 error 4.908e-03 (worst row 8.132e-03) [bound 0.081]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x1-s",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60842,
+        69863
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.993e-03 (worst row 1.196e-02) [bound 0.148]; attention input relative L2 error 5.205e-03 (worst row 7.915e-03) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.993e-03 (worst row 1.196e-02) [bound 0.148]; attention input relative L2 error 5.205e-03 (worst row 7.915e-03) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x1-f",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.803e-03 (worst row 8.636e-03) [bound 0.144]; attention input relative L2 error 4.768e-03 (worst row 5.958e-03) [bound 0.091]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.803e-03 (worst row 8.636e-03) [bound 0.144]; attention input relative L2 error 4.768e-03 (worst row 5.958e-03) [bound 0.091]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x1-f",
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60842,
+        69863
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.496e-03 (worst row 7.556e-03) [bound 0.150]; attention input relative L2 error 4.945e-03 (worst row 5.934e-03) [bound 0.113]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.496e-03 (worst row 7.556e-03) [bound 0.150]; attention input relative L2 error 4.945e-03 (worst row 5.934e-03) [bound 0.113]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x1-s",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.003e-03 (worst row 1.528e-02) [bound 0.129]; attention input relative L2 error 4.971e-03 (worst row 1.037e-02) [bound 0.084]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.003e-03 (worst row 1.528e-02) [bound 0.129]; attention input relative L2 error 4.971e-03 (worst row 1.037e-02) [bound 0.084]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x1-s",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60705,
+        70412
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.810e-03 (worst row 1.230e-02) [bound 0.134]; attention input relative L2 error 4.934e-03 (worst row 7.893e-03) [bound 0.088]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.810e-03 (worst row 1.230e-02) [bound 0.134]; attention input relative L2 error 4.934e-03 (worst row 7.893e-03) [bound 0.088]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x1-f",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.333e-03 (worst row 1.880e-02) [bound 0.140]; attention input relative L2 error 5.200e-03 (worst row 1.201e-02) [bound 0.091]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.333e-03 (worst row 1.880e-02) [bound 0.140]; attention input relative L2 error 5.200e-03 (worst row 1.201e-02) [bound 0.091]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x1-f",
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60705,
+        70412
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.718e-03 (worst row 9.687e-03) [bound 0.150]; attention input relative L2 error 4.894e-03 (worst row 6.329e-03) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.718e-03 (worst row 9.687e-03) [bound 0.150]; attention input relative L2 error 4.894e-03 (worst row 6.329e-03) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x8-s",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.462e-02 (worst row 7.894e-02) [bound 0.134]; attention input relative L2 error 3.639e-02 (worst row 5.266e-02) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.462e-02 (worst row 7.894e-02) [bound 0.134]; attention input relative L2 error 3.639e-02 (worst row 5.266e-02) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x8-s",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60842,
+        69863
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.118e-02 (worst row 9.546e-02) [bound 0.150]; attention input relative L2 error 4.108e-02 (worst row 6.945e-02) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.118e-02 (worst row 9.546e-02) [bound 0.150]; attention input relative L2 error 4.108e-02 (worst row 6.945e-02) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x8-f",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.237e-02 (worst row 8.663e-02) [bound 0.150]; attention input relative L2 error 4.175e-02 (worst row 6.214e-02) [bound 0.102]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.237e-02 (worst row 8.663e-02) [bound 0.150]; attention input relative L2 error 4.175e-02 (worst row 6.214e-02) [bound 0.102]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-16x8-f",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60842,
+        69863
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.521e-02 (worst row 8.950e-02) [bound 0.150]; attention input relative L2 error 4.400e-02 (worst row 6.490e-02) [bound 0.109]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.521e-02 (worst row 8.950e-02) [bound 0.150]; attention input relative L2 error 4.400e-02 (worst row 6.490e-02) [bound 0.109]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x8-s",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.528e-02 (worst row 1.024e-01) [bound 0.134]; attention input relative L2 error 3.695e-02 (worst row 6.060e-02) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.528e-02 (worst row 1.024e-01) [bound 0.134]; attention input relative L2 error 3.695e-02 (worst row 6.060e-02) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x8-s",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60705,
+        70412
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.064e-02 (worst row 1.037e-01) [bound 0.149]; attention input relative L2 error 4.029e-02 (worst row 6.076e-02) [bound 0.099]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.064e-02 (worst row 1.037e-01) [bound 0.149]; attention input relative L2 error 4.029e-02 (worst row 6.076e-02) [bound 0.099]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x8-f",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        60738,
+        70379
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.259e-02 (worst row 9.467e-02) [bound 0.150]; attention input relative L2 error 4.197e-02 (worst row 6.741e-02) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.259e-02 (worst row 9.467e-02) [bound 0.150]; attention input relative L2 error 4.197e-02 (worst row 6.741e-02) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "ctx64k-32x8-f",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 65536,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        60705,
+        70412
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.375e-02 (worst row 9.860e-02) [bound 0.150]; attention input relative L2 error 4.230e-02 (worst row 6.270e-02) [bound 0.104]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.375e-02 (worst row 9.860e-02) [bound 0.150]; attention input relative L2 error 4.230e-02 (worst row 6.270e-02) [bound 0.104]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-63",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 63,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        63,
+        63
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 1.664e-02 (worst row 1.664e-02) [bound 0.059]; attention input relative L2 error 8.435e-03 (worst row 8.435e-03) [bound 0.030]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 1.664e-02 (worst row 1.664e-02) [bound 0.059]; attention input relative L2 error 8.435e-03 (worst row 8.435e-03) [bound 0.030]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-63",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 63,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        63,
+        63
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 8.138e-03 (worst row 8.138e-03) [bound 0.110]; attention input relative L2 error 5.957e-03 (worst row 5.957e-03) [bound 0.076]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 8.138e-03 (worst row 8.138e-03) [bound 0.110]; attention input relative L2 error 5.957e-03 (worst row 5.957e-03) [bound 0.076]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-64",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 64,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        64,
+        64
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 4.496e-03 (worst row 4.496e-03) [bound 0.094]; attention input relative L2 error 3.996e-03 (worst row 3.996e-03) [bound 0.071]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 4.496e-03 (worst row 4.496e-03) [bound 0.094]; attention input relative L2 error 3.996e-03 (worst row 3.996e-03) [bound 0.071]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-64",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 64,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        64,
+        64
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.445e-03 (worst row 6.445e-03) [bound 0.109]; attention input relative L2 error 4.459e-03 (worst row 4.459e-03) [bound 0.065]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.445e-03 (worst row 6.445e-03) [bound 0.109]; attention input relative L2 error 4.459e-03 (worst row 4.459e-03) [bound 0.065]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-65",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        65,
+        65
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.622e-03 (worst row 6.622e-03) [bound 0.113]; attention input relative L2 error 5.578e-03 (worst row 5.578e-03) [bound 0.086]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.622e-03 (worst row 6.622e-03) [bound 0.113]; attention input relative L2 error 5.578e-03 (worst row 5.578e-03) [bound 0.086]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-65",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 65,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        65,
+        65
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.368e-03 (worst row 5.368e-03) [bound 0.120]; attention input relative L2 error 3.809e-03 (worst row 3.809e-03) [bound 0.072]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.368e-03 (worst row 5.368e-03) [bound 0.120]; attention input relative L2 error 3.808e-03 (worst row 3.808e-03) [bound 0.072]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2040",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2040,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2040,
+        2040
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.153e-03 (worst row 7.153e-03) [bound 0.150]; attention input relative L2 error 5.889e-03 (worst row 5.889e-03) [bound 0.113]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.153e-03 (worst row 7.153e-03) [bound 0.150]; attention input relative L2 error 5.889e-03 (worst row 5.889e-03) [bound 0.113]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2040",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2040,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2040,
+        2040
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.061e-03 (worst row 5.061e-03) [bound 0.131]; attention input relative L2 error 3.369e-03 (worst row 3.369e-03) [bound 0.069]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.061e-03 (worst row 5.061e-03) [bound 0.131]; attention input relative L2 error 3.369e-03 (worst row 3.369e-03) [bound 0.069]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2047",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2047,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2047,
+        2047
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.230e-03 (worst row 7.230e-03) [bound 0.119]; attention input relative L2 error 4.986e-03 (worst row 4.986e-03) [bound 0.074]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.230e-03 (worst row 7.230e-03) [bound 0.119]; attention input relative L2 error 4.986e-03 (worst row 4.986e-03) [bound 0.074]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2047",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2047,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2047,
+        2047
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.397e-03 (worst row 6.397e-03) [bound 0.150]; attention input relative L2 error 5.375e-03 (worst row 5.375e-03) [bound 0.129]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.397e-03 (worst row 6.397e-03) [bound 0.150]; attention input relative L2 error 5.375e-03 (worst row 5.375e-03) [bound 0.129]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2048",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2048,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2048,
+        2048
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 1.981e-02 (worst row 1.981e-02) [bound 0.150]; attention input relative L2 error 1.243e-02 (worst row 1.243e-02) [bound 0.098]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 1.981e-02 (worst row 1.981e-02) [bound 0.150]; attention input relative L2 error 1.243e-02 (worst row 1.243e-02) [bound 0.098]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2048",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2048,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2048,
+        2048
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.956e-03 (worst row 7.956e-03) [bound 0.150]; attention input relative L2 error 6.017e-03 (worst row 6.017e-03) [bound 0.140]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.956e-03 (worst row 7.956e-03) [bound 0.150]; attention input relative L2 error 6.017e-03 (worst row 6.017e-03) [bound 0.140]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2049",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2049,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2049,
+        2049
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 1.512e-02 (worst row 1.512e-02) [bound 0.150]; attention input relative L2 error 9.585e-03 (worst row 9.585e-03) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 1.512e-02 (worst row 1.512e-02) [bound 0.150]; attention input relative L2 error 9.585e-03 (worst row 9.585e-03) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "window-d1-2049",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 2049,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2049,
+        2049
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.500e-03 (worst row 5.500e-03) [bound 0.147]; attention input relative L2 error 4.394e-03 (worst row 4.394e-03) [bound 0.103]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.500e-03 (worst row 5.500e-03) [bound 0.147]; attention input relative L2 error 4.394e-03 (worst row 4.394e-03) [bound 0.103]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2040",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2040,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2040,
+        2040
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.744e-02 (worst row 8.672e-02) [bound 0.143]; attention input relative L2 error 3.845e-02 (worst row 5.688e-02) [bound 0.096]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.744e-02 (worst row 8.672e-02) [bound 0.143]; attention input relative L2 error 3.845e-02 (worst row 5.688e-02) [bound 0.096]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2040",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2040,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2040,
+        2040
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.945e-02 (worst row 7.782e-02) [bound 0.148]; attention input relative L2 error 3.851e-02 (worst row 5.403e-02) [bound 0.096]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.945e-02 (worst row 7.782e-02) [bound 0.148]; attention input relative L2 error 3.851e-02 (worst row 5.403e-02) [bound 0.096]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2047",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2047,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2047,
+        2047
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.250e-02 (worst row 6.787e-02) [bound 0.131]; attention input relative L2 error 3.524e-02 (worst row 4.623e-02) [bound 0.088]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.250e-02 (worst row 6.787e-02) [bound 0.131]; attention input relative L2 error 3.524e-02 (worst row 4.623e-02) [bound 0.088]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2047",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2047,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2047,
+        2047
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.925e-02 (worst row 7.170e-02) [bound 0.148]; attention input relative L2 error 3.863e-02 (worst row 5.160e-02) [bound 0.096]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.925e-02 (worst row 7.170e-02) [bound 0.148]; attention input relative L2 error 3.863e-02 (worst row 5.160e-02) [bound 0.096]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2048",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2048,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2048,
+        2048
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.247e-02 (worst row 6.701e-02) [bound 0.131]; attention input relative L2 error 3.650e-02 (worst row 4.848e-02) [bound 0.091]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.247e-02 (worst row 6.701e-02) [bound 0.131]; attention input relative L2 error 3.650e-02 (worst row 4.848e-02) [bound 0.091]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2048",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2048,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2048,
+        2048
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.901e-02 (worst row 8.655e-02) [bound 0.147]; attention input relative L2 error 3.726e-02 (worst row 5.714e-02) [bound 0.093]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.901e-02 (worst row 8.655e-02) [bound 0.147]; attention input relative L2 error 3.726e-02 (worst row 5.714e-02) [bound 0.093]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2049",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2049,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        2049,
+        2049
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.530e-02 (worst row 6.955e-02) [bound 0.138]; attention input relative L2 error 3.678e-02 (worst row 4.807e-02) [bound 0.092]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.530e-02 (worst row 6.955e-02) [bound 0.138]; attention input relative L2 error 3.678e-02 (worst row 4.807e-02) [bound 0.092]",
+      "ok": true
+    },
+    {
+      "label": "window-v2-2049",
+      "case": {
+        "batch": 2,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 2049,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        2049,
+        2049
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.112e-02 (worst row 7.895e-02) [bound 0.150]; attention input relative L2 error 4.044e-02 (worst row 5.145e-02) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.112e-02 (worst row 7.895e-02) [bound 0.150]; attention input relative L2 error 4.044e-02 (worst row 5.145e-02) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "page64-d1",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80001,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 64
+      },
+      "seed": 419731,
+      "seq_range": [
+        80001,
+        80001
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 1.529e-02 (worst row 1.529e-02) [bound 0.107]; attention input relative L2 error 1.172e-02 (worst row 1.172e-02) [bound 0.081]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 1.529e-02 (worst row 1.529e-02) [bound 0.107]; attention input relative L2 error 1.172e-02 (worst row 1.172e-02) [bound 0.081]",
+      "ok": true
+    },
+    {
+      "label": "page64-d1",
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "layer": "sliding",
+        "ctx": 80001,
+        "spread": "fixed",
+        "dist": "soft",
+        "page": 64
+      },
+      "seed": 427650,
+      "seq_range": [
+        80001,
+        80001
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.124e-03 (worst row 7.124e-03) [bound 0.150]; attention input relative L2 error 5.472e-03 (worst row 5.472e-03) [bound 0.120]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.124e-03 (worst row 7.124e-03) [bound 0.150]; attention input relative L2 error 5.472e-03 (worst row 5.472e-03) [bound 0.120]",
+      "ok": true
+    },
+    {
+      "label": "page64-v16-f",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 8193,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 64
+      },
+      "seed": 419731,
+      "seq_range": [
+        7593,
+        8798
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.075e-02 (worst row 1.072e-01) [bound 0.148]; attention input relative L2 error 4.101e-02 (worst row 5.612e-02) [bound 0.100]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.075e-02 (worst row 1.072e-01) [bound 0.148]; attention input relative L2 error 4.101e-02 (worst row 5.612e-02) [bound 0.100]",
+      "ok": true
+    },
+    {
+      "label": "page64-v16-f",
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 8193,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 64
+      },
+      "seed": 427650,
+      "seq_range": [
+        7606,
+        8733
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.113e-02 (worst row 9.763e-02) [bound 0.150]; attention input relative L2 error 4.092e-02 (worst row 6.028e-02) [bound 0.101]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.113e-02 (worst row 9.763e-02) [bound 0.150]; attention input relative L2 error 4.092e-02 (worst row 6.028e-02) [bound 0.101]",
+      "ok": true
+    },
+    {
+      "label": "page64-v32-f",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 64,
+        "kv_scale": 0.015625
+      },
+      "seed": 419731,
+      "seq_range": [
+        3797,
+        4399
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.792e-02 (worst row 9.095e-02) [bound 0.141]; attention input relative L2 error 3.898e-02 (worst row 6.313e-02) [bound 0.095]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.792e-02 (worst row 9.095e-02) [bound 0.141]; attention input relative L2 error 3.898e-02 (worst row 6.313e-02) [bound 0.095]",
+      "ok": true
+    },
+    {
+      "label": "page64-v32-f",
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 4097,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 64,
+        "kv_scale": 0.015625
+      },
+      "seed": 427650,
+      "seq_range": [
+        3795,
+        4401
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.984e-02 (worst row 8.880e-02) [bound 0.147]; attention input relative L2 error 3.976e-02 (worst row 6.081e-02) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.984e-02 (worst row 8.880e-02) [bound 0.147]; attention input relative L2 error 3.976e-02 (worst row 6.081e-02) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "mixed-d24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 20001,
+        "spread": "mixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        1358,
+        80004
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.302e-03 (worst row 1.366e-02) [bound 0.136]; attention input relative L2 error 5.023e-03 (worst row 7.281e-03) [bound 0.087]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.302e-03 (worst row 1.366e-02) [bound 0.136]; attention input relative L2 error 5.024e-03 (worst row 7.281e-03) [bound 0.087]",
+      "ok": true
+    },
+    {
+      "label": "mixed-d24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 20001,
+        "spread": "mixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        1173,
+        80004
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.617e-03 (worst row 1.144e-02) [bound 0.150]; attention input relative L2 error 4.676e-03 (worst row 5.801e-03) [bound 0.097]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.617e-03 (worst row 1.144e-02) [bound 0.150]; attention input relative L2 error 4.676e-03 (worst row 5.801e-03) [bound 0.097]",
+      "ok": true
+    },
+    {
+      "label": "mixed-v24-s",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 5001,
+        "spread": "mixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        339,
+        20004
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 5.473e-02 (worst row 1.043e-01) [bound 0.133]; attention input relative L2 error 3.646e-02 (worst row 6.215e-02) [bound 0.089]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 5.473e-02 (worst row 1.043e-01) [bound 0.133]; attention input relative L2 error 3.646e-02 (worst row 6.215e-02) [bound 0.089]",
+      "ok": true
+    },
+    {
+      "label": "mixed-v24-s",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "sliding",
+        "ctx": 5001,
+        "spread": "mixed",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        293,
+        20004
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.081e-02 (worst row 1.117e-01) [bound 0.150]; attention input relative L2 error 4.026e-02 (worst row 7.310e-02) [bound 0.100]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.081e-02 (worst row 1.117e-01) [bound 0.150]; attention input relative L2 error 4.026e-02 (worst row 7.310e-02) [bound 0.100]",
+      "ok": true
+    },
+    {
+      "label": "ctx96k-v24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 96000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        88972,
+        103094
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.229e-02 (worst row 8.586e-02) [bound 0.150]; attention input relative L2 error 4.123e-02 (worst row 5.937e-02) [bound 0.102]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.229e-02 (worst row 8.586e-02) [bound 0.150]; attention input relative L2 error 4.123e-02 (worst row 5.937e-02) [bound 0.102]",
+      "ok": true
+    },
+    {
+      "label": "ctx96k-v24-f",
+      "case": {
+        "batch": 24,
+        "q_len": 8,
+        "layer": "full",
+        "ctx": 96000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        89124,
+        102338
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.526e-02 (worst row 9.254e-02) [bound 0.150]; attention input relative L2 error 4.372e-02 (worst row 6.341e-02) [bound 0.108]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.526e-02 (worst row 9.254e-02) [bound 0.150]; attention input relative L2 error 4.372e-02 (worst row 6.341e-02) [bound 0.108]",
+      "ok": true
+    },
+    {
+      "label": "ctx96k-d48-f",
+      "case": {
+        "batch": 48,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 96000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 419731,
+      "seq_range": [
+        88972,
+        103094
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 7.474e-03 (worst row 1.392e-02) [bound 0.150]; attention input relative L2 error 5.413e-03 (worst row 1.091e-02) [bound 0.102]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 7.474e-03 (worst row 1.392e-02) [bound 0.150]; attention input relative L2 error 5.413e-03 (worst row 1.091e-02) [bound 0.102]",
+      "ok": true
+    },
+    {
+      "label": "ctx96k-d48-f",
+      "case": {
+        "batch": 48,
+        "q_len": 1,
+        "layer": "full",
+        "ctx": 96000,
+        "spread": "agentic",
+        "dist": "soft",
+        "page": 1
+      },
+      "seed": 427650,
+      "seq_range": [
+        88853,
+        103143
+      ],
+      "eager_ok": true,
+      "eager_msg": "update relative L2 error 6.494e-03 (worst row 9.046e-03) [bound 0.149]; attention input relative L2 error 4.637e-03 (worst row 5.830e-03) [bound 0.094]",
+      "graph_ok": true,
+      "graph_msg": "update relative L2 error 6.494e-03 (worst row 9.046e-03) [bound 0.149]; attention input relative L2 error 4.637e-03 (worst row 5.830e-03) [bound 0.094]",
+      "ok": true
+    }
+  ],
+  "dispatch": {
+    "attention:B1:Q1:W2048": {
+      "eager": 86,
+      "captured": 21
+    },
+    "attention:B1:Q1:W0": {
+      "eager": 26,
+      "captured": 6
+    },
+    "attention:B1:Q8:W2048": {
+      "eager": 10,
+      "captured": 2
+    },
+    "attention:B1:Q8:W0": {
+      "eager": 14,
+      "captured": 3
+    },
+    "project:T1:qkv3": {
+      "eager": 108,
+      "captured": 27
+    },
+    "project:T1:o": {
+      "eager": 108,
+      "captured": 27
+    },
+    "project:T1:pool_router": {
+      "eager": 108,
+      "captured": 27
+    },
+    "moe:T1:nt1_lop3": {
+      "eager": 108,
+      "captured": 27
+    },
+    "project:T1:unpooler_slice": {
+      "eager": 108,
+      "captured": 27
+    },
+    "project:T8:qkv_gate": {
+      "eager": 40,
+      "captured": 10
+    },
+    "attention:B8:Q1:W2048": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T8:o": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T8:pool_router": {
+      "eager": 40,
+      "captured": 10
+    },
+    "moe:T8:auto": {
+      "eager": 20,
+      "captured": 5
+    },
+    "project:T8:unpooler_slice": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T9:qkv_gate": {
+      "eager": 12,
+      "captured": 3
+    },
+    "attention:B9:Q1:W2048": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T9:o": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T9:pool_router": {
+      "eager": 12,
+      "captured": 3
+    },
+    "moe:T9:auto": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T9:unpooler": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T24:qkv_gate": {
+      "eager": 28,
+      "captured": 7
+    },
+    "attention:B3:Q8:W0": {
+      "eager": 4,
+      "captured": 1
+    },
+    "project:T24:o": {
+      "eager": 28,
+      "captured": 7
+    },
+    "project:T24:pool_router": {
+      "eager": 28,
+      "captured": 7
+    },
+    "moe:T24:auto": {
+      "eager": 28,
+      "captured": 7
+    },
+    "project:T24:unpooler": {
+      "eager": 28,
+      "captured": 7
+    },
+    "project:T40:qkv_gate": {
+      "eager": 4,
+      "captured": 1
+    },
+    "attention:B5:Q8:W2048": {
+      "eager": 4,
+      "captured": 1
+    },
+    "project:T40:o": {
+      "eager": 4,
+      "captured": 1
+    },
+    "project:T40:pool_router": {
+      "eager": 4,
+      "captured": 1
+    },
+    "moe:T40:auto": {
+      "eager": 4,
+      "captured": 1
+    },
+    "project:T40:unpooler": {
+      "eager": 4,
+      "captured": 1
+    },
+    "project:T33:qkv_gate": {
+      "eager": 12,
+      "captured": 3
+    },
+    "attention:B33:Q1:W0": {
+      "eager": 4,
+      "captured": 1
+    },
+    "project:T33:o": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T33:pool_router": {
+      "eager": 12,
+      "captured": 3
+    },
+    "moe:T33:auto": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T33:unpooler": {
+      "eager": 12,
+      "captured": 3
+    },
+    "project:T16:qkv_gate": {
+      "eager": 72,
+      "captured": 18
+    },
+    "attention:B2:Q8:W2048": {
+      "eager": 44,
+      "captured": 11
+    },
+    "project:T16:o": {
+      "eager": 88,
+      "captured": 22
+    },
+    "project:T16:pool_router": {
+      "eager": 88,
+      "captured": 22
+    },
+    "moe:T16:auto": {
+      "eager": 52,
+      "captured": 13
+    },
+    "project:T16:unpooler": {
+      "eager": 88,
+      "captured": 22
+    },
+    "moe:T8:nt1_lop3": {
+      "eager": 20,
+      "captured": 5
+    },
+    "project:T32:qkv_gate": {
+      "eager": 24,
+      "captured": 6
+    },
+    "attention:B4:Q8:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T32:o": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T32:pool_router": {
+      "eager": 40,
+      "captured": 10
+    },
+    "moe:T32:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T32:unpooler": {
+      "eager": 40,
+      "captured": 10
+    },
+    "attention:B16:Q1:W0": {
+      "eager": 20,
+      "captured": 5
+    },
+    "moe:T16:nt1_lop3": {
+      "eager": 36,
+      "captured": 9
+    },
+    "project:T16:qkv3": {
+      "eager": 16,
+      "captured": 4
+    },
+    "attention:B16:Q1:W2048": {
+      "eager": 16,
+      "captured": 4
+    },
+    "attention:B32:Q1:W2048": {
+      "eager": 16,
+      "captured": 4
+    },
+    "moe:T32:nt1_lop3": {
+      "eager": 32,
+      "captured": 8
+    },
+    "project:T32:qkv3": {
+      "eager": 16,
+      "captured": 4
+    },
+    "attention:B32:Q1:W0": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T128:qkv_gate": {
+      "eager": 40,
+      "captured": 10
+    },
+    "attention:B16:Q8:W2048": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T128:o": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T128:pool_router": {
+      "eager": 40,
+      "captured": 10
+    },
+    "moe:T128:hh_m128": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T128:unpooler": {
+      "eager": 40,
+      "captured": 10
+    },
+    "attention:B16:Q8:W0": {
+      "eager": 24,
+      "captured": 6
+    },
+    "project:T256:qkv_gate": {
+      "eager": 40,
+      "captured": 10
+    },
+    "attention:B32:Q8:W2048": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T256:o": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T256:pool_router": {
+      "eager": 40,
+      "captured": 10
+    },
+    "moe:T256:mixed_parallel_m256": {
+      "eager": 40,
+      "captured": 10
+    },
+    "project:T256:unpooler": {
+      "eager": 40,
+      "captured": 10
+    },
+    "attention:B32:Q8:W0": {
+      "eager": 24,
+      "captured": 6
+    },
+    "project:T2:qkv_gate": {
+      "eager": 16,
+      "captured": 4
+    },
+    "attention:B2:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T2:o": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T2:pool_router": {
+      "eager": 16,
+      "captured": 4
+    },
+    "moe:T2:auto": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T2:unpooler_slice": {
+      "eager": 16,
+      "captured": 4
+    },
+    "attention:B2:Q1:W0": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B8:Q1:W0": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B24:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B24:Q1:W0": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T48:qkv_gate": {
+      "eager": 24,
+      "captured": 6
+    },
+    "attention:B48:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T48:o": {
+      "eager": 24,
+      "captured": 6
+    },
+    "project:T48:pool_router": {
+      "eager": 24,
+      "captured": 6
+    },
+    "moe:T48:auto": {
+      "eager": 24,
+      "captured": 6
+    },
+    "project:T48:unpooler": {
+      "eager": 24,
+      "captured": 6
+    },
+    "attention:B48:Q1:W0": {
+      "eager": 16,
+      "captured": 4
+    },
+    "attention:B2:Q8:W0": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T192:qkv_gate": {
+      "eager": 32,
+      "captured": 8
+    },
+    "attention:B24:Q8:W2048": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T192:o": {
+      "eager": 32,
+      "captured": 8
+    },
+    "project:T192:pool_router": {
+      "eager": 32,
+      "captured": 8
+    },
+    "moe:T192:auto": {
+      "eager": 32,
+      "captured": 8
+    },
+    "project:T192:unpooler": {
+      "eager": 32,
+      "captured": 8
+    },
+    "attention:B24:Q8:W0": {
+      "eager": 16,
+      "captured": 4
+    },
+    "project:T7:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B7:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T7:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T7:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T7:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T7:unpooler_slice": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T15:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B15:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T15:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T15:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T15:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T15:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T17:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B17:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T17:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T17:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T17:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T17:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T31:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B31:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T31:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T31:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T31:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T31:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B33:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T63:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B63:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T63:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T63:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T63:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T63:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T64:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B64:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T64:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T64:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T64:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T64:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T65:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B65:Q1:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T65:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T65:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T65:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T65:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T120:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B15:Q8:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T120:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T120:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T120:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T120:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T136:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B17:Q8:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T136:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T136:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T136:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T136:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T248:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B31:Q8:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T248:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T248:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T248:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T248:unpooler": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T264:qkv_gate": {
+      "eager": 8,
+      "captured": 2
+    },
+    "attention:B33:Q8:W2048": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T264:o": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T264:pool_router": {
+      "eager": 8,
+      "captured": 2
+    },
+    "moe:T264:auto": {
+      "eager": 8,
+      "captured": 2
+    },
+    "project:T264:unpooler": {
+      "eager": 8,
+      "captured": 2
+    }
+  },
+  "complete": true,
+  "standins": {
+    "regmax": "frozen S14 N64 launch stands in for Hopper N128 ring; Python stage4 selection retained",
+    "last": "actual cs_attention Python ABI; direct-partials arithmetic plus native pointer-copy/counter-reset launch"
+  },
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "plans": {}
+}

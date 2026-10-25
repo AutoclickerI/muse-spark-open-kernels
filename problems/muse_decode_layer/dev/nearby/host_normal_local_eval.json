@@ -1,0 +1,101 @@
+{
+ "problem": "muse_decode_layer",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/nearby/lab_preview.py",
+ "sha256": "a357ab6f8bc5a74b2b6cd9f4b4c1e56626aeb0393ad99b16fd5b6bfcc0d8d4c8",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 144.53042837197427,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, layer sliding",
+   "first_call_s": 0.0014025919954292476,
+   "ok": true,
+   "msg": "update relative L2 error 7.624e-03 (worst row 7.624e-03) [bound 0.085]; attention input relative L2 error 4.359e-03 (worst row 4.359e-03) [bound 0.042]"
+  },
+  {
+   "case": "batch 1, ctx 3000, layer full",
+   "first_call_s": 0.0033217340242117643,
+   "ok": true,
+   "msg": "update relative L2 error 7.022e-03 (worst row 7.022e-03) [bound 0.150]; attention input relative L2 error 4.976e-03 (worst row 4.976e-03) [bound 0.108]"
+  },
+  {
+   "case": "batch 8, ctx 2047, layer sliding",
+   "first_call_s": 0.0014820810174569488,
+   "ok": true,
+   "msg": "update relative L2 error 6.451e-03 (worst row 9.351e-03) [bound 0.148]; attention input relative L2 error 4.612e-03 (worst row 6.244e-03) [bound 0.094]"
+  },
+  {
+   "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+   "first_call_s": 0.0025015940191224217,
+   "ok": true,
+   "msg": "update relative L2 error 7.332e-03 (worst row 9.991e-03) [bound 0.150]; attention input relative L2 error 5.304e-03 (worst row 7.280e-03) [bound 0.134]"
+  },
+  {
+   "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+   "first_call_s": 0.6314500709995627,
+   "ok": true,
+   "msg": "update relative L2 error 3.266e-03 (worst row 3.649e-03) [bound 0.150]; attention input relative L2 error 2.341e-03 (worst row 3.110e-03) [bound 0.087]"
+  },
+  {
+   "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 2.453197763999924,
+   "ok": true,
+   "msg": "update relative L2 error 3.370e-03 (worst row 3.618e-03) [bound 0.150]; attention input relative L2 error 2.971e-03 (worst row 3.322e-03) [bound 0.112]"
+  },
+  {
+   "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+   "first_call_s": 0.0037197500350885093,
+   "ok": true,
+   "msg": "update relative L2 error 7.214e-03 (worst row 8.436e-03) [bound 0.150]; attention input relative L2 error 5.243e-03 (worst row 6.737e-03) [bound 0.114]"
+  },
+  {
+   "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+   "first_call_s": 1.32494796696119,
+   "ok": true,
+   "msg": "update relative L2 error 3.416e-03 (worst row 3.640e-03) [bound 0.150]; attention input relative L2 error 3.056e-03 (worst row 3.298e-03) [bound 0.120]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, layer full, q_len 8",
+   "first_call_s": 1.4289437329862267,
+   "ok": true,
+   "msg": "update relative L2 error 3.366e-03 (worst row 3.685e-03) [bound 0.150]; attention input relative L2 error 2.795e-03 (worst row 3.098e-03) [bound 0.135]"
+  },
+  {
+   "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "first_call_s": 0.79313284100499,
+   "ok": true,
+   "msg": "update relative L2 error 3.343e-03 (worst row 3.556e-03) [bound 0.150]; attention input relative L2 error 2.911e-03 (worst row 3.301e-03) [bound 0.114]"
+  },
+  {
+   "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+   "first_call_s": 0.0035263870377093554,
+   "ok": true,
+   "msg": "update relative L2 error 7.361e-03 (worst row 7.361e-03) [bound 0.138]; attention input relative L2 error 6.099e-03 (worst row 6.099e-03) [bound 0.105]"
+  },
+  {
+   "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+   "first_call_s": 1.3576608370058239,
+   "ok": true,
+   "msg": "update relative L2 error 3.418e-03 (worst row 3.602e-03) [bound 0.149]; attention input relative L2 error 3.049e-03 (worst row 3.274e-03) [bound 0.101]"
+  },
+  {
+   "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+   "first_call_s": 0.0017243179609067738,
+   "ok": true,
+   "msg": "update relative L2 error 9.636e-03 (worst row 2.833e-02) [bound 0.145]; attention input relative L2 error 5.906e-03 (worst row 1.295e-02) [bound 0.097]"
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

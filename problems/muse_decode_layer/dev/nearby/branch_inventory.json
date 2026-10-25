@@ -1,0 +1,1448 @@
+{
+  "candidate": "problems/muse_decode_layer/cand_r3_best7_s15.py",
+  "sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "tables": [
+    {
+      "line": 33,
+      "source": "VDSK_SHORTLIST = {(128, 'qkv_gate'): [((128, 64, 64, 8, 4, 1), 3)]}"
+    },
+    {
+      "line": 106,
+      "source": "BEST7_SETTINGS = {'other': ('best6', 'auto', 'auto', 'auto'), (1, 1, 2048): (('best6', (16, 16), (8, 1), (8, 16)), ('attn_main', None), 'nt1_lop3', {'o': ('stream', 6, 1)}), (1, 1, 0): (('best6', (16, 16), (8, 1), (8, 16)), ('attn_main', None), 'nt1_lop3', {'o': ('stream', 6, 1)}), (16, 1, 2048): (('best6', (16, 1), (8, 1), (16, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (16, 1, 0): (('best6', (16, 1), (8, 1), (16, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (32, 1, 2048): ('best5', ('attn_main', None), 'nt1_lop3', 'auto'), (32, 1, 0): (('best6', (16, 1), (8, 1), (16, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (1, 8, 2048): (('best6', (16, 4), (4, 1), (8, 16)), ('layer', None), 'nt1_lop3', 'auto'), (1, 8, 0): (('best6', (16, 4), (4, 1), (8, 16)), ('layer', None), 'nt1_lop3', 'auto'), (16, 8, 2048): (('best6', (16, 1), (4, 1), (8, 1)), ('layer', None), 'hh_m128', 'auto'), (16, 8, 0): (('best6', (16, 1), (4, 1), (8, 1)), ('layer', None), 'hh_m128', 'auto'), (32, 8, 2048): (('best6', (16, 1), (4, 1), (16, 1)), ('layer', None), 'mixed_parallel_m256', 'auto'), (32, 8, 0): (('best6', (16, 1), (4, 1), (16, 1)), ('layer', None), 'mixed_parallel_m256', 'auto')}"
+    },
+    {
+      "line": 111,
+      "source": "BEST7_DENSE_CHAIN = {'other': False, (1, 1, 2048): False, (1, 1, 0): False, (16, 1, 2048): False, (16, 1, 0): False, (32, 1, 2048): False, (32, 1, 0): False, (1, 8, 2048): False, (1, 8, 0): False, (16, 8, 2048): False, (16, 8, 0): False, (32, 8, 2048): False, (32, 8, 0): False}"
+    },
+    {
+      "line": 123,
+      "source": "GLUE_CL_ROWS = {(1, 1, 2048): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (1, 1, 0): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (1, 8, 2048): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (1, 8, 0): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (16, 1, 2048): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (16, 1, 0): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (32, 1, 2048): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), (32, 1, 0): ('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1))}"
+    },
+    {
+      "line": 206,
+      "source": "SLICED_MAX_TOKENS = 8"
+    },
+    {
+      "line": 217,
+      "source": "GEMV_MAX_T = 64"
+    },
+    {
+      "line": 333,
+      "source": "GB_ROWS = {(1, 'qkv_gate'): ('bal', 64, 7, 4), (8, 'qkv_gate'): ('bal', 64, 7, 4), (16, 'qkv_gate'): ('bal', 64, 7, 4), (32, 'qkv_gate'): ('bal', 64, 7, 4), (1, 'pool_router'): ('bal', 64, 6, 4), (8, 'pool_router'): ('bal', 64, 6, 4), (16, 'pool_router'): ('bal', 64, 6, 4), (32, 'pool_router'): ('bal', 64, 6, 4), (16, 'unpooler'): ('bal', 64, 2, 4), (32, 'unpooler'): ('bal', 64, 2, 4)}"
+    },
+    {
+      "line": 371,
+      "source": "GATE_SPLIT_CFG = (64, 4, 4)"
+    },
+    {
+      "line": 374,
+      "source": "GATE_SPLIT_ROWS = {(1, True), (1, False), (16, True), (32, False)}"
+    },
+    {
+      "line": 375,
+      "source": "GATE_SPLIT_QKV3 = ('bal', 64, 10, 4)"
+    },
+    {
+      "line": 420,
+      "source": "GEMV_CFG = {(QKV_SIZE, HIDDEN): (64, 1024, 128), (QKV3_SIZE, HIDDEN): (64, 1024, 128), (HIDDEN, Q_SIZE): (64, 512, 128), (D_EXPERT + 2 * N_EXPERTS, HIDDEN): (64, 2048, 128), (UNPOOL_SLICE, D_EXPERT): (64, 512, 128), (HIDDEN, D_EXPERT): (64, 2048, 128)}"
+    },
+    {
+      "line": 2972,
+      "source": "CD_ROWS = {(1, 'qkv_gate'): (8, 1, 2, 22, 1, 3, 1), (1, 'pool_router'): (8, 1, 2, 11, 1, 3, 1)}"
+    },
+    {
+      "line": 3108,
+      "source": "_TUNE_TOKENS = (1, 8, 16, 32, 128, 256)"
+    },
+    {
+      "line": 3149,
+      "source": "PROJ_PINS = {(1, 'qkv_gate'): 'custom', (1, 'pool_router'): 'custom', (8, 'qkv_gate'): 'custom', (8, 'pool_router'): 'custom', (16, 'qkv_gate'): 'custom', (16, 'pool_router'): 'custom', (32, 'qkv_gate'): 'custom', (32, 'pool_router'): 'custom', (1, 'unpooler_slice'): 'custom', (8, 'unpooler_slice'): 'custom', (16, 'unpooler'): 'custom', (32, 'unpooler'): 'custom', (8, 'o'): 'custom', (16, 'o'): 'custom', (32, 'o'): 'custom', (128, 'qkv_gate'): ('vdsk', (128, 64, 64, 8, 4, 1), 3), (128, 'o'): ('lt', 0), (128, 'pool_router'): 'cublas', (128, 'unpooler'): ('short_lt', 1, 0), (256, 'qkv_gate'): ('lt', 0), (256, 'o'): 'custom', (256, 'pool_router'): 'custom', (256, 'unpooler'): ('short_lt', 0, 0)}"
+    },
+    {
+      "line": 5562,
+      "source": "_MEASURED_LT = {(256, 'pool_router'): (0, 0), (256, 'qkv_gate'): (0, 0), (256, 'unpooler'): (0, 0), (128, 'pool_router'): (0, 0), (128, 'qkv_gate'): (1, 23), (128, 'unpooler'): (1, 0), (128, 'o'): (1, 0)}"
+    },
+    {
+      "line": 7408,
+      "source": "SMALLM_FLAGS = {1: 95, 8: 69, 16: 69, 32: 69}"
+    },
+    {
+      "line": 7417,
+      "source": "SMALLM_FLAGS_BUILT = [69, 95]"
+    },
+    {
+      "line": 7733,
+      "source": "_VQ8_ROWS = {(16, 8, False): (4, 8), (32, 8, False): (4, 8)}"
+    },
+    {
+      "line": 7837,
+      "source": "_PP_ROWS = ((1, 1, False),)"
+    },
+    {
+      "line": 7937,
+      "source": "_CLUSTER_ROWS = ((1, 1, True),)"
+    },
+    {
+      "line": 7938,
+      "source": "_CLUSTER_NK = 128"
+    },
+    {
+      "line": 8058,
+      "source": "NF_SMALL = {(1, 'qkv_gate'): ('d9', (1, 4, 8, 4), 1, 2, 2, 256, ()), (8, 'qkv_gate'): ('q8', (1, 4, 8, 4), 1, 2, 5, 256, ()), (16, 'qkv_gate'): ('q16', (1, 4, 8, 4), 2, 1, 5, 128, ()), (32, 'qkv_gate'): ('q32', (1, 4, 8, 4), 4, 1, 5, 128, ()), (1, 'pool_router'): ('v18', (2, 16, 8, 1), 1, 1, 0, 1024, (6,)), (8, 'pool_router'): ('sm2', (2, 16, 8, 1), 1, 1, 0, 1024, (6,)), (16, 'pool_router'): ('cp', (1, 8, 16, 1), 2, 2, 0, 256, ()), (32, 'pool_router'): ('p32', (1, 8, 16, 1), 4, 1, 0, 256, ()), (1, 'o'): ('sm2', (4, 8, 2, 1), 1, 2, 0, 1024, (7,)), (8, 'o'): ('v18', (1, 8, 2, 1), 1, 2, 0, 256, (6,)), (16, 'o'): ('o16', (2, 4, 4, 1), 2, 1, 0, 256, ()), (1, 'unpooler_slice'): ('u1', (1, 8, 2, 4), 1, 2, 2, 256, ()), (8, 'unpooler_slice'): ('u8', (1, 16, 2, 2), 1, 2, 2, 512, ()), (16, 'unpooler'): ('cp', (2, 4, 16, 1), 2, 2, 0, 256, ())}"
+    },
+    {
+      "line": 8168,
+      "source": "NF_WIDE = {(32, 'o'), (32, 'unpooler')} | {(t, n) for t in (128, 256) for n in ('qkv_gate', 'o', 'pool_router', 'unpooler')}"
+    },
+    {
+      "line": 8270,
+      "source": "NF_PORT_SELECTED = {(1, 'o'), (1, 'qkv3'), (8, 'o'), (16, 'o'), (16, 'unpooler'), (32, 'o'), (32, 'qkv3'), (32, 'qkv_gate'), (32, 'unpooler')}"
+    },
+    {
+      "line": 8271,
+      "source": "NF_PORT_FORCE = False"
+    }
+  ],
+  "branches": [
+    {
+      "function": "_gb_gemv",
+      "line": 321,
+      "condition": "x.shape[0] in (32,) and tuple(w.shape) == (4608, 8192)"
+    },
+    {
+      "function": "_gate_split_on",
+      "line": 411,
+      "condition": "cfg['q_len'] != 1 or plan.get('dense_chain', False) or (cfg['batch'], bool(cfg['window'])) not in GATE_SPLIT_ROWS"
+    },
+    {
+      "function": "_gate_split_on",
+      "line": 414,
+      "condition": "choice == 'auto'"
+    },
+    {
+      "function": "gemv",
+      "line": 435,
+      "condition": "T > GEMV_MAX_T"
+    },
+    {
+      "function": "gemv",
+      "line": 442,
+      "condition": "isinstance(choice, tuple) and choice[0] == 'bal'"
+    },
+    {
+      "function": "gemv",
+      "line": 436,
+      "condition": "out_dtype == torch.float32"
+    },
+    {
+      "function": "gemv",
+      "line": 447,
+      "condition": "choice is not None"
+    },
+    {
+      "function": "gemv",
+      "line": 445,
+      "condition": "out_dtype == torch.float32"
+    },
+    {
+      "function": "v9_kernel_fn",
+      "line": 1598,
+      "condition": "mod.smem_needed(nt, nstage, M) > mod.smem_optin"
+    },
+    {
+      "function": "experts_v9",
+      "line": 1613,
+      "condition": "nt == 1"
+    },
+    {
+      "function": "experts_v9",
+      "line": 1618,
+      "condition": "nt == 2"
+    },
+    {
+      "function": "_layer_stage_attention",
+      "line": 2332,
+      "condition": "cfg['q_len'] == 1"
+    },
+    {
+      "function": "_dense_project",
+      "line": 3057,
+      "condition": "out_dtype == torch.float32"
+    },
+    {
+      "function": "_project_variant",
+      "line": 3064,
+      "condition": "cfg is not None and 'coded_dense' in state"
+    },
+    {
+      "function": "_project_variant",
+      "line": 3068,
+      "condition": "isinstance(variant, tuple) and variant[0] == 'vdsk'"
+    },
+    {
+      "function": "_project_variant",
+      "line": 3069,
+      "condition": "isinstance(variant, tuple) and variant[0] == 'short_lt'"
+    },
+    {
+      "function": "_project_variant",
+      "line": 3075,
+      "condition": "variant == 'custom'"
+    },
+    {
+      "function": "_project_variant",
+      "line": 3077,
+      "condition": "variant == 'cublas'"
+    },
+    {
+      "function": "_attn_port_variant",
+      "line": 5053,
+      "condition": "label in ('attn_main', 'port_verify')"
+    },
+    {
+      "function": "_attn_port_variant",
+      "line": 5055,
+      "condition": "label.startswith('xqa_group') or label.startswith('xqa_warp')"
+    },
+    {
+      "function": "_attn_port_variant",
+      "line": 5046,
+      "condition": "data['config']['q_len'] == 8 and _attn_port_hopper(qkv[0].device)"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5291,
+      "condition": "plan['glue'] == 'best5'"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5297,
+      "condition": "prefetch is not None"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5299,
+      "condition": "split"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5300,
+      "condition": "prefetch is not None"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5302,
+      "condition": "plan.get('dense_chain', False)"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5312,
+      "condition": "prefetch is not None"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5314,
+      "condition": "prefetch is not None"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5303,
+      "condition": "prefetch is not None"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5309,
+      "condition": "prefetch is not None"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5315,
+      "condition": "t <= SLICED_MAX_TOKENS"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5296,
+      "condition": "split"
+    },
+    {
+      "function": "_best7_run",
+      "line": 5292,
+      "condition": "_best7_old_chunks(t) == 1"
+    },
+    {
+      "function": "_best6_call",
+      "line": 6456,
+      "condition": "name == 'nt1_lop3'"
+    },
+    {
+      "function": "_best6_call",
+      "line": 6457,
+      "condition": "name == 'hh_m128'"
+    },
+    {
+      "function": "_best6_call",
+      "line": 6458,
+      "condition": "name == 'mixed_parallel_m256'"
+    },
+    {
+      "function": "_best6_call",
+      "line": 6459,
+      "condition": "name.startswith('v9nt')"
+    },
+    {
+      "function": "_best6_call",
+      "line": 6461,
+      "condition": "nt == 1"
+    },
+    {
+      "function": "_best6_call",
+      "line": 6462,
+      "condition": "nt == 1"
+    },
+    {
+      "function": "_best7_project",
+      "line": 6999,
+      "condition": "choice == 'auto'"
+    },
+    {
+      "function": "_best7_project",
+      "line": 7000,
+      "condition": "isinstance(choice, tuple) and choice[0] == 'stream'"
+    },
+    {
+      "function": "_best7_attention",
+      "line": 7008,
+      "condition": "(cfg['batch'], cfg['q_len'], bool(cfg['window'])) in state.get('cluster_rows', ())"
+    },
+    {
+      "function": "_best7_attention",
+      "line": 7010,
+      "condition": "(cfg['batch'], cfg['q_len'], bool(cfg['window'])) in state['partial_port_rows']"
+    },
+    {
+      "function": "_best7_attention",
+      "line": 7013,
+      "condition": "vq8 is not None"
+    },
+    {
+      "function": "_best7_attention",
+      "line": 7014,
+      "condition": "choice == 'auto'"
+    },
+    {
+      "function": "_best7_attention",
+      "line": 7017,
+      "condition": "choice[0] != 'layer' and (not _attn_port_hopper(qkv[0].device))"
+    },
+    {
+      "function": "_best7_attention",
+      "line": 7018,
+      "condition": "plan['glue'] == 'best5' and (choice[0] == 'fa3' or (choice[0] == 'layer' and cfg['q_len'] == 8 and _attn_port_hopper(qkv[0].device)))"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7029,
+      "condition": "plan['glue'] == 'best5'"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7030,
+      "condition": "phase not in plan['geometry']"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7031,
+      "condition": "plan['geometry'][phase][0] == 'cl'"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7034,
+      "condition": "t > 128 and replicas == 1"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7028,
+      "condition": "post"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7027,
+      "condition": "post"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7027,
+      "condition": "post"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7028,
+      "condition": "post"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7036,
+      "condition": "post"
+    },
+    {
+      "function": "_best7_boundary",
+      "line": 7039,
+      "condition": "post"
+    },
+    {
+      "function": "_best7_route",
+      "line": 7044,
+      "condition": "plan['glue'] == 'best5'"
+    },
+    {
+      "function": "_best7_route",
+      "line": 7045,
+      "condition": "'route' not in plan['geometry']"
+    },
+    {
+      "function": "_best7_route",
+      "line": 7046,
+      "condition": "plan['geometry']['route'][0] == 'cl'"
+    },
+    {
+      "function": "_best7_expert",
+      "line": 7057,
+      "condition": "name == 'auto'"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7221,
+      "condition": "any((p.get('dense_chain', False) for p in plans.values()))"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7178,
+      "condition": "isinstance(glue, tuple)"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7180,
+      "condition": "glue not in ('best5', 'best6')"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7181,
+      "condition": "attention != 'auto' and (not isinstance(attention, tuple) or len(attention) != 2)"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7182,
+      "condition": "moe not in ('auto', *_BEST6_CHOICES, 'mixed_parallel_m256', 'nt1_lop3', 'hh_m128')"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7183,
+      "condition": "projection == 'auto'"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7184,
+      "condition": "not isinstance(projection, dict)"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7186,
+      "condition": "prefetch and prefetch not in P7_PREFETCH_RECIPES"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7187,
+      "condition": "key == 'other' and (projection or attention != 'auto' or moe != 'auto')"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7188,
+      "condition": "key == 'other' and prefetch"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7190,
+      "condition": "not isinstance(dense_chain, bool)"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7194,
+      "condition": "key == 'other'"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7196,
+      "condition": "moe != 'auto'"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7204,
+      "condition": "attention != 'auto'"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7216,
+      "condition": "prefetch"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7206,
+      "condition": "gate_key not in gates"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7209,
+      "condition": "name not in roles"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7210,
+      "condition": "choice in ('auto', 'custom', 'cublas')"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7211,
+      "condition": "not isinstance(choice, tuple) or len(choice) != 3 or choice[0] != 'stream'"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7213,
+      "condition": "op_key not in state['best7_stream_ops']"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7217,
+      "condition": "length != 1 or tokens > 32"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7199,
+      "condition": "gate_key not in gates"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7207,
+      "condition": "tokens <= 8"
+    },
+    {
+      "function": "_best7_prepare_settings",
+      "line": 7201,
+      "condition": "moe.startswith('v9nt') or moe in ('mixed_parallel_m256', 'nt1_lop3', 'hh_m128')"
+    },
+    {
+      "function": "smallm_experts",
+      "line": 7447,
+      "condition": "mod.smem_needed(1, stages, m) > mod.smem_optin"
+    },
+    {
+      "function": "_s4_gate_moe",
+      "line": 7549,
+      "condition": "name == 'nt1_lop3' and tokens not in (1, 8, 16, 32)"
+    },
+    {
+      "function": "_s4_gate_moe",
+      "line": 7550,
+      "condition": "name == 'hh_m128' and tokens != 128"
+    },
+    {
+      "function": "_s4_gate_moe",
+      "line": 7564,
+      "condition": "worst > 0.01 or worst_row > 0.05"
+    },
+    {
+      "function": "_s4_gate_moe",
+      "line": 7555,
+      "condition": "want is None"
+    },
+    {
+      "function": "_vq8_attention",
+      "line": 7754,
+      "condition": "partial.dtype == torch.bfloat16"
+    },
+    {
+      "function": "_vq8_attention",
+      "line": 7753,
+      "condition": "torch.cuda.get_device_capability(device)[0] == 9"
+    },
+    {
+      "function": "_vq8_attention",
+      "line": 7764,
+      "condition": "window"
+    },
+    {
+      "function": "_vq8_attention",
+      "line": 7768,
+      "condition": "invf is not None"
+    },
+    {
+      "function": "_vq8_attention",
+      "line": 7756,
+      "condition": "partial.dim() == 3"
+    },
+    {
+      "function": "cs_plan",
+      "line": 7910,
+      "condition": "key not in cs__PLANS"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7926,
+      "condition": "key not in cs__COUNTERS"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7930,
+      "condition": "key not in cs__FREQ"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7920,
+      "condition": "P.dtype == torch.float32"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7921,
+      "condition": "P.dtype == torch.bfloat16 and P.dim() == 3 and (qkv is not None)"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7922,
+      "condition": "qt is None"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7934,
+      "condition": "split"
+    },
+    {
+      "function": "cs_attention",
+      "line": 7935,
+      "condition": "gate"
+    },
+    {
+      "function": "nf_project",
+      "line": 8160,
+      "condition": "state['native']"
+    },
+    {
+      "function": "nf_project",
+      "line": 8253,
+      "condition": "p is None or 'kind' not in p"
+    },
+    {
+      "function": "nf_project",
+      "line": 8255,
+      "condition": "kind == 'mw'"
+    },
+    {
+      "function": "nf_project",
+      "line": 8259,
+      "condition": "kind == 'lt'"
+    },
+    {
+      "function": "_project_variant",
+      "line": 8278,
+      "condition": "'nf_port' in state and (key in NF_PORT_SELECTED or (NF_PORT_FORCE and key in NF_SMALL.keys() | NF_WIDE))"
+    },
+    {
+      "function": "_best7_project",
+      "line": 8284,
+      "condition": "'nf_port' in state and (key in NF_PORT_SELECTED or (NF_PORT_FORCE and key in NF_SMALL.keys() | NF_WIDE))"
+    }
+  ],
+  "assertions": [
+    {
+      "line": 1408,
+      "condition": "_V9_RECODED_CUDA_SRC != V9_CUDA_SRC"
+    },
+    {
+      "line": 1472,
+      "condition": "len(used['A']) == 32 and len(used['B']) == 32"
+    },
+    {
+      "line": 1482,
+      "condition": "K == 4096"
+    },
+    {
+      "line": 1512,
+      "condition": "int(mant.max()) <= 7"
+    },
+    {
+      "line": 1515,
+      "condition": "torch.equal(torch.where(nz, back, torch.zeros_like(back)), a)"
+    },
+    {
+      "line": 1522,
+      "condition": "K == 4096"
+    },
+    {
+      "line": 1587,
+      "condition": "cfg['local_count'] == NLOC and cfg['d_hidden'] == H and (cfg['d_expert'] == H)"
+    },
+    {
+      "line": 2878,
+      "condition": "w.dtype == torch.bfloat16 and w.dim() == 2"
+    },
+    {
+      "line": 2880,
+      "condition": "N % 16 == 0 and K % 64 == 0 and (K <= 65535)"
+    },
+    {
+      "line": 2960,
+      "condition": "K == c['K'] and x.dtype == torch.bfloat16 and (x.stride(1) == 1) and (x.stride(0) % 8 == 0)"
+    },
+    {
+      "line": 5382,
+      "condition": "state['vq8_rows'] == _VQ8_ROWS"
+    },
+    {
+      "line": 5953,
+      "condition": "len(used['A']) == 32 and len(used['B']) == 32"
+    },
+    {
+      "line": 5961,
+      "condition": "K == 4096"
+    },
+    {
+      "line": 7581,
+      "condition": "int(e5[nz].min()) >= 0 and int(e5[nz].max()) <= 30 and (int(mant.max()) <= 7)"
+    },
+    {
+      "line": 7584,
+      "condition": "torch.equal(torch.where(nz, back, torch.zeros_like(back)), a)"
+    },
+    {
+      "line": 7919,
+      "condition": "L == 1 and cfg['window'] > 0 and (HQ == 8 * HK) and (cfg['head_dim'] == 64)"
+    },
+    {
+      "line": 7923,
+      "condition": "1 <= ns <= 32"
+    },
+    {
+      "line": 8022,
+      "condition": "p >= 0"
+    },
+    {
+      "line": 1511,
+      "condition": "int(e5[nz].min()) >= 0 and int(e5[nz].max()) <= 30"
+    },
+    {
+      "line": 6370,
+      "condition": "schema.weight_scale_2_type == _pf_WeightScale2Type.TENSOR"
+    },
+    {
+      "line": 7755,
+      "condition": "splits == 1"
+    },
+    {
+      "line": 7758,
+      "condition": "partial.dtype == torch.float32 and partial.stride(-1) == 1"
+    },
+    {
+      "line": 7911,
+      "condition": "resource[3] > 0"
+    },
+    {
+      "line": 7948,
+      "condition": "sliding and length == 1"
+    },
+    {
+      "line": 7994,
+      "condition": "'__nv_bfloat16* out,int m,int n,int k' in src"
+    },
+    {
+      "line": 7998,
+      "condition": "old in src"
+    },
+    {
+      "line": 8001,
+      "condition": "old in src"
+    },
+    {
+      "line": 8005,
+      "condition": "old in src"
+    },
+    {
+      "line": 8008,
+      "condition": "needle in src"
+    },
+    {
+      "line": 8010,
+      "condition": "'esc + (size_t)gw * 32 + lane' in src"
+    },
+    {
+      "line": 8029,
+      "condition": "old in src"
+    },
+    {
+      "line": 8035,
+      "condition": "needle in src"
+    },
+    {
+      "line": 6258,
+      "condition": "schema.weight_scale_2_type == _pf_WeightScale2Type.TENSOR"
+    },
+    {
+      "line": 1469,
+      "condition": "p not in used[w]"
+    },
+    {
+      "line": 5950,
+      "condition": "p not in used[w]"
+    }
+  ],
+  "cases": [
+    {
+      "label": "scored-d1-s",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-d1-f",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-d16-s",
+      "batch": 16,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-d16-f",
+      "batch": 16,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-d32-s",
+      "batch": 32,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-d32-f",
+      "batch": 32,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-v1-s",
+      "batch": 1,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-v1-f",
+      "batch": 1,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-v16-s",
+      "batch": 16,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-v16-f",
+      "batch": 16,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-v32-s",
+      "batch": 32,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "scored-v32-f",
+      "batch": 32,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d2-s",
+      "batch": 2,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d2-f",
+      "batch": 2,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d8-s",
+      "batch": 8,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d8-f",
+      "batch": 8,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d24-s",
+      "batch": 24,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d24-f",
+      "batch": 24,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d48-s",
+      "batch": 48,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-d48-f",
+      "batch": 48,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-v2-s",
+      "batch": 2,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-v2-f",
+      "batch": 2,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-v24-s",
+      "batch": 24,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "near-v24-f",
+      "batch": 24,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 80000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d7-s",
+      "batch": 7,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d9-s",
+      "batch": 9,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d15-s",
+      "batch": 15,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d17-s",
+      "batch": 17,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d31-s",
+      "batch": 31,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d33-s",
+      "batch": 33,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d63-s",
+      "batch": 63,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d64-s",
+      "batch": 64,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-d65-s",
+      "batch": 65,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-v15-s",
+      "batch": 15,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-v17-s",
+      "batch": 17,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-v31-s",
+      "batch": 31,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "edge-v33-s",
+      "batch": 33,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-1x1-s",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 65536,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-1x1-f",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 65536,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-16x1-s",
+      "batch": 16,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-16x1-f",
+      "batch": 16,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-32x1-s",
+      "batch": 32,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-32x1-f",
+      "batch": 32,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-16x8-s",
+      "batch": 16,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-16x8-f",
+      "batch": 16,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-32x8-s",
+      "batch": 32,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx64k-32x8-f",
+      "batch": 32,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 65536,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-63",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 63,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-64",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 64,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-65",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 65,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-2040",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 2040,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-2047",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 2047,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-2048",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 2048,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-d1-2049",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 2049,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-v2-2040",
+      "batch": 2,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 2040,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-v2-2047",
+      "batch": 2,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 2047,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-v2-2048",
+      "batch": 2,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 2048,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "window-v2-2049",
+      "batch": 2,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 2049,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "page64-d1",
+      "batch": 1,
+      "q_len": 1,
+      "layer": "sliding",
+      "ctx": 80001,
+      "spread": "fixed",
+      "dist": "soft",
+      "page": 64
+    },
+    {
+      "label": "page64-v16-f",
+      "batch": 16,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 8193,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 64
+    },
+    {
+      "label": "page64-v32-f",
+      "batch": 32,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 4097,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 64,
+      "kv_scale": 0.015625
+    },
+    {
+      "label": "mixed-d24-f",
+      "batch": 24,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 20001,
+      "spread": "mixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "mixed-v24-s",
+      "batch": 24,
+      "q_len": 8,
+      "layer": "sliding",
+      "ctx": 5001,
+      "spread": "mixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx96k-v24-f",
+      "batch": 24,
+      "q_len": 8,
+      "layer": "full",
+      "ctx": 96000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "label": "ctx96k-d48-f",
+      "batch": 48,
+      "q_len": 1,
+      "layer": "full",
+      "ctx": 96000,
+      "spread": "agentic",
+      "dist": "soft",
+      "page": 1
+    }
+  ]
+}
