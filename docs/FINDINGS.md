@@ -557,6 +557,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - NVFP4 decoders, synthetic (`849bd4b6`, 134M weights): 4-LOP3 decoder 0.98 T weights/s (136.6 us), one-PRMT LUT
   decoder 1.89 T weights/s (71.0 us, 1.92x); both exclude scales, BF16 packing and MMA. All 4,064 E2M1 x E4M3
   products are exact in BF16 (static).
+- Coded (12-bit) dense GEMV on the H200 (`35c875e6` v1, `32088444` v3; paired, read flush, bit-exact decode): a plain
+  read of the coded bytes saves qkv 1.95-2.2, pool_router 4.0-4.1, unpooler 3.6-3.8 us vs BF16. v3 vs the balanced GEMV
+  at t = 1 / 8: qkv -0.93 / -0.58, pool_router -2.37 / -2.19, o +0.37 / +0.74, slice +0.62 / +0.90 us; t=16 near even;
+  t=32 qkv 14.21 vs 12.46, pool_router 25.74 vs 22.38 (decode cost grows with t). `problems/muse_bf16_proj/dev/coded_dense/`.
 - Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
   samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
   cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
