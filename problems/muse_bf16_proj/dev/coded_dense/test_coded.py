@@ -27,9 +27,10 @@ def bits(w):
 
 
 def check_exact(name, w):
+    """Row-major and k-major encodes both decode to w bit for bit; returns the row-major encode."""
     c = cd_encode(w)
     got = cd_decode(c)
-    same = torch.equal(bits(got), bits(w))
+    same = torch.equal(bits(got), bits(w)) and torch.equal(bits(cd_decode(cd_encode(w, kmajor=True))), bits(w))
     n = w.numel()
     coded_bytes = c['coded'].numel() + c['scales'].numel() * 4 + c['eoff'].numel() * 4 + c['nesc'] * 8
     print(f'EXACT {name:28s} {tuple(w.shape)} {"OK " if same else "FAIL"} esc={c["nesc"]} ({c["nesc"] / n * 1e6:.1f} ppm) '
@@ -82,7 +83,7 @@ def ref_weights(seed, dev):
             'unpooler': w['unpooler'], 'unpooler_slice': w['unpooler'][:1024].contiguous()}
 
 
-VS = (1, 2, 3, 4)  # the kernel's lab steps (coded_gemv V)
+VS = (3, 4)  # coded_gemv V: 3 = S partials, 4 = cluster sum
 
 
 def cluster(S):
@@ -92,10 +93,11 @@ def cluster(S):
 
 def check_gemv(name, w, c, dev, configs, ms=(1, 5, 8, 12, 16, 20, 32)):
     ok = True
+    ck = cd_encode(w, kmajor=True)
     for M in ms:
         x = (torch.randn((M, w.shape[1]), device=dev) * 0.5).to(torch.bfloat16)
         ref = x.double() @ w.double().T
-        for (S, NW, RT, PIPE), V in ((cfg, V) for cfg in configs for V in VS):
+        for (S, NW, RT, PIPE), V, (lay, c) in ((cfg, V, lc) for cfg in configs for V in VS for lc in (('row', c), ('k', ck))):
             if (w.shape[0] // 16) % (NW * RT) or S > w.shape[1] // 64 or cd_smem(M, w.shape[1], S, V, NW, RT) > SMEM_MAX:
                 continue
             P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V, C=cluster(S))
@@ -106,7 +108,7 @@ def check_gemv(name, w, c, dev, configs, ms=(1, 5, 8, 12, 16, 20, 32)):
             good = err < 3e-5 and same_nonfinite and torch.isfinite(y[fin]).all().item()
             ok &= good
             if not good or (S, NW, RT, PIPE) == configs[0]:
-                print(f'GEMV {name:20s} M={M:2d} S={S:2d} NW={NW} RT={RT} PIPE={PIPE} V={V} err={err:.2e} '
+                print(f'GEMV {name:20s} M={M:2d} S={S:2d} NW={NW} RT={RT} PIPE={PIPE} V={V} {lay} err={err:.2e} '
                       f'nonfinite={"ok" if same_nonfinite else "MISMATCH"} {"OK" if good else "FAIL"}', flush=True)
     return ok
 
@@ -123,18 +125,20 @@ def check_integer_gemv(dev):
     for N, K in ((2304, 8192), (1024, 4096), (8192, 1024)):
         w = (torch.randint(-127, 128, (N, K), device=dev, generator=g).float() / 128).to(torch.bfloat16)
         w[torch.rand((N, K), device=dev, generator=g) < 1e-3] = 3.0   # exponent 128: outside any window with 120
-        c = cd_encode(w)
+        cs = {'row': cd_encode(w), 'k': cd_encode(w, kmajor=True)}
+        c = cs['row']
         for M in (1, 8, 16, 32):
             x = torch.randint(-8, 9, (M, K), device=dev, generator=g).to(torch.bfloat16)
             ref = (x.double() @ w.double().T)
-            for (S, NW, RT, PIPE), V in ((cfg, V) for cfg in ((1, 4, 1, 2), (7, 4, 2, 2), (16, 8, 1, 4)) for V in VS):
+            for (S, NW, RT, PIPE), V, lay in ((cfg, V, lay) for cfg in ((1, 4, 1, 2), (7, 4, 2, 2), (16, 8, 1, 4))
+                                              for V in VS for lay in cs):
                 if (N // 16) % (NW * RT) or S > K // 64 or cd_smem(M, K, S, V, NW, RT) > SMEM_MAX:
                     continue
-                P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V, C=cluster(S))
+                P, _ = cd_gemv(x, cs[lay], S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V, C=cluster(S))
                 same = torch.equal(P.double().sum(0), ref)
                 ok &= same
                 if not same:
-                    print(f'INT GEMV {N}x{K} M={M} S={S} NW={NW} RT={RT} PIPE={PIPE} V={V} MISMATCH '
+                    print(f'INT GEMV {N}x{K} M={M} S={S} NW={NW} RT={RT} PIPE={PIPE} V={V} {lay} MISMATCH '
                           f'max abs {(P.double().sum(0) - ref).abs().max().item()}', flush=True)
         print(f'INT GEMV {N}x{K} esc={c["nesc"]} {"OK" if ok else "FAIL"}', flush=True)
     return ok

@@ -137,8 +137,14 @@ SMEM_MAX = 227 * 1024
 CL_ROUNDS = 24
 
 
-CL_SHAPES = ((8, 1, 2), (8, 1, 4), (4, 2, 2))  # (NW, RT, PIPE) swept for every kernel step V
-CL_INSTANCES = tuple((nt, rt, pipe, v) for v in (1, 2, 3) for nt in (1, 2, 4) for rt, pipe in ((1, 2), (1, 4), (2, 2)))
+CL_VS = __CL_VS__            # kernel steps V paired in this lab (the first is the reference)
+CL_SHAPES = __CL_SHAPES__    # (NW, RT, PIPE) swept for every step
+CL_INSTANCES = tuple((nt, rt, pipe, v) for v in CL_VS for nt in (1, 2, 4) for rt, pipe in sorted({(r, p) for _, r, p in CL_SHAPES}))
+
+
+def cl_cluster(S):
+    """V4's cluster size: all S splits when S <= 16, else the largest divisor <= 16."""
+    return max(c for c in range(1, 17) if S % c == 0)
 
 
 def cl_configs(N, K, M):
@@ -154,7 +160,7 @@ def cl_configs(N, K, M):
         ss = []
         for waves in (1, 2, 3, 4):
             s = max(1, min(KB, round(waves * sms / rc)))
-            if s not in ss and max(cd_smem(M, K, s, v) for v in (1, 3)) <= smax:
+            if s not in ss and max(cd_smem(M, K, s, v, NW, RT) for v in CL_VS) <= smax:
                 ss.append(s)
         out += [(NW, RT, PIPE, s) for s in ss]
     return out
@@ -196,7 +202,8 @@ def lab(deadline, weights):
     base = statistics.median(_cl_times([empty], 8)[0])
     lines.append(f'META cold-L2 graphs, {CL_ROUNDS} paired rounds, us = median - empty ({base:.2f}); Vv[NW/RT/PIPE/S us] '
                  'best arms of step v (1 = 35c875e6 kernel, 2 = +entry metadata + escape prefetch, 3 = 2 + bulk-copy '
-                 'activation chunks on mbarriers + zero row); dV = paired median V - V1 at V1 best; '
+                 'activation chunks on mbarriers + zero row, 4 = 3 + cluster DSMEM sum of the C splits); '
+                 f'dV = paired median V - V{CL_VS[0]} at its best; '
                  f'enc {enc_s:.2f}s comp {comp_s:.1f}s exact {"OK" if ok else "FAIL"} {wkind}; '
                  + ' '.join(f'{k}:{c["nesc"]}' for k, c in coded.items()))
     sums, gains = [], []
@@ -221,9 +228,10 @@ def lab(deadline, weights):
                 arms.append(('cublas', lambda: F.linear(x, w)))
                 arms.append(('bal', lambda: gb_run(x, w, 64, CL_BAL[name], 4)))
                 err = 0.0
-                for V in (1, 2, 3):
+                for V in CL_VS:
                     for NW, RT, PIPE, S in cl_configs(N, K, t):
-                        fn = lambda NW=NW, RT=RT, PIPE=PIPE, S=S, V=V: cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, V=V)[0]
+                        fn = lambda NW=NW, RT=RT, PIPE=PIPE, S=S, V=V: cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, V=V,
+                                                                              C=cl_cluster(S))[0]
                         P = fn()
                         torch.cuda.synchronize()
                         err = max(err, float((P.double().sum(0) - ref).norm() / ref.norm()))
@@ -233,21 +241,23 @@ def lab(deadline, weights):
                 del graphs
                 got = {a: max(statistics.median(v) - base, 1e-3) for (a, _), v in zip(arms, vals)}
                 raw = {a: v for (a, _), v in zip(arms, vals)}
-                best = {V: sorted((u, a) for a, u in got.items() if a.startswith(f'{V}:')) for V in (1, 2, 3)}
-                cfg1 = best[1][0][1][2:]
-                dv = {V: statistics.median(x - y for x, y in zip(raw[f'{V}:{cfg1}'], raw[f'1:{cfg1}'])) for V in (2, 3)}
+                v0, vl = CL_VS[0], CL_VS[-1]
+                best = {V: sorted((u, a) for a, u in got.items() if a.startswith(f'{V}:')) for V in CL_VS}
+                cfg1 = best[v0][0][1][2:]
+                dv = {V: statistics.median(x - y for x, y in zip(raw[f'{V}:{cfg1}'], raw[f'{v0}:{cfg1}']))
+                      for V in CL_VS[1:]}
                 ctrl = min(v for k, v in got.items() if k in ('s8', 'cublas', 'bal'))
                 lines.append(f'R t={t} {name} rd16={got["rd16"]:.2f} rd12={got["rd12"]:.2f} '
                              + ' '.join(f'{k}={got[k]:.2f}' for k in ('s8', 'cublas', 'bal') if k in got) + ' |'
-                             + ''.join(f' V{V}' + ''.join(f'[{a[2:]} {u:.2f}]' for u, a in best[V][:2 if V == 3 else 1])
-                                       for V in (1, 2, 3))
-                             + f' | dV2={dv[2]:+.2f} dV3={dv[3]:+.2f} e={err:.0e}')
-                sums.append(f'{name}@{t} {best[3][0][0] - ctrl:+.2f}')
-                gains.append(f'{name}@{t} {best[3][0][0] - best[1][0][0]:+.2f}')
+                             + ''.join(f' V{V}' + ''.join(f'[{a[2:]} {u:.2f}]' for u, a in best[V][:2 if V == vl else 1])
+                                       for V in CL_VS)
+                             + ' |' + ''.join(f' dV{V}={d:+.2f}' for V, d in dv.items()) + f' e={err:.0e}')
+                sums.append(f'{name}@{t} {best[vl][0][0] - ctrl:+.2f}')
+                gains.append(f'{name}@{t} {best[vl][0][0] - best[v0][0][0]:+.2f}')
             except Exception as exc:
                 lines.append(f'ERROR t={t} {name} {type(exc).__name__}: {str(exc).splitlines()[0][:150]}')
             torch.cuda.empty_cache()
-    lines.append('SUM best V3 - best control (us): ' + ', '.join(sums))
-    lines.append('GAIN best V3 - best V1 (us): ' + ', '.join(gains))
+    lines.append(f'SUM best V{CL_VS[-1]} - best control (us): ' + ', '.join(sums))
+    lines.append(f'GAIN best V{CL_VS[-1]} - best V{CL_VS[0]} (us): ' + ', '.join(gains))
     lines.append(f'END t={time.monotonic() - t0:.1f}s')
     return lines

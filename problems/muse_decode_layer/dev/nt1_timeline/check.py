@@ -5,14 +5,19 @@ import hashlib,json,runpy,sys
 import torch
 ROOT=Path(__file__).resolve().parents[4];DEV=Path(__file__).resolve().parent
 n=runpy.run_path(str(ROOT/'prof/lab/moe_nt1_timeline.py'));g=n['var_call'].__globals__
-F=dict((k,n[k]) for k in ('F_Z','F_SLOT','F_ZOUT','F_RSQ','F_NREG','F_PDL','F_LAST','F_TRACE','F_DYN'))
+F=dict((k,n[k]) for k in ('F_Z','F_SLOT','F_ZOUT','F_RSQ','F_NREG','F_PDL','F_LAST','F_TRACE','F_NT2','F_W16','F_RND','F_ROT'))
 gen=torch.Generator(device='cuda').manual_seed(67182)
 
 w=n['rg_generate_weights'](5353);w['post_norm_w']=w['post_expert_norm'];state=n['nt1_banks'](w)
-arms=n['SMALLM_ARMS'];checks=0;worst={};vsinc={}
-# every E arm plus every R arm's flags on the edge fixtures; the lab's ECAP is F0 math on capped routes
-ecks={m:{**{k:v for k,v in a['E'].items() if v is not None},**{'E'+k:v for k,v in a['R'].items() if v is not None}} for m,a in arms.items()}
-TRACED={1:(0,95,1119),16:(0,93,69),32:(0,93,69)}
+checks=0;worst={};vsinc={}
+# the handed-over words and every lab arm: E = MoE alone on edge fixtures, R = router+MoE graphs with fresh inputs
+NT2=F['F_NT2'];W16=F['F_W16'];RND=F['F_RND'];ROT=F['F_ROT']
+HANDOFF={1:{'95':95,'16463':79|ROT},8:{'69':69,'77':77,'93':93},16:{'69':69,'77':77,'93':93,'2048':NT2,'2117':69|NT2,'6213':69|NT2|W16},
+    32:{'69':69,'77':77,'93':93,'2048':NT2,'2117':69|NT2,'6213':69|NT2|W16}}
+for m,a in n['SMALLM_ARMS'].items():HANDOFF.setdefault(m,{}).update({k[1:]:v for k,v in a['R'].items() if v is not None})
+ecks={m:{'E'+k:v for k,v in a.items()} for m,a in HANDOFF.items()}
+arms={m:{'R':{'R'+k:v for k,v in a.items()}} for m,a in HANDOFF.items()}
+TRACED={1:(95,79|ROT),8:(69|RND,69|ROT),16:(69,69|NT2,69|NT2|W16,69|RND,69|ROT),32:(69,69|NT2,69|NT2|W16,69|RND,69|ROT,69|RND|ROT)}
 def rel(a,b):return float((a.float()-b.float()).norm()/b.float().norm().clamp_min(1e-12))
 def edge_fixtures(m,seed):
  d=n['fx_make_fixture'](w,m,9000+m+97*seed);yield 'real',d
@@ -32,7 +37,7 @@ for seed in (0,1):
    for label,flags in ecks[m].items():
     for trace in ((False,True) if flags in TRACED.get(m,()) else (False,)):
      f=flags|(F['F_TRACE'] if trace else 0)
-     grid=min(264,state['sms']*n['var_module']().resident_blocks(1,2,m))
+     grid=n['var_geometry'](state,flags,m)[2]
      stamps=torch.zeros((grid,64),device='cuda',dtype=torch.int64) if trace else None
      fn=lambda:n['var_call'](d,state,f,stamps=stamps)
      eager=fn();graph=torch.cuda.CUDAGraph()
@@ -73,11 +78,12 @@ class Standin:
  def smem_needed(self,*a):return self.real.smem_needed(*a)
  def resident_blocks(self,*a):return self.real.resident_blocks(*a)
  def run(self,ptrs,m,start,stages,grid,stream,flags):
-  assert stages==2 and grid<=state['sms']*self.real.resident_blocks(1,2,m) and stream==torch.cuda.current_stream().cuda_stream
+  nt=2 if flags&NT2 else 1
+  assert (stages==2 or nt==2) and grid<=state['sms']*self.real.resident_blocks(flags&~F['F_TRACE'],stages,m) and stream==torch.cuda.current_stream().cuda_stream
   assert len(ptrs)==(14 if flags&F['F_TRACE'] else 13)
   self.real.run(ptrs,m,start,stages,grid,stream,flags)
 real=n['var_module']();g['NT1_HOPPER']=True;g['VAR_MODULE'][0]=Standin(real);forced=0
-for m in (1,8):
+for m in (1,8,32):
  d=n['fx_make_fixture'](w,m,123);inc=n['nt1_call'](d,state,'INC')
  for label,flags in ecks[m].items():
   out=n['var_call'](d,state,flags);torch.cuda.synchronize();assert rel(out,inc)<2e-3,(label,'forced');forced+=1

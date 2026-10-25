@@ -1,0 +1,22 @@
+FUSED_SELECT router m=128 incumbent_us=22.816 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.008 top=[(14.976000413298607, (64, 64, 4, 1, 16, 160)), (15.135999768972397, (64, 64, 4, 1, 16, 128)), (15.32800029963255, (64, 64, 4, 1, 8, 160)), (19.392000511288643, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.232 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.160 top=[(16.127999871969223, (64, 64, 4, 1, 8, 256)), (17.055999487638474, (64, 64, 4, 1, 8, 128)), (17.152000218629837, (64, 64, 4, 1, 8, 160)), (26.559999212622643, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.184 chosen=None chosen_us=25.184 top=[(29.823999851942062, (128, 64, 3, 1, 4, 160)), (33.59999880194664, (64, 64, 4, 1, 2, 256)), (35.999998450279236, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.120 chosen=None chosen_us=29.120 top=[(38.59199956059456, (128, 64, 4, 1, 2, 256)), (39.103999733924866, (128, 128, 2, 1, 2, 256)), (39.903998374938965, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.872 chosen=None chosen_us=31.872 top=[(32.06399828195572, ('lt', 0)), (32.86400064826012, ('lt_nn', 6)), (33.02399814128876, ('lt_nn', 1)), (33.535998314619064, ('lt_nn', 0)), (33.59999880194664, ('lt', 6))]
+FUSED_SELECT pooler m=256 incumbent_us=39.680 chosen=('lt_nn', 0) chosen_us=37.280 top=[(37.53599897027016, ('lt_nn', 4)), (37.59999945759773, ('lt_nn', 0)), (38.36800158023834, ('lt', 3)), (38.46399858593941, ('lt_nn', 1)), (39.103999733924866, ('lt', 5))]
+FUSED_SELECT unpooler m=128 incumbent_us=30.368 chosen=('lt_nn', 0) chosen_us=29.024 top=[(28.76799926161766, ('lt_nn', 0)), (29.37600016593933, ('lt', 0)), (30.239999294281006, ('lt', 3)), (30.33600002527237, ('lt', 2)), (30.432000756263733, ('lt_nn', 4))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.184 chosen=('lt', 0) chosen_us=33.120 top=[(33.02399814128876, ('lt', 0)), (34.01599824428558, ('lt', 2)), (34.40000116825104, ('lt_nn', 0)), (35.232000052928925, ('lt_nn', 1)), (37.087999284267426, ('lt', 3))]
+FUSED_SELECT o m=128 incumbent_us=12.992 chosen=('lt_nn', 0) chosen_us=12.704 top=[(12.608000077307224, ('lt_nn', 0)), (12.896000407636166, ('lt_nn', 4)), (12.927999719977379, ('lt', 4)), (12.927999719977379, ('lt_nn', 5)), (12.959999963641167, ('lt', 0))]
+FUSED_SELECT o m=256 incumbent_us=13.792 chosen=None chosen_us=13.792 top=[(13.952000066637993, ('lt', 0)), (14.527999795973301, ('lt', 2)), (14.592000283300877, ('lt', 4)), (14.783999882638454, ('lt_nn', 2)), (14.911999925971031, ('lt_nn', 4))]
+FUSED_SELECT prepare_s=7.96
+LAB_BEGIN moe_nt1_timeline 4583fe72360768ff
+LAB_ERROR KeyError: 'w13'
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/muse_bf16_proj-8dxaavuw/run/submission.py", line 1036, in _lab_run_one
+    return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)
+                                                                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "<h200_lab moe_nt1_timeline>", line 811, in lab
+    begin=time.monotonic();deadline-=5;device=weights['w13'].device
+                                              ~~~~~~~^^^^^^^
+KeyError: 'w13'
+LAB_END lab_s=0.1 prepare_s=8.1

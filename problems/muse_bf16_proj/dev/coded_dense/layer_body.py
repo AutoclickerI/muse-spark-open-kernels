@@ -20,7 +20,9 @@ LY_SEEDS = tuple(172903 + 7919 * i for i in range(12))
 LY_ROUNDS = 6
 LY_CASES = ((1, 1, 2048), (1, 1, 0), (1, 8, 2048), (1, 8, 0), (16, 1, 2048), (16, 1, 0), (32, 1, 2048), (32, 1, 0))
 LY_LOADS = {(1, 1): 'decode 1', (16, 1): 'decode 16', (32, 1): 'decode 32', (1, 8): 'verify 1'}
-CL_ROWS = __CL_ROWS__   # (tokens, role) -> (NW, RT, PIPE, S, prew)
+CL_ROWS = __CL_ROWS__   # (tokens, role) -> (NW, RT, PIPE, S, prew, V, C)
+CL_INSTANCES = tuple(sorted({(1 if t <= 8 else 2 if t <= 16 else 4, rt, pipe, v)
+                             for (t, _), (_, rt, pipe, _, _, v, _) in CL_ROWS.items()}))
 
 
 def ly_label(key):
@@ -48,8 +50,8 @@ def ly_namespace(rows, bank):
         hit = table.get((x.shape[0], w.shape[0], w.shape[1]))
         if hit is None:
             return base_gemv(x, w, out_dtype=out_dtype)
-        c, (NW, RT, PIPE, S, prew) = hit
-        return cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, prew=prew, pdl=True)
+        c, (NW, RT, PIPE, S, prew, V, C) = hit
+        return cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, prew=prew, pdl=True, V=V, C=C)
     v['gemv'] = gemv
     return v
 
@@ -145,7 +147,7 @@ def ly_time(graphs, rounds):
 def lab(deadline, weights, state):
     started = time.monotonic()
     device = state['qkv_gate'].device
-    cd_module()
+    cd_module(CL_INSTANCES)
     bank = {}
     for name in sorted({n for _, n in CL_ROWS}):
         w = state[name]

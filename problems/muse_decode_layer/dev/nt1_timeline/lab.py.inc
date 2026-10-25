@@ -22,13 +22,13 @@ def task_check(out,want):
     return ok,err,row
 
 
-DIAG_BY_M={1:('RTRACEALLnl','RTRACEDYN')}  # v4: M=1 critical path, 95 vs 95+DYN (v3 05e21862 has the M=32 one)
+DIAG_BY_M={16:('RTRACEZZP','RTRACEZZPR','RTRACEZZPO'),32:('RTRACEZZP','RTRACEZZPR','RTRACEZZPO','RTRACEZZPRO')}  # v8: critical paths + tile/publish split
 # R = the decode layer's context (router node + MoE node). R95/R93 = 849e4017's winners; R77 drops NREG, R69 drops
-# NREG and RSQ; R1119 = R95 with the dynamic M=1 schedule (DYN). ECAP = INC on the same routes with every local expert capped at 8 tokens (DIAGNOSTIC, no gate): the
+# NREG and RSQ; ECAP = INC on the same routes with every local expert capped at 8 tokens (DIAGNOSTIC, no gate): the
 # most that decode-once / no-reread for multi-block experts could save.
-SMALLM_ARMS={1:dict(E={},R={'RINC':None,'R95':95,'R1119':95|F_DYN})}
+SMALLM_ARMS={}
 for _m in (8,16,32):
-    SMALLM_ARMS[_m]=dict(E={},R={'RINC':None,'R93':93,'R77':77,'R69':69})
+    SMALLM_ARMS[_m]=dict(E={},R={'RINC':None,'R69':69,'R8261':69|F_RND,'R16453':69|F_ROT,'R24645':69|F_RND|F_ROT})
 
 
 def cap_fixture(d,cap=8):
@@ -49,7 +49,7 @@ def lab(deadline,weights):
     from concurrent.futures import ThreadPoolExecutor
     begin=time.monotonic();deadline-=5;device=weights['w13'].device
     lines=['META small-M NT1: E=MoE node alone (fixed real routes), R=router node+MoE node; INC=admitted one-LOP3 NT1; F0=same math in the flag harness; Z=norm-slot zero in W13 tile0; SLOT=M1 top-8 slot dispatch; ZOUT=W2 stores v(1+w); RSQ=finalizer scale once per pair; NREG=norm sums in registers per tile run; LAST=last CTA finalizes; PDL=MoE launched as programmatic dependent',
-        'META v4: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs its INC, independent INC A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; M1 globaltimer critical path of 95 vs 95+DYN (ACCOUNT/CRITICAL/SKEW)']
+        'META v8: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs its INC, independent INC A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; arms 69, 69+RND (two rounds split at the expert boundary nearest half the W13 units), 69+ROT (no per-tile CTA barrier: arrival counters, last arriver refills, tile t epilogue on warp t%8 one tile later) and 69+RND+ROT at M8/16/32; M16/32 critical paths with TILE (per-tile waits, barrier/epilogue spin, publish fence) lines']
     errors=[]
     with ThreadPoolExecutor(max_workers=4) as pool:
         jobs={name:pool.submit(fn) for name,fn in (('INC',lambda:nt1_module('INC')),('VAR',var_module),('CONTROL',control_module),('CUPTI',activity_module))}

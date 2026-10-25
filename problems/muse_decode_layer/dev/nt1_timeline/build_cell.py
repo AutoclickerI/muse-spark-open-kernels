@@ -9,7 +9,7 @@ TEMPLATE = '''"""Small-M NT1 variants (P3a), drop-in for S6's `nt1_call(data, st
 `smallm_bind(s4_nt1_bank, flags_by_m)` (prepare: compiles, allocates one counter block per flags word)
 `smallm_experts(data, s4_nt1_bank, flags)` (timed call; same data dict and bank as nt1_call)
 Flags (bit OR): Z=1 SLOT=2 (M=1 only) ZOUT=4 RSQ=8 NREG=16  PDL=64 (launch as a programmatic dependent of the preceding kernel; the router already
-triggers at its start) LAST=128 DYN=1024 (M=1 with SLOT: dynamic unit schedule from a global counter; 2+ stages).
+triggers at its start) LAST=128.
 flags=0 is the incumbent's math. Same recoded bank, same tile layout.
 """
 import hashlib
@@ -50,12 +50,14 @@ def smallm_bind(state, flags_by_m):
     return state
 
 
-def smallm_experts(data, state, flags, stages=2, grid=264):
+def smallm_experts(data, state, flags, grid=264):
     x = data['hidden_states'].contiguous(); m = x.shape[0]; p = m * 8; dev = x.device
     ids = data['topk_ids'].int().contiguous(); tw = data['topk_weights'].float().contiguous()
     mod = smallm_module()
-    if mod.smem_needed(1, stages, m) > mod.smem_optin: raise ValueError('shared memory exceeds device capacity')
-    grid = min(grid, state['sms'] * mod.resident_blocks(1, stages, m))
+    # NT2 words (2048) run 1 CTA/SM with as many stages as fit (4 on the H200); NT1 words 2 CTAs/SM, 2 stages
+    stages = next((s for s in ((4, 3, 2, 1) if flags & 2048 else (2,)) if mod.smem_needed(flags, s, m) <= mod.smem_optin), 0)
+    if not stages: raise ValueError('shared memory exceeds device capacity')
+    grid = min(grid, state['sms'] * mod.resident_blocks(flags, stages, m))
     bank = state['banks']['lop3']
     inter = torch.empty((p, 4096), device=dev, dtype=torch.bfloat16)
     y = torch.empty((p, 4096), device=dev); ss = torch.empty((p,), device=dev); out = torch.empty_like(x)

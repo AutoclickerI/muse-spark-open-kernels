@@ -155,6 +155,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   +5.2 / +9.4% at decode 1 / 16 / 32, verify 1 / 16 / 32 (geomean ~4.4%); balanced GEMVs off +3.5 / +2.7 / +4.1 /
   +1.5% (t <= 32); vq8 off +4.0% at verify 16 (+50 us per full layer), +7.1% at verify 32 (+123 us), neutral at
   verify 1 (dropped there); S10's N_full cell +1.3 / +2.2% at verify 16 / 32.
+- Leave-one-out A/B on final S11 `acda6c62` (= `dbcb26bb` + gate split + late glue; `863f502c`, same protocol, A:A
+  -0.25..+0.08%; r > 1 = removing the piece is slower; host run 1.7068x): all of S10's pieces back +4.9 / +2.8 / +4.2
+  / +1.9 / +5.8 / +9.95% at decode 1 / 16 / 32, verify 1 / 16 / 32; balanced GEMVs off +1.7 / +1.9 / +3.4 / +1.9%
+  (t <= 32); gate split off +1.4% at decode 1, +0.1% at decode 16 / 32; late glue off +0.7% at verify 32; vq8 off
+  +4.4 / +8.2% at verify 16 / 32; S10's N_full cell +1.2 / +1.1%. No piece loses at any load.
 - One-factor sweep of every tuned choice (`4bea7724`, 12 seeds x 6 rounds): at t <= 32 our GEMVs beat every cuBLAS /
   cuBLASLt variant at every role by 1-6% (the run's tuner had picked cuBLAS for o at t = 8 / 16 / 32 and qkv /
   unpooler at t=16: -1.9 / -1.4 / -0.6 / -1.6 / -0.8% when pinned); attention at decode 16 / 32 is attn_main at all

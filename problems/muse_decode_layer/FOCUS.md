@@ -20,8 +20,10 @@ cells, so a rebuild picks up their updates):
 - Audit (`dev/s9/audit.json`): every expert bank holds FP4 codes plus uint8 scale codes, 9.0 B per 16 weights;
   nothing widened. Local cold prepare 229.8 s (`CCACHE_DISABLE=1`; ccache hides compile time).
 
-S10 `cand_r3_best7_s10.py` 6688fad9 (sent 12:20; `dev/s10/build.py`): S9 on N_full fd04d8c4 (heavy branch first,
-0.9799 / 0.9882 `880c3881`), LT and the layer attention ext in prepare's native pool (local cold 186.0 s).
-Next, S11: balanced split-K GEMVs (`../muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py`) once chain `c2b2da75`
-agrees; the gate split (P7); coded dense GEMVs (P10) after a whole-layer paired lab.
+S10 `cand_r3_best7_s10.py` 6688fad9 (`dev/s10/build.py`): S9 on N_full fd04d8c4 (heavy branch first), LT and the
+layer attention ext in prepare's native pool. S11 `cand_r3_best7_s11_final.py` acda6c62 (`dev/s11/build.py`,
+manifest): S10 + balanced GEMVs + LI_swap N_full + vq8 at verify 16 / 32 full + tuner pins + gate split + late glue;
+13 PASS normal and forced; leave-one-out `863f502c` (FINDINGS), host 1.7068x; scored at the 00:00 UTC reset.
+Next, S12 on S11 final: coded dense GEMVs for qkv and pool_router at t <= 8 (P10), the N_full finalizer split, each
+by a whole-layer paired A/B.
 Rerun `dev/levers/build.py` on each new incumbent. Parked: megakernel at +1.74% estimated (`dev/megakernel/README.md`).

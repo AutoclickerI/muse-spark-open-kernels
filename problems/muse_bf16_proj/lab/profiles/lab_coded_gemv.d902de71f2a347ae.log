@@ -1,0 +1,32 @@
+FUSED_SELECT router m=128 incumbent_us=22.976 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.104 top=[(14.751999638974667, (64, 64, 4, 1, 8, 160)), (15.39199985563755, (64, 64, 4, 1, 16, 160)), (16.127999871969223, (64, 64, 4, 1, 16, 128)), (19.61600035429001, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.520 chosen=(64, 64, 4, 1, 8, 160) chosen_us=16.608 top=[(16.224000602960587, (64, 64, 4, 1, 8, 256)), (16.92800037562847, (64, 64, 4, 1, 8, 160)), (17.632000148296356, (64, 64, 4, 1, 8, 128)), (26.464000344276428, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.344 chosen=None chosen_us=25.344 top=[(30.751999467611313, (128, 64, 3, 1, 4, 160)), (35.16799956560135, (64, 64, 4, 1, 2, 256)), (36.22400015592575, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.440 chosen=None chosen_us=29.440 top=[(38.40000182390213, (128, 64, 4, 1, 2, 256)), (39.99999910593033, (128, 64, 4, 1, 2, 160)), (40.64000025391579, (128, 128, 2, 1, 2, 256))]
+FUSED_SELECT pooler m=128 incumbent_us=31.968 chosen=None chosen_us=31.968 top=[(31.647998839616776, ('lt', 0)), (31.775999814271927, ('lt_nn', 1)), (32.96000137925148, ('lt_nn', 0)), (33.02399814128876, ('lt_nn', 6)), (33.47200155258179, ('lt_nn', 4))]
+FUSED_SELECT pooler m=256 incumbent_us=38.816 chosen=('lt_nn', 0) chosen_us=37.536 top=[(37.76000067591667, ('lt_nn', 0)), (38.14399987459183, ('lt_nn', 1)), (38.40000182390213, ('lt', 3)), (38.62399980425835, ('lt_nn', 4)), (38.68800029158592, ('lt', 0))]
+FUSED_SELECT unpooler m=128 incumbent_us=31.136 chosen=('lt_nn', 0) chosen_us=28.992 top=[(29.791999608278275, ('lt_nn', 2)), (29.85600009560585, ('lt_nn', 1)), (30.17600066959858, ('lt_nn', 0)), (30.527999624609947, ('lt', 3)), (30.559999868273735, ('lt', 2))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.056 chosen=None chosen_us=33.056 top=[(33.28000009059906, ('lt', 0)), (34.33600068092346, ('lt_nn', 0)), (35.90400144457817, ('lt', 2)), (36.57599911093712, ('lt_nn', 1)), (36.99199855327606, ('lt', 1))]
+FUSED_SELECT o m=128 incumbent_us=13.024 chosen=('lt', 0) chosen_us=12.928 top=[(13.088000006973743, ('lt', 1)), (13.120000250637531, ('lt', 0)), (13.21600005030632, ('lt', 7)), (13.248000293970108, ('lt', 6)), (13.311999849975109, ('lt_nn', 4))]
+FUSED_SELECT o m=256 incumbent_us=14.400 chosen=('lt', 0) chosen_us=14.272 top=[(14.14399966597557, ('lt_nn', 0)), (14.175999909639359, ('lt', 0)), (14.911999925971031, ('lt', 2)), (15.00799972563982, ('lt', 6)), (15.168000012636185, ('lt_nn', 3))]
+FUSED_SELECT prepare_s=8.10
+LAB_BEGIN coded_gemv 54601db9c7cd11c3
+LAB_ERROR RuntimeError: Error building extension 'muse_coded_dense_90a_8e74f2c32a89': [1/3] ccache /usr/local/cuda/bin/nvcc -MD -MF cuda.cuda.o.d -DTORCH_EXTENSION_NAME=muse_coded_dense_90a_8e74f2c32a89 -DTORCH_API_INCLUDE_EXTENSION_H -isystem /opt/sglang/lib/python3.12/site-packages/torch/include -isystem /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /usr/local/cuda/include -isystem /usr/include/python3.12 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options '-fPIC' -O3 -std=c++17 -lineinfo -gencode=arch=compute_90a,code=sm_90a -c /tmp/muse_bf16_proj-8l37rn_7/sandbox/cache/torch_extensions/muse_coded_dense_90a_8e74f2c32a89/cuda.cu -o cuda.cuda.o 
+FAILED: [code=1] cuda.cuda.o 
+ccache /usr/local/cuda/bin/nvcc -MD -MF cuda.cuda.o.d -DTORCH_EXTENSION_NAME=muse_coded_dense_90a_8e74f2c32a89 -DTORCH_API_INCLUDE_EXTENSION_H -isystem /opt/sglang/lib/python3.12/site-packages/torch/include -isystem /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /usr/local/cuda/include -isystem /usr/include/python3.12 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options '-fPIC' -O3 -std=c++17 -lineinfo -gencode=arch=compute_90a,code=sm_90a -c /tmp/muse_bf16_proj-8l37rn_7/sandbox/cache/torch_extensions/muse_coded_dense_90a_8e74f2c32a89/cuda.cu -o cuda.cuda.o 
+In file included from /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include/torch/types.h:4,
+                 from /tmp/muse_bf16_proj-8l37rn_7/sandbox/cache/torch_extensions/muse_coded_dense_90a_8e74f2c32a89/cuda.cu:1:
+/opt/sglang/lib/python3.12/site-packages/torch/include/ATen/ATen.h:5:2: error: #error C++20 or later compatible compiler is required to use ATen.
+    5 | #error C++20 or later compatible compiler is required to use ATen.
+      |  ^~~~~
+[2/3] ccache c++ -MMD -MF main.o.d -DTORCH_EXTENSION_NAME=muse_coded_dense_90a_8e74f2c32a89 -DTORCH_API_INCLUDE_EXTENSION_H -isystem /opt/sglang/lib/python3.12/site-packages/torch/include -isystem /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /usr/local/cuda/include -isystem /usr/include/python3.12 -fPIC -std=c++20 -c /tmp/muse_bf16_proj-8l37rn_7/sandbox/cache/torch_extensions/muse_coded_dense_90a_8e74f2c32a89/main.cpp -o main.o 
+ninja: build stopped: subcommand failed.
+
+In file included from /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include/torch/types.h:4,
+                 from /tmp/muse_bf16_proj-8l37rn_7/sandbox/cache/torch_extensions/muse_coded_dense_90a_8e74f2c32a89/cuda.cu:1:
+/opt/sglang/lib/python3.12/site-packages/torch/include/ATen/ATen.h:5:2: error: #error C++20 or later compatible compiler is required to use ATen.
+    5 | #error C++20 or later compatible compiler is required to use ATen.
+      |  ^~~~~
+[2/3] ccache c++ -MMD -MF main.o.d -DTORCH_EXTENSION_NAME=muse_coded_dense_90a_8e74f2c32a89 -DTORCH_API_INCLUDE_EXTENSION_H -isystem /opt/sglang/lib/python3.12/site-packages/torch/include -isystem /opt/sglang/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /usr/local/cuda/include -isystem /usr/include/python3.12 -fPIC -std=c++20 -c /tmp/muse_bf16_proj-8l37rn_7/sandbox/cache/torch_extensions/muse_coded_dense_90a_8e74f2c32a89/main.cpp -o main.o 
+ninja: build stopped: subcommand failed.
+
+LAB_END lab_s=11.3 prepare_s=19.4

@@ -1,0 +1,87 @@
+MOE_PHASE M=1 ctas=264 route=5663/5802/5923 p1=20199/24418/31433 wait=817/6441/12289 barrier=1283/6273/10687 p2=17911/21379/26079 norm=1017/1797/2367 final=97/150/1928 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0764ms v12=0.0714ms v16=0.0940ms wide=0.3941ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5918/6200/6405 p1=109445/140001/154470 wait=1327/6516/44176 barrier=1322/19794/58269 p2=60696/68872/108993 norm=8701/10734/14000 final=97/162/2515 p1_tiles=32/33/33 p2_tiles=16/16/17 atomics=128/128/136
+MOE_TIME M=16 v9=0.1793ms v12=0.1954ms v16=0.2066ms wide=0.2777ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5829/6191/6527 p1=148060/187569/210428 wait=892/8130/60453 barrier=1266/22966/75767 p2=82545/91091/143139 norm=12338/14839/18217 final=103/165/2638 p1_tiles=44/45/45 p2_tiles=22/22/23 atomics=176/176/184
+MOE_TIME M=32 v9=0.2273ms v12=0.2488ms v16=0.2565ms wide=0.3470ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5456/5862/6059 p1=66370/81993/93272 wait=701/6173/32446 barrier=1229/13353/38693 p2=39971/45803/71036 norm=5060/6410/8715 final=103/150/2755 p1_tiles=19/19/20 p2_tiles=9/10/10 atomics=72/80/80
+MOE_TIME M=8 v9=0.1260ms v12=0.1334ms v16=0.1541ms wide=0.2083ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7179/7685/8051 p1=244837/304132/337729 wait=925/5022/89348 barrier=1272/25145/109801 p2=135556/143253/224612 norm=20369/24910/30745 final=108/2099/4250 p1_tiles=73/74/74 p2_tiles=36/37/37 atomics=288/296/296
+MOE_TIME M=128 v9=0.3324ms v12=0.3864ms v16=0.3729ms wide=0.4893ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10516/10814/11186 p1=400276/494540/550960 wait=1076/9294/144450 barrier=1191/49082/187320 p2=220093/229555/361225 norm=33952/42036/48896 final=958/4180/8547 p1_tiles=120/120/121 p2_tiles=60/60/61 atomics=480/480/488
+MOE_TIME M=256 v9=0.5077ms v12=0.6036ms v16=0.5672ms wide=0.5265ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.0764480009675026, 'v12': 0.07142399996519089, 'v16': 0.09401600062847137, 'wide': 0.3940800130367279}, 16: {'v9': 0.17929600179195404, 'v12': 0.195360004901886, 'v16': 0.20656000077724457, 'wide': 0.27772799134254456}, 32: {'v9': 0.22726400196552277, 'v12': 0.24876800179481506, 'v16': 0.25654399394989014, 'wide': 0.34703999757766724}, 8: {'v9': 0.12601600587368011, 'v12': 0.13337600231170654, 'v16': 0.15411199629306793, 'wide': 0.20825600624084473}, 128: {'v9': 0.33238399028778076, 'v12': 0.3864319920539856, 'v16': 0.3728640079498291, 'wide': 0.48931199312210083}, 256: {'v9': 0.5077120065689087, 'v12': 0.6036480069160461, 'v16': 0.5671679973602295, 'wide': 0.526528000831604}}
+/opt/sglang/lib/python3.12/site-packages/torch/cuda/graphs.py:630: UserWarning: The CUDA Graph is empty. This usually means that the graph was attempted to be captured on wrong device or stream. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/cuda/CUDAGraph.cpp:249.)
+  super().capture_end_pre()
+LAB_BEGIN moe_nf_tune_m128 bcdf731d3f3c9bc7
+META heavy-kernel lab at M128 vs LI_swap (701d2867 winner: N_full, heavy N32 lean K loop, W13 gate/up rows interleaved by 8 in prepare with SwiGLU in registers, grid 1056, launched first on the side stream || NT1<=16; live route; one join). F<s>: finalizer split over s blocks per token (bit-equal). Probes, timing only: LIF_swap = LI_swap without the per-stage fence.proxy.async (bit = race diagnostic); P_heavy / P_nt1 = one branch alone; P_nofin = no finalizer (TASK FAIL by design). 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to LI_swap output (diagnostic). Phase means are diagnostics.
+BUILD s=7.9 left=63.9
+S0 1.002 0.991 0.988 0.994 0.409 0.763 0.965
+S1 0.998 0.987 0.988 0.992 0.465 0.713 0.962
+S2 0.995 0.985 0.989 0.995 0.522 0.648 0.964
+S3 0.987 0.985 0.983 0.995 0.627 0.554 0.955
+S4 0.987 0.985 0.986 0.994 0.618 0.548 0.961
+S5 0.996 0.990 0.986 0.994 0.568 0.593 0.966
+S6 0.989 0.986 0.985 0.993 0.613 0.567 0.964
+S7 0.992 0.989 0.988 0.999 0.543 0.683 0.966
+S8 0.999 0.979 0.989 0.999 0.430 0.713 0.967
+S9 0.990 0.979 0.982 0.990 0.500 0.653 0.959
+S10 0.996 0.984 0.986 0.995 0.451 0.723 0.962
+S11 0.992 0.981 0.985 0.993 0.451 0.681 0.961
+ORDER LIF_swap F4 F8 F16 P_heavy P_nt1 P_nofin
+MEAN LI_swap n=36 us=194.95 med=197.68 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN LIF_swap n=36 us=193.58 med=197.07 pair=0.9935 lo/hi=0.983/1.008 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN F4 n=36 us=191.92 med=194.70 pair=0.9850 lo/hi=0.973/0.993 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN F8 n=36 us=192.10 med=194.83 pair=0.9863 lo/hi=0.978/0.997 L2/row=0.00413/0.00471 TASK=PASS bit=35
+MEAN F16 n=36 us=193.74 med=196.38 pair=0.9945 lo/hi=0.987/1.007 L2/row=0.00413/0.00471 TASK=PASS bit=35
+MEAN P_heavy n=36 us=99.80 med=92.55 pair=0.5163 lo/hi=0.353/0.672 L2/row=0.82057/1.45174 TASK=FAIL bit=0
+MEAN P_nt1 n=36 us=127.58 med=125.14 pair=0.6533 lo/hi=0.506/0.849 L2/row=0.97789/1.44367 TASK=FAIL bit=0
+MEAN P_nofin n=36 us=187.49 med=190.13 pair=0.9627 lo/hi=0.950/0.975 L2/row=1.00000/1.00000 TASK=FAIL bit=0
+PH LI_swap 6.4/181.2/12.8
+PH LIF_swap 6.3/179.6/12.8
+PH F4 6.3/181.1/9.1
+PH F8 6.3/181.1/8.9
+PH F16 6.3/181.2/10.9
+PH P_heavy 6.3/90.9/12.6
+PH P_nt1 6.3/111.6/12.7
+PH P_nofin 6.3/180.9/2.9
+AA signed/abs/max=-0.089/0.496/1.184
+END M=128 seeds=12/12 used=24.2 left=47.7
+LAB_END lab_s=29.7 prepare_s=160.0
+LAB_BEGIN moe_nf_tune_m256 e9df40c409ff7f99
+META heavy-kernel lab at M256 vs LI_swap (701d2867 winner: N_full, heavy N32 lean K loop, W13 gate/up rows interleaved by 8 in prepare with SwiGLU in registers, grid 2112, launched first on the side stream || NT1<=16; live route; one join). F<s>: finalizer split over s blocks per token (bit-equal). Probes, timing only: LIF_swap = LI_swap without the per-stage fence.proxy.async (bit = race diagnostic); P_heavy / P_nt1 = one branch alone; P_nofin = no finalizer (TASK FAIL by design). 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to LI_swap output (diagnostic). Phase means are diagnostics.
+BUILD s=0.0 left=125.0
+S0 0.990 0.990 0.994 1.008 0.609 0.549 0.970
+S1 0.987 0.992 0.997 1.008 0.601 0.535 0.975
+S2 0.989 0.989 0.994 1.007 0.651 0.493 0.968
+S3 0.986 0.987 0.990 1.008 0.694 0.452 0.969
+S4 0.984 0.986 0.992 1.006 0.723 0.388 0.970
+S5 0.985 0.990 0.993 1.007 0.693 0.424 0.970
+S6 0.986 0.993 0.997 1.005 0.741 0.389 0.969
+S7 0.989 0.986 0.994 1.007 0.553 0.589 0.967
+S8 0.992 0.987 0.994 1.004 0.528 0.595 0.969
+S9 0.983 0.986 0.990 1.005 0.719 0.419 0.965
+S10 0.986 0.986 0.989 1.005 0.615 0.521 0.967
+S11 0.985 0.990 0.993 1.006 0.603 0.531 0.970
+ORDER LIF_swap F4 F8 F16 P_heavy P_nt1 P_nofin
+MEAN LI_swap n=36 us=275.02 med=266.21 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00412/0.00465 TASK=PASS bit=34
+MEAN LIF_swap n=36 us=271.46 med=263.61 pair=0.9869 lo/hi=0.978/0.996 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN F4 n=36 us=271.84 med=263.73 pair=0.9885 lo/hi=0.984/0.997 L2/row=0.00412/0.00465 TASK=PASS bit=35
+MEAN F8 n=36 us=273.17 med=265.03 pair=0.9932 lo/hi=0.986/1.002 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN F16 n=36 us=276.86 med=268.74 pair=1.0064 lo/hi=1.002/1.013 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN P_heavy n=36 us=177.65 med=168.42 pair=0.6442 lo/hi=0.498/0.793 L2/row=0.57463/1.44163 TASK=FAIL bit=0
+MEAN P_nt1 n=36 us=133.74 med=132.98 pair=0.4904 lo/hi=0.339/0.620 L2/row=0.99437/1.44754 TASK=FAIL bit=0
+MEAN P_nofin n=36 us=266.46 med=258.05 pair=0.9691 lo/hi=0.961/0.978 L2/row=1.00000/1.00000 TASK=FAIL bit=0
+PH LI_swap 6.5/262.1/13.4
+PH LIF_swap 6.5/258.6/13.3
+PH F4 6.4/262.0/9.9
+PH F8 6.5/262.3/11.5
+PH F16 6.4/262.1/15.1
+PH P_heavy 6.4/167.5/13.3
+PH P_nt1 6.5/119.7/13.3
+PH P_nofin 6.6/262.2/2.9
+AA signed/abs/max=0.119/0.686/1.760
+END M=256 seeds=12/12 used=17.0 left=108.0
+LAB_END lab_s=17.0 prepare_s=177.0

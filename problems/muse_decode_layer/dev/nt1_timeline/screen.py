@@ -14,9 +14,9 @@ flags=[int(x) for x in sys.argv[1:] if '=' not in x];deltas={x:[] for x in flags
 for seed in range(SEEDS):
     w=n['rg_generate_weights'](5353+7919*seed);w['post_norm_w']=w['post_expert_norm'];state=n['nt1_banks'](w)
     pr,rs=n['routed_fixture'](w,M,9001+97*seed)
-    g0=n['TimelineGraph'](lambda:n['routed_experts'](pr,rs,state,'INC',False))
+    g0=n['TimelineGraph'](lambda:n['routed_experts'](pr,rs,state,'INC'))
     for x in flags:
-        g=n['TimelineGraph'](lambda x=x:n['routed_var'](pr,rs,state,x,False))
+        g=n['TimelineGraph'](lambda x=x:n['routed_var'](pr,rs,state,x))
         a,b,r=n['timeline_timing'](g0,g);deltas[x].append(a*(r-1))
     base.append(a)
     if seed==0:
@@ -25,6 +25,6 @@ for seed in range(SEEDS):
             n['DIAG_FLAGS']['RTRACE%d'%x]=x|256
         res=n['timeline_diagnose'](d,state,n['routed_fixture'](w,M,9001),tuple('RTRACE%d'%x for x in flags))
         for l in n['timeline_lines'](res,False):
-            if l.startswith(('CRITICAL','SKEW','ACCOUNT')):print(l[:400])
+            if l.startswith(('CRITICAL','SKEW','ACCOUNT','TILE')):print(l[:400])
 print('RINC',round(statistics.mean(base),2))
 for x,v in deltas.items():print(x,f'{statistics.mean(v):+.2f} +- {statistics.stdev(v)/len(v)**.5:.2f} n{len(v)}')

@@ -1,0 +1,71 @@
+FUSED_SELECT router m=128 incumbent_us=22.848 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.264 top=[(15.104000456631184, (64, 64, 4, 1, 8, 160)), (15.359999611973763, (64, 64, 4, 1, 16, 160)), (15.519999898970127, (64, 64, 4, 1, 16, 128)), (19.58400011062622, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.520 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.416 top=[(16.48000068962574, (64, 64, 4, 1, 8, 160)), (16.48000068962574, (64, 64, 4, 1, 8, 256)), (17.72800087928772, (64, 64, 4, 1, 8, 128)), (26.496000587940216, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=24.960 chosen=None chosen_us=24.960 top=[(29.7279991209507, (128, 64, 3, 1, 4, 160)), (34.55999866127968, (64, 64, 4, 1, 2, 256)), (34.65599939227104, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.280 chosen=None chosen_us=29.280 top=[(38.62399980425835, (128, 64, 4, 1, 2, 256)), (39.23200070858002, (128, 64, 4, 1, 2, 160)), (40.352001786231995, (128, 128, 2, 1, 2, 256))]
+FUSED_SELECT pooler m=128 incumbent_us=32.480 chosen=None chosen_us=32.480 top=[(31.615998595952988, ('lt', 0)), (33.376000821590424, ('lt_nn', 6)), (33.535998314619064, ('lt', 7)), (33.63199904561043, ('lt_nn', 1)), (33.72799977660179, ('lt_nn', 0))]
+FUSED_SELECT pooler m=256 incumbent_us=38.496 chosen=('lt_nn', 0) chosen_us=37.088 top=[(36.83200106024742, ('lt_nn', 0)), (37.28000074625015, ('lt', 1)), (38.07999938726425, ('lt', 3)), (38.656000047922134, ('lt', 2)), (38.816001266241074, ('lt', 0))]
+FUSED_SELECT unpooler m=128 incumbent_us=29.856 chosen=None chosen_us=29.856 top=[(29.791999608278275, ('lt_nn', 1)), (30.01599945127964, ('lt', 0)), (30.33600002527237, ('lt', 1)), (30.400000512599945, ('lt', 2)), (30.62400035560131, ('lt_nn', 0))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.696 chosen=('lt', 0) chosen_us=33.280 top=[(34.04799848794937, ('lt_nn', 0)), (34.432001411914825, ('lt', 2)), (34.752000123262405, ('lt', 0)), (36.06399893760681, ('lt_nn', 1)), (37.408001720905304, ('lt_nn', 3))]
+FUSED_SELECT o m=128 incumbent_us=12.960 chosen=None chosen_us=12.960 top=[(12.927999719977379, ('lt', 1)), (12.992000207304955, ('lt', 0)), (12.992000207304955, ('lt', 5)), (13.151999562978745, ('lt_nn', 1)), (13.151999562978745, ('lt_nn', 4))]
+FUSED_SELECT o m=256 incumbent_us=14.112 chosen=None chosen_us=14.112 top=[(14.112000353634357, ('lt', 0)), (14.399999752640724, ('lt_nn', 0)), (14.592000283300877, ('lt', 2)), (14.655999839305878, ('lt', 6)), (14.816000126302242, ('lt_nn', 4))]
+FUSED_SELECT prepare_s=9.74
+LAB_BEGIN vq8_layer c4594d911120ba7e
+META vq8 on the decode ABI (FP32 partials S=4) vs decode verify incumbent (qk_prep + public FA3 + norm_gate; glue current/best5), q_len 8 ctx 80000 page 1, cold L2 by read; "chain" = after a 37.7 MB projection stand-in (PDL), minus the stand-in alone
+META ROW shape kernel us chain_us gate(TASK check incl. new K/V) err; vq8 settings (stages, min_tiles)
+COMPILE_S 27.5 res=[168, 56, 4096, 221184, 1]
+ROW B=1 sliding fa3_current us=23.36 chain_us=17.47 gate=P err=0.0714
+ROW B=1 sliding fa3_best5 us=22.53 chain_us=17.95 gate=P err=0.0714
+ROW B=1 sliding vq8_st8mt1 us=25.73 chain_us=22.59 gate=P err=0.0709 chain_pdl_us=17.44 pdl_gate=P
+ROW B=1 sliding vq8_st8mt2 us=31.81 chain_us=28.70 gate=P err=0.0710 chain_pdl_us=24.03 pdl_gate=P
+ROW B=1 sliding vq8_st6mt2 us=30.34 chain_us=28.45 gate=P err=0.0710 chain_pdl_us=22.37 pdl_gate=P
+ROW B=1 sliding vq8_st4mt2 us=27.87 chain_us=25.92 gate=P err=0.0710 chain_pdl_us=19.94 pdl_gate=P
+ROW B=1 sliding vq8_st6mt1 us=23.42 chain_us=20.58 gate=P err=0.0709 chain_pdl_us=15.46 pdl_gate=P
+ROW B=1 sliding vq8_st4mt1 us=22.11 chain_us=19.01 gate=P err=0.0709 chain_pdl_us=14.40 pdl_gate=P
+STUB B=1 sliding proj_stub_us=34.94
+ROW B=16 sliding fa3_current us=28.74 chain_us=15.71 gate=P err=0.0657
+ROW B=16 sliding fa3_best5 us=28.74 chain_us=17.31 gate=P err=0.0657
+ROW B=16 sliding vq8_st8mt1 us=41.02 chain_us=30.11 gate=P err=0.0654 chain_pdl_us=23.90 pdl_gate=P
+ROW B=16 sliding vq8_st8mt2 us=40.93 chain_us=30.50 gate=P err=0.0654 chain_pdl_us=23.71 pdl_gate=P
+ROW B=16 sliding vq8_st6mt2 us=38.91 chain_us=27.71 gate=P err=0.0654 chain_pdl_us=21.44 pdl_gate=P
+ROW B=16 sliding vq8_st4mt2 us=34.75 chain_us=25.06 gate=P err=0.0654 chain_pdl_us=19.58 pdl_gate=P
+ROW B=16 sliding vq8_st6mt1 us=37.89 chain_us=27.94 gate=P err=0.0654 chain_pdl_us=21.47 pdl_gate=P
+ROW B=16 sliding vq8_st4mt1 us=34.88 chain_us=24.83 gate=P err=0.0654 chain_pdl_us=19.42 pdl_gate=P
+STUB B=16 sliding proj_stub_us=43.90
+ROW B=32 sliding fa3_current us=34.72 chain_us=20.96 gate=P err=0.0626
+ROW B=32 sliding fa3_best5 us=34.05 chain_us=22.91 gate=P err=0.0626
+ROW B=32 sliding vq8_st8mt1 us=51.90 chain_us=42.69 gate=P err=0.0622 chain_pdl_us=36.13 pdl_gate=P
+ROW B=32 sliding vq8_st8mt2 us=52.03 chain_us=42.40 gate=P err=0.0622 chain_pdl_us=35.42 pdl_gate=P
+ROW B=32 sliding vq8_st6mt2 us=49.09 chain_us=38.40 gate=P err=0.0622 chain_pdl_us=32.13 pdl_gate=P
+ROW B=32 sliding vq8_st4mt2 us=44.38 chain_us=32.70 gate=P err=0.0622 chain_pdl_us=26.62 pdl_gate=P
+ROW B=32 sliding vq8_st6mt1 us=48.80 chain_us=38.85 gate=P err=0.0622 chain_pdl_us=32.00 pdl_gate=P
+ROW B=32 sliding vq8_st4mt1 us=44.03 chain_us=33.06 gate=P err=0.0622 chain_pdl_us=26.88 pdl_gate=P
+STUB B=32 sliding proj_stub_us=46.59
+ROW B=16 full fa3_current us=201.47 chain_us=190.21 gate=P err=0.0331
+ROW B=16 full fa3_best5 us=201.54 chain_us=191.71 gate=P err=0.0331
+ROW B=16 full vq8_st8mt1 us=257.09 chain_us=248.70 gate=P err=0.0311 chain_pdl_us=242.66 pdl_gate=P
+ROW B=16 full vq8_st8mt2 us=255.90 chain_us=247.30 gate=P err=0.0311 chain_pdl_us=244.64 pdl_gate=P
+ROW B=16 full vq8_st6mt2 us=247.14 chain_us=238.30 gate=P err=0.0311 chain_pdl_us=233.22 pdl_gate=P
+ROW B=16 full vq8_st4mt2 us=241.86 chain_us=234.66 gate=P err=0.0311 chain_pdl_us=227.97 pdl_gate=P
+ROW B=16 full vq8_st6mt1 us=248.80 chain_us=237.31 gate=P err=0.0311 chain_pdl_us=233.31 pdl_gate=P
+ROW B=16 full vq8_st4mt1 us=241.54 chain_us=234.53 gate=P err=0.0311 chain_pdl_us=228.90 pdl_gate=P
+STUB B=16 full proj_stub_us=43.52
+ROW B=32 full fa3_current us=388.74 chain_us=378.53 gate=P err=0.0341
+ROW B=32 full fa3_best5 us=389.22 chain_us=377.60 gate=P err=0.0341
+ROW B=32 full vq8_st8mt1 us=479.04 chain_us=469.31 gate=P err=0.0297 chain_pdl_us=463.04 pdl_gate=P
+ROW B=32 full vq8_st8mt2 us=478.43 chain_us=472.19 gate=P err=0.0297 chain_pdl_us=463.46 pdl_gate=P
+ROW B=32 full vq8_st6mt2 us=460.93 chain_us=451.58 gate=P err=0.0297 chain_pdl_us=445.70 pdl_gate=P
+ROW B=32 full vq8_st4mt2 us=456.22 chain_us=447.49 gate=P err=0.0297 chain_pdl_us=439.30 pdl_gate=P
+ROW B=32 full vq8_st6mt1 us=463.17 chain_us=453.60 gate=P err=0.0297 chain_pdl_us=445.18 pdl_gate=P
+ROW B=32 full vq8_st4mt1 us=456.03 chain_us=447.04 gate=P err=0.0297 chain_pdl_us=439.65 pdl_gate=P
+STUB B=32 full proj_stub_us=46.85
+ROW B=1 full fa3_current us=34.72 chain_us=29.63 gate=P err=0.0262
+ROW B=1 full fa3_best5 us=35.39 chain_us=29.82 gate=P err=0.0262
+ROW B=1 full vq8_st8mt1 us=47.78 chain_us=44.61 gate=P err=0.0262 chain_pdl_us=39.62 pdl_gate=P
+ROW B=1 full vq8_st8mt2 us=48.26 chain_us=44.48 gate=P err=0.0262 chain_pdl_us=39.36 pdl_gate=P
+ROW B=1 full vq8_st6mt2 us=45.02 chain_us=41.73 gate=P err=0.0262 chain_pdl_us=33.82 pdl_gate=P
+ROW B=1 full vq8_st4mt2 us=41.09 chain_us=37.38 gate=P err=0.0262 chain_pdl_us=31.71 pdl_gate=P
+ROW B=1 full vq8_st6mt1 us=44.93 chain_us=40.13 gate=P err=0.0262 chain_pdl_us=35.30 pdl_gate=P
+ROW B=1 full vq8_st4mt1 us=40.70 chain_us=37.76 gate=P err=0.0262 chain_pdl_us=31.17 pdl_gate=P
+STUB B=1 full proj_stub_us=35.55
+LAB_S 33.4
+LAB_END lab_s=35.2 prepare_s=45.0

@@ -5,7 +5,7 @@ VAR_CPP='''#include <pybind11/pybind11.h>
 int64_t max_smem_attr();int64_t smem_needed(int64_t,int64_t,int64_t);int64_t resident_blocks(int64_t,int64_t,int64_t);
 void run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
 '''
-F_Z,F_SLOT,F_ZOUT,F_RSQ,F_NREG,F_PDL,F_LAST,F_TRACE,F_DYN=1,2,4,8,16,64,128,256,1024
+F_Z,F_SLOT,F_ZOUT,F_RSQ,F_NREG,F_PDL,F_LAST,F_TRACE,F_NT2,F_W16,F_RND,F_ROT=1,2,4,8,16,64,128,256,2048,4096,8192,16384
 VAR_MODULE=[]
 
 
@@ -20,12 +20,19 @@ def var_module():
     return VAR_MODULE[0]
 
 
-def var_call(d,state,flags,grid=264,stages=2,stamps=None):
+def var_geometry(state,flags,m,grid=264,stages=None):
+    """(nt, stages, grid): NT2 runs 1 CTA/SM with as many stages as fit (4 on the H200's 227 KB; 2, or 1 for W16, on sm_120's 99 KB)."""
+    mod=var_module();nt=2 if flags&F_NT2 else 1;f=flags&~F_TRACE
+    if stages is None:stages=next((s for s in ((4,3,2,1) if nt==2 else (2,)) if mod.smem_needed(f,s,m)<=mod.smem_optin),2)
+    if mod.smem_needed(f,stages,m)>mod.smem_optin:raise ValueError('stage depth exceeds shared capacity')
+    return nt,stages,min(grid,state['sms']*mod.resident_blocks(f,stages,m))
+
+
+def var_call(d,state,flags,grid=264,stages=None,stamps=None):
     """The flag-templated NT1 variant; flags=0 is the incumbent's math in the variant harness."""
     x=d['hidden_states'].contiguous();m=len(x);dev=x.device;mod=var_module()
     if flags&F_SLOT and m!=1:raise ValueError('F_SLOT is the M=1 dispatch')
-    if mod.smem_needed(1,stages,m)>mod.smem_optin:raise ValueError('stage depth exceeds shared capacity')
-    grid=min(grid,state['sms']*mod.resident_blocks(1,stages,m))
+    nt,stages,grid=var_geometry(state,flags,m,grid,stages)
     inter=torch.empty((m*8,4096),device=dev,dtype=torch.bfloat16);y=torch.empty((m*8,4096),device=dev);ss=torch.empty(m*8,device=dev)
     out=torch.empty_like(x);ids=d['topk_ids'].int().contiguous();tw=d['topk_weights'].float().contiguous()
     cnt=state.setdefault('vcounters',{}).setdefault(flags&~F_TRACE,None)

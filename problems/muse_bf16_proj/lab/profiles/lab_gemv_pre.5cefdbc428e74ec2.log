@@ -1,0 +1,26 @@
+FUSED_SELECT router m=128 incumbent_us=20.896 chosen=(64, 64, 4, 1, 8, 160) chosen_us=14.816 top=[(14.879999682307243, (64, 64, 4, 1, 8, 160)), (15.32800029963255, (64, 64, 4, 1, 16, 160)), (15.424000099301338, (64, 64, 4, 1, 16, 128)), (19.26399953663349, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=24.032 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.192 top=[(16.287999227643013, (64, 64, 4, 1, 8, 256)), (17.696000635623932, (64, 64, 4, 1, 8, 128)), (17.823999747633934, (64, 64, 4, 1, 8, 160)), (26.367999613285065, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.088 chosen=None chosen_us=25.088 top=[(29.952000826597214, (128, 64, 3, 1, 4, 160)), (34.752000123262405, (64, 64, 4, 1, 2, 160)), (34.81600061058998, (64, 64, 4, 1, 2, 256))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.408 chosen=None chosen_us=29.408 top=[(38.88000175356865, (128, 64, 4, 1, 2, 256)), (39.29600119590759, (128, 64, 4, 1, 2, 160)), (39.84000161290169, (128, 128, 2, 1, 2, 256))]
+FUSED_SELECT pooler m=128 incumbent_us=32.128 chosen=('lt_nn', 1) chosen_us=31.456 top=[(32.22399950027466, ('lt', 0)), (32.896000891923904, ('lt_nn', 1)), (33.215999603271484, ('lt', 1)), (33.40800106525421, ('lt_nn', 0)), (33.63199904561043, ('lt_nn', 6))]
+FUSED_SELECT pooler m=256 incumbent_us=38.368 chosen=('lt_nn', 0) chosen_us=36.480 top=[(37.376001477241516, ('lt_nn', 0)), (38.047999143600464, ('lt', 3)), (38.62399980425835, ('lt_nn', 4)), (39.0079990029335, ('lt', 1)), (39.264000952243805, ('lt', 6))]
+FUSED_SELECT unpooler m=128 incumbent_us=30.720 chosen=('lt_nn', 0) chosen_us=28.896 top=[(29.184000566601753, ('lt_nn', 0)), (29.85600009560585, ('lt_nn', 1)), (29.920000582933426, ('lt_nn', 2)), (30.33600002527237, ('lt', 0)), (31.007999554276466, ('lt', 3))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.536 chosen=None chosen_us=33.536 top=[(33.79200026392937, ('lt_nn', 0)), (34.81600061058998, ('lt', 0)), (35.711999982595444, ('lt', 2)), (37.47199848294258, ('lt_nn', 3)), (38.015998899936676, ('lt_nn', 1))]
+FUSED_SELECT o m=128 incumbent_us=13.248 chosen=('lt_nn', 0) chosen_us=12.960 top=[(12.736000120639801, ('lt_nn', 0)), (12.864000163972378, ('lt', 1)), (12.896000407636166, ('lt_nn', 1)), (12.896000407636166, ('lt_nn', 5)), (13.088000006973743, ('lt', 7))]
+FUSED_SELECT o m=256 incumbent_us=14.176 chosen=None chosen_us=14.176 top=[(14.175999909639359, ('lt_nn', 0)), (14.240000396966934, ('lt', 0)), (14.62399959564209, ('lt', 2)), (14.976000413298607, ('lt_nn', 2)), (15.00799972563982, ('lt_nn', 4))]
+FUSED_SELECT prepare_s=10.68
+LAB_BEGIN gemv_pre 4c021a48ec109d47
+META paired chains, lab_cold_l2 per replay, r = paired median vs the first arm, AA = control vs itself. POOL: O (F.linear) -> boundary_cl b1 -> pool_router -> route_cl -> sink; s8 = S8 V9_union GEMV; bBN/S = balanced split-K, pN = N weight tiles in registers / lN = N tiles L2-prefetched before griddepcontrol.wait. QKV: qkv producer -> sum+cast (split partials) -> sink; s8 = V9 tile (t<=16) / cuBLAS (t=32). SPLIT: q,k,v rows only (qkv3, 1280) and gate rows only (1024) in the same chain (medians; the gate split's critical path). UNPOOL: unpooler producer -> boundary_cl b2 -> sink; control cuBLAS (S8).
+POOL t=1 s8=39.26us AA=1.0136 [b64/6 37.50us r=0.9494] [b64/6p1 37.63us r=0.9535] [b64/6p2 39.49us r=1.0082] [b64/6l4 37.57us r=0.9611] [b32/3 37.94us r=0.9598]
+QKV t=1 s8=18.14us AA=0.9960 [b64/7 16.74us r=0.9232] [b32/7 17.58us r=0.9690]
+SPLIT t=1 s8=17.89us AA=1.0022 [qkv3_b64/10 13.28us] [qkv3_b32/7 14.03us] [qkv3_b32/12 14.30us] [gate_b64/8 12.06us]
+POOL t=16 s8=40.50us AA=0.9930 [b64/6 38.85us r=0.9596] [b64/6p1 40.06us r=0.9834] [b64/6p2 42.46us r=1.0520] [b64/6l4 39.63us r=0.9786] [b32/3 42.93us r=1.0558]
+QKV t=16 s8=18.61us AA=0.9961 [b64/7 17.02us r=0.9046] [b32/7 18.13us r=0.9788]
+SPLIT t=16 s8=18.30us AA=0.9960 [qkv3_b64/10 13.41us] [qkv3_b32/7 14.42us] [qkv3_b32/12 14.61us] [gate_b64/8 12.19us]
+UNPOOL t=16 cublas=26.35us AA=0.9895 [b64/2 25.44us r=0.9578] [b32/1 26.93us r=1.0242]
+POOL t=32 s8=45.17us AA=1.0054 [b64/6 41.10us r=0.9064] [b64/6p1 46.85us r=1.0413] [b64/6p2 49.97us r=1.1101] [b64/6l4 41.30us r=0.9192] [b32/3 41.78us r=0.9244]
+QKV t=32 s8=20.22us AA=0.9934 [b64/7 17.81us r=0.8773] [b32/7 19.38us r=0.9567]
+SPLIT t=32 s8=20.06us AA=1.0119 [qkv3_b64/10 14.22us] [qkv3_b32/7 15.57us] [qkv3_b32/12 15.31us] [gate_b64/8 12.48us]
+UNPOOL t=32 cublas=27.04us AA=1.0065 [b64/2 26.43us r=0.9791] [b32/1 27.90us r=1.0269]
+END t=30.3s
+LAB_END lab_s=30.4 prepare_s=41.1

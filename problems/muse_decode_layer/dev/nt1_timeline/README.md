@@ -25,24 +25,20 @@ Lane notes for PLAN P3a. Incumbent: the admitted one-LOP3 NT1 (`inc.cu`, identic
 - `screen.py [M=..] [SEEDS=..] flags...`: local paired screen of router+MoE arms plus their traced critical paths.
 
 ## Handoff (decode lane)
-`smallm_var_cell.py` instantiates flags 69, 77, 93, 95, 1119 (SHA-256 in the lane report; `test_cell.py` passes).
-H200 map (router+MoE graph, cf1de160, 16 seeds): `{1: 95, 8: 69, 16: 69, 32: 69}`; switch M=1 to 1119 (95 + DYN)
-if 6c5fb608 confirms the local -2.7 us. Integration in S7: `smallm_bind(state['s4_nt1_bank'], FLAGS)` at the end of
-`_s4_prepare_banks`; in `_best6_call`, `nt1_lop3` -> `smallm_experts(data, state['s4_nt1_bank'], FLAGS[m])`. PDL
-needs nothing else: S7 launches only `torch.empty` between the router (both routers trigger at start) and the MoE
-on every nt1_lop3 row.
+`smallm_var_cell.py` builds flags 95 and 69 (SHA-256 in the lane report; `test_cell.py` passes); map
+`{1: 95, 8: 69, 16: 69, 32: 69}` (H200 cf1de160 and eb9e0382, router+MoE graph, 16 seeds each). Integration in S7:
+`smallm_bind(state['s4_nt1_bank'], FLAGS)` at the end of `_s4_prepare_banks`; in `_best6_call`, `nt1_lop3` ->
+`smallm_experts(data, state['s4_nt1_bank'], FLAGS[m])`. PDL needs nothing else: S7 launches only `torch.empty`
+between the router (both routers trigger at start) and the MoE on every nt1_lop3 row.
 
-## Next: decode-once for multi-block experts (M=16/32)
-ECAP (INC with every local expert capped at 8 tokens) bounds it at -9.3 / -34.5 us (cf1de160): each extra 8-token
-block costs ~7.4 us at M=32 though its tiles are L2 re-reads. First test: `moe_var<2, F>` (16-token blocks) at 1
-CTA/SM with 4 stages (Bf[2] needs ~128 registers; NT4 spilled at 2 CTAs/SM in b68afb72).
-
-## DYN (flag 1024, M=1 with SLOT)
-The producer grabs 1-4 units at a time from a global counter (all W13 units, then all W2) and queues each unit id in
-its stage; consumers read the id one stage ahead, so operand reloads and W2-ready waits still overlap the copy. It
-balances W13 completion across CTAs (W2-ready wait on the critical CTA 14.2 -> 7.2 us locally). At M>=8 grabbed
-chunks split a multi-block expert's tile reuse across CTAs: +3 to +19 us locally, so DYN is M=1 only. A static
-expert grouping (early experts' W13 first) removed the wait but gained nothing (deleted).
+## Phase schedule at M=16/32 (in progress)
+M=32 critical CTA with 69 (c768a8e3, one seed): route 4.2, W13 36.1, W2-ready wait 11.6, W2 17.6, grid barrier 5.0 us
+of a 76 us span. Every CTA holds a contiguous unit range, so all experts finish W13 together and W2 waits on the slowest
+CTA of its expert plus the publish (the wait ends ~4 us after the last W13-end stamp). RND (flag 8192): two rounds
+split at the expert boundary nearest half the W13 units; each CTA runs its share of the first experts' W13, then the
+rest, and W2 in the same order, so the first experts' W2 covers the second round's publish. Traces now split per-tile
+time (tile waits of warp 0 and warp 7, per-tile barrier, publish fence and barrier): TILE lines.
+H200 v7 `1be7ce445ced8f66` (queued): 69 vs 69+RND at M=8/16/32, M=16/32 critical paths of both.
 
 ## H200 accounting (849e4017, M=1, INC, read flush)
 Event 36.21 = CUPTI node 31.81 + 4.40 event framing. Node = launch 1.0 + CTA span 32.2 + drain 1.3; the critical
@@ -57,13 +53,22 @@ finalizer ~2.4 left. zero_() vs read flush on the H200: +1.8 / +4.9 / +2.7 / +1.
 - `05e21862a4044642` (job cf1de1607d394778): v3, `lab_cold_l2()`; R95 at M=1, R93/R77/R69 at M=8/16/32; ECAP (INC
   with each local expert capped at 8 tokens: the most decode-once could save) at M=16/32; M=32 timeline with SKEW
   lines. Local `runs/screen/nt1_timeline_lab_local_v3.log` (ECAP -2.3 / -8.5 us at M=16/32 on sm_120).
-- `6c5fb6083f17a5e6` (queued): v4, R1119 (95 + DYN) vs R95 at M=1 with both critical paths; R93/R77/R69 again.
-  Local `runs/screen/nt1_timeline_lab_local_v4.log` (R1119 -5.33 vs R95 -2.67).
+- `6c5fb6083f17a5e6` (job eb9e038277684174): v4, R1119 (95 + DYN) vs R95: DYN loses on the H200 (-1.78 vs -5.68)
+  although it won locally (-5.33 vs -2.67); W13 slows by ~4 us per CTA. 69 confirmed at M=8/16/32.
+- `15e7735184c220f2` (job daf0c1aa0bd24eeb) and `ce29e19cbb20c8f5` (job c768a8e361f54977): v5/v6, NT2 and W16 lose
+  (see Closed recipes).
 
 ## Closed recipes
 - META (router-written `MoERouteMeta`, flag 32, deleted): +2.9 to +3.3 us at every M on the H200; the router's serial
   metadata epilogue costs more than the per-CTA route rebuild it replaces.
 - LAST (last CTA finalizes): +0.11 alone, +0.36 with SLOT (M=1).
+- DYN (M=1 units grabbed from a global counter, deleted): removes the W2-ready wait but slows every CTA's W13 on the
+  H200 (+3.9 us vs 95, eb9e0382). Static expert grouping (deleted) gained nothing locally.
 - Router-epilogue L2 prefetch of the MoE's first tiles (M=1, local): router node 4.1 -> 51.2 us. A single CTA's
   bulk prefetches run at one SM's TMA rate and block its exit.
 - Joint E2M1 x E4M3 table decoder: see `table_kill/`.
+- Decode once in registers for multi-block experts (M=16/32; flags 2048 NT2, 4096 W16): vs INC, NT2 (16-token blocks,
+  203 regs, 1 CTA/SM, 4 stages) +11.8 / +7.9 us and W16 (16 K-split warps, 123 regs, 1 CTA/SM) +19.0 / +17.2 us,
+  while 69 is -4.7 / -4.5 (c768a8e3, 16 seeds). NT2 cuts W13 units 37% but a 2-block unit costs 1.84x an NT1 unit
+  per SM, so the multi-block price is per-tile latency at 16 warps/SM, not decode issue; 16-token register
+  operands do not fit 2 CTAs/SM. ECAP (each expert capped at 8 tokens) had bounded it at -9.3 / -34.5 us.

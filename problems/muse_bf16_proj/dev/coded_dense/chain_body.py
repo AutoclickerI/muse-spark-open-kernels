@@ -31,8 +31,10 @@ class CCPool:
         return x, ids, wts, sout
 
 
-# Standalone H200 winners (coded_gemv receipt) per (t, role): (NW, RT, PIPE, S); each runs with prew 1 and 0.
+# Standalone H200 winners (coded_gemv receipt) per (t, role): (NW, RT, PIPE, S, V, C); each runs with prew 1 and 0.
 CC_CFG = __CC_CFG__
+CC_INSTANCES = tuple(sorted({(1 if t <= 8 else 2 if t <= 16 else 4, rt, pipe, v)
+                             for (t, _), cfgs in CC_CFG.items() for _, rt, pipe, _, v, _ in cfgs}))
 CC_S8 = {1: (32, 1024, 128, False), 8: (32, 1024, 128, False), 16: (32, 1024, 128, False), 32: (64, 512, 128, False)}
 CC_QKV_S8 = {1: 'cublas', 8: 'cublas', 16: (32, 1024, 128, False), 32: 'cublas'}  # S8 BEST6 plan (a5b2f55b)
 CC_BAL = {'qkv': 7, 'pool_router': 6, 'unpooler': 2, 'unpool_slice': 16, 'o': 2}
@@ -41,11 +43,11 @@ CC_BAL = {'qkv': 7, 'pool_router': 6, 'unpooler': 2, 'unpool_slice': 16, 'o': 2}
 def cc_arms(t, role, x_w, c):
     out = []
     for cfg in CC_CFG.get((t, role), ()):
-        NW, RT, PIPE, S = cfg
+        NW, RT, PIPE, S, V, C = cfg
         for prew in (1, 0):
-            out.append((f'cd{NW}/{RT}/{PIPE}/{S}{"p" if prew else "w"}',
-                        lambda x, NW=NW, RT=RT, PIPE=PIPE, S=S, prew=prew: cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE,
-                                                                                   prew=prew)))
+            out.append((f'V{V}:{NW}/{RT}/{PIPE}/{S}/{C}{"p" if prew else "w"}',
+                        lambda x, NW=NW, RT=RT, PIPE=PIPE, S=S, V=V, C=C, prew=prew: cd_gemv(
+                            x, c, S, NW=NW, RT=RT, PIPE=PIPE, prew=prew, V=V, C=C)))
     return out
 
 
@@ -54,13 +56,13 @@ def lab(deadline, weights):
     weights, wkind = cl_weights(weights)
     dev = weights['o'].device
     gen = torch.Generator(device=dev).manual_seed(5)
-    cd_module()
+    cd_module(CC_INSTANCES)
     gp_ext()
     v0 = _gp_vectors(weights, dev, gen, 1)
     coded = dict(pool_router=cd_encode(v0['pool_router']), qkv=cd_encode(v0['qkv']), unpooler=cd_encode(v0['unpooler']),
                  unpool_slice=cd_encode(v0['unpooler'][:1024].contiguous()), o=cd_encode(v0['o']))
     lines = [f'META {wkind} weights; paired chains, lab_cold_l2 per replay, r = paired median vs the first arm (control), AA = control vs '
-             'itself; cdNW/RT/PIPE/S p|w = coded GEMV with its first PIPE blocks loaded before (p) or after (w) '
+             'itself; Vv:NW/RT/PIPE/S/C p|w = coded GEMV step v with its first PIPE blocks loaded before (p) or after (w) '
              'griddepcontrol.wait. POOL: O (cuBLAS) -> b1 -> pool_router -> route -> sink; POOLO: the same with O coded '
              'too (vs S8 O stream/cuBLAS). QKV: qkv -> sum+cast -> sink. UNPOOL: unpooler (slice at t<=8) -> b2 -> sink.']
     rel = lambda a, b: float((a.float() - b.float()).norm() / b.float().norm().clamp_min(1e-12))  # noqa: E731
@@ -80,8 +82,8 @@ def lab(deadline, weights):
                      check=lambda o, r: '' if torch.equal(o[1], r[1]) and rel(o[0], r[0]) < 1e-2 else f'ids={torch.equal(o[1], r[1])},x={rel(o[0], r[0]):.1e}')
             best_pool = CC_CFG.get((t, 'pool_router'), [None])[0]
             if best_pool is not None and CC_CFG.get((t, 'o')):
-                NW, RT, PIPE, S = best_pool
-                pr = lambda x: cd_gemv(x, coded['pool_router'], S, NW=NW, RT=RT, PIPE=PIPE, prew=1)  # noqa: E731
+                NW, RT, PIPE, S, V, C = best_pool
+                pr = lambda x: cd_gemv(x, coded['pool_router'], S, NW=NW, RT=RT, PIPE=PIPE, prew=1, V=V, C=C)  # noqa: E731
                 arms = [('s8', None), ('s8b', None)] + [(n, f) for n, f in cc_arms(t, 'o', None, coded['o'])]
                 chains = [CCPool(t, v, attn, cub_o, s8), CCPool(t, v, attn, cub_o, s8)]
                 chains += [CCPool(t, v, attn, f, pr) for _, f in arms[2:]]

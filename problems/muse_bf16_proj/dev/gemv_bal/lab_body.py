@@ -184,14 +184,18 @@ def lab(deadline, weights):
                 arms.append(('s8', (lambda: F.linear(x, w)) if s8 == 'cublas' else (lambda: gb_s6(x, w, s8))))
                 if s8 != 'cublas':
                     arms.append(('cublas', lambda: F.linear(x, w)))
-                err = 0.0
+                err, rejected = 0.0, 0
                 for BN in (32, 64):
                     tiles = N // BN
                     for S in _gb_splits(tiles, K // 128):
                         for NS in (4, 6):
                             fn = lambda BN=BN, S=S, NS=NS: gb_run(x, w, BN, S, NS)
-                            P = fn()
-                            torch.cuda.synchronize()
+                            try:
+                                P = fn()
+                                torch.cuda.synchronize()
+                            except Exception:  # e.g. smem over this GPU's limit: skip the arm
+                                rejected += 1
+                                continue
                             err = max(err, float((P.sum(0) - ref).norm() / ref.norm()))
                             arms.append((f'{BN}/{S}/{NS}', fn))
                 graphs = [_gb_graph(fn) for _, fn in arms]
@@ -203,7 +207,7 @@ def lab(deadline, weights):
                 ctrl = got['s8'] if 'cublas' not in got else min(got['s8'], got['cublas'])
                 lines.append(f'R t={t} {name} {N}x{K} read={got["read"]:.2f} s8={got["s8"]:.2f}'
                              + (f' cublas={got["cublas"]:.2f}' if 'cublas' in got else '')
-                             + f' | {cells} e={err:.0e}')
+                             + f' | {cells} e={err:.0e} rej={rejected}')
                 sums.append(f'{name}@{t} {bal[0][0] - got["s8"]:+.2f}')
             except Exception as exc:
                 lines.append(f'ERROR t={t} {name} {type(exc).__name__}: {str(exc).splitlines()[0][:150]}')

@@ -1,0 +1,22 @@
+FUSED_SELECT router m=128 incumbent_us=23.008 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.424 top=[(15.072000212967396, (64, 64, 4, 1, 8, 160)), (15.615999698638916, (64, 64, 4, 1, 16, 128)), (15.807999297976494, (64, 64, 4, 1, 16, 160)), (19.519999623298645, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.712 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.576 top=[(16.287999227643013, (64, 64, 4, 1, 8, 160)), (16.416000202298164, (64, 64, 4, 1, 8, 256)), (18.239999189972878, (64, 64, 4, 1, 8, 128)), (27.39199995994568, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.440 chosen=None chosen_us=25.440 top=[(30.592000111937523, (128, 64, 3, 1, 4, 160)), (34.01599824428558, (64, 64, 4, 1, 2, 256)), (35.13599932193756, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.248 chosen=None chosen_us=29.248 top=[(37.47199848294258, (128, 64, 4, 1, 2, 256)), (40.192000567913055, (128, 128, 2, 1, 2, 256)), (40.70400074124336, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.648 chosen=('lt', 0) chosen_us=31.616 top=[(32.287999987602234, ('lt', 0)), (33.215999603271484, ('lt_nn', 1)), (33.56799855828285, ('lt', 1)), (33.824000507593155, ('lt_nn', 2)), (33.92000123858452, ('lt', 6))]
+FUSED_SELECT pooler m=256 incumbent_us=39.936 chosen=('lt_nn', 0) chosen_us=37.472 top=[(37.66399994492531, ('lt_nn', 0)), (38.336001336574554, ('lt_nn', 4)), (39.32800143957138, ('lt_nn', 1)), (39.32800143957138, ('lt_nn', 2)), (39.93599861860275, ('lt', 0))]
+FUSED_SELECT unpooler m=128 incumbent_us=30.336 chosen=('lt_nn', 0) chosen_us=29.760 top=[(30.208000913262367, ('lt', 2)), (30.46399913728237, ('lt_nn', 0)), (30.719999223947525, ('lt_nn', 2)), (30.97599931061268, ('lt', 5)), (31.26399964094162, ('lt', 0))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.504 chosen=('lt', 0) chosen_us=33.472 top=[(34.4959981739521, ('lt', 2)), (34.591998904943466, ('lt', 0)), (35.0399985909462, ('lt_nn', 0)), (36.57599911093712, ('lt_nn', 1)), (36.83200106024742, ('lt_nn', 2))]
+FUSED_SELECT o m=128 incumbent_us=13.504 chosen=('lt_nn', 1) chosen_us=13.184 top=[(13.183999806642532, ('lt', 1)), (13.311999849975109, ('lt_nn', 1)), (13.376000337302685, ('lt', 0)), (13.407999649643898, ('lt', 2)), (13.439999893307686, ('lt', 4))]
+FUSED_SELECT o m=256 incumbent_us=14.208 chosen=None chosen_us=14.208 top=[(14.208000153303146, ('lt', 0)), (14.592000283300877, ('lt_nn', 0)), (14.688000082969666, ('lt', 2)), (15.00799972563982, ('lt', 6)), (15.263999812304974, ('lt', 4))]
+FUSED_SELECT prepare_s=7.88
+/opt/sglang/lib/python3.12/site-packages/torch/cuda/graphs.py:630: UserWarning: The CUDA Graph is empty. This usually means that the graph was attempted to be captured on wrong device or stream. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/cuda/CUDAGraph.cpp:249.)
+  super().capture_end_pre()
+LAB_BEGIN stream_roof 536d27fa5d22903a
+META cold reads (lab_cold_l2 per replay) of each dense weight; us = median of 16 minus an empty graph (3.10 us); TB/s = bytes / us; gs/CTAs/threads/U = grid-stride 16 B ld.nc, U in flight per thread; ch = same, one contiguous slice per CTA; tma/CTAs/STxCH = per-CTA slice through ST bulk copies of CH (cp.async.bulk + mbarrier, 128 threads); top 6 per size + the 528/256/4 baseline
+R unpool_slice 8.4MB base=4.19us 2.00TB/s | [gs/1056/256/4 4.11us 2.04TB/s] [gs/528/256/4 4.19us 2.00TB/s] [gs/264/512/4 4.21us 1.99TB/s] [gs/132/1024/4 4.24us 1.98TB/s] [gs/1056/256/8 4.29us 1.96TB/s] [gs/528/256/8 4.29us 1.96TB/s] rej=0
+R o 16.8MB base=6.05us 2.77TB/s | [gs/1056/256/4 5.95us 2.82TB/s] [gs/1056/256/8 6.05us 2.77TB/s] [gs/528/256/4 6.05us 2.77TB/s] [ch/528/256/4 6.10us 2.75TB/s] [ch/528/256/8 6.10us 2.75TB/s] [gs/528/512/4 6.11us 2.74TB/s] rej=0
+R qkv 37.7MB base=10.93us 3.45TB/s | [gs/132/1024/4 10.88us 3.47TB/s] [gs/528/256/4 10.93us 3.45TB/s] [gs/528/512/4 10.96us 3.44TB/s] [gs/132/1024/8 11.02us 3.42TB/s] [gs/264/512/4 11.04us 3.42TB/s] [gs/1056/256/4 11.07us 3.41TB/s] rej=0
+R unpooler 67.1MB base=17.10us 3.92TB/s | [gs/264/1024/4 16.88us 3.98TB/s] [gs/1056/256/8 16.91us 3.97TB/s] [gs/528/512/4 16.99us 3.95TB/s] [gs/1056/256/4 17.04us 3.94TB/s] [gs/264/512/4 17.06us 3.93TB/s] [gs/528/256/8 17.07us 3.93TB/s] rej=0
+R pool_router 75.5MB base=18.88us 4.00TB/s | [gs/1056/256/4 18.85us 4.01TB/s] [gs/264/512/4 18.85us 4.01TB/s] [gs/528/256/4 18.88us 4.00TB/s] [gs/264/1024/4 18.96us 3.98TB/s] [gs/1056/256/8 18.99us 3.98TB/s] [gs/528/256/8 19.01us 3.97TB/s] rej=0
+END t=17.8s
+LAB_END lab_s=17.8 prepare_s=25.7

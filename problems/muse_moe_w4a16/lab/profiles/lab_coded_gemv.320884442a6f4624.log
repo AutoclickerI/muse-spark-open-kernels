@@ -1,0 +1,37 @@
+MOE_PHASE M=1 ctas=264 route=5400/5707/6017 p1=20244/24506/29924 wait=3520/9820/14555 barrier=1314/5041/10334 p2=21548/24943/30119 norm=1145/1804/2398 final=101/150/2339 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0886ms v12=0.0780ms v16=0.1028ms wide=0.4488ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5836/6123/6428 p1=93554/114527/133422 wait=694/7535/37146 barrier=1263/16888/49306 p2=49629/58734/90251 norm=7244/8700/11636 final=103/154/2419 p1_tiles=27/27/28 p2_tiles=13/14/14 atomics=104/112/112
+MOE_TIME M=16 v9=0.1663ms v12=0.1757ms v16=0.1869ms wide=0.2634ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5505/5816/6066 p1=168742/208476/237769 wait=965/6988/66507 barrier=1279/26673/86819 p2=93341/100814/158334 norm=13714/16849/21327 final=103/167/3038 p1_tiles=50/50/51 p2_tiles=25/25/26 atomics=200/200/208
+MOE_TIME M=32 v9=0.2536ms v12=0.2793ms v16=0.2830ms wide=0.3903ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5536/5757/6031 p1=67036/81300/93239 wait=739/8340/26982 barrier=1227/13412/36103 p2=39724/47327/67965 norm=5135/6477/8130 final=97/150/2630 p1_tiles=19/19/20 p2_tiles=9/10/10 atomics=72/80/80
+MOE_TIME M=8 v9=0.1306ms v12=0.1392ms v16=0.1632ms wide=0.2140ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7395/7657/7911 p1=244680/302102/339830 wait=1119/6077/90126 barrier=1238/28956/118615 p2=133776/141852/225838 norm=20371/24480/31059 final=158/2035/5061 p1_tiles=73/74/74 p2_tiles=36/37/37 atomics=288/296/296
+MOE_TIME M=128 v9=0.3416ms v12=0.3893ms v16=0.3798ms wide=0.4819ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10365/10747/10972 p1=399823/495213/547406 wait=823/8666/143540 barrier=1245/51619/189567 p2=218798/229154/360581 norm=33674/42315/48631 final=804/4166/8269 p1_tiles=120/120/121 p2_tiles=60/60/61 atomics=480/480/488
+MOE_TIME M=256 v9=0.5116ms v12=0.6123ms v16=0.5638ms wide=0.5212ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.08860799670219421, 'v12': 0.078015998005867, 'v16': 0.10275200009346008, 'wide': 0.4487999975681305}, 16: {'v9': 0.16633599996566772, 'v12': 0.1756799966096878, 'v16': 0.18694399297237396, 'wide': 0.26339200139045715}, 32: {'v9': 0.25360000133514404, 'v12': 0.27926400303840637, 'v16': 0.28300800919532776, 'wide': 0.3903360068798065}, 8: {'v9': 0.1305599957704544, 'v12': 0.13916799426078796, 'v16': 0.1632319986820221, 'wide': 0.21401600539684296}, 128: {'v9': 0.3416000008583069, 'v12': 0.3893119990825653, 'v16': 0.3797760009765625, 'wide': 0.48185598850250244}, 256: {'v9': 0.5115519762039185, 'v12': 0.6123200058937073, 'v16': 0.563808023929596, 'wide': 0.5211840271949768}}
+/opt/sglang/lib/python3.12/site-packages/torch/cuda/graphs.py:630: UserWarning: The CUDA Graph is empty. This usually means that the graph was attempted to be captured on wrong device or stream. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/cuda/CUDAGraph.cpp:249.)
+  super().capture_end_pre()
+LAB_BEGIN coded_gemv 7a91c77d1a7945af
+META cold-L2 graphs, 24 paired rounds, us = median - empty (3.04); Vv[NW/RT/PIPE/S us] best arms of step v (1 = 35c875e6 kernel, 2 = +entry metadata + escape prefetch, 3 = 2 + bulk-copy activation chunks on mbarriers + zero row); dV = paired median V - V1 at V1 best; enc 0.15s comp 26.7s exact OK synthetic; qkv:1268 o:635 pool_router:3573 unpool_slice:374 unpooler:2966
+R t=1 qkv rd16=10.90 rd12=8.82 s8=12.90 cublas=15.18 bal=11.66 | V1[8/1/2/22 10.85] V2[8/1/2/22 10.51] V3[8/1/2/22 10.74][4/2/2/22 10.96] | dV2=-0.26 dV3=-0.02 e=1e-06
+R t=1 o rd16=6.11 rd12=5.26 s8=6.45 cublas=7.36 bal=6.54 | V1[8/1/2/8 7.14] V2[8/1/2/6 6.94] V3[8/1/2/6 6.82][8/1/2/4 6.98] | dV2=+0.02 dV3=-0.02 e=5e-07
+R t=1 pool_router rd16=18.93 rd12=14.85 s8=23.22 cublas=23.76 bal=21.12 | V1[8/1/2/15 19.07] V2[8/1/2/11 19.20] V3[8/1/2/11 18.75][8/1/4/11 19.04] | dV2=+3.60 dV3=+3.23 e=2e-06
+R t=1 unpool_slice rd16=4.14 rd12=3.68 s8=4.62 cublas=8.00 bal=4.96 | V1[8/1/2/64 5.54] V2[8/1/2/64 5.28] V3[8/1/2/33 5.25][4/2/2/64 5.30] | dV2=-0.40 dV3=-0.34 e=2e-07
+R t=8 qkv rd16=10.88 rd12=8.61 s8=12.54 cublas=15.17 bal=11.78 | V1[8/1/2/22 11.25] V2[8/1/2/22 11.23] V3[8/1/2/22 11.20][4/2/2/22 11.60] | dV2=-0.05 dV3=-0.06 e=1e-06
+R t=8 o rd16=6.10 rd12=5.38 s8=6.75 cublas=7.18 bal=6.88 | V1[8/1/2/8 7.55] V2[8/1/2/6 7.38] V3[4/2/2/8 7.49][8/1/2/8 7.52] | dV2=-0.18 dV3=-0.03 e=5e-07
+R t=8 pool_router rd16=18.83 rd12=14.75 s8=22.70 cublas=23.86 bal=21.33 | V1[8/1/2/15 19.79] V2[8/1/2/11 20.02] V3[8/1/2/11 19.14][8/1/4/11 19.38] | dV2=+3.50 dV3=+3.87 e=2e-06
+R t=8 unpool_slice rd16=4.16 rd12=3.62 s8=4.58 cublas=7.89 bal=5.04 | V1[8/1/2/64 5.79] V2[8/1/2/50 5.41] V3[8/1/4/33 5.47][4/2/2/64 5.55] | dV2=-0.32 dV3=-0.19 e=2e-07
+R t=16 qkv rd16=10.82 rd12=8.72 s8=12.91 cublas=14.90 bal=11.87 | V1[8/1/2/22 13.17] V2[8/1/2/22 12.56] V3[4/2/2/22 12.18][8/1/2/22 12.19] | dV2=-0.62 dV3=-0.99 e=1e-06
+R t=16 o rd16=6.06 rd12=5.38 s8=6.64 cublas=7.28 bal=6.96 | V1[8/1/2/6 8.90] V2[8/1/2/6 8.42] V3[8/1/2/6 8.11][4/2/2/6 8.19] | dV2=-0.43 dV3=-0.80 e=5e-07
+R t=16 pool_router rd16=18.99 rd12=14.75 s8=22.58 cublas=23.94 bal=21.39 | V1[8/1/2/11 23.90] V2[8/1/2/11 22.83] V3[8/1/2/11 21.02][4/2/2/11 22.32] | dV2=-0.86 dV3=-2.74 e=2e-06
+R t=16 unpooler rd16=17.01 rd12=13.31 cublas=18.70 bal=18.13 | V1[8/1/2/6 19.44] V2[4/2/2/8 18.99] V3[8/1/2/8 17.74][4/2/2/8 17.86] | dV2=-0.42 dV3=-1.07 e=2e-06
+R t=32 qkv rd16=10.67 rd12=8.67 s8=14.62 cublas=15.26 bal=12.46 | V1[4/2/2/22 16.32] V2[4/2/2/22 15.65] V3[8/1/2/22 14.21][4/2/2/22 14.59] | dV2=-0.80 dV3=-1.84 e=1e-06
+R t=32 o rd16=6.06 rd12=5.33 s8=7.07 cublas=7.34 bal=7.07 | V1[8/1/2/4 10.90] V2[8/1/2/4 10.62] V3[8/1/4/4 9.81][8/1/2/6 9.82] | dV2=-0.18 dV3=-0.78 e=5e-07
+R t=32 pool_router rd16=18.82 rd12=14.88 s8=24.53 cublas=25.58 bal=22.38 | V1[8/1/4/7 32.83] V2[4/2/2/11 31.68] V3[8/1/2/11 25.74][8/1/4/7 27.33] | dV2=+6.75 dV3=-5.44 e=2e-06
+R t=32 unpooler rd16=17.06 rd12=13.49 cublas=19.07 bal=18.61 | V1[8/1/4/4 23.52] V2[4/2/2/6 23.54] V3[8/1/4/4 20.86][8/1/2/6 21.06] | dV2=+6.90 dV3=-2.62 e=2e-06
+SUM best V3 - best control (us): qkv@1 -0.93, o@1 +0.37, pool_router@1 -2.37, unpool_slice@1 +0.62, qkv@8 -0.58, o@8 +0.74, pool_router@8 -2.19, unpool_slice@8 +0.90, qkv@16 +0.30, o@16 +1.47, pool_router@16 -0.37, unpooler@16 -0.38, qkv@32 +1.74, o@32 +2.74, pool_router@32 +3.36, unpooler@32 +2.26
+GAIN best V3 - best V1 (us): qkv@1 -0.11, o@1 -0.32, pool_router@1 -0.32, unpool_slice@1 -0.29, qkv@8 -0.05, o@8 -0.06, pool_router@8 -0.66, unpool_slice@8 -0.32, qkv@16 -0.99, o@16 -0.78, pool_router@16 -2.88, unpooler@16 -1.70, qkv@32 -2.11, o@32 -1.09, pool_router@32 -7.09, unpooler@32 -2.66
+END t=55.5s
+LAB_END lab_s=55.5 prepare_s=208.1

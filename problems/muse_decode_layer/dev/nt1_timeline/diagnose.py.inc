@@ -2,7 +2,9 @@ DIAG_ALL=F_Z|F_SLOT|F_ZOUT|F_RSQ|F_NREG
 DIAG_ALLM=F_Z|F_ZOUT|F_RSQ|F_NREG
 DIAG_FLAGS={'TRACE0':F_TRACE,'TRACEZZP':F_TRACE|F_Z|F_ZOUT|F_PDL,'TRACEALL':F_TRACE|DIAG_ALL|F_LAST,'TRACEALLnl':F_TRACE|DIAG_ALL,'ALL_positioned':DIAG_ALL|F_LAST,
     'RTRACE0':F_TRACE,'RTRACEPDL':F_TRACE|F_PDL,'RTRACEALLnl':F_TRACE|DIAG_ALL|F_PDL,'RTRACEALL':F_TRACE|DIAG_ALL|F_LAST|F_PDL,
-    'TRACEALLM':F_TRACE|DIAG_ALLM,'RTRACEALLM':F_TRACE|DIAG_ALLM|F_PDL,'RTRACEZZP':F_TRACE|F_Z|F_ZOUT|F_PDL,'RTRACEDYN':F_TRACE|DIAG_ALL|F_PDL|F_DYN}
+    'TRACEALLM':F_TRACE|DIAG_ALLM,'RTRACEALLM':F_TRACE|DIAG_ALLM|F_PDL,'RTRACEZZP':F_TRACE|F_Z|F_ZOUT|F_PDL,'RTRACEZZP2':F_TRACE|F_Z|F_ZOUT|F_PDL|F_NT2,'RTRACEZZPW':F_TRACE|F_Z|F_ZOUT|F_PDL|F_NT2|F_W16,
+    'RTRACEZZPR':F_TRACE|F_Z|F_ZOUT|F_PDL|F_RND,'RTRACEZZPO':F_TRACE|F_Z|F_ZOUT|F_PDL|F_ROT,
+    'RTRACEZZPRO':F_TRACE|F_Z|F_ZOUT|F_PDL|F_RND|F_ROT}
 DIAG_CASES=('INC_plain','INC_positioned','TRACE0','TRACEALL','TRACEALLnl','ALL_positioned','EMPTY_match','EMPTY_tiny','STREAM',
     'RTRACE0','RTRACEPDL','RTRACEALLnl','RTRACEALL')
 DIAG_CASES_M=('INC_plain','TRACE0','TRACEALLM','STREAM','RTRACE0','RTRACEALLM','RTRACEZZP')
@@ -16,6 +18,7 @@ def timeline_case(d,state,kind,reps=10,cupti=True,routed=None):
     experts=(d['topk_ids']-d['config']['local_start']).flatten();experts=experts[(experts>=0)&(experts<32)].unique().int().contiguous()
     count=len(experts)
     flags=DIAG_FLAGS.get(kind)
+    if flags is not None and flags&F_NT2:grid=var_geometry(state,flags,m)[2]
     if kind=='STREAM':
         if not count:raise ValueError('stream control needs a routed expert')
         stamps=torch.zeros((grid+16,4),device=dev,dtype=torch.int64);sums=torch.empty(((grid+16)*256,),device=dev,dtype=torch.int32)
@@ -81,6 +84,23 @@ def skew_stats(rows,first):
     return q(w13)+q(w2)+q(bar)+(min(u1),max(u1),min(u2),max(u2))
 
 
+def tile_stats(rows,first):
+    """Where a CTA's tile time goes (per-CTA sums, us; median over CTAs): tid 0 (epilogue warp) and tid 224 (MMA-only warp)
+    waits on landed tiles and at the per-tile barrier, the expert publish (fence, then barrier+atomic), the W13 and W2 phase
+    per tile, and how late the last publish lands after the last W13 end."""
+    def p50(v):
+        v=sorted(v);return v[len(v)//2] if v else 0.
+    w=[r for r in rows if r[26]];w2=[r for r in rows if r[27]]
+    return dict(
+        wait13_t0=p50(r[28]/1000 for r in w),wait2_t0=p50(r[29]/1000 for r in w2),bar_t0=p50(r[22]/1000 for r in rows),
+        bar_w7=p50(r[30]/1000 for r in rows),wait_w7=p50(r[31]/1000 for r in rows),
+        fence=p50(r[17]/1000 for r in w),fence_max=max((r[17]/1000 for r in w),default=0.),
+        pubbar=p50(r[19]/1000 for r in w),pubbar_max=max((r[19]/1000 for r in w),default=0.),
+        per13=p50((r[3]-r[2])/1000/r[26] for r in w if r[3]),per2=p50((r[5]-r[4])/1000/r[27] for r in w2 if r[5] and r[4]),
+        last_pub_after_last13=(max(r[18] for r in w if r[18])-max(r[3] for r in w))/1000 if any(r[18] for r in w) else 0.,
+        pub_after_own13=p50((r[18]-r[3])/1000 for r in w if r[18] and r[3]))
+
+
 def timeline_account(case):
     """Critical CTA (latest exit) as contiguous phases, plus the dispatch ramp and drain against the marker stamps."""
     out=[]
@@ -101,7 +121,7 @@ def timeline_account(case):
             first_copy_land_us=statistics.median((rr[12]-rr[10])/1000 for rr in rows if rr[10] and rr[12]),
             w2_wait_med_us=statistics.median(rr[16]/1000 for rr in rows if rr[27]),
             w2_wait_max_us=max(rr[16]/1000 for rr in rows if rr[27]),
-            skew=skew_stats(rows,first))
+            skew=skew_stats(rows,first),tile=tile_stats(rows,first))
         if s.get('offset_bounds') and s.get('activity'):
             lo,hi=s['offset_bounds'];n0,n1=s['activity'][:2]
             res['node_to_first_cta_us']=[(first+lo-n0)/1000,(first+hi-n0)/1000];res['last_cta_to_node_end_us']=[(n1-last-hi)/1000,(n1-last-lo)/1000]
@@ -150,4 +170,7 @@ def timeline_lines(result,resolution=True):
         sk=[x['skew'] for x in rows];sm=[med(v[i] for v in sk) for i in range(13)]
         out.append(f'SKEW {k} W13end p50/p90/max={sm[0]:.2f}/{sm[1]:.2f}/{sm[2]:.2f} W2end={sm[3]:.2f}/{sm[4]:.2f}/{sm[5]:.2f} barrier_exit={sm[6]:.2f}/{sm[7]:.2f}/{sm[8]:.2f} units13={sm[9]:.0f}-{sm[10]:.0f} units2={sm[11]:.0f}-{sm[12]:.0f}')
         out.append(f'CRITICAL {k} {names}='+','.join(f'{med(x["phases"][i] for x in rows):.2f}' for i in range(9)))
+        t={key:med(x['tile'][key] for x in rows) for key in rows[0]['tile']}
+        out.append(f'TILE {k} per13/per2={t["per13"]:.2f}/{t["per2"]:.2f} t0_wait13/wait2/bar={t["wait13_t0"]:.2f}/{t["wait2_t0"]:.2f}/{t["bar_t0"]:.2f} w7_wait/bar={t["wait_w7"]:.2f}/{t["bar_w7"]:.2f}'
+            f' pub_fence={t["fence"]:.2f}(max {t["fence_max"]:.2f}) pub_bar={t["pubbar"]:.2f}(max {t["pubbar_max"]:.2f}) pub_after_own13={t["pub_after_own13"]:.2f} last_pub_after_last13={t["last_pub_after_last13"]:.2f}')
     return out

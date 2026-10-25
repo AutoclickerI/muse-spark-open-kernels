@@ -1,0 +1,131 @@
+80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640,85000,82436,78482,82100,80025,76892,74025,85313,81600,75788,81996,85242,81897,78298,82289,85958],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173,80770,79494,82902,81717,78762,85274,78788,78242,74541,80355,83314,83973,80508,79036,85397,79719],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826,85993,83810,81274,81504,84010,77379,77363,74002,78943,81935,79064,85764,74220,78589,78592,75983]],"selected":["layer",null],"mean_us":32.949,"control_mean_us":32.949}
+ATTN_PUBLIC {"batch":16,"q_len":8,"window":0,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["layer",null],"mean_us":202.549,"control_mean_us":202.549}
+ATTN_PUBLIC {"batch":16,"q_len":8,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["layer",null],"mean_us":28.565,"control_mean_us":28.565}
+ATTN_PUBLIC {"batch":1,"q_len":8,"window":0,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["layer",null],"mean_us":34.197,"control_mean_us":34.197}
+ATTN_PUBLIC {"batch":1,"q_len":8,"window":2048,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["layer",null],"mean_us":22.357,"control_mean_us":22.357}
+ATTN_PUBLIC {"batch":32,"q_len":1,"window":0,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640,85000,82436,78482,82100,80025,76892,74025,85313,81600,75788,81996,85242,81897,78298,82289,85958],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173,80770,79494,82902,81717,78762,85274,78788,78242,74541,80355,83314,83973,80508,79036,85397,79719],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826,85993,83810,81274,81504,84010,77379,77363,74002,78943,81935,79064,85764,74220,78589,78592,75983]],"selected":["attn_main",null],"mean_us":223.392,"control_mean_us":232.768}
+ATTN_PUBLIC {"batch":32,"q_len":1,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640,85000,82436,78482,82100,80025,76892,74025,85313,81600,75788,81996,85242,81897,78298,82289,85958],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173,80770,79494,82902,81717,78762,85274,78788,78242,74541,80355,83314,83973,80508,79036,85397,79719],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826,85993,83810,81274,81504,84010,77379,77363,74002,78943,81935,79064,85764,74220,78589,78592,75983]],"selected":["attn_main",null],"mean_us":21.195,"control_mean_us":21.429}
+ATTN_PUBLIC {"batch":16,"q_len":1,"window":0,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["attn_main",null],"mean_us":122.24,"control_mean_us":125.856}
+ATTN_PUBLIC {"batch":16,"q_len":1,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["attn_main",null],"mean_us":19.787,"control_mean_us":20.075}
+ATTN_PUBLIC {"batch":1,"q_len":1,"window":0,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["attn_main",null],"mean_us":23.616,"control_mean_us":37.461}
+ATTN_PUBLIC {"batch":1,"q_len":1,"window":2048,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["attn_main",null],"mean_us":13.941,"control_mean_us":16.896}
+BEST7_PLAN {"key":[1,1,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"cublas","o":["stream",6,1],"pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[1,1,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"cublas","o":["stream",6,1],"pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,1,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"cublas","pool_router":"custom","unpooler":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,1,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"cublas","pool_router":"custom","unpooler":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,1,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"cublas","o":"cublas","pool_router":"custom","unpooler":"cublas"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,1,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"cublas","o":"cublas","pool_router":"custom","unpooler":"cublas"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[1,8,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["layer",null],"moe":"nt1_lop3","projection":{"qkv_gate":"cublas","o":"cublas","pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[1,8,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["layer",null],"moe":"nt1_lop3","projection":{"qkv_gate":"cublas","o":"cublas","pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,8,2048],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[8,1]},"attention":["layer",null],"moe":"hh_m128","projection":{"qkv_gate":["vdsk",[128,64,64,8,4,1],3],"o":["short_lt",1,0],"pool_router":"cublas","unpooler":"cublas"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,8,0],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[8,1]},"attention":["layer",null],"moe":"hh_m128","projection":{"qkv_gate":["vdsk",[128,64,64,8,4,1],3],"o":["short_lt",1,0],"pool_router":"cublas","unpooler":"cublas"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,8,2048],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[16,1]},"attention":["layer",null],"moe":"mixed_parallel_m256","projection":{"qkv_gate":["short_lt",0,0],"o":["lt",0],"pool_router":["short_lt",0,0],"unpooler":"cublas"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,8,0],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[16,1]},"attention":["layer",null],"moe":"mixed_parallel_m256","projection":{"qkv_gate":["short_lt",0,0],"o":["lt",0],"pool_router":["short_lt",0,0],"unpooler":"cublas"},"l2_prefetch":0,"dense_chain":false}
+LAB_BEGIN decode_ablate d915687bb538467c
+META host S10 state; seeds 16 from 172903 (+7919); 8 rounds rotating order, lab_cold_l2 before each replay; r = mean per-seed time ratio vs A (<1 = faster than the host)
+META F=S8 moe_fused small M, N=no BF16 front, FN=both, A2=A:A, Q*=verify-1 qkv choice; C ctx RM=route+MoE M=MoE QAO=qkv+attn+O
+SETUP nt1 3.0s left=144s
+P d1S moe=nt1_lop3 attn=attn_main/None glue=best6 qkv_=cublas o=stream/6/1 pool=custom unpo=custom
+L d1S A2 r=0.9922 se=0.0012 d=-0.62 A=81.0 n=16
+L d1S F r=1.0534 se=0.0037 d=+4.42 A=81.0 n=16
+L d1S FN r=1.0498 se=0.0038 d=+4.13 A=81.0 n=16
+L d1S N r=0.9905 se=0.0013 d=-0.74 A=81.0 n=16
+P d1F moe=nt1_lop3 attn=attn_main/None glue=best6 qkv_=cublas o=stream/6/1 pool=custom unpo=custom
+L d1F A2 r=1.0012 se=0.0012 d=+0.10 A=87.8 n=16
+L d1F F r=1.0540 se=0.0032 d=+4.83 A=87.8 n=16
+L d1F FN r=1.0519 se=0.0031 d=+4.64 A=87.8 n=16
+L d1F N r=1.0040 se=0.0010 d=+0.34 A=87.8 n=16
+P v1S moe=nt1_lop3 attn=layer/None glue=best6 qkv_=cublas o=cublas pool=custom unpo=custom
+L v1S A2 r=1.0039 se=0.0014 d=+0.45 A=122.5 n=16
+L v1S F r=1.0370 se=0.0018 d=+4.49 A=122.5 n=16
+L v1S FN r=1.0416 se=0.0019 d=+5.07 A=122.5 n=16
+L v1S N r=1.0056 se=0.0009 d=+0.68 A=122.5 n=16
+L v1S Qc r=0.9873 se=0.0035 d=-1.56 A=122.5 n=16 L2=0.0161
+L v1S Ql r=0.9978 se=0.0012 d=-0.27 A=122.5 n=16
+P v1F moe=nt1_lop3 attn=layer/None glue=best6 qkv_=cublas o=cublas pool=custom unpo=custom
+L v1F A2 r=1.0012 se=0.0009 d=+0.15 A=135.9 n=16
+L v1F F r=1.0360 se=0.0010 d=+4.87 A=135.9 n=16
+L v1F FN r=1.0307 se=0.0012 d=+4.14 A=135.9 n=16
+L v1F N r=0.9965 se=0.0007 d=-0.49 A=135.9 n=16
+L v1F Qc r=0.9960 se=0.0050 d=-0.63 A=135.9 n=16 L2=0.0143
+L v1F Ql r=0.9969 se=0.0008 d=-0.43 A=135.9 n=16
+P d16S moe=nt1_lop3 attn=attn_main/None glue=best6 qkv_=custom o=cublas pool=custom unpo=custom
+L d16S A2 r=0.9992 se=0.0012 d=-0.12 A=131.9 n=16
+L d16S F r=1.0337 se=0.0015 d=+4.41 A=131.9 n=16
+L d16S FN r=1.0710 se=0.0020 d=+9.30 A=131.9 n=16
+L d16S N r=1.0389 se=0.0014 d=+5.10 A=131.9 n=16
+P d16F moe=nt1_lop3 attn=attn_main/None glue=best6 qkv_=custom o=cublas pool=custom unpo=custom
+L d16F A2 r=0.9993 se=0.0005 d=-0.17 A=221.4 n=16
+L d16F F r=1.0191 se=0.0005 d=+4.22 A=221.4 n=16
+L d16F FN r=1.0396 se=0.0007 d=+8.76 A=221.4 n=16
+L d16F N r=1.0205 se=0.0007 d=+4.52 A=221.4 n=16
+P d32S moe=nt1_lop3 attn=attn_main/None glue=best6 qkv_=cublas o=cublas pool=custom unpo=cublas
+L d32S A2 r=0.9995 se=0.0009 d=-0.09 A=164.0 n=16
+L d32S F r=1.0232 se=0.0018 d=+3.76 A=164.0 n=16
+L d32S FN r=1.0229 se=0.0020 d=+3.71 A=164.0 n=16
+L d32S N r=1.0015 se=0.0007 d=+0.23 A=164.0 n=16
+P d32F moe=nt1_lop3 attn=attn_main/None glue=best6 qkv_=cublas o=cublas pool=custom unpo=cublas
+L d32F A2 r=1.0002 se=0.0009 d=+0.06 A=336.2 n=16
+L d32F F r=1.0086 se=0.0008 d=+2.88 A=336.2 n=16
+L d32F FN r=1.0096 se=0.0009 d=+3.22 A=336.2 n=16
+L d32F N r=1.0019 se=0.0008 d=+0.62 A=336.2 n=16
+P v16S moe=hh_m128 attn=layer/None glue=best6 qkv_=vdsk/(128, 64, 64, 8, 4, 1)/3 o=short_lt/1/0 pool=cublas unpo=cublas
+L v16S A2 r=1.0015 se=0.0006 d=+0.41 A=269.0 n=16
+L v16S N r=1.0004 se=0.0005 d=+0.11 A=269.0 n=16
+P v16F moe=hh_m128 attn=layer/None glue=best6 qkv_=vdsk/(128, 64, 64, 8, 4, 1)/3 o=short_lt/1/0 pool=cublas unpo=cublas
+L v16F A2 r=1.0011 se=0.0003 d=+0.51 A=443.4 n=16
+L v16F N r=0.9995 se=0.0005 d=-0.23 A=443.4 n=16
+P v32S moe=mixed_parallel_m256 attn=layer/None glue=best6 qkv_=short_lt/0/0 o=lt/0 pool=short_lt/0/0 unpo=cublas
+L v32S A2 r=0.9993 se=0.0003 d=-0.25 A=339.9 n=16
+L v32S N r=1.0014 se=0.0005 d=+0.47 A=339.9 n=16
+P v32F moe=mixed_parallel_m256 attn=layer/None glue=best6 qkv_=short_lt/0/0 o=lt/0 pool=short_lt/0/0 unpo=cublas
+L v32F A2 r=1.0007 se=0.0003 d=+0.46 A=702.7 n=16
+L v32F N r=1.0000 se=0.0004 d=+0.04 A=702.7 n=16
+LOAD decode 1 A2 r=0.9947
+LOAD decode 1 F r=1.0536
+LOAD decode 1 FN r=1.0504
+LOAD decode 1 N r=0.9942
+LOAD decode 16 A2 r=0.9992
+LOAD decode 16 F r=1.0283
+LOAD decode 16 FN r=1.0594
+LOAD decode 16 N r=1.0321
+LOAD decode 32 A2 r=0.9998
+LOAD decode 32 F r=1.0171
+LOAD decode 32 FN r=1.0173
+LOAD decode 32 N r=1.0016
+LOAD verify 1 A2 r=1.0032
+LOAD verify 1 F r=1.0367
+LOAD verify 1 FN r=1.0386
+LOAD verify 1 N r=1.0031
+LOAD verify 1 Qc r=0.9897
+LOAD verify 1 Ql r=0.9975
+LOAD verify 16 A2 r=1.0014
+LOAD verify 16 N r=1.0001
+LOAD verify 32 A2 r=0.9999
+LOAD verify 32 N r=1.0008
+C d1S RM F r=1.2723 se=0.0105 d=+5.77 A=21.8 n=8
+C d1S M F r=1.2815 se=0.0097 d=+5.02 A=18.2 n=8
+C d1S QAO N r=1.0012 se=0.0036 d=+0.04 A=35.9 n=8
+C d1F RM F r=1.2558 se=0.0114 d=+5.62 A=22.6 n=8
+C d1F M F r=1.2622 se=0.0119 d=+4.83 A=19.2 n=8
+C d1F QAO N r=1.0012 se=0.0021 d=+0.05 A=43.5 n=8
+C v1S RM F r=1.0900 se=0.0076 d=+4.69 A=53.9 n=8
+C v1S M F r=1.0891 se=0.0065 d=+4.27 A=49.8 n=8
+C v1S QAO N r=0.9970 se=0.0038 d=-0.13 A=43.2 n=8
+C v1F RM F r=1.0841 se=0.0051 d=+4.57 A=55.4 n=8
+C v1F M F r=1.0809 se=0.0060 d=+4.05 A=51.3 n=8
+C v1F QAO N r=0.9937 se=0.0023 d=-0.35 A=55.4 n=8
+C d16S RM F r=1.0703 se=0.0041 d=+3.60 A=52.1 n=8
+C d16S M F r=1.0840 se=0.0052 d=+3.89 A=47.1 n=8
+C d16S QAO N r=1.1399 se=0.0048 d=+5.23 A=37.4 n=8
+C d16F RM F r=1.0676 se=0.0040 d=+3.56 A=53.1 n=8
+C d16F M F r=1.0902 se=0.0029 d=+4.29 A=47.8 n=8
+C d16F QAO N r=1.0392 se=0.0009 d=+5.06 A=129.3 n=8
+C d32S RM F r=1.0489 se=0.0052 d=+3.41 A=70.6 n=8
+C d32S M F r=1.0632 se=0.0063 d=+3.78 A=63.0 n=8
+C d32S QAO N r=1.0028 se=0.0034 d=+0.12 A=43.5 n=8
+C d32F RM F r=1.0015 se=0.0038 d=+0.11 A=71.6 n=8
+C d32F M F r=1.0618 se=0.0038 d=+3.71 A=61.1 n=8
+C d32F QAO N r=0.9988 se=0.0007 d=-0.25 A=221.5 n=8
+END shapes=12/12 elapsed=12.7s left=134.5s
+LAB_END lab_s=12.7 prepare_s=150.5
