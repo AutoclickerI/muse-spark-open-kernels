@@ -1,283 +1,106 @@
-Serves: G1. Read when designing H200 decode-layer fusion, MoE dependency scheduling, router epilogues or attention pipelines from DeepSeek's DeepInfer kernels.
+Read when adapting DeepInfer's dependency publication, operand pipelines, routing selection or replay state.
+Serves: G2.
 
 # DeepInfer designs that transfer to Muse decode
 
-The useful target is **less exposed dependency latency and less work per weight**, not an eleven-kernel layer. DeepInfer's principal mega kernels target SM100; their FP8 activations, MXFP4 experts, sparse MLA and shifted residual architecture differ from our hard requirements. Their scheduling ideas transfer selectively. Our small-M MoE already fuses expert work into one kernel, and our router already shares a projection with the pooler. Replacing those with a kernel bearing the same name does not establish a gain.
+Source audit, not an H200 benchmark. DeepInfer `9bd9cf243fc53ef9afbf8f04d391d989117d6ab9`
+targets SM100. Its DeepGEMM gitlink `1fc9c66975ee322d628b3288534ca0e9ce12a64d` is the
+implementation basis; inspected mainline `5081f8513af57e61696de4f4f04b0e707ffb503e`
+adds Mega-mHC's replay epoch fix. FlashMLA gitlink is `2e5429fc5653bab6e081f09477126f731882a6a9`.
+Reported performance belongs to SOTA; Muse measurements/closed recipes belong to FINDINGS;
+proposed experiments belong to PLAN. No aggregate source speedup predicts a Muse gain.
+
+## Mega-MoE dependency and operand pipelines
+
+`MLP.mega_moe_forward` consumes indices/weights already produced by `gate_forward`.
+Mega-MoE buckets and dispatches routes; it does not calculate logits/select top-k. [call site][di-mlp]
+
+Separate activation+scale and weight+scale TMA warps feed a joint full barrier. Activation loading
+waits for dispatch/W13 readiness, while weight loading waits only for its operand slot to become
+free. Pipeline indices continue across tasks rather than drain/reinitialize per output tile.
+This retains operands, unlike an L2 hint that still needs a subsequent register/shared load.
+The source also double-buffers combine loads and fetches metadata ahead of stores. [kernel][moe-kernel]
+
+Gate/up rows interleave by eight in weights and scales. W13 applies SwiGLU and writes the W2 input
+into a global ring; fusion does not keep that entire intermediate in registers. After TMA stores
+complete, each W13 N-block toggles a bit with `red_xor_rel`. `L2KBlockDependency` maps each W2
+K-block to the precise W13 bits it needs. Acquire polling caches observed pending masks; generation
+parity and bounded ring capacity distinguish reused slots. This permits partial readiness rather
+than an expert-wide completion wait. Publishing every tiny Muse tile individually could erase
+the benefit; the notification granularity and consuming K-slice must agree. [scheduler][moe-sched]
+
+The scheduler warms enough W13 waves before admitting W2 so waiting consumers cannot occupy all
+producer capacity. It checks required W13 tasks were fetched from every locality queue; helpers
+bound live pool blocks and ring capacity. Do not substitute an arbitrary count of completed
+producers for the named subset a consumer needs. [warmup and next-task logic][moe-sched]
+
+Released FP8×MXFP4 uses Blackwell block-scaled MMA; BF16 Mega-MoE uses BF16 weights too.
+Neither is a Hopper BF16-activation/NVFP4 adapter. Unmerged SM90 PR #454 at
+`d5925deb53a26895efad49395831f0bcf30d13b1` decodes into FP8 shared operands and uses FP8
+activations, so it is not admissible unchanged. Its 0.5 permutation/sign PTX operations per
+weight excludes selector/address/scale/store work and is not comparable to a full SASS decoder
+count. E2M1 1.5 × E4M3 1.125 = 1.6875 fits BF16, not E4M3; divide/cast/restore cannot recover
+lost significand bits. [proposal decoder][sm90-proposal] · [LUT][sm90-lut]
+
+DeepGEMM puts route weights in W13 before W2. Muse's per-expert post-norm prevents copying
+that placement (semantic contract: [research_moe_decode](research_moe_decode.md#model-invariants)).
+Communication elimination supplies no gain to the one-GPU problem.
+
+## Mega-Gate selection and glue ownership
+
+Mega-Gate keeps split score scratch in global memory and releases token blocks through
+`ScoreBarrier`; one launch does not eliminate the score-gather join. Its local selection sorts
+each lane's groups of four once with a five-comparison network, retains permutation/cursor
+state, and offers only each group's next candidate to warp max/min. Smallest ID wins ties;
+only the winner advances, and an output lane owns each selected ID. This avoids repeated local
+scans and dynamic winner arrays. [gate kernel][gate-kernel] · [selection epilogue][gate-epi]
+
+Its scoring is sqrt-softplus and weights BF16; Muse needs sigmoid and FP32 hi+lo accumulation.
+Import selection mechanics, not that arithmetic. Bias changes selection, not unbiased mixture
+weight normalization. A separate router may also lose Muse's pool/router input sharing.
+
+Mega-mHC carries coefficients/vector values across row reductions, loads next coefficients while
+stores drain, and recycles retired producer roles into normalization. Its shifted-coefficient
+mode changes architecture and cannot transfer. Keep Muse FP32 residuals and BF16 materialization
+points. TileKernels' last-split epilogues and producer-native output layouts are useful smaller
+patterns when a whole megakernel loses parallelism. [mHC roles][mhc-kernel] · [epilogue][mhc-epi]
+
+**Replay freshness:** Mega-mHC mainline replaces grid-ID tags with `Epoch` because a captured
+graph node keeps its grid ID across replays. The last retired CTA advances the workspace epoch.
+This proves `%gridid` alone is insufficient; it does not establish a bug in every other tagged
+protocol, which may reset/order differently. [epoch fix][mhc-epoch]
+
+## Attention pipeline primitives
+
+FlashMLA's fused sparse d512 SM100f kernel does not fit Muse's all-key d64/page1 H200 call.
+Its transferable details are independent QK/PV readiness, bounded issue distance protecting two
+probability buffers, page-index lookahead, compact hot loops and producer-native layouts.
+The adaptive issue loop checks whether previous PV can run before waiting on the next QK;
+`num_qk_issued <= num_sv_issued+1` protects buffer ownership. Gather coordinate generation,
+raw transport and dequant have separate readiness. [core][fm-core]
+
+Q norm's scalar denominator is applied after QK while QK overlaps norm-statistic generation.
+Muse's learned elementwise factors and BF16 rounding mean algebra alone is no correctness proof.
+Constructing `uint4` from independent conversion results can avoid register-quad alignment MOVs;
+inspect SM90 SASS before claiming savings. Blackwell TMEM, gather4 and CLC do not directly port.
+
+## Tiny-router selection versus DeepSelect
+
+DeepSelect's long-row filtering/radix work is not a drop-in top-8-of-256 replacement. Durable
+primitives are ballot/popcount prefixes, `ffs` enumeration of candidate bit masks, one winner
+per output lane and loading the first candidate before count exchange. Its denormal-FP32
+integer-increment trick requires exact bounded integers and no FTZ; it is not numerical score
+arithmetic. Preserve FP32 router scores. [filter/move implementation][ds-core]
 
-This is source research and an experiment ranking, **not an H200 benchmark of DeepInfer**. All proposed savings below are assumptions to test. No downloaded code was executed, imported, built or installed. No GPU, Docker or OKC command was used. The repository sync script invokes `okc init`, so the task's explicit no-OKC instruction took precedence over the normal sync practice. Only this document is part of the change.
-
-## Source identity and evidence conventions
-
-Primary sources were retrieved on 2026-10-25. Downloads are isolated below `/home/jihoon/.tmp-live-20260919/runtime/claude-1016/-home-jihoon-competitions-muse-kernel/ae5ada91-d8f5-49d0-a518-22df30a603ba/scratchpad/research/`; archives were unpacked as data, rejecting links and traversal paths. Source links below pin commits, not moving branches.
-
-| Source | Revision / scope |
-|---|---|
-| [DeepInfer][di] | `9bd9cf243fc53ef9afbf8f04d391d989117d6ab9`; model call sites, supported hardware and deployment QA |
-| [DeepInfer's DeepGEMM gitlink][dg] | `1fc9c66975ee322d628b3288534ca0e9ce12a64d`; primary implementation basis |
-| [DeepGEMM mainline][dg-main] | `5081f8513af57e61696de4f4f04b0e707ffb503e`; same inspected Mega-MoE/Gate code as the gitlink, but adds the Mega-mHC replay epoch fix |
-| [DeepInfer's FlashMLA gitlink][fm] | `2e5429fc5653bab6e081f09477126f731882a6a9`; fused core implementation matches inspected mainline `0f11e178da1f67becb087a324b400854931ec3e3`; Python backend binding differs |
-| [TileKernels][tk] | `c1cf914a82e6901c679445f872051ce44ac2cc63`; inspected library snapshot, not claimed to be a DeepInfer gitlink |
-| [DeepSelect][ds] | `bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18`; matches DeepInfer's gitlink |
-| [DeepSeek-V4.1-Flash report][report] | arXiv `2609.19969v1`, §§2.4.1 and 3.2 |
-| [SM90 NVFP4 MegaMoE proposal, PR #454][pr454] | **Unmerged** at inspection; contributor branch `lengrongfu/DeepGEMM`, head `d5925deb53a26895efad49395831f0bcf30d13b1`; examined separately, not attributed to released DeepInfer |
-
-**Evidence labels:** “code” means a directly inspected implementation; “reported” means an author's performance statement; “inference” means our interpretation or estimate. A release-wide speedup is not an isolated gain for each mechanism in it. Where hardware or shape is unspecified, it stays unspecified.
-
-## What the eleven-kernel statement establishes
-
-The report's §3.2 attributes **11 decode / 15 prefill kernels to CSA2 Reuse Mode layers**, naming FlashMLA's fused attention, DeepGEMM's three mega families, TileKernels and DeepSelect. It does not provide an eleven-row trace, per-kernel latency, H200 result or ablation isolating launch savings. Treat the count as an architectural execution-flow claim. [Report §3.2][report-system]
-
-DeepInfer's README supports NVIDIA **SM100**, and its published framework performance figures use **4 SM100 GPUs for prefill and 64 for decode**. Those are not single-H200, cold-cache Muse measurements. Its QA says Mega-MoE is the general solution inside a scale-up domain; that is a deployment assertion rather than a quantified one-GPU W4A16 result. [README][di] · [deployment QA, “When is Mega MoE used?”][di-qa]
-
-The actual separation is visible in `MLP.mega_moe_forward`: `gate_forward` writes top-k indices and weights directly into the symmetric buffer, then `mega_moe_func` consumes them. `gate_forward` selects `bf16_mega_gate` or a gate projection followed by TileKernels routing. **Mega-MoE does route bucketing/dispatch; it does not calculate router logits or select top-k.** [mlp.py, `gate_forward` and `mega_moe_forward`][di-mlp]
-
-For comparison, our reset small-M accounting already had **10 calls at decode-1 and 15 at verify-1**, including reductions and glue. It is a different candidate from S11, but is sufficient to disprove “eleven calls is itself the missing optimization.” Its explicit whole-layer fusion model was only **+1.74% score**, or +2.22% after deleting its estimated synchronization/resource tax. The larger one-read ceiling removes intrinsic work as well and is not a fusion estimate. [Our megakernel scope](../../problems/muse_decode_layer/dev/megakernel/README.md) · [call accounting](../../problems/muse_decode_layer/dev/megakernel/accounting.md)
-
-## Reported performance: preserve the workload and denominator
-
-| Technique | Published gain | Hardware / shape and limits of evidence |
-|---|---|---|
-| Mega-MoE FP8×FP4 | Flash: 56.5 / 146.5 / 1283.1 / 4855.5 µs, **1.96 / 1.73 / 1.56 / 1.62×** legacy | EP8; tokens **per rank** 1 / 512 / 8192 / 32768; 256 experts, top-6, H4096, I2048. PR does not identify the physical GPU SKU. SM100 implementation establishes Blackwell code, not a specific B200/B300 measurement. [#316][pr316] |
-| Mega-MoE FP8×FP4 | Pro: 108.1 / 369.6 / 2818.5 / 10655.2 µs, **1.61 / 1.54 / 1.50 / 1.54×** | Same EP8/token grid; 384 experts, top-6, H7168, I3072; SKU also unspecified. [#316][pr316] |
-| Mega-MoE later optimizations | approximately **15% faster at low latency, 4% at high throughput** | V4.1; release statement gives no shape/SKU or isolated scheduling ablation. [#432][pr432] |
-| Mega-Gate | **30–75% speedup** | Release wording; exact latency, baseline, shapes and GPU SKU unspecified; released implementation is SM100. Do not translate this phrase into 30–75% latency reduction. [#432][pr432] |
-| Mega-mHC | **45–85% speedup** | Same qualification as Mega-Gate; no shape-specific latency evidence. [#432][pr432] |
-| Mega-mHC traffic | Single-Pass traffic `(2n+2)d`, versus original four-kernel `(4n+4)d`; ordinary fused mHC `(3n+2)d` | Analytical activation-element traffic, not a measured H200 speedup; excludes applying our FP32 residual requirement. [Report §2.4.1][report-mhc] |
-| Mega-MoE locality | saves **100 W**, boosts GPU frequency **5–10%** on heavy workload | Optional localized allocations/domain scheduling; no H200 or shape result. Frequency uplift is not an equivalent end-to-end speedup. [#462][pr462] |
-| FlashMLA fused norm/RoPE/attention/RoPE/cast | No isolated numeric fusion gain found in the inspected API, test or report | Tests cover d512, 64/128 Q heads, a performance template with 128 local + 512 extra selected KV, cache length 32768, decode B64/128/256 with four Q positions. These are templates, not published timings. [test][fm-test] |
-| TileKernels fusion families | No isolated numerical gains found in inspected implementation/README | README claims broad near-roof performance and SM90/SM100 support; it is not a per-operation measurement for our shapes. [README][tk] |
-| DeepSelect | **2–20×** `torch.topk`; skipping values approximately **10% faster** | CUDA and Ascend aggregate statement; CUDA plots: BF16 top-512, FP32 vocabulary 129280/top-512. README does not name the CUDA GPU SKU. Nothing establishes the same gain for top-8 of 256 against our fused route. [README][ds] |
-
-## Mega-MoE: the execution graph inside one kernel
-
-### Dispatch, assignment and a persistent pipeline
-
-The FP8×FP4 implementation has dispatch warps, independent activation+scale and weight+scale TMA warps, an MMA issue warp, a scheduler warp, and epilogue/combine warps. The host heuristic chooses 128 dispatch + 128 non-epilogue + 256 epilogue threads: **512 threads/CTA**, paired in two-CTA clusters. Register budgets differ by role; the source explicitly excludes two CTAs sharing one SM/TMEM allocation. This amortizes setup across tiles and overlaps unlike work; it spends registers, shared memory and resident SMs. It does not eliminate those resource costs. [heuristics/mega_moe.hpp, `get_mega_moe_config`][moe-heur] · [implementation, warp roles and register reconfiguration][moe-kernel]
-
-Dispatch reads top-k slots, counts experts in shared memory, reserves per-expert ranges through global atomics, and writes source token/slot indices to destination ranks. Counts encode both arrival progress and token totals. The scheduler caches counts by expert across warp lanes, computes expert-block prefixes, and maps `(linear phase, pool M-block, N-cluster)` to `(local expert, expert M-block, valid M)`. It skips empty experts and carries valid-token counts. Pull warps round-robin across source ranks and stage input data/scales into the local activation ring. [implementation, dispatch lines 346–620][moe-kernel] · [scheduler, `fetch_expert_recv_count`, `create_task`][moe-sched]
-
-**What this removes:** separate histogram/prefix/dispatch launches, host knowledge of routed sizes, and phase-wide launch gaps; TMA avoids per-thread copy instructions/register staging. **What it retains:** route metadata, global activation storage, peer communication and counters. On our one-GPU partial-result problem, all peer dispatch/combine communication is absent by specification, so eliminating NVLink traffic yields **zero**. Use a local compact route descriptor rather than recreate symmetric multi-process transport. Device-dependent task counts are graph-compatible; host-dependent allocation is not. [Our TASK](../../problems/muse_decode_layer/TASK.md) · [Hopper TMA guide][hopper]
-
-### Expert tiles, warmup and deadlock prevention
-
-`get_block_config_for_mega_moe` estimates tokens/expert as `tokens*ranks*topk/experts`, adds a square-root routing margin, and chooses M16/32 or larger M64/128/192/240 blocks. Its explicit cost model says every M-block reloads the weight tiles, so fewer blocks can repay wider/padded tiles. Swapping A/B maps expert channels to UMMA M256 and valid token count to UMMA N, dynamically rounded to 16. Adjacent CTAs own adjacent N128 expert-channel blocks of the same M-block and multicast activations. This is hardware-specific token-tail handling, not evidence that an NT1→NT2 change is good on Hopper. [heuristic, `get_block_config_for_mega_moe`][moe-heur] · [kernel, `update_instr_desc_with_umma_n`][moe-kernel]
-
-The scheduler first issues enough W13 waves to ensure later W2 tasks cannot occupy all resident capacity while waiting for W13 tasks that have not been issued. It then alternates W2/W13 tasks; independent atomic task counters claim cluster work, with a two-slot shared task mailbox. Before issuing W2 it verifies required W13 tasks have been fetched from **all** locality queues. `get_num_l1_warmup_waves` accounts for unequal W13/W2 tile counts and wave rounding; `get_num_max_live_pool_blocks` bounds live intermediate blocks for ring capacity. [scheduler, warmup helpers and `get_next_task`][moe-sched]
-
-**Transfer:** preserve this producer-before-consumer invariant if fusing N_full's heavy and side paths. Do not add blocking consumers to an oversubscribed grid without proving producers can run. A fixed resident grid needs occupancy verification; an alternative is a nonblocking ready-work scheduler. The benefit is less tail/phase delay and smaller live activation footprint. No per-mechanism speedup is reported beyond the aggregate Mega-MoE results.
-
-**Our contrary H200 evidence matters:** small-M global per-unit DYN scheduling lost because its atomics lengthened W13, despite shortening W2-ready waits. Two-round interleaving merely moved wait into the final barrier. Larger register-held token blocks and a shared-memory dequant producer also lost. The transferable design is coarse, producer-safe task assignment plus **finer dependencies**, not “more dynamic scheduling.” [FINDINGS, MoE M1–32 and Closed recipes](../FINDINGS.md)
-
-### W13 → SwiGLU → W2: partial readiness instead of expert completion
-
-Gate/up rows are interleaved in groups of eight in weights **and scales**. The W13 epilogue reads matching gate/up fragments, computes SwiGLU and writes the W2 input directly; the quantized path also reduces amax and generates activation scales. It removes materialization/reread of the **two-wide W13 preactivation**, a standalone SwiGLU launch and another format/layout pass. The intermediate after SwiGLU is still written to a global ring and reread by W2. “One kernel” does not mean all intermediate activations stay in registers. [weight transformation, `_interleave_weights`][moe-transform] · [kernel, unified L1 epilogue][moe-kernel]
-
-After TMA stores complete, each W13 N-block toggles its bit with `red_xor_rel`. `L2KBlockDependency` maps a W2 K-block to just the W13 bits that supply it; the activation loader waits on that subset with acquire loads, caching the observed pending mask. W2 can consume early K-blocks before the rest of an expert's W13 finishes. Generation parity and a ring-capacity bound prevent old slot state from being mistaken for new data. This removes an **expert-wide W13-complete wait** from the start of W2; it replaces it with a sequence of true data dependencies and release/acquire publications. [scheduler, `L2KBlockDependency`, lines 140–165][moe-sched] · [kernel, token loader 712–750 and publication 1237–1250][moe-kernel]
-
-**Muse mapping:** NT1 already fuses W13/SwiGLU, but our measured critical M32 CTA still spends about **11.6 µs on W2-ready wait**, with about 5 µs at final grid barrier in one flags-69 trace. A K-slice-ready protocol is a materially different test from the failed expert-round schedules. Use coarse K-slice notifications, not an atomic for each eight-channel NT1 output tile; assemble all contributing gate/up/row tiles before publishing a slice. Our many tiny W13 tiles would otherwise create far more publication work than DeepGEMM's N128 tiles. [FINDINGS, critical M32 trace](../FINDINGS.md)
-
-### Load weights while the activation side waits
-
-The activation TMA warp waits for dispatch/W13 K-slice readiness. The separate weight+scale warp only waits for its pipeline stage to become free, then loads the same task's weights. Both producers arrive at a joint full barrier; MMA waits there. Thus weight loads for W2 overlap W13 readiness and activation fetching, up to the finite stage depth. The stage indices **continue across tasks**, rather than drain/reinitialize a pipeline at every output tile. This is a retained operand pipeline, not merely an L2 prefetch hint. [kernel, activation producer 694–755, weight producer 760–818, `advance_pipeline`][moe-kernel]
-
-**What it removes:** exposed weight latency after a dependency, repeated fill/drain bubbles and some address/setup work. It does **not** remove compulsory weight bytes. Our NT1 prefetcher already advances across W13/W2 units, so some overlap is present; first measure whether W2's first operand lands before its readiness wait ends. For N_full, preserve the independent heavy/NT1 streams that already won, and try this within a branch before forcing all work into one resident grid. Proposed savings are E1/E2 below, overlapping with finer readiness; never add their maxima.
-
-There is a second, smaller latency-hiding pattern: dispatch loads routing weights before scale copying; epilogues fetch source metadata ahead of stores; combine double-buffers the next top-k contribution while accumulating the current one. TMEM epilogue loads run ahead of SwiGLU/conversion and release accumulator slots early. These remove serial metadata/operand waits, not entire mathematical dependencies. The 2026-09-30 release describes epilogue prefetch and smaller asymmetric output staging as enabling deeper prefill pipelines; no separate latency gain is supplied. [kernel, dispatch 578, epilogue 1010–1066, combine 1440–1515][moe-kernel] · [#462][pr462]
-
-### Combine, synchronization and the norm mismatch
-
-The implementation still performs dispatch grid synchronization, a cross-rank barrier before pulling, an epilogue grid synchronization before combine, remote readiness signaling, and cleanup coordination. `comm::grid_sync` is an atomic release/acquire generation protocol, not a zero-cost hardware global barrier. Dispatch and epilogue use separate counter indices. Cleanup is overlapped with combine rather than launched separately. Combine gathers BF16 expert results, sums in FP32 registers, then writes BF16. [kernel, grid-sync indices and final combine][moe-kernel] · [comm/barrier.cuh, `grid_sync`, `nvlink_barrier`][moe-barrier]
-
-DeepGEMM applies routing weights in the W13/SwiGLU epilogue before W2. **Do not copy this placement into Muse.** Our contribution is `g * rmsnorm(y * (1+post_w))` per expert after W2. Moving `g` inside that normalization changes the computation, and even a positive scaling is affected by epsilon. W2 must publish complete per-route squared norms before the weighted combine can finish. We can accumulate norm partials in W2 and fuse the local finalizer, but cannot delete this reduction by importing DeepSeek's unnormalized combine. [kernel, L1 top-k weighting][moe-kernel] · [our MoE TASK](../../problems/muse_moe_w4a16/TASK.md)
-
-For logical local route count R, hidden H and intermediate I: fusing a separately materialized W13 BF16 tensor saves `8*R*I` bytes of write+reread (FP32: `16*R*I`). A BF16 SwiGLU intermediate still costs `4*R*I` bytes of write+reread across CTAs. A FP32 W2-output buffer costs `8*R*H` bytes if written/read once. These are **our accounting formulas**, not measured DRAM traffic: L2 hits and existing fusion change actual transactions. NT1 has already collected the first saving; only ownership changes that truly retain the intermediate can collect the second. The full vector post-norm restricts the third.
-
-### FP4/FP8 weights: why the instruction saving is mostly unavailable
-
-| Path | What actually happens / instructions per weight | H200 and rule verdict |
-|---|---|---|
-| Released SM100 FP8×MXFP4 | Packed E2M1 weights + per-32 UE8M0 scales. TMA descriptor uses unpacked-in-shared FP4 representation; UTCCP moves packed scale blocks into TMEM; `tcgen05.mma...kind::mxf8f6f4.block_scale` performs scaled mixed-format MMA. **Zero explicit CUDA-core FP4→BF16/FP8 conversion/multiply instructions per weight** in this path. Descriptor math, TMA, UTCCP and MMA still cost per tile. This is a code-path count, not a SASS throughput measurement. [runtime tensor-map type][moe-tma-type] · [scale/MMA code][moe-kernel] · [PTX wrapper][moe-ptx] | Not runnable on SM90; FP8 activations prohibited; MXFP4 scale format cannot represent our per-16 E4M3 NVFP4 scales losslessly. No direct gain. |
-| Released SM100 FP8×FP8 | Same machinery, no FP4 nibble unpack; scales still travel and execute through block-scaled MMA. No scalar per-weight software dequant loop. [kernel types and weight loader][moe-kernel] | FP8 activations prohibited; converting our weighted NVFP4 values to FP8 generally loses precision and widening in prepare is forbidden. |
-| Released BF16 Mega-MoE | BF16 inputs **and BF16 weights**, otherwise analogous persistent dispatch/GEMM/SwiGLU/combine. [bf16 implementation][moe-bf16] | It does not provide a BF16-activation/NVFP4-weight adapter. Preparing BF16 experts is forbidden. Its existence does not solve W4A16. |
-| Unmerged SM90 PR #454 | Converts packed NVFP4 + per-16 scale to **FP8 shared operands**, then FP8 WGMMA; FP8 activations and activation scale epilogues remain. `dequant_mode2_nibble_word` emits **2 PRMT + 2 explicit sign LOP3 for 8 weights**, i.e. **0.5 explicit permutation/sign PTX instructions per weight**, plus selector AND/shift/shift and loads/stores. Counting those three simple source operations gives ~7/8 operations/weight before scale lookup/addressing/stores; this is **not** a measured SASS total. Scale LUT: 128 × `uint2` = 1 KiB, loaded once into shared. [PR kernel, decoder functions][sm90-proposal] · [LUT][sm90-lut] | H200-targeted proposal, unmerged and unbenchmarked here; **not admissible as written**. LUT values include scale and divide by eight, round to E4M3 and restore ×8 in output scaling. The E2M1×E4M3 product can need more significant bits than FP8 holds. No lossless NVFP4 guarantee; no BF16 activation path. |
-| Our NT1 | Existing lossless bank/LOP3 decoder: approximately **26.06 non-MMA SASS instructions /16 weights = 1.63/weight**, including unpack, eight packed BF16 multiplies and amortized scale handling in the audited region. [our static decoder audit](../../problems/muse_decode_layer/dev/nt1_timeline/table_kill/) | This is the relevant comparison. It cannot be compared directly with the proposal's 0.5 subset or the Blackwell zero-conversion claim. |
-
-The proposal's practical transferable idea is **co-design the lossless packed layout with the consuming instructions**: precompute selectors/interleave, expose independent PRMT chains, decode a weight tile once for multiple token subgroups, and alternate decoded slots to avoid consumer overwrite. Its B loader also travels independently of its activation waits, and packs weights/scales into one TMA row. But its LUT entries are wider, numerically rounded products; preparing an analogous expanded BF16/FP8 bank is forbidden. A generic format decoder is different from storing each model weight in a wider representation; our exact table approaches have already lost on instruction count. [PR decoder][sm90-proposal] · [B loader / decoded-slot reuse][sm90-pipeline] · [FINDINGS, table decoders and producer/consumer losses](../FINDINGS.md)
-
-A numerical counterexample makes the precision issue concrete: E2M1 `1.5` times E4M3 scale `1.125` is `1.6875`, exactly representable in BF16, but not E4M3. Dividing by eight before the FP8 cast and restoring it afterwards does not restore the discarded significand bit. This is our arithmetic demonstration, not a claim that the contributor benchmark fails its own tolerance.
-
-**Estimated additional direct gain from imported dequant code: zero.** A different exact decoder or better reuse would be a new result, with no justified estimate from these sources. At M32, our decode-once diagnostic measured about 14.75 µs less than its own redo twin, yet both lost to S11; at M8/16 it did not help. Do not book that diagnostic delta as a candidate win. [FINDINGS, re-decode experiment](../FINDINGS.md)
-
-## Mega-Gate: router projection plus selection in one launch
-
-`sm100_bf16_mega_gate_impl` fuses BF16 routing GEMM, split-K reduction, score transformation, bias, top-k, normalization, optional logical→physical mapping and output. TMA/MMA and gate warps run separate pipelines. Scores are **still written to global scratch**, because expert groups/K splits must meet; a per-token-block `ScoreBarrier` releases when all logical CTAs publish. Each logical CTA then ranks a share of tokens. This avoids another launch and separate full-score transformation/output passes, while retaining a real score-gather dependency. [gate kernel, score staging and selection][gate-kernel] · [`ScoreBarrier`][gate-sched]
-
-The selection epilogue sorts each lane's groups of four once with a five-comparison network, packs permutations and cursors, and offers only each group's unconsumed best candidate on each top-k round. Warp max/min reductions choose the score and smallest expert ID on ties; only the winner advances. Each selected output lane holds its own ID. A width-8 reduction normalizes top-8 unbiased scores; bias affects selection, not the mixture weight. This removes repeated local scanning of all candidates and avoids dynamic per-thread winner arrays/spills. No isolated speedup for the selection network is reported. [epilogue, `sort4_best_first`, `select_warp_topk`, `store_topk_token`][gate-epi]
-
-**Critical semantic mismatch:** inspected mainline Mega-Gate supports **sqrt-softplus**, not our `sigmoid(logit/sqrt(32))`. Its weights are BF16; ours are FP32 represented by BF16 hi+lo products with FP32 accumulation. Port selection and synchronization, retain our scoring/precision. A BF16-only router or sqrt-softplus replacement is not a legal implementation of this task. [release #462][pr462] · [gate scoring function][gate-epi] · [our candidate, `_prepare_weights`, `_route_fast`](../../problems/muse_decode_layer/cand_r3_best7_s11_final.py)
-
-**Muse mapping:** pooler/router already concatenate rows into one projection, and `_route_fast` already combines projection partials, pool RMSNorm, sigmoid+bias, top-8, local IDs and BF16 expert input. A separate Mega-Gate could reread h and lose the sharing. Prefer a pooled projection's **last-split epilogue** that produces scores/selection and route metadata directly, or use the sorted-four selection network inside the existing route kernel. Preserve the independent pool RMS reduction. Gross bytes avoidable for one standalone FP32 `[M,256]` logit write+reread are only `2048*M` bytes; latency is the more plausible benefit. Existing partial scratch is larger and depends on split count. Estimate E5/E6 below; no credible 30–75% whole-stage promise.
-
-## Mega-mHC and TileKernels glue: fuse around the reductions that remain
-
-Mega-mHC combines previous residual post-processing, coefficient projection/statistics, mixing/Sinkhorn, input mixing and RMSNorm, with optional FP8 output. Its **shifted** mode uses prior-block input-mix coefficients, removing a coefficient-reduction dependency from the current input path. That changes model architecture; we cannot shift Muse's norms/residuals. [Report §2.4.1][report-mhc] · [DeepInfer hc.py, `_hc_fused_post_pre` / `_mega_mhc`][di-hc]
-
-The source-level engineering transfers better. The kernel has six warpgroup roles: TMA/MMA, two Post workers, workspace epilogue, Mix, Norm. It computes residual/output tiles and norm statistics together, carries coefficients in registers, issues next-task coefficients during store draining, and gates Mix/Norm arrivals only after stores/statistics commit. Retired producer roles join normalization work instead of leaving resident warps unused. Ordinary mode retains mixed values in registers across the RMS reduction; shifted mode partitions output normalization and prefetches reread packs. This removes separate vector passes/launches and overlaps small reductions with larger movement. [kernel, role map, Post and role retirement][mhc-kernel] · [epilogue, `run_normal_worker`, `run_shifted_norm_task`][mhc-epi]
-
-**Muse mapping:** our boundaries already fuse branch norm, residual update and next prenorm. Keep residual values/statistics **FP32**, keep required BF16 boundaries, and complete row reductions before dependent projections. The opportunities are projection split-reduction + boundary fusion, per-row last-arrival finalization, and loading the next projection's actual operands while waiting. Mega-mHC's BF16 residual tensors and optional FP8 output are not transferable precision choices. A one-pass algebraic norm identity is already present in our cluster-glue experiments; do not count it as new research gain.
-
-Our prior persistent O→boundary→pool chain lost **1.5–6.5×** against its control. Static audit identifies M1/8 padded NT4 work, serial tile trips, three grid barriers with almost all CTAs idle at small-M norm, no retained operand ring, and repeated dense weight loads at M128/256. These are source-supported mechanisms; their individual H200 latency shares remain unmeasured. Mega-mHC suggests fixing ownership/pipelining and recycling roles, not rerunning that recipe. [our megakernel README](../../problems/muse_decode_layer/dev/megakernel/README.md)
-
-**Graph replay is a separate correctness dependency.** DeepInfer's pinned Mega-mHC uses grid-ID tags. Inspected mainline changes to `Epoch`: a graph node retains the same grid ID across replays, so the last retired CTA advances a workspace epoch after every invocation. Treat that code comment/fix as primary evidence against using `%gridid` alone as a freshness guarantee. The inspected Mega-Gate and Mega-MoE also contain grid-tagged state; this research does not establish a bug in every such protocol, whose additional resets/orderings differ. Any port needs its own replay proof, alternating-input replay tests, scratch-reuse tests and release/acquire ordering. [mainline scheduler, `Epoch` and `SplitBarrier`][mhc-epoch]
-
-TileKernels supplies smaller fusion boundaries when a full mega kernel is inappropriate:
-
-| Design, source and what it removes | Transfer and remaining work | Reported gain / estimate |
-|---|---|---|
-| `moe_topk_gate_forward`: score activation+bias, warp top-k, normalize and mapping in one kernel; one output lane stores one selected ID, warp-only score exchange | Runs with SM90-supported library primitives, but current scoring is sqrt-softplus. Keep Muse sigmoid and FP32-router semantics; our route already covers most of this. [moe gate][tk-gate] | No isolated timing. E5 for selection instructions; E6 for metadata boundary. |
-| `pre_big_fuse`: reduce prenorm GEMM/statistic partials, produce mix coefficients, Sinkhorn and apply pre-mix; retain vector work around a small reduction | Transfer last-split reduction/epilogue pattern; no Muse Sinkhorn/mHC streams to add. [pre_big_fuse][tk-mhc] | No isolated timing. E3, not an additional gain on top of it. |
-| `swiglu_forward_and_per_token_cast`: load gate/up once, apply optional weight/scaling/clamp, cast and emit consumer scale layout, walk only valid expert rows | Keep SwiGLU fused into W13 and BF16 output; discard FP8/FP4 activation output and unrequired clamp. Pushing route weight before our expert norm is invalid. Its next-row L2 prefetch is within-call, not persistence. [swiglu CUDA kernel][tk-swiglu] | No isolated timing. Existing W13 fusion: zero new gain; row-valid scheduling included in E1/E2. |
-| Fused transformation in DeepInfer: RMSNorm + RoPE/Hadamard + cast + direct KV-cache scatter; controls which BF16 boundary is returned | This is DeepInfer's own TileLang op, distinct from TileKernels' standalone RoPE. Our KV remains FP8 and queries may round to FP8; add neither Hadamard nor O-RoPE where absent from Muse. Port direct output/layout and warp-local synchronization, not model transformations. [fused_transform.py][di-transform] | No isolated timing. E4; skip cache-store fusion if it makes another CTA race on new KV. |
-| Producer-native output layouts: norm writes directly into Mega-MoE symmetric activation/scale buffers, gate directly into routing slots; fused attention consumes permuted projection weights and emits next-GEMM layout | Avoid copy/transpose/repack launches and redundant intermediate IO. Lossless weight permutation during ≤300 s prepare is legal; expanded expert values are not. Emit BF16 in our consumer layout, no FP8 activation scales. [hc.py][di-hc] · [mlp.py][di-mlp] · [FlashMLA API, permutation functions][fm-api] | No isolated timing; E3/E4/E6 overlap with this, not additive. |
-
-## FlashMLA: prep, attention and epilogue share a pipeline
-
-### The fused work and its boundaries
-
-`fused_norm_rope_attn_rope_cast.decode` performs Q RMSNorm, Q RoPE, paged quantized-KV sparse attention, conjugate O RoPE and FP8 output quantization. It supports an extra cache, so local and selected global KV share attention accumulation and an epilogue rather than materializing two attentions and a merge. It takes BF16 Q, d512, one KV head, 64/128 Q heads, fixed rope dimension 64, and emits grouped E4M3 output plus per-32 packed scales. The C++ dispatcher requires **SM100f** and explicitly disables **split-KV** for this fused kernel. [Python decode contract][fm-api] · [C++ checks and `enable_split_kv=false`][fm-dispatch]
-
-Our shape is d64, 16 Q heads, two KV heads, full 80K or sliding 2048, with BF16 projection activations. **The kernel itself does not run/fit our H200 workload.** Dense all-key traversal must remain; sparse index selection, FP4 KV and FP8 attention-output activations are inadmissible. Our layers choose sliding or full rather than performing two independent local/global attentions to merge, so importing its extra-cache interface has zero direct launch saving. Lossless layout matching and in-kernel Q prep/BF16 output epilogue do transfer.
-
-WG0 interleaves `Q0 Q1 O0 Q2 O1 ...`: fetch the next query while the previous output matures. It gathers Q norm statistics during the load/conversion, retains two positions' sin/cos, negates the old sin for conjugate O rotation, then consumes output in tiles rather than materializing an intermediate O. Q and output projection weights are permuted beforehand to match these accesses. [core kernel, WG0 / `load_q_and_save_to_tmem` / `store_o`][fm-core] · [permutation API][fm-api]
-
-An additional instruction/dependency saving is explicit in the Scale/Exp warpgroup: Q's RMS denominator is applied as a **score multiplier after QK**, rather than multiplying/storing a normalized Q vector before MMA. QK can proceed while WG0 finishes the norm statistics; Scale/Exp waits for those statistics before consuming scores. This removes per-Q normalization multiplies and a normalization dependency ahead of MMA. [core, `score_multiplier`, lines 906–919][fm-core] For Muse this is a hypothesis inside E4: learned elementwise norm factors and the required BF16 rounding must still be respected, so scalar algebra alone is not a correctness proof. Test a deferred scalar only where the exact norm contract permits it; it does not authorize folding BF16 weight matrices into a different lossy bank.
-
-**What it removes:** separate Q norm/RoPE and O RoPE/cast launches, Q/O write-reread passes, duplicate sin/cos loads and output layout conversion. In Muse, fuse **only our existing** QK norm/RoPE, split sum/cast, RMSNorm/gating and BF16 format work. There is no O-RoPE to eliminate. S11 already has BF16 front, fused gate split and attention combine work, so E4 budgets only the remaining prep/reduction boundary. Keep split-KV for low B/long contexts; either prepare Q once in a producer epilogue or repeat cheap Q work per split after pricing duplication. A single CTA for an entire 80K context would trade away the useful parallelism.
-
-### Latency and instruction mechanisms worth testing
-
-| Mechanism in the inspected fused core | What it cuts | H200 port / estimate |
-|---|---|---|
-| **Independent QK/PV readiness.** Adaptive issue checks PV's softmax/output-slot readiness first, otherwise polls ready QK; `num_qk_issued <= num_sv_issued+1` protects the two P buffers. A late next KV dequant no longer blocks a ready previous PV. Used only in the one-CTA decode configuration with two P buffers. [core 1087–1147][fm-core] | Head-of-line wait and delayed KV-slot release; dependency barriers remain. | Use SM90 WGMMA completion/producer barriers with a proven issue-distance bound; do not copy tcgen05. E7. No isolated reported gain. |
-| **KV gather front/back split.** Index/coordinate generation runs ahead, a front issues raw gathers/scales, dequant WG waits once for transport then decodes in place. Next-block indices are register-prefetched before ballot/address arithmetic. [core 1259–1506][fm-core] | Serial page/index/scale latency, repeated coordinate arithmetic, extra staging passes. | Our page-1 FP8 KV needs different loads; no Blackwell gather4 assumed. Batch pointer/scale loads, consume later, and retain independent gather/dequant roles only if occupancy supports them. E7. |
-| **Exact conversion to BF16 on chip.** Source comments count per quantized chunk: FP8 **8 F2FP** converting E4M3×UE8M0 into BF16x2; FP4 **16 F2FP + 16 HMUL2.BF16**. FP4 E2M1×E4M3 fits BF16 exactly in significand. [core `DequantRows`, 183–300][fm-core] | Separate dequant kernel/global expanded KV; packed conversions reduce instruction count versus scalar unpack/multiply. | The FP4 converter and fused mixed-format conversions are Blackwell instructions, not an H200 shortcut. Retain exact FP8→BF16 or raw FP8 MMA path on SM90; original KV format/scales unchanged. Direct instruction-port gain zero. |
-| **Avoid register gathers around stores.** Construct a `uint4` from four independent conversion outputs for one STS.128, rather than inline-asm 128-bit register operand forcing aligned register-quads and MOVs. [core 259–264][fm-core] | Compiler-inserted moves and register constraints. | Portable coding pattern; inspect H200 SASS first. Included in E7, no separate timing. |
-| **Bounded load bursts.** Q loads are deliberately grouped; a runtime-zero address dependency prevents ptxas issuing an oversized LDG burst that stalls shared-memory operations. Source describes a ~2000-cycle prefill delay from a 64 KiB burst and slack used to serialize smaller groups. [core 566–599][fm-core] | Shared-memory/scoreboard backpressure from too many outstanding loads. | Mechanism needs H200 counters; do not reuse their threshold as a Hopper constant. Our Q is far smaller; zero standalone gain budget, keep as a diagnostic for weight/KV producers. |
-| **Selective output rescale.** Online softmax resizes O only if row max rises by >6 in log2 score units, with normalization tracking and BF16 probabilities. [core 949–991][fm-core] | Frequent TMEM O read/modify/write and rescale barriers/instructions. | Our q1 skip-rescale experiment already found no gain. Threshold-based delayed rescale is a separate numerical design; no free q1 budget and no unchanged-precision claim without checks. [Closed recipes](../FINDINGS.md). |
-| **Epilogue loads ahead; compact hot code.** TMEM tiles can be prefetched before conversion; hot FP4 body is specialized, uncommon/mixed work shares smaller code; no full unroll of all gather bursts. [core 725–728, 317–334, 1340–1360][fm-core] | Exposed load waits, accumulator hold time, instruction-cache footprint. | TMEM operations unavailable, but SM90 accumulator/store and gather-loop code-size control transfer. E7; our earlier vq8's ~17K-instruction footprint is direct local motivation. |
-| **CLC schedules subsequent jobs while pipelines drain.** Warp 9 manages cluster launch-control responses. [core 1188–1209][fm-core] | Tail imbalance/job-transition bubbles. | Blackwell CLC is not a direct SM90 facility. Use static/coarse local scheduling only if its overhead is measured; zero direct import budget. |
-
-No isolated speedup/hardware-shape ablation is supplied for these mechanisms. The code comments about delays/instruction counts are implementation evidence, not independent measurements reproduced here. E7 prices the combined Hopper scheduling hypothesis, not a sum of these rows.
-
-## DeepSelect: excellent large-N top-k, the wrong wholesale replacement for 256 experts
-
-DeepSelect scans each large row in contiguous blocks in pseudorandom block order, keeps a monotone top-k threshold, appends only possible winners into a shared candidate buffer, and periodically compacts with radix selection. Each input is read once in the described algorithm; candidate storage is `O(k+B+B2)`. Its analysis bounds expected selection work by `O(k log(N/k))` when block sizes scale with k. It reduces radix work and scratch traffic, not the need to examine all input values. [official algorithm note][ds-dive]
-
-The implementation records threshold hits in bit masks during counting, then enumerates only set bits using `ffs`/`mask &= mask-1`; packed BF16 comparisons, PRMT and DP4A generate masks. Independent ballots plus popcounts form per-lane prefixes. It starts the first surviving shared-memory load before count exchange. Some integer increments use denormal `add.f32` bit patterns to avoid integer-pipe contention under exact bounded-integer conditions. These remove redundant scans, integer instructions and serial dependencies. **Do not use FTZ arithmetic for that integer trick**, and do not confuse it with numerical floating-point computation. [common_parts.cuh, filter/move code][ds-core] · [algorithm implementation discussion][ds-dive]
-
-For tiny batches of very long rows, cluster mode computes local top-k per CTA, sends candidates to CTA0 and selects again. The inspected dispatch uses this for BF16 batch≤6, N≥512K, k≤1024 with **16 CTAs per cluster**. Normal dispatch chooses occupancy and TMA depth by number of waves. This trades cluster synchronization for enough active SMs. SM90 has cluster/TMA support, but a size-16 cluster is nonportable and needs explicit opt-in/occupancy checks; it is not a free way to speed up our tiny router. [api.cpp, dispatch][ds-dispatch] · [Hopper cluster guide][hopper]
-
-**Muse verdict:** no DSA attention indexer is allowed; no sampling is in the timed layer. Router top-8 of 256 already fits eight scores per lane and is fused with pool normalization. A large-row filter/radix kernel adds overhead and loses fusion. Keep only small primitives: a winner per output lane, sorted local candidate groups, ballot/popcount compaction for **route metadata**, vector loads and first-hit prefetch. Preserve FP32 scores; BF16 packed score comparisons would lower router precision. E5/E6 cap this at a small possible benefit, with **zero direct standalone DeepSelect gain**. Its reported 2–20× versus `torch.topk` is not a prediction versus our implementation.
-
-## H200 transfer ledger and six-load estimates
-
-### Basis and calculation
-
-Use the **current S11** stage table, not the S10 wording in the task context: [NEXT_CHECKS](../../problems/muse_decode_layer/dev/NEXT_CHECKS.md), [machine-readable stage data](../../problems/muse_decode_layer/dev/levers/current.json), H200 receipt `863f502c62e54d7b`, timed source `acda6c62`, score **1.706767423×**. Integrated scale-bank, small-M flags, N_swap, balanced GEMV, gate split, BF16 front, LI_swap N_full and verify-full vq8 savings are already included.
-
-| Load | M | Layer S / F µs | Attention S / F | MoE S / F | Boundary total S / F | Route S / F | Weighted load µs |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| decode 1 | 1 | 93.30 / 102.77 | 11.4 / 19.8 | 34.1 / 33.9 | 5.3 / 5.0 | 3.7 / 3.6 | 5936.12 |
-| decode 16 | 16 | 154.37 / 249.61 | 13.8 / 106.1 | 65.8 / 74.1 | 15.9 / 31.6 | 3.9 / 4.4 | 11094.57 |
-| decode 32 | 32 | 197.61 / 374.17 | 18.3 / 196.8 | 103.8 / 122.8 | 24.7 / 25.6 | 4.2 / 4.2 | 15076.83 |
-| verify 1 | 8 | 134.91 / 151.25 | 21.6 / 33.0 | 94.7 / 73.5 | 8.3 / 8.3 | 3.7 / 3.7 | 8625.87 |
-| verify 16 | 128 | 301.06 / 423.50 | ≥18.6 / ≥168.8 | ≥194.7 / ≥206.8 | 11.4 / 11.2 | 0 / 0 visible | 20624.93 |
-| verify 32 | 256 | 399.30 / 640.36 | ≥24.0 / ≥284.9 | ≥270.4 / ≥237.0 | 17.5 / 16.6 | 4.2 / 3.9 | 28613.68 |
-
-Stage durations include PDL waits and overlap; do not sum them to reconstruct graph time. The visible zero route at M128 is not evidence that routing costs nothing. Truncated attention/MoE rows are lower attribution bounds. Layer/load anchors above come from the receipt/model, with unrounded anchors retained for calculations. The stream model is **2.36 µs + bytes/4.58 TB/s**; its intercept is not a universal per-launch penalty. [NEXT_CHECKS, accounting caveats](../../problems/muse_decode_layer/dev/NEXT_CHECKS.md)
-
-For assumed per-layer savings `(dS,dF)`, use
-
-`score_multiplier = product_over_6_loads(T / (T - 46*dS - 16*dF))**(1/6)`.
-
-The following are **conditional engineering scenarios, not confidence intervals or source-reported gains**. Each range says what would happen *if* an implementation removed that much exposed time without worsening any other stage. Lower bounds above zero are not guaranteed wins: every untested experiment also has a zero-or-negative outcome. Amounts were selected within stage budgets and our wait diagnostics; they are not fits to DeepSeek's reported speedups. E1 is more plausible at M32 than M1 because our measured wait grows; E2 targets the bigger N_full pipeline; E3 allows only a fraction of profiled boundary time because much is overlap. Small expected gains are still meaningful, but cannot alone explain the leader gap.
-
-Cells are saved **µs per layer**, S/F when different. The last column is the six-load **relative score gain**, evaluated at the two scenario endpoints.
-
-| ID / compatible technique bundle | decode 1 | decode 16 | decode 32 | verify 1 | verify 16 | verify 32 | Conditional score gain |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| **E1** W13 K-slice readiness + independent W2 operand preload; retain NT1 at small M | 1–3 | 3–7 | 5–12 | 2–5 | 0 | 0 | **+1.05–2.68%** |
-| **E2** N_full heavy-branch W13/W2 operand ring, coarse producer-safe scheduling and valid-M/tile reuse; retain side stream | 0 | 0 | 0 | 0 | 8–20 | 10–30 | **+0.77–2.18%** |
-| **E3** Mega-mHC-style producer epilogue + FP32 boundary/statistics, per-row readiness and role recycling | 1–3 | 2–6 | 3–8 | 1–4 | 2–6 | 3–8 | **+0.90–2.78%** |
-| **E4** Fused attention prep/split reduction and BF16 consumer epilogue/layout, preserving KV splits | 0.5–1.5 | 0.5–1.5 | 0.5–1.5 | 1–3 | 0.5–1.5 | 0.5–1.5 | **+0.33–1.00%** |
-| **E5** Mega-Gate sorted-four/local-cursor top-8 inside existing sigmoid route | 0–0.5 | 0–1 | 0–1 | 0–0.5 | 0–1 | 0–1 | **+0–0.40%** |
-| **E6** Direct route metadata from existing router/pool finalizer; no redundant bucketing/copy launch | 0–0.5 | 0–1 | 0–1.5 | 0–0.5 | 0–1 | 0–1 | **+0–0.43%** |
-| **E7** FlashMLA-like gather/dequant/QK/PV issue and compact hot loops in our attention | S 0–0.5 / F 0–1 | S 0–1 / F 1–4 | S 0–1 / F 2–8 | S 0–1 / F 0–2 | S 0–1 / F 4–12 | S 0–2 / F 6–20 | **+0.17–1.06%** |
-
-**Do not add these ranges.** E1/E2 both price operand prefetch and partial readiness; E3/E4 can claim the same split-reduction epilogue; E5/E6 can claim the same route latency. E7's producer layout overlaps E4. A true end-to-end experiment must measure the combined graph, preserving route/seed identity and cold-stream behavior. The broad 1.3×-floor caps in NEXT_CHECKS (+11.70% small-M MoE, +11.35% attention, +9.43% boundaries+route, +3.16/+4.07% M128/M256) are much larger, optimistic stage counterfactuals, **not estimates that these imported techniques attain them**.
-
-Techniques with **zero budget on all six loads as direct imports**: NVLink/EP fusion (communication absent); Blackwell FP4/FP8 tensor/dequant instructions, TMEM and CLC (SM90 mismatch); FP8/FP4 activation casts; lossy expert conversion; shifted mHC coefficient reuse; FP4 KV; sparse/key selection; cross-layer KV/index reuse; DeepSelect sampler/indexer kernels; two-cache attention merging absent from our layer; SM100 locality-domain frequency/power claims. Some provide implementation ideas already counted in E1–E7. New architectural/precision work is not authorized by “fusion.”
-
-For prepare/capture feasibility, compatible ports use lossless layout packing plus fixed-shape allocations/descriptors/JIT within 300 s, with all route-dependent schedules/counters on device. Do not assume a whole distributed runtime can be embedded into a single-file submission. Prove bounded scratch/ring capacity for actual skew and nearby shapes; replay-safe epochs; producer progress under occupancy; exact NVFP4 decode; FP32 residual storage; and the actual BF16 rounding/norm order. No L2 persistence is needed. Within-call operand prefetch is admissible; cache survival across the flush is not. [CONSTRAINTS](../CONSTRAINTS.md)
-
-## Ranked transferable techniques and first H200 experiments
-
-Ranked by plausible score gain **and strength of evidence against our current bottleneck**, not by DeepSeek's aggregate speedup. Endpoints remain the conditional scenarios above; none is a measured improvement. The first experiment descriptions are proposals only—this research ran no H200 jobs.
-
-1. **Small-M W2 starts on ready K-slices, with independent retained weight loads — E1, +1.05–2.68% score.** Evidence: DeepGEMM's [`L2KBlockDependency`][moe-sched] and [separate operand producers][moe-kernel]; our H200 M32 ~11.6 µs W2-ready wait and failed whole-expert round schedules. First experiment: instrument flags-69 NT1 to timestamp first W2-weight landing versus readiness, then publish coarse BF16 SwiGLU slices (e.g. K256/512), allowing W2 to consume only released slices; keep static task ownership and compare M1/8/16/32 on identical real routes. Require whole-layer improvement and no moved final-barrier cost. Do not introduce a per-tiny-tile global queue.
-
-2. **FP32 boundary/statistics finalization inside producer epilogues — E3, +0.90–2.78%.** Evidence: [Mega-mHC's role/dataflow design][mhc-kernel] and [retained normalization values][mhc-epi], versus our boundary time/overlap table and failed dense-chain audit. First experiment: fuse one O split-reduction→boundary using per-token last-arrival ownership and compact FP32 sufficient statistics; emit both the FP32 residual and BF16 next input directly, leaving pool GEMV launch/tiling intact. Compare the complete O→boundary→pool graph; inspect whether reduced node count removes exposed latency or merely transfers PDL waits. Repeated alternating-input graph replay is mandatory.
-
-3. **N_full branch-local W13/W2 operand pipeline and producer-safe task schedule — E2, +0.77–2.18%.** Evidence: [Mega-MoE's warmup/ring bound][moe-sched] and [independent B loader][moe-kernel]; our verified heavy/NT1 side-stream overlap, plus negative results for broad shared-memory decode reuse. First experiment: preserve LI_swap heavy/NT1 partition, preload the heavy branch's first W2 packed operand tile before W13 completion, and extend its existing ring across task boundaries. Test M128/256 without changing activation residency, decoder or combine, measuring load landing, publish latency and branch join. Only if operand latency is exposed proceed to finer K readiness or a different schedule.
-
-4. **Attention gather/dequant/QK/PV readiness and code footprint — E7, +0.17–1.06%.** Evidence: FlashMLA's [adaptive issue-distance bound and metadata lookahead][fm-core], plus our vq8 page-refill/serialized-load/large-code findings. First experiment: in our native SM90 attention, replace the fixed “wait next KV then issue previous PV” order with readiness polling under a proven double-buffer distance bound, keeping arithmetic, splits, layouts and cache reads identical. Test full verify16/32 first, then all twelve shapes; require fewer exposed producer waits and a shorter whole-layer graph. No Blackwell gather/CLC port is assumed.
-
-5. **Attention prep and final BF16 consumer layout fusion — E4, +0.33–1.00%.** Evidence: FlashMLA's [WG0 Q/O pipeline][fm-core] and [projection permutation contract][fm-api]; our remaining prep/sum/cast nodes, with gate split already integrated. First experiment: have the existing QKV split finalizer emit prepared Q and required FP8 KV stores directly while keeping attention splits; fuse any remaining output RMS/BF16 layout work into the attention combine. Start verify1, where the launch share is largest; compare full and sliding, then every load. Preserve cache mutation ordering and add no O-RoPE.
-
-6. **Router-native metadata and local sorted-candidate top-8 — E6/E5, overlapping +0–0.43% / +0–0.40%.** Evidence: [Mega-Gate's local sort/cursor network][gate-epi], [direct symmetric output call site][di-mlp], [TileKernels' one-winner-per-lane design][tk-gate] and [DeepSelect mask/prefix primitives][ds-core]. First experiment: replace only repeated local winner scans in `_route_fast` with two sorted groups of four per lane, retaining sigmoid, FP32 hi+lo accumulation, unbiased weight normalization and local-expert checks. Then separately test emitting the existing route descriptor at the same finalizer; price register/shared state and consumer work, not just the saved launch. A standalone DeepSelect call is not the experiment.
-
-[di]: https://github.com/deepseek-ai/DeepInfer/tree/9bd9cf243fc53ef9afbf8f04d391d989117d6ab9
-[di-qa]: https://github.com/deepseek-ai/DeepInfer/blob/9bd9cf243fc53ef9afbf8f04d391d989117d6ab9/doc/inference_deployment_qa.md
 [di-mlp]: https://github.com/deepseek-ai/DeepInfer/blob/9bd9cf243fc53ef9afbf8f04d391d989117d6ab9/deepinfer/model_executor/models/v4_modules/mlp.py#L359-L563
-[di-hc]: https://github.com/deepseek-ai/DeepInfer/blob/9bd9cf243fc53ef9afbf8f04d391d989117d6ab9/deepinfer/model_executor/models/v4_modules/hc.py#L175-L298
-[di-transform]: https://github.com/deepseek-ai/DeepInfer/blob/9bd9cf243fc53ef9afbf8f04d391d989117d6ab9/deepinfer/model_executor/layers/tilelang_ops/cuda/fused_transform.py#L17-L619
-[dg]: https://github.com/deepseek-ai/DeepGEMM/tree/1fc9c66975ee322d628b3288534ca0e9ce12a64d
-[dg-main]: https://github.com/deepseek-ai/DeepGEMM/tree/5081f8513af57e61696de4f4f04b0e707ffb503e
-[fm]: https://github.com/deepseek-ai/FlashMLA/tree/2e5429fc5653bab6e081f09477126f731882a6a9
-[tk]: https://github.com/deepseek-ai/TileKernels/tree/c1cf914a82e6901c679445f872051ce44ac2cc63
-[ds]: https://github.com/deepseek-ai/DeepSelect/tree/bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18
-[report]: https://arxiv.org/html/2609.19969v1
-[report-system]: https://arxiv.org/html/2609.19969v1#S3.SS2
-[report-mhc]: https://arxiv.org/html/2609.19969v1#S2.SS4.SSS1
-[pr316]: https://github.com/deepseek-ai/DeepGEMM/pull/316
-[pr432]: https://github.com/deepseek-ai/DeepGEMM/pull/432
-[pr454]: https://github.com/deepseek-ai/DeepGEMM/pull/454
-[pr462]: https://github.com/deepseek-ai/DeepGEMM/pull/462
 [moe-kernel]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/impls/sm100_fp8_fp4_mega_moe.cuh#L57-L1528
-[moe-bf16]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/impls/sm100_bf16_mega_moe.cuh#L118-L130
 [moe-sched]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/scheduler/mega_moe.cuh#L16-L475
-[moe-heur]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/csrc/jit_kernels/heuristics/mega_moe.hpp#L88-L228
-[moe-transform]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/mega/__init__.py#L112-L175
-[moe-barrier]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/comm/barrier.cuh#L33-L91
-[moe-tma-type]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/csrc/jit_kernels/impls/runtime_utils.hpp#L85-L98
-[moe-ptx]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/ptx/tcgen05.cuh#L46-L85
 [sm90-proposal]: https://github.com/lengrongfu/DeepGEMM/blob/d5925deb53a26895efad49395831f0bcf30d13b1/deep_gemm/include/deep_gemm/impls/sm90_nvfp4_mega_moe_fused.cuh#L34-L278
-[sm90-pipeline]: https://github.com/lengrongfu/DeepGEMM/blob/d5925deb53a26895efad49395831f0bcf30d13b1/deep_gemm/include/deep_gemm/impls/sm90_nvfp4_mega_moe_fused.cuh#L1149-L1428
 [sm90-lut]: https://github.com/lengrongfu/DeepGEMM/blob/d5925deb53a26895efad49395831f0bcf30d13b1/deep_gemm/include/deep_gemm/quantization/nvfp4_dequant.cuh#L18-L23
 [gate-kernel]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/impls/sm100_bf16_mega_gate.cuh#L25-L447
-[gate-sched]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/scheduler/mega_gate.cuh#L11-L38
 [gate-epi]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/epilogue/sm100_mega_gate.cuh#L19-L215
 [mhc-kernel]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/impls/sm100_mega_mhc.cuh#L35-L696
 [mhc-epi]: https://github.com/deepseek-ai/DeepGEMM/blob/1fc9c66975ee322d628b3288534ca0e9ce12a64d/deep_gemm/include/deep_gemm/epilogue/sm100_mega_mhc.cuh#L139-L428
 [mhc-epoch]: https://github.com/deepseek-ai/DeepGEMM/blob/5081f8513af57e61696de4f4f04b0e707ffb503e/deep_gemm/include/deep_gemm/scheduler/mega_mhc.cuh#L11-L80
-[tk-gate]: https://github.com/deepseek-ai/TileKernels/blob/c1cf914a82e6901c679445f872051ce44ac2cc63/tile_kernels/moe/moe_topk_gate_forward_cuda.py#L189-L291
-[tk-mhc]: https://github.com/deepseek-ai/TileKernels/blob/c1cf914a82e6901c679445f872051ce44ac2cc63/tile_kernels/mhc/pre_big_fuse_cuda.py#L44-L136
-[tk-swiglu]: https://github.com/deepseek-ai/TileKernels/blob/c1cf914a82e6901c679445f872051ce44ac2cc63/tile_kernels/quant/swiglu_forward_cuda.py#L25-L332
-[fm-api]: https://github.com/deepseek-ai/FlashMLA/blob/2e5429fc5653bab6e081f09477126f731882a6a9/flash_mla/fused_norm_rope_attn_rope_cast.py#L86-L211
-[fm-dispatch]: https://github.com/deepseek-ai/FlashMLA/blob/2e5429fc5653bab6e081f09477126f731882a6a9/csrc/api/fused_norm_rope_attn_rope_cast_fwd.cpp#L191-L415
 [fm-core]: https://github.com/deepseek-ai/FlashMLA/blob/2e5429fc5653bab6e081f09477126f731882a6a9/csrc/cuda_kernels/sm100/prefill/sparse/fused_norm_rope_attn_rope_cast_fwd/core_attn/kernel.cuh#L183-L1506
-[fm-test]: https://github.com/deepseek-ai/FlashMLA/blob/2e5429fc5653bab6e081f09477126f731882a6a9/tests/test-fused-norm-rope-attn-rope-cast.py#L492-L511
-[ds-dive]: https://github.com/deepseek-ai/DeepSelect/blob/bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18/docs/DeepSelect-deep-dive.md
 [ds-core]: https://github.com/deepseek-ai/DeepSelect/blob/bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18/csrc/cuda_kernels/common_parts.cuh#L940-L1480
-[ds-dispatch]: https://github.com/deepseek-ai/DeepSelect/blob/bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18/csrc/api.cpp#L145-L205
-[hopper]: https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html#tensor-memory-accelerator

@@ -1,19 +1,16 @@
-# H200 and Hopper hardware
-Serves: G2, G1. Read when sizing a kernel for the judge's H200, or when one nears a bandwidth, issue, cache or
-register limit.
+Read when sizing Hopper kernels or inspecting memory, tensor, register and synchronization limits.
+Serves: G2.
 
-What the judge's H200 measurably reaches (streams, gathers, L2, PDL, small-N MMA) is in [bound](bound.md)
-"Practical ceilings"; candidate timings are in [FINDINGS](../FINDINGS.md). The local RTX PRO 6000 (sm_120) and GB10
-(sm_121) run neither WGMMA/TMA nor FA3 and have other memory systems: their timings rank loosely, never as H200
-evidence. A microbenchmark's warm-cache or stream-launch number is not a scored result either: the judge replays a
-captured graph after an L2 flush.
+# H200 and Hopper hardware
+
+Judge-specific measurements and protocol: [FINDINGS](../FINDINGS.md#the-judges-h200).
+Local sm_120/sm_121 timings do not establish Hopper execution or rank.
 
 ## H200 facts
 
 | Parameter | Value | Source |
 |---|---:|---|
 | HBM3e | 141 GB, 4.8 TB/s | [NVIDIA H200](https://www.nvidia.com/en-us/data-center/h200/) |
-| SMs, clocks | 132 SMs; the judge reports 1980 MHz SM, 3201 MHz memory, 700 W limit | receipts `7fb3e930`, `849bd4b6` (`machine`) |
 | L2 | 60 MB, driver-reported | [DeepGEMM issue 107](https://github.com/deepseek-ai/DeepGEMM/issues/107) |
 | Shared memory | 228 KB per SM, 227 KB per block | [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
 | Registers | 64K 32-bit per SM, up to 255 per thread | same |
@@ -26,8 +23,7 @@ across architectures ([Hopper compatibility guide](https://docs.nvidia.com/cuda/
 ## Memory requests and cache policy
 
 HBM rate is a request-concurrency problem: aligned, coalesced rows, several independent loads per thread and
-enough resident CTAs. A 128-bit load sets request width, not memory-level parallelism (the judge's LDG rate grows
-0.64 -> 3.01 TB/s with CTAs and loads in flight, `849bd4b6`). TMA pays off when a block reuses a tile; for a
+enough resident CTAs. A 128-bit load sets request width, not memory-level parallelism (measurements: FINDINGS "The judge's H200"). TMA pays off when a block reuses a tile; for a
 one-pass skinny stream its barrier and descriptor cost can lose to plain loads (H800 study: vector loads reach
 90-91% of bandwidth, TMA helps mainly large matrices; [arXiv:2501.12084](https://arxiv.org/abs/2501.12084),
 [arXiv:2402.13499](https://arxiv.org/abs/2402.13499)).
@@ -50,16 +46,15 @@ instruction, and an increase can block on the CTA's register pool
 
 `wgmma.mma_async` is an sm_90a warpgroup operation: RS takes A from registers and B from shared memory, SS both from
 shared memory. RS saves a shared round trip at the cost of live registers and occupancy. WGMMA reaches peak only
-at N >= 64; at N = 8-16 `mma.sync` from registers beats WGMMA SS on the judge (bound "Practical ceilings"). WGMMA
-has no INT4 mode, and its FP8 form needs both operands FP8; an FP8 `mma.sync` on sm_90 is emulated (12 conversions
-plus two FP16 HMMAs per instruction, FINDINGS "P5 producer mechanism").
+at N >= 64; small-N performance depends on operand path and residency (FINDINGS "The judge's H200"). WGMMA
+has no INT4 mode, and its FP8 form needs both operands FP8; an FP8 `mma.sync` on sm_90 is emulated (FINDINGS "Our kernels").
 
 ## Format and decode
 
 Hopper has no E2M1 (FP4) conversion: PTX restricts the packed E2M1 forms to sm_100+. NVFP4 W4A16 therefore needs
 integer/logic (LOP3) or LUT (`prmt`) reconstruction, E4M3 block scales, BF16 activations and accumulation points,
 and an FP32 global scale in the epilogue. Packed FP8 conversion exists (`cvt.rn.f16x2.e4m3x2`), and the query may
-round to E4M3 (CONSTRAINTS 6). Every finite E2M1 x E4M3 product is exact in BF16 (4,064 values), so a product table
+round to E4M3 (CONSTRAINTS 6). Every finite E2M1 x E4M3 product is exact in BF16, so a product table
 or in-register decode is lossless. The issue cost of decode is in [bound](bound.md) "NVFP4 decode issue".
 
 ## Graphs, PDL and persistent grids
@@ -88,10 +83,5 @@ instruction cache, whose H200 size no primary source gives: compare SASS sizes r
 CuAssembler is unofficial and unvalidated for sm_90a; a patched cubin is allowed (CONSTRAINTS "Boundary cases") but
 needs its own H200 correctness and timing.
 
-## Unverified on the H200
-
-No primary source or receipt yet gives H200 HBM or L2 near/far latency, bank mapping, TLB reach, cluster launch
-cost or clock behaviour under load. External figures bound them only: H100 unloaded memory latency ~350-400 ns
-([arXiv:2608.15764](https://arxiv.org/abs/2608.15764)); memory-bound vs tensor-heavy clock ranges under power caps
-([arXiv:2604.11391](https://arxiv.org/abs/2604.11391)); ~1.0 us empty kernel and 1.3 us graph vs 2.1 us stream
-launch on H100 ([frontiers issue 24](https://github.com/vectorware-inc/frontiers-feedback/issues/24)).
+H200 near/far memory latency, bank mapping, TLB reach and clock behaviour under load remain
+unestablished here. External H100/H800 figures do not establish those H200 constants.
