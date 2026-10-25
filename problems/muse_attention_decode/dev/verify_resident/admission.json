@@ -1,0 +1,2055 @@
+{
+  "source_files": {
+    "freeze.py": "6e8dff12f51fb2548423622baa01fc3cc9815c2df4dfb33c8cf37768e66e0cdd",
+    "early_edge.cu.inc": "853625f4b4a33bbb990d0babb15367040946e5acf5069ed452c9b05b403ae577",
+    "lab_body.inc": "2f7d33c63e93f976d17bec99132c4bad5d0d4ad7a41ab50116129a14acb06847",
+    "build_payload.py": "b5d9b5e7ccd90e18c2617f50052455698a2a9b432c4199ea2fe10db78ff7f602",
+    "resgen.py": "e111ba14d70eabccb762b814af8caaf11c1a74b65cc536bbcb21a7191b9a7ff5",
+    "check_lab.py": "b2defe8e82d9300fe248509876f5ecd66e5764a773b591ddae75432510b172df",
+    "local_standin.py": "b518952b339cd0420302a037e363bdf5d20cd231b2d0d205cfaa6529c88cd0a0",
+    "runtime.py": "f4a23ad0bc69ee6dcba8d7ca48cae4bc9b77a9b20ccd49a877a835e9cacec5dc",
+    "coverage.py": "594faae88ddf6603621adff19dc17ef47a0e95a3961b8189f9a0140775f9b667",
+    "receipt_floor.py": "f9afae0a24c7e119f9f982938e40cfb5672904d2bfb6e0eedddbbf4f3055f432",
+    "check_kernels.py": "2ef35fb5befea468dc73e057061a4d0f918b836106cefb4394a7ea07b5ef6bb5",
+    "check_edge.py": "5eab1b47571edd9f5db20995e80f3c1fd0f7c02b12510eeda10e1b24f5f404a2",
+    "local_wrapper.py": "d5bf1e10b495bfdfadad244622c8c149c309add945ba490887d4a5c98d399008",
+    "sass_check.py": "36abceecc578b768d9b3cffd30f02ee66d3d2ee58dddcc2fcab57493e9b0b7f3",
+    "audit_producer.py": "f683b86371f5d0f611121386d2c19f550249aba33c2ae1eb1670fbd527507742",
+    "screen.py": "739858cb59d2165bfd003736b2a7afc0889c93fafe9067892a04a6e21f788499"
+  },
+  "component_sha256": "5e7cb4d14a806b6f93d26e561a881b6e707a5183265eedc74ab71c6d35224382",
+  "board_sha256": "a6c3423dcb2dab7d6521d95d34f52d5cc4fac6de85c090d9974082661fe266e0",
+  "local_wrapper_sha256": "d8f7ebfe7f7f7ffb5a6531c0955822866cc786ba8d37db5926de094abf4cb60d",
+  "payload_sha256": "74864386bb715300a7a08d1f7a82553c011f360616b445cc565edf874e880a39",
+  "floor": {
+    "job": "c6bd22e2084c4809",
+    "receipt": "runs/muse_prefill_layer/20261025T071342Z_check_c6bd22e2084c4809.json",
+    "receipt_sha256": "a629549f3ae48481a26e01e56cba0ecf9d9931c855c7add0cd2d6f524c3523f0",
+    "rows": [
+      {
+        "case": "v16S",
+        "critical_increment_us": 24.225,
+        "KV_logical_bytes": 8417280,
+        "KV_floor_us": 1.7536,
+        "total_attention_logical_bytes": 12087816,
+        "byte_floor_TB_s": 4.8,
+        "caveat": "Logical unique bytes are a compulsory-byte model, not measured DRAM traffic. Same unchanged sliding path in S14; native new batch remains unmeasured."
+      },
+      {
+        "case": "v32S",
+        "critical_increment_us": 29.824,
+        "KV_logical_bytes": 16834560,
+        "KV_floor_us": 3.5072,
+        "total_attention_logical_bytes": 18277384,
+        "byte_floor_TB_s": 4.8,
+        "caveat": "Logical unique bytes are a compulsory-byte model, not measured DRAM traffic. Same unchanged sliding path in S14; native new batch remains unmeasured."
+      }
+    ]
+  },
+  "native": [
+    {
+      "name": "C2P",
+      "cs": 2,
+      "cap": 1024,
+      "pipeline": true,
+      "cuda_sha256": "73241275d5db076f9973d59373689cdd06e07ed6328ba7a1bf4a518a237619c0",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/verify_resident/out/C2P.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN38_GLOBAL__N__b844c8d2_6_C2P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN38_GLOBAL__N__b844c8d2_6_C2P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x4c40"
+          ],
+          "history_copy": [
+            [
+              "0x7a0",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x7e0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R20.64], !P2"
+            ],
+            [
+              "0x940",
+              "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x970",
+              "LDGSTS.E.BYPASS.128 [R25+0x11000], desc[UR16][R18.64], !P0"
+            ],
+            [
+              "0xa00",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0xa40",
+              "LDGSTS.E.BYPASS.128 [R27+0x11000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0xa70",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R14.64], !P2"
+            ],
+            [
+              "0xa90",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0xf70",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0xfa0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R18.64], !P3"
+            ],
+            [
+              "0x1030",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P0"
+            ],
+            [
+              "0x1070",
+              "LDGSTS.E.BYPASS.128 [R27+0x11000], desc[UR16][R22.64], !P0"
+            ],
+            [
+              "0x1130",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R12.64], !P2"
+            ],
+            [
+              "0x11d0",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x11f0",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0x1200",
+              "LDGSTS.E.BYPASS.128 [R23+0x11000], desc[UR16][R24.64], !P1"
+            ],
+            [
+              "0x1620",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x1690",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R18.64], !P3"
+            ],
+            [
+              "0x17c0",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x17e0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R20.64], !P0"
+            ],
+            [
+              "0x1880",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R18.64], !P1"
+            ],
+            [
+              "0x18b0",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0x1a20",
+              "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0x1a80",
+              "LDGSTS.E.BYPASS.128 [R31+0x11000], desc[UR16][R26.64], !P2"
+            ],
+            [
+              "0x1d90",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x1dc0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R20.64], !P2"
+            ],
+            [
+              "0x1f30",
+              "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x1f60",
+              "LDGSTS.E.BYPASS.128 [R25+0x11000], desc[UR16][R18.64], !P0"
+            ],
+            [
+              "0x1ff0",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0x2030",
+              "LDGSTS.E.BYPASS.128 [R27+0x11000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0x2060",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R14.64], !P2"
+            ],
+            [
+              "0x2080",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0x2560",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x2590",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R18.64], !P3"
+            ],
+            [
+              "0x2620",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P0"
+            ],
+            [
+              "0x2660",
+              "LDGSTS.E.BYPASS.128 [R27+0x11000], desc[UR16][R22.64], !P0"
+            ],
+            [
+              "0x2720",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R12.64], !P2"
+            ],
+            [
+              "0x27c0",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x27e0",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0x27f0",
+              "LDGSTS.E.BYPASS.128 [R23+0x11000], desc[UR16][R24.64], !P1"
+            ],
+            [
+              "0x2c10",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x2c80",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R18.64], !P3"
+            ],
+            [
+              "0x2db0",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x2dd0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R20.64], !P0"
+            ],
+            [
+              "0x2e70",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R18.64], !P1"
+            ],
+            [
+              "0x2ea0",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0x3010",
+              "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0x3070",
+              "LDGSTS.E.BYPASS.128 [R31+0x11000], desc[UR16][R26.64], !P2"
+            ],
+            [
+              "0x3380",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x33b0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R20.64], !P2"
+            ],
+            [
+              "0x3520",
+              "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x3550",
+              "LDGSTS.E.BYPASS.128 [R25+0x11000], desc[UR16][R18.64], !P0"
+            ],
+            [
+              "0x35e0",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0x3620",
+              "LDGSTS.E.BYPASS.128 [R27+0x11000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0x3650",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R14.64], !P2"
+            ],
+            [
+              "0x3670",
+              "LDGSTS.E.BYPASS.128 [R29+0x11000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0x3ba0",
+              "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x3bd0",
+              "LDGSTS.E.BYPASS.128 [R3+0x11000], desc[UR16][R16.64], !P3"
+            ],
+            [
+              "0x3ca0",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x3cc0",
+              "LDGSTS.E.BYPASS.128 [R11+0x11000], desc[UR16][R20.64], !P2"
+            ],
+            [
+              "0x3d50",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R12.64], !P1"
+            ],
+            [
+              "0x3d80",
+              "LDGSTS.E.BYPASS.128 [R23+0x11000], desc[UR16][R14.64], !P1"
+            ],
+            [
+              "0x3d90",
+              "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR16][R16.64], !P0"
+            ],
+            [
+              "0x3da0",
+              "LDGSTS.E.BYPASS.128 [R3+0x11000], desc[UR16][R18.64], !P0"
+            ]
+          ],
+          "V_transpose": [
+            [
+              "0x4070",
+              "LDSM.16.MT88.4 R32, [R21]"
+            ],
+            [
+              "0x4120",
+              "LDSM.16.MT88.4 R36, [R11]"
+            ]
+          ],
+          "wait1": 3
+        }
+      ],
+      "dynamic_shared": 142336,
+      "no_C75": true
+    },
+    {
+      "name": "C4P",
+      "cs": 4,
+      "cap": 512,
+      "pipeline": true,
+      "cuda_sha256": "b71a19e1452d5c448677ec9e612b3fdde24456f7b0e0f0971e9bd2eb5afa6ac9",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/verify_resident/out/C4P.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN38_GLOBAL__N__37043d72_6_C4P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN38_GLOBAL__N__37043d72_6_C4P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x2f10"
+          ],
+          "history_copy": [
+            [
+              "0x830",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x860",
+              "LDGSTS.E.BYPASS.128 [R11+0x9000], desc[UR16][R18.64], !P3"
+            ],
+            [
+              "0x8f0",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P0"
+            ],
+            [
+              "0x930",
+              "LDGSTS.E.BYPASS.128 [R27+0x9000], desc[UR16][R22.64], !P0"
+            ],
+            [
+              "0x9a0",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R12.64], !P2"
+            ],
+            [
+              "0xa50",
+              "LDGSTS.E.BYPASS.128 [R29+0x9000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0xa80",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0xab0",
+              "LDGSTS.E.BYPASS.128 [R23+0x9000], desc[UR16][R24.64], !P1"
+            ],
+            [
+              "0xef0",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0xf90",
+              "LDGSTS.E.BYPASS.128 [R11+0x9000], desc[UR16][R18.64], !P3"
+            ],
+            [
+              "0x1080",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x10a0",
+              "LDGSTS.E.BYPASS.128 [R11+0x9000], desc[UR16][R20.64], !P0"
+            ],
+            [
+              "0x1140",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R18.64], !P1"
+            ],
+            [
+              "0x1170",
+              "LDGSTS.E.BYPASS.128 [R29+0x9000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0x13b0",
+              "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0x13f0",
+              "LDGSTS.E.BYPASS.128 [R31+0x9000], desc[UR16][R26.64], !P2"
+            ],
+            [
+              "0x1640",
+              "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x1680",
+              "LDGSTS.E.BYPASS.128 [R11+0x9000], desc[UR16][R20.64], !P2"
+            ],
+            [
+              "0x17b0",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x17f0",
+              "LDGSTS.E.BYPASS.128 [R27+0x9000], desc[UR16][R18.64], !P0"
+            ],
+            [
+              "0x18c0",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0x18d0",
+              "LDGSTS.E.BYPASS.128 [R29+0x9000], desc[UR16][R22.64], !P1"
+            ],
+            [
+              "0x1a20",
+              "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR16][R24.64], !P2"
+            ],
+            [
+              "0x1a30",
+              "LDGSTS.E.BYPASS.128 [R31+0x9000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x1e70",
+              "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR16][R12.64], !P3"
+            ],
+            [
+              "0x1eb0",
+              "LDGSTS.E.BYPASS.128 [R3+0x9000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x1f60",
+              "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR16][R16.64], !P2"
+            ],
+            [
+              "0x1f80",
+              "LDGSTS.E.BYPASS.128 [R7+0x9000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x2030",
+              "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR16][R10.64], !P1"
+            ],
+            [
+              "0x2050",
+              "LDGSTS.E.BYPASS.128 [R21+0x9000], desc[UR16][R12.64], !P1"
+            ],
+            [
+              "0x2060",
+              "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x2070",
+              "LDGSTS.E.BYPASS.128 [R25+0x9000], desc[UR16][R16.64], !P0"
+            ]
+          ],
+          "V_transpose": [
+            [
+              "0x2340",
+              "LDSM.16.MT88.4 R32, [R21]"
+            ],
+            [
+              "0x23f0",
+              "LDSM.16.MT88.4 R36, [R13]"
+            ]
+          ],
+          "wait1": 3
+        }
+      ],
+      "dynamic_shared": 76800,
+      "no_C75": true
+    },
+    {
+      "name": "C8P",
+      "cs": 8,
+      "cap": 256,
+      "pipeline": true,
+      "cuda_sha256": "6ed5a2a78e9384316285ac1e32f4a8a969fbe5dcfb8d7cbf2c0c37ebf2eb033a",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/verify_resident/out/C8P.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN38_GLOBAL__N__f2f4d073_6_C8P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN38_GLOBAL__N__f2f4d073_6_C8P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x2070"
+          ],
+          "history_copy": [
+            [
+              "0x7c0",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R16.64], !P2"
+            ],
+            [
+              "0x810",
+              "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x920",
+              "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R12.64], !P0"
+            ],
+            [
+              "0x950",
+              "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R16.64], !P0"
+            ],
+            [
+              "0xa00",
+              "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R18.64], !P1"
+            ],
+            [
+              "0xa40",
+              "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR16][R20.64], !P1"
+            ],
+            [
+              "0xa70",
+              "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R12.64], !P2"
+            ],
+            [
+              "0xaf0",
+              "LDGSTS.E.BYPASS.128 [R29+0x5000], desc[UR16][R22.64], !P2"
+            ],
+            [
+              "0xff0",
+              "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR16][R12.64], !P3"
+            ],
+            [
+              "0x1020",
+              "LDGSTS.E.BYPASS.128 [R3+0x5000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x10d0",
+              "LDGSTS.E.BYPASS.128 [R9+0x1000], desc[UR16][R16.64], !P2"
+            ],
+            [
+              "0x10f0",
+              "LDGSTS.E.BYPASS.128 [R9+0x5000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x11b0",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R10.64], !P1"
+            ],
+            [
+              "0x11d0",
+              "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR16][R12.64], !P1"
+            ],
+            [
+              "0x11e0",
+              "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0x11f0",
+              "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R16.64], !P0"
+            ]
+          ],
+          "V_transpose": [
+            [
+              "0x14a0",
+              "LDSM.16.MT88.4 R32, [R22]"
+            ],
+            [
+              "0x1550",
+              "LDSM.16.MT88.4 R36, [R13]"
+            ]
+          ],
+          "wait1": 3
+        }
+      ],
+      "dynamic_shared": 44032,
+      "no_C75": true
+    },
+    {
+      "name": "C16P",
+      "cs": 16,
+      "cap": 128,
+      "pipeline": true,
+      "cuda_sha256": "f91fe5133c4441b7035f8b3fe326ec57c766eb91f6ce856b0a18bb6d7e800782",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/verify_resident/out/C16P.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN39_GLOBAL__N__e5d411a6_7_C16P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:168 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN39_GLOBAL__N__e5d411a6_7_C16P_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1be0"
+          ],
+          "history_copy": [
+            [
+              "0x800",
+              "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR16][R12.64], !P3"
+            ],
+            [
+              "0x840",
+              "LDGSTS.E.BYPASS.128 [R7+0x3000], desc[UR16][R14.64], !P3"
+            ],
+            [
+              "0x8d0",
+              "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR16][R16.64], !P2"
+            ],
+            [
+              "0x910",
+              "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR16][R18.64], !P2"
+            ],
+            [
+              "0x9d0",
+              "LDGSTS.E.BYPASS.128 [R9+0x1000], desc[UR16][R10.64], !P1"
+            ],
+            [
+              "0xa10",
+              "LDGSTS.E.BYPASS.128 [R9+0x3000], desc[UR16][R12.64], !P1"
+            ],
+            [
+              "0xa40",
+              "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R14.64], !P0"
+            ],
+            [
+              "0xa60",
+              "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR16][R16.64], !P0"
+            ]
+          ],
+          "V_transpose": [
+            [
+              "0xbf0",
+              "LDSM.16.MT88.4 R20, [R13+UR4]"
+            ],
+            [
+              "0xd50",
+              "LDSM.16.MT88.4 R24, [R10+UR4]"
+            ],
+            [
+              "0x1080",
+              "LDSM.16.MT88.4 R24, [R19]"
+            ],
+            [
+              "0x1110",
+              "LDSM.16.MT88.4 R32, [R18]"
+            ]
+          ],
+          "wait1": 3
+        }
+      ],
+      "dynamic_shared": 27648,
+      "no_C75": true
+    },
+    {
+      "name": "C4S",
+      "cs": 4,
+      "cap": 512,
+      "pipeline": false,
+      "cuda_sha256": "0e78fa76ce1f530f987b0d390683510e4cff381e2347e1ee356c188fba69db0a",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/verify_resident/out/C4S.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN38_GLOBAL__N__25b1929c_6_C4S_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:151 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN38_GLOBAL__N__25b1929c_6_C4S_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x2fd0"
+          ],
+          "history_copy": [
+            [
+              "0x790",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R22.64], !P2"
+            ],
+            [
+              "0x7c0",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R24.64], !P2"
+            ],
+            [
+              "0x910",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R18.64], !P0"
+            ],
+            [
+              "0x950",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R22.64], !P0"
+            ],
+            [
+              "0xa00",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R24.64], !P1"
+            ],
+            [
+              "0xa30",
+              "LDGSTS.E.BYPASS.128 [R17+0x9000], desc[UR12][R26.64], !P1"
+            ],
+            [
+              "0xa90",
+              "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR12][R18.64], !P2"
+            ],
+            [
+              "0xac0",
+              "LDGSTS.E.BYPASS.128 [R31+0x9000], desc[UR12][R28.64], !P2"
+            ],
+            [
+              "0xf60",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R18.64], !P3"
+            ],
+            [
+              "0xf90",
+              "LDGSTS.E.BYPASS.128 [R17+0x9000], desc[UR12][R22.64], !P3"
+            ],
+            [
+              "0x1020",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R24.64], !P0"
+            ],
+            [
+              "0x1060",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R26.64], !P0"
+            ],
+            [
+              "0x10f0",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R10.64], !P2"
+            ],
+            [
+              "0x1120",
+              "LDGSTS.E.BYPASS.128 [R17+0x9000], desc[UR12][R22.64], !P2"
+            ],
+            [
+              "0x1210",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R24.64], !P1"
+            ],
+            [
+              "0x1220",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R28.64], !P1"
+            ],
+            [
+              "0x1630",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R18.64], !P3"
+            ],
+            [
+              "0x16b0",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R22.64], !P3"
+            ],
+            [
+              "0x17d0",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R18.64], !P0"
+            ],
+            [
+              "0x1820",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R24.64], !P0"
+            ],
+            [
+              "0x1860",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R22.64], !P1"
+            ],
+            [
+              "0x18c0",
+              "LDGSTS.E.BYPASS.128 [R17+0x9000], desc[UR12][R26.64], !P1"
+            ],
+            [
+              "0x1920",
+              "LDGSTS.E.BYPASS.128 [R33+0x1000], desc[UR12][R28.64], !P2"
+            ],
+            [
+              "0x19b0",
+              "LDGSTS.E.BYPASS.128 [R33+0x9000], desc[UR12][R30.64], !P2"
+            ],
+            [
+              "0x1d50",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R10.64], !P3"
+            ],
+            [
+              "0x1d60",
+              "LDGSTS.E.BYPASS.128 [R17+0x9000], desc[UR12][R18.64], !P3"
+            ],
+            [
+              "0x1ed0",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R20.64], !P2"
+            ],
+            [
+              "0x1f00",
+              "LDGSTS.E.BYPASS.128 [R15+0x9000], desc[UR12][R22.64], !P2"
+            ],
+            [
+              "0x1f80",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R8.64], !P1"
+            ],
+            [
+              "0x1fb0",
+              "LDGSTS.E.BYPASS.128 [R17+0x9000], desc[UR12][R10.64], !P1"
+            ],
+            [
+              "0x1fe0",
+              "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R2.64], !P0"
+            ],
+            [
+              "0x1ff0",
+              "LDGSTS.E.BYPASS.128 [R21+0x9000], desc[UR12][R18.64], !P0"
+            ]
+          ],
+          "V_transpose": [
+            [
+              "0x2240",
+              "LDSM.16.MT88.4 R24, [R22]"
+            ],
+            [
+              "0x22d0",
+              "LDSM.16.MT88.4 R32, [R9]"
+            ]
+          ],
+          "wait1": 0
+        }
+      ],
+      "dynamic_shared": 76800,
+      "no_C75": true
+    },
+    {
+      "name": "C8S",
+      "cs": 8,
+      "cap": 256,
+      "pipeline": false,
+      "cuda_sha256": "37cac2eaf1b8303d2fa1800bc4c9770dceb3e058ffb79d3e4d7be6ec6d90a3fd",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/verify_resident/out/C8S.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN38_GLOBAL__N__e0417f9d_6_C8S_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:151 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN38_GLOBAL__N__e0417f9d_6_C8S_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x2130"
+          ],
+          "history_copy": [
+            [
+              "0x750",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R10.64], !P3"
+            ],
+            [
+              "0x7e0",
+              "LDGSTS.E.BYPASS.128 [R15+0x5000], desc[UR12][R18.64], !P3"
+            ],
+            [
+              "0x920",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R10.64], !P0"
+            ],
+            [
+              "0x950",
+              "LDGSTS.E.BYPASS.128 [R15+0x5000], desc[UR12][R20.64], !P0"
+            ],
+            [
+              "0x9e0",
+              "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR12][R18.64], !P1"
+            ],
+            [
+              "0xa50",
+              "LDGSTS.E.BYPASS.128 [R31+0x5000], desc[UR12][R22.64], !P1"
+            ],
+            [
+              "0xbb0",
+              "LDGSTS.E.BYPASS.128 [R33+0x1000], desc[UR12][R24.64], !P2"
+            ],
+            [
+              "0xbe0",
+              "LDGSTS.E.BYPASS.128 [R33+0x5000], desc[UR12][R26.64], !P2"
+            ],
+            [
+              "0xf50",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R10.64], !P3"
+            ],
+            [
+              "0xf80",
+              "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR12][R18.64], !P3"
+            ],
+            [
+              "0x1020",
+              "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR12][R20.64], !P2"
+            ],
+            [
+              "0x1050",
+              "LDGSTS.E.BYPASS.128 [R15+0x5000], desc[UR12][R22.64], !P2"
+            ],
+            [
+              "0x1110",
+              "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R8.64], !P1"
+            ],
+            [
+              "0x1130",
+              "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR12][R10.64], !P1"
+            ],
+            [
+              "0x1140",
+              "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R2.64], !P0"
+            ],
+            [
+              "0x1150",
+              "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR12][R18.64], !P0"
+            ]
+          ],
+          "V_transpose": [
+            [
+              "0x13a0",
+              "LDSM.16.MT88.4 R24, [R22]"
+            ],
+            [
+              "0x1430",
+              "LDSM.16.MT88.4 R32, [R9]"
+            ]
+          ],
+          "wait1": 0
+        }
+      ],
+      "dynamic_shared": 44032,
+      "no_C75": true
+    }
+  ],
+  "edge": {
+    "records": [
+      {
+        "early": false,
+        "producer_start": 1792950608403546240,
+        "producer_end": 1792950608403694944,
+        "consumer_start": 1792950608403695456,
+        "consumer_wait_done": 1792950608403695904,
+        "overlap_ns": -512,
+        "fresh_replays": 32,
+        "correct": true
+      },
+      {
+        "early": true,
+        "producer_start": 1792950608473862208,
+        "producer_end": 1792950608474011680,
+        "consumer_start": 1792950608473862432,
+        "consumer_wait_done": 1792950608474012128,
+        "overlap_ns": 149248,
+        "fresh_replays": 32,
+        "correct": true
+      }
+    ],
+    "source_sha256": "b107372406361ed876f2f2d2e4b5d542a0b2917184d5dad5c33173e1593bc3e1"
+  },
+  "producer": {
+    "source": "S14 f1c77ce6 _vdsk_gemm",
+    "target": "sm90",
+    "grid": [
+      36,
+      3
+    ],
+    "shared": 196672,
+    "num_warps": 4,
+    "ptx_sha256": "9dc4eb7502677fccf490066547dab59b404f5caa1ff856b3c2f5a86557fb8cf4",
+    "has_programmatic_release": false,
+    "no_execution": true
+  },
+  "index": {
+    "cases": 96,
+    "passed": true
+  },
+  "component_cells": {
+    "standin": {
+      "reduction": "genuine nonspinning global-last-CTA",
+      "C2": "C4/CAP512 (sm120 shared limit)",
+      "other_caps": "unchanged",
+      "WGMMA": "exact mma.sync shim",
+      "native_performance_claim": false
+    },
+    "rows": [
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.689e-02 (worst row 9.913e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.689e-02 (worst row 9.913e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.689e-02 (worst row 9.913e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.689e-02 (worst row 9.913e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.676e-02 (worst row 9.932e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.676e-02 (worst row 9.932e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.667e-02 (worst row 9.914e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.667e-02 (worst row 9.914e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.689e-02 (worst row 9.913e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.689e-02 (worst row 9.913e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.676e-02 (worst row 9.932e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.676e-02 (worst row 9.932e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 1.007e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 1.007e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 1.007e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 1.007e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.645e-02 (worst row 9.939e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.645e-02 (worst row 9.939e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.642e-02 (worst row 9.937e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.642e-02 (worst row 9.937e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 1.007e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 1.007e-01) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.645e-02 (worst row 9.939e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.645e-02 (worst row 9.939e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.533e-02 (worst row 8.197e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.533e-02 (worst row 8.197e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.533e-02 (worst row 8.197e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.533e-02 (worst row 8.197e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.532e-02 (worst row 8.146e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.532e-02 (worst row 8.146e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.520e-02 (worst row 8.122e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.520e-02 (worst row 8.122e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.533e-02 (worst row 8.197e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.533e-02 (worst row 8.197e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.532e-02 (worst row 8.146e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 3,
+          "ctx": 4000,
+          "page": 1,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.532e-02 (worst row 8.146e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C2P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C2P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C4P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C4P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C8P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C8P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C16P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C16P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C4S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C4S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C8S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "name": "C8S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 5.706e-02 (worst row 7.903e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C2P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C2P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C4P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C4P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C8P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.128e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C8P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.128e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C16P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C16P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C4S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C4S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.127e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C8S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.128e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 4,
+          "ctx": 6000,
+          "page": 1,
+          "dist": "edges"
+        },
+        "name": "C8S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 8.239e-02 (worst row 1.128e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.150e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C2P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.150e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.150e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C4P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.150e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.648e-02 (worst row 8.120e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C8P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.648e-02 (worst row 8.120e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.102e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C16P",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.102e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.150e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C4S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.657e-02 (worst row 8.150e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.648e-02 (worst row 8.120e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 2,
+          "ctx": 300000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "name": "C8S",
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.648e-02 (worst row 8.120e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+      }
+    ]
+  },
+  "local_payload": {
+    "standin": {
+      "reduction": "genuine nonspinning global-last-CTA",
+      "C2": "C4/CAP512 (sm120 shared limit)",
+      "other_caps": "unchanged",
+      "WGMMA": "exact mma.sync shim",
+      "native_performance_claim": false
+    },
+    "shapes": 2,
+    "arms_per_shape": 10,
+    "seeds": 2,
+    "rounds": 2,
+    "reference_margin": 0.8,
+    "task": {
+      "v16S": {
+        "A": 2,
+        "A2": 2,
+        "C2P": 2,
+        "C4P": 2,
+        "C8P": 2,
+        "C16P": 2,
+        "C4S": 2,
+        "C8S": 2,
+        "RAW4": 2,
+        "RAW8": 2
+      },
+      "v32S": {
+        "A": 2,
+        "A2": 2,
+        "C2P": 2,
+        "C4P": 2,
+        "C8P": 2,
+        "C16P": 2,
+        "C4S": 2,
+        "C8S": 2,
+        "RAW4": 2,
+        "RAW8": 2
+      }
+    },
+    "one_attention_launch": true,
+    "native_multi_CTA_placement_verified": false
+  },
+  "H200_job_ids": [],
+  "promotion": "none; one native batch queued",
+  "normal_board": {
+    "tests": 16,
+    "shapes": 12,
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "X_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "G_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "P8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "ok": true
+  },
+  "forced_board": {
+    "tests": 16,
+    "shapes": 12,
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "X_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "G_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "P8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "ok": true
+  },
+  "queues": [
+    {
+      "pid": 2411468,
+      "priority": 0,
+      "t": 1792927118.258989,
+      "problem": "muse_decode_layer",
+      "file": "problems/muse_decode_layer/lab/lab_p5_global_attention.py",
+      "sha256": "0ccc25484dbe581002136aada0f66ca065d37a18ad8564c887102ca997e48d53",
+      "note": "P5 h200_lab: validate paired sliding+fullverify winners host 8e091fcb; one-launch decode1 full NS128/shared merge weights plus sliding B1/16/32 vs S11/last/direct-partials 16 seeds x8",
+      "not_before": 0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1029989,
+      "priority": 4.0,
+      "t": 1792947906.1692176,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/sliding_round2/out/sliding_round2_board.py",
+      "sha256": "295a2792bb092012c09c91d521a1d26ebe67e4cedcf7d5eb055d250fe516b7ff",
+      "note": "P5 second round: decode16/32 and verify1 sliding, one-launch token-aware last-CTA plus query partitions1/2/4/8, early-history, cooperative DSM and exact reset DSM control. One exact-S14 whole-layer payload:28 candidate shape-arms +A/A2,16 fresh seeds x12cold rounds, full public TASK checker20pct margin everyseed, CUPTI QKV/attn/gate/O increments, raw samples retained. Native3families x8specializations compile; early loads+V transpose before PDL wait SASS.100 fresh partial/page/scale/counter cells pass; board normal+forced16tests/12graphs/7static each, exact forced whole-layer payload all3shapes/allarms2seeds pass. Result-independent; priority4 behind existing0ccc2548/f1c270e6/0cec6706 reset queue; no replacement senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1465956,
+      "priority": 5.0,
+      "t": 1792951520.183782,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/lab/lab_resident_verify_lab.py",
+      "sha256": "a6c3423dcb2dab7d6521d95d34f52d5cc4fac6de85c090d9974082661fe266e0",
+      "note": "h200_lab problems/muse_attention_decode/dev/verify_resident/out/resident_verify_lab.py: P5 structural verify32/16: resident history before GDC wait; launch-completion graph edge preserves S14 QKV. CS2/4/8/16 pipeline, CS4/8 serial, RAW4/8 scheduling controls, A/A2; 24 fresh seeds x12 cold rounds; full TASK20pct margin every arm/seed with immediate cache checks; CUPTI critical increments and QKV/attention resources. Normal+forced16tests/12shapes/7static,72component cells,6native SASS prewait/noC75, actual graph-port visibility probe. Independent of reset; priority5 behind prior four P5 senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 3038721,
+      "priority": 2,
+      "t": 1792932711.092709,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/cluster_sliding/out/p5_dsm_board.py",
+      "sha256": "f1c270e6e12b7cb2abba0d00db7c54ce7aba10022427e605e3ff4730305264de",
+      "note": "P5 final attention check: sliding verify N128 DSM gang1/2/4/8/16, one-wave16/4/2 atB1/16/32; distribute norm/gate rows acrossSMs after global last-CTA serialized. Frozen e43 shader already native-gated79061182; 8 seeds x8, A2, strided partial gates. Exact normal+forced16/12/11 pass; sm120 uses genuine1CTA launch stand-in. Whole-layer pair built for reset.",
+      "not_before": 0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 3549805,
+      "priority": 3.0,
+      "t": 1792937178.918709,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/early_history/out/p5_early_history_board.py",
+      "sha256": "0cec67066689787d498240bfcef317bdf67827e26f3e23b38bb47f088bb59d98",
+      "note": "P5 early sliding history: finish 2048-key gather plus LDSM.T V transpose before PDL wait; 53.5KB to28.9KB dynamic shared. One batched exact-S14 f1c77ce6 whole-layer lab A/A2/OLD4/E4/E2/E1/L4,16 fresh seeds x12 cold rounds, full public TASK checks with20pct margin, CUPTI attention/gate/QKV increments and phase clocks. Normal+forced layer13/12/25, board16/12/8, 40 fresh partial/page/scale/counter cells; exact sm90a copy+transpose-before-ACQBULK proof. Preserve existing f1c270e6 and0ccc2548 senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    }
+  ]
+}

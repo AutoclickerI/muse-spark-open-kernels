@@ -1,0 +1,25 @@
+{
+  "job": "c6bd22e2084c4809",
+  "receipt": "runs/muse_prefill_layer/20261025T071342Z_check_c6bd22e2084c4809.json",
+  "receipt_sha256": "a629549f3ae48481a26e01e56cba0ecf9d9931c855c7add0cd2d6f524c3523f0",
+  "rows": [
+    {
+      "case": "v16S",
+      "critical_increment_us": 24.225,
+      "KV_logical_bytes": 8417280,
+      "KV_floor_us": 1.7536,
+      "total_attention_logical_bytes": 12087816,
+      "byte_floor_TB_s": 4.8,
+      "caveat": "Logical unique bytes are a compulsory-byte model, not measured DRAM traffic. Same unchanged sliding path in S14; native new batch remains unmeasured."
+    },
+    {
+      "case": "v32S",
+      "critical_increment_us": 29.824,
+      "KV_logical_bytes": 16834560,
+      "KV_floor_us": 3.5072,
+      "total_attention_logical_bytes": 18277384,
+      "byte_floor_TB_s": 4.8,
+      "caveat": "Logical unique bytes are a compulsory-byte model, not measured DRAM traffic. Same unchanged sliding path in S14; native new batch remains unmeasured."
+    }
+  ]
+}
