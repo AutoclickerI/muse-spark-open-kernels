@@ -68,15 +68,47 @@ TMA plus the portable arithmetic stand-in. Native sm90 has no stack/spills/C75.
 the original BF16 exponent with a packed-byte add, and remove per-output FP32
 scaling. It keeps all escapes at original precision. `direct_validation.json` passes
 all bit patterns and 936 WGMMA cases plus CP cases, max error 4.48e-6. The local
-24-cell lab also passes; H200 job **a645a795307b4c77** is accepted, result pending. It adds qkv3 and gate to measure the
+24-cell lab passes. H200 **a645a795307b4c77** landed: T1 qkv3/gate 7.55/7.02 us, paired
+0.9346/0.8769 of balanced; full qkv/pool 10.45/18.17 us (0.8843/0.8527). T32 qkv/pool
+still lose 1.0487/1.1045; O wins only T1 by 0.13 us; the slice loses. Direct WGMMA
+unpooler T16 wins 0.9383, T32 is nearly neutral 0.9917. None closes the 0.8 target. It adds qkv3 and gate to measure the
 actual S11 split path. This is unmeasured on H200 until its receipt lands.
 
 `build_rt2.py`: two 64-row A tiles share one CTA activation staging and TMA copy,
 reducing activation traffic repeated over output-row tiles. Preserve one decode
-per weight and measure register/residency costs. It passes all-bit round trips and 936 local arithmetic/capture cases. Native sm90 has no stack/spills/C75; T32 takes 162/165 registers at WB1/2. The paired 18-cell lab passed locally and is accepted on prefill as **93d1583417cc4c7e**; result pending.
+per weight and measure register/residency costs. It passes all-bit round trips and 936 local arithmetic/capture cases. Native sm90 has no stack/spills/C75; T32 takes 162/165 registers at WB1/2. The paired 18-cell lab passed locally. H200 **93d1583417cc4c7e** loses: T32 qkv/pool
+1.1514/1.1826, unpooler 1.1241; T16 qkv/pool 1.0735/1.0765, unpooler 1.0103.
+The reduced activation traffic does not compensate for this implementation's larger
+register/scheduling costs; that attribution is a model, not a counter measurement.
 
-Next: integration has the frozen S13 patch in commit 656cce1. Direct exponent reconstruction
-and two-tile reuse are queued on H200 (prefill host; proj quota spent). Read both results and
-apply only measured winners as separately removable whole-layer arms. Promote only by
-multi-seed identical-input whole-layer ratios. Then denser codes; `DENSER.md`
-records the escape-cost problem of naive 11-bit coding and a sparse-plane design.
+## Additional direct-qkv3 handoff
+
+**`patch_direct_qkv3.py` 2a4b14c9** applies on S13 **a70dd30c**, producing
+`s13_direct_qkv3_local.py` **37091cd8**. It codes the actual split qkv3 at T1,
+NW4/S32, k-major, direct BF16 exponent reconstruction. The bank uses uint8 packed
+codes and int32 origin/base/escape metadata; no FP32 scale or widened weight values.
+Prepare derives the qkv3 view and encodes it before any tuner can call the row.
+An initial late-initialization failure stayed local and was fixed by this ordering.
+
+`patch_direct_o.py` **f703e6d5** is an independently removable O-T1 experiment,
+not a default recommendation: its 6.68 vs 6.81 us /0.9740 standalone result has not
+beaten S11's stream override in a layer pair. It composes with qkv3, producing
+**7f87e3f0**. Both the qkv3-only and combined candidates pass normal and forced
+13/12/23 screens with cloned weight/code banks; `direct_handoff.json` pins them.
+The same unchanged literal CUDA source/flag units reuse S13's completed compile
+proof. New direct native code has its own sm90 proof and H200 receipt; runtime
+checks rerun for each exact candidate. The optional O row preserves its measured
+prew=0; any attempt to change prefetch ordering needs chain timing.
+
+`build_short.py` is the next register-lifetime experiment. The first K16-at-a-time
+form passed local arithmetic but triggered native C7513 serialization and stayed
+local. The revised form decodes two K16 fragments before each fence, aiming to
+halve A operand storage while preserving an asynchronous group. Native validation
+and timing are in progress. This is not the previously tested half-activation-load
+variant: the new change affects WGMMA A-operand lifetime and commit granularity.
+
+Next: integration pairs the S13 rows and direct-qkv3/O pieces independently.
+The larger-T and slice gap remains open; finish native admission and pair the
+shorter A-lifetime form on H200, then choose the next representation from the
+measured bottleneck. `DENSER.md` records the escape-cost problem of naive 11-bit
+coding and a sparse-plane design. No new candidate is promoted from local timing.

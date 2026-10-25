@@ -54,7 +54,7 @@ def lab(deadline, weights, state):
         # local_eval disables FA3 scheduler metadata on its reference inputs. Apply that same portable
         # fixture behavior here; the judge uses the original scheduler on H200.
         generator = ab_namespace({'_ap_fa3_scheduler_metadata': lambda *a, **kw: None})['_ap_generate_input']
-    lines = ['META S13 leave-one-out; 16 seeds (+7919), 8 rotating rounds, cold L2 before every replay; r=arm/A (>1 S13 wins)',
+    lines = ['META S13 leave-one-out; 16 seeds (+7919), 32 rounds at decode1 / 8 elsewhere, cold L2 before every replay; r=arm/A (>1 S13 wins)',
              'META arms=' + ','.join(S13_VARIANTS) + '; A2=A:A; S12=all new pieces removed; unchanged loads are controls']
     ns = {'A': ab_namespace({})}
     states = {'A': state}
@@ -130,7 +130,7 @@ def lab(deadline, weights, state):
             torch.cuda.synchronize()
             for name, (_, output) in graphs.items():
                 if name != 'A' and (reason := ab_gate(output, graphs['A'][1])):gates.setdefault(name, reason)
-            times = ab_time(graphs, AB_ROUNDS)
+            times = ab_time(graphs, 32 if t == 1 else AB_ROUNDS)
             per_seed.append({name: statistics.mean(values) for name, values in times.items()})
         if per_seed:
             results[key] = (ab_summary(per_seed), gates)

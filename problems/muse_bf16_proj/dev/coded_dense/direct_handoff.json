@@ -1,0 +1,45 @@
+{
+  "base_sha256": "a70dd30c6a4ac81fc78a5728dc1e52ce1a3addbf0ed1f51d1ab8b80641ea49f9",
+  "patches": {
+    "qkv3": {
+      "path": "patch_direct_qkv3.py",
+      "sha256": "2a4b14c9a0c5909e11c2cc2dc4192c7248b540767331491a9a64c071c9b335c0"
+    },
+    "o": {
+      "path": "patch_direct_o.py",
+      "sha256": "f703e6d531a4c670311f7c8aec16b4bdb71dccd3b863a290ebcc61177234bc27"
+    }
+  },
+  "screens": {
+    "s13_direct_qkv3_local.py": {
+      "sha256": "37091cd8a150253cfb4da5d6c03239295cfc1465a8f05757d4244fd499d492c2",
+      "results": {
+        "normal": {
+          "tests": 13,
+          "shapes": 12,
+          "static": 23
+        },
+        "forced": {
+          "tests": 13,
+          "shapes": 12,
+          "static": 23
+        }
+      }
+    },
+    "s13_direct_o_local.py": {
+      "sha256": "7f87e3f0255cf7d4a90362c67f1a26483a4d4ae817af9ec215e0be4dcb97b054",
+      "results": {
+        "normal": {
+          "tests": 13,
+          "shapes": 12,
+          "static": 23
+        },
+        "forced": {
+          "tests": 13,
+          "shapes": 12,
+          "static": 23
+        }
+      }
+    }
+  }
+}

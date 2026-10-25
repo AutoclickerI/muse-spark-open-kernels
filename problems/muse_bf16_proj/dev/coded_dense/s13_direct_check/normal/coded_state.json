@@ -1,0 +1,230 @@
+{
+  "('cp', 'qkv_gate', True)": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        28311552
+      ],
+      "bytes": 28311552
+    },
+    "scales": {
+      "dtype": "torch.float32",
+      "shape": [
+        144
+      ],
+      "bytes": 576
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        18433
+      ],
+      "bytes": 73732
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        1341,
+        2
+      ],
+      "bytes": 10728
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        144
+      ],
+      "bytes": 576
+    }
+  },
+  "('cp', 'pool_router', True)": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        56623104
+      ],
+      "bytes": 56623104
+    },
+    "scales": {
+      "dtype": "torch.float32",
+      "shape": [
+        288
+      ],
+      "bytes": 1152
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        36865
+      ],
+      "bytes": 147460
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        3569,
+        2
+      ],
+      "bytes": 28552
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        288
+      ],
+      "bytes": 1152
+    }
+  },
+  "('wg', 'qkv_gate', True)": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        28311552
+      ],
+      "bytes": 28311552
+    },
+    "scales": {
+      "dtype": "torch.float32",
+      "shape": [
+        144
+      ],
+      "bytes": 576
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        18433
+      ],
+      "bytes": 73732
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        1341,
+        2
+      ],
+      "bytes": 10728
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        144
+      ],
+      "bytes": 576
+    }
+  },
+  "('wg', 'unpooler', True)": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        50331648
+      ],
+      "bytes": 50331648
+    },
+    "scales": {
+      "dtype": "torch.float32",
+      "shape": [
+        512
+      ],
+      "bytes": 2048
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        32769
+      ],
+      "bytes": 131076
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        2930,
+        2
+      ],
+      "bytes": 23440
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        512
+      ],
+      "bytes": 2048
+    }
+  },
+  "('direct', 'qkv3')": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        15728640
+      ],
+      "bytes": 15728640
+    },
+    "origin": {
+      "dtype": "torch.int32",
+      "shape": [
+        80
+      ],
+      "bytes": 320
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        10241
+      ],
+      "bytes": 40964
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        1493,
+        2
+      ],
+      "bytes": 11944
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        80
+      ],
+      "bytes": 320
+    }
+  },
+  "('direct', 'o')": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        12582912
+      ],
+      "bytes": 12582912
+    },
+    "origin": {
+      "dtype": "torch.int32",
+      "shape": [
+        512
+      ],
+      "bytes": 2048
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        8193
+      ],
+      "bytes": 32772
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        852,
+        2
+      ],
+      "bytes": 6816
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        512
+      ],
+      "bytes": 2048
+    }
+  }
+}

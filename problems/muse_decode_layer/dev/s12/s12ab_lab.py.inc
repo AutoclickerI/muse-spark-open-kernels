@@ -37,8 +37,10 @@ def s12_namespace(name, spec, state):
     for key, code in s12_assignments(source).items():
         if key not in ('_GEMV_CHOICES', 'NF_OPTS') and host_assign.get(key) == code and key in g and not callable(g[key]):
             ns[key] = g[key]
-    # Seed the source's actual projection choices, independently of the S12 host's mutable choices.
-    ns['_seed_v9_gemv_choices'](state)
+    # Preserve prepare's full choices, including split-QKV. A V9-only reseed silently drops QKV3.
+    for key in ('GB_ROWS', 'GATE_SPLIT_QKV3', 'GATE_SPLIT_ROWS'):
+        assert ns[key] == g[key], (name, key)
+    ns['_GEMV_CHOICES'] = dict(g['_GEMV_CHOICES'])
     return ns
 
 

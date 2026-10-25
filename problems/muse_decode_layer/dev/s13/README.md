@@ -88,3 +88,16 @@ S11/S12 unchanged controls all pass. The final conditional lab increases decode1
 no-cpall source **958f1258**. This resolves the S12 coding uncertainty and tests every retained S13 piece
 on the final composition. Its normal/forced each already pass 13 tests, 12 graph shapes, 25 static checks.
 Manifests for the earlier composition are archived in `trials/m256_cpall_4bb0fdd5/`.
+
+## Final conditional check pending
+
+**cb38a0503a434573**, wrapper **0c627bd2**, source **958f1258** (attention + PERMW256, no cpall), accepted.
+16 seeds, **32 rotating rounds at decode1**, 8 elsewhere; same S12/S11 controls and direct S12 subpairs.
+The full local wrapper lab passes all 12 shapes, all gates, 13 tests and 25 static checks (42.4 s lab).
+Normal/forced source admission also passes 13 tests, 12 graph shapes, 25 static checks each.
+`admission.json` followup and `s13finalab_manifest.json` pin these exact sources. The earlier 8-round no-cpall
+wrapper **299c5d08** also passed local admission but was never sent; 32-round decode1 supersedes it.
+
+Next: collect cb38a0503a434573, run `report.py cb38a050 --manifest dev/s13/s13finalab_manifest.json`
+(with the full repo-relative manifest path), and freeze only if both the S13 and corrected S12 gates pass.
+An attention-only source is being screened as a contingency while the judge runs; no speculative extra send.

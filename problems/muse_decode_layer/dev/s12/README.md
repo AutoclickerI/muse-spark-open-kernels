@@ -11,6 +11,13 @@ onto S11 final. Orchestrator owns the scored send; this lane has not sent a scor
 The all-three precursor and its compact wrapper **c64aed26** passed full admission and decode check
 **937801feb77b4302**. This README's frozen section records the final selection from both whole-layer runs.
 
+The S13 takeover found and fixed an inherited A/B namespace bug: V9 reseeding dropped real prepare's
+split-QKV choice, inflating decode-1 reversion timings and moving unchanged decode controls. The S12
+harness now copies/asserts the complete prepared choices; old sent manifests/receipts remain archived.
+F4/wide verify comparisons are unaffected. Corrected S12 coding-off in **4de869d4** is +1.8602%, positive
+but inside that run's A:A upper +2.0506%; the final 32-round decode1 recheck is running in S13's lab.
+The source **240248b2** remains frozen and locally admitted; its coding promotion proof is being revalidated.
+
 Tested pieces:
 
 

@@ -4,7 +4,9 @@
     "cells": 24,
     "payload_sha256": "7797122b5e668d6ea0e957e90aaf67da92bd77c8e42b1687719c00cc662b7383",
     "validation": "direct_validation.json",
-    "job": "a645a795307b4c77"
+    "job": "a645a795307b4c77",
+    "status": "done",
+    "result": "T1 qkv3 0.9346; gate 0.8769; qkv 0.8843; pool 0.8527 vs balanced. No extension to T32 qkv/pool or O beyond small T1 gain."
   },
   "rt2": {
     "passed": true,
@@ -12,6 +14,8 @@
     "payload_sha256": "3abfa9711aba7360f74b27d8843ecc6b007576e1a6a4ecc92207755329f503c8",
     "validation": "rt2_validation.json",
     "dispatch": "523b0723f6c01ee9",
-    "job": "93d1583417cc4c7e"
+    "job": "93d1583417cc4c7e",
+    "status": "done",
+    "result": "Loses: T32 qkv/pool/unpooler 1.1514/1.1826/1.1241 of balanced; T16 1.0735/1.0765/1.0103"
   }
 }
