@@ -2,12 +2,13 @@
 
 `audit.py` runs `tools/local_eval.py` through S9's dispatch audit, recursively inventories the complete retained
 state (including adapter objects and closures), and independently decodes every coded dense bank bit-for-bit.
-`normal/precision_inventory.json` records all 78 tensors of current candidate `a92b6619` (the same
-representations as original `7d4216dd`, with T=8 coded dispatch removed);
-`forced/precision_inventory.json` records 118, including Hopper adapter layouts. Both full screens pass
-13 tests, 12 scored-shape graph captures, and 23 static checks. Aliases are marked rather than counted as
+Frozen final **240248b2** is inventoried in `final_screen/normal/precision_inventory.json` (78 tensors)
+and `final_screen/forced/precision_inventory.json` (118 tensors, including Hopper adapters). Both screens pass
+13 tests, 12 graph captures and 23 static checks; `final_admission.json` pins the exact hash. The heavy bank
+uses the original interleaved packed layout, with no wide permutation. The earlier `normal/` and `forced/`
+inventories belong to the a92b6619 all-three precursor. Tensor aliases are marked rather than counted as
 different encodings. Humming's global weight_scale_2 tensors remain FP32, its weight_scale tensors remain
-E4M3, and its int32 words hold packed E2M1 nibbles. CPU int64 kernel configurations are launch metadata.
+E4M3, and int32 words hold packed E2M1 nibbles. CPU int64 kernel configurations are launch metadata.
 
 | State tensors | Contents and precision |
 |---|---|
@@ -17,7 +18,7 @@ E4M3, and its int32 words hold packed E2M1 nibbles. CPU int64 kernel configurati
 | coded_dense.*.scales, base | One exact power-of-two FP32 window scale and int32 base per 16 rows, encoding the original BF16 exponent window; no expanded per-weight values |
 | coded_dense.*.esc, eoff | Int32 coordinates plus original BF16 16-bit patterns for escapes; int32 per-tile offsets. Decode is bit-exact against original BF16 weights |
 | moe_bank{,_raw}.w13p/w2p; s4_nt1_bank.banks.lop3.* | Packed E2M1 nibbles plus raw or losslessly recoded E4M3 scale bytes, 9 bytes per 16 weights |
-| s5_hh_base.w13/w2 | Packed E2M1 nibbles in int32 words; gate/up row interleave and wide-bank permutation preserve original codes |
+| s5_hh_base.w13/w2 | Packed E2M1 nibbles in int32 words; gate/up row interleave preserves original codes |
 | s5_hh_base.w13_sf/w2_sf | uint8 E4M3 scale-code recode/permutation, 1 byte per 16 weights; no widened scales |
 | moe6_adapters.raw17.blob13/blob2, sfb13/sfb2 | Packed E2M1 codes and byte E4M3 scales in the raw17 layout, respectively; no dequantized prepare bank |
 | moe6_adapters.w13p/w2p (Hopper) | Same packed E2M1/E4M3 representation for timed expansion inside the DeepGEMM path |
@@ -32,7 +33,3 @@ KV remains the input FP8 cache. Activations and intermediate buffers follow S11'
 and accumulations are FP32. F4 assigns disjoint output-channel slices to four CTAs with the same per-channel
 arithmetic and reduction order. Co-residency is excluded after its H200 loss.
 
-Frozen no-wide S12 final **240248b2**: full state audit and independent dense decode checks passed in
-`final_screen/{normal,forced}/precision_inventory.json`. Same 78 / 118 tensor representations as above,
-with the original packed-code / uint8-scale heavy layout in `s5_hh_base` (no wide permutation).
-Both modes pass 13 tests, 12 graphs and 23 static checks; `final_admission.json` pins the exact source.

@@ -1,21 +1,24 @@
 # P4: S12 integration
 
-Base: `cand_r3_best7_s11_final.py` **acda6c62** (full SHA in build.py). Current candidate:
-`cand_r3_best7_s12.py` **a92b6619**; normal/forced screens pass 13 tests, 12 graph captures and 23 static checks
-each. Compact wrapper **c64aed26** also passes 13 tests, 23 static checks and its complete 12-shape/16-seed/8-round
-lab. Second decode check **937801feb77b4302** is accepted; no final freeze yet.
+Frozen candidate: `cand_r3_best7_s12_final.py` **240248b2**, on exact S11 final **acda6c62**.
+It retains T=1 coding and F4, dropping wide banks. Normal/forced each pass 13 tests, 12 graphs and 23 static
+checks; `final_admission.json` pins that source. `final_patch.py` **de387aef** is the frozen repository handoff
+onto S11 final. Orchestrator owns the scored send; this lane has not sent a scored candidate.
 
-`build.py` asserts the base and every snapshot hash in `pieces.json`, records intermediate hashes in
-`manifest.json`, and supports `--without <name>`. `patch.py` **f186750c** is the aggregate repository handoff
-onto exact acda6c62; dependencies and output are pinned by the manifest. No scored send from this lane.
+`build.py --without wide` reproduces the final source. Its default all-three trial remains
+`cand_r3_best7_s12.py` **a92b6619**; `patch.py` reconstructs that experiment, not the frozen handoff.
+`build.py` asserts the base and every snapshot hash in `pieces.json` and records intermediate hashes.
+The all-three precursor and its compact wrapper **c64aed26** passed full admission and decode check
+**937801feb77b4302**. This README's frozen section records the final selection from both whole-layer runs.
 
-Current pieces:
+Tested pieces:
+
 
 - `coded`: **T=1 only**, qkv_gate and pool_router; snapshot `patch_coded_t1_92e22450.py`. T=8 was removed after
   its whole-layer loss below. Gate split bypasses the coded qkv in scored T=1 calls; pool_router runs coded.
   The prepare bank lives in state so judge tensor clones retain the correct encoded weights.
 - `final4`: `patch_final4_ef041fd4.py`, N_full finalizer split over four CTAs per token.
-- `wide`: `patch_wide_b2748e23.py`, lossless heavy packed-bank permutation and three LDS.128 loads per stage.
+- `wide` (dropped from final): `patch_wide_b2748e23.py`, lossless heavy packed-bank permutation and three LDS.128 loads per stage.
 - Small-M keeps S11 flags {1:95, 8/16/32:69}. Co-residency and verify-dense epilogue are excluded.
 
 Promotion gate (orchestrator clarified): every changed load must win; each retained piece must win its
