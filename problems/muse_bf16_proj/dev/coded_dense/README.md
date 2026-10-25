@@ -143,9 +143,17 @@ in the supported k-major/WB2 configuration; max error 4.48e-6. All 18 local lab
 cells pass their unchanged mathematical gates and graph captures. Local timing
 uses two rounds and a small read flush only as a smoke screen, never for ranking;
 the remote payload retains 3 seeds x16 cold ABBA rounds and the 1 GiB read flush.
-H200 prefill job **a39a1f05649647ec** is accepted; its detached collector is running.
+H200 prefill job **a39a1f05649647ec** landed (3 seeds x16 rounds, all gates pass):
+T16 qkv 11.35 vs balanced 12.13 us, paired 0.9387; original WG 11.61 (0.9521).
+T16 pool 20.81 vs 21.19 (0.9835), but balanced NS2 20.78 is slightly faster.
+T16 unpooler 16.82 vs 18.28 (0.9175), matching original WG 16.73/0.9174.
+T32 qkv/pool 12.93/23.56 vs 12.49/22.16 (1.0356/1.0655); unpooler
+18.22 vs 18.78 (0.9717), original WG 18.29/0.9754. O/slice lose. T1 qkv3
+is neutral 0.9942, so direct-qkv3 remains the stronger handoff. No new promotion: the
+bulk ring does not close T32 and its small gain over WG lacks whole-layer evidence.
+Dense ownership now belongs to P10b (`dev/public_nf/`); this lane stops dense work.
 
-Next: integration pairs direct-qkv3 and WGMMA T16 independently. The larger-T and
-slice gap remains open; screen and pair the bulk-code pipeline. `DENSER.md`
-records the escape-cost problem of naive 11-bit coding and a sparse-plane design.
-No new candidate is promoted from local timing.
+Integration pairs direct-qkv3 and WGMMA T16 independently. Dense follow-up belongs
+to P10b. This lane now owns full attention at decode/verify 16/32; no further dense
+variants are planned here. `DENSER.md` and `plane_sizes.json` preserve the measured
+representation tradeoffs for the new dense owner.
