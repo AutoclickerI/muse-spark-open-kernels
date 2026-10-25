@@ -62,18 +62,10 @@ The full payload completes locally in17.36s within105s, with12 phase seeds.
 SM120 uses immediate MMA to execute the same bank/shared/scratch/route glue;
 its times do not rank H200.
 
-The owner requested one lab **after09:00 KST** on proj. `--not-before
-2026-10-25T09:01:00+09:00` freezes the snapshot now, keeps it outside dispatch
-order, and prevents service reads/sends until release. Other lanes' ready labs
-are not absorbed into this delay. `check_send_gate.py` verifies this with a
-simulated clock and fake sender, including timezone handling and queue order;
-it does not sleep or contact the service. Actual frozen identity: **d8d3a89cb3436100**, held until **2026-10-25
-09:01 KST**; detached log inspected. The queued wrapper matches the fully
-screened file byte-for-byte. Its identity and log are in `sent.json`. A scheduled key is not a judge job id; the latter exists only
-after release and judge acceptance. No new H200 performance is claimed.
+Sent on proj with `--not-before 2026-10-25T09:01:00+09:00` (send **d8d3a89cb3436100**,
+byte-identical to the screened file; `sent.json`); judge job `4c469bf9ef9645b1`.
 
 Reproduce: `build.py`, build on the proj host with `tools/h200_lab.py build`,
 then `tools/img python native.py` and GPU0 `tools/img env MAX_JOBS=2 python
-check.py` / `check_edges.py`. On resume inspect the single scheduled log/receipt
-once and act on complete paired means. Emit a fixed winning cell for decode
-only after its H200 verdict.
+check.py` / `check_edges.py`. Emit a fixed winning cell for decode
+from its complete paired H200 means.

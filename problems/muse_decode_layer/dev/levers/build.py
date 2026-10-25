@@ -332,40 +332,6 @@ def render(m):
     return '\n'.join(lines)
 
 
-def refresh_plan(model):
-    """Refresh Status only from a landed candidate, preserving other lanes' work."""
-    if model['mode']=='reset':return False
-    import datetime
-    path=R/'docs/PLAN.md';s=path.read_text()
-    def replace_bullet(prefix,text):
-        nonlocal s
-        pattern=r'^'+re.escape(prefix)+r'.*(?:\n  [^\n]*)*'
-        s,n=re.subn(pattern,lambda _:text,s,count=1,flags=re.M)
-        assert n==1,(prefix,path)
-    rows=model['rows'];ratio=lambda r,stage:r['stages_us'][stage]/r['floors_us'][stage]
-    moe=[ratio(r,'moe') for r in rows]
-    attention=[ratio(r,'attention') for r in rows if r['case']['layer']=='full']
-    projections=[sum(r['stages_us'][k] for k in ROLES)/sum(r['floors_us'][k] for k in ROLES) for r in rows]
-    glue=[r['stages_us']['boundaries']+r['stages_us']['route'] for r in rows]
-    replace_bullet('- Where our layer time goes',
-        f'- Where our layer time goes ({model["mode"]} H200 profile `{model["job"]}`): visible MoE '
-        f'{min(moe):.1f}-{max(moe):.1f}x its one-read floor, full attention '
-        f'{min(attention):.1f}-{max(attention):.1f}x, projections {min(projections):.1f}-{max(projections):.1f}x; '
-        f'boundaries+route {min(glue):.1f}-{max(glue):.1f} us per layer.\n'
-        f'  Measured source score {model["baseline_source_speedup"]:.6f}x; current correction model '
-        f'{model["modeled_speedup"]:.6f}x. Profile sums include PDL waits; exposed savings require paired layer evidence.')
-    gains=', '.join(f'{x["owner"]} +{x["gain_pct"]:.1f}%' for x in model['ranking'])
-    replace_bullet('- Lever table',
-        f'- Lever table (`problems/muse_decode_layer/dev/NEXT_CHECKS.md`, {model["mode"]} `{model["job"]}`): '
-        f'independent overall gains at1.3x each floor: {gains}.\n'
-        '  These are profile-duration headrooms, not measured whole-layer gains; do not add percentages.')
-    now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-    s,n=re.subn(r'^## Status \([^\n]*\)',f'## Status ({now.strftime("%Y-%m-%d %H:%M")} KST)',s,count=1,flags=re.M)
-    assert n==1
-    path.write_text(s)
-    return True
-
-
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--receipt',type=Path);ap.add_argument('--out',type=Path);a=ap.parse_args()
     tag,path,d=choose_source(a.receipt);model=make_model(tag,path,d)
@@ -386,7 +352,7 @@ def main():
     model['verification']=dict(shapes=12,loads=6,source_score_reproduced=True,projection_groups_close=True,
                                corrections_applied_once=True,negative_gain_clamped=True,profile_rounding_tolerance_us='0.05 * (visible rows + 1)')
     out=a.out or H.parent/'NEXT_CHECKS.md';out.write_text(render(model));(H/'current.json').write_text(json.dumps(model,indent=2)+'\n')
-    print('source',tag,model['job'],'score',model['baseline_source_speedup'],'model',model['modeled_speedup'],'PLAN updated',refresh_plan(model))
+    print('source',tag,model['job'],'score',model['baseline_source_speedup'],'model',model['modeled_speedup'])
     for i,x in enumerate(model['ranking'],1):print(i,x['owner'],f'{x["gain_pct"]:.4f}%',x['lever'])
 
 if __name__=='__main__':main()

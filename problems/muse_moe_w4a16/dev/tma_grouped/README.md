@@ -78,13 +78,10 @@ Reproduce with `CUDA_VISIBLE_DEVICES=0 tools/img python` and:
 - `env TORCH_CUDA_ARCH_LIST=9.0a python problems/muse_moe_w4a16/dev/tma_grouped/validate.py --compile90`
 
 Do not regenerate the frozen candidate after handoff; future variants need a new name.
-H200 execution/cold prepare/choices/speed and decode-layer integration remain unverified.
+H200 `c8c89f9f111845af`: all 12 choices lose (FINDINGS "MoE grouped TMA").
 
 Precision audit (2026-10-24): raw17 banks retain packed NVFP4 bytes and E4M3 scale bytes, only permuted; no BF16/FP8 expanded weight bank is prepared. FP32 dequant in `_tg_reference` is diagnostic-only and not returned in state or read by timed kernels. `cand_v11_gemm` likewise retains packed/scaled expert weights in prepare and expands inside `_experts_dequant` on every timed call.
 
-The inherited V9 prefix is different: `_encode_scales` rebiases scales into uint8
-exponent/mantissa codes and folds sign/zero into FP4 nibbles. It is exact and has
-no floating-point expanded bank, but it is not a permutation of the stored E4M3
-bytes. Only the new raw17 bank passes that stricter literal byte-preservation
-audit. This withdrawn candidate is not cleared for resubmission under the newer
-scale-layout instruction; do not copy its inherited encoder into new work.
+The inherited V9 prefix's `_encode_scales` rebiases scales into uint8
+exponent/mantissa codes and folds sign/zero into FP4 nibbles: exact and same-size,
+the lossless recode S1 uses (CONSTRAINTS "Boundary cases").

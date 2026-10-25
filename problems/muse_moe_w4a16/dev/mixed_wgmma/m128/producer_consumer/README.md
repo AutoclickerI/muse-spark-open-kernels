@@ -3,9 +3,8 @@
 Serves G1/G2: improve M128 MoE inside the decode-layer score. The fixed H_H
 incumbent is234.44us on H200770809cf: NT1 for expert count<=16 and packed
 WGMMA32 above16 in both W13 and W2, then distributed norm/combine. The
-threshold sweep **d8d3a89cb3436100** is held for09:01 KST. This lab is built
-now and **must not be sent until that receipt lands**. There is no new judge
-send or performance claim from this structure yet.
+threshold sweep (send d8d3a89cb3436100) runs as judge job `4c469bf9ef9645b1`.
+This lab is built and unsent; it makes no performance claim yet.
 
 ## Why the small-M D split lost
 
@@ -134,5 +133,3 @@ exercise the local scheduling, not Hopper's asynchronous MMA engine.
 Reproduce: `build.py`, build with `tools/h200_lab.py build` on proj, then
 `tools/img python audit.py`, GPU0 `tools/img env MAX_JOBS=2 python check.py`,
 `check_edges.py`, `check_exact.py`; sanitizer command is in `admission.json`.
-Do not edit the scheduled threshold snapshot or spend another host quota
-before it lands. No send watcher or prerequisite polling loop is installed.

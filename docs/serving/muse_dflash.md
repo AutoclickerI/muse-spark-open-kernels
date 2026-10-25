@@ -153,8 +153,8 @@ checks (observed stock spread0);14 forced Hopper ABI cases;16 SM90 pointwise spe
 and the SM90a dense utility compile. The projection diagnostic passes9/9 official tests and
 30/30 fresh-input graph shapes, with45.854s prepare. All48 diagnostic comparisons complete;
 none is rejected/skipped. The50 compact DFB lines occupy5,619 characters and fit the last16K.
-The ready SHA and reproduction commands live in
-`problems/muse_bf16_proj/dev/NEXT_CHECKS.md`. Evidence: `runs/screen/serving_dflash/`.
+The ready SHA and reproduction commands are in git `e8d710f:problems/muse_bf16_proj/dev/NEXT_CHECKS.md`.
+Evidence: `runs/screen/serving_dflash/`.
 Local unary medians are6.144->4.096us at C1 and8.192->4.096us at C4/16/32. Dense choices
 vary by shape; convolution is at local parity and selector fusion can regress. Wire those
 paths only after the H200 comparison confirms a win; sm_120 timing does not predict it.

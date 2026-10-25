@@ -1,9 +1,7 @@
-Current batch: e0712c33 was superseded before dispatch by **b098ec3e0876b70a**,
-releasing2026-10-25 09:00:20KST on proj. It retains original producer clocks
-and the verify1 FA3 pair, and adds native FP8 WGMMA vs FA3. See
-[the selected native design](../native_verify8/README.md). The explicit
-widening design below lost the static tile-instruction comparison776vs1224;
-only native is added to the batch. Conditional rescale9828bfa0 is closed.
+The lab ran as `a1679f9c6f6b4c70` (send b098ec3e, proj): original producer clocks,
+the verify1 FA3 pair and [native FP8 WGMMA](../native_verify8/README.md) vs FA3. The
+explicit widening design below lost the static tile-instruction comparison 776 vs 1224
+and was not sent.
 
 # Hopper producer diagnosis and paired attention lab
 
@@ -75,13 +73,7 @@ Native FA3 cannot execute on sm120: its Python/Triton glue is forced through
 a portable operation; its local timing is not used as an FA3 measurement.
 Both payloads pass undefined-name/signature checks and native sm90a builds.
 Warm full control-flow exercises take4.8s/0.22s and print3601/997 characters,
-inside each80s/4500-character share. Cold H200 compilation remains unverified.
-
-Scheduled batch: send key `e0712c33ab1cb715`, proj host, priority0.8,
-`--not-before 2026-10-25T09:00:20+09:00`. The detached log confirms the
-hold and no early judge request. There is no judge job ID until dispatch.
-Read the `verify8_producer_phases` and `verify1_sliding_fa3_pair` sections
-once a receipt exists; no attention setting changes before a measured win.
+inside each80s/4500-character share.
 
 Reproduce in the image:
 

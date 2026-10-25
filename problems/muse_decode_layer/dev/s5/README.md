@@ -60,11 +60,6 @@ The MoE lane's fixed cell landed during assembly:
 `hh_cell.py` SHA-256 `970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f`.
 The audit cross-checks all three native bodies against its frozen handoff.
 
-S5 is queued scored-only at priority0 behind S1–S4 for2026-10-25 09:01 KST:
-`runs/detached/f7064fc0127e80a9.log`. The candidate source SHA-256 is
-`f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284`.
-`queued.json` verifies the frozen snapshot and all four prior queue entries.
-Refresh from landed S1–S4 profiles with
-`python problems/muse_decode_layer/dev/levers/build.py`; this also updates PLAN
-Status from the latest cumulative profile and applies each measured correction
-once. No watcher or judge polling is added.
+S5 ran as scored job `e2f45792b8ee41fb` (send log `runs/detached/f7064fc0127e80a9.log`);
+source SHA-256 `f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284`;
+`queued.json` verifies the frozen snapshot.

@@ -93,11 +93,11 @@ accumulation/rounding (max relative0.030%). Standard/WS128 stage3 glue uses
 native stage2 stand-ins on SM120; WS64/K2 native depths1–3 are exercised.
 All12 source families/20 sm90a entries compile without spills/local loads.
 The host wrapper passes5 public tests/6 static checks; its full12-seed payload
-finishes in7.2s locally, prepare9.3s. Local new-path rankings mostly lose;
-H200 rankings remain unverified. See [admission.json](admission.json).
+finishes in7.2s locally, prepare9.3s. Local new-path rankings mostly lose. See [admission.json](admission.json).
 
-Sent once: **d52b02e0bc91d390**, accepted job **383ccc1fbbae41e2** on MoE.
-The immediate detached log confirms acceptance and no rejection. No polling.
+H200 job **383ccc1fbbae41e2** (send d52b02e0bc91d390): the once-route pass A costs
++1.4 us at M=1; B, C and K2 lose; the D64/D128 producer/consumer split runs 2-3x
+slower (implementation suspect). Rows in FINDINGS (MoE M=1-32).
 
 ```bash
 python prof/lab/build_moe_nt1_branches.py

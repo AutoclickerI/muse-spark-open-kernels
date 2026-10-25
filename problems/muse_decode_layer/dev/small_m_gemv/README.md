@@ -56,11 +56,5 @@ python prof/lab/build_moe_m1_stream.py
 CUDA_VISIBLE_DEVICES=1 tools/img python prof/lab/check_moe_m1_stream.py
 ```
 
-For integration after an H200 win, inline `dropin.py`, compile
-`m1_stream_module()` in prepare, and store it as `bank['stream_mod']` alongside
-the existing `w13p/w2p/gs13/gs2/pnw` tensors. `m1_stream_kernel` supports M1
-only; the winning split, grid and PDL setting must come from the paired receipt.
-
-H200 lab accepted: **963515d3f0c04d91**, send key **7c830c8447f4c705**.
-The immediate detached-log read showed no rejection. Every recipe loses (best P2g26457.07us versus raw NT1 44.17us);
+H200 lab **963515d3f0c04d91** (send key 7c830c8447f4c705): every recipe loses (best P2g26457.07us versus raw NT1 44.17us);
 [admission.json](admission.json) pins the source hashes and local checks.

@@ -1,28 +1,19 @@
-# Projection lane focus (P7 / G1)
-Serves G1/G2: the overall decode-layer board score.
+# Projections and glue in the decode layer (P7)
+Serves: G2 (dense GEMVs, verify dense GEMMs and glue inside the decode layer), for G1. Levers at 1.3x floor on S4:
+glue +7.03%, projections +5.93% ([lever table](../muse_decode_layer/dev/NEXT_CHECKS.md)).
 
-P7 bulk-ring batch: `dev/bulk_ring/`, real proj-host BF16/FP32 weights.
-Held send ef2048bf49b3fdf4, PID4164652; gate09:02KST, behind MoE09:01.
-16 role/M pairs,21 configs,4 O/boundary/pool segments, unchanged O/config6.
-Cold256MiB, AB/BA, three input banks, producer+consumer AA, segment AA.
-Pool+router M32 is the largest3.6TB/s gap:12.72us/layer,788.5us x62.
-QKV leads at M1/M8; pool+router at M16/M32. FINDINGS owns all16 rows.
-Native persistent equal-work grid,1/2CTA perSM,4/8-stage bulk-copy ring.
-Lossless row-swizzled BF16 tiles; explicit splits1/2/4/8; fused consumer reduction.
-Hopper residency capped by smem; each CTA differs by at most one K tile.
-756 checks/252 graphs,9 host tests,33 spill-free sm90a kernels; forced smem stand-ins.
-Local O/OP routes flip at M8/16/32; pool-only exact. H200 timing unmeasured.
-`dev/bulk_ring/manifest.json` binds source; README owns reproduction.
+Incumbent: best7's per-role dispatch (cuBLAS/Lt and custom GEMV) in S1-S6, plus O config6 at decode 1 in S6:
+`dev/gemv_fixed/projection.py` (Best7ProjectionCell), SHA-256
+c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe, 15.39 -> 15.04 us with its consumer
+(`95ab383d`, near noise). Glue: best7_paired geometry.
 
-95ab383d:15/16 unsplit register-MMA finalists lose; mainloops dominate.
-Native entry-first47-101cycles, PDLwait10-11; fewer CTAs alone is insufficient.
-M1 O/config6: producer+consumer15.39->15.04us, segment41.95->41.29us.
-6 live full/sliding cases pass; exact routes; max hidden drift0.1833%.
-Existing cell `dev/gemv_fixed/projection.py`, Best7ProjectionCell;
-SHA256 c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe
-Decode handoff `dev/gemv_fixed/handoff.json`; whole-layer H200 gain unmeasured.
-
-P10 compression4233660b granted; zero/pattern BW2.03x/1.70x, real weights~1x.
-No compression drop-in. `dev/memory_compression/h200_result.json` owns evidence.
-Oracle09d19813 caps later-stage prefetch~2-4us; chain87dc944b loses38.3->57.7us.
-PDL7426e17c measured one M1 case, noise; remaining cases failed0.3% gate.
+In flight: equal-work bulk-ring dense batch `87b2667f` (send `ef2048bf`; `dev/bulk_ring/`): 16 role/M pairs, 21
+configs, O/boundary/pool segments, cold AB/BA and A:A. Pool+router at M=32 has the largest gap to a 3.6 TB/s
+stream (12.7 us per layer).
+Measured losses (exact recipes; FINDINGS): cooperative glue `9eeb39ba` 1.17-9.5x (mechanism not isolated); fused glue
+`80b70f7f` (a bug: 576 norm copies per token); 15/16 register-MMA GEMV finalists `95ab383d`; persistent chain
+`87dc944b`; verify split-K `19f3a13b`; side-stream L2 prefetch `d5a90258`. PDL prefetch `7426e17c`: 1 of 8 cases
+measured, the rest unmeasured (our 0.3% gate). L2 oracle `09d19813`: later-stage prefetch caps at ~2-4 us per layer.
+Hardware compression `4233660b`: real weights read at ~1.0x.
+Next (PLAN P7): read `87b2667f` once and hand any winning role/M cell (path + SHA-256) to decode FOCUS; native route
+top-8; the T<=8 zero-tail boundary; router + top-8 beside the pooler.

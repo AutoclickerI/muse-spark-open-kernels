@@ -61,7 +61,7 @@ serving path violates the storage boundary; activation on Hopper was not run her
 ## Source: `problems/muse_decode_layer/dev/glue/README.md`
 
 The inspected serving V9 bank and timed Marlin layout bridge also retain packed codes and E4M3 bytes;
-no serving source was changed by this lane. [Weight audit](../../problems/muse_decode_layer/dev/glue/BOUNDARY_AUDIT.md) also records an unused legacy Humming scale-decoder bug.
+no serving source was changed by this lane. The weight audit (git `e8d710f:problems/muse_decode_layer/dev/glue/BOUNDARY_AUDIT.md`) also records an unused legacy Humming scale-decoder bug.
 
 ## Source: `problems/muse_decode_layer/dev/glue/README.md`
 

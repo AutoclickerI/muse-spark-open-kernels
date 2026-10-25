@@ -50,7 +50,7 @@ It changes the shared row pad to 32 BF16s so the two rows in an eight-lane
 128-bit transaction use opposite halves of the bank array. Keeping the scalar
 path's eight-BF16 pad did not improve local timings despite fewer LDS instructions.
 `vector_validation.json` and `vector_compile_sm90a.json` cover the same gates
-and native build. It awaits the first lab's H200 evidence; local ranking does
+and native build. H200 `feb7b287e3464e4a`: M1 matches the same-byte read, M>=8 lose; local ranking does
 not select a decode dispatch. `read_receipt.py <job>` makes a per-shape handoff
 only from a completed local receipt whose payload hash matches the source.
 

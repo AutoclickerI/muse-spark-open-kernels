@@ -63,7 +63,7 @@ The local sm_120 reader retains the existing 96 KiB shared-memory stage cap.
 Current admission: 6,105 eager configurations/edge checks, 510 captured graphs
 with fresh replays, all 30 local host stage winners without rejection, and
 5/5 official prefill host tests. Native sm_90a: 33 kernels, no entry or device
-continuation spills, up to 240 registers. H200 speed and routing safety on its
-fresh router remain unverified; no decode dispatch is changed.
+continuation spills, up to 240 registers. H200 `5535d2f171b34d72`: fused glue loses
+2.3-21x; no decode dispatch is changed.
 
 The unsafe overlap payload stays deleted. No overlap code rides this lab.

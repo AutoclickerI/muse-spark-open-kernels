@@ -16,4 +16,5 @@ applied in each GEMM epilogue. No prepared BF16/FP8 expert bank exists.
 The scalar PRMT and bit-plane/BF16x2 layouts are both lossless packed formats.
 
 Experiment and validation details are in [mixed_wgmma/README.md](mixed_wgmma/README.md).
-The scalar lab is H200 job `296fdf45382244dc`; H200 results are pending.
+The scalar lab, H200 job `296fdf45382244dc`, returned no result: its log tail holds
+only TileLang and profiler lines (FINDINGS "Failures"), so it is unmeasured.

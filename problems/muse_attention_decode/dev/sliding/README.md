@@ -46,5 +46,5 @@ Receipt32f2f07a is complete:1.2137x, all16 tests pass. Only verify1 sliding
 wins against the board control (kernel12.1vs16.2us; whole call18.18vs19.26).
 Larger sliding cells lose. Decode best7 uses public FA3 for verify1, so
 only the guarded `verify1_sliding_pick.py` comparator is retained, disabled.
-Its paired current/best5 FA3-glue measurement is scheduled in the proj-host
-batch e0712c33ab1cb715 after09:00 KST; see ../producer_phases/HANDOFF.md.
+Paired against decode's public FA3 incl. qk_prep and norm_gate (`a1679f9c`, proj):
+19.55 vs 20.16 us at partials=0, 20.38 vs 20.35 at 1, 21.25 vs 21.79 at 4.

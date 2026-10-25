@@ -114,8 +114,7 @@ python tools/h200_lab.py send prof/lab/dense_pdl_prefetch.py --host muse_moe_w4a
 
 `projection.py` is the standalone drop-in: construct `PPDense` outside capture;
 call it within the layer and retain the incumbent BF16 boundary. It imports no
-repository module. It is not enabled in best7 while the H200 evidence is absent.
+repository module. It is not enabled: `7426e17c` measured 1 of 8 cases before our
+0.3% gate stopped the rest, which stay unmeasured.
 `manifest.json`, `native_validation.json`, `compile_sm90a.json` and
-`validation.json` bind the source and screens to hashes. The send record will
-name the detached log and the immutable queued source. Read the landed receipt
-once on resume with `tools/h200_lab.py read <job>`; there is no judge wait loop.
+`validation.json` bind the source and screens to hashes.

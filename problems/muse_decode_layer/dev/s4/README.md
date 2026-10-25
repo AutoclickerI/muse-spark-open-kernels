@@ -52,12 +52,6 @@ fresh-route FP32 gates reach LOP3 maximum L2/row0.001669/0.001727 and D32g
 Local timing does not rank Hopper; standalone H200 wins do not establish the
 combined whole-layer score, nearby-seed speed or cold H200 prepare time.
 
-S4 is queued scored-only at priority0 behind the existing S1–S3 reset entries:
-`runs/detached/9b2b2a48337aa13b.log`; source SHA-256
-`9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e`.
-`queued.json` verifies the frozen snapshot and FIFO ordering; the tool reports
-the reset at2026-10-25 09:01 KST. No other candidate is resent.
-S1/S2/S3 profile refresh is offline and explicit:
-`python problems/muse_decode_layer/dev/levers/build.py`. It prefers the latest
-cleared cumulative source, avoids reapplying integrated deltas and refreshes
-PLAN Status only when a new candidate profile exists. It creates no judge watcher.
+S4 ran as scored job `ad858b5875a940a6` (send log `runs/detached/9b2b2a48337aa13b.log`);
+source SHA-256 `9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e`;
+`queued.json` verifies the frozen snapshot.

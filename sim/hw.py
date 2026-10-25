@@ -14,10 +14,9 @@ NVLINK_BPS = 450e9          # NVLink 4, per GPU per direction (900 GB/s bidirect
 
 # --- EFF: the practical model ---
 EFF = {
-    # Fraction of HBM_BPS a well-tuned streaming kernel sustains: read-heavy streams reach ~4.45 TB/s
-    # on H200 (arXiv 2604.11391) and a copy 4.3 TB/s (SGLang's hopper_bf16_gemv.py note). SGLang's
-    # cuBLAS GEMMs fit 2.8 us + bytes / 3.54 TB/s (74%) on the judge (sim.calibrate).
-    "bw": 0.90,
+    # Fraction of HBM_BPS a plain stream sustains on the judge: 256 MiB read cold at ~3.61 TB/s
+    # (`4233660b`, docs/reference/bound.md). SGLang's cuBLAS GEMMs fit 2.8 us + bytes / 3.54 TB/s.
+    "bw": 0.752,
     # The first kernel of a timed call: ramp to full bandwidth and the tail, on a cold L2. The
     # judge subtracts the graph launch itself (~4 us), so this is what's left of a lone kernel.
     "ramp_us": 1.5,

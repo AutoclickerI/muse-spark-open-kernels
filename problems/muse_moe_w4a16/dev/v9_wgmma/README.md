@@ -23,7 +23,6 @@ Local verification:
   MODE/STAGES instantiations; native `HGMMA.64x64x16` disassembly is saved in
   [`raw64_sm90a.sass`](raw64_sm90a.sass).
 
-The H200 comparison is the lab submitted from
-`prof/lab/moe_decode_adapters.py`, with raw64 added beside NT1/NT2/raw17,
-masked Humming and DG.  It uses exact R0 plus the same 12 public seeds and
-independent FP32 gates.
+H200 `63c980e800194764` (`prof/lab/moe_decode_adapters.py`, R0 + 12 public seeds,
+FP32 gates pass): raw64 534/679 us at M=128/256 vs V9 NT2 342/547 and masked Humming
+342/450. Closed for decode.

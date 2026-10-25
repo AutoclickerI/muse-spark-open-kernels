@@ -15,8 +15,8 @@ vs NT1rec290.83 us, shared-A678.86–785.54. Logical one-read alone does not
 make these implementations faster. All numeric gates pass; no one-read cell
 is promoted. The paired experiment `../phase_mix/` **770809cf159f41e2** confirms H_H
 234.44us vsD32g272.70 and NT1rec289.62: NT1<=16 and WGMMA32>16 in both
-phases. Its fixed cell is handed to S5; threshold/N64 tuning is scheduled on
-proj after09:00 KST in `../mix_sweep/`.
+phases. Its fixed cell is handed to S5; threshold/N64 tuning runs on
+proj as job `4c469bf9` (`../mix_sweep/`).
 Static issue estimates below do not establish the binding hardware limit.
 
 Measured here: sm90a SASS from nvcc -O3, nvdisasm -c -g and cuobjdump --dump-sass, with source hashes and exact PC ranges in audit.json. Native entries have no spills/C7513; 16 K64 register-bank paths remain safe.

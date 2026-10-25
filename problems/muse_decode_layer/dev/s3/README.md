@@ -8,7 +8,7 @@ H200 job `9e8a6a15f95748db`: 12 public weight/router seeds, three fresh inputs
 and eight rotated/reversed cold graph replays. C1g2112 takes 365.2 us mean
 (346.4 median) versus raw R1g2112 at 386.1 and masked Humming at 448.2 us. Paired
 C:R is 0.946; maximum L2/row errors are 0.00411/0.0048. These are standalone H200
-measurements; whole-layer composition awaits a candidate receipt.
+measurements; the scored whole-layer run is `5c7323ea63d944b2`.
 
 The six packing/launch functions and native source are exact copies of the
 accepted lab payload (`d30f4a862fa0b882`). Configuration: NT32/K128/four stages,
@@ -53,8 +53,7 @@ fresh-route FP32 expert gate reaches maximum L2/row errors 0.003803/0.004261.
 The source SHA-256 is
 `cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7`.
 
-Validation and measured prepare times are in `validation.json`. This lane does
-not send S3; the owner controls the reset submissions. Local passes do not
+Validation and measured prepare times are in `validation.json`. Local passes do not
 establish H200 whole-layer speed or cold H200 preparation time.
 
 The older `assemble_dense.py`/`dense_gate.py.inc` are inactive tooling: the

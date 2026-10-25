@@ -32,9 +32,8 @@ CUDA_VISIBLE_DEVICES=0 tools/img env MAX_JOBS=2 python \
   problems/muse_decode_layer/dev/s2/force.py --cold-native
 ```
 
-H200 timings are the standalone paired receipt. Whole-layer H200 composition,
-new judge seeds and actual cold H200 prepare remain unmeasured. The candidate
-has not been sent by this lane.
+H200 timings above are the standalone paired receipt; the scored whole-layer run
+is `4e212ec25109434d`.
 
 ## Admission result
 

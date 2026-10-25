@@ -1,9 +1,5 @@
 # CUTLASS verify projections
 
-Read when handing the M128/256 H200 lab to the decode lane. No judge polling or wait:
-inspect a receipt once per turn, build independently, end if only the receipt remains.
-No candidate file is modified.
-
 `projection_cutlass.py` is a self-contained source block. Its only dependencies are
 standard Python, torch, CUDA and image-shipped CUTLASS headers. The image's FlashInfer
 CUTLASS version is4.5.0 with the Hopper3.x collective API. The relevant implementation
@@ -100,4 +96,4 @@ construction is independently forced. The final stand-in test covers1152 recipes
 Frozen block SHA256a5823cb913cb24fbbd316a004c450c7e7825aa4e409ad8bd96e6dcc02f10ed60.
 Sent payload SHA256e43ed9b225d98cf1feaf1b720f295ca21a69bf74a389cc560ed4ffc588246bab;
 scored hostSHAb81c9564402fa62c4e4a87cca541c853506aa6884c8cd4b41b61f583b7fb34ab.
-H200 timing and actual cold prepare total remain pending.
+H200 `45f58e7009c440eb`: all 144 recipes per key lose at M128/256 (FINDINGS).

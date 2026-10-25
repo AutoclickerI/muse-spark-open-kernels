@@ -77,8 +77,7 @@ weight seeds; max L2=0.242%. Signed, zero and subnormal scales, empty routes,
 zero inputs and local-start96 are included. SM120 cannot fit early's two-stage
 shared footprint or the standard three-stage footprint: those Python paths use
 stage1/stage2 native arithmetic stand-ins. Native sm90a builds of all eight
-families pass, with no spill loads/stores. H200 execution of the changed
-two-stage producer remains to verify. Logs: `runs/screen/nt1_limit_*`.
+families pass, with no spill loads/stores. Logs: `runs/screen/nt1_limit_*`.
 
 ```bash
 python prof/lab/build_moe_nt1_limit.py
@@ -86,8 +85,7 @@ CUDA_VISIBLE_DEVICES=1 tools/img python prof/lab/check_moe_nt1_limit.py
 CUDA_VISIBLE_DEVICES=1 tools/img python prof/lab/audit_moe_nt1.py
 ```
 
-`dropin.py` now excludes widened-scale storage and prepares one selected bank.
-It is experimental. No best7 cell is changed before a valid H200 seed-mean win.
+`dropin.py` excludes widened-scale storage and prepares one selected bank.
 
 Landed as merged MoE job **dc3fea0a20a349bf** (original send0ea5aeba5a3435bf,
 merged senda1762556e26931ef). One-LOP3 wins42.74/73.75/79.20/113.61us against

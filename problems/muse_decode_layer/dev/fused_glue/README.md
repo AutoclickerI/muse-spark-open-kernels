@@ -65,4 +65,4 @@ Local native oracle: `tools/img python problems/muse_decode_layer/dev/fused_glue
 Whole lab: `tools/img python problems/muse_decode_layer/dev/fused_glue/screen.py`.
 `admission.json` binds the sent source and local evidence; the layer table stays empty.
 
-The family remains open. [The cooperative repair](../coop_glue/README.md) removes the duplicated-row and serial-tail bugs. Both historical payload builders now record flips and disable that cell while continuing the other timings; old receipt snapshots under `runs/` remain immutable.
+[The cooperative repair](../coop_glue/README.md) removed the duplicated-row and serial-tail bugs and still lost (`9eeb39ba`, 1.17-9.5x); fusion with a cheaper cross-CTA reduction stays open.

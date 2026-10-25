@@ -1,9 +1,5 @@
 # GEMV and decode glue fusion
 
-Read when merging the proj-host H200 lab into `cand_r3_best` (frozen base812f5f36).
-Solo/GPU0, no commits, no decode submissions. Jihoon sends candidates. No judge polling:
-send the lab, build the handoff, check receipts once per turn and end if only results remain.
-
 The old CUTLASS recipe set is closed by45f58e7009c440eb: all144 choices/shape lose at
 M128/256. This closes those stock schedules/tiles, not split-K/TMA/WGMMA as a family.
 This experiment targets the12–25us boundary/routing/launch remainder in the decode lane's
@@ -120,8 +116,5 @@ actual whole-layer H200 performance require a decode integration receipt.
 Frozen block SHA256c763555f9908158879fb9bf65f766e03b650967487a8f97d325400613d5c92f9.
 Frozen payload SHA25634143ac6134efe1f0d0c98ae95e0d3d25425fa536339b734c80f5c190a88e0ac.
 Host SHA2564b4182cb1d0ff580916f7ed6fbe3a9b236264917bea014fa7a09f111168bfcf4,
-sent priority0, local waiting request468733; no judge job assigned at the local check.
-Do not poll or resend. H200 results are pending. Use `read_receipt.py <receipt>
---recipes <file>` to verify its payload hash and emit only phases belonging to a
-positive combined-chain result. Retest those choices in the decode layer before
-claiming a layer or serving gain.
+H200 `479aab3038c6407c`: every fused stage, prefix and chain loses 1.04-11.4x, picks=0
+(FINDINGS).

@@ -50,8 +50,7 @@ The NT1 device-source diff from board v9 to best6 is exactly the new `scale_e4m3
 two call sites. Board v9 recoded E4M3 bytes in prepare and folded negative/zero scales into NVFP4 codes;
 best6 preserves stored scale bytes and converts them inside the timed kernel. Both representations
 are allowed by CONSTRAINTS 5: lossless recoding of the packed bank does not dequantize its weights.
-Best7 currently keeps the raw NT1 bank pending the paired E:C measurement, rather than treating
-raw byte preservation as a hard limit. Optional raw17/DG banks also use raw bytes and timed
+Paired E:C `58ae2e2c` then measured the recoded bank faster at M8-128, so S1 reinstates it. Optional raw17/DG banks also use raw bytes and timed
 conversion; their new native Hopper composition is unverified. Humming's native transform is unchanged.
 [All-scale precision gate](precision_gate.py) tests all 254 finite codes and lossless code recovery.
 No expanded BF16/FP8 expert weight bank is retained.
@@ -61,7 +60,6 @@ remaining M8/16/128 gap; the present receipts do **not** isolate their contribut
 reader/bank with the board host's own recoded reader/bank on identical post-attention routes at
 M8/16/32/128, both layer types and three public seeds. It asserts matching NT/stages/grid/shared-memory
 choices, checks each bank against its packer, and gates both outputs against FP32 before/after replay.
-Only the H200 receipt can promote recoding per M; local timing cannot explain the board gap.
 
 ## Score accounting
 

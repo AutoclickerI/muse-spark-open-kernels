@@ -77,9 +77,8 @@ SM90a: **15** kernels, no spills, max154 registers, HGMMA/TMA in SASS.
 The prefill-host screen also passes **5/5** tests, **8/8** scored graph shapes
 and **3/3** static checks, prepare18.40s (`host_screen.json`). The send merged
 the waiting projection-glue payload into the same run: send key
-**be5d6aa5ae1ac0bd**, priority0.5. Detached log:
-`runs/detached/be5d6aa5ae1ac0bd.log`; it reports waiting for a slot, with no
-static rejection. No job ID has been assigned yet. Payload SHA-256:
+**be5d6aa5ae1ac0bd**, judge job `5535d2f171b34d72`: weight-wide WGMMA loses 1.28-2.18x
+(FINDINGS). Payload SHA-256:
 `7b67602f1d4b77c0ccb074d52772d93e7fd228767900fb07178565373896445d`.
 The two payloads get separate namespaces, output shares and time budgets.
 

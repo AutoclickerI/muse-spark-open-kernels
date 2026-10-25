@@ -33,9 +33,9 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 | 2, 8 | Our own cubin or hand-edited SASS | Accepted, not banned; review risk (2) | allowed (R-20261023-6) |
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
 | 5 | Lossless re-encoding or compression of the weights in `prepare()` (recoded scale bank, coded exponents), decoded in the timed kernels | llms.txt:107: "compress them losslessly" | allowed |
-| 5 | A dequantized (BF16, FP8) copy of NVFP4 weights made in `prepare()` | Moves timed dequant into prepare | forbidden (withdrawn job 07d07d96) |
+| 5 | A dequantized (BF16, FP8, 16-bit) copy of NVFP4 weights or scales made in `prepare()` | Moves timed dequant into prepare | forbidden (withdrawn 07d07d96, S4-S6) |
 | 2, 6 | Correctness | TASK.md:76-87 is the check (near-tie routing; 3-15% relative L2), not equality with our incumbent: time a variant that fails our exact-ID or 0.003 gates but passes it; promote only with margin on many seeds | allowed |
-| 5 | A constant table of format products (all 4,064 E2M1 x E4M3 values as BF16) | Not a dequantized bank: the timed kernel still reads and decodes the weights | allowed |
+| 5 | A constant table of all 4,064 E2M1 x E4M3 products as BF16 | Not a dequantized bank: the timed kernel still decodes the weights | allowed |
 | 2 | The unpooler's T <= 8 shortcut (TASK.md:22) | Set by the call's total T; internal chunking doesn't extend it | forbidden above T = 8 |
 | 2 | L2 persistence (access-policy windows, set-aside L2) across the per-replay flush | Defeats the cold-cache protocol | forbidden |
 | 2 | Prefetching a later stage's weights into L2 within one timed call | Nothing survives the flush | allowed |

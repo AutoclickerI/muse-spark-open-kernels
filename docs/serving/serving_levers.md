@@ -2,7 +2,7 @@
 Serves: G1. Read before touching `serving/sglang`: what the patch can change on 8x H200, what is in `serving/patch.diff`, and how agreement is tested.
 
 What our SGLang patch (`serving/sglang`, base `a55ab7d5`; rules in `serving/RULES.md`) can change on
-the judge's 8x H200, ranked by expected gain. Gains are modeled ([CEILING](../reference/ceiling.md), `sim.serving`)
+the judge's 8x H200, ranked by expected gain. Gains are modeled ([bound](../reference/bound.md), `sim.serving`)
 unless marked measured; the complete serving patch has not run on an H200 node yet. The serving track opens
 2026-11-06 05:00 KST with 3 checks and 1 scored run a day.
 

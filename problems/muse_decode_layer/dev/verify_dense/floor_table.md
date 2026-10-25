@@ -2,11 +2,11 @@ M>=64 uses the full unpooler. BF16 bank197,132,288B, not138,412,032B (the latter
 
 | M | Role | W MB | All MB | GFLOP | Byte/math floor us | Floor us | cuBLAS/Lt us | Gap us/layer; x62 us |
 |---:|---|---:|---:|---:|---:|---:|---:|---:|
-| 64 | qkv_gate | 37.75 | 39.09 | 2.416 | 10.86/3.02 | 10.86 | unmeasured | pending lab |
-| 64 | o | 16.78 | 17.96 | 1.074 | 4.99/1.34 | 4.99 | unmeasured | pending lab |
-| 64 | pool_router | 75.50 | 77.73 | 4.832 | 21.59/6.04 | 21.59 | unmeasured | pending lab |
-| 64 | unpooler | 67.11 | 68.68 | 4.295 | 19.08/5.37 | 19.08 | unmeasured | pending lab |
-| 64 | **sum** | 197.13 | 203.46 | 12.616 | — | **56.52** | unmeasured | pending lab |
+| 64 | qkv_gate | 37.75 | 39.09 | 2.416 | 10.86/3.02 | 10.86 | unmeasured | — |
+| 64 | o | 16.78 | 17.96 | 1.074 | 4.99/1.34 | 4.99 | unmeasured | — |
+| 64 | pool_router | 75.50 | 77.73 | 4.832 | 21.59/6.04 | 21.59 | unmeasured | — |
+| 64 | unpooler | 67.11 | 68.68 | 4.295 | 19.08/5.37 | 19.08 | unmeasured | — |
+| 64 | **sum** | 197.13 | 203.46 | 12.616 | — | **56.52** | unmeasured | — |
 | 128 | qkv_gate | 37.75 | 40.44 | 4.832 | 11.23/6.04 | 11.23 | 21.728 | 10.50; 650.7 |
 | 128 | o | 16.78 | 19.14 | 2.147 | 5.32/2.68 | 5.32 | 11.808 | 6.49; 402.5 |
 | 128 | pool_router | 75.50 | 79.95 | 9.664 | 22.21/12.08 | 22.21 | 28.064 | 5.85; 363.0 |
@@ -18,5 +18,5 @@ M>=64 uses the full unpooler. BF16 bank197,132,288B, not138,412,032B (the latter
 | 256 | unpooler | 67.11 | 73.40 | 17.180 | 20.39/21.47 | 21.47 | 28.640 | 7.17; 444.2 |
 | 256 | **sum** | 197.13 | 222.43 | 50.466 | — | **63.68** | **100.400** | **36.72; 2276.3** |
 
-At the FOCUS best6 denominators, reaching these floors at verify16/32 gives1.99% overall. This is optimistic: the floor excludes launch overhead and assumes stage peak rates;1.3x these floors gives 0.81%.
-M64 has no incumbent measurement in this receipt; the batched lab supplies it. No number is interpolated.
+At best6's benchmark denominators, reaching these floors at verify16/32 gives1.99% overall. This is optimistic: the floor excludes launch overhead and assumes stage peak rates;1.3x these floors gives 0.81%.
+M64 is not a scored shape; it stays unmeasured and no number is interpolated.

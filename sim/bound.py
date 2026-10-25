@@ -358,7 +358,7 @@ def problem_bound(problem: str) -> dict:
         gm[key] = geomean(r[key] for r in loads.values())
     gm["paired_stock"] = geomean(r["stock"] for r in loads.values())
     # Use the organizers' published SGLang geomean for the headline, as sim.__main__ and
-    # docs/reference/ceiling.md do.  Per-load ratios above remain tied to our paired calibration receipts.
+    # docs/reference/bound.md do.  Per-load ratios above remain tied to our paired calibration receipts.
     gm["stock"] = float(spec(problem)["sglang_us"])
     gm["speedup_spec"] = gm["stock"] / gm["work_spec"]
     gm["speedup_measured"] = gm["stock"] / gm["work_measured"]

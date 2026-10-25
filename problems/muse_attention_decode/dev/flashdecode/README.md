@@ -60,4 +60,4 @@ confirms the adapter performs exactly two kernels even with split projection
 inputs. H200 be19da94 passes16 tests but full-q8 B16/B32 producers lose at
 427.8/713.7us, combine6.3/8.5us. No adapter row is promoted. sm90a SASS
 shows FP8 mma.sync lowering to FP16; see ../producer_phases/README.md for
-the mechanism, resources, screened next variant and scheduled diagnostic pair.
+the mechanism and resources.

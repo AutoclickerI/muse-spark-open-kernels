@@ -1,4 +1,4 @@
-# Decode verify projection block: H200 Lt shortlist; native pending
+# Decode verify projection block: H200 Lt shortlist
 
 `projection_dropin.py` is self-contained: append it to a decode single file.
 Its default shortlist now contains
@@ -139,4 +139,4 @@ Twenty paired finalists alternate order over3 fresh inputs after128MiB L2 flush.
 Ratios are medians of paired ratios, not quotients of the displayed raw medians.
 These control times differ from the earlier union receipt; do not count that run-to-run
 shift as a gain. All90-ish expanded candidates per shape were checked without a rejection;
-Lt search closes only a small part of the gap. Native WGMMA/PDL is still unverified on H200.
+Lt search closes only a small part of the gap. Native weight-wide WGMMA loses on H200 (`5535d2f1`, `19f3a13b`; FINDINGS).

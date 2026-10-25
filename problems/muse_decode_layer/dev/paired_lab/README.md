@@ -23,10 +23,8 @@ Absolute times include equal graph-replay overhead. Every per-seed sample is ret
 compact H200 lines report per-case seed ratios, mean us, routing counts and per-M means.
 Budget exhaustion prints INCOMPLETE and never supplies a complete verdict.
 
-`E8:C`/`E9:C` are M128 sliding/full. B:A <1 favors recoding. Compare their matched-route
-microsecond savings with the unresolved board-profile gap (258.9 us versus raw NT1 317–320 us);
-separate-run profiles alone cannot establish causality. Promote only the supported bank per M,
-keeping the settled G/F/E choices. Read with `tools/h200_lab.py read <job> decode_scale_bank`.
+`E8:C`/`E9:C` are M128 sliding/full. B:A <1 favors recoding. Result (`58ae2e2cf8df45ef`):
+recoding wins at every M, B:A 0.914/0.908/0.897/0.880 at M8/16/32/128; S1 adopts it.
 
 ## Settled G/F/E
 
@@ -36,9 +34,8 @@ zero rejections and zero flipped tokens; 114.8 s payload, 160.7 s total host pre
 - G: fixed new glue wins at decode1/verify1; old glue wins at decode32 sliding; others retain new.
 - F: public `layer` q8 scheduling ties every split at large loads and beats explicit splits at verify1 full.
 - E: NT1 wins below M256 (M128 317–320 us vs Humming 346–353); Humming wins M256 (417–426 vs 537–547).
-The earlier failed receipts supply no stage verdict. [Glue receipts](GLUE_RECEIPT.md) explain
-why single-run best5/best5_glue scores were confounded. The frozen best7_paired candidate applies
-these supported changes; E:C has not yet established a bank choice.
+The earlier failed receipts supply no stage verdict. The frozen best7_paired candidate applies
+these supported changes.
 
 ## Reproduce
 
@@ -66,5 +63,5 @@ contains payload **8e01adcec8da5a0f**. Its [send validation](scale_bank_sent.jso
 empty-cache test exposed serial raw-MoE plus prefix-attention compilation taking **123.5 s**, too
 long for an 80 s batched slot. The current builder overlaps both builds before graph capture; its
 cold 80 s screen passes **24/24 fixtures in 56.4 s**, including all **254 × 16** finite scale/FP4
-represented-value checks. [Validation](scale_bank_validation.json) pins this revision. No duplicate check is queued. The arithmetic, fixtures, readers
+represented-value checks. [Validation](scale_bank_validation.json) pins this revision. The arithmetic, fixtures, readers
 and timing protocol are identical between the sent and shared versions.

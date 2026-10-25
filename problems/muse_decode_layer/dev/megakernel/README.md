@@ -1,7 +1,7 @@
 # P11: small-M layer kernel decision
 
-**Do not build the layer kernel or send the first increment yet.** The explicit
-fusion estimate is **+1.74% on the six-load score**, below the owner's +3% gate.
+**Parked: +1.74% estimated, below the other levers in PLAN.** That is the explicit
+fusion estimate on the six-load score.
 Even deleting the estimated synchronization/resource tax gives +2.22%. The
 one-read ceiling is much larger (+19.0% overall), but it also deletes intrinsic
 attention/dequant/mainloop work; that is not a fusion estimate. This conclusion
@@ -10,9 +10,8 @@ receipt or new H200 boundary/NT1 phase evidence can change it.
 
 The arithmetic, source hashes and assumptions live in [scope.json](scope.json).
 [accounting.md](accounting.md) contains every visible kernel row for decode1
-and verify1, sliding and full. The source is **c0e74bedf7b74be5**; S6 is still
-unmeasured here. `current.json` is the reset profile plus the measured scale-bank
-and M256 deltas, not a landed S6 profile. No S6 latency is called measured.
+and verify1, sliding and full. The source is the reset profile **c0e74bedf7b74be5** plus the measured scale-bank
+and M256 deltas; no S-candidate profile is used here.
 
 ## What the profile establishes
 
@@ -164,7 +163,7 @@ parallelism; no T<=8 unpool shortcut is allowed there. An eight-token internal
 chunk does not change the call's total T. Do not claim gains on the other four
 loads without separate measurements.
 
-## Op estimates and the score gate
+## Op estimates
 
 The following are **design assumptions**, not H200 observations of the proposed
 kernel. They retain the existing loop times and give fusion credit only to
@@ -190,9 +189,8 @@ Apply these deltas to adjusted whole-layer times, preserving each profile's
 overlap/replay residual. With46 sliding+16 full layers per load and the other
 four loads unchanged, the score factor is
 `product_load[Tload/(Tload-46*dS-16*dF)]**(1/6)`.
-It gives1.01736x, or1.02218x with zero tax. A uniform10.796us saving in all four
-small-M cases is required for1.03x. The point estimate misses by4.8/3.8us per
-decode/verify layer. A copy-bandwidth model would claim much more by deleting
+It gives1.01736x, or1.02218x with zero tax; a uniform10.796us saving in all four
+small-M cases would give1.03x. A copy-bandwidth model would claim much more by deleting
 real inner-loop work, which the proposed scheduler has not shown it can do.
 
 The riskiest piece is **preserving standalone inner-loop throughput at one
@@ -206,8 +204,8 @@ could erase the entire estimated gain. This supports the no-build decision.
 One persistent `O -> boundary -> pool+router -> route -> NT1 W13` prefix, M1/8,
 against frozen best7_scale on identical inputs in one prefill-host lab (that
 host provides dense weights, norms and packed experts). Project-host execution
-would require explicit fixed-seed packed expert synthesis. No send before the
-owner's09:00KST gate. This is a design, not a queued lab.
+would require explicit fixed-seed packed expert synthesis. This is a design,
+not a queued lab.
 
 Use the same W13 tile routine in both arms. Extracting a standalone W13 prefix
 from NT1 changes its launch envelope; never compare persistent W13 alone with
@@ -231,14 +229,13 @@ and strict-diagnostic failures last. Promote only from a subsequent identical-
 input six-load whole-layer comparison with correctness margin across seeds.
 
 There is **no first-increment build, new lab send or projection handoff** from
-this scope. The existing bulk-ring send remains held under `ef2048bf49b3fdf4`.
-Reopen when port-parity/transport or join evidence supplies the missing gain;
-do not wait on that receipt in this turn.
+this scope. The bulk-ring lab (send `ef2048bf49b3fdf4`) runs as judge job `87b2667f5dac43a6`.
+Reopen when port-parity/transport or join evidence supplies the missing gain.
 
 ```bash
 python problems/muse_decode_layer/dev/megakernel/scope.py
 CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_decode_layer/dev/megakernel/analyze_prior.py
 tools/img python problems/muse_decode_layer/dev/megakernel/audit_prior.py
-# After S6 lands, refresh current.json using dev/levers/build.py, then pass its
-# saved profile to scope.py --profile. Read a landed receipt once; never poll.
+# To rescope on a landed S-profile, refresh current.json with dev/levers/build.py,
+# then pass that saved profile to scope.py --profile.
 ```

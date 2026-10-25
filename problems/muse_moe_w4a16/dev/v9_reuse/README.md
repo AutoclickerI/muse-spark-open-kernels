@@ -21,9 +21,6 @@ Reproduce the exact-front local seed sweep:
 Read a landed native seed receipt without querying the judge:
 `python prof/lab/read_moe_seed.py <receipt-or-job> --json <output>`
 
-H200 V1 a029bd95b80a461f: all new kernels lose to V9. V2
-3f2b8da0f1d244d7 was accepted already. The new native seed lab is separate;
-its generator/fields and its moe_tune routing fixture are explicit in its output.
-The new proj submission queue key is56040f879cdeefd2; the send returned no judge ID.
-`manifest.json` records current hashes and verification. The owner sends
-candidates and commits; this lane sends lab payloads only.
+H200 V1 a029bd95b80a461f: all new kernels lose to V9. V2 is 3f2b8da0f1d244d7; the
+native seed lab (send 56040f87) ran as `c30223b03cc34829` (FINDINGS).
+`manifest.json` records current hashes and verification.

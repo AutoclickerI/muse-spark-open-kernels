@@ -1,8 +1,8 @@
 # Native Hopper verify8 producer
 
-This is a lab experiment, with FA3 retained in decode settings. The prior
-FP8-mma.sync producer is held out of further attention submissions until a
-same-shape H200 lab beats FA3. No attention candidate was sent by this change.
+Lab experiment; FA3 stays in decode settings. H200 `a1679f9c6f6b4c70` (proj): correct,
+but loses to FA3, B16 275.1 us at 33 splits vs 210.8, B32 524.3 vs 395.1; QK and P
+dominate the per-tile cycles (FINDINGS "Attention").
 
 `body.cu.inc` maps all64 query rows (eight tokens x eight GQA heads) to the
 M dimension of one native FP8 WGMMA m64n64k32 tile. QK uses two native MMAs
@@ -65,15 +65,10 @@ transpose, QK, softmax, P and PV; producer clocks cover issue/backpressure.
 Plain and clocked wall times/resources are both printed. It reserves35s
 for the original phase section, then passes the actual deadline to native.
 Warm full payload control flow takes7.22s and3542 characters; the verify1
-pair takes0.33s/997 characters, within each80s/4500-character share. Cold
-H200 compile and runtime remain unverified.
+pair takes0.33s/997 characters, within each80s/4500-character share.
 
-The old held send e0712c33ab1cb715 (PID4023015) was superseded by the same
-lab path; its marker was removed. Replacement send `b098ec3e0876b70a`,
-proj priority0.8, remains held until2026-10-25 09:00:20 KST. Its detached
-log confirms no earlier judge request. No judge ID exists before dispatch.
-One run contains the combined producer payload and the unchanged paired
-verify1 sliding adapter vs exact current/best5 decode FA3 glue.
+Send `b098ec3e0876b70a` ran as `a1679f9c6f6b4c70`: the combined producer payload plus
+the paired verify1 sliding adapter vs exact current/best5 decode FA3 glue.
 
 The ready adapter is `muse_decode_layer/dev/verify8_native_wgmma.py`, function
 `attention_verify8_native(qkv,data,setting=(17,4)) -> [B*8,1024]`. It accepts

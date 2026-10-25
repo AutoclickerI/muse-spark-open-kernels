@@ -39,9 +39,8 @@ in [admission.json](admission.json). Local timing does not rank H200.
 
 Payload `prof/lab/moe_m256_mix.py`, SHA256
 `974a56676cf6604fb5840913095f425cab3d9050658be886c5dbf35a7d48e93e`.
-The one MoE-host snapshot, send7c2160b9dbc119ad, is held for2026-10-25 09:01 KST.
-The immediate detached log confirms no judge request before release; current state is
-in admission.json. No new expert-mix winner is claimed before the paired H200 means.
+The MoE-host snapshot (send 7c2160b9dbc119ad) runs as judge job `ec44b322ba944237`;
+no expert-mix winner is claimed before its paired H200 means.
 
 `unmeasured_cell.py` is a fixed threshold16/N32 review artifact, not a promoted
 M256 winner. Its actual prepare/expert API passes15 fresh-route graph gates and

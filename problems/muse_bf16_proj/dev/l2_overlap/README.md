@@ -72,15 +72,13 @@ projection cell accepts `{'l2_prefetch': recipe_id}`; absent/zero disables it.
 Only explicit decode q1 rows with M<=32 are admitted. Every enabled row gates
 three refreshed full-layer graphs against no prefetch during prepare.
 
-Queued on prefill base cb8939d0 at priority0.5, send key
-**9367398c624b7796**; payload SHA256
-`e62b6b087adeb0c5744c79f3f0597039e799f316908dc82951c9d9ee0e3fda55`.
-The immediate detached log reported a waiting slot, without static rejection.
+Sent on prefill base cb8939d0 (send key **9367398c624b7796**, payload SHA256
+`e62b6b087adeb0c5744c79f3f0597039e799f316908dc82951c9d9ee0e3fda55`); H200 job
+`d5a9025890a64141`: its best recipe still slows the layer 0.3-16.6% (FINDINGS).
 Local admission:78 coarse recipe/cases,12 final pairs,6 native activity
 profiles,5 official host tests and3 host static checks; no rejects. Cached
 payload12.0s inside an80s share,2442 output characters. `validation.json`
-and `compile_sm90a.json` pin the source and native evidence. H200 concurrency,
-cache retention, speed and cold prepare time remain unverified.
+and `compile_sm90a.json` pin the source and native evidence.
 
 Best7 transport tests are recorded separately in `best7_admission.json`.
 The decode owner changed its default NT/attention table while screens ran;

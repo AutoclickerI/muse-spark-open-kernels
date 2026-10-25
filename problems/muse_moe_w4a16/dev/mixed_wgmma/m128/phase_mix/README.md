@@ -31,7 +31,7 @@ on that fixture despite losing the whole seed mean. Repeated-decode versus
 padding/transport overhead depends on expert size and phase; no counter proves
 one hardware stall. New threshold/N32/N64 and independent-W2 work is in
 [../mix_sweep/](../mix_sweep/README.md), one proj snapshot**d8d3a89cb3436100**
-scheduled for2026-10-25 09:01 KST. It measures component phase means on12 seeds.
+runs as judge job `4c469bf9ef9645b1`. It measures component phase means on12 seeds.
 
 The prerequisite one-read result **640d67e7e56d42e5** landed: NT1-recoded290.83,
 RS64g528378.67, RS128g528425.03, RS64g2112361.16, SS64g528750.96,

@@ -196,8 +196,8 @@ Eighteen swapped WGMMA specializations and12 packing layouts compile SM90; Lt bu
 The block's existing180 dense WGMMA specializations and counter/norm math were previously
 validated; no new H200 winner is claimed for this block pending its queued receipt.
 
-Current hashes, commands and evidence live in
-`problems/muse_bf16_proj/dev/NEXT_CHECKS.md`, `runs/screen/prefill_gemm/`.
+Current hashes, commands and evidence live in `runs/screen/prefill_gemm/`
+(send notes: git `e8d710f:problems/muse_bf16_proj/dev/NEXT_CHECKS.md`).
 The actual single-file candidate is `problems/muse_prefill_layer/cand_v11_gemm.py`; its
 V11 integration preserves the original router/routing/pooler group as incumbent.
 Direct dense rates from dafbcad0 are established above. `cand_v11_gemm` has no H200 result yet:

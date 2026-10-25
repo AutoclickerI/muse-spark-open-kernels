@@ -81,10 +81,8 @@ about1.8e-5. The five host tests and six static checks pass. Three native sm90a
 transport kernels and two ordered-control specializations compile, with no
 native spills. These are local findings, not H200 claims.
 
-`sent.json` binds the immutable queued source and baseline to the payload.
-`read_receipt.py <job>` records the landed result and emits an allocation helper
-only after a real-weight H200 gain. Its cell list still requires kernel-level
-gain and the printed bit gates. Until then, no compression drop-in is promoted.
+`sent.json` binds the sent source and baseline to the payload; `read_receipt.py <job>`
+reads the landed result.
 
 ```bash
 python problems/muse_bf16_proj/dev/memory_compression/build.py

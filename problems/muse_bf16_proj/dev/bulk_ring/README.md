@@ -1,10 +1,8 @@
 # Persistent bulk-ring dense projections (P7)
 
-One real-weight **proj-host** batch, held locally until **2026-10-25 09:02 KST**.
-The MoE lane's proj-host lab has the09:01 slot. Local send key
-`ef2048bf49b3fdf4`, PID4164652; detached log confirms00:02UTC gate. `sent.json` records the local
-send key and immutable snapshot; a send key is not a judge job. No H200 result
-or new dispatch promotion is claimed before the receipt lands.
+One real-weight **proj-host** batch: send key `ef2048bf49b3fdf4` (`sent.json` pins the
+snapshot), judge job `87b2667f5dac43a6`. No H200 result or dispatch promotion is
+claimed before its receipt.
 
 `bandwidth.json` and FINDINGS contain all16 best7 role/M rows against a3.6TB/s
 streaming control. M32 pool+router has the largest opportunity ceiling:

@@ -5,14 +5,14 @@ Current successor: [cand_r3_best7_paired.py](../../cand_r3_best7_paired.py), SHA
 [paired_validation.json](paired_validation.json) pins both screens and the actual admitted table.
 It applies paired receipt `9c83cdb852fe4576`: the exact measured new glue geometry, old glue at
 decode32 sliding, and public `layer` scheduling for all q8 cases. It retains NT1 below M256,
-Humming at M256 and best6 decode1 attention. No scale-bank change has been promoted.
+Humming at M256 and best6 decode1 attention. S1 (`cand_r3_best7_scale.py`) adds the
+recoded scale bank; S2-S6 build on S1 (`dev/s2`-`dev/s6`).
 
 Prior frozen reset: [cand_r3_best7_reset.py](../../cand_r3_best7_reset.py), SHA-256
 `b4cc76dc5302c4572951cf56163cb1bd1c8f1db5d3c133c667fbbe208ba6c98a`, sent by the owner as
 check `c0e74bedf7b74be5`. Its source and [reset validation](reset_validation.json) remain intact.
 Base is exact best6 `4516cb97`, H200 check `1b80ffc037cc454c`, **1.379716x**.
 The builder emits `cand_r3_best7.py`; the paired snapshot is frozen for candidate handoff.
-This lane sends labs and reports candidate paths/hashes; Jihoon sends candidates.
 
 ## P7 within-call L2 prefetch switch
 
@@ -26,14 +26,9 @@ prepare checks three refreshed full-layer graph fixtures in both replay orders
 against the same table row without prefetch. Both load and bulk transports run
 locally; only Hopper attention has its established stand-in.
 
-Pending H200 lab send key **9367398c624b7796**, section `l2_overlap_lab`, payload
-SHA256 `e62b6b087adeb0c5744c79f3f0597039e799f316908dc82951c9d9ee0e3fda55`.
-No row is enabled from local timing. Read a landed receipt with
-`tools/h200_lab.py read <job> l2_overlap_lab`; the projection lane's
-`dev/l2_overlap/read_receipt.py <job>` emits proposed row cells from paired
-whole-layer gains beyond measured A/A noise. Re-screen the cumulative table
-before candidate handoff. PDL activity sums are diagnostic and never substitute
-for the paired layer delta.
+H200 lab `d5a9025890a64141` (send 9367398c, payload SHA256
+`e62b6b087adeb0c5744c79f3f0597039e799f316908dc82951c9d9ee0e3fda55`) slows the layer
+by 0.3-16.6% even with its best recipe (FINDINGS); no row is enabled.
 
 ## Applying a receipt
 
@@ -59,9 +54,9 @@ and returns `(op(x).unsqueeze(0), 1)`; pool/router output remains FP32 with sepa
 The exact projection-lane kernel and `StreamingProjection` runtime are embedded, without a runtime
 repository import. Its configuration IDs and split counts come from the H200 receipt, not local ranking.
 
-`BEST7_DENSE_CHAIN` is the receipt-gated P7 switch for the persistent `o -> boundary -> pool/router`
-chain at M=1/8/128/256. It is false in every row until the real-weight H200 A/B lab
-`5279d3e3903a57b5` passes. The prototype uses a phase-numbered grid barrier, prefetches dependent
+`BEST7_DENSE_CHAIN` is the P7 switch for the persistent `o -> boundary -> pool/router`
+chain at M=1/8/128/256. It is false in every row: the H200 A/B `87dc944b` lost 1.5-6.5x
+([mechanism](../megakernel/README.md)). The prototype uses a phase-numbered grid barrier, prefetches dependent
 pool/router rows before the barrier, and zeroes its counters inside the captured graph so changed-input
 replays are deterministic.
 
@@ -76,8 +71,8 @@ The old NT tuner remains in base prepare but cannot override table-locked runtim
 at M32: best6 chose NT2 from a 0.929961 paired ratio despite slower pooled NT2 medians. At M128 best6
 already chose NT1, so restoring NT1 alone cannot recover board v9's M128 timing. Stored E4M3 conversion
 inside the native kernel is another difference from v9. Lossless packed-bank recoding is allowed by
-CONSTRAINTS 5; [paired E:C](../paired_lab/README.md) measures that difference on identical routes
-at M8/16/32/128 before a bank choice per M is promoted.
+CONSTRAINTS 5; [paired E:C](../paired_lab/README.md) measured it faster on identical routes
+at M8/16/32/128, so S1 adopts it.
 No prepared BF16/FP8 expert weight bank is retained. Optional adapters must still pass best6's three-seed
 final gates; rejection is printed explicitly. Fixed NT1/NT2 at small M get three public-stream FP32 gates,
 with changed routing before and after graph replay. The MoE-only fixture uses sliding metadata because
@@ -147,11 +142,11 @@ three prepare fixtures. M128 chose NT1 **323.107 us**, versus NT2 **332.957**, H
 All alternatives passed gates. These match the broad twelve-seed conclusion: Humming wins M256,
 ties V9 at M128, and raw17/dg_w8 lose. The earlier native-safety hold is resolved.
 
-The reset allocation and the live per-load sensitivity table are owned by **[FOCUS.md](../../FOCUS.md)**.
+The live lever table is [NEXT_CHECKS.md](../NEXT_CHECKS.md).
 [sensitivity.py](sensitivity.py) derives the numbers from best6's H200 `median_ns`, weights 46 sliding
 and 16 full, and verifies that the six-load geometric speedup reproduces **1.379716x** exactly, and reconstructs all three v9 rerun scores.
-[sensitivity.json](sensitivity.json) retains the inputs and formula; [SENSITIVITY.md](SENSITIVITY.md)
-is the generated table. Saving 1 us on both layer types affects 62 layers in only that load; a full-only
+[sensitivity.json](sensitivity.json) retains the inputs and formula; the table is in
+[DISPATCH.md](DISPATCH.md). Saving 1 us on both layer types affects 62 layers in only that load; a full-only
 attention saving affects 16. For several simultaneous stage savings, add their critical-path deltas
 inside each load before applying the geometric formula. Summed PDL kernel durations are not such deltas.
 This is a local accounting sensitivity around one receipt, not an independent seed-mean performance claim.
@@ -159,5 +154,4 @@ This is a local accounting sensitivity around one receipt, not an independent se
 Paired **`9c83cdb852fe4576`** resolves G/F/E with zero route flips; its supported table
 changes are in best7_paired. E:C isolates scale-bank conversion on identical routes before any
 recode promotion. Small-M **`b68afb72b72542b4`** resolved against NT2 below M128; streaming
-**`feb7b287e3464e4a`** only supports further in-layer M1 overlap work. Current run order and
-sensitivity ownership stay in FOCUS. A final-place gain still needs seed-mean/median evidence.
+**`feb7b287e3464e4a`** only supports further in-layer M1 overlap work. A final-place gain still needs seed-mean/median evidence.

@@ -31,23 +31,23 @@ Dense/router/norm seed941732 is unchanged. No dequantized expert bank is prepare
 A flipped cell is recorded with IDs, 8th/9th biased-sigmoid gap, cutoff loss and
 candidate score perturbation. It is disabled for that M; other cells continue.
 Any flip disables admission even when a near-tie explains it. The old M256
-pool epilogue is retained only as an untimed diagnostic for failed receipt8a3d7181.
-That receipt contains no gap or surviving timings; its near-tie status is unknown.
-Local reproduction has zero flips and minimum candidate cutoff gap 0.00010979,
-which cannot classify the H200 event. The new receipt will carry the missing data.
+pool epilogue is retained as an untimed diagnostic for failed receipt8a3d7181;
+`9eeb39ba` shows that event is two experts swapping slots inside the same top-8
+set, not a routing error (FINDINGS "Failures").
 
 Local validation: 36 native graph cases, zero flips, maxL2 0.000088; 180 full-layer
 comparisons, zero flips, maxL2 0.004623; 24 exact metadata descriptors. Injecting a
 wrong expert disables one cell, skips its other window and finishes 174 timings.
 Nine host checks and three static checks pass. SM90a builds pass: cooperative
 glue56 registers (pool has4B stores/24B loads of spills), route128/no spills.
-All switches in `BEST7_COOP_GLUE_CELLS` remain empty. Local timing is diagnostic;
-several repaired cells still lose locally. H200 whole-layer results decide use.
+All switches in `BEST7_COOP_GLUE_CELLS` remain empty.
 
-The single batch is queued with an explicit **2026-10-25 09:00 KST** send gate:
-send key **270212081442eff6**, payload SHA `da57e4ccf74a6d6559ae1e9de882de77201a72d68203740deca6c72c369a9f9f`.
-The detached log confirms no judge request before the gate. `sent.json` and
-`admission.json` pin the exact sources. No H200 job ID exists before dispatch.
+H200 job **9eeb39bab3fd4742** (proj; send 270212081442eff6, payload SHA
+`da57e4ccf74a6d6559ae1e9de882de77201a72d68203740deca6c72c369a9f9f`) loses every cell at
+every case, B/A 1.17-9.5x (case G0 pool 156.8 vs 103.5 us, route 327.7 vs 104.0; G8 all
+1500.5 vs 218.6). This closes the exact recipe; the mechanism is not isolated (the
+per-row grid-wide sync is the likely cost, unmeasured). The case-10 flip that disabled
+three cells is a slot-order swap. `sent.json` and `admission.json` pin the sources.
 
 Build: `build.py`, `build_cell.py`, `build_lab.py`. Screen: `validate.py`, then
 `screen.py`; `screen.py --inject-flip` tests failure isolation. Run the GPU scripts

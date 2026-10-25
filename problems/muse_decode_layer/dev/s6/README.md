@@ -59,20 +59,10 @@ hidden/stream relative errors are0.001905/0.000952 with exact routing IDs.
 The O FP32 graph gate is0.001676; the mixed_parallel FP32 L2/row gate is
 0.003803/0.004261. Both changed rows execute eager and captured native math.
 
-The first forced-driver attempt called the expert-only input refresher with
-full-layer data in the new O comparison and stopped with KeyError before the
-screen. It is retained in `forced_driver_attempt.log`. The driver now refreshes
-all full-layer inputs with `local_eval.copy_into`; candidate source and gates
-are unchanged. The complete forced screen is rerun after the driver fix.
 Final source-pinned checks and prepare times are in `validation.json`.
 Whole-layer H200 speed and cold H200 prepare remain unmeasured.
 
-S6 is queued scored-only at priority0 behind S1–S5 for2026-10-25 09:01 KST;
-log `runs/detached/4c98f12fc7fab973.log`. Source SHA-256:
-`4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f`.
-`queued.json` verifies snapshot SHA and all five earlier queue entries.
-Refresh the lever table and PLAN
-Status from landed profiles using
-`python problems/muse_decode_layer/dev/levers/build.py`. The parser separately
-attributes the new O kernel and groups all H_H/parallel MoE kernels; overlapping
-kernel durations remain optimistic headroom rather than measured wall savings.
+S6 runs as scored job `fecc29af233d45b3` (send log `runs/detached/4c98f12fc7fab973.log`);
+source SHA-256 `4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f`.
+The lever parser (`dev/levers/build.py`) attributes the new O kernel separately and groups
+all H_H/parallel MoE kernels; overlapping kernel durations remain optimistic headroom.

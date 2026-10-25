@@ -1,6 +1,6 @@
 # Routing, pre-expert norm and metadata
 
-The active experiment is the [cooperative repair and batched lab](../coop_glue/README.md).
+The cooperative repair and its H200 lab `9eeb39ba` (lost) are in [coop_glue](../coop_glue/README.md).
 `route_once.cu` computes top8/bias and pre-expert RMS once per row, publishes
 IDs/weights/inverse norms through a cooperative grid barrier, then retains the
 packed expert MMA body. No BF16/FP8 expert bank is prepared. M256 retains masked
@@ -33,7 +33,6 @@ timings: after74s, one M256 sliding pool-epilogue route flip raised an exception
 Its source is frozen in
 `runs/muse_moe_w4a16/20261024T154402Z_check_8a3d71811a324c36.py`;
 `admission.json` refers to that immutable source, not the rebuilt payload.
-The receipt lacks the8th/9th gap, so near-tie versus error remains unresolved.
-Current payload builders record flip details, disable that cell/M and continue;
-only the new batched payload is queued, send270212081442eff6, gated to09:00 KST.
-The old prefix is included as an untimed cutoff-gap diagnostic.
+Payload builders now record flip details, disable that cell/M and continue. The coop
+lab `9eeb39ba` reran the old prefix: the flip is two experts swapping slots inside
+the same top-8 set (cutoff loss 0), not a routing error (FINDINGS "Failures").

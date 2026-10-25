@@ -43,9 +43,8 @@ Accepted attention-board job `9828bfa041a143a9`, send key `acd77ec8d7a34384`.
 No decode settings are promoted by this measurement candidate. The saved
 `be19da94dc534323` receipt passes16 tests but full-q8 B16/B32 calls lose at
 431.15/751.42 vs205.98/391.03 us. Producer427.8/713.7 us is98.6/98.8% of
-the profile; combine6.3/8.5 us is no longer the target. Next is producer
-phase profiling and native register/occupancy data; this profile cannot
-identify the inner binding phase. FA3 remains selected for full verify.
+the profile; combine6.3/8.5 us is no longer the target. This profile cannot
+identify the inner binding phase ([producer phases](../producer_phases/README.md)). FA3 remains selected for full verify.
 `compare_profiles.py` reads saved profile JSON only, with d98ae45d as its
 default control; it makes no judge calls or waits. Its 12-shape outputs are
 `sliding_result.json` and `flashdecode_result.json`.

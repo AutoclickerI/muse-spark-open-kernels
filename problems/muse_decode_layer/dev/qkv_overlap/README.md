@@ -14,7 +14,7 @@ its combine where present. Denominators are the FOCUS sensitivity benchmark medi
 
 All three decode loads together: **1.820% overall**.
 Using best7_reset's own benchmark denominators instead: 1.857%.
-This clears the1% screening threshold only in aggregate. At 50% realization, the
+At 50% realization, the
 overall gain is 0.897%.
 The bound gives no GPU-resource availability or scheduling guarantee. M1/16/32
 qkv and attention compete for the same SMs and memory; launch cost is not divisible
