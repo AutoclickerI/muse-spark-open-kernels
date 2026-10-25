@@ -1,9 +1,0 @@
-{
-  "source": "problems/muse_decode_layer/cand_r3_best7_s7.py",
-  "sha256": "bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390",
-  "base": "problems/muse_decode_layer/cand_r3_best7_s6.py",
-  "base_sha256": "4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f",
-  "old_S5_HH_CUDA_sha256": "61eb4d547fdd4a7ac2ebf999a1c2bf3a8d8cf20db99c6b45530bf8ff2a6b74f0",
-  "new_S5_HH_CUDA_sha256": "1b7e5747c73d5e2cf083cfa9f15786d329e902e5d115e818c6701ee2bfe6a17f",
-  "change": "H_H heavy path reads packed uint8 scale codes; BF16 scale words formed in-kernel; issue_word_bank deleted"
-}

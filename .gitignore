@@ -16,3 +16,16 @@ runs/sent/
 *.sqlite
 runs/detached/
 *.cubin
+
+# Regenerated H200 wrappers and local build/screen outputs. Live tracked inputs remain tracked.
+/problems/*/lab/*.py
+/problems/*/dev/**/out/
+/problems/*/dev/**/screen/
+/problems/*/dev/**/*_screen/
+/problems/*/dev/**/normal/
+/problems/*/dev/**/forced/
+*.ptx
+*.sass
+/problems/*/dev/local_*.json
+/problems/*/dev/verify_*.json
+/problems/*/dev/upstream_sync/

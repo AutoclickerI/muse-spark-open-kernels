@@ -1,1 +1,0 @@
-VERIFY_PROJ_RECIPES = {(256, 'pool_router'): [('lt', 0, 0)], (256, 'qkv_gate'): [('lt', 0, 0)], (256, 'unpooler'): [('lt', 0, 0)], (128, 'pool_router'): [('lt', 0, 0)], (128, 'qkv_gate'): [('lt', 1, 23)], (128, 'unpooler'): [('lt', 1, 0)], (128, 'o'): [('lt', 1, 0)]}

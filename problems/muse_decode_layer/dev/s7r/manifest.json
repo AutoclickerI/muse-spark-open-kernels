@@ -1,9 +1,0 @@
-{
-  "source": "problems/muse_decode_layer/cand_r3_best7_s7r.py",
-  "sha256": "56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101",
-  "base": "problems/muse_decode_layer/cand_r3_best7_s7.py",
-  "base_sha256": "bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390",
-  "rf_cuda_sha256": "dd698666aaa853b45436c3434b83e438a4e44c45364dcd6f000d1104609b8dad",
-  "lab": "110599ba6b6144d4 R_full 0.9227 vs mixed_parallel, bit-equal",
-  "change": "M256 MoE: live route + fork-once N16 remainder groups || N32 full groups, both phases; same finalizer and bank"
-}
