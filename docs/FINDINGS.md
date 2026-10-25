@@ -453,6 +453,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   whole S11 final layer (`c114c35e`, 16 seeds x 8 rounds, A:A +-0.08%, host 1.7297x): 0.971 at decode 1, 0.9997 /
   0.9990 at decode 16 / 32 (neutral): use it at decode 1. Gather stages (`6d555796`): S2 / S3 / S4 0.960 / 0.959 /
   0.955 at decode-1 sliding, 0.951 / 0.957 / 0.969 at decode-32 sliding, 0.976-0.989 at full.
+- One launch per sliding layer (q/k norm + RoPE + cache append, all-SM split gather, cluster DSM combine, norm/gate;
+  `79061182`, 4 seeds x 8 cold rounds, CUPTI critical increments in the whole S11 layer): decode 1 14.2-14.9 us vs
+  S11's 14.75 (r 0.996-1.011); decode 16 / 32 worse (r 1.02-1.10); verify 1 12.6-12.8 vs 17.4 (r 0.970); verify 16 /
+  32 neutral. The decode-1 sliding increment is a dependent latency chain (page index -> gather -> softmax -> combine
+  -> epilogue on cold data), not launch overhead.
 - vq8 with a balanced native softmax at full verify 16 / 32 (`8b8e4e2b`): 1.005-1.020 vs S11's vq8 (per-tile clocks:
   132 CTAs, 150 / 300 tiles, producer ends ~3 us before the consumers); the revised shared-RoPE cooperative prep loses
   1.08-1.30 at sliding decode and 1.25-1.27 at full decode; verify-1 sliding 0.973 and 1.002 in two parts of the run
@@ -600,6 +605,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   A:A 1.000) every variant loses to S11's pinned Lt / cuBLAS: own GEMMs with the old boundary 1.019 / 1.010 at
   verify 16 / 32, with norm statistics 1.042 / 1.026, o-only 1.009 / 1.008 (closed recipe: Triton-tile verify GEMMs).
   The plain GEMMs alone (`ca685be1`): o 0.9957 / 1.0056 (6 stages) and 0.9995 / 0.9997 (4), unpooler 1.003-1.026.
+- Glue folded into producer epilogues loses (`f21c60b0`, 8 shapes, paired, CUPTI increments): b1 in O's reduction
+  1.05-1.11 per load, route (norm + top-8 + MoERouteMeta) in pool_router's 1.10-1.15, b2 in the unpooler's 1.03-1.06,
+  all three 1.12-1.21. A last-CTA epilogue runs the boundary on one CTA's tail; the separate glue kernel spreads it
+  over the GPU (closed recipe: late row-owner epilogues).
 - Balanced GEMV issue sweep (`d3666d18`, projection + sum-cast graph, standalone): pool_router at BK=128 with 2
   stages 0.977 / 0.959 / 0.960 at t = 1 / 16 / 32 (-0.6 to -1.1 us); every other role and setting within +-2%.
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;
