@@ -57,7 +57,9 @@ The first A/B wrapper **8a94b0f4** passed its own screen, but the server rejecte
 413 before creating a job (no check consumed). The rebuilt wrapper **8cae39f5** (payload **f75c1775**; current
 manifest is authoritative) stores one compressed shared source and lossless line edits for each arm, verifying
 every reconstructed SHA256 both during build and before H200 execution. Source is 951,182 B, JSON-encoded source
-972,223 B. The timed candidate and every arm's source hash are unchanged. Its local screen is running.
-No S12 H200 result or freeze yet.
+972,223 B. The timed candidate and every arm's source hash are unchanged. Its local screen passes all 13 tests,
+23 static checks, and the complete 12-shape/16-seed/8-round lab with no correctness failures.
+Decode check **c5f4f0182acc4fe3** accepted at 05:11 UTC; receipt collection is running. No S12 H200 result or
+freeze yet. `admission.json` pins the normal, forced and compact-wrapper screens to their exact hashes.
 Prepared ignored removal variants for immediate rebuild if an arm loses: no-wide **c9ee036e**, no-final4
 **9a4a0978**, no-coded **e9ce6986**. Each matches the source hash already embedded in the lab manifest.
