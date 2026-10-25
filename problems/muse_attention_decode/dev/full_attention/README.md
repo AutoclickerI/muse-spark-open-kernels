@@ -248,7 +248,7 @@ cold paired samples each. The first forced boot stayed local: original-P ST8
 exceeds sm120's99KiB shared-memory limit. Its explicit off-Hopper arithmetic
 stand-in maps ST8 to ST6; ST8 native code is separately compiled. H200 runs true
 ST8. The corrected exact wrapper passes; no gate or native stage was dropped.
-Result pending; scarce decode quota is untouched by this lane.
+Landed result is below; scarce decode quota was untouched by this lane.
 
 ## Matrix-load register-V form under local admission
 
@@ -257,5 +257,75 @@ register-A fragments from raw V with two `ldmatrix.x4.trans.b16` operations per
 thread, warp shuffles and byte permutations, replacing32 scalar shared-byte loads
 and their packing. Shared P uses the matching within16-key permutation. V is never
 byte-transposed in shared. Builds cover two heads/CTA, independent one-head CTAs
-and adjacent paired-head CTAs. Independent FP64 PV mapping, full attention/cache/
-capture and native resource checks must pass before any H200 send. No handoff.
+and adjacent paired-head CTAs. Independent FP64 PV mapping, full attention/cache/capture and native resource checks pass. Attention check5cca129606894641 landed; numbers below. No handoff.
+
+
+## Occupancy and matrix-load results
+
+Each pair uses three fresh seeds ×16 cold rotating replays; ratios are candidate/S13.
+
+| Job / form | Verify16 us /ratio | Verify32 us /ratio | A:A16/32 |
+|---|---:|---:|---:|
+|6ec9d43d6e3f4fbf rawV independent S6|180.38 /1.23010|332.68 /1.28167|.99872/1.00084|
+|6ec9d43d6e3f4fbf rawV paired S6|180.71 /1.23298|328.06 /1.26333|same|
+|6ec9d43d6e3f4fbf P-register S4|155.22 /1.05897|289.46 /1.11346|.99997/.99845|
+|5cca129606894641 matrixV two-head S8|188.03 /1.28817|337.11 /1.30672|.99903/1.00077|
+|5cca129606894641 matrixV one-head S4|163.24 /1.11747|299.98 /1.16235|same|
+|5cca129606894641 matrixV paired S4|159.93 /1.09493|289.28 /1.12130|same|
+
+All gates pass; no form wins. Paired S4 matrix-V seed ranges1.08361–1.10558
+and1.11984–1.12314, so this is a clear loss, not noise. Increasing shared stage
+depth trades away resident CTAs and is particularly poor: original-P S6/8 ratios
+1.58/2.12 atB16,1.68/2.26 atB32; rawV S8 loses1.71/1.56. Head adjacency helps
+the faster matrix-load form, but does not recover its remaining issue cost.
+
+`check_sass.py`/`pv_sass.json` isolates the raw-V PV probe: scalar/matrix forms
+have696/600 static SASS instructions.32 `LDS.U8` become two `LDSM.16.MT88.4`;
+SHFL.IDX2→18, PRMT24→16, LOP3.LUT190→129. This is the complete probe including
+unchanged P packing and O restoration, not the production main-loop dynamic
+instruction count. H200 confirms that reducing this issue helps relative to the
+scalar form, but remaining shared-P/layout work still outweighs the removed
+producer transpose atN64.
+
+## N128 occupancy form
+
+P5 already measured full128 source **9a23ca9a** as a whole-layer win, while this
+lane was probing S13. That source is now pinned as an additional comparator;
+P5's files are read only. `build_ldsv128_lab.py` rebuilds the selected source,
+`build_paired.py --parent ldsv128 --name ldsv128pair` co-schedules head halves,
+and freezes a lab against both S13 and that exact measured N128 control.
+
+The first N128 port at128 registers failed native admission with C7512 and
+~400 bytes of spills; `ldsv128_initial_failure.json` records it. It stayed local.
+The cause was overlapping64 QK accumulator registers with32 O and16 V-A
+registers. The current cached-tile schedule drains QK and packs P before forming
+V-A, so resident CTAs supply independent work. Native main123–124 registers (paired head123–125),
+combine63, no spills/C75 atS2/3/4. ST3 fits a modeled three160-thread CTAs/SM
+(70,656 dynamic bytes plus4,096 static). A CTA gathers one64B head; the paired
+form gathers adjacent complementary head halves at the same keys.
+
+Both actual N128 pipelines run locally atST3 and pass four independent
+attention/cache/capture fixtures, including B16/32 full80K and page64/scale1/64,
+plus four-FP32-partial captures. The standalone PV64 fixture verifies the common
+V-register mapping; full attention verifies its N128 extension. The comparator's
+two-head N128 ring exceeds sm120 shared limits and uses S13 as its explicit local
+boot stand-in; H200 executes frozen9a23ca9a. Exact attention-host wrapper **fba55912** passes normal16 tests/12 captured shapes/7 static checks and forced boot of both full80K paired rows (three seeds ×16 cold pairs, ten arms). H200 attention check **cf79aa070ca349c6** is accepted; result pending. A native whole-layer gain is not claimed.
+
+
+## Experimental integration preparation
+
+`patch_ldsv128.py` builds `s13_ldsv128.py` **a67ff29d** and
+`s13_ldsv128_experimental.patch` **5ae1b320**, applying only onto S13 final
+**958f1258**. It changes the two existing full verify16/32 vq8 rows to the adjacent
+head N128/ST3 kernel **84eddcfe**, updates its launch/scratch ABI and module key,
+and makes this changed prepare gate fail loudly. Original S13 attention dispatch
+already selects only these two rows. Decode, sliding and verify1 are untouched.
+FP32 QKV partials are summed and rounded to BF16 in the adapter, then the native
+kernel performs attention and writes new cache rows; the cost belongs in the
+whole-layer pair. Nothing returned by timed calls is precomputed in prepare.
+
+`check_candidate.py` uses local_eval through the established S9 audit, normal and
+forced Hopper glue, with the source/flag keyed native compiler cache. It requires
+both changed rows to execute eagerly and in captured calls. Both normal and forced pass13 TASK tests/12 captured scored shapes/25 static checks. Each changed row executes eagerly5 times and in captured graphs in each mode; `candidate_admission.json` pins the exact candidate, patch and checks. This experimental patch is **not an integration handoff or promotion**.
+The decision to retain or remove it waits for the N128 H200 stage pair and then a
+whole-layer paired run on identical inputs. Decode quota is currently zero.

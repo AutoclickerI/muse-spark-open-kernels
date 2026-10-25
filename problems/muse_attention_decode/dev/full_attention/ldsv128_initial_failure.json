@@ -1,0 +1,28 @@
+{
+  "source_sha256": "30b2ec97ac227d4866bbea8bdd7cfab07cc07a46d830f8ff1759a9e4dbb7176e",
+  "native_admission": false,
+  "sent": false,
+  "reason": "N128 QK/PV overlap at128reg limit emits C7512 and main spill traffic",
+  "native": [
+    {
+      "stage": 2,
+      "registers": 128,
+      "spill_stores": 412,
+      "spill_loads": 408
+    },
+    {
+      "stage": 3,
+      "registers": 128,
+      "spill_stores": 404,
+      "spill_loads": 400
+    },
+    {
+      "stage": 4,
+      "registers": 128,
+      "spill_stores": 412,
+      "spill_loads": 408
+    }
+  ],
+  "local": "PV and raw BF16 attention passed first fixture; partial ABI test requested unsupported stage6. Test now uses3 for both ABIs.",
+  "fix": "Drain QK before forming V register-A; remove previous P bank from QK lifetime. Strict checker unchanged."
+}

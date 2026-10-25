@@ -1,9 +1,11 @@
 """Adjacent one-head CTAs gather the two halves of each physical KV row together."""
 import ast
+import argparse
 import hashlib
 from pathlib import Path
 H=Path(__file__).resolve().parent
-s=(H/'onehead.cu').read_text()
+ap=argparse.ArgumentParser();ap.add_argument('--parent',default='onehead');ap.add_argument('--name',default='paired');args=ap.parse_args()
+s=(H/(args.parent+'.cu')).read_text()
 def sub(a,b,n=1):
  global s
  assert s.count(a)==n,(a,s.count(a),n)
@@ -26,17 +28,19 @@ sub('pb * 64 +','pb * 128 +')
 sub('const int head = (hp) * 8 + (row & 7);','const int head = (2*hp+hh) * 8 + (row & 7);')
 sub('dim3(p.L * p.wpr, p.NS)','dim3(2*p.L * p.wpr, p.NS)')
 sub('if (HQ != 8 * HK','if (grid%2 || HK%2 || HQ != 8 * HK')
-(H/'paired.cu').write_text(s)
-tree=ast.parse((H/'onehead.py').read_text())
+(H/(args.name+'.cu')).write_text(s)
+tree=ast.parse((H/(args.parent+'.py')).read_text())
 for n in tree.body:
  if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='VQ8_CUDA':n.value=ast.Constant(s)
  if isinstance(n,ast.FunctionDef) and n.name=='vq8_attention':
   for q in n.body:
    if isinstance(q,ast.Assign) and getattr(q.targets[0],'id','')=='NS':q.value=ast.parse('B*(HK//2)',mode='eval').body
 drv=ast.unparse(tree).replace('(G + NS) * 64 * 68','(G//2 + NS) * 128 * 68')+'\n'
-(H/'paired.py').write_text(drv)
-test=(H/'check_onehead.py').read_text().replace("load('onehead')","load('paired')").replace("'onehead.py'","'paired.py'").replace("'onehead_validation.json'","'paired_validation.json'")
-(H/'check_paired.py').write_text(test)
+(H/(args.name+'.py')).write_text(drv)
+test=(H/('check_'+args.parent+'.py')).read_text().replace("load('"+args.parent+"')","load('"+args.name+"')").replace("'"+args.parent+".py'","'"+args.name+".py'").replace("'"+args.parent+"_validation.json'","'"+args.name+"_validation.json'")
+(H/('check_'+args.name+'.py')).write_text(test)
+print('Paired heads:',args.parent,args.name,hashlib.sha256(s.encode()).hexdigest())
+if args.parent!='onehead':raise SystemExit(0)
 prefix=(H/'phases_lab.py').read_text().split('\nSOURCES=',1)[0]
 lab=(H/'hybrid_lab.py.inc').read_text()
 lab=lab.replace('range(5)','range(8)').replace('range(3)','range(6)')
@@ -45,4 +49,3 @@ lab=lab.replace("for j,st in enumerate((4,6,8))","for j,st in enumerate(('one4',
 lab=lab.replace('FP8 QK + register FP16 PV','one-head CTA160 native register-V PV, independent/adjacent head scheduling')
 lab=lab.replace('V stays raw, exact register widening; P keeps E4M3 quantization, output register transpose only once per portion.','Three CTA occupancy target; adjacent physical CTAs share page/tile ranges and read complementary 64B row halves; raw V, shared P.')
 (H/'occupancy_lab.py').write_text(prefix+'\nSOURCES='+repr({'old':(H/'vq_runtime.py').read_text(),'onehead':(H/'onehead.py').read_text(),'paired':drv})+'\n'+lab)
-print('Paired heads:',hashlib.sha256(s.encode()).hexdigest())

@@ -21,11 +21,18 @@ row=next(json.loads(x) for x in (R/'runs/ledger.jsonl').read_text().splitlines()
 embedded=[h200_lab.embed(p) for p in ps]
 s=(R/row['source']).read_text().rstrip()+'\n\n'+h200_lab.WRAPPER.format(
     names=', '.join(f'{n} {sha}' for n,sha,_ in embedded),base=base,payloads=embedded,
-    budget=300-h200_lab.MARGIN_S,limit=h200_lab.LIMIT)
-assert s.count('def prepare(weights):') == 1
-s = s.replace('def prepare(weights):', 'def prepare(weights=None):')
-assert s.count('state = _lab_base_prepare(weights)') == 1
-s = s.replace('state = _lab_base_prepare(weights)', 'state = _lab_base_prepare()')
+    limit=h200_lab.LIMIT)
+# This pinned attention source has a private zero-argument prepare tuner. Keep
+# its ABI and the established guarded boot while sharing the current lab runner.
+s+='''
+_lab_base_prepare = prepare
+def prepare(weights=None):
+    import time as _t
+    _start = _t.monotonic()
+    state = _lab_base_prepare()
+    _lab_run(weights, state, _start, _start + 285, "import")
+    return state
+'''
 s += '\n# Full-attention diagnostic boot: attention has no harness prepare hook.\nif torch.cuda.is_available() and torch.cuda.get_device_capability()[0] == 9:\n    prepare()\n'
 out = H / ('_'.join(p.stem.removesuffix('_lab') for p in ps)+'_board.py')
 out.write_text(s)
