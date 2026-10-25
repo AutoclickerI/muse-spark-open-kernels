@@ -1,0 +1,32 @@
+{
+  "payload_sha256": "2b0356d740f0b2ca4c7091e74025f9c2e7b9bdcf2d0ea0d2236405d38e1a7628",
+  "device": "sm120 GPU0",
+  "H200": false,
+  "all_local_stages": 2,
+  "lines": [
+    "GATE EPBASE:0.00240/0.00240,NORM:0.00240/0.00240,ONCE:0.00239/0.00244,ONCE_PAIR:0.00239/0.00244,ONCE_VEC:0.00239/0.00244,PAIR:0.00240/0.00240,PROD:0.00240/0.00240,S14:0.00240/0.00240,VEC:0.00240/0.00240",
+    "AA M1 abs=0.859 us",
+    "AA M8 abs=0.322 us",
+    "AA M16 abs=0.544 us",
+    "PAIR M32 S14 us=153.707 r=1.00000 se=0.00000 wins=0/16 node=150.107 TBs=1.384",
+    "PAIR M32 EPBASE us=154.463 r=1.00397 se=0.00239 wins=1/16 d_us=+0.882",
+    "PAIR M32 VEC us=154.228 r=1.00461 se=0.00272 wins=4/16 d_us=+0.417 node=150.791 TBs=1.378",
+    "PAIR M32 PROD us=152.364 r=0.98887 se=0.00235 wins=11/16 d_us=-1.589 node=148.970 TBs=1.395",
+    "PAIR M32 NORM us=152.079 r=0.98807 se=0.00241 wins=13/16 d_us=-1.795 node=148.379 TBs=1.400",
+    "PAIR M32 PAIR us=151.614 r=0.98595 se=0.00280 wins=13/16 d_us=-2.326 node=148.315 TBs=1.402",
+    "PAIR M32 ONCE us=192.613 r=1.25597 se=0.02068 wins=0/16 d_us=+38.672",
+    "PAIR M32 ONCE_VEC us=195.833 r=1.27415 se=0.02037 wins=0/16 d_us=+42.023",
+    "PAIR M32 ONCE_PAIR us=192.833 r=1.25644 se=0.02141 wins=0/16 d_us=+39.004",
+    "AA M32 abs=0.313 us",
+    "TRACE M32 EPBASE n=8 observer=1.0035 d_us=+0.544 phase_us=4.624,0.036,69.608,40.596,9.512,1.500 sub_us=1.028,0.604,8.756,3.744,9.156,4.920,0.000 eff_GHz=2.0139",
+    "TRACE M32 VEC n=8 observer=1.0111 d_us=+1.262 phase_us=4.868,0.032,71.580,41.224,9.728,1.604 sub_us=0.964,0.792,8.652,3.540,12.020,13.456,0.000 eff_GHz=2.0240",
+    "TRACE M32 PROD n=8 observer=1.0118 d_us=+1.370 phase_us=4.664,0.044,69.624,39.468,10.780,1.604 sub_us=1.620,0.704,8.608,3.588,11.164,11.424,0.000 eff_GHz=2.0044",
+    "TRACE M32 NORM n=8 observer=1.0142 d_us=+1.864 phase_us=4.552,0.032,69.396,38.244,10.392,1.452 sub_us=1.432,0.628,8.500,3.532,11.000,10.428,0.472 eff_GHz=2.0070",
+    "TRACE M32 PAIR n=8 observer=1.0115 d_us=+1.740 phase_us=4.664,0.052,67.428,38.552,10.988,1.532 sub_us=2.492,0.872,8.796,3.764,8.300,9.076,0.296 eff_GHz=1.9889",
+    "TRACE M32 ONCE n=8 observer=1.0055 d_us=+1.146 phase_us=4.832,101.340,48.896,44.980,1.452 sub_us=20.684,9.620,75.548,31.628,7.640,9.848 eff_GHz=0.0000",
+    "TRACE M32 ONCE_VEC n=8 observer=1.0022 d_us=+0.564 phase_us=4.856,100.472,48.780,49.600,1.488 sub_us=18.812,12.976,78.180,25.896,6.496,9.416 eff_GHz=0.0000",
+    "TRACE M32 ONCE_PAIR n=8 observer=1.0106 d_us=+2.636 phase_us=4.676,95.448,49.124,53.488,1.424 sub_us=18.488,15.584,72.048,24.860,6.628,8.720 eff_GHz=0.0000",
+    "NORM_MODEL host_schedule mean W2tiles/runs/scalar_atomics_before/after=2912.00,296.69,15456.00,1719.62; simulation of exact S14 unit order,not a hardware counter",
+    "END seeds=16 seconds=39.5 left=215.5; promote only by paired whole-layer S14 ratios"
+  ]
+}

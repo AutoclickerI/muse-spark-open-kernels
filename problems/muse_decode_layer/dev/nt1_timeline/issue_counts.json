@@ -1,0 +1,749 @@
+{
+  "source_sha256": "4234ebdc66f0fb0e51eca0f438f786727abff491afee28b30186d7823bab36f7",
+  "S14_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "gpu_model": {
+    "sms": 132,
+    "clock_GHz_assumed": 1.98,
+    "warp_issue_per_sm_cycle_peak": 4,
+    "weight_bytes_per16": 9,
+    "target_TBs": 4.0,
+    "warp_instructions_per16_per_lane_budget": 75.27168
+  },
+  "probes": [
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_335886812p_norm_flushILi1EEEvPKfPfPmiii",
+      "segment": 0,
+      "instructions": 24,
+      "ops": {
+        "SHFL": 3,
+        "LDC": 1,
+        "IMAD": 2,
+        "BSSY": 1,
+        "LOP3": 1,
+        "FADD": 3,
+        "VIADD": 1,
+        "ISETP": 2,
+        "BRA": 1,
+        "ULDC": 2,
+        "USHF": 1,
+        "IADD3": 1,
+        "LEA": 3,
+        "REDG": 1,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 1
+      },
+      "branches": 3
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_335886812p_norm_flushILi0EEEvPKfPfPmiii",
+      "segment": 0,
+      "instructions": 23,
+      "ops": {
+        "SHFL": 3,
+        "LDC": 1,
+        "IMAD": 2,
+        "BSSY": 1,
+        "LOP3": 1,
+        "FADD": 3,
+        "ISETP": 2,
+        "BRA": 1,
+        "ULDC": 2,
+        "USHF": 1,
+        "IADD3": 1,
+        "LEA": 3,
+        "REDG": 1,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 1
+      },
+      "branches": 3
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_pairILi1ELi1ELb1EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 66,
+      "ops": {
+        "LDC": 3,
+        "ULDC": 2,
+        "SHF": 4,
+        "USHF": 2,
+        "VIADD": 1,
+        "IMAD": 4,
+        "LDG": 3,
+        "S2UR": 1,
+        "UMOV": 1,
+        "ULEA": 1,
+        "LEA": 3,
+        "LDS": 8,
+        "FADD": 19,
+        "LOP3": 2,
+        "IADD3": 2,
+        "FMUL": 6,
+        "FFMA": 1,
+        "STG": 3
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 2,
+        "LDG.E": 1,
+        "LDS.64": 8
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_pairILi1ELi0ELb1EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 65,
+      "ops": {
+        "LDC": 3,
+        "ULDC": 2,
+        "SHF": 4,
+        "USHF": 2,
+        "VIADD": 1,
+        "IMAD": 4,
+        "LDG": 3,
+        "S2UR": 1,
+        "UMOV": 1,
+        "ULEA": 1,
+        "LEA": 3,
+        "LDS": 8,
+        "FADD": 19,
+        "LOP3": 1,
+        "IADD3": 2,
+        "FMUL": 6,
+        "FFMA": 1,
+        "STG": 3
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 2,
+        "LDG.E": 1,
+        "LDS.64": 8
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_pairILi0ELi1ELb1EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 74,
+      "ops": {
+        "LDC": 2,
+        "LDG": 1,
+        "S2UR": 1,
+        "UMOV": 1,
+        "BSSY": 1,
+        "ULEA": 1,
+        "LEA": 3,
+        "ULDC": 3,
+        "LDS": 8,
+        "FADD": 17,
+        "SHF": 3,
+        "IMAD": 3,
+        "LOP3": 3,
+        "FMUL": 7,
+        "FSETP": 1,
+        "MUFU": 2,
+        "STG": 2,
+        "FCHK": 1,
+        "FFMA": 5,
+        "BRA": 1,
+        "MOV": 1,
+        "CALL": 1,
+        "BSYNC": 1,
+        "USHF": 2,
+        "IADD3": 2,
+        "F2FP": 1
+      },
+      "memory_width_ops": {
+        "LDG.E": 1,
+        "LDS.64": 8,
+        "F2FP.BF16.F32.PACK_AB": 1
+      },
+      "branches": 3
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_pairILi0ELi0ELb1EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 74,
+      "ops": {
+        "LDC": 2,
+        "LDG": 1,
+        "S2UR": 1,
+        "UMOV": 1,
+        "BSSY": 1,
+        "ULEA": 1,
+        "LEA": 3,
+        "ULDC": 3,
+        "LDS": 8,
+        "FADD": 17,
+        "SHF": 2,
+        "LOP3": 2,
+        "IMAD": 5,
+        "FMUL": 7,
+        "FSETP": 1,
+        "MUFU": 2,
+        "STG": 2,
+        "FCHK": 1,
+        "FFMA": 5,
+        "BRA": 1,
+        "MOV": 1,
+        "CALL": 1,
+        "BSYNC": 1,
+        "USHF": 2,
+        "IADD3": 2,
+        "F2FP": 1
+      },
+      "memory_width_ops": {
+        "LDG.E": 1,
+        "LDS.64": 8,
+        "F2FP.BF16.F32.PACK_AB": 1
+      },
+      "branches": 3
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_335886812p_store_pairEPK6float4PfPm",
+      "segment": 0,
+      "instructions": 11,
+      "ops": {
+        "S2UR": 1,
+        "UMOV": 1,
+        "IMAD": 2,
+        "MOV": 1,
+        "ULEA": 1,
+        "LEA": 1,
+        "SHF": 1,
+        "STS": 2,
+        "BAR": 1
+      },
+      "memory_width_ops": {
+        "STS.64": 2
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi1ELi0ELb1EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 106,
+      "ops": {
+        "LDC": 3,
+        "ULDC": 2,
+        "SHF": 6,
+        "USHF": 2,
+        "IADD3": 3,
+        "IMAD": 2,
+        "LDG": 3,
+        "S2UR": 1,
+        "UMOV": 1,
+        "ULEA": 1,
+        "LEA": 3,
+        "LDS": 8,
+        "FADD": 40,
+        "BSSY": 1,
+        "FMUL": 11,
+        "FFMA": 2,
+        "SHFL": 6,
+        "LOP3": 2,
+        "STG": 4,
+        "ISETP": 1,
+        "BRA": 1,
+        "REDG": 2,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 2,
+        "LDG.E": 1,
+        "LDS.128": 8,
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 2
+      },
+      "branches": 3
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi1ELi3ELb0EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 77,
+      "ops": {
+        "LDC": 3,
+        "ISETP": 2,
+        "BSSY": 1,
+        "LOP3": 7,
+        "IMAD": 7,
+        "BRA": 3,
+        "LDG": 2,
+        "S2UR": 1,
+        "SHF": 6,
+        "LEA": 7,
+        "UMOV": 2,
+        "ULEA": 1,
+        "ULDC": 2,
+        "LDS": 8,
+        "FADD": 13,
+        "IADD3": 1,
+        "FMUL": 4,
+        "STG": 1,
+        "SHFL": 4,
+        "REDG": 1,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 1,
+        "LDG.E": 1,
+        "LDS": 8,
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 1
+      },
+      "branches": 5
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi1ELi2ELb0EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 77,
+      "ops": {
+        "LDC": 3,
+        "ISETP": 2,
+        "BSSY": 1,
+        "LOP3": 7,
+        "IMAD": 7,
+        "BRA": 3,
+        "LDG": 2,
+        "S2UR": 1,
+        "SHF": 6,
+        "LEA": 7,
+        "UMOV": 2,
+        "ULEA": 1,
+        "ULDC": 2,
+        "LDS": 8,
+        "FADD": 13,
+        "IADD3": 1,
+        "FMUL": 4,
+        "STG": 1,
+        "SHFL": 4,
+        "REDG": 1,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 1,
+        "LDG.E": 1,
+        "LDS": 8,
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 1
+      },
+      "branches": 5
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi1ELi1ELb0EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 77,
+      "ops": {
+        "LDC": 3,
+        "ISETP": 2,
+        "BSSY": 1,
+        "LOP3": 7,
+        "IMAD": 7,
+        "BRA": 3,
+        "LDG": 2,
+        "S2UR": 1,
+        "SHF": 6,
+        "LEA": 7,
+        "UMOV": 2,
+        "ULEA": 1,
+        "ULDC": 2,
+        "LDS": 8,
+        "FADD": 13,
+        "IADD3": 1,
+        "FMUL": 4,
+        "STG": 1,
+        "SHFL": 4,
+        "REDG": 1,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 1,
+        "LDG.E": 1,
+        "LDS": 8,
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 1
+      },
+      "branches": 5
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi1ELi0ELb0EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 77,
+      "ops": {
+        "LDC": 3,
+        "ISETP": 2,
+        "BSSY": 1,
+        "LOP3": 7,
+        "IMAD": 7,
+        "BRA": 3,
+        "LDG": 2,
+        "S2UR": 1,
+        "SHF": 6,
+        "LEA": 7,
+        "UMOV": 2,
+        "ULEA": 1,
+        "ULDC": 2,
+        "LDS": 8,
+        "FADD": 13,
+        "IADD3": 1,
+        "FMUL": 4,
+        "STG": 1,
+        "SHFL": 4,
+        "REDG": 1,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "LDG.E.U16": 1,
+        "LDG.E": 1,
+        "LDS": 8,
+        "REDG.E.ADD.F32.FTZ.RN.STRONG.GPU": 1
+      },
+      "branches": 5
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi0ELi0ELb1EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 116,
+      "ops": {
+        "S2UR": 1,
+        "UMOV": 1,
+        "ULEA": 1,
+        "LEA": 3,
+        "ULDC": 3,
+        "LDS": 8,
+        "FADD": 34,
+        "LDC": 2,
+        "LDG": 1,
+        "SHF": 3,
+        "LOP3": 3,
+        "BSSY": 2,
+        "FMUL": 13,
+        "FSETP": 2,
+        "MUFU": 4,
+        "IMAD": 4,
+        "FCHK": 2,
+        "STG": 4,
+        "FFMA": 10,
+        "BRA": 2,
+        "MOV": 3,
+        "CALL": 2,
+        "BSYNC": 2,
+        "USHF": 2,
+        "F2FP": 2,
+        "IADD3": 2
+      },
+      "memory_width_ops": {
+        "LDS.128": 8,
+        "LDG.E": 1,
+        "F2FP.BF16.F32.PACK_AB": 2
+      },
+      "branches": 6
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi0ELi1ELb0EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 93,
+      "ops": {
+        "ISETP": 1,
+        "BSSY": 2,
+        "BRA": 2,
+        "LDC": 4,
+        "LDG": 1,
+        "S2UR": 1,
+        "VIADD": 1,
+        "UMOV": 1,
+        "SHF": 3,
+        "LOP3": 7,
+        "IMAD": 7,
+        "ULEA": 1,
+        "LEA": 4,
+        "LDS": 16,
+        "FADD": 17,
+        "STG": 2,
+        "FMUL": 7,
+        "FSETP": 1,
+        "MUFU": 2,
+        "FCHK": 1,
+        "FFMA": 5,
+        "MOV": 1,
+        "CALL": 1,
+        "BSYNC": 2,
+        "ULDC": 1,
+        "F2FP": 1,
+        "IADD3": 1
+      },
+      "memory_width_ops": {
+        "LDG.E": 1,
+        "LDS": 16,
+        "F2FP.BF16.F32.PACK_AB": 1
+      },
+      "branches": 6
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588685p_epiILi0ELi0ELb0EEEvPKfPK13__nv_bfloat16PS3_PfS7_Pmi",
+      "segment": 0,
+      "instructions": 92,
+      "ops": {
+        "ISETP": 1,
+        "BSSY": 2,
+        "BRA": 2,
+        "LDC": 4,
+        "LDG": 1,
+        "S2UR": 1,
+        "SHF": 3,
+        "UMOV": 1,
+        "LOP3": 7,
+        "IMAD": 7,
+        "ULEA": 1,
+        "LEA": 4,
+        "LDS": 16,
+        "FADD": 17,
+        "STG": 2,
+        "FMUL": 7,
+        "FSETP": 1,
+        "MUFU": 2,
+        "FCHK": 1,
+        "FFMA": 5,
+        "MOV": 1,
+        "CALL": 1,
+        "BSYNC": 2,
+        "ULDC": 1,
+        "F2FP": 1,
+        "IADD3": 1
+      },
+      "memory_width_ops": {
+        "LDG.E": 1,
+        "LDS": 16,
+        "F2FP.BF16.F32.PACK_AB": 1
+      },
+      "branches": 6
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi4EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 0,
+      "instructions": 50,
+      "ops": {
+        "STL": 3,
+        "LOP3": 10,
+        "ULDC": 1,
+        "LDS": 1,
+        "SHF": 1,
+        "IMAD": 2,
+        "LEA": 16,
+        "LDG": 16
+      },
+      "memory_width_ops": {
+        "LDS": 1,
+        "LDG.E.128.CONSTANT": 16
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi4EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 1,
+      "instructions": 693,
+      "ops": {
+        "LDS": 11,
+        "STL": 2,
+        "SHF": 115,
+        "IMAD": 4,
+        "LOP3": 169,
+        "LDL": 5,
+        "LEA": 66,
+        "LDG": 48,
+        "PRMT": 16,
+        "HMUL2": 128,
+        "HMMA": 128,
+        "S2R": 1
+      },
+      "memory_width_ops": {
+        "LDS": 3,
+        "LDG.E.128.CONSTANT": 48,
+        "LDS.128": 8
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi3EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 0,
+      "instructions": 46,
+      "ops": {
+        "LOP3": 10,
+        "ULDC": 1,
+        "LDS": 1,
+        "SHF": 1,
+        "IMAD": 1,
+        "LEA": 16,
+        "LDG": 16
+      },
+      "memory_width_ops": {
+        "LDS": 1,
+        "LDG.E.128.CONSTANT": 16
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi3EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 1,
+      "instructions": 618,
+      "ops": {
+        "LDS": 10,
+        "STL": 1,
+        "SHF": 114,
+        "IMAD": 10,
+        "LOP3": 160,
+        "LEA": 49,
+        "LDG": 32,
+        "PRMT": 16,
+        "HMUL2": 128,
+        "HMMA": 96,
+        "NOP": 1,
+        "LDL": 1
+      },
+      "memory_width_ops": {
+        "LDS": 2,
+        "LDG.E.128.CONSTANT": 32,
+        "LDS.128": 8
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi2EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 0,
+      "instructions": 46,
+      "ops": {
+        "LOP3": 10,
+        "ULDC": 1,
+        "LDS": 1,
+        "SHF": 1,
+        "IMAD": 1,
+        "LEA": 16,
+        "LDG": 16
+      },
+      "memory_width_ops": {
+        "LDS": 1,
+        "LDG.E.128.CONSTANT": 16
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi2EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 1,
+      "instructions": 532,
+      "ops": {
+        "LDS": 9,
+        "SHF": 113,
+        "IMAD": 1,
+        "LOP3": 152,
+        "LEA": 33,
+        "LDG": 16,
+        "PRMT": 16,
+        "HMUL2": 128,
+        "HMMA": 64
+      },
+      "memory_width_ops": {
+        "LDS": 1,
+        "LDG.E.128.CONSTANT": 16,
+        "LDS.128": 8
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi1EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 0,
+      "instructions": 46,
+      "ops": {
+        "LOP3": 10,
+        "LDS": 1,
+        "ULDC": 1,
+        "SHF": 1,
+        "IMAD": 1,
+        "LEA": 16,
+        "LDG": 16
+      },
+      "memory_width_ops": {
+        "LDS": 1,
+        "LDG.E.128.CONSTANT": 16
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588686p_mathILi1EEEvPK5uint4S3_PK13__nv_bfloat16PKiPfPm",
+      "segment": 1,
+      "instructions": 457,
+      "ops": {
+        "LEA": 17,
+        "PRMT": 16,
+        "LDS": 8,
+        "SHF": 112,
+        "LOP3": 144,
+        "HMUL2": 128,
+        "HMMA": 32
+      },
+      "memory_width_ops": {
+        "LDS.128": 8
+      },
+      "branches": 0
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_335886810p_prefetchEPKNS_5RouteEPKhS4_Pmiii",
+      "segment": 0,
+      "instructions": 269,
+      "ops": {
+        "ISETP": 36,
+        "BSSY": 1,
+        "BRA": 14,
+        "S2R": 1,
+        "MOV": 1,
+        "LDC": 4,
+        "LEA": 3,
+        "LDS": 22,
+        "IMAD": 77,
+        "VIADD": 22,
+        "SEL": 12,
+        "SHF": 3,
+        "LOP3": 9,
+        "SYNCS": 2,
+        "R2UR": 10,
+        "PLOP3": 3,
+        "ULEA": 4,
+        "UIMAD": 1,
+        "UMOV": 2,
+        "ELECT": 1,
+        "UBLKCP": 1,
+        "ULDC": 2,
+        "IADD3": 6,
+        "VIADDMNMX": 2,
+        "IABS": 10,
+        "I2F": 3,
+        "MUFU": 3,
+        "F2I": 3,
+        "S2UR": 1,
+        "STS": 9,
+        "BSYNC": 1
+      },
+      "memory_width_ops": {
+        "LDS": 20,
+        "LDS.64": 2,
+        "STS": 9
+      },
+      "branches": 16
+    },
+    {
+      "name": "_ZN55_GLOBAL__N__3ee5f340_14_issue_probe_cu_93450385_33588687p_storeEPK6float4PfPm",
+      "segment": 0,
+      "instructions": 7,
+      "ops": {
+        "S2UR": 1,
+        "UMOV": 1,
+        "SHF": 1,
+        "ULEA": 1,
+        "LEA": 1,
+        "STS": 1,
+        "BAR": 1
+      },
+      "memory_width_ops": {
+        "STS.128": 1
+      },
+      "branches": 0
+    }
+  ]
+}

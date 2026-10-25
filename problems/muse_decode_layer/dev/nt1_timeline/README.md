@@ -1,7 +1,7 @@
 # Small-M NT1 (M=1-32): timeline and flag variants
 
-Lane notes for PLAN P3a. Incumbent: the admitted one-LOP3 NT1 (`inc.cu`, identical to
-`nt1_branches/nt1_lop3_cell.py`). Everything here reads the same recoded bank (4-bit codes, one u8 scale per
+Lane notes for PLAN P3a. Current whole-layer base: S14 final `f1c77ce6`. Its small-M
+CUDA is the admitted one-LOP3 NT1 plus flags95/69 (unchanged since S13). Everything here reads the same recoded bank (4-bit codes, one u8 scale per
 16 weights, TILE_BYTES 36864); nothing widens or dequantizes scales in prepare.
 
 ## Files
@@ -308,7 +308,7 @@ ACT cell **b36eb1fa**, DECODED **c84eca66**; each1320 checks +6forced launches a
 routed gates pass. Native performance builds128regs with24B/16B stack respectively (spills recorded).
 No local timing is used for promotion. The first DECODED race was fixed and the exact sent source retested.
 
-Cache payload `prof/lab/moe_nt1_cache.py` **c81aede1**, attention job **b5659458e309480b**, pending.
+Cache payload `prof/lab/moe_nt1_cache.py` **c81aede1**, attention job **b5659458e309480b**, landed: all arms lose (numbers below).
 COMPACT cell **34840e3a**: aliases route-prefix scratch and moves one B0 word to a register, saving1288B.
 AtM32,99328 dynamic bytes plus1KiB reserved perCTA allow two CTAs in196KiB; preferred Hopper carveout85pct.
 PREFETCH cell **74f5e89e** additionally prefetches extra-block activation rows into L1 before dequant.
@@ -324,8 +324,49 @@ critical grid-barrier mean32.09->74.10/73.56us across the8phase seeds. Weight wa
 This rules out these two transport implementations; it does not prove every extra-block stall is a load.
 Observer/off1.016/1.014/1.055 forBUNDLE/ACT/DECODED; all gates pass,16performance seeds. No S13 promotion.
 
-The cache lab is the remaining H200 decision. `patch_s13.py` can make a reviewable patch for each arm onto
-frozenS13 `958f1258`, with a complete map. Its generated experimental COMPACT-M32 patch8410e29a,
-candidate1cb67165, applies cleanly; it has no whole-layer validation or promotion. Native untraced COMPACT
-and PREFETCH run2 stages locally (1320 checks plus6forced each); a decode candidate will be screened with
-normal and forced `local_eval.py` before a whole-layer remote send if H200 supports promotion.
+Cache H20016seed results (`b5659458e309480b`): BUNDLE/S13=1.11848/1.16170/1.24138,
+COMPACT=1.12710/1.12951/1.24985, PREFETCH=1.13021/1.20709/1.38272 atM8/16/32.
+M32 COMPACT +27.400us to S13, PREFETCH +42.163us; PREFETCH/BUNDLE1.11297 (+15.440us).
+A:A absolute drift .337/.380/.307us. All gates pass; all performance arms lose. Cache/activation
+transport variants are closed. `patch_s13.py` remains a historical experimental patch builder;
+no S13 patch was promoted.
+
+## S14 epilogue and issue model (current work)
+
+See [issue_model.md](issue_model.md) for marked sm90a SASS counts, 4TB/s issue budget,
+bank-address model, and the exact mechanisms/limits. At assumed1.98GHz the budget is75.27
+warp instructions per16weights/lane; the M32 route mix spends45.98 on S14 math and2.84
+on scalar epilogues before other costs. This leaves aggregate high-clock issue headroom,
+not proof of a particular pipe bottleneck. Old ONCE epi28.5us includes synchronization,
+producer and norm/output work; the new trace splits these instead of calling it atomic cost.
+
+Built cells: EPBASE `34e6a03b`, VEC `568dd340`, PROD `dc0c98a4`, NORM `e92d2250`,
+PAIR `b2f4ac1c`. VEC widens gather loads; PROD assigns TMA to warp7; NORM aggregates norm
+partials per contiguous expert/block run; PAIR uses two contiguous float2 planes and two writer
+warps. Modeled reduction bank wavefronts128->32 (write+read160->64). The host schedule model
+predicts ~9x fewer scalar norm atomics atM32, not a measured conflict/atomic counter.
+PAIR untraced/trace125regs,0stack/spills; VEC/PROD/NORM untraced128regs,0spills. Two packed
+stages,8-way Ksplit and twoH200 CTAs/SM retained; actual residency queried in lab.
+`reusee_cell.py` `1add5c1a` and `reuseh_cell.py` `6386f7a8` isolate original guarded ONCE
+math with one/two-writer vector epi and warp7 producer; no block-count specialization.
+All untraced ONCE arms zero-spill; original traced ONCE has8B observer spill.
+
+Each of five S14 cells passes528 checks +6forced; each ONCE cell1320+6, including graph
+replays and route/block edges. Full final lab passes16 local seeds. NORM and PAIR candidates
+pass normal and forced shipped-Hopper `local_eval.py`:13 correctness cases,12dispatch shapes,
+24static checks. The forced runner preserves S14/S9 reference/dispatch audits and executes
+NT1/NF math natively; Hopper attention uses stand-ins. JSON receipts and coverage are adjacent.
+No local timing is H200 evidence and no variant is promoted.
+
+Final payload `prof/lab/moe_nt1_epilogue.py` **2b0356d7** is queued on MoE with
+`--not-before 2026-10-26T09:00:00+09:00`, wrapper **917e79f37f28b5c1**. It replaced
+held wrapper2fa72831c25c8ca4 (no judge request). No H200 job ID yet; no attention quota used.
+One batch:16seeds exactS14/EPBASE/VEC/PROD/NORM/PAIR and ONCE/ONCE_VEC/ONCE_PAIR,
+readflush AB/BA router+MoE, A:A, CUPTI nodes and unique-byte bandwidth;8M32phase seeds,
+effectiveGHz, observer/off, store/barrier, producer, writer and norm-flush clocks.
+
+Experimental integration handoff (not a win): `epilogue_s14_pair.cell.py` **23e1492f**,
+`epilogue_s14_pair.patch` **786a5ecb**, candidate **1f737947**, applies onto S14 **f1c77ce6**;
+complete map `{1:95,8:69,16:69,32:69}`. Optional NORM handoff adjacent. Both patches pass
+`git apply --check` and whole-layer local screens. Next: collect the reset batch, reject losses,
+and require paired whole-layer S14 ratios over many seeds before promoting any kernel win.
