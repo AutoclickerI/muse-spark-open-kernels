@@ -1,0 +1,16 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_s11.py",
+  "sha256": "0e59545f3aa94afbb2ceebce68fffcbef772ba3cd7d93fbbad32a78db7a1fa31",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s10.py",
+  "base_sha256": "6688fad999783d53a4660d85d40ee82862b87a209e03d289e44c95e41a3ffbc1",
+  "patches": [
+    {
+      "path": "problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py",
+      "sha256": "cdd297abe5e51f471b5e1d590f5555b054102a01a73a8a5bc904a36257057a0e",
+      "out_sha256": "65fd9a93ef239c45be25d3540f71bd7a1db93237c3005a5f4e9f6714eceaaeb9"
+    }
+  ],
+  "labs": {
+    "gemv_bal": "26fd09a7 (standalone) + 5cefdbc4 (S8 chains, paired)"
+  }
+}
