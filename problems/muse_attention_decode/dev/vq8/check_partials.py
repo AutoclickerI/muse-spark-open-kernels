@@ -48,3 +48,5 @@ for B, layer in ((1, 'sliding'), (16, 'full'), (32, 'sliding'), (3, 'full')):
             fails += not err < 1e-2
             print('PASS' if err < 1e-2 else 'FAIL', B, layer, 'no-gate rel err %.2e' % err, flush=True)
 print('FAILS', fails)
+
+raise SystemExit(bool(fails))

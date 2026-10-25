@@ -1,13 +1,14 @@
 """Smoke-run prof/lab/vq8_layer.py on sm_120: FA3 stubbed (Hopper only), vq8 built for this GPU at 2 stages.
 Checks the lab's own code paths (partials ABI, gate, chains, PDL), not its timings."""
 import sys
+import hashlib
 import time
 from pathlib import Path
 
 import torch
 
 ROOT = Path(__file__).resolve().parents[4]
-src = (ROOT / 'prof/lab/vq8_layer.py').read_text()
+src = (ROOT / (sys.argv[2] if len(sys.argv) > 2 else 'prof/lab/vq8_layer.py')).read_text()
 ns = {'__name__': 'vq8_layer_local'}
 _flush = []
 
@@ -26,17 +27,18 @@ exec(compile(src, fname, 'exec'), ns)
 from torch.utils.cpp_extension import load_inline  # noqa: E402
 
 
-def build_local(clk):  # this GPU's arch (the lab builds sm_90a)
-    return load_inline(name='vq8lablocal%s_%s' % ('clk' if clk else '', str(abs(hash(ns['VQ8_CUDA'])))[:10]),
-                       cpp_sources=ns['VQ8_CPP'], cuda_sources=ns['VQ8_CUDA'], functions=['vq8_forward', 'vq8_resources'],
+def build_local(clk, old=False):  # this GPU's arch (the lab builds sm_90a)
+    cu = ns['VQ8_OLD_CUDA'] if old else ns['VQ8_CUDA']
+    return load_inline(name='vq8lablocal%s_%s' % ('clk' if clk else '', hashlib.sha256(cu.encode()).hexdigest()[:10]),
+                       cpp_sources=ns['VQ8_CPP'], cuda_sources=cu, functions=['vq8_forward', 'vq8_resources'],
                        extra_cuda_cflags=['-O3', '-gencode=arch=compute_120,code=sm_120', '-DVQ8_CLK=%d' % clk],
                        verbose=False)
 
 
 ns['_vq8_build'] = build_local
 orig = ns['attention_vq8']
-ns['attention_vq8'] = lambda qkv, d, setting=(8, 2), pdl=False, clocks=None, fused=False, part=None: orig(
-    qkv, d, (2, setting[1]), pdl, clocks, fused, part)
+ns['attention_vq8'] = lambda qkv, d, setting=(8, 2), pdl=False, clocks=None, fused=False, part=None, old=False: orig(
+    qkv, d, (2, setting[1]), pdl, clocks, fused, part, old)
 
 
 def fake_fa3(q, gate, data, state):  # shape-correct stand-in: FA3 can't run here

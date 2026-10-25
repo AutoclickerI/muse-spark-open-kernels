@@ -65,3 +65,5 @@ for i, case in enumerate(CASES + SCORED):
         fails += not ok
         print(('PASS' if ok else 'FAIL'), case, st, msg, f'{time.time() - t0:.1f}s', flush=True)
 print('FAILS', fails)
+
+raise SystemExit(bool(fails))

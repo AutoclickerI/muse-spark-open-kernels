@@ -755,7 +755,7 @@ DI void consumer(const VP& p, const Sched& S, uint8_t* Qs, uint8_t* Kn, uint8_t*
 // holds dims 2*lane, 2*lane+1. CH partials at a time with all their loads in flight (online max).
 // Returns (max, sum, x, y), unnormalized. __ldcg: the partials come from other SMs (fused: same grid).
 DI float4 merge_slice(const float* base, int k_lo, int k_hi) {
-  constexpr int CH = 16;
+  constexpr int CH = 8;
   const int lane = threadIdx.x & 31;
   float mx = -INFINITY, total = 0.f, x = 0.f, y = 0.f;
   for (int k0 = k_lo; k0 < k_hi; k0 += CH) {

@@ -4,6 +4,7 @@ path (qk_prep + public FA3 + norm_gate), q_len 1 attn_main (sumcast + the attent
 S11 file). Every time is a chain: a projection stand-in, then the kernel (PDL), minus the stand-in alone; cold L2
 by a read. Base: prof/lab/verify1_sliding_fa3_pair.py (the TASK gate, generate_input, the verify path)."""
 import ast
+import argparse
 import hashlib
 from pathlib import Path
 
@@ -11,7 +12,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 base = (ROOT / 'prof/lab/verify1_sliding_fa3_pair.py').read_text()
 base = base[:base.index('def lab(deadline,weights):')]
-S11 = ROOT / 'problems/muse_decode_layer/cand_r3_best7_s11.py'
+S11 = ROOT / 'problems/muse_decode_layer/cand_r3_best7_s11_final.py'
 s11 = S11.read_text()
 PORT_NAMES = ('_attn_sumcast_kernel', '_attn_sumcast', 'ATTN_PORT_CUDA_SRC', 'ATTN_PORT_CPP_SRC', '_ATTN_PORT_EXT',
               '_ATTN_PORT_COUNTERS', '_attn_port_ext', '_attn_port_counters', '_attn_port_raw', '_attn_main_plan',
@@ -38,7 +39,19 @@ PORT = ('# ---- attn_main (q_len 1 incumbent) from ' + str(S11.relative_to(ROOT)
         '    if idx not in _LAB_SMS:\n        _LAB_SMS[idx] = torch.cuda.get_device_properties(idx).multi_processor_count\n'
         '    return _LAB_SMS[idx]\n\n\n' + _segments(s11, PORT_NAMES) + '\n\n\n'
         'def layer_attn_main(qkv, data):\n    return _attn_port_forward(_attn_port_raw(qkv, data), data)\n')
-cu = (HERE / 'vq8.cu').read_text()
+ap = argparse.ArgumentParser()
+ap.add_argument('--fastprep', action='store_true')
+ap.add_argument('--softmax', action='store_true')
+ap.add_argument('--compact', action='store_true')
+args = ap.parse_args()
+if args.softmax:
+    from build_softmax import source
+    cu = source()
+elif args.fastprep:
+    from build_fastprep import source
+    cu = source()
+else:
+    cu = (HERE / 'vq8.cu').read_text()
 drv = (HERE / 'vq8.py').read_text()
 CLOCK_SUMMARY = drv[drv.index('def clock_summary(rows, G):'):drv.index('def attention_vq8(')]
 
@@ -51,12 +64,14 @@ void vq8_forward(int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t
 std::vector<int64_t> vq8_resources(int64_t);
 """
 _VQ8_MOD = {}
+_VQ8_OLD = None
 _VQ8_SMS = {}
 
 
-def _vq8_build(clk):
-    tag = hashlib.sha256(VQ8_CUDA.encode()).hexdigest()[:12]
-    return load_inline(name=f'vq8lab{"clk" if clk else ""}_{tag}', cpp_sources=VQ8_CPP, cuda_sources=VQ8_CUDA,
+def _vq8_build(clk, old=False):
+    source = VQ8_OLD_CUDA if old else VQ8_CUDA
+    tag = hashlib.sha256(source.encode()).hexdigest()[:12]
+    return load_inline(name=f'vq8lab{"clk" if clk else ""}_{tag}', cpp_sources=VQ8_CPP, cuda_sources=source,
                        functions=['vq8_forward', 'vq8_resources'],
                        extra_cuda_cflags=['-O3', '-gencode=arch=compute_90a,code=sm_90a', f'-DVQ8_CLK={int(clk)}'],
                        verbose=False)
@@ -71,7 +86,7 @@ def _vq8_ext(clk=False):
 CLOCK_SUMMARY_SRC
 
 
-def attention_vq8(qkv, data, setting=(8, 2), pdl=False, clocks=None, fused=False, part=None):
+def attention_vq8(qkv, data, setting=(8, 2), pdl=False, clocks=None, fused=False, part=None, old=False):
     """Decode ABI: qkv = (P, S), P the FP32 projection partials [S, T, W]. Returns BF16 [T, HQ*64].
     clocks: the clock build; its rows (after the partials) must be zero: pass a zeroed `part` (zeroed outside the
     timed chain) or let this call zero them (a memset between the stub and vq8)."""
@@ -91,7 +106,7 @@ def attention_vq8(qkv, data, setting=(8, 2), pdl=False, clocks=None, fused=False
     out = torch.empty((B * L, HQ_ * 64), device=dev, dtype=torch.bfloat16)
     window = cfg['window']
     invf = _inv_freq(cfg['rope_theta'], dev) if window else None
-    _vq8_ext(clocks is not None).vq8_forward(
+    (_VQ8_OLD if old else _vq8_ext(clocks is not None)).vq8_forward(
         P.data_ptr(), data['cache_loc'].data_ptr(), data['page_table'].data_ptr(), data['seq_lens'].data_ptr(),
         data['k_cache'].data_ptr(), data['v_cache'].data_ptr(), data['k_scale'].data_ptr(), data['v_scale'].data_ptr(),
         invf.data_ptr() if invf is not None else 0, part.data_ptr(), out.data_ptr(), B, L, HQ_, HK_, P.stride(-2),
@@ -142,91 +157,149 @@ def timed_cold(fn, data, rounds=7):
     return sorted(vals)[len(vals) // 2], out, graph
 
 
+def paired(kernels, data, rounds=8):
+    graphs, outputs = [], []
+    for name, fn, _ in kernels:
+        fn(data)
+        torch.cuda.synchronize()
+        graph = torch.cuda.CUDAGraph()
+        with torch.cuda.graph(graph):
+            out = fn(data)
+        graphs.append(graph)
+        outputs.append(out)
+    ev = [torch.cuda.Event(enable_timing=True) for _ in range(2)]
+    times = [[] for _ in kernels]
+    ratios = [[] for _ in kernels]
+    def run(i):
+        lab_cold_l2()
+        ev[0].record(); graphs[i].replay(); ev[1].record(); ev[1].synchronize()
+        return ev[0].elapsed_time(ev[1]) * 1000.
+    for i in range(1, len(kernels)):
+        for r in range(rounds):
+            order = (0, i) if r % 2 == 0 else (i, 0)
+            vals = {j: run(j) for j in order}
+            for j in order: times[j].append(vals[j])
+            ratios[i].append(vals[i] / vals[0])
+    return times, ratios, outputs
+
+
 def lab(deadline, weights):
     import time as _time
-    lines = ['META vq8 (decode ABI, 4 FP32 partials) combine kernel (c) vs fused merge (f) vs the layer incumbent: '
-             'q_len 8 qk_prep + public FA3 + norm_gate, q_len 1 attn_main (sumcast + port); ctx 80000 page 1, cold L2 '
-             'by read; us = chain (37.7 MB projection stand-in, then the kernel with PDL) minus the stand-in alone',
-             'META ROW shape kernel chain_us gate(TASK check incl. new K/V) err; vq8 settings (stages, min_tiles)']
+    import statistics as _st
+    global _VQ8_OLD
+    lines = ['META paired AB/BA x8, 3 seeds; identical projection-partials and KV per arm, read-flushed L2; '
+             'ratio=variant/control entire projection-stub+attention graph. Control: final S11 attn_main at L1, '
+             'public FA3 at L8 sliding/B1 full, frozen c262e4c5 vq8 at L8 B16/32 full.',
+             'META us are chain minus the same projection stub; TASK gate including cache; local FA3 stub fails by design.']
     t0 = _time.monotonic()
     from concurrent.futures import ThreadPoolExecutor
-    with ThreadPoolExecutor(3) as pool:  # the production and phase-clock builds and the port compile together
+    with ThreadPoolExecutor(4) as pool:
         port = pool.submit(_attn_port_ext)
+        old = pool.submit(_vq8_build, False, True)
         for clk, mod in zip((False, True), pool.map(_vq8_build, (False, True))):
             _VQ8_MOD[clk] = mod
+        _VQ8_OLD = old.result()
         port.result()
-    lines.append('COMPILE_S %.1f res st6=%s' % (_time.monotonic() - t0, _vq8_ext().vq8_resources(6)))
-    S = 4
+    lines.append('COMPILE_S %.1f res=%s' % (_time.monotonic() - t0, _vq8_ext().vq8_resources(4)))
+    summaries, clocks = {}, []
     wt = torch.randn((37748736 // 2,), device='cuda').to(torch.bfloat16)
-    order = ((1, 'sliding', 8), (1, 'full', 8), (1, 'sliding', 1), (1, 'full', 1), (16, 'sliding', 8),
-             (32, 'sliding', 8), (16, 'sliding', 1), (32, 'sliding', 1), (16, 'full', 8), (32, 'full', 8),
-             (16, 'full', 1), (32, 'full', 1))
-    for B, layer, L in order:
-        if deadline - _time.monotonic() < 6:
-            lines.append('SKIP B=%d %s L=%d budget' % (B, layer, L))
-            break
-        try:
-            T = B * L
-            data = generate_input(B, 80000, 'tp8', layer, 4100 + B, q_len=L, page=1,
-                                  dist='soft' if layer == 'sliding' else 'coherent', spread='agentic' if B > 1 else 'fixed')
-            data['config']['tokens'] = T
-            theta = data['config']['rope_theta']
-            state = {'inv_freq': 1. / (theta ** (torch.arange(0, 64, 2, device='cuda').float() / 64.)) if theta else
-                     torch.ones(32, device='cuda')}
-            g = torch.Generator(device='cuda').manual_seed(B)
-            parts = torch.randn((S, T, 2304), generator=g, device='cuda') * 0.5
-            parts[S - 1] = data['qkv'].view(T, 2304).float() - parts[:S - 1].sum(0)  # the partials sum to the input
-            data['qkv'] = parts.sum(0).to(torch.bfloat16).view(B, L, 2304)
-            src = parts.clone()
-            qkv = (parts, S)
-            layer_fa3(qkv, data, state, glue='current')  # the step's new K/V in the cache, then the TASK reference
-            torch.cuda.synchronize()
-            expected = gate_prepare(data)
-            if L == 8:
-                kernels = [('fa3', lambda d: layer_fa3(qkv, d, state, glue='current'), None)]
-            else:
-                kernels = [('attn_main', lambda d: layer_attn_main(qkv, d), None)]
-            for st in ((4, 1), (4, 2), (6, 8)):
-                for fz in (False, True):
-                    kernels.append(('vq8%s_st%dmt%d' % ('f' if fz else 'c', *st),
-                                    lambda d, st=st, fz=fz: attention_vq8(qkv, d, st, pdl=True, fused=fz), (st, fz)))
-            stub_us, _, _ = timed_cold(lambda d: _proj(wt, src, parts), data)
-            best = {}
-            row = []
-            for name, fn, key in kernels:
-                if deadline - _time.monotonic() < 3:
-                    row.append('SKIP')
-                    break
-                us, out, _ = timed_cold(lambda d, fn=fn: (_proj(wt, src, parts), fn(d))[1], data)
-                ok, msg, err = gate_cached(data, out, expected)
-                row.append('%s=%.2f%s' % (name, us - stub_us, '' if ok else '(F %.3f)' % err))
-                if not ok:
-                    lines.append('GATE_ERROR %s %s' % (name, msg[:120]))
-                if key is not None and ok and (key[1] not in best or us < best[key[1]][1]):
-                    best[key[1]] = (key[0], us)
-            lines.append('ROW B=%d %s L=%d stub=%.1f %s' % (B, layer, L, stub_us, ' '.join(row)))
-            for fz in (False, True):  # phase clocks of the best setting of each merge, in the chain
-                if fz in best and deadline - _time.monotonic() > 2:
-                    G, NS = _VQ8_SMS[0], B * (data['config']['num_kv_heads'] // 2)
-                    part = torch.zeros(((G + NS) * 128 * 68 + 256 + (G + 16 * L * NS) * 64,), device='cuda')
-                    rows = []
-                    lab_cold_l2()
-                    _proj(wt, src, parts)  # the stub, then vq8 with PDL (no clock zeroing between them)
-                    attention_vq8(qkv, data, best[fz][0], pdl=True, clocks=rows, fused=fz, part=part)
-                    torch.cuda.synchronize()
-                    lines.append('CLK B=%d %s L=%d %s st%dmt%d %s' % (B, layer, L, 'f' if fz else 'c', *best[fz][0],
-                                                                    clock_summary(rows[0], _VQ8_SMS[0])))
-        except Exception as exc:  # a failed shape keeps the others
-            lines.append('SHAPE_ERROR B=%d %s L=%d %s' % (B, layer, L, str(exc).splitlines()[0][:160]))
-        data = parts = src = expected = qkv = None
-        torch.cuda.empty_cache()
+    order = ((1, 'sliding', 8), (1, 'sliding', 1), (16, 'sliding', 8), (32, 'sliding', 8),
+             (16, 'sliding', 1), (32, 'sliding', 1), (16, 'full', 1), (32, 'full', 1),
+             (16, 'full', 8), (32, 'full', 8), (1, 'full', 1), (1, 'full', 8))
+    for seed in (4100, 5100, 6100):
+        for B, layer, L in order:
+            if deadline - _time.monotonic() < 6:
+                lines.append('SKIP seed=%d B=%d %s L=%d budget' % (seed, B, layer, L))
+                break
+            try:
+                T, S = B * L, 4
+                data = generate_input(B, 80000, 'tp8', layer, seed + B, q_len=L, page=1,
+                                      dist='soft' if layer == 'sliding' else 'coherent', spread='agentic' if B > 1 else 'fixed')
+                data['config']['tokens'] = T
+                theta = data['config']['rope_theta']
+                state = {'inv_freq': 1. / (theta ** (torch.arange(0, 64, 2, device='cuda').float() / 64.)) if theta else
+                         torch.ones(32, device='cuda')}
+                g = torch.Generator(device='cuda').manual_seed(seed + B)
+                parts = torch.randn((S, T, 2304), generator=g, device='cuda') * 0.5
+                parts[-1] = data['qkv'].view(T, 2304).float() - parts[:-1].sum(0)
+                data['qkv'] = parts.sum(0).to(torch.bfloat16).view(B, L, 2304)
+                src, qkv = parts.clone(), (parts, S)
+                # Populate the new slots before the untimed TASK reference.
+                attention_vq8(qkv, data, (4, 1))
+                torch.cuda.synchronize()
+                expected = gate_prepare(data)
+                if L == 1:
+                    control = lambda d: layer_attn_main(qkv, d)
+                    control_name = 'attn_main'
+                elif B > 1 and layer == 'full':
+                    control = lambda d: attention_vq8(qkv, d, (6, 8), pdl=True, old=True)
+                    control_name = 's11_vq8'
+                else:
+                    control = lambda d: layer_fa3(qkv, d, state, glue='current')
+                    control_name = 'fa3'
+                kernels = [(control_name, control, None)]
+                for st in ((4, 1), (6, 8)):
+                    for fz in (False, True):
+                        kernels.append(('%s%d' % ('f' if fz else 'c', st[0]),
+                                        lambda d, st=st, fz=fz: attention_vq8(qkv, d, st, pdl=True, fused=fz), (st, fz)))
+                stub_us, _, _ = timed_cold(lambda d: _proj(wt, src, parts), data)
+                chained = [(name, lambda d, fn=fn: (_proj(wt, src, parts), fn(d))[1], key) for name, fn, key in kernels]
+                times, ratios, outs = paired(chained, data)
+                for i, (name, fn, key) in enumerate(kernels):
+                    fn(data); torch.cuda.synchronize()  # cache check belongs to this arm
+                    ok, msg, err = gate_cached(data, outs[i], expected)
+                    skey = (B, layer, L, name)
+                    summaries.setdefault(skey, []).append((_st.median(times[i]) - stub_us,
+                                                           _st.median(ratios[i]) if i else 1., ok, err))
+                    if not ok: lines.append('GATE_ERROR %s %s' % (skey, msg[:100]))
+                if seed == 4100 and (layer == 'full' and L == 8 or B == 1 and layer == 'sliding'):
+                    for fz in (False, True):
+                        st = (6, 8) if layer == 'full' else (4, 1)
+                        G, NS = _VQ8_SMS[0], B * (data['config']['num_kv_heads'] // 2)
+                        part = torch.zeros(((G + NS) * 128 * 68 + 256 + (G + 16 * L * NS) * 64,), device='cuda')
+                        rows = []
+                        lab_cold_l2(); _proj(wt, src, parts)
+                        attention_vq8(qkv, data, st, pdl=True, clocks=rows, fused=fz, part=part)
+                        torch.cuda.synchronize()
+                        clocks.append('CLK %d%s%d %s %s' % (B, layer[0], L, 'f' if fz else 'c', clock_summary(rows[0], G)))
+            except Exception as exc:
+                lines.append('SHAPE_ERROR seed=%d B=%d %s L=%d %s' % (seed, B, layer, L, str(exc).splitlines()[0][:160]))
+            data = parts = src = expected = qkv = outs = kernels = chained = None
+            torch.cuda.empty_cache()
+    lines += clocks
+    for (B, layer, L, name), rows in summaries.items():
+        lines.append('PAIR %d%s%d %s n=%d us=%.2f ratio=%.4f[%.4f,%.4f] gate=%s err=%.4f' % (
+            B, layer[0], L, name, len(rows), _st.median(x[0] for x in rows), _st.median(x[1] for x in rows),
+            min(x[1] for x in rows), max(x[1] for x in rows), 'P' if all(x[2] for x in rows) else 'F', max(x[3] for x in rows)))
     lines.append('LAB_S %.1f' % (_time.monotonic() - t0))
     return lines
+
 '''
 
+if args.softmax:
+    LAB = LAB.replace('for st in ((4, 1), (6, 8)):', 'for st in ((4, 1), (6, 8), (8, 8)):').replace('for fz in (False, True):', 'for fz in (False,):')
+if args.compact:
+    LAB = LAB.replace("    NS = B * (HK_ // 2)\n", "    NS = B * (HK_ // 2)\n    if cfg['window']:\n        G = min(G,max(1,NS*((cfg['window']+63)//64+1)//setting[1]))\n")
+    LAB = LAB.replace("part[(G + NS) * 128 * 68 + 256:].view(torch.int64)", "part[(G + NS) * 128 * 68 + 256:(G + NS) * 128 * 68 + 256 + nclk].view(torch.int64)")
+    LAB = LAB.replace("clock_summary(rows[0], G)", "clock_summary(rows[0],rows[0].shape[0]-16*L*NS)")
+if args.softmax or args.compact:
+    lo=LAB.index('    order = (('); hi=LAB.index('    for seed in (4100, 5100, 6100):',lo)
+    order=(((16,'full',8),(32,'full',8),(16,'full',1),(32,'full',1),(1,'sliding',8),(1,'sliding',1)) if args.softmax else
+           tuple((b,'sliding',L) for L in (1,8) for b in (1,16,32))+((16,'full',8),(32,'full',8)))
+    LAB=LAB[:lo]+'    order = '+repr(order)+'\n'+LAB[hi:]
+    if args.softmax:
+        LAB=LAB.replace("if seed == 4100 and (layer == 'full' and L == 8 or B == 1 and layer == 'sliding'):",
+                        "if seed == 4100 and layer == 'full' and L == 8:")
+    else:
+        LAB=LAB.replace('for st in ((4, 1), (6, 8)):', "for st in (((4,1),) if layer=='sliding' else ((6,8),)):")
+        LAB=LAB.replace("if seed == 4100 and (layer == 'full' and L == 8 or B == 1 and layer == 'sliding'):",
+                        "if seed == 4100 and (B == 16 and layer == 'full' and L == 8 or B == 1 and layer == 'sliding'):")
+        LAB=LAB.replace('for fz in (False, True):\n                        st =',
+                        "for fz in (False, True):\n                        if (layer == 'sliding' and not fz) or (layer == 'full' and fz):continue\n                        st =")
 LAB = LAB.replace('CLOCK_SUMMARY_SRC', CLOCK_SUMMARY.rstrip())
 out = ('"""vq8 (combine or fused merge) vs the decode layer attention incumbents on its ABI (generated by problems/muse_attention_decode/'
        'dev/vq8/build_layer_lab.py; vq8.cu SHA-256 ' + hashlib.sha256(cu.encode()).hexdigest() + ')."""\n'
-       + base + '\n' + PORT + '\nimport hashlib\nVQ8_CUDA = ' + repr(cu) + '\n' + LAB)
-(ROOT / 'prof/lab/vq8_layer.py').write_text(out)
-print('wrote prof/lab/vq8_layer.py', len(out))
+       + base + '\nVQ8_OLD_CUDA = ' + repr((HERE / 'out/vq8_c262e4c5.cu').read_text()) + '\n' + PORT + '\nimport hashlib\nVQ8_CUDA = ' + repr(cu) + '\n' + LAB)
+target = ROOT / ('prof/lab/vq8_softmax.py' if args.softmax else 'prof/lab/vq8_fastprep2.py' if args.compact else 'prof/lab/vq8_fastprep.py' if args.fastprep else 'prof/lab/vq8_layer.py')
+target.write_text(out.rstrip() + '\n')
+print('wrote', target, len(out))
