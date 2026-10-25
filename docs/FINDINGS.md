@@ -280,6 +280,12 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   once per expert over all token blocks (ONCE) vs the same kernel re-decoding per block (REDO): -14.75 us at M=32
   (16/16 seeds), +3.0 at M=16, +11.9 at M=8. Both lose to S11's flags (ONCE 1.30 / 1.30 / 1.33, REDO 1.13 / 1.26 /
   1.46 at M=8 / 16 / 32): the ~15 us is real at M=32, but this kernel's ownership and activation streaming cost more.
+- What limits small-M MoE (`360810b1`, 16 seeds, one MoE node per graph, read flush, paired): S11 flags 69 runs
+  64.9 / 75.9 / 104.7 us at M=8 / 16 / 32 (3.07 / 2.65 / 2.08 TB/s); with a trivial dequant (same loads, MMA, syncs)
+  0.930 / 0.913 / 0.828; weight loads alone on S11's depth-2 TMA pipeline 0.745 / 0.723 / 0.668; a pure stream of the
+  same bytes with 4-16 loads in flight 49.4 / 50.8 / 53.2 us (~4.0-4.1 TB/s, 0.77 / 0.68 / 0.53). All three layers
+  cost: dequant 7-17%, MMA + syncs + expert-ready waits 10-16%, the depth-2 pipeline 9-16 us short of streaming.
+  At stream speed: -15 / -25 / -51 us per layer (~14% of verify-1, 17% of decode-16, 24% of decode-32 wall).
 ## MoE M=128
 
 - Best measured, N_full (`c01b1916`, read flush; 12 seeds x 3, A:A abs 0.58 us, every TASK.md check passes, bit-equal
