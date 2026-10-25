@@ -1,0 +1,26 @@
+{
+  "normal": {
+    "sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540",
+    "tests": 13,
+    "graph_shapes": 12,
+    "static_checks": 24,
+    "retained_tensors": 78
+  },
+  "forced": {
+    "sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540",
+    "tests": 13,
+    "graph_shapes": 12,
+    "static_checks": 24,
+    "retained_tensors": 118
+  },
+  "lab": {
+    "sha256": "ef002c7152dc58771e968ed650527a5f117dee7fe494cc2296c16c7cda659c85",
+    "tests": 13,
+    "static_checks": 24,
+    "graph_shapes": 12,
+    "seeds": 16,
+    "rounds": 8,
+    "failed_arms": 0,
+    "source_bytes": 1001892
+  }
+}

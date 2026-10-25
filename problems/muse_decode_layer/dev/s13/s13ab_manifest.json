@@ -1,0 +1,67 @@
+{
+  "source": "problems/muse_decode_layer/lab/lab_decode_s13ab.py",
+  "sha256": "ef002c7152dc58771e968ed650527a5f117dee7fe494cc2296c16c7cda659c85",
+  "host_sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540",
+  "payload_sha256": "26f061f9ac04992bd42edb88cc498f96599868c821d8d128e780dc104e927d11",
+  "seeds": 16,
+  "rounds": 8,
+  "arms": {
+    "attention": {
+      "active_tokens": [
+        1
+      ],
+      "sha256": "c6a5986456b84bc3eed8238e0e700fa4b97905395341ef2da209e2ec1e1ed350"
+    },
+    "cpall": {
+      "active_tokens": [
+        1
+      ],
+      "sha256": "d67e734a6b8905b704788102d3af4fce6ec140aa3543c8ff33a11a537f5f81c8"
+    },
+    "permw": {
+      "active_tokens": [
+        128,
+        256
+      ],
+      "sha256": "632e5b52be9ce3fa0869e609a678afda85b5f970c4ee04d58d65051728506cfe"
+    },
+    "S12": {
+      "active_tokens": [
+        1,
+        128,
+        256
+      ],
+      "sha256": "240248b2c27c890bf5055a77e87d2fc9c4429b747a04d714e51d5f67e936bb3e"
+    }
+  },
+  "patches": [
+    {
+      "name": "attention",
+      "path": "problems/muse_decode_layer/dev/s13/patch_partial_port.py",
+      "sha256": "739965675b0a4562c1432ee4230526afdc2696cb4aca834e837641a81e06f0a1",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "4558693953ad12aafb9ee92bb7f2c3e5b7a216f84e092353fc49ab516b3d97f4"
+    },
+    {
+      "name": "cpall",
+      "path": "problems/muse_decode_layer/dev/s13/patch_cpall.py",
+      "sha256": "faf5aaa20736f5d580ed1d57863bc414dc651865b1fd1b79e6638d2e4417410b",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "632e5b52be9ce3fa0869e609a678afda85b5f970c4ee04d58d65051728506cfe"
+    },
+    {
+      "name": "permw",
+      "path": "problems/muse_decode_layer/dev/s13/patch_permw.py",
+      "sha256": "021410770114caa91af043cce4da976acf3927589e4e68718c66576dea9ea501",
+      "active_tokens": [
+        128,
+        256
+      ],
+      "out_sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540"
+    }
+  ]
+}
