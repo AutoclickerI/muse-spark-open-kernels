@@ -26,7 +26,7 @@ loosely) → H200 via `okc_run.py send` / `h200_lab.py send` (queue ~6.6 min per
 - **Bottleneck: H200 runs.** Each day gives 150 (5 problems x 10 scored + 20 checks). On 10-25 the prepare hosts
   were empty by ~17:00 KST and decode by ~21:00, and seven lanes then waited 12 hours for the reset.
 - Fixes in place: batched payloads per run; every problem hosts labs (attention at import time, R-20261025-3,
-  `--import-budget` 45 s proven, a 150 s probe pending); labs queue with `--not-before` for the reset; integration's
+  `--import-budget` default 150 s, proven by `33d8bb68`); labs queue with `--not-before` for the reset; integration's
   A/B gets priority -1 on decode.
 - Next fix: pack each run fuller (more arms and seeds per payload, all of a lane's variants in one run), spend
   decode checks only on whole-layer pairs, and send each lane's reset batch within the first hour so the day's
@@ -46,7 +46,7 @@ result from a failed control or an unproven implementation is unmeasured. Receip
 | 6 | P12 | G1 | Our per-stage gap to the leader. The component boards time the layer's stages at the layer's shapes; ours there are old kernels. Package S15's MoE, attention and projection paths as component submissions (scored quota the score doesn't use) and compare with the leader's component times, to rank stages by their gap to the leader rather than to the roof | Our current stage kernels on all three component boards | public-proj lane | next |
 | 7 | P10 | G1 | Dense projections (8-13% of wall). In S15: NathenFernandes's MIT kernels at the shapes they win in our layer (R-20261025-2; qkv 0.71 at t=1, 0.82 at t=32; O 0.85-0.96; unpooler 0.81 / 0.90 at t=16 / 32; their fused pool / router loses, `e3c637d1`). Next: pool_router (ours keeps the router fused) and denser lossless codes (2.545 bits of exponent entropy; 11.42 bits per weight measured for K8192, ~4.9% fewer bytes) on their kernel structure | Every dense stage at its stream roof, or below it through coding | public-proj lane | next |
 | 8 | P7 | G1, G2 | Glue (b1 + route + b2; 13% of wall at d1, 3-5% elsewhere). Producer-epilogue fusion lost 1.15-1.29 (`f21c60b0`, `15abb9c1`). PDL audit: nvcc sinks intended preloads past the dependency wait in 17 of 19 cluster-glue variants; fixing all lost 0.885 (register pressure), metadata-only +0.3% (`0f74021a`) is confirmed or dropped at the reset (`dev/pdl_audit/`). Boundaries at d16 / d32 are 5-6 us critical (`dev/boundary_attribution/`). Next: the S14 wait trace, then the decode-1 chain | Glue <= 6 us per layer | glue lane | active |
-| 9 | P11 | G1 | Whole-layer persistent kernel at small M: +1.74% estimated (+2.22% if the whole synchronization tax went); fusion alone is ~+2.8% in the literature (`docs/reference/research_megakernel.md`); our persistent dense chain lost 1.5-6.5x (`87dc944b`, mechanism unknown) | Reopen when stage receipts lift the estimate above the rows ranked above it | none | parked: +1.74% estimated |
+| 9 | P11 | G1 | Whole-layer persistent kernel at small M: +1.74% estimated (+2.22% if the whole synchronization tax went); a resident kernel needs competitive inner loops, precise readiness and operands kept across stages, not just fewer launches (`docs/reference/research_megakernel.md`); our persistent dense chain lost 1.5-6.5x (`87dc944b`, mechanism unknown) | Reopen when stage receipts lift the estimate above the rows ranked above it | none | parked: +1.74% estimated |
 
 ## Questions for Jihoon
 None open.

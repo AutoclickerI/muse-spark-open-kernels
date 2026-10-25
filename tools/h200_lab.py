@@ -33,7 +33,7 @@ risky payload last.
 
 Hosts: proj, MoE, prefill, decode and attention, sharing each host's board quota. Prefill is off the
 overall board. Attention has no judge-called prepare(), so uses import-time labs (--import-budget,
-default 45 s). Lab runs default to proj at the priority of the measurement's problem (--priority).
+default 150 s). Lab runs default to proj at the priority of the measurement's problem (--priority).
 """
 
 import argparse
@@ -57,7 +57,7 @@ from screen_all import local_imports  # noqa: E402
 LIMIT = 9000          # characters of lab output kept between the markers
 MARGIN_S = 15         # left of prepare's 300 s after the payload's deadline
 HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer", "muse_attention_decode")
-IMPORT_BUDGET_S = 45  # H200 probe cd9e07cf650e4839 completed 45 s; the parent's maximum is unknown
+IMPORT_BUDGET_S = 150  # H200 probe 33d8bb6861b64c9e completed 150 s after the host's own ~45 s import lab
 MERGE_MAX = 2        # payloads per run: base prepares take ~130 s on the H200, leaving each ~80 s
 
 WRAPPER = '''
