@@ -10,8 +10,9 @@ Unchanged shapes differ by up to ~4.5% between runs: promote from paired labs on
 Before a cell enters a candidate, list what each prepare() tensor holds at what precision (CONSTRAINTS 5).
 
 S9 `cand_r3_best7_s9.py` f55f616254a88e33781e897de0a8bfbfb82a410d1a03f1da8e8cae0f2de23f6e: 1.6073x `b7c59570`
-(our board score; no own-time gain at decode 1 / 32 and verify 1, a paired A/B decides). Built by `dev/s9/build.py [--base] [--patch ...] [--flags]` (asserted replacements; reads the
-other lanes' builders and cells, so a rebuild picks up their updates):
+(our board score; no own-time gain at decode 1 / 32 and verify 1, a paired A/B decides). Built by
+`dev/s9/build.py [--base] [--patch ...] [--flags]` (asserted replacements; reads the other lanes' builders and
+cells, so a rebuild picks up their updates):
 - BF16 qkv front: `../muse_bf16_proj/dev/attn_front/patch_front_bf16.py` (= S8_front 77f477fe, `87cd3a84`).
 - N_full at M=128/256 from `dev/s7n` (0.8842x / 0.8701x, `c01b1916` / `14f942d5`); R_full, mixed_parallel and
   pm_call deleted.
