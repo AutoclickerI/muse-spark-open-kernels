@@ -6,25 +6,25 @@ times (API, 2026-10-23): proj 4,830.8; attention 3,766.3; MoE 13,448.5; decode l
 step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sglang_us`). Its per-shape times
 and where they go are in [FINDINGS](FINDINGS.md).
 
-## Leaderboard (snapshot `runs/boards/20261025T014433Z`, 2026-10-25 10:44 KST)
+## Leaderboard (snapshot `runs/boards/20261025T022740Z`, 2026-10-25 11:27 KST)
 
-**Overall board (openkernelchallenge.dev/leaderboard): rank 166 of 1,014.** The API gives overall ranks only. Our fit
-of them (`python3 tools/board_model.py <snapshot>`; derivation in FINDINGS "Boards") is
-max(decode, 0.351 + 0.312 MoE + 0.268 proj + 0.105 attention), prefill ignored. On this snapshot it still holds:
-Kendall tau 0.964 over all teams, 0.987 over the top 300, 46 of the top 50 ranks exact, and it predicts our rank 166
-exactly. Every top-50 team's component composite is below its decode run, so **the overall board is the decode-layer
-board**: our score is 1.5735 (S7R), and rank 50 needs decode 1.820 (+0.247).
+**Overall board (openkernelchallenge.dev/leaderboard): rank 145.** The API gives overall ranks only. Our fit of them
+(`python3 tools/board_model.py <snapshot>`; derivation in FINDINGS "Boards") is max(decode, 0.351 + 0.312 MoE + 0.268
+proj + 0.105 attention), prefill ignored. On this snapshot: Kendall tau 0.964 over all teams, 0.987 over the top 300,
+48 of the top 50 ranks exact, and it predicts our rank 145 exactly. Every top-50 team's component composite is below
+its decode run, so **the overall board is the decode-layer board**: our score is 1.6073 (S9), and rank 50 needs decode
+1.826 (+0.219).
 
 | Overall rank | Team | Decode layer (= score) | MoE | Proj | Attention |
 |---|---|---|---|---|---|
 | 1 | colinlikescode | 2.285 | 2.523 | 1.610 | 2.844 |
 | 2 | abhishekgahlot2 | 2.203 | 2.352 | 1.461 | 2.643 |
 | 3 | pjmullin3 | 2.190 | 2.308 | 1.426 | 2.910 |
-| **166** | **AutoclickerI (us)** | **1.574** | 1.694 | 1.187 | 1.403 |
+| **145** | **AutoclickerI (us)** | **1.607** | 1.694 | 1.187 | 1.403 |
 
 | Problem | Our best H200 run (on the board) | Our rank / entries | Leader | 10th | 50th |
 |---|---|---|---|---|---|
-| muse_decode_layer | 1.5735x S7R `c1fbd0cf` (S7 1.5597x `2f6471d5`; S4-S6 withdrawn) | 166 / 586 | 2.285x (colinlikescode) | 2.066x | 1.820x |
+| muse_decode_layer | 1.6073x S9 `b7c59570` (S8 1.5742x, S7R 1.5735x; S4-S6 withdrawn) | 145 / 587 | 2.285x (colinlikescode) | 2.066x | 1.826x |
 | muse_moe_w4a16 | 1.694x (a lab host run, `14f942d5`) | 235 / 688 | 2.523x (colinlikescode) | 2.335x | 2.092x |
 | muse_attention_decode | 1.403x verify_stream `d98ae45d` (vq8 1.371x `c816b9a7`) | 358 / 641 | 2.910x (pjmullin3) | 2.476x | 2.113x |
 | muse_bf16_proj | 1.187x (a lab host run, `b15a3bde`) | 463 / 864 | 1.610x (colinlikescode) | 1.517x | 1.402x |
