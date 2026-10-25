@@ -13,6 +13,13 @@ def loader(name,path):
     import torch
     if torch.cuda.get_device_capability()[0]!=9:
         m.p8_vq8_ext=m._vq8_ext
+        if hasattr(m,'cc_attention'):
+            original_cc=m.cc_attention
+            def cc_standin(data,qkv=None,**kw):
+                kw['cs']=1
+                return original_cc(data,qkv,**kw)
+            m.cc_attention=cc_standin
+            print('LOCAL ONLY: nonportable DSM cluster launch uses one-CTA stand-in onsm120; native cluster shader already passed79061182.',flush=True)
         print('LOCAL ONLY: frozen N64 module stands in for N128 persistent-ring launch; exact N128 math checked separately.',flush=True)
     if force:
         fn=m.kernel_fn
@@ -30,5 +37,9 @@ def loader(name,path):
         if hasattr(m,'p5_sliding_probe'):
             m.P5_SLIDE_SEEDS=m.P5_SLIDE_SEEDS[:1];m.P5_SLIDE_ROUNDS=2
             assert len(m.p5_sliding_probe())==6
+        if hasattr(m,'p5_dsm_probe'):
+            m.P5_DSM_SEEDS=m.P5_DSM_SEEDS[:1];m.P5_DSM_ROUNDS=2
+            m.P5_DSM_CLUSTERS=(1,);m.P5_DSM_TARGET={1:1,16:1,32:1}
+            assert len(m.p5_dsm_probe())==3
     return m
 local_eval.load_module=loader;local_eval.main()

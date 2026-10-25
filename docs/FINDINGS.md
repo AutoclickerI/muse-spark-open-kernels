@@ -654,6 +654,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   1.44. S13's intended immutable preloads were compiled after the PDL dependency wait (inline PTX keeps them before
   it). Joint b1 / route / b2 preloads: 0.977 at decode 1 in the pilot (`0110a781`); held out (`1a880faf`) full 0.987
   (A:A 0.995), sliding 1.001: kept for decode-1 full only (~+0.06%).
+- PDL preload audit on S14 (72 native specializations, 15 Triton kernels, sm_90a SASS): 17 of 19 cluster-glue variants
+  issue their intended preloads after the dependency wait. Fixing all (`8db42132`) loses 0.885 (six-load speedup
+  ratio): register-hoisted tiles take the GEMV from 48 to 150 registers and 40 to 8 LDGSTS. Separately
+  (`0f74021a`, A:A 1.0007): hints 1.0027, metadata-only 1.0032, register tiles 0.887. Confirmation pending;
+  `problems/muse_bf16_proj/dev/pdl_audit/README.md`.
 - Balanced GEMV issue sweep (`d3666d18`, projection + sum-cast graph, standalone): pool_router at BK=128 with 2
   stages 0.977 / 0.959 / 0.960 at t = 1 / 16 / 32 (-0.6 to -1.1 us); every other role and setting within +-2%.
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;

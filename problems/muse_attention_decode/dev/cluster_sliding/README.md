@@ -176,7 +176,49 @@ until the full paired layer ratios land.
 
 Native attention candidate`6f733856` compares original base/VQ8, original last-CTA, padded-row masking,
 and fast-RoPE+last-CTA across all six sliding loads, eight seeds ×eight cold replays, plus FP32-partial gates.
-Normal andforced local_eval eachpass16 TASK tests/12 graph shapes/12 static checks. Native result pending.
+Normal andforced local_eval eachpass16 TASK tests/12 graph shapes/12 static checks. Native result2f8b702d landed below.
 `build_all_lab.py` builds the identical six-shape,16-seed original-S11 whole-layer pair with CUPTI increments;
-host`7eee215c` also retains the paired full-verify N128 winner. The exact wrapper`da3d0c48` is being screened
-normally/forced before any queued send. Every layer host is exhausted until09:01KST October26.
+host`7eee215c` also retains the paired full-verify N128 winner. The exact wrapper`da3d0c48` passes normal/forced13 TASK/12 graph/24 static checks each; it is not queued after the native verify loss. Every layer host is exhausted until09:01KST October26.
+
+
+**2f8b702dc76b42fd** lands: all native gates pass; global last-CTA verify is rejected.
+Eight seeds ×eight native paired replays (event times include graph fixed cost, not whole-layer increments):
+
+| Sliding | FAST us | FAST/last-CTA(decode) or VQ8(verify) | MASK/last-CTA | A2/base |
+|---|---:|---:|---:|---:|
+| decode1 | 13.017 | .99329 | .99834 | .98561 |
+| decode16 | 17.507 | .99153 | .99721 | .98903 |
+| decode32 | 21.382 | .97267 | .97855 | .98843 |
+| verify1 | 23.921 | 1.10835 | .99378 | .99678 |
+| verify16 | 48.199 | 1.61124 | 1.00038 | .99225 |
+| verify32 | 51.256 | 1.58303 | 1.00235 | .98936 |
+
+Native official16/16 pass,1.50358x (CI1.48103–1.52614). Scored sliding times8.83/13.34/17.56us decode,
+20.11/44.25/46.99us verify. Neither latency target is met. Decode1/16 changes are inside the control bias;
+decode32 shows a component improvement but needs a layer pair. The whole all-sliding wrapper passes normal
+andforced13 TASK/12 graph/24 static each, but **is not queued** because verify loses heavily natively.
+The safe previously queued host remains8e091fcb (old last-CTA B1 sliding + measured full128 stage4).
+
+Next native test`build_dsm_board.py`:the original verified shader distributes output reduction over its
+cluster rather than serializing64 rows in one last CTA. Fixed clusters1/2/4/8/16 include one-wave targets
+16/4/2 at verifyB1/16/32, cutting duplicate preparation and gang scheduling. This changes only public-shape
+launch parameters of CUDA`e43cb513`, already validated by79061182; no new attention math. Local forced
+launch uses the genuine supported one-CTA resource/launch path onsm120; only H200 establishes multi-CTA DSM.
+
+
+DSM one-wave packet is complete: native attention candidate`f1c270e6` passes normal/forced16 TASK,
+12 graph shapes,11 static checks each. The attention quota was consumed by another send during local
+screens, so the send is **queued for09:01KST October26; no accepted H200 job ID exists yet**.
+`build_dsm_lab.py` writes `prof/lab/verify_dsm_layer_pair.py` and
+`problems/muse_decode_layer/lab/lab_p5_verify_dsm.py` (`5e0013af`, host`d6c54b50`). Its normal andforced
+local audits eachpass13 TASK/12 fresh graph/25 static checks. The host retains the qualified oldB1 sliding
+and measured full-verify wins, and tests fixed DSM16/4/2 on verify. Local cluster launch uses the actual
+one-CTA stand-in; multi-CTA behavior must come fromH200. The packet is **not queued** until the native
+cluster sweep selects competitive settings. The already-screened safe original layer send`0ccc2548`
+(host`8e091fcb`) remains queued and will establish the changed full-verify host's official correctness.
+
+Handoffs remain [oldB1 sliding](HANDOFF_LAST.md), [full verify](../full128/HANDOFF.md), and
+[prior direct-partials](../vq8/HANDOFF.md) forB1 full. No serial last-CTA verify or native one-head variant
+is promoted. Per64-key-equivalent full-verify stage4 clocks are1,423/1,327 cycles (nativeN128 total2,846/2,654),
+closing the old1,800-vs1,400 per-tile model gap; measured whole-layer savings still miss the requested targets.
+All remaining hardware-dependent decisions wait on the quota reset and native DSM result.
