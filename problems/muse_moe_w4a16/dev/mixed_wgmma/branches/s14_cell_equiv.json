@@ -9,5 +9,9 @@
     "nf_ilv",
     "nf_wide"
   ],
+  "successor_controls": {
+    "cluster_copy_payload.py": "95416a2eb9ee4d0f7e55fc9a4080d17c4e28380282a344e30765c9edf964658d",
+    "cluster_schedule_payload.py": "c5840d07ddb95a2d50e041f65801433177df5b439e0c17240789e9e5ed9a8c9c"
+  },
   "note": "N16G4 control is exactly the S14 nf CUDA/plan and bank transformations. New integration patches must pin S14, not S12."
 }

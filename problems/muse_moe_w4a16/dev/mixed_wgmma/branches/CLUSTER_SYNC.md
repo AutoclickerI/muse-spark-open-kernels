@@ -74,3 +74,28 @@ portable math, gather, class boundaries, nearby sizes and stream joins. It force
 not exercise multicast hardware. H200's96 passing fixtures cover actual multicast execution; they
 do not prove absence of every possible hardware interleaving. The ordering argument above is the
 reason slot reuse is safe under the stated PTX contracts.
+
+## Parallel-copy successor
+
+`cluster_copy_manifest.json` pins the lean, parallel-copy and direct-row variants. Their W2 norm
+scratch aliases the Q ring only after the final WGMMA wait0. The norm's CTA reductions finish before
+the existing final CTA barrier; the next expert/channel task cannot issue new Q copies until every
+thread crosses that barrier. The alias therefore introduces no live Q/norm overlap.
+
+COPY and DIRECT write X through generic-proxy LDGSTS. Each consumer first executes the appropriate
+`cp.async.wait_group`, then a CTA barrier and `fence.proxy.async.shared::cta` before WGMMA reads X.
+That fence is retained. TMA completion and cluster barriers are absent from these X paths. DIRECT
+changes the global source row through SLOTS, preserving the destination layout and publication order.
+
+The schedule packet adds S3 only for MAX64. It preloads two committed copy groups, waits with limit1,
+then issues step `k+2` after sub0. The destination slot was last read at step `k-1`, whose final group
+`2*k-1` has retired under the WGMMA wait1. Its raw Q/scale data was also consumed before that point.
+At the tail, empty committed copy groups preserve the constant wait1 distance: without them the last
+real copy could remain outstanding. The unrolled loop guards `k>=32`, since32 is not divisible by3.
+The S3 copy ring has no mbarriers and no parity-reset requirement; its final WGMMA wait0 drains readers.
+
+`copy_sync_check.py/json` models the least guaranteed completion for S1/S2/S3 and K lengths3..65:
+**19,278 checks** pass. Negative controls catch the missing tail commit and WGMMA wait2's early
+A-register reuse. `cluster_schedule_validation.json` separately records588 poisoned captured local
+checks across every class boundary, with all three new arms bit-equal on98 cases. Local sm120 uses
+the portable math path; it does not establish Hopper scheduling performance or hardware race freedom.

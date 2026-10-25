@@ -220,13 +220,77 @@ barrier parity across expert tiles. **36,864 checks +1,888 launch-class checks**
 wait limits, missing cross-rank retirement and odd-K parity are rejected. The96 H200 output gates add
 actual hardware execution evidence, not an exhaustive race test.
 
-Next diagnostic is `cluster_copy_build.py`: S14 nf control, original TMA CS4, lean TMA CS4, parallel
+`cluster_copy_build.py` (payload **95416a2e**) compares: S14 nf control, original TMA CS4, lean TMA CS4, parallel
 cp.async CS1, and direct-gather cp.async CS1. Lean unrolls the S2 stage ring; W2 norms reuse Q staging
 only after the final wait0, removing a static-shared occupancy boundary. Lean/COPY use eight warp-owned
 gather rows per CTA; DIRECT loads original BF16 rows by SLOTS and removes the gather kernel. COPY and
 DIRECT retain the generic-to-async X publication fence. The packet includes isolated heavy/light
 W13/W2 service times and gather timing on one fixed fixture, explicitly not critical-path increments.
-New-arm validation/admission and the next attention job are recorded below when complete.
+`cluster_copy_validation.json`: **588 poisoned captured checks**, 98 input cases, all three new
+arms bit-equal on every case; sizes127/128/255/256/257 and every width boundary. The weights=None
+entry screen passes39 fixtures/M/arm on sm120. `pipeline_audit.py` / `pipeline_resources.json` record
+sm90a SASS and resources: no stack/spills or C7512 serialization warning. Lean S2 drops roughly
+257-266 to227-235 instructions/KT128; COPY's low/medium classes use191-218. The <=64 COPY kernels
+retain three theoretical CTAs/SM. Lean's W2 MAX128 crosses from two to three resident CTAs on H200,
+but the full-MoE result still loses.
+
+Attention import-time job **8ee003dbf1e244f0**, wrapper **6a022c28**, budget180s, landed112.4s:
+16 seeds x3/M, every arm TASK PASS and **48/48 bit-equal to S14** per M. A:A signed/abs/max
+-0.174/0.548/2.176us. Paired ratios are against the identical S14 nf control.
+
+| M | S14 us | TMA_CS4 us (ratio) | LEAN_CS4 us (ratio) | COPY_CS1 us (ratio) | DIRECT_CS1 us (ratio) |
+|---|---:|---:|---:|---:|---:|
+|128|185.43|259.39 (1.4044)|265.50 (1.4385)|227.36 (1.2299)|221.25 (1.1970)|
+|256|261.03|341.85 (1.3135)|346.75 (1.3337)|299.17 (1.1499)|294.58 (1.1322)|
+
+**All four recipes lose; no integration patch.** Parallel copies remove a large part of TMA's loss;
+removing gather helps further. Lower instruction counts and the extra theoretical W2 occupancy did
+not produce a win. One fixed fixture's isolated service times locate the remaining gap in heavy,
+with light phases unchanged within noise. These are not critical-path increments:
+
+| M / arm | heavy W13 us | heavy W2 us | light W13 us | light W2 us | gather us |
+|---|---:|---:|---:|---:|---:|
+|128 S14|43.38|34.56|80.86|49.17|0|
+|128 TMA|103.90|55.14|84.24|54.61|9.02|
+|128 LEAN|104.46|64.38|80.03|48.86|14.29|
+|128 COPY|64.67|40.75|80.54|49.01|14.11|
+|128 DIRECT|65.97|41.41|80.88|49.55|0|
+|256 S14|81.89|47.71|70.16|44.19|0|
+|256 TMA|157.26|107.95|71.15|44.26|8.96|
+|256 LEAN|158.11|116.42|71.25|43.90|13.79|
+|256 COPY|109.84|72.69|70.98|45.04|13.92|
+|256 DIRECT|109.90|75.79|71.14|44.10|0|
+
+Next attribution packet, `cluster_schedule_build.py`: S14, DIRECT with cluster1 launch, the same
+compiled device image with ordinary CTA launch, ordinary CTAs with serial width classes, then
+serial classes with S3 raw-copy depth for MAX64 (larger widths retain S2/S1). All direct arms remove
+gather. The cluster occupancy query reports the launch topology limit separately from per-SM
+occupancy; a cluster1 bottleneck is a hypothesis. The serial arm tests class scheduling/interference;
+CUDA graph fork/join events encode dependencies and are not assumed to cost one GPU event each.
+
+Schedule payload **c5840d07**, ordinary/cluster CUDA **797cec7f**, S3 CUDA **a0ddf24f**.
+The builder asserts an unchanged device-source prefix and one shared compiled image for the three
+launch/scheduling arms. `cluster_schedule_validation.json`: **588** poisoned captured checks,
+98 input cases, every new arm bit-equal. `cluster_schedule_entry.json`: weights=None,16 seeds,
+**48 fixtures/M/arm**, all TASK PASS and bit-equal to S14; local timing is not promotion evidence.
+S3 compiles for sm90a without stack/spills/C7512; MAX64 W13/W2 uses128/135 registers and63488B dynamic
+shared memory. `copy_sync_check.py/json` adds **19,278** least-completion checks, including tail empty
+commits and wrong-wait negative controls. The complete proof is in `CLUSTER_SYNC.md`.
+
+Dispatch **f867a8b74a243d1e** is **queued for quota, not judge-accepted**. At dispatch the tool reported
+zero runs on every host, including attention. Sole waiter `runs/waiting/3408321.json`, reset
+**2026-10-26 09:01 KST**, log `runs/detached/f867a8b74a243d1e.log`; `pipeline_queue.json` records the
+frozen wrapper/payload hashes. The previous MoE reset waiter **d5a4529b6e59529b** was cancelled before
+acceptance and cannot duplicate this packet. Do not re-send this packet while the sole waiter is live.
+Next decision waits on this attribution: retain ordinary launches only if paired timings show a gain;
+use the measured phase changes to choose a new tile layout if the native-wide loss persists.
+
+Rebuild with `python3 .../cluster_schedule_build.py` (recreates copy/lean dependencies); screen actual
+portable math with `CUDA_VISIBLE_DEVICES=0 tools/img python .../cluster_check.py .../cluster_schedule_payload.py`.
+`pipeline_audit.py` reads sm90a cubins disassembled by cuobjdump in `/tmp`; `pipeline_resources.json`
+preserves the counts/resources and source hashes. `s14_cell_equiv.py/json` pins both successor controls
+exactly to S14's nf source/plan/bank transforms. No new production patch exists: the integration base
+stays `cand_r3_best7_s14_final.py` **f1c77ce6**.
 Target **132.6 /158.5us** remains unmet.
 
 The earlier FP16 magic proposal is audited separately, not pursued as the main lever: `magic_audit.py` /

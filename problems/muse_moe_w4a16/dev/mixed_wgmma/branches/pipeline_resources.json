@@ -1,0 +1,2530 @@
+{
+  "lean": {
+    "cuda_sha256": "91897376dba7c81932eda9b30b514ba02c3f0ad485c15499ae5515197d3dc133",
+    "sass_sha256": "cb9de4c4e8d3693467d0f910db62946783f7b3ab7f00254852b52cc9df054e4f",
+    "resources": [
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 4,
+        "registers": 254,
+        "static_smem": 1024,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 4,
+        "registers": 190,
+        "static_smem": 1024,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 4,
+        "registers": 168,
+        "static_smem": 1024,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 4,
+        "registers": 158,
+        "static_smem": 1024,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 4,
+        "registers": 168,
+        "static_smem": 1024,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 4,
+        "registers": 153,
+        "static_smem": 1024,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 4,
+        "registers": 140,
+        "static_smem": 1024,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 4,
+        "registers": 128,
+        "static_smem": 1024,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 1,
+        "registers": 254,
+        "static_smem": 1024,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 1,
+        "registers": 190,
+        "static_smem": 1024,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 1,
+        "registers": 168,
+        "static_smem": 1024,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 1,
+        "registers": 157,
+        "static_smem": 1024,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 1,
+        "registers": 168,
+        "static_smem": 1024,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 1,
+        "registers": 151,
+        "static_smem": 1024,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 1,
+        "registers": 138,
+        "static_smem": 1024,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 1,
+        "registers": 127,
+        "static_smem": 1024,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "kernels": {
+      "256/0/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 239.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 240.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 243.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 246.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 239.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 236.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 242.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 242.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 227.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 229.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 228.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 230.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 228.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 235.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/1/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 228.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 234.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "256/0/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 238.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 240.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 238.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 240.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 238.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 236.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 238.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 236.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 228.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 230.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 227.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 230.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 229.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 235.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/1/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 228.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 234.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 5.0,
+            "TMA": 2.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      }
+    }
+  },
+  "copy": {
+    "cuda_sha256": "c5a4a13fcbc9eaff32bfa33754af8755b579616d527bcf1a6b4198cbad5b9cb0",
+    "sass_sha256": "00271902039ed891bf6c277e4b85f72bce20474f78c75cc84e342d25c98c156b",
+    "resources": [
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 4,
+        "registers": 254,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 4,
+        "registers": 212,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 4,
+        "registers": 224,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 4,
+        "registers": 177,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 4,
+        "registers": 180,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 4,
+        "registers": 177,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 4,
+        "registers": 152,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 4,
+        "registers": 139,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 1,
+        "registers": 254,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 1,
+        "registers": 214,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 1,
+        "registers": 222,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 1,
+        "registers": 176,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 1,
+        "registers": 184,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 1,
+        "registers": 177,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 1,
+        "registers": 150,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 1,
+        "registers": 138,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "kernels": {
+      "256/0/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 294.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 293.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 266.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 255.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 268.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 260.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 218.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 208.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 218.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 208.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 191.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 198.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/1/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 192.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 198.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "256/0/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 294.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 293.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 265.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 255.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 268.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 260.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 218.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 208.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 218.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 208.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 191.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 198.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/1/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 192.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 198.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      }
+    }
+  },
+  "direct": {
+    "cuda_sha256": "ba3555801586189224398144fe7b3b064367f1d9a846b4718d9f8406a8855000",
+    "sass_sha256": "2257a25587e62e0f37ac9d6801425ec7e8a3208635a0a7d260a81da9707f7196",
+    "resources": [
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 4,
+        "registers": 254,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 4,
+        "registers": 229,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 4,
+        "registers": 224,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 4,
+        "registers": 192,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 4,
+        "registers": 180,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 4,
+        "registers": 189,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 4,
+        "registers": 152,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 4,
+        "registers": 156,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 1,
+        "registers": 254,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 1,
+        "registers": 229,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 1,
+        "registers": 222,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 1,
+        "registers": 192,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 1,
+        "registers": 184,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 1,
+        "registers": 189,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 1,
+        "registers": 150,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 1,
+        "registers": 156,
+        "static_smem": 0,
+        "dynamic_smem": 41984,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "kernels": {
+      "256/0/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 294.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 296.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 291.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 266.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 255.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 267.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 259.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 218.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 208.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 237.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 222.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 191.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 198.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/1/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 202.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 199.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "256/0/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 294.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 296.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 291.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 265.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 255.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 267.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 259.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 218.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 208.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 237.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 222.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 191.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 198.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/1/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 202.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 199.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      }
+    }
+  },
+  "deep": {
+    "cuda_sha256": "a0ddf24f5f14675945aa6d1e15a0ed42544d9054a87a7378fdd21ef37ad3fba8",
+    "sass_sha256": "fc83709ce259732271192774e6fb89e743f77f7f8a7be0f0d915554cd8cfe380",
+    "resources": [
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 4,
+        "registers": 254,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 4,
+        "registers": 229,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 4,
+        "registers": 224,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 4,
+        "registers": 192,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 4,
+        "registers": 182,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 4,
+        "registers": 191,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 4,
+        "registers": 132,
+        "static_smem": 0,
+        "dynamic_smem": 63488,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 4,
+        "registers": 128,
+        "static_smem": 0,
+        "dynamic_smem": 63488,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 0,
+        "cs": 1,
+        "registers": 254,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 256,
+        "first": 1,
+        "cs": 1,
+        "registers": 229,
+        "static_smem": 0,
+        "dynamic_smem": 70656,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 0,
+        "cs": 1,
+        "registers": 222,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 192,
+        "first": 1,
+        "cs": 1,
+        "registers": 192,
+        "static_smem": 0,
+        "dynamic_smem": 54272,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 0,
+        "cs": 1,
+        "registers": 185,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 128,
+        "first": 1,
+        "cs": 1,
+        "registers": 191,
+        "static_smem": 0,
+        "dynamic_smem": 74752,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 0,
+        "cs": 1,
+        "registers": 135,
+        "static_smem": 0,
+        "dynamic_smem": 63488,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "maxnt": 64,
+        "first": 1,
+        "cs": 1,
+        "registers": 128,
+        "static_smem": 0,
+        "dynamic_smem": 63488,
+        "stack_spill": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "kernels": {
+      "256/0/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 294.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/4": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 296.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 291.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 266.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 255.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/4": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 267.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 259.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 219.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 209.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/4": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 238.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 223.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 198.66666666666666,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 204.33333333333334,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 12,
+          "0x0": 2
+        }
+      },
+      "64/1/4": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 201.66666666666666,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 200.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 12,
+          "0x0": 2
+        }
+      },
+      "256/0/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 294.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 288.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "256/1/1": {
+        "loops": [
+          {
+            "nt": 256,
+            "KT128_instructions": 296.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 37.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 224,
+            "KT128_instructions": 291.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 33.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/0/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 265.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 255.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "192/1/1": {
+        "loops": [
+          {
+            "nt": 192,
+            "KT128_instructions": 267.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 29.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 160,
+            "KT128_instructions": 259.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 25.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 4,
+          "0x0": 4
+        }
+      },
+      "128/0/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 219.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 209.5,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "128/1/1": {
+        "loops": [
+          {
+            "nt": 128,
+            "KT128_instructions": 238.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 21.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 96,
+            "KT128_instructions": 223.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 17.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 8,
+          "0x0": 2
+        }
+      },
+      "64/0/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 198.66666666666666,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 204.33333333333334,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 12,
+          "0x0": 2
+        }
+      },
+      "64/1/1": {
+        "loops": [
+          {
+            "nt": 64,
+            "KT128_instructions": 201.66666666666666,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 13.0,
+            "TMA": 0.0,
+            "local": 0
+          },
+          {
+            "nt": 32,
+            "KT128_instructions": 200.0,
+            "HGMMA": 8,
+            "HMUL2": 32.0,
+            "LDGSTS": 9.0,
+            "TMA": 0.0,
+            "local": 0
+          }
+        ],
+        "depbar": {
+          "0x1": 12,
+          "0x0": 2
+        }
+      }
+    }
+  }
+}
