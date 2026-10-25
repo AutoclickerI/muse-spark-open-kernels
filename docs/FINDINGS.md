@@ -403,7 +403,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   46.2 -> 35.4, heavy W13 109.5 / 94.4 / 70.2 / 50.3, heavy W2 60.7 / 54.6 / 39.5 / 26.8. NT1 sits at 1.22-1.31x its
   stream; the heavy branch at 1.9-2.3x: it schedules 1.6x / 2.2x its unique weight bytes (each 32-token tile
   re-reads and re-decodes the expert) and re-reads 171 / 403 MB of activations. Unique MoE bytes at M=128 ~467 MB
-  (~102 us at 4.58 TB/s) vs ~171 us in the layer.
+  (~102 us at 4.58 TB/s) vs ~171 us in the layer. Reordering heavy tiles to (expert, channel, token group) for
+  inter-CTA weight reuse is neutral (`1bf2cc04`: 1.001 / 1.003); PERMW confirmed 0.9895 / 0.9778 with real outputs.
 ## Attention
 
 ### Shapes, floors and the incumbents
@@ -461,7 +462,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - vq8 with a balanced native softmax at full verify 16 / 32 (`8b8e4e2b`): 1.005-1.020 vs S11's vq8 (per-tile clocks:
   132 CTAs, 150 / 300 tiles, producer ends ~3 us before the consumers); the revised shared-RoPE cooperative prep loses
   1.08-1.30 at sliding decode and 1.25-1.27 at full decode; verify-1 sliding 0.973 and 1.002 in two parts of the run
-  (no win).
+  (no win). An FP32 polynomial in place of ex2 for the probabilities at full verify loses (`9407b461`: degree 2 / 3
+  1.080 / 1.087 at verify 16, 1.105 / 1.114 at verify 32).
 
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
