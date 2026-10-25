@@ -419,6 +419,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   M=128 / 256 vs S12 final (196.2 -> 182.4 us, 270.6 -> 256.4 us).
 - A whole-MoE shared queue on top of N16G4 loses (`ea794250`, all PASS): phased N8 / N16 / N32 queue 1.034 / 1.037,
   expert-ready persistent DAG 1.100 / 1.107 at M=128 / 256.
+- Decode-once across all of an expert's tokens with cluster activation sharing loses at M=128 / 256 (bit-equal to S14,
+  48 fixtures per M, ordering proof `CLUSTER_SYNC.md`): vs S12 CS1 1.319 / 1.252, CS4 multicast 1.322 / 1.260
+  (`5fdb668c`); vs S14 TMA staging 1.404 / 1.314, lean TMA 1.439 / 1.334, parallel copy 1.230 / 1.150, direct rows
+  1.197 / 1.132 (`8ee003db`; best 221.3 / 294.6 us vs S14 185.4 / 261.0).
 ## Attention
 
 ### Shapes, floors and the incumbents
