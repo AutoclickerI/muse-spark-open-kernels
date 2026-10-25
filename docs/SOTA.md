@@ -31,14 +31,15 @@ The decode leader has held 2.285x since 10-25 09:27 KST; 10th and 50th keep risi
 1.896 in 13 hours). Our component entries are old kernels, so the leader-vs-us component ratios overstate our
 per-stage gaps (PLAN P12 measures them). Boards come from `okc leaderboard [<problem>] --json`.
 
-## Public competitor code (GitHub search 2026-10-25 18:00 KST)
+## Public competitor code (GitHub and web search 2026-10-26 02:20 KST)
 
 | Repo | Board standing | What is public | Status |
 |---|---|---|---|
-| NathenFernandes/muse-bf16-proj @ 86aff75 (MIT) | proj #14, 1.5186x | judged v18 proj submission and per-shape times; 0.62-0.96x our proj-board time, but in our layer the port wins only qkv / O / unpooler shapes (+1.5-2% est.; FINDINGS "Projections") | ported under R-20261025-2 (P10) |
-| lee101/openkernels (Apache-2.0) | below us (decode 1.348 by its README) | every judged version per problem; MoE ablations: removing activation L2 traffic -20% at bs128/256, removing dequant -15% | checked |
-| theluckystrike/muse-spark-open-kernels | decode #30, 1.954x | placeholder; code after Nov 4 | checked |
-| Lurrobert/Lurrobert | decode #6, 2.162x | profile only; points to guild.1nterface.ai (we don't join) | checked |
+| NathenFernandes/muse-bf16-proj @ 86aff75 (MIT) | proj #20, 1.5186x | judged v18 proj submission and per-shape times; 0.62-0.96x our proj-board time, but in our layer the port wins only qkv / O / unpooler shapes (+1.5-2% est.; FINDINGS "Projections") | ported under R-20261025-2 (P10) |
+| tie-pilot-qxw/pdl-megakernel-reconstruction (MIT) | decode #5, 2.213x | not an OKC entry: PDL vs persistent megakernel on Llama-1B / H100 (graph 1169, PDL 1010, persistent 983 us per step); releasing the successor once the producer has issued its final TMA, not when it lands, saved 34 us; smaller register tiles and per-shard readiness lost | scheduling evidence (P7, P11) |
+| lee101/openkernels (Apache-2.0) | not on the board (decode 1.348 by its README) | every judged version per problem; MoE ablations: removing activation L2 traffic -20% at bs128/256, removing dequant -15%; its full verify 172 / 326 us at B16 / 32 vs our 150.5 / 264.8 | checked; no stage beats ours |
+| theluckystrike/muse-spark-open-kernels | decode #34, 1.954x | placeholder; code after Nov 4 | recheck after Nov 4 |
+| Lurrobert (guild.1nterface.ai notes; we don't join) | decode #8, 2.162x | failure notes: next-stage L2 prefetch lost 0.4-10.6%; a `cp.async` weight ring did not lift NVFP4 MoE bandwidth; prepare-time TMA descriptors holding buffer addresses break when state tensors are cloned | evidence only, no code |
 | colinlikescode (leader), other top-40 teams | — | nothing competition-related public | checked (repo lists) |
 
 ## Comparisons

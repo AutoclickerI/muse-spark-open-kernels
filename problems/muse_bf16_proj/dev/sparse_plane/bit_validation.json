@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "vector": false,
+      "seed": 61791,
+      "enumerated_inputs": 65536,
+      "random_stream_bytes": 196608,
+      "exact": true,
+      "stats": {
+        "weights": 131072,
+        "original_bytes": 196608,
+        "packed_bytes": 193536,
+        "bits_per_weight": 11.8125,
+        "rotation": 5,
+        "occupied": 0.75
+      }
+    },
+    {
+      "vector": false,
+      "seed": 14357,
+      "enumerated_inputs": 65536,
+      "random_stream_bytes": 196608,
+      "exact": true,
+      "stats": {
+        "weights": 131072,
+        "original_bytes": 196608,
+        "packed_bytes": 193536,
+        "bits_per_weight": 11.8125,
+        "rotation": 2,
+        "occupied": 0.75
+      }
+    },
+    {
+      "vector": false,
+      "seed": 92003,
+      "enumerated_inputs": 65536,
+      "random_stream_bytes": 196608,
+      "exact": true,
+      "stats": {
+        "weights": 131072,
+        "original_bytes": 196608,
+        "packed_bytes": 193536,
+        "bits_per_weight": 11.8125,
+        "rotation": 6,
+        "occupied": 0.75
+      }
+    },
+    {
+      "vector": true,
+      "seed": 61791,
+      "enumerated_inputs": 65536,
+      "random_stream_bytes": 196608,
+      "exact": true,
+      "stats": {
+        "weights": 131072,
+        "original_bytes": 196608,
+        "packed_bytes": 193536,
+        "bits_per_weight": 11.8125,
+        "rotation": 5,
+        "occupied": 0.75
+      }
+    },
+    {
+      "vector": true,
+      "seed": 14357,
+      "enumerated_inputs": 65536,
+      "random_stream_bytes": 196608,
+      "exact": true,
+      "stats": {
+        "weights": 131072,
+        "original_bytes": 196608,
+        "packed_bytes": 193536,
+        "bits_per_weight": 11.8125,
+        "rotation": 2,
+        "occupied": 0.75
+      }
+    },
+    {
+      "vector": true,
+      "seed": 92003,
+      "enumerated_inputs": 65536,
+      "random_stream_bytes": 196608,
+      "exact": true,
+      "stats": {
+        "weights": 131072,
+        "original_bytes": 196608,
+        "packed_bytes": 193536,
+        "bits_per_weight": 11.8125,
+        "rotation": 6,
+        "occupied": 0.75
+      }
+    }
+  ]
+}

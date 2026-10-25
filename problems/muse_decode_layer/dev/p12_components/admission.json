@@ -1,0 +1,210 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "screens": [
+    {
+      "role": "moe",
+      "mode": "normal",
+      "sha256": "4127d934adc31a29e21a8498341ef12706fb6d7776d8e5271acae67af16286be",
+      "checks": {
+        "tests": {
+          "count": 5,
+          "passed": 5
+        },
+        "shapes": {
+          "count": 6,
+          "passed": 6
+        },
+        "static": {
+          "count": 25,
+          "passed": 25
+        }
+      },
+      "prepare_s": 3.319546459999401,
+      "calls": {
+        "v9_kernel_fn": {
+          "eager": 3,
+          "captured": 0
+        },
+        "nf_plan": {
+          "eager": 7,
+          "captured": 2
+        },
+        "smallm_experts": {
+          "eager": 13,
+          "captured": 4
+        }
+      }
+    },
+    {
+      "role": "moe",
+      "mode": "forced",
+      "sha256": "4127d934adc31a29e21a8498341ef12706fb6d7776d8e5271acae67af16286be",
+      "checks": {
+        "tests": {
+          "count": 5,
+          "passed": 5
+        },
+        "shapes": {
+          "count": 6,
+          "passed": 6
+        },
+        "static": {
+          "count": 25,
+          "passed": 25
+        }
+      },
+      "prepare_s": 2.478196419950109,
+      "calls": {
+        "v9_kernel_fn": {
+          "eager": 3,
+          "captured": 0
+        },
+        "nf_plan": {
+          "eager": 7,
+          "captured": 2
+        },
+        "smallm_experts": {
+          "eager": 13,
+          "captured": 4
+        }
+      }
+    },
+    {
+      "role": "attention",
+      "mode": "normal",
+      "sha256": "f38b9ae3bb3cd1179e92c409f80b192c9c2b973183fec634dbb92770ab82c6d4",
+      "checks": {
+        "tests": {
+          "count": 16,
+          "passed": 16
+        },
+        "shapes": {
+          "count": 12,
+          "passed": 12
+        },
+        "static": {
+          "count": 25,
+          "passed": 25
+        }
+      },
+      "prepare_s": 0.23359150503529236,
+      "calls": {
+        "_cluster_attention": {
+          "eager": 4,
+          "captured": 1
+        },
+        "_attn_port_variant": {
+          "eager": 24,
+          "captured": 4
+        },
+        "_layer_partial_port": {
+          "eager": 3,
+          "captured": 1
+        },
+        "_vq8_attention": {
+          "eager": 6,
+          "captured": 2
+        }
+      }
+    },
+    {
+      "role": "attention",
+      "mode": "forced",
+      "sha256": "f38b9ae3bb3cd1179e92c409f80b192c9c2b973183fec634dbb92770ab82c6d4",
+      "checks": {
+        "tests": {
+          "count": 16,
+          "passed": 16
+        },
+        "shapes": {
+          "count": 12,
+          "passed": 12
+        },
+        "static": {
+          "count": 25,
+          "passed": 25
+        }
+      },
+      "prepare_s": 0.2129314549965784,
+      "calls": {
+        "_cluster_attention": {
+          "eager": 4,
+          "captured": 1
+        },
+        "_attn_port_variant": {
+          "eager": 36,
+          "captured": 8
+        },
+        "_layer_partial_port": {
+          "eager": 3,
+          "captured": 1
+        },
+        "_vq8_attention": {
+          "eager": 6,
+          "captured": 2
+        }
+      }
+    },
+    {
+      "role": "projection",
+      "mode": "normal",
+      "sha256": "01f80a780d5a19162b7cacc4a40d62ca285f703423933e9e80b14332508563c0",
+      "checks": {
+        "tests": {
+          "count": 9,
+          "passed": 9
+        },
+        "shapes": {
+          "count": 30,
+          "passed": 30
+        },
+        "static": {
+          "count": 25,
+          "passed": 25
+        }
+      },
+      "prepare_s": 1.2422416470362805,
+      "calls": {
+        "nf_project": {
+          "eager": 28,
+          "captured": 7
+        },
+        "_project_variant": {
+          "eager": 51,
+          "captured": 16
+        }
+      }
+    },
+    {
+      "role": "projection",
+      "mode": "forced",
+      "sha256": "01f80a780d5a19162b7cacc4a40d62ca285f703423933e9e80b14332508563c0",
+      "checks": {
+        "tests": {
+          "count": 9,
+          "passed": 9
+        },
+        "shapes": {
+          "count": 30,
+          "passed": 30
+        },
+        "static": {
+          "count": 25,
+          "passed": 25
+        }
+      },
+      "prepare_s": 3.5802857209928334,
+      "calls": {
+        "vdsk": 5,
+        "nf_project": {
+          "eager": 28,
+          "captured": 7
+        },
+        "_project_variant": {
+          "eager": 79,
+          "captured": 24
+        }
+      }
+    }
+  ]
+}

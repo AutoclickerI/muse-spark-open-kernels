@@ -1,0 +1,13 @@
+[
+  {
+    "pid": 1134936,
+    "priority": 4.5,
+    "t": 1792948668.0178764,
+    "problem": "muse_attention_decode",
+    "file": "problems/muse_attention_decode/lab/lab_p10_sparse_pool_lab.py",
+    "sha256": "1a03dfa6906c8242f25c8d808aec8ef96ab6de960f905257195369842bf021dd",
+    "note": "h200_lab problems/muse_bf16_proj/dev/sparse_plane/p10_sparse_pool_lab.py: P10 round2 independent of reset: fused4608 pool_router on attributed NF warp MMA;4 geometries x12bit/scalar sparse/vector sparse=12arms,4M,8seeds x12cold ABBA+A:A+route consumer.11.451b/weight(-4.57% encoded bytes); escape tables exact.12arms local9tests30graphs;12sm90a zero spills;6bitwise reader/120projection cases. Native resource queries. Behind reset and P12. Unique payload name; old generic-name own waiter cancelled.",
+    "not_before": 1792972800.0,
+    "until": 1792972800.0
+  }
+]

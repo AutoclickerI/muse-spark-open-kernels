@@ -1,0 +1,979 @@
+{
+  "passed": true,
+  "adapter_sha256": "601108de757a8a226196b7fcc612ba3542fdbaad7c9d697b69fd45a1f291ae7f",
+  "vector": false,
+  "rows": [
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 8,
+      "error": 1.955623286049739e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 16,
+      "error": 1.9838230598271428e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 32,
+      "error": 1.9911109370900346e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 8,
+      "error": 9.719611960769466e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 16,
+      "error": 9.804172400179008e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 32,
+      "error": 9.928719074775528e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 8,
+      "error": 9.858503605597923e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 16,
+      "error": 9.935922999568976e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 32,
+      "error": 9.945033330949101e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 8,
+      "error": 1.955623286049739e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 16,
+      "error": 1.9838230598271428e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 32,
+      "error": 1.9911109370900346e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 8,
+      "error": 9.719611960769466e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 16,
+      "error": 9.804172400179008e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 32,
+      "error": 9.928719074775528e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 8,
+      "error": 9.858503605597923e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 16,
+      "error": 9.935922999568976e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 32,
+      "error": 9.945033330949101e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 8,
+      "error": 1.955623286049739e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 16,
+      "error": 1.9838230598271428e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 61791,
+      "t": 32,
+      "error": 1.9911109370900346e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 8,
+      "error": 9.719611960769466e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 16,
+      "error": 9.804172400179008e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 14357,
+      "t": 32,
+      "error": 9.928719074775528e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 8,
+      "error": 9.858503605597923e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 16,
+      "error": 9.935922999568976e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": false,
+      "seed": 92003,
+      "t": 32,
+      "error": 9.945033330949101e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 56623104,
+        "bits_per_weight": 12.0
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 8,
+      "error": 1.955623286049739e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 16,
+      "error": 1.9838230598271428e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 61791,
+      "t": 32,
+      "error": 1.9911109370900346e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 8,
+      "error": 9.719611960769466e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 16,
+      "error": 9.804172400179008e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 14357,
+      "t": 32,
+      "error": 9.928719074775528e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 8,
+      "error": 9.858503605597923e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 16,
+      "error": 9.935922999568976e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 2,
+      "wk": 8,
+      "sparse": true,
+      "seed": 92003,
+      "t": 32,
+      "error": 9.945033330949101e-07,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 61791,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 61791,
+      "t": 8,
+      "error": 4.674464240895226e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 61791,
+      "t": 16,
+      "error": 4.742298317157004e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 61791,
+      "t": 32,
+      "error": 4.769575477916725e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 14357,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 14357,
+      "t": 8,
+      "error": 2.056625614389448e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 14357,
+      "t": 16,
+      "error": 2.0864551833436777e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 14357,
+      "t": 32,
+      "error": 2.1034018250615884e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 92003,
+      "t": 1,
+      "error": 0.0,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 92003,
+      "t": 8,
+      "error": 2.0454517973249092e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 92003,
+      "t": 16,
+      "error": 2.087067909665578e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    },
+    {
+      "wr": 1,
+      "wk": 4,
+      "sparse": true,
+      "seed": 92003,
+      "t": 32,
+      "error": 2.097066286153378e-06,
+      "probe": 0.0,
+      "stats": {
+        "weights": 37748736,
+        "original_bytes": 56623104,
+        "packed_bytes": 54033232,
+        "bits_per_weight": 11.451134575737846,
+        "rotation": 3,
+        "occupied": 0.388634592294693
+      }
+    }
+  ]
+}

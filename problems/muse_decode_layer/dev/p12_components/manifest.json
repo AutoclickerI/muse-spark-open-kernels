@@ -1,0 +1,27 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s15.py",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "candidates": [
+    {
+      "role": "moe",
+      "problem": "muse_moe_w4a16",
+      "file": "problems/muse_decode_layer/dev/p12_components/cand_s15_moe.py",
+      "sha256": "4127d934adc31a29e21a8498341ef12706fb6d7776d8e5271acae67af16286be",
+      "bytes": 918031
+    },
+    {
+      "role": "attention",
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_decode_layer/dev/p12_components/cand_s15_attention.py",
+      "sha256": "f38b9ae3bb3cd1179e92c409f80b192c9c2b973183fec634dbb92770ab82c6d4",
+      "bytes": 917919
+    },
+    {
+      "role": "projection",
+      "problem": "muse_bf16_proj",
+      "file": "problems/muse_decode_layer/dev/p12_components/cand_s15_projection.py",
+      "sha256": "01f80a780d5a19162b7cacc4a40d62ca285f703423933e9e80b14332508563c0",
+      "bytes": 919791
+    }
+  ]
+}
