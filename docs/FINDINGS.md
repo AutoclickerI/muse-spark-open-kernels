@@ -274,6 +274,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   Paired directly against S11's map (`3af06b40`, `4dd00540`, 16 seeds): interleaved rounds and M=1 ROT +1.8 to +10 us;
   two writer warps publishing without a CTA barrier (WPUB) +1.0 / +1.1 / +0.4 us at M=8 / 16 / 32; aligned rounds
   +2.2 to +5.9. No arm beats flags 69 / 95.
+- Re-decode cost measured (`e4ad355e`, 16 seeds, router+MoE): a unique-weight-tile kernel that decodes each K group
+  once per expert over all token blocks (ONCE) vs the same kernel re-decoding per block (REDO): -14.75 us at M=32
+  (16/16 seeds), +3.0 at M=16, +11.9 at M=8. Both lose to S11's flags (ONCE 1.30 / 1.30 / 1.33, REDO 1.13 / 1.26 /
+  1.46 at M=8 / 16 / 32): the ~15 us is real at M=32, but this kernel's ownership and activation streaming cost more.
 ## MoE M=128
 
 - Best measured, N_full (`c01b1916`, read flush; 12 seeds x 3, A:A abs 0.58 us, every TASK.md check passes, bit-equal
