@@ -403,7 +403,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   4,500-cycle loads) reproduces it and predicts ~1,400 cycles (the slower side) for publish-first with LAG <= ST-2
   (model). A page-table lookahead unrolled 6-8x costs ~30 us at B32 full; PD stays 4.
 - vq8 on the decode ABI (`5d54b589`, `f0a79d79`; after a 37.7 MB projection stand-in, PDL, vs qk_prep + FA3 +
-  norm_gate): only B1 sliding wins, st4mt1 14.40 vs 17.47 us; B16 / B32 sliding 19.4 / 26.6 vs 15.7 / 21.0; B1 / B16 /
+  norm_gate): only verify-1 sliding (B1, q_len 8) wins, st4mt1 14.40 vs 17.47 us (at decode-1 sliding attn_main 14.0 vs
+  vq8 19.8 us, `d5bcbc7d`); verify B16 / B32 sliding 19.4 / 26.6 vs 15.7 / 21.0; B1 / B16 /
   B32 full 31.2 / 228 / 439 vs 29.6 / 190 / 378. vq8's main CTA holds the whole register file (168 x 384), so PDL
   overlaps only its launch with the projection. Attention board `d5bcbc7d` (d98ae45d with vq8 where it wins): 1.4088x
   vs 1.4027x (vq8 at verify 16 sliding 29.3 vs 30.3 us and verify 1 sliding).
