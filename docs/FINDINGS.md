@@ -122,6 +122,7 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 | `c1fbd0cf` (scored 10-25) | S7R (`56c51fa0`): S7 + M=256 on R_full (light/heavy branches, "MoE M=256") | 1.638 | 1.601 | 1.459 | 1.821 | 1.498 | 1.455 | 1.5735 (CI 1.5499-1.5971) |
 | `a5b2f55b` (scored 10-25) | S8 (`cb84645d`): S7R + attention early release, M=128 verify qkv split-K, cluster glue at t <= 32 | 1.703 | 1.605 | 1.413 | 1.826 | 1.435 | 1.504 | 1.5742 |
 | `b7c59570` (scored 10-25) | S9 (`f55f6162`): S8 + BF16 qkv front + N_full at M=128/256 + small-M flags {1:95, 8/16/32:69}; prepare 206.5 s | 1.713 | 1.630 | 1.414 | 1.815 | 1.571 | 1.531 | 1.6073 |
+| `43049b80` (check 10-25) | S10 (`6688fad9`): S9 on N_full fd04d8c4 (heavy branch first) + LT and the layer attention ext in prepare's native pool; prepare 133.5 s. Own load time vs S8 -2.64% with the baseline +0.28% (decode 16 -5.1%, verify 16 -6.7%, verify 32 -3.0%, verify 1 +1.7%) | 1.725 | 1.679 | 1.420 | 1.849 | 1.537 | 1.555 | 1.6214 |
 
 - The M=256 cells hold in the layer: verify 32 sliding / full 565.6 / 925.4 us (S1, Humming) -> 519.0 / 875.2 (S2)
   -> 492.2 / 862.3 (S3) -> 482.2 / 828.5 (S7) -> 449.2 / 799.2 (S7R). S3's lower score than S2 is noise (next bullet).
