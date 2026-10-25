@@ -36,9 +36,19 @@
   in-stage, mostly MoE M=256 and full verify attention). Latency-bound stages with almost no bytes (sliding
   attention, boundaries, route, MoE waits) cost ~25-30 us per decode-1 layer that a continuous weight stream could
   hide.
-- Agents: Codex is back (13:45 KST); the six lanes resumed on gpt-6.1-sol from the Claude lanes' committed state
-  (2485ff4): integration (P4), attention (P5), glue/proj (P7), small-M (P3a), dense coding (P10), MoE M=128/256
-  (P3b); P11 is parked.
+- Where the time goes (S11 H200 timeline `c6bd22e2`, `problems/muse_decode_layer/dev/timeline/README.md`): no-kernel
+  gaps are 0.5-2% of wall, so launches are not the loss. Critical-path time above the byte roof, share of wall at
+  d1 / d16 / d32 / v1 / v16 / v32: attention 25 / 13 / 12 / 19 / 12 / 13% (sliding increments 16-30 us per layer
+  on 0.6-19 MB; full verify at 49-56% of roof; full decode at 66-73%, near the 2.56 TB/s page-row gather
+  microbenchmark), MoE 6* / 12 / 10 / 16 / 20 / 18% (a flat 2.0-3.0 TB/s at every M; *no local experts in the d1
+  fixture), glue b1 + route + b2 13 / 5 / 3 / 8 / 5 / 4%, dense projections 8-13% (near their stream roofs at
+  small M). Literature (`docs/reference/research_megakernel.md`, `research_deepinfer.md`): fusion alone is ~+2.8%;
+  the jump has to come from inside the stages. Lanes now work structural targets: one-launch sliding attention
+  <= 6-10 us and full verify at decode full's rate (P5); MoE issue vs memory-pipeline diagnosis, then a rebuild to
+  >= 4 TB/s (P3a, P3b); glue folded into producer epilogues, <= 1 us per step (P7); lossless coding on every dense
+  role (P10).
+- Agents: Codex lanes on gpt-6.1-sol: integration (P4), attention (P5), glue/proj (P7), small-M (P3a), dense coding
+  (P10), MoE M=128/256 (P3b); P11 is parked.
 - Promotion: by the six-load score on identical inputs and its spread across seeds (GOAL); our exact-ID or 0.003
   gates are not TASK.md's checks (CONSTRAINTS "Boundary cases").
 
