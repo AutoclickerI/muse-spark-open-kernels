@@ -51,6 +51,6 @@ lifetimes, staging/occupancy and layout. `build_stream.py` builds half-k32 and k
 load experiments while retaining one decode per weight. Integer decode remains SHF + 4 LOP3 + 4 PRMT
 per eight weights (1.125 instructions/weight, prior SASS audit), below the stream's issue budget.
 
-Next: complete normal/forced handoff screens; land cleanup H200 receipt; screen and pair the fragment
-lifetime experiments. Promote only through integration's identical-input multi-seed whole-layer ratios.
+Next: handoff screens and cleanup receipt are complete. The fragment-lifetime/chunk-size lab is queued;
+`build_cpall.py` adds all-thread cp.async staging with one CTA barrier, targeting the fixed o/slice costs. Promote only through integration's identical-input multi-seed whole-layer ratios.
 Then o/slice and entropy coding (2.545 exponent bits, ideal 10.545 bits/weight). `DENSER.md` records why naive 11-bit codes would barely save bytes and multiply serial escape work, plus a sparse-bitplane design to measure.

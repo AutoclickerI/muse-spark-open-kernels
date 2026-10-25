@@ -367,6 +367,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   1 CTA per SM 1.24 / 1.40; NT1 grid halved worse still. Serial branches beat shared SMs: the heavy branch needs every
   SM's bandwidth. Wide banks (3 LDS.128 per stage instead of 8) 0.9936 / 0.9900; the W2 X tile by TMA (no proxy
   fence) 0.999 / 1.002.
+- Heavy-stage variants vs LI_swap + finalizer split (`89608c59`, same protocol, all TASK PASS): wide banks 0.9924 /
+  0.9884; typed-smem WGMMA activations + wide banks 0.9918 / 0.9857; two N32 accumulators sharing one decode
+  1.0225 / 0.9794 (spread 0.90-1.13), four 1.013 / 1.004; W2 per-warp norm partials 0.999 / 1.002 and a hoisted
+  descriptor 0.998 / 0.996 (neutral).
 ## Attention
 
 ### Shapes, floors and the incumbents
