@@ -1,6 +1,8 @@
 """Build a small paired lab of activation staging; no change to the 12-bit encoding or weight decoder."""
 from pathlib import Path
+import runpy
 H=Path(__file__).resolve().parent
+runpy.run_path(str(H/'build_stream.py'))
 new=(H/'coded.py').read_text()
 pre=(H/'lab_body.py').read_text().split('\ndef lab(',1)[0].replace('__CL_VS__','(3,)').replace('__CL_SHAPES__','((8,1,2),)')
 variants={name:(H/f'stream_{name}.py').read_text() for name in ('half','step')}

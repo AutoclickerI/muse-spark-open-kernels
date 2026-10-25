@@ -40,6 +40,8 @@ H200 evidence:
 | `35c875e6` (inherited v1) | Wins only at T=1: pool_router -1.84 us, qkv -0.29 us vs balanced; loses T>=16 |
 | `320884442a6f4624` (inherited frozen v3) | qkv 10.74/11.20 vs balanced 11.66/11.78 us at T=1/8 (0.921/0.951); pool_router 18.75/19.14 vs 21.12/21.33 (0.888/0.897). T32 qkv 14.21 vs 12.46 (1.140), pool_router 25.74 vs 22.38 (1.150). o and slice lose at T1/8 |
 | `3239a2ea8b4c4800` | Completed: `cleanup_lab.py`, v3/v4 x both layouts, frozen v3 and balanced controls, 3 input seeds x 12 cold rounds, A:A. All cells correct; cleanup does not close T>=16. Best T16 qkv/pool 12.44/22.37 vs bal 11.86/21.06; T32 14.11/25.66 vs 12.54/22.47. k-layout T1 qkv 10.87 vs frozen 10.85; T8 qkv 11.49 vs 11.36. V4 never wins. o and slice improve over old coding but still lose to balanced |
+| `9aff77cc54bf471b` | Pending: `staging_lab.py` merged by the lab tool with attention's `attn_partial_port`; three seeds x24 rounds, CB2/4/8 and half/k16 activation fragments. No result yet |
+| `c446fdab439b44e5` | Pending: `cpall_lab.py` on `muse_prefill_layer`, synthetic dense weights; all-thread cp.async with one CTA barrier vs bulk staging, 3 seeds x24 paired rounds + A:A/balanced. Proj quota exhausted before submission, so only this lane's unsubmitted proj waiter was stopped and rerouted |
 
 `cleanup_sm90.json` pins the cleaned source and ptxas resource counts: all 24 GEMV instantiations and
 the decoder compile for sm_90a without spills; RT1/PIPE2 v3 uses 56/64/75 registers at NT1/2/4.
@@ -51,6 +53,7 @@ lifetimes, staging/occupancy and layout. `build_stream.py` builds half-k32 and k
 load experiments while retaining one decode per weight. Integer decode remains SHF + 4 LOP3 + 4 PRMT
 per eight weights (1.125 instructions/weight, prior SASS audit), below the stream's issue budget.
 
-Next: handoff screens and cleanup receipt are complete. The fragment-lifetime/chunk-size lab is queued;
-`build_cpall.py` adds all-thread cp.async staging with one CTA barrier, targeting the fixed o/slice costs. Promote only through integration's identical-input multi-seed whole-layer ratios.
+Next: handoff screens and cleanup receipt are complete. The fragment-lifetime/chunk-size lab and one-barrier lab passed all 14 local-image cells and are queued;
+`build_cpall.py` adds all-thread cp.async staging with one CTA barrier, targeting the fixed o/slice costs.
+`test_summary.json` pins local test outcomes and payload hashes; `cpall_sm90.json` confirms the new inline-asm arm compiles without spills on Hopper too. Staging shares a proj-host run with attention; cpall uses the prefill host after proj quota ran out. Promote only through integration's identical-input multi-seed whole-layer ratios.
 Then o/slice and entropy coding (2.545 exponent bits, ideal 10.545 bits/weight). `DENSER.md` records why naive 11-bit codes would barely save bytes and multiply serial escape work, plus a sparse-bitplane design to measure.
