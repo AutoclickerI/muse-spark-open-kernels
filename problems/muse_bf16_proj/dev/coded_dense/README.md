@@ -1,59 +1,81 @@
-# P10 dense coding lane
+# P10 dense coding
 
-Integration handoff: `patch_coded_s12.py` **8dc761b0** applies to
-`problems/muse_decode_layer/cand_r3_best7_s11_final.py` **acda6c62**.
-The independently generated candidate is `s11_check/s11_coded.py` **c5750b4b**.
-S12 integration owns `problems/muse_decode_layer/dev/s12/`; this lane does not edit it.
+Integration handoff: **`patch_coded_s13.py` 47536891** applies to S12
+`problems/muse_decode_layer/cand_r3_best7_s12.py` **a92b6619**, producing
+`s13_coded_local.py` **a70dd30c**. The patch replaces S12's existing coded block and
+retains all unrelated kernels and plans. `patch(src, rows=...)` allows independent
+piece ablations. Integration owns `problems/muse_decode_layer/dev/s12/` and S13.
 
-The handoff freezes the measured v3 body, not the experimental cleanup in `coded.py`.
-It routes full qkv at T=8 and pool_router at T=1/8. The ROWS table also contains full qkv T=1,
-which S11 final's gate split bypasses in the actual decode-1 layer. Preserve that split until
-whole-layer pairing establishes whether full coded qkv or coded qkv3 plus split gate is better.
+Default stage winners:
 
-Fixed the old pointer-keyed global encoded bank: packed weights now live in
-`state['coded_dense']`, with projection dispatch by role. `check_cand.py` clones both these tensors
-and the corresponding BF16 weights before running the layer, exercising changed weight addresses.
+| T | Role | Kernel / layout | Configuration | Evidence |
+|---|---|---|---|---|
+| 1 | qkv_gate | all-thread cp.async / k-major | NW8, PIPE2, S22 | c446fdab |
+| 1 | pool_router | all-thread cp.async / k-major | NW8, PIPE2, S11 | c446fdab |
+| 16 | qkv_gate | register-A WGMMA / k-major | NW8, S16, WB2 | 04d89c7d, paired 0.9685 of balanced |
+| 16 | unpooler | register-A WGMMA / k-major | NW8, S4, WB2 | 04d89c7d, paired 0.9177 |
+| 32 | unpooler | register-A WGMMA / k-major | NW8, S4, WB2 | 04d89c7d, paired 0.9677 |
 
-Precision audit (CONSTRAINTS 5): `coded` is uint8 (12 bits/weight); `base` int32 and `scales` FP32
-encode one exponent-window origin per 16 rows; each scale is exactly 2**(base-112).
-`eoff` int32 indexes escape lists; `esc` int32 pairs contain row/column addresses and the original
-16-bit BF16 patterns (no widened numerical weights). Original BF16 weights remain for other rows.
-Prepare checks bit-exact reconstruction; the audit asserts the tensor inventory, metadata values,
-and bit-exact reconstruction again after cloning. There are no prepare-expanded BF16/FP32 weights
-inside the coded bank. `coded_state.json` records all shapes/dtypes/bytes.
+The gate split bypasses full qkv coding at T1 and decode-16 sliding, so the qkv16
+row affects full decode. There is no unmeasured qkv3 substitution. T8 stays out
+of the default patch because integration's whole-layer c5f4f018 lost there despite
+standalone wins. O's cp.async T1 gain is only 0.12 us vs balanced and has not beaten
+S11's stream override in a layer pair, so it stays out too. These are handoffs for
+whole-layer admission, not a claimed six-load promotion.
 
-Verification: cleanup `test_coded.py --seeds 3` passed both row/k layouts, v3/v4, integer-exact GEMVs,
-all 65,536 BF16 patterns, +/-zero, denormals, extreme scales, finite escapes and Inf/NaN propagation.
-Exact candidate **c5750b4b** passes normal and forced judge-image screens: each has 13/13 correctness
-tests, 12/12 graph-timed shapes and 23/23 static checks. Both clone encoded banks and BF16 weights and
-check the full precision inventory. `handoff.json` pins source hashes and completion; `s11_check/normal/`
-and `s11_check/forced/` hold the current audit/call/precision evidence. Earlier concurrent attempts hit
-GPU-memory contention and stayed local; the final serial reruns passed without changing the checks.
-The integration lane froze the earlier `ccb512c3` patch; its dispatch has the same state-owned bank
-with a redundant presence guard. The final **8dc761b0** patch removes that guard and the frozen module's
-inapplicable emitter; integration can consume this final patch directly.
+`s13_handoff.json` pins base/patch/candidate hashes. Both normal and forced screens
+pass **13 tests, 12 graph-timed shapes, 23 static checks**. `s13_check/normal/` and
+`forced/` record dispatch, precision inventory and native admission. The forced
+screen reuses the normal screen's completed native compile proof only for the
+byte-identical candidate; it reruns every runtime check. The unchanged compilation
+checks otherwise repeated eight concurrent native compiles under host memory pressure.
 
-H200 evidence:
+The encoded bank is in state and keyed by family/role/layout; both encoded tensors
+and corresponding BF16 weights are cloned before the screen. Prepare and the audit
+reconstruct every bank bit-exactly. Tensors are uint8 packed codes, int32 exponent
+origins/offsets/original BF16 escape bits, and one FP32 power-of-two window scale per
+16 weight rows. That scalar is encoding metadata. No numerical weights are widened
+in prepare. WGMMA's K permutation is lossless and inverted by the audit.
 
-| Job | Paired result |
+## Landed H200 stage evidence
+
+All are standalone paired graph measurements; integration must measure the complete layer.
+
+| Job | Result |
 |---|---|
-| `35c875e6` (inherited v1) | Wins only at T=1: pool_router -1.84 us, qkv -0.29 us vs balanced; loses T>=16 |
-| `320884442a6f4624` (inherited frozen v3) | qkv 10.74/11.20 vs balanced 11.66/11.78 us at T=1/8 (0.921/0.951); pool_router 18.75/19.14 vs 21.12/21.33 (0.888/0.897). T32 qkv 14.21 vs 12.46 (1.140), pool_router 25.74 vs 22.38 (1.150). o and slice lose at T1/8 |
-| `3239a2ea8b4c4800` | Completed: `cleanup_lab.py`, v3/v4 x both layouts, frozen v3 and balanced controls, 3 input seeds x 12 cold rounds, A:A. All cells correct; cleanup does not close T>=16. Best T16 qkv/pool 12.44/22.37 vs bal 11.86/21.06; T32 14.11/25.66 vs 12.54/22.47. k-layout T1 qkv 10.87 vs frozen 10.85; T8 qkv 11.49 vs 11.36. V4 never wins. o and slice improve over old coding but still lose to balanced |
-| `9aff77cc54bf471b` | Pending: `staging_lab.py` merged by the lab tool with attention's `attn_partial_port`; three seeds x24 rounds, CB2/4/8 and half/k16 activation fragments. No result yet |
-| `c446fdab439b44e5` | Pending: `cpall_lab.py` on `muse_prefill_layer`, synthetic dense weights; all-thread cp.async with one CTA barrier vs bulk staging, 3 seeds x24 paired rounds + A:A/balanced. Proj quota exhausted before submission, so only this lane's unsubmitted proj waiter was stopped and rerouted |
+| 35c875e6 | Inherited v1: qkv/pool at T1 -0.29/-1.84 us vs balanced; T>=16 loses |
+| 320884442a6f4624 | Inherited v3: qkv T1/8 10.74/11.20 vs 11.66/11.78 us (0.921/0.951); pool 18.75/19.14 vs 21.12/21.33 (0.888/0.897). O/slice lose |
+| 3239a2ea8b4c4800 | Cleanup: T32 qkv/pool 14.11/25.66 vs balanced 12.54/22.47; paired 0.9881/0.9872 vs old coded. Not enough |
+| 9aff77cc54bf471b | Shorter activation lifetimes/chunks: ~0.97–0.98 of cleanup; T16 qkv/pool 12.20/21.89 vs 11.77/21.26, T32 13.91/24.67 vs 12.24/22.21. Still loses |
+| c446fdab439b44e5 | All-thread cp.async: T1 qkv/pool 10.34/18.19 vs balanced 11.66/21.32; paired 0.9498/0.9616 vs cleanup. T8 11.01/19.42 vs 11.96/21.52. T32 loses badly; O T1 6.67 vs 6.79, slice 5.17 vs 4.96 |
+| 04d89c7dc7344c08 | Register-A WGMMA: T16 qkv/unpooler 11.46/16.90 us, paired 0.9685/0.9177 vs balanced; T32 unpooler 18.33 (0.9677). T32 qkv/pool 12.99/24.35, paired 1.0482/1.0917; O loses at every T. Pool's BK128/2-stage balanced control is faster still |
 
-`cleanup_sm90.json` pins the cleaned source and ptxas resource counts: all 24 GEMV instantiations and
-the decoder compile for sm_90a without spills; RT1/PIPE2 v3 uses 56/64/75 registers at NT1/2/4.
-Local image cleanup lab passed every cell (largest relative L2 2.9e-6); timings are sm_120 under
-other lanes' load, so no promotion is inferred. `build_cleanup.py` regenerates the payload.
+The S11 timeline c6bd22e2084c4809 confirms dense bytes remain material: decode-1
+qkv3 increment 7.26 us for 20.99 MB; pool/router 19.87 us for 75.51 MB. Its fixture
+has no local experts at decode-1; those wall times are not board routing medians.
 
-The kernel already decodes each weight once across all T; T>=16 work targets activation-register
-lifetimes, staging/occupancy and layout. `build_stream.py` builds half-k32 and k16 activation-fragment
-load experiments while retaining one decode per weight. Integer decode remains SHF + 4 LOP3 + 4 PRMT
-per eight weights (1.125 instructions/weight, prior SASS audit), below the stream's issue budget.
+## Current structural experiments
 
-Next: handoff screens and cleanup receipt are complete. The fragment-lifetime/chunk-size lab and one-barrier lab passed all 14 local-image cells and are queued;
-`build_cpall.py` adds all-thread cp.async staging with one CTA barrier, targeting the fixed o/slice costs.
-`test_summary.json` pins local test outcomes and payload hashes; `cpall_sm90.json` confirms the new inline-asm arm compiles without spills on Hopper too. Staging shares a proj-host run with attention; cpall uses the prefill host after proj quota ran out. Promote only through integration's identical-input multi-seed whole-layer ratios.
-Then o/slice and entropy coding (2.545 exponent bits, ideal 10.545 bits/weight). `DENSER.md` records why naive 11-bit codes would barely save bytes and multiply serial escape work, plus a sparse-bitplane design to measure.
+`ISSUE_MODEL.md` and `issue_model.json` distinguish static instruction counts,
+register/wave models and measured stage time. Native WGMMA removes the old per-n8
+activation LDS/address loop: four HGMMA per K64 at T8/16/32, zero LDS.128 in that
+loop, one decode per weight. It retains FP32 output scaling and larger fragment
+register banks; the 0.8-of-balanced target remains unmet. `wg_validation.json` records
+936 exact-arithmetic/capture cases and all BF16 bit-pattern round trips using real
+TMA plus the portable arithmetic stand-in. Native sm90 has no stack/spills/C75.
+
+`build_direct.py` / `direct_lab.py.inc`: choose an even window origin, reconstruct
+the original BF16 exponent with a packed-byte add, and remove per-output FP32
+scaling. It keeps all escapes at original precision. `direct_validation.json` passes
+all bit patterns and 936 WGMMA cases plus CP cases, max error 4.48e-6. The local
+24-cell lab also passes; H200 timing is next. It adds qkv3 and gate to measure the
+actual S11 split path. This is unmeasured on H200 until its receipt lands.
+
+`build_rt2.py`: two 64-row A tiles share one CTA activation staging and TMA copy,
+reducing activation traffic repeated over output-row tiles. Preserve one decode
+per weight and measure register/residency costs. Screening is in progress.
+
+Next: hand integration the frozen S13 patch; pair direct exponent reconstruction
+and two-tile reuse on H200 (prefill or MoE host; proj quota spent). Promote only by
+multi-seed identical-input whole-layer ratios. Then denser codes; `DENSER.md`
+records the escape-cost problem of naive 11-bit coding and a sparse-plane design.

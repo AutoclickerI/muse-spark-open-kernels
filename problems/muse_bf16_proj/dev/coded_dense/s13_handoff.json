@@ -1,0 +1,22 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s12.py",
+  "base_sha256": "a92b66193d5cf689c57a1112c6bd166d273c5cb770974c78d57c458a7d300885",
+  "patch_sha256": "47536891a4d8bb28f30ff26f66043305a93cade77f29bd046ef64a65f1157c69",
+  "candidate_sha256": "a70dd30c6a4ac81fc78a5728dc1e52ce1a3addbf0ed1f51d1ab8b80641ea49f9",
+  "stage_jobs": [
+    "c446fdab439b44e5",
+    "04d89c7dc7344c08"
+  ],
+  "screens": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 23
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 23
+    }
+  }
+}

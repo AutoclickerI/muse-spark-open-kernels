@@ -1,0 +1,86 @@
+{
+  "units": "SASS instructions executed by one warp per K64 block (two unrolled blocks in source); not dynamic counters",
+  "old": {
+    "1": {
+      "HMMA_per_k64": 4.0,
+      "LDS128_per_k64": 2.0,
+      "decoder_integer_per_weight": 1.125,
+      "activation_address_ops_per_n8_k64": 4,
+      "activation_regs_per_n8": 8,
+      "accumulator_regs_per_n8": 4
+    },
+    "2": {
+      "HMMA_per_k64": 8.0,
+      "LDS128_per_k64": 4.0,
+      "decoder_integer_per_weight": 1.125,
+      "activation_address_ops_per_n8_k64": 4,
+      "activation_regs_per_n8": 8,
+      "accumulator_regs_per_n8": 4
+    },
+    "4": {
+      "HMMA_per_k64": 16.0,
+      "LDS128_per_k64": 8.0,
+      "decoder_integer_per_weight": 1.125,
+      "activation_address_ops_per_n8_k64": 4,
+      "activation_regs_per_n8": 8,
+      "accumulator_regs_per_n8": 4
+    }
+  },
+  "wg": {
+    "T32:WB2": {
+      "HGMMA_per_k64": 4.0,
+      "LDS128_per_k64": 0.0,
+      "local_loads": 0,
+      "local_stores": 0,
+      "registers": 88,
+      "stack_bytes": 0,
+      "spills": 0
+    },
+    "T16:WB2": {
+      "HGMMA_per_k64": 4.0,
+      "LDS128_per_k64": 0.0,
+      "local_loads": 0,
+      "local_stores": 0,
+      "registers": 78,
+      "stack_bytes": 0,
+      "spills": 0
+    },
+    "T8:WB2": {
+      "HGMMA_per_k64": 4.0,
+      "LDS128_per_k64": 0.0,
+      "local_loads": 0,
+      "local_stores": 0,
+      "registers": 75,
+      "stack_bytes": 0,
+      "spills": 0
+    },
+    "T32:WB1": {
+      "HGMMA_per_k64": 4.0,
+      "LDS128_per_k64": 0.0,
+      "local_loads": 0,
+      "local_stores": 0,
+      "registers": 86,
+      "stack_bytes": 0,
+      "spills": 0
+    },
+    "T16:WB1": {
+      "HGMMA_per_k64": 4.0,
+      "LDS128_per_k64": 0.0,
+      "local_loads": 0,
+      "local_stores": 0,
+      "registers": 75,
+      "stack_bytes": 0,
+      "spills": 0
+    },
+    "T8:WB1": {
+      "HGMMA_per_k64": 4.0,
+      "LDS128_per_k64": 0.0,
+      "local_loads": 0,
+      "local_stores": 0,
+      "registers": 71,
+      "stack_bytes": 0,
+      "spills": 0
+    }
+  },
+  "wg_kernel_sha256": "c079610fba75198755e99539ddb129946f6178f81cab53c3f7b58eec1431abe9"
+}
