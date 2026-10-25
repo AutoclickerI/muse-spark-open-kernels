@@ -268,9 +268,36 @@ plus its release fence and a CTA barrier corrected it before sending. `run_queue
 with every router+MoE output gate passing. The local profiler explicitly selects CUDA12.4 record9, while the
 remote payload retains its already H200-verified record10 ABI. These local timings are not H200 evidence.
 `queue_model.md` separates the experimental contrasts from unmeasured HBM transactions and documents lifetimes.
-The MoE host had exhausted its daily quota; its local waiter was canceled before judge acceptance and the same payload was rerouted to the prefill host. Prefill also hit the cap before acceptance. Its local waiter is `runs/detached/398287e8deefb63f.log`,
-queued for2026-10-26 09:01KST; wrapper source **398287e8**, payload **f9c21230**, no H200 job ID yet.
-No duplicate MoE waiter remains. Both allowed lab hosts are quota-blocked. No correct candidate has
-reached4TB/s; no integration patch. Next: collect this result after acceptance, then either whole-layer
-pair the winning map ontoS11 `acda6c62`, or test producer/consumer overlap with an on-chip expanded queue.
-The incumbent map remains `{1:95,8:69,16:69,32:69}`.
+The quota-blocked MoE/prefill local waiters were canceled before acceptance. R-20261025-3 authorizes
+attention import-time labs; the payload now synthesizes all weights with `weights=None` and was retested
+locally over16seeds. Attention H200 **a2e4cf101c1f4b92** (`e860cbae` payload, `81b89ff3` wrapper) landed:
+Q4 ratios1.56709/1.55927/1.25969, Q8 1.57919/1.56827/1.26651, Q12 1.98494/1.81304/1.48110;
+all gates pass, no win. No reset-time duplicate remains.
+
+## Current: why decode-once loses, then activation overlap
+
+Integration base is now **S13 final958f1258**. Its small-M CUDA is byte-identical toS11 (`c023c946`),
+so flags69 remain the stage control. `phase_findings.md` records the measured contrasts and limits.
+`build_reuse_phase.py` -> `reusep_cell.py` **d1ec8fbe**: mode0 BASE reproduces original ONCE;
+mode2 BUNDLE specializes block counts and reduces all blocks in parallel. Stage2 untraced kernels keep
+2H200 CTAs/SM,127/128regs, zero stack/spills; the separate phase builds have8B local, not the old176B.
+1320 local checks +6forced launches pass; local BUNDLE TRACE uses1 raw stage solely to fit shared capacity.
+
+H200 attention **f58cc7a6a6694326** (`ebf9c15b` payload, `1faceb7e` wrapper),16seeds:
+BUNDLE/S13=1.13216/1.16782/1.24438. Against BASE it saves12.215/10.935/10.639us (16/16 wins each),
+but no arm beats S13. M32 critical-unit math58.7->49.2us, epi28.5->22.8, weight wait3.6->1.7;
+grid barrier19.9->25.1. Trace/off1.032/1.017 bounds the observer tax, not exact untraced attribution.
+BUNDLE W13-unit math grows0.90/3.64/6.41/9.16us at1/2/3/4blocks while weight wait stays~0.07us.
+SASS proves one128HMUL2 decode per specialized path; growth therefore remains in additional activation
+loads/address/control/MMAs, not a repeated decoder or long weight-ready waits.
+
+The next variants issue per-thread extra-block activation copies before dequant (ACT, `build_reuse_act.py`),
+and optionally stage decoded A once in the reduction workspace (DECODED, `build_reuse_pipe.py`). This keeps
+8-way Ksplit,2 packed stages and queried2H200 CTAs/SM. Expanded values exist only transiently in timed shared
+memory; prepare still holds raw packed weights. Native builds spill under the128-register bound, recorded
+explicitly. Optimized local math uses1 raw stage because sm120 cannot fit the H200's shared footprint;
+all edge routes and fresh-input replay tests must pass before sending. The all-block A workspace needs
+barriers both before the epilogue overwrites it and after reduction before the next tile writes A.
+The first local DECODED edge test exposed that overwrite race; it was fixed before any send.
+
+No integration win or patch. The incumbent small-M map stays `{1:95,8:69,16:69,32:69}`.

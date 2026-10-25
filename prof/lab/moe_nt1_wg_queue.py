@@ -1046,7 +1046,7 @@ def reuse_trace_lines(pr,rs,state):
 
 def lab(deadline,weights):
     from concurrent.futures import ThreadPoolExecutor
-    begin=time.monotonic();device=next(v.device for v in weights.values() if isinstance(v,torch.Tensor));deadline-=5
+    begin=time.monotonic();device=torch.device('cuda');deadline-=5
     lines=['META P3a unique weight-tile ownership; ONCE decodes each K group once per expert over all token blocks; REDO fixed-work re-decode control, same ownership, activation streaming, MMA and epilogues. S11=exact frozen acda6c62 smallm flags69.',
         'META router+MoE CUDA graphs; judge-style read flush; AB/BA x6 per arm per seed; 16 independent weight/router seeds; TASK gate per arm before and after timing. r=new/S11; ONCE/REDO reuses each paired seed ratio. TRACE is separately compiled, clock64 cycles, intrusive, not an additive attribution. No persistent decoded bank or dropped work.']
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -1224,7 +1224,7 @@ def wg_node(graph,arm):
 
 def lab(deadline,weights):
  from concurrent.futures import ThreadPoolExecutor
- begin=time.monotonic();deadline-=5;device=next(v.device for v in weights.values() if isinstance(v,torch.Tensor))
+ begin=time.monotonic();deadline-=5;device=torch.device('cuda')
  lines=['META P3a structural RS WGMMA:64 output rows x adaptive8/16/32 expert-token columns; original S11 code bytes plus losslessly grouped raw u8 scales; independent packed-weight TMA queue4/8/12 x4608B,3 activation stages x8192B; router and W13 stores emit the exact K-permuted BF16 activation layout, vector16B copies; every expert weight decoded once for all token blocks. No K-split shared reduction; norm atomics4x fewer. One contiguous bulk TMA perK128, lossless exact raw code/scale regrouping. Maximum3 CTAs/SM capped by shared capacity; no per-K64 scalar activation gathers. SM120 uses NF portable MMA stand-in; native H200 output must independently pass.',
   'META exact S11 acda6c62 flags69 comparator; router+MoE CUDA graphs paired AB/BA x6, read flush,16 weight/router seeds; TASK routing+output gate before/after; independent S11 A:A; separate3-sample CUPTI consumer-node times per seed for unique logical TB/s. Requested grid4 is capped at the native resident count (at most3). Raw code/scale and activation layouts have inverse checks. Every queue depth executes locally with native TMA and portable MMA; native H200 math is independently gated.']
  with ThreadPoolExecutor(max_workers=3) as pool:

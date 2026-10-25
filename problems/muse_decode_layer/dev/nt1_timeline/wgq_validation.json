@@ -12,7 +12,7 @@
   "routed_lab": {
     "seeds": 16,
     "all_arms_pass": true,
-    "payload_sha256": "f9c212307f49d3482260bb97a3332b16d67d44e91a3cf7556c7ea08e183b3f16",
+    "payload_sha256": "e860cbae03d52d41ccb139ee6757b6095dd306cd3ffea44a1acbee70405179fb",
     "CUPTI_local_record": 9,
     "remote_record": 10,
     "timing_is_H200": false
@@ -27,5 +27,15 @@
     "spill_loads_bytes": 0,
     "spill_stores_bytes": 0,
     "serialization_warnings": 0
+  },
+  "H200": {
+    "job": "a2e4cf101c1f4b92",
+    "seeds": 16,
+    "all_gates_pass": true,
+    "Q4_ratios": [
+      1.56709,
+      1.55927,
+      1.25969
+    ]
   }
 }

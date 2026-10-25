@@ -15,5 +15,6 @@ def build():
  src=src.replace('K128/K256 stages; router and W13 stores', 'independent packed-weight TMA queue4/8/12 x4608B,3 activation stages x8192B; router and W13 stores')
  src=src.replace('K128 stages4/8, K256 stages2/4; maximum3 CTAs/SM capped by shared capacity;', 'One contiguous bulk TMA perK128, lossless exact raw code/scale regrouping. Maximum3 CTAs/SM capped by shared capacity;')
  src=src.replace('Raw u8 scale and activation layouts have inverse checks.', 'Raw code/scale and activation layouts have inverse checks. Every queue depth executes locally with native TMA and portable MMA; native H200 math is independently gated.')
+ src=src.replace("device=next(v.device for v in weights.values() if isinstance(v,torch.Tensor))","device=torch.device('cuda')")
  out=ROOT/'prof/lab/moe_nt1_wg_queue.py';out.write_text(src);ast.parse(src);print(out,hashlib.sha256(src.encode()).hexdigest())
 if __name__=='__main__':build()
