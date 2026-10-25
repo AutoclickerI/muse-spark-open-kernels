@@ -73,7 +73,7 @@ actual S11 split path. This is unmeasured on H200 until its receipt lands.
 
 `build_rt2.py`: two 64-row A tiles share one CTA activation staging and TMA copy,
 reducing activation traffic repeated over output-row tiles. Preserve one decode
-per weight and measure register/residency costs. It passes all-bit round trips and 936 local arithmetic/capture cases. Native sm90 has no stack/spills/C75; T32 takes 162/165 registers at WB1/2. The paired 18-cell lab passed locally and is queued on prefill (dispatch 523b0723f6c01ee9; job id not assigned yet).
+per weight and measure register/residency costs. It passes all-bit round trips and 936 local arithmetic/capture cases. Native sm90 has no stack/spills/C75; T32 takes 162/165 registers at WB1/2. The paired 18-cell lab passed locally and is accepted on prefill as **93d1583417cc4c7e**; result pending.
 
 Next: integration has the frozen S13 patch in commit 656cce1. Direct exponent reconstruction
 and two-tile reuse are queued on H200 (prefill host; proj quota spent). Read both results and
