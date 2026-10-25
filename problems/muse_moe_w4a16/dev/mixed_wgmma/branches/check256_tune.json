@@ -1,0 +1,52 @@
+{
+  "sha256": "16ba69eb9a216a9e42ffdb876ed8d0f4e4d35fc3c9250194aebd2aabdbc1e3fb",
+  "seeds": 2,
+  "checks": 207,
+  "bit_equal_to_control": 174,
+  "worst_L2_row": [
+    0.004380313213914633,
+    0.004579185973852873
+  ],
+  "arms": [
+    "N_full",
+    "N_g1056",
+    "N_g4224",
+    "N_p50",
+    "N_p75",
+    "N_hi",
+    "N_swap",
+    "N_swap_hi",
+    "N_p50_hi"
+  ],
+  "lab_seconds": 40.6,
+  "lab_chars": 1977,
+  "lines": [
+    "META N_full tuning at M256 vs N_full (nf_cell.py: NT1<=16 W13->W2 on a side stream || heavy-only N32 grid 2112, live route, one join). N_g<grid>: heavy grid; N_p50/p75: NT1 persistent grid x0.5/0.75; _hi: side stream at high priority; N_swap: heavy on the side stream, NT1 on the main. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.",
+    "GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to N_full output (diagnostic). Phase means are diagnostics.",
+    "BUILD s=0.0 left=60.0",
+    "S0 0.999 1.020 0.975 0.990 1.027 0.985 0.982 0.986",
+    "S1 1.008 1.019 0.957 0.977 1.030 0.990 0.986 0.989",
+    "BUDGET before seed2",
+    "ORDER N_g1056 N_g4224 N_p50 N_p75 N_hi N_swap N_swap_hi N_p50_hi",
+    "MEAN N_full n=6 us=554.63 med=571.69 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00409/0.00458 TASK=PASS bit=6",
+    "MEAN N_g1056 n=6 us=551.65 med=567.86 pair=1.0033 lo/hi=0.989/1.021 L2/row=0.00409/0.00458 TASK=PASS bit=6",
+    "MEAN N_g4224 n=6 us=559.99 med=581.10 pair=1.0194 lo/hi=1.001/1.052 L2/row=0.00409/0.00458 TASK=PASS bit=6",
+    "MEAN N_p50 n=6 us=532.35 med=545.32 pair=0.9660 lo/hi=0.931/0.987 L2/row=0.00409/0.00458 TASK=PASS bit=4",
+    "MEAN N_p75 n=6 us=543.62 med=560.69 pair=0.9837 lo/hi=0.942/0.999 L2/row=0.00409/0.00458 TASK=PASS bit=4",
+    "MEAN N_hi n=6 us=564.95 med=583.22 pair=1.0281 lo/hi=1.018/1.035 L2/row=0.00409/0.00458 TASK=PASS bit=6",
+    "MEAN N_swap n=6 us=544.12 med=568.35 pair=0.9876 lo/hi=0.960/1.035 L2/row=0.00409/0.00458 TASK=PASS bit=6",
+    "MEAN N_swap_hi n=6 us=541.34 med=562.05 pair=0.9838 lo/hi=0.969/1.014 L2/row=0.00409/0.00458 TASK=PASS bit=6",
+    "MEAN N_p50_hi n=6 us=541.57 med=556.08 pair=0.9874 lo/hi=0.962/1.019 L2/row=0.00409/0.00458 TASK=PASS bit=4",
+    "PH N_full 4.1/505.4/11.3",
+    "PH N_g1056 4.1/500.3/10.2",
+    "PH N_g4224 4.1/510.5/10.2",
+    "PH N_p50 4.3/491.8/10.5",
+    "PH N_p75 3.9/501.0/11.0",
+    "PH N_hi 4.6/531.2/10.2",
+    "PH N_swap 4.1/494.1/10.2",
+    "PH N_swap_hi 4.1/495.6/11.5",
+    "PH N_p50_hi 3.8/497.4/10.9",
+    "AA signed/abs/max=-5.483/6.128/20.496",
+    "END M=256 seeds=2/12 used=40.6 left=19.4"
+  ]
+}

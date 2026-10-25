@@ -56,6 +56,8 @@ def br_u16_module():
 def br_modules():
     m128_hh_pm_module()
     br_hh_module()
+    if BR_SET == 'tune':
+        return
     if BR_M == 128:
         br_u16_module()
     else:
@@ -65,9 +67,11 @@ def br_modules():
 def br_prepare(weights):
     hh = hh_prepare(weights)
     dev = hh['base']['w13'].device
-    hh.update(side=torch.cuda.Stream(device=dev), fork_ev=torch.cuda.Event(), join_ev=torch.cuda.Event(), mod=br_hh_module(),
+    hh.update(side=torch.cuda.Stream(device=dev), side_hi=torch.cuda.Stream(device=dev, priority=-1), fork_ev=torch.cuda.Event(), join_ev=torch.cuda.Event(), mod=br_hh_module(),
               sms=torch.cuda.get_device_properties(dev).multi_processor_count)
-    if BR_M == 128:
+    if BR_SET == 'tune':
+        pass
+    elif BR_M == 128:
         hh['u16_sf'] = {k: ((hh['base'][k].to(torch.int32) << 4) + 0x7000).to(torch.int16) for k in ('w13_sf', 'w2_sf')}
     else:
         hh['s6'] = wi_prepare(weights)
@@ -92,22 +96,39 @@ BR_ARMS = {
     'B8_full': (('n',), (0,), ('n8', 12), (1,), 'full'),
     'B8R_full': (('n', 5), (4,), ('n8', 12, 9), (8,), 'full'),
 }
-BR_ONLY = {'S6': 256, 'R_s6': 256, 'U16': 128}
-BR_CONTROL = 'HH' if BR_M == 128 else 'S6'
-BR_NAMES = [BR_CONTROL] + [a for a in BR_ARMS if a != BR_CONTROL and BR_ONLY.get(a, BR_M) == BR_M]
 BR_GRID = 1056 if BR_M == 128 else 2112
+# N_full tuning (control N_full = nf_cell.py): heavy grid, NT1 persistent-grid fraction, a high-priority side stream,
+# heavy on the side stream instead of NT1.
+BR_TUNE = {
+    'N_g' + str(BR_GRID // 2): (('n',), (0,), ('n',), (1,), 'full', dict(grid=BR_GRID // 2)),
+    'N_g' + str(BR_GRID * 2): (('n',), (0,), ('n',), (1,), 'full', dict(grid=BR_GRID * 2)),
+    'N_p50': (('n',), (0,), ('n',), (1,), 'full', dict(pg=.5)),
+    'N_p75': (('n',), (0,), ('n',), (1,), 'full', dict(pg=.75)),
+    'N_hi': (('n',), (0,), ('n',), (1,), 'full', dict(hi=True)),
+    'N_swap': ((0,), ('n',), (1,), ('n',), 'full'),
+    'N_swap_hi': ((0,), ('n',), (1,), ('n',), 'full', dict(hi=True)),
+    'N_p50_hi': (('n',), (0,), ('n',), (1,), 'full', dict(pg=.5, hi=True)),
+}
+BR_ARMS.update(BR_TUNE)
+BR_ONLY = {'S6': 256, 'R_s6': 256, 'U16': 128}
+if BR_SET == 'tune':
+    BR_CONTROL = 'N_full'
+    BR_NAMES = [BR_CONTROL] + list(BR_TUNE)
+else:
+    BR_CONTROL = 'HH' if BR_M == 128 else 'S6'
+    BR_NAMES = [BR_CONTROL] + [a for a in BR_ARMS if a != BR_CONTROL and a not in BR_TUNE and BR_ONLY.get(a, BR_M) == BR_M]
 
 
 def br_cur():
     return torch.cuda.current_stream().cuda_stream
 
 
-def br_fork(hh, side, main):
+def br_fork(hh, side, main, key='side'):
     parent = torch.cuda.current_stream()
     hh['fork_ev'].record(parent)
-    hh['side'].wait_event(hh['fork_ev'])
-    with torch.cuda.stream(hh['side']):
-        side(hh['side'].cuda_stream)
+    hh[key].wait_event(hh['fork_ev'])
+    with torch.cuda.stream(hh[key]):
+        side(hh[key].cuda_stream)
         hh['join_ev'].record()
     main(parent.cuda_stream)
     parent.wait_event(hh['join_ev'])
@@ -202,14 +223,18 @@ def br_plan(data, hh, arm):
     stages = 2
     while stages > 1 and mod.pmz_smem(stages, m) > BR_OPTS['pmz']:
         stages -= 1
-    grids = {f: hh['sms'] * mod.pmz_resident(stages, m, f) for f in (0, 1)}
+    s13, k13, s2, k2, mode = spec[:5]
+    opts = spec[5] if len(spec) > 5 else {}
+    grids = {f: max(1, int(hh['sms'] * mod.pmz_resident(stages, m, f) * opts.get('pg', 1.))) for f in (0, 1)}
+    hgrid = opts.get('grid', BR_GRID)
+    skey = 'side_hi' if opts.get('hi') else 'side'
 
     def run(first, kinds, stream):
         for k in kinds:
             if k in ('n', 'n8'):
                 mod.pmz_run(pn, first, 16 if k == 'n' else 8, m, stages, grids[first], stream)
             else:
-                mod.br_run(p28 if k == 12 else p13 if first else p2, k, BR_GRID, m, stream)
+                mod.br_run(p28 if k == 12 else p13 if first else p2, k, hgrid, m, stream)
 
     def route():
         _ = owners
@@ -220,11 +245,10 @@ def br_plan(data, hh, arm):
         mod.br_finish(fp, m, start, br_cur())
         return out
 
-    s13, k13, s2, k2, mode = spec
     if mode == 'full':
         def body():
             _ = owners
-            br_fork(hh, lambda st: (run(1, s13, st), run(0, s2, st)), lambda st: (run(1, k13, st), run(0, k2, st)))
+            br_fork(hh, lambda st: (run(1, s13, st), run(0, s2, st)), lambda st: (run(1, k13, st), run(0, k2, st)), skey)
         steps = (route, body, finish)
     else:
         def phase(first, side, main):

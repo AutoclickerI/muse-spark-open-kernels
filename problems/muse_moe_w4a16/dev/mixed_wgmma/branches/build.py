@@ -65,11 +65,12 @@ def main():
               f'BR_U16_CUDA = {u16!r}\n')
     manifest = dict(S6_sha256=sources.S6_SHA, HH_cell_sha256=HH_SHA, cu_hh_sha256=hashlib.sha256(src['cu_hh'].encode()).hexdigest(),
                     cu_s6_sha256=hashlib.sha256(src['cu_s6'].encode()).hexdigest(), u16_sha256=hashlib.sha256(u16.encode()).hexdigest())
-    for m in (128, 256):
-        body = (helpers() + '\n' + IMPORTS + strip_imports(hh) + '\n' + (engine + '\n' if m == 256 else '') + common
-                + f'BR_M = {m}\n' + (H / 'plan.py.inc').read_text() + '\n' + (H / 'driver.py.inc').read_text())
-        assert not dupes(body), dupes(body)
-        manifest[f'm{m}'] = write(f'moe_br_m{m}', body, {})
+    for name, kind in (('moe_br_m', 'branch'), ('moe_nf_tune_m', 'tune')):
+        for m in (128, 256):
+            body = (helpers() + '\n' + IMPORTS + strip_imports(hh) + '\n' + (engine + '\n' if m == 256 and kind == 'branch' else '')
+                    + common + f'BR_M = {m}\nBR_SET = {kind!r}\n' + (H / 'plan.py.inc').read_text() + '\n' + (H / 'driver.py.inc').read_text())
+            assert not dupes(body), dupes(body)
+            manifest[f'{name}{m}'] = write(f'{name}{m}', body, {})
     (H / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
 

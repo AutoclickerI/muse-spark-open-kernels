@@ -35,6 +35,9 @@ def br_phases(data, bank, arm, ev0, ev1):
     return vals
 
 
+BR_META_TUNE = ('META N_full tuning at M%d vs N_full (nf_cell.py: NT1<=16 W13->W2 on a side stream || heavy-only N32 grid %d, '
+                'live route, one join). N_g<grid>: heavy grid; N_p50/p75: NT1 persistent grid x0.5/0.75; _hi: side stream at high '
+                'priority; N_swap: heavy on the side stream, NT1 on the main. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
 BR_META = {
     128: 'META M128 vs HH = exact S7 H_H (u8 codes; route128 zero-fill + pm_meta SS clear; NT1<=16 then WGMMA32>16 per phase; finish). '
          'U16 = exact u16-word H_H (S6). ',
@@ -52,7 +55,7 @@ def lab(deadline, weights, state=None):
     start = time.monotonic()
     names = BR_NAMES
     ctl = BR_CONTROL
-    lines = [BR_META[BR_M] + BR_META_TAIL,
+    lines = [BR_META_TUNE % (BR_M, BR_GRID) if BR_SET == 'tune' else BR_META[BR_M] + BR_META_TAIL,
              f'GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to {ctl} output (diagnostic). Phase means are diagnostics.']
     rows, phases, aa = [], [], []
     try:

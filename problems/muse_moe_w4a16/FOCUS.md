@@ -7,9 +7,11 @@ Incumbents in S7R `cand_r3_best7_s7r.py` 56c51fa026210357… (1.5735x `c1fbd0cf`
   `dev/mixed_wgmma/m128/phase_mix/hh_cell.py` 365b623992367a1d…; 234.44 us on `770809cf` (u16 predecessor, bit-identical).
 - M=256: R_full (live 1-CTA route; one fork: <=16-row groups on N16 || full groups on N32, W13->W2): 0.9227 vs
   mixed_parallel (`110599ba`, bit-equal).
-Ready: M=256 N_full = 298.68 vs mixed_parallel 342.80 us, paired 0.8701 (R_full 0.9230 in the same run, `14f942d5`):
+Ready at M=128: N_full 207.40 vs exact S7 H_H 234.78 us, 0.8842, bit-equal 36/36 (`c01b1916`; HH_u8 0.9702, U16 words
+0.9931: S7's in-register scale word costs 0.7%). Ready at M=256: N_full 298.68 vs mixed_parallel 342.80 us, 0.8701 (R_full 0.9230, `14f942d5`):
 NT1 <=16 W13->W2 on a side stream || heavy-only N32 W13->W2, one join; reads S7's H_H base + NT1 banks, no new bank.
-Cell `dev/mixed_wgmma/branches/nf_cell.py` 1becadbec9f11247…; on S7R `cand_r3_best7_s7n.py` 381054dbcc5d08ac…
+One cell for both M (heavy grid 1056 at M<=128, 2112 at M=256): `dev/mixed_wgmma/branches/nf_cell.py` de34914e47242d68…;
+on S7R `cand_r3_best7_s7n.py` a2a52a108e97d65b…
 (mixed_parallel's engine and its 1.69 GiB bank deleted; 72 fixtures within 6e-8 of the timed arm; normal + forced 13 PASS).
 
 In flight: M=128 branch lab `c01b1916` (MoE host: exact S7 control, U16 = cost of S7's in-register word, HH_u8,

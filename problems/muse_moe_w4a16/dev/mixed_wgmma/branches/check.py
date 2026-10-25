@@ -1,6 +1,6 @@
 """Branch lab at M=128 or 256: every arm vs the FP32 oracle (TASK gates) with poisoned scratch, route transitions
 (none/hot/remainder/single pair) through one captured graph, nearby M with a nonzero local_start; then the lab
-itself under a deadline. Usage: check.py M [seeds] [lab_seconds]."""
+itself under a deadline. Usage: check.py M [seeds] [lab_seconds] [tune]."""
 import hashlib
 import json
 import runpy
@@ -22,7 +22,7 @@ def lab_cold_l2():
 
 def main():
     M = int(sys.argv[1])
-    p = R / f'prof/lab/moe_br_m{M}.py'
+    p = R / (f'prof/lab/moe_br_m{M}.py' if len(sys.argv) < 5 else f'prof/lab/moe_nf_tune_m{M}.py')
     m = runpy.run_path(str(p), init_globals=dict(lab_cold_l2=lab_cold_l2))
     arms = m['BR_NAMES']
     ctl = m['BR_CONTROL']
@@ -89,7 +89,7 @@ def main():
     report = '\n'.join(lines)
     print(report)
     print('LAB_SECONDS', round(time.monotonic() - t0, 1), 'CHARS', len(report))
-    (H / f'check{M}.json').write_text(json.dumps(dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(), seeds=seeds, checks=checks,
+    (H / f'check{M}{"" if len(sys.argv) < 5 else "_tune"}.json').write_text(json.dumps(dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(), seeds=seeds, checks=checks,
                                                      bit_equal_to_control=bit, worst_L2_row=worst, arms=arms,
                                                      lab_seconds=round(time.monotonic() - t0, 1), lab_chars=len(report), lines=lines), indent=2) + '\n')
 

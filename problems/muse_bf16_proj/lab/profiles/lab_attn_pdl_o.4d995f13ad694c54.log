@@ -1,0 +1,26 @@
+FUSED_SELECT router m=128 incumbent_us=23.264 chosen=(64, 64, 4, 1, 8, 160) chosen_us=14.784 top=[(14.688000082969666, (64, 64, 4, 1, 8, 160)), (15.39199985563755, (64, 64, 4, 1, 16, 160)), (15.424000099301338, (64, 64, 4, 1, 16, 128)), (19.1040001809597, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.424 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.352 top=[(16.224000602960587, (64, 64, 4, 1, 8, 256)), (16.416000202298164, (64, 64, 4, 1, 8, 160)), (17.696000635623932, (64, 64, 4, 1, 8, 128)), (26.43200010061264, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.600 chosen=None chosen_us=25.600 top=[(31.007999554276466, (128, 64, 3, 1, 4, 160)), (34.432001411914825, (64, 64, 4, 1, 2, 256)), (36.38400137424469, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.440 chosen=None chosen_us=29.440 top=[(38.14399987459183, (128, 64, 4, 1, 2, 256)), (39.20000046491623, (128, 128, 2, 1, 2, 256)), (41.63200035691261, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.776 chosen=None chosen_us=31.776 top=[(31.90400078892708, ('lt', 0)), (31.936001032590866, ('lt_nn', 1)), (32.92800113558769, ('lt', 1)), (33.952001482248306, ('lt_nn', 0)), (34.11199897527695, ('lt', 2))]
+FUSED_SELECT pooler m=256 incumbent_us=39.232 chosen=('lt_nn', 0) chosen_us=36.608 top=[(36.41600161790848, ('lt_nn', 0)), (38.40000182390213, ('lt_nn', 4)), (38.62399980425835, ('lt', 3)), (38.784001022577286, ('lt', 1)), (38.88000175356865, ('lt_nn', 2))]
+FUSED_SELECT unpooler m=128 incumbent_us=30.432 chosen=('lt_nn', 0) chosen_us=29.184 top=[(29.983999207615852, ('lt_nn', 2)), (30.01599945127964, ('lt_nn', 0)), (30.368000268936157, ('lt_nn', 1)), (30.400000512599945, ('lt', 0)), (30.62400035560131, ('lt', 1))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.792 chosen=('lt', 0) chosen_us=33.248 top=[(34.20799970626831, ('lt_nn', 0)), (34.591998904943466, ('lt', 0)), (35.51999852061272, ('lt_nn', 1)), (36.06399893760681, ('lt', 2)), (37.05599904060364, ('lt', 1))]
+FUSED_SELECT o m=128 incumbent_us=13.088 chosen=('lt_nn', 0) chosen_us=12.832 top=[(12.768000364303589, ('lt_nn', 0)), (12.83199992030859, ('lt', 1)), (13.024000450968742, ('lt', 6)), (13.055999763309956, ('lt_nn', 5)), (13.088000006973743, ('lt', 7))]
+FUSED_SELECT o m=256 incumbent_us=14.240 chosen=None chosen_us=14.240 top=[(13.98400031030178, ('lt_nn', 0)), (14.4640002399683, ('lt', 2)), (14.783999882638454, ('lt', 6)), (14.816000126302242, ('lt_nn', 4)), (14.976000413298607, ('lt', 5))]
+FUSED_SELECT prepare_s=9.81
+LAB_BEGIN attn_pdl_o 295bc470ec43b10b
+META attn_main early griddepcontrol trigger x O kind (cublas=S1, gf6=S6 M1, gf4/7/5/12 M16/32, srg=whole O slice in smem before wait); chain attention->O->PDL consumer; cold 256MiB read per replay; r=paired median vs control (base attention + S6 O), AA=control vs itself
+SETUP compile=23.5s left=252s srg_rows=64
+C b=1 w=2048 plan_base=(16, 16) plan_trig=(16, 16) AA=1.0098 [base:gf6 21.81us r=1.0000] [base:cublas 22.00us r=1.0126] [trig:gf6 20.86us r=0.9626] [trig:srg(64, 131072) 20.64us r=0.9457] [trig:srg(64, 65536) 21.18us r=0.9672] [base:srg(64, 131072) 21.86us r=0.9978]
+C b=1 w=0 plan_base=(336, 16) plan_trig=(336, 16) AA=0.9883 [base:gf6 30.45us r=1.0000] [base:cublas 30.82us r=1.0115] [trig:gf6 28.38us r=0.9300] [trig:srg(64, 131072) 29.52us r=0.9649] [trig:srg(64, 65536) 29.57us r=0.9786] [base:srg(64, 131072) 30.34us r=0.9911]
+C b=32 w=2048 plan_base=(12, 2) plan_trig=(12, 2) AA=0.9972 [base:cublas 28.96us r=1.0000] [trig:cublas 29.01us r=1.0033] [base:gf5 32.46us r=1.1206] [trig:gf5 31.36us r=1.0801] [trig:gf12 39.10us r=1.3463]
+C b=32 w=0 plan_base=(12, 2) plan_trig=(12, 2) AA=1.0019 [base:cublas 208.72us r=1.0000] [trig:cublas 208.70us r=0.9991] [base:gf5 212.21us r=1.0154] [trig:gf5 210.30us r=1.0077] [trig:gf12 218.10us r=1.0465]
+C b=16 w=0 plan_base=(24, 2) plan_trig=(24, 2) AA=0.9940 [base:cublas 115.34us r=1.0000] [trig:cublas 115.23us r=0.9985] [base:gf7 117.73us r=1.0211] [trig:gf7 116.61us r=1.0118] [trig:gf4 114.00us r=0.9908]
+SUM b=1 w=2048 ctrl=base:gf6 21.81us best=trig:srg(64, 131072) 20.64us delta=-1.17us r=0.9457
+SUM b=1 w=0 ctrl=base:gf6 30.45us best=trig:gf6 28.38us delta=-2.06us r=0.9300
+SUM b=32 w=2048 ctrl=base:cublas 28.96us best=base:cublas 28.96us delta=+0.00us r=1.0000
+SUM b=32 w=0 ctrl=base:cublas 208.72us best=trig:cublas 208.70us delta=-0.02us r=0.9991
+SUM b=16 w=0 ctrl=base:cublas 115.34us best=trig:gf4 114.00us delta=-1.34us r=0.9908
+END t=24.4s
+LAB_END lab_s=24.5 prepare_s=34.3

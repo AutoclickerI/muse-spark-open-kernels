@@ -9,6 +9,12 @@ in-register scale word; bit-identical to the u16 cell 770809cf timed), and every
 starts from the judge-style read flush `lab_cold_l2()`. Locally (sm_120, no WGMMA) the consumer is
 mma.sync from the same shared tiles, so local ranks say nothing about the SS-WGMMA consumer.
 
+## H200 result: closed (proj job 9cd95e72b56a42c1, send 1d29f095)
+
+vs exact S7 H_H 232.99 us (12 seeds x3, judge-style read flush, all gates PASS): B64s2 1.1305, T32_A64 1.1500,
+A64 1.26, P64/P128 1.39, P32 1.46; heavy W13 phase 55.6 -> 97-114 us; M16/32 vs NT1 2.2-2.8x. Grid, N width and
+ring depth barely move it. The design below loses in every configuration; the cause is not isolated.
+
 ## Why the small-M D split lost
 
 H200383ccc1fbbae41e2 measured12 seeds: D64 M16/M32 **230.50/364.46us**,

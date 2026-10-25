@@ -1,0 +1,12 @@
+VQ8_COMPILE_S 24.4
+VQ8_RES st=4 regs,local,static_smem,dyn_smem,ctas_per_sm=[168, 64, 4096, 122880, 1]
+VQ8_RES st=6 regs,local,static_smem,dyn_smem,ctas_per_sm=[168, 64, 4096, 172032, 1]
+VQ8_RES st=8 regs,local,static_smem,dyn_smem,ctas_per_sm=[168, 64, 4096, 221184, 1]
+VQ8_GATE ok=1 errs=0.0065,0.0098,0.0068,0.0094
+VQ8_LAB B=1 W=2048 fa3=27.1 st8mt2=45.7 st6mt2=44.6 st4mt2=44.5 st8mt4=47.9 st8mt1=50.4 pick=fa3
+VQ8_LAB B=1 W=0 fa3=40.7 st8mt2=113.4 st6mt2=84.2 st4mt2=77.5 st8mt4=113.8 st8mt1=114.1 pick=fa3
+VQ8_LAB B=16 W=2048 fa3=34.1 st8mt2=54.0 st6mt2=53.2 st4mt2=52.6 st8mt4=53.5 st8mt1=53.9 pick=fa3
+VQ8_LAB B=16 W=0 fa3=208.1 st8mt2=247.2 st6mt2=246.9 st4mt2=241.0 st8mt4=247.8 st8mt1=247.2 pick=fa3
+VQ8_LAB B=32 W=2048 fa3=39.5 st8mt2=56.6 st6mt2=57.3 st4mt2=57.1 st8mt4=57.0 st8mt1=57.2 pick=fa3
+VQ8_LAB B=32 W=0 fa3=393.8 st8mt2=438.9 st6mt2=442.0 st4mt2=430.2 st8mt4=438.3 st8mt1=439.0 pick=fa3
+VQ8_LAB_S 26.2

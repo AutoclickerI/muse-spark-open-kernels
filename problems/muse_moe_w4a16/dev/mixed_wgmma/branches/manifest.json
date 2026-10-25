@@ -4,12 +4,20 @@
   "cu_hh_sha256": "a35caa46656e7b3eadff795ea4ff0e5f1e20e55ba8d652784d5e58ba316529bc",
   "cu_s6_sha256": "dd698666aaa853b45436c3434b83e438a4e44c45364dcd6f000d1104609b8dad",
   "u16_sha256": "61eb4d547fdd4a7ac2ebf999a1c2bf3a8d8cf20db99c6b45530bf8ff2a6b74f0",
-  "m128": {
+  "moe_br_m128": {
     "payload": "prof/lab/moe_br_m128.py",
-    "sha256": "92d64d1b2c8458f116610102f7fdfb86a1c8f645beb5a74e2a2c9f4f25450844"
+    "sha256": "cade32bd4784b202a9de42fc02517430f3828ea1d6a164f02f6019fdfb514c8c"
   },
-  "m256": {
+  "moe_br_m256": {
     "payload": "prof/lab/moe_br_m256.py",
-    "sha256": "e4e35c8a27399db264b20b74127d972311fa9afe92a69b2ad6298ffb90b371cd"
+    "sha256": "587e353bcf91170f315ea095c93c1cf826debbbf8d6cd88e65c53e0cde6c55f8"
+  },
+  "moe_nf_tune_m128": {
+    "payload": "prof/lab/moe_nf_tune_m128.py",
+    "sha256": "d32ab784cd01fde7c1f87f3259cd64ce93c607d799d90a10759a81fb897dddbf"
+  },
+  "moe_nf_tune_m256": {
+    "payload": "prof/lab/moe_nf_tune_m256.py",
+    "sha256": "16ba69eb9a216a9e42ffdb876ed8d0f4e4d35fc3c9250194aebd2aabdbc1e3fb"
   }
 }

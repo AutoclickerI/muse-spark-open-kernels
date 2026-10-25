@@ -1,0 +1,213 @@
+import statistics
+import time
+
+import torch.nn.functional as F
+
+# Balanced split-K: grid (N / BN, S) with S picked so every CTA is resident in one wave, and each split gets
+# KB // S or KB // S + 1 of the KB = K / BK k-blocks (runtime bounds), so all CTAs finish together. Same
+# (P [S, T, N] FP32, S) ABI as S8's _gemv_kernel; same PDL start/wait placement.
+
+
+@triton.jit
+def _gb_kernel(X, W, P, T, x_stride, N, K, S, BN: tl.constexpr, BK: tl.constexpr, TB: tl.constexpr,
+               NS: tl.constexpr):
+    pn = tl.program_id(0)
+    ps = tl.program_id(1)
+    tl.extra.cuda.gdc_launch_dependents()
+    n = pn * BN + tl.arange(0, BN)
+    kb_total = K // BK
+    kb0 = ps * kb_total // S
+    kb1 = (ps + 1) * kb_total // S
+    tl.extra.cuda.gdc_wait()
+    t = tl.arange(0, TB)
+    kk = tl.arange(0, BK)
+    acc = tl.zeros((BN, TB), tl.float32)
+    for kb in tl.range(kb0, kb1, num_stages=NS):
+        k = kb * BK
+        w = tl.load(W + n[:, None] * K + (k + kk)[None, :])
+        x = tl.load(X + t[:, None] * x_stride + (k + kk)[None, :], mask=t[:, None] < T, other=0.0)
+        acc = tl.dot(w, tl.trans(x), acc)
+    tl.store(P + ps * (T * N) + t[None, :] * N + n[:, None], acc, mask=t[None, :] < T)
+
+
+def gb_run(x, w, BN, S, NS, BK=128):
+    T, K = x.shape
+    N = w.shape[0]
+    P = torch.empty((S, T, N), device=x.device, dtype=torch.float32)
+    _gb_kernel[(N // BN, S)](x, w, P, T, x.stride(0), N, K, S, BN=BN, BK=BK, TB=max(16, triton.next_power_of_2(T)),
+                             NS=NS, num_warps=4, launch_pdl=True)
+    return P
+
+
+def gb_s6(x, w, cfg):
+    """S8's gemv() Triton path: (BN, KS, BK, prefetch) -> P [K / KS, T, N]."""
+    T, K = x.shape
+    N = w.shape[0]
+    BN, KS, BK, pf = cfg
+    P = torch.empty((K // KS, T, N), device=x.device, dtype=torch.float32)
+    _gemv_kernel[(N // BN, K // KS)](x, w, P, T, x.stride(0), N=N, K=K, KS=KS, BN=BN, BK=BK,
+                                     TB=max(16, triton.next_power_of_2(T)), PREFETCH=pf, USE_PDL=True,
+                                     launch_pdl=True, num_warps=4, num_stages=4)
+    return P
+
+
+GB_READ = r'''
+#include <cuda_runtime.h>
+#include <stdint.h>
+#include <stdexcept>
+__device__ __forceinline__ uint4 gb_ld(const uint4* p) {
+  uint4 v;
+  asm volatile("ld.global.nc.L1::no_allocate.v4.u32 {%0,%1,%2,%3}, [%4];"
+               : "=r"(v.x), "=r"(v.y), "=r"(v.z), "=r"(v.w) : "l"(p));
+  return v;
+}
+__global__ void __launch_bounds__(256) gb_rd(const uint4* __restrict__ W, size_t n16, unsigned* sink) {
+  const size_t tid = (size_t)blockIdx.x * blockDim.x + threadIdx.x, step = (size_t)gridDim.x * blockDim.x;
+  unsigned acc = 0;
+  for (size_t i = tid; i < n16; i += step * 4) {
+    uint4 v[4];
+#pragma unroll
+    for (int j = 0; j < 4; ++j) v[j] = (i + j * step < n16) ? gb_ld(W + i + j * step) : make_uint4(0, 0, 0, 0);
+#pragma unroll
+    for (int j = 0; j < 4; ++j) acc ^= v[j].x ^ v[j].y ^ v[j].z ^ v[j].w;
+  }
+  if (acc == 0x9e3779b9u) sink[0] = acc;
+}
+void rd(int64_t W, int64_t bytes, int64_t sink, int64_t ctas, int64_t stream) {
+  gb_rd<<<(int)ctas, 256, 0, reinterpret_cast<cudaStream_t>(stream)>>>((const uint4*)W, (size_t)bytes / 16, (unsigned*)sink);
+  cudaError_t e = cudaGetLastError();
+  if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
+}
+'''
+_GB = []
+
+
+def gb_ext():
+    if not _GB:
+        from torch.utils.cpp_extension import load_inline
+        major, minor = torch.cuda.get_device_capability()
+        arch = '90a' if major == 9 else f'{major}{minor}'
+        _GB.append(load_inline(name=f'muse_lab_gemv_bal_{arch}', cpp_sources='#include <cstdint>\nvoid rd(int64_t, int64_t, int64_t, int64_t, int64_t);',
+                               cuda_sources=GB_READ, functions=['rd'], verbose=False,
+                               extra_cuda_cflags=['-O3', f'-gencode=arch=compute_{arch},code=sm_{arch}']))
+    return _GB[0]
+
+
+def _gb_graph(fn):
+    s = torch.cuda.Stream()
+    s.wait_stream(torch.cuda.current_stream())
+    with torch.cuda.stream(s):
+        for _ in range(2):
+            fn()
+    torch.cuda.current_stream().wait_stream(s)
+    torch.cuda.synchronize()
+    g = torch.cuda.CUDAGraph()
+    with torch.cuda.graph(g):
+        fn()
+    g.replay()
+    torch.cuda.synchronize()
+    return g
+
+
+def _gb_times(graphs, rounds):
+    evs = []
+    for r in range(rounds):
+        order = list(range(len(graphs)))
+        if r % 2:
+            order.reverse()
+        for j in order:
+            lab_cold_l2()  # h200_lab: the judge's cold-L2 step (1 GiB read)
+            a, b = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+            a.record()
+            graphs[j].replay()
+            b.record()
+            evs.append((j, a, b))
+    torch.cuda.synchronize()
+    vals = [[] for _ in graphs]
+    for j, a, b in evs:
+        vals[j].append(a.elapsed_time(b) * 1e3)
+    return [statistics.median(v) for v in vals]
+
+
+# S8's per-(T, role) choice (_seed_v9_gemv_choices): Triton (BN, KS, BK, prefetch) or cuBLAS.
+GB_S8 = {
+    (1, 'qkv'): (32, 1024, 128, False), (1, 'o'): (64, 512, 128, False), (1, 'pool_router'): (32, 1024, 128, False),
+    (1, 'unpool_slice'): (64, 512, 128, False),
+    (16, 'qkv'): (32, 1024, 128, False), (16, 'o'): (64, 512, 128, False), (16, 'pool_router'): (32, 1024, 128, False),
+    (16, 'unpooler'): 'cublas',
+    (32, 'qkv'): (64, 512, 128, False), (32, 'o'): (64, 512, 128, False), (32, 'pool_router'): (64, 512, 128, False),
+    (32, 'unpooler'): 'cublas',
+}
+
+
+def _gb_splits(tiles, kb):
+    out = []
+    for target in (264, 396, 528, 660, 792, 1056):
+        s = max(1, min(kb, round(target / tiles)))
+        if s not in out and 132 <= tiles * s <= 1188:
+            out.append(s)
+    return out
+
+
+def lab(deadline, weights):
+    t0 = time.monotonic()
+    dev = weights['o'].device
+    router = weights['router'].float()
+    hi = router.to(torch.bfloat16)
+    roles = dict(qkv=weights['qkv_gate'].contiguous(), o=weights['o'].contiguous(),
+                 pool_router=torch.cat([weights['pooler'], hi, (router - hi.float()).to(torch.bfloat16)], 0).contiguous(),
+                 unpool_slice=weights['unpooler'][:1024].contiguous(), unpooler=weights['unpooler'].contiguous())
+    ext = gb_ext()
+    sink = torch.zeros(4, dtype=torch.int32, device=dev)
+    empty = _gb_graph(lambda: None)
+    base = _gb_times([empty], 8)[0]
+    lines = ['META standalone graphs after lab_cold_l2 (1 GiB read); us = median of 16 minus an empty graph '
+             f'({base:.2f} us); read = plain 16B-load stream over the weight (528 CTAs); s8 = S8 choice (Triton '
+             '_gemv_kernel cfg or cuBLAS); cublas = F.linear; bal BN/S/NS = balanced split-K (runtime k-block ranges, '
+             'NS stages, BK 128); e = max rel err of sum(P) vs FP32 over bal arms; top 4 bal arms per role']
+    sums = []
+    for t in (1, 16, 32):
+        names = ('qkv', 'o', 'pool_router', 'unpool_slice') if t == 1 else ('qkv', 'o', 'pool_router', 'unpooler')
+        for name in names:
+            if time.monotonic() > deadline - 10:
+                lines.append(f'SKIP t={t} {name}')
+                continue
+            try:
+                w = roles[name]
+                N, K = w.shape
+                nbytes = w.numel() * 2
+                x = (torch.randn((t, K), device=dev) * 0.5).to(torch.bfloat16)
+                ref = x.float() @ w.float().T
+                arms = [('read', lambda: ext.rd(w.data_ptr(), nbytes, sink.data_ptr(), 528,
+                                                torch.cuda.current_stream().cuda_stream))]
+                s8 = GB_S8[(t, name)]
+                arms.append(('s8', (lambda: F.linear(x, w)) if s8 == 'cublas' else (lambda: gb_s6(x, w, s8))))
+                if s8 != 'cublas':
+                    arms.append(('cublas', lambda: F.linear(x, w)))
+                err = 0.0
+                for BN in (32, 64):
+                    tiles = N // BN
+                    for S in _gb_splits(tiles, K // 128):
+                        for NS in (4, 6):
+                            fn = lambda BN=BN, S=S, NS=NS: gb_run(x, w, BN, S, NS)
+                            P = fn()
+                            torch.cuda.synchronize()
+                            err = max(err, float((P.sum(0) - ref).norm() / ref.norm()))
+                            arms.append((f'{BN}/{S}/{NS}', fn))
+                graphs = [_gb_graph(fn) for _, fn in arms]
+                us = [max(u - base, 1e-3) for u in _gb_times(graphs, 16)]
+                del graphs
+                got = dict(zip((a for a, _ in arms), us))
+                bal = sorted((u, a) for a, u in got.items() if '/' in a)
+                cells = ' '.join(f'[{a} {u:.2f}]' for u, a in bal[:4])
+                ctrl = got['s8'] if 'cublas' not in got else min(got['s8'], got['cublas'])
+                lines.append(f'R t={t} {name} {N}x{K} read={got["read"]:.2f} s8={got["s8"]:.2f}'
+                             + (f' cublas={got["cublas"]:.2f}' if 'cublas' in got else '')
+                             + f' | {cells} e={err:.0e}')
+                sums.append(f'{name}@{t} {bal[0][0] - got["s8"]:+.2f}')
+            except Exception as exc:
+                lines.append(f'ERROR t={t} {name} {type(exc).__name__}: {str(exc).splitlines()[0][:150]}')
+            torch.cuda.empty_cache()
+    lines.append('SUM best bal - s8 (us): ' + ', '.join(sums))
+    lines.append(f'END t={time.monotonic() - t0:.1f}s')
+    return lines
