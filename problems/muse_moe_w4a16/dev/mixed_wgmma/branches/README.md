@@ -8,6 +8,27 @@ flight, no fills; META adds the heavy-only T32 and 8<count<=16 T8 lists) and the
 
 ## Handoff (current)
 
+S11-final patches (2026-10-25, P3b takeover):
+
+- `patch_s11_f4.py` **ef041fd4** applies onto `cand_r3_best7_s11_final.py` **acda6c62** (or a derived candidate
+  retaining its nf_plan). Changes only nf_plan's finalizer argument 1 -> 4: the CUDA already contains finish<4>.
+  Generated `s11_f4.py` **9696416e**. `check_f4.py` / `f4_bitexact.json`: bit-equal against split 1 on the SAME S11
+  producer Y/SS (3 fixtures at each M), plus captured synthetic finalizers at both M and local_start=64.
+  Local whole-layer normal: 13 PASS; forced screen in progress. H200 paired evidence: `5e197b5e` 0.9850 / 0.9885.
+- `patch_s11_wide.py` **b2748e23** applies onto S11 final, before or after F4; changes only heavy packed-bank
+  layout and its loads. Generated F4+wide **e9ce6986**. H200 `f976b09d3fc445eb` (collected): LIW vs LI4
+  **0.9936 / 0.9900**, 12 seeds x3, all TASK PASS, bit 35/36 at each M (NT1 norm atomic replay difference).
+  Local integrated validation pending; integration should pair it separately before promotion.
+
+`f976b09d` co-residency cap LOST on H200: G1 **1.2351 / 1.4045**, G2 **1.0242 / 1.0586**, G3
+**1.0285 / 1.0433**, G1p5 **1.1951 / 1.3436**, G2p5 **1.1115 / 1.0882** (M128/M256, vs LI4).
+The local 0.957 / 0.944 did not transfer. W2 TMA LT2 **0.9993 / 1.0015** is neutral.
+Controls 191.79 / 270.98 us; LIW 190.22 / 268.18 us. A:A abs 0.565 / 0.440 us.
+Receipt: `runs/muse_moe_w4a16/20261025T044440Z_check_f976b09d3fc445eb.json`.
+
+Next experiments: static typed-smem to remove uniform descriptor setup (S11 already has aligned dynamic-smem),
+W2 per-warp SS partials, and two register-A accumulators reusing each decoded weight across two N32 token groups.
+
 `nf_cell.py` e86f6fb36a467233b2460c18689456d0108f37ef52a68eb7536de0a2da91ebdd: N_full at M=128 and M=256 (live route; heavy
 N32 W13->W2 with the lean K loop, W13 kind 26 = gate/up rows interleaved by 8 (`nf_ilv` in prepare) with SwiGLU in
 registers, W2 kind 21, launched first on the side stream || NT1 <=16 W13->W2; one join; own buffers; reads S7's H_H u8
