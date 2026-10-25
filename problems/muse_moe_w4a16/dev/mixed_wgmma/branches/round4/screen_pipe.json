@@ -1,0 +1,68 @@
+{
+ "problem": "muse_moe_w4a16",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/screen_pipe.py",
+ "sha256": "3b15eb6598dbd2ba4b2404be5c244ddaa99facc1e0c0201463c0dc2152b896f4",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 1.3084509890177287,
+ "tests": [
+  {
+   "case": "bs 4, sharding ep8",
+   "first_call_s": 0.0023518800153397024,
+   "ok": true,
+   "msg": "relative L2 error 3.745e-03 (worst row 3.832e-03)"
+  },
+  {
+   "case": "bs 33, sharding ep8",
+   "first_call_s": 0.002216772991232574,
+   "ok": true,
+   "msg": "relative L2 error 3.775e-03 (worst row 4.169e-03)"
+  },
+  {
+   "case": "bs 257, sharding ep8",
+   "first_call_s": 0.0010888130054809153,
+   "ok": true,
+   "msg": "relative L2 error 3.805e-03 (worst row 4.104e-03)"
+  },
+  {
+   "case": "bs 128, sharding ep8, dist skewed",
+   "first_call_s": 0.0007825280190445483,
+   "ok": true,
+   "msg": "relative L2 error 3.652e-03 (worst row 3.923e-03)"
+  },
+  {
+   "case": "bs 1, sharding ep8",
+   "first_call_s": 0.0004671220085583627,
+   "ok": true,
+   "msg": "relative L2 error 3.782e-03 (worst row 3.782e-03)"
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "M128_HH_PM_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "NF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "WS_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

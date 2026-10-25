@@ -1,0 +1,22 @@
+{
+  "payload_sha256": "80c5d1c8fd50dc5a579e6d74d8c54bde9d4b99d552d65520dace7976334da119",
+  "elapsed_s": 57.919353528996,
+  "deadline_s": 150,
+  "weights": null,
+  "lines": [
+    "META S14 / CTA2 vs WS_TILE_BARRIER and WS_PIPE: TMA packed-weight raw ring, three decode warps to BF16 A fragments, two RS-WGMMA WGs sharing X, release-before-epilogue and per-warp norm partials. Barrier arm blocks cross-tile stream until epilogues complete. Packed weights unchanged precision. Real output all arms. Cold read, direct ABBA x8 pairs against BOTH controls.",
+    "M128 S14 n=72 us=354.14 pairS14=1.0000 pairCTA2=1.0009 lo/hi=1.000/1.000 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 CTA2 n=72 us=353.85 pairS14=1.0061 pairCTA2=1.0000 lo/hi=0.875/1.186 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 WS_TILE_BARRIER n=72 us=492.84 pairS14=1.4093 pairCTA2=1.3984 lo/hi=1.163/2.020 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 WS_PIPE n=72 us=488.51 pairS14=1.3946 pairCTA2=1.3861 lo/hi=1.155/2.017 L2/row=0.004132/0.004947 TASK=PASS",
+    "M256 S14 n=72 us=504.12 pairS14=1.0000 pairCTA2=1.0637 lo/hi=1.000/1.000 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 CTA2 n=72 us=475.95 pairS14=0.9454 pairCTA2=1.0000 lo/hi=0.807/1.211 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 WS_TILE_BARRIER n=72 us=675.42 pairS14=1.3502 pairCTA2=1.4242 lo/hi=1.108/1.677 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 WS_PIPE n=72 us=679.36 pairS14=1.3545 pairCTA2=1.4408 lo/hi=1.082/1.654 L2/row=0.004124/0.005018 TASK=PASS",
+    "WS_RES [(64, 0, 0, [104, 0, 1024, 98304, 1]), (64, 0, 1, [104, 0, 1024, 98304, 1]), (64, 1, 0, [89, 0, 1024, 98304, 1]), (64, 1, 1, [89, 0, 1024, 98304, 1]), (128, 0, 0, [128, 0, 1024, 65536, 1]), (128, 0, 1, [128, 0, 1024, 65536, 1]), (128, 1, 0, [107, 0, 1024, 65536, 1]), (128, 1, 1, [107, 0, 1024, 65536, 1]), (192, 0, 0, [164, 0, 1024, 81920, 1]), (192, 0, 1, [164, 0, 1024, 81920, 1]), (192, 1, 0, [140, 0, 1024, 81920, 1]), (192, 1, 1, [140, 0, 1024, 81920, 1]), (256, 0, 0, [160, 0, 1024, 98304, 1]), (256, 0, 1, [160, 0, 1024, 98304, 1]), (256, 1, 0, [157, 0, 1024, 98304, 1]), (256, 1, 1, [157, 0, 1024, 98304, 1])]",
+    "AA signed/abs/max=0.971/4.397/50.848",
+    "END seeds=24 used=57.9 left=92.1"
+  ],
+  "device": "GPU0 sm120",
+  "limitation": "Local cold-read timing only; compiled stand-ins and JIT cache are local, so this is a deadline/correctness rehearsal rather than Hopper performance evidence."
+}

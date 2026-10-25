@@ -1,0 +1,24 @@
+{
+  "payload_sha256": "80c5d1c8fd50dc5a579e6d74d8c54bde9d4b99d552d65520dace7976334da119",
+  "cases": [
+    {
+      "experts": 1,
+      "groups": 8,
+      "bytes": 294912,
+      "bit_equal": true
+    },
+    {
+      "experts": 2,
+      "groups": 16,
+      "bytes": 1179648,
+      "bit_equal": true
+    },
+    {
+      "experts": 3,
+      "groups": 24,
+      "bytes": 2654208,
+      "bit_equal": true
+    }
+  ],
+  "meaning": "All packed code and scale bytes preserved, no precision expansion; metadata aligns each9216B TMA packet."
+}

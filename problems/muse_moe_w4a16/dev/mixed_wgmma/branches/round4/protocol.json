@@ -1,0 +1,18 @@
+{
+  "source_sha256": "d63f15a667ce00ec9aec30555cb5144243a509093937b519dc6f42fff4912c5c",
+  "checks": 442,
+  "random_schedules": 400,
+  "pipe_schedules_with_cross_tile_overlap": 200,
+  "negative_controls": [
+    "('deadlock', 1, True, 0, 1, 1, [1, 1], [0, 0])",
+    "('overwrite pending X', 2, [[0], [0]])"
+  ],
+  "raw_slots": 2,
+  "decoded_slots": [
+    1,
+    2
+  ],
+  "stages_per_tile": 32,
+  "ownership": "Empty barrier requires both consumers. S2 releases the prior stage after the next group0 wait1; final wait0 releases the final stage. S1 drains/releases current. Raw TMA completion precedes decode, decode completion precedes A loads. Next tile may stream before both consumer epilogues finish; gated arm waits for both.",
+  "limitation": "Models ownership and forward progress under variable completion order. Native TMA proxy visibility, instruction semantics, register reallocation and Hopper two-slot execution require H200."
+}

@@ -1,0 +1,17 @@
+{
+  "local_start64_checks": 12,
+  "payload_sha256": "80c5d1c8fd50dc5a579e6d74d8c54bde9d4b99d552d65520dace7976334da119",
+  "checks": 1036,
+  "input_cases": 128,
+  "bit_equal_to_S14": [
+    128,
+    48,
+    48
+  ],
+  "worst_L2_row": [
+    0.004212214145809412,
+    0.004781694617122412
+  ],
+  "device": "GPU0 sm120",
+  "coverage": "All4 arms forced at every size; hot/empty/real and N32/N64/N128/N192/N256 boundary routes; NaN ACT/Y/SS/OUT/GX/HP, two graph replays, finite heavy256-way norm partial coverage, exact barrier/pipe output equality, separately captured local_start64. TMA and WGMMA use real cp.async/mma.sync stand-ins; S1 replaces S2 only for MAX>64 locally."
+}

@@ -57,3 +57,11 @@ beside every arm. Three local_eval screens and1,235 graph/metadata checks pass.
 Sender **77150f5f5046c333**, prefill host, PID1290600, priority11, not-before1792972860, behind all existing
 senders. No judge job ID yet. Round2's full-overlap model is corrected to146.0/144.5us by enforcing the
 combined weight-stream floor; its conservative CTA2 prediction remains177.8/248.7us. Existing senders unchanged.
+
+Heavy residual batch: [round4/README.md](round4/README.md), payload **80c5d1c8**, CUDA **a43783e7**.
+TMA raw ring, three decode warps and two register-A WGMMA consumers sharing X; per-warp W2 norms
+and stream-before-epilogue. S14/CTA2 controls plus an epilogue-gated ablation,24seed entry rehearsal,
+two official screens,1,036 graph checks and442 protocol checks pass. Resource audit prevents
+carrying M128's old same-SM overlap: point187.4/193.9us, optimistic spatial-overlap155.1/193.9us;
+targets132.6/158.5 remain unmet. Sender **8c4c89c1d51b179d**, attention import host, PID1837828,
+priority13, not-before1792972860, budget150s; no judge job yet. Earlier three senders unchanged.

@@ -1,0 +1,40 @@
+{
+  "128": {
+    "target_us": 132.6,
+    "CTA2_point_us": 177.84241379310345,
+    "heavy_weight_stream_us": 28.311552,
+    "heavy_residual_targeted_us": 29.036164292794126,
+    "light_residual_untouched_us": 21.49931200000001,
+    "gather_service_us": 9.02,
+    "fill_drain_allowance_us": 4,
+    "light_service_unchanged_us": 130.03,
+    "route_finish_tail_us": 16,
+    "overlap_credit_point_us": 0,
+    "optimistic_spatial_overlap_credit_us": 32.311552,
+    "optimistic_spatial_overlap_prediction_us": 155.05,
+    "WS_PIPE_prediction_us": 187.36155200000002,
+    "WS_TILE_BARRIER_prediction_us": 190.2651684292794,
+    "remaining_above_target_us": 54.76155200000002,
+    "full_overlap_bound_us": 146.03,
+    "assumption": "Decode/epilogue plus cached X service hide under the heavy unique-weight stream. This is a hypothesis, not a consequence of specialization. No light residual removed. Register admission64,512 prevents NT1 CTA co-residency; zero interbranch overlap is the point estimate. Old overlap survives only as an optimistic spatial/tail scenario. Barrier-arm10% exposed residual is an unmeasured sensitivity."
+  },
+  "256": {
+    "target_us": 158.5,
+    "CTA2_point_us": 248.74878661087865,
+    "heavy_weight_stream_us": 49.545216,
+    "heavy_residual_targeted_us": 47.00364744410906,
+    "light_residual_untouched_us": 19.975088000000007,
+    "gather_service_us": 8.96,
+    "fill_drain_allowance_us": 4,
+    "light_service_unchanged_us": 114.35,
+    "route_finish_tail_us": 17.079999999999984,
+    "overlap_credit_point_us": 0,
+    "optimistic_spatial_overlap_credit_us": 0.0,
+    "optimistic_spatial_overlap_prediction_us": 193.935216,
+    "WS_PIPE_prediction_us": 193.935216,
+    "WS_TILE_BARRIER_prediction_us": 198.6355807444109,
+    "remaining_above_target_us": 35.435216,
+    "full_overlap_bound_us": 144.48198399999998,
+    "assumption": "Decode/epilogue plus cached X service hide under the heavy unique-weight stream. This is a hypothesis, not a consequence of specialization. No light residual removed. Register admission64,512 prevents NT1 CTA co-residency; zero interbranch overlap is the point estimate. Old overlap survives only as an optimistic spatial/tail scenario. Barrier-arm10% exposed residual is an unmeasured sensitivity."
+  }
+}
