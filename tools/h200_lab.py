@@ -70,7 +70,7 @@ def lab_cold_l2():
     global _lab_flush_buf
     if _lab_flush_buf is None:
         _lab_flush_buf = torch.empty(1 << 30, dtype=torch.uint8, device="cuda")
-    _lab_flush_buf.sum()
+    _lab_flush_buf.view(torch.int64).sum()  # int64 view: the uint8 sum upcasts and runs ~4x slower
 
 
 def _lab_run_one(name, src, deadline, weights, state):

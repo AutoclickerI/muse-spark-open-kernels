@@ -15,7 +15,7 @@ Judge prepare: S1 170.2 s, S2 173.6 s, S4 200.8 s of 300 s; each new native modu
 Cell handoffs (path, SHA-256; all in S6):
 - LOP3 NT1 M1-32: `dev/nt1_branches/nt1_lop3_cell.py` 3f84a8a4e12b41bd7257712d8656d3f417f6a9e238f00e481b3be526da69cc40
 - D32g M128: `../muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/d32g_cell.py` a7afb63d9cb17c920412c8f3003640bf956599ab6caa874a9631f290798dce82
-- H_H M128: `../muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/hh_cell.py` 970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f
+- H_H M128: `../muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/hh_cell.py` 365b623992367a1d45d3dae06a2096ddd0e6879deffab2e3924678a47997b621 (u8)
 - mixed_parallel M256: accepted payload of `8483c0c6`, cb20858c5de9bfaca16ee289529cc2f46554ed575e32a7ce16dcccd31b1cd179 (`dev/s6/build.py` extracts it)
 - O config6 M1: `../muse_bf16_proj/dev/gemv_fixed/projection.py` c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe
 - Not in S1-S6: verify-1 sliding single launch `dev/verify1_sliding_pick.py` 46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e,
@@ -26,4 +26,5 @@ M=1 timeline `28fc0380` (prefill). Landed: M128 sweep `4c469bf9`.
 Next: S7 = the best measured S plus each landed lab win and the verify-1 sliding cell; rerun `dev/levers/build.py` when S5/S6 land.
 Withdrawn: S4-S6 (16-bit scale words, CONSTRAINTS 5). Incumbent: S7 `cand_r3_best7_s7.py` bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390,
 1.5597x `2f6471d5` (S6 with H_H on uint8 scales; verify 16 within noise of S6).
+Next: S7R `cand_r3_best7_s7r.py` 56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101 (M=256 on R_full, 0.9227x paired `110599ba`), sent.
 Parked: megakernel at +1.74% estimated (`dev/megakernel/README.md`). Glue recipes lost: `80b70f7f` (bug), `9eeb39ba`.
