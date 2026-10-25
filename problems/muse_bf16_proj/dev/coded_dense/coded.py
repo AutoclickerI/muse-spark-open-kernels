@@ -91,7 +91,7 @@ template <int NT, int RT, int PIPE>
 __global__ void __launch_bounds__(256) coded_gemv(const uint4* __restrict__ Wc, const float* __restrict__ scales,
                                                   const int* __restrict__ eoff, const int2* __restrict__ esc,
                                                   const __nv_bfloat16* __restrict__ X, int x_stride, int M,
-                                                  float* __restrict__ P, int N, int KB, int S, int pf) {
+                                                  float* __restrict__ P, int N, int KB, int S, int pf, int prew) {
   extern __shared__ __align__(16) unsigned char smem_raw[];
   __nv_bfloat16* xs = reinterpret_cast<__nv_bfloat16*>(smem_raw);
   pdl_release();
@@ -103,6 +103,7 @@ __global__ void __launch_bounds__(256) coded_gemv(const uint4* __restrict__ Wc, 
 #pragma unroll
   for (int rt = 0; rt < RT; ++rt) wp[rt] = Wc + ((size_t)(r0 + rt) * KB + kb0) * 96 + lane;
   uint4 buf[PIPE][RT][3];
+  if (!prew) pdl_wait();  // prew: the first PIPE blocks load before griddepcontrol.wait (overlap the producer)
 #pragma unroll
   for (int p = 0; p < PIPE; ++p)
     if (p < nb)
@@ -117,13 +118,23 @@ __global__ void __launch_bounds__(256) coded_gemv(const uint4* __restrict__ Wc, 
       for (int off = (PIPE * 1536) + lane * 128; off < nb * 1536; off += 32 * 128) l2_prefetch(base + off);
     }
   }
-  pdl_wait();
-  const int L = nb * 64, RS = L + 8, k0 = kb0 * 64, cpr = L >> 3;
-  for (int i = threadIdx.x; i < M * cpr; i += blockDim.x) {
-    const int row = i / cpr, c = i - row * cpr;
-    cp_async16(xs + row * RS + c * 8, X + (size_t)row * x_stride + k0 + c * 8);
+  if (prew) pdl_wait();
+  // Activations X[0:M, split] -> xs in two cp.async groups: the first PIPE blocks' columns, then the rest, so
+  // the MMA loop starts once the first group lands.
+  const int L = nb * 64, RS = L + 8, k0 = kb0 * 64, c0 = nb < PIPE ? nb : PIPE;
+  {
+    const int cpr0 = c0 * 8, cpr1 = (nb - c0) * 8;
+    for (int i = threadIdx.x; i < M * cpr0; i += blockDim.x) {
+      const int row = i / cpr0, c = i - row * cpr0;
+      cp_async16(xs + row * RS + c * 8, X + (size_t)row * x_stride + k0 + c * 8);
+    }
+    asm volatile("cp.async.commit_group;" ::: "memory");
+    for (int i = threadIdx.x; i < M * cpr1; i += blockDim.x) {
+      const int row = i / cpr1, c = cpr0 + (i - row * cpr1);
+      cp_async16(xs + row * RS + c * 8, X + (size_t)row * x_stride + k0 + c * 8);
+    }
+    asm volatile("cp.async.commit_group;\ncp.async.wait_group 1;" ::: "memory");
   }
-  asm volatile("cp.async.commit_group;\ncp.async.wait_group 0;" ::: "memory");
   __syncthreads();
 
   float acc[RT][NT][4];
@@ -138,6 +149,10 @@ __global__ void __launch_bounds__(256) coded_gemv(const uint4* __restrict__ Wc, 
 #pragma unroll
     for (int p = 0; p < PIPE; ++p) {
       const int bb = b + p;
+      if (bb == c0) {  // the second activation group (uniform across the CTA)
+        asm volatile("cp.async.wait_group 0;" ::: "memory");
+        __syncthreads();
+      }
       if (bb < nb) {
         uint4 cur[RT][3];
 #pragma unroll
@@ -178,6 +193,7 @@ __global__ void __launch_bounds__(256) coded_gemv(const uint4* __restrict__ Wc, 
     }
   }
 
+  if (nb <= c0) asm volatile("cp.async.wait_group 0;" ::: "memory");  // nothing in flight past this point
 #pragma unroll
   for (int rt = 0; rt < RT; ++rt) {
     const int r = r0 + rt;
@@ -247,7 +263,7 @@ __global__ void coded_decode(const uint4* __restrict__ Wc, const float* __restri
 template <int NT, int RT, int PIPE>
 static cudaError_t launch(int NW, int pdl, cudaStream_t st, const uint4* Wc, const float* sc, const int* eoff,
                           const int2* esc, const __nv_bfloat16* X, int xs, int M, float* P, int N, int KB, int S,
-                          int pf) {
+                          int pf, int prew) {
   const int R = N / 16, Lmax = ((KB + S - 1) / S) * 64, smem = M * (Lmax + 8) * 2;
   auto k = coded_gemv<NT, RT, PIPE>;
   static int smem_set = 0;  // one per instantiation
@@ -266,7 +282,7 @@ static cudaError_t launch(int NW, int pdl, cudaStream_t st, const uint4* Wc, con
   at[0].val.programmaticStreamSerializationAllowed = 1;
   cfg.attrs = at;
   cfg.numAttrs = pdl ? 1 : 0;
-  return cudaLaunchKernelEx(&cfg, k, Wc, sc, eoff, esc, X, xs, M, P, N, KB, S, pf);
+  return cudaLaunchKernelEx(&cfg, k, Wc, sc, eoff, esc, X, xs, M, P, N, KB, S, pf, prew);
 }
 
 }  // namespace cdg
@@ -275,11 +291,11 @@ static cudaError_t launch(int NW, int pdl, cudaStream_t st, const uint4* Wc, con
   if (NT == NT_ && RT == RT_ && PIPE == PIPE_)                                                               \
     e = cdg::launch<NT_, RT_, PIPE_>((int)NW, (int)pdl, st, (const uint4*)Wc, (const float*)sc, (const int*)eoff, \
                                      (const int2*)esc, (const __nv_bfloat16*)X, (int)xs, (int)M, (float*)P,     \
-                                     (int)N, (int)KB, (int)S, (int)pf);
+                                     (int)N, (int)KB, (int)S, (int)pf, (int)prew);
 
 void cd_gemv(int64_t Wc, int64_t sc, int64_t eoff, int64_t esc, int64_t X, int64_t xs, int64_t M, int64_t P,
-             int64_t N, int64_t KB, int64_t S, int64_t NW, int64_t RT, int64_t PIPE, int64_t pf, int64_t pdl,
-             int64_t stream) {
+             int64_t N, int64_t KB, int64_t S, int64_t NW, int64_t RT, int64_t PIPE, int64_t pf, int64_t prew,
+             int64_t pdl, int64_t stream) {
   cudaStream_t st = reinterpret_cast<cudaStream_t>(stream);
   const int NT = (int)((M + 7) / 8) == 3 ? 4 : (int)((M + 7) / 8);
   if (NT > 4 || (N / 16) % (NW * RT) || S > KB) throw std::runtime_error("cd_gemv shape");
@@ -304,8 +320,8 @@ void cd_decode(int64_t Wc, int64_t sc, int64_t N, int64_t K, int64_t out, int64_
 CD_CPP = r'''
 #include <cstdint>
 void cd_gemv(int64_t Wc, int64_t sc, int64_t eoff, int64_t esc, int64_t X, int64_t xs, int64_t M, int64_t P,
-             int64_t N, int64_t KB, int64_t S, int64_t NW, int64_t RT, int64_t PIPE, int64_t pf, int64_t pdl,
-             int64_t stream);
+             int64_t N, int64_t KB, int64_t S, int64_t NW, int64_t RT, int64_t PIPE, int64_t pf, int64_t prew,
+             int64_t pdl, int64_t stream);
 void cd_decode(int64_t Wc, int64_t sc, int64_t N, int64_t K, int64_t out, int64_t stream);
 '''
 
@@ -421,13 +437,13 @@ def cd_smem(M, K, S):
     return M * (-(-KB // S) * 64 + 8) * 2
 
 
-def cd_gemv(x, c, S, NW=4, RT=1, PIPE=3, pf=0, pdl=True, out=None):
+def cd_gemv(x, c, S, NW=4, RT=1, PIPE=3, pf=0, prew=1, pdl=True, out=None):
     """x [T, K] bf16 (16 B aligned rows) -> (P [S, T, N] FP32 partials, S)."""
     T, K = x.shape
     N = c['N']
     assert K == c['K'] and x.dtype == torch.bfloat16 and x.stride(1) == 1 and x.stride(0) % 8 == 0
     P = torch.empty((S, T, N), device=x.device, dtype=torch.float32) if out is None else out
     cd_module().cd_gemv(c['coded'].data_ptr(), c['scales'].data_ptr(), c['eoff'].data_ptr(), c['esc'].data_ptr(),
-                        x.data_ptr(), x.stride(0), T, P.data_ptr(), N, K // 64, S, NW, RT, PIPE, pf, int(pdl),
+                        x.data_ptr(), x.stride(0), T, P.data_ptr(), N, K // 64, S, NW, RT, PIPE, pf, prew, int(pdl),
                         torch.cuda.current_stream(x.device).cuda_stream)
     return P, S

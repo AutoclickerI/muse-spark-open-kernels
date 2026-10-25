@@ -1,3 +1,4 @@
+import math
 import statistics
 import time
 
@@ -155,8 +156,20 @@ def cl_configs(N, K, M):
     return out
 
 
+def cl_weights(weights):
+    """The host's dense weights, or synthetic ones of generate_weights' distribution (randn / sqrt(k) BF16; FP32
+    router 0.045 randn) on a host that lacks them (MoE / prefill)."""
+    if all(k in weights for k in ('qkv_gate', 'o', 'pooler', 'unpooler', 'router')):
+        return weights, 'real'
+    g = torch.Generator(device='cuda').manual_seed(1234)
+    dense = lambda n, k: (torch.randn((n, k), device='cuda', generator=g) / math.sqrt(k)).to(torch.bfloat16)  # noqa: E731
+    return dict(qkv_gate=dense(2304, 8192), o=dense(8192, 1024), pooler=dense(4096, 8192), unpooler=dense(8192, 4096),
+                router=0.045 * torch.randn((256, 8192), device='cuda', generator=g)), 'synthetic'
+
+
 def lab(deadline, weights):
     t0 = time.monotonic()
+    weights, wkind = cl_weights(weights)
     dev = weights['o'].device
     router = weights['router'].float()
     hi = router.to(torch.bfloat16)
@@ -180,7 +193,7 @@ def lab(deadline, weights):
     lines.append(f'META standalone graphs after lab_cold_l2; us = median of 16 minus an empty graph ({base:.2f} us); '
                  f'rd16/rd12 = plain 16 B stream over the bf16 / coded bytes (528 CTAs); s8 = S8 Triton tile; bal = P7 '
                  f'balanced BN64/S/NS4; cd NW/RT/PIPE/S = coded GEMV; encode {enc_s:.2f}s all 5 roles, '
-                 f'compile {comp_s:.1f}s, bit-exact {"OK" if ok else "FAIL"}; '
+                 f'compile {comp_s:.1f}s, bit-exact {"OK" if ok else "FAIL"}, {wkind} weights; '
                  + ' '.join(f'{k}:esc={c["nesc"]}' for k, c in coded.items()))
     sums = []
     for t in (1, 8, 16, 32):
