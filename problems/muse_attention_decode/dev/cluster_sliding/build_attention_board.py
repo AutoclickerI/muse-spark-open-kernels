@@ -14,9 +14,10 @@ s=''.join(lines)
 def driver_cell(path,prefix,cuda,cpp=None):
     d=path.read_text();nodes=ast.parse(d).body
     cell='\n'.join(ast.get_source_segment(d,n) for n in nodes if isinstance(n,ast.FunctionDef) or (isinstance(n,ast.Assign) and any(getattr(t,'id','') in ('CPP','VQ8_CPP','_MOD','_PLANS','_FREQ','_COUNTERS','_EXT','_SMS','_INVF') for t in n.targets)))
-    names=('CUDA','CPP','_MOD','_PLANS','_FREQ','_COUNTERS','module','plan','attention') if prefix=='gc_' else ('VQ8_CUDA','VQ8_CPP','_EXT','_SMS','_INVF','vq8_ext','_num_sms','_inv_freq','vq8_supported','vq8_attention')
+    gather='VQ8_CPP' not in d
+    names=('CUDA','CPP','_MOD','_PLANS','_FREQ','_COUNTERS','module','plan','attention') if gather else ('VQ8_CUDA','VQ8_CPP','_EXT','_SMS','_INVF','vq8_ext','_num_sms','_inv_freq','vq8_supported','vq8_attention')
     for name in names:cell=re.sub(r'\b'+name+r'\b',prefix+name,cell)
-    return prefix+('CUDA' if prefix=='gc_' else 'VQ8_CUDA')+'='+repr(cuda)+'\n'+(prefix+'CPP='+repr(cpp)+'\n' if cpp else '')+cell+'\n'
+    return prefix+('CUDA' if gather else 'VQ8_CUDA')+'='+repr(cuda)+'\n'+(prefix+'CPP='+repr(cpp)+'\n' if cpp else '')+cell+'\n'
 cuda=build_global.source();cpp='#include <cstdint>\n#include <vector>\n'+'\n'.join(re.search(r'(?:void|std::vector<int64_t>) '+fn+r'\([^)]*\)',cuda,re.S).group(0)+';' for fn in ('sliding_forward','sliding_resources'))
 s+='\nimport hashlib,re\n'+driver_cell(HERE/'global_driver.py','gc_',cuda,cpp)
 p=HERE.parent/'full128/build.py';q=importlib.util.spec_from_file_location('_p5_board_vq_source',p);v=importlib.util.module_from_spec(q);q.loader.exec_module(v)

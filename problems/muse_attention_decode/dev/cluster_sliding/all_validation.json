@@ -1,0 +1,39 @@
+{
+  "all_sliding_cuda_sha256": "1b0ce13efddd6c73ca7825e37a0b650c928659ce22309f3420ac58a783936357",
+  "masked_cuda_sha256": "6294cf1834c35b8a4917c12456d95966e126e8be987e9e858953ab895b2cda0a",
+  "independent_attention_checks": 48,
+  "fresh_graph_replays_each": 8,
+  "fast_rope_decode_checks": 32,
+  "rope_extreme_contexts": [
+    300000,
+    1048576
+  ],
+  "native_sm90a": {
+    "registers": [
+      151,
+      138,
+      157,
+      119,
+      138,
+      98,
+      140,
+      98
+    ],
+    "stack_bytes": 0,
+    "spill_store_bytes": 0,
+    "spill_load_bytes": 0,
+    "C75": false
+  },
+  "native_board_sha256": "6f7338569f434fc98cb41b47c811ba0c8216ef57127658991c94c77533ac5f53",
+  "normal": {
+    "tests": 16,
+    "shapes": 12,
+    "static": 12
+  },
+  "forced": {
+    "tests": 16,
+    "shapes": 12,
+    "static": 12
+  },
+  "status": "native six-shape pair pending; whole-layer lab in local screen"
+}

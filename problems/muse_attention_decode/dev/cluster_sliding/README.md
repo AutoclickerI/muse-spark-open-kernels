@@ -157,3 +157,26 @@ sm120 FA3 scheduler metadata. Full/sliding global attention itself runs natively
 No new performance or correctness promotion for this follow-up; every whole-layer host quota was exhausted
 while screens ran. Frozen source`0ccc2548`,host`8e091fcb`,is queued for09:01KST October26.
 Native attention-board validation is bundled with [single-head probe](../full_head/README.md).
+
+
+## Decode padded softmax and last-CTA verify
+
+`build_masked.py` skips padded query rows within the active warp, not only inactive warps, before FP32ex2.
+Missing-row probabilities are exactlyzero; quad reductions use the active mask, and RS-WGMMA still executes
+for the complete warpgroup. This removes the unused second8-row fragment at decode. `build_fast.py` also
+uses FP32`__sincosf`, already used by verify, instead of the out-of-line sine/cosine helper.32 decode
+TASK/partial fixtures including300K and1M contexts pass; no cache tolerance was changed.
+
+`build_all.py` extends last-CTA completion to8-token sliding verify: proper per-token gate/output indexing,
+L×partial allocation and native L8 instantiations. Native code`1b0ce13e`, zero stack/spills/C75,98–157
+registers across variants. `check_all.py` passes all48 TASK/scored-shape ×N64/N128 ×BF16/strided3-partial
+fixtures, each with eight fresh-input graph replays and zero residual counters.
+`patch_all.py` produces an experimental candidate for all six sliding shapes on originalS11. No promotion
+until the full paired layer ratios land.
+
+Native attention candidate`6f733856` compares original base/VQ8, original last-CTA, padded-row masking,
+and fast-RoPE+last-CTA across all six sliding loads, eight seeds ×eight cold replays, plus FP32-partial gates.
+Normal andforced local_eval eachpass16 TASK tests/12 graph shapes/12 static checks. Native result pending.
+`build_all_lab.py` builds the identical six-shape,16-seed original-S11 whole-layer pair with CUPTI increments;
+host`7eee215c` also retains the paired full-verify N128 winner. The exact wrapper`da3d0c48` is being screened
+normally/forced before any queued send. Every layer host is exhausted until09:01KST October26.

@@ -24,5 +24,11 @@ def loader(name,path):
         if hasattr(m,'p5_head_probe'):
             m.P5_HEAD_SEEDS=m.P5_HEAD_SEEDS[:1];m.P5_HEAD_ROUNDS=2
             assert len(m.p5_head_probe())==2
+        if hasattr(m,'p5_q1_probe'):
+            m.P5_Q1_SEEDS=m.P5_Q1_SEEDS[:1];m.P5_Q1_ROUNDS=2
+            assert m.p5_q1_probe()['seeds']==1
+        if hasattr(m,'p5_sliding_probe'):
+            m.P5_SLIDE_SEEDS=m.P5_SLIDE_SEEDS[:1];m.P5_SLIDE_ROUNDS=2
+            assert len(m.p5_sliding_probe())==6
     return m
 local_eval.load_module=loader;local_eval.main()
