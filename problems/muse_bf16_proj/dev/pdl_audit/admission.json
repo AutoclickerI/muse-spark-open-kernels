@@ -1,0 +1,26 @@
+{
+  "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "candidate_sha256": "04d4ba683728ef1cc9e4c0dfc720535d384d1cbd62125114c87535cc4e9fb17a",
+  "patch_sha256": "f2438ff786d9dac9facd7b14c9412924a70240d5a63b0c2a1ba785a35b85ed0c",
+  "local": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 24
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 24
+    }
+  },
+  "native_sources": 10,
+  "native_specializations": 72,
+  "triton_kernels": 15,
+  "local_lab_fixtures": 12,
+  "local_lab_seeds": 16,
+  "local_lab_paths": "portable; Hopper kernels audited/compiled separately",
+  "status": "H200 queued; not promoted",
+  "h200_job": "8db4213240c6420d",
+  "payload_sha256": "c638acca812650c7aa9791d278ab84e9bff25ae77639426bc9ad9482c01b48d5"
+}

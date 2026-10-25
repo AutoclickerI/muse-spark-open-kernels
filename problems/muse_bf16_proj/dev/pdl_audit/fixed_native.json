@@ -1,0 +1,4145 @@
+[
+  {
+    "name": "GLUE_CL_CUDA",
+    "sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN7glue_cl8route_clILi2ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+        "instructions": 2544,
+        "waits": [
+          34
+        ],
+        "releases": [
+          12
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 23,
+            "line": null,
+            "sass": "/*0170*/                   LDG.E.STRONG.SM R2, desc[UR14][R22.64] ;                     /* 0x0000000e16027981 */"
+          },
+          {
+            "index": 29,
+            "line": null,
+            "sass": "/*01d0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR14][R16.64] ;                 /* 0x0000000e10088981 */"
+          },
+          {
+            "index": 31,
+            "line": null,
+            "sass": "/*01f0*/              @!P1 LDG.E.128.STRONG.SM R12, desc[UR14][R18.64] ;                /* 0x0000000e120c9981 */"
+          },
+          {
+            "index": 33,
+            "line": null,
+            "sass": "/*0210*/              @!P2 LDG.E.STRONG.SM R36, desc[UR14][R20.64] ;                    /* 0x0000000e1424a981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+        "instructions": 2128,
+        "waits": [
+          29
+        ],
+        "releases": [
+          9
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 25,
+            "line": null,
+            "sass": "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ;                     /* 0x0000000a10037981 */"
+          },
+          {
+            "index": 26,
+            "line": null,
+            "sass": "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ;                 /* 0x0000000a0c089981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] ;                     /* 0x0000000a0e028981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+        "instructions": 2128,
+        "waits": [
+          29
+        ],
+        "releases": [
+          9
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 25,
+            "line": null,
+            "sass": "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ;                     /* 0x0000000a10037981 */"
+          },
+          {
+            "index": 26,
+            "line": null,
+            "sass": "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ;                 /* 0x0000000a0c089981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] ;                     /* 0x0000000a0e028981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl8route_clILi8ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+        "instructions": 2128,
+        "waits": [
+          25
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 10,
+            "line": null,
+            "sass": "/*00a0*/                   LDG.E.STRONG.SM R2, desc[UR10][R12.64] ;                     /* 0x0000000a0c027981 */"
+          },
+          {
+            "index": 21,
+            "line": null,
+            "sass": "/*0150*/              @!P4 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64] ;                 /* 0x0000000a0610c981 */"
+          },
+          {
+            "index": 24,
+            "line": null,
+            "sass": "/*0180*/              @!P1 LDG.E.STRONG.SM R0, desc[UR10][R10.64] ;                     /* 0x0000000a0a009981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl8route_clILi16ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+        "instructions": 2136,
+        "waits": [
+          25
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 10,
+            "line": null,
+            "sass": "/*00a0*/                   LDG.E.STRONG.SM R2, desc[UR10][R12.64] ;                     /* 0x0000000a0c027981 */"
+          },
+          {
+            "index": 21,
+            "line": null,
+            "sass": "/*0150*/              @!P3 LDG.E.128.STRONG.SM R16, desc[UR10][R6.64] ;                 /* 0x0000000a0610b981 */"
+          },
+          {
+            "index": 24,
+            "line": null,
+            "sass": "/*0180*/              @!P0 LDG.E.STRONG.SM R0, desc[UR10][R10.64] ;                     /* 0x0000000a0a008981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1816,
+        "waits": [
+          82
+        ],
+        "releases": [
+          21
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 42,
+            "line": null,
+            "sass": "/*02a0*/                   LDG.E.128.CONSTANT R16, desc[UR6][R118.64] ;                 /* 0x0000000676107981 */"
+          },
+          {
+            "index": 52,
+            "line": null,
+            "sass": "/*0340*/               @P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64] ;                   /* 0x0000000608040981 */"
+          },
+          {
+            "index": 54,
+            "line": null,
+            "sass": "/*0360*/               @P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64] ;                 /* 0x000000060a4c0981 */"
+          },
+          {
+            "index": 56,
+            "line": null,
+            "sass": "/*0380*/               @P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64] ;                 /* 0x000000060c480981 */"
+          },
+          {
+            "index": 58,
+            "line": null,
+            "sass": "/*03a0*/               @P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64] ;                 /* 0x000000060e440981 */"
+          },
+          {
+            "index": 62,
+            "line": null,
+            "sass": "/*03e0*/                   LDG.E.128.STRONG.SM R64, desc[UR6][R64.64] ;                 /* 0x0000000640407981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/                   LDG.E.128.STRONG.SM R60, desc[UR6][R60.64] ;                 /* 0x000000063c3c7981 */"
+          },
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/                   LDG.E.128.STRONG.SM R52, desc[UR6][R52.64] ;                 /* 0x0000000634347981 */"
+          },
+          {
+            "index": 68,
+            "line": null,
+            "sass": "/*0440*/                   LDG.E.128.STRONG.SM R48, desc[UR6][R48.64] ;                 /* 0x0000000630307981 */"
+          },
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/                   LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                 /* 0x000000062c2c7981 */"
+          },
+          {
+            "index": 72,
+            "line": null,
+            "sass": "/*0480*/                   LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                 /* 0x0000000628287981 */"
+          },
+          {
+            "index": 74,
+            "line": null,
+            "sass": "/*04a0*/                   LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                 /* 0x0000000624247981 */"
+          },
+          {
+            "index": 76,
+            "line": null,
+            "sass": "/*04c0*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/                   LDG.E.128.STRONG.SM R56, desc[UR6][R56.64] ;                 /* 0x0000000638387981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1880,
+        "waits": [
+          83
+        ],
+        "releases": [
+          24
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 42,
+            "line": null,
+            "sass": "/*02a0*/                   LDG.E.128.CONSTANT R16, desc[UR6][R118.64] ;                 /* 0x0000000676107981 */"
+          },
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/               @P0 LDG.E.128.STRONG.SM R68, desc[UR6][R14.64] ;                 /* 0x000000060e440981 */"
+          },
+          {
+            "index": 53,
+            "line": null,
+            "sass": "/*0350*/               @P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64] ;                   /* 0x0000000608040981 */"
+          },
+          {
+            "index": 55,
+            "line": null,
+            "sass": "/*0370*/               @P0 LDG.E.128.STRONG.SM R76, desc[UR6][R10.64] ;                 /* 0x000000060a4c0981 */"
+          },
+          {
+            "index": 57,
+            "line": null,
+            "sass": "/*0390*/               @P0 LDG.E.128.STRONG.SM R72, desc[UR6][R12.64] ;                 /* 0x000000060c480981 */"
+          },
+          {
+            "index": 61,
+            "line": null,
+            "sass": "/*03d0*/                   LDG.E.128.STRONG.SM R64, desc[UR6][R64.64] ;                 /* 0x0000000640407981 */"
+          },
+          {
+            "index": 63,
+            "line": null,
+            "sass": "/*03f0*/                   LDG.E.128.STRONG.SM R60, desc[UR6][R60.64] ;                 /* 0x000000063c3c7981 */"
+          },
+          {
+            "index": 65,
+            "line": null,
+            "sass": "/*0410*/                   LDG.E.128.STRONG.SM R52, desc[UR6][R52.64] ;                 /* 0x0000000634347981 */"
+          },
+          {
+            "index": 67,
+            "line": null,
+            "sass": "/*0430*/                   LDG.E.128.STRONG.SM R48, desc[UR6][R48.64] ;                 /* 0x0000000630307981 */"
+          },
+          {
+            "index": 69,
+            "line": null,
+            "sass": "/*0450*/                   LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                 /* 0x0000000628287981 */"
+          },
+          {
+            "index": 71,
+            "line": null,
+            "sass": "/*0470*/                   LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                 /* 0x000000062c2c7981 */"
+          },
+          {
+            "index": 73,
+            "line": null,
+            "sass": "/*0490*/                   LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                 /* 0x0000000624247981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/                   LDG.E.128.STRONG.SM R56, desc[UR6][R56.64] ;                 /* 0x0000000638387981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1080,
+        "waits": [
+          51
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 32,
+            "line": null,
+            "sass": "/*0200*/                   LDG.E.128.CONSTANT R36, desc[UR4][R60.64] ;                  /* 0x000000043c247981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/               @P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64] ;                  /* 0x0000000404300981 */"
+          },
+          {
+            "index": 38,
+            "line": null,
+            "sass": "/*0260*/               @P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64] ;                   /* 0x0000000406080981 */"
+          },
+          {
+            "index": 42,
+            "line": null,
+            "sass": "/*02a0*/                   LDG.E.128.STRONG.SM R12, desc[UR4][R12.64] ;                 /* 0x000000040c0c7981 */"
+          },
+          {
+            "index": 44,
+            "line": null,
+            "sass": "/*02c0*/                   LDG.E.128.STRONG.SM R16, desc[UR4][R16.64] ;                 /* 0x0000000410107981 */"
+          },
+          {
+            "index": 46,
+            "line": null,
+            "sass": "/*02e0*/                   LDG.E.128.STRONG.SM R24, desc[UR4][R24.64] ;                 /* 0x0000000418187981 */"
+          },
+          {
+            "index": 48,
+            "line": null,
+            "sass": "/*0300*/                   LDG.E.128.STRONG.SM R28, desc[UR4][R28.64] ;                 /* 0x000000041c1c7981 */"
+          },
+          {
+            "index": 49,
+            "line": null,
+            "sass": "/*0310*/                   LDG.E.128.STRONG.SM R20, desc[UR4][R20.64] ;                 /* 0x0000000414147981 */"
+          },
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/                   LDG.E.128.STRONG.SM R32, desc[UR4][R32.64] ;                 /* 0x0000000420207981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1160,
+        "waits": [
+          52
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 32,
+            "line": null,
+            "sass": "/*0200*/                   LDG.E.128.CONSTANT R36, desc[UR4][R58.64] ;                  /* 0x000000043a247981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/               @P0 LDG.E.128.STRONG.SM R48, desc[UR4][R4.64] ;                  /* 0x0000000404300981 */"
+          },
+          {
+            "index": 38,
+            "line": null,
+            "sass": "/*0260*/               @P0 LDG.E.128.STRONG.SM R8, desc[UR4][R6.64] ;                   /* 0x0000000406080981 */"
+          },
+          {
+            "index": 42,
+            "line": null,
+            "sass": "/*02a0*/                   LDG.E.128.STRONG.SM R12, desc[UR4][R12.64] ;                 /* 0x000000040c0c7981 */"
+          },
+          {
+            "index": 44,
+            "line": null,
+            "sass": "/*02c0*/                   LDG.E.128.STRONG.SM R16, desc[UR4][R16.64] ;                 /* 0x0000000410107981 */"
+          },
+          {
+            "index": 46,
+            "line": null,
+            "sass": "/*02e0*/                   LDG.E.128.STRONG.SM R24, desc[UR4][R24.64] ;                 /* 0x0000000418187981 */"
+          },
+          {
+            "index": 48,
+            "line": null,
+            "sass": "/*0300*/                   LDG.E.128.STRONG.SM R28, desc[UR4][R28.64] ;                 /* 0x000000041c1c7981 */"
+          },
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/                   LDG.E.128.STRONG.SM R20, desc[UR4][R20.64] ;                 /* 0x0000000414147981 */"
+          },
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/                   LDG.E.128.STRONG.SM R32, desc[UR4][R32.64] ;                 /* 0x0000000420207981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 584,
+        "waits": [
+          35
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 24,
+            "line": null,
+            "sass": "/*0180*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */"
+          },
+          {
+            "index": 31,
+            "line": null,
+            "sass": "/*01f0*/               @P0 LDG.E.128.STRONG.SM R28, desc[UR6][R2.64] ;                  /* 0x00000006021c0981 */"
+          },
+          {
+            "index": 33,
+            "line": null,
+            "sass": "/*0210*/                   LDG.E.128.STRONG.SM R16, desc[UR6][R16.64] ;                 /* 0x0000000610107981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 640,
+        "waits": [
+          35
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 25,
+            "line": null,
+            "sass": "/*0190*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR6][R2.64] ;                  /* 0x0000000602180981 */"
+          },
+          {
+            "index": 31,
+            "line": null,
+            "sass": "/*01f0*/                   LDG.E.128.STRONG.SM R8, desc[UR6][R8.64] ;                   /* 0x0000000608087981 */"
+          },
+          {
+            "index": 34,
+            "line": null,
+            "sass": "/*0220*/                   LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                 /* 0x000000060c0c7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 984,
+        "waits": [
+          52
+        ],
+        "releases": [
+          18
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 34,
+            "line": null,
+            "sass": "/*0220*/                   LDG.E.128.CONSTANT R44, desc[UR6][R72.64] ;                  /* 0x00000006482c7981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/               @P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64] ;                 /* 0x000000060e100981 */"
+          },
+          {
+            "index": 36,
+            "line": null,
+            "sass": "/*0240*/               @P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64] ;                   /* 0x0000000602040981 */"
+          },
+          {
+            "index": 41,
+            "line": null,
+            "sass": "/*0290*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */"
+          },
+          {
+            "index": 43,
+            "line": null,
+            "sass": "/*02b0*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */"
+          },
+          {
+            "index": 45,
+            "line": null,
+            "sass": "/*02d0*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */"
+          },
+          {
+            "index": 47,
+            "line": null,
+            "sass": "/*02f0*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */"
+          },
+          {
+            "index": 49,
+            "line": null,
+            "sass": "/*0310*/                   LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                 /* 0x0000000624247981 */"
+          },
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/                   LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                 /* 0x0000000628287981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1032,
+        "waits": [
+          52
+        ],
+        "releases": [
+          18
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 34,
+            "line": null,
+            "sass": "/*0220*/                   LDG.E.128.CONSTANT R44, desc[UR6][R72.64] ;                  /* 0x00000006482c7981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/               @P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64] ;                 /* 0x000000060e100981 */"
+          },
+          {
+            "index": 36,
+            "line": null,
+            "sass": "/*0240*/               @P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64] ;                   /* 0x0000000602040981 */"
+          },
+          {
+            "index": 41,
+            "line": null,
+            "sass": "/*0290*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */"
+          },
+          {
+            "index": 43,
+            "line": null,
+            "sass": "/*02b0*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */"
+          },
+          {
+            "index": 45,
+            "line": null,
+            "sass": "/*02d0*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */"
+          },
+          {
+            "index": 47,
+            "line": null,
+            "sass": "/*02f0*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */"
+          },
+          {
+            "index": 49,
+            "line": null,
+            "sass": "/*0310*/                   LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                 /* 0x0000000624247981 */"
+          },
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/                   LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                 /* 0x0000000628287981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1040,
+        "waits": [
+          53
+        ],
+        "releases": [
+          20
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 33,
+            "line": null,
+            "sass": "/*0210*/               @P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64] ;                 /* 0x0000000c042c0981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/               @P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64] ;                 /* 0x0000000c08280981 */"
+          },
+          {
+            "index": 36,
+            "line": null,
+            "sass": "/*0240*/                   LDG.E.128.CONSTANT R12, desc[UR12][R66.64] ;                 /* 0x0000000c420c7981 */"
+          },
+          {
+            "index": 41,
+            "line": null,
+            "sass": "/*0290*/                   LDG.E.128.STRONG.SM R36, desc[UR12][R36.64] ;                /* 0x0000000c24247981 */"
+          },
+          {
+            "index": 44,
+            "line": null,
+            "sass": "/*02c0*/                   LDG.E.128.STRONG.SM R32, desc[UR12][R32.64] ;                /* 0x0000000c20207981 */"
+          },
+          {
+            "index": 46,
+            "line": null,
+            "sass": "/*02e0*/                   LDG.E.128.STRONG.SM R28, desc[UR12][R28.64] ;                /* 0x0000000c1c1c7981 */"
+          },
+          {
+            "index": 48,
+            "line": null,
+            "sass": "/*0300*/                   LDG.E.128.STRONG.SM R24, desc[UR12][R24.64] ;                /* 0x0000000c18187981 */"
+          },
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */"
+          },
+          {
+            "index": 52,
+            "line": null,
+            "sass": "/*0340*/                   LDG.E.128.STRONG.SM R16, desc[UR12][R16.64] ;                /* 0x0000000c10107981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 1088,
+        "waits": [
+          53
+        ],
+        "releases": [
+          20
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 34,
+            "line": null,
+            "sass": "/*0220*/               @P0 LDG.E.128.STRONG.SM R44, desc[UR12][R4.64] ;                 /* 0x0000000c042c0981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/                   LDG.E.128.CONSTANT R12, desc[UR12][R66.64] ;                 /* 0x0000000c420c7981 */"
+          },
+          {
+            "index": 36,
+            "line": null,
+            "sass": "/*0240*/               @P0 LDG.E.128.STRONG.SM R40, desc[UR12][R8.64] ;                 /* 0x0000000c08280981 */"
+          },
+          {
+            "index": 41,
+            "line": null,
+            "sass": "/*0290*/                   LDG.E.128.STRONG.SM R36, desc[UR12][R36.64] ;                /* 0x0000000c24247981 */"
+          },
+          {
+            "index": 44,
+            "line": null,
+            "sass": "/*02c0*/                   LDG.E.128.STRONG.SM R32, desc[UR12][R32.64] ;                /* 0x0000000c20207981 */"
+          },
+          {
+            "index": 46,
+            "line": null,
+            "sass": "/*02e0*/                   LDG.E.128.STRONG.SM R28, desc[UR12][R28.64] ;                /* 0x0000000c1c1c7981 */"
+          },
+          {
+            "index": 48,
+            "line": null,
+            "sass": "/*0300*/                   LDG.E.128.STRONG.SM R24, desc[UR12][R24.64] ;                /* 0x0000000c18187981 */"
+          },
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */"
+          },
+          {
+            "index": 52,
+            "line": null,
+            "sass": "/*0340*/                   LDG.E.128.STRONG.SM R16, desc[UR12][R16.64] ;                /* 0x0000000c10107981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 608,
+        "waits": [
+          35
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 24,
+            "line": null,
+            "sass": "/*0180*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ;                /* 0x0000000c0c0c7981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/                   LDG.E.128.STRONG.SM R16, desc[UR12][R16.64] ;                /* 0x0000000c10107981 */"
+          },
+          {
+            "index": 31,
+            "line": null,
+            "sass": "/*01f0*/               @P0 LDG.E.128.STRONG.SM R8, desc[UR12][R6.64] ;                  /* 0x0000000c06080981 */"
+          },
+          {
+            "index": 33,
+            "line": null,
+            "sass": "/*0210*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 664,
+        "waits": [
+          36
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 25,
+            "line": null,
+            "sass": "/*0190*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64] ;                 /* 0x0000000c06180981 */"
+          },
+          {
+            "index": 31,
+            "line": null,
+            "sass": "/*01f0*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ;                /* 0x0000000c0c0c7981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/                   LDG.E.128.STRONG.SM R8, desc[UR12][R8.64] ;                  /* 0x0000000c08087981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 624,
+        "waits": [
+          35
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 24,
+            "line": null,
+            "sass": "/*0180*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ;                /* 0x0000000c0c0c7981 */"
+          },
+          {
+            "index": 27,
+            "line": null,
+            "sass": "/*01b0*/                   LDG.E.128.STRONG.SM R16, desc[UR12][R16.64] ;                /* 0x0000000c10107981 */"
+          },
+          {
+            "index": 30,
+            "line": null,
+            "sass": "/*01e0*/               @P0 LDG.E.128.STRONG.SM R8, desc[UR12][R4.64] ;                  /* 0x0000000c04080981 */"
+          },
+          {
+            "index": 32,
+            "line": null,
+            "sass": "/*0200*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN7glue_cl11boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+        "instructions": 688,
+        "waits": [
+          36
+        ],
+        "releases": [
+          16
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 25,
+            "line": null,
+            "sass": "/*0190*/                   LDG.E.128.STRONG.SM R16, desc[UR12][R16.64] ;                /* 0x0000000c10107981 */"
+          },
+          {
+            "index": 28,
+            "line": null,
+            "sass": "/*01c0*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR12][R20.64] ;                /* 0x0000000c14180981 */"
+          },
+          {
+            "index": 31,
+            "line": null,
+            "sass": "/*01f0*/                   LDG.E.128.STRONG.SM R8, desc[UR12][R8.64] ;                  /* 0x0000000c08087981 */"
+          },
+          {
+            "index": 35,
+            "line": null,
+            "sass": "/*0230*/                   LDG.E.128.STRONG.SM R4, desc[UR12][R4.64] ;                  /* 0x0000000c04047981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "a1d9ec2fdc172feb718e0dfa7bd66269df66fdf082092ee2ea879fed0be02639",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/GLUE_CL_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN7glue_cl8route_clILi2ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj:\n  REG:64 STACK:0 SHARED:4396 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj:\n  REG:64 STACK:0 SHARED:4404 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj:\n  REG:64 STACK:0 SHARED:4420 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl8route_clILi8ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj:\n  REG:56 STACK:0 SHARED:4404 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl8route_clILi16ELi128EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj:\n  REG:56 STACK:0 SHARED:4436 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi2ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:128 STACK:0 SHARED:1216 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi2ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:128 STACK:0 SHARED:1216 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi2ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:64 STACK:0 SHARED:1344 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi2ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:64 STACK:0 SHARED:1344 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi4ELi512ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:64 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi4ELi512ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:64 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi4ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:80 STACK:0 SHARED:1280 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:80 STACK:0 SHARED:1280 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi8ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:72 STACK:0 SHARED:1344 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi8ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:72 STACK:0 SHARED:1344 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi8ELi256ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:55 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:57 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi16ELi128ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:56 STACK:0 SHARED:1600 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl11boundary_clILi16ELi128ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_:\n  REG:62 STACK:0 SHARED:1600 LOCAL:0 CONSTANT[0]:624 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "CUDA_SRC",
+    "sha256": "e1fe1460f9f394803ec7b01dd24595b4e33f9366ecee200eb6d1833dc17f5762",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be12attn_combineILi8EEEvNS_6ParamsE",
+        "instructions": 768,
+        "waits": [
+          9
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 3,
+            "line": null,
+            "sass": "/*0030*/                   LDG.E.STRONG.SM R3, desc[UR6][R2.64] ;                        /* 0x0000000602037981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be9attn_mainILi8ELi3EEEvNS_6ParamsE",
+        "instructions": 14456,
+        "waits": [],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be12attn_combineILi1EEEvNS_6ParamsE",
+        "instructions": 824,
+        "waits": [
+          9
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 3,
+            "line": null,
+            "sass": "/*0030*/                   LDG.E.STRONG.SM R0, desc[UR6][R2.64] ;                        /* 0x0000000602007981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be9attn_mainILi1ELi4EEEvNS_6ParamsE",
+        "instructions": 3352,
+        "waits": [],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "8d2bd769e891a045fa43d75a0167b75f1d0c796167ef3e73bba4bcfd3eb3b5cd",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/CUDA_SRC.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be12attn_combineILi8EEEvNS_6ParamsE:\n  REG:32 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:704 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be9attn_mainILi8ELi3EEEvNS_6ParamsE:\n  REG:233 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:704 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be12attn_combineILi1EEEvNS_6ParamsE:\n  REG:36 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:704 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__4716e7f1_11_CUDA_SRC_cu_3838d1be9attn_mainILi1ELi4EEEvNS_6ParamsE:\n  REG:110 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:704 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "CD_CUDA",
+    "sha256": "764aec6e8889154edd6c63e1e3a7808048c8e1bef2f3b060ed209176da73063f",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN3cdg10coded_gemvILi1ELi1ELi2ELi3EEEvPK5uint4PKfPKiPK4int2PK13__nv_bfloat16iiPfiiiiii",
+        "instructions": 1472,
+        "waits": [
+          133,
+          264
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 109,
+            "line": null,
+            "sass": "/*06d0*/                   LDG.E.CONSTANT R49, desc[UR14][R28.64] ;                            /* 0x0000000e1c317981 */"
+          },
+          {
+            "index": 117,
+            "line": null,
+            "sass": "/*0750*/                   LDG.E.CONSTANT R7, desc[UR14][R38.64] ;                             /* 0x0000000e26077981 */"
+          },
+          {
+            "index": 118,
+            "line": null,
+            "sass": "/*0760*/                   LDG.E.CONSTANT R2, desc[UR14][R40.64] ;                             /* 0x0000000e28027981 */"
+          },
+          {
+            "index": 122,
+            "line": null,
+            "sass": "/*07a0*/               @P0 LDG.E.NA.LTC256B.128.CONSTANT R20, desc[UR14][R42.64+0x600] ;       /* 0x0006000e2a140981 */"
+          },
+          {
+            "index": 123,
+            "line": null,
+            "sass": "/*07b0*/               @P0 LDG.E.NA.LTC256B.128.CONSTANT R24, desc[UR14][R42.64+0x800] ;       /* 0x0008000e2a180981 */"
+          },
+          {
+            "index": 124,
+            "line": null,
+            "sass": "/*07c0*/               @P0 LDG.E.NA.LTC256B.128.CONSTANT R28, desc[UR14][R42.64+0xa00] ;       /* 0x000a000e2a1c0981 */"
+          },
+          {
+            "index": 127,
+            "line": null,
+            "sass": "/*07f0*/               @P1 LDG.E.NA.LTC256B.128.CONSTANT R8, desc[UR14][R36.64] ;              /* 0x0000000e24081981 */"
+          },
+          {
+            "index": 129,
+            "line": null,
+            "sass": "/*0810*/               @P1 LDG.E.NA.LTC256B.128.CONSTANT R12, desc[UR14][R36.64+0x200] ;       /* 0x0002000e240c1981 */"
+          },
+          {
+            "index": 130,
+            "line": null,
+            "sass": "/*0820*/               @P1 LDG.E.NA.LTC256B.128.CONSTANT R16, desc[UR14][R36.64+0x400] ;       /* 0x0004000e24101981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "27116ba7037946676c4f2756f186cb24ba09d3677e4f5949222aa7f45e471175",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/CD_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN3cdg10coded_gemvILi1ELi1ELi2ELi3EEEvPK5uint4PKfPKiPK4int2PK13__nv_bfloat16iiPfiiiiii:\n  REG:56 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:608 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN3cdg12coded_decodeEPK5uint4PKfiiiPt:\n  REG:32 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:568 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "ATTN_PORT_CUDA_SRC",
+    "sha256": "498e93ccda4854843881290cec33d583303b7a577c9eb86dacb303804459cc4c",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN54_GLOBAL__N__d7165214_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi8ELi3EEEvNS_6ParamsE",
+        "instructions": 7032,
+        "waits": [],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN54_GLOBAL__N__d7165214_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi1ELi4EEEvNS_6ParamsE",
+        "instructions": 3552,
+        "waits": [],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "76f3b512d4c84acda6f7a067c1d012b8378508b1d31b48c890b874b37bc57409",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/ATTN_PORT_CUDA_SRC.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN54_GLOBAL__N__d7165214_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi8ELi3EEEvNS_6ParamsE:\n  REG:235 STACK:32 SHARED:1152 LOCAL:0 CONSTANT[0]:712 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN54_GLOBAL__N__d7165214_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi1ELi4EEEvNS_6ParamsE:\n  REG:120 STACK:32 SHARED:1152 LOCAL:0 CONSTANT[0]:712 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "DENSE_CHAIN_CUDA",
+    "sha256": "81d1859f3608a08e1b2c81aed6f34a21fac0f8c2deb6255c481737d8a0b253b3",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN10persistent12dense_islandILi4ELb0EEEvNS_6ParamsE",
+        "instructions": 5088,
+        "waits": [
+          36
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN10persistent12dense_islandILi2ELb0EEEvNS_6ParamsE",
+        "instructions": 3016,
+        "waits": [
+          36
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN10persistent12dense_islandILi1ELb0EEEvNS_6ParamsE",
+        "instructions": 1344,
+        "waits": [
+          36
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN10persistent12dense_islandILi4ELb1EEEvNS_6ParamsE",
+        "instructions": 4776,
+        "waits": [
+          37
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN10persistent12dense_islandILi2ELb1EEEvNS_6ParamsE",
+        "instructions": 4520,
+        "waits": [
+          37
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN10persistent12dense_islandILi1ELb1EEEvNS_6ParamsE",
+        "instructions": 4312,
+        "waits": [
+          36
+        ],
+        "releases": [
+          8
+        ],
+        "independent_candidates_before_first_wait": [],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "ba364208bd43edbeacd60dbac7695365348770abd0bfeca50a26df4269f853ac",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/DENSE_CHAIN_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:28 CONSTANT[4]:224\n Function _ZN10persistent12dense_islandILi4ELb0EEEvNS_6ParamsE:\n  REG:238 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN10persistent12dense_islandILi2ELb0EEEvNS_6ParamsE:\n  REG:168 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN10persistent12dense_islandILi1ELb0EEEvNS_6ParamsE:\n  REG:128 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN10persistent12dense_islandILi4ELb1EEEvNS_6ParamsE:\n  REG:248 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN10persistent12dense_islandILi2ELb1EEEvNS_6ParamsE:\n  REG:164 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN10persistent12dense_islandILi1ELb1EEEvNS_6ParamsE:\n  REG:124 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "SMALLM_VAR_CUDA",
+    "sha256": "c511727257ab74911ec7693fcae4d8dbcb5eaded538d369417c22fac1f904a1d",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+        "instructions": 3376,
+        "waits": [
+          116
+        ],
+        "releases": [],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 112,
+            "line": null,
+            "sass": "/*0700*/                   LDG.E.STRONG.SM R184, desc[UR12][R184.64] ;                          /* 0x0000000cb8b87981 */"
+          },
+          {
+            "index": 115,
+            "line": null,
+            "sass": "/*0730*/                   LDG.E.STRONG.SM R186, desc[UR12][R10.64] ;                           /* 0x0000000c0aba7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+        "instructions": 2048,
+        "waits": [
+          100
+        ],
+        "releases": [],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 97,
+            "line": null,
+            "sass": "/*0610*/                   LDG.E.STRONG.SM R111, desc[UR10][R4.64] ;                            /* 0x0000000a046f7981 */"
+          },
+          {
+            "index": 99,
+            "line": null,
+            "sass": "/*0630*/                   LDG.E.STRONG.SM R109, desc[UR10][R6.64] ;                            /* 0x0000000a066d7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+        "instructions": 3192,
+        "waits": [
+          112
+        ],
+        "releases": [],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 109,
+            "line": null,
+            "sass": "/*06d0*/                   LDG.E.STRONG.SM R112, desc[UR12][R10.64] ;                           /* 0x0000000c0a707981 */"
+          },
+          {
+            "index": 111,
+            "line": null,
+            "sass": "/*06f0*/                   LDG.E.STRONG.SM R110, desc[UR12][R12.64] ;                           /* 0x0000000c0c6e7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "62ec2ca446d65dee55c9acf55771ff7e60fd2174825986657900755ca8659100",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/SMALLM_VAR_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm:\n  REG:205 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:656 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi0EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm:\n  REG:127 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:656 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm:\n  REG:119 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:656 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN51_GLOBAL__N__7bc92c6a_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm:\n  REG:125 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:656 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "GF_CUDA",
+    "sha256": "c26e6f40e67bc82ec6c1395ca0674aeb993b4cfc1ba0f82ca38f2d1935c14962",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi1ELi8ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 664,
+        "waits": [
+          242
+        ],
+        "releases": [
+          19
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 42,
+            "line": null,
+            "sass": "/*02a0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R8.64] ;                  /* 0x0000000608088981 */"
+          },
+          {
+            "index": 59,
+            "line": null,
+            "sass": "/*03b0*/              @!P1 LDG.E.128.STRONG.SM R12, desc[UR6][R14.64] ;                /* 0x000000060e0c9981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR6][R6.64] ;                  /* 0x0000000606048981 */"
+          },
+          {
+            "index": 74,
+            "line": null,
+            "sass": "/*04a0*/              @!P1 LDG.E.128.STRONG.SM R64, desc[UR6][R64.64] ;                /* 0x0000000640409981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P1 LDG.E.128.STRONG.SM R72, desc[UR6][R72.64] ;                /* 0x0000000648489981 */"
+          },
+          {
+            "index": 92,
+            "line": null,
+            "sass": "/*05c0*/              @!P0 LDG.E.128.STRONG.SM R68, desc[UR6][R68.64] ;                /* 0x0000000644448981 */"
+          },
+          {
+            "index": 98,
+            "line": null,
+            "sass": "/*0620*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                /* 0x0000000620208981 */"
+          },
+          {
+            "index": 101,
+            "line": null,
+            "sass": "/*0650*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624248981 */"
+          },
+          {
+            "index": 105,
+            "line": null,
+            "sass": "/*0690*/              @!P0 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c8981 */"
+          },
+          {
+            "index": 111,
+            "line": null,
+            "sass": "/*06f0*/              @!P1 LDG.E.128.STRONG.SM R60, desc[UR6][R60.64] ;                /* 0x000000063c3c9981 */"
+          },
+          {
+            "index": 114,
+            "line": null,
+            "sass": "/*0720*/              @!P1 LDG.E.128.STRONG.SM R52, desc[UR6][R52.64] ;                /* 0x0000000634349981 */"
+          },
+          {
+            "index": 117,
+            "line": null,
+            "sass": "/*0750*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 120,
+            "line": null,
+            "sass": "/*0780*/              @!P1 LDG.E.128.STRONG.SM R56, desc[UR6][R56.64] ;                /* 0x0000000638389981 */"
+          },
+          {
+            "index": 123,
+            "line": null,
+            "sass": "/*07b0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R42.64] ;                /* 0x000000062a289981 */"
+          },
+          {
+            "index": 127,
+            "line": null,
+            "sass": "/*07f0*/              @!P0 LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                /* 0x0000000618188981 */"
+          },
+          {
+            "index": 129,
+            "line": null,
+            "sass": "/*0810*/              @!P1 LDG.E.128.STRONG.SM R48, desc[UR6][R48.64] ;                /* 0x0000000630309981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi1ELi8ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 680,
+        "waits": [
+          236
+        ],
+        "releases": [
+          15
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 48,
+            "line": null,
+            "sass": "/*0300*/              @!P1 LDG.E.128.STRONG.SM R60, desc[UR6][R60.64] ;                /* 0x000000063c3c9981 */"
+          },
+          {
+            "index": 52,
+            "line": null,
+            "sass": "/*0340*/              @!P0 LDG.E.128.STRONG.SM R52, desc[UR6][R52.64] ;                /* 0x0000000634348981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P0 LDG.E.128.STRONG.SM R56, desc[UR6][R56.64] ;                /* 0x0000000638388981 */"
+          },
+          {
+            "index": 69,
+            "line": null,
+            "sass": "/*0450*/              @!P0 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c8981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/              @!P1 LDG.E.128.STRONG.SM R48, desc[UR6][R48.64] ;                /* 0x0000000630309981 */"
+          },
+          {
+            "index": 83,
+            "line": null,
+            "sass": "/*0530*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624248981 */"
+          },
+          {
+            "index": 92,
+            "line": null,
+            "sass": "/*05c0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                /* 0x0000000628289981 */"
+          },
+          {
+            "index": 102,
+            "line": null,
+            "sass": "/*0660*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 105,
+            "line": null,
+            "sass": "/*0690*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                /* 0x0000000620209981 */"
+          },
+          {
+            "index": 109,
+            "line": null,
+            "sass": "/*06d0*/              @!P0 LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                /* 0x0000000614148981 */"
+          },
+          {
+            "index": 115,
+            "line": null,
+            "sass": "/*0730*/              @!P1 LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                /* 0x0000000618189981 */"
+          },
+          {
+            "index": 118,
+            "line": null,
+            "sass": "/*0760*/              @!P1 LDG.E.128.STRONG.SM R80, desc[UR6][R80.64] ;                /* 0x0000000650509981 */"
+          },
+          {
+            "index": 121,
+            "line": null,
+            "sass": "/*0790*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                /* 0x000000060c0c8981 */"
+          },
+          {
+            "index": 126,
+            "line": null,
+            "sass": "/*07e0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR6][R16.64] ;                /* 0x0000000610109981 */"
+          },
+          {
+            "index": 129,
+            "line": null,
+            "sass": "/*0810*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR6][R4.64] ;                  /* 0x0000000604048981 */"
+          },
+          {
+            "index": 130,
+            "line": null,
+            "sass": "/*0820*/              @!P1 LDG.E.128.STRONG.SM R72, desc[UR6][R72.64] ;                /* 0x0000000648489981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi32ELi1ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 368,
+        "waits": [
+          144
+        ],
+        "releases": [
+          22
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 46,
+            "line": null,
+            "sass": "/*02e0*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 58,
+            "line": null,
+            "sass": "/*03a0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R16.64] ;                /* 0x0000000810109981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R8.64] ;                  /* 0x0000000808088981 */"
+          },
+          {
+            "index": 69,
+            "line": null,
+            "sass": "/*0450*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR8][R44.64] ;                /* 0x000000082c2c9981 */"
+          },
+          {
+            "index": 76,
+            "line": null,
+            "sass": "/*04c0*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR8][R34.64] ;                /* 0x0000000822208981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824249981 */"
+          },
+          {
+            "index": 86,
+            "line": null,
+            "sass": "/*0560*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR8][R28.64] ;                /* 0x000000081c1c8981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R40.64] ;                /* 0x0000000828289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi32ELi1ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 424,
+        "waits": [
+          149
+        ],
+        "releases": [
+          23
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 61,
+            "line": null,
+            "sass": "/*03d0*/              @!P0 LDG.E.128.STRONG.SM R20, desc[UR8][R20.64] ;                /* 0x0000000814148981 */"
+          },
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P1 LDG.E.128.STRONG.SM R24, desc[UR8][R24.64] ;                /* 0x0000000818189981 */"
+          },
+          {
+            "index": 73,
+            "line": null,
+            "sass": "/*0490*/              @!P0 LDG.E.128.STRONG.SM R16, desc[UR8][R16.64] ;                /* 0x0000000810108981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR8][R44.64] ;                /* 0x000000082c2c9981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R40.64] ;                /* 0x0000000828289981 */"
+          },
+          {
+            "index": 91,
+            "line": null,
+            "sass": "/*05b0*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR8][R4.64] ;                  /* 0x0000000804048981 */"
+          },
+          {
+            "index": 93,
+            "line": null,
+            "sass": "/*05d0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824249981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi16ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 408,
+        "waits": [
+          145
+        ],
+        "releases": [
+          33
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 57,
+            "line": null,
+            "sass": "/*0390*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR8][R44.64] ;                /* 0x000000082c2c9981 */"
+          },
+          {
+            "index": 73,
+            "line": null,
+            "sass": "/*0490*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R36.64] ;                 /* 0x0000000824088981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R18.64] ;                /* 0x0000000812109981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR8][R32.64] ;                /* 0x0000000820208981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824249981 */"
+          },
+          {
+            "index": 90,
+            "line": null,
+            "sass": "/*05a0*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR8][R28.64] ;                /* 0x000000081c1c8981 */"
+          },
+          {
+            "index": 91,
+            "line": null,
+            "sass": "/*05b0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R40.64] ;                /* 0x0000000828289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi16ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 472,
+        "waits": [
+          148
+        ],
+        "releases": [
+          32
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 60,
+            "line": null,
+            "sass": "/*03c0*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24248981 */"
+          },
+          {
+            "index": 73,
+            "line": null,
+            "sass": "/*0490*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 91,
+            "line": null,
+            "sass": "/*05b0*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 95,
+            "line": null,
+            "sass": "/*05f0*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR10][R4.64] ;                 /* 0x0000000a04048981 */"
+          },
+          {
+            "index": 96,
+            "line": null,
+            "sass": "/*0600*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi64ELi8ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 400,
+        "waits": [
+          136
+        ],
+        "releases": [
+          24
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 60,
+            "line": null,
+            "sass": "/*03c0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR8][R44.64] ;                /* 0x000000082c2c9981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R18.64] ;                /* 0x0000000812109981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R34.64] ;                 /* 0x0000000822088981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824249981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR8][R28.64] ;                /* 0x000000081c1c8981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR8][R40.64] ;                /* 0x0000000828208981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R42.64] ;                /* 0x000000082a289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi64ELi8ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 456,
+        "waits": [
+          139
+        ],
+        "releases": [
+          23
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 61,
+            "line": null,
+            "sass": "/*03d0*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24248981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 86,
+            "line": null,
+            "sass": "/*0560*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR10][R4.64] ;                 /* 0x0000000a04048981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi8ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 400,
+        "waits": [
+          137
+        ],
+        "releases": [
+          24
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/              @!P0 LDG.E.128.STRONG.SM R20, desc[UR8][R20.64] ;                /* 0x0000000814148981 */"
+          },
+          {
+            "index": 58,
+            "line": null,
+            "sass": "/*03a0*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 61,
+            "line": null,
+            "sass": "/*03d0*/              @!P1 LDG.E.128.STRONG.SM R24, desc[UR8][R24.64] ;                /* 0x0000000818189981 */"
+          },
+          {
+            "index": 67,
+            "line": null,
+            "sass": "/*0430*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R18.64] ;                /* 0x0000000812109981 */"
+          },
+          {
+            "index": 73,
+            "line": null,
+            "sass": "/*0490*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R8.64] ;                  /* 0x0000000808088981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R40.64] ;                /* 0x0000000828289981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824248981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R4, desc[UR8][R4.64] ;                  /* 0x0000000804049981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi8ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 456,
+        "waits": [
+          140
+        ],
+        "releases": [
+          23
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 60,
+            "line": null,
+            "sass": "/*03c0*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R30.64] ;               /* 0x0000000a1e109981 */"
+          },
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P0 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28288981 */"
+          },
+          {
+            "index": 74,
+            "line": null,
+            "sass": "/*04a0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR10][R44.64] ;               /* 0x0000000a2c2c9981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24249981 */"
+          },
+          {
+            "index": 85,
+            "line": null,
+            "sass": "/*0550*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR10][R30.64] ;               /* 0x0000000a1e1c8981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi8ELi8ELi8ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 448,
+        "waits": [
+          138
+        ],
+        "releases": [
+          26
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 52,
+            "line": null,
+            "sass": "/*0340*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 62,
+            "line": null,
+            "sass": "/*03e0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR8][R44.64] ;                /* 0x000000082c2c9981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R18.64] ;                /* 0x0000000812109981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R34.64] ;                 /* 0x0000000822088981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824249981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR8][R28.64] ;                /* 0x000000081c1c8981 */"
+          },
+          {
+            "index": 83,
+            "line": null,
+            "sass": "/*0530*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR8][R40.64] ;                /* 0x0000000828208981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R42.64] ;                /* 0x000000082a289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi8ELi8ELi8ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 504,
+        "waits": [
+          141
+        ],
+        "releases": [
+          25
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 53,
+            "line": null,
+            "sass": "/*0350*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 63,
+            "line": null,
+            "sass": "/*03f0*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24248981 */"
+          },
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR10][R4.64] ;                 /* 0x0000000a04048981 */"
+          },
+          {
+            "index": 89,
+            "line": null,
+            "sass": "/*0590*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi16ELi4ELi8ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 704,
+        "waits": [
+          250
+        ],
+        "releases": [
+          32
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P1 LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                /* 0x0000000614149981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P0 LDG.E.128.STRONG.SM R16, desc[UR6][R16.64] ;                /* 0x0000000610108981 */"
+          },
+          {
+            "index": 85,
+            "line": null,
+            "sass": "/*0550*/              @!P0 LDG.E.128.STRONG.SM R72, desc[UR6][R72.64] ;                /* 0x0000000648488981 */"
+          },
+          {
+            "index": 90,
+            "line": null,
+            "sass": "/*05a0*/              @!P1 LDG.E.128.STRONG.SM R80, desc[UR6][R80.64] ;                /* 0x0000000650509981 */"
+          },
+          {
+            "index": 99,
+            "line": null,
+            "sass": "/*0630*/              @!P1 LDG.E.128.STRONG.SM R76, desc[UR6][R76.64] ;                /* 0x000000064c4c9981 */"
+          },
+          {
+            "index": 103,
+            "line": null,
+            "sass": "/*0670*/              @!P0 LDG.E.128.STRONG.SM R68, desc[UR6][R68.64] ;                /* 0x0000000644448981 */"
+          },
+          {
+            "index": 107,
+            "line": null,
+            "sass": "/*06b0*/              @!P1 LDG.E.128.STRONG.SM R64, desc[UR6][R64.64] ;                /* 0x0000000640409981 */"
+          },
+          {
+            "index": 111,
+            "line": null,
+            "sass": "/*06f0*/              @!P0 LDG.E.128.STRONG.SM R52, desc[UR6][R52.64] ;                /* 0x0000000634348981 */"
+          },
+          {
+            "index": 117,
+            "line": null,
+            "sass": "/*0750*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R8.64] ;                  /* 0x0000000608088981 */"
+          },
+          {
+            "index": 124,
+            "line": null,
+            "sass": "/*07c0*/              @!P1 LDG.E.128.STRONG.SM R12, desc[UR6][R30.64] ;                /* 0x000000061e0c9981 */"
+          },
+          {
+            "index": 127,
+            "line": null,
+            "sass": "/*07f0*/              @!P0 LDG.E.128.STRONG.SM R48, desc[UR6][R48.64] ;                /* 0x0000000630308981 */"
+          },
+          {
+            "index": 135,
+            "line": null,
+            "sass": "/*0870*/              @!P1 LDG.E.128.STRONG.SM R60, desc[UR6][R60.64] ;                /* 0x000000063c3c9981 */"
+          },
+          {
+            "index": 138,
+            "line": null,
+            "sass": "/*08a0*/              @!P0 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c8981 */"
+          },
+          {
+            "index": 142,
+            "line": null,
+            "sass": "/*08e0*/              @!P1 LDG.E.128.STRONG.SM R56, desc[UR6][R56.64] ;                /* 0x0000000638389981 */"
+          },
+          {
+            "index": 145,
+            "line": null,
+            "sass": "/*0910*/              @!P0 LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                /* 0x0000000628288981 */"
+          },
+          {
+            "index": 146,
+            "line": null,
+            "sass": "/*0920*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624249981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi16ELi4ELi8ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 776,
+        "waits": [
+          253
+        ],
+        "releases": [
+          32
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 68,
+            "line": null,
+            "sass": "/*0440*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 72,
+            "line": null,
+            "sass": "/*0480*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/              @!P0 LDG.E.128.STRONG.SM R20, desc[UR10][R20.64] ;               /* 0x0000000a14148981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R24, desc[UR10][R24.64] ;               /* 0x0000000a18189981 */"
+          },
+          {
+            "index": 92,
+            "line": null,
+            "sass": "/*05c0*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 104,
+            "line": null,
+            "sass": "/*0680*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c8981 */"
+          },
+          {
+            "index": 112,
+            "line": null,
+            "sass": "/*0700*/              @!P0 LDG.E.128.STRONG.SM R68, desc[UR10][R68.64] ;               /* 0x0000000a44448981 */"
+          },
+          {
+            "index": 121,
+            "line": null,
+            "sass": "/*0790*/              @!P1 LDG.E.128.STRONG.SM R72, desc[UR10][R72.64] ;               /* 0x0000000a48489981 */"
+          },
+          {
+            "index": 124,
+            "line": null,
+            "sass": "/*07c0*/              @!P0 LDG.E.128.STRONG.SM R84, desc[UR10][R84.64] ;               /* 0x0000000a54548981 */"
+          },
+          {
+            "index": 130,
+            "line": null,
+            "sass": "/*0820*/              @!P1 LDG.E.128.STRONG.SM R88, desc[UR10][R38.64] ;               /* 0x0000000a26589981 */"
+          },
+          {
+            "index": 135,
+            "line": null,
+            "sass": "/*0870*/              @!P0 LDG.E.128.STRONG.SM R92, desc[UR10][R40.64] ;               /* 0x0000000a285c8981 */"
+          },
+          {
+            "index": 140,
+            "line": null,
+            "sass": "/*08c0*/              @!P1 LDG.E.128.STRONG.SM R96, desc[UR10][R10.64] ;               /* 0x0000000a0a609981 */"
+          },
+          {
+            "index": 143,
+            "line": null,
+            "sass": "/*08f0*/              @!P0 LDG.E.128.STRONG.SM R100, desc[UR10][R36.64] ;              /* 0x0000000a24648981 */"
+          },
+          {
+            "index": 146,
+            "line": null,
+            "sass": "/*0920*/              @!P1 LDG.E.128.STRONG.SM R104, desc[UR10][R38.64] ;              /* 0x0000000a26689981 */"
+          },
+          {
+            "index": 149,
+            "line": null,
+            "sass": "/*0950*/              @!P0 LDG.E.128.STRONG.SM R108, desc[UR10][R40.64] ;              /* 0x0000000a286c8981 */"
+          },
+          {
+            "index": 151,
+            "line": null,
+            "sass": "/*0970*/              @!P1 LDG.E.128.STRONG.SM R116, desc[UR10][R42.64] ;              /* 0x0000000a2a749981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi4ELi8ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 680,
+        "waits": [
+          241
+        ],
+        "releases": [
+          24
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 56,
+            "line": null,
+            "sass": "/*0380*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R10.64] ;                 /* 0x000000060a088981 */"
+          },
+          {
+            "index": 67,
+            "line": null,
+            "sass": "/*0430*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR6][R28.64] ;                 /* 0x000000061c048981 */"
+          },
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/              @!P1 LDG.E.128.STRONG.SM R12, desc[UR6][R14.64] ;                /* 0x000000060e0c9981 */"
+          },
+          {
+            "index": 74,
+            "line": null,
+            "sass": "/*04a0*/              @!P1 LDG.E.128.STRONG.SM R68, desc[UR6][R68.64] ;                /* 0x0000000644449981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P0 LDG.E.128.STRONG.SM R64, desc[UR6][R64.64] ;                /* 0x0000000640408981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/              @!P1 LDG.E.128.STRONG.SM R72, desc[UR6][R72.64] ;                /* 0x0000000648489981 */"
+          },
+          {
+            "index": 90,
+            "line": null,
+            "sass": "/*05a0*/              @!P1 LDG.E.128.STRONG.SM R60, desc[UR6][R60.64] ;                /* 0x000000063c3c9981 */"
+          },
+          {
+            "index": 95,
+            "line": null,
+            "sass": "/*05f0*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                /* 0x0000000620208981 */"
+          },
+          {
+            "index": 104,
+            "line": null,
+            "sass": "/*0680*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624248981 */"
+          },
+          {
+            "index": 110,
+            "line": null,
+            "sass": "/*06e0*/              @!P1 LDG.E.128.STRONG.SM R56, desc[UR6][R56.64] ;                /* 0x0000000638389981 */"
+          },
+          {
+            "index": 113,
+            "line": null,
+            "sass": "/*0710*/              @!P0 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c8981 */"
+          },
+          {
+            "index": 122,
+            "line": null,
+            "sass": "/*07a0*/              @!P1 LDG.E.128.STRONG.SM R52, desc[UR6][R52.64] ;                /* 0x0000000634349981 */"
+          },
+          {
+            "index": 129,
+            "line": null,
+            "sass": "/*0810*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 132,
+            "line": null,
+            "sass": "/*0840*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                /* 0x0000000628289981 */"
+          },
+          {
+            "index": 135,
+            "line": null,
+            "sass": "/*0870*/              @!P0 LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                /* 0x0000000618188981 */"
+          },
+          {
+            "index": 137,
+            "line": null,
+            "sass": "/*0890*/              @!P1 LDG.E.128.STRONG.SM R48, desc[UR6][R48.64] ;                /* 0x0000000630309981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi4ELi8ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 736,
+        "waits": [
+          244
+        ],
+        "releases": [
+          25
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P1 LDG.E.128.STRONG.SM R80, desc[UR10][R80.64] ;               /* 0x0000000a50509981 */"
+          },
+          {
+            "index": 83,
+            "line": null,
+            "sass": "/*0530*/              @!P1 LDG.E.128.STRONG.SM R12, desc[UR10][R14.64] ;               /* 0x0000000a0e0c9981 */"
+          },
+          {
+            "index": 86,
+            "line": null,
+            "sass": "/*0560*/              @!P0 LDG.E.128.STRONG.SM R72, desc[UR10][R72.64] ;               /* 0x0000000a48488981 */"
+          },
+          {
+            "index": 93,
+            "line": null,
+            "sass": "/*05d0*/              @!P1 LDG.E.128.STRONG.SM R76, desc[UR10][R76.64] ;               /* 0x0000000a4c4c9981 */"
+          },
+          {
+            "index": 100,
+            "line": null,
+            "sass": "/*0640*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R22.64] ;                /* 0x0000000a16088981 */"
+          },
+          {
+            "index": 106,
+            "line": null,
+            "sass": "/*06a0*/              @!P0 LDG.E.128.STRONG.SM R68, desc[UR10][R68.64] ;               /* 0x0000000a44448981 */"
+          },
+          {
+            "index": 115,
+            "line": null,
+            "sass": "/*0730*/              @!P1 LDG.E.128.STRONG.SM R64, desc[UR10][R64.64] ;               /* 0x0000000a40409981 */"
+          },
+          {
+            "index": 119,
+            "line": null,
+            "sass": "/*0770*/              @!P0 LDG.E.128.STRONG.SM R60, desc[UR10][R60.64] ;               /* 0x0000000a3c3c8981 */"
+          },
+          {
+            "index": 123,
+            "line": null,
+            "sass": "/*07b0*/              @!P0 LDG.E.128.STRONG.SM R24, desc[UR10][R24.64] ;               /* 0x0000000a18188981 */"
+          },
+          {
+            "index": 127,
+            "line": null,
+            "sass": "/*07f0*/              @!P0 LDG.E.128.STRONG.SM R52, desc[UR10][R52.64] ;               /* 0x0000000a34348981 */"
+          },
+          {
+            "index": 132,
+            "line": null,
+            "sass": "/*0840*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          },
+          {
+            "index": 135,
+            "line": null,
+            "sass": "/*0870*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20208981 */"
+          },
+          {
+            "index": 138,
+            "line": null,
+            "sass": "/*08a0*/              @!P1 LDG.E.128.STRONG.SM R56, desc[UR10][R56.64] ;               /* 0x0000000a38389981 */"
+          },
+          {
+            "index": 141,
+            "line": null,
+            "sass": "/*08d0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24249981 */"
+          },
+          {
+            "index": 143,
+            "line": null,
+            "sass": "/*08f0*/              @!P0 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28288981 */"
+          },
+          {
+            "index": 144,
+            "line": null,
+            "sass": "/*0900*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR10][R44.64] ;               /* 0x0000000a2c2c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi32ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 464,
+        "waits": [
+          143
+        ],
+        "releases": [
+          31
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 55,
+            "line": null,
+            "sass": "/*0370*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                /* 0x000000060c0c8981 */"
+          },
+          {
+            "index": 68,
+            "line": null,
+            "sass": "/*0440*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c9981 */"
+          },
+          {
+            "index": 71,
+            "line": null,
+            "sass": "/*0470*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R36.64] ;                 /* 0x0000000624088981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR6][R18.64] ;                /* 0x0000000612109981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                /* 0x0000000620208981 */"
+          },
+          {
+            "index": 85,
+            "line": null,
+            "sass": "/*0550*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624249981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 89,
+            "line": null,
+            "sass": "/*0590*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                /* 0x0000000628289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi32ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 536,
+        "waits": [
+          147
+        ],
+        "releases": [
+          30
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P0 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10108981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P1 LDG.E.128.STRONG.SM R48, desc[UR10][R48.64] ;               /* 0x0000000a30309981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 90,
+            "line": null,
+            "sass": "/*05a0*/              @!P1 LDG.E.128.STRONG.SM R20, desc[UR10][R22.64] ;               /* 0x0000000a16149981 */"
+          },
+          {
+            "index": 92,
+            "line": null,
+            "sass": "/*05c0*/              @!P0 LDG.E.128.STRONG.SM R44, desc[UR10][R44.64] ;               /* 0x0000000a2c2c8981 */"
+          },
+          {
+            "index": 93,
+            "line": null,
+            "sass": "/*05d0*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR10][R34.64] ;               /* 0x0000000a22208981 */"
+          },
+          {
+            "index": 94,
+            "line": null,
+            "sass": "/*05e0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24249981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi16ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 480,
+        "waits": [
+          143
+        ],
+        "releases": [
+          31
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 55,
+            "line": null,
+            "sass": "/*0370*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                /* 0x000000060c0c8981 */"
+          },
+          {
+            "index": 68,
+            "line": null,
+            "sass": "/*0440*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c9981 */"
+          },
+          {
+            "index": 71,
+            "line": null,
+            "sass": "/*0470*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R36.64] ;                 /* 0x0000000624088981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR6][R18.64] ;                /* 0x0000000612109981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                /* 0x0000000620208981 */"
+          },
+          {
+            "index": 85,
+            "line": null,
+            "sass": "/*0550*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624249981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 89,
+            "line": null,
+            "sass": "/*0590*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                /* 0x0000000628289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi16ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 552,
+        "waits": [
+          147
+        ],
+        "releases": [
+          30
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P0 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10108981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P1 LDG.E.128.STRONG.SM R48, desc[UR10][R48.64] ;               /* 0x0000000a30309981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 90,
+            "line": null,
+            "sass": "/*05a0*/              @!P1 LDG.E.128.STRONG.SM R20, desc[UR10][R22.64] ;               /* 0x0000000a16149981 */"
+          },
+          {
+            "index": 92,
+            "line": null,
+            "sass": "/*05c0*/              @!P0 LDG.E.128.STRONG.SM R44, desc[UR10][R44.64] ;               /* 0x0000000a2c2c8981 */"
+          },
+          {
+            "index": 93,
+            "line": null,
+            "sass": "/*05d0*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR10][R34.64] ;               /* 0x0000000a22208981 */"
+          },
+          {
+            "index": 94,
+            "line": null,
+            "sass": "/*05e0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24249981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi8ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 416,
+        "waits": [
+          138
+        ],
+        "releases": [
+          26
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 52,
+            "line": null,
+            "sass": "/*0340*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 62,
+            "line": null,
+            "sass": "/*03e0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR8][R44.64] ;                /* 0x000000082c2c9981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R18.64] ;                /* 0x0000000812109981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R34.64] ;                 /* 0x0000000822088981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824249981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR8][R28.64] ;                /* 0x000000081c1c8981 */"
+          },
+          {
+            "index": 83,
+            "line": null,
+            "sass": "/*0530*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR8][R40.64] ;                /* 0x0000000828208981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R42.64] ;                /* 0x000000082a289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi32ELi8ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 472,
+        "waits": [
+          141
+        ],
+        "releases": [
+          25
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 53,
+            "line": null,
+            "sass": "/*0350*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 63,
+            "line": null,
+            "sass": "/*03f0*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24248981 */"
+          },
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR10][R4.64] ;                 /* 0x0000000a04048981 */"
+          },
+          {
+            "index": 89,
+            "line": null,
+            "sass": "/*0590*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi8ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 512,
+        "waits": [
+          136
+        ],
+        "releases": [
+          24
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                /* 0x000000060c0c8981 */"
+          },
+          {
+            "index": 60,
+            "line": null,
+            "sass": "/*03c0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c9981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR6][R18.64] ;                /* 0x0000000612109981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R34.64] ;                 /* 0x0000000622088981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624249981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR6][R40.64] ;                /* 0x0000000628208981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R42.64] ;                /* 0x000000062a289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi8ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 568,
+        "waits": [
+          139
+        ],
+        "releases": [
+          23
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 61,
+            "line": null,
+            "sass": "/*03d0*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24248981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 86,
+            "line": null,
+            "sass": "/*0560*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR10][R4.64] ;                 /* 0x0000000a04048981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 480,
+        "waits": [
+          136
+        ],
+        "releases": [
+          24
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 50,
+            "line": null,
+            "sass": "/*0320*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                /* 0x000000060c0c8981 */"
+          },
+          {
+            "index": 60,
+            "line": null,
+            "sass": "/*03c0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR6][R44.64] ;                /* 0x000000062c2c9981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR6][R18.64] ;                /* 0x0000000612109981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR6][R34.64] ;                 /* 0x0000000622088981 */"
+          },
+          {
+            "index": 79,
+            "line": null,
+            "sass": "/*04f0*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                /* 0x0000000624249981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                /* 0x000000061c1c8981 */"
+          },
+          {
+            "index": 81,
+            "line": null,
+            "sass": "/*0510*/              @!P0 LDG.E.128.STRONG.SM R32, desc[UR6][R40.64] ;                /* 0x0000000628208981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR6][R42.64] ;                /* 0x000000062a289981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi16ELi8ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 536,
+        "waits": [
+          139
+        ],
+        "releases": [
+          23
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 51,
+            "line": null,
+            "sass": "/*0330*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 61,
+            "line": null,
+            "sass": "/*03d0*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24248981 */"
+          },
+          {
+            "index": 64,
+            "line": null,
+            "sass": "/*0400*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R16.64] ;               /* 0x0000000a10109981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28289981 */"
+          },
+          {
+            "index": 78,
+            "line": null,
+            "sass": "/*04e0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          },
+          {
+            "index": 86,
+            "line": null,
+            "sass": "/*0560*/              @!P0 LDG.E.128.STRONG.SM R4, desc[UR10][R4.64] ;                 /* 0x0000000a04048981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P1 LDG.E.128.STRONG.SM R28, desc[UR10][R28.64] ;               /* 0x0000000a1c1c9981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi8ELi8ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 424,
+        "waits": [
+          139
+        ],
+        "releases": [
+          26
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 53,
+            "line": null,
+            "sass": "/*0350*/              @!P0 LDG.E.128.STRONG.SM R20, desc[UR8][R20.64] ;                /* 0x0000000814148981 */"
+          },
+          {
+            "index": 60,
+            "line": null,
+            "sass": "/*03c0*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR8][R12.64] ;                /* 0x000000080c0c8981 */"
+          },
+          {
+            "index": 63,
+            "line": null,
+            "sass": "/*03f0*/              @!P1 LDG.E.128.STRONG.SM R24, desc[UR8][R24.64] ;                /* 0x0000000818189981 */"
+          },
+          {
+            "index": 69,
+            "line": null,
+            "sass": "/*0450*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR8][R18.64] ;                /* 0x0000000812109981 */"
+          },
+          {
+            "index": 75,
+            "line": null,
+            "sass": "/*04b0*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR8][R8.64] ;                  /* 0x0000000808088981 */"
+          },
+          {
+            "index": 80,
+            "line": null,
+            "sass": "/*0500*/              @!P1 LDG.E.128.STRONG.SM R40, desc[UR8][R40.64] ;                /* 0x0000000828289981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR8][R36.64] ;                /* 0x0000000824248981 */"
+          },
+          {
+            "index": 84,
+            "line": null,
+            "sass": "/*0540*/              @!P1 LDG.E.128.STRONG.SM R4, desc[UR8][R4.64] ;                  /* 0x0000000804049981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN2gf6directILi8ELi8ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb",
+        "instructions": 472,
+        "waits": [
+          142
+        ],
+        "releases": [
+          25
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 62,
+            "line": null,
+            "sass": "/*03e0*/              @!P0 LDG.E.128.STRONG.SM R12, desc[UR10][R12.64] ;               /* 0x0000000a0c0c8981 */"
+          },
+          {
+            "index": 66,
+            "line": null,
+            "sass": "/*0420*/              @!P1 LDG.E.128.STRONG.SM R16, desc[UR10][R30.64] ;               /* 0x0000000a1e109981 */"
+          },
+          {
+            "index": 68,
+            "line": null,
+            "sass": "/*0440*/              @!P0 LDG.E.128.STRONG.SM R40, desc[UR10][R40.64] ;               /* 0x0000000a28288981 */"
+          },
+          {
+            "index": 76,
+            "line": null,
+            "sass": "/*04c0*/              @!P1 LDG.E.128.STRONG.SM R44, desc[UR10][R44.64] ;               /* 0x0000000a2c2c9981 */"
+          },
+          {
+            "index": 82,
+            "line": null,
+            "sass": "/*0520*/              @!P0 LDG.E.128.STRONG.SM R8, desc[UR10][R8.64] ;                 /* 0x0000000a08088981 */"
+          },
+          {
+            "index": 86,
+            "line": null,
+            "sass": "/*0560*/              @!P1 LDG.E.128.STRONG.SM R36, desc[UR10][R36.64] ;               /* 0x0000000a24249981 */"
+          },
+          {
+            "index": 87,
+            "line": null,
+            "sass": "/*0570*/              @!P0 LDG.E.128.STRONG.SM R28, desc[UR10][R30.64] ;               /* 0x0000000a1e1c8981 */"
+          },
+          {
+            "index": 90,
+            "line": null,
+            "sass": "/*05a0*/              @!P1 LDG.E.128.STRONG.SM R32, desc[UR10][R32.64] ;               /* 0x0000000a20209981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "03d27008de10ca16e8a72061a81a8afeb048964b4c46775e8942e65ebfccc950",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/GF_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN2gf6directILi16ELi8ELi1ELi8ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:104 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi1ELi8ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:128 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi32ELi1ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi32ELi1ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:72 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi16ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi16ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:78 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi64ELi8ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi64ELi8ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:78 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi8ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi8ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:78 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi8ELi8ELi8ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi8ELi8ELi8ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:78 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi16ELi4ELi8ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:104 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi16ELi4ELi8ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:139 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi4ELi8ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:104 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi4ELi8ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:126 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi32ELi2ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi32ELi2ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:80 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi16ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi16ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:80 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi8ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi32ELi8ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:78 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi8ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:60 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi8ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:80 STACK:0 SHARED:5120 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:60 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi16ELi8ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:80 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi8ELi8ELi4ELi4ELb0EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:58 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6directILi8ELi8ELi4ELi4ELb1EEEvPK13__nv_bfloat16S3_PvPmiiibb:\n  REG:78 STACK:0 SHARED:3072 LOCAL:0 CONSTANT[0]:574 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2gf6anchorEPm:\n  REG:8 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:536 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "VQ8_CUDA",
+    "sha256": "aaaf8a9327b4864e9bdb8f41c91ecdd5abaa1faa1ebb3d8a3c22810605bc66b5",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi8EEEvNS_2VPE",
+        "instructions": 6536,
+        "waits": [
+          1231
+        ],
+        "releases": [
+          4
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/                   LDG.E R10, desc[UR30][R10.64] ;                                    /* 0x0000001e0a0a7981 */"
+          },
+          {
+            "index": 134,
+            "line": null,
+            "sass": "/*0860*/                   LDG.E R6, desc[UR30][R6.64] ;                                      /* 0x0000001e06067981 */"
+          },
+          {
+            "index": 205,
+            "line": null,
+            "sass": "/*0cd0*/                   LDG.E R8, desc[UR30][R8.64] ;                                      /* 0x0000001e08087981 */"
+          },
+          {
+            "index": 1169,
+            "line": null,
+            "sass": "/*4910*/                   LDG.E.STRONG.SM R104, desc[UR30][R104.64] ;                        /* 0x0000001e68687981 */"
+          },
+          {
+            "index": 1182,
+            "line": null,
+            "sass": "/*49e0*/                   LDG.E.STRONG.SM R23, desc[UR30][R4.64] ;                           /* 0x0000001e04177981 */"
+          },
+          {
+            "index": 1221,
+            "line": null,
+            "sass": "/*4c50*/               @P0 LDG.E.STRONG.SM R22, desc[UR30][R6.64] ;                           /* 0x0000001e06160981 */"
+          },
+          {
+            "index": 1227,
+            "line": null,
+            "sass": "/*4cb0*/                   LDG.E.64.STRONG.SM R106, desc[UR30][R106.64] ;                     /* 0x0000001e6a6a7981 */"
+          },
+          {
+            "index": 1230,
+            "line": null,
+            "sass": "/*4ce0*/                   LDG.E.64.STRONG.SM R108, desc[UR30][R108.64] ;                     /* 0x0000001e6c6c7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi6EEEvNS_2VPE",
+        "instructions": 6936,
+        "waits": [
+          1231
+        ],
+        "releases": [
+          4
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/                   LDG.E R10, desc[UR30][R10.64] ;                                    /* 0x0000001e0a0a7981 */"
+          },
+          {
+            "index": 134,
+            "line": null,
+            "sass": "/*0860*/                   LDG.E R6, desc[UR30][R6.64] ;                                      /* 0x0000001e06067981 */"
+          },
+          {
+            "index": 205,
+            "line": null,
+            "sass": "/*0cd0*/                   LDG.E R8, desc[UR30][R8.64] ;                                      /* 0x0000001e08087981 */"
+          },
+          {
+            "index": 1169,
+            "line": null,
+            "sass": "/*4910*/                   LDG.E.STRONG.SM R104, desc[UR30][R104.64] ;                        /* 0x0000001e68687981 */"
+          },
+          {
+            "index": 1182,
+            "line": null,
+            "sass": "/*49e0*/                   LDG.E.STRONG.SM R23, desc[UR30][R4.64] ;                           /* 0x0000001e04177981 */"
+          },
+          {
+            "index": 1221,
+            "line": null,
+            "sass": "/*4c50*/               @P0 LDG.E.STRONG.SM R22, desc[UR30][R6.64] ;                           /* 0x0000001e06160981 */"
+          },
+          {
+            "index": 1227,
+            "line": null,
+            "sass": "/*4cb0*/                   LDG.E.64.STRONG.SM R106, desc[UR30][R106.64] ;                     /* 0x0000001e6a6a7981 */"
+          },
+          {
+            "index": 1230,
+            "line": null,
+            "sass": "/*4ce0*/                   LDG.E.64.STRONG.SM R108, desc[UR30][R108.64] ;                     /* 0x0000001e6c6c7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi4EEEvNS_2VPE",
+        "instructions": 6776,
+        "waits": [
+          1231
+        ],
+        "releases": [
+          4
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/                   LDG.E R10, desc[UR30][R10.64] ;                                    /* 0x0000001e0a0a7981 */"
+          },
+          {
+            "index": 134,
+            "line": null,
+            "sass": "/*0860*/                   LDG.E R6, desc[UR30][R6.64] ;                                      /* 0x0000001e06067981 */"
+          },
+          {
+            "index": 205,
+            "line": null,
+            "sass": "/*0cd0*/                   LDG.E R8, desc[UR30][R8.64] ;                                      /* 0x0000001e08087981 */"
+          },
+          {
+            "index": 1169,
+            "line": null,
+            "sass": "/*4910*/                   LDG.E.STRONG.SM R104, desc[UR30][R104.64] ;                        /* 0x0000001e68687981 */"
+          },
+          {
+            "index": 1182,
+            "line": null,
+            "sass": "/*49e0*/                   LDG.E.STRONG.SM R23, desc[UR30][R4.64] ;                           /* 0x0000001e04177981 */"
+          },
+          {
+            "index": 1221,
+            "line": null,
+            "sass": "/*4c50*/               @P0 LDG.E.STRONG.SM R22, desc[UR30][R6.64] ;                           /* 0x0000001e06160981 */"
+          },
+          {
+            "index": 1227,
+            "line": null,
+            "sass": "/*4cb0*/                   LDG.E.64.STRONG.SM R106, desc[UR30][R106.64] ;                     /* 0x0000001e6a6a7981 */"
+          },
+          {
+            "index": 1230,
+            "line": null,
+            "sass": "/*4ce0*/                   LDG.E.64.STRONG.SM R108, desc[UR30][R108.64] ;                     /* 0x0000001e6c6c7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi2EEEvNS_2VPE",
+        "instructions": 6784,
+        "waits": [
+          1231
+        ],
+        "releases": [
+          4
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 70,
+            "line": null,
+            "sass": "/*0460*/                   LDG.E R10, desc[UR30][R10.64] ;                                    /* 0x0000001e0a0a7981 */"
+          },
+          {
+            "index": 134,
+            "line": null,
+            "sass": "/*0860*/                   LDG.E R6, desc[UR30][R6.64] ;                                      /* 0x0000001e06067981 */"
+          },
+          {
+            "index": 205,
+            "line": null,
+            "sass": "/*0cd0*/                   LDG.E R8, desc[UR30][R8.64] ;                                      /* 0x0000001e08087981 */"
+          },
+          {
+            "index": 1169,
+            "line": null,
+            "sass": "/*4910*/                   LDG.E.STRONG.SM R104, desc[UR30][R104.64] ;                        /* 0x0000001e68687981 */"
+          },
+          {
+            "index": 1182,
+            "line": null,
+            "sass": "/*49e0*/                   LDG.E.STRONG.SM R23, desc[UR30][R4.64] ;                           /* 0x0000001e04177981 */"
+          },
+          {
+            "index": 1221,
+            "line": null,
+            "sass": "/*4c50*/               @P0 LDG.E.STRONG.SM R22, desc[UR30][R6.64] ;                           /* 0x0000001e06160981 */"
+          },
+          {
+            "index": 1227,
+            "line": null,
+            "sass": "/*4cb0*/                   LDG.E.64.STRONG.SM R106, desc[UR30][R106.64] ;                     /* 0x0000001e6a6a7981 */"
+          },
+          {
+            "index": 1230,
+            "line": null,
+            "sass": "/*4ce0*/                   LDG.E.64.STRONG.SM R108, desc[UR30][R108.64] ;                     /* 0x0000001e6c6c7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e11vq8_combineENS_2VPE",
+        "instructions": 848,
+        "waits": [
+          19
+        ],
+        "releases": [
+          9
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 18,
+            "line": null,
+            "sass": "/*0120*/                   LDG.E.STRONG.SM R59, desc[UR6][R4.64] ;                            /* 0x00000006043b7981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "09e93416d68c599f544d202ae5f9e6cb53f7e307757f488300e63e7754996a16",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/VQ8_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi8EEEvNS_2VPE:\n  REG:161 STACK:32 SHARED:7168 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi6EEEvNS_2VPE:\n  REG:161 STACK:32 SHARED:6144 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi4EEEvNS_2VPE:\n  REG:161 STACK:32 SHARED:6144 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e8vq8_mainILi2EEEvNS_2VPE:\n  REG:161 STACK:32 SHARED:6144 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN44_GLOBAL__N__dd7483d4_11_VQ8_CUDA_cu_7c053c9e11vq8_combineENS_2VPE:\n  REG:64 STACK:8 SHARED:5120 LOCAL:0 CONSTANT[0]:696 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "PARTIAL_CUDA",
+    "sha256": "8260df4d77059106824dc862e9133d88340fc49a848fe73fd75aca51eb559181",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN48_GLOBAL__N__1c82ffa9_15_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi8ELi3EEEvNS_6ParamsE",
+        "instructions": 7560,
+        "waits": [
+          523
+        ],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 12,
+            "line": null,
+            "sass": "/*00c0*/                   LDG.E.STRONG.SM R203, desc[UR8][R2.64] ;                      /* 0x0000000802cb7981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P5 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606d981 */"
+          },
+          {
+            "index": 83,
+            "line": null,
+            "sass": "/*0530*/              @!P2 LDG.E.STRONG.SM R8, desc[UR8][R8.64] ;                        /* 0x000000080808a981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P3 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212b981 */"
+          },
+          {
+            "index": 119,
+            "line": null,
+            "sass": "/*0770*/              @!P4 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606c981 */"
+          },
+          {
+            "index": 125,
+            "line": null,
+            "sass": "/*07d0*/              @!P5 LDG.E.STRONG.SM R8, desc[UR8][R8.64] ;                        /* 0x000000080808d981 */"
+          },
+          {
+            "index": 130,
+            "line": null,
+            "sass": "/*0820*/              @!P2 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212a981 */"
+          },
+          {
+            "index": 138,
+            "line": null,
+            "sass": "/*08a0*/              @!P3 LDG.E.STRONG.SM R20, desc[UR8][R20.64] ;                      /* 0x000000081414b981 */"
+          },
+          {
+            "index": 242,
+            "line": null,
+            "sass": "/*0f20*/                   LDGSTS.E.BYPASS.128 [R11], desc[UR8][R24.64], P6 ;            /* 0x00000000180b7fae */"
+          },
+          {
+            "index": 245,
+            "line": null,
+            "sass": "/*0f50*/                   LDGSTS.E.BYPASS.128 [R11+0x6000], desc[UR8][R20.64], P6 ;     /* 0x06000000140b7fae */"
+          },
+          {
+            "index": 263,
+            "line": null,
+            "sass": "/*1070*/                   LDGSTS.E.BYPASS.128 [R5], desc[UR8][R28.64], P6 ;             /* 0x000000001c057fae */"
+          },
+          {
+            "index": 266,
+            "line": null,
+            "sass": "/*10a0*/                   LDGSTS.E.BYPASS.128 [R5+0x6000], desc[UR8][R26.64], P6 ;      /* 0x060000001a057fae */"
+          },
+          {
+            "index": 277,
+            "line": null,
+            "sass": "/*1150*/                   LDGSTS.E.BYPASS.128 [R5], desc[UR8][R32.64], P6 ;             /* 0x0000000020057fae */"
+          },
+          {
+            "index": 278,
+            "line": null,
+            "sass": "/*1160*/                   LDGSTS.E.BYPASS.128 [R5+0x6000], desc[UR8][R30.64], P6 ;      /* 0x060000001e057fae */"
+          },
+          {
+            "index": 280,
+            "line": null,
+            "sass": "/*1180*/                   LDGSTS.E.BYPASS.128 [R11], desc[UR8][R36.64], P6 ;            /* 0x00000000240b7fae */"
+          },
+          {
+            "index": 281,
+            "line": null,
+            "sass": "/*1190*/                   LDGSTS.E.BYPASS.128 [R11+0x6000], desc[UR8][R34.64], P6 ;     /* 0x06000000220b7fae */"
+          },
+          {
+            "index": 284,
+            "line": null,
+            "sass": "/*11c0*/              @!P4 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606c981 */"
+          },
+          {
+            "index": 287,
+            "line": null,
+            "sass": "/*11f0*/              @!P2 LDG.E.STRONG.SM R16, desc[UR8][R8.64] ;                       /* 0x000000080810a981 */"
+          },
+          {
+            "index": 288,
+            "line": null,
+            "sass": "/*1200*/              @!P3 LDG.E.STRONG.SM R24, desc[UR8][R18.64] ;                      /* 0x000000081218b981 */"
+          },
+          {
+            "index": 335,
+            "line": null,
+            "sass": "/*14f0*/                   LDGSTS.E.BYPASS.128 [R27+0x2000], desc[UR8][R8.64], P0 ;      /* 0x02000000081b7fae */"
+          },
+          {
+            "index": 336,
+            "line": null,
+            "sass": "/*1500*/                   LDGSTS.E.BYPASS.128 [R27+0x8000], desc[UR8][R6.64], P0 ;      /* 0x08000000061b7fae */"
+          },
+          {
+            "index": 354,
+            "line": null,
+            "sass": "/*1620*/                   LDGSTS.E.BYPASS.128 [R27+0x2000], desc[UR8][R20.64], P0 ;     /* 0x02000000141b7fae */"
+          },
+          {
+            "index": 357,
+            "line": null,
+            "sass": "/*1650*/                   LDGSTS.E.BYPASS.128 [R27+0x8000], desc[UR8][R18.64], P0 ;     /* 0x08000000121b7fae */"
+          },
+          {
+            "index": 374,
+            "line": null,
+            "sass": "/*1760*/                   LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR8][R8.64], P0 ;      /* 0x02000000081d7fae */"
+          },
+          {
+            "index": 377,
+            "line": null,
+            "sass": "/*1790*/                   LDGSTS.E.BYPASS.128 [R29+0x8000], desc[UR8][R6.64], P0 ;      /* 0x08000000061d7fae */"
+          },
+          {
+            "index": 387,
+            "line": null,
+            "sass": "/*1830*/                   LDGSTS.E.BYPASS.128 [R5+0x2000], desc[UR8][R20.64], P0 ;      /* 0x0200000014057fae */"
+          },
+          {
+            "index": 388,
+            "line": null,
+            "sass": "/*1840*/                   LDGSTS.E.BYPASS.128 [R5+0x8000], desc[UR8][R18.64], P0 ;      /* 0x0800000012057fae */"
+          },
+          {
+            "index": 413,
+            "line": null,
+            "sass": "/*19d0*/              @!P4 LDG.E.STRONG.SM R54, desc[UR8][R54.64] ;                      /* 0x000000083636c981 */"
+          },
+          {
+            "index": 431,
+            "line": null,
+            "sass": "/*1af0*/              @!P5 LDG.E.STRONG.SM R56, desc[UR8][R56.64] ;                      /* 0x000000083838d981 */"
+          },
+          {
+            "index": 439,
+            "line": null,
+            "sass": "/*1b70*/              @!P2 LDG.E.64.STRONG.SM R48, desc[UR8][R48.64] ;                   /* 0x000000083030a981 */"
+          },
+          {
+            "index": 463,
+            "line": null,
+            "sass": "/*1cf0*/                   LDG.E.64.STRONG.SM R94, desc[UR8][R94.64] ;                   /* 0x000000085e5e7981 */"
+          },
+          {
+            "index": 466,
+            "line": null,
+            "sass": "/*1d20*/                   LDG.E.64.STRONG.SM R96, desc[UR8][R96.64] ;                   /* 0x0000000860607981 */"
+          },
+          {
+            "index": 469,
+            "line": null,
+            "sass": "/*1d50*/                   LDG.E.64.STRONG.SM R98, desc[UR8][R98.64] ;                   /* 0x0000000862627981 */"
+          },
+          {
+            "index": 473,
+            "line": null,
+            "sass": "/*1d90*/                   LDG.E.STRONG.SM R16, desc[UR8][R52.64] ;                      /* 0x0000000834107981 */"
+          },
+          {
+            "index": 476,
+            "line": null,
+            "sass": "/*1dc0*/                   LDG.E.64.STRONG.SM R100, desc[UR8][R100.64] ;                 /* 0x0000000864647981 */"
+          },
+          {
+            "index": 481,
+            "line": null,
+            "sass": "/*1e10*/                   LDG.E.64.STRONG.SM R102, desc[UR8][R102.64] ;                 /* 0x0000000866667981 */"
+          },
+          {
+            "index": 486,
+            "line": null,
+            "sass": "/*1e60*/                   LDG.E.64.STRONG.SM R104, desc[UR8][R104.64] ;                 /* 0x0000000868687981 */"
+          },
+          {
+            "index": 491,
+            "line": null,
+            "sass": "/*1eb0*/                   LDG.E.64.STRONG.SM R106, desc[UR8][R106.64] ;                 /* 0x000000086a6a7981 */"
+          },
+          {
+            "index": 498,
+            "line": null,
+            "sass": "/*1f20*/                   LDG.E.64.STRONG.SM R108, desc[UR8][R108.64] ;                 /* 0x000000086c6c7981 */"
+          },
+          {
+            "index": 508,
+            "line": null,
+            "sass": "/*1fc0*/                   LDG.E.STRONG.SM R3, desc[UR8][R50.64] ;                       /* 0x0000000832037981 */"
+          },
+          {
+            "index": 510,
+            "line": null,
+            "sass": "/*1fe0*/              @!P3 LDG.E.64.STRONG.SM R44, desc[UR8][R44.64] ;                   /* 0x000000082c2cb981 */"
+          },
+          {
+            "index": 511,
+            "line": null,
+            "sass": "/*1ff0*/              @!P3 LDG.E.STRONG.SM R61, desc[UR8][R46.64] ;                      /* 0x000000082e3db981 */"
+          },
+          {
+            "index": 512,
+            "line": null,
+            "sass": "/*2000*/              @!P2 LDG.E.STRONG.SM R59, desc[UR8][R58.64] ;                      /* 0x000000083a3ba981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN48_GLOBAL__N__1c82ffa9_15_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi1ELi4EEEvNS_6ParamsE",
+        "instructions": 3968,
+        "waits": [
+          615
+        ],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 12,
+            "line": null,
+            "sass": "/*00c0*/                   LDG.E.STRONG.SM R90, desc[UR8][R90.64] ;                      /* 0x000000085a5a7981 */"
+          },
+          {
+            "index": 71,
+            "line": null,
+            "sass": "/*0470*/              @!P3 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606b981 */"
+          },
+          {
+            "index": 76,
+            "line": null,
+            "sass": "/*04c0*/              @!P4 LDG.E.STRONG.SM R12, desc[UR8][R12.64] ;                      /* 0x000000080c0cc981 */"
+          },
+          {
+            "index": 109,
+            "line": null,
+            "sass": "/*06d0*/              @!P5 LDG.E.STRONG.SM R12, desc[UR8][R12.64] ;                      /* 0x000000080c0cd981 */"
+          },
+          {
+            "index": 115,
+            "line": null,
+            "sass": "/*0730*/              @!P1 LDG.E.STRONG.SM R14, desc[UR8][R14.64] ;                      /* 0x000000080e0e9981 */"
+          },
+          {
+            "index": 121,
+            "line": null,
+            "sass": "/*0790*/              @!P2 LDG.E.STRONG.SM R16, desc[UR8][R16.64] ;                      /* 0x000000081010a981 */"
+          },
+          {
+            "index": 126,
+            "line": null,
+            "sass": "/*07e0*/              @!P3 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212b981 */"
+          },
+          {
+            "index": 134,
+            "line": null,
+            "sass": "/*0860*/              @!P4 LDG.E.STRONG.SM R20, desc[UR8][R20.64] ;                      /* 0x000000081414c981 */"
+          },
+          {
+            "index": 260,
+            "line": null,
+            "sass": "/*1040*/                   LDGSTS.E.BYPASS.128 [R39], desc[UR8][R42.64], P6 ;            /* 0x000000002a277fae */"
+          },
+          {
+            "index": 262,
+            "line": null,
+            "sass": "/*1060*/                   LDGSTS.E.BYPASS.128 [R39+0x8000], desc[UR8][R44.64], P6 ;     /* 0x080000002c277fae */"
+          },
+          {
+            "index": 282,
+            "line": null,
+            "sass": "/*11a0*/                   LDGSTS.E.BYPASS.128 [R33], desc[UR8][R30.64], P6 ;            /* 0x000000001e217fae */"
+          },
+          {
+            "index": 284,
+            "line": null,
+            "sass": "/*11c0*/                   LDGSTS.E.BYPASS.128 [R33+0x8000], desc[UR8][R40.64], P6 ;     /* 0x0800000028217fae */"
+          },
+          {
+            "index": 298,
+            "line": null,
+            "sass": "/*12a0*/                   LDGSTS.E.BYPASS.128 [R31], desc[UR8][R26.64], P6 ;            /* 0x000000001a1f7fae */"
+          },
+          {
+            "index": 300,
+            "line": null,
+            "sass": "/*12c0*/                   LDGSTS.E.BYPASS.128 [R31+0x8000], desc[UR8][R38.64], P6 ;     /* 0x08000000261f7fae */"
+          },
+          {
+            "index": 302,
+            "line": null,
+            "sass": "/*12e0*/                   LDGSTS.E.BYPASS.128 [R25], desc[UR8][R28.64], P6 ;            /* 0x000000001c197fae */"
+          },
+          {
+            "index": 303,
+            "line": null,
+            "sass": "/*12f0*/                   LDGSTS.E.BYPASS.128 [R25+0x8000], desc[UR8][R46.64], P6 ;     /* 0x080000002e197fae */"
+          },
+          {
+            "index": 305,
+            "line": null,
+            "sass": "/*1310*/              @!P5 LDG.E.STRONG.SM R12, desc[UR8][R12.64] ;                      /* 0x000000080c0cd981 */"
+          },
+          {
+            "index": 314,
+            "line": null,
+            "sass": "/*13a0*/              @!P1 LDG.E.STRONG.SM R14, desc[UR8][R14.64] ;                      /* 0x000000080e0e9981 */"
+          },
+          {
+            "index": 316,
+            "line": null,
+            "sass": "/*13c0*/              @!P2 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212a981 */"
+          },
+          {
+            "index": 317,
+            "line": null,
+            "sass": "/*13d0*/              @!P3 LDG.E.STRONG.SM R25, desc[UR8][R20.64] ;                      /* 0x000000081419b981 */"
+          },
+          {
+            "index": 318,
+            "line": null,
+            "sass": "/*13e0*/              @!P4 LDG.E.STRONG.SM R30, desc[UR8][R22.64] ;                      /* 0x00000008161ec981 */"
+          },
+          {
+            "index": 392,
+            "line": null,
+            "sass": "/*1880*/                   LDGSTS.E.BYPASS.128 [R43+0x2000], desc[UR8][R32.64], P0 ;     /* 0x02000000202b7fae */"
+          },
+          {
+            "index": 394,
+            "line": null,
+            "sass": "/*18a0*/                   LDGSTS.E.BYPASS.128 [R43+0xa000], desc[UR8][R34.64], P0 ;     /* 0x0a000000222b7fae */"
+          },
+          {
+            "index": 405,
+            "line": null,
+            "sass": "/*1950*/                   LDGSTS.E.BYPASS.128 [R33+0x2000], desc[UR8][R20.64], P0 ;     /* 0x0200000014217fae */"
+          },
+          {
+            "index": 406,
+            "line": null,
+            "sass": "/*1960*/                   LDGSTS.E.BYPASS.128 [R33+0xa000], desc[UR8][R36.64], P0 ;     /* 0x0a00000024217fae */"
+          },
+          {
+            "index": 424,
+            "line": null,
+            "sass": "/*1a80*/                   LDGSTS.E.BYPASS.128 [R15+0x2000], desc[UR8][R18.64], P0 ;     /* 0x02000000120f7fae */"
+          },
+          {
+            "index": 425,
+            "line": null,
+            "sass": "/*1a90*/                   LDGSTS.E.BYPASS.128 [R15+0xa000], desc[UR8][R28.64], P0 ;     /* 0x0a0000001c0f7fae */"
+          },
+          {
+            "index": 427,
+            "line": null,
+            "sass": "/*1ab0*/                   LDGSTS.E.BYPASS.128 [R11+0x2000], desc[UR8][R22.64], P0 ;     /* 0x02000000160b7fae */"
+          },
+          {
+            "index": 428,
+            "line": null,
+            "sass": "/*1ac0*/                   LDGSTS.E.BYPASS.128 [R11+0xa000], desc[UR8][R38.64], P0 ;     /* 0x0a000000260b7fae */"
+          },
+          {
+            "index": 496,
+            "line": null,
+            "sass": "/*1f00*/                   LDGSTS.E.BYPASS.128 [R39+0x4000], desc[UR8][R30.64], P4 ;     /* 0x040000001e277fae */"
+          },
+          {
+            "index": 500,
+            "line": null,
+            "sass": "/*1f40*/                   LDGSTS.E.BYPASS.128 [R39+0xc000], desc[UR8][R28.64], P4 ;     /* 0x0c0000001c277fae */"
+          },
+          {
+            "index": 511,
+            "line": null,
+            "sass": "/*1ff0*/                   LDGSTS.E.BYPASS.128 [R41+0x4000], desc[UR8][R32.64], P3 ;     /* 0x0400000020297fae */"
+          },
+          {
+            "index": 517,
+            "line": null,
+            "sass": "/*2050*/                   LDGSTS.E.BYPASS.128 [R41+0xc000], desc[UR8][R26.64], P3 ;     /* 0x0c0000001a297fae */"
+          },
+          {
+            "index": 537,
+            "line": null,
+            "sass": "/*2190*/                   LDGSTS.E.BYPASS.128 [R31+0x4000], desc[UR8][R28.64], P4 ;     /* 0x040000001c1f7fae */"
+          },
+          {
+            "index": 540,
+            "line": null,
+            "sass": "/*21c0*/                   LDGSTS.E.BYPASS.128 [R31+0xc000], desc[UR8][R4.64], P4 ;      /* 0x0c000000041f7fae */"
+          },
+          {
+            "index": 547,
+            "line": null,
+            "sass": "/*2230*/                   LDGSTS.E.BYPASS.128 [R37+0x4000], desc[UR8][R26.64], P4 ;     /* 0x040000001a257fae */"
+          },
+          {
+            "index": 548,
+            "line": null,
+            "sass": "/*2240*/                   LDGSTS.E.BYPASS.128 [R37+0xc000], desc[UR8][R16.64], P4 ;     /* 0x0c00000010257fae */"
+          },
+          {
+            "index": 574,
+            "line": null,
+            "sass": "/*23e0*/              @!P1 LDG.E.STRONG.SM R27, desc[UR8][R26.64] ;                      /* 0x000000081a1b9981 */"
+          },
+          {
+            "index": 577,
+            "line": null,
+            "sass": "/*2410*/              @!P5 LDG.E.STRONG.SM R11, desc[UR8][R24.64] ;                      /* 0x00000008180bd981 */"
+          },
+          {
+            "index": 579,
+            "line": null,
+            "sass": "/*2430*/               @P0 LDG.E.64.STRONG.SM R16, desc[UR8][R16.64] ;                   /* 0x0000000810100981 */"
+          },
+          {
+            "index": 583,
+            "line": null,
+            "sass": "/*2470*/              @!P2 LDG.E.STRONG.SM R15, desc[UR8][R20.64] ;                      /* 0x00000008140fa981 */"
+          },
+          {
+            "index": 585,
+            "line": null,
+            "sass": "/*2490*/              @!P6 LDG.E.STRONG.SM R28, desc[UR8][R28.64] ;                      /* 0x000000081c1ce981 */"
+          },
+          {
+            "index": 586,
+            "line": null,
+            "sass": "/*24a0*/               @P0 LDG.E.STRONG.SM R35, desc[UR8][R18.64] ;                      /* 0x0000000812230981 */"
+          },
+          {
+            "index": 609,
+            "line": null,
+            "sass": "/*2610*/                   LDG.E.64.STRONG.SM R18, desc[UR8][R30.64] ;                   /* 0x000000081e127981 */"
+          },
+          {
+            "index": 612,
+            "line": null,
+            "sass": "/*2640*/                   LDG.E.STRONG.SM R3, desc[UR8][R24.64] ;                       /* 0x0000000818037981 */"
+          },
+          {
+            "index": 614,
+            "line": null,
+            "sass": "/*2660*/                   LDG.E.STRONG.SM R88, desc[UR8][R88.64] ;                      /* 0x0000000858587981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "3c7b7cf1de440d57fc073ca065f29249d077968977866cf5699e8385a8badbd2",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/PARTIAL_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN48_GLOBAL__N__1c82ffa9_15_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi8ELi3EEEvNS_6ParamsE:\n  REG:254 STACK:32 SHARED:1152 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN48_GLOBAL__N__1c82ffa9_15_PARTIAL_CUDA_cu_0e6d075c9attn_mainILi1ELi4EEEvNS_6ParamsE:\n  REG:126 STACK:32 SHARED:1152 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  {
+    "name": "PARTIAL_FAST_CUDA",
+    "sha256": "8260df4d77059106824dc862e9133d88340fc49a848fe73fd75aca51eb559181",
+    "ok": true,
+    "kernels": [
+      {
+        "symbol": "_ZN53_GLOBAL__N__be237906_20_PARTIAL_FAST_CUDA_cu_0e6d075c9attn_mainILi8ELi3EEEvNS_6ParamsE",
+        "instructions": 7560,
+        "waits": [
+          523
+        ],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 12,
+            "line": null,
+            "sass": "/*00c0*/                   LDG.E.STRONG.SM R203, desc[UR8][R2.64] ;                      /* 0x0000000802cb7981 */"
+          },
+          {
+            "index": 77,
+            "line": null,
+            "sass": "/*04d0*/              @!P5 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606d981 */"
+          },
+          {
+            "index": 83,
+            "line": null,
+            "sass": "/*0530*/              @!P2 LDG.E.STRONG.SM R8, desc[UR8][R8.64] ;                        /* 0x000000080808a981 */"
+          },
+          {
+            "index": 88,
+            "line": null,
+            "sass": "/*0580*/              @!P3 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212b981 */"
+          },
+          {
+            "index": 119,
+            "line": null,
+            "sass": "/*0770*/              @!P4 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606c981 */"
+          },
+          {
+            "index": 125,
+            "line": null,
+            "sass": "/*07d0*/              @!P5 LDG.E.STRONG.SM R8, desc[UR8][R8.64] ;                        /* 0x000000080808d981 */"
+          },
+          {
+            "index": 130,
+            "line": null,
+            "sass": "/*0820*/              @!P2 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212a981 */"
+          },
+          {
+            "index": 138,
+            "line": null,
+            "sass": "/*08a0*/              @!P3 LDG.E.STRONG.SM R20, desc[UR8][R20.64] ;                      /* 0x000000081414b981 */"
+          },
+          {
+            "index": 242,
+            "line": null,
+            "sass": "/*0f20*/                   LDGSTS.E.BYPASS.128 [R11], desc[UR8][R24.64], P6 ;            /* 0x00000000180b7fae */"
+          },
+          {
+            "index": 245,
+            "line": null,
+            "sass": "/*0f50*/                   LDGSTS.E.BYPASS.128 [R11+0x6000], desc[UR8][R20.64], P6 ;     /* 0x06000000140b7fae */"
+          },
+          {
+            "index": 263,
+            "line": null,
+            "sass": "/*1070*/                   LDGSTS.E.BYPASS.128 [R5], desc[UR8][R28.64], P6 ;             /* 0x000000001c057fae */"
+          },
+          {
+            "index": 266,
+            "line": null,
+            "sass": "/*10a0*/                   LDGSTS.E.BYPASS.128 [R5+0x6000], desc[UR8][R26.64], P6 ;      /* 0x060000001a057fae */"
+          },
+          {
+            "index": 277,
+            "line": null,
+            "sass": "/*1150*/                   LDGSTS.E.BYPASS.128 [R5], desc[UR8][R32.64], P6 ;             /* 0x0000000020057fae */"
+          },
+          {
+            "index": 278,
+            "line": null,
+            "sass": "/*1160*/                   LDGSTS.E.BYPASS.128 [R5+0x6000], desc[UR8][R30.64], P6 ;      /* 0x060000001e057fae */"
+          },
+          {
+            "index": 280,
+            "line": null,
+            "sass": "/*1180*/                   LDGSTS.E.BYPASS.128 [R11], desc[UR8][R36.64], P6 ;            /* 0x00000000240b7fae */"
+          },
+          {
+            "index": 281,
+            "line": null,
+            "sass": "/*1190*/                   LDGSTS.E.BYPASS.128 [R11+0x6000], desc[UR8][R34.64], P6 ;     /* 0x06000000220b7fae */"
+          },
+          {
+            "index": 284,
+            "line": null,
+            "sass": "/*11c0*/              @!P4 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606c981 */"
+          },
+          {
+            "index": 287,
+            "line": null,
+            "sass": "/*11f0*/              @!P2 LDG.E.STRONG.SM R16, desc[UR8][R8.64] ;                       /* 0x000000080810a981 */"
+          },
+          {
+            "index": 288,
+            "line": null,
+            "sass": "/*1200*/              @!P3 LDG.E.STRONG.SM R24, desc[UR8][R18.64] ;                      /* 0x000000081218b981 */"
+          },
+          {
+            "index": 335,
+            "line": null,
+            "sass": "/*14f0*/                   LDGSTS.E.BYPASS.128 [R27+0x2000], desc[UR8][R8.64], P0 ;      /* 0x02000000081b7fae */"
+          },
+          {
+            "index": 336,
+            "line": null,
+            "sass": "/*1500*/                   LDGSTS.E.BYPASS.128 [R27+0x8000], desc[UR8][R6.64], P0 ;      /* 0x08000000061b7fae */"
+          },
+          {
+            "index": 354,
+            "line": null,
+            "sass": "/*1620*/                   LDGSTS.E.BYPASS.128 [R27+0x2000], desc[UR8][R20.64], P0 ;     /* 0x02000000141b7fae */"
+          },
+          {
+            "index": 357,
+            "line": null,
+            "sass": "/*1650*/                   LDGSTS.E.BYPASS.128 [R27+0x8000], desc[UR8][R18.64], P0 ;     /* 0x08000000121b7fae */"
+          },
+          {
+            "index": 374,
+            "line": null,
+            "sass": "/*1760*/                   LDGSTS.E.BYPASS.128 [R29+0x2000], desc[UR8][R8.64], P0 ;      /* 0x02000000081d7fae */"
+          },
+          {
+            "index": 377,
+            "line": null,
+            "sass": "/*1790*/                   LDGSTS.E.BYPASS.128 [R29+0x8000], desc[UR8][R6.64], P0 ;      /* 0x08000000061d7fae */"
+          },
+          {
+            "index": 387,
+            "line": null,
+            "sass": "/*1830*/                   LDGSTS.E.BYPASS.128 [R5+0x2000], desc[UR8][R20.64], P0 ;      /* 0x0200000014057fae */"
+          },
+          {
+            "index": 388,
+            "line": null,
+            "sass": "/*1840*/                   LDGSTS.E.BYPASS.128 [R5+0x8000], desc[UR8][R18.64], P0 ;      /* 0x0800000012057fae */"
+          },
+          {
+            "index": 413,
+            "line": null,
+            "sass": "/*19d0*/              @!P4 LDG.E.STRONG.SM R54, desc[UR8][R54.64] ;                      /* 0x000000083636c981 */"
+          },
+          {
+            "index": 431,
+            "line": null,
+            "sass": "/*1af0*/              @!P5 LDG.E.STRONG.SM R56, desc[UR8][R56.64] ;                      /* 0x000000083838d981 */"
+          },
+          {
+            "index": 439,
+            "line": null,
+            "sass": "/*1b70*/              @!P2 LDG.E.64.STRONG.SM R48, desc[UR8][R48.64] ;                   /* 0x000000083030a981 */"
+          },
+          {
+            "index": 463,
+            "line": null,
+            "sass": "/*1cf0*/                   LDG.E.64.STRONG.SM R94, desc[UR8][R94.64] ;                   /* 0x000000085e5e7981 */"
+          },
+          {
+            "index": 466,
+            "line": null,
+            "sass": "/*1d20*/                   LDG.E.64.STRONG.SM R96, desc[UR8][R96.64] ;                   /* 0x0000000860607981 */"
+          },
+          {
+            "index": 469,
+            "line": null,
+            "sass": "/*1d50*/                   LDG.E.64.STRONG.SM R98, desc[UR8][R98.64] ;                   /* 0x0000000862627981 */"
+          },
+          {
+            "index": 473,
+            "line": null,
+            "sass": "/*1d90*/                   LDG.E.STRONG.SM R16, desc[UR8][R52.64] ;                      /* 0x0000000834107981 */"
+          },
+          {
+            "index": 476,
+            "line": null,
+            "sass": "/*1dc0*/                   LDG.E.64.STRONG.SM R100, desc[UR8][R100.64] ;                 /* 0x0000000864647981 */"
+          },
+          {
+            "index": 481,
+            "line": null,
+            "sass": "/*1e10*/                   LDG.E.64.STRONG.SM R102, desc[UR8][R102.64] ;                 /* 0x0000000866667981 */"
+          },
+          {
+            "index": 486,
+            "line": null,
+            "sass": "/*1e60*/                   LDG.E.64.STRONG.SM R104, desc[UR8][R104.64] ;                 /* 0x0000000868687981 */"
+          },
+          {
+            "index": 491,
+            "line": null,
+            "sass": "/*1eb0*/                   LDG.E.64.STRONG.SM R106, desc[UR8][R106.64] ;                 /* 0x000000086a6a7981 */"
+          },
+          {
+            "index": 498,
+            "line": null,
+            "sass": "/*1f20*/                   LDG.E.64.STRONG.SM R108, desc[UR8][R108.64] ;                 /* 0x000000086c6c7981 */"
+          },
+          {
+            "index": 508,
+            "line": null,
+            "sass": "/*1fc0*/                   LDG.E.STRONG.SM R3, desc[UR8][R50.64] ;                       /* 0x0000000832037981 */"
+          },
+          {
+            "index": 510,
+            "line": null,
+            "sass": "/*1fe0*/              @!P3 LDG.E.64.STRONG.SM R44, desc[UR8][R44.64] ;                   /* 0x000000082c2cb981 */"
+          },
+          {
+            "index": 511,
+            "line": null,
+            "sass": "/*1ff0*/              @!P3 LDG.E.STRONG.SM R61, desc[UR8][R46.64] ;                      /* 0x000000082e3db981 */"
+          },
+          {
+            "index": 512,
+            "line": null,
+            "sass": "/*2000*/              @!P2 LDG.E.STRONG.SM R59, desc[UR8][R58.64] ;                      /* 0x000000083a3ba981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      },
+      {
+        "symbol": "_ZN53_GLOBAL__N__be237906_20_PARTIAL_FAST_CUDA_cu_0e6d075c9attn_mainILi1ELi4EEEvNS_6ParamsE",
+        "instructions": 3968,
+        "waits": [
+          615
+        ],
+        "releases": [
+          5
+        ],
+        "independent_candidates_before_first_wait": [
+          {
+            "index": 12,
+            "line": null,
+            "sass": "/*00c0*/                   LDG.E.STRONG.SM R90, desc[UR8][R90.64] ;                      /* 0x000000085a5a7981 */"
+          },
+          {
+            "index": 71,
+            "line": null,
+            "sass": "/*0470*/              @!P3 LDG.E.STRONG.SM R6, desc[UR8][R6.64] ;                        /* 0x000000080606b981 */"
+          },
+          {
+            "index": 76,
+            "line": null,
+            "sass": "/*04c0*/              @!P4 LDG.E.STRONG.SM R12, desc[UR8][R12.64] ;                      /* 0x000000080c0cc981 */"
+          },
+          {
+            "index": 109,
+            "line": null,
+            "sass": "/*06d0*/              @!P5 LDG.E.STRONG.SM R12, desc[UR8][R12.64] ;                      /* 0x000000080c0cd981 */"
+          },
+          {
+            "index": 115,
+            "line": null,
+            "sass": "/*0730*/              @!P1 LDG.E.STRONG.SM R14, desc[UR8][R14.64] ;                      /* 0x000000080e0e9981 */"
+          },
+          {
+            "index": 121,
+            "line": null,
+            "sass": "/*0790*/              @!P2 LDG.E.STRONG.SM R16, desc[UR8][R16.64] ;                      /* 0x000000081010a981 */"
+          },
+          {
+            "index": 126,
+            "line": null,
+            "sass": "/*07e0*/              @!P3 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212b981 */"
+          },
+          {
+            "index": 134,
+            "line": null,
+            "sass": "/*0860*/              @!P4 LDG.E.STRONG.SM R20, desc[UR8][R20.64] ;                      /* 0x000000081414c981 */"
+          },
+          {
+            "index": 260,
+            "line": null,
+            "sass": "/*1040*/                   LDGSTS.E.BYPASS.128 [R39], desc[UR8][R42.64], P6 ;            /* 0x000000002a277fae */"
+          },
+          {
+            "index": 262,
+            "line": null,
+            "sass": "/*1060*/                   LDGSTS.E.BYPASS.128 [R39+0x8000], desc[UR8][R44.64], P6 ;     /* 0x080000002c277fae */"
+          },
+          {
+            "index": 282,
+            "line": null,
+            "sass": "/*11a0*/                   LDGSTS.E.BYPASS.128 [R33], desc[UR8][R30.64], P6 ;            /* 0x000000001e217fae */"
+          },
+          {
+            "index": 284,
+            "line": null,
+            "sass": "/*11c0*/                   LDGSTS.E.BYPASS.128 [R33+0x8000], desc[UR8][R40.64], P6 ;     /* 0x0800000028217fae */"
+          },
+          {
+            "index": 298,
+            "line": null,
+            "sass": "/*12a0*/                   LDGSTS.E.BYPASS.128 [R31], desc[UR8][R26.64], P6 ;            /* 0x000000001a1f7fae */"
+          },
+          {
+            "index": 300,
+            "line": null,
+            "sass": "/*12c0*/                   LDGSTS.E.BYPASS.128 [R31+0x8000], desc[UR8][R38.64], P6 ;     /* 0x08000000261f7fae */"
+          },
+          {
+            "index": 302,
+            "line": null,
+            "sass": "/*12e0*/                   LDGSTS.E.BYPASS.128 [R25], desc[UR8][R28.64], P6 ;            /* 0x000000001c197fae */"
+          },
+          {
+            "index": 303,
+            "line": null,
+            "sass": "/*12f0*/                   LDGSTS.E.BYPASS.128 [R25+0x8000], desc[UR8][R46.64], P6 ;     /* 0x080000002e197fae */"
+          },
+          {
+            "index": 305,
+            "line": null,
+            "sass": "/*1310*/              @!P5 LDG.E.STRONG.SM R12, desc[UR8][R12.64] ;                      /* 0x000000080c0cd981 */"
+          },
+          {
+            "index": 314,
+            "line": null,
+            "sass": "/*13a0*/              @!P1 LDG.E.STRONG.SM R14, desc[UR8][R14.64] ;                      /* 0x000000080e0e9981 */"
+          },
+          {
+            "index": 316,
+            "line": null,
+            "sass": "/*13c0*/              @!P2 LDG.E.STRONG.SM R18, desc[UR8][R18.64] ;                      /* 0x000000081212a981 */"
+          },
+          {
+            "index": 317,
+            "line": null,
+            "sass": "/*13d0*/              @!P3 LDG.E.STRONG.SM R25, desc[UR8][R20.64] ;                      /* 0x000000081419b981 */"
+          },
+          {
+            "index": 318,
+            "line": null,
+            "sass": "/*13e0*/              @!P4 LDG.E.STRONG.SM R30, desc[UR8][R22.64] ;                      /* 0x00000008161ec981 */"
+          },
+          {
+            "index": 392,
+            "line": null,
+            "sass": "/*1880*/                   LDGSTS.E.BYPASS.128 [R43+0x2000], desc[UR8][R32.64], P0 ;     /* 0x02000000202b7fae */"
+          },
+          {
+            "index": 394,
+            "line": null,
+            "sass": "/*18a0*/                   LDGSTS.E.BYPASS.128 [R43+0xa000], desc[UR8][R34.64], P0 ;     /* 0x0a000000222b7fae */"
+          },
+          {
+            "index": 405,
+            "line": null,
+            "sass": "/*1950*/                   LDGSTS.E.BYPASS.128 [R33+0x2000], desc[UR8][R20.64], P0 ;     /* 0x0200000014217fae */"
+          },
+          {
+            "index": 406,
+            "line": null,
+            "sass": "/*1960*/                   LDGSTS.E.BYPASS.128 [R33+0xa000], desc[UR8][R36.64], P0 ;     /* 0x0a00000024217fae */"
+          },
+          {
+            "index": 424,
+            "line": null,
+            "sass": "/*1a80*/                   LDGSTS.E.BYPASS.128 [R15+0x2000], desc[UR8][R18.64], P0 ;     /* 0x02000000120f7fae */"
+          },
+          {
+            "index": 425,
+            "line": null,
+            "sass": "/*1a90*/                   LDGSTS.E.BYPASS.128 [R15+0xa000], desc[UR8][R28.64], P0 ;     /* 0x0a0000001c0f7fae */"
+          },
+          {
+            "index": 427,
+            "line": null,
+            "sass": "/*1ab0*/                   LDGSTS.E.BYPASS.128 [R11+0x2000], desc[UR8][R22.64], P0 ;     /* 0x02000000160b7fae */"
+          },
+          {
+            "index": 428,
+            "line": null,
+            "sass": "/*1ac0*/                   LDGSTS.E.BYPASS.128 [R11+0xa000], desc[UR8][R38.64], P0 ;     /* 0x0a000000260b7fae */"
+          },
+          {
+            "index": 496,
+            "line": null,
+            "sass": "/*1f00*/                   LDGSTS.E.BYPASS.128 [R39+0x4000], desc[UR8][R30.64], P4 ;     /* 0x040000001e277fae */"
+          },
+          {
+            "index": 500,
+            "line": null,
+            "sass": "/*1f40*/                   LDGSTS.E.BYPASS.128 [R39+0xc000], desc[UR8][R28.64], P4 ;     /* 0x0c0000001c277fae */"
+          },
+          {
+            "index": 511,
+            "line": null,
+            "sass": "/*1ff0*/                   LDGSTS.E.BYPASS.128 [R41+0x4000], desc[UR8][R32.64], P3 ;     /* 0x0400000020297fae */"
+          },
+          {
+            "index": 517,
+            "line": null,
+            "sass": "/*2050*/                   LDGSTS.E.BYPASS.128 [R41+0xc000], desc[UR8][R26.64], P3 ;     /* 0x0c0000001a297fae */"
+          },
+          {
+            "index": 537,
+            "line": null,
+            "sass": "/*2190*/                   LDGSTS.E.BYPASS.128 [R31+0x4000], desc[UR8][R28.64], P4 ;     /* 0x040000001c1f7fae */"
+          },
+          {
+            "index": 540,
+            "line": null,
+            "sass": "/*21c0*/                   LDGSTS.E.BYPASS.128 [R31+0xc000], desc[UR8][R4.64], P4 ;      /* 0x0c000000041f7fae */"
+          },
+          {
+            "index": 547,
+            "line": null,
+            "sass": "/*2230*/                   LDGSTS.E.BYPASS.128 [R37+0x4000], desc[UR8][R26.64], P4 ;     /* 0x040000001a257fae */"
+          },
+          {
+            "index": 548,
+            "line": null,
+            "sass": "/*2240*/                   LDGSTS.E.BYPASS.128 [R37+0xc000], desc[UR8][R16.64], P4 ;     /* 0x0c00000010257fae */"
+          },
+          {
+            "index": 574,
+            "line": null,
+            "sass": "/*23e0*/              @!P1 LDG.E.STRONG.SM R27, desc[UR8][R26.64] ;                      /* 0x000000081a1b9981 */"
+          },
+          {
+            "index": 577,
+            "line": null,
+            "sass": "/*2410*/              @!P5 LDG.E.STRONG.SM R11, desc[UR8][R24.64] ;                      /* 0x00000008180bd981 */"
+          },
+          {
+            "index": 579,
+            "line": null,
+            "sass": "/*2430*/               @P0 LDG.E.64.STRONG.SM R16, desc[UR8][R16.64] ;                   /* 0x0000000810100981 */"
+          },
+          {
+            "index": 583,
+            "line": null,
+            "sass": "/*2470*/              @!P2 LDG.E.STRONG.SM R15, desc[UR8][R20.64] ;                      /* 0x00000008140fa981 */"
+          },
+          {
+            "index": 585,
+            "line": null,
+            "sass": "/*2490*/              @!P6 LDG.E.STRONG.SM R28, desc[UR8][R28.64] ;                      /* 0x000000081c1ce981 */"
+          },
+          {
+            "index": 586,
+            "line": null,
+            "sass": "/*24a0*/               @P0 LDG.E.STRONG.SM R35, desc[UR8][R18.64] ;                      /* 0x0000000812230981 */"
+          },
+          {
+            "index": 609,
+            "line": null,
+            "sass": "/*2610*/                   LDG.E.64.STRONG.SM R18, desc[UR8][R30.64] ;                   /* 0x000000081e127981 */"
+          },
+          {
+            "index": 612,
+            "line": null,
+            "sass": "/*2640*/                   LDG.E.STRONG.SM R3, desc[UR8][R24.64] ;                       /* 0x0000000818037981 */"
+          },
+          {
+            "index": 614,
+            "line": null,
+            "sass": "/*2660*/                   LDG.E.STRONG.SM R88, desc[UR8][R88.64] ;                      /* 0x0000000858587981 */"
+          }
+        ],
+        "load_source_lines_after_wait": []
+      }
+    ],
+    "sass_sha256": "55f3fdebbf7b73c795e2a624db8c4d0a2d0cd14f22b83a75d83490a633d48c8c",
+    "resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/pdl_audit/native/fixed/PARTIAL_FAST_CUDA.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN53_GLOBAL__N__be237906_20_PARTIAL_FAST_CUDA_cu_0e6d075c9attn_mainILi8ELi3EEEvNS_6ParamsE:\n  REG:254 STACK:32 SHARED:1152 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN53_GLOBAL__N__be237906_20_PARTIAL_FAST_CUDA_cu_0e6d075c9attn_mainILi1ELi4EEEvNS_6ParamsE:\n  REG:126 STACK:32 SHARED:1152 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  }
+]

@@ -1,0 +1,333 @@
+[
+  {
+    "name": "_gemv_kernel",
+    "source_sha256": "0a6faeb620cf9f88769fa09b970c4caa44d0a2c97cabdd8014517d273186f8f0",
+    "waits": [
+      61
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*02b0*/                   CCTL.E.PF2 [R16] ;",
+      "/*02d0*/                   CCTL.E.PF2 [R10] ;",
+      "/*02f0*/                   CCTL.E.PF2 [R16+0x40000] ;",
+      "/*0300*/                   CCTL.E.PF2 [R16+0x60000] ;",
+      "/*0320*/                   CCTL.E.PF2 [R16+0x80000] ;",
+      "/*0350*/                   CCTL.E.PF2 [R16+0xa0000] ;",
+      "/*0370*/                   CCTL.E.PF2 [R16+0xc0000] ;",
+      "/*03a0*/                   CCTL.E.PF2 [R16+0xe0000] ;"
+    ],
+    "registers": 40,
+    "shared": 61440,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_attn_sumcast_kernel",
+    "source_sha256": "efc8ee23534cfe9237b027b62c879c20119d6d862984ba3dddf8b34eda2e73d1",
+    "waits": [
+      17
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 32,
+    "shared": 0,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_gb_kernel",
+    "source_sha256": "5b45a47191940b80f6df1ff405229e5cfc31bc3d25f33d25cd575b9d4f92ceec",
+    "waits": [
+      13
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 48,
+    "shared": 81920,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_gate_split_kernel",
+    "source_sha256": "926f8941dc6fa7d2ec0f325bd5892cb349d4d3a04591f7fd650b8e61ec8ea47e",
+    "waits": [
+      371
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*06d0*/                   LDGSTS.E.BYPASS.128 [R5], desc[UR14][R18.64], P0 ;",
+      "/*0710*/                   LDGSTS.E.BYPASS.128 [R5+0x400], desc[UR14][R26.64], P0 ;",
+      "/*0790*/                   LDGSTS.E.BYPASS.128 [R5+0x800], desc[UR14][R28.64], P0 ;",
+      "/*07d0*/                   LDGSTS.E.BYPASS.128 [R5+0xc00], desc[UR14][R30.64], P0 ;",
+      "/*0830*/                   LDGSTS.E.BYPASS.128 [R5+0x1000], desc[UR14][R24.64], P0 ;",
+      "/*0880*/                   LDGSTS.E.BYPASS.128 [R5+0x1400], desc[UR14][R26.64], P0 ;",
+      "/*08f0*/                   LDGSTS.E.BYPASS.128 [R5+0x1800], desc[UR14][R28.64], P0 ;",
+      "/*0910*/                   LDGSTS.E.BYPASS.128 [R5+0x1c00], desc[UR14][R44.64], P0 ;",
+      "/*0950*/                   LDGSTS.E.BYPASS.128 [R6+0xc000], desc[UR14][R30.64], P3 ;",
+      "/*0970*/                   LDGSTS.E.BYPASS.128 [R6+0xc400], desc[UR14][R24.64], !PT ;",
+      "/*0a00*/                   LDGSTS.E.BYPASS.128 [R5+0x4000], desc[UR14][R40.64], !P2 ;",
+      "/*0a10*/                   LDGSTS.E.BYPASS.128 [R5+0x4400], desc[UR14][R28.64], !P2 ;",
+      "/*0a20*/                   LDGSTS.E.BYPASS.128 [R5+0x4800], desc[UR14][R26.64], !P2 ;",
+      "/*0a30*/                   LDGSTS.E.BYPASS.128 [R5+0x4c00], desc[UR14][R24.64], !P2 ;",
+      "/*0a50*/                   LDGSTS.E.BYPASS.128 [R5+0x5000], desc[UR14][R44.64], !P2 ;",
+      "/*0aa0*/                   LDGSTS.E.BYPASS.128 [R5+0x5400], desc[UR14][R26.64], !P2 ;",
+      "/*0ab0*/                   LDGSTS.E.BYPASS.128 [R5+0x5800], desc[UR14][R28.64], !P2 ;",
+      "/*0ac0*/                   LDGSTS.E.BYPASS.128 [R5+0x5c00], desc[UR14][R30.64], !P2 ;",
+      "/*0af0*/                   LDGSTS.E.BYPASS.128 [R6+0xd000], desc[UR14][R40.64], P4 ;",
+      "/*0b10*/                   LDGSTS.E.BYPASS.128 [R6+0xd400], desc[UR14][R38.64], !PT ;",
+      "/*1040*/                   LDGSTS.E.BYPASS.128 [R45], desc[UR14][R38.64], !P0 ;",
+      "/*1050*/                   LDGSTS.E.BYPASS.128 [R45+0x400], desc[UR14][R40.64], !P0 ;",
+      "/*1080*/                   LDGSTS.E.BYPASS.128 [R45+0x800], desc[UR14][R40.64], !P0 ;",
+      "/*1090*/                   LDGSTS.E.BYPASS.128 [R45+0xc00], desc[UR14][R38.64], !P0 ;",
+      "/*10c0*/                   LDGSTS.E.BYPASS.128 [R45+0x1000], desc[UR14][R40.64], !P0 ;",
+      "/*10d0*/                   LDGSTS.E.BYPASS.128 [R45+0x1400], desc[UR14][R38.64], !P0 ;",
+      "/*1100*/                   LDGSTS.E.BYPASS.128 [R45+0x1800], desc[UR14][R38.64], !P0 ;",
+      "/*1110*/                   LDGSTS.E.BYPASS.128 [R45+0x1c00], desc[UR14][R40.64], !P0 ;",
+      "/*1180*/                   LDGSTS.E.BYPASS.128 [R44+0xc000], desc[UR14][R40.64], P0 ;",
+      "/*11a0*/                   LDGSTS.E.BYPASS.128 [R44+0xc400], desc[UR14][R38.64], !PT ;",
+      "/*16a0*/                   CCTL.IVALL ;"
+    ],
+    "registers": 48,
+    "shared": 61440,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_qk_prep_kernel",
+    "source_sha256": "b1f22adb6e15b0d68d706ab9031015e592e29910d14add7ca6f7b211771437ee",
+    "waits": [
+      815
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*00a0*/                   LDG.E.64 R6, desc[UR4][R6.64] ;",
+      "/*00f0*/                   LDG.E.128 R8, desc[UR4][R8.64] ;",
+      "/*0120*/                   LDG.E.64 R48, desc[UR4][R48.64] ;",
+      "/*0130*/                   LDG.E R44, desc[UR4][R4.64] ;",
+      "/*01a0*/                   LDG.E R13, desc[UR4][R12.64] ;",
+      "/*01b0*/                   LDG.E R45, desc[UR4][R2.64] ;",
+      "/*0350*/                   LDG.E.CONSTANT R6, desc[UR4][R6.64] ;",
+      "/*08c0*/                   LDG.E.CONSTANT R6, desc[UR4][R6.64] ;",
+      "/*0e30*/                   LDG.E.CONSTANT R22, desc[UR4][R22.64] ;",
+      "/*13b0*/                   LDG.E.CONSTANT R24, desc[UR4][R24.64] ;",
+      "/*1920*/                   LDG.E.CONSTANT R28, desc[UR4][R24.64] ;",
+      "/*1dd0*/                   LDG.E.CONSTANT R25, desc[UR4][R24.64] ;",
+      "/*2250*/                   LDG.E.CONSTANT R15, desc[UR4][R8.64] ;",
+      "/*26e0*/                   LDG.E.CONSTANT R15, desc[UR4][R14.64] ;",
+      "/*2b70*/                   LDG.E.CONSTANT R15, desc[UR4][R14.64] ;",
+      "/*3000*/                   LDG.E.CONSTANT R15, desc[UR4][R14.64] ;"
+    ],
+    "registers": 70,
+    "shared": 4096,
+    "local_loads": 30,
+    "local_stores": 20
+  },
+  {
+    "name": "_attn_split_kernel",
+    "source_sha256": "06cdff3df74d79037141af4c1e131a536bbad5fb42d40a04695d7cf50039a0d9",
+    "waits": [
+      21
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*0100*/                   LDG.E R0, desc[UR12][R2.64] ;"
+    ],
+    "registers": 128,
+    "shared": 22784,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_attn_combine_kernel",
+    "source_sha256": "1642fe97050f1bce64186e60f40dcff1a90ea5245a1372caacf62ba727ffe283",
+    "waits": [
+      8
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 40,
+    "shared": 64,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_norm_gate_kernel",
+    "source_sha256": "2f40983611634482432ce98bda9770b8d448338490d984e49d764984c2c4d210",
+    "waits": [
+      8
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 29,
+    "shared": 0,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_boundary_fast",
+    "source_sha256": "454fbfb89d89f19e477fe34ae579891149582682f7b87f42ac13494aacffd91e",
+    "waits": [
+      140
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*0100*/                   LDG.E.128 R68, desc[UR6][R6.64+0x10] ;",
+      "/*0120*/                   LDG.E.128 R72, desc[UR6][R6.64+0x1000] ;",
+      "/*0130*/                   LDG.E.128 R76, desc[UR6][R6.64+0x1010] ;",
+      "/*0150*/                   LDG.E.128 R84, desc[UR6][R4.64] ;",
+      "/*0170*/                   LDG.E.128 R80, desc[UR6][R4.64+0x10] ;",
+      "/*0180*/                   LDG.E.128 R64, desc[UR6][R4.64+0x1000] ;",
+      "/*01a0*/                   LDG.E.128 R60, desc[UR6][R4.64+0x1010] ;",
+      "/*01b0*/                   LDG.E.128 R56, desc[UR6][R4.64+0x2000] ;",
+      "/*01c0*/                   LDG.E.128 R52, desc[UR6][R4.64+0x2010] ;",
+      "/*01d0*/                   LDG.E.128 R48, desc[UR6][R4.64+0x3000] ;",
+      "/*01e0*/                   LDG.E.128 R44, desc[UR6][R4.64+0x3010] ;",
+      "/*01f0*/                   LDG.E.128 R40, desc[UR6][R4.64+0x4000] ;",
+      "/*0200*/                   LDG.E.128 R36, desc[UR6][R4.64+0x4010] ;",
+      "/*0210*/                   LDG.E.128 R32, desc[UR6][R4.64+0x5000] ;",
+      "/*0220*/                   LDG.E.128 R28, desc[UR6][R4.64+0x5010] ;",
+      "/*0230*/                   LDG.E.128 R24, desc[UR6][R4.64+0x6000] ;",
+      "/*0240*/                   LDG.E.128 R88, desc[UR6][R6.64+0x3000] ;",
+      "/*0250*/                   LDG.E.128 R20, desc[UR6][R4.64+0x6010] ;",
+      "/*0260*/                   LDG.E.128 R16, desc[UR6][R4.64+0x7000] ;",
+      "/*0270*/                   LDG.E.128 R12, desc[UR6][R4.64+0x7010] ;",
+      "/*0280*/                   LDG.E.128 R8, desc[UR6][R6.64] ;",
+      "/*0290*/                   LDG.E.128 R92, desc[UR6][R6.64+0x3010] ;",
+      "/*02a0*/                   LDG.E.128 R96, desc[UR6][R6.64+0x4000] ;",
+      "/*02b0*/                   LDG.E.128 R100, desc[UR6][R6.64+0x4010] ;",
+      "/*02c0*/                   LDG.E.128 R104, desc[UR6][R6.64+0x5000] ;",
+      "/*02d0*/                   LDG.E.128 R108, desc[UR6][R6.64+0x5010] ;",
+      "/*02e0*/                   LDG.E.128 R112, desc[UR6][R6.64+0x6000] ;",
+      "/*02f0*/                   LDG.E.128 R116, desc[UR6][R6.64+0x6010] ;",
+      "/*0300*/                   LDG.E.128 R120, desc[UR6][R6.64+0x7000] ;",
+      "/*0310*/                   LDG.E.128 R124, desc[UR6][R6.64+0x7010] ;",
+      "/*0320*/                   LDG.E.128 R128, desc[UR6][R204.64] ;",
+      "/*0330*/                   LDG.E.128 R132, desc[UR6][R204.64+0x10] ;",
+      "/*0340*/                   LDG.E.128 R136, desc[UR6][R204.64+0x1000] ;",
+      "/*0350*/                   LDG.E.128 R140, desc[UR6][R204.64+0x1010] ;",
+      "/*0360*/                   LDG.E.128 R144, desc[UR6][R204.64+0x2000] ;",
+      "/*0370*/                   LDG.E.128 R148, desc[UR6][R204.64+0x2010] ;",
+      "/*0380*/                   LDG.E.128 R152, desc[UR6][R204.64+0x3000] ;",
+      "/*0390*/                   LDG.E.128 R156, desc[UR6][R204.64+0x3010] ;",
+      "/*03a0*/                   LDG.E.128 R160, desc[UR6][R204.64+0x4000] ;",
+      "/*03b0*/                   LDG.E.128 R164, desc[UR6][R204.64+0x4010] ;",
+      "/*03c0*/                   LDG.E.128 R172, desc[UR6][R204.64+0x5010] ;",
+      "/*03d0*/                   LDG.E.128 R176, desc[UR6][R204.64+0x6000] ;",
+      "/*03e0*/                   LDG.E.128 R180, desc[UR6][R204.64+0x6010] ;",
+      "/*03f0*/                   LDG.E.128 R184, desc[UR6][R204.64+0x7000] ;",
+      "/*0400*/                   LDG.E.128 R188, desc[UR6][R204.64+0x7010] ;",
+      "/*0510*/                   LDG.E.128 R84, desc[UR6][R6.64+0x2010] ;",
+      "/*0520*/                   LDG.E.128 R80, desc[UR6][R6.64+0x2000] ;",
+      "/*0550*/                   LDG.E.128 R4, desc[UR6][R168.64+0x7010] ;",
+      "/*0560*/                   LDG.E.128 R64, desc[UR6][R168.64] ;",
+      "/*07d0*/                   LDG.E.128 R60, desc[UR6][R168.64+0x10] ;",
+      "/*07e0*/                   LDG.E.128 R56, desc[UR6][R168.64+0x1000] ;",
+      "/*07f0*/                   LDG.E.128 R52, desc[UR6][R168.64+0x1010] ;",
+      "/*0800*/                   LDG.E.128 R48, desc[UR6][R168.64+0x2000] ;",
+      "/*0810*/                   LDG.E.128 R44, desc[UR6][R168.64+0x2010] ;",
+      "/*0820*/                   LDG.E.128 R40, desc[UR6][R168.64+0x3000] ;",
+      "/*0830*/                   LDG.E.128 R36, desc[UR6][R168.64+0x3010] ;",
+      "/*0840*/                   LDG.E.128 R32, desc[UR6][R168.64+0x4000] ;",
+      "/*0850*/                   LDG.E.128 R28, desc[UR6][R168.64+0x4010] ;",
+      "/*0860*/                   LDG.E.128 R24, desc[UR6][R168.64+0x5000] ;",
+      "/*0870*/                   LDG.E.128 R20, desc[UR6][R168.64+0x5010] ;",
+      "/*0880*/                   LDG.E.128 R16, desc[UR6][R168.64+0x6000] ;",
+      "/*0890*/                   LDG.E.128 R12, desc[UR6][R168.64+0x6010] ;",
+      "/*08a0*/                   LDG.E.128 R8, desc[UR6][R168.64+0x7000] ;",
+      "/*08b0*/                   LDG.E.128 R168, desc[UR6][R204.64+0x5000] ;"
+    ],
+    "registers": 255,
+    "shared": 4096,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_boundary_late",
+    "source_sha256": "07e242f7f9ce9dc4e79d9aedc8f8185998420c0471c0dc1b44b4958543646c49",
+    "waits": [
+      7
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 180,
+    "shared": 4096,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_route_fast",
+    "source_sha256": "446d3193fae8f4bc6ec567c8ad0cc6b7b21fa34b491020f81d85979963e8c68b",
+    "waits": [
+      29
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*0120*/                   LDG.E.64 R6, desc[UR4][R6.64] ;",
+      "/*0140*/                   LDG.E R0, desc[UR4][R8.64] ;",
+      "/*0150*/                   LDG.E.128 R48, desc[UR4][R4.64] ;",
+      "/*0160*/                   LDG.E.128 R36, desc[UR4][R4.64+0x10] ;",
+      "/*0170*/                   LDG.E.128 R32, desc[UR4][R4.64+0x1000] ;",
+      "/*0180*/                   LDG.E.128 R28, desc[UR4][R4.64+0x1010] ;",
+      "/*0190*/                   LDG.E.128 R24, desc[UR4][R4.64+0x2000] ;",
+      "/*01a0*/                   LDG.E.128 R20, desc[UR4][R4.64+0x2010] ;",
+      "/*01b0*/                   LDG.E.128 R16, desc[UR4][R4.64+0x3000] ;",
+      "/*01c0*/                   LDG.E.128 R68, desc[UR4][R4.64+0x3010] ;"
+    ],
+    "registers": 132,
+    "shared": 1024,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_best7_old_qk_prep_kernel",
+    "source_sha256": "a06c9e82346a5b8841c04d41e91e0497b40fa40ee51437c4bf2a0f7be45b2050",
+    "waits": [
+      11
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 54,
+    "shared": 4096,
+    "local_loads": 30,
+    "local_stores": 20
+  },
+  {
+    "name": "_best7_old_boundary_kernel",
+    "source_sha256": "c6698ea50b3c36ca86fb2140d72fa43181a468b13a414e8690e6921bd8aca41a",
+    "waits": [
+      36
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*01d0*/                   LDG.E.128 R12, desc[UR10][R12.64] ;",
+      "/*01f0*/                   LDG.E.128 R4, desc[UR10][R4.64] ;",
+      "/*0210*/                   LDG.E.128 R8, desc[UR10][R8.64] ;",
+      "/*0230*/                   LDG.E.128 R16, desc[UR10][R16.64] ;"
+    ],
+    "registers": 32,
+    "shared": 16,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_best7_old_route_norm_kernel",
+    "source_sha256": "9c6a13fcbf42326dae113099c6446acc94fbe203ca2477efa92ed0c70f52553a",
+    "waits": [
+      28,
+      456
+    ],
+    "independent_candidates_before_first_wait": [
+      "/*0140*/                   LDG.E.128 R52, desc[UR6][R8.64] ;",
+      "/*0150*/                   LDG.E.128 R48, desc[UR6][R8.64+0x10] ;",
+      "/*0160*/                   LDG.E.128 R44, desc[UR6][R8.64+0x1000] ;",
+      "/*0170*/                   LDG.E.128 R40, desc[UR6][R8.64+0x1010] ;",
+      "/*0180*/                   LDG.E.128 R36, desc[UR6][R8.64+0x2000] ;",
+      "/*0190*/                   LDG.E.128 R32, desc[UR6][R8.64+0x2010] ;",
+      "/*01a0*/                   LDG.E.128 R28, desc[UR6][R8.64+0x3000] ;",
+      "/*01b0*/                   LDG.E.128 R24, desc[UR6][R8.64+0x3010] ;"
+    ],
+    "registers": 96,
+    "shared": 32,
+    "local_loads": 0,
+    "local_stores": 0
+  },
+  {
+    "name": "_gi_kernel",
+    "source_sha256": "13ba4b16d6d8c7e16cda2a45add43d6e8b824d7045e04636071c239fd59320b0",
+    "waits": [
+      13
+    ],
+    "independent_candidates_before_first_wait": [],
+    "registers": 48,
+    "shared": 40960,
+    "local_loads": 0,
+    "local_stores": 0
+  }
+]
