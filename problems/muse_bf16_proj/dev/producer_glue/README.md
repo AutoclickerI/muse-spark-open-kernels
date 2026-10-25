@@ -165,12 +165,17 @@ Phase maxima after the last producer partial store (us):
 
 For native O, apply-ready means norm parameters ready, before the final output
 loop. For Triton it means apply stores issued. Each column is a maximum across
-CTAs, not one CTA's serial trace or a hardware node-completion timestamp.
+CTA-leader stamps, not one CTA's serial trace or a hardware node-completion
+timestamp. The wait stamp does not separately establish that every warp has
+passed its polling loop. The top8 interval includes router-partial reads,
+sigmoid/bias, selection, normalization and stores; it does not isolate sorting.
 
 Measured: sliced b2's statistics dominate its tail (79% at d1, 77% at v1);
-route's top8 takes another 2.11 us after apply and metadata another 1.44 us at
-d1; full-width d32 b1/b2 spend 4.64/4.83 us between wait and apply. Publication
-plus wait adds roughly .8–1.3 us after statistics. The raw producer comparison
+route's score/top8 block takes another 2.11 us after apply and metadata another
+1.44 us at d1; full-width d32 b1/b2 spend 4.64/4.83 us between the leader's wait
+stamp and apply. This interval can include other warps' waiting, memory and
+barriers. Publication plus the leader's wait adds roughly .8–1.3 us after
+statistics. The raw producer comparison
 localizes most d1 raw-body overhead to pool/router, not O. Thus blaming a global
 barrier alone would miss the dominant statistics/apply work.
 
@@ -195,3 +200,34 @@ Integration receives no prototype patch. Any future winning glue shape/role
 rows must be frozen and paired onto S13 final `958f1258` with its projection
 kernels retained. Next: remove the measured serial sliced statistics and
 expensive apply/top8 tails, and test the independent preload repair separately.
+
+## Parallel statistics and fast selection follow-ups
+
+`build_parallel.py` replaces only `_ps_tile`, retaining an AST-identical
+`_ps_gemv`. `parallel_tile.py.inc` unpads the epilogue token axis (MMA still
+uses TB>=16), and loads the sliced residual groups in parallel (eight groups
+at T<=4, two batches of four above it to bound registers). 42 cells / 1,680
+poison/zero/64-bit-wrap replays pass, worst L2 .0001223; 48 sm90 cells compile
+with <=83 registers and no local loads/stores. In whole-layer S13 job
+`0110a781a74e4261`, it still loses: E=1.017702 at decode1, 1.061348 at verify1;
+raw producer controls 1.006468/1.005796. This removes the diagnosed serial
+statistics structure but does not establish an integration win.
+
+`warp_topk.py` provides a separate four-warp FP32 ordered-key top8 helper for
+Triton producer epilogues. Each warp selects eight of its 64 experts, then
+warp0 selects eight of 32 candidates with native integer redux; two CTA
+barriers and 464 additional static shared bytes (452 data + alignment).
+Equal keys choose lower expert IDs. Inputs are 256 ordered uint32 biased
+keys, 256 FP32 sigmoid scores and expert indices; only output slots 0..7 are
+live. Output weights use the selected FP32 scores and FP32 normalization.
+The parent must use exactly four warps and reach the helper uniformly.
+
+`check_topk.py`: 128 changed-input replays cover ties, zero scores and negative
+biased keys (worst weight L2 1.2e-7). `build_fast_route.py` replaces only
+`_ps_topk` in the parallel prototype; the GEMV body remains AST-identical.
+Full producer admission: 36 cells / 1,440 poison/zero/epoch-wrap replays,
+including all 711 metadata fields and none/some/none routes, worst L2 8.7e-5;
+48 sm90 compile cells, <=83 registers, no local loads/stores. Static shared
+usage of the inspected route cell rises 1024 -> 1488 bytes. H200 performance
+is unmeasured. This helper is for P10b's Triton epilogue integration, not a
+replacement for the already-fast native cluster router.

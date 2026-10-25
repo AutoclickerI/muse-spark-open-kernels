@@ -49,6 +49,7 @@ for t in (1,8,16,32):
         exact=True;worst=0.
         for i in range(16):
             p.normal_(generator=gen);stream.normal_(generator=gen)
+            start.fill_((i%8)*32)
             if i%3==0:p.zero_()
             graph.replay();torch.cuda.synchronize()
             for x,y in zip(got,want):
@@ -61,5 +62,5 @@ for t in (1,8,16,32):
         rows.append(dict(t=t,role=role,n=n,s=s,dtype=str(dtype),replays=16,exact=exact,worst_l2=worst))
         print(rows[-1],flush=True)
 (HERE/'validation.json').write_text(json.dumps(dict(cuda_sha256=hashlib.sha256(trial.GP_CUDA.encode()).hexdigest(),
-    trial_sha256=hashlib.sha256((HERE/'preload_trial.py').read_bytes()).hexdigest(),cells=rows),indent=2)+'\n')
+    trial_sha256=hashlib.sha256((HERE/'preload_trial.py').read_bytes()).hexdigest(),changed_local_start=True,cells=rows),indent=2)+'\n')
 print('PASS',len(rows),'cells',sum(r['replays'] for r in rows),'replays')

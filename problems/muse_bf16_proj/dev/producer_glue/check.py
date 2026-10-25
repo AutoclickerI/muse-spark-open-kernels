@@ -69,14 +69,17 @@ def check_meta(op,lids,start):
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--quick',action='store_true');ap.add_argument('--stats',action='store_true');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--quick',action='store_true');ap.add_argument('--stats',action='store_true');ap.add_argument('--parallel',action='store_true');ap.add_argument('--fast-route',action='store_true');a=ap.parse_args()
     factory=ProducerGlue
-    if a.stats:
-        from stats_kernel import ProducerStats
+    if a.stats or a.parallel or a.fast_route:
+        if a.fast_route:from stats_fast_route import ProducerStats
+        elif a.parallel:from stats_parallel import ProducerStats
+        else:from stats_kernel import ProducerStats
+        a.stats=True
         factory=ProducerStats
     dev='cuda';gen=torch.Generator(device=dev).manual_seed(52419);st=state(dev,gen)
     rows=[]
-    for t in ((1,) if a.quick else (1,2,8,16,31,32)):
+    for t in ((1,) if a.quick else (1,2,3,8,16,31,32) if a.parallel else (1,2,8,16,31,32)):
         for role in ('b2','route','b1'):
             n,k,s=(1024 if t<=8 else 8192,4096,8 if t<=8 else 2) if role=='b2' else ((4608,8192,6) if role=='route' else (8192,1024,2))
             w=(torch.randn((n,k),device=dev,generator=gen)/k**.5).bfloat16()
@@ -126,7 +129,7 @@ def main():
                 rows.append(dict(t=t,role=role,owner=owner,replays=40,epoch_u32_crossing=True,
                                  epoch_u64_crossing=True,none_some_none_routes=role=='route',worst_l2=worst))
                 print(rows[-1],flush=True)
-    prefix='stats_' if a.stats else ''
+    prefix='fast_route_' if a.fast_route else 'parallel_' if a.parallel else 'stats_' if a.stats else ''
     (HERE/(prefix+('quick_validation.json' if a.quick else 'validation.json'))).write_text(json.dumps(rows,indent=2)+'\n')
 
 

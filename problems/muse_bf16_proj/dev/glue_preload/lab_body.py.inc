@@ -7,6 +7,12 @@ def gp_namespace():
     # CUDA modules, banks, tuner choices and caches remain S13's exact objects.
     name='<gp-runtime>';linecache.cache[name]=(len(GP_RUNTIME),None,GP_RUNTIME.splitlines(True),name)
     exec(compile(GP_RUNTIME,name,'exec'),ns)
+    name='<gp-parallel-stats>';linecache.cache[name]=(len(EP_CODE),None,EP_CODE.splitlines(True),name)
+    exec(compile(EP_CODE,name,'exec'),ns)
+    def epb(x,stream,st,plan):
+        op=st['epb_op'];out=op(x,st,stream)
+        return out if op.fuse else ns['_gp_base_boundary'](out,stream,st,plan,'b2')
+    ns['_gp_epb']=epb
     name='<gp-root>';linecache.cache[name]=(len(GP_ROOT),None,GP_ROOT.splitlines(True),name)
     exec(compile(GP_ROOT,name,'exec'),ns)
     ns['gp_module']()
@@ -27,6 +33,7 @@ def gp_capture(ns,st,data,act):
     wrap('_best7_project',lambda a:a[1]);wrap('_best7_attention',lambda a:'attn')
     wrap('_gate_split_apply',lambda a:'gate');wrap('_best7_boundary',lambda a:a[4])
     wrap('_best7_route',lambda a:'route');wrap('_best7_expert',lambda a:'moe')
+    wrap('_gp_epb',lambda a:'unpool_b2')
     try:
         graph=torch.cuda.CUDAGraph()
         with torch.cuda.graph(graph):out=ns['kernel_fn'](data,st)
@@ -46,17 +53,18 @@ def gp_profile(graph,mapping,act):
 
 def gp_inc(result):
     frontier=0.;out={}
-    for name in ('init','qkv3','qkv_gate','attn','gate','o','b1','pool_router','route','moe','unpooler_slice','unpooler','b2'):
+    for name in ('init','qkv3','qkv_gate','attn','gate','o','b1','pool_router','route','moe','unpooler_slice','unpooler','b2','unpool_b2'):
         if name in result['stages']:
             end=result['stages'][name]['end'];out[name]=max(0.,end-frontier);frontier=max(frontier,end)
-    return [out.get(n,0.) for n in ('b1','route','b2')]
+    return [out.get('o',0.)+out.get('b1',0.),out.get('pool_router',0.)+out.get('route',0.),
+        out.get('unpool_b2',out.get('unpooler',out.get('unpooler_slice',0.))+out.get('b2',0.))]
 
 
 def lab(deadline,weights,state):
     global GP_RESULTS
     GP_RESULTS=[];started=time.monotonic()
     lines=['META S13 958f1258 pure glue preload repair; projections/attention/MoE unchanged; r=arm/A (<1 faster)',
-           'META A2=A:A, B1/R/B2=one role, F=all; 12 seeds x6 rotated cold READ, all12 shapes; INC=glue completion frontier b1/route/b2']
+           'META A2=A:A, B1/R/B2=one preload role, F=all; E/ER/FE=parallel sliced-b2 epilogue/raw/all preload+epilogue; 12 seeds x6 cold READ; INC=combined O+b1/pool+route/unpool+b2']
     from concurrent.futures import ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=1) as pool:
         future=pool.submit(tl_activity);ns=gp_namespace();act=future.result()
@@ -73,10 +81,14 @@ def lab(deadline,weights,state):
                 spread='fixed' if b==1 else 'agentic',dist='soft',page=1,seed=seed,device=weights['o'].device)
             data=mk(seeds[0]);arms={n:dict(state,gp_roles=roles) for n,roles in
                 (('A',()),('A2',()),('B1',('b1',)),('R',('route',)),('B2',('b2',)),('F',('b1','route','b2')))}
+            if b*q<=8:
+                for n,fuse,roles in (('E',True,()),('ER',False,()),('FE',True,('b1','route','b2'))):
+                    op=ns['ProducerStats'](state['unpooler_slice'],b*q,8,'b2',fuse=fuse,emit_meta=False)
+                    arms[n]=dict(state,gp_roles=roles,epb_op=op)
             graphs={};maps={};gates={}
             for n,st in arms.items():
                 try:
-                    if n in ('A','F'):
+                    if n in ('A','F','E'):
                         for _ in range(2):ns['kernel_fn'](data,st)
                         torch.cuda.synchronize();act.profile_begin()
                         try:
@@ -100,12 +112,14 @@ def lab(deadline,weights,state):
                 (' GATE='+repr(gates) if gates else ''))
             profiles={}
             if 'F' in graphs and time.monotonic()<deadline-4:
-                for n in ('A','F'):
+                for n in (('A','F','E') if 'E' in graphs else ('A','F')):
                     p=gp_profile(graphs[n][0],maps[n],act)
                     profiles[n]=dict(wall=round(p['wall'],3),span_samples=[round(v,3) for v in p['span_samples']],
                         stages={k:dict(start=round(v['start'],3),end=round(v['end'],3)) for k,v in p['stages'].items()})
                 lines.append(f'INC {label} A='+','.join(f'{v:.3f}' for v in gp_inc(profiles['A']))+
                     ' F='+','.join(f'{v:.3f}' for v in gp_inc(profiles['F'])))
+            if b*q>32:
+                profiles={n:dict(wall=p['wall'],span_samples=p['span_samples'],increments=gp_inc(p)) for n,p in profiles.items()}
             GP_RESULTS.append(dict(case=label,paired={n:[round(v,8) for v in values] for n,values in summary.items()},
                 gates=gates,profiles=profiles,seeds=len(samples)))
             del graphs,arms,data;gc.collect();torch.cuda.empty_cache()

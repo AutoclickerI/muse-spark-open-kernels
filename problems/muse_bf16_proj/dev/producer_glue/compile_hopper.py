@@ -13,9 +13,13 @@ from check import state
 
 HERE=Path(__file__).resolve().parent
 rows=[]
-stats='--stats' in sys.argv
+parallel='--parallel' in sys.argv
+fast_route='--fast-route' in sys.argv
+stats='--stats' in sys.argv or parallel or fast_route
 if stats:
-    import stats_kernel as S
+    if fast_route:import stats_fast_route as S
+    elif parallel:import stats_parallel as S
+    else:import stats_kernel as S
 kernel=S._ps_gemv if stats else V._pg_gemv
 
 
@@ -54,5 +58,5 @@ finally:
     triton.runtime.driver.active.get_current_target=target
     if stats:S._ps_gemv=kernel
     else:V._pg_gemv=kernel
-(HERE/('stats_compile_hopper.json' if stats else 'compile_hopper.json')).write_text(json.dumps(rows,indent=2)+'\n')
+(HERE/('fast_route_compile_hopper.json' if fast_route else 'parallel_compile_hopper.json' if parallel else 'stats_compile_hopper.json' if stats else 'compile_hopper.json')).write_text(json.dumps(rows,indent=2)+'\n')
 print('PASS sm90',len(rows),'cells')

@@ -21,10 +21,15 @@ base=(REPO/'problems/muse_decode_layer/cand_r3_best7_s13_final.py').read_text()
 assert hashlib.sha256(base.encode()).hexdigest()==BASE_SHA
 runtime=(HERE/'runtime.py.inc').read_text().replace('__GP_CUDA__',repr(cuda_source(base)),1).replace('__GP_ROWS__','()',1)
 root=pieces(base,('_ap_generate_input','_best7_run','kernel_fn'))
+old="    f=_best7_project(moe,name,state,plan)\n    hidden,stream2=_best7_boundary(f,stream1,state,plan,'b2',sync[2])"
+assert root.count(old)==1
+root=root.replace(old,"    if state.get('epb_op') is not None:\n        hidden,stream2=_gp_epb(moe,stream1,state,plan)\n    else:\n    "+old.replace('\n','\n    '))
+ep=HERE.parent/'producer_glue'
+epcode=(ep/'kernels.py').read_text()+'\n'+(ep/'stats_parallel.py').read_text().replace('from kernels import ProducerGlue, _pg_wait, _pg_clock, _pg_meta\n','')
 ab=(REPO/'problems/muse_decode_layer/dev/s10/ablate_lab.py.inc').read_text()
 tl=REPO/'problems/muse_decode_layer/dev/timeline'
 body='import base64,json,lzma,types,linecache,time,statistics,gc\nimport torch\nfrom torch.utils.cpp_extension import load_inline\n'
-body+='GP_RUNTIME='+repr(runtime)+'\nGP_ROOT='+repr(root)+'\nTL_ACTIVITY='+repr((tl/'activity.cpp').read_text())+'\nTL_REPS=5\n'
+body+='GP_RUNTIME='+repr(runtime)+'\nGP_ROOT='+repr(root)+'\nEP_CODE='+repr(epcode)+'\nTL_ACTIVITY='+repr((tl/'activity.cpp').read_text())+'\nTL_REPS=5\n'
 body+=pieces(ab,('ab_copy','ab_graph','ab_tensors','ab_gate','ab_time','ab_summary'))+'\n'
 body+=pieces((tl/'lab_body.py').read_text(),('tl_activity','tl_times','tl_union','tl_summarize','tl_node_bytes'))+'\n'
 body+=(HERE/'lab_body.py.inc').read_text();compile(body,'gp_lab','exec')
