@@ -26,7 +26,7 @@ its decode run, so **the overall board is the decode-layer board**: our score is
 |---|---|---|---|---|---|
 | muse_decode_layer | 1.6073x S9 `b7c59570` (S8 1.5742x, S7R 1.5735x; S4-S6 withdrawn) | 145 / 587 | 2.285x (colinlikescode) | 2.066x | 1.826x |
 | muse_moe_w4a16 | 1.694x (a lab host run, `14f942d5`) | 235 / 688 | 2.523x (colinlikescode) | 2.335x | 2.092x |
-| muse_attention_decode | 1.533x vq8 `1b993e2f` (publish order fixed) | 358 / 641 | 2.910x (pjmullin3) | 2.476x | 2.113x |
+| muse_attention_decode | 1.588x vq8 page ring `81cccbc1` (1.533x `1b993e2f`) | 358 / 641 | 2.910x (pjmullin3) | 2.476x | 2.113x |
 | muse_bf16_proj | 1.187x (a lab host run, `b15a3bde`) | 463 / 864 | 1.610x (colinlikescode) | 1.517x | 1.402x |
 | muse_prefill_layer | 1.453x `3920d3f0` | 106 / 336 | 1.867x (dylantirandaz) | 1.767x | 1.600x |
 
