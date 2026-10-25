@@ -94,9 +94,7 @@ allowed numerical routing changes, so the small ratios do not establish an atten
 
 `patch_cluster.py` builds an experimental S11 decode-1 candidate (`842eb8eb`, N128 auto cluster).
 Its **normal and forced local_eval audits both complete**: 13 TASK tests, 12 fresh graph shapes, 24 static
-checks each. An initial report-write failure was fixed by creating the output directories and rerunning
-both audits; the successful JSON is under ignored `out/{normal,forced}`. This is not yet an integration
-promotion: compare against the already-handed-off direct-partials winner over many seeds first.
+checks each. The successful JSON is under ignored `out/{normal,forced}`. It was superseded by the paired last-CTA winner below.
 
 Next: `build_gated.py` stages the gate in the same cooperative load pass (in unused KN storage), then
 reads it from shared memory in the epilogue. `build_gated_lab.py` compares S11 gate split, one full-QKV
@@ -130,7 +128,7 @@ identity, so graph capture cannot insert a hidden zeros launch. Native N64/N128 
 
 B1 C128/direct-partials .98017, SE .00131, saving 1.43225 us; C128/S11 saves 2.98375 us. Handoff only
 B1 sliding: [patch and validation](HANDOFF_LAST.md). Whole-layer critical-path target remains missed.
-All native gates pass and full replay outputs are finite; native changed-candidate official check is pending.
+All native gates pass and full replay outputs are finite; native changed-candidate official check passes in9d9a01e1 below.
 The combined check's unchanged S11 host passes 13/13, 1.71559x, CI [1.68986,1.74133]. Receipts and paired
 seed archive: `../full128/h200_7e93cc81af17489a.json`, `runs/muse_decode_layer/20261025T100820Z_check_7e93cc81af17489a.*`.
 
@@ -138,3 +136,22 @@ Independent `check_last.py`: 24 fixtures × eight fresh graph replays, zero coun
 `fead4a00` candidate normal and forced: 13 TASK, 12 graph shapes, 24 static checks each. The exact next
 wrapped check also validates the register-only full128 follow-up in prepare; heavy local audits run serially
 after simultaneous audits exhausted GPU0 memory. Failed OOM screens stayed local and successful screens reran cleanly.
+
+
+Official sliding-only candidate **9d9a01e1f6db4d79** passes all 13 whole-layer tests, 1.71028x,
+CI [1.68463,1.73594]. Integration handoff is now correctness-qualified; prior sentences about its pending
+native changed-candidate check are superseded by this receipt. This job also lands the independent
+[full-verify register-fold win](../full128/HANDOFF.md).
+
+
+`build_global.py` extends the nonspinning kernel to decode full attention (QT1, up to128 splits), and
+reuses the drained gather ring to share one merge weight per split/row across all64 dimensions.
+CUDA `35c257f8`. `check_global.py`:52 attention TASK/FP32-partial fixtures ×8 fresh graph replays, allpass;
+all counters reset. Full layers explicitly skip RoPE; the first local prototype incorrectly applied the
+sliding theta=0 path and failed with NaN cache entries, repaired before any send. Native sm90a source check
+passes. `build_global_lab.py` pairs all three sliding loads plus decode1 full against canonical S11,
+the last-CTA winner and direct-partials over16 seeds; captured new attention must contain one launch.
+The host also includes the selected full-verify stage4 win for official correctness. Its normal/forced
+local audits explicitly use N64 launch glue for the Hopper-only N128 persistent ring and omit unavailable
+sm120 FA3 scheduler metadata. Full/sliding global attention itself runs natively onGPU0. Pending screens,
+no new performance or correctness promotion for this follow-up.

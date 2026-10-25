@@ -44,7 +44,7 @@ The current build fixes **page fetch and K/V gather** to keys `16*warp + local16
 transpose exactly, with no extra CTA barrier. A per-warp set check proves page/gather/transpose ownership
 identical and complete. Ownership-fixed CUDA SHA-256: `3dcd60016b7a5adae96b32168434c5ada185027c7b144dadc48d621d2e76e7f2`;
 16 portable tile checks pass again, the sm90a build completes without C75xx, and the forced layer/graph
-stand-in completes both shapes. No claim of a fixed native pipeline until the new H200 gate lands.
+stand-in completes both shapes. The native gates and every fresh replay in 7e93cc81 confirm the ownership fix.
 
 Ownership-fixed pipeline landed in **7e93cc81af17489a** (decode host), 16 seeds × eight cold replays:
 all native attention gates pass and all fresh replay outputs are finite. The warp-ownership fix is confirmed.
@@ -69,6 +69,16 @@ All 16 exact tile oracle fixtures pass again. This is a machine-code result, not
 full128 pair, reusing actual prepared host weights/state (no redundant S11 tuner). It writes
 `prof/lab/full128_regmax_pair.py` and `problems/muse_decode_layer/lab/lab_p5_last_and_regmax.py` (`2d48b941`).
 Proj/prefill/MoE quotas are exhausted; this check uses a remaining decode check to finish the promotion gate
-and measure the identified in-stage fix. Normal/forced local screens precede send.
+and measure the identified in-stage fix. Normal/forced local screens both pass: 13 TASK cases, 12 graph shapes and24 static checks each; sent and landed as9d9a01e1 below.
 
 Full-verify polynomial experiments are closed losses in [full_poly](../full_poly/README.md).
+
+
+Register-fold H200 **9d9a01e1f6db4d79** lands a paired stage4 win (16 seeds × eight):
+B16 **.97726063** (SE .00132951), attention increment **152.928→141.440 us**;
+B32 **.94812554** (SE .00144336), **265.440→229.728 us**. A2 .99950900/1.00154286.
+Stage3 loses 1.04794/1.07119. All native gates pass, finite outputs on every replay. Stage4 per-tile
+softmax1,619/1,584 cycles, total2,846/2,654, so the register-locality diagnosis is confirmed by H200.
+Full-verify still misses the requested 50/63us attention savings. [Integration patch](HANDOFF.md);
+official changed-full-verify candidate gate is batched with the next global-reduction experiment.
+The job's changed sliding host separately passes13/13,1.71028x, CI[1.68463,1.73594].

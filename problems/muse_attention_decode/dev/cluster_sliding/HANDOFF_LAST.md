@@ -16,8 +16,9 @@ variation and do not establish a useful attention improvement. All native attent
 Bare candidate local_eval normal and forced each pass 13 TASK tests, 12 fresh graph shapes and 24 static
 checks. Attention checker passes 24 independent TASK/FP32-partial fixtures with eight fresh graph replays;
 all counters return to zero. Native sm90a compile has zero spills and no C75xx warnings.
-**Official whole-layer H200 correctness for the changed candidate is pending** in the next batched check;
-the 1.71559x score in 7e93cc81 belongs to the unchanged S11 control, not this candidate.
+**Official changed-candidate whole-layer H200 correctness passes** in **9d9a01e1f6db4d79**:
+13/13 tests, host speedup 1.71028x, CI [1.68463,1.73594]. The score is context only;
+promotion rests on the paired ratios above.
 
 The earlier [direct-partials handoff](../vq8/HANDOFF.md), patch `d454609d`, already wins decode-1 full.
 When combining these, use last-CTA for decode-1 sliding and direct-partials for decode-1 full. Both builders
