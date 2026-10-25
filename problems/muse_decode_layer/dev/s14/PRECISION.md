@@ -22,3 +22,7 @@ Light experts with 9..16 tokens use the measured N16G4 W13/W2 kernels on a third
 heavy N32 handles larger experts, and the finalizer joins both side streams. No routes or contributions are
 skipped. Weight/scale decoding remains inside timed kernels. The piece uses the exact measured PERMW bank
 at M128 as well as M256; it removes the unused original M128 module/bank from the S14 trial.
+
+The stage2 conditional **f1e61081** removes both direct-coded banks and bal2 T16. Its normal/forced
+inventories in `stage2_screen/` retain only S13's original BF16 coding plus the lossless light/PERMW
+expert bank. Both pass13/12/24. The graph audit confirms GI calls at T8/32 and none at T16.

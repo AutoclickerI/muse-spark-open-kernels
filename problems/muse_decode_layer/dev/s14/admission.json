@@ -51,6 +51,17 @@
       "graph_shapes": 12,
       "static_checks": 24,
       "retained_tensors": 118
+    },
+    "lab": {
+      "sha256": "90482ea2f3ec70e49bbd846dcb260fe7443f33e275f5043ce3f5688338fdd762",
+      "tests": 13,
+      "static_checks": 24,
+      "graph_shapes": 12,
+      "seeds": 16,
+      "decode1_rounds": 32,
+      "verify1_rounds": 32,
+      "other_rounds": 8,
+      "failed_arms": 0
     }
   }
 }

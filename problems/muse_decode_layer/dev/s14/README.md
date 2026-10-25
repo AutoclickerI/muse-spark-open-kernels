@@ -51,7 +51,9 @@ Those ABI differences are source-verified; their timing contribution has not bee
 
 Current conditional **f1e61081** = light + bal2 at T8/32 only, omitting direct qkv3/O. Full normal/forced
 13/12/24 pass. Wrapper **90482ea2** is built, with32 rounds at decode1 and verify1 (16 seeds),8 elsewhere;
-local full wrapper admission is running. Snapshot the first receipt via `trials/all4_72bb46f6/`.
+full local wrapper admission passes all12 shapes/16seeds/all gates and13tests24static. Accepted as **740c63afadc14e01**, result pending. Snapshot the first receipt via `trials/all4_72bb46f6/`.
 Root cand_r3_best7_s14.py remains the rejected all-piece trial; stage2 is in `variants/stage2.py`.
 No S14 final freeze or scored-source swap yet. Next: send stage2 after its wrapper screen, select bal2
 per load from the new paired evidence, then freeze only retained winning pieces with controls inside A:A.
+
+Stage3 contingency **f1c77ce6** keeps light + bal2 T32 only. Its normal13/12/24 passes; forced is running while stage2 is judged. No speculative third check is sent.
