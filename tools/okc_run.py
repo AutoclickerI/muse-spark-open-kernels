@@ -355,7 +355,9 @@ def send(args):
                  "--force to send it again")
     # --scored: a candidate that may beat the board waits for the reset rather than going as a check,
     # since a check can't place it and the judge answers the same source again with the check's result.
-    modes = ("submit",) if args.scored or ("check" in ran and not args.force) else ("submit", "check")
+    if args.scored and args.check:
+        sys.exit("--scored and --check are mutually exclusive")
+    modes = ("check",) if args.check else ("submit",) if args.scored or ("check" in ran and not args.force) else ("submit", "check")
     # Send a snapshot, so the file can be edited while this run waits. okc writes the run's profiles
     # beside the file it sent; finish() moves them beside the original.
     snap = SENT / sha[:16] / args.file.name
@@ -454,6 +456,7 @@ def main():
     p.add_argument("--note", default="", help="what this candidate is, for the ledger")
     p.add_argument("--force", action="store_true", help="send source the ledger already has")
     p.add_argument("--scored", action="store_true", help="only as a scored run: wait for the reset if none is left today")
+    p.add_argument("--check", action="store_true", help="only as a check, preserving scored quota")
     p.add_argument("--priority", type=float, help="queue order, lower first (default: by problem)")
     p.add_argument("--not-before", type=parse_not_before, help="hold this snapshot until an ISO8601 timestamp with timezone")
     p.set_defaults(run=send)

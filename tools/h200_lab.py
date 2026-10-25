@@ -251,15 +251,17 @@ def absorb_waiting(host: str, embedded: list, priority: float, note: str):
     return embedded, priority, note
 
 
-def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S) -> tuple[str, str]:
+def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, base_file: Path | None = None) -> tuple[str, str]:
     if not 1 <= len(embedded) <= MERGE_MAX:
         sys.exit(f"a lab needs 1 to {MERGE_MAX} payloads")
     if not 0 < import_budget < float("inf"):
         sys.exit("--import-budget must be positive and finite")
     if len({name for name, _, _ in embedded}) < len(embedded):
         sys.exit("payload names must differ (they label the receipt's sections)")
-    base = best_source(host)
+    base = best_source(host) if base_file is None else {"source": str(base_file), "job": "candidate " + str(base_file)}
     src = (REPO / base["source"]).read_text()
+    if not re.match(r"#\s*okc:\s*problem=" + re.escape(host) + r"\b", src):
+        sys.exit("lab base must target --host")
     # Attention's judge never calls prepare. Its best source may still define a private,
     # zero-argument prepare() tuner that it calls itself during import; leave that intact.
     has_prepare = host != "muse_attention_decode" and any(
@@ -305,12 +307,14 @@ def main():
         s = sub.add_parser(name)
         s.add_argument("payloads", type=Path, nargs="+")
         s.add_argument("--host", default="muse_bf16_proj", choices=HOSTS)
+        s.add_argument("--base-file", type=Path, help="explicit screened candidate to validate as the lab host")
         s.add_argument("--import-budget", type=float, default=IMPORT_BUDGET_S,
                        help="payload deadline budget in seconds on hosts without prepare() (default: %(default)s)")
         if name == "send":
             s.add_argument("--note", required=True)
             s.add_argument("--priority", type=float, default=1.0)
             s.add_argument("--not-before", help="pass an ISO8601 send-time gate to okc_run; no early judge send")
+            s.add_argument("--check", action="store_true", help="reserve scored quota; send only as a check")
         else:
             s.add_argument("-o", type=Path, required=True)
     r = sub.add_parser("read")
@@ -322,7 +326,7 @@ def main():
         return read(args.ref, args.name)
     embedded = [embed(p) for p in args.payloads]
     if args.cmd == "build":
-        src, base = build(embedded, args.host, args.import_budget)
+        src, base = build(embedded, args.host, args.import_budget, base_file=args.base_file)
         args.o.write_text(src)
         return print(f"{args.o}: {len(src)} bytes, base {base}")
     left = quota()
@@ -335,13 +339,14 @@ def main():
     # An explicitly scheduled lab must not pull another lane's ready payload
     # into its delay. Other sends also skip this held entry via its until field.
     embedded, priority, note = (embedded, args.priority, note) if args.not_before else absorb_waiting(args.host, embedded, args.priority, note)
-    src, base = build(embedded, args.host, args.import_budget)
+    src, base = build(embedded, args.host, args.import_budget, base_file=args.base_file)
     out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in embedded)}.py"
     out.parent.mkdir(exist_ok=True)
     out.write_text(src)
     command=[sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
              "--priority", str(priority), "--note", note]
     if args.not_before:command += ["--not-before", args.not_before]
+    if args.check:command += ["--check"]
     subprocess.run(command, cwd=REPO, check=False)
 
 
