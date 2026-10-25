@@ -14,13 +14,27 @@
     "retained_tensors": 118
   },
   "lab": {
-    "sha256": "ef002c7152dc58771e968ed650527a5f117dee7fe494cc2296c16c7cda659c85",
+    "sha256": "351907fb3d02c22333102f3114411f4fc9a3290b7334c215c8aac66ebd32cdb8",
     "tests": 13,
     "static_checks": 24,
     "graph_shapes": 12,
     "seeds": 16,
     "rounds": 8,
     "failed_arms": 0,
-    "source_bytes": 1001892
+    "source_bytes": 989808
+  },
+  "followup": {
+    "normal": {
+      "sha256": "d67e734a6b8905b704788102d3af4fce6ec140aa3543c8ff33a11a537f5f81c8",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24
+    },
+    "forced": {
+      "sha256": "d67e734a6b8905b704788102d3af4fce6ec140aa3543c8ff33a11a537f5f81c8",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24
+    }
   }
 }

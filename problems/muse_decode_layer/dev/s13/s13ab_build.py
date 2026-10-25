@@ -5,6 +5,9 @@ bindings (notably nf_module's lru_cache); no hand-written inverse patch is neede
 only add coded dense banks or change runtime kernels, so the prepared S13 state serves every arm exactly.
 """
 import argparse
+import ast
+import io
+import tokenize
 import base64
 import difflib
 import hashlib
@@ -29,16 +32,19 @@ spec.loader.exec_module(build)
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--tag', default='s13ab')
+    ap.add_argument('--without', nargs='*', default=[])
+    ap.add_argument('--candidate', type=Path)
     args = ap.parse_args()
-    src, meta = build.compose()
-    candidate = D / 'cand_r3_best7_s13.py'
+    src, meta = build.compose(args.without)
+    candidate = args.candidate or D / 'cand_r3_best7_s13.py'
     assert candidate.read_text() == src, 'rebuild the candidate first'
     variants = {}
     for piece in build.pieces():
-        text, _ = build.compose([piece['name']])
+        if piece['name'] in args.without:continue
+        text, _ = build.compose(args.without + [piece['name']])
         variants[piece['name']] = dict(source=text, active_tokens=piece['active_tokens'],
             sha256=hashlib.sha256(text.encode()).hexdigest())
-    variants['S12'] = dict(source=build.BASE.read_text(), active_tokens=sorted({t for p in build.pieces() for t in p['active_tokens']}),
+    variants['S12'] = dict(source=build.BASE.read_text(), active_tokens=sorted({t for p in meta['patches'] for t in p['active_tokens']}),
                            sha256=build.BASE_SHA)
     # Reuse the reviewed S12/S10 timing helpers, excluding their obsolete lab and NT1 compiler.
     helpers = (D / 'dev/s10/ablate_lab.py.inc').read_text().split('\ndef lab(deadline, weights, state):', 1)[0]
@@ -73,12 +79,22 @@ def main():
     payload = H / (args.tag + '_payload.py')
     payload.write_text(bootstrap)
     embedded = [h200_lab.embed(payload)]
-    wrapped = src.rstrip() + '\n\n' + h200_lab.WRAPPER.format(
+    # Only the outer lab host drops Python comments; the submitted candidate and embedded arms stay exact.
+    # Assert identical Python AST, including every CUDA string, before using this smaller request envelope.
+    outer_lines = src.splitlines(keepends=True)
+    for tok in tokenize.generate_tokens(io.StringIO(src).readline):
+        if tok.type == tokenize.COMMENT and tok.start[0] != 1:
+            line = tok.start[0] - 1
+            outer_lines[line] = outer_lines[line][:tok.start[1]] + outer_lines[line][tok.end[1]:]
+    outer = ''.join(outer_lines)
+    assert ast.dump(ast.parse(outer)) == ast.dump(ast.parse(src))
+    wrapped = outer.rstrip() + '\n\n' + h200_lab.WRAPPER.format(
         names=', '.join(f'{n} {sha}' for n, sha, _ in embedded), base='S13 ' + hashlib.sha256(src.encode()).hexdigest()[:8],
         payloads=embedded, budget=300 - h200_lab.MARGIN_S, limit=h200_lab.LIMIT)
     assert not rejected_words(wrapped), rejected_words(wrapped)
     compile(wrapped, '<S13 AB>', 'exec')
     out = D / 'lab' / ('lab_decode_' + args.tag + '.py')
+    assert len(wrapped.encode()) <= 1_000_000, len(wrapped.encode())
     out.write_text(wrapped)
     manifest = dict(source=str(out.relative_to(R)), sha256=build.sha(out), host_sha256=build.sha(candidate),
         payload_sha256=build.sha(payload), seeds=16, rounds=8,
