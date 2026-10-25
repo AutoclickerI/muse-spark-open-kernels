@@ -417,6 +417,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   decode 16 8.3 / 99.9, decode 32 12.6 / 190.1 (attn_main); verify 1 16.5 (FA3) / 29.5 (FA3), verify 16 15.9 (FA3) /
   142.7 (vq8), verify 32 21.7 (FA3) / 253.1 (vq8). Cooperative four-lane QK prep + vq8's fused merge loses at every
   shape: 1.07-1.39 sliding, 1.22-1.31 decode full, 1.03-1.09 verify full (best c6 1.031 at verify 32).
+- One-launch attn_main reading the projection partials directly (PDL, cached KV gather; `9aff77cc`, same protocol)
+  wins at every decode (q1) shape: sliding 0.963 / 0.979 / 0.968 and full 0.979 / 0.979 / 0.988 at decode 1 / 16 /
+  32 (-1.0 to -2.9 us per layer); fast sincos adds nothing; at q8 it loses 1.20-1.57 (decode loads only).
 
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
