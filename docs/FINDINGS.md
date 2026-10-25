@@ -479,6 +479,13 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   26.35 -> 25.44, t=32 27.04 -> 26.43: -3.2 / -4.2 / -7.1 us per decode 1 / 16 / 32 layer. BN 32 loses in every chain.
   Gate-split critical path (medians): full qkv 17.89 / 18.30 / 20.06; q,k,v rows only (1,280, b64/10) 13.28 / 13.41 /
   14.22; gate rows (1,024, b64/8) 12.06 / 12.19 / 12.48.
+- Ramp oracles (`cc718d3f`, paired AB/BA x24, read flush; oracle arms warm bytes after the flush, outside the events;
+  us vs the control chain): attention -> O (b1 sliding / full, b16 / b32 sliding): O warm +0.26 / -0.70 / +0.31 / +0.03,
+  KV warm +0.06 / -0.74 / -0.14 / -0.12, both -0.28 / -0.42 / -0.31 / -0.51; S10's O with L2 prefetch before the wait
+  +2.1 to +2.3 (loses at 3 of 4). O -> b1 -> pool_router at t = 1 / 16 / 32: first 2 k-blocks per CTA warm (14 MB)
+  -1.50 / -0.62 / -1.99, 4 -1.31 / -0.18 / -1.46; bulk L2 prefetch of 2 / 4 / all blocks before the wait +0.6 to +10.8.
+  Unpooler: t=1 slice warm -1.36; t=16 / 32 12.6 / 25 / 42 MB warm -1.7 / -3.1 / -4.6 and -1.4 / -2.5 / -3.7 (bytes
+  read before the call, not ramp).
 - Verify dense at a kernel running max(read, compute) would save ~12 us per verify-16 layer and ~10 per verify-32
   (~+1% score; cuBLAS GEMM-only at M=128 runs +41-97% over the read, M=256 near its ~700 TFLOP/s compute floor);
   Triton split-K and DeepGEMM only tie cuBLAS apart from M=128 qkv (inferred from `b15a3bde` and `9cd95e72`).
@@ -554,6 +561,7 @@ A negative closes only the recipe tested. "Mechanism" says why, or "not isolated
 
 | Recipe tested | Result | Mechanism | Leaves open | Receipt |
 |---|---|---|---|---|
+| Hiding a stage's ramp behind its predecessor (weights in registers / L2 before `griddepcontrol.wait`, bulk L2 prefetch) at attention -> O and O -> b1 -> pool_router | Every recipe loses (+0.1 to +10.8 us, `5cefdbc4`, `cc718d3f`); the oracle ceilings with the bytes already warm are <= 0.7 us (attention -> O) and <= 2.0 us (pool_router) | The 2.36 us cold-read intercept (`7b6c96b5`) is mostly launch, flush and tail, not latency that a prefetch hides; prefetches compete with the running stage for HBM and issue | Unpooler at t=16/32 only by reading its bytes during an HBM-idle predecessor (none at small M) | `5cefdbc4`, `cc718d3f` |
 | Skipping pooler/unpooler rows of tokens with no local expert | Tokens with no local route (reference.py inputs, busiest 32-expert range, 40 router seeds): median 13.3% at verify 16 (T=128), 14.8% at verify 32 (T=256), range 1.6-24.6%; 0-6% at decode 16/32; the judge's load-targeted routers carry more local routes (S8's MoE fixture 259/1024 pairs at M=128), so fewer | Pooler/unpooler are partly byte-bound (weights read once regardless of rows): a skip cuts <= 15% of rows plus a compaction step, est. <= 2-4 us per verify 16/32 layer; the pooler skip needs the router first | Nothing worth building now (H200 unmeasured) | local; `problems/muse_bf16_proj/dev/zero_route/share.py` |
 | Router-epilogue L2 prefetch of the MoE's first W13 tiles (M=1, 13.9 MB) | Router node 4.1 -> 51.2 us; router+MoE 53.2 -> 92.2 us (local sm_120, read flush) | One CTA's bulk prefetches run at a single SM's TMA rate and hold the CTA's exit, so the dependent MoE waits | Weight prefetch issued from many SMs | local; `problems/muse_decode_layer/dev/nt1_timeline/README.md` |
 | MoE M=1 streaming expert GEMV (persistent W13 rows + W2 split-K, fused norm/sum, 14 grid/stage/PDL variants) | Best P2g264 57.07 us vs NT1 44.17 (1.29x slower), 12 seeds; PDL and grids 264-528 barely matter, split8 95 us | Not isolated; NT1 already reads 1.4-1.7 TB/s unique and the recode alone gives 9-12%, so per-weight decode work, not bytes in flight alone, binds at small M (inference) | Streaming with a cheaper decoder | `963515d3` |
