@@ -48,7 +48,7 @@ def main():
     seeds = int(sys.argv[1]) if len(sys.argv) > 1 else 12
     s6 = load('cand_s6', R / 'problems/muse_decode_layer/cand_r3_best7_s6.py')
     s7 = load('cand_s7', R / 'problems/muse_decode_layer/cand_r3_best7_s7.py')
-    lab = runpy.run_path(str(R / 'prof/lab/moe_m128_branches.py'))
+    lab = runpy.run_path(str(R / 'prof/lab/moe_br_m128.py'))
     stats = dict(fixtures=0, act_bits=0, y_bits=0, ss_heavy_bits=0, out_bit_equal=0, out_rerun_s6_equal=0, worst_L2=0., worst_row=0.)
     for seed in range(seeds):
         w = lab['dc_weights'](5353 + 7919 * seed, 'cuda')

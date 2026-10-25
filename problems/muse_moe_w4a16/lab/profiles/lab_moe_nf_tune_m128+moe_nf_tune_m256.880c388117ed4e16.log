@@ -1,0 +1,89 @@
+MOE_PHASE M=1 ctas=264 route=5437/5753/6012 p1=20270/24584/31651 wait=1623/9369/14954 barrier=1330/6140/10892 p2=19713/24759/30555 norm=1053/1815/3763 final=97/147/2348 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0911ms v12=0.0787ms v16=0.1038ms wide=0.5013ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5764/5987/6147 p1=123003/154297/174858 wait=884/6216/49055 barrier=1244/22456/66690 p2=66997/75234/115620 norm=10165/12059/15040 final=103/156/2356 p1_tiles=36/37/37 p2_tiles=18/18/19 atomics=144/144/152
+MOE_TIME M=16 v9=0.2052ms v12=0.2261ms v16=0.2253ms wide=0.3144ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5531/5887/6100 p1=147803/184218/209086 wait=831/5954/59619 barrier=1241/24216/78790 p2=81375/88919/141352 norm=12244/14952/18935 final=103/166/2531 p1_tiles=44/45/45 p2_tiles=22/22/23 atomics=176/176/184
+MOE_TIME M=32 v9=0.2350ms v12=0.2540ms v16=0.2596ms wide=0.3609ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5462/5754/5932 p1=66634/81718/93925 wait=971/7685/26084 barrier=1288/12921/37636 p2=38402/47139/65902 norm=5036/6339/8691 final=97/152/2103 p1_tiles=19/19/20 p2_tiles=9/10/10 atomics=72/80/80
+MOE_TIME M=8 v9=0.1351ms v12=0.1394ms v16=0.1583ms wide=0.2106ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7320/7651/7867 p1=238234/295547/329125 wait=807/7032/87074 barrier=1219/38046/121326 p2=131923/139871/219831 norm=19775/24590/29126 final=146/2007/4055 p1_tiles=71/72/72 p2_tiles=35/36/36 atomics=280/288/288
+MOE_TIME M=128 v9=0.3371ms v12=0.3802ms v16=0.3680ms wide=0.4829ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10638/10937/11329 p1=394953/485299/541734 wait=1078/8433/148297 barrier=1166/51736/186605 p2=216216/225541/363604 norm=33241/41244/48495 final=1012/3921/8006 p1_tiles=118/118/119 p2_tiles=59/59/60 atomics=472/472/480
+MOE_TIME M=256 v9=0.5036ms v12=0.6013ms v16=0.5637ms wide=0.5566ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.09110400080680847, 'v12': 0.07868800312280655, 'v16': 0.10384000092744827, 'wide': 0.5013440251350403}, 16: {'v9': 0.2051839977502823, 'v12': 0.2261119931936264, 'v16': 0.2253119945526123, 'wide': 0.3144319951534271}, 32: {'v9': 0.23500800132751465, 'v12': 0.2539519965648651, 'v16': 0.2595840096473694, 'wide': 0.3608959913253784}, 8: {'v9': 0.13513599336147308, 'v12': 0.13942399621009827, 'v16': 0.15833599865436554, 'wide': 0.21062399446964264}, 128: {'v9': 0.3370560109615326, 'v12': 0.38022398948669434, 'v16': 0.36796799302101135, 'wide': 0.4829440116882324}, 256: {'v9': 0.5036479830741882, 'v12': 0.6012799739837646, 'v16': 0.5637120008468628, 'wide': 0.5566080212593079}}
+LAB_BEGIN moe_nf_tune_m128 d32ab784cd01fde7
+META N_full tuning at M128 vs N_full (nf_cell.py: NT1<=16 W13->W2 on a side stream || heavy-only N32 grid 1056, live route, one join). N_g<grid>: heavy grid; N_p50/p75: NT1 persistent grid x0.5/0.75; _hi: side stream at high priority; N_swap: heavy on the side stream, NT1 on the main. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to N_full output (diagnostic). Phase means are diagnostics.
+BUILD s=8.2 left=49.9
+S0 0.992 0.997 1.101 1.015 1.049 0.985 0.984 1.116
+S1 0.999 1.002 1.091 1.045 1.037 0.980 0.981 1.102
+S2 0.999 0.999 1.095 1.017 1.038 0.981 0.981 1.084
+S3 1.004 1.000 1.075 1.027 1.040 0.975 0.976 1.109
+S4 1.030 1.004 1.076 1.019 1.056 0.981 0.983 1.102
+S5 1.028 0.998 1.086 1.028 1.043 0.981 0.981 1.101
+S6 1.041 1.001 1.078 1.012 1.052 0.977 0.978 1.118
+S7 1.015 0.999 1.077 0.992 1.030 0.945 0.945 1.106
+S8 0.985 0.999 1.061 1.007 1.044 0.984 0.984 1.086
+S9 1.007 1.002 1.095 1.029 1.057 0.990 0.994 1.101
+S10 1.000 1.004 1.075 1.041 1.025 0.985 0.984 1.101
+S11 0.994 1.001 1.093 1.036 1.039 0.996 0.995 1.121
+ORDER N_g528 N_g2112 N_p50 N_p75 N_hi N_swap N_swap_hi N_p50_hi
+MEAN N_full n=36 us=207.60 med=208.88 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN N_g528 n=36 us=209.26 med=209.29 pair=1.0079 lo/hi=0.982/1.074 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN N_g2112 n=36 us=207.74 med=209.23 pair=1.0006 lo/hi=0.994/1.013 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN N_p50 n=36 us=225.09 med=230.38 pair=1.0837 lo/hi=1.031/1.174 L2/row=0.00413/0.00471 TASK=PASS bit=28
+MEAN N_p75 n=36 us=212.18 med=214.13 pair=1.0225 lo/hi=0.985/1.106 L2/row=0.00413/0.00471 TASK=PASS bit=26
+MEAN N_hi n=36 us=216.32 med=213.00 pair=1.0425 lo/hi=0.999/1.075 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN N_swap n=36 us=203.43 med=204.45 pair=0.9799 lo/hi=0.922/1.007 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN N_swap_hi n=36 us=203.46 med=204.74 pair=0.9805 lo/hi=0.921/1.007 L2/row=0.00413/0.00471 TASK=PASS bit=35
+MEAN N_p50_hi n=36 us=228.97 med=234.30 pair=1.1040 lo/hi=1.071/1.168 L2/row=0.00413/0.00471 TASK=PASS bit=28
+PH N_full 6.4/194.0/12.8
+PH N_g528 6.4/195.6/12.8
+PH N_g2112 6.3/194.1/12.7
+PH N_p50 6.4/210.5/12.9
+PH N_p75 6.3/197.8/12.8
+PH N_hi 6.3/203.1/12.7
+PH N_swap 6.3/190.4/12.7
+PH N_swap_hi 6.3/190.3/12.8
+PH N_p50_hi 6.3/213.6/12.7
+AA signed/abs/max=-0.094/0.404/1.216
+END M=128 seeds=12/12 used=20.6 left=37.5
+LAB_END lab_s=27.2 prepare_s=182.9
+LAB_BEGIN moe_nf_tune_m256 16ba69eb9a216a9e
+META N_full tuning at M256 vs N_full (nf_cell.py: NT1<=16 W13->W2 on a side stream || heavy-only N32 grid 2112, live route, one join). N_g<grid>: heavy grid; N_p50/p75: NT1 persistent grid x0.5/0.75; _hi: side stream at high priority; N_swap: heavy on the side stream, NT1 on the main. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to N_full output (diagnostic). Phase means are diagnostics.
+BUILD s=0.0 left=102.1
+S0 0.999 1.002 1.082 1.024 1.053 0.981 0.985 1.111
+S1 1.003 1.002 1.073 1.017 1.032 0.984 0.983 1.093
+S2 1.005 1.003 1.061 1.019 1.041 0.989 0.989 1.097
+S3 1.006 1.002 1.053 1.018 1.038 0.986 0.984 1.083
+S4 0.999 0.999 1.051 1.015 1.029 0.993 0.990 1.074
+S5 1.005 1.002 1.056 1.008 1.028 0.990 0.990 1.072
+S6 1.012 1.000 1.045 1.011 1.037 0.989 0.990 1.078
+S7 0.999 1.001 1.098 1.024 1.039 0.983 0.985 1.122
+S8 1.001 1.000 1.103 1.023 1.028 0.992 0.989 1.109
+S9 1.004 1.003 1.052 1.011 1.038 0.991 0.993 1.077
+S10 1.003 1.001 1.076 1.022 1.042 0.991 0.992 1.105
+S11 0.999 1.002 1.069 1.018 1.034 0.988 0.991 1.098
+ORDER N_g1056 N_g4224 N_p50 N_p75 N_hi N_swap N_swap_hi N_p50_hi
+MEAN N_full n=36 us=299.49 med=290.52 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN N_g1056 n=36 us=300.25 med=291.04 pair=1.0029 lo/hi=0.996/1.015 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN N_g4224 n=36 us=299.69 med=290.89 pair=1.0014 lo/hi=0.997/1.005 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN N_p50 n=36 us=319.50 med=310.38 pair=1.0682 lo/hi=1.033/1.121 L2/row=0.00412/0.00465 TASK=PASS bit=27
+MEAN N_p75 n=36 us=304.44 med=295.06 pair=1.0176 lo/hi=1.005/1.032 L2/row=0.00412/0.00465 TASK=PASS bit=19
+MEAN N_hi n=36 us=309.84 med=300.92 pair=1.0364 lo/hi=1.025/1.062 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN N_swap n=36 us=295.71 med=286.51 pair=0.9882 lo/hi=0.976/0.995 L2/row=0.00412/0.00465 TASK=PASS bit=35
+MEAN N_swap_hi n=36 us=295.68 med=286.68 pair=0.9883 lo/hi=0.974/0.997 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN N_p50_hi n=36 us=326.58 med=318.60 pair=1.0933 lo/hi=1.063/1.143 L2/row=0.00412/0.00465 TASK=PASS bit=27
+PH N_full 6.6/286.9/13.4
+PH N_g1056 6.5/287.6/13.5
+PH N_g4224 6.5/286.5/13.5
+PH N_p50 6.6/306.4/13.5
+PH N_p75 6.5/291.7/13.4
+PH N_hi 6.5/297.1/13.4
+PH N_swap 6.5/283.3/13.4
+PH N_swap_hi 6.5/283.1/13.3
+PH N_p50_hi 6.6/314.1/13.4
+AA signed/abs/max=-0.083/0.317/0.800
+END M=256 seeds=12/12 used=12.9 left=89.2
+LAB_END lab_s=13.0 prepare_s=195.8

@@ -1,4 +1,4 @@
-"""Force Hopper glue and require native S7N math at every scored dispatch row (M256 MoE on N_full)."""
+"""Force Hopper glue and require native S7N math at every scored dispatch row (M128 and M256 MoE on N_full)."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -27,21 +27,16 @@ def main():
             if context['row'] is not None:
                 row=counter['full_layer_rows'].setdefault(context['row'],dict(eager=0,captured=0))
                 row['captured' if capture else 'eager']+=1
-        nt=m.nt1_call;dist=m.pm_call;rec=m.nf_call
+        nt=m.nt1_call;rec=m.nf_call
         def small(data,bank,kind='recode',stages=2,grid=264,trace=False):
             assert (kind,stages,grid,trace)==('lop3',2,264,False)
             assert data['hidden_states'].shape[0] in (1,8,16,32)
             counted('nt1_lop3');return nt(data,bank,kind,stages,grid,trace)
-        def large(data,base,native,first,second):
-            assert (first,second)==('H','H')
-            assert data['hidden_states'].shape[0]==128
-            assert all(base[k].dtype==m.torch.uint8 for k in ('w13_sf','w2_sf'))
-            counted('hh_m128');return dist(data,base,native,first,second)
         def recoded(data,state):
-            assert data['hidden_states'].shape[0]==256
+            n=data['hidden_states'].shape[0];assert n in (128,256)
             assert all(state['s5_hh_base'][k].dtype==m.torch.uint8 for k in ('w13_sf','w2_sf')) and len(state['nf_streams'])==3
-            counted('mixed_parallel_m256');return rec(data,state)
-        m.nt1_call=small;m.pm_call=large;m.nf_call=recoded
+            counted('hh_m128' if n==128 else 'mixed_parallel_m256');return rec(data,state)
+        m.nt1_call=small;m.nf_call=recoded
         run=m._best7_run
         def layer(data,state,plan,prefetch=None):
             c=data['config'];prior=context['row']
