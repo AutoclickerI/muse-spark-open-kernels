@@ -1,0 +1,49 @@
+{
+  "normal": {
+    "sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540",
+    "tests": 13,
+    "graph_shapes": 12,
+    "static_checks": 24,
+    "retained_tensors": 78
+  },
+  "forced": {
+    "sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540",
+    "tests": 13,
+    "graph_shapes": 12,
+    "static_checks": 24,
+    "retained_tensors": 118
+  },
+  "lab": {
+    "sha256": "351907fb3d02c22333102f3114411f4fc9a3290b7334c215c8aac66ebd32cdb8",
+    "tests": 13,
+    "static_checks": 24,
+    "graph_shapes": 12,
+    "seeds": 16,
+    "rounds": 8,
+    "failed_arms": 0,
+    "source_bytes": 989808
+  },
+  "followup": {
+    "normal": {
+      "sha256": "d67e734a6b8905b704788102d3af4fce6ec140aa3543c8ff33a11a537f5f81c8",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24
+    },
+    "forced": {
+      "sha256": "d67e734a6b8905b704788102d3af4fce6ec140aa3543c8ff33a11a537f5f81c8",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24
+    },
+    "lab": {
+      "sha256": "1bf6c9ffdeaf2466a3f748c28c169a66b478226f2beae4281bd7f0bcfaefe983",
+      "tests": 13,
+      "static_checks": 24,
+      "graph_shapes": 12,
+      "seeds": 16,
+      "rounds": 8,
+      "failed_arms": 0
+    }
+  }
+}
