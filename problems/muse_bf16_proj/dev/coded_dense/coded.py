@@ -325,7 +325,7 @@ def cd_module(instances=CD_INSTANCES):
         tag = hashlib.sha256(src.encode()).hexdigest()[:12]
         _CD_MOD.append(load_inline(name=f'muse_coded_dense_{arch}_{tag}', cpp_sources=CD_CPP, cuda_sources=src,
                                    functions=['cd_gemv', 'cd_decode'], verbose=False,
-                                   extra_cuda_cflags=['-O3', '-std=c++17', '-lineinfo',
+                                   extra_cuda_cflags=['-O3', '-std=c++20', '-lineinfo',
                                                       f'-gencode=arch=compute_{arch},code=sm_{arch}']))
     return _CD_MOD[0]
 

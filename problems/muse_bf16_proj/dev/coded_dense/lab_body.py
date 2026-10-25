@@ -86,7 +86,7 @@ def cl_ext():
         arch = '90a' if major == 9 else f'{major}{minor}'
         _CL.append(load_inline(name=f'muse_lab_coded_read_{arch}', cpp_sources='#include <cstdint>\nvoid cl_read(int64_t, int64_t, int64_t, int64_t, int64_t);',
                                cuda_sources=CL_READ, functions=['cl_read'], verbose=False,
-                               extra_cuda_cflags=['-O3', f'-gencode=arch=compute_{arch},code=sm_{arch}']))
+                               extra_cuda_cflags=['-O3', '-std=c++20', f'-gencode=arch=compute_{arch},code=sm_{arch}']))
     return _CL[0]
 
 
@@ -164,15 +164,15 @@ def lab(deadline, weights):
                  pool_router=torch.cat([weights['pooler'], hi, (router - hi.float()).to(torch.bfloat16)], 0).contiguous(),
                  unpool_slice=weights['unpooler'][:1024].contiguous(), unpooler=weights['unpooler'].contiguous())
     lines = []
+    tc = time.monotonic()
+    cd_module()
+    comp_s = time.monotonic() - tc
     torch.cuda.synchronize()
     te = time.monotonic()
     coded = {k: cd_encode(v) for k, v in roles.items()}
     torch.cuda.synchronize()
     enc_s = time.monotonic() - te
     ok = all(torch.equal(cd_decode(coded[k]).view(torch.int16), v.view(torch.int16)) for k, v in roles.items())
-    tc = time.monotonic()
-    cd_module()
-    comp_s = time.monotonic() - tc
     ext = cl_ext()
     sink = torch.zeros(4, dtype=torch.int32, device=dev)
     empty = _cl_graph(lambda: None)
