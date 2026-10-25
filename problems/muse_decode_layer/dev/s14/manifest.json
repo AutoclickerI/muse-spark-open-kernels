@@ -1,0 +1,47 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_s14.py",
+  "sha256": "72bb46f68f214febe05a8026b69bdd7cad5ec152e4986c736a0273420286bff8",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s13_final.py",
+  "base_sha256": "958f1258908f44834ec6cf0c33af00ff6c08ea62b2f5cc483a36f0a91f39d0b6",
+  "patches": [
+    {
+      "name": "light",
+      "path": "problems/muse_decode_layer/dev/s14/patch_light.py",
+      "sha256": "76e242b6177086cea6c69860e53c39b1cfabb9c552ad82255fbd6721a28ee56d",
+      "active_tokens": [
+        128,
+        256
+      ],
+      "out_sha256": "c7d63639ae632dc7e32b4df5c9e73dd1184408791b0d59a6c186a215bc99b896"
+    },
+    {
+      "name": "qkv3",
+      "path": "problems/muse_decode_layer/dev/s14/patch_direct_qkv3.py",
+      "sha256": "2a4b14c9a0c5909e11c2cc2dc4192c7248b540767331491a9a64c071c9b335c0",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "ad5a6afe7df31e37a4ff9545dbdd233845b8dcf003e6367387513907f998bd87"
+    },
+    {
+      "name": "o",
+      "path": "problems/muse_decode_layer/dev/s14/patch_direct_o.py",
+      "sha256": "f703e6d531a4c670311f7c8aec16b4bdb71dccd3b863a290ebcc61177234bc27",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "ee2f011b54e3c6934c6e5a719d9424a061280f81d568c561eec67097cc449d62"
+    },
+    {
+      "name": "bal2",
+      "path": "problems/muse_decode_layer/dev/s14/patch_bal2.py",
+      "sha256": "715f16073ec7870c2db6a67d0bcc37cd603257df8b7f7b44b30b6cccf9b487e1",
+      "active_tokens": [
+        8,
+        16,
+        32
+      ],
+      "out_sha256": "72bb46f68f214febe05a8026b69bdd7cad5ec152e4986c736a0273420286bff8"
+    }
+  ]
+}
