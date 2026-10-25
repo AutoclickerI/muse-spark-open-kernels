@@ -556,7 +556,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   screen, 3 seeds, not yet against S11's Lt choice): M=128 o 0.942 (-1.0 of 17.1 us), unpooler 0.993; M=256 o and
   unpooler lose 1.02-1.09 at every tile config. `problems/muse_bf16_proj/dev/verify_epilogue/`. Putting the norm
   statistics in that GEMM's epilogue loses (`d3666d18`, 3 seeds x 12 rounds): four sums 1.14-1.21, the branch norm
-  sum alone 1.03-1.06, at both M (closed recipe; the plain GEMM keeps M=128 o 0.942).
+  sum alone 1.03-1.06, at both M (closed recipe). In the whole S11 final layer (`d4cbf3ca`, 12 seeds x 6 rounds,
+  A:A 1.000) every variant loses to S11's pinned Lt / cuBLAS: own GEMMs with the old boundary 1.019 / 1.010 at
+  verify 16 / 32, with norm statistics 1.042 / 1.026, o-only 1.009 / 1.008 (closed recipe: Triton-tile verify GEMMs).
 - Balanced GEMV issue sweep (`d3666d18`, projection + sum-cast graph, standalone): pool_router at BK=128 with 2
   stages 0.977 / 0.959 / 0.960 at t = 1 / 16 / 32 (-0.6 to -1.1 us); every other role and setting within +-2%.
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;
