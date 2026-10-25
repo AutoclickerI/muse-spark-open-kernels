@@ -6,7 +6,9 @@ paired-lab stage wins that profile does not contain yet, and prints the six-load
   - the model and the model plus those pending wins ("pending");
   - each stage's time as a multiple of its one-read floor, per shape;
   - per lever: that lever's stages capped at 1.5x / 1.3x their floor (independent; they don't add);
-  - every stage capped at 2.0x / 1.5x / 1.3x its floor;
+  - every stage capped at 2.0x / 1.5x / 1.3x / 1.15x its floor (the judge's stream roof is above 3.61 TB/s: our sweep
+    reached 4.04-4.25 TB/s);
+  - the projections with 25% fewer dense bytes (lossless BF16 exponent coding) at a fixed 0 / 2 / 4 us per call;
   - each component sped up by a leader-match factor (--match);
   - each decode-1 / verify-1 layer's time above a one-read stream at the measured 3.61 TB/s.
 
@@ -24,7 +26,7 @@ import math
 from pathlib import Path
 
 LAYERS = {'sliding': 46, 'full': 16}
-ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R', 'S8', 'S9')
+ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R', 'S8', 'S9', 'S10')
 PROJ = ('qkv_gate', 'o', 'pool_router', 'unpooler')
 GLUE = ('boundaries', 'route')
 # 4233660b: a plain cold 256 MiB read takes 74.33 us on the judge, 3.61 TB/s = the 4.8 TB/s floor x 1.329.
@@ -81,6 +83,9 @@ def pending(mode: str) -> list[tuple]:
             out.append((t, 'moe', lambda us, d=d: us - d, 'small-M flags cf1de160+eb9e0382'))
         out.append((128, 'moe', lambda us: us * 0.8842, 'N_full M128 c01b1916'))
         out.append((256, 'moe', lambda us: us * 0.8701 / 0.9230, 'N_full M256 14f942d5'))
+    if i < ORDER.index('S10'):  # N_full stream swap (heavy N32 on the side stream, launched first), 880c3881
+        out.append((128, 'moe', lambda us: us * 0.9799, 'N_swap 880c3881'))
+        out.append((256, 'moe', lambda us: us * 0.9882, 'N_swap 880c3881'))
     return out
 
 
@@ -142,7 +147,14 @@ def main() -> None:
         s15, s13 = score(model, cap(rows, sel, 1.5)), score(model, cap(rows, sel, 1.3))
         print(f'  {name:32s} {s15:.3f} ({(s15 / est - 1) * 100:+5.1f}%)  {s13:.3f} ({(s13 / est - 1) * 100:+5.1f}%)')
     every = lambda r, k: True
-    print('\nevery stage capped at ' + ', '.join(f'{f}x floor: {score(model, cap(rows, every, f)):.3f}' for f in (2.0, 1.5, 1.3)))
+    print('\nevery stage capped at ' + ', '.join(f'{f}x floor: {score(model, cap(rows, every, f)):.3f}' for f in (2.0, 1.5, 1.3, 1.15)))
+
+    # Lossless BF16 exponent coding of the dense weights (P10): 25% fewer dense bytes; a projection's time beyond a
+    # fixed part (launch, tail, activation IO) scales with its bytes.
+    proj = lambda r, k: k in PROJ
+    print('\ndense bytes -25% (projection time = fixed + (t - fixed) x 0.75): ' + ', '.join(
+        f"fixed {f:g} us {(v := score(model, edit(rows, proj, lambda t, _, f=f: min(t, f + (t - f) * 0.75)))):.3f} ({(v / est - 1) * 100:+.1f}%)"
+        for f in (0.0, 2.0, 4.0)))
 
     match = {k: float(v) for k, v in (x.split('=') for x in a.match.split(','))}
     print('\nleader match (stage time / factor): ' + ', '.join(f'{k} /{v:g}' for k, v in match.items()))

@@ -145,38 +145,50 @@ def load(path):
     return mod
 
 
+def compose(base, patches, flags, tag='S9'):
+    """Base text -> candidate text and manifest fields: each patch module, then N_full, then the small-M cell."""
+    s = base.read_text()
+    meta = dict(base=str(base.relative_to(R)), base_sha256=hashlib.sha256(s.encode()).hexdigest(), patches=[])
+    for path in patches:
+        path = path.resolve()
+        s = load(path).patch(s)
+        meta['patches'].append(dict(path=str(path.relative_to(R)), sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                                    out_sha256=hashlib.sha256(s.encode()).hexdigest()))
+    head = '"""Best7 ('
+    s = sub(s, head, head + f'{tag} = {base.stem.split("_")[-1].upper()} + ' + ''.join(p['path'].rsplit('/', 1)[-1].removesuffix('.py') + ' + ' for p in meta['patches'])
+            + f'small-M NT1 flags {flags} (H200 849e4017, cf1de160) + M128/M256 N_full (H200 c01b1916, 14f942d5); ')
+    s, nf_sha = nfull(s)
+    s, sm_sha = smallm(s, flags)
+    rows = check_pdl_rows(s, flags)
+    meta.update(smallm_flags=flags, smallm_cuda_sha256=sm_sha, smallm_cell_sha256=hashlib.sha256(CELL.read_bytes()).hexdigest(),
+                nf_cuda_sha256=nf_sha, pdl_rows=[list(k) for k in rows], deleted=list(s7n.DEAD) + list(NT1_DEAD), labs=dict(LABS))
+    return s, meta
+
+
+def finish(s, out, meta, manifest):
+    """Normalize, check and write a candidate and its manifest."""
+    s = re.sub(r'\n{4,}', '\n\n\n', s)
+    compile(s, 'cand', 'exec')
+    assert not rejected_words(s), rejected_words(s)
+    out.write_text(s)
+    m = dict(source=str(out.relative_to(R)), sha256=hashlib.sha256(s.encode()).hexdigest(), **meta)
+    manifest.write_text(json.dumps(m, indent=2) + '\n')
+    print(m['source'], m['sha256'], len(s))
+    return m
+
+
+def parse_flags(text):
+    return {int(m): int(f) for m, f in (x.split(':') for x in text.split(','))}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--base', type=Path, default=D / 'cand_r3_best7_s8.py')
     ap.add_argument('--patch', type=Path, nargs='*', default=PATCHES, help='modules with patch(src) -> src, applied in order')
     ap.add_argument('--flags', default='1:95,8:69,16:69,32:69')
     a = ap.parse_args()
-    flags = {int(m): int(f) for m, f in (x.split(':') for x in a.flags.split(','))}
-    base = a.base.resolve()
-    s = base.read_text()
-    base_sha = hashlib.sha256(s.encode()).hexdigest()
-    patches = []
-    for path in a.patch:
-        path = path.resolve()
-        s = load(path).patch(s)
-        patches.append(dict(path=str(path.relative_to(R)), sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                            out_sha256=hashlib.sha256(s.encode()).hexdigest()))
-    head = '"""Best7 ('
-    s = sub(s, head, head + f'S9 = {base.stem.split("_")[-1].upper()} + ' + ''.join(p['path'].rsplit('/', 1)[-1].removesuffix('.py') + ' + ' for p in patches)
-            + f'small-M NT1 flags {flags} (H200 849e4017, cf1de160) + M128/M256 N_full (H200 c01b1916, 14f942d5); ')
-    s, nf_sha = nfull(s)
-    s, sm_sha = smallm(s, flags)
-    rows = check_pdl_rows(s, flags)
-    s = re.sub(r'\n{4,}', '\n\n\n', s)
-    compile(s, 'cand', 'exec')
-    assert not rejected_words(s), rejected_words(s)
-    out = D / 'cand_r3_best7_s9.py'
-    out.write_text(s)
-    m = dict(source=str(out.relative_to(R)), sha256=hashlib.sha256(s.encode()).hexdigest(), base=str(base.relative_to(R)),
-             base_sha256=base_sha, patches=patches, smallm_flags=flags, smallm_cuda_sha256=sm_sha, smallm_cell_sha256=hashlib.sha256(CELL.read_bytes()).hexdigest(),
-             nf_cuda_sha256=nf_sha, pdl_rows=[list(k) for k in rows], deleted=list(s7n.DEAD) + list(NT1_DEAD), labs=LABS)
-    (H / 'manifest.json').write_text(json.dumps(m, indent=2) + '\n')
-    print(m['source'], m['sha256'], len(s))
+    s, meta = compose(a.base.resolve(), a.patch, parse_flags(a.flags))
+    finish(s, D / 'cand_r3_best7_s9.py', meta, H / 'manifest.json')
 
 
 if __name__ == '__main__':

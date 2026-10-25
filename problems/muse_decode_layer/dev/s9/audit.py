@@ -6,6 +6,9 @@ the timed call, with dtype, shape, bytes and, for expert banks, bytes per 16 wei
 captured. Writes audit.json, normal_local.json.
 
     CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_decode_layer/dev/s9/audit.py [--forced] [--cold-native]
+        [--candidate cand.py --out dev/<dir>]
+    Cold prepare: fresh TORCH_EXTENSIONS_DIR / TRITON_CACHE_DIR / CUDA_CACHE_PATH and CCACHE_DISABLE=1 (the image's
+    extension builds go through ccache).
 """
 from pathlib import Path
 import argparse
@@ -60,7 +63,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--forced', action='store_true', help='force the Hopper glue (best7/force.py) and require native S9 math per row')
     ap.add_argument('--cold-native', action='store_true')
+    ap.add_argument('--candidate', type=Path, default=CAND)
+    ap.add_argument('--out', type=Path, default=H, help='directory for the json outputs')
     a = ap.parse_args()
+    cand, out_dir = a.candidate.resolve(), a.out.resolve()
     original = local_eval.load_module
     records = dict(calls={}, nf={})
     force = None
@@ -122,8 +128,8 @@ def main():
         return m
 
     local_eval.load_module = loader
-    out = H / ('forced_local.json' if a.forced else 'normal_local.json')
-    sys.argv = [sys.argv[0], str(CAND), '--no-baseline', '--json', str(out)]
+    out = out_dir / ('forced_local.json' if a.forced else 'normal_local.json')
+    sys.argv = [sys.argv[0], str(cand), '--no-baseline', '--json', str(out)]
     try:
         local_eval.main()
     except SystemExit as exc:
@@ -134,8 +140,8 @@ def main():
             want = {f'M{mm}:{f}' for mm, f in records['smallm_flags'].items()}
             assert set(records['calls']) == want and all(v['captured'] > 0 for v in records['calls'].values()), records['calls']
             assert set(records['nf']) == {'M128', 'M256'} and all(v['captured'] > 0 for v in records['nf'].values()), records['nf']
-            records['sha256'] = hashlib.sha256(CAND.read_bytes()).hexdigest()
-            (H / ('forced_audit.json' if a.forced else 'audit.json')).write_text(json.dumps(records, indent=2, default=str) + '\n')
+            records['sha256'] = hashlib.sha256(cand.read_bytes()).hexdigest()
+            (out_dir / ('forced_audit.json' if a.forced else 'audit.json')).write_text(json.dumps(records, indent=2, default=str) + '\n')
         raise
 
 

@@ -1,110 +1,110 @@
 {
-  "mode": "S7R",
-  "profile_source": "problems/muse_decode_layer/profiles/cand_r3_best7_s7r.c1fbd0cfa43f45d3.json",
-  "profile_sha256": "29940e72bb40dba3373e474c89df8216ef6d18975bb9b9e378c27f1f0711c535",
-  "job": "c1fbd0cfa43f45d3",
-  "baseline_source_speedup": 1.5734680177613642,
-  "modeled_speedup": 1.5734680177613642,
+  "mode": "S8",
+  "profile_source": "problems/muse_decode_layer/profiles/cand_r3_best7_s8.a5b2f55be30f4f47.json",
+  "profile_sha256": "9b4c9e08e8086379d903c6e084979c758d424860e90a4453efd85e40171dc18f",
+  "job": "a5b2f55be30f4f47",
+  "baseline_source_speedup": 1.5741808739509857,
+  "modeled_speedup": 1.5741808739509857,
   "loads_us": {
-    "decode 1": 6658.317611062271,
-    "decode 16": 11881.760421049268,
-    "decode 32": 15628.453152245798,
-    "verify 1": 8996.838538811782,
-    "verify 16": 23988.19943532912,
-    "verify 32": 33450.687821815394
+    "decode 1": 6319.397299589341,
+    "decode 16": 11723.138429851944,
+    "decode 32": 15232.563046433746,
+    "verify 1": 8874.424127614351,
+    "verify 16": 23724.964027982965,
+    "verify 32": 32866.27345849124
   },
   "unadjusted_loads_us": {
-    "decode 1": 6658.317611062271,
-    "decode 16": 11881.760421049268,
-    "decode 32": 15628.453152245798,
-    "verify 1": 8996.838538811782,
-    "verify 16": 23988.19943532912,
-    "verify 32": 33450.687821815394
+    "decode 1": 6319.397299589341,
+    "decode 16": 11723.138429851944,
+    "decode 32": 15232.563046433746,
+    "verify 1": 8874.424127614351,
+    "verify 16": 23724.964027982965,
+    "verify 32": 32866.27345849124
   },
   "stage_gains": {
     "qkv_gate": {
-      "estimate": 1.1003780321554926,
-      "minimum": 0.0,
-      "maximum": 20.644639040278754
+      "estimate": 1.9016905144062253,
+      "minimum": 0.8551937901772116,
+      "maximum": 10.09761240936076
     },
     "o": {
-      "estimate": 0.9768426302138887,
-      "minimum": 0.7243865198681659,
-      "maximum": 11.854011297907697
+      "estimate": 0.9704825848739176,
+      "minimum": 0.4236635554853376,
+      "maximum": 13.649924578985681
     },
     "pool_router": {
-      "estimate": 2.1705582087937114,
-      "minimum": 0.2852945170491407,
-      "maximum": 12.15974646529641
+      "estimate": 2.293332662393205,
+      "minimum": 0.3014990448367337,
+      "maximum": 7.692349375498752
     },
     "unpooler": {
-      "estimate": 1.1258544726146447,
+      "estimate": 1.3760453061860514,
       "minimum": 0.0,
-      "maximum": 20.561719283137037
+      "maximum": 15.521305155924264
     },
     "attention": {
-      "estimate": 11.441278984735272,
-      "minimum": 11.441278984735272,
-      "maximum": 12.597731487187058
+      "estimate": 11.838766861882194,
+      "minimum": 11.838766861882194,
+      "maximum": 12.862255965861419
     },
     "moe": {
-      "estimate": 21.38006919328986,
-      "minimum": 21.38006919328986,
-      "maximum": 22.80821419478277
+      "estimate": 21.756380053208023,
+      "minimum": 21.756380053208023,
+      "maximum": 23.092361487740526
     },
     "boundaries": {
-      "estimate": 4.450720114411891,
-      "minimum": 4.450720114411891,
-      "maximum": 4.450720114411891
+      "estimate": 3.653116556926065,
+      "minimum": 3.653116556926065,
+      "maximum": 3.653116556926065
     },
     "route": {
-      "estimate": 2.095579671133697,
-      "minimum": 2.095579671133697,
-      "maximum": 2.095579671133697
+      "estimate": 1.9384517517837567,
+      "minimum": 1.9384517517837567,
+      "maximum": 1.9384517517837567
     }
   },
   "ranking": [
     {
       "lever": "Attention, all scored shapes",
       "owner": "attention",
-      "gain_pct": 11.441278984735272,
-      "gain_max_unreported_pct": 12.597731487187058,
-      "saved_weighted_us": 10434.005150166666
+      "gain_pct": 11.838766861882194,
+      "gain_max_unreported_pct": 12.862255965861419,
+      "saved_weighted_us": 10662.605150166666
     },
     {
       "lever": "Small-M MoE M1/8/16/32",
       "owner": "small-M MoE",
-      "gain_pct": 11.440650987739163,
-      "gain_max_unreported_pct": 11.440650987739163,
-      "saved_weighted_us": 6869.232503733335
-    },
-    {
-      "lever": "Boundaries and route",
-      "owner": "glue",
-      "gain_pct": 6.754966117615247,
-      "gain_max_unreported_pct": 6.754966117615247,
-      "saved_weighted_us": 5234.1728
+      "gain_pct": 9.80755867774986,
+      "gain_max_unreported_pct": 9.80755867774986,
+      "saved_weighted_us": 5789.832503733335
     },
     {
       "lever": "Dense projections, all four roles",
       "owner": "proj GEMV",
-      "gain_pct": 5.591306308041006,
-      "gain_max_unreported_pct": 5.591306308041006,
-      "saved_weighted_us": 4828.334122243882
+      "gain_pct": 6.877520295469221,
+      "gain_max_unreported_pct": 6.877520295469221,
+      "saved_weighted_us": 5405.334122243883
+    },
+    {
+      "lever": "Boundaries and route",
+      "owner": "glue",
+      "gain_pct": 5.743929834822628,
+      "gain_max_unreported_pct": 5.743929834822628,
+      "saved_weighted_us": 4584.012736000001
     },
     {
       "lever": "MoE M256",
       "owner": "free M256",
-      "gain_pct": 5.148285342435225,
-      "gain_max_unreported_pct": 5.5600022652764975,
-      "saved_weighted_us": 8699.737291516665
+      "gain_pct": 5.6504905442229,
+      "gain_max_unreported_pct": 6.075898176569517,
+      "saved_weighted_us": 9233.13729151667
     },
     {
       "lever": "MoE M128",
       "owner": "MoE M128",
-      "gain_pct": 3.586115041438788,
-      "gain_max_unreported_pct": 4.39612648659351,
-      "saved_weighted_us": 4570.920075699999
+      "gain_pct": 4.951336538328507,
+      "gain_max_unreported_pct": 5.677407300002887,
+      "saved_weighted_us": 5971.720075699999
     }
   ],
   "rows": [
@@ -118,20 +118,20 @@
         "load": "decode 1",
         "page": 1,
         "repeats": 60,
-        "seed": 2515247799237481580,
+        "seed": 6011651857669205775,
         "weight": 46
       },
       "tokens": 1,
       "stages_us": {
-        "qkv_gate": 12.041379310344826,
-        "o": 7.3,
-        "pool_router": 24.082758620689653,
-        "unpooler": 2.675862068965517,
-        "attention": 9.8,
-        "moe": 30.6,
-        "boundaries": 6.6,
-        "route": 4.0,
-        "other": 4.8
+        "qkv_gate": 14.399999999999999,
+        "o": 7.2,
+        "pool_router": 24.3,
+        "unpooler": 2.7,
+        "attention": 10.3,
+        "moe": 31.8,
+        "boundaries": 5.2,
+        "route": 3.6,
+        "other": 0.0
       },
       "floors_us": {
         "qkv_gate": 7.86432,
@@ -159,35 +159,33 @@
       },
       "role_bounds_us": {
         "qkv_gate": [
-          0.0,
-          38.8
+          14.399999999999999,
+          14.399999999999999
         ],
         "o": [
-          7.3,
-          7.3
+          7.2,
+          7.2
         ],
         "pool_router": [
           0.0,
-          38.8
+          27.0
         ],
         "unpooler": [
           0.0,
-          38.8
+          27.0
         ]
       },
       "estimated_roles": [
-        "qkv_gate",
         "pool_router",
         "unpooler"
       ],
       "projection_groups": [
         {
           "roles": [
-            "qkv_gate",
             "pool_router",
             "unpooler"
           ],
-          "us": 38.8,
+          "us": 27.0,
           "names": [
             "_gemv_kernel"
           ],
@@ -195,9 +193,20 @@
         },
         {
           "roles": [
+            "qkv_gate"
+          ],
+          "us": 14.399999999999999,
+          "names": [
+            "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
             "o"
           ],
-          "us": 7.3,
+          "us": 7.2,
           "names": [
             "void gf::direct<16, 8, 4, 8, false>(__nv_bfloat16 const*,..."
           ],
@@ -206,53 +215,53 @@
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 101.9,
-      "reset_profile_total_after_deltas_us": 101.9,
-      "base_adjusted_us": 105.2984434615014,
-      "modeled_adjusted_us": 105.2984434615014,
+      "profile_total_us": 99.5,
+      "reset_profile_total_after_deltas_us": 99.5,
+      "base_adjusted_us": 99.93196219748236,
+      "modeled_adjusted_us": 99.93196219748236,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 30.6,
-      "benchmark_baseline_us": 173.39199827983975,
+      "base_moe_us": 31.8,
+      "benchmark_baseline_us": 170.89600209146738,
       "kernels": [
         {
-          "name": "_gemv_kernel",
-          "us": 38.8,
-          "calls": 3
+          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
+          "us": 31.8,
+          "calls": 1
         },
         {
-          "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 30.6,
+          "name": "_gemv_kernel",
+          "us": 27.0,
+          "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+          "us": 12.7,
           "calls": 1
         },
         {
           "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
-          "us": 9.8,
+          "us": 10.3,
           "calls": 1
         },
         {
           "name": "void gf::direct<16, 8, 4, 8, false>(__nv_bfloat16 const*,...",
-          "us": 7.3,
+          "us": 7.2,
           "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 6.6,
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 5.2,
           "calls": 2
         },
         {
-          "name": "_route_fast",
-          "us": 4.0,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 3.6,
           "calls": 1
         },
         {
-          "name": "void at::native::reduce_kernel<128, 4, at::native::Reduce...",
-          "us": 3.8,
-          "calls": 1
-        },
-        {
-          "name": "void at::native::vectorized_elementwise_kernel<8, at::nat...",
-          "us": 1.0,
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 1.7,
           "calls": 1
         }
       ],
@@ -265,16 +274,22 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
-            16
-          ],
-          "route": [
+            "cl",
             8,
+            256,
             1
           ],
-          "b2": [
+          "route": [
+            "cl",
             8,
-            16
+            256,
+            0
+          ],
+          "b2": [
+            "cl",
+            8,
+            256,
+            1
           ]
         },
         "attention": [
@@ -283,7 +298,7 @@
         ],
         "moe": "nt1_lop3",
         "projection": {
-          "qkv_gate": "custom",
+          "qkv_gate": "cublas",
           "o": [
             "stream",
             6,
@@ -295,16 +310,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": 3.398443461501401,
+      "profile_vs_adjusted_residual_us": 0.4319621974823633,
       "stage_gain_pct": {
-        "qkv_gate": 0.21085225101531652,
-        "o": 0.3209313337540582,
-        "pool_router": 0.42485652115520106,
-        "unpooler": 0.046588072628342046,
-        "attention": 1.1572727606233095,
-        "moe": 1.3802204531451674,
-        "boundaries": 0.7781584313251292,
-        "route": 0.46785594419819376
+        "qkv_gate": 0.5158645932747564,
+        "o": 0.3259315442583083,
+        "pool_router": 0.47522135082994243,
+        "unpooler": 0.052029752607454446,
+        "attention": 1.2882415108748986,
+        "moe": 1.6201229796570211,
+        "boundaries": 0.6423686184510651,
+        "route": 0.44324349226023674
       }
     },
     {
@@ -317,20 +332,20 @@
         "load": "decode 1",
         "page": 1,
         "repeats": 60,
-        "seed": 2515523995317497722,
+        "seed": 6011908966509300473,
         "weight": 16
       },
       "tokens": 1,
       "stages_us": {
-        "qkv_gate": 12.041379310344826,
-        "o": 6.9,
-        "pool_router": 24.082758620689653,
-        "unpooler": 2.675862068965517,
-        "attention": 18.9,
-        "moe": 29.7,
-        "boundaries": 6.8,
-        "route": 4.2,
-        "other": 4.6
+        "qkv_gate": 13.7,
+        "o": 6.800000000000001,
+        "pool_router": 24.029999999999998,
+        "unpooler": 2.67,
+        "attention": 19.3,
+        "moe": 37.2,
+        "boundaries": 4.9,
+        "route": 3.8,
+        "other": 0.0
       },
       "floors_us": {
         "qkv_gate": 7.86432,
@@ -358,35 +373,33 @@
       },
       "role_bounds_us": {
         "qkv_gate": [
-          0.0,
-          38.8
+          13.7,
+          13.7
         ],
         "o": [
-          6.9,
-          6.9
+          6.8,
+          6.8
         ],
         "pool_router": [
           0.0,
-          38.8
+          26.7
         ],
         "unpooler": [
           0.0,
-          38.8
+          26.7
         ]
       },
       "estimated_roles": [
-        "qkv_gate",
         "pool_router",
         "unpooler"
       ],
       "projection_groups": [
         {
           "roles": [
-            "qkv_gate",
             "pool_router",
             "unpooler"
           ],
-          "us": 38.8,
+          "us": 26.7,
           "names": [
             "_gemv_kernel"
           ],
@@ -394,9 +407,20 @@
         },
         {
           "roles": [
+            "qkv_gate"
+          ],
+          "us": 13.7,
+          "names": [
+            "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
             "o"
           ],
-          "us": 6.9,
+          "us": 6.8,
           "names": [
             "void gf::direct<16, 8, 4, 8, false>(__nv_bfloat16 const*,..."
           ],
@@ -405,53 +429,53 @@
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 109.9,
-      "reset_profile_total_after_deltas_us": 109.9,
-      "base_adjusted_us": 113.41182573957535,
-      "modeled_adjusted_us": 113.41182573957535,
+      "profile_total_us": 112.4,
+      "reset_profile_total_after_deltas_us": 112.4,
+      "base_adjusted_us": 107.65793990657204,
+      "modeled_adjusted_us": 107.65793990657204,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 29.7,
-      "benchmark_baseline_us": 183.0399939790368,
+      "base_moe_us": 37.2,
+      "benchmark_baseline_us": 181.103999260813,
       "kernels": [
         {
-          "name": "_gemv_kernel",
-          "us": 38.8,
-          "calls": 3
-        },
-        {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 29.7,
+          "us": 37.2,
           "calls": 1
         },
         {
+          "name": "_gemv_kernel",
+          "us": 26.7,
+          "calls": 2
+        },
+        {
           "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
-          "us": 18.9,
+          "us": 19.3,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_128x8_64x12_4x1_v_bz_splitK_TNT",
+          "us": 12.0,
           "calls": 1
         },
         {
           "name": "void gf::direct<16, 8, 4, 8, false>(__nv_bfloat16 const*,...",
-          "us": 6.9,
+          "us": 6.8,
           "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 6.8,
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 4.9,
           "calls": 2
         },
         {
-          "name": "_route_fast",
-          "us": 4.2,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 3.8,
           "calls": 1
         },
         {
-          "name": "void at::native::reduce_kernel<128, 4, at::native::Reduce...",
-          "us": 3.6,
-          "calls": 1
-        },
-        {
-          "name": "void at::native::vectorized_elementwise_kernel<8, at::nat...",
-          "us": 1.0,
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 1.7,
           "calls": 1
         }
       ],
@@ -464,16 +488,22 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
-            16
-          ],
-          "route": [
+            "cl",
             8,
+            256,
             1
           ],
-          "b2": [
+          "route": [
+            "cl",
             8,
-            16
+            256,
+            0
+          ],
+          "b2": [
+            "cl",
+            8,
+            256,
+            1
           ]
         },
         "attention": [
@@ -482,7 +512,7 @@
         ],
         "moe": "nt1_lop3",
         "projection": {
-          "qkv_gate": "custom",
+          "qkv_gate": "cublas",
           "o": [
             "stream",
             6,
@@ -494,16 +524,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": 3.511825739575343,
+      "profile_vs_adjusted_residual_us": -4.742060093427966,
       "stage_gain_pct": {
-        "qkv_gate": 0.07298779657816294,
-        "o": 0.09467795205765996,
-        "pool_router": 0.14635013918615924,
-        "unpooler": 0.016187324015451775,
-        "attention": 0.5414434956332994,
-        "moe": 0.4280070875508069,
-        "boundaries": 0.27406224848561167,
-        "route": 0.16910710075807478
+        "qkv_gate": 0.14745487928183443,
+        "o": 0.095524715974796,
+        "pool_router": 0.1519913452372,
+        "unpooler": 0.016808335249324242,
+        "attention": 0.5886442782264949,
+        "moe": 0.7817183790836889,
+        "boundaries": 0.2073307699361633,
+        "route": 0.16115258150888778
       }
     },
     {
@@ -515,20 +545,20 @@
         "layer": "sliding",
         "load": "decode 16",
         "page": 1,
-        "seed": 2515800191397513865,
+        "seed": 6012166075349395172,
         "spread": "agentic",
         "weight": 46
       },
       "tokens": 16,
       "stages_us": {
-        "qkv_gate": 11.833333333333332,
-        "o": 5.12,
-        "pool_router": 23.666666666666664,
-        "unpooler": 20.48,
-        "attention": 15.4,
-        "moe": 99.4,
-        "boundaries": 8.3,
-        "route": 4.3,
+        "qkv_gate": 12.099999999999998,
+        "o": 5.74,
+        "pool_router": 24.199999999999996,
+        "unpooler": 22.96,
+        "attention": 16.2,
+        "moe": 83.7,
+        "boundaries": 5.6,
+        "route": 3.8,
         "other": 0.0
       },
       "floors_us": {
@@ -558,19 +588,19 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          35.5
+          36.3
         ],
         "o": [
           0.0,
-          25.6
+          28.7
         ],
         "pool_router": [
           0.0,
-          35.5
+          36.3
         ],
         "unpooler": [
           0.0,
-          25.6
+          28.7
         ]
       },
       "estimated_roles": [
@@ -585,7 +615,7 @@
             "qkv_gate",
             "pool_router"
           ],
-          "us": 35.5,
+          "us": 36.3,
           "names": [
             "_gemv_kernel"
           ],
@@ -596,57 +626,69 @@
             "o",
             "unpooler"
           ],
-          "us": 25.6,
+          "us": 28.7,
           "names": [
-            "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT"
+            "nvjet_sm90_tst_128x16_64x11_2x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
           ],
           "allocation": "modeled proportional resource floor"
         }
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 188.5,
-      "reset_profile_total_after_deltas_us": 188.5,
-      "base_adjusted_us": 166.65539547127207,
-      "modeled_adjusted_us": 166.65539547127207,
+      "profile_total_us": 174.3,
+      "reset_profile_total_after_deltas_us": 174.3,
+      "base_adjusted_us": 164.50608782925062,
+      "modeled_adjusted_us": 164.50608782925062,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 99.4,
-      "benchmark_baseline_us": 260.49600820988417,
+      "base_moe_us": 83.7,
+      "benchmark_baseline_us": 257.52000557258725,
       "kernels": [
         {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 99.4,
+          "us": 83.7,
           "calls": 1
         },
         {
           "name": "_gemv_kernel",
-          "us": 35.5,
+          "us": 36.3,
           "calls": 2
         },
         {
-          "name": "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
-          "us": 25.6,
-          "calls": 2
-        },
-        {
-          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
-          "us": 10.5,
+          "name": "nvjet_sm90_tst_128x16_64x11_2x1_v_bz_splitK_TNT",
+          "us": 19.7,
           "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 8.3,
+          "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
+          "us": 11.4,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+          "us": 7.0,
+          "calls": 1
+        },
+        {
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 5.6,
           "calls": 2
         },
         {
           "name": "void (anonymous namespace)::attn_combine<1>((anonymous na...",
-          "us": 4.9,
+          "us": 4.8,
           "calls": 1
         },
         {
-          "name": "_route_fast",
-          "us": 4.3,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 3.8,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 2.0,
           "calls": 1
         }
       ],
@@ -659,15 +701,21 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
+            "cl",
+            8,
+            256,
             1
           ],
           "route": [
+            "cl",
             8,
-            1
+            256,
+            0
           ],
           "b2": [
-            16,
+            "cl",
+            8,
+            256,
             1
           ]
         },
@@ -680,21 +728,24 @@
           "qkv_gate": "custom",
           "o": "cublas",
           "pool_router": "custom",
-          "unpooler": "custom"
+          "unpooler": [
+            "lt",
+            1
+          ]
         },
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -21.844604528727928,
+      "profile_vs_adjusted_residual_us": -9.793912170749394,
       "stage_gain_pct": {
-        "qkv_gate": 0.10424577575223413,
-        "o": 0.03722567513456737,
-        "pool_router": 0.20925704428390476,
-        "unpooler": 0.1494879127071285,
-        "attention": 0.8707251128591595,
-        "moe": 2.920234326606085,
-        "boundaries": 0.544345367998122,
-        "route": 0.2800190349289162
+        "qkv_gate": 0.12324110896278881,
+        "o": 0.07844175797033963,
+        "pool_router": 0.24755332827830495,
+        "unpooler": 0.3163814495213689,
+        "attention": 0.9386221210181737,
+        "moe": 1.7556052138668639,
+        "boundaries": 0.3695084193824584,
+        "route": 0.2505303462037852
       }
     },
     {
@@ -706,21 +757,21 @@
         "layer": "full",
         "load": "decode 16",
         "page": 1,
-        "seed": 2516076387477530009,
+        "seed": 6012423184189489872,
         "spread": "agentic",
         "weight": 16
       },
       "tokens": 16,
       "stages_us": {
-        "qkv_gate": 11.799999999999999,
-        "o": 5.239999999999999,
-        "pool_router": 23.599999999999998,
-        "unpooler": 20.959999999999997,
-        "attention": 106.3,
-        "moe": 99.2,
-        "boundaries": 8.3,
-        "route": 4.4,
-        "other": 5.5
+        "qkv_gate": 11.833333333333332,
+        "o": 5.72,
+        "pool_router": 23.666666666666664,
+        "unpooler": 22.88,
+        "attention": 106.4,
+        "moe": 77.4,
+        "boundaries": 5.6,
+        "route": 3.8,
+        "other": 5.7
       },
       "floors_us": {
         "qkv_gate": 7.86432,
@@ -749,19 +800,19 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          35.4
+          35.5
         ],
         "o": [
           0.0,
-          26.2
+          28.6
         ],
         "pool_router": [
           0.0,
-          35.4
+          35.5
         ],
         "unpooler": [
           0.0,
-          26.2
+          28.6
         ]
       },
       "estimated_roles": [
@@ -776,7 +827,7 @@
             "qkv_gate",
             "pool_router"
           ],
-          "us": 35.4,
+          "us": 35.5,
           "names": [
             "_gemv_kernel"
           ],
@@ -787,62 +838,74 @@
             "o",
             "unpooler"
           ],
-          "us": 26.2,
+          "us": 28.6,
           "names": [
-            "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT"
+            "nvjet_sm90_tst_128x16_64x11_2x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
           ],
           "allocation": "modeled proportional resource floor"
         }
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 285.4,
-      "reset_profile_total_after_deltas_us": 285.4,
-      "base_adjusted_us": 263.47576433567207,
-      "modeled_adjusted_us": 263.47576433567207,
+      "profile_total_us": 262.9,
+      "reset_profile_total_after_deltas_us": 262.9,
+      "base_adjusted_us": 259.741149356651,
+      "modeled_adjusted_us": 259.741149356651,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 99.2,
-      "benchmark_baseline_us": 440.12799859046936,
+      "base_moe_us": 77.4,
+      "benchmark_baseline_us": 435.53600553423166,
       "kernels": [
         {
           "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
-          "us": 106.3,
+          "us": 106.4,
           "calls": 1
         },
         {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 99.2,
+          "us": 77.4,
           "calls": 1
         },
         {
           "name": "_gemv_kernel",
-          "us": 35.4,
+          "us": 35.5,
           "calls": 2
+        },
+        {
+          "name": "nvjet_sm90_tst_128x16_64x11_2x1_v_bz_splitK_TNT",
+          "us": 19.5,
+          "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_64x16_64x16_2x1_v_bz_TNT",
-          "us": 26.2,
-          "calls": 2
+          "us": 7.0,
+          "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 8.3,
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 5.6,
           "calls": 2
         },
         {
           "name": "void at::native::reduce_kernel<128, 4, at::native::Reduce...",
-          "us": 4.4,
+          "us": 4.5,
           "calls": 1
         },
         {
-          "name": "_route_fast",
-          "us": 4.4,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 3.8,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 2.1,
           "calls": 1
         },
         {
           "name": "void at::native::vectorized_elementwise_kernel<8, at::nat...",
-          "us": 1.1,
+          "us": 1.2,
           "calls": 1
         }
       ],
@@ -855,15 +918,21 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
+            "cl",
+            8,
+            256,
             1
           ],
           "route": [
+            "cl",
             8,
-            1
+            256,
+            0
           ],
           "b2": [
-            16,
+            "cl",
+            8,
+            256,
             1
           ]
         },
@@ -876,21 +945,24 @@
           "qkv_gate": "custom",
           "o": "cublas",
           "pool_router": "custom",
-          "unpooler": "custom"
+          "unpooler": [
+            "lt",
+            1
+          ]
         },
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -21.92423566432791,
+      "profile_vs_adjusted_residual_us": -3.1588506433489556,
       "stage_gain_pct": {
-        "qkv_gate": 0.035423235674799596,
-        "o": 0.015632961310358635,
-        "pool_router": 0.0709344948557147,
-        "unpooler": 0.06263472476020704,
-        "attention": 0.367489456784752,
-        "moe": 0.9786532346849641,
-        "boundaries": 0.18699980741751998,
-        "route": 0.0990371682235385
+        "qkv_gate": 0.036663301117639734,
+        "o": 0.026779479984294623,
+        "pool_router": 0.0734209035462974,
+        "unpooler": 0.1074203070875867,
+        "attention": 0.3748619491544188,
+        "moe": 0.47055549486076165,
+        "boundaries": 0.12744528173812908,
+        "route": 0.08664411114270885
       }
     },
     {
@@ -902,20 +974,20 @@
         "layer": "sliding",
         "load": "decode 32",
         "page": 1,
-        "seed": 2516352583557546154,
+        "seed": 6012680293029584573,
         "spread": "agentic",
         "weight": 46
       },
       "tokens": 32,
       "stages_us": {
-        "qkv_gate": 12.693103448275862,
-        "o": 5.641379310344828,
-        "pool_router": 24.9,
-        "unpooler": 22.56551724137931,
-        "attention": 17.2,
-        "moe": 112.1,
-        "boundaries": 8.8,
-        "route": 6.0,
+        "qkv_gate": 13.065517241379311,
+        "o": 5.806896551724138,
+        "pool_router": 24.2,
+        "unpooler": 23.227586206896554,
+        "attention": 16.6,
+        "moe": 114.4,
+        "boundaries": 7.0,
+        "route": 6.7,
         "other": 0.0
       },
       "floors_us": {
@@ -945,19 +1017,19 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          40.9
+          42.1
         ],
         "o": [
           0.0,
-          40.9
+          42.1
         ],
         "pool_router": [
-          24.9,
-          24.9
+          24.2,
+          24.2
         ],
         "unpooler": [
           0.0,
-          40.9
+          42.1
         ]
       },
       "estimated_roles": [
@@ -972,7 +1044,7 @@
             "o",
             "unpooler"
           ],
-          "us": 40.9,
+          "us": 42.1,
           "names": [
             "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
             "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
@@ -984,7 +1056,7 @@
           "roles": [
             "pool_router"
           ],
-          "us": 24.9,
+          "us": 24.2,
           "names": [
             "_gemv_kernel"
           ],
@@ -993,53 +1065,48 @@
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 210.0,
-      "reset_profile_total_after_deltas_us": 210.0,
-      "base_adjusted_us": 211.14647931814434,
-      "modeled_adjusted_us": 211.14647931814434,
+      "profile_total_us": 210.9,
+      "reset_profile_total_after_deltas_us": 210.9,
+      "base_adjusted_us": 200.34275826696447,
+      "modeled_adjusted_us": 200.34275826696447,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 112.1,
-      "benchmark_baseline_us": 272.84800447523594,
+      "base_moe_us": 114.4,
+      "benchmark_baseline_us": 256.9439974613488,
       "kernels": [
         {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 112.1,
+          "us": 114.4,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
-          "us": 26.7,
+          "us": 27.4,
           "calls": 2
         },
         {
           "name": "_gemv_kernel",
-          "us": 24.9,
+          "us": 24.2,
           "calls": 1
         },
         {
           "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
-          "us": 13.6,
+          "us": 16.6,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
-          "us": 12.3,
+          "us": 12.8,
           "calls": 1
         },
         {
-          "name": "_best7_old_boundary_kernel",
-          "us": 8.8,
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 7.0,
           "calls": 2
         },
         {
-          "name": "_best7_old_route_norm_kernel",
-          "us": 6.0,
-          "calls": 1
-        },
-        {
-          "name": "void (anonymous namespace)::attn_combine<1>((anonymous na...",
-          "us": 3.6,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 6.7,
           "calls": 1
         },
         {
@@ -1054,10 +1121,29 @@
           1,
           2048
         ],
-        "glue": "best5",
-        "geometry": {},
+        "glue": "best6",
+        "geometry": {
+          "b1": [
+            "cl",
+            8,
+            256,
+            1
+          ],
+          "route": [
+            "cl",
+            8,
+            256,
+            0
+          ],
+          "b2": [
+            "cl",
+            8,
+            256,
+            1
+          ]
+        },
         "attention": [
-          "layer",
+          "attn_main",
           null
         ],
         "moe": "nt1_lop3",
@@ -1070,16 +1156,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": 1.146479318144344,
+      "profile_vs_adjusted_residual_us": -10.55724173303554,
       "stage_gain_pct": {
-        "qkv_gate": 0.12165910146329838,
-        "o": 0.05394291788900866,
-        "pool_router": 0.2201201544016262,
-        "unpooler": 0.21700355731571808,
-        "attention": 0.6310823426701978,
-        "moe": 2.3125039498814255,
-        "boundaries": 0.43721616108647227,
-        "route": 0.2972813164268684
+        "qkv_gate": 0.14375562003506806,
+        "o": 0.06371298494648159,
+        "pool_router": 0.1901386693529529,
+        "unpooler": 0.2565729611272159,
+        "attention": 0.6162996865490168,
+        "moe": 2.5149065715157093,
+        "boundaries": 0.3555824684719279,
+        "route": 0.3411266420846841
       }
     },
     {
@@ -1091,20 +1177,20 @@
         "layer": "full",
         "load": "decode 32",
         "page": 1,
-        "seed": 2516628779637562300,
+        "seed": 6012937401869679275,
         "spread": "agentic",
         "weight": 16
       },
       "tokens": 32,
       "stages_us": {
-        "qkv_gate": 12.972413793103447,
-        "o": 5.76551724137931,
-        "pool_router": 24.2,
-        "unpooler": 23.06206896551724,
-        "attention": 196.4,
-        "moe": 112.7,
-        "boundaries": 8.4,
-        "route": 7.4,
+        "qkv_gate": 12.817241379310344,
+        "o": 5.69655172413793,
+        "pool_router": 26.7,
+        "unpooler": 22.78620689655172,
+        "attention": 198.8,
+        "moe": 111.8,
+        "boundaries": 7.0,
+        "route": 6.1,
         "other": 0.0
       },
       "floors_us": {
@@ -1134,19 +1220,19 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          41.8
+          41.3
         ],
         "o": [
           0.0,
-          41.8
+          41.3
         ],
         "pool_router": [
-          24.2,
-          24.2
+          26.7,
+          26.7
         ],
         "unpooler": [
           0.0,
-          41.8
+          41.3
         ]
       },
       "estimated_roles": [
@@ -1157,73 +1243,73 @@
       "projection_groups": [
         {
           "roles": [
+            "pool_router"
+          ],
+          "us": 26.7,
+          "names": [
+            "_gemv_kernel"
+          ],
+          "allocation": "exact role"
+        },
+        {
+          "roles": [
             "qkv_gate",
             "o",
             "unpooler"
           ],
-          "us": 41.8,
+          "us": 41.3,
           "names": [
             "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
             "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
             "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
           ],
           "allocation": "modeled proportional resource floor"
-        },
-        {
-          "roles": [
-            "pool_router"
-          ],
-          "us": 24.2,
-          "names": [
-            "_gemv_kernel"
-          ],
-          "allocation": "exact role"
         }
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 390.9,
-      "reset_profile_total_after_deltas_us": 390.9,
-      "base_adjusted_us": 369.7321939756974,
-      "modeled_adjusted_us": 369.7321939756974,
+      "profile_total_us": 391.7,
+      "reset_profile_total_after_deltas_us": 391.7,
+      "base_adjusted_us": 376.0497603845863,
+      "modeled_adjusted_us": 376.0497603845863,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 112.7,
-      "benchmark_baseline_us": 640.255980193615,
+      "base_moe_us": 111.8,
+      "benchmark_baseline_us": 606.7039887420833,
       "kernels": [
         {
           "name": "void (anonymous namespace)::attn_main<1, 4>((anonymous na...",
-          "us": 196.4,
+          "us": 198.8,
           "calls": 1
         },
         {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 112.7,
+          "us": 111.8,
+          "calls": 1
+        },
+        {
+          "name": "_gemv_kernel",
+          "us": 26.7,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_64x32_64x16_2x1_v_bz_TNT",
-          "us": 26.9,
+          "us": 26.0,
           "calls": 2
-        },
-        {
-          "name": "_gemv_kernel",
-          "us": 24.2,
-          "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_64x32_64x16_4x1_v_bz_splitK_TNT",
-          "us": 13.0,
+          "us": 13.4,
           "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 8.4,
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 7.0,
           "calls": 2
         },
         {
-          "name": "_route_fast",
-          "us": 7.4,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 6.1,
           "calls": 1
         },
         {
@@ -1241,15 +1327,21 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
+            "cl",
+            8,
+            256,
             1
           ],
           "route": [
+            "cl",
             8,
-            1
+            256,
+            0
           ],
           "b2": [
-            16,
+            "cl",
+            8,
+            256,
             1
           ]
         },
@@ -1267,16 +1359,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -21.167806024302593,
+      "profile_vs_adjusted_residual_us": -15.650239615413682,
       "stage_gain_pct": {
-        "qkv_gate": 0.04697960137563402,
-        "o": 0.02086075591907757,
-        "pool_router": 0.0641769968036229,
-        "unpooler": 0.08362635663986563,
-        "attention": 0.2779259314738058,
-        "moe": 0.7572724647438472,
-        "boundaries": 0.14366942822373788,
-        "route": 0.12678353507976037
+        "qkv_gate": 0.04547722694174895,
+        "o": 0.02019423374293441,
+        "pool_router": 0.10988455686600687,
+        "unpooler": 0.08094872289326425,
+        "attention": 0.3281471526942088,
+        "moe": 0.7608723630315352,
+        "boundaries": 0.12268113666226128,
+        "route": 0.10714573582208321
       }
     },
     {
@@ -1289,19 +1381,19 @@
         "load": "verify 1",
         "page": 1,
         "q_len": 8,
-        "seed": 2516904975717578447,
+        "seed": 6013194510709773978,
         "weight": 46
       },
       "tokens": 8,
       "stages_us": {
-        "qkv_gate": 12.13448275862069,
-        "o": 7.2,
-        "pool_router": 24.26896551724138,
-        "unpooler": 2.6965517241379313,
-        "attention": 21.6,
-        "moe": 74.2,
-        "boundaries": 7.5,
-        "route": 4.3,
+        "qkv_gate": 14.746153846153847,
+        "o": 6.5538461538461545,
+        "pool_router": 24.39,
+        "unpooler": 2.71,
+        "attention": 20.0,
+        "moe": 59.7,
+        "boundaries": 5.5,
+        "route": 3.7,
         "other": 0.0
       },
       "floors_us": {
@@ -1331,34 +1423,34 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          39.1
+          21.3
         ],
         "o": [
-          7.2,
-          7.2
+          0.0,
+          21.3
         ],
         "pool_router": [
           0.0,
-          39.1
+          27.1
         ],
         "unpooler": [
           0.0,
-          39.1
+          27.1
         ]
       },
       "estimated_roles": [
-        "qkv_gate",
         "pool_router",
-        "unpooler"
+        "unpooler",
+        "qkv_gate",
+        "o"
       ],
       "projection_groups": [
         {
           "roles": [
-            "qkv_gate",
             "pool_router",
             "unpooler"
           ],
-          "us": 39.1,
+          "us": 27.1,
           "names": [
             "_gemv_kernel"
           ],
@@ -1366,45 +1458,48 @@
         },
         {
           "roles": [
+            "qkv_gate",
             "o"
           ],
-          "us": 7.2,
+          "us": 21.3,
           "names": [
-            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT"
+            "nvjet_sm90_tst_192x8_64x8_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
           ],
-          "allocation": "exact role"
+          "allocation": "modeled proportional resource floor"
         }
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 153.9,
-      "reset_profile_total_after_deltas_us": 153.9,
-      "base_adjusted_us": 140.5089352688638,
-      "modeled_adjusted_us": 140.5089352688638,
+      "profile_total_us": 137.3,
+      "reset_profile_total_after_deltas_us": 137.3,
+      "base_adjusted_us": 139.75058362924048,
+      "modeled_adjusted_us": 139.75058362924048,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 74.2,
-      "benchmark_baseline_us": 259.6000120975077,
+      "base_moe_us": 59.7,
+      "benchmark_baseline_us": 258.2239946350455,
       "kernels": [
         {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 74.2,
+          "us": 59.7,
           "calls": 1
         },
         {
           "name": "_gemv_kernel",
-          "us": 39.1,
-          "calls": 3
+          "us": 27.1,
+          "calls": 2
         },
         {
-          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
-          "us": 10.3,
+          "name": "nvjet_sm90_tst_192x8_64x8_4x1_v_bz_splitK_TNT",
+          "us": 12.1,
           "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 7.5,
-          "calls": 2
+          "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
+          "us": 10.0,
+          "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
@@ -1412,22 +1507,32 @@
           "calls": 1
         },
         {
-          "name": "_route_fast",
-          "us": 4.3,
-          "calls": 1
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 5.5,
+          "calls": 2
         },
         {
           "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
-          "us": 4.2,
+          "us": 4.1,
+          "calls": 1
+        },
+        {
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 3.7,
           "calls": 1
         },
         {
           "name": "_qk_prep_kernel",
-          "us": 4.0,
+          "us": 2.6,
           "calls": 1
         },
         {
           "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>(in...",
+          "us": 2.2,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
           "us": 2.0,
           "calls": 1
         },
@@ -1446,16 +1551,22 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
-            4
-          ],
-          "route": [
-            4,
+            "cl",
+            8,
+            256,
             1
           ],
-          "b2": [
+          "route": [
+            "cl",
             8,
-            16
+            256,
+            0
+          ],
+          "b2": [
+            "cl",
+            8,
+            256,
+            1
           ]
         },
         "attention": [
@@ -1464,7 +1575,10 @@
         ],
         "moe": "nt1_lop3",
         "projection": {
-          "qkv_gate": "custom",
+          "qkv_gate": [
+            "lt",
+            2
+          ],
           "o": "cublas",
           "pool_router": "custom",
           "unpooler_slice": "custom"
@@ -1472,16 +1586,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -13.391064731136197,
+      "profile_vs_adjusted_residual_us": 2.4505836292404695,
       "stage_gain_pct": {
-        "qkv_gate": 0.1637693679456291,
-        "o": 0.22815681466532783,
-        "pool_router": 0.32943480825640664,
-        "unpooler": 0.03623139802480048,
-        "attention": 1.9554666049505804,
-        "moe": 1.4977107489434585,
-        "boundaries": 0.6518393034110418,
-        "route": 0.3709820241973076
+        "qkv_gate": 0.39613960031147244,
+        "o": 0.17470988960667544,
+        "pool_router": 0.34473966840447456,
+        "unpooler": 0.03789666171985394,
+        "attention": 1.8266273187014928,
+        "moe": 0.1904520015882254,
+        "boundaries": 0.4812341000027906,
+        "route": 0.32305095081426205
       }
     },
     {
@@ -1494,19 +1608,19 @@
         "load": "verify 1",
         "page": 1,
         "q_len": 8,
-        "seed": 2517181171797594595,
+        "seed": 6013451619549868682,
         "weight": 16
       },
       "tokens": 8,
       "stages_us": {
-        "qkv_gate": 12.258620689655173,
-        "o": 7.1,
-        "pool_router": 24.517241379310345,
-        "unpooler": 2.724137931034483,
-        "attention": 33.3,
-        "moe": 67.1,
-        "boundaries": 7.5,
-        "route": 4.4,
+        "qkv_gate": 14.607692307692309,
+        "o": 6.492307692307693,
+        "pool_router": 24.57,
+        "unpooler": 2.73,
+        "attention": 31.299999999999997,
+        "moe": 91.6,
+        "boundaries": 5.4,
+        "route": 3.6,
         "other": 0.0
       },
       "floors_us": {
@@ -1536,34 +1650,34 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          39.5
+          21.1
         ],
         "o": [
-          7.1,
-          7.1
+          0.0,
+          21.1
         ],
         "pool_router": [
           0.0,
-          39.5
+          27.3
         ],
         "unpooler": [
           0.0,
-          39.5
+          27.3
         ]
       },
       "estimated_roles": [
-        "qkv_gate",
         "pool_router",
-        "unpooler"
+        "unpooler",
+        "qkv_gate",
+        "o"
       ],
       "projection_groups": [
         {
           "roles": [
-            "qkv_gate",
             "pool_router",
             "unpooler"
           ],
-          "us": 39.5,
+          "us": 27.3,
           "names": [
             "_gemv_kernel"
           ],
@@ -1571,45 +1685,48 @@
         },
         {
           "roles": [
+            "qkv_gate",
             "o"
           ],
-          "us": 7.1,
+          "us": 21.1,
           "names": [
-            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT"
+            "nvjet_sm90_tst_192x8_64x8_4x1_v_bz_splitK_TNT",
+            "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
+            "void cublasLt::splitKreduce_kernel<32, 16, int, float, __..."
           ],
-          "allocation": "exact role"
+          "allocation": "modeled proportional resource floor"
         }
       ],
       "unreported_us": 0.0,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 158.8,
-      "reset_profile_total_after_deltas_us": 158.8,
-      "base_adjusted_us": 158.339219777753,
-      "modeled_adjusted_us": 158.339219777753,
+      "profile_total_us": 180.6,
+      "reset_profile_total_after_deltas_us": 180.6,
+      "base_adjusted_us": 152.86858004183057,
+      "modeled_adjusted_us": 152.86858004183057,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 67.1,
-      "benchmark_baseline_us": 277.5359977968037,
+      "base_moe_us": 91.6,
+      "benchmark_baseline_us": 270.3199996612966,
       "kernels": [
         {
           "name": "void (anonymous namespace)::moe_fused<1>(__nv_bfloat16 co...",
-          "us": 67.1,
+          "us": 91.6,
           "calls": 1
         },
         {
           "name": "_gemv_kernel",
-          "us": 39.5,
-          "calls": 3
+          "us": 27.3,
+          "calls": 2
         },
         {
           "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
-          "us": 18.2,
+          "us": 18.7,
           "calls": 1
         },
         {
-          "name": "_boundary_fast",
-          "us": 7.5,
-          "calls": 2
+          "name": "nvjet_sm90_tst_192x8_64x8_4x1_v_bz_splitK_TNT",
+          "us": 12.2,
+          "calls": 1
         },
         {
           "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
@@ -1618,27 +1735,37 @@
         },
         {
           "name": "nvjet_sm90_tst_64x8_64x16_2x1_v_bz_TNT",
-          "us": 7.1,
+          "us": 6.9,
           "calls": 1
         },
         {
-          "name": "_route_fast",
-          "us": 4.4,
-          "calls": 1
+          "name": "void glue_cl::boundary_cl<8, 256, 1>(void const*, int, in...",
+          "us": 5.4,
+          "calls": 2
         },
         {
-          "name": "_qk_prep_kernel",
-          "us": 3.5,
+          "name": "void glue_cl::route_cl<8, 256>(void const*, int, int, lon...",
+          "us": 3.6,
           "calls": 1
         },
         {
           "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>(int...",
-          "us": 3.3,
+          "us": 2.9,
+          "calls": 1
+        },
+        {
+          "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __...",
+          "us": 2.0,
           "calls": 1
         },
         {
           "name": "_norm_gate_kernel",
-          "us": 1.1,
+          "us": 1.3,
+          "calls": 1
+        },
+        {
+          "name": "_qk_prep_kernel",
+          "us": 1.2,
           "calls": 1
         }
       ],
@@ -1651,16 +1778,22 @@
         "glue": "best6",
         "geometry": {
           "b1": [
-            16,
-            4
-          ],
-          "route": [
-            4,
+            "cl",
+            8,
+            256,
             1
           ],
-          "b2": [
+          "route": [
+            "cl",
             8,
-            16
+            256,
+            0
+          ],
+          "b2": [
+            "cl",
+            8,
+            256,
+            1
           ]
         },
         "attention": [
@@ -1669,7 +1802,10 @@
         ],
         "moe": "nt1_lop3",
         "projection": {
-          "qkv_gate": "custom",
+          "qkv_gate": [
+            "lt",
+            2
+          ],
           "o": "cublas",
           "pool_router": "custom",
           "unpooler_slice": "custom"
@@ -1677,16 +1813,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -0.4607802222470241,
+      "profile_vs_adjusted_residual_us": -27.731419958169425,
       "stage_gain_pct": {
-        "qkv_gate": 0.060445294564827445,
-        "o": 0.07596657812145911,
-        "pool_router": 0.1211472746453214,
-        "unpooler": 0.013410208202026236,
-        "attention": 0.8444301037081547,
-        "moe": 0.2871089331119477,
-        "boundaries": 0.22337877841677284,
-        "route": 0.1309401981242966
+        "qkv_gate": 0.13234756088868171,
+        "o": 0.0586699150613064,
+        "pool_router": 0.12442469551695926,
+        "unpooler": 0.01377159507309234,
+        "attention": 0.7927786445562577,
+        "moe": 1.0628048545173676,
+        "boundaries": 0.1625177945849593,
+        "route": 0.1085119612312063
       }
     },
     {
@@ -1699,21 +1835,21 @@
         "load": "verify 16",
         "page": 1,
         "q_len": 8,
-        "seed": 2517457367877610744,
+        "seed": 6013708728389963387,
         "spread": "agentic",
         "weight": 46
       },
       "tokens": 128,
       "stages_us": {
-        "qkv_gate": 13.423404255319149,
-        "o": 5.96595744680851,
-        "pool_router": 26.846808510638297,
-        "unpooler": 23.86382978723404,
-        "attention": 18.5,
-        "moe": 210.99999999999997,
-        "boundaries": 11.2,
+        "qkv_gate": 14.5,
+        "o": 5.757894736842106,
+        "pool_router": 25.910526315789475,
+        "unpooler": 23.031578947368423,
+        "attention": 22.2,
+        "moe": 231.39999999999998,
+        "boundaries": 11.3,
         "route": 0.0,
-        "other": 14.300000000000011
+        "other": 11.500000000000057
       },
       "floors_us": {
         "qkv_gate": 7.86432,
@@ -1741,24 +1877,23 @@
       },
       "role_bounds_us": {
         "qkv_gate": [
-          0.0,
-          70.1
+          14.5,
+          14.5
         ],
         "o": [
           0.0,
-          70.1
+          54.7
         ],
         "pool_router": [
           0.0,
-          70.1
+          54.7
         ],
         "unpooler": [
           0.0,
-          70.1
+          54.7
         ]
       },
       "estimated_roles": [
-        "qkv_gate",
         "o",
         "pool_router",
         "unpooler"
@@ -1766,79 +1901,87 @@
       "projection_groups": [
         {
           "roles": [
-            "qkv_gate",
             "o",
             "pool_router",
             "unpooler"
           ],
-          "us": 70.1,
+          "us": 54.7,
           "names": [
             "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
-            "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
-            "nvjet_sm90_tst_96x128_64x6_4x1_v_bz_splitK_NNN"
+            "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN"
           ],
           "allocation": "modeled proportional resource floor"
+        },
+        {
+          "roles": [
+            "qkv_gate"
+          ],
+          "us": 14.5,
+          "names": [
+            "_vdsk_gemm"
+          ],
+          "allocation": "exact role"
         }
       ],
-      "unreported_us": 14.300000000000011,
+      "unreported_us": 11.500000000000057,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 325.1,
-      "reset_profile_total_after_deltas_us": 325.1,
-      "base_adjusted_us": 341.5810588323212,
-      "modeled_adjusted_us": 341.5810588323212,
+      "profile_total_us": 345.6,
+      "reset_profile_total_after_deltas_us": 345.6,
+      "base_adjusted_us": 337.89226119075835,
+      "modeled_adjusted_us": 337.89226119075835,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 210.99999999999997,
-      "benchmark_baseline_us": 534.6559942699969,
+      "base_moe_us": 231.39999999999998,
+      "benchmark_baseline_us": 501.5839892439544,
       "kernels": [
         {
           "name": "void pmnt::phase<1, true, true>(__nv_bfloat16 const*, __n...",
-          "us": 69.8,
+          "us": 80.6,
           "calls": 1
         },
         {
           "name": "void idist::fused<32, 128, 4, 1, true, 1>(int const*, uns...",
-          "us": 52.7,
+          "us": 60.3,
           "calls": 1
         },
         {
           "name": "void pmnt::phase<1, false, true>(__nv_bfloat16 const*, __...",
-          "us": 40.7,
+          "us": 45.8,
           "calls": 1
         },
         {
           "name": "void idist::fused<32, 128, 4, 1, false, 1>(int const*, un...",
-          "us": 37.6,
+          "us": 38.1,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
-          "us": 29.1,
+          "us": 28.5,
           "calls": 2
         },
         {
           "name": "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
-          "us": 26.4,
+          "us": 26.2,
           "calls": 1
         },
         {
-          "name": "nvjet_sm90_tst_96x128_64x6_4x1_v_bz_splitK_NNN",
-          "us": 14.6,
+          "name": "_vdsk_gemm",
+          "us": 14.5,
           "calls": 1
         },
         {
           "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
-          "us": 14.6,
+          "us": 14.5,
           "calls": 1
         },
         {
           "name": "_boundary_fast",
-          "us": 11.2,
+          "us": 11.3,
           "calls": 2
         },
         {
           "name": "idist::finish(int const*, int const*, float const*, int c...",
-          "us": 7.0,
+          "us": 6.6,
           "calls": 1
         },
         {
@@ -1847,8 +1990,8 @@
           "calls": 1
         },
         {
-          "name": "idist::route_init(int const*, int*, int*, int*, int*, int...",
-          "us": 3.2,
+          "name": "_qk_prep_kernel",
+          "us": 3.8,
           "calls": 1
         }
       ],
@@ -1880,9 +2023,16 @@
         "moe": "hh_m128",
         "projection": {
           "qkv_gate": [
-            "short_lt",
-            1,
-            23
+            "vdsk",
+            [
+              128,
+              64,
+              64,
+              8,
+              4,
+              1
+            ],
+            3
           ],
           "o": "cublas",
           "pool_router": [
@@ -1895,15 +2045,15 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": 16.481058832321196,
+      "profile_vs_adjusted_residual_us": -7.707738809241675,
       "stage_gain_pct": {
-        "qkv_gate": 0.1026334111135966,
-        "o": 0.04552388742781833,
-        "pool_router": 0.20600874615948847,
-        "unpooler": 0.18297182241062646,
-        "attention": 0.526844942113731,
-        "moe": 2.433871471760565,
-        "boundaries": 0.3617818666747671,
+        "qkv_gate": 0.13886275824476996,
+        "o": 0.03928620237414922,
+        "pool_router": 0.17764438069296085,
+        "unpooler": 0.15779679871355135,
+        "attention": 0.6574352704482699,
+        "moe": 3.266532377639709,
+        "boundaries": 0.3691631836291789,
         "route": 0.0
       }
     },
@@ -1917,21 +2067,21 @@
         "load": "verify 16",
         "page": 1,
         "q_len": 8,
-        "seed": 2517733563957626894,
+        "seed": 6013965837230058093,
         "spread": "agentic",
         "weight": 16
       },
       "tokens": 128,
       "stages_us": {
-        "qkv_gate": 13.002127659574468,
-        "o": 5.778723404255318,
-        "pool_router": 26.004255319148935,
-        "unpooler": 23.114893617021274,
-        "attention": 201.6,
-        "moe": 226.10000000000002,
-        "boundaries": 11.2,
+        "qkv_gate": 14.3,
+        "o": 5.726315789473684,
+        "pool_router": 25.76842105263158,
+        "unpooler": 22.905263157894737,
+        "attention": 202.0,
+        "moe": 255.0,
+        "boundaries": 11.0,
         "route": 0.0,
-        "other": 14.300000000000011
+        "other": 11.900000000000091
       },
       "floors_us": {
         "qkv_gate": 7.86432,
@@ -1959,24 +2109,23 @@
       },
       "role_bounds_us": {
         "qkv_gate": [
-          0.0,
-          67.89999999999999
+          14.3,
+          14.3
         ],
         "o": [
           0.0,
-          67.89999999999999
+          54.4
         ],
         "pool_router": [
           0.0,
-          67.89999999999999
+          54.4
         ],
         "unpooler": [
           0.0,
-          67.89999999999999
+          54.4
         ]
       },
       "estimated_roles": [
-        "qkv_gate",
         "o",
         "pool_router",
         "unpooler"
@@ -1984,59 +2133,67 @@
       "projection_groups": [
         {
           "roles": [
-            "qkv_gate",
             "o",
             "pool_router",
             "unpooler"
           ],
-          "us": 67.89999999999999,
+          "us": 54.4,
           "names": [
             "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
-            "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
-            "nvjet_sm90_tst_96x128_64x6_4x1_v_bz_splitK_NNN"
+            "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN"
           ],
           "allocation": "modeled proportional resource floor"
+        },
+        {
+          "roles": [
+            "qkv_gate"
+          ],
+          "us": 14.3,
+          "names": [
+            "_vdsk_gemm"
+          ],
+          "allocation": "exact role"
         }
       ],
-      "unreported_us": 14.300000000000011,
+      "unreported_us": 11.900000000000091,
       "moe_branch_overlap_us": 0.0,
-      "profile_total_us": 521.1,
-      "reset_profile_total_after_deltas_us": 521.1,
-      "base_adjusted_us": 517.2169205651464,
-      "modeled_adjusted_us": 517.2169205651464,
+      "profile_total_us": 548.6,
+      "reset_profile_total_after_deltas_us": 548.6,
+      "base_adjusted_us": 511.3700008255052,
+      "modeled_adjusted_us": 511.3700008255052,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 226.10000000000002,
-      "benchmark_baseline_us": 708.7840070016682,
+      "base_moe_us": 255.0,
+      "benchmark_baseline_us": 685.872012283653,
       "kernels": [
         {
           "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
-          "us": 193.6,
+          "us": 194.5,
           "calls": 1
         },
         {
           "name": "void pmnt::phase<1, true, true>(__nv_bfloat16 const*, __n...",
-          "us": 81.9,
+          "us": 91.3,
           "calls": 1
         },
         {
           "name": "void idist::fused<32, 128, 4, 1, true, 1>(int const*, uns...",
-          "us": 52.3,
+          "us": 68.6,
           "calls": 1
         },
         {
           "name": "void pmnt::phase<1, false, true>(__nv_bfloat16 const*, __...",
-          "us": 47.3,
+          "us": 50.0,
           "calls": 1
         },
         {
           "name": "void idist::fused<32, 128, 4, 1, false, 1>(int const*, un...",
-          "us": 37.3,
+          "us": 38.3,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
-          "us": 27.9,
+          "us": 28.7,
           "calls": 2
         },
         {
@@ -2045,28 +2202,28 @@
           "calls": 1
         },
         {
-          "name": "nvjet_sm90_tst_96x128_64x6_4x1_v_bz_splitK_NNN",
+          "name": "_vdsk_gemm",
           "us": 14.3,
           "calls": 1
         },
         {
           "name": "_boundary_fast",
-          "us": 11.2,
+          "us": 11.0,
           "calls": 2
         },
         {
           "name": "idist::finish(int const*, int const*, float const*, int c...",
-          "us": 7.3,
+          "us": 6.8,
           "calls": 1
         },
         {
           "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
-          "us": 4.7,
+          "us": 4.4,
           "calls": 1
         },
         {
           "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>(int...",
-          "us": 3.3,
+          "us": 3.1,
           "calls": 1
         }
       ],
@@ -2098,9 +2255,16 @@
         "moe": "hh_m128",
         "projection": {
           "qkv_gate": [
-            "short_lt",
-            1,
-            23
+            "vdsk",
+            [
+              128,
+              64,
+              64,
+              8,
+              4,
+              1
+            ],
+            3
           ],
           "o": "cublas",
           "pool_router": [
@@ -2113,15 +2277,15 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -3.8830794348535846,
+      "profile_vs_adjusted_residual_us": -37.22999917449482,
       "stage_gain_pct": {
-        "qkv_gate": 0.030920975033793985,
-        "o": 0.013734394813414881,
-        "pool_router": 0.06190900195102013,
-        "unpooler": 0.05501696531038749,
-        "attention": 1.295824947786673,
-        "moe": 0.9685179428566315,
-        "boundaries": 0.12480236069055567,
+        "qkv_gate": 0.04589184676244828,
+        "o": 0.013297238007562584,
+        "pool_router": 0.05993525986181952,
+        "unpooler": 0.05326336011879524,
+        "attention": 1.3158026190331737,
+        "moe": 1.3316685739811782,
+        "boundaries": 0.12392547120876472,
         "route": 0.0
       }
     },
@@ -2135,21 +2299,21 @@
         "load": "verify 32",
         "page": 1,
         "q_len": 8,
-        "seed": 2518009760037643045,
+        "seed": 6014222946070152800,
         "spread": "agentic",
         "weight": 46
       },
       "tokens": 256,
       "stages_us": {
-        "qkv_gate": 17.348936170212763,
-        "o": 7.71063829787234,
-        "pool_router": 34.697872340425526,
-        "unpooler": 30.84255319148936,
-        "attention": 24.5,
-        "moe": 295.59999999999997,
-        "boundaries": 19.0,
-        "route": 4.0,
-        "other": 9.199999999999932
+        "qkv_gate": 17.540425531914895,
+        "o": 7.795744680851064,
+        "pool_router": 35.08085106382979,
+        "unpooler": 31.182978723404258,
+        "attention": 24.2,
+        "moe": 314.50000000000006,
+        "boundaries": 19.2,
+        "route": 3.9,
+        "other": 8.899999999999977
       },
       "floors_us": {
         "qkv_gate": 9.771159166835186,
@@ -2178,19 +2342,19 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          90.6
+          91.60000000000001
         ],
         "o": [
           0.0,
-          90.6
+          91.60000000000001
         ],
         "pool_router": [
           0.0,
-          90.6
+          91.60000000000001
         ],
         "unpooler": [
           0.0,
-          90.6
+          91.60000000000001
         ]
       },
       "estimated_roles": [
@@ -2207,7 +2371,7 @@
             "pool_router",
             "unpooler"
           ],
-          "us": 90.6,
+          "us": 91.60000000000001,
           "names": [
             "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
             "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
@@ -2216,35 +2380,35 @@
           "allocation": "modeled proportional resource floor"
         }
       ],
-      "unreported_us": 9.199999999999932,
-      "moe_branch_overlap_us": 92.89999999999998,
-      "profile_total_us": 442.9,
-      "reset_profile_total_after_deltas_us": 442.9,
-      "base_adjusted_us": 449.20843942196944,
-      "modeled_adjusted_us": 449.20843942196944,
+      "unreported_us": 8.899999999999977,
+      "moe_branch_overlap_us": 101.09999999999997,
+      "profile_total_us": 462.3,
+      "reset_profile_total_after_deltas_us": 462.3,
+      "base_adjusted_us": 437.8513645161943,
+      "modeled_adjusted_us": 437.8513645161943,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 295.59999999999997,
-      "benchmark_baseline_us": 693.6320173554122,
+      "base_moe_us": 314.50000000000006,
+      "benchmark_baseline_us": 705.8559814468026,
       "kernels": [
         {
           "name": "void mwbr::gemm<16, true, true, 2, 0, 16>(int const*, uns...",
-          "us": 123.6,
+          "us": 131.4,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<32, true, true, 2, 16, 32>(int const*, un...",
-          "us": 113.8,
+          "us": 126.3,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<16, false, false, 2, 0, 16>(int const*, u...",
-          "us": 74.0,
+          "us": 78.9,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<32, false, false, 2, 16, 32>(int const*, ...",
-          "us": 68.9,
+          "us": 71.1,
           "calls": 1
         },
         {
@@ -2254,37 +2418,37 @@
         },
         {
           "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
-          "us": 32.7,
+          "us": 33.5,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN",
-          "us": 23.0,
+          "us": 23.2,
           "calls": 1
         },
         {
           "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
-          "us": 20.1,
+          "us": 19.9,
           "calls": 1
         },
         {
           "name": "_boundary_fast",
-          "us": 19.0,
+          "us": 19.2,
           "calls": 2
         },
         {
           "name": "mwbr::finish(int const*, int const*, float const*, int co...",
-          "us": 8.2,
+          "us": 7.9,
           "calls": 1
         },
         {
           "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cu...",
-          "us": 4.4,
+          "us": 4.3,
           "calls": 1
         },
         {
           "name": "_route_fast",
-          "us": 4.0,
+          "us": 3.9,
           "calls": 1
         }
       ],
@@ -2315,8 +2479,8 @@
         ],
         "moe": "mixed_parallel_m256",
         "projection": {
-          "qkv_gate": "cublas",
-          "o": "custom",
+          "qkv_gate": "custom",
+          "o": "cublas",
           "pool_router": [
             "short_lt",
             0,
@@ -2327,16 +2491,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": 6.308439421969467,
+      "profile_vs_adjusted_residual_us": -24.44863548380573,
       "stage_gain_pct": {
-        "qkv_gate": 0.10689171725870614,
-        "o": 0.047408766368594,
-        "pool_router": 0.21458840827857406,
-        "unpooler": 0.19058566797488985,
-        "attention": 0.46279690793065204,
-        "moe": 3.4005661722231135,
-        "boundaries": 0.44170742604803154,
-        "route": 0.09191500093470609
+        "qkv_gate": 0.11330135493327041,
+        "o": 0.05024531225896882,
+        "pool_router": 0.22750746719599318,
+        "unpooler": 0.2020494549439833,
+        "attention": 0.4639326092366495,
+        "moe": 4.0394000319470695,
+        "boundaries": 0.4545012546201497,
+        "route": 0.09120694344601357
       }
     },
     {
@@ -2349,21 +2513,21 @@
         "load": "verify 32",
         "page": 1,
         "q_len": 8,
-        "seed": 2518285956117659197,
+        "seed": 6014480054910247508,
         "spread": "agentic",
         "weight": 16
       },
       "tokens": 256,
       "stages_us": {
-        "qkv_gate": 17.17659574468085,
-        "o": 7.63404255319149,
-        "pool_router": 34.3531914893617,
-        "unpooler": 30.53617021276596,
-        "attention": 380.8,
-        "moe": 327.59999999999997,
-        "boundaries": 19.7,
-        "route": 3.9,
-        "other": 9.399999999999977
+        "qkv_gate": 17.425531914893615,
+        "o": 7.744680851063829,
+        "pool_router": 34.85106382978723,
+        "unpooler": 30.978723404255316,
+        "attention": 386.59999999999997,
+        "moe": 306.6,
+        "boundaries": 18.8,
+        "route": 0.0,
+        "other": 9.600000000000023
       },
       "floors_us": {
         "qkv_gate": 9.771159166835186,
@@ -2392,19 +2556,19 @@
       "role_bounds_us": {
         "qkv_gate": [
           0.0,
-          89.7
+          91.0
         ],
         "o": [
           0.0,
-          89.7
+          91.0
         ],
         "pool_router": [
           0.0,
-          89.7
+          91.0
         ],
         "unpooler": [
           0.0,
-          89.7
+          91.0
         ]
       },
       "estimated_roles": [
@@ -2421,74 +2585,74 @@
             "pool_router",
             "unpooler"
           ],
-          "us": 89.7,
+          "us": 91.0,
           "names": [
-            "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
             "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+            "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
             "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN"
           ],
           "allocation": "modeled proportional resource floor"
         }
       ],
-      "unreported_us": 9.399999999999977,
-      "moe_branch_overlap_us": 111.10000000000002,
-      "profile_total_us": 831.1,
-      "reset_profile_total_after_deltas_us": 831.1,
-      "base_adjusted_us": 799.1937255252998,
-      "modeled_adjusted_us": 799.1937255252998,
+      "unreported_us": 9.600000000000023,
+      "moe_branch_overlap_us": 106.89999999999998,
+      "profile_total_us": 812.6,
+      "reset_profile_total_after_deltas_us": 812.6,
+      "base_adjusted_us": 795.3194181716439,
+      "modeled_adjusted_us": 795.3194181716439,
       "delta_scale_us": 0.0,
       "delta_m256_us": 0.0,
-      "base_moe_us": 327.59999999999997,
-      "benchmark_baseline_us": 1046.8319738283753,
+      "base_moe_us": 306.6,
+      "benchmark_baseline_us": 1060.080028604716,
       "kernels": [
         {
           "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<f...",
-          "us": 376.8,
+          "us": 378.7,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<32, true, true, 2, 16, 32>(int const*, un...",
-          "us": 157.5,
+          "us": 141.5,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<16, true, true, 2, 0, 16>(int const*, uns...",
-          "us": 118.9,
+          "us": 117.2,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<32, false, false, 2, 16, 32>(int const*, ...",
-          "us": 83.0,
+          "us": 75.2,
           "calls": 1
         },
         {
           "name": "void mwbr::gemm<16, false, false, 2, 0, 16>(int const*, u...",
-          "us": 71.3,
+          "us": 72.0,
+          "calls": 1
+        },
+        {
+          "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+          "us": 33.9,
           "calls": 1
         },
         {
           "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
-          "us": 33.8,
+          "us": 33.9,
           "calls": 2
         },
         {
-          "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
-          "us": 33.1,
-          "calls": 1
-        },
-        {
           "name": "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN",
-          "us": 22.8,
+          "us": 23.2,
           "calls": 1
         },
         {
           "name": "_boundary_fast",
-          "us": 19.7,
+          "us": 18.8,
           "calls": 2
         },
         {
           "name": "mwbr::finish(int const*, int const*, float const*, int co...",
-          "us": 8.0,
+          "us": 7.6,
           "calls": 1
         },
         {
@@ -2497,7 +2661,7 @@
           "calls": 1
         },
         {
-          "name": "_route_fast",
+          "name": "void flash::prepare_varlen_num_blocks_kernel<2, true>(int...",
           "us": 3.9,
           "calls": 1
         }
@@ -2529,8 +2693,8 @@
         ],
         "moe": "mixed_parallel_m256",
         "projection": {
-          "qkv_gate": "cublas",
-          "o": "custom",
+          "qkv_gate": "custom",
+          "o": "cublas",
           "pool_router": [
             "short_lt",
             0,
@@ -2541,16 +2705,16 @@
         "l2_prefetch": 0,
         "dense_chain": false
       },
-      "profile_vs_adjusted_residual_us": -31.90627447470024,
+      "profile_vs_adjusted_residual_us": -17.280581828356162,
       "stage_gain_pct": {
-        "qkv_gate": 0.03571173365793623,
-        "o": 0.01586086319025702,
-        "pool_router": 0.07151293199524561,
-        "unpooler": 0.06354935730947442,
-        "attention": 1.694632009366733,
-        "moe": 1.3678735549713372,
-        "boundaries": 0.15773741203642044,
-        "route": 0.031104477646523798
+        "qkv_gate": 0.03837263147296856,
+        "o": 0.0170417815427325,
+        "pool_router": 0.07684857295991021,
+        "unpooler": 0.06828940925954084,
+        "attention": 1.7797865948044782,
+        "moe": 1.2068992135375727,
+        "boundaries": 0.15317515541196033,
+        "route": 0.0
       }
     }
   ],
