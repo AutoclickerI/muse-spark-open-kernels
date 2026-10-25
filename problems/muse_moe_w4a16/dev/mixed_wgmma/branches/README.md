@@ -8,9 +8,10 @@ flight, no fills; META adds the heavy-only T32 and 8<count<=16 T8 lists) and the
 
 ## Handoff (current)
 
-**PERMW for S12:** `patch_s12_permw.py` applies only to S12's F4+wide nf cell; accepts the same cell inside
-S12 final. Local build used current `cand_r3_best7_s12.py` **a92b6619** (final filename not yet present), producing
-**4a4ed79f**. `check_permw.py` / `permw_equiv.json`: **18/18 bit-equal to S12 and 18/18 to the b88d04fe PERMW arm**,
+**PERMW for S12 final:** `patch_s12_permw.py` **a42a5832** applies onto exact **240248b2**,
+`cand_r3_best7_s12_final.py`, producing **4a4ed79f**. Final dropped wide after whole-layer job 937801fe; this
+patch restores wide as part of PERMW, using the pinned sibling `patch_s11_wide.py` **b2748e23**. It also accepts
+the older a92b6619 wide cell. `check_permw.py` / `permw_equiv.json`: **18/18 bit-equal to final and 18/18 to the b88d04fe PERMW arm**,
 3 seeds x3 fixtures x2 M; all TASK gates pass, maximum absolute difference zero.
 
 Landed **b88d04fe86aa45a7** (36 fixtures/M): PERMW **0.9862 / 0.9787** vs LI4; LIW controls **0.9940 / 0.9894**.

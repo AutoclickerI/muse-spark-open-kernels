@@ -5,6 +5,7 @@ S12 final or its a92b6619 precursor; all matching is scoped to the nf cell.
 """
 import ast
 import hashlib
+import runpy
 import sys
 from pathlib import Path
 
@@ -47,6 +48,13 @@ def cuda_patch(c):
 
 def patch(text):
     n=next(n for n in ast.parse(text).body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='NF_CUDA')
+    if 'F(26,32,true,3,0,0,0)' in ast.literal_eval(n.value):
+        # Final S12 dropped wide after its second whole-layer test. PERMW needs
+        # that packed layout; restore it as part of this concrete proposal.
+        dependency=Path(__file__).with_name('patch_s11_wide.py')
+        assert hashlib.sha256(dependency.read_bytes()).hexdigest()=='b2748e2359f892b679be32eaf6e8fff4d8bba5f6df225c1e5db35b66b4dded18'
+        text=runpy.run_path(str(dependency))['patch'](text)
+        n=next(n for n in ast.parse(text).body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='NF_CUDA')
     cu=cuda_patch(ast.literal_eval(n.value))
     lines=text.splitlines(keepends=True);lines[n.lineno-1:n.end_lineno]=['NF_CUDA='+repr(cu)+'\n'];text=''.join(lines)
     anchor="state['s5_hh_base']=nf_wide(issue_prepare(nf_ilv(dict(weights,post_norm_w=weights['post_expert_norm']))))"

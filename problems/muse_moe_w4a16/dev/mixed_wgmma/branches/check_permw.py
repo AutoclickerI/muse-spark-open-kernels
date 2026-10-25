@@ -15,15 +15,15 @@ def load(name,path):
 
 
 def main():
-    a=load('s12',R/'problems/muse_decode_layer/cand_r3_best7_s12.py')
+    a=load('s12',R/'problems/muse_decode_layer/cand_r3_best7_s12_final.py')
     b=load('s12perm',H/'s12_permw.py')
     lab=runpy.run_path(str(R/'prof/lab/moe_p3b_adapt_m128.py'))
     rows=[]
     for seed in range(3):
         w=lab['dc_weights'](5353+7919*seed,'cuda');wp=dict(w,post_norm_w=w['post_expert_norm'])
         bank=lab['br_prepare'](w)
-        base=a.nf_wide(a.issue_prepare(a.nf_ilv(wp)))
-        perm=b.nf_perm(dict(base))
+        base=a.issue_prepare(a.nf_ilv(wp))
+        perm=b.nf_perm(b.nf_wide(dict(base)))
         for M in (128,256):
             ds=lab['dc_fixtures'](w,M);wants=lab['dc_oracles'](ds,w)
             for data,want in zip(ds,wants):
