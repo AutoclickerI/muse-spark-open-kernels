@@ -297,6 +297,12 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   0.930 / 0.913 / 0.828; weight loads alone on S11's depth-2 TMA pipeline 0.745 / 0.723 / 0.668; a pure stream of the
   same bytes with 4-16 loads in flight 49.4 / 50.8 / 53.2 us (~4.0-4.1 TB/s, 0.77 / 0.68 / 0.53). All three layers
   cost: dequant 7-17%, MMA + syncs + expert-ready waits 10-16%, the depth-2 pipeline 9-16 us short of streaming.
+- Small-M reuse rebuilds vs S13 (paired, 16 seeds, M=8 / 16 / 32): queue Q4 1.567 / 1.559 / 1.260 (`a2e4cf10`);
+  BUNDLE 1.118 / 1.162 / 1.241, COMPACT 1.127 / 1.130 / 1.250, activation prefetch 1.130 / 1.207 / 1.383
+  (`b5659458`); ACT 1.163 / 1.319 / 1.782, DECODED 1.206 / 1.357 / 1.785 (`2fad2371`). BUNDLE recovers 10.6 us at M=32
+  vs its own BASE (16/16 seeds) but not S13. Phase clocks at M=32: 58.7 us in math / activation and 28.5 in epilogues
+  vs 3.6 in exposed weight waits; extra-block gathers replace B0's register reuse, so amortized dequant doesn't give
+  back the 19.5 us. `problems/muse_decode_layer/dev/nt1_timeline/README.md`.
   At stream speed: -15 / -25 / -51 us per layer (~14% of verify-1, 17% of decode-16, 24% of decode-32 wall).
   Register-A WGMMA (64 x 8/16/32) decoding each expert once with no K-split loses 1.52-2.29x (`00f4adc3`, 16
   seeds; 1.0-1.9 TB/s): at small M the K-split is what fills the GPU with bytes in flight (closed recipe).
