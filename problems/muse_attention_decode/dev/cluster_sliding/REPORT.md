@@ -2,7 +2,7 @@
 
 Status: two new paired original-S11 wins; structural latency targets remain missed. All fiveH200 quotas
 are exhausted until2026-10-26 09:01KST. Native DSM sweep`f1c270e6` and safe two-win whole-layer host
-`0ccc2548` are queued, with no accepted job IDs yet. Their detached senders collect receipts automatically.
+`0ccc2548` are queued, with no accepted job IDs yet. Their live detached senders (nativePID3038721,layerPID2411468) collect receipts automatically; do not duplicate the sends.
 The DSM layer packet`5e0013af` is screened normally/forced but waits for the native sweep before sending.
 
 | H200 job | Result (whole-layer ratios unless marked native) |
@@ -34,4 +34,4 @@ Built experiments: last-CTA CUDA`3815beab`; full N128 CUDA`9a23ca9a`; single-hea
 single-head decode`607dc8a1` (closed losses); all-sliding padded-mask/fast-RoPE CUDA`1b0ce13e` (verify loss);
 DSM sweep reuses native-gated CUDA`e43cb513`. Exact receipts/source snapshots are committed inruns/.
 Next: land queued native DSM sweep, then measure selected cluster settings in `lab_p5_verify_dsm.py`
-using original whole-S11 CUPTI increments and16 identical-input seeds. Do not integrate from board score.
+using original whole-S11 CUPTI increments and16 identical-input seeds. `build_dsm_lab.py --clusters` accepts the selected public batch/cluster map; `{}` disables experimental host dispatch while retaining its paired lab. Re-screen after changing the selected map. Do not integrate from board score.

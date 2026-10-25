@@ -27,5 +27,19 @@
     "static": 25
   },
   "native_board_status": "queued until2026-10-26 09:01KST, no accepted job id; every host quota is0",
-  "whole_layer_status": "screened and ready; not queued until native parameter sweep selects launch sizes"
+  "whole_layer_status": "screened and ready; not queued until native parameter sweep selects launch sizes",
+  "live_reset_waiters": {
+    "native_dsm": {
+      "pid": 3038721,
+      "sha256_8": "f1c270e6",
+      "priority": 2,
+      "accepted_job": null
+    },
+    "qualified_layer_host": {
+      "pid": 2411468,
+      "sha256_8": "0ccc2548",
+      "priority": 0,
+      "accepted_job": null
+    }
+  }
 }
