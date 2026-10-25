@@ -238,6 +238,39 @@ worst L2 0.0024594, maximum relative INC0.0009174. High stages exceed local shar
 their host ABI was forced through lower-stage stand-ins. Native high-stage correctness is an H200 gate.
 The full producer+consumer local16-seed lab passes all four arms (`run_coarse_local.py`), without timing claims.
 
-Coarse payload `prof/lab/moe_nt1_wg_coarse.py` **27ce07ef**, H200 MoE **b3f1c4fbc7164374**, pending:
+Coarse payload `prof/lab/moe_nt1_wg_coarse.py` **27ce07ef**, H200 MoE **b3f1c4fbc7164374**, landed:
 K128S4/K128S8/K256S2/K256S4 vs S11 consumer69, paired router+MoE graphs,16 seeds, read flush,
 separate CUPTI node samples and A:A. No integration promotion; S11's flag map stays unchanged.
+
+
+Coarse H200 results: all four native gates pass (L2~0.00238/row~0.00246),16seeds, A:A absolute drift
+0.381/0.307/0.203us. Wider/vector copies improve the first RS rebuild but still lose; no win to hand off.
+
+| M | S11 event/node us | K128S4 r | K128S8 r | K256S2 r | K256S4 r | Best new node us/TB/s |
+|---|---:|---:|---:|---:|---:|---:|
+| 8 | 71.109/66.056 | 1.39575 | 1.49292 | 1.37177 | 1.47871 | 93.168/2.168 |
+| 16 | 81.636/76.872 | 1.37395 | 1.34335 | 1.34650 | 1.32194 | 103.638/1.953 |
+| 32 | 110.879/105.898 | 1.11186 | 1.12973 | 1.11834 | 1.11690 | 117.440/1.840 |
+
+The next independent-queue design (`build_wg_queue.py`) isolates packed-weight buffering from activation
+stages: one contiguous4608B bulk TMA perN64/K128,4/8/12 raw stages plus3 activation stages.
+This increases packed bytes in flight without duplicating each8KiB BF16 activation buffer per raw stage.
+Prepare only permutes the raw codes and u8 scale bytes into contiguous K128 units; timed dequant is unchanged.
+Both raw-bank halves are verified by exact inverse permutation.
+
+Independent-queue cell `wgq_cell.py` **224cbbb1**, payload `prof/lab/moe_nt1_wg_queue.py` **f9c21230**.
+Native Hopper compile151-153regs/no stack/spills or WGMMA serialization warnings. Dynamic shared45,992/64,456/
+82,920B, nominal native residency3/3/2CTAs perSM. `check_wgq.py`:900 checks,9 forced ABI launches,
+worst L2 0.0024594, relative INC0.0009174. All three depths execute natively onsm120 (TMA plus portable MMA),
+without high-stage stand-ins. `check_wgq_mem.py`:36 changed-input graph replays under compute-sanitizer,
+zero errors. Initial distributed mbarrier initialization failed locally; single issuing-thread initialization
+plus its release fence and a CTA barrier corrected it before sending. `run_queue_local.py` completes16seeds
+with every router+MoE output gate passing. The local profiler explicitly selects CUDA12.4 record9, while the
+remote payload retains its already H200-verified record10 ABI. These local timings are not H200 evidence.
+`queue_model.md` separates the experimental contrasts from unmeasured HBM transactions and documents lifetimes.
+The MoE host had exhausted its daily quota; its local waiter was canceled before judge acceptance and the same payload was rerouted to the prefill host. Prefill also hit the cap before acceptance. Its local waiter is `runs/detached/398287e8deefb63f.log`,
+queued for2026-10-26 09:01KST; wrapper source **398287e8**, payload **f9c21230**, no H200 job ID yet.
+No duplicate MoE waiter remains. Both allowed lab hosts are quota-blocked. No correct candidate has
+reached4TB/s; no integration patch. Next: collect this result after acceptance, then either whole-layer
+pair the winning map ontoS11 `acda6c62`, or test producer/consumer overlap with an on-chip expanded queue.
+The incumbent map remains `{1:95,8:69,16:69,32:69}`.
