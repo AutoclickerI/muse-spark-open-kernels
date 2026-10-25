@@ -1,0 +1,39 @@
+{
+  "candidate": "cand_r3_best7_s11_final.py",
+  "candidate_sha256": "acda6c621b1f3b885f2111ea1b4482ae1d733e2f2493db2b7f0b852ccf66dfb7",
+  "payload_sha256": "3862a1aa10cb33f3697e9657df2912cd22c01ceb80d0987c9d814358ae607e96",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell sm_120; CUDA_VISIBLE_DEVICES=0",
+  "archive": "Final XZ/base85 packing round-tripped both complete local traces; empty-graph calibration separately exercised on sm_120.",
+  "normal": {
+    "official_tests_passed": 13,
+    "static_checks_passed": 23,
+    "timeline_shapes": 12,
+    "kernel_nodes": 160,
+    "capture_query_ratio_range": [
+      0.99423635112103,
+      1.0066518708213257
+    ],
+    "profile_on_off_ratio_range": [
+      0.9954128091297381,
+      1.0068062575502272
+    ],
+    "maximum_cross_capture_relative_L2": 2.8898512027808465e-05,
+    "unresolved_node_reads": 0
+  },
+  "forced": {
+    "official_tests_passed": 13,
+    "static_checks_passed": 23,
+    "timeline_shapes": 12,
+    "kernel_nodes": 180,
+    "capture_query_ratio_range": [
+      0.9907407376217603,
+      1.0017094148060197
+    ],
+    "profile_on_off_ratio_range": [
+      0.9932431920883207,
+      1.008771932623868
+    ],
+    "maximum_cross_capture_relative_L2": 2.4933166059781797e-05,
+    "unresolved_node_reads": 16
+  }
+}
