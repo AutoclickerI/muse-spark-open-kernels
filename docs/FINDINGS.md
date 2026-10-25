@@ -681,6 +681,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   ratio): register-hoisted tiles take the GEMV from 48 to 150 registers and 40 to 8 LDGSTS. Separately
   (`0f74021a`, A:A 1.0007): hints 1.0027, metadata-only 1.0032, register tiles 0.887. Confirmation pending;
   `problems/muse_bf16_proj/dev/pdl_audit/README.md`.
+- The lever table's boundaries excess at decode 16 / 32 (19.95 / 24.93 us per layer, "+7.2%") is residence, not
+  critical path: the boundaries' critical increments are 5.15 / 5.92 us (S11 CUPTI; different fixtures, so not a matched
+  subtraction). Stage residence in `dev/levers/current.json` counts waits on other streams (the same artifact gives
+  O 58 us at decode-16 full). `problems/muse_bf16_proj/dev/boundary_attribution/README.md`.
 - Balanced GEMV issue sweep (`d3666d18`, projection + sum-cast graph, standalone): pool_router at BK=128 with 2
   stages 0.977 / 0.959 / 0.960 at t = 1 / 16 / 32 (-0.6 to -1.1 us); every other role and setting within +-2%.
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;
