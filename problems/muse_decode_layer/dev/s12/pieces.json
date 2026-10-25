@@ -1,13 +1,12 @@
 [
   {
     "name": "coded",
-    "path": "problems/muse_decode_layer/dev/s12/patch_coded_ccb512c3.py",
-    "sha256": "ccb512c3dcf25b8226be0f39bb947bfd2219ebe1d3839e72a64779e359e65ce7",
+    "path": "problems/muse_decode_layer/dev/s12/patch_coded_t1_92e22450.py",
+    "sha256": "92e22450012180ae4a1cc682336b3bc95127e8619cb5d3be41fc5cd00771473e",
     "origin": "problems/muse_bf16_proj/dev/coded_dense/patch_coded_s12.py",
-    "lab": "320884442a6f4624",
+    "lab": "320884442a6f4624 + 3239a2ea + whole-layer c5f4f0182acc4fe3: T1 wins; T8 removed after loss",
     "active_tokens": [
-      1,
-      8
+      1
     ]
   },
   {

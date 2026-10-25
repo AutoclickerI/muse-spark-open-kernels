@@ -377,7 +377,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Heavy-stage variants vs LI_swap + finalizer split (`89608c59`, same protocol, all TASK PASS): wide banks 0.9924 /
   0.9884; typed-smem WGMMA activations + wide banks 0.9918 / 0.9857; two N32 accumulators sharing one decode
   1.0225 / 0.9794 (spread 0.90-1.13), four 1.013 / 1.004; W2 per-warp norm partials 0.999 / 1.002 and a hoisted
-  descriptor 0.998 / 0.996 (neutral).
+  descriptor 0.998 / 0.996 (neutral). Packed-scale nibble rotation (dequant core 128 -> 124 SASS per stage) + wide
+  banks 0.9862 / 0.9787 (`b88d04fe`; wide alone 0.9940 / 0.9894); adaptive N32 groups lose 1.015-1.16 at M=128
+  (AD64 0.976-0.984 at M=256 inside a +-7% spread).
 ## Attention
 
 ### Shapes, floors and the incumbents

@@ -2967,7 +2967,7 @@ def cd_gemv(x, c, S, NW=8, RT=1, PIPE=2, pf=0, prew=1, pdl=True, V=3, C=1, out=N
 
 
 # (tokens, role) -> (NW, RT, PIPE, S, prew, V, C): H200 lab rows (prof/lab/coded_gemv.py)
-CD_ROWS = {(1, 'qkv_gate'): (8, 1, 2, 22, 1, 3, 1), (8, 'qkv_gate'): (8, 1, 2, 22, 1, 3, 1), (1, 'pool_router'): (8, 1, 2, 11, 1, 3, 1), (8, 'pool_router'): (8, 1, 2, 11, 1, 3, 1)}
+CD_ROWS = {(1, 'qkv_gate'): (8, 1, 2, 22, 1, 3, 1), (1, 'pool_router'): (8, 1, 2, 11, 1, 3, 1)}
 
 
 def _cd_prepare(state):

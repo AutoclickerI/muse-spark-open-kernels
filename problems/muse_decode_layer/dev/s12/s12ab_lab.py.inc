@@ -76,6 +76,9 @@ def lab(deadline, weights, state):
         if code not in bank_states:
             st = dict(state)
             ns[name]['_s4_prepare_banks'](st, weights)
+            # The changed representation belongs only to s5_hh_base. Share the unchanged small-M bank,
+            # including its exact counter buffers, so control loads do not compare unrelated allocations.
+            st['s4_nt1_bank'] = state['s4_nt1_bank']
             bank_states[code] = st
         states[name] = bank_states[code]
     results, seed_times, incomplete = {}, {}, []

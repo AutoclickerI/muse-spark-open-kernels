@@ -1,65 +1,79 @@
 # P4: S12 integration
 
-Base: `cand_r3_best7_s11_final.py`, SHA256 `acda6c621b1f3b885f2111ea1b4482ae1d733e2f2493db2b7f0b852ccf66dfb7`.
+Base: `cand_r3_best7_s11_final.py` **acda6c62** (full SHA in build.py). Current candidate:
+`cand_r3_best7_s12.py` **a92b6619**; normal/forced local screens in progress. No final freeze yet.
 
-The build pins every incoming patch's hash in `pieces.json`, asserts the base, and records each intermediate
-hash in `manifest.json`. `--without <name>` builds each leave-one-out arm. No scored send from this lane.
+`build.py` asserts the base and every snapshot hash in `pieces.json`, records intermediate hashes in
+`manifest.json`, and supports `--without <name>`. `patch.py` **f186750c** is the aggregate repository handoff
+onto exact acda6c62; dependencies and output are pinned by the manifest. No scored send from this lane.
 
-Incoming pieces:
+Current pieces:
 
-- `coded`: qkv_gate and pool_router at T=1/8, patch `problems/muse_bf16_proj/dev/coded_dense/patch_coded_s12.py`.
-  Standalone H200 `320884442a6f4624`: qkv 10.74/11.20 vs balanced 11.66/11.78 us; pool_router 18.75/19.14 vs
-  21.12/21.33 us. Waiting for dense lane's normal/forced S11-final screen and whole-layer S12 A/B.
-- `final4`: received `patch_s11_f4.py` ef041fd4 on S11 final's nf cell. Standalone H200 `5e197b5eb7424a1e`:
-  F4/LI_swap 0.9850 at M128, 0.9885 at M256; bit-equal.
-- `wide`: received `patch_s11_wide.py` b2748e23; H200 `f976b09d3fc445eb`, LIW/LI4 0.9936 / 0.9900 at M128/256,
-  12 seeds x3, all TASK PASS. Separate arm and independently prepared original-layout bank for its reversion.
-- `coresidency`: excluded after `f976b09d3fc445eb`: G1 1.2351/1.4045, G2 1.0242/1.0586, G3 1.0285/1.0433,
-  G1p5 1.1951/1.3436, G2p5 1.1115/1.0882 at M128/256. Control 191.79/270.98 us; LIW 190.22/268.18 us;
-  A:A abs 0.565/0.440 us. LT2 0.9993/1.0015 is neutral.
-- Small-M, glue, attention: only patches with a paired H200 win.
+- `coded`: **T=1 only**, qkv_gate and pool_router; snapshot `patch_coded_t1_92e22450.py`. T=8 was removed after
+  its whole-layer loss below. Gate split bypasses the coded qkv in scored T=1 calls; pool_router runs coded.
+  The prepare bank lives in state so judge tensor clones retain the correct encoded weights.
+- `final4`: `patch_final4_ef041fd4.py`, N_full finalizer split over four CTAs per token.
+- `wide`: `patch_wide_b2748e23.py`, lossless heavy packed-bank permutation and three LDS.128 loads per stage.
+- Small-M keeps S11 flags {1:95, 8/16/32:69}. Co-residency and verify-dense epilogue are excluded.
 
-Whole-layer protocol: 16 seeds x 8 rotating rounds; cold L2 before every replay; A:A; each piece removed;
-all S11 back. Promotion requires complete normal/forced local screens, precision inventory, all 12 H200
-shapes and six weighted loads, no failed correctness arm, S12 better than S11 at every load, no losing piece.
-Orchestrator's clarified promotion gate: unchanged decode-16/32 must have no regression beyond measured A:A
-spread; every changed load and every retained piece at each affected load must win. The lab reports A:A's
-16-seed whole-load min/max and SE explicitly. An unchanged load is a control, not evidence of a speedup.
+Promotion gate (orchestrator clarified): every changed load must win; each retained piece must win its
+leave-one-out arm at every load it touches. Unchanged controls must have no regression beyond the measured
+A:A spread. With T=8 coding removed, verify-1 joins decode-16/32 as an unchanged control.
 
-Current candidate: `cand_r3_best7_s12.py` **7d4216dd**, three frozen patch snapshots in this directory. The
-dense lane fixed its original pointer-keyed global code bank: the admitted patch ccb512c3 stores codes in state,
-so judge tensor clones retain valid weights. Gate split bypasses coded qkv at T=1; pool_router still runs coded
-there, while T=8 uses both coded roles. The first (coded-only) local attempt exhausted GPU0 memory amid concurrent
-lane screens and was discarded. The assembled candidate passed normal 13 tests and 12 graph captures;
-all 23 static checks pass. Forced also passes 13 tests, 12 graph captures and 23 static checks, with 118 retained
-tensors inventoried. [Precision audit](PRECISION.md). The first complete local A/B wrapper passes 13 tests,
-all 12 shapes at 16 seeds x8 rounds, no correctness gates failed, and 23 static checks. Its sm120 ratios are
-not H200 evidence. The final wrapper adds explicit A:A load-spread lines for the clarified promotion gate.
+## Whole-layer H200
 
-`patch.py` is the aggregate repository handoff: asserts exact **acda6c62**, composes the hash-pinned snapshots,
-and returns **7d4216dd**. `build.py --without <name>` generates a piece's removal; the A/B manifest pins each
-arm's complete source hash. The source and builders were committed/pushed in **99f1ede**; no freeze yet.
+**c5f4f0182acc4fe3**, check, host **7d4216dd** = original T<=8 coding + F4 + wide. All 12 shapes, 16 seeds x8
+rotating rounds, cold L2 before every replay, A:A; all correctness gates pass. Host check 1.716146x
+[1.690404, 1.741888]; prepare including lab 173.9 s (lab 10.3 s). Ratios below are reverted arm / S12 (>1 wins):
 
-Coded cleanup H200 **3239a2ea** confirms scope (qkv -0.96/-0.44 us, pool_router -2.33/-1.07 at T1/8).
-Small-M **17512d86** RND/ROT lose; S11 flags stay {1:95, 8/16/32:69}. Verify-dense **f65e843f** is a screen,
-not admitted to S12. No co-residency patch is applied.
+| Load | All S11 back | Coding off | F4 off | Wide off | A:A mean (range) |
+|---|---:|---:|---:|---:|---|
+| decode 1 | 1.0410 | 1.0340 | — | — | 1.002945 (0.990026..1.013485) |
+| decode 16 | 1.0085 | — | — | — | 1.001801 (0.997711..1.005040) |
+| decode 32 | 1.0036 | — | — | — | 0.998454 (0.994503..1.004902) |
+| verify 1 | **0.9990** | **0.9966** | — | — | 1.001879 (0.997761..1.006915) |
+| verify 16 | 1.0091 | — | 1.0073 | 1.0023 | 1.000371 (0.997361..1.005506) |
+| verify 32 | 1.0109 | — | 1.0072 | 1.0048 | 1.000258 (0.998657..1.001773) |
 
-Local wrapper admission found a fixture-generator issue before sending: the candidate's embedded public
-`_ap_generate_input` calls FA3's Hopper scheduler for full decode inputs even on sm120. The lab now does what
-local_eval does for its reference: suppresses only fixture scheduler metadata off Hopper. H200 still calls the
-original scheduler. It also carries unchanged runtime/cache assignments into independent arm namespaces,
-without sharing function bindings or mutable GEMV-choice dictionaries.
+Decision: no freeze; drop T=8 coding, retain the measured T=1 coding win. The wide-layout reversion also rebuilt
+small-M counter buffers unnecessarily; the new lab restores the exact host s4_nt1_bank after creating its
+original-layout s5_hh_base. This keeps unrelated small-M state identical. We cannot attribute the original
+unchanged-load timing differences to counters from this evidence alone.
 
-Next: finish normal/forced screens, exercise the full lab, then send the check. Preserve S11 final for the
-orchestrator's 00:00 UTC scored send until an S12 final is verified and explicitly frozen here.
+Evidence: `c5f4f018_report.json`, `trials/7d4216dd_{manifest,pieces,s12ab_manifest,admission}.json`, receipt and
+source in `runs/muse_decode_layer/20261025T051106Z_check_c5f4f0182acc4fe3.*`, and lab profiles with that job id.
+The old source is preserved by git **99f1ede** / **08b85ce**. Use the archived manifest when re-reporting this run.
 
-The first A/B wrapper **8a94b0f4** passed its own screen, but the server rejected the 4.25 MB request with HTTP
-413 before creating a job (no check consumed). The rebuilt wrapper **8cae39f5** (payload **f75c1775**; current
-manifest is authoritative) stores one compressed shared source and lossless line edits for each arm, verifying
-every reconstructed SHA256 both during build and before H200 execution. Source is 951,182 B, JSON-encoded source
-972,223 B. The timed candidate and every arm's source hash are unchanged. Its local screen passes all 13 tests,
-23 static checks, and the complete 12-shape/16-seed/8-round lab with no correctness failures.
-Decode check **c5f4f0182acc4fe3** accepted at 05:11 UTC; receipt collection is running. No S12 H200 result or
-freeze yet. `admission.json` pins the normal, forced and compact-wrapper screens to their exact hashes.
-Prepared ignored removal variants for immediate rebuild if an arm loses: no-wide **c9ee036e**, no-final4
-**9a4a0978**, no-coded **e9ce6986**. Each matches the source hash already embedded in the lab manifest.
+## Component evidence and rejected work
+
+- Dense **320884442a6f4624**: qkv 10.74/11.20 vs balanced 11.66/11.78 us; pool_router 18.75/19.14 vs
+  21.12/21.33 at T1/8. Cleanup **3239a2ea**: qkv -0.96/-0.44 us, pool_router -2.33/-1.07. These standalone
+  wins did not predict the T=8 whole-layer result; whole-layer promotion takes precedence.
+- F4 **5e197b5eb7424a1e**: 0.9850/0.9885 at M128/256 versus LI_swap; bit-equal.
+- Wide **f976b09d3fc445eb**: LIW/LI4 0.9936/0.9900, 12 seeds x3, all TASK PASS, bit 35/36 at each M
+  (NT1 atomic replay variation); control 191.79/270.98 us, LIW 190.22/268.18; A:A abs 0.565/0.440 us.
+- Co-residency in **f976b09d** loses: G1 1.2351/1.4045, G2 1.0242/1.0586, G3 1.0285/1.0433,
+  G1p5 1.1951/1.3436, G2p5 1.1115/1.0882. LT2 0.9993/1.0015 is neutral; neither applied.
+- Small-M **17512d86** RND/ROT lose; S11 flags retained. Verify-dense **f65e843f** is a screen, excluded;
+  its own whole-layer **d4cbf3ca** loses 1-4% (P7 closed it).
+
+## Local admission and lab plumbing
+
+Original **7d4216dd** passed normal and forced: 13 tests, 12 graph captures, 23 static checks each. Retained
+state inventories contain 78 normal /118 forced tensors. [Precision audit](PRECISION.md); archived admission
+pins those exact hashes. New a92b6619 requires its own screens before sending.
+
+`s12ab_build.py` composes each complete arm source independently, then stores one compressed shared source
+plus lossless line edits. Every restored arm SHA is checked at build and runtime. The first 4.25 MB wrapper
+**8a94b0f4** was rejected HTTP 413 before a job existed (no check consumed); compact **8cae39f5** (951,182 B)
+passed local 13 tests +23 static and ran as c5f4f018. The current wrapper/arm hashes are in s12ab_manifest.json.
+Generated payloads and removal candidates stay ignored; builders reproduce them.
+
+The local wrapper disables FA3 fixture scheduler metadata only off Hopper, matching local_eval's input
+behavior; H200 uses the original scheduler. Fresh arm namespaces retain independent functions/decorator
+globals and GEMV-choice dictionaries, with compatible unchanged runtime caches. The wide reversion has its
+own original-layout expert bank, while every arm now shares unchanged small-M state.
+
+Next: finish a92b6619 normal/forced screens, screen its compact lab, and send a second decode check. If all
+piece/load arms win and unchanged controls pass A:A, freeze cand_r3_best7_s12_final.py, commit/push and tell
+the orchestrator. Preserve S11 final's scored handoff until that freeze is explicit. No scored runs here.
