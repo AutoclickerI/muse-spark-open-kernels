@@ -3,11 +3,11 @@
 ## Status (2026-10-25 13:50 KST)
 - G0 (R-20261025-1): the highest score on the overall kernel board by the close (2026-11-05 16:59 KST, day 3 of 14).
   By our fit (GOAL), overall = max(decode layer, component sum), and the decode layer wins for every top-50 team.
-- Board (SOTA "Leaderboard", 11:27): 145th at 1.6073x (S9); leader 2.285x (+9% overnight, flat since 09:27), 10th
-  2.066x, 50th 1.826x. The leader's component boards: attention 2.84x (ours 1.40), MoE 2.52x (1.69), projections 1.61x (1.19).
+- Board (decode, 13:50): 158th at 1.6073x (S9); leader 2.285x (flat since 09:27), 10th 2.10x, 50th 1.848x; S11
+  final's host 1.7068x would place ~99th. The leader's component boards: attention 2.84x (ours 1.40), MoE 2.52x
+  (1.69), projections 1.61x (1.19).
 - Runs (FINDINGS "Our kernels on the H200"): S8 1.5742x, S9 1.6073x `b7c59570` (on the board), S10 check 1.6214x
-  `43049b80` (our load time -2.6% vs S8 with the baseline flat; prepare 133.5 s), scored at the 00:00 UTC reset
-  (09:00 KST, a background send). Scored runs don't rank changes under ~3%: the whole-layer paired A/B on S10
+  `43049b80` (our load time -2.6% vs S8 with the baseline flat; prepare 133.5 s). Scored runs don't rank changes under ~3%: the whole-layer paired A/B on S10
   (`ff3b9aca`) is the comparator, and it confirmed S9's small-M flags (+1.7-5.4% if removed) and the BF16 front
   (+3.2% at decode 16).
 - S11 (`dbcb26bb`: S10 + balanced GEMVs + LI_swap N_full + vq8 page ring at verify 16 / 32 full + pinned tuner
@@ -34,10 +34,9 @@
   +3.2%), small-M MoE +5.8 / +9.4%, glue +5.9%, projections +1.9 / +5.9%, M=256 MoE +3.5 / +4.6%, M=128 MoE +1.3 /
   +2.5% (independent counterfactuals); lossless dense coding +4 to +8% on top of projections. Inside each row,
   deleting provably dead or repeated work comes first.
-- Agents: Codex is out of quota (Hermes `local_auth_cap` on every credential since 02:05 KST, still at 12:31), and
-  the Claude session limit stopped every lane but integration at ~12:35 (resets 15:30 KST; the MoE lane 16:50);
-  lanes resume from their saved state. Lanes: integration (P4), attention (P5), glue/proj (P7), small-M (P3a), dense coding
-  (P10), MoE M=128/256 (P3b); P11 is parked.
+- Agents: Codex is back (13:45 KST); the six lanes resumed on gpt-6.1-sol from the Claude lanes' committed state
+  (2485ff4): integration (P4), attention (P5), glue/proj (P7), small-M (P3a), dense coding (P10), MoE M=128/256
+  (P3b); P11 is parked.
 - Promotion: by the six-load score on identical inputs and its spread across seeds (GOAL); our exact-ID or 0.003
   gates are not TASK.md's checks (CONSTRAINTS "Boundary cases").
 
