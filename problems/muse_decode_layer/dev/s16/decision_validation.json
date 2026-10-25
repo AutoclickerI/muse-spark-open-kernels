@@ -1,0 +1,168 @@
+{
+  "passed": true,
+  "synthetic_only": true,
+  "performance_claim": false,
+  "selected": [
+    {
+      "name": "early_E4",
+      "family": "early",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "qt": 4,
+      "early": true
+    },
+    {
+      "name": "global_C64",
+      "family": "global",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "nk": 64,
+      "split": null
+    },
+    {
+      "name": "dsm_4",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 4,
+        "16": 4,
+        "32": 4
+      }
+    },
+    {
+      "name": "soft_mix25",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "mix25"
+    },
+    {
+      "name": "epi_NORM",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "NORM"
+    },
+    {
+      "name": "heavy_DIRECT_NORMAL",
+      "family": "heavy",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "arm": 2
+    }
+  ],
+  "checks": [
+    "wins beyond A:A",
+    "neutral rejected",
+    "incomplete seeds rejected",
+    "all seven receipt schemas decoded",
+    "both unchanged layer variants retained for token policies",
+    "selected source composition parses"
+  ]
+}

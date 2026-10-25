@@ -1,0 +1,1068 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "cells_sha256": "3ae99bef5043689b207998f636a7a653579ab4dc2a646607135ca3b1e8f073d1",
+  "arms": {
+    "global_C64": {
+      "name": "global_C64",
+      "family": "global",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "nk": 64,
+      "split": null
+    },
+    "global_C128": {
+      "name": "global_C128",
+      "family": "global",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "nk": 128,
+      "split": null
+    },
+    "global_W4": {
+      "name": "global_W4",
+      "family": "global",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "nk": 128,
+      "split": 4
+    },
+    "global_W8": {
+      "name": "global_W8",
+      "family": "global",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "nk": 128,
+      "split": 8
+    },
+    "dsm_1": {
+      "name": "dsm_1",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 1,
+        "16": 1,
+        "32": 1
+      }
+    },
+    "dsm_2": {
+      "name": "dsm_2",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 2,
+        "16": 2,
+        "32": 2
+      }
+    },
+    "dsm_4": {
+      "name": "dsm_4",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 4,
+        "16": 4,
+        "32": 4
+      }
+    },
+    "dsm_8": {
+      "name": "dsm_8",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 8,
+        "16": 8,
+        "32": 8
+      }
+    },
+    "dsm_16": {
+      "name": "dsm_16",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 16,
+        "16": 16,
+        "32": 16
+      }
+    },
+    "dsm_wave": {
+      "name": "dsm_wave",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 16,
+        "16": 4,
+        "32": 2
+      }
+    },
+    "early_E4": {
+      "name": "early_E4",
+      "family": "early",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "qt": 4,
+      "early": true
+    },
+    "early_E2": {
+      "name": "early_E2",
+      "family": "early",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "qt": 2,
+      "early": true
+    },
+    "early_E1": {
+      "name": "early_E1",
+      "family": "early",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "qt": 1,
+      "early": true
+    },
+    "early_L4": {
+      "name": "early_L4",
+      "family": "early",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "qt": 4,
+      "early": false
+    },
+    "soft_mix25": {
+      "name": "soft_mix25",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "mix25"
+    },
+    "soft_mix50": {
+      "name": "soft_mix50",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "mix50"
+    },
+    "soft_gap": {
+      "name": "soft_gap",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "gap"
+    },
+    "soft_mixgap": {
+      "name": "soft_mixgap",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "mixgap"
+    },
+    "soft_tc25": {
+      "name": "soft_tc25",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "tc25"
+    },
+    "soft_ping": {
+      "name": "soft_ping",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "ping"
+    },
+    "soft_ping25": {
+      "name": "soft_ping25",
+      "family": "soft",
+      "rows": [
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "ping25"
+    },
+    "epi_VEC": {
+      "name": "epi_VEC",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "VEC"
+    },
+    "epi_PROD": {
+      "name": "epi_PROD",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "PROD"
+    },
+    "epi_NORM": {
+      "name": "epi_NORM",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "NORM"
+    },
+    "epi_PAIR": {
+      "name": "epi_PAIR",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "PAIR"
+    },
+    "heavy_DIRECT_CLUSTER1": {
+      "name": "heavy_DIRECT_CLUSTER1",
+      "family": "heavy",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "arm": 1
+    },
+    "heavy_DIRECT_NORMAL": {
+      "name": "heavy_DIRECT_NORMAL",
+      "family": "heavy",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "arm": 2
+    },
+    "heavy_DIRECT_SERIAL": {
+      "name": "heavy_DIRECT_SERIAL",
+      "family": "heavy",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "arm": 3
+    },
+    "heavy_DEEP_SERIAL": {
+      "name": "heavy_DEEP_SERIAL",
+      "family": "heavy",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "arm": 4
+    },
+    "boundary_R": {
+      "name": "boundary_R",
+      "family": "boundary",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "R"
+    },
+    "boundary_P": {
+      "name": "boundary_P",
+      "family": "boundary",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "P"
+    },
+    "boundary_RP": {
+      "name": "boundary_RP",
+      "family": "boundary",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "RP"
+    },
+    "boundary_C": {
+      "name": "boundary_C",
+      "family": "boundary",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "C"
+    },
+    "boundary_S": {
+      "name": "boundary_S",
+      "family": "boundary",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "S"
+    },
+    "pdl_B": {
+      "name": "pdl_B",
+      "family": "pdl",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "B"
+    },
+    "pdl_M": {
+      "name": "pdl_M",
+      "family": "pdl",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "M"
+    },
+    "pdl_D": {
+      "name": "pdl_D",
+      "family": "pdl",
+      "rows": [
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "kind": "D"
+    }
+  },
+  "diagnostics_excluded": [
+    "fixed-work ONCE variants do not execute the model",
+    "ready-input boundaries are attribution controls",
+    "CUPTI/occupancy/phase clocks do not implement a new model path",
+    "P7 all-register-tile F is an already measured loss; B/M/D are retained reset experiments"
+  ]
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "pid": 2411468,
+    "file": "problems/muse_decode_layer/lab/lab_p5_global_attention.py",
+    "problem": "muse_decode_layer",
+    "sha256": "0ccc25484dbe581002136aada0f66ca065d37a18ad8564c887102ca997e48d53",
+    "note": "P5 h200_lab: validate paired sliding+fullverify winners host 8e091fcb; one-launch decode1 full NS128/shared merge weights plus sliding B1/16/32 vs S11/last/direct-partials 16 seeds x8",
+    "priority": 0,
+    "until": 1792972860.0,
+    "not_before": 0
+  },
+  {
+    "pid": 3038721,
+    "file": "problems/muse_attention_decode/dev/cluster_sliding/out/p5_dsm_board.py",
+    "problem": "muse_attention_decode",
+    "sha256": "f1c270e6e12b7cb2abba0d00db7c54ce7aba10022427e605e3ff4730305264de",
+    "note": "P5 final attention check: sliding verify N128 DSM gang1/2/4/8/16, one-wave16/4/2 atB1/16/32; distribute norm/gate rows acrossSMs after global last-CTA serialized. Frozen e43 shader already native-gated79061182; 8 seeds x8, A2, strided partial gates. Exact normal+forced16/12/11 pass; sm120 uses genuine1CTA launch stand-in. Whole-layer pair built for reset.",
+    "priority": 2,
+    "until": 1792972860.0,
+    "not_before": 0
+  },
+  {
+    "pid": 3171016,
+    "file": "problems/muse_bf16_proj/lab/lab_softmax_mix_lab.py",
+    "problem": "muse_bf16_proj",
+    "sha256": "030864131ce8d08f238ea779fd7df676ca553ef0e7defff848844c23c0d929b3",
+    "note": "h200_lab problems/muse_attention_decode/dev/full_attention/softmax/softmax_mix_lab.py: Full-attention S14 softmax batch:25/50pct MUFU/FMA FP32 exp, FP8 P*ones TC sums, WG stagger and explicit alternating WG pipeline;8 variants plus S14 A/A2;3 fresh seeds16cold rotating pairs+phase clocks+rescale counts;32 independent fixtures,16 native units no spills/C75;screened proj host. Attention quota exhausted;no tonight check accepted.",
+    "priority": 2.0,
+    "until": 1792972800.0,
+    "not_before": 1792972800.0
+  },
+  {
+    "pid": 3360739,
+    "file": "problems/muse_moe_w4a16/lab/lab_moe_nt1_epilogue.py",
+    "problem": "muse_moe_w4a16",
+    "sha256": "917e79f37f28b5c1215cfd346d829baa768d0f5afea3dbb2f66073556639d028",
+    "note": "h200_lab prof/lab/moe_nt1_epilogue.py: P3a final single reset batch; replaces held prior version. S14 f1c77ce6: VEC bank-safe vector reduction, PROD warp7 TMA, NORM per-run norms, PAIR two contiguous float2 planes/two writers plus per-run norms(125regs0spill). Fixed-math ONCE/ONCE_VEC/ONCE_PAIR contrast isolates old28.5us epi.16seed readflush paired router+MoE M1/8/16/32+nodes;8seed subphase store/bar,TMA,body,flush,observer,effGHz; exact host atomic model. All5epi cells528+6forced;ONCE variants1320+6;16seed local all gates. S14 NORM andPAIR normal+shipped-Hopper forced local_eval/reference+24static checks pass. Not before09:00KST reset; no attention checks.",
+    "priority": 1.0,
+    "until": 1792972800.0,
+    "not_before": 1792972800.0
+  },
+  {
+    "pid": 3408321,
+    "file": "problems/muse_attention_decode/lab/lab_cluster_schedule_payload.py",
+    "problem": "muse_attention_decode",
+    "sha256": "f867a8b74a243d1e21a3ba073331bbcea1ac46f188832c0f644fd6d084b9b0f3",
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/cluster_schedule_payload.py: P3b S14 f1c77ce6 whole MoE paired 16 seeds: identical native direct-copy image cluster1 vs ordinary CTA launch vs serial classes; S3 small-class copy pipeline; all local TASK/bit gates pass, synthetic weights=None",
+    "priority": 1.0,
+    "until": 1792972860.0,
+    "not_before": 0
+  },
+  {
+    "pid": 3517006,
+    "file": "problems/muse_prefill_layer/lab/lab_lab_boundary_batch.py",
+    "problem": "muse_prefill_layer",
+    "sha256": "d29911c50f95545574f06aa4e7aecb2e4a21456916999e5948bb78f695dfec53",
+    "note": "h200_lab problems/muse_bf16_proj/dev/boundary_attribution/lab_boundary_batch.py: P7 reset batch: exact 6cb428bc shared-JIT confirmation unchanged plus S14 d16/d32 boundary CUPTI/DAG, ready-input/serialization/C4 and MoE-release+unpool-hint controls; local normal+forced screens pass; decode reserved for P10b and integration",
+    "priority": 1.0,
+    "until": 1792972800.0,
+    "not_before": 1792972800.0
+  },
+  {
+    "pid": 3526702,
+    "file": "problems/muse_decode_layer/lab/lab_s15ab_payload.py",
+    "problem": "muse_decode_layer",
+    "sha256": "49ce378bb4bbb287731b16a0ab6ac99f5b165c65697d7d98b69438f5c0aa1260",
+    "note": "h200_lab problems/muse_decode_layer/dev/s15/s15ab_payload.py: P4 combined S15 60254883 on exact S14 f1c77ce6: nine attributed NF rows + last-CTA B1 sliding + N128 regmax full verify stage4; every piece/role off, S14 back,A:A,16 fresh seeds,all12 shapes,32 small/8 other cold rounds; normal+forced combined and each piece pass; MIT retained. P10b selected-row admission coordinated via README.",
+    "priority": -1.0,
+    "until": 1792972800.0,
+    "not_before": 1792972800.0
+  },
+  {
+    "pid": 3549805,
+    "file": "problems/muse_attention_decode/dev/early_history/out/p5_early_history_board.py",
+    "problem": "muse_attention_decode",
+    "sha256": "0cec67066689787d498240bfcef317bdf67827e26f3e23b38bb47f088bb59d98",
+    "note": "P5 early sliding history: finish 2048-key gather plus LDSM.T V transpose before PDL wait; 53.5KB to28.9KB dynamic shared. One batched exact-S14 f1c77ce6 whole-layer lab A/A2/OLD4/E4/E2/E1/L4,16 fresh seeds x12 cold rounds, full public TASK checks with20pct margin, CUPTI attention/gate/QKV increments and phase clocks. Normal+forced layer13/12/25, board16/12/8, 40 fresh partial/page/scale/counter cells; exact sm90a copy+transpose-before-ACQBULK proof. Preserve existing f1c270e6 and0ccc2548 senders.",
+    "priority": 3.0,
+    "until": 1792972860.0,
+    "not_before": 1792972860.0
+  }
+]

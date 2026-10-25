@@ -1,0 +1,98 @@
+{
+  "global_C64": {
+    "normal": {
+      "sha256": "b76af1a5909a3f7c1f7cbbbeeed0dd3dd85bb48a5dacfbbc0ba3b5778c128221",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_C64/normal/local.json"
+    },
+    "forced": {
+      "sha256": "b76af1a5909a3f7c1f7cbbbeeed0dd3dd85bb48a5dacfbbc0ba3b5778c128221",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_C64/forced/local.json"
+    }
+  },
+  "global_C128": {
+    "normal": {
+      "sha256": "739a3a86d1d9f79e09026f61952354a1cc5b4b99f3f81693086d1facec49051a",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_C128/normal/local.json"
+    },
+    "forced": {
+      "sha256": "739a3a86d1d9f79e09026f61952354a1cc5b4b99f3f81693086d1facec49051a",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_C128/forced/local.json"
+    }
+  },
+  "global_W4": {
+    "normal": {
+      "sha256": "08805d6778bbc2168973b0b3051c55cfad8c4784d963e98eb73af0b9a8cbde9d",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_W4/normal/local.json"
+    },
+    "forced": {
+      "sha256": "08805d6778bbc2168973b0b3051c55cfad8c4784d963e98eb73af0b9a8cbde9d",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_W4/forced/local.json"
+    }
+  },
+  "global_W8": {
+    "normal": {
+      "sha256": "857d684725ddd745518e939704a55d2c04ad5c28c752fc2154c89c7130d6b00e",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 26
+      },
+      "local_report": "screen/global_W8/normal/local.json"
+    },
+    "forced": {
+      "sha256": "857d684725ddd745518e939704a55d2c04ad5c28c752fc2154c89c7130d6b00e",
+      "passed": false,
+      "exit_code": 1,
+      "counts": {
+        "tests": 0,
+        "shapes": 0,
+        "static": 0
+      },
+      "local_report": "screen/global_W8/forced/local.json"
+    }
+  }
+}

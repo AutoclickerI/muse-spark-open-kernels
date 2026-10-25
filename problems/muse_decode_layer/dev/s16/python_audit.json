@@ -1,0 +1,53 @@
+{
+  "passed": false,
+  "failures": {
+    "heavy_DEEP_SERIAL": [
+      {
+        "name": "undefined_names",
+        "ok": false,
+        "msg": "F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2` | F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2`"
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "heavy_DIRECT_CLUSTER1": [
+      {
+        "name": "undefined_names",
+        "ok": false,
+        "msg": "F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2` | F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2`"
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "heavy_DIRECT_NORMAL": [
+      {
+        "name": "undefined_names",
+        "ok": false,
+        "msg": "F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2` | F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2`"
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "heavy_DIRECT_SERIAL": [
+      {
+        "name": "undefined_names",
+        "ok": false,
+        "msg": "F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2` | F821 Undefined name `M128_HH_NT1` | F821 Undefined name `M128_HH_NT2`"
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  }
+}
