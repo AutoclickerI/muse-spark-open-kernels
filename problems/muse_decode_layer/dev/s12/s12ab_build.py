@@ -5,10 +5,13 @@ bindings (notably nf_module's lru_cache); no hand-written inverse patch is neede
 only add coded dense banks or change runtime kernels, so the prepared S12 state serves every arm exactly.
 """
 import argparse
+import base64
+import difflib
 import hashlib
 import importlib.util
 import json
 import sys
+import zlib
 from pathlib import Path
 
 R = Path(__file__).resolve().parents[4]
@@ -40,7 +43,22 @@ def main():
     # Reuse the reviewed S11/S10 timing helpers, excluding their obsolete lab and NT1 compiler.
     helpers = (D / 'dev/s10/ablate_lab.py.inc').read_text().split('\ndef lab(deadline, weights, state):', 1)[0]
     helpers = helpers.replace('__NT1_CUDA__', "''", 1).replace('__NT1_CPP__', "''", 1)
-    body = helpers + '\nS12_HOST_SOURCE = ' + repr(src) + '\n' + (H / 's12ab_lab.py.inc').read_text().replace('__S12_VARIANTS__', repr(variants), 1)
+    # One shared source plus lossless line edits: complete source copies exceed the server request limit.
+    host_lines = src.splitlines(keepends=True)
+    packed = {}
+    for name, arm in variants.items():
+        lines = arm['source'].splitlines(keepends=True)
+        edits = [(a, b, ''.join(lines[c:d])) for op, a, b, c, d in
+                 difflib.SequenceMatcher(None, host_lines, lines, autojunk=False).get_opcodes() if op != 'equal']
+        restored = list(host_lines)
+        for a, b, text in reversed(edits):restored[a:b] = [text]
+        assert ''.join(restored) == arm['source'], name
+        packed[name] = {k: v for k, v in arm.items() if k != 'source'} | dict(edits=edits)
+    bundle = json.dumps(dict(host=src, variants=packed), separators=(',', ':')).encode()
+    encoded = base64.b85encode(zlib.compress(bundle, 9)).decode()
+    body = (helpers + '\nimport base64, json, zlib\n_S12_BUNDLE = json.loads(zlib.decompress(base64.b85decode('
+            + repr(encoded) + ')))\nS12_HOST_SOURCE = _S12_BUNDLE["host"]\n'
+            + (H / 's12ab_lab.py.inc').read_text().replace('__S12_VARIANTS__', '_S12_BUNDLE["variants"]', 1))
     payload = H / (args.tag + '_payload.py')
     payload.write_text(body)
     embedded = [h200_lab.embed(payload)]

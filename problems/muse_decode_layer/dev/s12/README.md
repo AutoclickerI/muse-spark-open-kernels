@@ -52,3 +52,12 @@ without sharing function bindings or mutable GEMV-choice dictionaries.
 
 Next: finish normal/forced screens, exercise the full lab, then send the check. Preserve S11 final for the
 orchestrator's 00:00 UTC scored send until an S12 final is verified and explicitly frozen here.
+
+The first A/B wrapper **8a94b0f4** passed its own screen, but the server rejected the 4.25 MB request with HTTP
+413 before creating a job (no check consumed). The rebuilt wrapper **8cae39f5** (payload **f75c1775**; current
+manifest is authoritative) stores one compressed shared source and lossless line edits for each arm, verifying
+every reconstructed SHA256 both during build and before H200 execution. Source is 951,182 B, JSON-encoded source
+972,223 B. The timed candidate and every arm's source hash are unchanged. Its local screen is running.
+No S12 H200 result or freeze yet.
+Prepared ignored removal variants for immediate rebuild if an arm loses: no-wide **c9ee036e**, no-final4
+**9a4a0978**, no-coded **e9ce6986**. Each matches the source hash already embedded in the lab manifest.

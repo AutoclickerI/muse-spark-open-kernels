@@ -2,8 +2,17 @@
 import linecache
 import threading
 import ast
+import hashlib
 
 S12_VARIANTS = __S12_VARIANTS__
+
+
+def s12_restore(spec):
+    lines = S12_HOST_SOURCE.splitlines(keepends=True)
+    for a, b, text in reversed(spec['edits']):lines[a:b] = [text]
+    source = ''.join(lines)
+    assert hashlib.sha256(source.encode()).hexdigest() == spec['sha256']
+    return source
 
 
 def s12_assignments(source):
@@ -50,6 +59,7 @@ def lab(deadline, weights, state):
         try:v['nf_module']();compiled[name] = True
         except Exception as exc:errors[name] = f'{type(exc).__name__}:{str(exc)[:100]}'
     for name, spec in S12_VARIANTS.items():
+        spec['source'] = s12_restore(spec)
         ns[name] = s12_namespace(name, spec, state)
         th = threading.Thread(target=native, args=(name, ns[name]), daemon=True)
         threads[name] = th
