@@ -1,0 +1,98 @@
+{
+  "method": "Equal-run geometric mean of matched whole-layer M256 leave-one-out ratios; compare to worst observed absolute A:A envelope, unchanged selection rule.",
+  "rows": [
+    {
+      "job": "3dbcaccd1bb042a4",
+      "ratio": 1.006322,
+      "normalized": 1.007232,
+      "AA": {
+        "mean": 0.999097,
+        "lo": 0.996696,
+        "hi": 1.000925,
+        "se": 0.000277,
+        "n": 16
+      },
+      "noise_radius": 0.0033039999999999736
+    },
+    {
+      "job": "4de869d41148400e",
+      "ratio": 1.004031,
+      "normalized": 1.003865,
+      "AA": {
+        "mean": 1.000167,
+        "lo": 0.997927,
+        "hi": 1.001995,
+        "se": 0.000349,
+        "n": 16
+      },
+      "noise_radius": 0.0020729999999999915
+    },
+    {
+      "job": "cb38a0503a434573",
+      "ratio": 1.000923,
+      "normalized": 1.001777,
+      "AA": {
+        "mean": 0.999147,
+        "lo": 0.99774,
+        "hi": 1.000536,
+        "se": 0.000214,
+        "n": 16
+      },
+      "noise_radius": 0.0022600000000000398
+    }
+  ],
+  "code_identity": [
+    {
+      "job": "3dbcaccd1bb042a4",
+      "NF_CUDA_sha256": "7bf25e2e7e6384c32e9b48e56b31bfacc533a749b20606f0dd1c922387b2c702",
+      "NF_CPP_sha256": "fc3fe643b2a6202dda9eb8649911a2dad50fedce9d802f58a923f8563b54445f",
+      "M256_nf_plan_sha256": "b5b308240058e0564f4367576c2d63a8d2e584cc67c488804b5b316d9356fb18"
+    },
+    {
+      "job": "4de869d41148400e",
+      "NF_CUDA_sha256": "7bf25e2e7e6384c32e9b48e56b31bfacc533a749b20606f0dd1c922387b2c702",
+      "NF_CPP_sha256": "fc3fe643b2a6202dda9eb8649911a2dad50fedce9d802f58a923f8563b54445f",
+      "M256_nf_plan_sha256": "b5b308240058e0564f4367576c2d63a8d2e584cc67c488804b5b316d9356fb18"
+    },
+    {
+      "job": "cb38a0503a434573",
+      "NF_CUDA_sha256": "7bf25e2e7e6384c32e9b48e56b31bfacc533a749b20606f0dd1c922387b2c702",
+      "NF_CPP_sha256": "fc3fe643b2a6202dda9eb8649911a2dad50fedce9d802f58a923f8563b54445f",
+      "M256_nf_plan_sha256": "b5b308240058e0564f4367576c2d63a8d2e584cc67c488804b5b316d9356fb18"
+    }
+  ],
+  "pooled_ratio": 1.0037562275298042,
+  "pooled_normalized_ratio": 1.004288819966852,
+  "worst_AA_radius": 0.0033039999999999736,
+  "margin": 0.00045222752980422776,
+  "pooled_permw_wins": true,
+  "final_attention_wins": true,
+  "S12_recheck_gate": true,
+  "controls_pass": true,
+  "freeze_gate": true,
+  "baseline_and_encoding_identity": [
+    {
+      "job": "3dbcaccd1bb042a4",
+      "reverted_source_sha256": "632e5b52be9ce3fa0869e609a678afda85b5f970c4ee04d58d65051728506cfe",
+      "baseline_NF_CUDA_sha256": "09dac24f43049d95f2ff88b28488ab9c8dbd80310898da49785ce65b86ee5f0f",
+      "baseline_nf_plan_sha256": "b5b308240058e0564f4367576c2d63a8d2e584cc67c488804b5b316d9356fb18",
+      "host_bank_expression_sha256": "14b8f870c228c6fdfffe715dadf1b8a8947f262d86bf903ae78a74be242b944b"
+    },
+    {
+      "job": "4de869d41148400e",
+      "reverted_source_sha256": "632e5b52be9ce3fa0869e609a678afda85b5f970c4ee04d58d65051728506cfe",
+      "baseline_NF_CUDA_sha256": "09dac24f43049d95f2ff88b28488ab9c8dbd80310898da49785ce65b86ee5f0f",
+      "baseline_nf_plan_sha256": "b5b308240058e0564f4367576c2d63a8d2e584cc67c488804b5b316d9356fb18",
+      "host_bank_expression_sha256": "14b8f870c228c6fdfffe715dadf1b8a8947f262d86bf903ae78a74be242b944b"
+    },
+    {
+      "job": "cb38a0503a434573",
+      "reverted_source_sha256": "4558693953ad12aafb9ee92bb7f2c3e5b7a216f84e092353fc49ab516b3d97f4",
+      "baseline_NF_CUDA_sha256": "09dac24f43049d95f2ff88b28488ab9c8dbd80310898da49785ce65b86ee5f0f",
+      "baseline_nf_plan_sha256": "b5b308240058e0564f4367576c2d63a8d2e584cc67c488804b5b316d9356fb18",
+      "host_bank_expression_sha256": "14b8f870c228c6fdfffe715dadf1b8a8947f262d86bf903ae78a74be242b944b"
+    }
+  ],
+  "median_ratio": 1.004031,
+  "median_exceeds_worst_AA": true
+}

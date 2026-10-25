@@ -1,0 +1,126 @@
+tch":32,"q_len":8,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640,85000,82436,78482,82100,80025,76892,74025,85313,81600,75788,81996,85242,81897,78298,82289,85958],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173,80770,79494,82902,81717,78762,85274,78788,78242,74541,80355,83314,83973,80508,79036,85397,79719],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826,85993,83810,81274,81504,84010,77379,77363,74002,78943,81935,79064,85764,74220,78589,78592,75983]],"selected":["layer",null],"mean_us":32.971,"control_mean_us":32.971}
+ATTN_PUBLIC {"batch":16,"q_len":8,"window":0,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["layer",null],"mean_us":202.272,"control_mean_us":202.272}
+ATTN_PUBLIC {"batch":16,"q_len":8,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["layer",null],"mean_us":28.693,"control_mean_us":28.693}
+ATTN_PUBLIC {"batch":1,"q_len":8,"window":0,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["fa3",[0,null]],"mean_us":35.659,"control_mean_us":37.077}
+ATTN_PUBLIC {"batch":1,"q_len":8,"window":2048,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["fa3",[64,true]],"mean_us":23.083,"control_mean_us":25.088}
+ATTN_PUBLIC {"batch":32,"q_len":1,"window":0,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640,85000,82436,78482,82100,80025,76892,74025,85313,81600,75788,81996,85242,81897,78298,82289,85958],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173,80770,79494,82902,81717,78762,85274,78788,78242,74541,80355,83314,83973,80508,79036,85397,79719],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826,85993,83810,81274,81504,84010,77379,77363,74002,78943,81935,79064,85764,74220,78589,78592,75983]],"selected":["attn_main",null],"mean_us":217.685,"control_mean_us":234.571}
+ATTN_PUBLIC {"batch":32,"q_len":1,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640,85000,82436,78482,82100,80025,76892,74025,85313,81600,75788,81996,85242,81897,78298,82289,85958],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173,80770,79494,82902,81717,78762,85274,78788,78242,74541,80355,83314,83973,80508,79036,85397,79719],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826,85993,83810,81274,81504,84010,77379,77363,74002,78943,81935,79064,85764,74220,78589,78592,75983]],"selected":["layer",null],"mean_us":23.563,"control_mean_us":23.563}
+ATTN_PUBLIC {"batch":16,"q_len":1,"window":0,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["attn_main",null],"mean_us":121.749,"control_mean_us":126.464}
+ATTN_PUBLIC {"batch":16,"q_len":1,"window":2048,"seeds":[172903,180822,188741],"spread":"agentic","seq_lens":[[80385,78170,80025,85417,80704,82148,84054,84352,78777,84451,77370,85471,83016,80718,80542,74640],[85867,78629,78064,83997,79015,79393,84398,78138,81293,74723,77908,83714,83118,78200,83126,82173],[78215,83204,77959,77757,84208,79306,82834,78869,83385,83663,76953,79742,77142,84741,83900,78826]],"selected":["layer",null],"mean_us":20.021,"control_mean_us":20.021}
+ATTN_PUBLIC {"batch":1,"q_len":1,"window":0,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["attn_main",null],"mean_us":28.011,"control_mean_us":41.045}
+ATTN_PUBLIC {"batch":1,"q_len":1,"window":2048,"seeds":[172903,180822,188741],"spread":"fixed","seq_lens":[[80000],[80000],[80000]],"selected":["attn_main",null],"mean_us":18.219,"control_mean_us":20.149}
+BEST7_PLAN {"key":[1,1,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":["stream",6,1],"pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[1,1,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":["stream",6,1],"pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,1,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"custom","pool_router":"custom","unpooler":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,1,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"custom","pool_router":"custom","unpooler":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,1,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"custom","pool_router":"custom","unpooler":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,1,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["attn_main",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"custom","pool_router":"custom","unpooler":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[1,8,2048],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["layer",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"custom","pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[1,8,0],"glue":"best6","geometry":{"b1":["cl",8,256,1],"route":["cl",8,256,0],"b2":["cl",8,256,1]},"attention":["layer",null],"moe":"nt1_lop3","projection":{"qkv_gate":"custom","o":"custom","pool_router":"custom","unpooler_slice":"custom"},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,8,2048],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[8,1]},"attention":["layer",null],"moe":"hh_m128","projection":{"qkv_gate":["vdsk",[128,64,64,8,4,1],3],"o":["lt",0],"pool_router":"cublas","unpooler":["short_lt",1,0]},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[16,8,0],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[8,1]},"attention":["layer",null],"moe":"hh_m128","projection":{"qkv_gate":["vdsk",[128,64,64,8,4,1],3],"o":["lt",0],"pool_router":"cublas","unpooler":["short_lt",1,0]},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,8,2048],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[16,1]},"attention":["layer",null],"moe":"mixed_parallel_m256","projection":{"qkv_gate":["lt",0],"o":"custom","pool_router":"custom","unpooler":["short_lt",0,0]},"l2_prefetch":0,"dense_chain":false}
+BEST7_PLAN {"key":[32,8,0],"glue":"best6","geometry":{"b1":[16,1],"route":[4,1],"b2":[16,1]},"attention":["layer",null],"moe":"mixed_parallel_m256","projection":{"qkv_gate":["lt",0],"o":"custom","pool_router":"custom","unpooler":["short_lt",0,0]},"l2_prefetch":0,"dense_chain":false}
+LAB_BEGIN s13finalab_payload 963be4ec7c3c4827
+META S13 leave-one-out; 16 seeds (+7919), 32 rounds at decode1 / 8 elsewhere, cold L2 before every replay; r=arm/A (>1 S13 wins)
+META arms=attention,permw,S12,S12_nocode,S12_noF4,S11; A2=A:A; S12=all new pieces removed; unchanged loads are controls
+L d1S A2 r=1.0094 se=0.0018 d=+0.70 A=72.9 n=16
+L d1S S11 r=1.0420 se=0.0031 d=+2.98 A=72.9 n=16
+L d1S S12 r=1.0396 se=0.0017 d=+2.89 A=72.9 n=16
+L d1S S12_nocode r=1.0546 se=0.0016 d=+3.97 A=72.9 n=16
+L d1S attention r=1.0405 se=0.0013 d=+2.97 A=72.9 n=16
+L d1F A2 r=1.0072 se=0.0019 d=+0.63 A=80.8 n=16
+L d1F S11 r=1.0483 se=0.0016 d=+3.87 A=80.8 n=16
+L d1F S12 r=1.0274 se=0.0014 d=+2.22 A=80.8 n=16
+L d1F S12_nocode r=1.0535 se=0.0015 d=+4.32 A=80.8 n=16
+L d1F attention r=1.0304 se=0.0013 d=+2.45 A=80.8 n=16
+L v1S A2 r=0.9873 se=0.0030 d=-1.56 A=120.4 n=16
+L v1S S11 r=0.9836 se=0.0037 d=-2.03 A=120.4 n=16
+L v1S S12 r=0.9871 se=0.0037 d=-1.57 A=120.4 n=16
+L v1F A2 r=0.9889 se=0.0043 d=-1.42 A=129.6 n=16
+L v1F S11 r=1.0071 se=0.0044 d=+0.91 A=129.6 n=16
+L v1F S12 r=1.0011 se=0.0058 d=+0.20 A=129.6 n=16
+L d16S A2 r=1.0108 se=0.0030 d=+1.35 A=126.1 n=16
+L d16S S11 r=1.0012 se=0.0024 d=+0.14 A=126.1 n=16
+L d16S S12 r=1.0146 se=0.0032 d=+1.80 A=126.1 n=16
+L d16F A2 r=1.0006 se=0.0016 d=+0.11 A=215.6 n=16
+L d16F S11 r=1.0054 se=0.0016 d=+1.16 A=215.6 n=16
+L d16F S12 r=1.0026 se=0.0020 d=+0.54 A=215.6 n=16
+L d32S A2 r=1.0012 se=0.0025 d=+0.20 A=153.3 n=16
+L d32S S11 r=1.0062 se=0.0023 d=+0.98 A=153.3 n=16
+L d32S S12 r=1.0165 se=0.0030 d=+2.55 A=153.3 n=16
+L d32F A2 r=1.0027 se=0.0016 d=+0.87 A=332.9 n=16
+L d32F S11 r=1.0003 se=0.0014 d=+0.07 A=332.9 n=16
+L d32F S12 r=1.0051 se=0.0012 d=+1.68 A=332.9 n=16
+L v16S A2 r=0.9998 se=0.0007 d=-0.07 A=284.2 n=16
+L v16S S11 r=1.0061 se=0.0006 d=+1.75 A=284.2 n=16
+L v16S S12 r=0.9994 se=0.0005 d=-0.16 A=284.2 n=16
+L v16S S12_noF4 r=1.0063 se=0.0005 d=+1.80 A=284.2 n=16
+L v16F A2 r=1.0024 se=0.0005 d=+0.98 A=406.5 n=16
+L v16F S11 r=1.0052 se=0.0005 d=+2.11 A=406.5 n=16
+L v16F S12 r=1.0013 se=0.0006 d=+0.51 A=406.5 n=16
+L v16F S12_noF4 r=1.0044 se=0.0007 d=+1.82 A=406.5 n=16
+L v32S A2 r=0.9989 se=0.0003 d=-0.41 A=366.6 n=16
+L v32S S11 r=1.0083 se=0.0005 d=+3.06 A=366.6 n=16
+L v32S S12 r=1.0011 se=0.0004 d=+0.40 A=366.6 n=16
+L v32S S12_noF4 r=1.0065 se=0.0005 d=+2.40 A=366.6 n=16
+L v32S permw r=1.0009 se=0.0005 d=+0.33 A=366.6 n=16
+L v32F A2 r=0.9996 se=0.0003 d=-0.20 A=588.2 n=16
+L v32F S11 r=1.0052 se=0.0006 d=+3.06 A=588.2 n=16
+L v32F S12 r=1.0012 se=0.0004 d=+0.71 A=588.2 n=16
+L v32F S12_noF4 r=1.0052 se=0.0004 d=+3.04 A=588.2 n=16
+L v32F permw r=1.0010 se=0.0004 d=+0.58 A=588.2 n=16
+AA decode 1 mean=1.008841 lo=1.001890 hi=1.021515 se=0.001475 n=16
+AA12 decode 1 mean=0.996802 lo=0.989567 hi=1.001950 se=0.001042 n=16
+LOAD decode 1 A2 r=1.008808
+LOAD decode 1 attention r=1.037679
+PAIR decode 1 attention mean=1.037688 se=0.001077 norm=1.028608 normse=0.000930 n=16
+LOAD decode 1 S12 r=1.036221
+PAIR decode 1 S12 mean=1.036252 se=0.001361 norm=1.027184 normse=0.001191 n=16
+LOAD decode 1 S12_nocode r=1.054268
+LOAD decode 1 S11 r=1.043743
+SUBPAIR decode 1 S12_nocode mean=1.017397 se=0.001166 norm=1.020661 n=16
+SUBPAIR decode 1 S11 mean=1.007190 se=0.002356 norm=1.010408 n=16
+AA decode 16 mean=1.006947 lo=0.989350 hi=1.018381 se=0.002078 n=16
+AA12 decode 16 mean=0.993778 lo=0.982766 hi=1.007003 se=0.001729 n=16
+LOAD decode 16 A2 r=1.006977
+LOAD decode 16 S12 r=1.010152
+PAIR decode 16 S12 mean=1.010178 se=0.002195 norm=1.003259 normse=0.002698 n=16
+LOAD decode 16 S11 r=1.002775
+SUBPAIR decode 16 S11 mean=0.992685 se=0.002002 norm=0.998906 n=16
+AA decode 32 mean=1.001890 lo=0.994514 hi=1.016695 se=0.001364 n=16
+AA12 decode 32 mean=1.006720 lo=0.984892 hi=1.019346 se=0.002264 n=16
+LOAD decode 32 A2 r=1.001824
+LOAD decode 32 S12 r=1.011615
+PAIR decode 32 S12 mean=1.011657 se=0.001604 norm=1.009770 normse=0.001882 n=16
+LOAD decode 32 S11 r=1.003686
+SUBPAIR decode 32 S11 mean=0.992228 se=0.001702 norm=0.985636 n=16
+AA verify 1 mean=0.987574 lo=0.963294 hi=1.001386 se=0.002669 n=16
+AA12 verify 1 mean=1.000799 lo=0.969105 hi=1.024407 se=0.003645 n=16
+LOAD verify 1 A2 r=0.987733
+LOAD verify 1 S12 r=0.990937
+PAIR verify 1 S12 mean=0.990919 se=0.003583 norm=1.003468 normse=0.004091 n=16
+LOAD verify 1 S11 r=0.989986
+SUBPAIR verify 1 S11 mean=0.999083 se=0.004012 norm=0.998362 n=16
+AA verify 16 mean=1.000643 lo=0.997013 hi=1.005339 se=0.000532 n=16
+AA12 verify 16 mean=1.000335 lo=0.998626 hi=1.002263 se=0.000269 n=16
+LOAD verify 16 A2 r=1.000634
+LOAD verify 16 S12 r=1.000003
+PAIR verify 16 S12 mean=1.000015 se=0.000355 norm=0.999375 normse=0.000447 n=16
+LOAD verify 16 S12_noF4 r=1.005689
+LOAD verify 16 S11 r=1.005797
+SUBPAIR verify 16 S12_noF4 mean=1.005672 se=0.000478 norm=1.005336 n=16
+SUBPAIR verify 16 S11 mean=1.005799 se=0.000372 norm=1.005463 n=16
+AA verify 32 mean=0.999147 lo=0.997740 hi=1.000536 se=0.000214 n=16
+AA12 verify 32 mean=0.999772 lo=0.997758 hi=1.002393 se=0.000346 n=16
+LOAD verify 32 A2 r=0.999151
+LOAD verify 32 permw r=1.000925
+PAIR verify 32 permw mean=1.000923 se=0.000361 norm=1.001777 normse=0.000305 n=16
+LOAD verify 32 S12 r=1.001129
+PAIR verify 32 S12 mean=1.001124 se=0.000282 norm=1.001979 normse=0.000259 n=16
+LOAD verify 32 S12_noF4 r=1.006025
+LOAD verify 32 S11 r=1.007196
+SUBPAIR verify 32 S12_noF4 mean=1.004903 se=0.000414 norm=1.005133 n=16
+SUBPAIR verify 32 S11 mean=1.006072 se=0.000473 norm=1.006302 n=16
+END shapes=12/12 elapsed=15.0s left=100.2s
+LAB_END lab_s=15.1 prepare_s=184.8

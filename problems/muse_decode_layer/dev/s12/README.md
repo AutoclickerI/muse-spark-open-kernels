@@ -14,9 +14,10 @@ The all-three precursor and its compact wrapper **c64aed26** passed full admissi
 The S13 takeover found and fixed an inherited A/B namespace bug: V9 reseeding dropped real prepare's
 split-QKV choice, inflating decode-1 reversion timings and moving unchanged decode controls. The S12
 harness now copies/asserts the complete prepared choices; old sent manifests/receipts remain archived.
-F4/wide verify comparisons are unaffected. Corrected S12 coding-off in **4de869d4** is +1.8602%, positive
-but inside that run's A:A upper +2.0506%; the final 32-round decode1 recheck is running in S13's lab.
-The source **240248b2** remains frozen and locally admitted; its coding promotion proof is being revalidated.
+F4/wide verify comparisons are unaffected. The corrected **cb38a0503a434573** recheck (16 seeds, 32 rounds
+at decode1) validates **240248b2**: coding off **1.017397** vs S12 A:A radius .010433; F4 off
+**1.005672 / 1.004903** vs A:A radii .002263 / .002393 at verify16/32. All unchanged controls pass.
+The direct S12 recheck gate is true. S13 final **958f1258** builds on this exact frozen source.
 
 Tested pieces:
 
