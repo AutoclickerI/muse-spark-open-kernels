@@ -108,6 +108,7 @@ def _cl_graph(fn):
 
 
 def _cl_times(graphs, rounds):
+    """Per-graph lists of `rounds` times (us); every round replays every graph once (alternating order)."""
     evs = []
     for r in range(rounds):
         order = list(range(len(graphs)))
@@ -119,12 +120,12 @@ def _cl_times(graphs, rounds):
             a.record()
             graphs[j].replay()
             b.record()
-            evs.append((j, a, b))
+            evs.append((j, r, a, b))
     torch.cuda.synchronize()
-    vals = [[] for _ in graphs]
-    for j, a, b in evs:
-        vals[j].append(a.elapsed_time(b) * 1e3)
-    return [statistics.median(v) for v in vals]
+    vals = [[0.0] * rounds for _ in graphs]
+    for j, r, a, b in evs:
+        vals[j][r] = a.elapsed_time(b) * 1e3
+    return vals
 
 
 # S8's per-(T, role) Triton tile (_seed_v9_gemv_choices) and the P7 lane's best balanced arm (26fd09a7: BN 64, NS 4).
@@ -133,6 +134,11 @@ CL_S8 = {'qkv': (32, 1024, 128, False), 'o': (64, 512, 128, False), 'pool_router
 CL_S8_32 = {'qkv': (64, 512, 128, False), 'o': (64, 512, 128, False), 'pool_router': (64, 512, 128, False)}
 CL_BAL = {'qkv': 7, 'o': 2, 'pool_router': 6, 'unpool_slice': 16, 'unpooler': 2}
 SMEM_MAX = 227 * 1024
+CL_ROUNDS = 24
+
+
+CL_SHAPES = ((8, 1, 2), (8, 1, 4), (4, 2, 2))  # (NW, RT, PIPE) swept for every kernel step V
+CL_INSTANCES = tuple((nt, rt, pipe, v) for v in (1, 2, 3) for nt in (1, 2, 4) for rt, pipe in ((1, 2), (1, 4), (2, 2)))
 
 
 def cl_configs(N, K, M):
@@ -141,18 +147,16 @@ def cl_configs(N, K, M):
     sms = torch.cuda.get_device_properties(0).multi_processor_count
     smax = min(SMEM_MAX, torch.cuda.get_device_properties(0).shared_memory_per_block_optin)
     out = []
-    for NW, RT, pipes in ((4, 1, (2, 3, 4)), (4, 2, (2, 3)), (8, 1, (2, 4))):
+    for NW, RT, PIPE in CL_SHAPES:
         if R % (NW * RT):
             continue
         rc = R // (NW * RT)
         ss = []
         for waves in (1, 2, 3, 4):
             s = max(1, min(KB, round(waves * sms / rc)))
-            if s not in ss and cd_smem(M, K, s) <= smax:
+            if s not in ss and max(cd_smem(M, K, s, v) for v in (1, 3)) <= smax:
                 ss.append(s)
-        for s in ss:
-            for p in pipes:
-                out.append((NW, RT, p, s))
+        out += [(NW, RT, PIPE, s) for s in ss]
     return out
 
 
@@ -178,7 +182,7 @@ def lab(deadline, weights):
                  unpool_slice=weights['unpooler'][:1024].contiguous(), unpooler=weights['unpooler'].contiguous())
     lines = []
     tc = time.monotonic()
-    cd_module()
+    cd_module(CL_INSTANCES)
     comp_s = time.monotonic() - tc
     torch.cuda.synchronize()
     te = time.monotonic()
@@ -189,17 +193,17 @@ def lab(deadline, weights):
     ext = cl_ext()
     sink = torch.zeros(4, dtype=torch.int32, device=dev)
     empty = _cl_graph(lambda: None)
-    base = _cl_times([empty], 8)[0]
-    lines.append(f'META standalone graphs after lab_cold_l2; us = median of 16 minus an empty graph ({base:.2f} us); '
-                 f'rd16/rd12 = plain 16 B stream over the bf16 / coded bytes (528 CTAs); s8 = S8 Triton tile; bal = P7 '
-                 f'balanced BN64/S/NS4; cd NW/RT/PIPE/S = coded GEMV; encode {enc_s:.2f}s all 5 roles, '
-                 f'compile {comp_s:.1f}s, bit-exact {"OK" if ok else "FAIL"}, {wkind} weights; '
-                 + ' '.join(f'{k}:esc={c["nesc"]}' for k, c in coded.items()))
-    sums = []
+    base = statistics.median(_cl_times([empty], 8)[0])
+    lines.append(f'META cold-L2 graphs, {CL_ROUNDS} paired rounds, us = median - empty ({base:.2f}); Vv[NW/RT/PIPE/S us] '
+                 'best arms of step v (1 = 35c875e6 kernel, 2 = +entry metadata + escape prefetch, 3 = 2 + bulk-copy '
+                 'activation chunks on mbarriers + zero row); dV = paired median V - V1 at V1 best; '
+                 f'enc {enc_s:.2f}s comp {comp_s:.1f}s exact {"OK" if ok else "FAIL"} {wkind}; '
+                 + ' '.join(f'{k}:{c["nesc"]}' for k, c in coded.items()))
+    sums, gains = [], []
     for t in (1, 8, 16, 32):
         names = ('qkv', 'o', 'pool_router', 'unpool_slice') if t <= 8 else ('qkv', 'o', 'pool_router', 'unpooler')
         for name in names:
-            if time.monotonic() > deadline - 6:
+            if time.monotonic() > deadline - 8:
                 lines.append(f'SKIP t={t} {name}')
                 continue
             try:
@@ -217,25 +221,33 @@ def lab(deadline, weights):
                 arms.append(('cublas', lambda: F.linear(x, w)))
                 arms.append(('bal', lambda: gb_run(x, w, 64, CL_BAL[name], 4)))
                 err = 0.0
-                for NW, RT, PIPE, S in cl_configs(N, K, t):
-                    fn = lambda NW=NW, RT=RT, PIPE=PIPE, S=S: cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE)[0]
-                    P = fn()
-                    torch.cuda.synchronize()
-                    err = max(err, float((P.double().sum(0) - ref).norm() / ref.norm()))
-                    arms.append((f'cd{NW}/{RT}/{PIPE}/{S}', fn))
+                for V in (1, 2, 3):
+                    for NW, RT, PIPE, S in cl_configs(N, K, t):
+                        fn = lambda NW=NW, RT=RT, PIPE=PIPE, S=S, V=V: cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, V=V)[0]
+                        P = fn()
+                        torch.cuda.synchronize()
+                        err = max(err, float((P.double().sum(0) - ref).norm() / ref.norm()))
+                        arms.append((f'{V}:{NW}/{RT}/{PIPE}/{S}', fn))
                 graphs = [_cl_graph(fn) for _, fn in arms]
-                us = [max(u - base, 1e-3) for u in _cl_times(graphs, 16)]
+                vals = _cl_times(graphs, CL_ROUNDS)
                 del graphs
-                got = dict(zip((a for a, _ in arms), us))
-                cd = sorted((u, a) for a, u in got.items() if a.startswith('cd'))
+                got = {a: max(statistics.median(v) - base, 1e-3) for (a, _), v in zip(arms, vals)}
+                raw = {a: v for (a, _), v in zip(arms, vals)}
+                best = {V: sorted((u, a) for a, u in got.items() if a.startswith(f'{V}:')) for V in (1, 2, 3)}
+                cfg1 = best[1][0][1][2:]
+                dv = {V: statistics.median(x - y for x, y in zip(raw[f'{V}:{cfg1}'], raw[f'1:{cfg1}'])) for V in (2, 3)}
                 ctrl = min(v for k, v in got.items() if k in ('s8', 'cublas', 'bal'))
                 lines.append(f'R t={t} {name} rd16={got["rd16"]:.2f} rd12={got["rd12"]:.2f} '
-                             + ' '.join(f'{k}={got[k]:.2f}' for k in ('s8', 'cublas', 'bal') if k in got)
-                             + ' | ' + ' '.join(f'[{a[2:]} {u:.2f}]' for u, a in cd[:5]) + f' e={err:.0e}')
-                sums.append(f'{name}@{t} {cd[0][0] - ctrl:+.2f}')
+                             + ' '.join(f'{k}={got[k]:.2f}' for k in ('s8', 'cublas', 'bal') if k in got) + ' |'
+                             + ''.join(f' V{V}' + ''.join(f'[{a[2:]} {u:.2f}]' for u, a in best[V][:2 if V == 3 else 1])
+                                       for V in (1, 2, 3))
+                             + f' | dV2={dv[2]:+.2f} dV3={dv[3]:+.2f} e={err:.0e}')
+                sums.append(f'{name}@{t} {best[3][0][0] - ctrl:+.2f}')
+                gains.append(f'{name}@{t} {best[3][0][0] - best[1][0][0]:+.2f}')
             except Exception as exc:
                 lines.append(f'ERROR t={t} {name} {type(exc).__name__}: {str(exc).splitlines()[0][:150]}')
             torch.cuda.empty_cache()
-    lines.append('SUM best cd - best control (us): ' + ', '.join(sums))
+    lines.append('SUM best V3 - best control (us): ' + ', '.join(sums))
+    lines.append('GAIN best V3 - best V1 (us): ' + ', '.join(gains))
     lines.append(f'END t={time.monotonic() - t0:.1f}s')
     return lines

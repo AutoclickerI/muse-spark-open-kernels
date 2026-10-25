@@ -82,15 +82,18 @@ def ref_weights(seed, dev):
             'unpooler': w['unpooler'], 'unpooler_slice': w['unpooler'][:1024].contiguous()}
 
 
-def check_gemv(name, w, c, dev, configs, ms=(1, 8, 16, 32)):
+VS = (1, 2, 3)  # the kernel's lab steps (coded_gemv V)
+
+
+def check_gemv(name, w, c, dev, configs, ms=(1, 5, 8, 12, 16, 20, 32)):
     ok = True
     for M in ms:
         x = (torch.randn((M, w.shape[1]), device=dev) * 0.5).to(torch.bfloat16)
         ref = x.double() @ w.double().T
-        for S, NW, RT, PIPE in configs:
-            if (w.shape[0] // 16) % (NW * RT) or S > w.shape[1] // 64 or cd_smem(M, w.shape[1], S) > SMEM_MAX:
+        for (S, NW, RT, PIPE), V in ((cfg, V) for cfg in configs for V in VS):
+            if (w.shape[0] // 16) % (NW * RT) or S > w.shape[1] // 64 or cd_smem(M, w.shape[1], S, V) > SMEM_MAX:
                 continue
-            P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False)
+            P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V)
             y = P.sum(0).double()
             fin = torch.isfinite(ref)
             same_nonfinite = torch.equal(torch.isnan(y[~fin]), torch.isnan(ref[~fin])) and torch.equal(y[~fin & ~torch.isnan(ref)], ref[~fin & ~torch.isnan(ref)])
@@ -98,7 +101,7 @@ def check_gemv(name, w, c, dev, configs, ms=(1, 8, 16, 32)):
             good = err < 3e-5 and same_nonfinite and torch.isfinite(y[fin]).all().item()
             ok &= good
             if not good or (S, NW, RT, PIPE) == configs[0]:
-                print(f'GEMV {name:20s} M={M:2d} S={S:2d} NW={NW} RT={RT} PIPE={PIPE} err={err:.2e} '
+                print(f'GEMV {name:20s} M={M:2d} S={S:2d} NW={NW} RT={RT} PIPE={PIPE} V={V} err={err:.2e} '
                       f'nonfinite={"ok" if same_nonfinite else "MISMATCH"} {"OK" if good else "FAIL"}', flush=True)
     return ok
 
@@ -119,14 +122,14 @@ def check_integer_gemv(dev):
         for M in (1, 8, 16, 32):
             x = torch.randint(-8, 9, (M, K), device=dev, generator=g).to(torch.bfloat16)
             ref = (x.double() @ w.double().T)
-            for S, NW, RT, PIPE in ((1, 4, 1, 2), (7, 4, 2, 3), (16, 8, 1, 4)):
-                if (N // 16) % (NW * RT) or S > K // 64 or cd_smem(M, K, S) > SMEM_MAX:
+            for (S, NW, RT, PIPE), V in ((cfg, V) for cfg in ((1, 4, 1, 2), (7, 4, 2, 2), (16, 8, 1, 4)) for V in VS):
+                if (N // 16) % (NW * RT) or S > K // 64 or cd_smem(M, K, S, V) > SMEM_MAX:
                     continue
-                P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False)
-                same = torch.equal(P.double().sum(0), ref) if S == 1 else torch.equal(P.double().sum(0), ref)
+                P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V)
+                same = torch.equal(P.double().sum(0), ref)
                 ok &= same
                 if not same:
-                    print(f'INT GEMV {N}x{K} M={M} S={S} NW={NW} RT={RT} PIPE={PIPE} MISMATCH '
+                    print(f'INT GEMV {N}x{K} M={M} S={S} NW={NW} RT={RT} PIPE={PIPE} V={V} MISMATCH '
                           f'max abs {(P.double().sum(0) - ref).abs().max().item()}', flush=True)
         print(f'INT GEMV {N}x{K} esc={c["nesc"]} {"OK" if ok else "FAIL"}', flush=True)
     return ok
@@ -138,7 +141,7 @@ def main():
     args = ap.parse_args()
     dev = 'cuda'
     ok = True
-    configs = [(7, 4, 1, 3), (1, 4, 1, 2), (6, 4, 2, 2), (11, 8, 1, 4), (3, 2, 2, 3), (16, 4, 1, 4)]
+    configs = [(7, 4, 1, 2), (1, 4, 1, 2), (6, 4, 2, 2), (11, 8, 1, 4), (3, 2, 2, 4), (16, 4, 1, 4), (22, 8, 1, 2)]
     ok &= check_integer_gemv(dev)
     for seed in range(1234, 1234 + args.seeds):
         for name, w in ref_weights(seed, dev).items():
@@ -157,7 +160,7 @@ def main():
             if name == 'row scales 2^-120..2^120':  # keep products inside FP32 range for the reference
                 wf = w.float().clamp(-2.0 ** 60, 2.0 ** 60).to(torch.bfloat16)
                 c = cd_encode(wf)
-            ok &= check_gemv(name, wf, c, dev, [(1, 4, 1, 2), (2, 2, 2, 3), (4, 4, 1, 4)])
+            ok &= check_gemv(name, wf, c, dev, [(1, 4, 1, 2), (2, 2, 2, 2), (4, 4, 1, 4)])
     print('ALL OK' if ok else 'FAILURES', flush=True)
     sys.exit(0 if ok else 1)
 
