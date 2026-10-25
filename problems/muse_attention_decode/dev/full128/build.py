@@ -42,8 +42,13 @@ DI void pv128(float (&o)[8][4],const uint32_t (&a)[16],const uint8_t* VT) {
     a=s.index('template <bool MASK>\nDI void softmax');b=s.index('DI void rescale(',a)
     sm=s[a:b].replace('template <bool MASK>', 'template <int NB,bool MASK>').replace('float (&s)[8][4]','float (&s)[NB][4]').replace('uint32_t (&pk)[8]','uint32_t (&pk)[NB]')
     sm=sm.replace('n < 8','n < NB').replace('float v[8]','float v[NB]')
-    sm=sm.replace('for (int n = 0; n < 4; n++) v[n] = fmaxf(v[n], v[n + 4]);', 'for (int stride=NB/2;stride;stride/=2)\n#pragma unroll\n      for(int n=0;n<stride;n++)v[n]=fmaxf(v[n],v[n+stride]);')
-    sm=sm.replace('mx[rh] = fmaxf(fmaxf(v[0], v[2]), fmaxf(v[1], v[3]));','mx[rh] = v[0];').replace('kk < 2','kk < NB/4')
+    sm=sm.replace('for (int n = 0; n < 4; n++) v[n] = fmaxf(v[n], v[n + 4]);', '''if constexpr(NB==16) {
+#pragma unroll
+      for(int n=0;n<8;n++)v[n]=fmaxf(v[n],v[n+8]);
+    }
+#pragma unroll
+    for(int n=0;n<4;n++)v[n]=fmaxf(v[n],v[n+4]);''')
+    sm=sm.replace('kk < 2','kk < NB/4')
     s=s[:a]+sm+s[b:]
     s=s.replace('(seq - lo + 63) >> 6','(seq - lo + 127) >> 7').replace('(sq - lo + 63) >> 6','(sq - lo + 127) >> 7').replace('w.lo + 64 * w.k','w.lo + 128 * w.k')
     # Two 64-key transpose slabs for each KV head.
@@ -54,6 +59,11 @@ DI void pv128(float (&o)[8][4],const uint32_t (&a)[16],const uint8_t* VT) {
     a=s.index('DI void page_fetch(');b=s.index('// Online softmax',a)
     pp=s[a:b].replace('16 * pw + (lane & 15)','32 * pw + lane').replace('if (lane < 16) cp4(ring + slot * 64 + 16 * pw + lane','cp4(ring + slot * 128 + 32 * pw + lane')
     pp=pp.replace('slot * 8192','slot * 16384').replace('head * 4096','head * 8192').replace('i < 4','i < 8').replace('16 * pw + 4 * i + q','32 * pw + 4 * i + q').replace('ps * 64 + kk','ps * 128 + kk')
+    # cp.async waits are per issuing warp. Keep both 16-key slabs owned by the
+    # same warp that transposes them; a contiguous 32-key ownership crosses warps.
+    pp=pp.replace('key0 + 32 * pw + lane','key0 + 16 * pw + (lane&15) + 64*(lane>>4)')
+    pp=pp.replace('slot * 128 + 32 * pw + lane','slot * 128 + 16 * pw + (lane&15) + 64*(lane>>4)')
+    pp=pp.replace('32 * pw + 4 * i + q','16 * pw + 4*(i&3) + q + 64*(i>>2)')
     s=s[:a]+pp+s[b:]
     a=s.index('template <int ST, bool MASK>\nDI void step');b=s.index('template <int ST>\n__global__',a)
     c=s[a:b].replace('float (&sx)[8][4]','float (&sx)[16][4]').replace('uint32_t (&pc)[8]','uint32_t (&pc)[16]').replace('uint32_t (&pn)[8]','uint32_t (&pn)[16]')

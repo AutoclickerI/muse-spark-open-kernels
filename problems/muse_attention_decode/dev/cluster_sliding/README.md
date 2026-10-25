@@ -75,3 +75,66 @@ cluster plan and can have extra residency waves; their entry spreads are explici
 Next structural fix is cooperative projection reduction (`build_compact.py`): one warp per **real** Q/K/V
 row, one load pass over all projection partials, and metadata/RoPE/zeroing before the dependency wait.
 The prior design redundantly loaded padded Q rows and serialized Q and new-KV input passes.
+
+Cooperative-prep H200 job **915040fb98e841b5** (`2ae16f19`) wins decode 1, with four paired seeds ×
+eight cold replays. It still misses the requested latency target.
+
+| Decode sliding | S11 increment us | N64 increment / layer ratio | N128 increment / layer ratio | Fixed4 ratio | Fixed8 ratio | A2 |
+|---|---:|---:|---:|---:|---:|---:|
+| B1 | 14.912 | 10.912 / .96487 | 12.288 / .96387 | 1.01094 | .96913 | 1.00428 |
+| B16 | 14.592 | 14.720 / 1.01770 | 12.192 / .99221 | .99816 | .98773 | .99735 |
+| B32 | 18.208 | 26.368 / 1.02335 | 18.176 / .97677 | .97915 | 1.03759 | .99304 |
+
+All attention gates pass. B1 native/prep-replacement median input/norm/rope/store phase falls from
+5.28 to **1.824 us**, and clocked gather/virtual tile 1.792 to 1.472 us. Its component graph (actual QKV
+producer + attention) ends 11.264 us from first CTA entry, projection-ready at 5.024 us. The actual whole
+layer attention increment is larger, consistent with downstream PDL kernels competing for resources;
+that cause remains a hypothesis until the next paired policy study. B16/32 whole-layer changes include
+allowed numerical routing changes, so the small ratios do not establish an attention-path promotion.
+
+`patch_cluster.py` builds an experimental S11 decode-1 candidate (`842eb8eb`, N128 auto cluster).
+Its **normal and forced local_eval audits both complete**: 13 TASK tests, 12 fresh graph shapes, 24 static
+checks each. An initial report-write failure was fixed by creating the output directories and rerunning
+both audits; the successful JSON is under ignored `out/{normal,forced}`. This is not yet an integration
+promotion: compare against the already-handed-off direct-partials winner over many seeds first.
+
+Next: `build_gated.py` stages the gate in the same cooperative load pass (in unused KN storage), then
+reads it from shared memory in the epilogue. `build_gated_lab.py` compares S11 gate split, one full-QKV
+projection + one gated attention launch, and PDL dependent release after preparation (eight paired seeds).
+The shared-gate kernel passes all 24 decode TASK/FP32-partial checks, and every policy runs inside the exact
+local whole-layer/CUPTI lab. Payload `ea59b980` landed as c773699a977f4574; results below.
+
+
+Shared-gate/policy job **c773699a977f4574** (eight seeds × eight): C128 gate-split whole-layer ratios
+.99005/.99011/.96795 at decode B1/B16/B32. Full-QKV fused N128 gives 1.00258/1.00492/.96837;
+late dependent release gives 1.00191/1.00331/.96890. Fused N64 gives 1.00063/1.01767/1.00193.
+The B1 increment drops 14.95→9.70 us with full-QKV fusion, but its larger producer offsets that saving.
+Retain the original split-gate producer. A2 .99855/.99852/.99551; no new policy promoted.
+
+## Nonspinning last-CTA reduction
+
+`build_last.py` replaces cluster DSM with global FP32 partials, a release/acquire arrival counter, and a
+nonspinning last-CTA epilogue. It can distribute splits without cluster residency constraints. No reset or
+combine kernel exists; captured attention consists of exactly one launch. `last_driver.py` uses shape-only
+split selection and caches zero-initialized counters before capture. Counter keys exclude capture-stream
+identity, so graph capture cannot insert a hidden zeros launch. Native N64/N128 use 98/138–139 registers,
+32 stack bytes from the RoPE helper, zero spills and no C75xx warnings. CUDA `3815beab`.
+
+**7e93cc81af17489a**, decode host, combined structural lab, 16 seeds × eight cold replays:
+
+| Decode sliding | S11 increment us | N64 ratio / increment us | N128 ratio / increment us | Fixed4 ratio | Fixed8 ratio | Direct-partials | A2 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| B1 | 15.10 | .97994 / 13.76 | **.95868 / 11.10** | 1.01766 | .97818 | .97811 | .99221 |
+| B16 | 14.53 | 1.01092 / 14.59 | .98881 / 14.08 | 1.01514 | .99094 | .99371 | .99615 |
+| B32 | 18.18 | 1.01542 / 20.29 | .99545 / 18.24 | .99833 | 1.02796 | .99648 | 1.00406 |
+
+B1 C128/direct-partials .98017, SE .00131, saving 1.43225 us; C128/S11 saves 2.98375 us. Handoff only
+B1 sliding: [patch and validation](HANDOFF_LAST.md). Whole-layer critical-path target remains missed.
+All native gates pass and full replay outputs are finite; native changed-candidate official check is pending.
+The combined check's unchanged S11 host passes 13/13, 1.71559x, CI [1.68986,1.74133]. Receipts and paired
+seed archive: `../full128/h200_7e93cc81af17489a.json`, `runs/muse_decode_layer/20261025T100820Z_check_7e93cc81af17489a.*`.
+
+Independent `check_last.py`: 24 fixtures × eight fresh graph replays, zero counter residues. Bare
+`fead4a00` candidate normal and forced: 13 TASK, 12 graph shapes, 24 static checks each. The exact next
+wrapped check also validates the register-only full128 follow-up in prepare; heavy local audits run serially
+after simultaneous audits exhausted GPU0 memory. Failed OOM screens stayed local and successful screens reran cleanly.
