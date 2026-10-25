@@ -406,6 +406,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Attention inside the layer (S7 `2f6471d5` profile, us per layer, sliding / full): decode 1 10.2 / 19.4, decode 16
   16.3 / 104.1, decode 32 16.7 / 191.2, verify 1 20.7 / 31.8, verify 16 22.5 / 199.1, verify 32 24.5 / 381.4. Sliding
   sits 3-200x its floor in 46 layers per load (5 kernels at verify); full decode at 1.5-1.65x, full verify at ~3x.
+- S11 final's attention per layer (`8fd0d2a6`, projection stub subtracted, us, sliding / full): decode 1 11.6 / 19.5,
+  decode 16 8.3 / 99.9, decode 32 12.6 / 190.1 (attn_main); verify 1 16.5 (FA3) / 29.5 (FA3), verify 16 15.9 (FA3) /
+  142.7 (vq8), verify 32 21.7 (FA3) / 253.1 (vq8). Cooperative four-lane QK prep + vq8's fused merge loses at every
+  shape: 1.07-1.39 sliding, 1.22-1.31 decode full, 1.03-1.09 verify full (best c6 1.031 at verify 32).
 
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
