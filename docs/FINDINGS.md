@@ -460,7 +460,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   `79061182`, 4 seeds x 8 cold rounds, CUPTI critical increments in the whole S11 layer): decode 1 14.2-14.9 us vs
   S11's 14.75 (r 0.996-1.011); decode 16 / 32 worse (r 1.02-1.10); verify 1 12.6-12.8 vs 17.4 (r 0.970); verify 16 /
   32 neutral. The decode-1 sliding increment is a dependent latency chain (page index -> gather -> softmax -> combine
-  -> epilogue on cold data), not launch overhead.
+  -> epilogue on cold data), not launch overhead. A 32-thread m16 FP8-MMA variant with every page ID in flight
+  (`c0fd644c`) loses 1.01-1.18 at decode 1 and 1.03-1.13 at decode 16 / 32; its phase clocks at decode-1 sliding
+  (median us): entry / QKV wait 3.6, prep 1.2, KV gather 5.3, QK + softmax + PV 1.8 + 0.9 + 0.2, combine + epilogue
+  1.8 of 14.4. The gather of history (independent of this call's QKV) is the largest phase.
 - vq8 with a balanced native softmax at full verify 16 / 32 (`8b8e4e2b`): 1.005-1.020 vs S11's vq8 (per-tile clocks:
   132 CTAs, 150 / 300 tiles, producer ends ~3 us before the consumers); the revised shared-RoPE cooperative prep loses
   1.08-1.30 at sliding decode and 1.25-1.27 at full decode; verify-1 sliding 0.973 and 1.002 in two parts of the run
