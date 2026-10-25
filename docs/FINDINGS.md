@@ -560,8 +560,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   -0.64 / -0.77 / +0.02 / +0.88 / -1.91, split (S 8) +0.39 / -0.72 / +0.25 / -0.47 / +2.53 / -0.83, gs16 worse; A:A
   0.986-1.003. Config sweep (`997bd383`): BN 64 / S 4 / 4 stages (64 CTAs) best or tied at b1 S -1.79, b1 F -0.37,
   b16 S -2.23 us. Taken on decode 1 S/F, decode 16 S, decode 32 F (`patch_gate_split.py` 3139a8e2, ~+0.35%).
-  Inferred: the 16.8 MB gate GEMV (~7.5 us) outlasts attention's window at b1 and must finish before O; at b16 full
-  attention's 384 CTAs fill the GPU.
+  Measured (`0a48a058`, globaltimer stamps per CTA, 8 cold replays): the gate GEMV's dot takes 6.5-7.1 us alone but
+  stretches to attention's end beside it: 6.7 us at decode-1 sliding (attention 8.9), 18.3 at decode-1 full
+  (attention 19.7), 8.3 at decode-16 sliding, 96.4 at decode-16 full (attention 106). Both stream HBM at once, so
+  the overlap saves only the bandwidth attention leaves idle: a real gain only where attention is short and
+  latency-bound (decode-1 sliding, trace 0.965).
 - Boundary glue at t = 128 / 256 (`3345699f`, paired, real-shaped synthetic weights), us vs `_boundary_fast` at b1 /
   b2: weight vectors loaded after the wait +0.01 / +0.04 at t=128, -1.07 / -1.13 at t=256 (`patch_glue_late.py`
   fa509715, t > 128 only); two PDL kernels over column chunks +1.5 to +12.8 (row-per-CTA wins at large T, as cluster
