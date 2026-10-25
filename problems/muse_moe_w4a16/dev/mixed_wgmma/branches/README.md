@@ -70,7 +70,11 @@ W13 1401 -> 1385, W2 1246 -> 1238; no spills. New adaptive payload compares PERM
 AD64D/P/PW, AD128D/P/PW (live N32 groups, S2); P=rotated scale words, W=wide layout.
 Final payload **3bf3b5f2**: M128 and M256 each **100/100 bit-equal** on poisoned route-transition checks, nearby
 sizes and local_start=64 pass. Both capacity-64 and capacity-128 kernels compile for sm90a without spills.
-Sent on the MoE check host as wrapper **779b8fe6**; job id follows in the detached receipt.
+Sent on the MoE check host as wrapper **779b8fe6**, job **b88d04fe86aa45a7** (pending).
+Collect with `python3 tools/okc_run.py collect b88d04fe86aa45a7`, then
+`python3 tools/h200_lab.py read b88d04fe86aa45a7`. Select by paired ratios and seed spread, then build the nf-only
+patch for the integration lane's whole-layer A/B. Current policy stays S11+F4+LIW until that evidence lands;
+the 1.3x floor target is not reached by the stage batch above.
 
 ## Earlier integrated base (S7 -> S11)
 
