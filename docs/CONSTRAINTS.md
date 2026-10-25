@@ -6,7 +6,7 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 ## Hard limits (bind above G0)
 
 1. **Rules acceptance is a person's act.** [hard] Never run `okc login`; never call `POST /rules/accept`. [external: llms.txt:65]
-2. **Real speedups only.** [hard] No tampering with timing or harness, no work outside the timed calls, no caching or replaying outputs, nothing below the allowed precision or work (fewer experts, skipped keys). Final places are medians of reruns on held-out data and nearby shapes (much slower nearby shapes get a closer look); follow the spirit (upstreamable speedups). [external: llms.txt:112, 135-139]
+2. **Real speedups only.** [hard] No tampering with timing or harness, no work outside the timed calls, no caching or replaying outputs, nothing below the allowed precision or work (fewer experts, skipped keys). Final places are medians of reruns on held-out data and nearby shapes; follow the spirit (upstreamable speedups). [external: llms.txt:112, 135-139]
 3. **Withdraw reward-hacky runs** with `okc withdraw <job>` and tell Jihoon. [hard] [external: llms.txt:137]
 4. **CUDA-graph capturable.** [hard] No host sync, no allocations or control flow that depend on input values; branching on shapes and `config` is fine. [external: llms.txt:106]
 5. **Weights keep their precision.** [hard] Lossless repacking only (NVFP4 stays NVFP4, BF16 stays BF16). The FP32 router may run as BF16 hi + lo with FP32 accumulation. [external: llms.txt:107]
@@ -32,9 +32,10 @@ Each rule is `[hard]` (external, or protects others, shared resources or Jihoon'
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
 | 4 | Value-dependent work inside kernels (device counters, route-driven schedules) | Rule 4 bans host-side sync and control flow | allowed |
 | 5 | Lossless re-encoding, compression, duplicate layouts and padding of the weights in `prepare()` (recoded scale bank, coded BF16 exponents), decoded in timed kernels | llms.txt:107; audit what each tensor holds at what precision, not its bytes | allowed |
-| 5 | NVFP4 weights or scales held in a wider format made in `prepare()` (BF16/FP16/FP8 values or their bit patterns) | Moves timed dequant into prepare | forbidden (withdrawn 07d07d96, S4-S6) |
-| 2, 6 | Correctness | TASK.md:76-87 is the check (routing by expert membership and score, near ties free, any order; 3-15% relative L2), not our exact-ID or 0.003 gates: time such variants; promote with margin on many seeds | allowed |
+| 5 | NVFP4 weights or scales held in a wider format made in `prepare()` (BF16/FP16/FP8 values or their bit patterns) | Moves timed dequant into prepare | forbidden |
+| 2, 6 | Correctness | TASK.md:76-87 is the check (routing by expert membership, near ties free, any order; 3-15% relative L2), not our own gates; promote with margin on many seeds | allowed |
 | 2 | The unpooler's T <= 8 shortcut (TASK.md:22) | Set by the call's total T; internal chunking doesn't extend it | forbidden above T = 8 |
 | 2 | L2 persistence (access-policy windows, set-aside L2) across the per-replay flush | Defeats the cold-cache protocol | forbidden |
 | 2 | Prefetching a later stage's weights into L2 within one timed call | Nothing survives the flush | allowed |
-| 2, 8 | Lab runs: timing other kernels inside `prepare()` (`tools/h200_lab.py`) | Computes nothing the timed calls return | allowed (R-20261024-3) |
+| 2, 8 | Lab runs: timing other kernels inside `prepare()`, or at import time on attention (`tools/h200_lab.py`) | Computes nothing the timed calls return | allowed (R-20261024-3, R-20261025-3) |
+| 8 | Another team's permissively licensed public code, shipped with its notice | llms.txt:151 (the right to license it) | allowed per repo (R-20261025-2) |

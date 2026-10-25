@@ -5,9 +5,8 @@ By the kernel close (2026-11-05 16:59 KST): the highest score on the overall ker
 (openkernelchallenge.dev/leaderboard), aiming for 1st place; the only goal (R-20261025-1). Promote a change by its
 six-load score on identical inputs and its spread across seeds (places are rerun medians, CONSTRAINTS 2).
 
-Ranks are all that's published; our fit (FINDINGS "Boards"): overall = max(decode layer, a weighted sum of the
-component boards); the sum stays below the decode layer even at the leaders' components (1.87 vs 2.285x), so other
-kernels count only inside the decode layer.
+Only ranks are published; our fit (FINDINGS "Boards") is overall = max(decode layer, a weighted component sum), and
+the sum stays below the decode layer even at the leaders' components, so other kernels count only inside the layer.
 
 ## Subgoals (ranked)
 
@@ -17,12 +16,11 @@ kernels count only inside the decode layer.
 | 2 | G2 | H200-verified stage kernels inside the decode layer at its 12 scored shapes (M = 1-256): MoE, attention, projections, glue | G1 is built from them (the leader: every stage at ~1.5x its floor) | Each stage at <= 1.3x its floor (byte-bound ones at the judge's best measured stream) or below it through lossless weight coding, in a whole-layer paired lab that passes TASK.md's checks with margin on many seeds |
 
 ## Optimize vs spend (R-20261024-2)
-The board score is the only target; loop speed counts only because it buys score (pack new information into each
-judge run). Everything no hard limit bounds is a resource to spend, never minimized: GPU memory, power, SMs,
+The board score is the only target; loop speed counts only because it buys score. Everything no hard limit bounds is a resource to spend, never minimized: GPU memory, power, SMs,
 `prepare` and compile time, quotas, local GPUs, agent time.
 
 ## Non-goals
-- Serving (patch, board, prefill, drafter) until the serving round (R-20261025-1); parked in [serving/](serving/README.md).
+- Serving (patch, board, prefill, drafter) until the serving round (R-20261025-1); parked in [docs/serving/](serving/README.md).
 - Component and prefill boards for their own sake (fit above; prefill isn't on the overall board).
 - Renting an H200: H200 numbers come from the judge (R-20261023-3).
 

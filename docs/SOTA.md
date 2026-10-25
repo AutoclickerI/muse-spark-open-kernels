@@ -6,34 +6,30 @@ times (API, 2026-10-23): proj 4,830.8; attention 3,766.3; MoE 13,448.5; decode l
 step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sglang_us`). Its per-shape times
 and where they go are in [FINDINGS](FINDINGS.md).
 
-## Leaderboard (snapshot `runs/boards/20261025T022740Z`, 2026-10-25 11:27 KST)
+## Leaderboard (snapshot `runs/boards/20261025T150149Z`, 2026-10-26 00:01 KST)
 
-**Overall board (openkernelchallenge.dev/leaderboard): rank 145.** The API gives overall ranks only. Our fit of them
+**Overall board (openkernelchallenge.dev/leaderboard): rank 180.** The API gives overall ranks only. Our fit of them
 (`python3 tools/board_model.py <snapshot>`; derivation in FINDINGS "Boards") is max(decode, 0.351 + 0.312 MoE + 0.268
-proj + 0.105 attention), prefill ignored. On this snapshot: Kendall tau 0.964 over all teams, 0.987 over the top 300,
-48 of the top 50 ranks exact, and it predicts our rank 145 exactly. Every top-50 team's component composite is below
-its decode run, so **the overall board is the decode-layer board**: our score is 1.6073 (S9), and rank 50 needs decode
-1.826 (+0.219).
+proj + 0.105 attention), prefill ignored: Kendall tau 0.964 over all teams, 0.995 over the top 300, the top 50 exact.
+**The overall board is the decode-layer board.** Rank 50 needs decode 1.896x (+0.289); serving-queue priority goes
+to the top 50 at the kernel close (llms.txt:120).
 
 | Overall rank | Team | Decode layer (= score) | MoE | Proj | Attention |
 |---|---|---|---|---|---|
 | 1 | colinlikescode | 2.285 | 2.523 | 1.610 | 2.844 |
-| 2 | abhishekgahlot2 | 2.203 | 2.352 | 1.461 | 2.643 |
-| 3 | pjmullin3 | 2.190 | 2.308 | 1.426 | 2.910 |
-| **145** | **AutoclickerI (us)** | **1.607** | 1.694 | 1.187 | 1.403 |
+| **180** | **AutoclickerI (us)** | **1.607** | 1.694 | 1.187 | 1.603 |
 
-| Problem | Our best H200 run (on the board) | Our rank / entries | Leader | 10th | 50th |
+| Problem | Our best run on the board | Our rank / entries | Leader | 10th | 50th |
 |---|---|---|---|---|---|
-| muse_decode_layer | 1.6073x S9 `b7c59570` (S8 1.5742x, S7R 1.5735x; S4-S6 withdrawn) | 145 / 587 | 2.285x (colinlikescode) | 2.066x | 1.826x |
-| muse_moe_w4a16 | 1.694x (a lab host run, `14f942d5`) | 235 / 688 | 2.523x (colinlikescode) | 2.335x | 2.092x |
-| muse_attention_decode | 1.588x vq8 page ring `81cccbc1` (1.533x `1b993e2f`) | 358 / 641 | 2.910x (pjmullin3) | 2.476x | 2.113x |
-| muse_bf16_proj | 1.187x (a lab host run, `b15a3bde`) | 463 / 864 | 1.610x (colinlikescode) | 1.517x | 1.402x |
-| muse_prefill_layer | 1.453x `3920d3f0` | 106 / 336 | 1.867x (dylantirandaz) | 1.767x | 1.600x |
+| muse_decode_layer | 1.6073x S9 `b7c59570` (S14 final scores at the 09:00 KST reset; host runs 1.717-1.753x) | 180 / 650 | 2.285x (colinlikescode) | 2.134x | 1.896x |
+| muse_moe_w4a16 | 1.694x (an old kernel, lab host run `14f942d5`) | 281 / 749 | 2.523x (colinlikescode) | 2.369x | 2.140x |
+| muse_attention_decode | 1.603x | 280 / 703 | 2.910x (pjmullin3) | 2.530x | 2.209x |
+| muse_bf16_proj | 1.187x (an old kernel, lab host run `b15a3bde`) | 553 / 954 | 1.610x (colinlikescode) | 1.534x | 1.472x |
+| muse_prefill_layer | 1.454x | 135 / 392 | 1.926x (cu788) | 1.781x | 1.626x |
 
-The field moved fast overnight (decode leader 2.101 -> 2.285 between 10-24 20:24 and 10-25 09:27) and held between
-09:27 and 10:44. What each of our stages would have to reach to match is in [bound](reference/bound.md) "Score vs
-floor" (today's leader = every stage at ~1.5x its floor). Receipts are in `runs/<problem>/`; boards come from
-`okc leaderboard [<problem>] --json`.
+The decode leader has held 2.285x since 10-25 09:27 KST; 10th and 50th keep rising (2.066 -> 2.134 and 1.826 ->
+1.896 in 13 hours). Our component entries are old kernels, so the leader-vs-us component ratios overstate our
+per-stage gaps (PLAN P12 measures them). Boards come from `okc leaderboard [<problem>] --json`.
 
 ## Public competitor code (GitHub search 2026-10-25 18:00 KST)
 

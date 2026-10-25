@@ -12,7 +12,7 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 ## Practice
 
 - Next work: the highest-ranked `active` or `next` row in [PLAN](docs/PLAN.md) "Ranked work" that no lane owns.
-- Judge every change by the decode layer's score (GOAL "Terms"; lever table: `problems/muse_decode_layer/dev/NEXT_CHECKS.md`).
+- Judge every change by the decode layer's score (GOAL "Terms").
 - The critical path is judge latency (PLAN "Critical path"): never idle on it.
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon if unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
