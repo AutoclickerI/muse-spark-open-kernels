@@ -1,0 +1,40 @@
+{
+  "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "payload_sha256": "500830f737d858dd0589dcfa4b3b9678f168c9d535a478019e66742e7ec46bd2",
+  "wrapper_sha256": "d8b2e3c7129a22fe42a20af337e3ff86bb040c7d2c75e36c0ed58239dcfb61fe",
+  "host_source_unchanged": true,
+  "host_prepare_unchanged": true,
+  "normal": {
+    "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "shapes": 12,
+    "seeds_per_shape": 3,
+    "profiles_per_seed": 3,
+    "all_schedule_signatures_identical": true,
+    "all_output_gates_pass": true,
+    "all_stamps_monotone": true,
+    "max_accounting_error": 2.1662681895488045e-16,
+    "archive_chars": 8345,
+    "timestamp_and_dag_roundtrip_exact": true,
+    "logical_work_roundtrip_exact": true,
+    "critical_accounting_roundtrip_exact": true,
+    "local_sm120_only": true
+  },
+  "forced": {
+    "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "shapes": 12,
+    "seeds_per_shape": 3,
+    "profiles_per_seed": 3,
+    "all_schedule_signatures_identical": true,
+    "all_output_gates_pass": true,
+    "all_stamps_monotone": true,
+    "max_accounting_error": 2.1774165556754606e-16,
+    "archive_chars": 8710,
+    "timestamp_and_dag_roundtrip_exact": true,
+    "logical_work_roundtrip_exact": true,
+    "critical_accounting_roundtrip_exact": true,
+    "local_sm120_only": true
+  },
+  "sender_pid": 1539344,
+  "priority": 2.0,
+  "not_before": 1792972800.0
+}

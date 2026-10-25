@@ -1,0 +1,11 @@
+{
+  "pid": 1539344,
+  "priority": 2.0,
+  "t": 1792952173.9550126,
+  "problem": "muse_decode_layer",
+  "file": "problems/muse_decode_layer/lab/lab_lab_s15_timeline.py",
+  "sha256": "d8b2e3c7129a22fe42a20af337e3ff86bb040c7d2c75e36c0ed58239dcfb61fe",
+  "note": "h200_lab problems/muse_decode_layer/dev/s15_timeline/lab_s15_timeline.py: P7 S15 critical-path timeline final: exact 60254883 host/prepare/kernels unchanged;CUPTI timestamps kernels+memcpy+memset on all streams, full PDL/event DAG;12shapes x3 busiest-shard seeds x3 cold profiles;untouched/mapped schedule fingerprints and gates match;logical byte/FLOP roofs+PLAN decoder;normal/forced 108 profiles each monotone, wall accounting error <2.18e-16;replaces own prior kernel-only timeline sender",
+  "not_before": 1792972800.0,
+  "until": 1792972800.0
+}

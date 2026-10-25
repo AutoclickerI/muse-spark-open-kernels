@@ -1,0 +1,51 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "arms": {
+    "L": {
+      "sha256": "233239ad2bd19d69ae31df6e3a94dc45d9c454f229c41fc8fc91aaa93808b83d",
+      "without": []
+    },
+    "no_o": {
+      "sha256": "c1054ad13f62d7c94737649fb616385addc9d7a1a8a2466bc591fcd3e0698b84",
+      "without": [
+        "o"
+      ]
+    },
+    "no_pool128": {
+      "sha256": "7a137dcfa8281b2b8a6fd1c9a420eb38caddc1f85978d54d32c453abce02b403",
+      "without": [
+        "pool128"
+      ]
+    },
+    "no_unpool128": {
+      "sha256": "4d0d73b098856c8550e22cb18ca7820452a48f522da0bacdebc25eeefc4f90c1",
+      "without": [
+        "unpool128"
+      ]
+    },
+    "no_v1full": {
+      "sha256": "d4fae50a9eb85ce322b44c51edf8ba6e0860a139611ba4b5a9e088249c6d5d4f",
+      "without": [
+        "v1full"
+      ]
+    },
+    "no_v32slide": {
+      "sha256": "02d53bb54d10a4b58fddc53cd7988a3f3b2b51b1dd9964f1ddb98e2a4ac69e87",
+      "without": [
+        "v32slide"
+      ]
+    }
+  },
+  "groups": [
+    "o",
+    "pool128",
+    "unpool128",
+    "v1full",
+    "v32slide"
+  ],
+  "diff": {
+    "add": 12,
+    "remove": 3
+  },
+  "all_string_literals_identical": 36
+}

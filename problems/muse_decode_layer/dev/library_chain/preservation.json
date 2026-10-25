@@ -1,0 +1,55 @@
+{
+  "changed_functions": [
+    [
+      "_vdsk_gemm",
+      0
+    ],
+    [
+      "_vdsk_project",
+      0
+    ],
+    [
+      "_best7_project",
+      1
+    ]
+  ],
+  "unchanged_tables": [
+    "BEST7_SETTINGS",
+    "PROJ_PINS",
+    "CD_ROWS",
+    "GB_ROWS",
+    "SMALLM_FLAGS",
+    "GATE_SPLIT_ROWS",
+    "GLUE_CL_ROWS",
+    "NF_SMALL",
+    "NF_WIDE"
+  ],
+  "unchanged_cuda_vendor_literals": 36,
+  "qkv_vdsk_binary_identical": true,
+  "binaries": [
+    {
+      "name": "S15",
+      "sass_sha256": "5c342793d176e11189ae3084650a3d1118be104febc96e1db93842e0d7e8f9b7"
+    },
+    {
+      "name": "S15L",
+      "sass_sha256": "5c342793d176e11189ae3084650a3d1118be104febc96e1db93842e0d7e8f9b7"
+    }
+  ],
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "candidate_sha256": "233239ad2bd19d69ae31df6e3a94dc45d9c454f229c41fc8fc91aaa93808b83d",
+  "dispatch_changes": {
+    "o": [
+      "T128",
+      "T256"
+    ],
+    "vdsk": [
+      "T128 pool_router",
+      "T128 unpooler"
+    ],
+    "vq8": [
+      "B1Q8 full",
+      "B32Q8 sliding"
+    ]
+  }
+}

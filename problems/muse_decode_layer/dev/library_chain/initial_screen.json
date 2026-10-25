@@ -1,0 +1,45 @@
+{
+  "failures": [
+    {
+      "label": "scored-v16-s",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "scored-v16-s",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "scored-v16-f",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "scored-v16-f",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "ctx64k-16x8-s",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "ctx64k-16x8-s",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "ctx64k-16x8-f",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "ctx64k-16x8-f",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "page64-v16-f",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    },
+    {
+      "label": "page64-v16-f",
+      "error": "OutOfResources: out of resource: shared memory, Required: 131104, Hardware limit: 101376. Reducing block sizes or `num_stages` may help."
+    }
+  ],
+  "cause": "sm120 shared-memory capacity; no correctness failure; explicit stand-in added for oversized Hopper launch"
+}

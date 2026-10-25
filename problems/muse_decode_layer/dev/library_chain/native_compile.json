@@ -1,0 +1,70 @@
+[
+  {
+    "name": "olayer_e038df407c21",
+    "sha256": "e038df407c2194f7b7ae39a1f9771bdd718ce0ae5e54ccd824d7def59b27b380",
+    "ok": true,
+    "registers": [
+      90
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "release": true,
+    "wait": true
+  },
+  {
+    "name": "rl_3bf39eb5eb48",
+    "sha256": "3bf39eb5eb48b4287ff267d726d60c8dc1fede7ecd949a07b8e06d9c8e2c3ea3",
+    "ok": true,
+    "registers": [
+      154
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "release": true,
+    "wait": true
+  },
+  {
+    "name": "pool_router",
+    "ok": true,
+    "sha256": "8a636918d1ccbdb81189e1fc200510ffed4f6401cac62d672a8820c210e6741a",
+    "shared": 163880,
+    "resource_usage": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _vdsk_gemm:\n  REG:90 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:952 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "release_instruction": [
+      34
+    ],
+    "wait_instruction": [
+      36
+    ],
+    "first_global_load": [
+      276
+    ],
+    "metadata": "KernelMetadata(allowed_dot_input_precisions=['tf32', 'tf32x3', 'ieee', 'bf16x3', 'bf16x6'], arch='sm90', backend_name='cuda', debug=False, default_dot_input_precision='tf32', deprecated_fp8_dot_operand_dtypes=['fp8e4b15'], enable_fp_fusion=True, enable_reflect_ftz=True, extern_libs=[['libdevice', '/opt/sglang/lib/python3.12/site-packages/triton/backends/nvidia/lib/libdevice.10.bc']], global_scratch_align=1, global_scratch_size=0, hash='c79b15927468eb57d470a9df7e3d57b659038d3f57125bb2428b1377e332cfc4', instrumentation_mode='', ir_override=None, launch_cooperative_grid=False, launch_pdl=True, max_num_imprecise_acc_default=1073741824, maxnreg=None, name='_vdsk_gemm', num_ctas=1, num_stages=5, num_warps=8, profile_scratch_align=1, profile_scratch_size=0, ptx_options=None, ptx_version=None, sanitize_overflow=True, shared=163880, supported_fp8_dtypes=['fp8e4b15', 'fp8e4nv', 'fp8e5'], target=GPUTarget(backend='cuda', arch=90, warp_size=32), tensordesc_meta=[{'swizzle': 3, 'elem_size': 2, 'elem_type': 10, 'block_size': [128, 64], 'fp4_padded': False, 'is_im2col': False}, {'swizzle': 3, 'elem_size': 2, 'elem_type': 10, 'block_size': [128, 64], 'fp4_padded': False, 'is_im2col': False}], tmem_size=0, triton_version='3.8.0', warp_size=32)"
+  },
+  {
+    "name": "unpooler",
+    "ok": true,
+    "sha256": "66fade5e3b8f986928cde28fb5b06da8e096c32df2fdb81850c43e6f5c72c2c3",
+    "shared": 163840,
+    "resource_usage": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _vdsk_gemm:\n  REG:110 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:584 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "release_instruction": [
+      27
+    ],
+    "wait_instruction": [
+      28
+    ],
+    "first_global_load": [
+      150
+    ],
+    "metadata": "KernelMetadata(allowed_dot_input_precisions=['tf32', 'tf32x3', 'ieee', 'bf16x3', 'bf16x6'], arch='sm90', backend_name='cuda', debug=False, default_dot_input_precision='tf32', deprecated_fp8_dot_operand_dtypes=['fp8e4b15'], enable_fp_fusion=True, enable_reflect_ftz=True, extern_libs=[['libdevice', '/opt/sglang/lib/python3.12/site-packages/triton/backends/nvidia/lib/libdevice.10.bc']], global_scratch_align=1, global_scratch_size=0, hash='541064d89b080439b5e19510253cbb92ee7ad0571470270ea4a70e7359e4e857', instrumentation_mode='', ir_override=None, launch_cooperative_grid=False, launch_pdl=True, max_num_imprecise_acc_default=1073741824, maxnreg=None, name='_vdsk_gemm', num_ctas=1, num_stages=5, num_warps=8, profile_scratch_align=1, profile_scratch_size=0, ptx_options=None, ptx_version=None, sanitize_overflow=True, shared=163840, supported_fp8_dtypes=['fp8e4b15', 'fp8e4nv', 'fp8e5'], target=GPUTarget(backend='cuda', arch=90, warp_size=32), tensordesc_meta=[], tmem_size=0, triton_version='3.8.0', warp_size=32)"
+  }
+]

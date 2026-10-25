@@ -1,0 +1,572 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "rows": [
+    {
+      "load": "d1",
+      "call": "none",
+      "shape": "",
+      "kernel_count_per_layer": 0,
+      "layers": 62,
+      "kernels_per_step": 0,
+      "external": false
+    },
+    {
+      "load": "d16",
+      "call": "_attn_sumcast (owned)",
+      "shape": "S x 16 x 1280/2304 -> BF16",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": false,
+      "gap_us": [
+        0.448,
+        0.417
+      ],
+      "model": "owned release already at entry; ordinary attn_main consumer; S15e tests its enable/wait edge"
+    },
+    {
+      "load": "d32",
+      "call": "_attn_sumcast (owned)",
+      "shape": "S x 32 x 1280/2304 -> BF16",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": false,
+      "gap_us": [
+        0.416,
+        0.384
+      ],
+      "model": "owned release already at entry; ordinary attn_main consumer; S15e tests its enable/wait edge"
+    },
+    {
+      "load": "v1",
+      "call": "FA3 metadata + main + combine",
+      "shape": "Q[1,8,16,64], FP8 KV, page1, ctx~80K",
+      "kernel_count_per_layer": 3,
+      "layers": 62,
+      "kernels_per_step": 186,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.545,
+          "gap_plus_tail_allowance_us": 5.265,
+          "library_residence_span_us": 13.407
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.544,
+          "gap_plus_tail_allowance_us": 5.264,
+          "library_residence_span_us": 26.4
+        }
+      ],
+      "modeled_step_us": 326.414
+    },
+    {
+      "load": "v16",
+      "call": "FA3 metadata + main + combine",
+      "shape": "Q[16,8,16,64], FP8 KV, page1, ctx~80K",
+      "kernel_count_per_layer": 3,
+      "layers": 46,
+      "kernels_per_step": 138,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 1.024,
+          "gap_plus_tail_allowance_us": 5.744,
+          "library_residence_span_us": 17.472
+        }
+      ],
+      "modeled_step_us": 264.224
+    },
+    {
+      "load": "v16",
+      "call": "o cuBLAS/Lt",
+      "shape": "(128,8192,1024) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.8,
+          "gap_plus_tail_allowance_us": 3.16,
+          "library_residence_span_us": 7.392
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.896,
+          "gap_plus_tail_allowance_us": 3.256,
+          "library_residence_span_us": 7.104
+        }
+      ],
+      "modeled_step_us": 197.456
+    },
+    {
+      "load": "v16",
+      "call": "pool_router cuBLAS/Lt",
+      "shape": "(128,4608,8192) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.607,
+          "gap_plus_tail_allowance_us": 2.967,
+          "library_residence_span_us": 26.081
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.608,
+          "gap_plus_tail_allowance_us": 2.968,
+          "library_residence_span_us": 26.656
+        }
+      ],
+      "modeled_step_us": 183.97
+    },
+    {
+      "load": "v16",
+      "call": "unpooler cuBLAS/Lt",
+      "shape": "(128,8192,4096) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.0,
+          "gap_plus_tail_allowance_us": 2.36,
+          "library_residence_span_us": 20.192
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.032,
+          "gap_plus_tail_allowance_us": 2.392,
+          "library_residence_span_us": 19.616
+        }
+      ],
+      "modeled_step_us": 146.832
+    },
+    {
+      "load": "v32",
+      "call": "FA3 metadata + main + combine",
+      "shape": "Q[32,8,16,64], FP8 KV, page1, ctx~80K",
+      "kernel_count_per_layer": 3,
+      "layers": 46,
+      "kernels_per_step": 138,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.928,
+          "gap_plus_tail_allowance_us": 5.648,
+          "library_residence_span_us": 23.552
+        }
+      ],
+      "modeled_step_us": 259.808
+    },
+    {
+      "load": "v32",
+      "call": "qkv_gate cuBLAS/Lt",
+      "shape": "(256,2304,8192) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.832,
+          "gap_plus_tail_allowance_us": 3.192,
+          "library_residence_span_us": 20.8
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.32,
+          "gap_plus_tail_allowance_us": 2.68,
+          "library_residence_span_us": 20.832
+        }
+      ],
+      "modeled_step_us": 189.712
+    },
+    {
+      "load": "v32",
+      "call": "o cuBLAS/Lt",
+      "shape": "(256,8192,1024) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.544,
+          "gap_plus_tail_allowance_us": 2.904,
+          "library_residence_span_us": 9.024
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.384,
+          "gap_plus_tail_allowance_us": 2.744,
+          "library_residence_span_us": 9.056
+        }
+      ],
+      "modeled_step_us": 177.488
+    },
+    {
+      "load": "v32",
+      "call": "pool_router cuBLAS/Lt",
+      "shape": "(256,4608,8192) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.576,
+          "gap_plus_tail_allowance_us": 2.936,
+          "library_residence_span_us": 32.448
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.543,
+          "gap_plus_tail_allowance_us": 2.903,
+          "library_residence_span_us": 33.569
+        }
+      ],
+      "modeled_step_us": 181.504
+    },
+    {
+      "load": "v32",
+      "call": "unpooler cuBLAS/Lt",
+      "shape": "(256,8192,4096) M,N,K",
+      "kernel_count_per_layer": 1,
+      "layers": 62,
+      "kernels_per_step": 62,
+      "external": true,
+      "estimates": [
+        {
+          "layer": "S",
+          "gap_us": 0.0,
+          "gap_plus_tail_allowance_us": 2.36,
+          "library_residence_span_us": 25.28
+        },
+        {
+          "layer": "F",
+          "gap_us": 0.032,
+          "gap_plus_tail_allowance_us": 2.392,
+          "library_residence_span_us": 24.673
+        }
+      ],
+      "modeled_step_us": 146.832
+    }
+  ],
+  "timeline": [
+    {
+      "case": "d1S",
+      "stage": "attn",
+      "name": "_attn_sumcast_kernel",
+      "start_us": 5.472,
+      "end_us": 8.448,
+      "residence_us": 2.976,
+      "next_start_gap_us": 0.64
+    },
+    {
+      "case": "d1F",
+      "stage": "attn",
+      "name": "_attn_sumcast_kernel",
+      "start_us": 6.752,
+      "end_us": 9.536,
+      "residence_us": 2.784,
+      "next_start_gap_us": 0.416
+    },
+    {
+      "case": "d16S",
+      "stage": "attn",
+      "name": "_attn_sumcast_kernel",
+      "start_us": 5.248,
+      "end_us": 8.704,
+      "residence_us": 3.456,
+      "next_start_gap_us": 0.448
+    },
+    {
+      "case": "d16F",
+      "stage": "attn",
+      "name": "_attn_sumcast_kernel",
+      "start_us": 5.92,
+      "end_us": 12.192,
+      "residence_us": 6.272,
+      "next_start_gap_us": 0.417
+    },
+    {
+      "case": "d32S",
+      "stage": "attn",
+      "name": "_attn_sumcast_kernel",
+      "start_us": 5.056,
+      "end_us": 12.64,
+      "residence_us": 7.584,
+      "next_start_gap_us": 0.416
+    },
+    {
+      "case": "d32F",
+      "stage": "attn",
+      "name": "_attn_sumcast_kernel",
+      "start_us": 4.864,
+      "end_us": 8.928,
+      "residence_us": 4.064,
+      "next_start_gap_us": 0.384
+    },
+    {
+      "case": "v1S",
+      "stage": "attn",
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>",
+      "start_us": 14.112,
+      "end_us": 16.288,
+      "residence_us": 2.176,
+      "next_start_gap_us": -1.152
+    },
+    {
+      "case": "v1S",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >",
+      "start_us": 15.136,
+      "end_us": 25.184,
+      "residence_us": 10.048,
+      "next_start_gap_us": -0.896
+    },
+    {
+      "case": "v1S",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >",
+      "start_us": 24.288,
+      "end_us": 27.519,
+      "residence_us": 3.231,
+      "next_start_gap_us": 0.129
+    },
+    {
+      "case": "v1F",
+      "stage": "attn",
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>",
+      "start_us": 14.016,
+      "end_us": 17.408,
+      "residence_us": 3.392,
+      "next_start_gap_us": -2.368
+    },
+    {
+      "case": "v1F",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >",
+      "start_us": 15.04,
+      "end_us": 34.336,
+      "residence_us": 19.296,
+      "next_start_gap_us": -0.704
+    },
+    {
+      "case": "v1F",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >",
+      "start_us": 33.632,
+      "end_us": 40.416,
+      "residence_us": 6.784,
+      "next_start_gap_us": 0.128
+    },
+    {
+      "case": "v16S",
+      "stage": "attn",
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>",
+      "start_us": 18.24,
+      "end_us": 20.608,
+      "residence_us": 2.368,
+      "next_start_gap_us": -1.44
+    },
+    {
+      "case": "v16S",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >",
+      "start_us": 19.168,
+      "end_us": 32.928,
+      "residence_us": 13.76,
+      "next_start_gap_us": -0.768
+    },
+    {
+      "case": "v16S",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >",
+      "start_us": 32.16,
+      "end_us": 35.712,
+      "residence_us": 3.552,
+      "next_start_gap_us": 0.672
+    },
+    {
+      "case": "v16S",
+      "stage": "o",
+      "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
+      "start_us": 38.304,
+      "end_us": 45.696,
+      "residence_us": 7.392,
+      "next_start_gap_us": 0.8
+    },
+    {
+      "case": "v16S",
+      "stage": "pool_router",
+      "name": "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
+      "start_us": 53.28,
+      "end_us": 79.361,
+      "residence_us": 26.081,
+      "next_start_gap_us": 0.607
+    },
+    {
+      "case": "v16S",
+      "stage": "unpooler",
+      "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_NNT",
+      "start_us": 254.496,
+      "end_us": 274.688,
+      "residence_us": 20.192,
+      "next_start_gap_us": -0.064
+    },
+    {
+      "case": "v16F",
+      "stage": "o",
+      "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_TNT",
+      "start_us": 166.624,
+      "end_us": 173.728,
+      "residence_us": 7.104,
+      "next_start_gap_us": 0.896
+    },
+    {
+      "case": "v16F",
+      "stage": "pool_router",
+      "name": "nvjet_sm90_tss_96x64_64x10_4x2_h_bz_TNN",
+      "start_us": 180.416,
+      "end_us": 207.072,
+      "residence_us": 26.656,
+      "next_start_gap_us": 0.608
+    },
+    {
+      "case": "v16F",
+      "stage": "unpooler",
+      "name": "nvjet_sm90_tst_128x64_64x8_1x2_h_bz_NNT",
+      "start_us": 349.568,
+      "end_us": 369.184,
+      "residence_us": 19.616,
+      "next_start_gap_us": 0.032
+    },
+    {
+      "case": "v32S",
+      "stage": "qkv_gate",
+      "name": "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN",
+      "start_us": 0.0,
+      "end_us": 20.8,
+      "residence_us": 20.8,
+      "next_start_gap_us": 0.832
+    },
+    {
+      "case": "v32S",
+      "stage": "attn",
+      "name": "void flash::prepare_varlen_num_blocks_kernel<2, false>",
+      "start_us": 24.928,
+      "end_us": 27.264,
+      "residence_us": 2.336,
+      "next_start_gap_us": -1.408
+    },
+    {
+      "case": "v32S",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >",
+      "start_us": 25.856,
+      "end_us": 45.536,
+      "residence_us": 19.68,
+      "next_start_gap_us": -0.64
+    },
+    {
+      "case": "v32S",
+      "stage": "attn",
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >",
+      "start_us": 44.896,
+      "end_us": 48.48,
+      "residence_us": 3.584,
+      "next_start_gap_us": 0.576
+    },
+    {
+      "case": "v32S",
+      "stage": "o",
+      "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+      "start_us": 51.04,
+      "end_us": 60.064,
+      "residence_us": 9.024,
+      "next_start_gap_us": 0.544
+    },
+    {
+      "case": "v32S",
+      "stage": "pool_router",
+      "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+      "start_us": 69.44,
+      "end_us": 101.888,
+      "residence_us": 32.448,
+      "next_start_gap_us": 0.576
+    },
+    {
+      "case": "v32S",
+      "stage": "unpooler",
+      "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+      "start_us": 289.152,
+      "end_us": 314.432,
+      "residence_us": 25.28,
+      "next_start_gap_us": 0.0
+    },
+    {
+      "case": "v32F",
+      "stage": "qkv_gate",
+      "name": "nvjet_sm90_tst_96x64_64x10_2x4_h_bz_TNN",
+      "start_us": 0.0,
+      "end_us": 20.832,
+      "residence_us": 20.832,
+      "next_start_gap_us": 0.32
+    },
+    {
+      "case": "v32F",
+      "stage": "o",
+      "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+      "start_us": 285.728,
+      "end_us": 294.784,
+      "residence_us": 9.056,
+      "next_start_gap_us": 0.384
+    },
+    {
+      "case": "v32F",
+      "stage": "pool_router",
+      "name": "nvjet_sm90_tss_80x128_64x8_4x2_h_bz_TNN",
+      "start_us": 303.488,
+      "end_us": 337.057,
+      "residence_us": 33.569,
+      "next_start_gap_us": 0.543
+    },
+    {
+      "case": "v32F",
+      "stage": "unpooler",
+      "name": "nvjet_sm90_tst_128x128_64x6_2x1_v_bz_TNT",
+      "start_us": 551.808,
+      "end_us": 576.481,
+      "residence_us": 24.673,
+      "next_start_gap_us": 0.032
+    }
+  ],
+  "source_receipt": "runs/muse_prefill_layer/20261025T071342Z_check_c6bd22e2084c4809.json",
+  "receipt_sha256": "a629549f3ae48481a26e01e56cba0ecf9d9931c855c7add0cd2d6f524c3523f0",
+  "producer_tail_allowance_per_edge_us": 2.36,
+  "caveats": [
+    "S11 fixture-specific activity, not an S15 timing claim",
+    "tail is not identifiable from kernel timestamps; gap+2.36us/edge is a screening model, not a gain claim",
+    "FA3 metadata/main/combine overlap internally in the receipt; external is not proof of implicit-exit scheduling",
+    "Lt algorithm may be a multi-kernel implementation; listed count is observed c6bd22e2, source plans do not guarantee it",
+    "zero separate torch BF16 cast on scored Hopper paths; _attn_port_raw .to is a dtype-preserving alias after owned sumcast",
+    "prepare-only repacks, scale casts, counter initialization and inverse-frequency cache creation are outside captured steady-state kernel_fn",
+    "no standalone q/k FP8 cast: fused into owned qk_prep, or VQ8/attn_main"
+  ]
+}

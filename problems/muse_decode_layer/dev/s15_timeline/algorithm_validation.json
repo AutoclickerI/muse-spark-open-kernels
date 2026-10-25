@@ -1,0 +1,123 @@
+{
+  "fork_join": {
+    "joins": [
+      {
+        "node": 4,
+        "winner": 2,
+        "runner_up": 3,
+        "slack_us": 2.0
+      }
+    ],
+    "wall_us": 7.0,
+    "critical_us": {
+      "qkv_gate": 1.0,
+      "moe_heavy": 4.9,
+      "b2": 1.0,
+      "launch_gaps": 0.1
+    },
+    "residence_us": {
+      "qkv_gate": 1.0,
+      "moe_heavy": 4.9,
+      "moe_light": 2.9,
+      "b2": 4.0
+    },
+    "path": [
+      {
+        "node": 1,
+        "stage": "qkv_gate",
+        "critical_us": 1.0,
+        "gap_us": 0.0
+      },
+      {
+        "node": 2,
+        "stage": "moe_heavy",
+        "critical_us": 4.9,
+        "gap_us": 0.1
+      },
+      {
+        "node": 4,
+        "stage": "b2",
+        "critical_us": 1.0,
+        "gap_us": 0.0
+      }
+    ],
+    "accounting_error_fraction": 0.0,
+    "monotone": true
+  },
+  "early_completion": {
+    "joins": [],
+    "wall_us": 6.0,
+    "critical_us": {
+      "qkv_gate": 1.0,
+      "moe_heavy": 4.9,
+      "launch_gaps": 0.1
+    },
+    "residence_us": {
+      "qkv_gate": 1.0,
+      "moe_heavy": 4.9,
+      "moe_light": 2.9,
+      "b2": 2.0
+    },
+    "path": [
+      {
+        "node": 1,
+        "stage": "qkv_gate",
+        "critical_us": 1.0,
+        "gap_us": 0.0
+      },
+      {
+        "node": 2,
+        "stage": "moe_heavy",
+        "critical_us": 4.9,
+        "gap_us": 0.1
+      }
+    ],
+    "accounting_error_fraction": 0.0,
+    "monotone": true
+  },
+  "event_join": {
+    "joins": [
+      {
+        "node": -4,
+        "winner": 2,
+        "runner_up": 3,
+        "slack_us": 2.0
+      }
+    ],
+    "wall_us": 7.1,
+    "critical_us": {
+      "qkv_gate": 1.0,
+      "moe_heavy": 4.9,
+      "b2": 1.0,
+      "launch_gaps": 0.2
+    },
+    "residence_us": {
+      "qkv_gate": 1.0,
+      "moe_heavy": 4.9,
+      "moe_light": 2.9,
+      "b2": 1.0
+    },
+    "path": [
+      {
+        "node": 1,
+        "stage": "qkv_gate",
+        "critical_us": 1.0,
+        "gap_us": 0.0
+      },
+      {
+        "node": 2,
+        "stage": "moe_heavy",
+        "critical_us": 4.9,
+        "gap_us": 0.1
+      },
+      {
+        "node": 4,
+        "stage": "b2",
+        "critical_us": 1.0,
+        "gap_us": 0.1
+      }
+    ],
+    "accounting_error_fraction": 1.2509555207044018e-16,
+    "monotone": true
+  }
+}
