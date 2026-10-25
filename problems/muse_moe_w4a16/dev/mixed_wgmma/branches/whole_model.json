@@ -1,0 +1,34 @@
+{
+  "128": {
+    "unique_MB": 467.14,
+    "unique_stream_us": 101.99563318777292,
+    "target_us": 132.5943231441048,
+    "current_us": 196.44,
+    "heavy_observed_us": 93.53999999999999,
+    "decode_once_no_multicast_us": 182.70601870724784,
+    "decode_once_multicast4_optimistic_us": 155.75492807974985,
+    "shared_queue_stream_service_us": 128.0628622115316,
+    "shared_queue_residual_us": 71.11,
+    "shared_queue_all_half_none_residual_us": [
+      143.0628622115316,
+      178.61786221153162,
+      214.1728622115316
+    ]
+  },
+  "256": {
+    "unique_MB": 558.37,
+    "unique_stream_us": 121.91484716157206,
+    "target_us": 158.4893013100437,
+    "current_us": 270.64,
+    "heavy_observed_us": 170.13,
+    "decode_once_no_multicast_us": 235.0441273121793,
+    "decode_once_multicast4_optimistic_us": 186.65755605753077,
+    "shared_queue_stream_service_us": 162.11981140237847,
+    "shared_queue_residual_us": 117.94,
+    "shared_queue_all_half_none_residual_us": [
+      177.11981140237847,
+      236.08981140237847,
+      295.0598114023785
+    ]
+  }
+}

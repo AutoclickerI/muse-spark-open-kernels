@@ -8,6 +8,14 @@ flight, no fills; META adds the heavy-only T32 and 8<count<=16 T8 lists) and the
 
 ## Handoff (current)
 
+**N16G4 handoff, H200 eea9d87b8d1640cf:** `patch_s12_light.py` **6aaf9a3d** applies onto exact
+S12 final **240248b2**, producing `s12_light.py` **98ed03ef**. It includes the pinned PERMW/wide
+changes and the measured N16G4 stream geometry. Requires sibling patch/build files; no project imports in
+its output. `check_light_patch.py` / `light_patch_equiv.json`: **18/18 bit-equal to the measured arm**,
+3 seeds x3 fixtures x2 M, all TASK gates pass. Normal `local_eval`: **13 tests +23 static PASS**
+(`light_normal.json`); forced **13 tests +12 graph shapes +23 static PASS** (`light_forced.json`). Actual N16 math also has the direct equivalence/poison checks below. Whole-layer pairing is still required.
+
+
 **PERMW for S12 final:** `patch_s12_permw.py` **a42a5832** applies onto exact **240248b2**,
 `cand_r3_best7_s12_final.py`, producing **4a4ed79f**. Final dropped wide after whole-layer job 937801fe; this
 patch restores wide as part of PERMW, using the pinned sibling `patch_s11_wide.py` **b2748e23**. It also accepts
@@ -77,14 +85,77 @@ rejected before a job id with "uses the network"; no network code exists. Only s
 Changing that metadata to "weight reads." was accepted as wrapper **56149757**, with all four CUDA hashes
 unchanged. The server scanner explanation is an inference from that one-token A/B.
 
-Next structural rebuild: `light_build.py` / `light_payload.py` **ce1ecf2e**, native CUDA **0a31e251**.
+Landed structural rebuild: `light_build.py` / `light_payload.py` **ce1ecf2e**, native CUDA **0a31e251**.
 NT1 now owns only <=8-token experts; a third stream runs N16 WGMMA for 9-16-token experts, so each reads and
 decodes its weights once instead of twice. Heavy N32 stays PERMW. No extra token padding. Persistent light
 grids 2 and 4 CTAs/SM are separate arms, allowing NT1 residency beside the smaller ~36 KB N16 CTAs.
 Local real-route screen: 48 fixtures/M/arm all TASK PASS. `light_check.py` / `light_validation.json`: **160**
 captured class-transition checks, NaN ACT/Y/SS/OUT before every replay, M127/128/255/256/257 and counts
 0/8/9/16/17/M; max L2/row **0.004222/0.004648**. Hopper compilation passes without spills.
-Accepted as MoE check **eea9d87b8d1640cf**, wrapper **29be9a1c**, pending. Local timings are not promotion evidence.
+MoE check **eea9d87b8d1640cf**, wrapper **29be9a1c**, landed: 16 seeds x3/M, all TASK PASS;
+A:A signed/abs/max -0.060/0.438/1.584 us. All numbers below are paired component timings.
+
+| M | S12 us | PERMW us (ratio) | N16G2 us (ratio) | N16G4 us (ratio) |
+|---|---:|---:|---:|---:|
+| 128 | 196.20 | 195.16 (0.9951) | 185.01 (0.9447) | **182.39 (0.9328)** |
+| 256 | 270.57 | 265.78 (0.9825) | 257.63 (0.9526) | **256.43 (0.9485)** |
+
+N16G4 wins both M. The fixture spreads are 0.799-1.010 / 0.912-1.008; full-MoE outputs often differ in
+last bits because N16 WGMMA and NT1 split-K sum in different orders. Max FP32 L2/row 0.004134/0.004709,
+well within TASK. This is not yet a whole-layer promotion and remains far above the unique-byte target.
+
+### Whole-MoE structural schedule
+
+`whole_model.py` / `whole_model.json` use the measured 3e8996f8 phase rates, with all branch service times
+added before an explicit overlap assumption (never treating max(heavy,NT1) as a prediction). Unique-weight
+floors at 4.58 TB/s are **102.0 /121.9 us**, so targets are **132.6 /158.5 us** for these fixtures.
+Decode-once at unchanged activation traffic models **182.7 /235.0 us**; four-way activation multicast gives
+an optimistic **155.8 /186.7 us** before cluster barriers, padding and occupancy costs. That is a bound using
+the old address-mix rate, not a measured multicast throughput. Shared scheduling with light weights read
+once models **178.6 /236.1 us**, range **143.1-214.2 /177.1-295.1** for full-to-zero residual overlap.
+The planning points nearly tie; shared scheduling was selected for the stronger M128 point without assigning
+an unmeasured multicast throughput. These models do not establish the <=1.3x outcome.
+
+`shared_build.py` / `shared.cu.inc` construct one work list for adaptive N8/N16/N32 tiles across every expert.
+The per-phase queue and single-launch DAG are paired arms. In the DAG, each completed W13 tile releases its
+stores before incrementing the expert counter; the last tile publishes W2 readiness. Every CTA can then
+consume that expert's W2 or take more W13 work. No branch-specific SM cap, software grid barrier or
+residency-dependent progress assumption; no host input-value control flow. Route resets all counters on
+every graph replay. The N8 copy guard avoids writing a 16-row activation tile into an 8-row allocation.
+
+Final payload `shared_payload.py` **cd8c87fb**, CUDA **f7df4e22**. `shared_check.py`:
+**450 captured checks**, invalid queue counters + NaN scratch, sizes127/128/255/256/257, empty, class-boundary,
+hot and real skewed routes; PHASE and DAG **75/75 bit-equal**, three replays/case; max L2/row
+0.004155/0.004782. SASS (`shared_sass.py/json`): W13/W2/DAG **125/134/139 regs**, no stack/spills,
+N32 K-loop **189.5/189.25/189.25 instructions per KT128**, 8 HGMMA +32 HMUL2 +9 LDGSTS. Group wait1
+is retained. Earlier out-of-line versions serialized every HGMMA despite no spills, and were discarded;
+the final uses one shared W13/W2 loop body and inline dispatch, preserving async groups.
+MoE check **ea794250c51744f7**, wrapper **0c8df035**, landed on16 seeds x3/M, all TASK PASS.
+S12 **195.67 /269.27 us**; PERMW **193.56 /263.26** (0.9890/0.9777);
+SHARED_PHASE **201.70 /279.17** (**1.0337 /1.0374**); SHARED_DAG **214.51 /297.85**
+(**1.0999 /1.1069**). A:A abs/max0.439/2.192 us. H200 occupancy4/3/3 CTAs/SM for W13/W2/DAG.
+**Both shared-list recipes lose; no integration.** Ready-expert scheduling adds another~13/19 us above
+PHASE. The experiment does not isolate atomic scheduling from changed light math/activation traffic.
+The optimistic planning estimate is rejected by this receipt; next build targets one read/decode plus
+shared activation slices, retaining NT1 for the light experts.
+
+The queue also replaces <=8-token NT1 with N8 WGMMA; this changes activation read traffic. `whole_bytes.py`
+counts that explicitly on the local versions of the same fixture seeds (routing can differ on H200):
+new light activation reads **90.9 /93.1 MB**, versus native phase refresh reads ~24 MB total. The planning
+model does not price this cache-traffic increase or the new queue atomics/register occupancy separately;
+its point estimate is optimistic. At the measured activation-inclusive stream rates, the extra bytes
+alone price ~5-8 us if they fail to overlap. This uncertainty is a reason to measure the queue, not claim
+a forecast or byte-floor result. No new branch recipe is promoted from this model.
+
+**Why the old N64 form lost:** `n64_audit.py/json` extracts the exact 858ff2fa payload and recompiles its
+lean N32/N64 kernels. S4 dynamic smem **52,223 ->84,991 B**, W13 static smem **4,096 ->8,192 B**,
+W13 registers **91 ->116**, W2 **87 ->110**. The shared-memory limit changes **4 ->2 CTAs/SM**.
+N64 doubles per-tile accumulators, can pad65-96 tokens to128 rather than96, keeps the channel-CTA activation
+rereads, and adds separate heavy-class launches. Its body phases actually rise183.4->195.8 us atM128 and
+266.6->280.1 atM256 (858ff2fa). These are measured costs plus source/resource evidence for an occupancy,
+padding and pipeline mechanism; the old lab did not isolate a single cause. Repeating N64 without changing
+those costs is closed. A multicast rebuild must share activation slices and demonstrate adequate residency.
+
 
 The earlier FP16 magic proposal is audited separately, not pursued as the main lever: `magic_audit.py` /
 `magic_audit.json` exhaust **65,024 FP4-pair x finite E4M3-code cases**. FP16 subnormal placement followed by
