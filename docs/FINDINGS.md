@@ -112,6 +112,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 | `4e212ec2` (scored) | S2 (`b0805447`): S1 + raw-bank CTA1g2112 at M=256 (distributed W2 combine) | 1.639 | 1.560 | 1.391 | 1.741 | 1.251 | 1.326 | 1.4742 (CI 1.4521-1.4963) |
 | `5c7323ea` (scored) | S3 (`cadef19a`): S2 with the recoded C1g2112 at M=256 | 1.584 | 1.541 | 1.356 | 1.730 | 1.284 | 1.353 | 1.4665 (CI 1.4445-1.4885) |
 | `ad858b58` (scored, withdrawn) | S4 (`9b2b2a48`): S3 + one-LOP3 NT1 at M=1-32 + D32g (16-bit scale words, forbidden) at M=128 | 1.657 | 1.641 | 1.411 | 1.826 | 1.342 | 1.353 | 1.5279 (CI 1.5050-1.5509) |
+| `e2f45792` (scored, withdrawn) | S5 (`f7064fc0`): S4 + H_H at M=128 (16-bit scale words, forbidden) | 1.680 | 1.557 | 1.401 | 1.789 | 1.501 | 1.353 | 1.5397 |
+| `fecc29af` (scored, withdrawn) | S6 (`4c98f12f`): S5 + mixed_parallel at M=256, o config6 at M=1 | 1.628 | 1.609 | 1.398 | 1.760 | 1.458 | 1.403 | 1.5370 |
 
 - best6's losses to v9 are MoE: decode 32 sliding `moe_fused<1>` 101.7 vs `moe_fused<2>` 137.6 us; verify 16
   sliding 258.9 vs 315.7 us. best7_reset shows the M=128 gap was the raw-scale bank, not the dispatch (verify 16
