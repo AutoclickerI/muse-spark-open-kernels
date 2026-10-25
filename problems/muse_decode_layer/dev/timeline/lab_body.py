@@ -25,7 +25,7 @@ def tl_host(weights):
         module._ap_fa3_scheduler_metadata = lambda *a, **kw: None
     if 'TL_LOCAL_INSTALL' in globals():
         TL_LOCAL_INSTALL(module)
-    state = module.prepare(weights)
+    state = tl_prepare_selected(module, weights)
     return module, state
 
 

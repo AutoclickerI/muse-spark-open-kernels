@@ -2,7 +2,10 @@ S11 final H200 graph timeline
 
 This lane measures the original `cand_r3_best7_s11_final.py` (`acda6c62`) at
 all twelve scored shapes: decode/verify × batch 1/16/32 × sliding/full.
-It changes no candidate kernels or dispatch choices. The prefill host supplies
+It changes no candidate kernels or dispatch choices. `selected_prepare.py`
+constructs the same selected S11 state and retains its selected expert,
+attention and projection gates; it omits compilation/tuning of unselected
+contenders so both the host and the lab fit prepare’s 300-second cap. The prefill host supplies
 its real layer weights; inputs use public generation, seed 172903, 80K context,
 soft keys, page size 1, fixed lengths at batch 1 and agentic lengths otherwise.
 These are one fixture per shape, not held-out decode-host routing or a multi-seed
@@ -70,17 +73,20 @@ Measurement and limits
   optimistic model, not a proven attainable ceiling. Stage residuals identify
   headroom envelopes, not causal measurements of time with no HBM traffic.
 
+Receipt accounting
+
+[jobs.json](jobs.json) keeps every H200 attempt. First attempt
+`2cc7b07dd29c4360` (`3862a1aa`) produced **zero timeline shapes**: host prepare
+136.4 s + full S11 prepare 144.8 s = 281.2 s, beyond the lab's deadline margin.
+Its 1.4313× host score concerns the unchanged prefill candidate. This is an
+unmeasured timeline, not a negative kernel result. The selected-only setup
+removes the unselected work that exhausted that budget.
+
 Results
 
-H200 prefill-host check **`2cc7b07dd29c4360`** accepted; payload SHA-256
-**`3862a1aa`**, source S11 **`acda6c62`**. Results await the judge receipt.
-No candidate speedup is claimed; paired ratios in this lane test instrumentation
-only.
-
-[validation.json](validation.json) records both local screens: each passed all
-13 official cases and all 23 static checks. The normal screen traced 160 nodes
-at 12 shapes; the forced screen traced 180 nodes at 12 shapes. Normal paired
-capture-query/no-query ratios ranged 0.9942–1.0067; CUPTI-on/off event ratios
-0.9954–1.0068. Forced ratios were 0.9907–1.0017 and 0.9932–1.0088. Route IDs
-matched in both captures. Final XZ/base85 packing round-tripped both full traces;
-empty-graph calibration also ran on sm_120. Raw local traces/logs stay ignored.
+Corrected H200 check **`c6bd22e2084c4809`**, payload **`ce30e3c3`**, is accepted.
+Both selected-only setup comparisons passed: 36 exact tensor checks and 36
+whole-layer fixtures (three seeds × twelve shapes) in normal and forced modes.
+Routes matched; maximum relative L2 was 0.000116 / 0.000074. The exact standalone
+selected-only payload completed twelve shapes locally in 16.9 seconds. Awaiting
+the H200 receipt; no candidate speedup is claimed.

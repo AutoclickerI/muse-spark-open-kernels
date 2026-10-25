@@ -1,7 +1,7 @@
 """Decode a lossless timeline archive from an H200 receipt and render tables.
 
 python3 .../timeline/report.py JOB_ID
-Writes results.json, nodes.csv, and measured.md in this directory.
+Writes results.json, nodes.csv, and the Results portion of README.md.
 """
 import argparse
 import base64
@@ -114,7 +114,15 @@ def main():
     nodes=[dict(case=r['case'],**n) for r in archive['results'] for n in r['nodes']]
     with (HERE/'nodes.csv').open('w') as f:
         writer=csv.DictWriter(f,fieldnames=list(nodes[0]));writer.writeheader();writer.writerows(nodes)
-    (HERE/'measured.md').write_text(render(archive,path,job))
+    readme=HERE/'README.md'
+    prefix=readme.read_text().split('\nResults\n',1)[0]
+    summary=render(archive,path,job)
+    validation=json.loads((HERE/'validation.json').read_text())
+    summary+='\nPayload SHA-256: `'+validation['payload_sha256']+'`. '
+    summary+='Normal and forced local screens each passed all 13 official cases and 23 static checks; '
+    summary+='[validation.json](validation.json) keeps the measured local observer ranges. '
+    summary+='The final standalone embedded payload also completed all 12 shapes locally.\n'
+    readme.write_text(prefix+'\nResults\n\n'+summary)
     print(f'{job}: {len(archive["results"])} shapes, {len(nodes)} original kernel nodes')
 
 if __name__=='__main__':main()

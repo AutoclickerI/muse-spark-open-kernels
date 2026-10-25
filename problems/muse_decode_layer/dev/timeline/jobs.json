@@ -1,0 +1,22 @@
+{
+  "2cc7b07dd29c4360": {
+    "host": "muse_prefill_layer",
+    "mode": "check",
+    "payload_sha256": "3862a1aa10cb33f3697e9657df2912cd22c01ceb80d0987c9d814358ae607e96",
+    "status": "host passed; timeline incomplete, zero shapes",
+    "host_speedup": 1.4313158877494636,
+    "host_prepare_s": 136.4,
+    "lab_s": 144.8,
+    "total_prepare_s": 281.2,
+    "measured_shapes": 0,
+    "cause": "Full host prepare plus full S11 prepare exhausted the 285 s lab deadline before shape 1.",
+    "receipt": "runs/muse_prefill_layer/20261025T065526Z_check_2cc7b07dd29c4360.json"
+  },
+  "c6bd22e2084c4809": {
+    "host": "muse_prefill_layer",
+    "mode": "check",
+    "payload_sha256": "ce30e3c3a3d8212cb070e7a6c47f48a278c464e7e575ae0119f58ae6bcae67de",
+    "status": "accepted; awaiting receipt",
+    "receipt": "runs/muse_prefill_layer/20261025T071342Z_check_c6bd22e2084c4809.json"
+  }
+}

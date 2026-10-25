@@ -1,7 +1,7 @@
 {
   "candidate": "cand_r3_best7_s11_final.py",
   "candidate_sha256": "acda6c621b1f3b885f2111ea1b4482ae1d733e2f2493db2b7f0b852ccf66dfb7",
-  "payload_sha256": "3862a1aa10cb33f3697e9657df2912cd22c01ceb80d0987c9d814358ae607e96",
+  "payload_sha256": "ce30e3c3a3d8212cb070e7a6c47f48a278c464e7e575ae0119f58ae6bcae67de",
   "gpu": "NVIDIA RTX PRO 6000 Blackwell sm_120; CUDA_VISIBLE_DEVICES=0",
   "archive": "Final XZ/base85 packing round-tripped both complete local traces; empty-graph calibration separately exercised on sm_120.",
   "normal": {
@@ -35,5 +35,47 @@
     ],
     "maximum_cross_capture_relative_L2": 2.4933166059781797e-05,
     "unresolved_node_reads": 16
+  },
+  "full_setup_control": {
+    "shapes": 12,
+    "kernel_nodes": 160,
+    "elapsed_s": 26.7,
+    "archive_chars": 6565,
+    "empty_event_us": 1.3439999893307686
+  },
+  "selected_prepare_equivalence": {
+    "normal": {
+      "selected_setup_s": 3.0270354310050607,
+      "tensor_exact_checks": 36,
+      "whole_layer_fixtures": 36,
+      "seeds": [
+        172903,
+        180822,
+        188741
+      ],
+      "max_relative_L2": 0.0001163131746579893,
+      "routes_equal": true,
+      "timeline_shapes": 12
+    },
+    "forced": {
+      "selected_setup_s": 5.325017482973635,
+      "tensor_exact_checks": 36,
+      "whole_layer_fixtures": 36,
+      "seeds": [
+        172903,
+        180822,
+        188741
+      ],
+      "max_relative_L2": 7.388103404082358e-05,
+      "routes_equal": true,
+      "timeline_shapes": 12
+    }
+  },
+  "standalone_selected_payload": {
+    "payload_sha256": "ce30e3c3a3d8212cb070e7a6c47f48a278c464e7e575ae0119f58ae6bcae67de",
+    "shapes": 12,
+    "nodes": 160,
+    "elapsed_s": 16.9,
+    "archive_chars": 6615
   }
 }
