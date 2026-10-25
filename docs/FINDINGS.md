@@ -291,6 +291,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   same bytes with 4-16 loads in flight 49.4 / 50.8 / 53.2 us (~4.0-4.1 TB/s, 0.77 / 0.68 / 0.53). All three layers
   cost: dequant 7-17%, MMA + syncs + expert-ready waits 10-16%, the depth-2 pipeline 9-16 us short of streaming.
   At stream speed: -15 / -25 / -51 us per layer (~14% of verify-1, 17% of decode-16, 24% of decode-32 wall).
+  Register-A WGMMA (64 x 8/16/32) decoding each expert once with no K-split loses 1.52-2.29x (`00f4adc3`, 16
+  seeds; 1.0-1.9 TB/s): at small M the K-split is what fills the GPU with bytes in flight (closed recipe).
 ## MoE M=128
 
 - Best measured, N_full (`c01b1916`, read flush; 12 seeds x 3, A:A abs 0.58 us, every TASK.md check passes, bit-equal
