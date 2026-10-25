@@ -1,0 +1,66 @@
+{
+  "S12": {
+    "W2": {
+      "loop_instructions": 832,
+      "instructions_per_KT128": 208.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    },
+    "W13": {
+      "loop_instructions": 828,
+      "instructions_per_KT128": 207.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    }
+  },
+  "PERMW": {
+    "W2": {
+      "loop_instructions": 752,
+      "instructions_per_KT128": 188.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    },
+    "W13": {
+      "loop_instructions": 752,
+      "instructions_per_KT128": 188.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    }
+  },
+  "ORDER": {
+    "W2": {
+      "loop_instructions": 828,
+      "instructions_per_KT128": 207.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    },
+    "W13": {
+      "loop_instructions": 832,
+      "instructions_per_KT128": 208.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    }
+  },
+  "PERMW_ORDER": {
+    "W2": {
+      "loop_instructions": 752,
+      "instructions_per_KT128": 188.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    },
+    "W13": {
+      "loop_instructions": 752,
+      "instructions_per_KT128": 188.0,
+      "HGMMA_per_stage": 8.0,
+      "HMUL2_per_stage": 32.0,
+      "LDGSTS_per_stage": 9.0
+    }
+  }
+}

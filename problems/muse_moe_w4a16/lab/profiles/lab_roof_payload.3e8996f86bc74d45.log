@@ -1,0 +1,36 @@
+MOE_PHASE M=1 ctas=264 route=5756/6013/6276 p1=12772/17482/21197 wait=1590/6361/12685 barrier=1208/4793/9448 p2=16444/18051/22805 norm=563/1383/1748 final=101/150/2254 p1_tiles=3/4/4 p2_tiles=1/2/2 atomics=8/16/16
+MOE_TIME M=1 v9=0.0776ms v12=0.0676ms v16=0.0966ms wide=0.4968ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5711/5868/6071 p1=105872/130573/148784 wait=804/6915/41663 barrier=1185/20028/57339 p2=58175/66434/103454 norm=8063/10281/13548 final=101/159/2549 p1_tiles=31/31/32 p2_tiles=15/16/16 atomics=120/128/128
+MOE_TIME M=16 v9=0.1792ms v12=0.1939ms v16=0.2073ms wide=0.2781ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5598/5979/6445 p1=142266/176953/197765 wait=777/5151/52614 barrier=1176/21125/71139 p2=79101/84706/130886 norm=11706/14419/17712 final=97/166/2864 p1_tiles=42/43/43 p2_tiles=21/21/22 atomics=168/168/176
+MOE_TIME M=32 v9=0.2268ms v12=0.2422ms v16=0.2505ms wide=0.3462ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5566/5808/6230 p1=92587/115269/128888 wait=1398/8952/38175 barrier=1226/14259/47139 p2=52066/60255/90420 norm=7417/8976/11274 final=97/152/2019 p1_tiles=27/27/28 p2_tiles=13/14/14 atomics=104/112/112
+MOE_TIME M=8 v9=0.1650ms v12=0.1738ms v16=0.1860ms wide=0.2559ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7493/7898/8207 p1=251074/310606/345871 wait=899/6220/91693 barrier=1289/31677/122103 p2=139046/145898/231539 norm=20619/25913/31692 final=123/1974/5040 p1_tiles=75/76/76 p2_tiles=37/38/38 atomics=296/304/304
+MOE_TIME M=128 v9=0.3480ms v12=0.3962ms v16=0.3868ms wide=0.4819ms selected=v9
+MOE_PHASE M=256 ctas=264 route=11290/11642/12013 p1=394050/485602/541781 wait=857/8581/144876 barrier=1239/51854/192099 p2=214105/225229/360218 norm=33524/41075/49338 final=1024/4031/8773 p1_tiles=118/118/119 p2_tiles=59/59/60 atomics=472/472/480
+MOE_TIME M=256 v9=0.5064ms v12=0.5940ms v16=0.5687ms wide=0.5308ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.07756800204515457, 'v12': 0.06761600077152252, 'v16': 0.09663999825716019, 'wide': 0.4967679977416992}, 16: {'v9': 0.17923200130462646, 'v12': 0.19388799369335175, 'v16': 0.20732800662517548, 'wide': 0.27811199426651}, 32: {'v9': 0.22678400576114655, 'v12': 0.24223999679088593, 'v16': 0.25046399235725403, 'wide': 0.34620800614356995}, 8: {'v9': 0.16499200463294983, 'v12': 0.1737920045852661, 'v16': 0.18598400056362152, 'wide': 0.25593599677085876}, 128: {'v9': 0.3479680120944977, 'v12': 0.3961920142173767, 'v16': 0.38678398728370667, 'wide': 0.4819200038909912}, 256: {'v9': 0.5064319968223572, 'v12': 0.594048023223877, 'v16': 0.5687360167503357, 'wide': 0.530784010887146}}
+LAB_BEGIN roof_payload 9d8b264f3238f46d
+META Four arms: exact S12 final nf; trivial dequant (all packed data consumed, original MMA/copies/epilogue); original load schedule without MMA/dequant/epilogue; max-MLP stream, same weight multiplicity and activation cache-refresh reads.
+LIMIT Stream includes packed codes/scales and BF16 activation reads; excludes small route/global-scale/post-norm metadata and output writes. Unique byte rates are logical proxies, not measured DRAM counters. Probes are intentionally incorrect, not eligible candidates. W2 ACT is fixed synthetic BF16 in all arms.
+CELL M128 NT1 W13 n=36 us=74.85/69.89/64.96/61.39 ratios=1.0000/0.9335/0.8665/0.8208 uniqueW_MB=229.64 scheduledW_MB=271.06 X_MB=12.02 stream_TBs=4.611
+RES M128 NT1 W13 grid=264 normal/trivial/loads=[[112, 0, 0, 88936, 2], [107, 0, 0, 88936, 2], [46, 0, 0, 88936, 2]]
+CELL M128 NT1 W2 n=36 us=44.52/40.73/35.99/33.87 ratios=1.0000/0.9158/0.8045/0.7612 uniqueW_MB=114.82 scheduledW_MB=135.53 X_MB=12.00 stream_TBs=4.356
+RES M128 NT1 W2 grid=264 normal/trivial/loads=[[109, 0, 0, 88936, 2], [108, 0, 0, 88936, 2], [48, 0, 0, 88936, 2]]
+CELL M128 heavy W13 n=36 us=56.43/50.62/38.13/29.18 ratios=1.0000/0.9036/0.6794/0.5200 uniqueW_MB=81.79 scheduledW_MB=129.50 X_MB=170.74 stream_TBs=10.289
+RES M128 heavy W13 grid=1056 normal/trivial/loads=[[86, 0, 0, 52223, 4], [84, 0, 0, 52223, 4], [68, 0, 0, 52223, 4]]
+CELL M128 heavy W2 n=36 us=37.11/32.90/25.06/17.36 ratios=1.0000/0.8832/0.6769/0.4667 uniqueW_MB=40.89 scheduledW_MB=64.75 X_MB=85.37 stream_TBs=8.645
+RES M128 heavy W2 grid=1056 normal/trivial/loads=[[87, 0, 1024, 52223, 4], [84, 0, 1024, 52223, 4], [68, 0, 0, 52223, 4]]
+CELL M256 NT1 W13 n=36 us=78.42/73.70/68.96/64.40 ratios=1.0000/0.9380/0.8767/0.8212 uniqueW_MB=241.70 scheduledW_MB=286.26 X_MB=11.79 stream_TBs=4.628
+RES M256 NT1 W13 grid=264 normal/trivial/loads=[[112, 0, 0, 94056, 2], [107, 0, 0, 94056, 2], [46, 0, 0, 94056, 2]]
+CELL M256 NT1 W2 n=36 us=46.22/42.50/37.80/35.36 ratios=1.0000/0.9178/0.8142/0.7680 uniqueW_MB=120.85 scheduledW_MB=143.13 X_MB=11.89 stream_TBs=4.384
+RES M256 NT1 W2 grid=264 normal/trivial/loads=[[109, 0, 0, 94056, 2], [108, 0, 0, 94056, 2], [48, 0, 0, 94056, 2]]
+CELL M256 heavy W13 n=36 us=109.47/94.43/70.17/50.32 ratios=1.0000/0.8628/0.6428/0.4648 uniqueW_MB=130.55 scheduledW_MB=282.07 X_MB=402.74 stream_TBs=13.610
+RES M256 heavy W13 grid=2112 normal/trivial/loads=[[86, 0, 0, 52223, 4], [84, 0, 0, 52223, 4], [68, 0, 0, 52223, 4]]
+CELL M256 heavy W2 n=36 us=60.66/54.62/39.53/26.75 ratios=1.0000/0.9039/0.6522/0.4439 uniqueW_MB=65.27 scheduledW_MB=141.03 X_MB=201.37 stream_TBs=12.798
+RES M256 heavy W2 grid=2112 normal/trivial/loads=[[87, 0, 1024, 52223, 4], [84, 0, 1024, 52223, 4], [68, 0, 0, 52223, 4]]
+GATE unchanged S12 max L2/row=0.004120/0.004709
+AA signed/abs/max=0.000/0.277/4.016
+END seeds=12 cells=288 used=38.6 left=86.9
+LAB_END lab_s=45.0 prepare_s=198.1

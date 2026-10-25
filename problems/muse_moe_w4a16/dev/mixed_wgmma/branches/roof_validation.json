@@ -1,0 +1,27 @@
+{
+  "payload_sha256": "9d8b264f3238f46dc0aec6f2cfbee133b6f2632244e29b140f2e7f011596422a",
+  "device": "sm_120",
+  "cold_L2": false,
+  "normal_reference_gates": 24,
+  "diagnostic_cells": 288,
+  "lines": [
+    "CELL M128 NT1 W13 n=36 us=131.66/129.63/125.79/136.00 ratios=1.0000/0.9909/0.9650/1.2279 uniqueW_MB=230.16 scheduledW_MB=273.15 X_MB=9.20 stream_TBs=2.076",
+    "RES M128 NT1 W13 grid=188 normal/trivial/loads=[[113, 0, 0, 88936, 1], [116, 0, 0, 88936, 1], [49, 0, 0, 88936, 1]]",
+    "CELL M128 NT1 W2 n=36 us=65.60/65.54/56.16/39.64 ratios=1.0000/0.9943/0.8362/0.7733 uniqueW_MB=115.08 scheduledW_MB=136.58 X_MB=9.17 stream_TBs=3.677",
+    "RES M128 NT1 W2 grid=188 normal/trivial/loads=[[113, 0, 0, 88936, 1], [119, 0, 0, 88936, 1], [51, 0, 0, 88936, 1]]",
+    "CELL M128 heavy W13 n=36 us=97.96/87.53/56.02/29.99 ratios=1.0000/0.8917/0.5810/0.3137 uniqueW_MB=74.45 scheduledW_MB=119.54 X_MB=151.37 stream_TBs=9.035",
+    "RES M128 heavy W13 grid=1056 normal/trivial/loads=[[140, 0, 0, 52223, 1], [140, 0, 0, 52223, 1], [74, 0, 0, 52223, 1]]",
+    "CELL M128 heavy W2 n=36 us=54.46/48.69/32.03/18.68 ratios=1.0000/0.9077/0.6097/0.3587 uniqueW_MB=37.22 scheduledW_MB=59.77 X_MB=75.69 stream_TBs=7.251",
+    "RES M128 heavy W2 grid=1056 normal/trivial/loads=[[151, 0, 1024, 52223, 1], [151, 0, 1024, 52223, 1], [74, 0, 0, 52223, 1]]",
+    "CELL M256 NT1 W13 n=36 us=121.14/120.30/116.06/131.74 ratios=1.0000/0.9875/0.9538/1.2367 uniqueW_MB=221.77 scheduledW_MB=270.53 X_MB=9.40 stream_TBs=2.125",
+    "RES M256 NT1 W13 grid=188 normal/trivial/loads=[[113, 0, 0, 94056, 1], [116, 0, 0, 94056, 1], [49, 0, 0, 94056, 1]]",
+    "CELL M256 NT1 W2 n=36 us=61.49/61.30/54.16/37.78 ratios=1.0000/0.9947/0.8472/0.7405 uniqueW_MB=110.89 scheduledW_MB=135.27 X_MB=9.42 stream_TBs=3.829",
+    "RES M256 NT1 W2 grid=188 normal/trivial/loads=[[113, 0, 0, 94056, 1], [119, 0, 0, 94056, 1], [51, 0, 0, 94056, 1]]",
+    "CELL M256 heavy W13 n=36 us=198.77/178.09/117.90/62.91 ratios=1.0000/0.8973/0.5961/0.3199 uniqueW_MB=121.11 scheduledW_MB=262.67 X_MB=366.71 stream_TBs=10.005",
+    "RES M256 heavy W13 grid=2112 normal/trivial/loads=[[140, 0, 0, 52223, 1], [140, 0, 0, 52223, 1], [74, 0, 0, 52223, 1]]",
+    "CELL M256 heavy W2 n=36 us=102.90/93.89/57.75/32.12 ratios=1.0000/0.9149/0.5692/0.3202 uniqueW_MB=60.56 scheduledW_MB=131.33 X_MB=183.36 stream_TBs=9.799",
+    "RES M256 heavy W2 grid=2112 normal/trivial/loads=[[151, 0, 1024, 52223, 1], [151, 0, 1024, 52223, 1], [74, 0, 0, 52223, 1]]",
+    "GATE unchanged S12 max L2/row=0.004124/0.004735",
+    "END seeds=12 cells=288 used=31.6 left=18.4"
+  ]
+}
