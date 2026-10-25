@@ -1,4 +1,4 @@
-"""S7N's M=128/256 MoE (nf_call on S7's own H_H base + recoded NT1 banks) vs the lab arm N_swap that H200 880c3881 timed
+"""S7N's M=128/256 MoE (nf_call on S7's own H_H base + recoded NT1 banks) vs the lab arm L_swap that H200 858ff2fa timed
 (prof/lab/moe_nf_tune_m{M}.py on hh_cell's banks). Usage: equiv.py M [seeds]: same inputs, outputs compared bit for bit (the NT1 W2 norm partials
 are float atomics, so a rare last-bit difference is counted, not failed), and both gated against the FP32 oracle."""
 import hashlib
@@ -51,7 +51,7 @@ def main():
         wants = lab['dc_oracles'](cases[:-1] + [real[1]], w)
         for d, want in zip(cases, wants):
             oc = cand.nf_call(d, state).clone()
-            ol = lab['br_call'](d, hh, 'N_swap').clone()
+            ol = lab['br_call'](d, hh, 'L_swap').clone()
             torch.cuda.synchronize()
             e, r = lab['br_error'](oc, want)
             el, rl = lab['br_error'](ol, want)

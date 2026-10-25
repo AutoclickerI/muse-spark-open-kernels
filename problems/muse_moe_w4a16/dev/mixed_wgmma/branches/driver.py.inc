@@ -35,9 +35,9 @@ def br_phases(data, bank, arm, ev0, ev1):
     return vals
 
 
-BR_META_TUNE = ('META N_full tuning at M%d vs N_full (nf_cell.py: NT1<=16 W13->W2 on a side stream || heavy-only N32 grid %d, '
-                'live route, one join). N_g<grid>: heavy grid; N_p50/p75: NT1 persistent grid x0.5/0.75; _hi: side stream at high '
-                'priority; N_swap: heavy on the side stream, NT1 on the main. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
+BR_META_TUNE = ('META heavy-kernel lab at M%d vs L_swap (858ff2fa winner: N_full, heavy N32 with the lean K loop, grid %d, '
+                'launched first on the side stream || NT1<=16; live route; one join). LI_swap: gate/up rows interleaved by 8 in '
+                'prepare, SwiGLU in registers (bit-equal); L_g<grid>: heavy grid. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
 BR_META = {
     128: 'META M128 vs HH = exact S7 H_H (u8 codes; route128 zero-fill + pm_meta SS clear; NT1<=16 then WGMMA32>16 per phase; finish). '
          'U16 = exact u16-word H_H (S6). ',

@@ -23,7 +23,7 @@ sys.path[:0] = [str(BR), str(R / 'tools')]
 import sources  # noqa: E402
 from okc_run import rejected_words  # noqa: E402
 
-KINDS = ((0, 32, 1, 1, 0, 0, 0), (1, 32, 0, 1, 0, 0, 0))  # W13 / W2 N32 on the heavy-only T32 list
+KINDS = ((20, 32, 1, 2, 0, 0, 0), (21, 32, 0, 2, 0, 0, 0))  # W13 / W2 N32, lean K loop, on the heavy-only T32 list
 DEAD = ('pm_plan', 'pm_module', 'S5_HH_CUDA', 'S5_HH_CPP', 'S5_HH_FUNCTIONS', 'ISSUE_OPTS', 'FX_CUDA', 'FX_CPP', 'FX_CONFIGS', 'WI_CPP', 'fx_module', 'fx_prepare', 'fx_from_packed', 'fx_plan', 'wi_prepare',
         'wi_plan', 'wi_call', 'pm_call', 'RF_CUDA', 'RF_CPP', 'rf_module', 'rf_plan', 'rf_call', 'rc_masks', 'RC_SIGNS', 'RC_ZEROS', 'rc_repack')
 COMMENTS = ('# H200 770809cf159f41e2: exact H_H expert/phase mix at M128.\n','# H200 8483c0c6783a4df1: exact M256 mixed_parallel policy6/grid2112.\n',
@@ -31,7 +31,8 @@ COMMENTS = ('# H200 770809cf159f41e2: exact H_H expert/phase mix at M128.\n','# 
 CELL = '''
 
 # MoE lane H200 c01b1916e2c74af8 / 14f942d57e764ebf / 880c388117ed4e16: N_full at M=128 (paired 0.8842 vs S7's H_H,
-# bit-equal) and M=256 (0.8701 vs mixed_parallel); heavy on the side stream, launched first: a further 0.9799 / 0.9882.
+# bit-equal) and M=256 (0.8701 vs mixed_parallel); heavy on the side stream, launched first: a further 0.9799 / 0.9882;
+# heavy kernel's lean K loop (858ff2fa): a further 0.9613 / 0.9426.
 NF_CUDA={cuda!r}
 NF_CPP={cpp!r}
 NF_OPTS={{}}
@@ -47,7 +48,7 @@ def nf_module():
 def nf_plan(data,base,native,streams):
     x=data['hidden_states'];m=x.shape[0];dev=x.device;cap=m*8+32*128;mod=nf_module()
     c=torch.empty(32,device=dev,dtype=torch.int32);off=torch.empty(33,device=dev,dtype=torch.int32);order=torch.empty_like(c)
-    tasks=[torch.empty_like(off) for _ in range(3)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
+    tasks=[torch.empty_like(off) for _ in range(4)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
     ids=data['topk_ids'].int().contiguous();tw=data['topk_weights'].float().contiguous();pos=torch.empty_like(ids)
     act=torch.empty((cap,4096),device=dev,dtype=torch.bfloat16);y=torch.empty((cap,4096),device=dev);ss=torch.empty((cap,64),device=dev)
     out=torch.empty_like(x);start=data['config'].get('local_start',0)
@@ -55,7 +56,7 @@ def nf_plan(data,base,native,streams):
     h2=[base['w2'],base['w2_sf'],base['w2_gs'],act,c,off,order,tasks[1],slots,base['pnw'],act,y,ss]
     nv=[x,base['pnw'],native['w13p'],native['w2p'],base['w13_gs'],base['w2_gs'],c,off,slots,act,y,ss]
     p13,p2,pn=([t.data_ptr() for t in v] for v in (h13,h2,nv))
-    rp=[t.data_ptr() for t in (ids,c,off,order,tasks[0],slots,pos,tasks[1],tasks[2])]
+    rp=[t.data_ptr() for t in (ids,c,off,order,tasks[0],slots,pos,tasks[1],tasks[2],tasks[3])]
     fp=[t.data_ptr() for t in (off,ids,tw,pos,y,ss,out)]
     owners=(h13,h2,nv,ids,tw,pos,tasks)
     stages=2
@@ -69,7 +70,7 @@ def nf_plan(data,base,native,streams):
         _=owners;parent=torch.cuda.current_stream()
         fork.record(parent);side.wait_event(fork)
         with torch.cuda.stream(side):  # heavy first: launched ahead of NT1 it takes the SMs it needs (880c3881 N_swap)
-            mod.br_run(p13,0,grid,m,side.cuda_stream);mod.br_run(p2,1,grid,m,side.cuda_stream);join.record()
+            mod.br_run(p13,20,grid,m,side.cuda_stream);mod.br_run(p2,21,grid,m,side.cuda_stream);join.record()
         mod.pmz_run(pn,1,16,m,stages,grids[1],parent.cuda_stream);mod.pmz_run(pn,0,16,m,stages,grids[0],parent.cuda_stream)
         parent.wait_event(join)
     def finish():
@@ -103,6 +104,24 @@ PY_EDITS = (
 )
 
 
+PATCH_START = '# MoE lane H200 c01b1916e2c74af8'
+PATCH_END = "def nf_call(data,state):\n    for f in nf_plan(data,state['s5_hh_base'],state['moe_bank'],state['nf_streams'])['steps']:out=f()\n    return out\n"
+PATCH = """\"\"\"patch(src) -> src: replace the N_full cell block of a best7 candidate (S7N/S10 onward) with the current cell.
+Written by dev/s7n/build.py together with branches/nf_cell.py; the block runs from the MoE-lane comment to nf_call.\"\"\"
+BODY = {body}
+START = {start}
+END = {end}
+
+
+def patch(src):
+    i = src.index(START)
+    assert src.count(START) == 1 and src.count(END) == 1
+    j = src.index(END) + len(END)
+    assert i < j
+    return src[:i] + BODY + src[j:]
+"""
+
+
 def main():
     s = BASE.read_text()
     assert hashlib.sha256(s.encode()).hexdigest() == BASE_SHA
@@ -131,6 +150,9 @@ def main():
     cuda = sources.kinds_macro(KINDS) + (BR / 'gemm.cu.inc').read_text() + '\n' + sources.pmz_source(sources.s6_text())
     cell = CELL.format(cuda=cuda, cpp=src['cpp_hh'])
     (BR / 'nf_cell.py').write_text(CELL_HEAD + cell.lstrip('\n'))
+    body = cell.lstrip('\n')
+    assert body.startswith(PATCH_START) and body.endswith(PATCH_END)
+    (H / 'nf_patch.py').write_text(PATCH.format(body=repr(body), start=repr(PATCH_START), end=repr(PATCH_END)))
     assert s.count(ANCHOR) == 1
     s = s.replace(ANCHOR, cell + ANCHOR, 1)
     s = re.sub(r'\n{4,}', '\n\n\n', s)
@@ -140,7 +162,7 @@ def main():
     out.write_text(s)
     m = dict(source=str(out.relative_to(R)), sha256=hashlib.sha256(s.encode()).hexdigest(), base=str(BASE.relative_to(R)), base_sha256=BASE_SHA,
              nf_cuda_sha256=hashlib.sha256(cuda.encode()).hexdigest(), deleted=list(DEAD),
-             lab='c01b1916 M128 N_full 207.40 vs H_H 234.78 us (0.8842); 14f942d5 M256 N_full 298.68 vs mixed_parallel 342.80 us (0.8701); 880c3881 N_swap 0.9799 (M128) / 0.9882 (M256) vs N_full',
+             lab='c01b1916 M128 N_full 207.40 vs H_H 234.78 us (0.8842); 14f942d5 M256 N_full 298.68 vs mixed_parallel 342.80 us (0.8701); 880c3881 N_swap 0.9799 / 0.9882 vs N_full; 858ff2fa lean K loop L_swap 197.16 / 279.38 us, 0.9613 / 0.9426 vs N_swap',
              change='M128 and M256 MoE: live route + fork-once NT1<=16 (W13->W2) || heavy N32 (W13->W2) on the H_H u8 + NT1 banks; mixed_parallel engine deleted')
     (H / 'manifest.json').write_text(json.dumps(m, indent=2) + '\n')
     print(m['source'], m['sha256'], len(s))

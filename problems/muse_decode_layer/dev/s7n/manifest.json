@@ -1,9 +1,9 @@
 {
   "source": "problems/muse_decode_layer/cand_r3_best7_s7n.py",
-  "sha256": "2c9de5e57b8ea617c1c913d3738e4d0a1130e7b5b88f2669a6c2ffadbb18651c",
+  "sha256": "414f8a56950132accc7cd1f672e6c31fde458d1334de63811b18dda8cbad69a2",
   "base": "problems/muse_decode_layer/cand_r3_best7_s7r.py",
   "base_sha256": "56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101",
-  "nf_cuda_sha256": "e494160713e4f37bcb01b55b21f55fecb2103225118019ae5c87ccfe812b5bdb",
+  "nf_cuda_sha256": "515ca2532276cdadc0ac1c504e75b5e1abc6797ca3c209788920d60233fda4ac",
   "deleted": [
     "pm_plan",
     "pm_module",
@@ -33,6 +33,6 @@
     "RC_ZEROS",
     "rc_repack"
   ],
-  "lab": "c01b1916 M128 N_full 207.40 vs H_H 234.78 us (0.8842); 14f942d5 M256 N_full 298.68 vs mixed_parallel 342.80 us (0.8701); 880c3881 N_swap 0.9799 (M128) / 0.9882 (M256) vs N_full",
+  "lab": "c01b1916 M128 N_full 207.40 vs H_H 234.78 us (0.8842); 14f942d5 M256 N_full 298.68 vs mixed_parallel 342.80 us (0.8701); 880c3881 N_swap 0.9799 / 0.9882 vs N_full; 858ff2fa lean K loop L_swap 197.16 / 279.38 us, 0.9613 / 0.9426 vs N_swap",
   "change": "M128 and M256 MoE: live route + fork-once NT1<=16 (W13->W2) || heavy N32 (W13->W2) on the H_H u8 + NT1 banks; mixed_parallel engine deleted"
 }

@@ -50,6 +50,15 @@ template<int NT>__device__ __forceinline__ void mma(float*c,const unsigned*a,con
  "{%0,%1,%2,%3,%4,%5,%6,%7},{%8,%9,%10,%11},%12,p,1,1,0;}"
  :"+f"(c[0]),"+f"(c[1]),"+f"(c[2]),"+f"(c[3]),"+f"(c[4]),"+f"(c[5]),"+f"(c[6]),"+f"(c[7])
  :"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]),"l"(d));
+ }else if constexpr(NT==64){
+ asm volatile("{ .reg .pred p; setp.ne.b32 p,1,0; wgmma.mma_async.sync.aligned.m64n64k16.f32.bf16.bf16 "
+ "{%0,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12,%13,%14,%15,%16,%17,%18,%19,%20,%21,%22,%23,%24,%25,%26,%27,%28,%29,%30,%31},"
+ "{%32,%33,%34,%35},%36,p,1,1,0;}"
+ :"+f"(c[0]),"+f"(c[1]),"+f"(c[2]),"+f"(c[3]),"+f"(c[4]),"+f"(c[5]),"+f"(c[6]),"+f"(c[7]),
+  "+f"(c[8]),"+f"(c[9]),"+f"(c[10]),"+f"(c[11]),"+f"(c[12]),"+f"(c[13]),"+f"(c[14]),"+f"(c[15]),
+  "+f"(c[16]),"+f"(c[17]),"+f"(c[18]),"+f"(c[19]),"+f"(c[20]),"+f"(c[21]),"+f"(c[22]),"+f"(c[23]),
+  "+f"(c[24]),"+f"(c[25]),"+f"(c[26]),"+f"(c[27]),"+f"(c[28]),"+f"(c[29]),"+f"(c[30]),"+f"(c[31])
+ :"r"(a[0]),"r"(a[1]),"r"(a[2]),"r"(a[3]),"l"(d));
  }else{
  static_assert(NT==32,"tile width");
  asm volatile("{ .reg .pred p; setp.ne.b32 p,1,0; wgmma.mma_async.sync.aligned.m64n32k16.f32.bf16.bf16 "
@@ -79,7 +88,7 @@ template<int NT>__device__ __forceinline__ void mma_group(float*c,const unsigned
  asm volatile("wgmma.wait_group.sync.aligned 1;":::"memory");
 #endif
 }
-template<int NT,bool VEC>__device__ __forceinline__ void load_stage(
+template<int NT,int VEC>__device__ __forceinline__ void load_stage(
  unsigned char*q,unsigned char*s,__nv_bfloat16*bs,const int*Q,const unsigned char*SC,
  const __nv_bfloat16*X,const int*src,int e,int mt,int N,int tile){
  constexpr int NJ=NT>=16?NT/16:1;
@@ -119,7 +128,7 @@ template<int NS>__device__ __forceinline__ void cp_wait(int k){
 }
 template<int NT>constexpr int smem_bytes(){return 1023+((S*(64*KT/2+64*KT/16)+1023)&~1023)+S*NT*KT*2;}
 
-template<int NT,bool FIRST,bool VEC,int FM,int LO,int HI>
+template<int NT,bool FIRST,int VEC,int FM,int LO,int HI>
 __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC,const float*GS,
  const __nv_bfloat16*X,const int*C,const int*OFF,const int*ORDER,const int*TASK,const int*SLOTS,
  const __nv_bfloat16*PNW,__nv_bfloat16*ACT,float*Y,float*SS,int M){
@@ -134,15 +143,70 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
   int group=unit/MT,mt=unit%MT,ix=0;
   #pragma unroll
   for(int d=16;d;d>>=1)if(TASK[ix+d]<=group)ix+=d;
-  int e=ORDER[ix],row=(group-TASK[ix])*32,count=C[e],offset=OFF[e];
+  int e=ORDER[ix],row=(group-TASK[ix])*(NT==64?64:32),count=C[e],offset=OFF[e];
   if constexpr(FM==1){if(count<=LO||count>HI)continue;}
   if constexpr(FM==2){int rem=min(count-row,32);if(rem<=LO||rem>HI)continue;}
+  static_assert(NT!=64||FM!=2,"N64 tiles run whole 64-row groups");
   int src[NJ];
   #pragma unroll
   for(int j=0;j<NJ;++j){int rl=t/8+j*16,r=row+rl;src[j]=(rl<NT&&r<count)?(FIRST?SLOTS[e*M+r]/8:offset+r):-1;}
   float acc[NT/2]={};unsigned af[2][16]={};
   #pragma unroll
   for(int j=0;j<NT/2;++j)asm volatile("":"+f"(acc[j]));
+  if constexpr(VEC>=2){
+   // Lean K loop (same smem layout, copies and math as VEC==1): per-unit global pointers advanced by a fixed
+   // stride, one commit group per stage (empty past the end) so the wait count is a constant, and the stage
+   // ring unrolled so every shared offset and WGMMA descriptor is a compile-time constant.
+   static_assert(NS%S==0,"stage ring");
+   const int*qg=Q;const unsigned char*sg=SC;const __nv_bfloat16*xg[NJ];bool xv[NJ];
+   const bool wq=t<64,ws=t>=64&&t<64+KT/4;
+   if(wq){unsigned gp=t>>4,ln=t&15;qg=Q+((unsigned)e*(N/16)+mt*4+gp)*128*64+ln*4;}
+   if(ws){unsigned i=t-64,g=i/8,gp=(i%8)/2,hf=i%2;sg=SC+((((unsigned)e*(N/16)+mt*4+gp)*128+g)*32+hf*16);}
+   unsigned qd=smaddr(qs+t*16),sd=0;
+   if(ws){unsigned i=t-64,g=i/8,gp=(i%8)/2,hf=i%2;sd=smaddr(ss+g*128+gp*32+hf*16);}
+   unsigned bd[NJ];
+   #pragma unroll
+   for(int j=0;j<NJ;++j){int r=t/8+j*16,k=(t&7)*8;xv[j]=src[j]>=0;xg[j]=X+(size_t)max(src[j],0)*4096+k;
+    bd[j]=smaddr(bs+r*64+(k^((r&7)*8)));}
+   auto issue=[&](int slot){
+    if(wq){
+     #pragma unroll
+     for(int g=0;g<KT/32;++g)asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(qd+slot*QB+g*1024),"l"(qg+g*64):"memory");
+     qg+=(KT/32)*64;}
+    if(ws){asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(sd+slot*SB),"l"(sg):"memory");sg+=(KT/32)*32;}
+    #pragma unroll
+    for(int c=0;c<KT/64;++c){
+     #pragma unroll
+     for(int j=0;j<NJ;++j)asm volatile("cp.async.cg.shared.global [%0],[%1],16,%2;"::"r"(bd[j]+(slot*NT*KT+c*NT*64)*2),"l"(xg[j]+c*64),"r"(xv[j]?16:0):"memory");
+    }
+    #pragma unroll
+    for(int j=0;j<NJ;++j)xg[j]+=KT;
+   };
+   #pragma unroll
+   for(int i=0;i<S-1;++i){issue(i);asm volatile("cp.async.commit_group;":::"memory");}
+   #pragma unroll 1
+   for(int k0=0;k0<NS;k0+=S){
+    #pragma unroll
+    for(int st=0;st<S;++st){
+     asm volatile("cp.async.wait_group %0;"::"n"(S-2):"memory");__syncthreads();
+#if BR_HOPPER
+     asm volatile("fence.proxy.async.shared::cta;":::"memory");
+#endif
+     #pragma unroll
+     for(int sub=0;sub<2;++sub){
+      #pragma unroll
+      for(int g=0;g<2;++g){int z=sub*2+g;uint2 q=*(const uint2*)(qs+st*QB+(z*128+t)*8);
+       unsigned sf=*(const unsigned*)(ss+st*SB+z*128+w*32+(l>>2)*4);dq(q.x,q.y,sf,af[sub]+g*8);}
+      keep(af[sub]);
+#if BR_HOPPER
+      asm volatile("wgmma.fence.sync.aligned;":::"memory");
+#endif
+      mma_group<NT>(acc,af[sub],bs+st*NT*KT+sub*NT*64);keep(af[sub^1]);
+      if(sub==0){if(k0+st+S-1<NS)issue((st+S-1)%S);asm volatile("cp.async.commit_group;":::"memory");}
+     }
+    }
+   }
+  }else{
   #pragma unroll
   for(int i=0;i<S-1;++i)load_stage<NT,VEC>(qs+i*QB,ss+i*SB,bs+i*NT*KT,Q,SC,X,src,e,mt,N,i);
   #pragma unroll 1
@@ -165,11 +229,21 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
      load_stage<NT,VEC>(qs+dst*QB,ss+dst*SB,bs+dst*NT*KT,Q,SC,X,src,e,mt,N,k+S-1);}
    }
   }
+  }
 #if BR_HOPPER
   asm volatile("wgmma.wait_group.sync.aligned 0;":::"memory");
 #endif
   keep(af[0]);keep(af[1]);
-  if constexpr(FIRST){
+  if constexpr(FIRST&&VEC==3){
+   // Gate/up rows interleaved by 8 in prepare (per 64-row tile: G0-7,U0-7,G8-15,U8-15,...): accumulator j holds gate
+   // and j+2 the up row of the same channel, so SwiGLU finishes in registers (same BF16 roundings as below).
+   float gg=GS[e]*256.f,gu=GS[e+32]*256.f;int ch=mt*32+w*8+(l>>2);
+   #pragma unroll
+   for(int j=0;j<NT/2;++j)if(((j>>1)&1)==0){int r=(l&3)*2+(j&1)+(j>>2)*8;
+    float g=__bfloat162float(__float2bfloat16_rn(acc[j]*gg)),u=__bfloat162float(__float2bfloat16_rn(acc[j+2]*gu));
+    if(row+r<count)ACT[(size_t)(offset+row+r)*4096+ch]=__float2bfloat16_rn(g/(1.f+__expf(-g))*u);
+   }
+  }else if constexpr(FIRST){
    #pragma unroll
    for(int j=0;j<NT/2;++j){int r=(l&3)*2+(j&1)+(j>>2)*8;
     int c=w*16+(l>>2)+((j>>1)&1)*8;float gs=GS[e+(c>=32?32:0)]*256.f;
@@ -208,10 +282,10 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
 }
 
 // Routing only: no output fill, no readiness state. One CTA owns every pair (same as the
-// original CTA 0); with META it also writes the heavy-only (count>16) 32-row task prefix T32 and
-// the one-group-per-expert prefix T8 of experts with 8<count<=16.
+// original CTA 0); with META it also writes the heavy-only (count>16) 32-row task prefix T32, the
+// one-group-per-expert prefix T8 of experts with 8<count<=16 and the 64-row prefix T64 of experts with count>32.
 template<bool META>__global__ void __launch_bounds__(256) route_live(const int*ids,int*C,int*OFF,int*ORDER,int*TASK,int*SLOTS,int*POS,int*T32,
- int*T8,int M,int NT,int start){
+ int*T8,int*T64,int M,int NT,int start){
  int t=threadIdx.x;
  __shared__ int count[32];if(t<32)count[t]=0;__syncthreads();
  // All eight cold id loads per thread are issued before the first shared atomic.
@@ -242,10 +316,10 @@ template<bool META>__global__ void __launch_bounds__(256) route_live(const int*i
   #pragma unroll
   for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,ends,d);if(t>=d)ends+=a;}
   TASK[t+1]=ends;if(t==0)TASK[0]=0;
-  if constexpr(META){int ns=key/32,v=ns>16?(ns+31)/32:0,u=ns>8&&ns<=16;
+  if constexpr(META){int ns=key/32,v=ns>16?(ns+31)/32:0,u=ns>8&&ns<=16,h=ns>32?(ns+63)/64:0;
    #pragma unroll
-   for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,v,d),b=__shfl_up_sync(~0u,u,d);if(t>=d){v+=a;u+=b;}}
-   T32[t+1]=v;T8[t+1]=u;if(t==0){T32[0]=0;T8[0]=0;}}
+   for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,v,d),b=__shfl_up_sync(~0u,u,d),c=__shfl_up_sync(~0u,h,d);if(t>=d){v+=a;u+=b;h+=c;}}
+   T32[t+1]=v;T8[t+1]=u;T64[t+1]=h;if(t==0){T32[0]=0;T8[0]=0;T64[0]=0;}}
  }
 }
 
@@ -279,11 +353,11 @@ void br_run(std::vector<int64_t>v,int64_t kind,int64_t grid,int64_t M,int64_t st
  switch(kind){BR_KINDS(BR_GO) default:BR_REQUIRE(false);}
  BR_CUDA_CHECK(cudaGetLastError());
 }
-// v: ids,C,OFF,ORDER,TASK,SLOTS,POS,T32,T8 (T32/T8 written only with meta)
+// v: ids,C,OFF,ORDER,TASK,SLOTS,POS,T32,T8,T64 (T32/T8/T64 written only with meta)
 void br_route(std::vector<int64_t>v,int64_t M,int64_t start,int64_t meta,int64_t stream){
- BR_REQUIRE(v.size()==9);
- if(meta)mwbr::route_live<true><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int)M,32,(int)start);
- else mwbr::route_live<false><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int)M,32,(int)start);
+ BR_REQUIRE(v.size()==10);
+ if(meta)mwbr::route_live<true><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int*)v[9],(int)M,32,(int)start);
+ else mwbr::route_live<false><<<1,256,0,(cudaStream_t)stream>>>((const int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(int*)v[5],(int*)v[6],(int*)v[7],(int*)v[8],(int*)v[9],(int)M,32,(int)start);
  BR_CUDA_CHECK(cudaGetLastError());
 }
 // v: OFF,IDS,TW,POS,Y,SS,OUT
