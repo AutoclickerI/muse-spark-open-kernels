@@ -1,0 +1,1111 @@
+import torch
+from torch.utils.cpp_extension import load_inline
+import time as lab_time
+import statistics as lab_stats
+lab_torch=torch
+
+NT1_SOURCES={'INC': '\n#define C10_CUDA_CHECK(expr) do{cudaError_t e=(expr);if(e!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(e));}while(0)\n#define C10_CUDA_KERNEL_LAUNCH_CHECK() C10_CUDA_CHECK(cudaGetLastError())\n\n#include <cuda_runtime.h>\n#include <stdexcept>\n#include <vector>\n\n#include <cuda_bf16.h>\n#include <stdint.h>\n\nnamespace {\n\nconstexpr int HD = 4096;\nconstexpr int NLOC = 32;\nconstexpr int TILE_BYTES = 36864;\nconstexpr int TILE_W_BYTES = 32768;\nconstexpr int NT1 = 512;\nconstexpr int NT2 = 256;\nconstexpr int NCW = 8;                 // consumer warps\nconstexpr int NCT = NCW * 32;          // consumer threads\nconstexpr int NTHR = NCT;             // thread 0 also prefetches\nconstexpr uint32_t DQ_MASK = 0x81C081C0u;\nconstexpr uint32_t LA_MASK = 0x60306030u;\n// persistent counters\nenum { C_DONE = 0, C_ZERO = 32, C_BAR = 33, C_GEN = 34 };\n\n__device__ __forceinline__ uint32_t smem_u32(const void* p) {\n  return static_cast<uint32_t>(__cvta_generic_to_shared(p));\n}\n__device__ __forceinline__ void mbar_init(uint64_t* b, int cnt) {\n  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" :: "r"(smem_u32(b)), "r"(cnt));\n}\n__device__ __forceinline__ bool mbar_try(uint64_t* b, uint32_t parity) {\n  uint32_t ok;\n  asm volatile("{\\n .reg .pred p;\\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\\n selp.u32 %0, 1, 0, p;\\n}\\n"\n               : "=r"(ok) : "r"(smem_u32(b)), "r"(parity) : "memory");\n  return ok != 0;\n}\n__device__ __forceinline__ void mbar_wait(uint64_t* b, uint32_t parity) {\n  while (!mbar_try(b, parity)) {}\n}\n__device__ __forceinline__ void mbar_arrive(uint64_t* b) {\n  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" :: "r"(smem_u32(b)) : "memory");\n}\n__device__ __forceinline__ void mbar_expect_tx(uint64_t* b, uint32_t bytes) {\n  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" :: "r"(smem_u32(b)), "r"(bytes) : "memory");\n}\n__device__ __forceinline__ void bulk_g2s(void* dst, const void* src, uint32_t bytes, uint64_t* b, uint64_t pol) {\n  asm volatile("cp.async.bulk.shared::cluster.global.mbarrier::complete_tx::bytes.L2::cache_hint [%0], [%1], %2, [%3], %4;"\n               :: "r"(smem_u32(dst)), "l"(src), "r"(bytes), "r"(smem_u32(b)), "l"(pol) : "memory");\n}\n__device__ __forceinline__ void bar_consumers() {\n  asm volatile("bar.sync 1, %0;" :: "n"(NCT) : "memory");\n}\n__device__ __forceinline__ int ld_acquire(const int* p) {\n  int v;\n  asm volatile("ld.acquire.gpu.global.s32 %0, [%1];" : "=r"(v) : "l"(p) : "memory");\n  return v;\n}\n__device__ __forceinline__ uint32_t rotr(uint32_t x, int s) { return __funnelshift_r(x, x, s); }\n__device__ __forceinline__ uint32_t hmul2(uint32_t a, uint32_t b) {\n  uint32_t d;\n  asm("mul.rn.bf16x2 %0, %1, %2;" : "=r"(d) : "r"(a), "r"(b));\n  return d;\n}\n__device__ __forceinline__ void mma16816(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,\n                                         uint32_t b0, uint32_t b1) {\n  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"\n               : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])\n               : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));\n}\n// 16 E2M1 codes (two words) -> 8 BF16x2 registers holding value * 2^-126 (exact).\n__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {\n  o[0] = A & DQ_MASK;\n  o[1] = rotr(A, 4) & DQ_MASK;\n  o[2] = rotr(A, 10) & DQ_MASK;\n  o[3] = rotr(B, 2) & DQ_MASK;\n  o[4] = rotr(B, 6) & DQ_MASK;\n  o[5] = rotr(B, 12) & DQ_MASK;\n  uint32_t W; asm("lop3.b32 %0,%1,%2,%3,0xe4;":"=r"(W):"r"(A),"r"(B),"n"(LA_MASK));\n  o[6] = rotr(W, 24) & DQ_MASK;\n  o[7] = rotr(W, 30) & DQ_MASK;\n}\n\nstruct PrefetchState {\n  volatile int index, stage, phase, pass;\n  volatile int e, nb, m, mb, me;\n  volatile uint64_t pol_first, pol_normal;\n};\n\nstruct Route {        // shared-memory routing summary\n  int n[NLOC];        // pairs per local expert\n  int off[NLOC];      // first sorted position\n  int nblk[NLOC];     // token blocks\n  int us1[NLOC + 1];  // phase-1 unit prefix\n  int us2[NLOC + 1];  // phase-2 unit prefix\n  int c1, c2;         // m-chunk sizes\n  int run[NLOC];\n  int wc[NCW][NLOC];\n  PrefetchState pre;\n};\n\n// unit -> (expert, token block, m tile); order (e, m-chunk, block, m)\n__device__ __forceinline__ void decode_unit(int u, const int* us, const int* nblk, int cc, int ntile,\n                                            int& e, int& nb, int& m) {\n  e = 0;\n#pragma unroll\n  for (int d = 16; d > 0; d >>= 1) {\n    if (us[e + d] <= u) e += d;\n  }\n  const int rel = u - us[e];\n  const int nbk = nblk[e];\n  const int nfull = ntile / cc;\n  const int span = cc * nbk;\n  if (rel < nfull * span) {\n    const int mc = rel / span;\n    const int r2 = rel - mc * span;\n    nb = r2 / cc;\n    m = mc * cc + (r2 - nb * cc);\n  } else {\n    const int L = ntile - nfull * cc;\n    const int r3 = rel - nfull * span;\n    nb = r3 / L;\n    m = nfull * cc + (r3 - nb * L);\n  }\n}\n\n__device__ __forceinline__ void advance_unit(int& e, int& nb, int& m, int& mb, int& me,\n                                               const int* nblk, int cc, int ntile) {\n  if (++m == me) {\n    if (++nb == nblk[e]) {\n      nb = 0;\n      mb += cc;\n      if (mb >= ntile) {\n        ++e;\n        while (e < NLOC && nblk[e] == 0) ++e;\n        mb = 0;\n      }\n      me = min(ntile, mb + cc);\n    }\n    m = mb;\n  }\n}\n\n\n__device__ __forceinline__ void prefetch_one(\n    Route* rt, int total, int first, int a2, int nstage,\n    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb,\n    const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  int idx = p.index;\n  if (idx >= total) return;\n  int st=p.stage, ph=p.phase, pass=p.pass;\n  int e=p.e, nb=p.nb, m=p.m, mb=p.mb, me=p.me;\n  const int ntile=pass?NT2:NT1;\n  const int cc=pass?rt->c2:rt->c1;\n  const uint8_t* base=pass?w2p:w13p;\n  const uint8_t* src=base+(static_cast<size_t>(e)*ntile+m)*TILE_BYTES;\n  const uint64_t pol=rt->nblk[e]>1?p.pol_normal:p.pol_first;\n  mbar_wait(&emptyb[st], ph^1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages+st*TILE_BYTES, src, TILE_BYTES, &fullb[st], pol);\n  ++idx;\n  if (idx < total) {\n    if (idx == first) {\n      pass=1;\n      decode_unit(a2,rt->us2,rt->nblk,rt->c2,NT2,e,nb,m);\n      mb=(m/rt->c2)*rt->c2;\n      me=min(NT2,mb+rt->c2);\n    } else {\n      advance_unit(e,nb,m,mb,me,rt->nblk,cc,ntile);\n    }\n  }\n  if (++st == nstage) { st=0; ph^=1; }\n  p.index=idx; p.stage=st; p.phase=ph; p.pass=pass;\n  p.e=e; p.nb=nb; p.m=m; p.mb=mb; p.me=me;\n}\n\ntemplate <int NT>\n__global__ void __launch_bounds__(NTHR, 2) moe_fused(\n    const __nv_bfloat16* __restrict__ x, const int* __restrict__ ids, const float* __restrict__ tw,\n    const __nv_bfloat16* __restrict__ pnw, const uint8_t* __restrict__ w13p, const uint8_t* __restrict__ w2p,\n    const float* __restrict__ gs13, const float* __restrict__ gs2, __nv_bfloat16* __restrict__ inter,\n    float* __restrict__ y, float* __restrict__ ss, int* __restrict__ cnt, __nv_bfloat16* __restrict__ out,\n    int M, int local_start, int nstage) {\n  constexpr int NB = 8 * NT;\n  constexpr int RED = NT * 4;\n  const int npairs = M * 8;\n  extern __shared__ __align__(128) uint8_t smem[];\n  uint8_t* stages = smem;\n  float* red = reinterpret_cast<float*>(smem + nstage * TILE_BYTES);        // [2][NCW][32][RED]\n  uint64_t* fullb = reinterpret_cast<uint64_t*>(red + 2 * NCW * 32 * RED);\n  uint64_t* emptyb = fullb + nstage;\n  Route* rt = reinterpret_cast<Route*>(emptyb + nstage);\n  int8_t* eflat = reinterpret_cast<int8_t*>(rt + 1);                        // [npairs] local expert or -1\n  int16_t* pos_of = reinterpret_cast<int16_t*>(eflat + ((npairs + 15) & ~15));  // [npairs]\n  int16_t* pair_of = pos_of + npairs;                                        // [npairs] sorted pos -> flat\n\n  const int tid = threadIdx.x, lane = tid & 31, warp = tid >> 5;\n  const int G = gridDim.x, c = blockIdx.x;\n  int bar_gen0 = 0;\n\n  // ---------------- routing: counts ----------------\n  if (tid < NLOC) rt->n[tid] = 0;\n  if (tid == 0) {\n    for (int s = 0; s < nstage; ++s) { mbar_init(&fullb[s], 1); mbar_init(&emptyb[s], NCW); }\n    asm volatile("fence.mbarrier_init.release.cluster;" ::: "memory");\n    bar_gen0 = ld_acquire(cnt + C_GEN);\n  }\n  __syncthreads();\n  for (int i = tid; i < npairs; i += NTHR) {\n    int e = __ldg(ids + i) - local_start;\n    if (e < 0 || e >= NLOC) e = -1;\n    eflat[i] = static_cast<int8_t>(e);\n    if (e >= 0) atomicAdd(&rt->n[e], 1);\n  }\n  __syncthreads();\n  if (warp == 0) {\n    const int n = rt->n[lane];\n    const int nb = (n + NB - 1) / NB;\n    int off = n, u1 = nb * NT1, u2 = nb * NT2;\n#pragma unroll\n    for (int d = 1; d < 32; d <<= 1) {\n      const int a = __shfl_up_sync(~0u, off, d), b = __shfl_up_sync(~0u, u1, d), e2 = __shfl_up_sync(~0u, u2, d);\n      if (lane >= d) { off += a; u1 += b; u2 += e2; }\n    }\n    rt->off[lane] = off - n;\n    rt->run[lane] = off - n;\n    rt->nblk[lane] = nb;\n    rt->us1[lane + 1] = u1;\n    rt->us2[lane + 1] = u2;\n    if (lane == 0) { rt->us1[0] = 0; rt->us2[0] = 0; }\n    const int U1 = __shfl_sync(~0u, u1, 31), U2 = __shfl_sync(~0u, u2, 31);\n    if (lane == 0) {\n      rt->c1 = min(NT1, max(1, (U1 + G / 2) / G));\n      rt->c2 = min(NT2, max(1, (U2 + G / 2) / G));\n    }\n  }\n  __syncthreads();\n\n  const int U1 = rt->us1[NLOC], U2 = rt->us2[NLOC];\n  const int a1 = static_cast<int>((long long)U1 * c / G), b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n  const int a2 = static_cast<int>((long long)U2 * c / G), b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n\n  const int first_count=b1-a1, total_count=first_count+b2-a2;\n  if (tid == 0) {\n    uint64_t pf,pn;\n    asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;" : "=l"(pf));\n    asm volatile("createpolicy.fractional.L2::evict_normal.b64 %0, 1.0;" : "=l"(pn));\n    rt->pre.pol_first=pf; rt->pre.pol_normal=pn;\n    rt->pre.index=0; rt->pre.stage=0; rt->pre.phase=0;\n    if (total_count) {\n      int e,nb,m;\n      const int pass=first_count?0:1;\n      const int cc=pass?rt->c2:rt->c1, ntile=pass?NT2:NT1;\n      decode_unit(pass?a2:a1,pass?rt->us2:rt->us1,rt->nblk,cc,ntile,e,nb,m);\n      rt->pre.pass=pass; rt->pre.e=e; rt->pre.nb=nb; rt->pre.m=m;\n      rt->pre.mb=(m/cc)*cc; rt->pre.me=min(ntile,(m/cc)*cc+cc);\n    }\n    for (int i=0;i<nstage;++i)\n      prefetch_one(rt,total_count,first_count,a2,nstage,stages,fullb,emptyb,w13p,w2p);\n  }\n  __syncthreads();\n\n  // ---------------- consumers: deterministic token lists ----------------\n  for (int base = 0; base < npairs; base += NCT) {\n    rt->wc[warp][lane] = 0;\n    bar_consumers();\n    const int i = base + tid;\n    const int e = i < npairs ? eflat[i] : -1;\n    const unsigned mk = __match_any_sync(~0u, e);\n    const int rank = __popc(mk & ((1u << lane) - 1u));\n    if (e >= 0 && rank == 0) rt->wc[warp][e] = __popc(mk);\n    bar_consumers();\n    if (tid < NLOC) {\n      int s = rt->run[tid];\n      for (int w = 0; w < NCW; ++w) { const int t = rt->wc[w][tid]; rt->wc[w][tid] = s; s += t; }\n      rt->run[tid] = s;\n    }\n    bar_consumers();\n    if (i < npairs) {\n      if (e >= 0) {\n        const int pos = rt->wc[warp][e] + rank;\n        pos_of[i] = static_cast<int16_t>(pos);\n        pair_of[pos] = static_cast<int16_t>(i);\n      } else {\n        pos_of[i] = -1;\n      }\n    }\n  }\n  // zero this CTA\'s slice of the sum-of-squares accumulators, then publish\n  {\n    const int P = rt->us1[NLOC] > 0 ? rt->off[NLOC - 1] + rt->n[NLOC - 1] : 0;\n    const int z0 = static_cast<int>((long long)P * c / G), z1 = static_cast<int>((long long)P * (c + 1) / G);\n    for (int i = z0 + tid; i < z1; i += NCT) ss[i] = 0.f;\n    __threadfence();\n    bar_consumers();\n    if (tid == 0) atomicAdd(cnt + C_ZERO, 1);\n  }\n\n  const int q = lane & 3;\n  uint32_t Bf[NT][8][8];\n  int st = 0;\n  uint32_t ph = 0;\n  int buf = 0;\n  int cur_pass = -1, cur_e = -1, cur_nb = -1, seg_tiles = 0;\n  float fw[2];   // (1 + post_norm_w) for this thread\'s phase-2 epilogue row, refreshed per tile\n\n  for (int pass = 0; pass < 2; ++pass) {\n    const int ua = pass ? a2 : a1, ub = pass ? b2 : b1;\n    const int* us = pass ? rt->us2 : rt->us1;\n    const int cc = pass ? rt->c2 : rt->c1;\n    const int ntile = pass ? NT2 : NT1;\n    int e=0, nb=0, m=0, mb=0, me=0;\n    if (ua < ub) {\n      decode_unit(ua, us, rt->nblk, cc, ntile, e, nb, m);\n      mb = (m / cc) * cc;\n      me = min(ntile, mb + cc);\n    }\n    for (int u = ua; u < ub; ++u) {\n      const int ne = rt->n[e], off = rt->off[e];\n      if (pass != cur_pass || e != cur_e || nb != cur_nb) {\n        if (cur_pass == 0 && seg_tiles > 0) {  // publish the finished phase-1 segment\n          __threadfence();\n          bar_consumers();\n          if (tid == 0) atomicAdd(cnt + C_DONE + cur_e, seg_tiles);\n        }\n        cur_pass = pass; cur_e = e; cur_nb = nb; seg_tiles = 0;\n        if (pass == 1) {\n          const int target = NT1 * rt->nblk[e];\n          while (ld_acquire(cnt + C_DONE + e) < target) __nanosleep(64);\n          while (ld_acquire(cnt + C_ZERO) < G) __nanosleep(64);\n        }\n#pragma unroll\n        for (int j = 0; j < NT; ++j) {\n          const int idx = nb * NB + j * 8 + (lane >> 2);\n          const __nv_bfloat16* row = nullptr;\n          if (idx < ne) {\n            const int pos = off + idx;\n            row = pass ? inter + static_cast<size_t>(pos) * HD : x + static_cast<size_t>(pair_of[pos] >> 3) * HD;\n          }\n#pragma unroll\n          for (int g = 0; g < 8; ++g) {\n            uint4 v0 = make_uint4(0, 0, 0, 0), v1 = v0;\n            if (row) {\n              const uint4* p = reinterpret_cast<const uint4*>(row + warp * 512 + g * 64 + q * 16);\n              if (pass) { v0 = __ldcg(p); v1 = __ldcg(p + 1); }\n              else { v0 = __ldg(p); v1 = __ldg(p + 1); }\n            }\n            Bf[j][g][0] = v0.x; Bf[j][g][1] = v0.y; Bf[j][g][2] = v0.z; Bf[j][g][3] = v0.w;\n            Bf[j][g][4] = v1.x; Bf[j][g][5] = v1.y; Bf[j][g][6] = v1.z; Bf[j][g][7] = v1.w;\n          }\n        }\n      }\n      if (pass == 1 && tid < 16 * NB) fw[0] = 1.f + __bfloat162float(pnw[m * 16 + (tid & 15)]);\n\n      mbar_wait(&fullb[st], ph);\n      const uint8_t* tile = stages + st * TILE_BYTES;\n      float acc[NT][4];\n#pragma unroll\n      for (int j = 0; j < NT; ++j) acc[j][0] = acc[j][1] = acc[j][2] = acc[j][3] = 0.f;\n      {\n        const uint4* wq = reinterpret_cast<const uint4*>(tile) + warp * 8 * 32 + lane;\n        const uint4 scv = *(reinterpret_cast<const uint4*>(tile + TILE_W_BYTES) + warp * 32 + lane);\n        const uint32_t scw[4] = {scv.x, scv.y, scv.z, scv.w};\n#pragma unroll\n        for (int g = 0; g < 8; ++g) {\n          const uint4 wv = wq[g * 32];\n          const uint32_t sw = scw[g >> 1];\n          const uint32_t Sr = __byte_perm(sw, 0u, (g & 1) ? 0x4242u : 0x4040u) * 16u + 0x70007000u;\n          const uint32_t Sr8 = __byte_perm(sw, 0u, (g & 1) ? 0x4343u : 0x4141u) * 16u + 0x70007000u;\n          uint32_t o[16];\n          dq8(wv.x, wv.y, o);\n          dq8(wv.z, wv.w, o + 8);\n#pragma unroll\n          for (int s = 0; s < 4; ++s) {\n            const uint32_t* os = o + (s >> 1) * 8 + (s & 1) * 4;\n            const uint32_t a0 = hmul2(os[0], Sr), a1 = hmul2(os[1], Sr8);\n            const uint32_t a2 = hmul2(os[2], Sr), a3 = hmul2(os[3], Sr8);\n#pragma unroll\n            for (int j = 0; j < NT; ++j) mma16816(acc[j], a0, a1, a2, a3, Bf[j][g][2 * s], Bf[j][g][2 * s + 1]);\n          }\n        }\n      }\n      __syncwarp();\n      if (lane == 0) mbar_arrive(&emptyb[st]);\n      if (++st == nstage) { st = 0; ph ^= 1u; }\n\n      float* rp = red + ((buf * NCW + warp) * 32 + lane) * RED;\n#pragma unroll\n      for (int j = 0; j < NT; ++j) reinterpret_cast<float4*>(rp)[j] = make_float4(acc[j][0], acc[j][1], acc[j][2], acc[j][3]);\n      bar_consumers();\n      if (tid == 0) prefetch_one(rt,total_count,first_count,a2,nstage,stages,fullb,emptyb,w13p,w2p);\n      const float* rb = red + buf * NCW * 32 * RED;\n      if (pass == 0) {\n        const float sc = gs13[e] * 256.f;\n        if (tid < 8 * NB) {\n          const int i = tid & 7, n = tid >> 3, j = n >> 3, col = n & 7;\n          const int ls = i * 4 + (col >> 1), rg = j * 4 + (col & 1);\n          float G1 = 0.f, U = 0.f;\n#pragma unroll\n          for (int w = 0; w < NCW; ++w) {\n            G1 += rb[(w * 32 + ls) * RED + rg];\n            U += rb[(w * 32 + ls) * RED + rg + 2];\n          }\n          const int idx = nb * NB + n;\n          if (idx < ne) {\n            G1 *= sc;\n            U *= sc;\n            const float h = G1 / (1.f + __expf(-G1)) * U;\n            inter[static_cast<size_t>(off + idx) * HD + m * 8 + i] = __float2bfloat16(h);\n          }\n        }\n      } else {\n        const float sc = gs2[e] * 256.f;\n        if (tid < 16 * NB) {\n          const int i = tid & 15, n = tid >> 4, j = n >> 3, col = n & 7;\n          const int ls = (i & 7) * 4 + (col >> 1), rg = j * 4 + (col & 1) + ((i >> 3) << 1);\n          float v = 0.f;\n#pragma unroll\n          for (int w = 0; w < NCW; ++w) v += rb[(w * 32 + ls) * RED + rg];\n          v *= sc;\n          const int idx = nb * NB + n;\n          const bool ok = idx < ne;\n          if (ok) y[static_cast<size_t>(off + idx) * HD + m * 16 + i] = v;\n          float t2 = ok ? (v * fw[0]) * (v * fw[0]) : 0.f;\n#pragma unroll\n          for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);   // 16 rows of one token\n          if (ok && i == 0) atomicAdd(ss + off + idx, t2);\n        }\n      }\n      buf ^= 1;\n      ++seg_tiles;\n      advance_unit(e, nb, m, mb, me, rt->nblk, cc, ntile);\n    }\n  }\n  if (cur_pass == 0 && seg_tiles > 0) {\n    __threadfence();\n    bar_consumers();\n    if (tid == 0) atomicAdd(cnt + C_DONE + cur_e, seg_tiles);\n  }\n\n  // ---------------- grid barrier ----------------\n  __threadfence();\n  bar_consumers();\n  if (tid == 0) {\n    if (atomicAdd(cnt + C_BAR, 1) == G - 1) {\n      for (int i = 0; i < NLOC; ++i) cnt[C_DONE + i] = 0;   // every CTA is past its waits\n      cnt[C_ZERO] = 0;\n      cnt[C_BAR] = 0;\n      __threadfence();\n      atomicAdd(cnt + C_GEN, 1);\n    } else {\n      while (ld_acquire(cnt + C_GEN) == bar_gen0) __nanosleep(64);\n    }\n  }\n  bar_consumers();\n\n  // ---------------- combine: item = (token, half of the columns) ----------------\n  for (int it = c; it < 2 * M; it += G) {\n    const int t = it >> 1;\n    const int c0 = (it & 1) * 2048 + tid * 8;\n    float f[8];\n    {\n      const uint4 wv = *reinterpret_cast<const uint4*>(pnw + c0);\n      const __nv_bfloat16* wb = reinterpret_cast<const __nv_bfloat16*>(&wv);\n#pragma unroll\n      for (int k = 0; k < 8; ++k) f[k] = 1.f + __bfloat162float(wb[k]);\n    }\n    float acc[8];\n#pragma unroll\n    for (int k = 0; k < 8; ++k) acc[k] = 0.f;\n#pragma unroll\n    for (int j = 0; j < 8; ++j) {\n      const int pos = pos_of[t * 8 + j];\n      if (pos >= 0) {\n        const float sc = tw[t * 8 + j] * rsqrtf(__ldcg(ss + pos) * (1.f / HD) + 1e-8f);\n        const float4* p = reinterpret_cast<const float4*>(y + static_cast<size_t>(pos) * HD + c0);\n        const float4 u0 = __ldcg(p), u1 = __ldcg(p + 1);\n        acc[0] += sc * u0.x * f[0]; acc[1] += sc * u0.y * f[1]; acc[2] += sc * u0.z * f[2]; acc[3] += sc * u0.w * f[3];\n        acc[4] += sc * u1.x * f[4]; acc[5] += sc * u1.y * f[5]; acc[6] += sc * u1.z * f[6]; acc[7] += sc * u1.w * f[7];\n      }\n    }\n    uint4 ov;\n    __nv_bfloat16* ob = reinterpret_cast<__nv_bfloat16*>(&ov);\n#pragma unroll\n    for (int k = 0; k < 8; ++k) ob[k] = __float2bfloat16(acc[k]);\n    *reinterpret_cast<uint4*>(out + static_cast<size_t>(t) * HD + c0) = ov;\n  }\n}\n\nsize_t smem_bytes(int nt, int nstage, int M) {\n  const int npairs = M * 8;\n  return static_cast<size_t>(nstage) * TILE_BYTES + 2 * NCW * 32 * nt * 4 * sizeof(float) + 2 * nstage * 8 +\n         sizeof(Route) + ((npairs + 15) & ~15) + 4 * npairs;\n}\n\n}  // namespace\n\nint64_t max_smem_attr() {\n  int dev, optin;\n  C10_CUDA_CHECK(cudaGetDevice(&dev));\n  C10_CUDA_CHECK(cudaDeviceGetAttribute(&optin, cudaDevAttrMaxSharedMemoryPerBlockOptin, dev));\n  C10_CUDA_CHECK(cudaFuncSetAttribute(moe_fused<1>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin));\n  return optin;\n}\n\nint64_t smem_needed(int64_t nt, int64_t nstage, int64_t M) { return (int64_t)smem_bytes(nt, nstage, M); }\nint64_t resident_blocks(int64_t nt, int64_t nstage, int64_t M) {\n  int n;\n  C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_fused<1>, NTHR, smem_bytes(nt,nstage,M)));\n  return n;\n}\n\nvoid run(std::vector<int64_t>v,int64_t M,int64_t start,int64_t stages,int64_t grid,int64_t stream){\n moe_fused<1><<<grid,NTHR,smem_bytes(1,stages,M),(cudaStream_t)stream>>>(\n (const __nv_bfloat16*)v[0],(const int*)v[1],(const float*)v[2],(const __nv_bfloat16*)v[3],\n (const uint8_t*)v[4],(const uint8_t*)v[5],(const float*)v[6],(const float*)v[7],\n (__nv_bfloat16*)v[8],(float*)v[9],(float*)v[10],(int*)v[11],(__nv_bfloat16*)v[12],M,start,stages);\n C10_CUDA_KERNEL_LAUNCH_CHECK();\n}\n'}
+H = 4096
+
+NLOC = 32
+
+TOPK = 8
+
+TILE_BYTES = 36864
+
+NT1, NT2 = 512, 256
+
+NCNT = 64
+
+_DQ_SLOTS = (("A", 0), ("A", 4), ("A", 10), ("B", 2), ("B", 6), ("B", 12), ("W", 24), ("W", 30))
+
+_LA_MASK = 0x60306030
+
+def _bit_table():
+    """(slot, half, code bit, word, bit position) for the kernel's dq8 decode."""
+    dbit = {3: 15, 2: 8, 1: 7, 0: 6}
+    la = {p for p in range(32) if (_LA_MASK >> p) & 1}
+    table, used = [], {"A": set(), "B": set()}
+    for k, (src, rot) in enumerate(_DQ_SLOTS):
+        for h in (0, 1):
+            for b in range(4):
+                p = (dbit[b] + 16 * h + rot) % 32
+                w = src if src != "W" else ("A" if p in la else "B")
+                assert p not in used[w]
+                used[w].add(p)
+                table.append((k, h, b, w, p))
+    assert len(used["A"]) == 32 and len(used["B"]) == 32
+    return table
+
+_TABLE = _bit_table()
+
+def _encode_scales(sf: torch.Tensor):
+    """E4M3 block scales -> (u8 code, neg mask, zero mask). Code: |s| = 2^(e5 - 21) * (1 + m/8),
+    byte = e5 << 3 | m; the kernel builds BF16 bits 0x7000 | byte << 4 = |s| * 2^118. Exact for
+    every nonzero finite E4M3 value (subnormals included)."""
+    s = sf.float()
+    if not torch.isfinite(s).all():
+        raise ValueError("non-finite NVFP4 block scale")
+    a = s.abs()
+    nz = a > 0
+    m, e = torch.frexp(torch.where(nz, a, torch.ones_like(a)))
+    mant = ((m * 2 - 1) * 8).round().to(torch.int32)
+    e5 = (e - 1 + 21).to(torch.int32)
+    assert int(e5[nz].min()) >= 0 and int(e5[nz].max()) <= 30 and int(mant.max()) <= 7
+    code = torch.where(nz, (e5 << 3) | mant, torch.zeros_like(e5))
+    back = torch.exp2((code >> 3).float() - 21) * (1 + (code & 7).float() / 8)
+    assert torch.equal(torch.where(nz, back, torch.zeros_like(back)), a)
+    return code.to(torch.uint8), s < 0, ~nz
+
+def _repack(wq: torch.Tensor, sf: torch.Tensor, rowmap: torch.Tensor) -> torch.Tensor:
+    """One expert: packed E2M1 [R, K/2] u8 + E4M3 scales [R, K/16] -> [T, 36864] u8 tiles."""
+    R, K = wq.shape[0], wq.shape[1] * 2
+    assert K == 4096
+    T = rowmap.shape[0]
+    codes = torch.stack((wq & 0xF, wq >> 4), -1).reshape(R, K // 16, 16)
+    u, neg, zero = _encode_scales(sf)
+    codes = torch.where(neg[..., None], codes ^ 8, codes)                  # sign moved into the codes
+    codes = torch.where(zero[..., None], torch.zeros_like(codes), codes)   # 0 * anything stays 0
+    codes = codes.reshape(R, K)[rowmap.reshape(-1)]
+    # k = 512 w + 64 g + 16 q + 4 (2 p + sl) + 2 j + h ; tile row = 8 ri + rr
+    ct = codes.view(T, 2, 8, 8, 8, 4, 2, 2, 2, 2)                           # T ri rr w g q p sl j h
+    ct = ct.permute(0, 3, 4, 2, 5, 6, 7, 8, 1, 9).reshape(T, 8, 8, 32, 2, 8, 2).to(torch.int64)
+    words = torch.zeros((2, T, 8, 8, 32, 2), dtype=torch.int64, device=wq.device)
+    for k, h, b, w, p in _TABLE:
+        words[0 if w == "A" else 1] |= ((ct[..., k, h] >> b) & 1) << p
+    words = words.permute(1, 2, 3, 4, 5, 0).contiguous()                    # T w g lane p {A,B}
+    wbytes = words.view(torch.uint8).view(T, 8, 8, 32, 2, 2, 8)[..., :4].reshape(T, 32768)
+    us = u[rowmap.reshape(-1)].view(T, 2, 8, 8, 8, 4)                       # T ri rr w g q
+    sbytes = us.permute(0, 3, 2, 5, 4, 1).reshape(T, 4096)                  # T w (rr q) g ri
+    return torch.cat((wbytes, sbytes), 1).contiguous()
+def _raw_repack(wq: torch.Tensor, sf: torch.Tensor, rowmap: torch.Tensor) -> torch.Tensor:
+    """One expert: packed E2M1 [R, K/2] u8 + E4M3 scales [R, K/16] -> [T, 36864] u8 tiles."""
+    R, K = wq.shape[0], wq.shape[1] * 2
+    assert K == 4096
+    T = rowmap.shape[0]
+    codes = torch.stack((wq & 0xF, wq >> 4), -1).reshape(R, K // 16, 16)
+    u = sf.contiguous().view(torch.uint8)  # exact stored E4M3 bytes
+    codes = codes.reshape(R, K)[rowmap.reshape(-1)]
+    # k = 512 w + 64 g + 16 q + 4 (2 p + sl) + 2 j + h ; tile row = 8 ri + rr
+    ct = codes.view(T, 2, 8, 8, 8, 4, 2, 2, 2, 2)                           # T ri rr w g q p sl j h
+    ct = ct.permute(0, 3, 4, 2, 5, 6, 7, 8, 1, 9).reshape(T, 8, 8, 32, 2, 8, 2).to(torch.int64)
+    words = torch.zeros((2, T, 8, 8, 32, 2), dtype=torch.int64, device=wq.device)
+    for k, h, b, w, p in _TABLE:
+        words[0 if w == "A" else 1] |= ((ct[..., k, h] >> b) & 1) << p
+    words = words.permute(1, 2, 3, 4, 5, 0).contiguous()                    # T w g lane p {A,B}
+    wbytes = words.view(torch.uint8).view(T, 8, 8, 32, 2, 2, 8)[..., :4].reshape(T, 32768)
+    us = u[rowmap.reshape(-1)].view(T, 2, 8, 8, 8, 4)                       # T ri rr w g q
+    sbytes = us.permute(0, 3, 2, 5, 4, 1).reshape(T, 4096)                  # T w (rr q) g ri
+    return torch.cat((wbytes, sbytes), 1).contiguous()
+
+"""Prepare-time MoE tuner for decode-layer routing.
+
+It reconstructs the layer's router distribution from the loaded router, bias, pre-FFN norm and
+pooler weights. It never reads a submission input: callers provide only their loaded weights and
+shape list, so the resulting shape dispatch remains CUDA-graph safe.
+"""
+import math as fx_math
+import statistics as fx_statistics
+import time as fx_time
+from typing import Callable as fx_Callable
+import torch as fx_torch
+fx_HIDDEN = 8192
+fx_D_EXPERT = 4096
+fx_N_EXPERTS = 256
+fx_LOCAL_EXPERTS = 32
+fx_TOP_K = 8
+fx_ROUTER_MULTIPLIER = 0.1767766952966369
+fx_RMS_EPS = 1e-05
+fx_STREAM_SEED = 5354
+fx_STREAM_MEAN = 0.7
+fx_STREAM_SHARED = 0.9
+fx_STREAM_RANK = 4
+fx_DRAFT_SHARE = 0.6
+
+def fx__rms(x: fx_torch.Tensor) -> fx_torch.Tensor:
+    xf = x.float()
+    return xf * fx_torch.rsqrt(xf.square().mean(-1, keepdim=True) + fx_RMS_EPS)
+
+def fx__basis(device: fx_torch.device) -> tuple[fx_torch.Tensor, fx_torch.Tensor]:
+    gen = fx_torch.Generator().manual_seed(fx_STREAM_SEED)
+    mean = fx_torch.randn((fx_HIDDEN,), generator=gen).to(device)
+    shared = fx_torch.randn((fx_STREAM_RANK, fx_HIDDEN), generator=gen).to(device)
+    return (mean, shared)
+
+def fx_make_fixture(weights: dict[str, fx_torch.Tensor], tokens: int, seed: int, *, mode: str='real', q_len: int | None=None) -> dict:
+    """Return an expert-call fixture with real router or controlled route IDs.
+
+    `q_len` defaults to 8 for the verify loads (8/128/256 tokens), otherwise 1.
+    Pass it explicitly for other loads. Draft sharing applies within every verify block.
+    `real` uses the layer router and chooses the busiest 32-expert range. `matched_uniform` keeps
+    the real local/remote mask but replaces local expert IDs uniformly. `uniform` routes every
+    slot to a uniformly chosen local expert, matching older synthetic tuners.
+    """
+    device = weights['router'].device
+    gen = fx_torch.Generator(device=device).manual_seed(seed)
+    mean, shared = fx__basis(device)
+    coef = fx_torch.randn((tokens, fx_STREAM_RANK), generator=gen, device=device)
+    q_len = (8 if tokens in (8, 128, 256) else 1) if q_len is None else int(q_len)
+    if q_len < 1 or tokens % q_len:
+        raise ValueError(f'tokens={tokens} must be divisible by q_len={q_len}')
+    scale = fx_torch.ones((tokens // q_len, q_len, 1), device=device)
+    if 1 < q_len <= 8:
+        scale[:, 1:] = fx_DRAFT_SHARE
+    scale = scale.reshape(tokens, 1)
+    stream = scale * (fx_STREAM_MEAN * mean + fx_math.sqrt(fx_STREAM_SHARED / fx_STREAM_RANK) * (coef @ shared)) + (1 - fx_STREAM_SHARED * scale.square()).sqrt() * fx_torch.randn((tokens, fx_HIDDEN), generator=gen, device=device)
+    h = fx__rms(stream) * (1.0 + weights['pre_ffn_norm'].float())
+    router = weights['router'].float()
+    biased = fx_torch.sigmoid(h @ router.t() * fx_ROUTER_MULTIPLIER) + weights['router_bias'].float()
+    scores = fx_torch.sigmoid(h @ router.t() * fx_ROUTER_MULTIPLIER)
+    global_ids = biased.topk(fx_TOP_K, dim=-1).indices.to(fx_torch.int32)
+    picked = scores.gather(1, global_ids.long())
+    topk_weights = picked / picked.sum(-1, keepdim=True).clamp_min(1e-15)
+    ranges = fx_torch.bincount((global_ids // fx_LOCAL_EXPERTS).flatten(), minlength=fx_N_EXPERTS // fx_LOCAL_EXPERTS)
+    local_start = fx_LOCAL_EXPERTS * int(ranges.argmax())
+    local = ((global_ids - local_start) % fx_N_EXPERTS).to(fx_torch.int32)
+    local_mask = local < fx_LOCAL_EXPERTS
+    if mode == 'uniform':
+        lids = fx_torch.randint(0, fx_LOCAL_EXPERTS, global_ids.shape, generator=gen, device=device, dtype=fx_torch.int32)
+    elif mode == 'matched_uniform':
+        lids = fx_torch.randint(0, fx_LOCAL_EXPERTS, global_ids.shape, generator=gen, device=device, dtype=fx_torch.int32)
+        lids = fx_torch.where(local_mask, lids, fx_torch.full_like(lids, -1))
+    elif mode == 'real':
+        lids = fx_torch.where(local_mask, local, fx_torch.full_like(local, -1))
+    else:
+        raise ValueError(mode)
+    x = h @ weights['pooler'].float().t()
+    x = (fx__rms(x) * (1.0 + weights['pre_expert_norm'].float())).to(fx_torch.bfloat16)
+    tw = topk_weights if mode != 'uniform' else fx_torch.rand((tokens, fx_TOP_K), generator=gen, device=device)
+    if mode == 'uniform':
+        tw = tw / tw.sum(-1, keepdim=True)
+    cfg = {'local_count': 32, 'd_hidden': fx_D_EXPERT, 'd_expert': fx_D_EXPERT, 'local_start': 0}
+    return {'hidden_states': x, 'topk_ids': lids, 'topk_weights': tw.float(), 'config': cfg, 'local_start': local_start, 'global_ids': global_ids, 'local_mask': local_mask}
+
+def fx_route_summary(fixture: dict) -> dict[str, float]:
+    ids = fixture['topk_ids']
+    local = ids[ids >= 0]
+    counts = fx_torch.bincount(local, minlength=fx_LOCAL_EXPERTS)
+    return {'pairs': float(local.numel()), 'distinct': float((counts > 0).sum()), 'max_expert': float(counts.max()), 'mean_nonzero': float(counts[counts > 0].float().mean())}
+# Public generator sha256 23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163
+import math as rg_math
+import functools as rg_functools
+import torch as rg_torch
+rg_HIDDEN = 8192
+rg_HEAD_DIM = 64
+rg_HQ = 16
+rg_HKV = 2
+rg_Q_SIZE = 1024
+rg_KV_SIZE = 128
+rg_QKV_SIZE = 2304
+rg_D_EXPERT = 4096
+rg_LOCAL_EXPERTS = 32
+rg_N_EXPERTS = 256
+rg_STREAM_SEED = 5354
+rg_STREAM_RANK = 4
+rg_ROUTER_STD = 0.045
+rg_ROUTER_ALIGN = 0.07
+rg_ROUTER_BIAS_STD = 0.055
+rg_BLOCK = 16
+rg_E4M3_MAX = 448.0
+rg_SCALE_LOG2_MEAN = 7.0
+rg_SCALE_LOG2_STD = 0.4
+
+def rg_random_weights(rows: int, k: int, *, generator: rg_torch.Generator, device: str | rg_torch.device, leading: tuple[int, ...]=(), wide_scales: bool=False):
+    """Random NVFP4 weights whose dequantized values have roughly unit-variance dot products.
+
+    Codes are uniform over all 16 bit patterns; block scales are log-normal, log2 ~ N(7, 0.4)
+    clamped to [8, 448]; the global scale
+    normalizes by sqrt(k). With wide_scales, block scales are log-uniform over 2^-6 to 448
+    instead.
+    """
+    shape = (*leading, rows, k // 2)
+    packed = rg_torch.randint(0, 256, shape, dtype=rg_torch.uint8, generator=generator, device=device)
+    scale_shape = (*leading, rows, k // rg_BLOCK)
+    if wide_scales:
+        u = rg_torch.rand(scale_shape, generator=generator, device=device)
+        sf = rg_torch.exp2(-6 + u * (rg_math.log2(rg_E4M3_MAX) + 6)).to(rg_torch.float8_e4m3fn)
+        mean_sq = float(sf.float().pow(2).mean())
+    else:
+        z = rg_torch.randn(scale_shape, generator=generator, device=device)
+        sf = rg_torch.exp2(rg_SCALE_LOG2_MEAN + rg_SCALE_LOG2_STD * z).clamp(8.0, rg_E4M3_MAX).to(rg_torch.float8_e4m3fn)
+        mean_sq = 4.0 ** rg_SCALE_LOG2_MEAN * rg_math.exp(2 * (rg_math.log(2) * rg_SCALE_LOG2_STD) ** 2)
+    gs = rg_torch.tensor(1.0 / (8.6 * mean_sq * k) ** 0.5, dtype=rg_torch.float32, device=device)
+    return (packed, sf, gs)
+
+def rg_generate_weights(seed: int, device: str='cuda', router_seed: int | None=None):
+    """The layer's weights from `seed`. With router_seed, the router and its bias come from that
+    seed instead."""
+    gen = rg_torch.Generator(device=device).manual_seed(seed)
+
+    def dense(n, k, dtype=rg_torch.bfloat16):
+        return (rg_torch.randn((n, k), generator=gen, device=device) / rg_math.sqrt(k)).to(dtype)
+
+    def vec(n, std):
+        return (std * rg_torch.randn((n,), generator=gen, device=device)).to(rg_torch.bfloat16)
+    w13, w13_sf, gs13 = rg_random_weights(2 * rg_D_EXPERT, rg_D_EXPERT, generator=gen, device=device, leading=(rg_LOCAL_EXPERTS,))
+    w2, w2_sf, gs2 = rg_random_weights(rg_D_EXPERT, rg_D_EXPERT, generator=gen, device=device, leading=(rg_LOCAL_EXPERTS,))
+    gs13 = gs13 * rg_torch.exp(rg_torch.randn((rg_LOCAL_EXPERTS,), generator=gen, device=device))
+    gs2 = gs2 * rg_torch.exp(rg_torch.randn((rg_LOCAL_EXPERTS,), generator=gen, device=device))
+    o, attn_gate, pre_ffn = (dense(rg_HIDDEN, rg_Q_SIZE), vec(rg_HIDDEN, 0.3), vec(rg_HIDDEN, 0.1))
+    weights = {'qkv_gate': dense(rg_QKV_SIZE, rg_HIDDEN), 'o': o, 'attn_residual_gate': attn_gate, 'pre_ffn_norm': pre_ffn, **rg__router(gen, device, pre_ffn), 'pooler': dense(rg_D_EXPERT, rg_HIDDEN), 'pre_expert_norm': vec(rg_D_EXPERT, 0.1), 'w13': w13, 'w13_sf': w13_sf, 'w13_gs': gs13, 'w2': w2, 'w2_sf': w2_sf, 'w2_gs': gs2, 'post_expert_norm': vec(rg_D_EXPERT, 0.1), 'unpooler': dense(rg_HIDDEN, rg_D_EXPERT), 'post_ffn_norm': vec(rg_HIDDEN, 0.1), 'ffn_residual_gate': vec(rg_HIDDEN, 0.3), 'next_pre_attn_norm': vec(rg_HIDDEN, 0.1)}
+    if router_seed is not None:
+        weights.update(rg__router(rg_torch.Generator(device=device).manual_seed(router_seed), device, pre_ffn))
+    return weights
+
+@rg_functools.cache
+def rg__stream_basis(device: str):
+    """The residual stream's mean direction [8192] and shared directions [STREAM_RANK, 8192]."""
+    gen = rg_torch.Generator().manual_seed(rg_STREAM_SEED)
+    mean = rg_torch.randn((rg_HIDDEN,), generator=gen)
+    shared = rg_torch.randn((rg_STREAM_RANK, rg_HIDDEN), generator=gen)
+    return (mean.to(device), shared.to(device))
+
+def rg__router(gen, device, pre_ffn):
+    """FP32 router rows, each with a component along the stream's mean direction, and the router
+    bias. pre_ffn is unused."""
+    mean, _ = rg__stream_basis(str(device))
+    w = rg_ROUTER_STD * rg_torch.randn((rg_N_EXPERTS, rg_HIDDEN), generator=gen, device=device)
+    align = rg_ROUTER_ALIGN * rg_torch.randn((rg_N_EXPERTS, 1), generator=gen, device=device)
+    rows = w + align * mean[None, :] / rg_math.sqrt(rg_HIDDEN)
+    bias = rg_ROUTER_BIAS_STD * rg_torch.randn((rg_N_EXPERTS,), generator=gen, device=device)
+    return {'router': rows.contiguous(), 'router_bias': bias.contiguous()}
+class LabGraph:
+    def __init__(self,fn,data):
+        self.data={k:v.clone() if lab_torch.is_tensor(v) else v for k,v in data.items()}
+        fn(self.data)
+        lab_torch.cuda.synchronize()
+        self.graph=lab_torch.cuda.CUDAGraph()
+        with lab_torch.cuda.graph(self.graph):self.out=fn(self.data)
+    def refresh(self,data):
+        for k in ('hidden_states','topk_ids','topk_weights'):self.data[k].copy_(data[k])
+    def replay(self):
+        self.graph.replay();return self.out
+
+def lab_pair(old,new,ds,flush,repeats=6):
+    ot,nt,ratios=[],[],[]
+    a,b=lab_torch.cuda.Event(enable_timing=True),lab_torch.cuda.Event(enable_timing=True)
+    for i in range(repeats):
+        old.refresh(ds[i%len(ds)]);new.refresh(ds[i%len(ds)])
+        pair=[]
+        for g in ((old,new) if i%2==0 else (new,old)):
+            flush.sum()
+            a.record();g.replay();b.record();b.synchronize()
+            pair.append(float(a.elapsed_time(b))*1000)
+        x,y=pair if i%2==0 else pair[::-1]
+        ot.append(x);nt.append(y);ratios.append(y/x)
+    # Median paired ratio, anchored by the median reference time, as in the judge.
+    return lab_stats.median(ot)*lab_stats.median(ratios),lab_stats.median(nt),lab_stats.median(ot)
+VAR_CUDA='\n#define C10_CUDA_CHECK(expr) do{cudaError_t e=(expr);if(e!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(e));}while(0)\n#define C10_CUDA_KERNEL_LAUNCH_CHECK() C10_CUDA_CHECK(cudaGetLastError())\n\n#include <cuda_runtime.h>\n#include <stdexcept>\n#include <vector>\n#include <algorithm>\n\n#include <cuda_bf16.h>\n#include <stdint.h>\n\nnamespace {\n\nconstexpr int HD = 4096;\nconstexpr int NLOC = 32;\nconstexpr int TILE_BYTES = 36864;\nconstexpr int TILE_W_BYTES = 32768;\nconstexpr int NT1 = 512;\nconstexpr int NT2 = 256;\nconstexpr int NCW = 8;                 // consumer warps\nconstexpr int NCT = NCW * 32;          // consumer threads\nconstexpr int NTHR = NCT;             // thread 0 also prefetches\nconstexpr uint32_t DQ_MASK = 0x81C081C0u;\nconstexpr uint32_t LA_MASK = 0x60306030u;\n// persistent counters\nenum { C_DONE = 0, C_ZERO = 32, C_BAR = 33, C_GEN = 34 };\n\n__device__ __forceinline__ uint32_t smem_u32(const void* p) {\n  return static_cast<uint32_t>(__cvta_generic_to_shared(p));\n}\n__device__ __forceinline__ void mbar_init(uint64_t* b, int cnt) {\n  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" :: "r"(smem_u32(b)), "r"(cnt));\n}\n__device__ __forceinline__ bool mbar_try(uint64_t* b, uint32_t parity) {\n  uint32_t ok;\n  asm volatile("{\\n .reg .pred p;\\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\\n selp.u32 %0, 1, 0, p;\\n}\\n"\n               : "=r"(ok) : "r"(smem_u32(b)), "r"(parity) : "memory");\n  return ok != 0;\n}\n__device__ __forceinline__ void mbar_wait(uint64_t* b, uint32_t parity) {\n  while (!mbar_try(b, parity)) {}\n}\n__device__ __forceinline__ void mbar_arrive(uint64_t* b) {\n  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" :: "r"(smem_u32(b)) : "memory");\n}\n__device__ __forceinline__ void mbar_expect_tx(uint64_t* b, uint32_t bytes) {\n  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" :: "r"(smem_u32(b)), "r"(bytes) : "memory");\n}\n__device__ __forceinline__ void bulk_g2s(void* dst, const void* src, uint32_t bytes, uint64_t* b, uint64_t pol) {\n  asm volatile("cp.async.bulk.shared::cluster.global.mbarrier::complete_tx::bytes.L2::cache_hint [%0], [%1], %2, [%3], %4;"\n               :: "r"(smem_u32(dst)), "l"(src), "r"(bytes), "r"(smem_u32(b)), "l"(pol) : "memory");\n}\n__device__ __forceinline__ void bar_consumers() {\n  asm volatile("bar.sync 1, %0;" :: "n"(NCT) : "memory");\n}\n__device__ __forceinline__ int ld_acquire(const int* p) {\n  int v;\n  asm volatile("ld.acquire.gpu.global.s32 %0, [%1];" : "=r"(v) : "l"(p) : "memory");\n  return v;\n}\n__device__ __forceinline__ uint32_t rotr(uint32_t x, int s) { return __funnelshift_r(x, x, s); }\n__device__ __forceinline__ uint32_t hmul2(uint32_t a, uint32_t b) {\n  uint32_t d;\n  asm("mul.rn.bf16x2 %0, %1, %2;" : "=r"(d) : "r"(a), "r"(b));\n  return d;\n}\n__device__ __forceinline__ void mma16816(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,\n                                         uint32_t b0, uint32_t b1) {\n  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"\n               : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])\n               : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));\n}\n// 16 E2M1 codes (two words) -> 8 BF16x2 registers holding value * 2^-126 (exact).\n__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {\n  o[0] = A & DQ_MASK;\n  o[1] = rotr(A, 4) & DQ_MASK;\n  o[2] = rotr(A, 10) & DQ_MASK;\n  o[3] = rotr(B, 2) & DQ_MASK;\n  o[4] = rotr(B, 6) & DQ_MASK;\n  o[5] = rotr(B, 12) & DQ_MASK;\n  uint32_t W; asm("lop3.b32 %0,%1,%2,%3,0xe4;":"=r"(W):"r"(A),"r"(B),"n"(LA_MASK));\n  o[6] = rotr(W, 24) & DQ_MASK;\n  o[7] = rotr(W, 30) & DQ_MASK;\n}\n\nstruct PrefetchState {\n  volatile int index, stage, phase, pass;\n  volatile int e, nb, m, mb, me;\n  volatile int seg, left;  // F_RND: current run and units left in it\n  volatile uint64_t pol_first, pol_normal;\n};\n\nstruct Route {        // shared-memory routing summary\n  int n[NLOC];        // pairs per local expert\n  int off[NLOC];      // first sorted position\n  int nblk[NLOC];     // token blocks\n  int us1[NLOC + 1];  // phase-1 unit prefix\n  int us2[NLOC + 1];  // phase-2 unit prefix\n  int c1, c2;         // m-chunk sizes\n  int run[NLOC];\n  int wc[16][NLOC];  // up to 16 consumer warps (F_W16)\n  PrefetchState pre;\n  int erank[8];  // F_SLOT: local expert of each local rank\n  int P;         // F_SLOT: local pairs\n  int sa[4], sn[4], sp[4];  // F_RND: first unit and count of each (pass, round) run of this CTA\n  int tcnt[8];       // F_ROT: per reduce buffer, warp arrivals (monotonic)\n};\n\n// unit -> (expert, token block, m tile); order (e, m-chunk, block, m)\n__device__ __forceinline__ void decode_unit(int u, const int* us, const int* nblk, int cc, int ntile,\n                                            int& e, int& nb, int& m) {\n  e = 0;\n#pragma unroll\n  for (int d = 16; d > 0; d >>= 1) {\n    if (us[e + d] <= u) e += d;\n  }\n  const int rel = u - us[e];\n  const int nbk = nblk[e];\n  const int nfull = ntile / cc;\n  const int span = cc * nbk;\n  if (rel < nfull * span) {\n    const int mc = rel / span;\n    const int r2 = rel - mc * span;\n    nb = r2 / cc;\n    m = mc * cc + (r2 - nb * cc);\n  } else {\n    const int L = ntile - nfull * cc;\n    const int r3 = rel - nfull * span;\n    nb = r3 / L;\n    m = nfull * cc + (r3 - nb * L);\n  }\n}\n\n__device__ __forceinline__ void advance_unit(int& e, int& nb, int& m, int& mb, int& me,\n                                               const int* nblk, int cc, int ntile) {\n  if (++m == me) {\n    if (++nb == nblk[e]) {\n      nb = 0;\n      mb += cc;\n      if (mb >= ntile) {\n        ++e;\n        while (e < NLOC && nblk[e] == 0) ++e;\n        mb = 0;\n      }\n      me = min(ntile, mb + cc);\n    }\n    m = mb;\n  }\n}\n\n\n__device__ __forceinline__ void prefetch_one(\n    Route* rt, int total, int first, int a2, int nstage,\n    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb,\n    const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  int idx = p.index;\n  if (idx >= total) return;\n  int st=p.stage, ph=p.phase, pass=p.pass;\n  int e=p.e, nb=p.nb, m=p.m, mb=p.mb, me=p.me;\n  const int ntile=pass?NT2:NT1;\n  const int cc=pass?rt->c2:rt->c1;\n  const uint8_t* base=pass?w2p:w13p;\n  const uint8_t* src=base+(static_cast<size_t>(e)*ntile+m)*TILE_BYTES;\n  const uint64_t pol=rt->nblk[e]>1?p.pol_normal:p.pol_first;\n  mbar_wait(&emptyb[st], ph^1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages+st*TILE_BYTES, src, TILE_BYTES, &fullb[st], pol);\n  ++idx;\n  if (idx < total) {\n    if (idx == first) {\n      pass=1;\n      decode_unit(a2,rt->us2,rt->nblk,rt->c2,NT2,e,nb,m);\n      mb=(m/rt->c2)*rt->c2;\n      me=min(NT2,mb+rt->c2);\n    } else {\n      advance_unit(e,nb,m,mb,me,rt->nblk,cc,ntile);\n    }\n  }\n  if (++st == nstage) { st=0; ph^=1; }\n  p.index=idx; p.stage=st; p.phase=ph; p.pass=pass;\n  p.e=e; p.nb=nb; p.m=m; p.mb=mb; p.me=me;\n}\n\n// ---- flag-templated variants of the admitted one-LOP3 NT1 kernel (F=0 is the incumbent\'s math) ----\nenum {\n  F_Z = 1,      // zero each pair\'s norm slot in its W13 tile 0 (before expert release); no C_ZERO wait\n  F_SLOT = 2,   // M=1: dispatch straight from the 8 top-k slots (rank = popcount), no counts/scan/lists/search\n  F_ZOUT = 4,   // W2 epilogue stores z = v(1+w); the finalizer drops its post-norm weight loads\n  F_RSQ = 8,    // finalizer: lanes 0-7 compute each pair\'s scale once and shuffle it\n  F_NREG = 16,  // W2 norm partials stay in registers across a CTA\'s run of tiles for one (expert, block)\n  F_PDL = 64,   // launched as a programmatic dependent: setup overlaps the router, griddepcontrol.wait first\n  F_LAST = 128, // the last CTA to finish W2 runs the whole finalizer; no grid-wide release/spin\n  F_TRACE = 256, // globaltimer stamps per CTA (layout of the earlier TRACE build), written to v[13]\n  F_NT2 = 2048, // 16-token blocks: each weight tile is decoded once for up to 16 of an expert\'s tokens; 1 CTA/SM\n  F_W16 = 4096, // F_NT2 with 16 consumer warps (each half of a K slice): 16 warps/SM as NT1, operands in 64 registers\n  F_RND = 8192, // two rounds split at the expert boundary nearest half the W13 units: every CTA runs its share of the\n                // first experts\' W13, then the rest; W2 likewise, so the first experts\' W2 runs while the rest publish\n  F_ALIGN = 131072, // F_RND: parallel split search and m-chunks sized for each round, rather than for the full pass\n  F_WPUB = 65536, // W13 writer warps publish independently after their own global stores; no publish CTA barrier\n  F_PIPE = 32768, // F_RND: W13 group A, W2 group A, W13 group B, W2 group B\n  F_ROT = 16384 // no per-tile CTA barrier: warps count their arrival per tile in shared memory, the last one refills\n                // the stage, and tile t\'s epilogue runs on warp t % 8 after its next tile (nstage + 2 reduce buffers)\n};\ntemplate <int Fv> constexpr int nt_of = (Fv & F_NT2) ? 2 : 1;\ntemplate <int Fv> constexpr int threads_of = (Fv & F_W16) ? 512 : NTHR;\nconstexpr int NT2_PROBE = F_NT2 | 69;           // instantiated words that resident_blocks() sizes NT2 / W16 grids with\nconstexpr int W16_PROBE = F_NT2 | F_W16 | 69;\ntemplate <int N> __device__ __forceinline__ void bar_cta() { asm volatile("bar.sync 1, %0;" :: "n"(N) : "memory"); }\n__device__ __forceinline__ uint64_t tg() { uint64_t t; asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(t)::"memory"); return t; }\n__device__ __forceinline__ uint64_t tclk() { uint64_t t; asm volatile("mov.u64 %0, %%clock64;" : "=l"(t)::"memory"); return t; }\n\n__device__ __forceinline__ void prefetch_slot(Route* rt, int total, int first, int a1, int a2, int nstage,\n    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb, const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  const int idx = p.index;\n  if (idx >= total) return;\n  const int st = p.stage, ph = p.phase;\n  const bool pass = idx >= first;\n  const int u = pass ? a2 + idx - first : a1 + idx;\n  const int r = pass ? (u >> 8) : (u >> 9), m = pass ? (u & (NT2 - 1)) : (u & (NT1 - 1));\n  const int e = rt->erank[r];\n  const uint8_t* src = (pass ? w2p : w13p) + (static_cast<size_t>(e) * (pass ? NT2 : NT1) + m) * TILE_BYTES;\n  mbar_wait(&emptyb[st], ph ^ 1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages + st * TILE_BYTES, src, TILE_BYTES, &fullb[st], p.pol_first);\n  p.index = idx + 1;\n  if (st + 1 == nstage) { p.stage = 0; p.phase = ph ^ 1; } else p.stage = st + 1;\n}\n\n// F_RND prefetcher: the CTA\'s units are up to four (pass, round) runs rt->sa[i] .. rt->sa[i] + rt->sn[i]\n__device__ __forceinline__ void prefetch_rnd(Route* rt, int total, int nstage, uint8_t* stages, uint64_t* fullb,\n                                             uint64_t* emptyb, const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  int idx = p.index;\n  if (idx >= total) return;\n  int st = p.stage, ph = p.phase, pass = p.pass, seg = p.seg, left = p.left;\n  int e = p.e, nb = p.nb, m = p.m, mb = p.mb, me = p.me;\n  const int ntile = pass ? NT2 : NT1;\n  const uint8_t* src = (pass ? w2p : w13p) + (static_cast<size_t>(e) * ntile + m) * TILE_BYTES;\n  const uint64_t pol = rt->nblk[e] > 1 ? p.pol_normal : p.pol_first;\n  mbar_wait(&emptyb[st], ph ^ 1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages + st * TILE_BYTES, src, TILE_BYTES, &fullb[st], pol);\n  ++idx;\n  if (idx < total) {\n    if (--left == 0) {\n      do { ++seg; } while (rt->sn[seg] == 0);\n      pass = rt->sp[seg];\n      const int cc = pass ? rt->c2 : rt->c1, nt = pass ? NT2 : NT1;\n      decode_unit(rt->sa[seg], pass ? rt->us2 : rt->us1, rt->nblk, cc, nt, e, nb, m);\n      mb = (m / cc) * cc; me = min(nt, mb + cc); left = rt->sn[seg];\n    } else {\n      advance_unit(e, nb, m, mb, me, rt->nblk, pass ? rt->c2 : rt->c1, ntile);\n    }\n  }\n  if (++st == nstage) { st = 0; ph ^= 1; }\n  p.index = idx; p.stage = st; p.phase = ph; p.pass = pass; p.seg = seg; p.left = left;\n  p.e = e; p.nb = nb; p.m = m; p.mb = mb; p.me = me;\n}\n\ntemplate <int NT, int F>\n__global__ void __launch_bounds__(threads_of<F>, NT == 1 ? 2 : 1) moe_var(\n    const __nv_bfloat16* __restrict__ x, const int* __restrict__ ids, const float* __restrict__ tw,\n    const __nv_bfloat16* __restrict__ pnw, const uint8_t* __restrict__ w13p, const uint8_t* __restrict__ w2p,\n    const float* __restrict__ gs13, const float* __restrict__ gs2, __nv_bfloat16* __restrict__ inter,\n    float* __restrict__ y, float* __restrict__ ss, int* __restrict__ cnt, __nv_bfloat16* __restrict__ out,\n    int M, int local_start, int nstage, uint64_t* __restrict__ trace) {\n  constexpr bool Z = F & F_Z, SLOT = F & F_SLOT, ZOUT = F & F_ZOUT, RSQ = F & F_RSQ, NREG = F & F_NREG;\n  constexpr bool PDL = F & F_PDL, LAST = F & F_LAST, TRACE = F & F_TRACE;\n  static_assert(((F & F_NT2) != 0) == (NT == 2) && !(NT == 2 && SLOT), "F_NT2 selects NT=2 (M>1 dispatch)");\n  constexpr bool W16 = F & F_W16, RND = F & F_RND;\n  static_assert(!(RND && SLOT), "F_RND is the M>1 dispatch");\n  constexpr bool ROT = F & F_ROT, PIPE = F & F_PIPE, WPUB = F & F_WPUB, ALIGN = F & F_ALIGN;\n  static_assert(!ALIGN || (RND && !PIPE), "F_ALIGN requires non-interleaved F_RND");\n  static_assert(!WPUB || (NT == 1 && !ROT), "F_WPUB: two fixed writer warps, non-ROT epilogue");\n  static_assert(!PIPE || RND, "F_PIPE requires F_RND");\n  static_assert(!ROT || (NT == 1 && !W16 && !NREG), "F_ROT: NT=1, 8 warps, norm atomics per tile");\n  static_assert(!W16 || NT == 2, "F_W16 widens the NT2 CTA");\n  constexpr int CW = W16 ? 16 : NCW, CT = CW * 32, GS = W16 ? 4 : 8;   // consumer warps, threads, K groups per warp\n  constexpr int NB = 8 * NT;\n  constexpr int RED = NT * 4;\n  const int npairs = M * 8;\n  extern __shared__ __align__(128) uint8_t smem[];\n  uint8_t* stages = smem;\n  const int NR = ROT ? nstage + 2 : 2;                                       // reduce buffers\n  float* red = reinterpret_cast<float*>(smem + nstage * TILE_BYTES);        // [NR][CW][32][RED]\n  uint64_t* fullb = reinterpret_cast<uint64_t*>(red + NR * CW * 32 * RED);\n  uint64_t* emptyb = fullb + nstage;\n  Route* rt = reinterpret_cast<Route*>(emptyb + nstage);\n  int8_t* eflat = reinterpret_cast<int8_t*>(rt + 1);                        // [npairs] local expert or -1\n  int16_t* pos_of = reinterpret_cast<int16_t*>(eflat + ((npairs + 15) & ~15));  // [npairs]\n  int16_t* pair_of = pos_of + npairs;                                        // [npairs] sorted pos -> flat\n\n  const int tid = threadIdx.x, lane = tid & 31, warp = tid >> 5;\n  const int G = gridDim.x, c = blockIdx.x;\n  int bar_gen0 = 0;\n  __shared__ int last_cta;\n  // F_TRACE layout: [0] entry [1] routed [2] main loop [3] W13 end [4] first W2 ready [5] W2 end\n  // [6] barrier [7] combine [8] end [9] exit [10] first copy issue [11,12] first W13 copy wait\n  // [13] first W13 tile done [14,15] first W2 copy wait [16] sum of ready waits\n  // [17,19] sums of publish fence / barrier time [18] last publish atomic [22] tid 0 tile-barrier sum\n  // [28,29] tid 0 W13/W2 tile-wait sums [30,31] tid 224 tile-barrier / tile-wait sums\n  // [20,21] clock64 entry/exit [23] finalizer [24] smid [25] grid [26,27] W13/W2 units [32+w] warp entry [40+w] warp exit\n  __shared__ uint64_t probe[TRACE ? 64 : 1];\n  if constexpr (TRACE) {\n    if ((tid & 31) == 0 && warp < 8) probe[32 + warp] = tg();\n    if (tid == 0) { probe[0] = probe[32]; probe[20] = tclk(); }\n    if (tid < 64 && tid != 0 && tid != 20 && !(tid >= 32 && tid < 40)) probe[tid] = 0;\n  }\n  auto dump = [&](bool finalizer) {\n    if constexpr (TRACE) {\n      if (tid == 0) { probe[8] = tg(); probe[23] = finalizer; if (!probe[4]) probe[4] = probe[3]; }\n      bar_cta<CT>();\n      if (tid < 64) trace[(size_t)c * 64 + tid] = probe[tid];\n      bar_cta<CT>();\n      if (lane == 0 && warp < 8) trace[(size_t)c * 64 + 40 + warp] = tg();\n      if (tid == 0) { trace[(size_t)c * 64 + 21] = tclk(); trace[(size_t)c * 64 + 9] = tg(); }\n    }\n  };\n\n  if (tid == 0) {\n    for (int s = 0; s < nstage; ++s) { mbar_init(&fullb[s], 1); mbar_init(&emptyb[s], CW); }\n    asm volatile("fence.mbarrier_init.release.cluster;" ::: "memory");\n    uint64_t pf, pn;\n    asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;" : "=l"(pf));\n    asm volatile("createpolicy.fractional.L2::evict_normal.b64 %0, 1.0;" : "=l"(pn));\n    rt->pre.pol_first = pf; rt->pre.pol_normal = pn;\n    rt->pre.index = 0; rt->pre.stage = 0; rt->pre.phase = 0;\n    if constexpr (ROT) { for (int i = 0; i < 8; ++i) rt->tcnt[i] = 0; }\n  }\n  if constexpr (PDL) asm volatile("griddepcontrol.wait;" ::: "memory");\n\n  int U1, U2, a1, b1, a2, b2, first_count, total_count;\n  if constexpr (SLOT) {\n    // M == 1: a local expert holds at most one pair. Local slots in slot order: rank = popcount.\n    if (warp == 0) {\n      int e = -1;\n      if (lane < 8) {\n        e = __ldg(ids + lane) - local_start;\n        if (e < 0 || e >= NLOC) e = -1;\n      }\n      if (!LAST && lane == 0) bar_gen0 = ld_acquire(cnt + C_GEN);\n      const unsigned mk = __ballot_sync(~0u, e >= 0);\n      const int P = __popc(mk), r = __popc(mk & ((1u << lane) - 1u));\n      if (lane < 8) pos_of[lane] = static_cast<int16_t>(e >= 0 ? r : -1);\n      if (e >= 0) { pair_of[r] = static_cast<int16_t>(lane); rt->erank[r] = e; }\n      __syncwarp();   // lane 0\'s first copies read erank\n      U1 = P * NT1; U2 = P * NT2;\n      a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n      a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n      first_count = b1 - a1; total_count = first_count + b2 - a2;\n      if (lane == 0) {\n        rt->P = P;\n        if constexpr (TRACE) probe[10] = tg();\n        for (int i = 0; i < nstage; ++i)\n          prefetch_slot(rt, total_count, first_count, a1, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n      }\n    }\n    __syncthreads();\n    if (warp != 0) {\n      const int P = rt->P;\n      U1 = P * NT1; U2 = P * NT2;\n      a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n      a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n      first_count = b1 - a1; total_count = first_count + b2 - a2;\n    }\n  } else {\n    if (tid < NLOC) rt->n[tid] = 0;\n    if (!LAST && tid == 0) bar_gen0 = ld_acquire(cnt + C_GEN);\n    __syncthreads();\n    for (int i = tid; i < npairs; i += CT) {\n      int e = __ldg(ids + i) - local_start;\n      if (e < 0 || e >= NLOC) e = -1;\n      eflat[i] = static_cast<int8_t>(e);\n      if (e >= 0) atomicAdd(&rt->n[e], 1);\n    }\n    __syncthreads();\n    if (warp == 0) {\n      const int n = rt->n[lane];\n      const int nb = (n + NB - 1) / NB;\n      int off = n, u1 = nb * NT1, u2 = nb * NT2;\n#pragma unroll\n      for (int d = 1; d < 32; d <<= 1) {\n        const int a = __shfl_up_sync(~0u, off, d), b = __shfl_up_sync(~0u, u1, d), e2 = __shfl_up_sync(~0u, u2, d);\n        if (lane >= d) { off += a; u1 += b; u2 += e2; }\n      }\n      rt->off[lane] = off - n;\n      rt->run[lane] = off - n;\n      rt->nblk[lane] = nb;\n      rt->us1[lane + 1] = u1;\n      rt->us2[lane + 1] = u2;\n      if (lane == 0) { rt->us1[0] = 0; rt->us2[0] = 0; }\n      const int T1 = __shfl_sync(~0u, u1, 31), T2 = __shfl_sync(~0u, u2, 31);\n      if (lane == 0) {\n        rt->c1 = min(NT1, max(1, (T1 + G / 2) / G));\n        rt->c2 = min(NT2, max(1, (T2 + G / 2) / G));\n      }\n    }\n    __syncthreads();\n    U1 = rt->us1[NLOC]; U2 = rt->us2[NLOC];\n    a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n    a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n    first_count = b1 - a1; total_count = first_count + b2 - a2;\n    if constexpr (ALIGN) {\n      // Parallel nearest-boundary search, ties by lower expert index. Only lane 0 constructs the four runs.\n      if (warp == 0) {\n        const int b = rt->us1[lane];\n        int key = (lane && b > 0 && b < U1) ? abs(2 * b - U1) * 32 + lane : 0x7fffffff;\n#pragma unroll\n        for (int d = 16; d; d >>= 1) key = min(key, __shfl_xor_sync(~0u, key, d));\n        if (lane == 0) {\n          const int be = key == 0x7fffffff ? NLOC : (key & 31);\n          const int B1 = rt->us1[be], B2 = rt->us2[be];\n          rt->c1 = min(NT1, max(1, (max(B1, U1 - B1) + G / 2) / G));\n          rt->c2 = min(NT2, max(1, (max(B2, U2 - B2) + G / 2) / G));\n          const int lo[4] = {0, B1, 0, B2}, hi[4] = {B1, U1, B2, U2};\n#pragma unroll\n          for (int i = 0; i < 4; ++i) {\n            const int w = hi[i] - lo[i];\n            rt->sa[i] = lo[i] + static_cast<int>((long long)w * c / G);\n            rt->sn[i] = lo[i] + static_cast<int>((long long)w * (c + 1) / G) - rt->sa[i];\n            rt->sp[i] = i >> 1;\n          }\n        }\n      }\n      __syncthreads();\n      first_count = rt->sn[0] + rt->sn[1]; total_count = first_count + rt->sn[2] + rt->sn[3];\n    } else if constexpr (RND) {\n      int B1 = U1, B2 = U2, best = U1;   // no interior expert boundary: round 1 is empty\n      for (int e = 1; e < NLOC; ++e) {\n        const int b = rt->us1[e];\n        if (b > 0 && b < U1 && abs(2 * b - U1) < best) { best = abs(2 * b - U1); B1 = b; B2 = rt->us2[e]; }\n      }\n      const int lo[4] = {0, B1, 0, B2}, hi[4] = {B1, U1, B2, U2};\n      int sa[4], sn[4];\n#pragma unroll\n      for (int i = 0; i < 4; ++i) {\n        const int w = hi[i] - lo[i];\n        sa[i] = lo[i] + static_cast<int>((long long)w * c / G);\n        sn[i] = lo[i] + static_cast<int>((long long)w * (c + 1) / G) - sa[i];\n      }\n      __syncthreads();   // every thread has read us1/us2 before tid 0 writes the runs\n      if (tid < 4) {\n        const int i = PIPE ? ((tid & 1) * 2 + (tid >> 1)) : tid;\n        rt->sa[tid] = sa[i]; rt->sn[tid] = sn[i]; rt->sp[tid] = i >> 1;\n      }\n      first_count = sn[0] + sn[1]; total_count = first_count + sn[2] + sn[3];\n      __syncthreads();\n    }\n    if (tid == 0) {\n      if (RND && total_count) {\n        int i = 0;\n        while (rt->sn[i] == 0) ++i;\n        const int pass = rt->sp[i], cc = pass ? rt->c2 : rt->c1, ntile = pass ? NT2 : NT1;\n        int e, nb, m;\n        decode_unit(rt->sa[i], pass ? rt->us2 : rt->us1, rt->nblk, cc, ntile, e, nb, m);\n        rt->pre.pass = pass; rt->pre.e = e; rt->pre.nb = nb; rt->pre.m = m; rt->pre.seg = i; rt->pre.left = rt->sn[i];\n        rt->pre.mb = (m / cc) * cc; rt->pre.me = min(ntile, (m / cc) * cc + cc);\n      } else if (total_count) {\n        int e, nb, m;\n        const int pass = first_count ? 0 : 1;\n        const int cc = pass ? rt->c2 : rt->c1, ntile = pass ? NT2 : NT1;\n        decode_unit(pass ? a2 : a1, pass ? rt->us2 : rt->us1, rt->nblk, cc, ntile, e, nb, m);\n        rt->pre.pass = pass; rt->pre.e = e; rt->pre.nb = nb; rt->pre.m = m;\n        rt->pre.mb = (m / cc) * cc; rt->pre.me = min(ntile, (m / cc) * cc + cc);\n      }\n      if constexpr (TRACE) probe[10] = tg();\n      for (int i = 0; i < nstage; ++i) {\n        if constexpr (RND) prefetch_rnd(rt, total_count, nstage, stages, fullb, emptyb, w13p, w2p);\n        else prefetch_one(rt, total_count, first_count, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n      }\n    }\n    __syncthreads();\n    // deterministic token lists (sorted by local expert, then flat slot)\n    for (int base = 0; base < npairs; base += CT) {\n      rt->wc[warp][lane] = 0;\n      bar_cta<CT>();\n      const int i = base + tid;\n      const int e = i < npairs ? eflat[i] : -1;\n      const unsigned mk = __match_any_sync(~0u, e);\n      const int rank = __popc(mk & ((1u << lane) - 1u));\n      if (e >= 0 && rank == 0) rt->wc[warp][e] = __popc(mk);\n      bar_cta<CT>();\n      if (tid < NLOC) {\n        int s = rt->run[tid];\n        for (int w = 0; w < CW; ++w) { const int t = rt->wc[w][tid]; rt->wc[w][tid] = s; s += t; }\n        rt->run[tid] = s;\n      }\n      bar_cta<CT>();\n      if (i < npairs) {\n        if (e >= 0) {\n          const int pos = rt->wc[warp][e] + rank;\n          pos_of[i] = static_cast<int16_t>(pos);\n          pair_of[pos] = static_cast<int16_t>(i);\n        } else {\n          pos_of[i] = -1;\n        }\n      }\n    }\n  }\n  if constexpr (TRACE) {\n    if (tid == 0) {\n      probe[1] = tg(); uint32_t sm; asm("mov.u32 %0, %%smid;" : "=r"(sm)); probe[24] = sm; probe[25] = G;\n      probe[26] = first_count; probe[27] = total_count - first_count;\n    }\n  }\n  if constexpr (!Z) {\n    // zero this CTA\'s slice of the sum-of-squares accumulators, then publish\n    const int P = SLOT ? rt->P : (U1 > 0 ? rt->off[NLOC - 1] + rt->n[NLOC - 1] : 0);\n    const int z0 = static_cast<int>((long long)P * c / G), z1 = static_cast<int>((long long)P * (c + 1) / G);\n    for (int i = z0 + tid; i < z1; i += CT) ss[i] = 0.f;\n    __threadfence();\n    bar_cta<CT>();\n    if (tid == 0) atomicAdd(cnt + C_ZERO, 1);\n  }\n\n  if constexpr (TRACE) { if (tid == 0) probe[2] = tg(); }\n  const int q = lane & 3;\n  uint32_t Bf[NT][GS][8];\n  const int kw = W16 ? (warp >> 1) : warp, gofs = W16 ? (warp & 1) * 4 : 0;   // this warp\'s K slice and groups\n  int st = 0;\n  uint32_t ph = 0;\n  int buf = 0;\n  int cur_pass = -1, cur_e = -1, cur_nb = -1, seg_tiles = 0;\n  float fw[2];   // (1 + post_norm_w) for this thread\'s phase-2 epilogue row, refreshed per tile\n  float nacc = 0.f;  // F_NREG: this thread\'s squared sum over the current (expert, block) run\n  int npos = -1;\n  auto flush_norm = [&]() {\n    if (tid < 16 * NB) {\n      float t2 = nacc;\n#pragma unroll\n      for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);\n      if (npos >= 0 && (tid & 15) == 0) atomicAdd(ss + npos, t2);\n    }\n    nacc = 0.f; npos = -1;\n  };\n\n  // F_TRACE publish probes: [17] sum of fence time, [19] sum of fence-to-atomic (barrier) time, [18] last atomic\n  auto publish = [&](const int pe, const int tiles) {\n    uint64_t p0 = 0, p1 = 0;\n    if constexpr (TRACE) { if (tid == 0) p0 = tg(); }\n    if constexpr (WPUB) {\n      // Only warps 0 and 1 store W13\'s 64 outputs. Each publishes its own writes after all its lanes fenced.\n      // Their independent tile counts sum to 2 * NT1 * nblk: observing that total means both halves are visible.\n      if (warp < 2) {\n        __threadfence();\n        __syncwarp();\n        if constexpr (TRACE) { if (tid == 0) p1 = tg(); }\n        if (lane == 0) {\n          atomicAdd(cnt + C_DONE + pe, tiles);\n          if constexpr (TRACE) { if (tid == 0) { const uint64_t p2 = tg(); probe[17] += p1 - p0; probe[19] += p2 - p1; probe[18] = p2; } }\n        }\n      }\n    } else {\n    __threadfence();\n    if constexpr (TRACE) { if (tid == 0) p1 = tg(); }\n    bar_cta<CT>();\n    if (tid == 0) {\n      atomicAdd(cnt + C_DONE + pe, tiles);\n      if constexpr (TRACE) { const uint64_t p2 = tg(); probe[17] += p1 - p0; probe[19] += p2 - p1; probe[18] = p2; }\n    }\n    }\n  };\n\n  // F_ROT: tile `ptile` (pass pp, expert pe, block pnb, tile pm, pairs pne at poff) awaits its epilogue on warp ptile % CW\n  int tcount = 0, ptile = -1, pp = 0, pe = 0, pnb = 0, pm = 0, pne = 0, poff = 0;\n  auto run_epi = [&]() {\n    const int rbi = ptile % NR, target = (ptile / NR + 1) * CW;\n    uint64_t s0 = 0;\n    if constexpr (TRACE) { if (lane == 0) s0 = tg(); }\n    while (*reinterpret_cast<volatile int*>(&rt->tcnt[rbi]) < target) {}\n    __threadfence_block();\n    if constexpr (TRACE) { if (tid == 0 || tid == 224) probe[tid ? 30 : 22] += tg() - s0; }\n    const float* rb = red + rbi * CW * 32 * RED;\n    if (pp == 0) {\n      const float sc = gs13[pe] * 256.f;\n#pragma unroll\n      for (int k = 0; k < 2; ++k) {\n        const int o = lane + 32 * k, i = o & 7, n = o >> 3;\n        const int ls = i * 4 + (n >> 1), rg = n & 1;\n        float G1 = 0.f, U = 0.f;\n#pragma unroll\n        for (int w = 0; w < CW; ++w) {\n          G1 += rb[(w * 32 + ls) * RED + rg];\n          U += rb[(w * 32 + ls) * RED + rg + 2];\n        }\n        const int idx = pnb * NB + n;\n        if (idx < pne) {\n          if constexpr (Z) { if (pm == 0 && i == 0) ss[poff + idx] = 0.f; }\n          G1 *= sc;\n          U *= sc;\n          const float h = G1 / (1.f + __expf(-G1)) * U;\n          inter[static_cast<size_t>(poff + idx) * HD + pm * 8 + i] = __float2bfloat16(h);\n        }\n      }\n    } else {\n      const float sc = gs2[pe] * 256.f;\n      const int i = lane & 15;\n      const float fwv = 1.f + __bfloat162float(pnw[pm * 16 + i]);\n#pragma unroll\n      for (int k = 0; k < 4; ++k) {\n        const int n = (lane >> 4) + 2 * k;\n        const int ls = (i & 7) * 4 + (n >> 1), rg = (n & 1) + ((i >> 3) << 1);\n        float v = 0.f;\n#pragma unroll\n        for (int w = 0; w < CW; ++w) v += rb[(w * 32 + ls) * RED + rg];\n        v *= sc;\n        const int idx = pnb * NB + n;\n        const bool ok = idx < pne;\n        const float z = v * fwv;\n        if (ok) y[static_cast<size_t>(poff + idx) * HD + pm * 16 + i] = ZOUT ? z : v;\n        float t2 = ok ? z * z : 0.f;\n#pragma unroll\n        for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);   // 16 rows of one token\n        if (ok && i == 0) atomicAdd(ss + poff + idx, t2);\n      }\n    }\n  };\n  auto flush_epi = [&]() {   // F_ROT: the pending tile\'s epilogue now (segment publish, end of the units)\n    if constexpr (ROT) {\n      if (ptile >= 0 && ptile % CW == warp) run_epi();\n      ptile = -1;\n    }\n  };\n\n  auto unit_body = [&](const int pass, const bool firstp, const int e, const int nb, const int m, const int ne,\n                       const int off) {\n    if (pass != cur_pass || e != cur_e || nb != cur_nb) {\n      if (cur_pass == 0 && seg_tiles > 0) { flush_epi(); publish(cur_e, seg_tiles); }  // the finished phase-1 segment\n      if constexpr (NREG) { if (cur_pass == 1) flush_norm(); }\n      cur_pass = pass; cur_e = e; cur_nb = nb; seg_tiles = 0;\n      if (pass == 1) {\n        uint64_t wait0 = 0;\n        if constexpr (TRACE) { if (tid == 0) wait0 = tg(); }\n        const int target = (WPUB ? 2 : 1) * NT1 * (SLOT ? 1 : rt->nblk[e]);\n        while (ld_acquire(cnt + C_DONE + e) < target) __nanosleep(64);\n        if constexpr (!Z) { while (ld_acquire(cnt + C_ZERO) < G) __nanosleep(64); }\n        if constexpr (TRACE) { if (tid == 0) probe[16] += tg() - wait0; }\n      }\n#pragma unroll\n      for (int j = 0; j < NT; ++j) {\n        const int idx = nb * NB + j * 8 + (lane >> 2);\n        const __nv_bfloat16* row = nullptr;\n        if (idx < ne) {\n          const int pos = off + idx;\n          row = pass ? inter + static_cast<size_t>(pos) * HD : x + static_cast<size_t>(pair_of[pos] >> 3) * HD;\n        }\n#pragma unroll\n        for (int g = 0; g < GS; ++g) {\n          uint4 v0 = make_uint4(0, 0, 0, 0), v1 = v0;\n          if (row) {\n            const uint4* p = reinterpret_cast<const uint4*>(row + kw * 512 + (gofs + g) * 64 + q * 16);\n            if (pass) { v0 = __ldcg(p); v1 = __ldcg(p + 1); }\n            else { v0 = __ldg(p); v1 = __ldg(p + 1); }\n          }\n          Bf[j][g][0] = v0.x; Bf[j][g][1] = v0.y; Bf[j][g][2] = v0.z; Bf[j][g][3] = v0.w;\n          Bf[j][g][4] = v1.x; Bf[j][g][5] = v1.y; Bf[j][g][6] = v1.z; Bf[j][g][7] = v1.w;\n        }\n      }\n    }\n    if constexpr (TRACE) { if (tid == 0 && pass == 1 && firstp) probe[4] = tg(); }\n    if (pass == 1 && tid < 16 * NB) fw[0] = 1.f + __bfloat162float(pnw[m * 16 + (tid & 15)]);\n\n    if constexpr (TRACE) { if (tid == 0 && firstp) probe[pass ? 14 : 11] = tg(); }\n    uint64_t fw0 = 0;\n    if constexpr (TRACE) { if (tid == 0 || tid == 224) fw0 = tg(); }\n    mbar_wait(&fullb[st], ph);\n    if constexpr (TRACE) {\n      if (tid == 0 && firstp) probe[pass ? 15 : 12] = tg();\n      if (tid == 0 || tid == 224) probe[tid ? 31 : 28 + pass] += tg() - fw0;\n    }\n    const uint8_t* tile = stages + st * TILE_BYTES;\n    float acc[NT][4];\n#pragma unroll\n    for (int j = 0; j < NT; ++j) acc[j][0] = acc[j][1] = acc[j][2] = acc[j][3] = 0.f;\n    {\n      const uint4* wq = reinterpret_cast<const uint4*>(tile) + kw * 8 * 32 + lane;\n      const uint4 scv = *(reinterpret_cast<const uint4*>(tile + TILE_W_BYTES) + kw * 32 + lane);\n      const uint32_t scw[4] = {scv.x, scv.y, scv.z, scv.w};\n#pragma unroll\n      for (int g = 0; g < GS; ++g) {\n        const uint4 wv = wq[(gofs + g) * 32];\n        const uint32_t sw = scw[(gofs + g) >> 1];\n        const uint32_t Sr = __byte_perm(sw, 0u, (g & 1) ? 0x4242u : 0x4040u) * 16u + 0x70007000u;\n        const uint32_t Sr8 = __byte_perm(sw, 0u, (g & 1) ? 0x4343u : 0x4141u) * 16u + 0x70007000u;\n        uint32_t o[16];\n        dq8(wv.x, wv.y, o);\n        dq8(wv.z, wv.w, o + 8);\n#pragma unroll\n        for (int s = 0; s < 4; ++s) {\n          const uint32_t* os = o + (s >> 1) * 8 + (s & 1) * 4;\n          const uint32_t a0 = hmul2(os[0], Sr), a1 = hmul2(os[1], Sr8);\n          const uint32_t a2 = hmul2(os[2], Sr), a3 = hmul2(os[3], Sr8);\n#pragma unroll\n          for (int j = 0; j < NT; ++j) mma16816(acc[j], a0, a1, a2, a3, Bf[j][g][2 * s], Bf[j][g][2 * s + 1]);\n        }\n      }\n    }\n    __syncwarp();\n    if (lane == 0) mbar_arrive(&emptyb[st]);\n    if (++st == nstage) { st = 0; ph ^= 1u; }\n\n    if constexpr (ROT) {\n      const int rbi = tcount % NR;\n      *reinterpret_cast<float4*>(red + ((rbi * CW + warp) * 32 + lane) * RED) = make_float4(acc[0][0], acc[0][1], acc[0][2], acc[0][3]);\n      __syncwarp();\n      int old = 0;\n      if (lane == 0) { __threadfence_block(); old = atomicAdd(&rt->tcnt[rbi], 1); }\n      old = __shfl_sync(~0u, old, 0);\n      if (old % CW == CW - 1 && lane == 0) {   // every warp is past this stage: refill it\n        __threadfence_block();\n        if constexpr (SLOT) prefetch_slot(rt, total_count, first_count, a1, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n        else if constexpr (RND) prefetch_rnd(rt, total_count, nstage, stages, fullb, emptyb, w13p, w2p);\n        else prefetch_one(rt, total_count, first_count, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n      }\n      if (ptile >= 0 && ptile % CW == warp) run_epi();\n      ptile = tcount; pp = pass; pe = e; pnb = nb; pm = m; pne = ne; poff = off;\n      ++tcount;\n      ++seg_tiles;\n      return;\n    }\n    float* rp = red + ((buf * CW + warp) * 32 + lane) * RED;\n#pragma unroll\n    for (int j = 0; j < NT; ++j) reinterpret_cast<float4*>(rp)[j] = make_float4(acc[j][0], acc[j][1], acc[j][2], acc[j][3]);\n    uint64_t bw0 = 0;\n    if constexpr (TRACE) { if (tid == 0 || tid == 224) bw0 = tg(); }\n    bar_cta<CT>();\n    if constexpr (TRACE) { if (tid == 0 || tid == 224) probe[tid ? 30 : 22] += tg() - bw0; }\n    if (tid == 0) {\n      if constexpr (SLOT) prefetch_slot(rt, total_count, first_count, a1, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n      else if constexpr (RND) prefetch_rnd(rt, total_count, nstage, stages, fullb, emptyb, w13p, w2p);\n      else prefetch_one(rt, total_count, first_count, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n    }\n    const float* rb = red + buf * CW * 32 * RED;\n    if (pass == 0) {\n      const float sc = gs13[e] * 256.f;\n      if (tid < 8 * NB) {\n        const int i = tid & 7, n = tid >> 3, j = n >> 3, col = n & 7;\n        const int ls = i * 4 + (col >> 1), rg = j * 4 + (col & 1);\n        float G1 = 0.f, U = 0.f;\n#pragma unroll\n        for (int w = 0; w < CW; ++w) {\n          G1 += rb[(w * 32 + ls) * RED + rg];\n          U += rb[(w * 32 + ls) * RED + rg + 2];\n        }\n        const int idx = nb * NB + n;\n        if (idx < ne) {\n          if constexpr (Z) { if (m == 0 && i == 0) ss[off + idx] = 0.f; }\n          G1 *= sc;\n          U *= sc;\n          const float h = G1 / (1.f + __expf(-G1)) * U;\n          inter[static_cast<size_t>(off + idx) * HD + m * 8 + i] = __float2bfloat16(h);\n        }\n      }\n    } else {\n      const float sc = gs2[e] * 256.f;\n      if (tid < 16 * NB) {\n        const int i = tid & 15, n = tid >> 4, j = n >> 3, col = n & 7;\n        const int ls = (i & 7) * 4 + (col >> 1), rg = j * 4 + (col & 1) + ((i >> 3) << 1);\n        float v = 0.f;\n#pragma unroll\n        for (int w = 0; w < CW; ++w) v += rb[(w * 32 + ls) * RED + rg];\n        v *= sc;\n        const int idx = nb * NB + n;\n        const bool ok = idx < ne;\n        const float z = v * fw[0];\n        if (ok) y[static_cast<size_t>(off + idx) * HD + m * 16 + i] = ZOUT ? z : v;\n        if constexpr (NREG) {\n          if (ok) { nacc += z * z; npos = off + idx; }\n        } else {\n          float t2 = ok ? z * z : 0.f;\n#pragma unroll\n          for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);   // 16 rows of one token\n          if (ok && i == 0) atomicAdd(ss + off + idx, t2);\n        }\n      }\n    }\n    if constexpr (TRACE) {\n      if (tid == 0 && pass == 0 && firstp) probe[13] = tg();\n    }\n    buf ^= 1;\n    ++seg_tiles;\n  };\n  constexpr int NSEG = RND ? 4 : 2;\n  bool first_pass[2] = {true, true};   // the CTA\'s first unit of each pass (trace stamps)\n  for (int sg = 0; sg < NSEG; ++sg) {\n    const int pass = RND ? rt->sp[sg] : sg;\n    const int ua = RND ? rt->sa[sg] : (pass ? a2 : a1), ub = RND ? ua + rt->sn[sg] : (pass ? b2 : b1);\n    const int* us = pass ? rt->us2 : rt->us1;\n    const int cc = pass ? rt->c2 : rt->c1;\n    const int ntile = pass ? NT2 : NT1;\n    int e = 0, nb = 0, m = 0, mb = 0, me = 0;\n    if constexpr (!SLOT) {\n      if (ua < ub) {\n        decode_unit(ua, us, rt->nblk, cc, ntile, e, nb, m);\n        mb = (m / cc) * cc;\n        me = min(ntile, mb + cc);\n      }\n    }\n    for (int u0 = ua; u0 < ub; ++u0) {\n      const int u = u0;\n      int ne, off;\n      if constexpr (SLOT) {\n        const int r = pass ? (u >> 8) : (u >> 9);\n        m = u & (ntile - 1); e = rt->erank[r]; nb = 0; ne = 1; off = r;\n      } else {\n        ne = rt->n[e]; off = rt->off[e];\n      }\n      unit_body(pass, first_pass[pass], e, nb, m, ne, off);\n      first_pass[pass] = false;\n      if constexpr (!SLOT) advance_unit(e, nb, m, mb, me, rt->nblk, cc, ntile);\n    }\n    if constexpr (TRACE) { if (tid == 0 && (!RND || PIPE || (sg & 1))) probe[pass ? 5 : 3] = tg(); }\n  }\n  flush_epi();\n  if (cur_pass == 0 && seg_tiles > 0) publish(cur_e, seg_tiles);\n  if constexpr (NREG) { if (cur_pass == 1) flush_norm(); }\n\n  // ---------------- grid barrier (or last-arriver election) ----------------\n  __threadfence();\n  bar_cta<CT>();\n  if constexpr (TRACE) { if (tid == 0) probe[6] = tg(); }\n  if constexpr (LAST) {\n    if (tid == 0) {\n      const bool last = atomicAdd(cnt + C_BAR, 1) == G - 1;\n      if (last) {\n        __threadfence();\n        for (int i = 0; i < NLOC; ++i) cnt[C_DONE + i] = 0;   // every CTA is past its waits\n        cnt[C_ZERO] = 0;\n        cnt[C_BAR] = 0;\n      }\n      last_cta = last;\n    }\n    bar_cta<CT>();\n    if (!last_cta) { dump(false); return; }\n  } else {\n    if (tid == 0) {\n      if (atomicAdd(cnt + C_BAR, 1) == G - 1) {\n        for (int i = 0; i < NLOC; ++i) cnt[C_DONE + i] = 0;   // every CTA is past its waits\n        cnt[C_ZERO] = 0;\n        cnt[C_BAR] = 0;\n        __threadfence();\n        atomicAdd(cnt + C_GEN, 1);\n      } else {\n        while (ld_acquire(cnt + C_GEN) == bar_gen0) __nanosleep(64);\n      }\n    }\n    bar_cta<CT>();\n  }\n\n  // ---------------- combine: item = (token, 8 columns per thread: half the row at 256 threads, all of it at 512) ----\n  constexpr int PARTS = HD / (8 * CT);\n  if constexpr (TRACE) { if (tid == 0) probe[7] = tg(); }\n  for (int it = LAST ? 0 : c; it < PARTS * M; it += LAST ? 1 : G) {\n    const int t = it / PARTS;\n    const int c0 = (it % PARTS) * (8 * CT) + tid * 8;\n    float f[8];\n    if constexpr (!ZOUT) {\n      const uint4 wv = *reinterpret_cast<const uint4*>(pnw + c0);\n      const __nv_bfloat16* wb = reinterpret_cast<const __nv_bfloat16*>(&wv);\n#pragma unroll\n      for (int k = 0; k < 8; ++k) f[k] = 1.f + __bfloat162float(wb[k]);\n    }\n    float scl = 0.f;\n    int posl = -1;\n    if constexpr (RSQ) {\n      if (lane < 8) {\n        posl = pos_of[t * 8 + lane];\n        if (posl >= 0) scl = tw[t * 8 + lane] * rsqrtf(__ldcg(ss + posl) * (1.f / HD) + 1e-8f);\n      }\n    }\n    float acc[8];\n#pragma unroll\n    for (int k = 0; k < 8; ++k) acc[k] = 0.f;\n#pragma unroll\n    for (int j = 0; j < 8; ++j) {\n      int pos;\n      float sc;\n      if constexpr (RSQ) {\n        pos = __shfl_sync(~0u, posl, j);\n        sc = __shfl_sync(~0u, scl, j);\n      } else {\n        pos = pos_of[t * 8 + j];\n        sc = pos >= 0 ? tw[t * 8 + j] * rsqrtf(__ldcg(ss + pos) * (1.f / HD) + 1e-8f) : 0.f;\n      }\n      if (pos >= 0) {\n        const float4* p = reinterpret_cast<const float4*>(y + static_cast<size_t>(pos) * HD + c0);\n        const float4 u0 = __ldcg(p), u1 = __ldcg(p + 1);\n        if constexpr (ZOUT) {\n          acc[0] += sc * u0.x; acc[1] += sc * u0.y; acc[2] += sc * u0.z; acc[3] += sc * u0.w;\n          acc[4] += sc * u1.x; acc[5] += sc * u1.y; acc[6] += sc * u1.z; acc[7] += sc * u1.w;\n        } else {\n          acc[0] += sc * u0.x * f[0]; acc[1] += sc * u0.y * f[1]; acc[2] += sc * u0.z * f[2]; acc[3] += sc * u0.w * f[3];\n          acc[4] += sc * u1.x * f[4]; acc[5] += sc * u1.y * f[5]; acc[6] += sc * u1.z * f[6]; acc[7] += sc * u1.w * f[7];\n        }\n      }\n    }\n    uint4 ov;\n    __nv_bfloat16* ob = reinterpret_cast<__nv_bfloat16*>(&ov);\n#pragma unroll\n    for (int k = 0; k < 8; ++k) ob[k] = __float2bfloat16(acc[k]);\n    *reinterpret_cast<uint4*>(out + static_cast<size_t>(t) * HD + c0) = ov;\n  }\n  dump(LAST || c < PARTS * M);\n}\n\nsize_t smem_bytes(int nt, int nstage, int M) {\n  const int npairs = M * 8;\n  return static_cast<size_t>(nstage) * TILE_BYTES + 2 * NCW * 32 * nt * 4 * sizeof(float) + 2 * nstage * 8 +\n         sizeof(Route) + ((npairs + 15) & ~15) + 4 * npairs;\n}\n\n#define VAR_FLAGS(X) X(0) X(69) X(95) X(325) X(351) X(8261) X(8517) X(16453) X(16709) X(24645) X(24901) X(16463) X(16719) X(41029) X(41285) X(57413) X(57669) X(65605) X(65861) X(73797) X(74053) X(65615) X(65871) X(139333) X(139589) X(204869) X(205125)\n}  // namespace\n\nint64_t max_smem_attr() {\n  int dev, optin;\n  C10_CUDA_CHECK(cudaGetDevice(&dev));\n  C10_CUDA_CHECK(cudaDeviceGetAttribute(&optin, cudaDevAttrMaxSharedMemoryPerBlockOptin, dev));\n  int dyn = optin;\n#define SET_ATTR(Fv) { cudaFuncAttributes a = {}; C10_CUDA_CHECK(cudaFuncGetAttributes(&a, moe_var<nt_of<Fv>, Fv>)); \\\n    C10_CUDA_CHECK(cudaFuncSetAttribute(moe_var<nt_of<Fv>, Fv>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin - (int)a.sharedSizeBytes)); \\\n    dyn = std::min(dyn, optin - (int)a.sharedSizeBytes); }\n  VAR_FLAGS(SET_ATTR)\n  SET_ATTR(0)  // resident_blocks() sizes NT=1 grids with moe_var<1, 0> (same smem/threads as every NT=1 word)\n#undef SET_ATTR\n  return dyn;\n}\n\nsize_t smem_var(int flags, int nstage, int M) {   // smem_bytes() plus the wider (F_W16) or deeper (F_ROT) reduce buffers\n  const int nt = (flags & F_NT2) ? 2 : 1, cw = (flags & F_W16) ? 16 : NCW;\n  return smem_bytes(nt, nstage, M) + static_cast<size_t>(2 * (cw - NCW) * 32 * nt * 4) * sizeof(float) +\n         ((flags & F_ROT) ? static_cast<size_t>(nstage) * NCW * 32 * 4 * sizeof(float) : 0);\n}\nint64_t smem_needed(int64_t flags, int64_t nstage, int64_t M) { return (int64_t)smem_var(flags, nstage, M); }\nint64_t resident_blocks(int64_t flags, int64_t nstage, int64_t M) {\n  int n;\n  if (flags & F_W16) C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_var<2, W16_PROBE>, 512, smem_var(flags, nstage, M)));\n  else if (flags & F_NT2) C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_var<2, NT2_PROBE>, NTHR, smem_var(flags, nstage, M)));\n  else C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_var<1, 0>, NTHR, smem_var(flags, nstage, M)));\n  return n;\n}\n\ntemplate <int Fv>\nvoid launch_var(std::vector<int64_t>& v, int M, int start, int stages, int grid, cudaStream_t stream) {\n  cudaLaunchConfig_t cfg = {};\n  cfg.gridDim = dim3(grid); cfg.blockDim = dim3(threads_of<Fv>); cfg.dynamicSmemBytes = smem_var(Fv, stages, M);\n  cfg.stream = stream;\n  cudaLaunchAttribute attr{};\n  attr.id = cudaLaunchAttributeProgrammaticStreamSerialization;\n  attr.val.programmaticStreamSerializationAllowed = 1;\n  if (Fv & F_PDL) { cfg.attrs = &attr; cfg.numAttrs = 1; }\n  C10_CUDA_CHECK(cudaLaunchKernelEx(&cfg, moe_var<nt_of<Fv>, Fv>,\n    (const __nv_bfloat16*)v[0], (const int*)v[1], (const float*)v[2], (const __nv_bfloat16*)v[3],\n    (const uint8_t*)v[4], (const uint8_t*)v[5], (const float*)v[6], (const float*)v[7],\n    (__nv_bfloat16*)v[8], (float*)v[9], (float*)v[10], (int*)v[11], (__nv_bfloat16*)v[12], M, start, stages,\n    (uint64_t*)(v.size() > 13 ? v[13] : 0)));\n}\n\nvoid run(std::vector<int64_t> v, int64_t M, int64_t start, int64_t stages, int64_t grid, int64_t stream, int64_t flags) {\n  if ((flags & F_SLOT) && M != 1) throw std::runtime_error("F_SLOT requires M == 1");\n  if ((flags & F_TRACE) && (v.size() < 14 || !v[13])) throw std::runtime_error("F_TRACE requires a stamp buffer");\n  switch (flags) {\n#define CASE(Fv) case Fv: launch_var<Fv>(v, M, start, stages, grid, (cudaStream_t)stream); return;\n    VAR_FLAGS(CASE)\n#undef CASE\n  }\n  throw std::runtime_error("flag combination not instantiated");\n}\n'
+ACTIVITY_CPP='#include <pybind11/pybind11.h>\n#include <pybind11/stl.h>\n#include <cupti.h>\n#include <cupti_activity.h>\n#include <vector>\n#include <tuple>\n#include <string>\n#include <mutex>\n#include <cstdlib>\n#include <stdexcept>\n\nusing ActivityRow=std::tuple<std::string,std::vector<int64_t>>;\nnamespace {\nstd::vector<ActivityRow> activity_rows;\nstd::mutex activity_mutex;\nint activity_error=0;\nsize_t activity_dropped=0;\nbool activity_on=false,activity_callbacks=false;\nvoid ck(CUptiResult status){\n if(status!=CUPTI_SUCCESS){const char* text=nullptr;cuptiGetResultString(status,&text);throw std::runtime_error(text?text:"CUPTI activity error");}\n}\nvoid CUPTIAPI request_activity(uint8_t** buffer,size_t* size,size_t* max_records){\n *size=4<<20;*max_records=0;void* p=nullptr;\n if(posix_memalign(&p,64,*size))p=nullptr;\n *buffer=(uint8_t*)p;\n}\nvoid CUPTIAPI finish_activity(CUcontext context,uint32_t stream,uint8_t* buffer,size_t size,size_t valid){\n std::lock_guard<std::mutex> guard(activity_mutex);\n CUpti_Activity* record=nullptr;\n while(valid){\n   CUptiResult status=cuptiActivityGetNextRecord(buffer,valid,&record);\n   if(status==CUPTI_ERROR_MAX_LIMIT_REACHED)break;\n   if(status!=CUPTI_SUCCESS){activity_error=(int)status;break;}\n   if(record->kind==CUPTI_ACTIVITY_KIND_CONCURRENT_KERNEL||record->kind==CUPTI_ACTIVITY_KIND_KERNEL){\n     auto* k=(CUpti_ActivityKernel10*)record;\n     activity_rows.emplace_back(k->name?k->name:"",std::vector<int64_t>{\n       (int64_t)k->start,(int64_t)k->end,(int64_t)k->queued,(int64_t)k->submitted,\n       (int64_t)k->graphNodeId,(int64_t)k->gridId,(int64_t)k->graphId,\n       k->gridX,k->gridY,k->gridZ,k->blockX,k->dynamicSharedMemory,k->registersPerThread});\n   }\n }\n size_t lost=0;auto status=cuptiActivityGetNumDroppedRecords(context,stream,&lost);\n if(status!=CUPTI_SUCCESS)activity_error=(int)status;\n activity_dropped+=lost;free(buffer);\n}\n}\n\nvoid profile_begin(){\n if(activity_on)throw std::runtime_error("activity recorder already enabled");\n if(!activity_callbacks){ck(cuptiActivityRegisterCallbacks(request_activity,finish_activity));activity_callbacks=true;}\n {std::lock_guard<std::mutex> guard(activity_mutex);activity_rows.clear();activity_error=0;activity_dropped=0;}\n ck(cuptiActivityEnableLatencyTimestamps(1));\n ck(cuptiActivityEnable(CUPTI_ACTIVITY_KIND_CONCURRENT_KERNEL));activity_on=true;\n}\n\nstd::vector<ActivityRow> profile_end(){\n if(!activity_on)throw std::runtime_error("activity recorder not enabled");\n auto flush_status=cuptiActivityFlushAll(0);\n auto disable_status=cuptiActivityDisable(CUPTI_ACTIVITY_KIND_CONCURRENT_KERNEL);\n activity_on=false;\n auto latency_status=cuptiActivityEnableLatencyTimestamps(0);\n ck(flush_status);ck(disable_status);ck(latency_status);\n std::lock_guard<std::mutex> guard(activity_mutex);\n if(activity_error)ck((CUptiResult)activity_error);\n if(activity_dropped)throw std::runtime_error("activity recorder dropped records");\n return activity_rows;\n}\n'
+CONTROL_CUDA='#include <cuda_runtime.h>\n#include <stdint.h>\n#include <stdexcept>\n\n__device__ __forceinline__ uint64_t timeline_gt(){uint64_t v;asm volatile("mov.u64 %0, %%globaltimer;":"=l"(v)::"memory");return v;}\n__global__ void node_before(uint64_t* stamps){if(threadIdx.x==0){stamps[0]=timeline_gt();stamps[1]=clock64();}}\n__global__ void node_after(uint64_t* stamps){if(threadIdx.x==0){stamps[2]=timeline_gt();stamps[3]=clock64();}}\n__global__ void empty_like(uint64_t* stamps){\n extern __shared__ uint8_t shared[];\n if((threadIdx.x&31)==0){int w=threadIdx.x>>5;stamps[blockIdx.x*16+w]=timeline_gt();stamps[blockIdx.x*16+8+w]=timeline_gt();}\n}\n__global__ void stream_banks(const uint8_t* w13,const uint8_t* w2,const int* experts,int parts,uint32_t* sums,uint64_t* stamps){\n const int tid=threadIdx.x,bank=blockIdx.x>=2*parts;\n const int block=bank?blockIdx.x-2*parts:blockIdx.x,grid=bank?parts:2*parts;\n const int e=experts[blockIdx.y],bytes=bank?9437184:18874368;\n const uint4* src=reinterpret_cast<const uint4*>((bank?w2:w13)+(size_t)e*bytes);\n uint32_t acc=0;uint64_t entry=timeline_gt(),first0=0,first1=0;\n for(int base=block*blockDim.x*8;base<bytes/16;base+=grid*blockDim.x*8){\n   if(base==block*blockDim.x*8)first0=timeline_gt();\n   #pragma unroll\n   for(int j=0;j<8;++j){int index=base+j*blockDim.x+tid;if(index<bytes/16){uint4 v=__ldg(src+index);acc^=v.x^v.y^v.z^v.w;}}\n   if(base==block*blockDim.x*8){\n     // A real dependency through the checksum and CTA barrier. The first\n     // interval includes its reduction/barrier overhead; empty_like is separate.\n     volatile __shared__ uint32_t sink[256];sink[tid]=acc;__syncthreads();\n     acc^=sink[(tid+1)%blockDim.x];first1=timeline_gt();\n   }\n }\n sums[(blockIdx.y*gridDim.x+blockIdx.x)*blockDim.x+tid]=acc;\n if(tid==0){int b=blockIdx.y*gridDim.x+blockIdx.x;\n   stamps[b*4]=entry;stamps[b*4+1]=first0;stamps[b*4+2]=first1;stamps[b*4+3]=timeline_gt();}\n}\n\n__global__ void gt_resolution(uint64_t* out){\n uint64_t prev=timeline_gt(),first=prev,mind=~0ull;int changes=0;\n for(int i=0;i<40000;++i){uint64_t t=timeline_gt();if(t!=prev){mind=t-prev<mind?t-prev:mind;++changes;prev=t;}}\n out[0]=mind;out[1]=changes;out[2]=prev-first;\n}\nvoid resolution(int64_t out,int64_t stream){gt_resolution<<<1,1,0,(cudaStream_t)stream>>>((uint64_t*)out);}\nvoid mark(int64_t stamps,int64_t after,int64_t stream){\n if(after)node_after<<<1,32,0,(cudaStream_t)stream>>>((uint64_t*)stamps);\n else node_before<<<1,32,0,(cudaStream_t)stream>>>((uint64_t*)stamps);\n}\nvoid empty(int64_t stamps,int64_t grid,int64_t threads,int64_t smem,int64_t stream){\n empty_like<<<grid,threads,smem,(cudaStream_t)stream>>>((uint64_t*)stamps);\n}\nvoid streaming(int64_t w13,int64_t w2,int64_t experts,int64_t count,int64_t sums,int64_t stamps,int64_t grid,int64_t threads,int64_t smem,int64_t stream){\n int p=grid/(3*count);if(p<1)throw std::runtime_error("stream grid too small");\n stream_banks<<<dim3(3*p,count),threads,smem,(cudaStream_t)stream>>>((const uint8_t*)w13,(const uint8_t*)w2,(const int*)experts,p,(uint32_t*)sums,(uint64_t*)stamps);\n}\nint64_t control_optin(){\n int dev,n;cudaGetDevice(&dev);cudaDeviceGetAttribute(&n,cudaDevAttrMaxSharedMemoryPerBlockOptin,dev);\n cudaFuncAttributes a={};cudaFuncGetAttributes(&a,empty_like);cudaFuncSetAttribute(empty_like,cudaFuncAttributeMaxDynamicSharedMemorySize,n-a.sharedSizeBytes);\n cudaFuncGetAttributes(&a,stream_banks);cudaFuncSetAttribute(stream_banks,cudaFuncAttributeMaxDynamicSharedMemorySize,n-a.sharedSizeBytes);return n;\n}\n'
+import hashlib
+import time
+import statistics
+
+NT1_CPP='''#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <stdint.h>
+#include <vector>
+int64_t max_smem_attr();int64_t smem_needed(int64_t,int64_t,int64_t);int64_t resident_blocks(int64_t,int64_t,int64_t);
+void run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t);
+'''
+NT1_MODULES={}
+NT1_HOPPER=torch.cuda.get_device_capability()==(9,0)
+
+
+def nt1_module(kind):
+    if kind not in NT1_MODULES:
+        source=NT1_SOURCES[kind];tag=hashlib.sha256(source.encode()).hexdigest()[:12]
+        mod=load_inline(name='muse_timeline_'+kind+tag,cpp_sources=NT1_CPP,cuda_sources=source,
+            functions=['max_smem_attr','smem_needed','resident_blocks','run'],no_implicit_headers=True,
+            with_pytorch_error_handling=False,extra_cuda_cflags=['-O3','-std=c++20','-lineinfo',
+            *(['-gencode=arch=compute_90a,code=sm_90a'] if NT1_HOPPER else [])],verbose=False)
+        mod.smem_optin=mod.max_smem_attr();NT1_MODULES[kind]=mod
+    return NT1_MODULES[kind]
+
+
+CONTROL_MODULE=[]
+ACTIVITY_MODULE=[]
+
+
+def control_module():
+    if not CONTROL_MODULE:
+        cpp='''#include <pybind11/pybind11.h>
+#include <stdint.h>
+void mark(int64_t,int64_t,int64_t);
+void resolution(int64_t,int64_t);
+void empty(int64_t,int64_t,int64_t,int64_t,int64_t);
+void streaming(int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
+int64_t control_optin();
+'''
+        tag=hashlib.sha256((cpp+CONTROL_CUDA).encode()).hexdigest()[:12]
+        mod=load_inline(name='muse_timeline_control_'+tag,cpp_sources=cpp,cuda_sources=CONTROL_CUDA,
+            functions=['mark','resolution','empty','streaming','control_optin'],
+            no_implicit_headers=True,with_pytorch_error_handling=False,
+            extra_cuda_cflags=['-O3','-std=c++20','-lineinfo',
+                *(['-gencode=arch=compute_90a,code=sm_90a'] if NT1_HOPPER else [])],verbose=False)
+        mod.control_optin();CONTROL_MODULE.append(mod)
+    return CONTROL_MODULE[0]
+
+
+def activity_module():
+    """CUPTI kernel records (graph-node start/end); optional: the stamps stand without it."""
+    if not ACTIVITY_MODULE:
+        tag=hashlib.sha256(ACTIVITY_CPP.encode()).hexdigest()[:12]
+        ACTIVITY_MODULE.append(load_inline(name='muse_timeline_activity_'+tag,cpp_sources=ACTIVITY_CPP,
+            functions=['profile_begin','profile_end'],no_implicit_headers=True,with_pytorch_error_handling=False,
+            extra_include_paths=['/usr/local/cuda/include'],
+            extra_ldflags=['-L/usr/local/cuda/lib64','-Wl,-rpath,/usr/local/cuda/lib64','-lcupti'],verbose=False))
+    return ACTIVITY_MODULE[0]
+
+
+def nt1_banks(w):
+    dev=w['w13'].device;r=torch.arange(512,device=dev)[:,None]*8+torch.arange(8,device=dev)
+    bank={}
+    for name,rows in (('w13',torch.cat((r,r+4096),1)),('w2',torch.arange(4096,device=dev).view(256,16))):
+        bank[name+'p']=torch.stack([_repack(w[name][e],w[name+'_sf'][e],rows) for e in range(32)])
+    return dict(bank=bank,counters={k:torch.zeros(64,device=dev,dtype=torch.int32) for k in NT1_SOURCES},
+        pnw=w['post_norm_w'].contiguous(),gs13=w['w13_gs'].float().contiguous(),gs2=w['w2_gs'].float().contiguous(),
+        sms=torch.cuda.get_device_properties(dev).multi_processor_count)
+
+
+def nt1_call(d,state,kind='INC',grid=264,stages=2,trace_out=False):
+    x=d['hidden_states'].contiguous();m=len(x);dev=x.device;mod=nt1_module(kind)
+    if mod.smem_needed(1,stages,m)>mod.smem_optin:raise ValueError('stage depth exceeds shared capacity')
+    grid=min(grid,state['sms']*mod.resident_blocks(1,stages,m))
+    if grid<1:raise ValueError('no resident CTA')
+    inter=torch.empty((m*8,4096),device=dev,dtype=torch.bfloat16);y=torch.empty((m*8,4096),device=dev);ss=torch.empty(m*8,device=dev)
+    out=torch.empty_like(x);ids=d['topk_ids'].int().contiguous();tw=d['topk_weights'].float().contiguous()
+    tensors=[x,ids,tw,state['pnw'],state['bank']['w13p'],state['bank']['w2p'],state['gs13'],state['gs2'],inter,y,ss,state['counters'][kind],out]
+    stamps=torch.empty((grid,64),device=dev,dtype=torch.int64) if kind.startswith('TRACE') else None
+    if stamps is not None:tensors.append(stamps)
+    mod.run([v.data_ptr() for v in tensors],m,d['config']['local_start'],stages,grid,torch.cuda.current_stream(dev).cuda_stream)
+    return (out,stamps) if trace_out else out
+
+
+def nt1_error(got,want):
+    a,b=got.float(),want.float();den=b.norm(dim=-1)
+    return float((a-b).norm()/b.norm().clamp_min(1e-15)),float(((a-b).norm(dim=-1)/den.clamp_min(den.mean()*.1).clamp_min(1e-15)).max())
+
+VAR_CPP='''#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <stdint.h>
+#include <vector>
+int64_t max_smem_attr();int64_t smem_needed(int64_t,int64_t,int64_t);int64_t resident_blocks(int64_t,int64_t,int64_t);
+void run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
+'''
+F_Z,F_SLOT,F_ZOUT,F_RSQ,F_NREG,F_PDL,F_LAST,F_TRACE,F_NT2,F_W16,F_RND,F_ROT,F_PIPE,F_WPUB,F_ALIGN=1,2,4,8,16,64,128,256,2048,4096,8192,16384,32768,65536,131072
+VAR_MODULE=[]
+
+
+def var_module():
+    if not VAR_MODULE:
+        tag=hashlib.sha256(VAR_CUDA.encode()).hexdigest()[:12]
+        mod=load_inline(name='muse_smallm_var_'+tag,cpp_sources=VAR_CPP,cuda_sources=VAR_CUDA,
+            functions=['max_smem_attr','smem_needed','resident_blocks','run'],no_implicit_headers=True,
+            with_pytorch_error_handling=False,extra_cuda_cflags=['-O3','-std=c++20','-lineinfo',
+            *(['-gencode=arch=compute_90a,code=sm_90a'] if NT1_HOPPER else [])],verbose=False)
+        mod.smem_optin=mod.max_smem_attr();VAR_MODULE.append(mod)
+    return VAR_MODULE[0]
+
+
+def var_geometry(state,flags,m,grid=264,stages=None):
+    """(nt, stages, grid): NT2 runs 1 CTA/SM with as many stages as fit (4 on the H200's 227 KB; 2, or 1 for W16, on sm_120's 99 KB)."""
+    mod=var_module();nt=2 if flags&F_NT2 else 1;f=flags&~F_TRACE
+    if stages is None:stages=next((s for s in ((4,3,2,1) if nt==2 else (2,)) if mod.smem_needed(f,s,m)<=mod.smem_optin),2)
+    if mod.smem_needed(f,stages,m)>mod.smem_optin:raise ValueError('stage depth exceeds shared capacity')
+    return nt,stages,min(grid,state['sms']*mod.resident_blocks(f,stages,m))
+
+
+def var_call(d,state,flags,grid=264,stages=None,stamps=None):
+    """The flag-templated NT1 variant; flags=0 is the incumbent's math in the variant harness."""
+    x=d['hidden_states'].contiguous();m=len(x);dev=x.device;mod=var_module()
+    if flags&F_SLOT and m!=1:raise ValueError('F_SLOT is the M=1 dispatch')
+    nt,stages,grid=var_geometry(state,flags,m,grid,stages)
+    inter=torch.empty((m*8,4096),device=dev,dtype=torch.bfloat16);y=torch.empty((m*8,4096),device=dev);ss=torch.empty(m*8,device=dev)
+    out=torch.empty_like(x);ids=d['topk_ids'].int().contiguous();tw=d['topk_weights'].float().contiguous()
+    cnt=state.setdefault('vcounters',{}).setdefault(flags&~F_TRACE,None)
+    if cnt is None:cnt=state['vcounters'][flags&~F_TRACE]=torch.zeros(64,device=dev,dtype=torch.int32)
+    tensors=[x,ids,tw,state['pnw'],state['bank']['w13p'],state['bank']['w2p'],state['gs13'],state['gs2'],inter,y,ss,cnt,out]
+    ptrs=[v.data_ptr() for v in tensors]
+    if flags&F_TRACE:
+        if stamps is None or stamps.shape!=(grid,64):raise ValueError('F_TRACE needs a (grid,64) int64 stamp buffer')
+        ptrs.append(stamps.data_ptr())
+    mod.run(ptrs,m,d['config']['local_start'],stages,grid,torch.cuda.current_stream(dev).cuda_stream,flags)
+    return out
+
+
+def routed_var(pr,rs,state,flags,stamps=None):
+    x,ids,tw,lids=route_call(pr,rs)
+    d=dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0})
+    return var_call(d,state,flags,stamps=stamps),x,ids,tw,lids
+
+
+def run_lengths(d,grid=264):
+    """W2 tile runs per (CTA, expert, block) under the incumbent's unit schedule (host replica)."""
+    ids=d['topk_ids'].flatten().tolist();n=[0]*32
+    for e in ids:
+        if 0<=e<32:n[e]+=1
+    nblk=[(c+7)//8 for c in n];us=[0]
+    for b in nblk:us.append(us[-1]+256*b)
+    U=us[-1];cc=min(256,max(1,(U+grid//2)//grid));runs=[]
+    for c in range(grid):
+        a,b=U*c//grid,U*(c+1)//grid;cur=None;length=0
+        for u in range(a,b):
+            e=max(i for i in range(32) if us[i]<=u and nblk[i]);rel=u-us[e];span=cc*nblk[e];nfull=256//cc
+            if rel<nfull*span:nb=(rel-(rel//span)*span)//cc
+            else:nb=(rel-nfull*span)//(256-nfull*cc)
+            if (e,nb)!=cur:
+                if cur is not None:runs.append(length)
+                cur=(e,nb);length=0
+            length+=1
+        if cur is not None:runs.append(length)
+    return runs
+
+import triton
+import triton.language as tl
+@triton.jit
+def _pdl_start(USE: tl.constexpr):
+    if USE:
+        tl.extra.cuda.gdc_launch_dependents()
+
+@triton.jit
+def _pdl_wait(USE: tl.constexpr):
+    if USE:
+        tl.extra.cuda.gdc_wait()
+
+@triton.jit
+def timeline_route(PR,S:tl.constexpr,PS:tl.constexpr,RS:tl.constexpr,BIAS,PREW,LSTART,
+                X,IDS,WTS,LIDS,REPLICAS:tl.constexpr,USE_PDL:tl.constexpr):
+    t=tl.program_id(0);part=tl.program_id(1)
+    _pdl_start(USE_PDL)
+    d=tl.arange(0,4096);e=tl.arange(0,256)
+    prew=tl.load(PREW+d);bias=tl.load(BIAS+e);start=tl.load(LSTART)
+    _pdl_wait(USE_PDL)
+    p=tl.full((4096,),0.,tl.float32)
+    logit=tl.full((256,),0.,tl.float32)
+    for s in tl.static_range(S):
+        row=PR+s*PS+t*RS
+        p+=tl.load(row+d).to(tl.float32)
+        logit+=tl.load(row+4096+e).to(tl.float32)+tl.load(row+4352+e).to(tl.float32)
+    norm=p*tl.rsqrt(tl.sum(p*p,0)/4096+1.e-5)*prew
+    tl.store(X+t*4096+d,norm.to(tl.bfloat16),d//(4096//REPLICAS)==part)
+    if part==0:
+        scores=tl.sigmoid(logit*0.1767766952966369)
+        biased=scores+bias
+        bits=biased.to(tl.int32,bitcast=True)
+        ordered=tl.where(bits<0,~bits,bits^(-2147483648)).to(tl.uint32)
+        keys=(ordered.to(tl.uint64)<<32)|(255-e).to(tl.uint64)
+        winners=tl.topk(keys,8)
+        ids=255-(winners&0xffffffff).to(tl.int32)
+        scores=tl.gather(scores,ids,0)
+        k=tl.arange(0,8)
+        tl.store(IDS+t*8+k,ids)
+        tl.store(WTS+t*8+k,scores/(tl.sum(scores,0)+1.e-15))
+        local=(ids-start+256)%256
+        tl.store(LIDS+t*8+k,tl.where(local<32,local,-1))
+
+def route_call(pr,rs):
+    p,s=pr;m=p.shape[1];dev=p.device
+    x=torch.empty((m,4096),device=dev,dtype=torch.bfloat16)
+    ids=torch.empty((m,8),device=dev,dtype=torch.int32);lids=torch.empty_like(ids);tw=torch.empty((m,8),device=dev)
+    warps=4 if m==8 else 8
+    timeline_route[(m,1)](p,s,p.stride(0),p.stride(1),rs['bias'],rs['pre'],rs['start'],x,ids,tw,lids,
+        REPLICAS=1,USE_PDL=True,launch_pdl=True,num_warps=warps)
+    return x,ids,tw,lids
+
+
+def routed_experts(pr,rs,state,kind='INC'):
+    x,ids,tw,lids=route_call(pr,rs)
+    d=dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0})
+    return nt1_call(d,state,kind),x,ids,tw,lids
+
+
+def routed_fixture(w,m,seed):
+    device=w['router'].device;gen=torch.Generator(device=device).manual_seed(seed)
+    mean,shared=fx__basis(device);coef=torch.randn((m,fx_STREAM_RANK),generator=gen,device=device)
+    q=8 if m==8 else 1;scale=torch.ones((m//q,q,1),device=device)
+    if q>1:scale[:,1:]=fx_DRAFT_SHARE
+    scale=scale.reshape(m,1)
+    stream=scale*(fx_STREAM_MEAN*mean+(fx_STREAM_SHARED/fx_STREAM_RANK)**.5*(coef@shared))
+    stream+=(1-fx_STREAM_SHARED*scale.square()).sqrt()*torch.randn((m,fx_HIDDEN),generator=gen,device=device)
+    h=fx__rms(stream)*(1+w['pre_ffn_norm'].float())
+    logits=h@w['router'].float().T;pooled=h@w['pooler'].float().T
+    p=torch.cat((pooled,logits,torch.zeros_like(logits)),-1)[None].contiguous()
+    biased=torch.sigmoid(logits*.1767766952966369)+w['router_bias'].float()
+    ids=biased.topk(8,-1).indices;start=int(torch.bincount((ids//32).flatten(),minlength=8).argmax())*32
+    rs=dict(bias=w['router_bias'].float().contiguous(),pre=(1+w['pre_expert_norm'].float()).contiguous(),
+        start=torch.tensor([start],device=device,dtype=torch.int32))
+    return (p,1),rs
+
+
+def route_reference(pr,rs):
+    p,s=pr;value=p[:s].double().sum(0)
+    logits=(value[:,4096:4352]+value[:,4352:4608])*.1767766952966369
+    scores=logits.sigmoid();biased=scores+rs['bias'].double()
+    x=(value[:,:4096]*torch.rsqrt(value[:,:4096].square().mean(-1,keepdim=True)+1e-5)*rs['pre'].double()).float().to(torch.bfloat16)
+    return x,scores,biased
+
+
+def route_gate(ids,biased,start):
+    # TASK.md/ref check_routing: allow legitimate near ties and gate local load.
+    if bool((ids<0).any()) or bool((ids>=256).any()):raise ValueError('router expert out of range')
+    ranked=ids.long().sort(-1).values
+    if bool((ranked[:,1:]==ranked[:,:-1]).any()):raise ValueError('duplicate routed expert')
+    best=biased.topk(8,-1);selected=biased.gather(1,ids.long())
+    if float((best.values[:,-1:]-selected).max())>.05:raise ValueError('router score cutoff exceeds0.05')
+    ninth=biased.topk(9,-1).values[:,-1:];kept=(best.indices[:,:,None]==ids.long()[:,None,:]).any(-1)
+    local=(best.indices-start)%256<32
+    if bool((local&~kept&(best.values-ninth>.03)).any()):raise ValueError('router dropped mandatory local expert')
+    ref_local=best.indices[local];got_local=ids[((ids-start)%256)<32]
+    if got_local.numel()<ref_local.numel()*.92-4:raise ValueError('router local route count')
+    if got_local.unique().numel()<ref_local.unique().numel()*.85-2:raise ValueError('router distinct local experts')
+    return int((ids.long().sort(-1).values!=best.indices.sort(-1).values).any(-1).sum())
+def nt1_fp32(data, weights):
+    result = torch.zeros_like(data['hidden_states'], dtype=torch.float32)
+    ids = data['topk_ids'] - data['config']['local_start']
+    grid = torch.tensor((0., .5, 1., 1.5, 2., 3., 4., 6.), device=ids.device)
+    def expand(name, e):
+        p = weights[name][e]
+        code = torch.stack((p & 15, p >> 4), -1).flatten(-2)
+        value = grid[(code & 7).long()] * torch.where(code & 8 != 0, -1., 1.)
+        return (value.view(-1, 256, 16) * weights[name + '_sf'][e].float()[..., None] *
+                weights[name + '_gs'][e]).reshape(-1, 4096)
+    for e in range(32):
+        token, slot = (ids == e).nonzero(as_tuple=True)
+        if not token.numel():
+            continue
+        h = data['hidden_states'][token].float() @ expand('w13', e).T
+        a = torch.nn.functional.silu(h[:, :4096]) * h[:, 4096:]
+        y = a @ expand('w2', e).T
+        z = y * (1. + weights['post_norm_w'].float())
+        result.index_add_(0, token, z * torch.rsqrt(z.square().mean(-1, keepdim=True) + 1e-8) * data['topk_weights'][token, slot, None])
+    return result
+
+DIAG_ALL=F_Z|F_SLOT|F_ZOUT|F_RSQ|F_NREG
+DIAG_ALLM=F_Z|F_ZOUT|F_RSQ|F_NREG
+DIAG_FLAGS={'TRACE0':F_TRACE,'TRACEZZP':F_TRACE|F_Z|F_ZOUT|F_PDL,'TRACEALL':F_TRACE|DIAG_ALL|F_LAST,'TRACEALLnl':F_TRACE|DIAG_ALL,'ALL_positioned':DIAG_ALL|F_LAST,
+    'RTRACE0':F_TRACE,'RTRACEPDL':F_TRACE|F_PDL,'RTRACEALLnl':F_TRACE|DIAG_ALL|F_PDL,'RTRACEALL':F_TRACE|DIAG_ALL|F_LAST|F_PDL,
+    'TRACEALLM':F_TRACE|DIAG_ALLM,'RTRACEALLM':F_TRACE|DIAG_ALLM|F_PDL,'RTRACEZZP':F_TRACE|F_Z|F_ZOUT|F_PDL,'RTRACEZZP2':F_TRACE|F_Z|F_ZOUT|F_PDL|F_NT2,'RTRACEZZPW':F_TRACE|F_Z|F_ZOUT|F_PDL|F_NT2|F_W16,
+    'RTRACEZZPR':F_TRACE|F_Z|F_ZOUT|F_PDL|F_RND,'RTRACEZZPO':F_TRACE|F_Z|F_ZOUT|F_PDL|F_ROT,
+    'RTRACEZZPRO':F_TRACE|F_Z|F_ZOUT|F_PDL|F_RND|F_ROT,
+    'RTRACEWPUB':F_TRACE|65605,'RTRACEBASE1':F_TRACE|95,'RTRACEOROT1':F_TRACE|16463,
+    'RTRACEPIPE':F_TRACE|69|F_RND|F_PIPE,'RTRACEPIPEO':F_TRACE|69|F_RND|F_PIPE|F_ROT}
+DIAG_CASES=('INC_plain','INC_positioned','TRACE0','TRACEALL','TRACEALLnl','ALL_positioned','EMPTY_match','EMPTY_tiny','STREAM',
+    'RTRACE0','RTRACEPDL','RTRACEALLnl','RTRACEALL')
+DIAG_CASES_M=('INC_plain','TRACE0','TRACEALLM','STREAM','RTRACE0','RTRACEALLM','RTRACEZZP')
+
+
+def timeline_case(d,state,kind,reps=10,cupti=True,routed=None):
+    """One graph: [marker] node [marker]; event time, marker stamps, per-CTA stamps, optional CUPTI node records."""
+    ctl=control_module();dev=d['hidden_states'].device;m=len(d['hidden_states'])
+    markers=torch.zeros(4,device=dev,dtype=torch.int64)
+    inc=nt1_module('INC');grid=min(264,state['sms']*inc.resident_blocks(1,2,m));smem=inc.smem_needed(1,2,m)
+    experts=(d['topk_ids']-d['config']['local_start']).flatten();experts=experts[(experts>=0)&(experts<32)].unique().int().contiguous()
+    count=len(experts)
+    flags=DIAG_FLAGS.get(kind)
+    if flags is not None and flags&F_NT2:grid=var_geometry(state,flags,m)[2]
+    if kind=='STREAM':
+        if not count:raise ValueError('stream control needs a routed expert')
+        stamps=torch.zeros((grid+16,4),device=dev,dtype=torch.int64);sums=torch.empty(((grid+16)*256,),device=dev,dtype=torch.int32)
+    elif kind.startswith('EMPTY'):stamps=torch.zeros((grid,16),device=dev,dtype=torch.int64)
+    elif 'TRACE' in kind:stamps=torch.zeros((grid,64),device=dev,dtype=torch.int64)
+    else:stamps=None
+    positioned=not kind.startswith('INC_plain')
+    def launch():
+        stream=torch.cuda.current_stream(dev).cuda_stream
+        if positioned:ctl.mark(markers.data_ptr(),0,stream)
+        if kind.startswith('EMPTY'):
+            ctl.empty(stamps.data_ptr(),1 if kind=='EMPTY_tiny' else grid,32 if kind=='EMPTY_tiny' else 256,0 if kind=='EMPTY_tiny' else smem,stream)
+        elif kind=='STREAM':
+            ctl.streaming(state['bank']['w13p'].data_ptr(),state['bank']['w2p'].data_ptr(),experts.data_ptr(),count,
+                sums.data_ptr(),stamps.data_ptr(),grid,256,smem,stream)
+        elif kind[0]=='R':routed_var(*routed,state,flags,stamps=stamps)
+        elif flags is not None:var_call(d,state,flags,stamps=stamps)
+        else:nt1_call(d,state,'INC')
+        if positioned:ctl.mark(markers.data_ptr(),1,stream)
+    launch();torch.cuda.synchronize()
+    act=None
+    if cupti:
+        try:act=activity_module();act.profile_begin()
+        except Exception as e:act=None;cupti=f'{type(e).__name__}: {e}'[:120]
+    samples=[]
+    try:
+        graph=torch.cuda.CUDAGraph()
+        with torch.cuda.graph(graph):launch()
+        for _ in range(2):lab_cold_l2();graph.replay();torch.cuda.synchronize()
+        a,b=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
+        for rep in range(reps):
+            lab_cold_l2();a.record();graph.replay();b.record();b.synchronize()
+            samples.append(dict(event_us=a.elapsed_time(b)*1000,markers=markers.cpu().tolist() if positioned else None,
+                stamps=stamps.cpu().tolist() if stamps is not None else None))
+    finally:
+        torch.cuda.synchronize();records=act.profile_end() if act is not None else None
+    if records is not None:
+        main_name='moe_var' if flags is not None else 'empty_like' if kind.startswith('EMPTY') else 'stream_banks' if kind=='STREAM' else 'moe_fused'
+        main=sorted([r for r in records if main_name in r[0] and r[1][4]>0],key=lambda r:r[1][0])[-reps:]
+        before=sorted([r for r in records if 'node_before' in r[0]],key=lambda r:r[1][0])[-reps:]
+        after=sorted([r for r in records if 'node_after' in r[0]],key=lambda r:r[1][0])[-reps:]
+        router=sorted([r for r in records if 'timeline_route' in r[0]],key=lambda r:r[1][0])[-reps:]
+        if len(main)!=reps or (positioned and (len(before)!=reps or len(after)!=reps)):records=None;cupti='incomplete records'
+    for i,s in enumerate(samples):
+        if positioned:s['marker_span_us']=(s['markers'][2]-s['markers'][0])/1000
+        if records is None:continue
+        rec=main[i][1];s['activity']=rec;s['node_us']=(rec[1]-rec[0])/1000
+        if len(router)==reps:s['router_us']=(router[i][1][1]-router[i][1][0])/1000;s['router_end_to_moe_start_us']=(rec[0]-router[i][1][1])/1000
+        if positioned:
+            rb,ra=before[i][1],after[i][1];mb=s['markers'][0];ma=s['markers'][2]
+            lo=max(rb[0]-mb,ra[0]-ma);hi=min(rb[1]-mb,ra[1]-ma)
+            if lo<=hi:s['offset_bounds']=[lo,hi]
+            s['graph_span_us']=(ra[1]-rb[0])/1000
+    return dict(kind=kind,experts=experts.cpu().tolist(),unique_bytes=count*(18874368+9437184),grid=grid,samples=samples,cupti=cupti)
+
+
+def skew_stats(rows,first):
+    """W13 end, W2 end and grid-barrier exit per CTA (us from the first entry) and units per CTA: where W2 skew sits."""
+    def q(v):
+        v=sorted(v);return (v[len(v)//2],v[(9*len(v))//10],v[-1]) if v else (0.,0.,0.)
+    w13=[(r[3]-first)/1000 for r in rows if r[3] and r[26]];w2=[(r[5]-first)/1000 for r in rows if r[5] and r[27]]
+    bar=[(r[7]-first)/1000 for r in rows if r[7]];u1=[r[26] for r in rows];u2=[r[27] for r in rows]
+    return q(w13)+q(w2)+q(bar)+(min(u1),max(u1),min(u2),max(u2))
+
+
+def tile_stats(rows,first):
+    """Where a CTA's tile time goes (per-CTA sums, us; median over CTAs): tid 0 (epilogue warp) and tid 224 (MMA-only warp)
+    waits on landed tiles and at the per-tile barrier, the expert publish (fence, then barrier+atomic), the W13 and W2 phase
+    per tile, and how late the last publish lands after the last W13 end."""
+    def p50(v):
+        v=sorted(v);return v[len(v)//2] if v else 0.
+    w=[r for r in rows if r[26]];w2=[r for r in rows if r[27]]
+    return dict(
+        wait13_t0=p50(r[28]/1000 for r in w),wait2_t0=p50(r[29]/1000 for r in w2),bar_t0=p50(r[22]/1000 for r in rows),
+        bar_w7=p50(r[30]/1000 for r in rows),wait_w7=p50(r[31]/1000 for r in rows),
+        fence=p50(r[17]/1000 for r in w),fence_max=max((r[17]/1000 for r in w),default=0.),
+        pubbar=p50(r[19]/1000 for r in w),pubbar_max=max((r[19]/1000 for r in w),default=0.),
+        per13=p50((r[3]-r[2])/1000/r[26] for r in w if r[3]),per2=p50((r[5]-r[4])/1000/r[27] for r in w2 if r[5] and r[4]),
+        last_pub_after_last13=(max(r[18] for r in w if r[18])-max(r[3] for r in w))/1000 if any(r[18] for r in w) else 0.,
+        pub_after_own13=p50((r[18]-r[3])/1000 for r in w if r[18] and r[3]))
+
+
+def timeline_account(case):
+    """Critical CTA (latest exit) as contiguous phases, plus the dispatch ramp and drain against the marker stamps."""
+    out=[]
+    for s in case['samples']:
+        rows=[r for r in s['stamps'] if r[0]];entries=[min(r[32:40]) for r in rows];exits=[max(max(r[40:48]),r[9]) for r in rows]
+        first=min(entries);last=max(exits);k=max(range(len(rows)),key=lambda i:exits[i]);r=rows[k]
+        cut=[entries[k]]+[r[i] if r[i] else 0 for i in (1,2,3,4,5,6,7,8)]+[exits[k]]
+        for i in range(1,len(cut)):cut[i]=cut[i] or cut[i-1]
+        phases=[(b-a)/1000 for a,b in zip(cut,cut[1:])]
+        res=dict(event_us=s['event_us'],cta_span_us=(last-first)/1000,ramp_to_critical_us=(entries[k]-first)/1000,phases=phases,
+            entry_spread_us=(max(entries)-first)/1000,critical_finalizer=bool(r[23]),
+            launch_us=(first-s['markers'][0])/1000 if s.get('markers') else None,
+            drain_us=(s['markers'][2]-last)/1000 if s.get('markers') else None,
+            marker_span_us=s.get('marker_span_us'),node_us=s.get('node_us'),
+            after_last_W2_us=(last-max(rr[5] for rr in rows))/1000,
+            last_W13_end_us=(max(rr[3] for rr in rows)-first)/1000,
+            first_copy_issue_us=statistics.median((rr[10]-min(rr[32:40]))/1000 for rr in rows if rr[10]),
+            first_copy_land_us=statistics.median((rr[12]-rr[10])/1000 for rr in rows if rr[10] and rr[12]),
+            w2_wait_med_us=statistics.median(rr[16]/1000 for rr in rows if rr[27]),
+            w2_wait_max_us=max(rr[16]/1000 for rr in rows if rr[27]),
+            skew=skew_stats(rows,first),tile=tile_stats(rows,first))
+        if s.get('offset_bounds') and s.get('activity'):
+            lo,hi=s['offset_bounds'];n0,n1=s['activity'][:2]
+            res['node_to_first_cta_us']=[(first+lo-n0)/1000,(first+hi-n0)/1000];res['last_cta_to_node_end_us']=[(n1-last-hi)/1000,(n1-last-lo)/1000]
+        out.append(res)
+    return out
+
+
+def timeline_diagnose(d,state,routed,cases_run=DIAG_CASES):
+    ctl=control_module();res=torch.zeros(3,device=d['hidden_states'].device,dtype=torch.int64)
+    ctl.resolution(res.data_ptr(),torch.cuda.current_stream().cuda_stream);torch.cuda.synchronize();plain=res.cpu().tolist()
+    cases={}
+    for kind in cases_run:
+        try:cases[kind]=timeline_case(d,state,kind,routed=routed)
+        except Exception as e:cases[kind]=dict(kind=kind,error=f'{type(e).__name__}: {e}'[:160])
+    profiled=None
+    try:
+        act=activity_module();act.profile_begin()
+        try:ctl.resolution(res.data_ptr(),torch.cuda.current_stream().cuda_stream);torch.cuda.synchronize();profiled=res.cpu().tolist()
+        finally:act.profile_end()
+    except Exception as e:profiled=f'{type(e).__name__}'
+    acc={k:timeline_account(c) for k,c in cases.items() if 'TRACE' in k and 'samples' in c}
+    return dict(cases=cases,account=acc,resolution=dict(plain=plain,profiled=profiled))
+
+
+def timeline_lines(result,resolution=True):
+    out=[];r=result['resolution']
+    if resolution:out.append(f'GTRES plain_min/changes/span_ns={r["plain"]} under_cupti={r["profiled"]}')
+    med=statistics.median
+    for k,c in result['cases'].items():
+        if 'error' in c:out.append(f'NODE {k} ERROR {c["error"]}');continue
+        if k in result['account'] and not k.startswith('R'):continue  # its ACCOUNT line carries event/marker/node
+        s=c['samples'];line=f'NODE {k} event={med(x["event_us"] for x in s):.2f}'
+        if s[0].get('marker_span_us') is not None:line+=f' marker_span={med(x["marker_span_us"] for x in s):.2f}'
+        if s[0].get('node_us') is not None:line+=f' cupti_node={med(x["node_us"] for x in s):.2f}'
+        elif c.get('cupti') not in (True,None):line+=f' cupti={c["cupti"]}'
+        if s[0].get('router_us') is not None:line+=f' router={med(x["router_us"] for x in s):.2f} router_end_to_moe_start={med(x["router_end_to_moe_start_us"] for x in s):.2f}'
+        if k=='STREAM':line+=f' MB={c["unique_bytes"]/1e6:.1f}'
+        if k=='EMPTY_match' or k=='STREAM':
+            first=[min(r[0] for r in x['stamps'] if r[0]) for x in s];line+=f' launch={med((f-x["markers"][0])/1000 for f,x in zip(first,s)):.2f}'
+        out.append(line)
+    names='route,zero,W13,W2ready,W2rest,fence,barrier,combine,footer'
+    for k,rows in result['account'].items():
+        g=lambda key:med(x[key] for x in rows)
+        out.append(f'ACCOUNT {k} event={g("event_us"):.2f} marker_span={g("marker_span_us"):.2f} launch={g("launch_us"):.2f} CTAspan={g("cta_span_us"):.2f} drain={g("drain_us"):.2f} entry_spread={g("entry_spread_us"):.2f} lastW13end={g("last_W13_end_us"):.2f} afterLastW2={g("after_last_W2_us"):.2f} issue={g("first_copy_issue_us"):.2f} land={g("first_copy_land_us"):.2f} W2wait_med/max={g("w2_wait_med_us"):.2f}/{g("w2_wait_max_us"):.2f}'
+            +(f' cupti_node={g("node_us"):.2f}' if rows[0].get('node_us') else ''))
+        sk=[x['skew'] for x in rows];sm=[med(v[i] for v in sk) for i in range(13)]
+        out.append(f'SKEW {k} W13end p50/p90/max={sm[0]:.2f}/{sm[1]:.2f}/{sm[2]:.2f} W2end={sm[3]:.2f}/{sm[4]:.2f}/{sm[5]:.2f} barrier_exit={sm[6]:.2f}/{sm[7]:.2f}/{sm[8]:.2f} units13={sm[9]:.0f}-{sm[10]:.0f} units2={sm[11]:.0f}-{sm[12]:.0f}')
+        out.append(f'CRITICAL {k} {names}='+','.join(f'{med(x["phases"][i] for x in rows):.2f}' for i in range(9)))
+        t={key:med(x['tile'][key] for x in rows) for key in rows[0]['tile']}
+        out.append(f'TILE {k} per13/per2={t["per13"]:.2f}/{t["per2"]:.2f} t0_wait13/wait2/bar={t["wait13_t0"]:.2f}/{t["wait2_t0"]:.2f}/{t["bar_t0"]:.2f} w7_wait/bar={t["wait_w7"]:.2f}/{t["bar_w7"]:.2f}'
+            f' pub_fence={t["fence"]:.2f}(max {t["fence_max"]:.2f}) pub_bar={t["pubbar"]:.2f}(max {t["pubbar_max"]:.2f}) pub_after_own13={t["pub_after_own13"]:.2f} last_pub_after_last13={t["last_pub_after_last13"]:.2f}')
+    return out
+
+class TimelineGraph:
+    def __init__(self,fn):
+        fn();torch.cuda.synchronize();self.graph=torch.cuda.CUDAGraph()
+        with torch.cuda.graph(self.graph):self.out=fn()
+    def replay(self):self.graph.replay();return self.out
+
+
+def timeline_timing(old,new,repeats=12):
+    a,b=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
+    aa,bb,ratios=[],[],[]
+    def measured(graph):
+        lab_cold_l2();a.record();graph.replay();b.record();b.synchronize();return a.elapsed_time(b)*1000
+    for rep in range(repeats):
+        order=(old,new) if rep%2==0 else (new,old);v=[measured(g) for g in order]
+        x,y=v if rep%2==0 else v[::-1];aa.append(x);bb.append(y);ratios.append(y/x)
+    return statistics.median(aa),statistics.median(bb),statistics.median(ratios)
+
+
+def task_check(out,want):
+    """TASK.md: output relative L2 <= 1.5% vs FP32, every row <= 5x (near-zero rows vs a tenth of the mean row), finite."""
+    err,row=nt1_error(out,want);ok=bool(torch.isfinite(out).all()) and err<=.015 and row<=.075
+    return ok,err,row
+
+
+DIAG_BY_M={32:('RTRACEZZP','RTRACEWPUB')}  # v10: critical paths + tile/publish split
+# R = the decode layer's context (router node + MoE node). R95/R93 = 849e4017's winners; R77 drops NREG, R69 drops
+# NREG and RSQ; ECAP = INC on the same routes with every local expert capped at 8 tokens (DIAGNOSTIC, no gate): the
+# most that decode-once / no-reread for multi-block experts could save.
+BASE_FLAGS={1:95,8:69,16:69,32:69}
+SMALLM_ARMS={1:dict(E={},R={'RBASE':95,'R65615':65615})}
+for _m in (8,16,32):
+    SMALLM_ARMS[_m]=dict(E={},R={'RBASE':69,'R65605':65605,'R73797':73797,'R139333':139333,'R204869':204869})
+
+
+def cap_fixture(d,cap=8):
+    """Same fixture, each local expert keeps its first `cap` (token, slot) pairs; the rest become remote (-1)."""
+    ids=d['topk_ids'].clone();flat=ids.view(-1);local=flat-d['config']['local_start']
+    for e in range(32):
+        hit=((local>=0)&(local<32)&(local==e)).nonzero().flatten()
+        if len(hit)>cap:flat[hit[cap:]]=-1
+    return dict(d,topk_ids=ids)
+
+
+def blocks(d):
+    local=(d['topk_ids']-d['config']['local_start']).flatten();local=local[(local>=0)&(local<32)]
+    n=torch.bincount(local.long(),minlength=32);return int(((n+7)//8).sum()),int((n>0).sum())
+
+
+def lab(deadline,weights):
+    from concurrent.futures import ThreadPoolExecutor
+    begin=time.monotonic();deadline-=5;device=weights['w13'].device
+    lines=['META small-M NT1: E=MoE node alone (fixed real routes), R=router node+MoE node; INC=admitted one-LOP3 NT1; F0=same math in the flag harness; Z=norm-slot zero in W13 tile0; SLOT=M1 top-8 slot dispatch; ZOUT=W2 stores v(1+w); RSQ=finalizer scale once per pair; NREG=norm sums in registers per tile run; LAST=last CTA finalizes; PDL=MoE launched as programmatic dependent',
+        'META v10: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs S11 map {1:95,8/16/32:69}, independent S11 A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; WPUB (two writer warps publish without a CTA barrier), WPUB+RND, ALIGN (RND with parallel split search and per-round m-chunks), ALIGN+WPUB at M8/16/32, WPUB at M1; M32 base69 and WPUB critical paths with TILE (per-tile waits, publish fence) lines']
+    errors=[]
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        jobs={name:pool.submit(fn) for name,fn in (('INC',lambda:nt1_module('INC')),('VAR',var_module),('CONTROL',control_module),('CUPTI',activity_module))}
+        for name,job in jobs.items():
+            try:job.result()
+            except Exception as e:errors.append(f'BUILD_ERROR {name} {type(e).__name__}: {str(e)[-200:]}')
+    lines+=errors
+    if any(name in e for e in errors for name in ('BUILD_ERROR INC','BUILD_ERROR VAR')):return lines
+    lines.append(f'BUILD seconds={time.monotonic()-begin:.2f} left={deadline-time.monotonic():.1f}')
+    rows={};deltas={};paired={};caps={};noise={m:{'E':[],'R':[]} for m in SMALLM_ARMS};worst={};failed={};flips=0;complete=0;peak=0.
+    previous=torch.backends.cuda.matmul.allow_tf32;torch.backends.cuda.matmul.allow_tf32=False
+    try:
+        for seed in range(16):
+            if deadline-time.monotonic()<max(8.,peak*1.25+2.):
+                lines.append(f'BUDGET before_seed={seed}');break
+            started=time.monotonic();w=rg_generate_weights(5353+7919*seed,device=device);w['post_norm_w']=w['post_expert_norm'];state=nt1_banks(w)
+            if seed==0:
+                for mt,cases in DIAG_BY_M.items():
+                    try:lines.extend(f'M{mt} '+l for l in timeline_lines(timeline_diagnose(fx_make_fixture(w,mt,9001),state,routed_fixture(w,mt,9001),cases),False))
+                    except Exception as e:lines.append(f'DIAG_ERROR M{mt} {type(e).__name__}: {str(e)[:200]}')
+            for m,arms in SMALLM_ARMS.items():
+                d=fx_make_fixture(w,m,9000+m+97*seed);want=nt1_fp32(d,w)
+                pr,rs=routed_fixture(w,m,9000+m+97*seed);xr,score,bias=route_reference(pr,rs);start=int(rs['start'])
+                graphs={};truths={}
+                dcap=cap_fixture(d) if 'ECAP' in arms['E'] else None
+                if dcap is not None:caps.setdefault(m,[]).append(blocks(d)+blocks(dcap))
+                for label,flags in arms['E'].items():
+                    if label in failed:continue
+                    try:graphs[label]=TimelineGraph(lambda:nt1_call(d,state,'INC')) if flags is None else \
+                        TimelineGraph(lambda:nt1_call(dcap,state,'INC')) if label=='ECAP' else TimelineGraph(lambda f=flags:var_call(d,state,f))
+                    except Exception as e:failed[label]=f'M{m} seed{seed} capture {type(e).__name__}: {str(e)[:80]}'
+                for label,flags in arms['R'].items():
+                    if label in failed:continue
+                    try:
+                        graphs[label]=TimelineGraph(lambda:routed_experts(pr,rs,state,'INC')) if flags is None else \
+                            TimelineGraph(lambda f=flags:routed_var(pr,rs,state,f))
+                    except Exception as e:failed[label]=f'M{m} seed{seed} capture {type(e).__name__}: {str(e)[:80]}'
+                def gate(label,first=False):
+                    if label=='ECAP':return
+                    out=graphs[label].replay();torch.cuda.synchronize()
+                    if label[0]=='E':got,truth=out,want
+                    else:
+                        got,x,ids,tw,lids=out
+                        n=route_gate(ids,bias,start)
+                        if not torch.allclose(x.float(),xr.float(),rtol=.01,atol=.01):raise ValueError('pooled norm')
+                        key=tuple(ids.flatten().cpu().tolist())
+                        if key not in truths:truths[key]=nt1_fp32(dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0}),w)
+                        truth=truths[key]
+                        if label=='RBASE' and first:route_flips[0]+=n
+                    ok,err,row=task_check(got,truth)
+                    worst[label]=max(worst.get(label,(0.,0.)),(err,row))
+                    if not ok:raise ValueError(f'TASK gate L2/row={err:.5f}/{row:.5f}')
+                route_flips=[0]
+                for label in list(graphs):
+                    try:gate(label,True)
+                    except Exception as e:
+                        failed[label]=f'M{m} seed{seed} {type(e).__name__}: {str(e)[:100]}';graphs.pop(label)
+                flips+=route_flips[0]
+                for prefix in ('E','R'):
+                    base=prefix+'BASE'
+                    if base not in graphs:continue
+                    ctl=TimelineGraph(lambda:nt1_call(d,state,'INC')) if prefix=='E' else TimelineGraph(lambda:routed_var(pr,rs,state,BASE_FLAGS[m]))
+                    a,b,_=timeline_timing(graphs[base],ctl);noise[m][prefix].append(b-a);rows.setdefault((m,base),[]).append(a)
+                    others=[k for k in graphs if k[0]==prefix and k!=base]
+                    if seed%2:others.reverse()
+                    for label in others:
+                        a,b,ratio=timeline_timing(graphs[base],graphs[label])
+                        paired.setdefault((m,label),[]).append(ratio)
+                        rows.setdefault((m,label),[]).append(rows[m,base][-1]*ratio);deltas.setdefault((m,label),[]).append(rows[m,base][-1]*(ratio-1))
+                        try:gate(label)
+                        except Exception as e:failed[label]=f'M{m} seed{seed} post-timing {type(e).__name__}: {str(e)[:100]}'
+                graphs={};truths={}
+            complete+=1;peak=max(peak,time.monotonic()-started)
+    finally:torch.backends.cuda.matmul.allow_tf32=previous
+    for m,v in sorted(caps.items()):
+        lines.append(f'CAP M{m} blocks/experts {statistics.mean(x[0] for x in v):.2f}/{statistics.mean(x[1] for x in v):.2f} -> {statistics.mean(x[2] for x in v):.2f}/{statistics.mean(x[3] for x in v):.2f} n={len(v)}')
+    for label,why in failed.items():lines.append(f'FAIL {label} {why}')
+    lines.append(f'GATE TASK.md L2/row worst '+','.join(f'{k}:{v[0]:.4f}/{v[1]:.4f}' for k,v in sorted(worst.items()))+f'; RINC near-tie flips={flips}')
+    for m in SMALLM_ARMS:
+        for prefix in ('E','R'):
+            base=(m,prefix+'BASE')
+            if base not in rows:continue
+            nz=noise[m][prefix];parts=[f'{prefix}BASE{BASE_FLAGS[m]}={statistics.mean(rows[base]):.2f}']
+            for label in SMALLM_ARMS[m][prefix]:
+                if label==prefix+'BASE' or (m,label) not in deltas:continue
+                dl=deltas[m,label];se=statistics.stdev(dl)/len(dl)**.5 if len(dl)>1 else 0.
+                rat=paired[m,label];parts.append(f'{label}={statistics.mean(rows[m,label]):.2f}({statistics.mean(dl):+.2f}+-{se:.2f},r={statistics.mean(rat):.5f},win={sum(r<1 for r in rat)}/{len(rat)})')
+            parts.append(f'AA={statistics.mean(nz):+.2f}/{statistics.mean(map(abs,nz)):.2f}/{max(map(abs,nz)):.2f}')
+            lines.append(f'AGG M{m} '+' '.join(parts))
+    lines.append(f'END seeds={complete} min8={complete>=8} seconds={time.monotonic()-begin:.1f} left={deadline-time.monotonic():.1f}; nothing promoted here')
+    return lines
+
+SMALLM_VAR_CUDA = '\n#define C10_CUDA_CHECK(expr) do{cudaError_t e=(expr);if(e!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(e));}while(0)\n#define C10_CUDA_KERNEL_LAUNCH_CHECK() C10_CUDA_CHECK(cudaGetLastError())\n\n#include <cuda_runtime.h>\n#include <stdexcept>\n#include <vector>\n#include <algorithm>\n\n#include <cuda_bf16.h>\n#include <stdint.h>\n\nnamespace {\n\nconstexpr int HD = 4096;\nconstexpr int NLOC = 32;\nconstexpr int TILE_BYTES = 36864;\nconstexpr int TILE_W_BYTES = 32768;\nconstexpr int NT1 = 512;\nconstexpr int NT2 = 256;\nconstexpr int NCW = 8;                 // consumer warps\nconstexpr int NCT = NCW * 32;          // consumer threads\nconstexpr int NTHR = NCT;             // thread 0 also prefetches\nconstexpr uint32_t DQ_MASK = 0x81C081C0u;\nconstexpr uint32_t LA_MASK = 0x60306030u;\n// persistent counters\nenum { C_DONE = 0, C_ZERO = 32, C_BAR = 33, C_GEN = 34 };\n\n__device__ __forceinline__ uint32_t smem_u32(const void* p) {\n  return static_cast<uint32_t>(__cvta_generic_to_shared(p));\n}\n__device__ __forceinline__ void mbar_init(uint64_t* b, int cnt) {\n  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" :: "r"(smem_u32(b)), "r"(cnt));\n}\n__device__ __forceinline__ bool mbar_try(uint64_t* b, uint32_t parity) {\n  uint32_t ok;\n  asm volatile("{\\n .reg .pred p;\\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\\n selp.u32 %0, 1, 0, p;\\n}\\n"\n               : "=r"(ok) : "r"(smem_u32(b)), "r"(parity) : "memory");\n  return ok != 0;\n}\n__device__ __forceinline__ void mbar_wait(uint64_t* b, uint32_t parity) {\n  while (!mbar_try(b, parity)) {}\n}\n__device__ __forceinline__ void mbar_arrive(uint64_t* b) {\n  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" :: "r"(smem_u32(b)) : "memory");\n}\n__device__ __forceinline__ void mbar_expect_tx(uint64_t* b, uint32_t bytes) {\n  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" :: "r"(smem_u32(b)), "r"(bytes) : "memory");\n}\n__device__ __forceinline__ void bulk_g2s(void* dst, const void* src, uint32_t bytes, uint64_t* b, uint64_t pol) {\n  asm volatile("cp.async.bulk.shared::cluster.global.mbarrier::complete_tx::bytes.L2::cache_hint [%0], [%1], %2, [%3], %4;"\n               :: "r"(smem_u32(dst)), "l"(src), "r"(bytes), "r"(smem_u32(b)), "l"(pol) : "memory");\n}\n__device__ __forceinline__ void bar_consumers() {\n  asm volatile("bar.sync 1, %0;" :: "n"(NCT) : "memory");\n}\n__device__ __forceinline__ int ld_acquire(const int* p) {\n  int v;\n  asm volatile("ld.acquire.gpu.global.s32 %0, [%1];" : "=r"(v) : "l"(p) : "memory");\n  return v;\n}\n__device__ __forceinline__ uint32_t rotr(uint32_t x, int s) { return __funnelshift_r(x, x, s); }\n__device__ __forceinline__ uint32_t hmul2(uint32_t a, uint32_t b) {\n  uint32_t d;\n  asm("mul.rn.bf16x2 %0, %1, %2;" : "=r"(d) : "r"(a), "r"(b));\n  return d;\n}\n__device__ __forceinline__ void mma16816(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,\n                                         uint32_t b0, uint32_t b1) {\n  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"\n               : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])\n               : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));\n}\n// 16 E2M1 codes (two words) -> 8 BF16x2 registers holding value * 2^-126 (exact).\n__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {\n  o[0] = A & DQ_MASK;\n  o[1] = rotr(A, 4) & DQ_MASK;\n  o[2] = rotr(A, 10) & DQ_MASK;\n  o[3] = rotr(B, 2) & DQ_MASK;\n  o[4] = rotr(B, 6) & DQ_MASK;\n  o[5] = rotr(B, 12) & DQ_MASK;\n  uint32_t W; asm("lop3.b32 %0,%1,%2,%3,0xe4;":"=r"(W):"r"(A),"r"(B),"n"(LA_MASK));\n  o[6] = rotr(W, 24) & DQ_MASK;\n  o[7] = rotr(W, 30) & DQ_MASK;\n}\n\nstruct PrefetchState {\n  volatile int index, stage, phase, pass;\n  volatile int e, nb, m, mb, me;\n  volatile uint64_t pol_first, pol_normal;\n};\n\nstruct Route {        // shared-memory routing summary\n  int n[NLOC];        // pairs per local expert\n  int off[NLOC];      // first sorted position\n  int nblk[NLOC];     // token blocks\n  int us1[NLOC + 1];  // phase-1 unit prefix\n  int us2[NLOC + 1];  // phase-2 unit prefix\n  int c1, c2;         // m-chunk sizes\n  int run[NLOC];\n  int wc[NCW][NLOC];\n  PrefetchState pre;\n  int erank[8];  // F_SLOT: local expert of each local rank\n  int P;         // F_SLOT: local pairs\n};\n\n// unit -> (expert, token block, m tile); order (e, m-chunk, block, m)\n__device__ __forceinline__ void decode_unit(int u, const int* us, const int* nblk, int cc, int ntile,\n                                            int& e, int& nb, int& m) {\n  e = 0;\n#pragma unroll\n  for (int d = 16; d > 0; d >>= 1) {\n    if (us[e + d] <= u) e += d;\n  }\n  const int rel = u - us[e];\n  const int nbk = nblk[e];\n  const int nfull = ntile / cc;\n  const int span = cc * nbk;\n  if (rel < nfull * span) {\n    const int mc = rel / span;\n    const int r2 = rel - mc * span;\n    nb = r2 / cc;\n    m = mc * cc + (r2 - nb * cc);\n  } else {\n    const int L = ntile - nfull * cc;\n    const int r3 = rel - nfull * span;\n    nb = r3 / L;\n    m = nfull * cc + (r3 - nb * L);\n  }\n}\n\n__device__ __forceinline__ void advance_unit(int& e, int& nb, int& m, int& mb, int& me,\n                                               const int* nblk, int cc, int ntile) {\n  if (++m == me) {\n    if (++nb == nblk[e]) {\n      nb = 0;\n      mb += cc;\n      if (mb >= ntile) {\n        ++e;\n        while (e < NLOC && nblk[e] == 0) ++e;\n        mb = 0;\n      }\n      me = min(ntile, mb + cc);\n    }\n    m = mb;\n  }\n}\n\n\n__device__ __forceinline__ void prefetch_one(\n    Route* rt, int total, int first, int a2, int nstage,\n    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb,\n    const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  int idx = p.index;\n  if (idx >= total) return;\n  int st=p.stage, ph=p.phase, pass=p.pass;\n  int e=p.e, nb=p.nb, m=p.m, mb=p.mb, me=p.me;\n  const int ntile=pass?NT2:NT1;\n  const int cc=pass?rt->c2:rt->c1;\n  const uint8_t* base=pass?w2p:w13p;\n  const uint8_t* src=base+(static_cast<size_t>(e)*ntile+m)*TILE_BYTES;\n  const uint64_t pol=rt->nblk[e]>1?p.pol_normal:p.pol_first;\n  mbar_wait(&emptyb[st], ph^1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages+st*TILE_BYTES, src, TILE_BYTES, &fullb[st], pol);\n  ++idx;\n  if (idx < total) {\n    if (idx == first) {\n      pass=1;\n      decode_unit(a2,rt->us2,rt->nblk,rt->c2,NT2,e,nb,m);\n      mb=(m/rt->c2)*rt->c2;\n      me=min(NT2,mb+rt->c2);\n    } else {\n      advance_unit(e,nb,m,mb,me,rt->nblk,cc,ntile);\n    }\n  }\n  if (++st == nstage) { st=0; ph^=1; }\n  p.index=idx; p.stage=st; p.phase=ph; p.pass=pass;\n  p.e=e; p.nb=nb; p.m=m; p.mb=mb; p.me=me;\n}\n\n// ---- flag-templated variants of the admitted one-LOP3 NT1 kernel (F=0 is the incumbent\'s math) ----\nenum {\n  F_Z = 1,      // zero each pair\'s norm slot in its W13 tile 0 (before expert release); no C_ZERO wait\n  F_SLOT = 2,   // M=1: dispatch straight from the 8 top-k slots (rank = popcount), no counts/scan/lists/search\n  F_ZOUT = 4,   // W2 epilogue stores z = v(1+w); the finalizer drops its post-norm weight loads\n  F_RSQ = 8,    // finalizer: lanes 0-7 compute each pair\'s scale once and shuffle it\n  F_NREG = 16,  // W2 norm partials stay in registers across a CTA\'s run of tiles for one (expert, block)\n  F_PDL = 64,   // launched as a programmatic dependent: setup overlaps the router, griddepcontrol.wait first\n  F_LAST = 128, // the last CTA to finish W2 runs the whole finalizer; no grid-wide release/spin\n  F_TRACE = 256, // globaltimer stamps per CTA (layout of the earlier TRACE build), written to v[13]\n  F_NT2 = 2048  // 16-token blocks: each weight tile is decoded once for up to 16 of an expert\'s tokens; 1 CTA/SM\n};\ntemplate <int Fv> constexpr int nt_of = (Fv & F_NT2) ? 2 : 1;\nconstexpr int NT2_PROBE = F_NT2 | 69;   // instantiated NT2 word that resident_blocks(2, ...) sizes the grid with\n__device__ __forceinline__ uint64_t tg() { uint64_t t; asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(t)::"memory"); return t; }\n__device__ __forceinline__ uint64_t tclk() { uint64_t t; asm volatile("mov.u64 %0, %%clock64;" : "=l"(t)::"memory"); return t; }\n\n__device__ __forceinline__ void prefetch_slot(Route* rt, int total, int first, int a1, int a2, int nstage,\n    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb, const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  const int idx = p.index;\n  if (idx >= total) return;\n  const int st = p.stage, ph = p.phase;\n  const bool pass = idx >= first;\n  const int u = pass ? a2 + idx - first : a1 + idx;\n  const int r = pass ? (u >> 8) : (u >> 9), m = pass ? (u & (NT2 - 1)) : (u & (NT1 - 1));\n  const int e = rt->erank[r];\n  const uint8_t* src = (pass ? w2p : w13p) + (static_cast<size_t>(e) * (pass ? NT2 : NT1) + m) * TILE_BYTES;\n  mbar_wait(&emptyb[st], ph ^ 1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages + st * TILE_BYTES, src, TILE_BYTES, &fullb[st], p.pol_first);\n  p.index = idx + 1;\n  if (st + 1 == nstage) { p.stage = 0; p.phase = ph ^ 1; } else p.stage = st + 1;\n}\n\ntemplate <int NT, int F>\n__global__ void __launch_bounds__(NTHR, NT == 1 ? 2 : 1) moe_var(\n    const __nv_bfloat16* __restrict__ x, const int* __restrict__ ids, const float* __restrict__ tw,\n    const __nv_bfloat16* __restrict__ pnw, const uint8_t* __restrict__ w13p, const uint8_t* __restrict__ w2p,\n    const float* __restrict__ gs13, const float* __restrict__ gs2, __nv_bfloat16* __restrict__ inter,\n    float* __restrict__ y, float* __restrict__ ss, int* __restrict__ cnt, __nv_bfloat16* __restrict__ out,\n    int M, int local_start, int nstage, uint64_t* __restrict__ trace) {\n  constexpr bool Z = F & F_Z, SLOT = F & F_SLOT, ZOUT = F & F_ZOUT, RSQ = F & F_RSQ, NREG = F & F_NREG;\n  constexpr bool PDL = F & F_PDL, LAST = F & F_LAST, TRACE = F & F_TRACE;\n  static_assert(((F & F_NT2) != 0) == (NT == 2) && !(NT == 2 && SLOT), "F_NT2 selects NT=2 (M>1 dispatch)");\n  constexpr int NB = 8 * NT;\n  constexpr int RED = NT * 4;\n  const int npairs = M * 8;\n  extern __shared__ __align__(128) uint8_t smem[];\n  uint8_t* stages = smem;\n  float* red = reinterpret_cast<float*>(smem + nstage * TILE_BYTES);        // [2][NCW][32][RED]\n  uint64_t* fullb = reinterpret_cast<uint64_t*>(red + 2 * NCW * 32 * RED);\n  uint64_t* emptyb = fullb + nstage;\n  Route* rt = reinterpret_cast<Route*>(emptyb + nstage);\n  int8_t* eflat = reinterpret_cast<int8_t*>(rt + 1);                        // [npairs] local expert or -1\n  int16_t* pos_of = reinterpret_cast<int16_t*>(eflat + ((npairs + 15) & ~15));  // [npairs]\n  int16_t* pair_of = pos_of + npairs;                                        // [npairs] sorted pos -> flat\n\n  const int tid = threadIdx.x, lane = tid & 31, warp = tid >> 5;\n  const int G = gridDim.x, c = blockIdx.x;\n  int bar_gen0 = 0;\n  __shared__ int last_cta;\n  // F_TRACE layout: [0] entry [1] routed [2] main loop [3] W13 end [4] first W2 ready [5] W2 end\n  // [6] barrier [7] combine [8] end [9] exit [10] first copy issue [11,12] first W13 copy wait\n  // [13] first W13 tile done [14,15] first W2 copy wait [16] sum of ready waits\n  // [20,21] clock64 entry/exit [23] finalizer [24] smid [25] grid [26,27] W13/W2 units [32+w] warp entry [40+w] warp exit\n  __shared__ uint64_t probe[TRACE ? 64 : 1];\n  if constexpr (TRACE) {\n    if ((tid & 31) == 0) probe[32 + warp] = tg();\n    if (tid == 0) { probe[0] = probe[32]; probe[20] = tclk(); }\n    if (tid < 64 && tid != 0 && tid != 20 && !(tid >= 32 && tid < 40)) probe[tid] = 0;\n  }\n  auto dump = [&](bool finalizer) {\n    if constexpr (TRACE) {\n      if (tid == 0) { probe[8] = tg(); probe[23] = finalizer; if (!probe[4]) probe[4] = probe[3]; }\n      bar_consumers();\n      if (tid < 64) trace[(size_t)c * 64 + tid] = probe[tid];\n      bar_consumers();\n      if (lane == 0) trace[(size_t)c * 64 + 40 + warp] = tg();\n      if (tid == 0) { trace[(size_t)c * 64 + 21] = tclk(); trace[(size_t)c * 64 + 9] = tg(); }\n    }\n  };\n\n  if (tid == 0) {\n    for (int s = 0; s < nstage; ++s) { mbar_init(&fullb[s], 1); mbar_init(&emptyb[s], NCW); }\n    asm volatile("fence.mbarrier_init.release.cluster;" ::: "memory");\n    uint64_t pf, pn;\n    asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;" : "=l"(pf));\n    asm volatile("createpolicy.fractional.L2::evict_normal.b64 %0, 1.0;" : "=l"(pn));\n    rt->pre.pol_first = pf; rt->pre.pol_normal = pn;\n    rt->pre.index = 0; rt->pre.stage = 0; rt->pre.phase = 0;\n  }\n  if constexpr (PDL) asm volatile("griddepcontrol.wait;" ::: "memory");\n\n  int U1, U2, a1, b1, a2, b2, first_count, total_count;\n  if constexpr (SLOT) {\n    // M == 1: a local expert holds at most one pair. Local slots in slot order: rank = popcount.\n    if (warp == 0) {\n      int e = -1;\n      if (lane < 8) {\n        e = __ldg(ids + lane) - local_start;\n        if (e < 0 || e >= NLOC) e = -1;\n      }\n      if (!LAST && lane == 0) bar_gen0 = ld_acquire(cnt + C_GEN);\n      const unsigned mk = __ballot_sync(~0u, e >= 0);\n      const int P = __popc(mk), r = __popc(mk & ((1u << lane) - 1u));\n      if (lane < 8) pos_of[lane] = static_cast<int16_t>(e >= 0 ? r : -1);\n      if (e >= 0) { pair_of[r] = static_cast<int16_t>(lane); rt->erank[r] = e; }\n      __syncwarp();   // lane 0\'s first copies read erank\n      U1 = P * NT1; U2 = P * NT2;\n      a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n      a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n      first_count = b1 - a1; total_count = first_count + b2 - a2;\n      if (lane == 0) {\n        rt->P = P;\n        if constexpr (TRACE) probe[10] = tg();\n        for (int i = 0; i < nstage; ++i)\n          prefetch_slot(rt, total_count, first_count, a1, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n      }\n    }\n    __syncthreads();\n    if (warp != 0) {\n      const int P = rt->P;\n      U1 = P * NT1; U2 = P * NT2;\n      a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n      a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n      first_count = b1 - a1; total_count = first_count + b2 - a2;\n    }\n  } else {\n    if (tid < NLOC) rt->n[tid] = 0;\n    if (!LAST && tid == 0) bar_gen0 = ld_acquire(cnt + C_GEN);\n    __syncthreads();\n    for (int i = tid; i < npairs; i += NTHR) {\n      int e = __ldg(ids + i) - local_start;\n      if (e < 0 || e >= NLOC) e = -1;\n      eflat[i] = static_cast<int8_t>(e);\n      if (e >= 0) atomicAdd(&rt->n[e], 1);\n    }\n    __syncthreads();\n    if (warp == 0) {\n      const int n = rt->n[lane];\n      const int nb = (n + NB - 1) / NB;\n      int off = n, u1 = nb * NT1, u2 = nb * NT2;\n#pragma unroll\n      for (int d = 1; d < 32; d <<= 1) {\n        const int a = __shfl_up_sync(~0u, off, d), b = __shfl_up_sync(~0u, u1, d), e2 = __shfl_up_sync(~0u, u2, d);\n        if (lane >= d) { off += a; u1 += b; u2 += e2; }\n      }\n      rt->off[lane] = off - n;\n      rt->run[lane] = off - n;\n      rt->nblk[lane] = nb;\n      rt->us1[lane + 1] = u1;\n      rt->us2[lane + 1] = u2;\n      if (lane == 0) { rt->us1[0] = 0; rt->us2[0] = 0; }\n      const int T1 = __shfl_sync(~0u, u1, 31), T2 = __shfl_sync(~0u, u2, 31);\n      if (lane == 0) {\n        rt->c1 = min(NT1, max(1, (T1 + G / 2) / G));\n        rt->c2 = min(NT2, max(1, (T2 + G / 2) / G));\n      }\n    }\n    __syncthreads();\n    U1 = rt->us1[NLOC]; U2 = rt->us2[NLOC];\n    a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);\n    a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);\n    first_count = b1 - a1; total_count = first_count + b2 - a2;\n    if (tid == 0) {\n      if (total_count) {\n        int e, nb, m;\n        const int pass = first_count ? 0 : 1;\n        const int cc = pass ? rt->c2 : rt->c1, ntile = pass ? NT2 : NT1;\n        decode_unit(pass ? a2 : a1, pass ? rt->us2 : rt->us1, rt->nblk, cc, ntile, e, nb, m);\n        rt->pre.pass = pass; rt->pre.e = e; rt->pre.nb = nb; rt->pre.m = m;\n        rt->pre.mb = (m / cc) * cc; rt->pre.me = min(ntile, (m / cc) * cc + cc);\n      }\n      if constexpr (TRACE) probe[10] = tg();\n      for (int i = 0; i < nstage; ++i)\n        prefetch_one(rt, total_count, first_count, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n    }\n    __syncthreads();\n    // deterministic token lists (sorted by local expert, then flat slot)\n    for (int base = 0; base < npairs; base += NCT) {\n      rt->wc[warp][lane] = 0;\n      bar_consumers();\n      const int i = base + tid;\n      const int e = i < npairs ? eflat[i] : -1;\n      const unsigned mk = __match_any_sync(~0u, e);\n      const int rank = __popc(mk & ((1u << lane) - 1u));\n      if (e >= 0 && rank == 0) rt->wc[warp][e] = __popc(mk);\n      bar_consumers();\n      if (tid < NLOC) {\n        int s = rt->run[tid];\n        for (int w = 0; w < NCW; ++w) { const int t = rt->wc[w][tid]; rt->wc[w][tid] = s; s += t; }\n        rt->run[tid] = s;\n      }\n      bar_consumers();\n      if (i < npairs) {\n        if (e >= 0) {\n          const int pos = rt->wc[warp][e] + rank;\n          pos_of[i] = static_cast<int16_t>(pos);\n          pair_of[pos] = static_cast<int16_t>(i);\n        } else {\n          pos_of[i] = -1;\n        }\n      }\n    }\n  }\n  if constexpr (TRACE) {\n    if (tid == 0) {\n      probe[1] = tg(); uint32_t sm; asm("mov.u32 %0, %%smid;" : "=r"(sm)); probe[24] = sm; probe[25] = G;\n      probe[26] = b1 - a1; probe[27] = b2 - a2;\n    }\n  }\n  if constexpr (!Z) {\n    // zero this CTA\'s slice of the sum-of-squares accumulators, then publish\n    const int P = SLOT ? rt->P : (U1 > 0 ? rt->off[NLOC - 1] + rt->n[NLOC - 1] : 0);\n    const int z0 = static_cast<int>((long long)P * c / G), z1 = static_cast<int>((long long)P * (c + 1) / G);\n    for (int i = z0 + tid; i < z1; i += NCT) ss[i] = 0.f;\n    __threadfence();\n    bar_consumers();\n    if (tid == 0) atomicAdd(cnt + C_ZERO, 1);\n  }\n\n  if constexpr (TRACE) { if (tid == 0) probe[2] = tg(); }\n  const int q = lane & 3;\n  uint32_t Bf[NT][8][8];\n  int st = 0;\n  uint32_t ph = 0;\n  int buf = 0;\n  int cur_pass = -1, cur_e = -1, cur_nb = -1, seg_tiles = 0;\n  float fw[2];   // (1 + post_norm_w) for this thread\'s phase-2 epilogue row, refreshed per tile\n  float nacc = 0.f;  // F_NREG: this thread\'s squared sum over the current (expert, block) run\n  int npos = -1;\n  auto flush_norm = [&]() {\n    if (tid < 16 * NB) {\n      float t2 = nacc;\n#pragma unroll\n      for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);\n      if (npos >= 0 && (tid & 15) == 0) atomicAdd(ss + npos, t2);\n    }\n    nacc = 0.f; npos = -1;\n  };\n\n  auto unit_body = [&](const int pass, const bool firstp, const int e, const int nb, const int m, const int ne,\n                       const int off) {\n    if (pass != cur_pass || e != cur_e || nb != cur_nb) {\n      if (cur_pass == 0 && seg_tiles > 0) {  // publish the finished phase-1 segment\n        __threadfence();\n        bar_consumers();\n        if (tid == 0) atomicAdd(cnt + C_DONE + cur_e, seg_tiles);\n      }\n      if constexpr (NREG) { if (cur_pass == 1) flush_norm(); }\n      cur_pass = pass; cur_e = e; cur_nb = nb; seg_tiles = 0;\n      if (pass == 1) {\n        uint64_t wait0 = 0;\n        if constexpr (TRACE) { if (tid == 0) wait0 = tg(); }\n        const int target = NT1 * (SLOT ? 1 : rt->nblk[e]);\n        while (ld_acquire(cnt + C_DONE + e) < target) __nanosleep(64);\n        if constexpr (!Z) { while (ld_acquire(cnt + C_ZERO) < G) __nanosleep(64); }\n        if constexpr (TRACE) { if (tid == 0) probe[16] += tg() - wait0; }\n      }\n#pragma unroll\n      for (int j = 0; j < NT; ++j) {\n        const int idx = nb * NB + j * 8 + (lane >> 2);\n        const __nv_bfloat16* row = nullptr;\n        if (idx < ne) {\n          const int pos = off + idx;\n          row = pass ? inter + static_cast<size_t>(pos) * HD : x + static_cast<size_t>(pair_of[pos] >> 3) * HD;\n        }\n#pragma unroll\n        for (int g = 0; g < 8; ++g) {\n          uint4 v0 = make_uint4(0, 0, 0, 0), v1 = v0;\n          if (row) {\n            const uint4* p = reinterpret_cast<const uint4*>(row + warp * 512 + g * 64 + q * 16);\n            if (pass) { v0 = __ldcg(p); v1 = __ldcg(p + 1); }\n            else { v0 = __ldg(p); v1 = __ldg(p + 1); }\n          }\n          Bf[j][g][0] = v0.x; Bf[j][g][1] = v0.y; Bf[j][g][2] = v0.z; Bf[j][g][3] = v0.w;\n          Bf[j][g][4] = v1.x; Bf[j][g][5] = v1.y; Bf[j][g][6] = v1.z; Bf[j][g][7] = v1.w;\n        }\n      }\n    }\n    if constexpr (TRACE) { if (tid == 0 && pass == 1 && firstp) probe[4] = tg(); }\n    if (pass == 1 && tid < 16 * NB) fw[0] = 1.f + __bfloat162float(pnw[m * 16 + (tid & 15)]);\n\n    if constexpr (TRACE) { if (tid == 0 && firstp) probe[pass ? 14 : 11] = tg(); }\n    mbar_wait(&fullb[st], ph);\n    if constexpr (TRACE) { if (tid == 0 && firstp) probe[pass ? 15 : 12] = tg(); }\n    const uint8_t* tile = stages + st * TILE_BYTES;\n    float acc[NT][4];\n#pragma unroll\n    for (int j = 0; j < NT; ++j) acc[j][0] = acc[j][1] = acc[j][2] = acc[j][3] = 0.f;\n    {\n      const uint4* wq = reinterpret_cast<const uint4*>(tile) + warp * 8 * 32 + lane;\n      const uint4 scv = *(reinterpret_cast<const uint4*>(tile + TILE_W_BYTES) + warp * 32 + lane);\n      const uint32_t scw[4] = {scv.x, scv.y, scv.z, scv.w};\n#pragma unroll\n      for (int g = 0; g < 8; ++g) {\n        const uint4 wv = wq[g * 32];\n        const uint32_t sw = scw[g >> 1];\n        const uint32_t Sr = __byte_perm(sw, 0u, (g & 1) ? 0x4242u : 0x4040u) * 16u + 0x70007000u;\n        const uint32_t Sr8 = __byte_perm(sw, 0u, (g & 1) ? 0x4343u : 0x4141u) * 16u + 0x70007000u;\n        uint32_t o[16];\n        dq8(wv.x, wv.y, o);\n        dq8(wv.z, wv.w, o + 8);\n#pragma unroll\n        for (int s = 0; s < 4; ++s) {\n          const uint32_t* os = o + (s >> 1) * 8 + (s & 1) * 4;\n          const uint32_t a0 = hmul2(os[0], Sr), a1 = hmul2(os[1], Sr8);\n          const uint32_t a2 = hmul2(os[2], Sr), a3 = hmul2(os[3], Sr8);\n#pragma unroll\n          for (int j = 0; j < NT; ++j) mma16816(acc[j], a0, a1, a2, a3, Bf[j][g][2 * s], Bf[j][g][2 * s + 1]);\n        }\n      }\n    }\n    __syncwarp();\n    if (lane == 0) mbar_arrive(&emptyb[st]);\n    if (++st == nstage) { st = 0; ph ^= 1u; }\n\n    float* rp = red + ((buf * NCW + warp) * 32 + lane) * RED;\n#pragma unroll\n    for (int j = 0; j < NT; ++j) reinterpret_cast<float4*>(rp)[j] = make_float4(acc[j][0], acc[j][1], acc[j][2], acc[j][3]);\n    bar_consumers();\n    if (tid == 0) {\n      if constexpr (SLOT) prefetch_slot(rt, total_count, first_count, a1, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n      else prefetch_one(rt, total_count, first_count, a2, nstage, stages, fullb, emptyb, w13p, w2p);\n    }\n    const float* rb = red + buf * NCW * 32 * RED;\n    if (pass == 0) {\n      const float sc = gs13[e] * 256.f;\n      if (tid < 8 * NB) {\n        const int i = tid & 7, n = tid >> 3, j = n >> 3, col = n & 7;\n        const int ls = i * 4 + (col >> 1), rg = j * 4 + (col & 1);\n        float G1 = 0.f, U = 0.f;\n#pragma unroll\n        for (int w = 0; w < NCW; ++w) {\n          G1 += rb[(w * 32 + ls) * RED + rg];\n          U += rb[(w * 32 + ls) * RED + rg + 2];\n        }\n        const int idx = nb * NB + n;\n        if (idx < ne) {\n          if constexpr (Z) { if (m == 0 && i == 0) ss[off + idx] = 0.f; }\n          G1 *= sc;\n          U *= sc;\n          const float h = G1 / (1.f + __expf(-G1)) * U;\n          inter[static_cast<size_t>(off + idx) * HD + m * 8 + i] = __float2bfloat16(h);\n        }\n      }\n    } else {\n      const float sc = gs2[e] * 256.f;\n      if (tid < 16 * NB) {\n        const int i = tid & 15, n = tid >> 4, j = n >> 3, col = n & 7;\n        const int ls = (i & 7) * 4 + (col >> 1), rg = j * 4 + (col & 1) + ((i >> 3) << 1);\n        float v = 0.f;\n#pragma unroll\n        for (int w = 0; w < NCW; ++w) v += rb[(w * 32 + ls) * RED + rg];\n        v *= sc;\n        const int idx = nb * NB + n;\n        const bool ok = idx < ne;\n        const float z = v * fw[0];\n        if (ok) y[static_cast<size_t>(off + idx) * HD + m * 16 + i] = ZOUT ? z : v;\n        if constexpr (NREG) {\n          if (ok) { nacc += z * z; npos = off + idx; }\n        } else {\n          float t2 = ok ? z * z : 0.f;\n#pragma unroll\n          for (int d = 8; d > 0; d >>= 1) t2 += __shfl_xor_sync(~0u, t2, d);   // 16 rows of one token\n          if (ok && i == 0) atomicAdd(ss + off + idx, t2);\n        }\n      }\n    }\n    if constexpr (TRACE) {\n      if (tid == 0 && pass == 0 && firstp) probe[13] = tg();\n    }\n    buf ^= 1;\n    ++seg_tiles;\n  };\n  for (int pass = 0; pass < 2; ++pass) {\n    const int ua = pass ? a2 : a1, ub = pass ? b2 : b1;\n    const int* us = pass ? rt->us2 : rt->us1;\n    const int cc = pass ? rt->c2 : rt->c1;\n    const int ntile = pass ? NT2 : NT1;\n    int e = 0, nb = 0, m = 0, mb = 0, me = 0;\n    if constexpr (!SLOT) {\n      if (ua < ub) {\n        decode_unit(ua, us, rt->nblk, cc, ntile, e, nb, m);\n        mb = (m / cc) * cc;\n        me = min(ntile, mb + cc);\n      }\n    }\n    for (int u0 = ua; u0 < ub; ++u0) {\n      const int u = u0;\n      int ne, off;\n      if constexpr (SLOT) {\n        const int r = pass ? (u >> 8) : (u >> 9);\n        m = u & (ntile - 1); e = rt->erank[r]; nb = 0; ne = 1; off = r;\n      } else {\n        ne = rt->n[e]; off = rt->off[e];\n      }\n      unit_body(pass, u0 == ua, e, nb, m, ne, off);\n      if constexpr (!SLOT) advance_unit(e, nb, m, mb, me, rt->nblk, cc, ntile);\n    }\n    if constexpr (TRACE) { if (tid == 0) probe[pass ? 5 : 3] = tg(); }\n  }\n  if (cur_pass == 0 && seg_tiles > 0) {\n    __threadfence();\n    bar_consumers();\n    if (tid == 0) atomicAdd(cnt + C_DONE + cur_e, seg_tiles);\n  }\n  if constexpr (NREG) { if (cur_pass == 1) flush_norm(); }\n\n  // ---------------- grid barrier (or last-arriver election) ----------------\n  __threadfence();\n  bar_consumers();\n  if constexpr (TRACE) { if (tid == 0) probe[6] = tg(); }\n  if constexpr (LAST) {\n    if (tid == 0) {\n      const bool last = atomicAdd(cnt + C_BAR, 1) == G - 1;\n      if (last) {\n        __threadfence();\n        for (int i = 0; i < NLOC; ++i) cnt[C_DONE + i] = 0;   // every CTA is past its waits\n        cnt[C_ZERO] = 0;\n        cnt[C_BAR] = 0;\n      }\n      last_cta = last;\n    }\n    bar_consumers();\n    if (!last_cta) { dump(false); return; }\n  } else {\n    if (tid == 0) {\n      if (atomicAdd(cnt + C_BAR, 1) == G - 1) {\n        for (int i = 0; i < NLOC; ++i) cnt[C_DONE + i] = 0;   // every CTA is past its waits\n        cnt[C_ZERO] = 0;\n        cnt[C_BAR] = 0;\n        __threadfence();\n        atomicAdd(cnt + C_GEN, 1);\n      } else {\n        while (ld_acquire(cnt + C_GEN) == bar_gen0) __nanosleep(64);\n      }\n    }\n    bar_consumers();\n  }\n\n  // ---------------- combine: item = (token, half of the columns) ----------------\n  if constexpr (TRACE) { if (tid == 0) probe[7] = tg(); }\n  for (int it = LAST ? 0 : c; it < 2 * M; it += LAST ? 1 : G) {\n    const int t = it >> 1;\n    const int c0 = (it & 1) * 2048 + tid * 8;\n    float f[8];\n    if constexpr (!ZOUT) {\n      const uint4 wv = *reinterpret_cast<const uint4*>(pnw + c0);\n      const __nv_bfloat16* wb = reinterpret_cast<const __nv_bfloat16*>(&wv);\n#pragma unroll\n      for (int k = 0; k < 8; ++k) f[k] = 1.f + __bfloat162float(wb[k]);\n    }\n    float scl = 0.f;\n    int posl = -1;\n    if constexpr (RSQ) {\n      if (lane < 8) {\n        posl = pos_of[t * 8 + lane];\n        if (posl >= 0) scl = tw[t * 8 + lane] * rsqrtf(__ldcg(ss + posl) * (1.f / HD) + 1e-8f);\n      }\n    }\n    float acc[8];\n#pragma unroll\n    for (int k = 0; k < 8; ++k) acc[k] = 0.f;\n#pragma unroll\n    for (int j = 0; j < 8; ++j) {\n      int pos;\n      float sc;\n      if constexpr (RSQ) {\n        pos = __shfl_sync(~0u, posl, j);\n        sc = __shfl_sync(~0u, scl, j);\n      } else {\n        pos = pos_of[t * 8 + j];\n        sc = pos >= 0 ? tw[t * 8 + j] * rsqrtf(__ldcg(ss + pos) * (1.f / HD) + 1e-8f) : 0.f;\n      }\n      if (pos >= 0) {\n        const float4* p = reinterpret_cast<const float4*>(y + static_cast<size_t>(pos) * HD + c0);\n        const float4 u0 = __ldcg(p), u1 = __ldcg(p + 1);\n        if constexpr (ZOUT) {\n          acc[0] += sc * u0.x; acc[1] += sc * u0.y; acc[2] += sc * u0.z; acc[3] += sc * u0.w;\n          acc[4] += sc * u1.x; acc[5] += sc * u1.y; acc[6] += sc * u1.z; acc[7] += sc * u1.w;\n        } else {\n          acc[0] += sc * u0.x * f[0]; acc[1] += sc * u0.y * f[1]; acc[2] += sc * u0.z * f[2]; acc[3] += sc * u0.w * f[3];\n          acc[4] += sc * u1.x * f[4]; acc[5] += sc * u1.y * f[5]; acc[6] += sc * u1.z * f[6]; acc[7] += sc * u1.w * f[7];\n        }\n      }\n    }\n    uint4 ov;\n    __nv_bfloat16* ob = reinterpret_cast<__nv_bfloat16*>(&ov);\n#pragma unroll\n    for (int k = 0; k < 8; ++k) ob[k] = __float2bfloat16(acc[k]);\n    *reinterpret_cast<uint4*>(out + static_cast<size_t>(t) * HD + c0) = ov;\n  }\n  dump(LAST || c < 2 * M);\n}\n\nsize_t smem_bytes(int nt, int nstage, int M) {\n  const int npairs = M * 8;\n  return static_cast<size_t>(nstage) * TILE_BYTES + 2 * NCW * 32 * nt * 4 * sizeof(float) + 2 * nstage * 8 +\n         sizeof(Route) + ((npairs + 15) & ~15) + 4 * npairs;\n}\n\n#define VAR_FLAGS(X) X(69) X(95)\n}  // namespace\n\nint64_t max_smem_attr() {\n  int dev, optin;\n  C10_CUDA_CHECK(cudaGetDevice(&dev));\n  C10_CUDA_CHECK(cudaDeviceGetAttribute(&optin, cudaDevAttrMaxSharedMemoryPerBlockOptin, dev));\n  int dyn = optin;\n#define SET_ATTR(Fv) { cudaFuncAttributes a = {}; C10_CUDA_CHECK(cudaFuncGetAttributes(&a, moe_var<nt_of<Fv>, Fv>)); \\\n    C10_CUDA_CHECK(cudaFuncSetAttribute(moe_var<nt_of<Fv>, Fv>, cudaFuncAttributeMaxDynamicSharedMemorySize, optin - (int)a.sharedSizeBytes)); \\\n    dyn = std::min(dyn, optin - (int)a.sharedSizeBytes); }\n  VAR_FLAGS(SET_ATTR)\n  SET_ATTR(0)  // resident_blocks() sizes NT=1 grids with moe_var<1, 0> (same smem/threads as every NT=1 word)\n#undef SET_ATTR\n  return dyn;\n}\n\nint64_t smem_needed(int64_t nt, int64_t nstage, int64_t M) { return (int64_t)smem_bytes(nt, nstage, M); }\nint64_t resident_blocks(int64_t nt, int64_t nstage, int64_t M) {\n  int n;\n  if (nt == 2) C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_var<2, NT2_PROBE>, NTHR, smem_bytes(2, nstage, M)));\n  else C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n, moe_var<1, 0>, NTHR, smem_bytes(1, nstage, M)));\n  return n;\n}\n\ntemplate <int Fv>\nvoid launch_var(std::vector<int64_t>& v, int M, int start, int stages, int grid, cudaStream_t stream) {\n  cudaLaunchConfig_t cfg = {};\n  cfg.gridDim = dim3(grid); cfg.blockDim = dim3(NTHR); cfg.dynamicSmemBytes = smem_bytes(nt_of<Fv>, stages, M);\n  cfg.stream = stream;\n  cudaLaunchAttribute attr{};\n  attr.id = cudaLaunchAttributeProgrammaticStreamSerialization;\n  attr.val.programmaticStreamSerializationAllowed = 1;\n  if (Fv & F_PDL) { cfg.attrs = &attr; cfg.numAttrs = 1; }\n  C10_CUDA_CHECK(cudaLaunchKernelEx(&cfg, moe_var<nt_of<Fv>, Fv>,\n    (const __nv_bfloat16*)v[0], (const int*)v[1], (const float*)v[2], (const __nv_bfloat16*)v[3],\n    (const uint8_t*)v[4], (const uint8_t*)v[5], (const float*)v[6], (const float*)v[7],\n    (__nv_bfloat16*)v[8], (float*)v[9], (float*)v[10], (int*)v[11], (__nv_bfloat16*)v[12], M, start, stages,\n    (uint64_t*)(v.size() > 13 ? v[13] : 0)));\n}\n\nvoid run(std::vector<int64_t> v, int64_t M, int64_t start, int64_t stages, int64_t grid, int64_t stream, int64_t flags) {\n  if ((flags & F_SLOT) && M != 1) throw std::runtime_error("F_SLOT requires M == 1");\n  if ((flags & F_TRACE) && (v.size() < 14 || !v[13])) throw std::runtime_error("F_TRACE requires a stamp buffer");\n  switch (flags) {\n#define CASE(Fv) case Fv: launch_var<Fv>(v, M, start, stages, grid, (cudaStream_t)stream); return;\n    VAR_FLAGS(CASE)\n#undef CASE\n  }\n  throw std::runtime_error("flag combination not instantiated");\n}\n'
+SMALLM_VAR_CPP = """#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <stdint.h>
+#include <vector>
+int64_t max_smem_attr();int64_t smem_needed(int64_t,int64_t,int64_t);int64_t resident_blocks(int64_t,int64_t,int64_t);
+void run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
+"""
+SMALLM_FLAGS_BUILT = [69, 95]
+_SMALLM_MODULE = []
+
+
+def smallm_module():
+    if not _SMALLM_MODULE:
+        tag = hashlib.sha256(SMALLM_VAR_CUDA.encode()).hexdigest()[:12]
+        target = '-gencode=arch=compute_90a,code=sm_90a' if torch.cuda.get_device_capability() == (9, 0) else '-gencode=arch=compute_120,code=sm_120'
+        mod = load_inline(name='muse_smallm_var_' + tag, cpp_sources=SMALLM_VAR_CPP, cuda_sources=SMALLM_VAR_CUDA,
+            functions=['max_smem_attr', 'smem_needed', 'resident_blocks', 'run'], no_implicit_headers=True,
+            with_pytorch_error_handling=False, extra_cuda_cflags=['-O3', '-std=c++20', '-lineinfo', target], verbose=False)
+        mod.smem_optin = mod.max_smem_attr()
+        _SMALLM_MODULE.append(mod)
+    return _SMALLM_MODULE[0]
+
+
+def smallm_bind(state, flags_by_m):
+    """Prepare-time: compile and give every flags word its own zeroed counter block (64 int32)."""
+    mod = smallm_module(); dev = state['gs13'].device
+    for m, flags in flags_by_m.items():
+        if flags not in SMALLM_FLAGS_BUILT: raise ValueError(f'flags {flags} not instantiated')
+        if flags & 2 and m != 1: raise ValueError('SLOT is the M=1 dispatch')
+        state.setdefault('smallm_counters', {}).setdefault(flags, torch.zeros(64, device=dev, dtype=torch.int32))
+    return state
+
+
+def smallm_experts(data, state, flags, stages=2, grid=264):
+    x = data['hidden_states'].contiguous(); m = x.shape[0]; p = m * 8; dev = x.device
+    ids = data['topk_ids'].int().contiguous(); tw = data['topk_weights'].float().contiguous()
+    mod = smallm_module()
+    if mod.smem_needed(1, stages, m) > mod.smem_optin: raise ValueError('shared memory exceeds device capacity')
+    grid = min(grid, state['sms'] * mod.resident_blocks(1, stages, m))
+    bank = state['banks']['lop3']
+    inter = torch.empty((p, 4096), device=dev, dtype=torch.bfloat16)
+    y = torch.empty((p, 4096), device=dev); ss = torch.empty((p,), device=dev); out = torch.empty_like(x)
+    tensors = [x, ids, tw, state['pnw'], bank['w13p'], bank['w2p'], state['gs13'], state['gs2'], inter, y, ss,
+               state['smallm_counters'][flags], out]
+    ptrs = [v.data_ptr() for v in tensors]
+    mod.run(ptrs, m, data['config']['local_start'], stages, grid, torch.cuda.current_stream(dev).cuda_stream, flags)
+    return out
+
+
+
+"""P3a decode-once: one unique weight tile, per-K-group activation streaming over all token blocks.
+Bind in prepare with reuse_bind(s4_nt1_bank); same packed bank and data ABI as the S11 small-M cell.
+mode 0=ONCE, 1=REDO fixed-work diagnostic; trace=True emits per-CTA clocks without changing the untraced build.
+"""
+import hashlib
+import torch
+from torch.utils.cpp_extension import load_inline
+REUSE_CUDA = '\n#define C10_CUDA_CHECK(expr) do{cudaError_t e=(expr);if(e!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(e));}while(0)\n#define C10_CUDA_KERNEL_LAUNCH_CHECK() C10_CUDA_CHECK(cudaGetLastError())\n\n#include <cuda_runtime.h>\n#include <stdexcept>\n#include <vector>\n\n#include <cuda_bf16.h>\n#include <stdint.h>\n\nnamespace {\n\nconstexpr int HD = 4096;\nconstexpr int NLOC = 32;\nconstexpr int TILE_BYTES = 36864;\nconstexpr int TILE_W_BYTES = 32768;\nconstexpr int NT1 = 512;\nconstexpr int NT2 = 256;\nconstexpr int NCW = 8;                 // consumer warps\nconstexpr int NCT = NCW * 32;          // consumer threads\nconstexpr int NTHR = NCT;             // thread 0 also prefetches\nconstexpr uint32_t DQ_MASK = 0x81C081C0u;\nconstexpr uint32_t LA_MASK = 0x60306030u;\n// persistent counters\nenum { C_DONE = 0, C_ZERO = 32, C_BAR = 33, C_GEN = 34 };\n\n__device__ __forceinline__ uint32_t smem_u32(const void* p) {\n  return static_cast<uint32_t>(__cvta_generic_to_shared(p));\n}\n__device__ __forceinline__ void mbar_init(uint64_t* b, int cnt) {\n  asm volatile("mbarrier.init.shared::cta.b64 [%0], %1;" :: "r"(smem_u32(b)), "r"(cnt));\n}\n__device__ __forceinline__ bool mbar_try(uint64_t* b, uint32_t parity) {\n  uint32_t ok;\n  asm volatile("{\\n .reg .pred p;\\n mbarrier.try_wait.parity.shared::cta.b64 p, [%1], %2;\\n selp.u32 %0, 1, 0, p;\\n}\\n"\n               : "=r"(ok) : "r"(smem_u32(b)), "r"(parity) : "memory");\n  return ok != 0;\n}\n__device__ __forceinline__ void mbar_wait(uint64_t* b, uint32_t parity) {\n  while (!mbar_try(b, parity)) {}\n}\n__device__ __forceinline__ void mbar_arrive(uint64_t* b) {\n  asm volatile("mbarrier.arrive.shared::cta.b64 _, [%0];" :: "r"(smem_u32(b)) : "memory");\n}\n__device__ __forceinline__ void mbar_expect_tx(uint64_t* b, uint32_t bytes) {\n  asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _, [%0], %1;" :: "r"(smem_u32(b)), "r"(bytes) : "memory");\n}\n__device__ __forceinline__ void bulk_g2s(void* dst, const void* src, uint32_t bytes, uint64_t* b, uint64_t pol) {\n  asm volatile("cp.async.bulk.shared::cluster.global.mbarrier::complete_tx::bytes.L2::cache_hint [%0], [%1], %2, [%3], %4;"\n               :: "r"(smem_u32(dst)), "l"(src), "r"(bytes), "r"(smem_u32(b)), "l"(pol) : "memory");\n}\n__device__ __forceinline__ void bar_consumers() {\n  asm volatile("bar.sync 1, %0;" :: "n"(NCT) : "memory");\n}\n__device__ __forceinline__ int ld_acquire(const int* p) {\n  int v;\n  asm volatile("ld.acquire.gpu.global.s32 %0, [%1];" : "=r"(v) : "l"(p) : "memory");\n  return v;\n}\n__device__ __forceinline__ uint32_t rotr(uint32_t x, int s) { return __funnelshift_r(x, x, s); }\n__device__ __forceinline__ uint32_t hmul2(uint32_t a, uint32_t b) {\n  uint32_t d;\n  asm("mul.rn.bf16x2 %0, %1, %2;" : "=r"(d) : "r"(a), "r"(b));\n  return d;\n}\n__device__ __forceinline__ void mma16816(float* c, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,\n                                         uint32_t b0, uint32_t b1) {\n  asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.bf16.bf16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, {%0,%1,%2,%3};"\n               : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])\n               : "r"(a0), "r"(a1), "r"(a2), "r"(a3), "r"(b0), "r"(b1));\n}\n// 16 E2M1 codes (two words) -> 8 BF16x2 registers holding value * 2^-126 (exact).\n__device__ __forceinline__ void dq8(uint32_t A, uint32_t B, uint32_t* o) {\n  o[0] = A & DQ_MASK;\n  o[1] = rotr(A, 4) & DQ_MASK;\n  o[2] = rotr(A, 10) & DQ_MASK;\n  o[3] = rotr(B, 2) & DQ_MASK;\n  o[4] = rotr(B, 6) & DQ_MASK;\n  o[5] = rotr(B, 12) & DQ_MASK;\n  uint32_t W; asm("lop3.b32 %0,%1,%2,%3,0xe4;":"=r"(W):"r"(A),"r"(B),"n"(LA_MASK));\n  o[6] = rotr(W, 24) & DQ_MASK;\n  o[7] = rotr(W, 30) & DQ_MASK;\n}\n\nstruct PrefetchState {\n  volatile int index, stage, phase, pass;\n  volatile int e, nb, m, mb, me;\n  volatile uint64_t pol_first, pol_normal;\n};\n\nstruct Route {        // shared-memory routing summary\n  int n[NLOC];        // pairs per local expert\n  int off[NLOC];      // first sorted position\n  int nblk[NLOC];     // token blocks\n  int us1[NLOC + 1];  // phase-1 unit prefix\n  int us2[NLOC + 1];  // phase-2 unit prefix\n  int c1, c2;         // m-chunk sizes\n  int run[NLOC];\n  int wc[NCW][NLOC];\n  PrefetchState pre;\n};\n\n// unit -> (expert, token block, m tile); order (e, m-chunk, block, m)\n__device__ __forceinline__ void decode_unit(int u, const int* us, const int* nblk, int cc, int ntile,\n                                            int& e, int& nb, int& m) {\n  e = 0;\n#pragma unroll\n  for (int d = 16; d > 0; d >>= 1) {\n    if (us[e + d] <= u) e += d;\n  }\n  const int rel = u - us[e];\n  const int nbk = nblk[e];\n  const int nfull = ntile / cc;\n  const int span = cc * nbk;\n  if (rel < nfull * span) {\n    const int mc = rel / span;\n    const int r2 = rel - mc * span;\n    nb = r2 / cc;\n    m = mc * cc + (r2 - nb * cc);\n  } else {\n    const int L = ntile - nfull * cc;\n    const int r3 = rel - nfull * span;\n    nb = r3 / L;\n    m = nfull * cc + (r3 - nb * L);\n  }\n}\n\n__device__ __forceinline__ void advance_unit(int& e, int& nb, int& m, int& mb, int& me,\n                                               const int* nblk, int cc, int ntile) {\n  if (++m == me) {\n    if (++nb == nblk[e]) {\n      nb = 0;\n      mb += cc;\n      if (mb >= ntile) {\n        ++e;\n        while (e < NLOC && nblk[e] == 0) ++e;\n        mb = 0;\n      }\n      me = min(ntile, mb + cc);\n    }\n    m = mb;\n  }\n}\n\n\n__device__ __forceinline__ void prefetch_one(\n    Route* rt, int total, int first, int a2, int nstage,\n    uint8_t* stages, uint64_t* fullb, uint64_t* emptyb,\n    const uint8_t* w13p, const uint8_t* w2p) {\n  auto& p = rt->pre;\n  int idx = p.index;\n  if (idx >= total) return;\n  int st=p.stage, ph=p.phase, pass=p.pass;\n  int e=p.e, nb=p.nb, m=p.m, mb=p.mb, me=p.me;\n  const int ntile=pass?NT2:NT1;\n  const int cc=pass?rt->c2:rt->c1;\n  const uint8_t* base=pass?w2p:w13p;\n  const uint8_t* src=base+(static_cast<size_t>(e)*ntile+m)*TILE_BYTES;\n  const uint64_t pol=rt->nblk[e]>1?p.pol_normal:p.pol_first;\n  mbar_wait(&emptyb[st], ph^1u);\n  mbar_expect_tx(&fullb[st], TILE_BYTES);\n  bulk_g2s(stages+st*TILE_BYTES, src, TILE_BYTES, &fullb[st], pol);\n  ++idx;\n  if (idx < total) {\n    if (idx == first) {\n      pass=1;\n      decode_unit(a2,rt->us2,rt->nblk,rt->c2,NT2,e,nb,m);\n      mb=(m/rt->c2)*rt->c2;\n      me=min(NT2,mb+rt->c2);\n    } else {\n      advance_unit(e,nb,m,mb,me,rt->nblk,cc,ntile);\n    }\n  }\n  if (++st == nstage) { st=0; ph^=1; }\n  p.index=idx; p.stage=st; p.phase=ph; p.pass=pass;\n  p.e=e; p.nb=nb; p.m=m; p.mb=mb; p.me=me;\n}\n\n// Unique (expert, weight tile) ownership. Each K group\'s decoded operands are reused over every token block.\n// S11 packed bank, exact BF16 intermediates. REDO is a fixed-work diagnostic, never an omitted-compute arm.\nconstexpr int MAX_BLOCKS = 4;\nstruct ReuseRoute {\n  Route base;\n  int uniq[33];\n  int a1,b1,a2,b2,first,total;\n};\n__device__ __forceinline__ int unique_boundary(int u, const int* us, const int* nblk, const int* uniq, int ntile) {\n  if (u >= us[NLOC]) return uniq[NLOC] * ntile;\n  int e=0;\n#pragma unroll\n  for (int d=16;d;d>>=1) if(us[e+d]<=u)e+=d;\n  return uniq[e]*ntile + (u-us[e]+nblk[e]-1)/nblk[e];\n}\n__device__ __forceinline__ void unique_decode(int u,const int* uniq,int ntile,int& e,int& m) {\n  const int rank=u/ntile;\n  e=0;\n#pragma unroll\n  for(int d=16;d;d>>=1)if(uniq[e+d]<=rank)e+=d;\n  m=u-rank*ntile;\n}\n__device__ __forceinline__ void reuse_prefetch(ReuseRoute* rr,int nstage,uint8_t* stages,uint64_t* fullb,\n    uint64_t* emptyb,const uint8_t* w13p,const uint8_t* w2p) {\n  auto& rt=rr->base;auto& p=rt.pre;\n  int idx=p.index;\n  if(idx>=rr->total)return;\n  const bool pass=idx>=rr->first;\n  const int u=pass?rr->a2+idx-rr->first:rr->a1+idx;\n  int e,m;unique_decode(u,rr->uniq,pass?NT2:NT1,e,m);\n  int st=p.stage,ph=p.phase;\n  const uint8_t* src=(pass?w2p:w13p)+(static_cast<size_t>(e)*(pass?NT2:NT1)+m)*TILE_BYTES;\n  mbar_wait(&emptyb[st],ph^1u);mbar_expect_tx(&fullb[st],TILE_BYTES);\n  bulk_g2s(stages+st*TILE_BYTES,src,TILE_BYTES,&fullb[st],p.pol_first);\n  p.index=idx+1;\n  if(++st==nstage){st=0;ph^=1;}p.stage=st;p.phase=ph;\n}\n__device__ __forceinline__ uint64_t reuse_clock(){uint64_t t;asm volatile("mov.u64 %0, %%clock64;":"=l"(t)::"memory");return t;}\n\n// Trace per CTA: clocks[entry,route,copy-wait,decode,MMA+activation,reduce+epi,publish,ready,barrier,end],\n// units13,units2,blocks13,blocks2. Clocks inside the math are deliberately in a separate instantiation.\ntemplate<bool REDO,bool TRACE>\n__global__ void __launch_bounds__(256,2) moe_reuse(\n    const __nv_bfloat16* __restrict__ x,const int* __restrict__ ids,const float* __restrict__ tw,\n    const __nv_bfloat16* __restrict__ pnw,const uint8_t* __restrict__ w13p,const uint8_t* __restrict__ w2p,\n    const float* __restrict__ gs13,const float* __restrict__ gs2,__nv_bfloat16* __restrict__ inter,\n    float* __restrict__ y,float* __restrict__ ss,int* __restrict__ cnt,__nv_bfloat16* __restrict__ out,\n    int M,int local_start,int nstage,uint64_t* trace) {\n  extern __shared__ __align__(128) uint8_t smem[];\n  uint8_t* stages=smem;\n  float* red=reinterpret_cast<float*>(stages+nstage*TILE_BYTES);\n  uint32_t* cached_last=reinterpret_cast<uint32_t*>(red+2*NCW*32*4);\n  uint64_t* fullb=reinterpret_cast<uint64_t*>(cached_last+8*256);uint64_t* emptyb=fullb+nstage;\n  ReuseRoute* rr=reinterpret_cast<ReuseRoute*>(emptyb+nstage);Route* rt=&rr->base;\n  const int tid=threadIdx.x,lane=tid&31,warp=tid>>5,c=blockIdx.x,G=gridDim.x,npairs=M*8;\n  int8_t* eflat=reinterpret_cast<int8_t*>(rr+1);\n  int16_t* pos_of=reinterpret_cast<int16_t*>(eflat+((npairs+15)&~15));int16_t* pair_of=pos_of+npairs;\n  uint64_t clocks[14]={};if constexpr(TRACE){if(tid==0)clocks[0]=reuse_clock();}\n  int gen0=0;\n  if(tid<NLOC)rt->n[tid]=0;\n  if(tid==0){\n    for(int s=0;s<nstage;++s){mbar_init(&fullb[s],1);mbar_init(&emptyb[s],NCW);}\n    asm volatile("fence.mbarrier_init.release.cluster;":::"memory");\n    uint64_t pf;asm volatile("createpolicy.fractional.L2::evict_first.b64 %0, 1.0;":"=l"(pf));\n    rt->pre.pol_first=pf;rt->pre.index=0;rt->pre.stage=0;rt->pre.phase=0;\n  }\n  asm volatile("griddepcontrol.wait;":::"memory");\n  if(tid==0)gen0=ld_acquire(cnt+C_GEN);\n  __syncthreads();\n  for(int i=tid;i<npairs;i+=256){int e=__ldg(ids+i)-local_start;if(e<0||e>=NLOC)e=-1;\n    eflat[i]=e;if(e>=0)atomicAdd(&rt->n[e],1);}\n  __syncthreads();\n  if(warp==0){\n    const int n=rt->n[lane],nb=(n+7)/8;\n    int off=n,work=nb,un=n>0;\n#pragma unroll\n    for(int d=1;d<32;d<<=1){int a=__shfl_up_sync(~0u,off,d),b=__shfl_up_sync(~0u,work,d),v=__shfl_up_sync(~0u,un,d);\n      if(lane>=d){off+=a;work+=b;un+=v;}}\n    rt->off[lane]=off-n;rt->run[lane]=off-n;rt->nblk[lane]=nb;\n    rt->us1[lane+1]=work*NT1;rt->us2[lane+1]=work*NT2;rr->uniq[lane+1]=un;\n    if(lane==0){rt->us1[0]=0;rt->us2[0]=0;rr->uniq[0]=0;}\n  }\n  __syncthreads();\n  if(tid==0){\n    int U1=rt->us1[32],U2=rt->us2[32];\n    rr->a1=unique_boundary((long long)U1*c/G,rt->us1,rt->nblk,rr->uniq,NT1);\n    rr->b1=unique_boundary((long long)U1*(c+1)/G,rt->us1,rt->nblk,rr->uniq,NT1);\n    rr->a2=unique_boundary((long long)U2*c/G,rt->us2,rt->nblk,rr->uniq,NT2);\n    rr->b2=unique_boundary((long long)U2*(c+1)/G,rt->us2,rt->nblk,rr->uniq,NT2);\n    rr->first=rr->b1-rr->a1;rr->total=rr->first+rr->b2-rr->a2;\n    for(int s=0;s<nstage;++s)reuse_prefetch(rr,nstage,stages,fullb,emptyb,w13p,w2p);\n  }\n  __syncthreads();\n  for(int base=0;base<npairs;base+=256){\n    rt->wc[warp][lane]=0;bar_consumers();int i=base+tid,e=i<npairs?eflat[i]:-1;\n    unsigned mk=__match_any_sync(~0u,e);int rank=__popc(mk&((1u<<lane)-1u));\n    if(e>=0&&rank==0)rt->wc[warp][e]=__popc(mk);bar_consumers();\n    if(tid<NLOC){int s=rt->run[tid];for(int w=0;w<NCW;++w){int t=rt->wc[w][tid];rt->wc[w][tid]=s;s+=t;}rt->run[tid]=s;}\n    bar_consumers();if(i<npairs){if(e>=0){int pos=rt->wc[warp][e]+rank;pos_of[i]=pos;pair_of[pos]=i;}else pos_of[i]=-1;}\n  }\n  bar_consumers();\n  if constexpr(TRACE){if(tid==0)clocks[1]=reuse_clock()-clocks[0];}\n  uint32_t cached_b[7][8];\n  int st=0,ph=0,buf=0,cur_e=-1,cur_pass=-1,seg_tiles=0;\n  auto publish=[&](){\n    if(cur_pass==0&&seg_tiles){uint64_t t=0;if constexpr(TRACE){if(tid==0)t=reuse_clock();}\n      __threadfence();bar_consumers();if(tid==0){atomicAdd(cnt+C_DONE+cur_e,seg_tiles);if constexpr(TRACE)clocks[6]+=reuse_clock()-t;}}\n  };\n  for(int pass=0;pass<2;++pass){int ua=pass?rr->a2:rr->a1,ub=pass?rr->b2:rr->b1;\n    int ntile=pass?NT2:NT1;\n    for(int u=ua;u<ub;++u){\n      int e,m;unique_decode(u,rr->uniq,ntile,e,m);const int nb=rt->nblk[e],ne=rt->n[e],off=rt->off[e];\n      if(e!=cur_e||pass!=cur_pass){publish();cur_e=e;cur_pass=pass;seg_tiles=0;\n        if(pass){uint64_t t=0;if constexpr(TRACE){if(tid==0)t=reuse_clock();}\n          while(ld_acquire(cnt+C_DONE+e)<NT1)__nanosleep(64);\n          if constexpr(TRACE){if(tid==0)clocks[7]+=reuse_clock()-t;}}\n        const int idx=lane>>2;const __nv_bfloat16* row=nullptr;\n        if(idx<ne)row=pass?inter+(size_t)(off+idx)*HD:x+(size_t)(pair_of[off+idx]>>3)*HD;\n#pragma unroll\n        for(int g=0;g<8;++g){uint4 a=make_uint4(0,0,0,0),b=a;\n          if(row){const uint4* p=reinterpret_cast<const uint4*>(row+warp*512+g*64+(lane&3)*16);if(pass){a=__ldcg(p);b=__ldcg(p+1);}else{a=__ldg(p);b=__ldg(p+1);}}\n          if(g<7){cached_b[g][0]=a.x;cached_b[g][1]=a.y;cached_b[g][2]=a.z;cached_b[g][3]=a.w;\n            cached_b[g][4]=b.x;cached_b[g][5]=b.y;cached_b[g][6]=b.z;cached_b[g][7]=b.w;\n          }else{const uint32_t v[8]={a.x,a.y,a.z,a.w,b.x,b.y,b.z,b.w};\n#pragma unroll\n            for(int k=0;k<8;++k)cached_last[k*256+tid]=v[k];}\n\n        }\n      }\n      uint64_t t=0;if constexpr(TRACE){if(tid==0)t=reuse_clock();}\n      mbar_wait(&fullb[st],ph);\n      if constexpr(TRACE){if(tid==0)clocks[2]+=reuse_clock()-t;}\n      float acc[MAX_BLOCKS][4];\n#pragma unroll\n      for(int j=0;j<MAX_BLOCKS;++j)for(int k=0;k<4;++k)acc[j][k]=0.f;\n      const uint8_t* tile=stages+st*TILE_BYTES;\n\n      const uint4* wq=reinterpret_cast<const uint4*>(tile)+warp*8*32+lane;\n      const uint4 scv=*(reinterpret_cast<const uint4*>(tile+TILE_W_BYTES)+warp*32+lane);\n      const uint32_t scw[4]={scv.x,scv.y,scv.z,scv.w};\n      if constexpr(REDO){\n#pragma unroll\n        for(int j=0;j<MAX_BLOCKS;++j)if(j<nb){\n#pragma unroll\n          for(int g=0;g<8;++g){\nif constexpr(TRACE){if(tid==0)t=reuse_clock();}\n\n          const uint4 wv=wq[g*32];const uint32_t sw=scw[g>>1];\n          const uint32_t Sr=__byte_perm(sw,0u,(g&1)?0x4242u:0x4040u)*16u+0x70007000u;\n          const uint32_t Sr8=__byte_perm(sw,0u,(g&1)?0x4343u:0x4141u)*16u+0x70007000u;\n          uint32_t o[16],ar[16];dq8(wv.x,wv.y,o);dq8(wv.z,wv.w,o+8);\n#pragma unroll\n          for(int s=0;s<4;++s){int k=(s>>1)*8+(s&1)*4;\n            ar[s*4]=hmul2(o[k],Sr);ar[s*4+1]=hmul2(o[k+1],Sr8);\n            ar[s*4+2]=hmul2(o[k+2],Sr);ar[s*4+3]=hmul2(o[k+3],Sr8);}\nif constexpr(TRACE){if(tid==0)clocks[3]+=reuse_clock()-t;}\nif constexpr(TRACE){if(tid==0)t=reuse_clock();}\n\n          const int idx=j*8+(lane>>2);uint4 v0=make_uint4(0,0,0,0),v1=v0;\n          if(j>0&&idx<ne){const int pos=off+idx;\n            const __nv_bfloat16* row=pass?inter+(size_t)pos*HD:x+(size_t)(pair_of[pos]>>3)*HD;\n            const uint4* p=reinterpret_cast<const uint4*>(row+warp*512+g*64+(lane&3)*16);\n            if(pass){v0=__ldcg(p);v1=__ldcg(p+1);}else{v0=__ldg(p);v1=__ldg(p+1);}}\n          const uint32_t bf[8]={v0.x,v0.y,v0.z,v0.w,v1.x,v1.y,v1.z,v1.w};\n#pragma unroll\n          for(int s=0;s<4;++s)mma16816(acc[j],ar[s*4],ar[s*4+1],ar[s*4+2],ar[s*4+3],j==0?(g<7?cached_b[g][s*2]:cached_last[(s*2)*256+tid]):bf[s*2],j==0?(g<7?cached_b[g][s*2+1]:cached_last[(s*2+1)*256+tid]):bf[s*2+1]);\nif constexpr(TRACE){if(tid==0)clocks[4]+=reuse_clock()-t;}\n\n          }\n        }\n      }else{\n#pragma unroll\n        for(int g=0;g<8;++g){\nif constexpr(TRACE){if(tid==0)t=reuse_clock();}\n\n          const uint4 wv=wq[g*32];const uint32_t sw=scw[g>>1];\n          const uint32_t Sr=__byte_perm(sw,0u,(g&1)?0x4242u:0x4040u)*16u+0x70007000u;\n          const uint32_t Sr8=__byte_perm(sw,0u,(g&1)?0x4343u:0x4141u)*16u+0x70007000u;\n          uint32_t o[16],ar[16];dq8(wv.x,wv.y,o);dq8(wv.z,wv.w,o+8);\n#pragma unroll\n          for(int s=0;s<4;++s){int k=(s>>1)*8+(s&1)*4;\n            ar[s*4]=hmul2(o[k],Sr);ar[s*4+1]=hmul2(o[k+1],Sr8);\n            ar[s*4+2]=hmul2(o[k+2],Sr);ar[s*4+3]=hmul2(o[k+3],Sr8);}\nif constexpr(TRACE){if(tid==0)clocks[3]+=reuse_clock()-t;}\n\n#pragma unroll\n          for(int j=0;j<MAX_BLOCKS;++j)if(j<nb){\nif constexpr(TRACE){if(tid==0)t=reuse_clock();}\n\n          const int idx=j*8+(lane>>2);uint4 v0=make_uint4(0,0,0,0),v1=v0;\n          if(j>0&&idx<ne){const int pos=off+idx;\n            const __nv_bfloat16* row=pass?inter+(size_t)pos*HD:x+(size_t)(pair_of[pos]>>3)*HD;\n            const uint4* p=reinterpret_cast<const uint4*>(row+warp*512+g*64+(lane&3)*16);\n            if(pass){v0=__ldcg(p);v1=__ldcg(p+1);}else{v0=__ldg(p);v1=__ldg(p+1);}}\n          const uint32_t bf[8]={v0.x,v0.y,v0.z,v0.w,v1.x,v1.y,v1.z,v1.w};\n#pragma unroll\n          for(int s=0;s<4;++s)mma16816(acc[j],ar[s*4],ar[s*4+1],ar[s*4+2],ar[s*4+3],j==0?(g<7?cached_b[g][s*2]:cached_last[(s*2)*256+tid]):bf[s*2],j==0?(g<7?cached_b[g][s*2+1]:cached_last[(s*2+1)*256+tid]):bf[s*2+1]);\nif constexpr(TRACE){if(tid==0)clocks[4]+=reuse_clock()-t;}\n\n          }\n        }\n      }\n\n      __syncwarp();if(lane==0)mbar_arrive(&emptyb[st]);if(++st==nstage){st=0;ph^=1;}\n      if constexpr(TRACE){if(tid==0)t=reuse_clock();}\n#pragma unroll\n      for(int j=0;j<MAX_BLOCKS;++j)if(j<nb){\n        *reinterpret_cast<float4*>(red+((buf*NCW+warp)*32+lane)*4)=make_float4(acc[j][0],acc[j][1],acc[j][2],acc[j][3]);\n        bar_consumers();\n        if(j==0&&tid==0)reuse_prefetch(rr,nstage,stages,fullb,emptyb,w13p,w2p);\n        const float* rb=red+buf*NCW*32*4;\n        if(!pass){if(tid<64){int i=tid&7,n=tid>>3,ls=i*4+(n>>1),rg=n&1;float g=0.f,up=0.f;\n#pragma unroll\n          for(int w=0;w<NCW;++w){g+=rb[(w*32+ls)*4+rg];up+=rb[(w*32+ls)*4+rg+2];}\n          int idx=j*8+n;if(idx<ne){if(m==0&&i==0)ss[off+idx]=0.f;g*=gs13[e]*256.f;up*=gs13[e]*256.f;\n            inter[(size_t)(off+idx)*HD+m*8+i]=__float2bfloat16(g/(1.f+__expf(-g))*up);}}}\n        else if(tid<128){int i=tid&15,n=tid>>4,ls=(i&7)*4+(n>>1),rg=(n&1)+((i>>3)<<1);float v=0.f;\n#pragma unroll\n          for(int w=0;w<NCW;++w)v+=rb[(w*32+ls)*4+rg];v*=gs2[e]*256.f;\n          int idx=j*8+n;bool ok=idx<ne;float z=v*(1.f+__bfloat162float(pnw[m*16+i]));\n          if(ok)y[(size_t)(off+idx)*HD+m*16+i]=z;\n          float t2=ok?z*z:0.f;\n#pragma unroll\n          for(int d=8;d;d>>=1)t2+=__shfl_xor_sync(~0u,t2,d);if(ok&&i==0)atomicAdd(ss+off+idx,t2);\n        }\n        buf^=1;\n      }\n      if constexpr(TRACE){if(tid==0){clocks[5]+=reuse_clock()-t;clocks[10+pass]++;clocks[12+pass]+=nb;}}\n      ++seg_tiles;\n    }\n  }\n  publish();\n  uint64_t tb=0;if constexpr(TRACE){if(tid==0)tb=reuse_clock();}\n  __threadfence();bar_consumers();\n  if(tid==0){if(atomicAdd(cnt+C_BAR,1)==G-1){for(int i=0;i<NLOC;++i)cnt[C_DONE+i]=0;cnt[C_BAR]=0;\n      __threadfence();atomicAdd(cnt+C_GEN,1);}else while(ld_acquire(cnt+C_GEN)==gen0)__nanosleep(64);}\n  bar_consumers();if constexpr(TRACE){if(tid==0)clocks[8]=reuse_clock()-tb;}\n  for(int it=c;it<2*M;it+=G){int t=it>>1,c0=(it&1)*2048+tid*8;float acc[8]={};\n#pragma unroll\n    for(int j=0;j<8;++j){int pos=pos_of[t*8+j];if(pos>=0){float sc=tw[t*8+j]*rsqrtf(__ldcg(ss+pos)*(1.f/HD)+1e-8f);\n      const float4* p=reinterpret_cast<const float4*>(y+(size_t)pos*HD+c0);float4 a=__ldcg(p),b=__ldcg(p+1);\n      acc[0]+=sc*a.x;acc[1]+=sc*a.y;acc[2]+=sc*a.z;acc[3]+=sc*a.w;acc[4]+=sc*b.x;acc[5]+=sc*b.y;acc[6]+=sc*b.z;acc[7]+=sc*b.w;}}\n    uint4 ov;auto* ob=reinterpret_cast<__nv_bfloat16*>(&ov);\n#pragma unroll\n    for(int k=0;k<8;++k)ob[k]=__float2bfloat16(acc[k]);*reinterpret_cast<uint4*>(out+(size_t)t*HD+c0)=ov;\n  }\n  if constexpr(TRACE){if(tid==0){clocks[9]=reuse_clock();for(int k=0;k<14;++k)trace[c*16+k]=clocks[k];}}\n}\nsize_t reuse_smem(int nstage,int M){return (size_t)nstage*TILE_BYTES+(2*NCW*32*4+8*256)*sizeof(float)+2*nstage*8+sizeof(ReuseRoute)+((M*8+15)&~15)+4*M*8;}\n#define REUSE_INST(X) X(false,false) X(true,false) X(false,true) X(true,true)\n} // namespace\nint64_t reuse_init(){int dev,opt;C10_CUDA_CHECK(cudaGetDevice(&dev));C10_CUDA_CHECK(cudaDeviceGetAttribute(&opt,cudaDevAttrMaxSharedMemoryPerBlockOptin,dev));\n#define ATTR(R,T) {cudaFuncAttributes a{};C10_CUDA_CHECK(cudaFuncGetAttributes(&a,moe_reuse<R,T>));C10_CUDA_CHECK(cudaFuncSetAttribute(moe_reuse<R,T>,cudaFuncAttributeMaxDynamicSharedMemorySize,opt-a.sharedSizeBytes));}\n REUSE_INST(ATTR)\n#undef ATTR\n return opt;}\nstd::vector<int64_t> reuse_info(int64_t redo,int64_t trace,int64_t stages,int64_t M){int resident=0;cudaFuncAttributes a{};\n#define INFO(R,T) if(redo==R&&trace==T){C10_CUDA_CHECK(cudaFuncGetAttributes(&a,moe_reuse<R,T>));C10_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&resident,moe_reuse<R,T>,256,reuse_smem(stages,M)));}\n REUSE_INST(INFO)\n#undef INFO\n return {resident,a.numRegs,(int64_t)a.localSizeBytes,(int64_t)reuse_smem(stages,M)};}\nvoid reuse_run(std::vector<int64_t>v,int64_t M,int64_t start,int64_t stages,int64_t grid,int64_t stream,int64_t redo,int64_t trace){\n if(M>32)throw std::runtime_error("reuse: at most 32 tokens");\n cudaLaunchConfig_t cfg{};cfg.gridDim=dim3(grid);cfg.blockDim=dim3(256);cfg.dynamicSmemBytes=reuse_smem(stages,M);cfg.stream=(cudaStream_t)stream;\n cudaLaunchAttribute attr{};attr.id=cudaLaunchAttributeProgrammaticStreamSerialization;attr.val.programmaticStreamSerializationAllowed=1;cfg.attrs=&attr;cfg.numAttrs=1;\n#define LAUNCH(R,T) if(redo==R&&trace==T){C10_CUDA_CHECK(cudaLaunchKernelEx(&cfg,moe_reuse<R,T>,(const __nv_bfloat16*)v[0],(const int*)v[1],(const float*)v[2],(const __nv_bfloat16*)v[3],(const uint8_t*)v[4],(const uint8_t*)v[5],(const float*)v[6],(const float*)v[7],(__nv_bfloat16*)v[8],(float*)v[9],(float*)v[10],(int*)v[11],(__nv_bfloat16*)v[12],(int)M,(int)start,(int)stages,(uint64_t*)v[13]));return;}\n REUSE_INST(LAUNCH)\n#undef LAUNCH\n throw std::runtime_error("reuse flags");}\n'
+REUSE_CPP = r"""#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <stdint.h>
+#include <vector>
+int64_t reuse_init();std::vector<int64_t> reuse_info(int64_t,int64_t,int64_t,int64_t);
+void reuse_run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
+"""
+_REUSE_MODULE=[]
+
+def reuse_module():
+    if not _REUSE_MODULE:
+        target='-gencode=arch=compute_90a,code=sm_90a' if torch.cuda.get_device_capability()==(9,0) else '-gencode=arch=compute_120,code=sm_120'
+        mod=load_inline(name='muse_smallm_reuse_'+hashlib.sha256(REUSE_CUDA.encode()).hexdigest()[:12],
+            cpp_sources=REUSE_CPP,cuda_sources=REUSE_CUDA,functions=['reuse_init','reuse_info','reuse_run'],
+            no_implicit_headers=True,with_pytorch_error_handling=False,
+            extra_cuda_cflags=['-O3','-std=c++20','-lineinfo',target],verbose=False)
+        mod.optin=mod.reuse_init();_REUSE_MODULE.append(mod)
+    return _REUSE_MODULE[0]
+
+def reuse_bind(state):
+    reuse_module()
+    state['reuse_counters']={mode:torch.zeros(64,device=state['gs13'].device,dtype=torch.int32) for mode in (0,1)}
+    return state
+
+def reuse_geometry(state,m,mode=0,trace=False,stages=2):
+    resident,regs,local,smem=reuse_module().reuse_info(mode,int(trace),stages,m)
+    if not resident:raise ValueError('reuse has no resident CTA')
+    return min(264,state['sms']*resident),regs,local,smem,resident
+
+def reuse_experts(data,state,mode=0,trace=False,stamps=None):
+    x=data['hidden_states'].contiguous();m=x.shape[0];dev=x.device;p=m*8
+    if m>32:raise ValueError('reuse accepts at most 32 tokens')
+    stages=2;grid,*_=reuse_geometry(state,m,mode,trace,stages)
+    inter=torch.empty((p,4096),device=dev,dtype=torch.bfloat16);y=torch.empty((p,4096),device=dev);ss=torch.empty(p,device=dev)
+    out=torch.empty_like(x);ids=data['topk_ids'].int().contiguous();tw=data['topk_weights'].float().contiguous();bank=state['banks']['lop3']
+    ts=[x,ids,tw,state['pnw'],bank['w13p'],bank['w2p'],state['gs13'],state['gs2'],inter,y,ss,state['reuse_counters'][mode],out]
+    if trace and (stamps is None or stamps.shape!=(grid,16)):raise ValueError('reuse trace needs [grid,16] int64')
+    reuse_module().reuse_run([t.data_ptr() for t in ts]+[stamps.data_ptr() if trace else 0],m,data['config']['local_start'],
+        stages,grid,torch.cuda.current_stream(dev).cuda_stream,mode,int(trace))
+    return out
+
+# S11 functions and the reuse cell are frozen above this driver; fixture/runtime definitions are inherited.
+def reuse_routed(pr,rs,state,mode):
+    x,ids,tw,lids=route_call(pr,rs)
+    d=dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0})
+    out=smallm_experts(d,state,69) if mode<0 else reuse_experts(d,state,mode)
+    return out,x,ids,tw,lids
+
+
+def reuse_gate(output,w,truths,pr,rs):
+    got,x,ids,tw,lids=output;xr,_,bias=route_reference(pr,rs)
+    route_gate(ids,bias,int(rs['start']))
+    if not torch.allclose(x.float(),xr.float(),rtol=.01,atol=.01):raise ValueError('pooled norm')
+    key=tuple(ids.flatten().cpu().tolist())
+    if key not in truths:
+        truths[key]=nt1_fp32(dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0}),w)
+    ok,err,row=task_check(got,truths[key])
+    if not ok:raise ValueError(f'TASK gate {err:.6f}/{row:.6f}')
+    return err,row
+
+
+def reuse_trace_lines(pr,rs,state):
+    lines=[]
+    for mode in (0,1):
+        x,ids,tw,lids=route_call(pr,rs);m=x.shape[0];grid,*_=reuse_geometry(state,m,mode,True)
+        stamps=torch.zeros((grid,16),device=x.device,dtype=torch.int64)
+        d=dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0})
+        g=TimelineGraph(lambda:reuse_experts(d,state,mode,True,stamps));g.replay();torch.cuda.synchronize()
+        rsamp=stamps.cpu().tolist();live=[r for r in rsamp if r[10]+r[11]]
+        names=('route','copy_wait','decode','MMA_activation','reduce_epi','publish','ready','grid_barrier')
+        parts=[]
+        for slot,name in enumerate(names,1):parts.append(name+'='+str(round(statistics.median(r[slot] for r in live))))
+        lines.append(f'TRACE M{m} '+('REDO' if mode else 'ONCE')+' clocks_per_CTA '+','.join(parts)+
+            f' span_med/max={statistics.median(r[9]-r[0] for r in live):.0f}/{max(r[9]-r[0] for r in live)}'+
+            f' units13/2={sum(r[10] for r in live)}/{sum(r[11] for r in live)}'+
+            f' blockunits13/2={sum(r[12] for r in live)}/{sum(r[13] for r in live)}')
+    return lines
+
+
+def lab(deadline,weights):
+    from concurrent.futures import ThreadPoolExecutor
+    begin=time.monotonic();device=next(v.device for v in weights.values() if isinstance(v,torch.Tensor));deadline-=5
+    lines=['META P3a unique weight-tile ownership; ONCE decodes each K group once per expert over all token blocks; REDO fixed-work re-decode control, same ownership, activation streaming, MMA and epilogues. S11=exact frozen acda6c62 smallm flags69.',
+        'META router+MoE CUDA graphs; judge-style read flush; AB/BA x6 per arm per seed; 16 independent weight/router seeds; TASK gate per arm before and after timing. r=new/S11; ONCE/REDO reuses each paired seed ratio. TRACE is separately compiled, clock64 cycles, intrusive, not an additive attribution. No persistent decoded bank or dropped work.']
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        jobs=[pool.submit(smallm_module),pool.submit(reuse_module)]
+        for j in jobs:j.result()
+    lines.append(f'BUILD seconds={time.monotonic()-begin:.1f} left={deadline-time.monotonic():.1f}')
+    ratios={};deltas={};times={};aa={m:[] for m in (8,16,32)};fails={};worst={};counts={m:[] for m in (8,16,32)};done=0;peak=0.
+    oldtf=torch.backends.cuda.matmul.allow_tf32;torch.backends.cuda.matmul.allow_tf32=False
+    try:
+        for seed in range(16):
+            if deadline-time.monotonic()<max(8,peak*1.15+2):lines.append(f'BUDGET before_seed={seed}');break
+            started=time.monotonic();w=rg_generate_weights(5353+7919*seed,device=device);w['post_norm_w']=w['post_expert_norm'];base=nt1_banks(w)
+            state={k:base[k] for k in ('pnw','gs13','gs2','sms')};state['banks']={'lop3':base['bank']}
+            smallm_bind(state,{8:69,16:69,32:69});reuse_bind(state)
+            if seed==0:
+                for mode in (0,1):
+                    for trace in (0,1):lines.append(f'GEOM mode={mode} trace={trace} grid,regs,localB,smemB,resident='+str(reuse_geometry(state,32,mode,trace)))
+            for m in (8,16,32):
+                pr,rs=routed_fixture(w,m,9000+m+97*seed);truths={};graphs={}
+                x,ids,tw,lids=route_call(pr,rs)
+                cnt=torch.bincount(lids[lids>=0].long(),minlength=32);counts[m].append((int((cnt>0).sum()),int(((cnt+7)//8).sum())))
+                for name,mode in (('S11',-1),('ONCE',0),('REDO',1)):
+                    if name in fails:continue
+                    try:
+                        graphs[name]=TimelineGraph(lambda mode=mode:reuse_routed(pr,rs,state,mode))
+                        worst[name]=max(worst.get(name,(0.,0.)),reuse_gate(graphs[name].replay(),w,truths,pr,rs))
+                    except Exception as exc:fails[name]=f'M{m} seed{seed} {type(exc).__name__} {str(exc)[:140]}';graphs.pop(name,None)
+                if 'S11' not in graphs:continue
+                control=TimelineGraph(lambda:reuse_routed(pr,rs,state,-1))
+                a,b,_=timeline_timing(graphs['S11'],control);aa[m].append(b-a);times.setdefault((m,'S11'),[]).append(a)
+                labels=['ONCE','REDO'] if seed%2==0 else ['REDO','ONCE']
+                for name in labels:
+                    if name not in graphs:continue
+                    a,b,r=timeline_timing(graphs['S11'],graphs[name]);ratios.setdefault((m,name),[]).append(r)
+                    times.setdefault((m,name),[]).append(b);deltas.setdefault((m,name),[]).append(b-a)
+                    try:worst[name]=max(worst.get(name,(0.,0.)),reuse_gate(graphs[name].replay(),w,truths,pr,rs))
+                    except Exception as exc:fails[name]=f'M{m} seed{seed} after {type(exc).__name__} {str(exc)[:140]}'
+                if 'ONCE' in graphs and 'REDO' in graphs:
+                    a,b,r=timeline_timing(graphs['REDO'],graphs['ONCE']);ratios.setdefault((m,'ONCE/REDO'),[]).append(r)
+                    deltas.setdefault((m,'ONCE/REDO'),[]).append(b-a)
+                if seed==0 and m==32:
+                    try:lines.extend(reuse_trace_lines(pr,rs,state))
+                    except Exception as exc:lines.append('TRACE_ERROR '+str(exc)[:160])
+                graphs={};truths={}
+            done+=1;peak=max(peak,time.monotonic()-started)
+    finally:torch.backends.cuda.matmul.allow_tf32=oldtf
+    for name,why in fails.items():lines.append(f'FAIL {name} {why}')
+    lines.append('GATE '+','.join(f'{k}:{v[0]:.5f}/{v[1]:.5f}' for k,v in sorted(worst.items())))
+    for m in (8,16,32):
+        if not aa[m]:continue
+        parts=[f'S11_us={statistics.mean(times[m,"S11"]):.2f}']
+        for name in ('ONCE','REDO','ONCE/REDO'):
+            r=ratios.get((m,name),[])
+            if not r:continue
+            se=statistics.stdev(r)/len(r)**.5 if len(r)>1 else 0.
+            parts.append(f'{name} r={statistics.mean(r):.5f} se={se:.5f} d_us={statistics.mean(deltas[m,name]):+.2f} wins={sum(x<1 for x in r)}/{len(r)}'+
+                (f' us={statistics.mean(times[m,name]):.2f}' if (m,name) in times else ''))
+        es=statistics.mean(x[0] for x in counts[m]);bs=statistics.mean(x[1] for x in counts[m])
+        parts.append(f'experts/blocks={es:.2f}/{bs:.2f} AA={statistics.mean(aa[m]):+.2f}/{statistics.mean(map(abs,aa[m])):.2f}/{max(map(abs,aa[m])):.2f}')
+        lines.append(f'AGG M{m} '+' | '.join(parts))
+    lines.append(f'END seeds={done} seconds={time.monotonic()-begin:.1f} left={deadline-time.monotonic():.1f}; no promotion before paired whole-layer test')
+    return lines

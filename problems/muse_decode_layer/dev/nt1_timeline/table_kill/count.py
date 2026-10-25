@@ -2,7 +2,7 @@
 import re,subprocess,sys
 sass=subprocess.run(['cuobjdump','-sass',sys.argv[1]],capture_output=True,text=True).stdout
 for name,body in re.findall(r'Function : (\S+)\n(.*?)(?=\n\s*Function : |\Z)',sass,re.S):
-    ins=[l.split(';')[0].split('*/',1)[-1].strip() for l in body.splitlines() if re.match(r'\s*/\*[0-9a-f]{4}\*/',l)]
+    ins=[l.split(';')[0].split('*/',1)[-1].strip() for l in body.splitlines() if re.match(r'\s*/\*[0-9a-f]{4,}\*/',l)]
     marks=[i for i,l in enumerate(ins) if 'CS2R' in l and 'SR_CLOCK' in l]
     if len(marks)<2:print(name,'no markers',len(ins));continue
     loop=ins[marks[0]+1:marks[-1]];mma=sum('HMMA' in l for l in loop)

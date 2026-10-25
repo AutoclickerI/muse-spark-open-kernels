@@ -1,0 +1,40 @@
+{
+  "payload_sha256": "eac899e7da1c3915c6fe49ac20e5c2d44792d9cc59393b36f89b96d76489d37b",
+  "local": {
+    "seeds": 16,
+    "A_worst_task_L2": 0.00239,
+    "checksums_C_D": true,
+    "log": "runs/screen/nt1_limit4_local.log"
+  },
+  "sm90_sass": {
+    "B": {
+      "HMMA": 32,
+      "HMUL2": 0,
+      "LDS": 142,
+      "LDG": 77,
+      "CPASYNC": 0,
+      "BAR": 34,
+      "instructions": 2840
+    },
+    "D": {
+      "HMMA": 0,
+      "HMUL2": 0,
+      "LDS": 0,
+      "LDG": 33,
+      "CPASYNC": 0,
+      "BAR": 0,
+      "instructions": 152
+    },
+    "C": {
+      "HMMA": 0,
+      "HMUL2": 0,
+      "LDS": 64,
+      "LDG": 5,
+      "CPASYNC": 0,
+      "BAR": 5,
+      "instructions": 1376
+    }
+  },
+  "h200_job": "360810b110a44d36",
+  "promotion": false
+}
