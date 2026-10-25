@@ -1,0 +1,91 @@
+MOE_PHASE M=1 ctas=264 route=5362/5715/5946 p1=20213/25059/29792 wait=924/4078/10624 barrier=1253/5859/11627 p2=17002/18944/24000 norm=1164/1811/2257 final=101/150/2225 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0770ms v12=0.0697ms v16=0.0926ms wide=0.5761ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5490/5805/6070 p1=109080/136649/154024 wait=1045/7029/46057 barrier=1215/16210/53175 p2=60478/70148/107615 norm=8859/11026/14449 final=97/152/2595 p1_tiles=32/33/33 p2_tiles=16/16/17 atomics=128/128/136
+MOE_TIME M=16 v9=0.1775ms v12=0.1965ms v16=0.2035ms wide=0.2813ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5704/5970/6226 p1=161626/200510/227399 wait=1141/6942/64289 barrier=1203/25463/84725 p2=89047/96732/153509 norm=13432/16140/19746 final=103/166/2769 p1_tiles=48/48/49 p2_tiles=24/24/25 atomics=192/192/200
+MOE_TIME M=32 v9=0.2373ms v12=0.2660ms v16=0.2609ms wide=0.3657ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5664/5851/6069 p1=66640/80992/92541 wait=1037/7959/27917 barrier=1213/12243/35693 p2=37351/47244/69382 norm=5037/6416/8473 final=97/152/2516 p1_tiles=19/19/20 p2_tiles=9/10/10 atomics=72/80/80
+MOE_TIME M=8 v9=0.1271ms v12=0.1297ms v16=0.1565ms wide=0.2006ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7368/7794/7980 p1=263618/328090/366216 wait=827/7239/103243 barrier=1199/37882/130312 p2=145362/153505/249413 norm=22197/27249/32297 final=116/1954/5445 p1_tiles=79/80/80 p2_tiles=39/40/40 atomics=312/320/320
+MOE_TIME M=128 v9=0.3548ms v12=0.4088ms v16=0.3943ms wide=0.4727ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10200/10574/10813 p1=399924/494750/548667 wait=1160/9120/144273 barrier=1170/53124/191231 p2=219258/229009/361920 norm=33912/41640/49337 final=1006/4043/8590 p1_tiles=120/120/121 p2_tiles=60/60/61 atomics=480/480/488
+MOE_TIME M=256 v9=0.4910ms v12=0.5984ms v16=0.5508ms wide=0.5095ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.07702399790287018, 'v12': 0.06972800195217133, 'v16': 0.09257599711418152, 'wide': 0.5760959982872009}, 16: {'v9': 0.1775359958410263, 'v12': 0.19654400646686554, 'v16': 0.20348800718784332, 'wide': 0.2813119888305664}, 32: {'v9': 0.23734399676322937, 'v12': 0.26601600646972656, 'v16': 0.2608639895915985, 'wide': 0.3656960129737854}, 8: {'v9': 0.1271039992570877, 'v12': 0.12966400384902954, 'v16': 0.15647999942302704, 'wide': 0.2006080001592636}, 128: {'v9': 0.3547520041465759, 'v12': 0.4087679982185364, 'v16': 0.3943359851837158, 'wide': 0.4726719856262207}, 256: {'v9': 0.4910399913787842, 'v12': 0.5984320044517517, 'v16': 0.5507839918136597, 'wide': 0.5094720125198364}}
+LAB_BEGIN moe_p3b_adaptive 3bf3b5f2f01d541f
+META heavy-kernel lab at M128 vs LI4 (LI_swap 701d2867: N_full, heavy N32 lean K loop, W13 gate/up rows interleaved by 8 with SwiGLU in registers, grid 1056, launched first on the side stream || NT1<=16; live route; one join; finalizer split over 4 blocks per token, 5e197b5e). LIW: wide packed banks; TYP/TYPW: static typed activation smem (base/wide); WP: four W2 per-warp norm partials summed by finalizer; PAIR2/4: one decode feeds two separate N32 WGMMA accumulators, 2/4 pipeline stages (no N64 WGMMA). Adaptive lab: AD64/128D/P/PW uses only live independent N32 groups, capacity 64/128, S2; D=hoisted descriptor, P=rotated packed scale words, PW=P+wide. PERM/PERMW applies P/PW on N32 S4. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to LI4 output (diagnostic). Phase means are diagnostics.
+BUILD s=0.0 left=65.3
+S0 0.995 0.995 0.996 1.011 1.012 1.012 1.155 1.161 1.150
+S1 0.994 0.991 0.987 1.022 1.022 1.021 1.134 1.138 1.125
+S2 0.994 0.998 0.986 1.041 1.043 1.042 1.174 1.178 1.170
+S3 0.997 0.993 0.979 1.081 1.082 1.072 1.230 1.226 1.203
+S4 0.993 0.992 0.978 0.997 0.996 0.991 1.244 1.242 1.232
+S5 0.995 0.993 0.979 1.060 1.059 1.053 1.250 1.251 1.246
+S6 0.989 0.991 0.983 0.989 0.984 0.984 1.123 1.125 1.110
+S7 0.998 0.993 0.986 1.020 1.021 1.016 1.059 1.056 1.051
+S8 0.998 1.002 0.999 0.982 0.979 0.981 1.117 1.118 1.106
+S9 0.989 0.989 0.986 1.014 1.010 1.004 1.079 1.080 1.063
+S10 0.995 0.995 0.992 1.044 1.043 1.036 1.205 1.207 1.195
+S11 0.991 0.995 0.984 0.975 0.973 0.969 1.152 1.159 1.156
+ORDER LIW PERM PERMW AD64D AD64P AD64PW AD128D AD128P AD128PW
+MEAN LI4 n=36 us=191.95 med=194.73 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN LIW n=36 us=190.57 med=194.03 pair=0.9940 lo/hi=0.987/1.005 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN PERM n=36 us=190.86 med=193.58 pair=0.9940 lo/hi=0.986/1.009 L2/row=0.00413/0.00471 TASK=PASS bit=35
+MEAN PERMW n=36 us=189.16 med=192.78 pair=0.9862 lo/hi=0.972/1.008 L2/row=0.00413/0.00471 TASK=PASS bit=34
+MEAN AD64D n=36 us=195.30 med=200.02 pair=1.0196 lo/hi=0.948/1.092 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN AD64P n=36 us=195.13 med=199.80 pair=1.0186 lo/hi=0.939/1.099 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN AD64PW n=36 us=194.47 med=198.70 pair=1.0152 lo/hi=0.940/1.090 L2/row=0.00413/0.00471 TASK=PASS bit=35
+MEAN AD128D n=36 us=222.65 med=221.85 pair=1.1602 lo/hi=1.001/1.296 L2/row=0.00413/0.00471 TASK=PASS bit=36
+MEAN AD128P n=36 us=222.79 med=222.55 pair=1.1617 lo/hi=1.004/1.291 L2/row=0.00413/0.00471 TASK=PASS bit=35
+MEAN AD128PW n=36 us=220.78 med=220.93 pair=1.1506 lo/hi=1.003/1.280 L2/row=0.00413/0.00471 TASK=PASS bit=35
+PH LI4 6.6/180.9/9.1
+PH LIW 6.4/179.7/9.0
+PH PERM 6.4/180.1/9.1
+PH PERMW 6.4/178.4/9.1
+PH AD64D 6.4/184.0/9.1
+PH AD64P 6.4/183.9/9.1
+PH AD64PW 6.4/183.4/9.2
+PH AD128D 6.4/209.0/9.1
+PH AD128P 6.4/209.0/9.1
+PH AD128PW 6.4/208.0/9.1
+AA signed/abs/max=-0.098/0.507/2.048
+END M=128 seeds=12/12 used=16.1 left=49.2
+META heavy-kernel lab at M256 vs LI4 (LI_swap 701d2867: N_full, heavy N32 lean K loop, W13 gate/up rows interleaved by 8 with SwiGLU in registers, grid 2112, launched first on the side stream || NT1<=16; live route; one join; finalizer split over 4 blocks per token, 5e197b5e). LIW: wide packed banks; TYP/TYPW: static typed activation smem (base/wide); WP: four W2 per-warp norm partials summed by finalizer; PAIR2/4: one decode feeds two separate N32 WGMMA accumulators, 2/4 pipeline stages (no N64 WGMMA). Adaptive lab: AD64/128D/P/PW uses only live independent N32 groups, capacity 64/128, S2; D=hoisted descriptor, P=rotated packed scale words, PW=P+wide. PERM/PERMW applies P/PW on N32 S4. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to LI4 output (diagnostic). Phase means are diagnostics.
+BUILD s=0.0 left=114.5
+S0 0.990 0.994 0.983 1.001 0.999 0.991 1.224 1.233 1.222
+S1 0.987 0.988 0.981 1.000 1.004 0.999 1.107 1.114 1.104
+S2 0.988 0.995 0.981 0.979 0.980 0.975 1.151 1.152 1.143
+S3 0.987 0.990 0.976 0.977 0.979 0.967 1.083 1.085 1.076
+S4 0.988 0.992 0.976 0.956 0.956 0.953 1.035 1.037 1.028
+S5 0.991 0.988 0.975 0.957 0.957 0.949 1.102 1.106 1.094
+S6 0.985 0.979 0.969 0.922 0.922 0.912 0.980 0.986 0.982
+S7 0.991 0.993 0.982 1.015 1.011 1.002 1.150 1.150 1.150
+S8 0.995 0.994 0.981 0.991 0.989 0.985 1.079 1.079 1.068
+S9 0.988 0.987 0.977 1.000 0.995 0.988 1.143 1.144 1.130
+S10 0.992 0.994 0.979 0.979 0.975 0.972 1.085 1.086 1.074
+S11 0.990 0.990 0.983 1.035 1.031 1.023 1.137 1.137 1.123
+ORDER LIW PERM PERMW AD64D AD64P AD64PW AD128D AD128P AD128PW
+MEAN LI4 n=36 us=270.66 med=262.55 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN LIW n=36 us=267.65 med=259.86 pair=0.9894 lo/hi=0.983/0.997 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN PERM n=36 us=267.84 med=259.72 pair=0.9904 lo/hi=0.976/1.000 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN PERMW n=36 us=264.50 med=257.32 pair=0.9787 lo/hi=0.965/0.988 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN AD64D n=36 us=265.57 med=259.70 pair=0.9842 lo/hi=0.919/1.054 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN AD64P n=36 us=265.38 med=259.77 pair=0.9832 lo/hi=0.922/1.055 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN AD64PW n=36 us=263.53 med=258.38 pair=0.9762 lo/hi=0.904/1.045 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN AD128D n=36 us=298.18 med=295.71 pair=1.1064 lo/hi=0.961/1.255 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN AD128P n=36 us=298.86 med=296.39 pair=1.1090 lo/hi=0.965/1.268 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN AD128PW n=36 us=296.26 med=292.99 pair=1.0995 lo/hi=0.962/1.251 L2/row=0.00412/0.00465 TASK=PASS bit=36
+PH LI4 6.7/261.2/10.1
+PH LIW 6.6/258.0/10.1
+PH PERM 6.5/258.1/10.0
+PH PERMW 6.5/254.4/10.1
+PH AD64D 6.5/258.0/10.1
+PH AD64P 6.6/258.4/10.0
+PH AD64PW 6.5/256.1/10.1
+PH AD128D 6.6/288.7/10.0
+PH AD128P 6.6/289.8/10.1
+PH AD128PW 6.5/287.3/10.0
+AA signed/abs/max=-0.149/0.537/1.584
+END M=256 seeds=12/12 used=16.6 left=97.9
+LAB_END lab_s=59.6 prepare_s=187.1

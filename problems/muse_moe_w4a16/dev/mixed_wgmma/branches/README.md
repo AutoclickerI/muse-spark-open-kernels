@@ -8,6 +8,22 @@ flight, no fills; META adds the heavy-only T32 and 8<count<=16 T8 lists) and the
 
 ## Handoff (current)
 
+**PERMW for S12:** `patch_s12_permw.py` applies only to S12's F4+wide nf cell; accepts the same cell inside
+S12 final. Local build used current `cand_r3_best7_s12.py` **a92b6619** (final filename not yet present), producing
+**4a4ed79f**. `check_permw.py` / `permw_equiv.json`: **18/18 bit-equal to S12 and 18/18 to the b88d04fe PERMW arm**,
+3 seeds x3 fixtures x2 M; all TASK gates pass, maximum absolute difference zero.
+
+Landed **b88d04fe86aa45a7** (36 fixtures/M): PERMW **0.9862 / 0.9787** vs LI4; LIW controls **0.9940 / 0.9894**.
+The 1.38 / 2.13% includes the already-integrated wide win; do not attribute all of it to this patch. PERM without
+wide **0.9940 / 0.9904**. Adaptive AD64PW **1.0152 / 0.9762** has larger fixture spread (0.940-1.090 /
+0.904-1.045), so PERMW is the handoff at both M. AD128PW loses **1.1506 / 1.0995**. All TASK gates pass.
+Receipt: `runs/muse_moe_w4a16/20261025T051654Z_check_b88d04fe86aa45a7.json`.
+
+New structural diagnostic: `roof_build.py` freezes the exact S12 nf CUDA. Four arms per heavy/NT1 branch and
+W13/W2 phase: unchanged, trivial dequant with original copies/math, loads-only with original load schedule,
+and a wide-MLP stream of the same input segments. Trivial/loads arms are diagnostic-only, deliberately wrong;
+the host's returned computation stays unchanged. The table distinguishes unique bytes from scheduled rereads.
+
 S11-final patches (2026-10-25, P3b takeover):
 
 - `patch_s11_f4.py` **ef041fd4** applies onto `cand_r3_best7_s11_final.py` **acda6c62** (or a derived candidate
