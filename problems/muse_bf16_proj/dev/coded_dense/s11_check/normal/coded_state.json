@@ -1,0 +1,78 @@
+{
+  "pool_router": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        56623104
+      ],
+      "bytes": 56623104
+    },
+    "scales": {
+      "dtype": "torch.float32",
+      "shape": [
+        288
+      ],
+      "bytes": 1152
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        36865
+      ],
+      "bytes": 147460
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        3569,
+        2
+      ],
+      "bytes": 28552
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        288
+      ],
+      "bytes": 1152
+    }
+  },
+  "qkv_gate": {
+    "coded": {
+      "dtype": "torch.uint8",
+      "shape": [
+        28311552
+      ],
+      "bytes": 28311552
+    },
+    "scales": {
+      "dtype": "torch.float32",
+      "shape": [
+        144
+      ],
+      "bytes": 576
+    },
+    "eoff": {
+      "dtype": "torch.int32",
+      "shape": [
+        18433
+      ],
+      "bytes": 73732
+    },
+    "esc": {
+      "dtype": "torch.int32",
+      "shape": [
+        1341,
+        2
+      ],
+      "bytes": 10728
+    },
+    "base": {
+      "dtype": "torch.int32",
+      "shape": [
+        144
+      ],
+      "bytes": 576
+    }
+  }
+}

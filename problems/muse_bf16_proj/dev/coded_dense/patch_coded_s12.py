@@ -1,18 +1,20 @@
 """Coded dense GEMVs (P10) for a best7-family decode-layer candidate (S10, S11, ...): a patch module (patch(src) -> src,
 as the integration lane's builders apply them) and a CLI.
 
-    python3 problems/muse_bf16_proj/dev/coded_dense/patch_coded.py <cand.py> <out.py>
-    python3 problems/muse_bf16_proj/dev/coded_dense/patch_coded.py --emit <module.py>   # frozen hand-off module
+    python3 problems/muse_bf16_proj/dev/coded_dense/patch_coded_s12.py <cand.py> <out.py>
+
+This frozen handoff embeds measured v3. patch_coded.py emits future cleanup patches.
 
 An emitted module carries coded.py's source as a string (BODY), so its SHA-256 pins the kernel too.
 
-prepare() compiles the coded module in the native pool, encodes qkv_gate, o, pool_router, unpooler_slice and
-unpooler losslessly (coded.py: 12-bit code, per-16-row exponent window, escape list), checks the kernel's decode
+prepare() compiles the coded module in the native pool, encodes the roles listed in ROWS losslessly (coded.py: 12-bit code, per-16-row exponent window, escape list), checks the kernel's decode
 bit for bit against every weight (raises on any difference), and routes each (tokens, role) in ROWS through
-`gemv()` as ('coded', NW, RT, PIPE, S, prew, V, C): same (P [S, T, N] FP32, S) ABI, PDL release at entry, weights preloaded
+`_project_variant()` using state['coded_dense']: same (P [S, T, N] FP32, S) ABI, PDL release at entry, weights preloaded
 before griddepcontrol.wait. ROWS come from the H200 lab (prof/lab/coded_gemv.py); the rows are forced into
 proj_plan after the prepare tuners, and a decode-1 'stream' o override is dropped when ROWS codes o at t = 1.
 The original BF16 weights stay (cuBLAS / LT / vdsk still serve M = 128 / 256).
+S11 final keeps its gate split at decode 1, so full-qkv coding runs only at verify 1 (T=8).
+The encoded banks live in state; dispatch survives the judge's tensor clones and address padding.
 """
 import hashlib
 import re
@@ -45,37 +47,32 @@ def coded_block(rows):
     return ('\n\n# ---- P10 coded dense GEMVs (problems/muse_bf16_proj/dev/coded_dense/coded.py) ----\n'
             'import torch.nn.functional as F\n' + body +
             f'\n\n# (tokens, role) -> (NW, RT, PIPE, S, prew, V, C): H200 lab rows (prof/lab/coded_gemv.py)\nCD_ROWS = {rows!r}\n'
-            '_CD_BANK = {}  # (data_ptr, N, K) -> coded weight: unpooler_slice shares the unpooler storage\n\n\n'
-            'def _cd_prepare(state):\n'
-            '    """Encode every role ROWS codes, check the kernel decode bit for bit, register the GEMV choices."""\n'
+            '\n\ndef _cd_prepare(state):\n'
+            '    """Store lossless codes in state, so judge clones carry the matching encoded weights."""\n'
+            "    state['coded_dense'] = {}\n"
             '    for name in sorted({name for _, name in CD_ROWS}):\n'
             '        w = state[name]\n'
             '        c = cd_encode(w)\n'
             '        if not torch.equal(cd_decode(c).view(torch.int16), w.view(torch.int16)):\n'
             '            raise RuntimeError(f"coded {name}: decode differs from the weight")\n'
-            '        _CD_BANK[(w.data_ptr(), *w.shape)] = c\n'
+            "        state['coded_dense'][name] = c\n"
             '        print(f"CODED {name} {tuple(w.shape)} escapes={c[\'nesc\']} bytes={c[\'coded\'].numel()}", flush=True)\n\n\n'
-            'def _cd_choices(state):\n'
-            '    for (t, name), cfg in CD_ROWS.items():\n'
-            '        n, k = state[name].shape\n'
-            '        _GEMV_CHOICES[(t, n, k)] = (\'coded\',) + tuple(cfg)\n\n\n'
             'def _cd_force(state):\n'
-            '    _cd_choices(state)\n'
             '    for (t, name) in CD_ROWS:\n'
-            '        state[\'proj_plan\'][(t, name)] = \'custom\'\n')
+            "        state['proj_plan'][(t, name)] = 'custom'\n")
+
 
 
 def patch(src, rows=None):
     rows = ROWS if rows is None else rows
     src = _sub(src, '\n_GEMV_CHOICES = {}\n', '\n_GEMV_CHOICES = {}\n' + coded_block(rows))
-    src = _sub(src, '    choice = _GEMV_CHOICES.get((T, N, K))\n',
-               '    choice = _GEMV_CHOICES.get((T, N, K))\n'
-               "    if isinstance(choice, tuple) and choice[0] == 'coded':\n"
-               '        _, NW, RT, PIPE, S, PREW, V, C = choice\n'
-               '        return cd_gemv(x, _CD_BANK[(w.data_ptr(), N, K)], S, NW=NW, RT=RT, PIPE=PIPE, prew=PREW, pdl=PDL,\n'
-               '                       V=V, C=C)\n')
-    src = _sub(src, '            _GEMV_CHOICES[(t, n, k)] = choice\n',
-               '            _GEMV_CHOICES[(t, n, k)] = choice\n    _cd_choices(state)\n')
+    src = _sub(src, 'def _project_variant(x, w, name, state, variant, out_dtype=torch.bfloat16):\n',
+               'def _project_variant(x, w, name, state, variant, out_dtype=torch.bfloat16):\n'
+               '    cfg = CD_ROWS.get((x.shape[0], name))\n'
+               "    if cfg is not None:\n"
+               '        NW, RT, PIPE, S, PREW, V, C = cfg\n'
+               "        return cd_gemv(x, state['coded_dense'][name], S, NW=NW, RT=RT, PIPE=PIPE, prew=PREW,\n"
+               '                       pdl=PDL, V=V, C=C)\n')
     src = re.sub(r'with ThreadPoolExecutor\(max_workers=(\d+)\) as native_pool:',
                  lambda m: f'with ThreadPoolExecutor(max_workers={int(m.group(1)) + 1}) as native_pool:\n'
                            '        cd_future=native_pool.submit(cd_module)', src, count=1)
@@ -88,20 +85,7 @@ def patch(src, rows=None):
     return src
 
 
-def emit(out):
-    """Write a self-contained copy of this module with coded.py's current body frozen in."""
-    body = (HERE / 'coded.py').read_text().split('import torch.nn.functional as F\n', 1)[1]
-    src = Path(__file__).read_text()
-    src = _sub(src, '\nBODY = None  # an emitted module\'s frozen coded.py body\n',
-               f'\nBODY = {body!r}  # frozen coded.py body (coded.py SHA-256 '
-               f'{hashlib.sha256((HERE / "coded.py").read_bytes()).hexdigest()})\n')
-    out.write_text(src)
-    print(out, hashlib.sha256(out.read_bytes()).hexdigest())
-
-
 def main():
-    if sys.argv[1] == '--emit':
-        return emit(Path(sys.argv[2]))
     cand, out = Path(sys.argv[1]), Path(sys.argv[2])
     if not ROWS:
         raise SystemExit('ROWS is empty: fill it from the H200 lab receipt first')

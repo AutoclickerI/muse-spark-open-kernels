@@ -22,6 +22,7 @@ def main():
     audit = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(audit)
     counts = {}
+    codes = {}
     original = local_eval.load_module
 
     def loader(name, path):
@@ -34,6 +35,31 @@ def main():
                 row['captured' if m.torch.cuda.is_current_stream_capturing() else 'eager'] += 1
                 return gemv(x, c, S, **kw)
             m.cd_gemv = counted
+            prepare = m.prepare
+
+            def checked_prepare(weights):
+                state = prepare(weights)
+                # Exercise the judge's tensor-clone protocol, including new weight addresses.
+                state = dict(state)
+                state['coded_dense'] = {
+                    role: {k: v.clone() if isinstance(v, m.torch.Tensor) else v for k, v in c.items()}
+                    for role, c in state['coded_dense'].items()}
+                for role, c in state['coded_dense'].items():
+                    state[role] = state[role].clone()
+                    assert m.torch.equal(m.cd_decode(c).view(m.torch.int16), state[role].view(m.torch.int16)), role
+                    expected = dict(coded=m.torch.uint8, scales=m.torch.float32, eoff=m.torch.int32,
+                                    esc=m.torch.int32, base=m.torch.int32)
+                    tensors = {k: v for k, v in c.items() if isinstance(v, m.torch.Tensor)}
+                    assert set(tensors) == set(expected), (role, tensors.keys())
+                    assert all(v.dtype == expected[k] for k, v in tensors.items()), role
+                    # FP32 scales encode one exponent-window origin per 16 rows, not expanded weights.
+                    assert m.torch.equal(c['scales'], m.torch.pow(2.0, (c['base'] - 112).double()).float()), role
+                    assert bool(((c['esc'][:, 1] >= 0) & (c['esc'][:, 1] <= 65535)).all()), role
+                    codes[role] = {k: dict(dtype=str(v.dtype), shape=list(v.shape), bytes=v.numel() * v.element_size())
+                                   for k, v in c.items() if isinstance(v, m.torch.Tensor)}
+                return state
+
+            m.prepare = checked_prepare
         return m
     local_eval.load_module = loader
     sys.argv = ['audit.py', '--candidate', str(cand), '--out', str(out)] + (['--forced'] if forced else [])
@@ -41,6 +67,7 @@ def main():
         audit.main()
     finally:
         (out / ('coded_calls_forced.json' if forced else 'coded_calls.json')).write_text(json.dumps(counts, indent=2) + '\n')
+        (out / 'coded_state.json').write_text(json.dumps(codes, indent=2) + '\n')
         print('CODED_CALLS', json.dumps(counts), flush=True)
 
 

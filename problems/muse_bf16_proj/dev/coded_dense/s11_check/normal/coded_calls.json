@@ -1,4 +1,12 @@
 {
+  "T1:N2304:K8192:S22": {
+    "eager": 3,
+    "captured": 1
+  },
+  "T8:N2304:K8192:S22": {
+    "eager": 11,
+    "captured": 3
+  },
   "T1:N4608:K8192:S11": {
     "eager": 30,
     "captured": 8
@@ -6,13 +14,5 @@
   "T8:N4608:K8192:S11": {
     "eager": 29,
     "captured": 8
-  },
-  "T1:N2304:K8192:S22": {
-    "eager": 9,
-    "captured": 2
-  },
-  "T8:N2304:K8192:S22": {
-    "eager": 8,
-    "captured": 2
   }
 }
