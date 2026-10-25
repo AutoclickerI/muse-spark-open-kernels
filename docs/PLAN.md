@@ -1,66 +1,41 @@
 # Plan
 
-## Status (2026-10-25 11:45 KST)
+## Status (2026-10-25 12:50 KST)
 - G0 (R-20261025-1): the highest score on the overall kernel board by the close (2026-11-05 16:59 KST, day 3 of 14).
   By our fit (GOAL), overall = max(decode layer, component sum), and the decode layer wins for every top-50 team.
 - Board (SOTA "Leaderboard", 11:27): 145th at 1.6073x (S9); leader 2.285x (+9% overnight, flat since 09:27), 10th
   2.066x, 50th 1.826x. The leader's component boards: attention 2.84x (ours 1.40), MoE 2.52x (1.69), projections 1.61x (1.19).
-- Scored today: S1-S3 1.467-1.474x; S4-S6 withdrawn (a 16-bit scale copy made in prepare, CONSTRAINTS 5); S7 1.5597x
-  `2f6471d5`; S7R 1.5735x `c1fbd0cf`; S8 1.5742x `a5b2f55b` (+ early release, M=128 qkv split-K, cluster glue: faster
-  at 10 of 12 shapes; each load's ratio also moves 2-4% with the baseline's own run time). S9 1.6073x `b7c59570` (S8 +
-  BF16 qkv front + N_full at M=128/256 + small-M flags; modeled 1.674): verify 16 1.435 -> 1.571 (N_full), but our
-  own load times rose at decode 32 (+2.8%) and verify 1 (+4.7%), so the small-M flags and the front are unconfirmed
-  in the layer; a paired whole-layer A/B decides (FINDINGS "Failures": scored runs don't rank changes under ~3%).
-  S10 (`6688fad9`, S9 on the final N_full cell) went as a check (decode's 10 scored runs were used): 1.6214x
-  `43049b80`, our load time -2.6% vs S8 with the baseline flat, judge prepare 133.5 s; it goes as a scored run at the
-  00:00 UTC reset (09:00 KST, queued in a background send).
-- What the plan was missing (review of `88b5251` plus the board against our model, 11:30):
-  1. Our ceilings sat below the field. The leaders' MoE (2.52x) and decode-layer (2.28x) boards beat our "practical"
-     model's ceilings (2.35x, 2.25x; `python -m sim`), the projection leader runs at 1.255x its floor (~3.82 TB/s
-     effective), and our own 52-61 MB sweep read 4.04-4.25 TB/s. The 3.61 TB/s plain read (`4233660b`) is one
-     kernel's rate, not the roof: a cold read on the judge costs 2.36 us + bytes at 4.58 TB/s (`7b6c96b5`), so a
-     75 MB stage can reach 1.2x its floor and a 17 MB one 1.7x as a lone kernel. The 2.36 us intercept is launch, flush,
-     ramp and tail together, and little of it has hidden so far: weight loads before `griddepcontrol.wait` gained
-     nothing at O -> b1 -> pool_router (`5cefdbc4`), and fully L2-warm weights saved <= 2-4 us per layer after qkv
-     (`09d19813`, S8-era GEMVs); per-boundary L2-warm oracles on the balanced GEMVs are in flight. Target: every stage at <= 1.3x its floor (2.59 modeled), byte-bound ones at bytes / 4.58 TB/s with the
-     ramp hidden (every stage at 1.15x: 2.94).
-  2. Lossless coding of the dense weights was parked on "no byte-bound stage yet", which no longer holds: S8's GEMVs
-     run within 16-20% of a plain read of their bytes (`9cd95e72`). The dense weights are randn/sqrt(k) in BF16
-     (`reference.generate_weights`): 2.545 bits of exponent entropy, and 16 contiguous exponents cover 99.993% of
-     weights, so a 12-bit code with exact escapes cuts 25% of the ~138 MB per decode-1 layer. Modeled +4 to +8%
-     (time above a 0-4 us fixed part scales with bytes); the only lever that lowers a floor. Now P10, active.
-  3. Our rule readings were narrower than the rules (CONSTRAINTS "Boundary cases" widened): bytes per 16 weights was
-     our audit, not a limit (duplicate layouts and padding are fine; widened values are not); routing is checked by
-     membership and score, in any order; FP8 K/V may expand exactly to BF16 on chip; value-dependent work inside
-     kernels is fine; the router's hi + lo pair is allowed at any batch (llms.txt:107).
-  4. Ten code-level items, in the rows. MoE (P3b): the W2 vector loader and device-side N16/N32 lists are already in
-     N_full (S7R's scalar W2 copies were R_full's, now deleted); W13 gate/up interleave ~1-3 us and W2 norm partials
-     < 1-2 us at M=128; NT1 has neither exchange. Others: FP32 exponentials in the native
-     path (still `ex2.approx.f16x2`, verified), LDSM.T V transpose, register-resident P for RS WGMMA, FP8-QK + BF16-PV
-     (P5); gate projection overlapped with attention (P7); the QKV sum+cast fusion is S9's BF16 front.
-- Paired whole-layer A/B on S10 (`ff3b9aca`, 16 seeds; A:A +-0.5%): S8's small-M path back costs +5.4 / +2.8 / +1.7 /
-  +3.7% at decode 1 / 16 / 32 / verify 1, dropping the front +3.2% at decode 16: S9's changes win in the layer.
-  Ready for S11 with paired wins: balanced split-K GEMVs (chain -3.2 / -4.2 / -7.1 us per decode 1 / 16 / 32 layer,
+- Runs (FINDINGS "Our kernels on the H200"): S8 1.5742x, S9 1.6073x `b7c59570` (on the board), S10 check 1.6214x
+  `43049b80` (our load time -2.6% vs S8 with the baseline flat; prepare 133.5 s), scored at the 00:00 UTC reset
+  (09:00 KST, a background send). Scored runs don't rank changes under ~3%: the whole-layer paired A/B on S10
+  (`ff3b9aca`) is the comparator, and it confirmed S9's small-M flags (+1.7-5.4% if removed) and the BF16 front
+  (+3.2% at decode 16).
+- Ready for S11 with paired wins: balanced split-K GEMVs (-3.2 / -4.2 / -7.1 us per decode 1 / 16 / 32 layer,
   `c2b2da75`), the lean heavy-N32 K loop (0.9613 / 0.9426 at M=128 / 256, `858ff2fa`), verify-1 qkv pinned to cuBLAS
-  (0.990), vq8 at decode-1 sliding (14.40 vs 17.47 us, `f0a79d79`). The prepare tuners flip choices per run, so
-  candidates pin them to the in-layer winners.
+  (0.990; the prepare tuners flip choices per run, so candidates pin them), vq8 at decode-1 sliding (14.40 vs 17.47 us).
+- What the plan was missing (review of `88b5251` plus the board against our model):
+  1. Our ceilings sat below the field: the leaders' MoE (2.52x) and decode (2.28x) boards beat our "practical" model
+     (2.35x, 2.25x). A cold read on the judge costs 2.36 us + bytes at 4.58 TB/s (`7b6c96b5`), not a flat 3.61 TB/s:
+     a 75 MB stage can reach 1.2x its floor, a 17 MB one 1.7x. Little of the 2.36 us has hidden behind a predecessor
+     so far (`5cefdbc4`; L2-warm <= 2-4 us per layer, `09d19813`); per-boundary oracles are in flight. Target: every
+     stage at <= 1.3x its floor (2.59 modeled; every stage at 1.15x: 2.94).
+  2. Lossless coding of the dense weights (P10) was parked on a stale premise: the GEMVs now sit within 16-20% of a
+     plain read. 12-bit codes cut 25% of the ~138 MB per decode-1 layer (+4 to +8% modeled; the only lever that
+     lowers a floor); the first coded GEMV is decode-bound (`35c875e6`).
+  3. Our rule readings were narrower than the rules (CONSTRAINTS "Boundary cases" widened: precision, not bytes per
+     16 weights; routing by membership in any order; FP8 K/V expanded on chip; value-dependent work in kernels).
+  4. The review's code items are in the rows (P3b, P5, P7); those already done or small are recorded there.
 - Limits (`problems/muse_decode_layer/dev/levers/scenarios.py`, S7R plus the paired wins S8 and S9 carry, modeled
-  1.674; the model reproduces every S run within ~1.5%): every stage at 2.0 / 1.5 / 1.3 / 1.15x its floor gives
-  1.96 / 2.26 / 2.59 / 2.94; today's leader is every stage at ~1.5x.
-- Gain per lever on that model at 1.5x / 1.3x of its floor: attention +9.5 / +10.8% (sliding +5.2%, full verify
-  +2.7 / +3.2%), small-M MoE +5.8 / +9.4%, glue +5.9%, projections +1.9 / +5.9%, M=256 MoE +3.5 / +4.6%, M=128 MoE
-  +1.3 / +2.5% (independent counterfactuals; they don't add); lossless dense coding +4 to +8% on top of the
-  projection row. Inside each row, deleting provably dead or repeated work comes first.
-- Attention inside the layer (S7, us per layer, sliding / full): decode 1 10.2 / 19.4, decode 16 16.3 / 104.1, decode
-  32 16.7 / 191.2, verify 1 20.7 / 31.8, verify 16 22.5 / 199.1, verify 32 24.5 / 381.4. Sliding sits 3-200x its floor
-  in 46 layers per load (5 kernels at verify); full decode is at 1.5-1.65x its floor, full verify at ~3x.
-- Agents: Codex is out of quota (Hermes `local_auth_cap` on every credential since 02:05 KST, still at 10:58; RESOURCES
-  "Inventory"), so lanes run as Claude subagents: integration (P4), attention (P5), glue/proj (P7), small-M (P3a),
-  dense coding (P10), MoE M=128/256 (P3b); P11 is parked.
-- Promotion: by the six-load score on identical inputs and its spread across seeds (GOAL); a stage's seed mean is a
-  diagnostic, and our exact-ID or 0.003 gates are not TASK.md's checks (CONSTRAINTS "Boundary cases").
-- Bottleneck: judge latency (our runs start one at a time) and run-to-run noise (MoE routing per seed): compare
-  variants in paired labs, not single scored runs.
+  1.674): every stage at 2.0 / 1.5 / 1.3 / 1.15x its floor gives 1.96 / 2.26 / 2.59 / 2.94; the leader is every stage
+  at ~1.5x. Per lever at 1.5x / 1.3x of its floor: attention +9.5 / +10.8% (sliding +5.2%, full verify +2.7 /
+  +3.2%), small-M MoE +5.8 / +9.4%, glue +5.9%, projections +1.9 / +5.9%, M=256 MoE +3.5 / +4.6%, M=128 MoE +1.3 /
+  +2.5% (independent counterfactuals); lossless dense coding +4 to +8% on top of projections. Inside each row,
+  deleting provably dead or repeated work comes first.
+- Agents: Codex is out of quota (Hermes `local_auth_cap` on every credential since 02:05 KST; RESOURCES "Inventory"),
+  so lanes run as Claude subagents: integration (P4), attention (P5), glue/proj (P7), small-M (P3a), dense coding
+  (P10), MoE M=128/256 (P3b); P11 is parked.
+- Promotion: by the six-load score on identical inputs and its spread across seeds (GOAL); our exact-ID or 0.003
+  gates are not TASK.md's checks (CONSTRAINTS "Boundary cases").
 
 ## Critical path
 Kernel loop, measured 2026-10-23:
