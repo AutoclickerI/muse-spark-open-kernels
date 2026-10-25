@@ -64,6 +64,7 @@ def main():
             checks = json.loads((proof_dir / 'normal_local.json').read_text())['static']
             assert all(c['ok'] for c in checks)
             native = [c for c in checks if c['name'] not in ('undefined_names', 'call_signatures')]
+            assert set(native_units(cand)) == {c['name'] for c in native}
             local_eval.hopper_compile = lambda path: native
             print('NATIVE_UNITS_PROOF_REUSED', proof['sha256'], len(native), flush=True)
     spec = importlib.util.spec_from_file_location('s9_audit', R / 'problems/muse_decode_layer/dev/s9/audit.py')
