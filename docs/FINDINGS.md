@@ -150,6 +150,16 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   r 1.029 / 1.024 / 1.031 / 1.019 at decode 1 / 16 / 32 / verify 1 (~+1.7% score); one role back: pool_router 1.017 /
   1.007 / 1.014 / 1.009, qkv 1.010 / 1.006 / 1.014 / 1.009, unpooler 1.011 / 1.005 at decode 16 / 32; at verify 1 the
   other qkv choices lose (cuBLAS 1.022, Lt 1.017). A:A 0.997-1.009.
+- Whole-layer paired A/B on S11 `dbcb26bb` (S10 + balanced GEMVs + LI_swap N_full + vq8 page ring at verify 16 / 32
+  full + pins; `e42953c4`, 16 seeds x 8 rounds, A:A +-0.4%): all of S10's pieces back r +3.7 / +2.8 / +4.0 / +1.7 /
+  +5.2 / +9.4% at decode 1 / 16 / 32, verify 1 / 16 / 32 (geomean ~4.4%); balanced GEMVs off +3.5 / +2.7 / +4.1 /
+  +1.5% (t <= 32); vq8 off +4.0% at verify 16 (+50 us per full layer), +7.1% at verify 32 (+123 us), neutral at
+  verify 1 (dropped there); S10's N_full cell +1.3 / +2.2% at verify 16 / 32.
+- One-factor sweep of every tuned choice (`4bea7724`, 12 seeds x 6 rounds): at t <= 32 our GEMVs beat every cuBLAS /
+  cuBLASLt variant at every role by 1-6% (the run's tuner had picked cuBLAS for o at t = 8 / 16 / 32 and qkv /
+  unpooler at t=16: -1.9 / -1.4 / -0.6 / -1.6 / -0.8% when pinned); attention at decode 16 / 32 is attn_main at all
+  four shapes ('layer' +0.6 / +6.5 / +0.25 / +8.4%, FA3 +6-56%); at t = 128 / 256 every variant is within 0.5%.
+  Pins live in `problems/muse_decode_layer/dev/s11/patch_pin.py`.
 - The prepare tuners choose differently per run and move whole-layer time: verify-1 qkv_gate went Lt split-K (S8's
   run), Triton split-K (S9's) and cuBLAS (S10's); the Triton choice leaves FP32 splits that qk_prep sums (2.6 -> 4.0
   us sliding, 1.2 -> 3.6 full). The tuner times each projection alone, not with its consumer, over 3 graph repeats.
@@ -334,6 +344,15 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   (279.38 vs 296.72). SASS per KT=128 stage 254 -> 207 (63.5 -> 51.8 per 16 weights); the dequant core is 128 per
   stage (32 per 16 weights: LOP3 9, SHF 7, HMUL2 8, PRMT 4, LEA 4); the other ~79 are descriptors ~15, pointer
   increments 8, cp.async 9, LDS ~11, sync ~5. `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/README.md`.
+- W13 gate/up rows interleaved by 8 in prepare (kind 26, SwiGLU in registers; a layout change of the uint8 codes, no
+  extra bank) vs the lean loop (`701d2867`): 0.9923 / 0.9838 at M=128 / 256, bit-equal; heavy grid /2 or x2 neutral.
+  N_full's NT1 W2 norm partials are float atomics: ~1 in 36 M=256 fixtures differs in the last bit between replays.
+- N_full's branches barely overlap (`5e197b5e`; probes): heavy alone 99.8 / 177.7 us, NT1 alone 127.6 / 133.7,
+  together 195.0 / 275.0 at M=128 / 256 (sum 227 / 311). Inferred: heavy, launched first, fills every SM's shared
+  memory (W13 ~57 KB x 3 CTAs) and NT1's ~87 KB CTAs wait; heavy alone moves ~110 MB in 91 us (~1.2 TB/s). Finalizer
+  split over 4 blocks per token 0.9850 / 0.9885 (bit-equal; isolated finish 12.8 -> 9.1 us); the per-stage
+  `fence.proxy.async` costs 0.65 / 1.3% (no-fence probe), and a per-row TMA for W13's gathered X serialises (1.6-1.9x
+  locally).
 ## Attention
 
 ### Shapes, floors and the incumbents
@@ -493,8 +512,15 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Gate split (`9b7ffda0`, paired AB/BA x24, read flush; qkv3 balanced + ungated attention + a PDL gate GEMV with S
   splits vs qkv -> sum+cast -> attention -> O -> b1), us at decode 1 S / 1 F / 16 S / 32 S / 16 F / 32 F: gs4 -1.99 /
   -0.64 / -0.77 / +0.02 / +0.88 / -1.91, split (S 8) +0.39 / -0.72 / +0.25 / -0.47 / +2.53 / -0.83, gs16 worse; A:A
-  0.986-1.003. The ~4.6 us estimate from the qkv-only critical path didn't appear (mechanism not isolated); worth
-  ~+0.1-0.3% only with per-shape selection.
+  0.986-1.003. Config sweep (`997bd383`): BN 64 / S 4 / 4 stages (64 CTAs) best or tied at b1 S -1.79, b1 F -0.37,
+  b16 S -2.23 us. Taken on decode 1 S/F, decode 16 S, decode 32 F (`patch_gate_split.py` 3139a8e2, ~+0.35%).
+  Inferred: the 16.8 MB gate GEMV (~7.5 us) outlasts attention's window at b1 and must finish before O; at b16 full
+  attention's 384 CTAs fill the GPU.
+- Boundary glue at t = 128 / 256 (`3345699f`, paired, real-shaped synthetic weights), us vs `_boundary_fast` at b1 /
+  b2: weight vectors loaded after the wait +0.01 / +0.04 at t=128, -1.07 / -1.13 at t=256 (`patch_glue_late.py`
+  fa509715, t > 128 only); two PDL kernels over column chunks +1.5 to +12.8 (row-per-CTA wins at large T, as cluster
+  glue showed). A t=256 boundary still sits ~4-5 us over its DRAM floor; only norm statistics in the producer GEMM's
+  epilogue (our own verify-dense GEMM) reach it.
 - Verify dense at a kernel running max(read, compute) would save ~12 us per verify-16 layer and ~10 per verify-32
   (~+1% score; cuBLAS GEMM-only at M=128 runs +41-97% over the read, M=256 near its ~700 TFLOP/s compute floor);
   Triton split-K and DeepGEMM only tie cuBLAS apart from M=128 qkv (inferred from `b15a3bde` and `9cd95e72`).
@@ -560,7 +586,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Coded (12-bit) dense GEMV on the H200 (`35c875e6` v1, `32088444` v3; paired, read flush, bit-exact decode): a plain
   read of the coded bytes saves qkv 1.95-2.2, pool_router 4.0-4.1, unpooler 3.6-3.8 us vs BF16. v3 vs the balanced GEMV
   at t = 1 / 8: qkv -0.93 / -0.58, pool_router -2.37 / -2.19, o +0.37 / +0.74, slice +0.62 / +0.90 us; t=16 near even;
-  t=32 qkv 14.21 vs 12.46, pool_router 25.74 vs 22.38 (decode cost grows with t). `problems/muse_bf16_proj/dev/coded_dense/`.
+  t=32 qkv 14.21 vs 12.46, pool_router 25.74 vs 22.38. SASS: integer decode is 1.125 instructions per weight (SHF + 4
+  LOP3 + 4 PRMT per 8), decoded once and fed to every n8 token tile; the NT1 loop uses ~21% of the issue slots a
+  4.58 TB/s stream needs, so it isn't issue-bound. The t-dependence was the activation path (per-token guarded LDS,
+  zeroing, addressing; two-group cp.async staging with a CTA-wide stall); v3's 64-70 registers (v1 47) cost waves. `problems/muse_bf16_proj/dev/coded_dense/`.
 - Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
   samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
   cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
