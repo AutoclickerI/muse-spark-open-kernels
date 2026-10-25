@@ -43,7 +43,7 @@
     "R0_phases": 8,
     "output_characters": 3619
   },
-  "status": "Accepted; immediate detached log inspected, no rejection. New H200 timing pending; raw S2 and recoded S3 remain incumbents.",
+  "status": "Completed H200, all12seed gates pass. mixed_parallel344.5us is selected and integrated in decode S6; quad loses346.1. New M256 expert mix uses the winning vector converter.",
   "send_key": "22da326e27940230",
   "job": "8483c0c6783a4df1",
   "sent_wrapper_sha256": "22da326e2794023076043d066195ae035a28790ba1ea2650796f072b5d0122ee",
@@ -73,5 +73,23 @@
         "guarded": true
       }
     ]
+  },
+  "result": {
+    "receipt": "8483c0c6783a4df1",
+    "seed_count": 12,
+    "mixed_parallel_mean_us": 344.5,
+    "mixed_parallel_median_us": 330.8,
+    "C1g2112_mean_us": 366.2,
+    "masked_mean_us": 450.2,
+    "quad_mixed_mean_us": 346.1,
+    "R0_W13_us": 212.4,
+    "R0_W2_us": 123.7,
+    "R0_finish_us": 15.0,
+    "W13_requested_TBs": 2.49,
+    "W13_unique_TBs": 1.87
+  },
+  "handoff": {
+    "path": "problems/muse_decode_layer/cand_r3_best7_s6.py",
+    "sha256": "4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f"
   }
 }

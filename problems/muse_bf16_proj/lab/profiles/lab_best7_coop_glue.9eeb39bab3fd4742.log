@@ -1,0 +1,81 @@
+FUSED_SELECT router m=128 incumbent_us=23.296 chosen=(64, 64, 4, 1, 8, 160) chosen_us=15.264 top=[(14.84800036996603, (64, 64, 4, 1, 8, 160)), (15.359999611973763, (64, 64, 4, 1, 16, 160)), (15.615999698638916, (64, 64, 4, 1, 16, 128)), (19.648000597953796, (128, 64, 3, 3, 32, 160))]
+FUSED_SELECT router m=256 incumbent_us=23.744 chosen=(64, 64, 4, 1, 8, 256) chosen_us=16.416 top=[(16.287999227643013, (64, 64, 4, 1, 8, 256)), (16.35199971497059, (64, 64, 4, 1, 8, 160)), (18.015999346971512, (64, 64, 4, 1, 8, 128)), (27.96800062060356, (256, 64, 2, 3, 32, 160))]
+FUSED_SELECT qkv_gate m=128 incumbent_us=25.760 chosen=None chosen_us=25.760 top=[(31.295999884605408, (128, 64, 3, 1, 4, 160)), (35.360001027584076, (64, 64, 4, 1, 2, 256)), (36.51199862360954, (64, 64, 4, 1, 2, 160))]
+FUSED_SELECT qkv_gate m=256 incumbent_us=29.504 chosen=None chosen_us=29.504 top=[(39.32800143957138, (128, 128, 2, 1, 2, 256)), (39.39199820160866, (128, 64, 4, 1, 2, 256)), (41.08799993991852, (128, 64, 4, 1, 2, 160))]
+FUSED_SELECT pooler m=128 incumbent_us=31.872 chosen=None chosen_us=31.872 top=[(31.647998839616776, ('lt', 0)), (33.63199904561043, ('lt_nn', 1)), (33.76000002026558, ('lt', 2)), (34.01599824428558, ('lt', 4)), (34.17599946260452, ('lt', 5))]
+FUSED_SELECT pooler m=256 incumbent_us=40.032 chosen=('lt_nn', 0) chosen_us=37.120 top=[(36.67199984192848, ('lt_nn', 0)), (38.24000060558319, ('lt_nn', 4)), (39.135999977588654, ('lt', 5)), (39.20000046491623, ('lt', 2)), (39.5519994199276, ('lt', 1))]
+FUSED_SELECT unpooler m=128 incumbent_us=29.536 chosen=('lt_nn', 0) chosen_us=29.344 top=[(29.823999851942062, ('lt', 2)), (29.920000582933426, ('lt_nn', 2)), (30.14400042593479, ('lt_nn', 0)), (30.81599995493889, ('lt_nn', 4)), (31.199999153614044, ('lt', 0))]
+FUSED_SELECT unpooler m=256 incumbent_us=33.568 chosen=None chosen_us=33.568 top=[(33.47200155258179, ('lt', 0)), (35.26400029659271, ('lt_nn', 0)), (35.42400151491165, ('lt', 2)), (35.80800071358681, ('lt_nn', 1)), (38.07999938726425, ('lt_nn', 3))]
+FUSED_SELECT o m=128 incumbent_us=13.344 chosen=('lt_nn', 0) chosen_us=12.960 top=[(12.768000364303589, ('lt_nn', 0)), (13.120000250637531, ('lt_nn', 4)), (13.151999562978745, ('lt', 2)), (13.248000293970108, ('lt', 5)), (13.279999606311321, ('lt_nn', 1))]
+FUSED_SELECT o m=256 incumbent_us=14.240 chosen=None chosen_us=14.240 top=[(14.271999709308147, ('lt_nn', 0)), (14.303999952971935, ('lt', 0)), (14.911999925971031, ('lt', 1)), (14.944000169634819, ('lt', 6)), (15.200000256299973, ('lt_nn', 4))]
+FUSED_SELECT prepare_s=8.01
+LAB_BEGIN best7_coop_glue da57e4ccf74a6d65
+META cooperative glue: one RMS per row, 8 CTA chunks/row, resident cooperative grid; pool/tail/all/epi + route metadata v1
+META proj host: synthetic packed NVFP4 expert seed5252 (32 experts), dense seed941732; identical arms; cold ABBA6 + AA; flips disable cells
+SETUP seconds=42.0 remain=234.9
+G0 pool n=3 A/B=103.46/156.80 ratio=1.5164 AA=1.42 err=0.00050
+G0 tail n=3 A/B=103.82/123.56 ratio=1.1903 AA=1.42 err=0.00159
+G0 all n=3 A/B=103.87/176.65 ratio=1.7017 AA=1.42 err=0.00152
+G0 epi n=3 A/B=104.07/169.26 ratio=1.6276 AA=1.42 err=0.00159
+G0 route n=3 A/B=104.04/327.70 ratio=3.1540 AA=1.42 err=0.00017
+G1 pool n=3 A/B=113.11/166.30 ratio=1.4708 AA=0.77 err=0.00017
+G1 tail n=3 A/B=112.98/132.82 ratio=1.1759 AA=0.77 err=0.00154
+G1 all n=3 A/B=112.77/186.23 ratio=1.6523 AA=0.77 err=0.00154
+G1 epi n=3 A/B=113.23/178.66 ratio=1.5789 AA=0.77 err=0.00154
+G1 route n=3 A/B=113.27/337.27 ratio=2.9806 AA=0.77 err=0.00023
+G2 pool n=3 A/B=139.69/228.63 ratio=1.6384 AA=-0.42 err=0.00126
+G2 tail n=3 A/B=139.31/204.23 ratio=1.4671 AA=-0.42 err=0.00021
+G2 all n=3 A/B=139.68/293.32 ratio=2.1022 AA=-0.42 err=0.00127
+G2 epi n=3 A/B=139.43/293.02 ratio=2.1033 AA=-0.42 err=0.00127
+G2 route n=3 A/B=139.42/564.70 ratio=4.0538 AA=-0.42 err=0.00047
+G3 pool n=3 A/B=231.99/325.65 ratio=1.4041 AA=-0.38 err=0.00087
+G3 tail n=3 A/B=232.27/297.30 ratio=1.2802 AA=-0.38 err=0.00017
+G3 all n=3 A/B=231.83/390.47 ratio=1.6850 AA=-0.38 err=0.00086
+G3 epi n=3 A/B=232.18/389.14 ratio=1.6766 AA=-0.38 err=0.00086
+G3 route n=3 A/B=231.99/654.98 ratio=2.8235 AA=-0.38 err=0.00041
+G4 pool n=3 A/B=166.32/343.58 ratio=2.1305 AA=-0.42 err=0.00133
+G4 tail n=3 A/B=166.01/308.10 ratio=1.9076 AA=-0.42 err=0.00012
+G4 all n=3 A/B=167.28/484.37 ratio=3.0151 AA=-0.42 err=0.00133
+G4 epi n=3 A/B=167.37/492.04 ratio=3.0670 AA=-0.42 err=0.00133
+G4 route n=3 A/B=167.68/1045.56 ratio=5.5341 AA=-0.42 err=0.00016
+G5 pool n=3 A/B=349.48/528.91 ratio=1.5199 AA=-0.28 err=0.00134
+G5 tail n=3 A/B=349.30/490.76 ratio=1.4103 AA=-0.28 err=0.00015
+G5 all n=3 A/B=350.31/673.52 ratio=1.9343 AA=-0.28 err=0.00135
+G5 epi n=3 A/B=349.25/675.24 ratio=1.9449 AA=-0.28 err=0.00135
+G5 route n=3 A/B=348.50/1222.00 ratio=3.3283 AA=-0.28 err=0.00034
+G6 pool n=3 A/B=108.51/162.29 ratio=1.5011 AA=0.68 err=0.00090
+G6 tail n=3 A/B=108.04/126.23 ratio=1.1700 AA=0.68 err=0.00003
+G6 all n=3 A/B=108.19/180.15 ratio=1.6718 AA=0.68 err=0.00088
+G6 epi n=3 A/B=108.03/172.92 ratio=1.6071 AA=0.68 err=0.00087
+G6 route n=3 A/B=107.97/280.84 ratio=2.5148 AA=0.68 err=0.00014
+G7 pool n=3 A/B=114.46/170.95 ratio=1.4995 AA=-0.06 err=0.00084
+G7 tail n=3 A/B=114.34/132.56 ratio=1.1609 AA=-0.06 err=0.00010
+G7 all n=3 A/B=114.47/189.17 ratio=1.6603 AA=-0.06 err=0.00086
+G7 epi n=3 A/B=114.80/180.28 ratio=1.5768 AA=-0.06 err=0.00087
+G7 route n=3 A/B=114.46/224.10 ratio=1.8645 AA=-0.06 err=0.00019
+G8 pool n=3 A/B=219.21/917.55 ratio=4.9179 AA=0.93 err=0.00195
+G8 tail n=3 A/B=218.42/801.61 ratio=4.2861 AA=0.93 err=0.00015
+G8 all n=3 A/B=218.63/1500.54 ratio=8.2232 AA=0.93 err=0.00195
+G8 epi n=3 A/B=218.49/1552.97 ratio=8.5262 AA=0.93 err=0.00195
+G8 route n=3 A/B=219.14/388.08 ratio=1.7200 AA=0.93 err=0.00008
+G9 pool n=3 A/B=393.99/1095.08 ratio=2.9001 AA=1.42 err=0.00196
+G9 tail n=3 A/B=393.19/976.26 ratio=2.5848 AA=1.42 err=0.00012
+G9 all n=3 A/B=394.26/1680.89 ratio=4.4878 AA=1.42 err=0.00196
+G9 epi n=3 A/B=394.00/1734.18 ratio=4.6331 AA=1.42 err=0.00196
+G9 route n=3 A/B=394.46/562.73 ratio=1.3920 AA=1.42 err=0.00006
+DISABLED {"case":10,"cell":"pool","seed":188741,"disabled":true,"reason":"route_flip","flips":1,"tokens":256,"near_tie":false,"product_l2":9.446393050893676e-06,"gap8_9":[0.0013452768325805664],"max_score_delta":[2.8014183044433594e-06],"cutoff_loss":[0.0],"token_index":[15],"actual":[[195,46,109,214,94,173,172,81]],"control":[[195,46,109,214,94,172,173,81]]}
+G10 pool n=2 A/B=337.48/1729.25 ratio=5.6727 AA=-0.38 err=0.00290
+G10 tail n=3 A/B=280.49/1439.46 ratio=5.9145 AA=-0.38 err=0.00102
+DISABLED {"case":10,"cell":"all","seed":188741,"disabled":true,"reason":"route_flip","flips":1,"tokens":256,"near_tie":false,"product_l2":9.446393050893676e-06,"gap8_9":[0.0013452768325805664],"max_score_delta":[2.8014183044433594e-06],"cutoff_loss":[0.0],"token_index":[15],"actual":[[195,46,109,214,94,173,172,81]],"control":[[195,46,109,214,94,172,173,81]]}
+G10 all n=2 A/B=338.25/2888.64 ratio=9.5254 AA=-0.38 err=0.00292
+DISABLED {"case":10,"cell":"epi","seed":188741,"disabled":true,"reason":"route_flip","flips":1,"tokens":256,"near_tie":false,"product_l2":9.446393050893676e-06,"gap8_9":[0.0013452768325805664],"max_score_delta":[2.8014183044433594e-06],"cutoff_loss":[0.0],"token_index":[15],"actual":[[195,46,109,214,94,173,172,81]],"control":[[195,46,109,214,94,172,173,81]]}
+G10 epi n=2 A/B=338.09/3009.89 ratio=9.9261 AA=-0.38 err=0.00290
+G10 route n=3 A/B=281.74/294.73 ratio=1.0561 AA=-0.38 err=0.00109
+LEGACY_CASE10 {"flips":1,"tokens":256,"near_tie":false,"product_l2":9.430958016309887e-06,"gap8_9":[0.0013452768325805664],"max_score_delta":[2.8014183044433594e-06],"cutoff_loss":[0.0],"token_index":[15],"actual":[[195,46,109,214,94,173,172,81]],"control":[[195,46,109,214,94,172,173,81]],"candidate_min_gap8_9":1.2159347534179688e-05}
+SKIP G11 pool disabled M=256
+G11 tail n=3 A/B=635.19/1801.68 ratio=2.9020 AA=-0.63 err=0.00110
+SKIP G11 all disabled M=256
+SKIP G11 epi disabled M=256
+G11 route n=3 A/B=634.50/647.90 ratio=1.0221 AA=-0.63 err=0.00111
+END timed=168/180 disabled=3 maxL2=0.002919 seconds=79.3
+LAB_END lab_s=79.4 prepare_s=87.4

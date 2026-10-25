@@ -64,8 +64,11 @@ void ring(const B* __restrict__ w,const B* __restrict__ x,float* __restrict__ y,
 #pragma unroll
         for(int kk=0;kk<KC;kk+=32){
           const int off=kk+(lane%4)*8;
-          uint4 a=ld(tile+stage*R*KC+r*KC+off);
-          uint4 b=ld(tile+stage*R*KC+(r+8)*KC+off);
+          // Lossless odd-row64B XOR makes each eight-lane LDS.128 segment
+          // address all32 banks, instead of colliding between its two rows.
+          const int sw=off^(KC>=64?((r&1)*32):0);
+          uint4 a=ld(tile+stage*R*KC+r*KC+sw);
+          uint4 b=ld(tile+stage*R*KC+(r+8)*KC+sw);
           uint4 v=t<M?ld(x+(size_t)t*K+k+off):uint4{};
           mma(acc[c],a,b,v);
         }
@@ -108,7 +111,15 @@ void ring(const B* __restrict__ w,const B* __restrict__ x,float* __restrict__ y,
 template<int R,int KC,int ST,int TM>
 cudaError_t launch(const B* w,const B* x,float* y,uint64_t* stamps,int M,int N,int K,
                    int splits,int slots,int grid,int reserve,bool pdl,cudaStream_t stream){
-  if(grid==0)return cudaFuncSetAttribute(ring<R,KC,ST,TM>,cudaFuncAttributeMaxDynamicSharedMemorySize,reserve);
+  if(grid==0){
+    // Configurations share this specialization. A smaller per-launch reserve
+    // must never lower the limit of an already-captured larger-reserve cell.
+    int device=0,limit=0;cudaError_t e=cudaGetDevice(&device);
+    if(e!=cudaSuccess)return e;
+    e=cudaDeviceGetAttribute(&limit,cudaDevAttrMaxSharedMemoryPerBlockOptin,device);
+    if(e!=cudaSuccess)return e;
+    return cudaFuncSetAttribute(ring<R,KC,ST,TM>,cudaFuncAttributeMaxDynamicSharedMemorySize,limit);
+  }
   cudaLaunchAttribute attr{};attr.id=cudaLaunchAttributeProgrammaticStreamSerialization;
   attr.val.programmaticStreamSerializationAllowed=pdl;
   cudaLaunchConfig_t cfg{};cfg.gridDim=grid;cfg.blockDim=128;cfg.dynamicSmemBytes=reserve;

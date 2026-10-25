@@ -1,26 +1,28 @@
 # Projection lane focus (P7 / G1)
-Serves: G1, G2. G0 is the overall decode-layer board score (R-20261025-1).
+Serves G1/G2: the overall decode-layer board score.
 
-P10 hardware-compression recipe closed on H2004233660b1bff4d18.
-Send3110dc39be425573; support1/create success/granted1.
-Zero/pattern BW2.0265x/1.7008x; real raw/recoded NVFP4 and BF16~1.00x.
-NT1 M1/M8 and QKV/O time ratios1.0025/1.0009/0.9996/1.0024: no gain.
-Mapped bytes, W2, ordered MoE and dense outputs bit-exact.
-Incumbent norm atomics vary even AA (M1 10/24, M8 16/24); raw failures retained.
-No compression drop-in emitted. `dev/memory_compression/h200_result.json` owns it.
+P7 bulk-ring batch: `dev/bulk_ring/`, real proj-host BF16/FP32 weights.
+Held send ef2048bf49b3fdf4, PID4164652; gate09:02KST, behind MoE09:01.
+16 role/M pairs,21 configs,4 O/boundary/pool segments, unchanged O/config6.
+Cold256MiB, AB/BA, three input banks, producer+consumer AA, segment AA.
+Pool+router M32 is the largest3.6TB/s gap:12.72us/layer,788.5us x62.
+QKV leads at M1/M8; pool+router at M16/M32. FINDINGS owns all16 rows.
+Native persistent equal-work grid,1/2CTA perSM,4/8-stage bulk-copy ring.
+Lossless row-swizzled BF16 tiles; explicit splits1/2/4/8; fused consumer reduction.
+Hopper residency capped by smem; each CTA differs by at most one K tile.
+756 checks/252 graphs,9 host tests,33 spill-free sm90a kernels; forced smem stand-ins.
+Local O/OP routes flip at M8/16/32; pool-only exact. H200 timing unmeasured.
+`dev/bulk_ring/manifest.json` binds source; README owns reproduction.
 
-P7 fixed-cost95ab383de42a4fae landed:15/16 role finalists lose.
-Native observer entry-first47-101cycles; PDLwait10-11; mainloops dominate.
-M1 pool removes2.49us from consumer but adds3.01us producer time: loses3.4%.
-Next implementation lever is mainloop transport/weight reuse, not fewer CTAs alone.
-Measured candidate: M1 O/config6, BF16, full key(1,1,0).
-Producer+consumer15.39->15.04us (r0.9783); O/boundary/pool41.95->41.29 (r0.9846).
-6 live full/sliding cases: exact routes and official gates; max hidden drift0.1833%.
-Cell: `dev/gemv_fixed/projection.py`, Best7ProjectionCell.
+95ab383d:15/16 unsplit register-MMA finalists lose; mainloops dominate.
+Native entry-first47-101cycles, PDLwait10-11; fewer CTAs alone is insufficient.
+M1 O/config6: producer+consumer15.39->15.04us, segment41.95->41.29us.
+6 live full/sliding cases pass; exact routes; max hidden drift0.1833%.
+Existing cell `dev/gemv_fixed/projection.py`, Best7ProjectionCell;
 SHA256 c42e9fcc02a6ce57652507e763e1c5dbd67fc459b32a14684f379ac2ffe9d9fe
-Decode handoff: `dev/gemv_fixed/handoff.json`; no scored dispatch changed.
-Whole-layer H200 score gain/sliding latency unmeasured; bundle with larger change.
-Full decomposition: `dev/gemv_fixed/h200_result.json`; README owns reproduction.
+Decode handoff `dev/gemv_fixed/handoff.json`; whole-layer H200 gain unmeasured.
 
-Oracle09d19813 caps later-stage prefetch~2-4us; chain87dc944b loses38.3->57.7us M1.
-PDL7426e17c measured one M1 case, noise; remaining cases failed the0.3% gate.
+P10 compression4233660b granted; zero/pattern BW2.03x/1.70x, real weights~1x.
+No compression drop-in. `dev/memory_compression/h200_result.json` owns evidence.
+Oracle09d19813 caps later-stage prefetch~2-4us; chain87dc944b loses38.3->57.7us.
+PDL7426e17c measured one M1 case, noise; remaining cases failed0.3% gate.

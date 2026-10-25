@@ -1,5 +1,5 @@
 {
-  "hardware": "H20097be11d4631b44d6 confirms the distributed W2 repair: raw CTA1g2112 mean385.2us vs masked447.6. H2009e8a6a15 confirms full lossless recode C1g2112 mean365.2 vs same-run raw386.1. Both integrated in decode S2/S3; new W13-only issue lab8483c0c6783a4df1 accepted, timing pending.",
+  "hardware": "H20097be11d4 raw CTA1g2112385.2us;9e8a6a15 recoded C1g2112365.2us;8483c0c6 vector mixed_parallel344.5us, all12seed gates pass, integrated decode S6. New M256 expert/phase matrix45arms locally admitted; send7c2160b9dbc119ad held until2026-10-25 09:01KST, new H200 performance unmeasured.",
   "files": {
     "problems/muse_decode_layer/dev/parked/cand_r3_mixed_wgmma.py": "4b3753823bd6176bda1abc2b373e87ebeb32418c7e941e323525674081338dcb",
     "problems/muse_decode_layer/cand_r3_omni.py": "74e6e09d0164087d2431bf463f2b8cc7c1cae972934199d038ac21e665bafe01",

@@ -1,0 +1,37 @@
+{
+  "cuda_sha256": "81d1859f3608a08e1b2c81aed6f34a21fac0f8c2deb6255c481737d8a0b253b3",
+  "target": "sm_90a",
+  "rows": [
+    {
+      "nt": 4,
+      "registers_per_thread": 248,
+      "dynamic_smem_bytes": 20480,
+      "grid_ctas": 132,
+      "registers_per_cta": 63488,
+      "register_limit_ctas_per_sm": 1,
+      "resident_warps_with_actual_grid": 8,
+      "actual_resident_warp_fraction": 0.125
+    },
+    {
+      "nt": 2,
+      "registers_per_thread": 164,
+      "dynamic_smem_bytes": 10240,
+      "grid_ctas": 132,
+      "registers_per_cta": 41984,
+      "register_limit_ctas_per_sm": 1,
+      "resident_warps_with_actual_grid": 8,
+      "actual_resident_warp_fraction": 0.125
+    },
+    {
+      "nt": 1,
+      "registers_per_thread": 124,
+      "dynamic_smem_bytes": 5120,
+      "grid_ctas": 132,
+      "registers_per_cta": 31744,
+      "register_limit_ctas_per_sm": 2,
+      "resident_warps_with_actual_grid": 8,
+      "actual_resident_warp_fraction": 0.125
+    }
+  ],
+  "instruction": "source unchanged; strip host launch/includes and explicitly instantiate the three prefix specializations"
+}

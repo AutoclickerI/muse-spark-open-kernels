@@ -23,7 +23,7 @@ def compile_source(p):
         if m:registers[name]=int(m[1])
     entries=[]
     for part in sass.split('Function : ')[1:]:
-        name=part.splitlines()[0].strip();ops=re.findall(r'/\*[0-9a-f]+\*/\s+(?:@!?P\d+\s+)?([A-Z][A-Z0-9_.]*)\s*(.*?)\s*;',part)
+        name=part.splitlines()[0].strip();ops=re.findall(r'/\*[0-9a-f]+\*/\s+(?:@!?U?P\d+\s+)?([A-Z][A-Za-z0-9_.]*)\s*(.*?)\s*;',part)
         counts=Counter(op for op,arg in ops);local=sum(op.startswith(('LDL','STL')) for op,arg in ops)
         assert local==0,(name,local)
         if 'heavyI' in name:
@@ -91,26 +91,37 @@ def ring_gate():
 
 
 def main():
-    tree=ast.parse((ROOT/'prof/lab/moe_nt1_fixed.py').read_text())
+    payload=(ROOT/'prof/lab/moe_nt1_fixed.py').read_text()
+    frozen=next((ROOT/'runs/muse_moe_w4a16').glob('*383ccc1fbbae41e2.py'))
+    t=ast.parse(frozen.read_text());all_payloads=next(ast.literal_eval(n.value) for n in t.body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='_LAB_PAYLOADS')
+    accepted=next(text for name,sha,text in all_payloads if name=='moe_nt1_fixed')
+    assert hashlib.sha256(payload.encode()).digest()==hashlib.sha256(accepted.encode()).digest()
+    tree=ast.parse(accepted)
     src=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='NT1_SOURCES')
     result={}
     for name in ('INC','D','D128'):
         p=HERE/('audit_'+name+'.cu');p.write_text(src[name]);result[name]=compile_source(p)
     new=compile_source(HERE/'pc.cu');assert new['no_C7513']
     result['PC']=new
-    report=dict(native=result,bank_model=bank_gate(),ring_interleavings=ring_gate(),
+    report=dict(native=result,source_matches_H200383ccc=True,accepted_payload_sha256=hashlib.sha256(accepted.encode()).hexdigest(),bank_model=bank_gate(),ring_interleavings=ring_gate(),
         old_tile_model=dict(weight_values=65536,NT1_raw_TMA_requests=1,D_raw_TMA_requests=8,D128_raw_TMA_requests=4,
             D_mbarrier_arrivals_per_tile=128,D128_mbarrier_arrivals_per_tile=64,NT1_empty_arrivals_per_tile=8,
             D_decoded_shared_write_bytes=131072,D_decoded_shared_read_bytes=131072,
             D_producer_threads=128,D_consumer_threads=256,NT1_decode_threads=256,
             D_consumer_A_loads=32,D128_consumer_A_loads=32,NT1_register_A_roundtrip_bytes=0,
+            D_consumer_B_LD64_per_lane_per_tile=32,NT1_B_LD128_per_lane_per_expert_block_segment=16,
+            D_consumer_B_bytes_per_lane_per_tile=256,NT1_B_bytes_per_lane_per_segment=256,
+            B_register_cache_regression='NT1 retains Bf across cc contiguous channel tiles for a fixed expert/token block; D removes Bf and reloads all B for every channel tile. B load issue grows2*cc and B bytes growcc, before caching. cc=min(ntile,max(1,round(U/grid))); this is a logical request count, not DRAM bytes.',
+            D_BF16x2_mul_per_producer_lane_per_microstage=32,D128_BF16x2_mul_per_producer_lane_per_microstage=64,
+            D_mma_per_consumer_lane_per_microstage=4,D128_mma_per_consumer_lane_per_microstage=8,
+            issue_floor='D64 has128 producer-warp BF16x2 mul instructions plus32 consumer-warp MMA issues per microstage before unpack/scale/address/store/load/barriers. At4 warp instructions/cycle this is40cycles/8192 weights across one CTA, not a measured clock rate; unpack and address work add substantially.',
             note='Logical loop counts for one original16x4096 tile/token block, excluding initialization/epilogue/poll retries. Arrival totals count all warp leaders, not warp-instruction throughput.'),
         occupancy_model=dict(SM90_registers=65536,CTA_register_rounding='8 registers/thread at warp granularity',
             INC=dict(registers=125,threads=256,rounded_CTA_registers=32768,max_CTAs_by_registers=2,consumer_warps_at_2_CTAs=16),
             D=dict(registers=70,threads=384,rounded_CTA_registers=27648,max_CTAs_by_registers=2,consumer_warps_at_2_CTAs=16,producer_warps_at_2_CTAs=8),
             D128=dict(registers=78,threads=384,rounded_CTA_registers=30720,max_CTAs_by_registers=2),
             note='Register-derived upper bounds agree with H200 receipt grid264. Grid is not an independent occupancy counter; actual active blocks are printed in the new lab.'),
-        inference='No spills and no submitted-layout bank conflict. D halves decode warp width, adds BF16 shared roundtrip,8/4 fine-grain TMA+handshake stages, extra A/B load and address issue, and per-microtile schedule decoding. D128 gains18% while retaining these costs. Counts establish added work, not exact causal stall percentages.')
+        inference='No spills and no submitted-layout bank conflict. D drops register-cached activations across channel tiles, halves decode warp width, adds BF16 shared roundtrip,8/4 fine-grain TMA+handshake stages, extra A/B load and address issue, and per-microtile schedule decoding. D128 gains18% while retaining B reloads and roundtrip costs. Counts establish added work, not exact causal stall percentages.')
     (HERE/'audit.json').write_text(json.dumps(report,indent=2)+'\n');print('PC_AUDIT_PASS',len(new['kernels']),'new kernels; old D no spills; conflict-free; ring states',sum(v['states'] for v in report['ring_interleavings']),flush=True)
 
 

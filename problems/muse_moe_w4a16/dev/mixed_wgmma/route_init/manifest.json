@@ -1,0 +1,14 @@
+{
+  "payload": "prof/lab/moe_route_init_m256.py",
+  "sha256": "0763abdfe6d5d6326a327202df583b308900619aac52156153e7a1766c90632a",
+  "S6_sha256": "4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f",
+  "original_FX_CUDA_sha256": "345fa7bfe2a8367cb5d3fe63de72caf81750c79fdf39f4a38ef69927ec72666e",
+  "augmented_FX_CUDA_sha256": "97f31400a386af6f10365fe09fc6fd4abfb5b999518e0afb7f6e76c195b5159e",
+  "live_route_sha256": "2aec97c77a235e0c9a98379590f6c1a1508bb6f75d5011ea56485fe8dce90275",
+  "stages": [
+    "S6 original grid128",
+    "dead stores removed grid128",
+    "same live route kernel grid1"
+  ],
+  "not_before": "2026-10-25T09:01:00+09:00"
+}

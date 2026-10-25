@@ -23,7 +23,7 @@ for t in (1,5,8,16,17,32):
         for pdl in (False,True):
             op=m.BulkRingProjection(w,t,config,pdl=pdl,trace=True,grid=132*m.BR_CONFIGS[config][-1])
             # Lossless inverse packing check uses bits, not a numeric tolerance.
-            raw=op.w.permute(1,3,0,2,4).reshape_as(w)
+            raw=m.br_swizzle(op.w).permute(1,3,0,2,4).reshape_as(w)
             assert torch.equal(raw.view(torch.int16),w.view(torch.int16))
             graph,out=m.gf_graph(lambda:op(x));graphs+=1
             for seed in range(3):

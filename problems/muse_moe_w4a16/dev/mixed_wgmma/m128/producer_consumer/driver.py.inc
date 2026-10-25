@@ -6,17 +6,18 @@ PC_SMALL=[]
 def pc_module():
     arch='90a' if torch.cuda.get_device_capability()==(9,0) else '120'
     mod=load_inline(name='m128_pc_'+hashlib.sha256(PC_CUDA.encode()).hexdigest()[:12],cpp_sources=PC_CPP,cuda_sources=PC_CUDA,
-        functions=['pc_init','pc_info','pc_run','pc_meta'],no_implicit_headers=True,with_pytorch_error_handling=False,
+        functions=['pc_init','pc_info','pc_run','pc_meta','pc_probe'],no_implicit_headers=True,with_pytorch_error_handling=False,
         extra_cuda_cflags=['-O3','-std=c++20','-lineinfo','-gencode=arch=compute_'+arch+',code=sm_'+arch],verbose=False)
     mod.pc_init();return mod
 
 
-def pc_plan(data,state,which=1,grid=1056,mask=3,cut=16):
+def pc_plan(data,state,which=1,grid=1056,mask=3,cut=16,pcut=None):
     x=data['hidden_states'];m=x.shape[0];dev=x.device
     if not 1<=m<=128:raise ValueError('producer capacity covers M1..128')
+    if pcut is None:pcut=cut
     base=state['base'];word=state['word'];native=state['native'];cap=m*8+32*128
     c=torch.empty(32,device=dev,dtype=torch.int32);off=torch.empty(33,device=dev,dtype=torch.int32);order=torch.empty_like(c)
-    tasks=[torch.empty_like(off) for _ in range(3)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
+    tasks=[torch.empty_like(off) for _ in range(4)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
     ids=data['topk_ids'].int().contiguous();tw=data['topk_weights'].float().contiguous();pos=torch.empty_like(ids)
     clear=(cap//32)*193+m;counts=torch.empty(clear+m,device=dev,dtype=torch.int32)
     act=torch.empty((cap,4096),device=dev,dtype=torch.bfloat16);part=torch.empty(1,device=dev)
@@ -27,23 +28,26 @@ def pc_plan(data,state,which=1,grid=1056,mask=3,cut=16):
         v[7]=task;return v
     v13=vector(base,1,tasks[1]);v2=vector(base,0,tasks[1]);h13=vector(word,1,tasks[2]);h2=vector(word,0,tasks[2])
     nv=[x,base['pnw'],native['w13p'],native['w2p'],base['w13_gs'],base['w2_gs'],c,off,slots,act,y,ss]
-    ptrs=[[v.data_ptr() for v in row] for row in (v13,v2,h13,h2,nv)]
+    mid13=vector(word,1,tasks[3]);mid2=vector(word,0,tasks[3])
+    ptrs=[[v.data_ptr() for v in row] for row in (v13,v2,h13,h2,nv,mid13,mid2)]
     rp=[v.data_ptr() for v in (ids,c,off,order,tasks[0],slots,pos,counts,out)]
-    mp=[v.data_ptr() for v in (c,order,tasks[1],tasks[2],ss)]
-    old=m128_hh_pm_module();mod=pc_module();start=data['config'].get('local_start',0);owners=(v13,v2,h13,h2,nv,tasks,ids,tw)
+    mp=[v.data_ptr() for v in (c,order,tasks[1],tasks[2],tasks[3],ss)]
+    old=m128_hh_pm_module();mod=pc_module();start=data['config'].get('local_start',0);owners=(v13,v2,h13,h2,nv,mid13,mid2,tasks,ids,tw)
     stages=2
     while stages>1 and old.pm_nt_smem(stages,m)>M128_HH_ISSUE_OPTS['pm_nt']:stages-=1
     ngrids={f:native['grid']*old.pm_nt_resident(stages,m,f,1) for f in (0,1)}
     def stream():return torch.cuda.current_stream().cuda_stream
     def route():
         _=owners
-        old.idist_route(rp,m,32,start,clear,stream());mod.pc_meta(mp,cap,cut,stream())
+        old.idist_route(rp,m,32,start,clear,stream());mod.pc_meta(mp,cap,cut,pcut,stream())
     def light(first):
         _=owners
         if cut:old.pm_nt_run(ptrs[4],first,1,m,stages,ngrids[first],stream())
     def heavy(first):
         _=owners
-        if mask&(1 if first else 2):mod.pc_run(ptrs[0 if first else 1],first,which,grid,m,stream())
+        if mask&(1 if first else 2):
+            if pcut>cut:old.idist_run(ptrs[5 if first else 6],first,1,1056,start,1,0,m,cap,stream())
+            mod.pc_run(ptrs[0 if first else 1],first,which,grid,m,stream())
         else:old.idist_run(ptrs[2 if first else 3],first,1,1056,start,1,0,m,cap,stream())
     def a_light():light(1)
     def a_heavy():heavy(1)
@@ -57,15 +61,16 @@ def pc_plan(data,state,which=1,grid=1056,mask=3,cut=16):
     return dict(steps=(route,first,second,finish),components=(route,a_light,a_heavy,b_light,b_heavy,finish),owners=owners,v13=v13,v2=v2,tasks=tasks,out=out)
 
 
-def pc_call(data,state,which,grid,mask=3,cut=16):
-    for fn in pc_plan(data,state,which,grid,mask,cut)['steps']:out=fn()
+def pc_call(data,state,which,grid,mask=3,cut=16,pcut=None):
+    for fn in pc_plan(data,state,which,grid,mask,cut,pcut)['steps']:out=fn()
     return out
 
 
-PC_CHOICES=(('HH_route',1,1056,0),('P32s2',0,1056,3),('P64s2',1,1056,3),('P128s2',2,1056,3),
+PC_CHOICES=tuple((*v,16) for v in (('HH_route',1,1056,0),('P32s2',0,1056,3),('P64s2',1,1056,3),('P128s2',2,1056,3),
     ('P64s3',3,1056,3),('P64g528',1,528,3),('P64g2112',1,2112,3),
     ('A32s2',0,1056,1),('A64s2',1,1056,1),('A128s2',2,1056,1),('A64s3',3,1056,1),
-    ('A64g528',1,528,1),('A64g2112',1,2112,1),('B64s2',1,1056,2))
+    ('A64g528',1,528,1),('A64g2112',1,2112,1),('B64s2',1,1056,2)))+(
+    ('T32_P64',1,1056,3,32),('T32_A64',1,1056,1,32),('T32_P128',2,1056,3,32))
 PC_NAMES=('HH_admitted',)+tuple(v[0] for v in PC_CHOICES)
 
 
@@ -74,10 +79,10 @@ def pc_measure(w,state,ds,flush,small=False):
     if small:
         tiny=lop3_bind(state['native'])
         graphs=[MWGraph(lambda d:lop3_experts(d['hidden_states'],d['topk_weights'],d['topk_ids'],tiny),ds[0])]
-        choices=(('P64s2',1,1056,3),('P64s3',3,1056,3));names=('NT1lop',)+tuple(c[0] for c in choices)
+        choices=(('P64s2',1,1056,3,0),('P64s3',3,1056,3,0));names=('NT1lop',)+tuple(c[0] for c in choices)
     else:
         graphs=[MWGraph(lambda d:hh_experts(d['hidden_states'],d['topk_weights'],d['topk_ids'],state),ds[0])];choices=PC_CHOICES;names=PC_NAMES
-    graphs += [MWGraph(lambda d,c=c,g=g,p=p:pc_call(d,state,c,g,p,0 if small else 16),ds[0]) for name,c,g,p in choices]
+    graphs += [MWGraph(lambda d,c=c,g=g,p=p,q=q:pc_call(d,state,c,g,p,0 if small else 16,q),ds[0]) for name,c,g,p,q in choices]
     errors=[[0.,0.] for g in graphs];records=[];a=torch.cuda.Event(enable_timing=True);b=torch.cuda.Event(enable_timing=True)
     for index,(data,want) in enumerate(zip(ds,wants)):
         for j,g in enumerate(graphs):
@@ -102,8 +107,8 @@ def pc_measure(w,state,ds,flush,small=False):
     return records
 
 
-def pc_phases(data,state,which,grid,mask,flush):
-    plan=pc_plan(data,state,which,grid,mask);steps=plan['components'];result=[]
+def pc_phases(data,state,which,grid,mask,pcut,flush):
+    plan=pc_plan(data,state,which,grid,mask,16,pcut);steps=plan['components'];result=[]
     for f in steps:f()
     a=torch.cuda.Event(enable_timing=True);b=torch.cuda.Event(enable_timing=True)
     for index,fn in enumerate(steps):
@@ -132,8 +137,8 @@ def lab(deadline,weights,state=None):
         w=dc_weights(5353+7919*seed,dev);w['w13_gs_gate']=w['w13_gs'];w['w13_gs_up']=w['w13_gs']
         bank=hh_prepare(w);ds=dc_fixtures(w,128);rows=pc_measure(w,bank,ds,flush);PC_ROWS.extend(dict(seed=seed,**v) for v in rows)
         if seed==0:
-            for name,c,g,p in PC_CHOICES:
-                if p==3 or p==0:phases.append('PH '+name+' r/Al/Ah/Bl/Bh/f='+','.join(f'{v:.1f}' for v in pc_phases(ds[0],bank,c,g,p,flush)))
+            for name,c,g,p,q in PC_CHOICES:
+                if p==3 or p==0:phases.append('PH '+name+' r/Al/Ah/Bl/Bh/f='+','.join(f'{v:.1f}' for v in pc_phases(ds[0],bank,c,g,p,q,flush)))
         for M in (16,32):PC_SMALL.extend(dict(seed=seed,**v) for v in pc_measure(w,bank,dc_fixtures(w,M),flush,True))
         lines.append('S'+str(seed)+' us='+','.join(f'{statistics.mean(v["us"][j] for v in rows):.1f}' for j in range(len(PC_NAMES))))
         del bank,w,ds;gc.collect()

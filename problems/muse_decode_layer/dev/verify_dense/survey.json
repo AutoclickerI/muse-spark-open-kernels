@@ -1,0 +1,23 @@
+{
+  "deep_gemm_version": "0.2.1.post1+muse.cbe1727",
+  "cutlass_dsl_version": "4.8.0",
+  "deep_gemm_bf16": {
+    "torch.bfloat16": {
+      "available": true,
+      "error": 0.0016577692003920674,
+      "compile_s": 0.3048781729885377,
+      "graph": true
+    },
+    "torch.float32": {
+      "available": true,
+      "error": 8.061754215304973e-07,
+      "compile_s": 0.029789830034133047,
+      "graph": true
+    }
+  },
+  "sources": {
+    "/opt/sglang/lib/python3.12/site-packages/deep_gemm/__init__.py": "16ceded415051d5a5adfb3cce00eacc455d04a729b80a76428b96b3f9968018e",
+    "/opt/sglang/lib/python3.12/site-packages/deep_gemm/include/deep_gemm/impls/sm90_bf16_gemm.cuh": "3f12ad05796d7b8451604ff12e0a45ad1d9725a313919557bcdd9aa11c50e285",
+    "/opt/sglang/lib/python3.12/site-packages/nvidia_cutlass_dsl/dsl_packages/cutlass/utils/hopper_helpers.py": "8d2f76877def5a0ae81d05c20789a313430f43c98fcc345447790ffd7e5a54ad"
+  }
+}

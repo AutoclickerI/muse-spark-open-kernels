@@ -13,6 +13,13 @@ BR_CONFIGS={
  18:(128,64,8,4,1),19:(64,256,4,2,1),20:(64,128,8,4,1)}
 _BR_LIB=None
 
+def br_swizzle(packed):
+    """Self-inverse row XOR, preserving every BF16 bit."""
+    ks,rows,uk,r,kc=packed.shape
+    if kc<64:return packed
+    index=torch.arange(kc,device=packed.device).unsqueeze(0)^((torch.arange(r,device=packed.device)&1).unsqueeze(1)*32)
+    return packed.gather(-1,index.view(1,1,1,r,kc).expand(ks,rows,uk,r,kc)).contiguous()
+
 def br_library():
     global _BR_LIB
     if _BR_LIB is None:
@@ -46,7 +53,7 @@ class BulkRingProjection:
         if rows*uk*self.ks<self.grid:raise ValueError('insufficient weight tiles for equal grid')
         local=(self.grid+rows*self.ks-1)//(rows*self.ks)+1
         self.splits=self.ks*local
-        self.w=(w.view(rows,self.r,self.ks,uk,self.kc).permute(2,0,3,1,4).contiguous() if packed is None else packed)
+        self.w=(br_swizzle(w.view(rows,self.r,self.ks,uk,self.kc).permute(2,0,3,1,4).contiguous()) if packed is None else packed)
         self.out=torch.empty((self.splits,tokens,self.n),device=w.device,dtype=torch.float32)
         self.stamps=torch.empty((self.grid,5),device=w.device,dtype=torch.int64) if trace else None
         # Resolve attributes outside capture; reserve enough Hopper smem to cap

@@ -55,7 +55,7 @@ def main():
             rows.append(dict(name=name,registers=regs[name],local_memory=local,waits=waits,loop_instructions=count,per16_weights=count/4 if count else None,live_A_overwrites=0 if mma else None))
         report[key]=dict(sha256=hashlib.sha256(src.read_bytes()).hexdigest(),kernels=rows)
     addr=0
-    for n in (32,64):
+    for n in (16,32,64):
         for shared in (0,4096,5120,8192,9216):
             base=(shared+1023)//1024*1024+18432
             for st in range(4):

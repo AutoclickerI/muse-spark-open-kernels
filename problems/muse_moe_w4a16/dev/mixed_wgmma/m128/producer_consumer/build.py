@@ -24,16 +24,26 @@ def source():
 
 def main():
     cuda=source();(HERE/'pc.cu').write_text(cuda)
-    cpp=CPP_PRELUDE+'int64_t pc_init();std::vector<int64_t> pc_info(int64_t,int64_t,int64_t);void pc_run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t);void pc_meta(std::vector<int64_t>,int64_t,int64_t,int64_t);\n'
+    cpp=CPP_PRELUDE+'int64_t pc_init();std::vector<int64_t> pc_info(int64_t,int64_t,int64_t);void pc_run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t);void pc_meta(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t);void pc_probe(std::vector<int64_t>,int64_t);\n'
     cuda+='''
-__global__ void pc_meta_kernel(const int*C,const int*ORDER,int*T,int*T32,float*SS,int cap,int cut){
+__global__ void pc_meta_kernel(const int*C,const int*ORDER,int*T,int*T32,int*MID,float*SS,int cap,int cut,int pcut){
  int t=threadIdx.x,all=blockIdx.x*blockDim.x+t;
  for(int i=all;i<cap*64;i+=gridDim.x*blockDim.x)SS[i]=0.f;
- if(blockIdx.x==0&&t<32){int n=C[ORDER[t]],v=n>cut,b=v?(n+31)/32:0;
-  for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,v,d),c=__shfl_up_sync(~0u,b,d);if(t>=d){v+=a;b+=c;}}
-  T[t+1]=v;T32[t+1]=b;if(t==0){T[0]=0;T32[0]=0;}}
+ if(blockIdx.x==0&&t<32){int n=C[ORDER[t]],v=n>pcut,b=n>cut?(n+31)/32:0,m=(n>cut&&n<=pcut)?(n+31)/32:0;
+  for(int d=1;d<32;d*=2){int a=__shfl_up_sync(~0u,v,d),c=__shfl_up_sync(~0u,b,d),e=__shfl_up_sync(~0u,m,d);if(t>=d){v+=a;b+=c;m+=e;}}
+  T[t+1]=v;T32[t+1]=b;MID[t+1]=m;if(t==0){T[0]=0;T32[0]=0;MID[0]=0;}}
 }
-void pc_meta(std::vector<int64_t>v,int64_t cap,int64_t cut,int64_t stream){pc_meta_kernel<<<128,256,0,(cudaStream_t)stream>>>((int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(float*)v[4],cap,cut);WX_CUDA_CHECK(cudaGetLastError());}
+void pc_meta(std::vector<int64_t>v,int64_t cap,int64_t cut,int64_t pcut,int64_t stream){pc_meta_kernel<<<128,256,0,(cudaStream_t)stream>>>((int*)v[0],(int*)v[1],(int*)v[2],(int*)v[3],(int*)v[4],(float*)v[5],cap,cut,pcut);WX_CUDA_CHECK(cudaGetLastError());}
+__global__ void pc_decode_probe(const int*Q,const uint8_t*S,__nv_bfloat16*OUT){
+ __shared__ __align__(128) unsigned char raw[2304];int t=threadIdx.x,w=t>>5,l=t&31;
+ for(int g=0;g<2;++g){int z=w*128+g;
+  if(l<16)pc::async_copy(raw+(g*128+w*32)*8+l*16,Q+z*64+l*4,16,1);
+  if(l<8)pc::async_copy(raw+2048+g*128+w*32+l*4,S+z*32+l*4,4,1);}
+ asm volatile("cp.async.commit_group;cp.async.wait_group 0;":::"memory");__syncwarp();unsigned af[16];
+ for(int g=0;g<2;++g){uint2 v=*(uint2*)(raw+(g*128+t)*8);unsigned sf=*(unsigned*)(raw+2048+g*128+w*32+(l>>2)*4);pc::dq(v.x,v.y,sf,af+g*8);}
+ for(int atom=0;atom<4;++atom)for(int j=0;j<4;++j){int r=w*16+(l>>2)+(j&1)*8,k=atom*16+(l&3)*2+(j>>1)*8;*(unsigned*)(OUT+r*64+k)=af[atom*4+j];}
+}
+void pc_probe(std::vector<int64_t>v,int64_t stream){pc_decode_probe<<<1,128,0,(cudaStream_t)stream>>>((int*)v[0],(uint8_t*)v[1],(__nv_bfloat16*)v[2]);WX_CUDA_CHECK(cudaGetLastError());}
 '''
     (HERE/'pc.cu').write_text(cuda)
     helpers=subset((ROOT/'prof/lab/moe_m128_phase_mix.py').read_text(),('dc_weights','dc_fixtures','dc_oracles','MWGraph','pm_error'))

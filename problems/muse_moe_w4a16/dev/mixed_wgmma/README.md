@@ -26,9 +26,10 @@ Hopper-address emulation. Native register-A lifetime audits retain wait1 overlap
 `native_abi.py` supplies lean pointer-only bindings; plans retain scratch owners and obtain
 current streams at launch. `check_tail.py`, `check_w2fix.py` and `dump_w2fix.py` reproduce these checks.
 
-Current work: [w13_issue/README.md](w13_issue/README.md), instruction/scale-copy cuts and
-N16-cold/N32-hot scheduling at fixed K128/S4/grid2112. New MoE-host lab8483c0c6783a4df1
-(send22da326e27940230) is accepted; performance pending. No new cell is promoted.
+Current measured M256 winner: [w13_issue/README.md](w13_issue/README.md), H2008483c0c6
+mixed_parallel344.5us versus C1366.2, already integrated in decode S6. New independent-phase
+NT1/WGMMA32/64 composition: [m256_mix/README.md](m256_mix/README.md). One45-arm MoE snapshot,
+send7c2160b9dbc119ad, releases2026-10-25 09:01 KST; its new ranking remains unmeasured.
 Lossless scale format/provenance: [recode/README.md](recode/README.md).
 Older CUTLASS numeric GEMM stays quarantined and out of candidates.
 

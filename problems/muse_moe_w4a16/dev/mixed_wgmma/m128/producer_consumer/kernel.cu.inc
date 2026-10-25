@@ -1,7 +1,7 @@
 namespace pc {
 __device__ __forceinline__ void pbar(){asm volatile("bar.sync 1,128;":::"memory");}
 __device__ __forceinline__ void cbar(){asm volatile("bar.sync 2,128;":::"memory");}
-__device__ __forceinline__ void init_bar(uint64_t*b){asm volatile("mbarrier.init.shared::cta.b64 [%0],1;"::"r"(smaddr(b)):"memory");}
+__device__ __forceinline__ void init_bar(uint64_t*b){asm volatile("mbarrier.init.shared::cta.b64 [%0],128;"::"r"(smaddr(b)):"memory");}
 __device__ __forceinline__ void arrive(uint64_t*b){asm volatile("mbarrier.arrive.shared::cta.b64 _,[%0];"::"r"(smaddr(b)):"memory");}
 __device__ __forceinline__ void wait_bar(uint64_t*b,unsigned phase){
  unsigned ok;
@@ -61,9 +61,9 @@ __device__ __forceinline__ void produce(const int*Q,const unsigned char*SF,const
    for(int j=0;j<4;++j){int r=w*16+(l>>2)+(j&1)*8,k=atom*16+(l&3)*2+(j>>1)*8;
     *(unsigned*)(as+r*64+(k^((r&7)*8)))=af[atom*4+j];}
   }
-  // All writers publish their generic shared writes to the async proxy before
-  // the leader releases full. No producer crosses a stage-reuse edge early.
-  asm volatile("fence.proxy.async.shared::cta;":::"memory");pbar();if(t==0)arrive(full+st);
+  // Each producer warp publishes its own generic/cp.async writes. Four
+  // arrivals complete full only after all four warps reach this point.
+  asm volatile("fence.proxy.async.shared::cta;":::"memory");__syncwarp();arrive(full+st);
  }
 }
 
@@ -87,7 +87,7 @@ __device__ __forceinline__ void consume(unsigned char*sm,uint64_t*full,uint64_t*
 #endif
   // Both shared descriptors remain live until wait0. The producer can fill
   // other slots while this group executes, but never overwrite this one.
-  cbar();if(t==0)arrive(empty+st);
+  __syncwarp();arrive(empty+st);
  }
 }
 
@@ -99,6 +99,7 @@ __global__ void __launch_bounds__(256,2) heavy(const int*Q,const unsigned char*S
  extern __shared__ __align__(1024) unsigned char raw[];
  unsigned char*sm=(unsigned char*)(((uintptr_t)raw+1023)&~(uintptr_t)1023);
  __shared__ uint64_t full[S],empty[S];
+ __shared__ int epilogue_meta[2];
  __shared__ __nv_bfloat16 epi[FIRST?32*CAP:1];__shared__ float rowsum[FIRST?1:4*CAP];
  constexpr int N=FIRST?8192:4096,MT=N/64;int tx=threadIdx.x,t=tx&127,w=t>>5,l=t&31;
  int groups=TASK[32];
@@ -108,6 +109,7 @@ __global__ void __launch_bounds__(256,2) heavy(const int*Q,const unsigned char*S
   for(int d=16;d;d>>=1)if(TASK[ix+d]<=group)ix+=d;
   int e=ORDER[ix],count=C[e],offset=OFF[e];
   if(tx==0){
+   epilogue_meta[0]=count;epilogue_meta[1]=offset;
    #pragma unroll
    for(int s=0;s<S;++s){init_bar(full+s);init_bar(empty+s);}
    asm volatile("fence.mbarrier_init.release.cluster;":::"memory");
@@ -130,6 +132,9 @@ __global__ void __launch_bounds__(256,2) heavy(const int*Q,const unsigned char*S
     if(count<=64)consume<CAP,64,NLIMIT,S>(sm,full,empty,acc);
     else consume<CAP,128,NLIMIT,S>(sm,full,empty,acc);
    }
+   // The output row metadata is needed only after the K loop. Explicit
+   // reloads prevent ptxas from spilling it across the live accumulators.
+   asm volatile("ld.shared.u32 %0,[%2];ld.shared.u32 %1,[%3];":"=r"(count),"=r"(offset):"r"(smaddr(epilogue_meta)),"r"(smaddr(epilogue_meta+1)):"memory");
    if constexpr(FIRST){
     #pragma unroll
     for(int j=0;j<CAP/2;++j){int r=(l&3)*2+(j&1)+(j>>2)*8,c=w*16+(l>>2)+((j>>1)&1)*8;
@@ -157,6 +162,12 @@ __global__ void __launch_bounds__(256,2) heavy(const int*Q,const unsigned char*S
   // All producers and consumers finish this expert/channel before barriers
   // are reinitialized for the persistent CTA's next task.
   __syncthreads();
+  if(tx==0){
+   #pragma unroll
+   for(int s=0;s<S;++s){
+    asm volatile("mbarrier.inval.shared::cta.b64 [%0];mbarrier.inval.shared::cta.b64 [%1];"::"r"(smaddr(full+s)),"r"(smaddr(empty+s)):"memory");
+   }
+  }
  }
 }
 }

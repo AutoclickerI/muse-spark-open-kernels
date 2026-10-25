@@ -1,6 +1,6 @@
 # MoE focus
-G1/G2: M128 MoE lane; M256 free lane raw385.2/rec365.2us in S2/S3. W13 lab8483c0c6 pending; serving parked.
-
+G1/G2: M128 MoE lane; free M256 mixed_parallel344.5us in S6; expert-mix45-arm send7c2160b9 held to09:01; serving parked.
+Free M256 handoff: problems/muse_decode_layer/cand_r3_best7_s6.py; SHA256 4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f.
 Incumbent H_H: H200770809cf159f41e2,234.44 vsD32g272.70/NT1rec289.62us;
 paired ratio0.8629 vsD32g,12 seeds x3 fixtures, all gates pass,L2/row.00413/.00469.
 Both W13 and W2: one-LOP3 recoded NT1 for count<=16; exact-u16-scale

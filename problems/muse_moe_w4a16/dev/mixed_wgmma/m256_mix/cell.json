@@ -1,0 +1,19 @@
+{
+  "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/m256_mix/unmeasured_cell.py",
+  "sha256": "7129046df7d3fe2f8f39793a4d56edf1bcc464fe70ef068563e134e41d0bc60a",
+  "W13": [
+    16,
+    32
+  ],
+  "W2": [
+    16,
+    32
+  ],
+  "decoder": 1,
+  "grid": 2112,
+  "prepare": "m256_mix_prepare(weights)",
+  "call": "m256_mix_experts(x,scores,local_ids,state,local_start=0)",
+  "H200_win": false,
+  "status": "reviewable fixed port; do not promote as winner without paired H200 evidence",
+  "source_payload_sha256": "974a56676cf6604fb5840913095f425cab3d9050658be886c5dbf35a7d48e93e"
+}

@@ -1,0 +1,302 @@
+{
+  "source_sha256": "58bcfe1fdf1a62ed0f851a9ead19c7c4b8b844fce554f4f7ba4e8ce9695752d7",
+  "sass_sha256": "2d350c9389e92d5932b8b6e56168ecd09dc7589f986e81afceb03228a5090891",
+  "rows": [
+    {
+      "m": 128,
+      "role": "qkv_gate",
+      "code": 1,
+      "tile": [
+        64,
+        128,
+        64
+      ],
+      "stages": 6,
+      "pipe": false,
+      "ctas": 36,
+      "sms": 132,
+      "first_wave_sm_fill": 0.2727272727272727,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.2727272727272727,
+      "smem_bytes": 147552,
+      "max_blocks_by_smem": 1,
+      "k_steps": 128,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 3,
+        "SYNCS": 18,
+        "STG": 194,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi64ELi128ELi64ELi6ELb0EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 90,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 128,
+      "role": "o",
+      "code": 12,
+      "tile": [
+        128,
+        64,
+        64
+      ],
+      "stages": 8,
+      "pipe": true,
+      "ctas": 128,
+      "sms": 132,
+      "first_wave_sm_fill": 0.9696969696969697,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.9696969696969697,
+      "smem_bytes": 196736,
+      "max_blocks_by_smem": 1,
+      "k_steps": 16,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 8,
+        "SYNCS": 23,
+        "STG": 98,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi128ELi64ELi64ELi8ELb1EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 58,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 128,
+      "role": "pool_router",
+      "code": 1,
+      "tile": [
+        64,
+        128,
+        64
+      ],
+      "stages": 6,
+      "pipe": false,
+      "ctas": 72,
+      "sms": 132,
+      "first_wave_sm_fill": 0.5454545454545454,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.5454545454545454,
+      "smem_bytes": 147552,
+      "max_blocks_by_smem": 1,
+      "k_steps": 128,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 3,
+        "SYNCS": 18,
+        "STG": 194,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi64ELi128ELi64ELi6ELb0EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 90,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 128,
+      "role": "unpooler",
+      "code": 12,
+      "tile": [
+        128,
+        64,
+        64
+      ],
+      "stages": 8,
+      "pipe": true,
+      "ctas": 128,
+      "sms": 132,
+      "first_wave_sm_fill": 0.9696969696969697,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.9696969696969697,
+      "smem_bytes": 196736,
+      "max_blocks_by_smem": 1,
+      "k_steps": 64,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 8,
+        "SYNCS": 23,
+        "STG": 98,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi128ELi64ELi64ELi8ELb1EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 58,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 256,
+      "role": "qkv_gate",
+      "code": 1,
+      "tile": [
+        64,
+        128,
+        64
+      ],
+      "stages": 6,
+      "pipe": false,
+      "ctas": 72,
+      "sms": 132,
+      "first_wave_sm_fill": 0.5454545454545454,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.5454545454545454,
+      "smem_bytes": 147552,
+      "max_blocks_by_smem": 1,
+      "k_steps": 128,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 3,
+        "SYNCS": 18,
+        "STG": 194,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi64ELi128ELi64ELi6ELb0EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 90,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 256,
+      "role": "o",
+      "code": 11,
+      "tile": [
+        128,
+        128,
+        64
+      ],
+      "stages": 6,
+      "pipe": false,
+      "ctas": 128,
+      "sms": 132,
+      "first_wave_sm_fill": 0.9696969696969697,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.9696969696969697,
+      "smem_bytes": 196704,
+      "max_blocks_by_smem": 1,
+      "k_steps": 16,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 3,
+        "SYNCS": 18,
+        "STG": 194,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi128ELi128ELi64ELi6ELb0EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 90,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 256,
+      "role": "pool_router",
+      "code": 11,
+      "tile": [
+        128,
+        128,
+        64
+      ],
+      "stages": 6,
+      "pipe": false,
+      "ctas": 72,
+      "sms": 132,
+      "first_wave_sm_fill": 0.5454545454545454,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.5454545454545454,
+      "smem_bytes": 196704,
+      "max_blocks_by_smem": 1,
+      "k_steps": 128,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 3,
+        "SYNCS": 18,
+        "STG": 194,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi128ELi128ELi64ELi6ELb0EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 90,
+        "stores": 0,
+        "loads": 0
+      }
+    },
+    {
+      "m": 256,
+      "role": "unpooler",
+      "code": 11,
+      "tile": [
+        128,
+        128,
+        64
+      ],
+      "stages": 6,
+      "pipe": false,
+      "ctas": 128,
+      "sms": 132,
+      "first_wave_sm_fill": 0.9696969696969697,
+      "waves": 1,
+      "nominal_wave_efficiency": 0.9696969696969697,
+      "smem_bytes": 196704,
+      "max_blocks_by_smem": 1,
+      "k_steps": 64,
+      "instructions": {
+        "HGMMA": 4,
+        "UTMALDG": 2,
+        "WARPGROUP": 3,
+        "SYNCS": 18,
+        "STG": 194,
+        "LDG": 33,
+        "ATOM": 2,
+        "NANOSLEEP": 0
+      },
+      "native": {
+        "name": "'_ZN13verify_stream4gemmILi128ELi128ELi64ELi6ELb0EEEv14CUtensorMap_stS1_PvPfPjiiiib' for 'sm_90a'",
+        "registers": 90,
+        "stores": 0,
+        "loads": 0
+      }
+    }
+  ],
+  "conclusions": [
+    "QKV winning tile64x128x64 stages6 pipe0 has only36/72 CTAs at M128/256, one resident CTA/SM by147552B shared memory. It issues128 K64 iterations and drains WGMMA at every iteration.",
+    "Pool/router winners have72 CTAs at both verify loads; the M256 variant has two math warpgroups but still one CTA/SM.",
+    "O and unpooler winners have128 CTAs: 97% first-wave fill. Their loss cannot be blamed on low CTA count alone: K64 requests, wait/fence density, narrow GMMA and scalar stores remain.",
+    "No spills in all15 kernels. SASS contains real HGMMA and TMA, so Hopper did not silently use the portable MMA path.",
+    "Regular split-K adds output partial writes, atomics and deterministic serial accumulation. It does not supply balanced Stream-K scheduling. All measured splits>1 lose.",
+    "No H200 hardware-counter trace exists: fill is exact source geometry; latency attribution is an inference, not a measured stall breakdown."
+  ]
+}

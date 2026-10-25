@@ -7,8 +7,8 @@ from torch.utils.cpp_extension import load_inline
 
 MX_OPTS={}
 MX_DEADLINE=float('inf')
-# Change only after the paired W13 receipt establishes an H200 winner.
-MX_DECODE=0
+# H2008483c0c6: vector mixed_parallel344.5,quad346.1,C1366.2us.
+MX_DECODE=1
 MX_FIRST=tuple((h,n) for h in (8,16,32) for n in (32,64))
 MX_SECOND=((0,32),)+MX_FIRST
 
@@ -27,7 +27,7 @@ def mx_module():
     mod=load_inline(name='m256_mix_'+hashlib.sha256(MX_CUDA.encode()).hexdigest()[:12],cpp_sources=MX_CPP,cuda_sources=MX_CUDA,functions=MX_FUNCTIONS,
         no_implicit_headers=True,with_pytorch_error_handling=False,
         extra_cuda_cflags=['-O3','-std=c++20','-lineinfo','-gencode=arch=compute_'+arch+',code=sm_'+arch],verbose=False)
-    mod.rc_init();MX_OPTS['nt']=mod.mx_nt_init();mod.mx_opt_init();return mod
+    mod.rc_init();MX_OPTS['nt']=mod.mx_nt_init();mod.mx_opt_init();mod.mx_mixed_init();return mod
 
 
 def mx_prepare(w):
@@ -51,6 +51,7 @@ def mx_prepare(w):
         for e in range(32):out[e]=m128_hh_repack(w[key][e],w[key+'_sf'][e],rowmap)
         bank[key+'_nt']=out
     bank['mod']=mx_module();bank['sms']=torch.cuda.get_device_properties(dev).multi_processor_count
+    bank['mix_stream']=torch.cuda.Stream(device=dev);bank['mix_start']=torch.cuda.Event();bank['mix_done']=torch.cuda.Event()
     assert bank['w13_sf'].dtype==torch.uint8 and bank['w2_sf'].dtype==torch.uint8
     return bank
 
@@ -84,7 +85,12 @@ def mx_plan(data,bank,a=(16,32),b=(16,32),decoder=0,grid=2112,control=False):
         if not control and choice[0]>0:mod.mx_nt_run(ptrs[2],first,1,m,stages,grids[first],choice[0],stream())
     def heavy(first,choice):
         _=owners
-        if first and decoder and not control:mod.mx_opt_run(ptrs[0],choice[1],decoder,grid,m,cap,start,stream())
+        if first and control==2:
+            parent=torch.cuda.current_stream();bank['mix_start'].record(parent);bank['mix_stream'].wait_event(bank['mix_start'])
+            with torch.cuda.stream(bank['mix_stream']):
+                mod.mx_mixed_run(ptrs[0],0,grid,m,cap,start,bank['mix_stream'].cuda_stream);bank['mix_done'].record()
+            mod.mx_mixed_run(ptrs[0],1,grid,m,cap,start,parent.cuda_stream);parent.wait_event(bank['mix_done'])
+        elif first and decoder and not control:mod.mx_opt_run(ptrs[0],choice[1],decoder,grid,m,cap,start,stream())
         else:mod.rc_run(ptrs[0 if first else 1],first,1 if choice[1]==32 else 2,grid,start,1,0,m,cap,stream())
     def asmall():small(1,a)
     def aheavy():heavy(1,a)

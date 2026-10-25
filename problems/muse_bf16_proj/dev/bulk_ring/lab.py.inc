@@ -70,7 +70,7 @@ def br_role(m,state,flush,t,role,deadline):
     x=banks[0].clone();refresh=lambda r:x.copy_(banks[r%3])
     base=lambda:m._best7_project(x,role,state,plan,out_dtype=torch.float32 if role=='pool_router' else torch.bfloat16)
     gb,bv=gf_graph(base);bc,_=gf_graph(lambda:gd_consumer(m,base(),role,data,state,plan))
-    aa=gf_pair(bc,bc,flush,12,refresh);trials=[];ops={};packs={}
+    aa_producer=gf_pair(gb,gb,flush,12,refresh);aa=gf_pair(bc,bc,flush,12,refresh);trials=[];ops={};packs={}
     for config in BR_CONFIGS:
         if time.monotonic()>deadline-8:raise TimeoutError(f'incomplete role sweep {t}/{role}/{config}')
         r,kc,st,ks,cta=BR_CONFIGS[config];packkey=(r,kc,ks)
@@ -81,7 +81,9 @@ def br_role(m,state,flush,t,role,deadline):
             x.copy_(bank);graph.replay();raw=gf_value(out)
             e=gf_check(raw,want,.0001,'bulk BF16/FP32 dot')
             error=max(error,e)
-            if i==3:column_error=gf_check(raw,want,.001,'exact weight column')
+            if i==3:
+                column_error=gf_check(raw,want,.001,'exact weight column')
+                if not torch.equal(raw,want):raise RuntimeError('lossless column probe differs')
             if role=='pool_router':
                 router_error=max(router_error,gf_check(raw[:,4096:4352]+raw[:,4352:],bank.float()@state['router'].T,.0001,'router hi+lo'))
         producer=gf_pair(gb,graph,flush,4,refresh);combined=gf_pair(bc,cg,flush,4,refresh)
@@ -101,7 +103,7 @@ def br_role(m,state,flush,t,role,deadline):
         for bank,want in zip(probes,expected):x.copy_(bank);graph.replay();gf_check(gf_value(fo),want,.01,'unchanged O6')
         fixed=dict(producer=gf_pair(gb,graph,flush,24,refresh),combined=gf_pair(bc,cg,flush,24,refresh))
         graph.reset();cg.reset()
-    row=dict(kind='role',tokens=t,role=role,selected=config,aa=aa,producer=producer,combined=combined,
+    row=dict(kind='role',tokens=t,role=role,selected=config,aa=aa,aa_producer=aa_producer,producer=producer,combined=combined,
         trials=trials,geometry=br_geometry(op),diagnostic=diag,fixed_o6=fixed)
     BR_ROWS.append(row);gb.reset();bc.reset();return row
 
@@ -115,8 +117,7 @@ def br_segment(m,state,flush,t,choices):
         a=o(x) if o else m._best7_project(x,'o',state,plan)
         h,s=m._best7_boundary(a,data['stream'],state,plan,'b1')
         pr=p(h) if p else m._best7_project(h,'pool_router',state,plan,out_dtype=torch.float32)
-        routes=m._best7_route(pr,state,data,plan)
-        return h,s,pr,routes
+        return h,s,pr
     gb,bv=gf_graph(segment);aa=gf_pair(gb,gb,flush,12,refresh)
     o=BulkRingProjection(state['o'],t,choices[t,'o']);p=BulkRingProjection(state['pool_router'],t,choices[t,'pool_router'])
     arms=[('O',o,None),('P',None,p),('OP',o,p)]
@@ -133,7 +134,11 @@ def br_segment(m,state,flush,t,choices):
             # input; composition drift is separately measured above.
             expected=out[0].float()@state['router'].T
             router_error=max(router_error,gf_check(raw[:,4096:4352]+raw[:,4352:],expected,.0001,'segment router'))
-            flips+=int((out[3][1]!=bv[3][1]).any(dim=-1).sum())
+            # Route stability is checked outside the measured O/boundary/pool
+            # segment, whose endpoint matches receipt95ab383d.
+            routes=m._best7_route(out[2],state,data,plan)
+            base_routes=m._best7_route(bv[2],state,data,plan)
+            flips+=int((routes[1]!=base_routes[1]).any(dim=-1).sum())
         pair=gf_pair(gb,g,flush,24,refresh)
         trials.append(dict(arm=tag,error=error,router_error=router_error,route_token_flips=flips,**pair));g.reset()
     gb.reset();row=dict(kind='segment',tokens=t,aa=aa,trials=trials);BR_ROWS.append(row);return row
@@ -142,7 +147,7 @@ def lab(deadline,weights,host_state=None):
     global BR_ROWS
     BR_ROWS=[];start=time.monotonic()
     lines=['META best7_scale42f543a0 real host BF16 dense/FP32 router; lossless packed tiles; identical inputs; identity norm/fixed gate boundary fixture; zero router bias',
-        'META cold256MiB outside events; raw graph us; AB/BA three inputs AA12 finalist24; R=producer/with-consumer; S=O->boundary->pool+router->route; native ring 4/8 stages,4-32KiB/stage,split1/2/4/8,1/2CTA perSM; O6 unchanged']
+        'META cold256MiB outside events; raw graph us; AB/BA three inputs AA12 finalist24; R=producer/with-consumer; S=O->boundary->pool+router; native ring 4/8 stages,8-32KiB/stage,split1/2/4/8,1/2CTA perSM; O6 unchanged']
     oldtf=torch.backends.cuda.matmul.allow_tf32;oldbf=torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction=False
     try:
@@ -153,11 +158,11 @@ def lab(deadline,weights,host_state=None):
             for role in ('qkv_gate','o','pool_router','unpooler_slice' if t<=8 else 'unpooler'):
                 row=br_role(m,state,flush,t,role,deadline);choices[t,role]=row['selected'];p=row['producer'];c=row['combined'];g=row['geometry'];d=row['diagnostic']
                 lines.append(f'R {t}{role[0].upper()} c{row["selected"]} B={p["a"]:.2f}/{c["a"]:.2f} N={p["b"]:.2f}/{c["b"]:.2f} r={c["ratio"]:.4f} s='+','.join(f'{v:.3f}' for v in c['seed_ratios'])+
-                    f' aa={row["aa"]["ratio"]:.4f} G/S/B={g["grid"]}/{g["splits"]}/{g["ring_bytes"]} sm={d["sms"]} u={d["units_min"]}:{d["units_max"]} tail={d["tail_p95_us"]:.2f} v='+','.join(f'{v["combined"]["ratio"]:.3f}' for v in row['trials']))
+                    f' aa={row["aa_producer"]["ratio"]:.4f}/{row["aa"]["ratio"]:.4f} G/S/B={g["grid"]}/{g["splits"]}/{g["ring_bytes"]} sm={d["sms"]} u={d["units_min"]}:{d["units_max"]} tail={d["tail_p95_us"]:.2f} v='+','.join(f'{v["producer"]["ratio"]:.3f}/{v["combined"]["ratio"]:.3f}' for v in row['trials']))
                 if row['fixed_o6']:
                     f=row['fixed_o6'];lines.append(f'O6 B={f["producer"]["a"]:.2f}/{f["combined"]["a"]:.2f} N={f["producer"]["b"]:.2f}/{f["combined"]["b"]:.2f} r={f["combined"]["ratio"]:.4f} s='+','.join(f'{v:.3f}' for v in f['combined']['seed_ratios']))
             seg=br_segment(m,state,flush,t,choices)
-            lines.append(f'S {t} aa={seg["aa"]["ratio"]:.4f} '+','.join(f'{v["arm"]}={v["a"]:.2f}:{v["b"]:.2f}/{v["ratio"]:.4f}/flip{v["route_token_flips"]}' for v in seg['trials']))
+            lines.append(f'S {t} aa={seg["aa"]["ratio"]:.4f} '+','.join(f'{v["arm"]}={v["a"]:.2f}:{v["b"]:.2f}/{v["ratio"]:.4f}/flip{v["route_token_flips"]}/s'+':'.join(f'{s:.3f}' for s in v['seed_ratios']) for v in seg['trials']))
             gc.collect()
         lines.append(f'END roles16 segments4 configs{len(BR_CONFIGS)} elapsed{time.monotonic()-start:.1f}s left{deadline-time.monotonic():.1f}s')
         return lines

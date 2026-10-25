@@ -1,6 +1,6 @@
 {
-  "entries": 19,
-  "B128_addresses": 245760,
+  "entries": 21,
+  "B128_addresses": 286720,
   "sources": {
     "c1": {
       "sha256": "d2b741ca3aaaea833aa9b3fa313fdb8a3dbeac017235d3588fd0aebfee966650",
@@ -171,8 +171,34 @@
       ]
     },
     "opt": {
-      "sha256": "493461da82ca929277f549ef089c0d1970719eea02b44b6c4b552ee6a35f8833",
+      "sha256": "291677ad1c5ff44df57b633cf962fd02843c58b10fd589db03bd5351e7c40e45",
       "kernels": [
+        {
+          "name": "_ZN5mxopt5fusedILi32ELi128ELi4ELi1ELb1ELi1ELb1ELb1ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 95,
+          "local_memory": 0,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "loop_instructions": 254,
+          "per16_weights": 63.5,
+          "live_A_overwrites": 0
+        },
+        {
+          "name": "_ZN5mxopt5fusedILi16ELi128ELi4ELi1ELb1ELi1ELb1ELb1ELi1ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
+          "registers": 79,
+          "local_memory": 0,
+          "waits": [
+            "gsb0, 0x1",
+            "gsb0, 0x1",
+            "gsb0, 0x0"
+          ],
+          "loop_instructions": 243,
+          "per16_weights": 60.75,
+          "live_A_overwrites": 0
+        },
         {
           "name": "_ZN5mxopt5fusedILi64ELi128ELi4ELi1ELb1ELi1ELb1ELb1ELi0ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S2_S6_S2_S9_PfPS7_SA_SA_SA_PiSB_iiib",
           "registers": 111,

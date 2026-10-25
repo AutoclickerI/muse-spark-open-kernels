@@ -1,0 +1,19 @@
+{
+  "sha256": "66db92089dec1f5dd5a0b2926d4813ac49fbb634550390b88f0dca4ef607bb68",
+  "weight_seeds": 12,
+  "transitions_per_seed": 11,
+  "transition_checks": 132,
+  "captured_variant_replays": 396,
+  "FP32_checks": 117,
+  "dead_state_unchanged_checks": 264,
+  "random_byte_poison": true,
+  "none_some_none": true,
+  "all_output_channels_bit_exact": true,
+  "all_remote_positive_zero": true,
+  "nearby_M": [
+    128,
+    192,
+    257
+  ],
+  "local_start64": true
+}
