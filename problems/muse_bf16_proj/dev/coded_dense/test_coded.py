@@ -82,7 +82,12 @@ def ref_weights(seed, dev):
             'unpooler': w['unpooler'], 'unpooler_slice': w['unpooler'][:1024].contiguous()}
 
 
-VS = (1, 2, 3)  # the kernel's lab steps (coded_gemv V)
+VS = (1, 2, 3, 4)  # the kernel's lab steps (coded_gemv V)
+
+
+def cluster(S):
+    """V4's cluster size: all S splits when S <= 16, else the largest divisor <= 16."""
+    return max(c for c in range(1, 17) if S % c == 0)
 
 
 def check_gemv(name, w, c, dev, configs, ms=(1, 5, 8, 12, 16, 20, 32)):
@@ -91,9 +96,9 @@ def check_gemv(name, w, c, dev, configs, ms=(1, 5, 8, 12, 16, 20, 32)):
         x = (torch.randn((M, w.shape[1]), device=dev) * 0.5).to(torch.bfloat16)
         ref = x.double() @ w.double().T
         for (S, NW, RT, PIPE), V in ((cfg, V) for cfg in configs for V in VS):
-            if (w.shape[0] // 16) % (NW * RT) or S > w.shape[1] // 64 or cd_smem(M, w.shape[1], S, V) > SMEM_MAX:
+            if (w.shape[0] // 16) % (NW * RT) or S > w.shape[1] // 64 or cd_smem(M, w.shape[1], S, V, NW, RT) > SMEM_MAX:
                 continue
-            P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V)
+            P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V, C=cluster(S))
             y = P.sum(0).double()
             fin = torch.isfinite(ref)
             same_nonfinite = torch.equal(torch.isnan(y[~fin]), torch.isnan(ref[~fin])) and torch.equal(y[~fin & ~torch.isnan(ref)], ref[~fin & ~torch.isnan(ref)])
@@ -123,9 +128,9 @@ def check_integer_gemv(dev):
             x = torch.randint(-8, 9, (M, K), device=dev, generator=g).to(torch.bfloat16)
             ref = (x.double() @ w.double().T)
             for (S, NW, RT, PIPE), V in ((cfg, V) for cfg in ((1, 4, 1, 2), (7, 4, 2, 2), (16, 8, 1, 4)) for V in VS):
-                if (N // 16) % (NW * RT) or S > K // 64 or cd_smem(M, K, S, V) > SMEM_MAX:
+                if (N // 16) % (NW * RT) or S > K // 64 or cd_smem(M, K, S, V, NW, RT) > SMEM_MAX:
                     continue
-                P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V)
+                P, _ = cd_gemv(x, c, S, NW=NW, RT=RT, PIPE=PIPE, pdl=False, V=V, C=cluster(S))
                 same = torch.equal(P.double().sum(0), ref)
                 ok &= same
                 if not same:
