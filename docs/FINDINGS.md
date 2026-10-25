@@ -267,6 +267,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   split at the expert boundary nearest half the W13 units) +0.0 / +6.7 / +6.5 us at M=8 / 16 / 32, ROT +3.1 / +4.2 /
   +7.9, both +5.4 / +8.4 / +9.1. At M=32 RND moves the W2-ready wait 11.2 -> 2.1 us, but the grid barrier grows 4.3
   -> 12.7 and W13 37.4 -> 41.1 (per-unit 2.61 -> 2.85 us): the wait moves to the barrier instead of vanishing.
+  Paired directly against S11's map (`3af06b40`, `4dd00540`, 16 seeds): interleaved rounds and M=1 ROT +1.8 to +10 us;
+  two writer warps publishing without a CTA barrier (WPUB) +1.0 / +1.1 / +0.4 us at M=8 / 16 / 32; aligned rounds
+  +2.2 to +5.9. No arm beats flags 69 / 95.
 ## MoE M=128
 
 - Best measured, N_full (`c01b1916`, read flush; 12 seeds x 3, A:A abs 0.58 us, every TASK.md check passes, bit-equal
