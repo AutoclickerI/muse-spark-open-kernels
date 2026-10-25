@@ -50,7 +50,7 @@ reports actual sum(seq_lens)*2 KV heads*64 dimensions*2 caches and both bandwidt
 
 Initial MoE dispatch **ffe533f308c96cb9** found quota exhausted and was canceled
 before any judge acceptance. Proj/MoE/prefill all have zero quota until reset;
-attention still has 4 scored and 20 checks. The same probe is wrapped on the
+attention initially had 4 scored and 20 checks. The four scored runs below consumed the scored quota. The occupancy batch uses an attention check; decode checks are now exhausted by other lanes. The same probe is wrapped on the
 attention incumbent and screened with local_eval before using attention's own
 quota; scarce decode checks are preserved.
 
@@ -195,3 +195,67 @@ Next: retain native FP8 PV, load V as its register-A operand, store P as shared 
 and transpose output orientation once per portion. P-in-registers was a proposed
 method, not a precision requirement; this tests the actual throughput objective.
 The layout and online-rescale mapping need independent arithmetic verification.
+
+## Native register-V rebuild
+
+`build_regv.py` uses native FP8 RS-WGMMA for PV with V^T packed directly in the
+recycled P-register bank, and P stored in shared B. Its QK and probability
+quantization are unchanged. O has feature rows/query columns until a single
+shared transpose at the end of each portion. The online alpha is saved by query
+row and applied by O column at the existing P-publication barrier; this avoids a
+new per-tile alpha barrier. Main registers168, combine63, no spills/C75.
+
+Its PV probe passes FP64 random/all-finite-E4M3 errors2.78e-9/5.93e-8. Four
+attention/cache/capture cases, including B16/32 full80K and page64/scale1/64,
+match the incumbent bitwise locally. Four-FP32-partial captures match raw BF16.
+A full-mask shuffle inside a t==0 predicate hung its first local attention test;
+hoisting the shuffle before that predicate fixes the actual cause. This stayed
+local. The local warp-MMA shim also synchronizes the shared-B lifetime explicitly.
+
+H200 attention **bdfeb0e954f54e53** is accepted, wrapper**e3ed4dd3**. Exact normal
+16/12/7 and forced full80K paired boot pass. The result landed: B16 old146.57, S4/6/8 210.14/210.38/210.53 us, ratios1.43550/1.43467/1.43388; B32 old260.66,384.75/383.13/383.65 us, ratios1.47613/1.47016/1.47127. Seed ranges at the best stages1.43314–1.43454 and1.46694–1.47228; A:A0.99567/1.00195. Scalar shared-byte loads plus register packing cost more than the removed producer transpose. No promotion.
+
+While it runs, `build_onehead.py` rebuilds occupancy instead of another ring tweak:
+one KV head per stream-K segment, one128-thread compute group plus one32-thread
+gather warp, full L8/no-RoPE/BF16 specialization, three CTAs/SM target. FP32
+projection partials sum and round at the same BF16 boundary in the adapter.
+Native main registers**128** at stages2/4/6/8, zero spills/C75. At stage6 its
+~70KiB total shared and160*128 registers allow three CTAs/SM, giving twelve
+consumer warps versus eight in the incumbent. That is a resource model, not a
+measured speedup. Local arithmetic/layout/cache/capture admission passes all four fixtures and four-FP32-partial captures, including both full80K shapes. Output differs from S13 by ~0.2–0.35% after changed split order, within unchanged TASK bounds.
+
+
+## Occupancy separation:6ec9d43d6e3f4fbf
+
+Attention check **6ec9d43d6e3f4fbf**, wrapper **c14b2f36**, batches:
+
+- `build_onehead.py`: one independent KV head/CTA, raw V/scalar-register-A PV;
+- `build_paired.py`: adjacent physical CTAs gather complementary64B head halves of the same128B page row at the same key range. Their logical stream-K schedule and partial-slot prefix are shared; output halves are disjoint;
+- `build_onep.py`: occupancy control retaining S13 P-register/native FP8 PV and its shared V byte transpose. A single producer warp transposes all four16-key groups.
+
+All use128 compute+32 gather threads and full-q8/BF16 specialization; FP32
+projection partials are summed and rounded at the existing BF16 precision boundary.
+Main registers128, combine63, zero spills/C75, all stages2/4/6/8 compiled.
+ST4 fits three CTAs/SM for every form. Raw-V ST6 also fits three; original-P ST6
+is shared-memory limited to two. These are occupancy models, not speed claims.
+`occupancy_native.json` pins all four native units including the scalar two-head
+control. `onehead_validation.json`, `paired_validation.json`, `onep_validation.json`
+retain full80K, page64/scale1/64, new-cache, graph-capture and FP32-partial checks.
+
+Exact wrapper normal admission16 tests/12 shapes/7 static checks; forced boot
+requires all four B16/32 result rows from both payloads, three fresh seeds and16
+cold paired samples each. The first forced boot stayed local: original-P ST8
+exceeds sm120's99KiB shared-memory limit. Its explicit off-Hopper arithmetic
+stand-in maps ST8 to ST6; ST8 native code is separately compiled. H200 runs true
+ST8. The corrected exact wrapper passes; no gate or native stage was dropped.
+Result pending; scarce decode quota is untouched by this lane.
+
+## Matrix-load register-V form under local admission
+
+`build_ldsv.py` tests the specific issue cost exposed by bdfeb0e. It forms V^T
+register-A fragments from raw V with two `ldmatrix.x4.trans.b16` operations per
+thread, warp shuffles and byte permutations, replacing32 scalar shared-byte loads
+and their packing. Shared P uses the matching within16-key permutation. V is never
+byte-transposed in shared. Builds cover two heads/CTA, independent one-head CTAs
+and adjacent paired-head CTAs. Independent FP64 PV mapping, full attention/cache/
+capture and native resource checks must pass before any H200 send. No handoff.

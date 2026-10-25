@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "source_sha256": "f0242aac1b5eebb2240f04277894028511fd7e2f5075efb723a06205dbaf7242",
+  "pv": [
+    {
+      "case": "random",
+      "error": 2.783757705516047e-09
+    },
+    {
+      "case": "all finite E4M3",
+      "error": 5.9311233889138603e-08
+    }
+  ],
+  "rows": [
+    {
+      "batch": 2,
+      "ctx": 257,
+      "page": 64,
+      "scale": 0.015625,
+      "error": 0.06207512691617012,
+      "old_error": 0.06207512691617012,
+      "old_relative": 0.0,
+      "bound": 0.15,
+      "partial_splits": 4,
+      "partial_bitwise": true
+    },
+    {
+      "batch": 16,
+      "ctx": 4096,
+      "page": 1,
+      "scale": 1,
+      "error": 0.0554790161550045,
+      "old_error": 0.0554790161550045,
+      "old_relative": 0.0,
+      "bound": 0.15,
+      "partial_splits": 4,
+      "partial_bitwise": true
+    },
+    {
+      "batch": 16,
+      "ctx": 80000,
+      "page": 1,
+      "scale": 1,
+      "error": 0.029418837279081345,
+      "old_error": 0.029418837279081345,
+      "old_relative": 0.0,
+      "bound": 0.08853205233812332,
+      "partial_splits": 4,
+      "partial_bitwise": true
+    },
+    {
+      "batch": 32,
+      "ctx": 80000,
+      "page": 1,
+      "scale": 1,
+      "error": 0.029458068311214447,
+      "old_error": 0.029458068311214447,
+      "old_relative": 0.0,
+      "bound": 0.08842875003814697,
+      "partial_splits": 4,
+      "partial_bitwise": true
+    }
+  ]
+}

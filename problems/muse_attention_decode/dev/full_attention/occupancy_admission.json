@@ -1,0 +1,58 @@
+{
+  "board_sha256": "c14b2f36ad4213b6d17c27036d35972e11a2ce013d4b92b1c698aa6401d26ad0",
+  "normal": {
+    "tests": 16,
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "X_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "G_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "P8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ]
+  },
+  "forced_import": {
+    "passed": true,
+    "sha256": "c14b2f36ad4213b6d17c27036d35972e11a2ce013d4b92b1c698aa6401d26ad0",
+    "cases": 4,
+    "ctx": 80000,
+    "forced_change": "last capability guard only; payload, seeds and full context unchanged"
+  },
+  "payloads": {
+    "occupancy_lab": "154073a613b55340e6b958eb14b0f34f2995ecc523cf76332c9719db6edd9366",
+    "onep_lab": "473db69b3542c10400f5ad9070001773bc9997531ccfd5f31cc9735a30e0b971"
+  },
+  "native_spill_free": true,
+  "results_pending": true,
+  "job": "6ec9d43d6e3f4fbf",
+  "status": "accepted; collector running"
+}

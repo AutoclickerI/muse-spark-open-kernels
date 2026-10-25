@@ -8,7 +8,7 @@ import linecache
 from pathlib import Path
 
 H = Path(__file__).resolve().parent
-ap=argparse.ArgumentParser();ap.add_argument('--board',default='phases_board.py');a=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--board',default='phases_board.py');ap.add_argument('--rows',type=int,default=4);a=ap.parse_args()
 p = H / a.board
 s = p.read_text()
 old = '# Full-attention diagnostic boot: attention has no harness prepare hook.\nif torch.cuda.is_available() and torch.cuda.get_device_capability()[0] == 9:\n    prepare()\n'
@@ -23,8 +23,8 @@ with contextlib.redirect_stdout(buf):
     exec(compile(forced, str(f), 'exec'), ns)
 log = buf.getvalue()
 print(log, flush=True)
-assert ns['_lab_ran'] and sum(r.startswith('R B') for r in log.splitlines()) == 4, log
+assert ns['_lab_ran'] and sum(r.startswith('R B') for r in log.splitlines()) == a.rows, log
 assert not any(s in log for s in ('LAB_ERROR', 'ERROR B', 'SKIP B')), log
 (H / ('board_boot.json' if a.board=='phases_board.py' else p.stem+'_boot.json')).write_text(json.dumps(dict(passed=True,
-    sha256=hashlib.sha256(p.read_bytes()).hexdigest(), cases=4, ctx=80000,
+    sha256=hashlib.sha256(p.read_bytes()).hexdigest(), cases=a.rows, ctx=80000,
     forced_change='last capability guard only; payload, seeds and full context unchanged'), indent=2) + '\n')
