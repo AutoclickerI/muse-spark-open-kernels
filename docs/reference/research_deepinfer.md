@@ -1,4 +1,4 @@
-Read when designing H200 decode-layer fusion, MoE dependency scheduling, router epilogues or attention pipelines from DeepSeek's DeepInfer kernels.
+Serves: G1. Read when designing H200 decode-layer fusion, MoE dependency scheduling, router epilogues or attention pipelines from DeepSeek's DeepInfer kernels.
 
 # DeepInfer designs that transfer to Muse decode
 
