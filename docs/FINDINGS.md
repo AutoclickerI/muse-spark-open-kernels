@@ -392,6 +392,13 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   descriptor 0.998 / 0.996 (neutral). Packed-scale nibble rotation (dequant core 128 -> 124 SASS per stage) + wide
   banks 0.9862 / 0.9787 (`b88d04fe`; wide alone 0.9940 / 0.9894); adaptive N32 groups lose 1.015-1.16 at M=128
   (AD64 0.976-0.984 at M=256 inside a +-7% spread).
+- What limits N_full (`3e8996f8`, each branch alone, 12 seeds x 36 cells; us as S12 kernel / trivial dequant / loads
+  only / pure stream of the same bytes): M=128 NT1 W13 74.9 / 69.9 / 65.0 / 61.4, NT1 W2 44.5 / 40.7 / 36.0 / 33.9,
+  heavy W13 56.4 / 50.6 / 38.1 / 29.2, heavy W2 37.1 / 32.9 / 25.1 / 17.4; M=256 NT1 W13 78.4 -> 64.4, NT1 W2
+  46.2 -> 35.4, heavy W13 109.5 / 94.4 / 70.2 / 50.3, heavy W2 60.7 / 54.6 / 39.5 / 26.8. NT1 sits at 1.22-1.31x its
+  stream; the heavy branch at 1.9-2.3x: it schedules 1.6x / 2.2x its unique weight bytes (each 32-token tile
+  re-reads and re-decodes the expert) and re-reads 171 / 403 MB of activations. Unique MoE bytes at M=128 ~467 MB
+  (~102 us at 4.58 TB/s) vs ~171 us in the layer.
 ## Attention
 
 ### Shapes, floors and the incumbents
