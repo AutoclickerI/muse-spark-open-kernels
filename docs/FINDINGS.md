@@ -163,7 +163,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Leave-one-out A/B on S12 `7d4216dd` (S11 final + coded qkv / pool_router at t <= 8 + finalizer split F4 + wide
   banks; `c5f4f018`, same protocol, A:A -0.15..+0.29%; host run 1.7161x): coded off +3.4% at decode 1 but -0.34% at
   verify 1 (t = 8, a loss); F4 off +0.73 / +0.72% and wide banks off +0.23 / +0.48% at verify 16 / 32; all of S11
-  back +4.1 / +0.85 / +0.36 / -0.1 / +0.91 / +1.09% at decode 1 / 16 / 32, verify 1 / 16 / 32.
+  back +4.1 / +0.85 / +0.36 / -0.1 / +0.91 / +1.09% at decode 1 / 16 / 32, verify 1 / 16 / 32. Revision
+  `a92b6619` (coded at t=1 only; `937801fe`, host 1.7148x): coded off +3.9% at decode 1 (A:A +1.1% there), F4 off
+  +0.60 / +0.73%, wide banks off -0.04 / +0.15% at verify 16 / 32 (noise in this run), verify 1 unchanged.
 - One-factor sweep of every tuned choice (`4bea7724`, 12 seeds x 6 rounds): at t <= 32 our GEMVs beat every cuBLAS /
   cuBLASLt variant at every role by 1-6% (the run's tuner had picked cuBLAS for o at t = 8 / 16 / 32 and qkv /
   unpooler at t=16: -1.9 / -1.4 / -0.6 / -1.6 / -0.8% when pinned); attention at decode 16 / 32 is attn_main at all
