@@ -134,7 +134,7 @@ standalone cell `fc474b84`. It passes patch applicability and cell admission, no
 promotion. All those arms are now closed losses; the structural four-arm diagnostic below is current.
 
 
-## Structural limit diagnostic (current)
+## Structural limit diagnostic
 
 Owner direction: the logical ~2–3 TB/s stage rate does not identify HBM duty. `dev/timeline/README.md`
 (`c6bd22e2`) counts compulsory unique logical bytes and includes PDL overlap, not measured DRAM transactions.
@@ -151,9 +151,7 @@ The new `build_limit.py` -> `prof/lab/moe_nt1_limit4.py` tests M8/16/32, 16 publ
 Unprofiled AB/BA x6 plus independent A:A; separate three-sample CUPTI node durations and observer/off
 ratios per arm and seed. All A gates and C/D checksums passed in a full local 16-seed run; B/C/D are never
 candidates. Local timings only check the apparatus. `limit_b.cu`/`limit_c.cu` compile for sm90a, no spills.
-H200 MoE check **360810b110a44d36** (host source `7fbab395`, payload `eac899e7`) is accepted.
-The classification requires H200 A/B (decoder issue) and C/D (weight pipeline/order + route overhead) gaps;
-MMA/activation/glue remains between B and C. Target after that: >=4.0 TB/s unique logical MoE bytes.
+H200 MoE check **360810b110a44d36** (host source `7fbab395`, payload `eac899e7`) landed; results below. Target remains >=4.0 TB/s unique logical MoE bytes for a correct kernel.
 
 ## Recovered decode-once result
 
@@ -188,3 +186,58 @@ Hopper consumer101 uses 123 registers, no spills. `build_meta_lab.py` separates 
 CL_BASE (producer metadata, S11 consumer), and CL_META (producer metadata, consumer101).
 Local 16-seed total ratios vs S11 1.04087/1.04288/1.02925; direct consumer ratios
 0.99853/1.00108/1.00061. No H200 send or promotion; lower priority than the structural experiment.
+
+
+## Structural results and WGMMA rebuild
+
+**360810b110a44d36**, 16 seeds, one MoE node per graph, fixed identical routed fixture, read flush.
+B is wrong-math timing only; C/D checksums pass. Rates count unique compulsory logical bytes, not DRAM
+transactions. Ratios are per-seed paired unprofiled graph events; node times are separate CUPTI samples.
+
+| M | A S11 node us / TB/s | B reinterpret us / paired ratio | C matched loads us / TB/s | D best unique stream us / TB/s |
+|---|---:|---:|---:|---:|
+| 8 | 64.886 / 3.067 | 59.956 / 0.92986 | 47.586 / 4.192 | 49.228 / 4.056 |
+| 16 | 75.932 / 2.653 | 69.370 / 0.91301 | 53.740 / 3.752 | 50.194 / 4.043 |
+| 32 | 104.695 / 2.075 | 85.216 / 0.82805 | 69.284 / 3.124 | 53.224 / 4.079 |
+
+C paired ratios 0.74514/0.72301/0.66836; best D 0.77086/0.67396/0.53037 (best by mean node time;
+M32 D8 event ratio0.52854). A:A mean absolute drift0.360/0.356/0.281us. A output L2~0.00238;
+observer/off ratios near1. B saves4.93/6.56/19.48us, B->C leaves12.37/15.63/15.93us of
+MMA/activations/synchronization/glue. C minus best D is -1.64/+3.55/+16.06us, including the changed
+repeat-request schedule and omitted route/activation/epilogue work. These are mixed limits: M8's original
+weight-only pipeline already exceeds4TB/s, and M32 also needs fewer repeated requests. No actual HBM
+counter was collected, so the byte rate is not HBM utilization.
+
+`build_wg.py`, `wg_kernel.cu.inc` -> `wg_cell.py` **2dee212a**: RS WGMMA64 rows x adaptive8/16/32
+columns, one decode per expert, no K-split,4x fewer norm atomics. Original packed codes unchanged;
+raw scale bytes reordered losslessly. Native168regs/16B local,3CTA/SM. Four arms K64 stages4/8,
+grid264/396. H200 **00f4adc334084ba2** (`prof/lab/moe_nt1_wg.py` **5ed3dc1a**),16 seeds:
+
+| M | S11 event / node us | W4G2 ratio | W4G4 ratio | W8G2 ratio | W8G4 ratio / node us / TB/s |
+|---|---:|---:|---:|---:|---:|
+| 8 | 70.589 / 65.890 | 2.28616 | 1.63425 | 2.20890 | 1.57690 / 107.728 / 1.876 |
+| 16 | 81.175 / 76.124 | 2.08045 | 1.65896 | 2.02050 | 1.62035 / 127.048 / 1.593 |
+| 32 | 109.995 / 104.928 | 1.99225 | 1.55038 | 1.95579 | 1.51718 / 163.116 / 1.338 |
+
+All correctness gates pass; all performance arms lose. The narrow stages issue many copies/barriers and
+carry only a small packed-weight queue. This tests one ownership/layout implementation, not an impossibility
+result for decode-once or WGMMA.
+
+`build_wg_perm.py` -> `wgp_cell.py` **9588df1e** fuses the NT1 intra-K64 permutation into router and
+W13 BF16 stores; activation copies become16B. Physical[k]=logical[P(k)] with
+`P(k)=(k&~63)|((k&6)*8+((k>>4)&3)*4+((k>>3)&1)*2+(k&1))`.
+Both permutations and the raw scale bank have inverse checks. The router scatters these stores inside the timed
+kernel; prepare does no activation work or weight expansion.
+
+`build_wg_coarse.py` -> `wg2_cell.py` **652d2a3f** (K128), `wg4_cell.py` **3fc27752** (K256).
+Stages4/8 and2/4 respectively: shared54,152/105,352B; native153-157regs, no stack/spills or WGMMA
+serialization warnings. Bundled MMA descriptors are computed before the WGMMA fence; pairs of K64
+fragments retain constant buffer indices and valid async register lifetimes. Native residency3/2CTAs/SM.
+`check_wg2.py` and `check_wg4.py`: each300 math/replay checks plus6 forced high-stage host-glue checks,
+worst L2 0.0024594, maximum relative INC0.0009174. High stages exceed local shared capacity, so only
+their host ABI was forced through lower-stage stand-ins. Native high-stage correctness is an H200 gate.
+The full producer+consumer local16-seed lab passes all four arms (`run_coarse_local.py`), without timing claims.
+
+Coarse payload `prof/lab/moe_nt1_wg_coarse.py` **27ce07ef**, H200 MoE **b3f1c4fbc7164374**, pending:
+K128S4/K128S8/K256S2/K256S4 vs S11 consumer69, paired router+MoE graphs,16 seeds, read flush,
+separate CUPTI node samples and A:A. No integration promotion; S11's flag map stays unchanged.
