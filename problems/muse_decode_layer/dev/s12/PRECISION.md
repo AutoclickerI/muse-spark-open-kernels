@@ -31,3 +31,8 @@ E4M3, and its int32 words hold packed E2M1 nibbles. CPU int64 kernel configurati
 KV remains the input FP8 cache. Activations and intermediate buffers follow S11's BF16 boundaries; GEMV partials
 and accumulations are FP32. F4 assigns disjoint output-channel slices to four CTAs with the same per-channel
 arithmetic and reduction order. Co-residency is excluded after its H200 loss.
+
+Frozen no-wide S12 final **240248b2**: full state audit and independent dense decode checks passed in
+`final_screen/{normal,forced}/precision_inventory.json`. Same 78 / 118 tensor representations as above,
+with the original packed-code / uint8-scale heavy layout in `s5_hh_base` (no wide permutation).
+Both modes pass 13 tests, 12 graphs and 23 static checks; `final_admission.json` pins the exact source.

@@ -12,10 +12,15 @@ import local_eval
 
 
 def main():
+    if '--reuse-static' in sys.argv:
+        sys.path.insert(0, str(H))
+        import compile_cache
+        compile_cache.install(local_eval)
     forced = '--forced' in sys.argv
+    output_arg = Path(sys.argv[sys.argv.index('--out')+1]) if '--out' in sys.argv else H
     candidate = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else H.parents[1] / 'cand_r3_best7_s12.py'
-    out = H / ('forced' if forced else 'normal')
-    out.mkdir(exist_ok=True)
+    out = output_arg / ('forced' if forced else 'normal')
+    out.mkdir(exist_ok=True, parents=True)
     spec = importlib.util.spec_from_file_location('s9_audit', H.parent / 's9/audit.py')
     audit = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(audit)

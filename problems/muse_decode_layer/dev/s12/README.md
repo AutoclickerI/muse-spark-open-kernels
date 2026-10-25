@@ -77,6 +77,34 @@ behavior; H200 uses the original scheduler. Fresh arm namespaces retain independ
 globals and GEMV-choice dictionaries, with compatible unchanged runtime caches. The wide reversion has its
 own original-layout expert bank, while every arm now shares unchanged small-M state.
 
-Next: land a92b6619's second decode check. If all
-piece/load arms win and unchanged controls pass A:A, freeze cand_r3_best7_s12_final.py, commit/push and tell
-the orchestrator. Preserve S11 final's scored handoff until that freeze is explicit. No scored runs here.
+## Frozen S12 final
+
+`cand_r3_best7_s12_final.py` **240248b2** = S11 final + T=1 coded dense + F4, **without wide banks**.
+Reproduce with `build.py --without wide --out problems/muse_decode_layer/cand_r3_best7_s12_final.py
+--manifest problems/muse_decode_layer/dev/s12/final_manifest.json` (one command).
+`final_patch.py` is the aggregate handoff onto exact S11 final **acda6c62**.
+
+Second whole-layer check **937801feb77b4302**, host **a92b6619**, accepted, 1.7148x:
+16 seeds x8 cold rotating rounds, all 12 shapes and all gates pass. Reverted/S12 ratios:
+
+| Load | S11 back | Coding off | F4 off | Wide off | A:A range |
+|---|---:|---:|---:|---:|---|
+| decode 1 | 1.0396 | 1.0389 | — | — | 1.000335..1.025015 |
+| decode 16 | 1.0046 | — | — | — | 0.993896..1.001058 |
+| decode 32 | 1.0023 | — | — | — | 0.998026..1.004538 |
+| verify 1 | 0.9954 | — | — | — | 0.993983..1.002687 |
+| verify 16 | 1.0065 | — | 1.0060 | 0.9996 | 0.995704..1.002206 |
+| verify 32 | 1.0085 | — | 1.0073 | 1.0015 | 0.998592..1.003132 |
+
+Decision from both receipts: coding at T=1 and F4 clear the A:A envelope at every touched load.
+The corrected second run's unchanged controls lie within its A:A lower bound. Wide does not establish
+that win at verify 16: equal-run geometric pooled wide-off 1.000949 (A:A-normalized 1.001162), below
+its A:A spread. At verify 32 pooled wide-off 1.003149 (normalized 1.002647) is positive, but the second
+run's 1.0015 is inside A:A and the pooled raw ratio exceeds the combined observed upper envelope
+1.003132 by only 0.0017 percentage points, below the printed ratio resolution. No reliable margin.
+Drop wide at both M rather than promote the standalone MoE win over the whole-layer evidence.
+This is not an H200 timing claim for the newly frozen no-wide source; it is selection from its
+exact leave-one-out arm. Its full normal/forced admission is in `final_screen/`: each passes 13 tests, 12 graph shapes and 23 static checks. `final_admission.json` pins the SHA; unchanged forced static compiles reuse the exact normal source/flags via `compile_cache.py`.
+
+S13 development is in `../s13/`, based on this final source. The orchestrator owns the 00:00 UTC
+scored send. This lane has not sent a scored candidate.
