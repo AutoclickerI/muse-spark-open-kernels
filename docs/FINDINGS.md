@@ -631,6 +631,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   balanced GEMV: t = 1 / 8 qkv -0.96 / -0.44, pool_router -2.33 / -1.07 us; o even / +0.47, slice +0.37 / +0.29;
   t = 16 / 32 qkv +0.58 / +1.57, pool_router +1.31 / +3.19, o +1.45 / +2.51. The cleanup gains on v3 only at t >= 16
   (o at t=32 0.77x v3), not enough to pass balanced: coded GEMVs stay at qkv + pool_router, t <= 8.
+- All-thread cp.async staging with one CTA barrier (`c446fdab`, 3 seeds x 24 rounds) vs balanced: t = 1 / 8 qkv
+  -1.32 / -0.95, pool_router -3.13 / -2.10, o -0.12 / +0.26, slice +0.21 / +0.28 us; t=16 qkv +0.04, pool_router -0.32;
+  t=32 qkv 18.25 vs 12.39, pool_router 31.73 vs 22.31 (loses). Better than v3 at t <= 8.
 - Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
   samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
   cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
