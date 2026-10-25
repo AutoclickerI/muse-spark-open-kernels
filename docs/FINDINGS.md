@@ -407,6 +407,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   re-reads and re-decodes the expert) and re-reads 171 / 403 MB of activations. Unique MoE bytes at M=128 ~467 MB
   (~102 us at 4.58 TB/s) vs ~171 us in the layer. Reordering heavy tiles to (expert, channel, token group) for
   inter-CTA weight reuse is neutral (`1bf2cc04`: 1.001 / 1.003); PERMW confirmed 0.9895 / 0.9778 with real outputs.
+- Light experts decoded once (`eea9d87b`, 48 fixtures per M, all TASK PASS): an N16 kernel for 9-16-token experts on
+  a third stream, NT1 only for <= 8, heavy on PERMW: 0.9447 / 0.9526 (2 CTAs per SM) and 0.9328 / 0.9485 (4) at
+  M=128 / 256 vs S12 final (196.2 -> 182.4 us, 270.6 -> 256.4 us).
 ## Attention
 
 ### Shapes, floors and the incumbents
