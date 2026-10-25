@@ -1,0 +1,17 @@
+{
+  "combined_wrapper_sha256": "49ce378bb4bbb287731b16a0ab6ac99f5b165c65697d7d98b69438f5c0aa1260",
+  "action": "redundant selected-row admission batch cancelled before acceptance; probes preserved as source",
+  "superseded_waiting_entry": {
+    "pid": 3067143,
+    "priority": 1.0,
+    "t": 1792932961.2555559,
+    "problem": "muse_attention_decode",
+    "file": "problems/muse_attention_decode/lab/lab_s15_batch_lab.py",
+    "sha256": "c4c247ddbdb91849e0fdda43089d615983ec24524d54ba7139bf2303cd4ebd76",
+    "note": "h200_lab problems/muse_bf16_proj/dev/public_nf/s15_batch_lab.py: S15 e3ce8f15 deterministic patch onto exact S14 f1c77ce6. Replaces same pending batch (no duplicate): nine selected rows whole-layer16seeds/12shapes cold ABBA A:A role-removal, plus fused4608 geometry and corrected qkv16. Normal+forced13/12/24. MIT retained, source872053B host607KB. All hosts await quota reset.",
+    "not_before": 0,
+    "until": 1792972860.0
+  },
+  "probes_source": "problems/muse_bf16_proj/dev/public_nf/pool_q16_lab.py",
+  "new_h200_job": null
+}

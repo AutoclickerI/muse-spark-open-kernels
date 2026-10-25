@@ -1,0 +1,48 @@
+{
+  "status": "stage-selected; whole-layer admission pending",
+  "stage_job": "e3c637d10a584a0f",
+  "selected": [
+    [
+      1,
+      "o"
+    ],
+    [
+      1,
+      "qkv3"
+    ],
+    [
+      8,
+      "o"
+    ],
+    [
+      16,
+      "o"
+    ],
+    [
+      16,
+      "unpooler"
+    ],
+    [
+      32,
+      "o"
+    ],
+    [
+      32,
+      "qkv_gate"
+    ],
+    [
+      32,
+      "qkv3"
+    ],
+    [
+      32,
+      "unpooler"
+    ]
+  ],
+  "excluded": [
+    "all fused pool_router: native slower",
+    "qkv16: arithmetic failure",
+    "t1 qkv_gate/pool_router: retain incumbent coded",
+    "large-token: precision/route diagnostic pending"
+  ]
+}

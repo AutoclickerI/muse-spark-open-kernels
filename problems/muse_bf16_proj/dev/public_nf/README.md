@@ -266,7 +266,7 @@ Current stage-selected rows: O at T1/8/16/32; qkv3 at T1/32; full QKV at T32; un
 
 `layer_lab.py.inc` / `build_layer_lab.py` compare the exact S14 base against this selection:16 fresh seeds, all12 shapes, cold ABBA, A:A, six46-sliding/16-full loads, and per-role removals. The selected local pairing passes every gate. The diagnostic that enabled every port family changed routing IDs at T128/256 beyond the old S13 helper's2% ID threshold (`layer_lab_all_validation.json`). This is **not an authoritative task failure**: CONSTRAINTS boundary cases and TASK allow near ties by score, not an ID percentage. Large-QKV output rounding is a candidate cause; removing that arm removes most differences. The lab now also reports score deficits/missed decisive local experts/route coverage against S14's BF16 front, explicitly a diagnostic rather than an independent FP32 task oracle. No check was suppressed and no large row promoted on this evidence.
 
-`build_layer_batch.py` shares the embedded S14/adapter source between the layer experiment and pool/qkv16 probes, producing a607,435-byte host lab. Budget420 s applies to the attention **import-time lab**, not the candidate's300 s prepare allowance. The first whole-layer send was rejected before acceptance because its unnecessary new-module registration matched the judge filter; that statement was removed. Every host's quota is currently exhausted. The combined lab is queued for the2026-10-26 09:01 KST reset (`runs/detached/c4c247ddbdb91849.log`); no whole-layer job ID has been accepted yet.
+`build_layer_batch.py` shares the embedded S14/adapter source between the layer experiment and pool/qkv16 probes, producing a607,435-byte host lab. Budget420 s applies to the attention **import-time lab**, not the candidate's300 s prepare allowance. The first whole-layer send was rejected before acceptance because its unnecessary new-module registration matched the judge filter; that statement was removed. Every host's quota is currently exhausted. The former combined attention-host batch c4c247dd was cancelled before acceptance when P4 scheduled the complete integration admission (coordination below). No projection-only whole-layer job ID was accepted; pool/qkv16 probes remain available separately.
 
 | H200 job | Result / numbers |
 |---|---|
@@ -325,6 +325,21 @@ kernels, not standalone BF16 finalization, so absolute times must not be compare
 
 H200 route-B results (parked following route-A authorization): `08fff0542ea1462b` direct-X loses to the best S14-family control at almost every row (t16 qkv13.10 vs balanced11.93 us, pool22.69 vs bal2 20.79, unpool21.58 vs18.62). `a1ed67b7a9f04854` two-slot X improves t8 pool18.91 vs shared19.60 us but loses the largest t16/32 calls. `bdc1f5a233d5405e` had an invalid split config and supplies no performance result. The complete16-row tables and seed ranges are retained in `h200_results.json`. A route-B rewrite is justified only where the attributed port is blocked.
 
+
+## P4 combined reset admission coordination
+
+P4 owns selected-row whole-layer admission in `problems/muse_decode_layer/dev/s15/`:
+combined candidate **60254883** on exact S14 **f1c77ce6**, including this projection patch
+**17379ce9**, last-CTA sliding and register-fold full verify. Each piece/role off, S14 back,
+A:A,16 fresh seeds and all12 shapes are screened normal/forced. One decode-host check,
+wrapper **49ce378b**, is scheduled at priority-1 for **2026-10-26 00:00 UTC**.
+
+The former attention-host batch **c4c247dd**, waiting PID3067143, was cancelled before
+acceptance through the project helper after the combined queue was live. It had no accepted
+job ID. This removes duplicated selected-row admission. Exact former metadata and cancellation
+are in `muse_decode_layer/dev/s15/coordination.json`. The **pool/qkv16 probes remain useful and
+unsent**; source `pool_q16_lab.py` is preserved and may be queued separately. Do not requeue
+the selected-only whole-layer section; P4's README records the combined receipt/resume path.
 
 ## Rebuild / handoff
 

@@ -357,7 +357,7 @@ def main():
              "--priority", str(priority), "--note", note]
     if args.not_before:command += ["--not-before", args.not_before]
     if args.check:command += ["--check"]
-    subprocess.run(command, cwd=REPO, check=False)
+    subprocess.run(command, cwd=REPO, check=True)
 
 
 if __name__ == "__main__":

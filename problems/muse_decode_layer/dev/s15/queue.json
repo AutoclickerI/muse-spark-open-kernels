@@ -1,0 +1,29 @@
+{
+  "candidate": "problems/muse_decode_layer/cand_r3_best7_s15.py",
+  "candidate_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "wrapper": "problems/muse_decode_layer/lab/lab_s15ab_payload.py",
+  "wrapper_sha256": "49ce378bb4bbb287731b16a0ab6ac99f5b165c65697d7d98b69438f5c0aa1260",
+  "payload_sha256": "ac3422a4e09c95bfa4c6db79981278f37427b30f4922a73d1116cebb9e4af57b",
+  "not_before": "2026-10-26T00:00:00+00:00",
+  "mode": "check",
+  "priority": -1,
+  "job": null,
+  "status": "scheduled; no H200 performance result or final promotion",
+  "command": [
+    "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+    "/home/jihoon/competitions/muse_kernel/tools/h200_lab.py",
+    "send",
+    "problems/muse_decode_layer/dev/s15/s15ab_payload.py",
+    "--host",
+    "muse_decode_layer",
+    "--base-file",
+    "problems/muse_decode_layer/dev/s15/s15ab_host.py",
+    "--check",
+    "--not-before",
+    "2026-10-26T00:00:00+00:00",
+    "--priority",
+    "-1",
+    "--note",
+    "P4 combined S15 60254883 on exact S14 f1c77ce6: nine attributed NF rows + last-CTA B1 sliding + N128 regmax full verify stage4; every piece/role off, S14 back,A:A,16 fresh seeds,all12 shapes,32 small/8 other cold rounds; normal+forced combined and each piece pass; MIT retained. P10b selected-row admission coordinated via README."
+  ]
+}

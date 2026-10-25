@@ -1,0 +1,66 @@
+{
+  "T1:N2304:K8192:S22": {
+    "eager": 3,
+    "captured": 1
+  },
+  "_vq8_attention:B16:Q8:WFalse": {
+    "eager": 5,
+    "captured": 1
+  },
+  "_vq8_attention:B32:Q8:WFalse": {
+    "eager": 5,
+    "captured": 1
+  },
+  "_layer_partial_port:B1:Q1:WFalse": {
+    "eager": 9,
+    "captured": 1
+  },
+  "_layer_partial_port:B1:Q1:WTrue": {
+    "eager": 8,
+    "captured": 1
+  },
+  "T1:N4608:K8192:S11": {
+    "eager": 30,
+    "captured": 8
+  },
+  "bal2:T32": {
+    "eager": 29,
+    "captured": 8
+  },
+  "nf_port:T1:o": {
+    "eager": 10,
+    "captured": 2
+  },
+  "nf_port:T32:qkv3": {
+    "eager": 4,
+    "captured": 1
+  },
+  "nf_port:T1:qkv3": {
+    "eager": 10,
+    "captured": 2
+  },
+  "nf_port:T32:unpooler": {
+    "eager": 9,
+    "captured": 2
+  },
+  "nf_port:T16:o": {
+    "eager": 9,
+    "captured": 2
+  },
+  "nf_port:T8:o": {
+    "eager": 9,
+    "captured": 2
+  },
+  "nf_port:T32:qkv_gate": {
+    "eager": 6,
+    "captured": 1
+  },
+  "nf_port:T32:o": {
+    "eager": 9,
+    "captured": 2
+  },
+  "nf_port:T16:unpooler": {
+    "eager": 9,
+    "captured": 2
+  }
+}

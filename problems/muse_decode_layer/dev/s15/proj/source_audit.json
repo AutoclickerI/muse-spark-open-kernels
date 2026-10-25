@@ -1,0 +1,26 @@
+{
+  "source": "NathenFernandes/muse-bf16-proj@86aff75",
+  "exp_sha256": "5365dc731590f16e56cfd834f92d5a142eaa085e6ffe9240854151b1fdaa6a11",
+  "imports": [
+    "from concurrent.futures import ThreadPoolExecutor as _PreparePool",
+    "from sglang.srt.layers.quantization.unquant import _bf16_gemm_dispatch_impl",
+    "from torch.utils.cpp_extension import load_inline",
+    "from typing import TypedDict",
+    "import base64 as _zsrc_b64, zlib as _zsrc_zlib",
+    "import hashlib",
+    "import statistics",
+    "import time",
+    "import torch",
+    "import torch.nn.functional as F",
+    "import zlib"
+  ],
+  "python_direct_forbidden_calls": [],
+  "native_forbidden_calls": [],
+  "reviewed": true,
+  "notes": [
+    "No direct network/subprocess/filesystem/environment APIs",
+    "load_inline writes JIT build files through PyTorch",
+    "Diagnostic DIAG modes excluded by selected configurations",
+    "Clock-read unreachable-trap scheduling barriers present; not timing manipulation"
+  ]
+}
