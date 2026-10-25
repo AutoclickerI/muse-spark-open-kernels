@@ -69,3 +69,22 @@ is in the H200 receipt. The old no-cpall **d67e734a** / wrapper **1bf6c9ff** was
 it is superseded by the evidence that cpall should be rechecked with corrected choices.
 
 Next: collect **4de869d41148400e**, revalidate S12 directly, and select S13 by corrected per-piece/load ratios. The current no-cpall successor is being screened while the judge runs. Freeze only retained pieces/loads that clear A:A with unchanged controls inside it.
+
+## Corrected receipt 4de869d41148400e
+
+Host **4bb0fdd5**, wrapper **776a0e27**, official PASS **1.72362918x** [1.69777474, 1.74948362].
+All 12 shapes x16 seeds x8 rounds; all gates pass, lab 34.7 s, total prepare 202.9 s.
+Every unchanged S13 load is inside A:A after fixing the split-QKV dictionary.
+Reverted/host paired ratios: attention off **1.031672** (A:A mean 1.013751, range 1.006150..1.028698),
+cpall off **1.010536** (A:A-normalized **0.996850**), PERMW256 off **1.004031**
+(A:A 0.997927..1.001995). **Drop cpall**; retain attention and PERMW256 for the final conditional check.
+The positive raw cpall number is inside A:A and its normalized estimate loses.
+
+S12's own subpairs: coding off **1.018602**, SE .001753, normalized 1.011175, versus A:A
+0.997091..1.020506: positive, but short of this single receipt's full envelope. F4 off **1.006519 /
+1.003987** at verify16/32, both beyond S12's A:A (upper 1.005629 / absolute radius .003066).
+S11/S12 unchanged controls all pass. The final conditional lab increases decode1 to **32 rounds**
+(16 seeds retained, 8 rounds elsewhere), includes S12 coding/F4 subpairs again, and hosts the exact
+no-cpall source **958f1258**. This resolves the S12 coding uncertainty and tests every retained S13 piece
+on the final composition. Its normal/forced each already pass 13 tests, 12 graph shapes, 25 static checks.
+Manifests for the earlier composition are archived in `trials/m256_cpall_4bb0fdd5/`.

@@ -1,0 +1,85 @@
+{
+  "source": "problems/muse_decode_layer/lab/lab_decode_s13fix.py",
+  "sha256": "776a0e2711c05e6e5ad2bbab54aaff70279379864deb4d5d40fa2f84cc523e7d",
+  "host_sha256": "4bb0fdd5cabd2f484b3d3f4eb746a588d08c2d3b547d9aa6d4cb4efc24a81baa",
+  "payload_sha256": "6c5582b4e1c3cdd4431517a9edc1ae616341d8f201db976d6c7dc53c843fe58a",
+  "seeds": 16,
+  "rounds": 8,
+  "arms": {
+    "attention": {
+      "active_tokens": [
+        1
+      ],
+      "sha256": "462b3afd04d812b020f2956fd09228c487e328cf6aced364da753e8c7f2b22a9"
+    },
+    "cpall": {
+      "active_tokens": [
+        1
+      ],
+      "sha256": "958f1258908f44834ec6cf0c33af00ff6c08ea62b2f5cc483a36f0a91f39d0b6"
+    },
+    "permw": {
+      "active_tokens": [
+        256
+      ],
+      "sha256": "632e5b52be9ce3fa0869e609a678afda85b5f970c4ee04d58d65051728506cfe"
+    },
+    "S12": {
+      "active_tokens": [
+        1,
+        256
+      ],
+      "sha256": "240248b2c27c890bf5055a77e87d2fc9c4429b747a04d714e51d5f67e936bb3e"
+    },
+    "S12_nocode": {
+      "active_tokens": [
+        1
+      ],
+      "sha256": "9696416e4e1cbb8b2389f2c715e742d5bf30a176cbfeb659a91abeedacd0e5b2"
+    },
+    "S12_noF4": {
+      "active_tokens": [
+        128,
+        256
+      ],
+      "sha256": "cc54af0a383fb95a500d423d9aeb9cda3d3f0c128aebd9ff6d94367296426b66"
+    },
+    "S11": {
+      "active_tokens": [
+        1,
+        128,
+        256
+      ],
+      "sha256": "acda6c621b1f3b885f2111ea1b4482ae1d733e2f2493db2b7f0b852ccf66dfb7"
+    }
+  },
+  "patches": [
+    {
+      "name": "attention",
+      "path": "problems/muse_decode_layer/dev/s13/patch_partial_port.py",
+      "sha256": "739965675b0a4562c1432ee4230526afdc2696cb4aca834e837641a81e06f0a1",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "4558693953ad12aafb9ee92bb7f2c3e5b7a216f84e092353fc49ab516b3d97f4"
+    },
+    {
+      "name": "cpall",
+      "path": "problems/muse_decode_layer/dev/s13/patch_cpall.py",
+      "sha256": "faf5aaa20736f5d580ed1d57863bc414dc651865b1fd1b79e6638d2e4417410b",
+      "active_tokens": [
+        1
+      ],
+      "out_sha256": "632e5b52be9ce3fa0869e609a678afda85b5f970c4ee04d58d65051728506cfe"
+    },
+    {
+      "name": "permw",
+      "path": "problems/muse_decode_layer/dev/s13/patch_permw.py",
+      "sha256": "587518e9715833cd22db9aa2e783af9d0b4d140fddc22e0d9211585bbc4f9d91",
+      "active_tokens": [
+        256
+      ],
+      "out_sha256": "4bb0fdd5cabd2f484b3d3f4eb746a588d08c2d3b547d9aa6d4cb4efc24a81baa"
+    }
+  ]
+}
