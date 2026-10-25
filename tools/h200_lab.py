@@ -323,7 +323,8 @@ def main():
             s.add_argument("--note", required=True)
             s.add_argument("--priority", type=float, default=1.0)
             s.add_argument("--not-before", help="pass an ISO8601 send-time gate to okc_run; no early judge send")
-            s.add_argument("--check", action="store_true", help="reserve scored quota; send only as a check")
+            s.add_argument("--check", action="store_true", help="reserve scored quota; send only as a check "
+                           "(always on muse_decode_layer, whose scored runs carry candidates)")
         else:
             s.add_argument("-o", type=Path, required=True)
     r = sub.add_parser("read")
@@ -356,7 +357,7 @@ def main():
     command=[sys.executable, str(REPO / "tools/okc_run.py"), "send", str(out.relative_to(REPO)),
              "--priority", str(priority), "--note", note]
     if args.not_before:command += ["--not-before", args.not_before]
-    if args.check:command += ["--check"]
+    if args.check or args.host == "muse_decode_layer":command += ["--check"]
     subprocess.run(command, cwd=REPO, check=True)
 
 
