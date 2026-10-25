@@ -24,7 +24,7 @@ import math
 from pathlib import Path
 
 LAYERS = {'sliding': 46, 'full': 16}
-ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6')
+ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R')
 PROJ = ('qkv_gate', 'o', 'pool_router', 'unpooler')
 GLUE = ('boundaries', 'route')
 # 4233660b: a plain cold 256 MiB read takes 74.33 us on the judge, 3.61 TB/s = the 4.8 TB/s floor x 1.329.
@@ -60,6 +60,8 @@ def pending(mode: str) -> list[tuple[int, str, object, str]]:
         basis = 388.0 if i < ORDER.index('S3') else 366.2
         out.append((256, 'moe', lambda us, b=basis: us * 344.5 / b, 'mixed_parallel 8483c0c6'))
         out.append((1, 'o', lambda us: us - 0.35, 'O config6 c42e9fcc'))
+    if i < ORDER.index('S7R'):  # R_full 0.9227x mixed_parallel's M=256 MoE (paired, zero_()-flushed), 110599ba
+        out.append((256, 'moe', lambda us: us * 0.9227, 'R_full 110599ba'))
     return out
 
 

@@ -76,7 +76,7 @@ M = tokens per call (decode B = B, verify B = 8B); S / F = sliding / full layer.
 | MoE | 14.7 | 44.2 | 43.9-44.9 | 52.7-53.4 | 108.4-109.1 | 125.7-126.1 |
 | Boundaries, route | <= 0.02 | <= 0.02 | <= 0.02 | <= 0.02 | <= 0.02 | <= 0.02 |
 
-Where S4 (`ad858b58`, with the pending S5-S6 lab wins) sits, from `scenarios.py`: dense projections 1.4-2.1x their
+Where S7 (`2f6471d5`, with S7R's pending R_full) sits, from `scenarios.py`: dense projections 1.4-2.1x their
 floors; MoE 1.3-3.0x; full attention 1.4-1.5x at decode 16/32 and 2.8-2.9x at verify 16/32; sliding attention and
 the batch-1 full layers are fixed work (4-184x a sub-5 us floor); glue 6.9-19.7 us of boundaries plus 3.0-6.8 us of
 route per layer against ~0.02 us.
@@ -85,34 +85,34 @@ route per layer against ~0.02 us.
 
 `python3 problems/muse_decode_layer/dev/levers/scenarios.py` reads `current.json` (rebuilt by `build.py` from the
 latest landed S-candidate profile), adds the paired-lab stage wins that candidate doesn't contain yet, and rescores
-the six loads. On S4 (`ad858b5875a940a6`, measured 1.528x) the pending S5-S6 wins (`770809cf`, `8483c0c6`,
-`c42e9fcc`) give **1.565**. Calibration: the reset model (`c0e74bed` plus lab deltas) predicted 1.457 for S1's
-content and 1.507 for S4's; they measured 1.467 and 1.528. S2's content modeled 1.491 on S1 and measured 1.474
-(`4e212ec2`); S3 measured 1.466 (`5c7323ea`). The model tracks within ~1.5%, the size of one run's router-seed noise.
+the six loads. On S7 (`2f6471d5`, measured 1.5597x) the pending R_full (`110599ba`) gives **1.573**; S7R, which
+adds exactly that, measured 1.5735x (`c1fbd0cf`). Calibration: the reset model (`c0e74bed` plus lab deltas) predicted
+1.457 for S1's content and 1.507 for S4's; they measured 1.467 and 1.528. The model tracks within ~1.5%, the size of
+one run's router-seed noise. (`build.py` doesn't yet classify S7R's M=256 kernels, so the model stays on S7.)
 
-| Every stage capped at | Score on S4 | on S1 |
+| Every stage capped at | Score on S7 | on S1 |
 |---|---:|---:|
-| 2.0x its floor | 1.956 | 1.942 |
-| 1.5x | 2.280 | 2.341 |
-| 1.3x (byte-bound stages at the measured 3.61 TB/s stream) | 2.597 | 2.710 |
+| 2.0x its floor | 1.955 | 1.942 |
+| 1.5x | 2.296 | 2.341 |
+| 1.3x (byte-bound stages at the measured 3.61 TB/s stream) | 2.637 | 2.710 |
 
 The two bases differ because a capped layer keeps its profile's residual (adjusted graph minus kernel sum: kernel
 durations include PDL waits) and its run's baseline: read these as +-3%. The board leader (2.285x on 10-25, SOTA)
 corresponds to every stage at ~1.5x its floor at once. 1.3x is not reachable everywhere: glue and small attention
 floors are near zero, so a cap there assumes their fixed work is fused away.
 
-| Lever on S4, capped at 1.5x / 1.3x its floor | Score gain on 1.565 |
+| Lever on S7, capped at 1.5x / 1.3x its floor | Score gain on 1.573 |
 |---|---|
-| Attention (sliding +5.5 / +5.6%; full verify 16/32 +2.5 / +2.9%) | +9.8 / +11.0% |
-| Glue (boundaries, route) | +7.1 / +7.1% |
-| Small-M MoE, M <= 32 | +4.6 / +7.3% |
-| MoE M=256 | +5.5 / +6.6% |
-| MoE M=128 | +4.8 / +6.1% |
-| Projections | +2.3 / +6.0% |
+| Attention (sliding +5.7 / +5.8%; full verify 16/32 +2.5 / +3.0%) | +10.1 / +11.3% |
+| Glue (boundaries, route) | +7.0 / +7.0% |
+| Small-M MoE, M <= 32 | +6.6 / +9.9% |
+| MoE M=256 | +6.0 / +7.2% |
+| MoE M=128 | +2.5 / +3.6% |
+| Projections | +2.0 / +5.8% |
 
 Each row is an independent counterfactual; they don't add. Matching the leaders component by component
 (attention /1.8, MoE /1.2, projections /1.25 from the overall top 3's component boards on 10-24, MoE discounted for
-our newer in-layer kernels; glue /3 assumed; `--match` to change) gives 2.117, below the leader's 2.285x: the leaders'
+our newer in-layer kernels; glue /3 assumed; `--match` to change) gives 2.131, below the leader's 2.285x: the leaders'
 in-layer stages beat what their component boards imply, or their glue is faster still.
 
 ## Whole-layer excess and the megakernel
@@ -121,5 +121,5 @@ On the reset profile `c0e74bed`, each batch-1 layer's kernels take 46.7 / 56.1 u
 63.3 / 78.6 us (verify 1) more than a one-read stream at 3.6 TB/s
 ([megakernel scoping](../../problems/muse_decode_layer/dev/megakernel/README.md)). That excess bounds every fix
 together (compute, addressing, occupancy, tails, launches), not a megakernel's share: the scoped fusion estimate is
-+1.74% on the score. `scenarios.py` prints the same quantity for the current model (S4 with pending wins:
-44 / 48 us decode 1 and 46 / 57 us verify 1 above the stream, by adjusted graph time).
++1.74% on the score. `scenarios.py` prints the same quantity for the current model (S7 with R_full:
+45 / 48 us decode 1 and 47 / 57 us verify 1 above the stream, by adjusted graph time).

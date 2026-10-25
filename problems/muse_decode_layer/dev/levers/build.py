@@ -10,7 +10,7 @@ RESET='c0e74bedf7b74be5';SCALE='58ae2e2cf8df45ef';W2='97be11d4631b44d6'
 STAGES=('qkv_gate','o','pool_router','unpooler','attention','moe','boundaries','route','other')
 ROLES=STAGES[:4]
 NAMES=dict(qkv_gate='QKV+gate',o='O',pool_router='Pool+router',unpooler='Unpool',attention='Attention',moe='MoE',boundaries='Boundaries x2',route='Route+norm',other='Other/unreported')
-CANDIDATES=(('S6', 'cand_r3_best7_s6', '4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f'), ('S5', 'cand_r3_best7_s5', 'f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284'), ('S4', 'cand_r3_best7_s4', '9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e'), ('S3', 'cand_r3_best7_scale_recoded_m256', 'cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7'), ('S2', 'cand_r3_best7_scale_w2fix', 'b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337'), ('S1', 'cand_r3_best7_scale', '42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7'))
+CANDIDATES=(('S7R', 'cand_r3_best7_s7r', '56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101'), ('S7', 'cand_r3_best7_s7', 'bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390'), ('S6', 'cand_r3_best7_s6', '4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f'), ('S5', 'cand_r3_best7_s5', 'f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284'), ('S4', 'cand_r3_best7_s4', '9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e'), ('S3', 'cand_r3_best7_scale_recoded_m256', 'cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7'), ('S2', 'cand_r3_best7_scale_w2fix', 'b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337'), ('S1', 'cand_r3_best7_scale', '42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7'))
 
 
 def read_receipt(job):
@@ -62,7 +62,7 @@ def choose_source(explicit):
 
 
 def correction_for(tag,tokens,scale,w2):
-    if tag not in ('reset','S1','S2','S3','S4','S5','S6'):raise ValueError(tag)
+    if tag not in ('reset','S1','S2','S3','S4','S5','S6','S7','S7R'):raise ValueError(tag)
     return (scale.get(tokens,0.) if tag=='reset' else 0.,
             w2 if tokens==256 and tag in ('reset','S1') else 0.)
 
@@ -344,7 +344,7 @@ def main():
     for tokens in (1,8,16,32,128,256):
         assert correction_for('S2',tokens,scale,w2)==(0.,0.)
         assert correction_for('S3',tokens,scale,w2)==(0.,0.)
-        for integrated_tag in ('S4','S5','S6'):assert correction_for(integrated_tag,tokens,scale,w2)==(0.,0.)
+        for integrated_tag in ('S4','S5','S6','S7','S7R'):assert correction_for(integrated_tag,tokens,scale,w2)==(0.,0.)
         assert correction_for('S1',tokens,scale,w2)==(0.,w2 if tokens==256 else 0.)
     all_moe=model['stage_gains']['moe']['estimate']/100.+1.
     moe_lanes=[x for x in model['ranking'] if x['owner'] in ('small-M MoE','MoE M128','free M256')]
