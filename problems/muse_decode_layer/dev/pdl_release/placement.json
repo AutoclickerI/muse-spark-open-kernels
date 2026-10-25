@@ -1,0 +1,32 @@
+{
+  "sm": "90a",
+  "optimization": "O3",
+  "mapping": "isolated PREEXIT/ACQBULK proof in sass_mapping.json",
+  "sources": [
+    {
+      "source": "ATTN_PORT_CUDA_SRC",
+      "functions": 2,
+      "entry_release_before_first_global": true,
+      "release_instruction_max": 5
+    },
+    {
+      "source": "SMALLM_VAR_CUDA",
+      "functions": 3,
+      "entry_release_before_first_global": true,
+      "release_instruction_max": 10
+    },
+    {
+      "source": "NF_CUDA",
+      "functions": 15,
+      "entry_release_before_first_global": true,
+      "release_instruction_max": 8
+    },
+    {
+      "source": "V9_CUDA_SRC",
+      "functions": 1,
+      "entry_release_before_first_global": true,
+      "release_instruction_max": 13
+    }
+  ],
+  "statement": "Every changed release precedes the first global load in optimized SASS; every NF consumer wait precedes its first global load."
+}

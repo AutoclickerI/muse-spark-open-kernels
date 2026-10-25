@@ -1,0 +1,853 @@
+{
+ "problem": "muse_decode_layer",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s15e.py",
+ "sha256": "084e004b797991bc6f0302fc2d04efe7157998e9e6c25b0bdee1706e26d161fa",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 71.019004693022,
+ "tests": [
+  {
+   "case": "TASK-0:90000",
+   "ok": true,
+   "msg": "update relative L2 error 7.624e-03 (worst row 7.624e-03) [bound 0.085]; attention input relative L2 error 4.359e-03 (worst row 4.359e-03) [bound 0.042]"
+  },
+  {
+   "case": "TASK-1:90001",
+   "ok": true,
+   "msg": "update relative L2 error 7.020e-03 (worst row 7.020e-03) [bound 0.150]; attention input relative L2 error 4.971e-03 (worst row 4.971e-03) [bound 0.108]"
+  },
+  {
+   "case": "TASK-2:90002",
+   "ok": true,
+   "msg": "update relative L2 error 6.451e-03 (worst row 9.351e-03) [bound 0.148]; attention input relative L2 error 4.612e-03 (worst row 6.244e-03) [bound 0.094]"
+  },
+  {
+   "case": "TASK-3:90003",
+   "ok": true,
+   "msg": "update relative L2 error 7.332e-03 (worst row 9.991e-03) [bound 0.150]; attention input relative L2 error 5.304e-03 (worst row 7.280e-03) [bound 0.134]"
+  },
+  {
+   "case": "TASK-4:90004",
+   "ok": true,
+   "msg": "update relative L2 error 6.618e-02 (worst row 1.017e-01) [bound 0.150]; attention input relative L2 error 3.469e-02 (worst row 5.184e-02) [bound 0.087]"
+  },
+  {
+   "case": "TASK-5:90005",
+   "ok": true,
+   "msg": "update relative L2 error 6.705e-02 (worst row 9.976e-02) [bound 0.150]; attention input relative L2 error 4.483e-02 (worst row 6.240e-02) [bound 0.112]"
+  },
+  {
+   "case": "TASK-6:90006",
+   "ok": true,
+   "msg": "update relative L2 error 7.214e-03 (worst row 8.436e-03) [bound 0.150]; attention input relative L2 error 5.243e-03 (worst row 6.737e-03) [bound 0.114]"
+  },
+  {
+   "case": "TASK-7:90007",
+   "ok": true,
+   "msg": "update relative L2 error 7.034e-02 (worst row 1.018e-01) [bound 0.150]; attention input relative L2 error 4.786e-02 (worst row 7.012e-02) [bound 0.120]"
+  },
+  {
+   "case": "TASK-8:90008",
+   "ok": true,
+   "msg": "update relative L2 error 8.267e-02 (worst row 1.032e-01) [bound 0.150]; attention input relative L2 error 5.408e-02 (worst row 6.676e-02) [bound 0.135]"
+  },
+  {
+   "case": "TASK-9:90009",
+   "ok": true,
+   "msg": "update relative L2 error 6.913e-02 (worst row 1.071e-01) [bound 0.150]; attention input relative L2 error 4.550e-02 (worst row 7.139e-02) [bound 0.114]"
+  },
+  {
+   "case": "TASK-10:90010",
+   "ok": true,
+   "msg": "update relative L2 error 7.361e-03 (worst row 7.361e-03) [bound 0.138]; attention input relative L2 error 6.099e-03 (worst row 6.099e-03) [bound 0.105]"
+  },
+  {
+   "case": "TASK-11:90011",
+   "ok": true,
+   "msg": "update relative L2 error 5.987e-02 (worst row 8.378e-02) [bound 0.149]; attention input relative L2 error 4.032e-02 (worst row 5.770e-02) [bound 0.101]"
+  },
+  {
+   "case": "TASK-12:90012",
+   "ok": true,
+   "msg": "update relative L2 error 9.646e-03 (worst row 2.832e-02) [bound 0.145]; attention input relative L2 error 5.922e-03 (worst row 1.298e-02) [bound 0.097]"
+  },
+  {
+   "case": "scored-d1-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.838e-03 (worst row 5.838e-03) [bound 0.150]; attention input relative L2 error 4.665e-03 (worst row 4.665e-03) [bound 0.110]"
+  },
+  {
+   "case": "scored-d1-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.461e-03 (worst row 6.461e-03) [bound 0.125]; attention input relative L2 error 4.876e-03 (worst row 4.876e-03) [bound 0.082]"
+  },
+  {
+   "case": "scored-d1-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.891e-03 (worst row 6.891e-03) [bound 0.150]; attention input relative L2 error 5.367e-03 (worst row 5.367e-03) [bound 0.118]"
+  },
+  {
+   "case": "scored-d1-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 7.333e-03 (worst row 7.333e-03) [bound 0.145]; attention input relative L2 error 5.318e-03 (worst row 5.318e-03) [bound 0.096]"
+  },
+  {
+   "case": "scored-d16-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.734e-03 (worst row 9.449e-03) [bound 0.136]; attention input relative L2 error 4.886e-03 (worst row 6.060e-03) [bound 0.089]"
+  },
+  {
+   "case": "scored-d16-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.871e-03 (worst row 1.202e-02) [bound 0.150]; attention input relative L2 error 4.842e-03 (worst row 6.972e-03) [bound 0.098]"
+  },
+  {
+   "case": "scored-d16-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.371e-03 (worst row 8.068e-03) [bound 0.150]; attention input relative L2 error 4.722e-03 (worst row 6.039e-03) [bound 0.099]"
+  },
+  {
+   "case": "scored-d16-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.459e-03 (worst row 7.680e-03) [bound 0.150]; attention input relative L2 error 4.642e-03 (worst row 5.504e-03) [bound 0.095]"
+  },
+  {
+   "case": "scored-d32-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 8.225e-03 (worst row 2.871e-02) [bound 0.134]; attention input relative L2 error 5.486e-03 (worst row 1.657e-02) [bound 0.086]"
+  },
+  {
+   "case": "scored-d32-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 9.854e-03 (worst row 4.161e-02) [bound 0.150]; attention input relative L2 error 6.949e-03 (worst row 2.790e-02) [bound 0.103]"
+  },
+  {
+   "case": "scored-d32-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.049e-03 (worst row 1.155e-02) [bound 0.147]; attention input relative L2 error 5.090e-03 (worst row 8.190e-03) [bound 0.095]"
+  },
+  {
+   "case": "scored-d32-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.773e-03 (worst row 9.639e-03) [bound 0.150]; attention input relative L2 error 5.027e-03 (worst row 6.416e-03) [bound 0.107]"
+  },
+  {
+   "case": "scored-v1-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.433e-02 (worst row 6.486e-02) [bound 0.135]; attention input relative L2 error 3.613e-02 (worst row 4.535e-02) [bound 0.090]"
+  },
+  {
+   "case": "scored-v1-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.621e-02 (worst row 8.000e-02) [bound 0.150]; attention input relative L2 error 4.183e-02 (worst row 5.218e-02) [bound 0.104]"
+  },
+  {
+   "case": "scored-v1-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.841e-02 (worst row 6.857e-02) [bound 0.146]; attention input relative L2 error 3.877e-02 (worst row 4.557e-02) [bound 0.097]"
+  },
+  {
+   "case": "scored-v1-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.690e-02 (worst row 8.184e-02) [bound 0.150]; attention input relative L2 error 4.421e-02 (worst row 5.181e-02) [bound 0.111]"
+  },
+  {
+   "case": "scored-v16-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.351e-02 (worst row 8.259e-02) [bound 0.132]; attention input relative L2 error 3.580e-02 (worst row 5.680e-02) [bound 0.088]"
+  },
+  {
+   "case": "scored-v16-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.076e-02 (worst row 9.559e-02) [bound 0.150]; attention input relative L2 error 4.054e-02 (worst row 6.464e-02) [bound 0.100]"
+  },
+  {
+   "case": "scored-v16-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.152e-02 (worst row 9.233e-02) [bound 0.150]; attention input relative L2 error 4.142e-02 (worst row 6.450e-02) [bound 0.101]"
+  },
+  {
+   "case": "scored-v16-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.447e-02 (worst row 8.995e-02) [bound 0.150]; attention input relative L2 error 4.273e-02 (worst row 5.857e-02) [bound 0.106]"
+  },
+  {
+   "case": "scored-v32-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.534e-02 (worst row 9.491e-02) [bound 0.134]; attention input relative L2 error 3.685e-02 (worst row 6.772e-02) [bound 0.089]"
+  },
+  {
+   "case": "scored-v32-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.126e-02 (worst row 9.675e-02) [bound 0.150]; attention input relative L2 error 4.061e-02 (worst row 6.877e-02) [bound 0.099]"
+  },
+  {
+   "case": "scored-v32-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.329e-02 (worst row 9.925e-02) [bound 0.150]; attention input relative L2 error 4.202e-02 (worst row 6.299e-02) [bound 0.103]"
+  },
+  {
+   "case": "scored-v32-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.504e-02 (worst row 9.363e-02) [bound 0.150]; attention input relative L2 error 4.343e-02 (worst row 6.495e-02) [bound 0.107]"
+  },
+  {
+   "case": "near-d2-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.870e-03 (worst row 6.268e-03) [bound 0.111]; attention input relative L2 error 4.399e-03 (worst row 4.921e-03) [bound 0.073]"
+  },
+  {
+   "case": "near-d2-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.854e-03 (worst row 7.144e-03) [bound 0.150]; attention input relative L2 error 5.160e-03 (worst row 5.480e-03) [bound 0.101]"
+  },
+  {
+   "case": "near-d2-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.616e-03 (worst row 7.053e-03) [bound 0.146]; attention input relative L2 error 4.770e-03 (worst row 5.331e-03) [bound 0.094]"
+  },
+  {
+   "case": "near-d2-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.075e-03 (worst row 6.639e-03) [bound 0.121]; attention input relative L2 error 4.779e-03 (worst row 5.253e-03) [bound 0.083]"
+  },
+  {
+   "case": "near-d8-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.369e-03 (worst row 8.343e-03) [bound 0.133]; attention input relative L2 error 4.714e-03 (worst row 5.700e-03) [bound 0.088]"
+  },
+  {
+   "case": "near-d8-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.485e-03 (worst row 7.362e-03) [bound 0.150]; attention input relative L2 error 4.674e-03 (worst row 5.390e-03) [bound 0.098]"
+  },
+  {
+   "case": "near-d8-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.454e-03 (worst row 7.206e-03) [bound 0.144]; attention input relative L2 error 4.818e-03 (worst row 5.267e-03) [bound 0.097]"
+  },
+  {
+   "case": "near-d8-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.265e-03 (worst row 7.265e-03) [bound 0.144]; attention input relative L2 error 4.574e-03 (worst row 5.413e-03) [bound 0.093]"
+  },
+  {
+   "case": "near-d24-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.626e-03 (worst row 1.458e-02) [bound 0.130]; attention input relative L2 error 4.829e-03 (worst row 9.680e-03) [bound 0.086]"
+  },
+  {
+   "case": "near-d24-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.338e-03 (worst row 1.152e-02) [bound 0.148]; attention input relative L2 error 4.622e-03 (worst row 8.066e-03) [bound 0.095]"
+  },
+  {
+   "case": "near-d24-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.993e-03 (worst row 1.851e-02) [bound 0.146]; attention input relative L2 error 4.922e-03 (worst row 7.128e-03) [bound 0.094]"
+  },
+  {
+   "case": "near-d24-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.690e-03 (worst row 8.996e-03) [bound 0.150]; attention input relative L2 error 4.899e-03 (worst row 5.840e-03) [bound 0.105]"
+  },
+  {
+   "case": "near-d48-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.291e-03 (worst row 9.025e-03) [bound 0.130]; attention input relative L2 error 4.614e-03 (worst row 6.891e-03) [bound 0.085]"
+  },
+  {
+   "case": "near-d48-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.438e-03 (worst row 9.424e-03) [bound 0.144]; attention input relative L2 error 4.704e-03 (worst row 6.099e-03) [bound 0.092]"
+  },
+  {
+   "case": "near-d48-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.996e-03 (worst row 3.143e-02) [bound 0.146]; attention input relative L2 error 5.746e-03 (worst row 2.237e-02) [bound 0.095]"
+  },
+  {
+   "case": "near-d48-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.395e-03 (worst row 7.702e-03) [bound 0.150]; attention input relative L2 error 4.682e-03 (worst row 6.000e-03) [bound 0.105]"
+  },
+  {
+   "case": "near-v2-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.068e-02 (worst row 6.313e-02) [bound 0.126]; attention input relative L2 error 3.426e-02 (worst row 4.238e-02) [bound 0.085]"
+  },
+  {
+   "case": "near-v2-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.864e-02 (worst row 8.025e-02) [bound 0.146]; attention input relative L2 error 3.968e-02 (worst row 5.405e-02) [bound 0.099]"
+  },
+  {
+   "case": "near-v2-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.071e-02 (worst row 7.540e-02) [bound 0.150]; attention input relative L2 error 4.179e-02 (worst row 5.385e-02) [bound 0.104]"
+  },
+  {
+   "case": "near-v2-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.348e-02 (worst row 8.587e-02) [bound 0.150]; attention input relative L2 error 4.189e-02 (worst row 5.903e-02) [bound 0.105]"
+  },
+  {
+   "case": "near-v24-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.541e-02 (worst row 9.138e-02) [bound 0.136]; attention input relative L2 error 3.669e-02 (worst row 5.625e-02) [bound 0.090]"
+  },
+  {
+   "case": "near-v24-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.051e-02 (worst row 8.838e-02) [bound 0.150]; attention input relative L2 error 4.044e-02 (worst row 6.207e-02) [bound 0.100]"
+  },
+  {
+   "case": "near-v24-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.240e-02 (worst row 9.279e-02) [bound 0.150]; attention input relative L2 error 4.133e-02 (worst row 5.980e-02) [bound 0.103]"
+  },
+  {
+   "case": "near-v24-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.392e-02 (worst row 9.437e-02) [bound 0.150]; attention input relative L2 error 4.219e-02 (worst row 5.766e-02) [bound 0.104]"
+  },
+  {
+   "case": "edge-d7-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.483e-03 (worst row 7.860e-03) [bound 0.122]; attention input relative L2 error 4.301e-03 (worst row 5.247e-03) [bound 0.071]"
+  },
+  {
+   "case": "edge-d7-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.357e-03 (worst row 8.084e-03) [bound 0.149]; attention input relative L2 error 4.833e-03 (worst row 6.419e-03) [bound 0.101]"
+  },
+  {
+   "case": "edge-d9-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.766e-03 (worst row 8.372e-03) [bound 0.134]; attention input relative L2 error 4.754e-03 (worst row 5.598e-03) [bound 0.084]"
+  },
+  {
+   "case": "edge-d9-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.295e-03 (worst row 7.316e-03) [bound 0.150]; attention input relative L2 error 4.738e-03 (worst row 5.266e-03) [bound 0.104]"
+  },
+  {
+   "case": "edge-d15-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.701e-03 (worst row 1.771e-02) [bound 0.131]; attention input relative L2 error 5.463e-03 (worst row 9.782e-03) [bound 0.085]"
+  },
+  {
+   "case": "edge-d15-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.172e-03 (worst row 7.515e-03) [bound 0.143]; attention input relative L2 error 4.573e-03 (worst row 5.481e-03) [bound 0.093]"
+  },
+  {
+   "case": "edge-d17-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.810e-03 (worst row 9.638e-03) [bound 0.128]; attention input relative L2 error 5.030e-03 (worst row 6.841e-03) [bound 0.085]"
+  },
+  {
+   "case": "edge-d17-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.519e-03 (worst row 8.076e-03) [bound 0.137]; attention input relative L2 error 4.832e-03 (worst row 5.799e-03) [bound 0.092]"
+  },
+  {
+   "case": "edge-d31-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.433e-03 (worst row 1.260e-02) [bound 0.131]; attention input relative L2 error 5.351e-03 (worst row 9.055e-03) [bound 0.086]"
+  },
+  {
+   "case": "edge-d31-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.484e-03 (worst row 9.663e-03) [bound 0.150]; attention input relative L2 error 4.948e-03 (worst row 7.756e-03) [bound 0.103]"
+  },
+  {
+   "case": "edge-d33-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.612e-03 (worst row 1.305e-02) [bound 0.128]; attention input relative L2 error 5.596e-03 (worst row 8.524e-03) [bound 0.086]"
+  },
+  {
+   "case": "edge-d33-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.749e-03 (worst row 1.686e-02) [bound 0.148]; attention input relative L2 error 4.942e-03 (worst row 1.122e-02) [bound 0.098]"
+  },
+  {
+   "case": "edge-d63-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.134e-03 (worst row 1.321e-02) [bound 0.131]; attention input relative L2 error 5.126e-03 (worst row 8.839e-03) [bound 0.085]"
+  },
+  {
+   "case": "edge-d63-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.620e-03 (worst row 1.446e-02) [bound 0.145]; attention input relative L2 error 4.822e-03 (worst row 8.263e-03) [bound 0.095]"
+  },
+  {
+   "case": "edge-d64-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 9.125e-03 (worst row 2.676e-02) [bound 0.133]; attention input relative L2 error 6.500e-03 (worst row 1.954e-02) [bound 0.088]"
+  },
+  {
+   "case": "edge-d64-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.481e-03 (worst row 9.338e-03) [bound 0.144]; attention input relative L2 error 4.743e-03 (worst row 6.384e-03) [bound 0.095]"
+  },
+  {
+   "case": "edge-d65-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 8.160e-03 (worst row 1.393e-02) [bound 0.126]; attention input relative L2 error 5.804e-03 (worst row 1.030e-02) [bound 0.082]"
+  },
+  {
+   "case": "edge-d65-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 7.846e-03 (worst row 1.284e-02) [bound 0.147]; attention input relative L2 error 5.676e-03 (worst row 1.001e-02) [bound 0.097]"
+  },
+  {
+   "case": "edge-v15-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.674e-02 (worst row 8.705e-02) [bound 0.138]; attention input relative L2 error 3.736e-02 (worst row 6.290e-02) [bound 0.091]"
+  },
+  {
+   "case": "edge-v15-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.267e-02 (worst row 1.168e-01) [bound 0.150]; attention input relative L2 error 4.186e-02 (worst row 8.017e-02) [bound 0.103]"
+  },
+  {
+   "case": "edge-v17-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.553e-02 (worst row 8.189e-02) [bound 0.135]; attention input relative L2 error 3.655e-02 (worst row 5.487e-02) [bound 0.089]"
+  },
+  {
+   "case": "edge-v17-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.006e-02 (worst row 9.572e-02) [bound 0.149]; attention input relative L2 error 3.996e-02 (worst row 6.933e-02) [bound 0.099]"
+  },
+  {
+   "case": "edge-v31-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.487e-02 (worst row 8.219e-02) [bound 0.133]; attention input relative L2 error 3.648e-02 (worst row 5.637e-02) [bound 0.088]"
+  },
+  {
+   "case": "edge-v31-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.977e-02 (worst row 1.005e-01) [bound 0.148]; attention input relative L2 error 3.976e-02 (worst row 6.942e-02) [bound 0.098]"
+  },
+  {
+   "case": "edge-v33-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.545e-02 (worst row 9.636e-02) [bound 0.135]; attention input relative L2 error 3.675e-02 (worst row 6.637e-02) [bound 0.089]"
+  },
+  {
+   "case": "edge-v33-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.000e-02 (worst row 9.026e-02) [bound 0.149]; attention input relative L2 error 4.051e-02 (worst row 6.359e-02) [bound 0.100]"
+  },
+  {
+   "case": "ctx64k-1x1-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.426e-03 (worst row 5.426e-03) [bound 0.100]; attention input relative L2 error 4.344e-03 (worst row 4.344e-03) [bound 0.069]"
+  },
+  {
+   "case": "ctx64k-1x1-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.576e-03 (worst row 6.576e-03) [bound 0.150]; attention input relative L2 error 4.756e-03 (worst row 4.756e-03) [bound 0.115]"
+  },
+  {
+   "case": "ctx64k-1x1-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.588e-03 (worst row 6.588e-03) [bound 0.132]; attention input relative L2 error 5.107e-03 (worst row 5.107e-03) [bound 0.093]"
+  },
+  {
+   "case": "ctx64k-1x1-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 7.374e-03 (worst row 7.374e-03) [bound 0.150]; attention input relative L2 error 5.207e-03 (worst row 5.207e-03) [bound 0.101]"
+  },
+  {
+   "case": "ctx64k-16x1-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.925e-03 (worst row 1.158e-02) [bound 0.129]; attention input relative L2 error 4.908e-03 (worst row 8.132e-03) [bound 0.081]"
+  },
+  {
+   "case": "ctx64k-16x1-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.993e-03 (worst row 1.196e-02) [bound 0.148]; attention input relative L2 error 5.205e-03 (worst row 7.916e-03) [bound 0.101]"
+  },
+  {
+   "case": "ctx64k-16x1-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.803e-03 (worst row 8.636e-03) [bound 0.144]; attention input relative L2 error 4.768e-03 (worst row 5.958e-03) [bound 0.091]"
+  },
+  {
+   "case": "ctx64k-16x1-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.496e-03 (worst row 7.556e-03) [bound 0.150]; attention input relative L2 error 4.945e-03 (worst row 5.934e-03) [bound 0.113]"
+  },
+  {
+   "case": "ctx64k-32x1-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.003e-03 (worst row 1.528e-02) [bound 0.129]; attention input relative L2 error 4.971e-03 (worst row 1.038e-02) [bound 0.084]"
+  },
+  {
+   "case": "ctx64k-32x1-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.810e-03 (worst row 1.230e-02) [bound 0.134]; attention input relative L2 error 4.934e-03 (worst row 7.893e-03) [bound 0.088]"
+  },
+  {
+   "case": "ctx64k-32x1-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.334e-03 (worst row 1.880e-02) [bound 0.140]; attention input relative L2 error 5.201e-03 (worst row 1.201e-02) [bound 0.091]"
+  },
+  {
+   "case": "ctx64k-32x1-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.718e-03 (worst row 9.687e-03) [bound 0.150]; attention input relative L2 error 4.894e-03 (worst row 6.329e-03) [bound 0.097]"
+  },
+  {
+   "case": "ctx64k-16x8-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.462e-02 (worst row 7.894e-02) [bound 0.134]; attention input relative L2 error 3.639e-02 (worst row 5.266e-02) [bound 0.089]"
+  },
+  {
+   "case": "ctx64k-16x8-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.118e-02 (worst row 9.546e-02) [bound 0.150]; attention input relative L2 error 4.108e-02 (worst row 6.945e-02) [bound 0.103]"
+  },
+  {
+   "case": "ctx64k-16x8-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.237e-02 (worst row 8.663e-02) [bound 0.150]; attention input relative L2 error 4.175e-02 (worst row 6.214e-02) [bound 0.102]"
+  },
+  {
+   "case": "ctx64k-16x8-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.521e-02 (worst row 8.950e-02) [bound 0.150]; attention input relative L2 error 4.400e-02 (worst row 6.490e-02) [bound 0.109]"
+  },
+  {
+   "case": "ctx64k-32x8-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.528e-02 (worst row 1.024e-01) [bound 0.134]; attention input relative L2 error 3.695e-02 (worst row 6.060e-02) [bound 0.089]"
+  },
+  {
+   "case": "ctx64k-32x8-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.064e-02 (worst row 1.037e-01) [bound 0.149]; attention input relative L2 error 4.029e-02 (worst row 6.076e-02) [bound 0.099]"
+  },
+  {
+   "case": "ctx64k-32x8-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.259e-02 (worst row 9.467e-02) [bound 0.150]; attention input relative L2 error 4.197e-02 (worst row 6.741e-02) [bound 0.103]"
+  },
+  {
+   "case": "ctx64k-32x8-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.375e-02 (worst row 9.860e-02) [bound 0.150]; attention input relative L2 error 4.230e-02 (worst row 6.270e-02) [bound 0.104]"
+  },
+  {
+   "case": "window-d1-63:419731",
+   "ok": true,
+   "msg": "update relative L2 error 1.664e-02 (worst row 1.664e-02) [bound 0.059]; attention input relative L2 error 8.435e-03 (worst row 8.435e-03) [bound 0.030]"
+  },
+  {
+   "case": "window-d1-63:427650",
+   "ok": true,
+   "msg": "update relative L2 error 8.138e-03 (worst row 8.138e-03) [bound 0.110]; attention input relative L2 error 5.957e-03 (worst row 5.957e-03) [bound 0.076]"
+  },
+  {
+   "case": "window-d1-64:419731",
+   "ok": true,
+   "msg": "update relative L2 error 4.496e-03 (worst row 4.496e-03) [bound 0.094]; attention input relative L2 error 3.996e-03 (worst row 3.996e-03) [bound 0.071]"
+  },
+  {
+   "case": "window-d1-64:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.445e-03 (worst row 6.445e-03) [bound 0.109]; attention input relative L2 error 4.459e-03 (worst row 4.459e-03) [bound 0.065]"
+  },
+  {
+   "case": "window-d1-65:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.622e-03 (worst row 6.622e-03) [bound 0.113]; attention input relative L2 error 5.578e-03 (worst row 5.578e-03) [bound 0.086]"
+  },
+  {
+   "case": "window-d1-65:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.368e-03 (worst row 5.368e-03) [bound 0.120]; attention input relative L2 error 3.808e-03 (worst row 3.808e-03) [bound 0.072]"
+  },
+  {
+   "case": "window-d1-2040:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.153e-03 (worst row 7.153e-03) [bound 0.150]; attention input relative L2 error 5.889e-03 (worst row 5.889e-03) [bound 0.113]"
+  },
+  {
+   "case": "window-d1-2040:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.061e-03 (worst row 5.061e-03) [bound 0.131]; attention input relative L2 error 3.369e-03 (worst row 3.369e-03) [bound 0.069]"
+  },
+  {
+   "case": "window-d1-2047:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.230e-03 (worst row 7.230e-03) [bound 0.119]; attention input relative L2 error 4.986e-03 (worst row 4.986e-03) [bound 0.074]"
+  },
+  {
+   "case": "window-d1-2047:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.397e-03 (worst row 6.397e-03) [bound 0.150]; attention input relative L2 error 5.375e-03 (worst row 5.375e-03) [bound 0.129]"
+  },
+  {
+   "case": "window-d1-2048:419731",
+   "ok": true,
+   "msg": "update relative L2 error 1.981e-02 (worst row 1.981e-02) [bound 0.150]; attention input relative L2 error 1.243e-02 (worst row 1.243e-02) [bound 0.098]"
+  },
+  {
+   "case": "window-d1-2048:427650",
+   "ok": true,
+   "msg": "update relative L2 error 7.956e-03 (worst row 7.956e-03) [bound 0.150]; attention input relative L2 error 6.017e-03 (worst row 6.017e-03) [bound 0.140]"
+  },
+  {
+   "case": "window-d1-2049:419731",
+   "ok": true,
+   "msg": "update relative L2 error 1.512e-02 (worst row 1.512e-02) [bound 0.150]; attention input relative L2 error 9.586e-03 (worst row 9.586e-03) [bound 0.101]"
+  },
+  {
+   "case": "window-d1-2049:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.500e-03 (worst row 5.500e-03) [bound 0.147]; attention input relative L2 error 4.394e-03 (worst row 4.394e-03) [bound 0.103]"
+  },
+  {
+   "case": "window-v2-2040:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.744e-02 (worst row 8.672e-02) [bound 0.143]; attention input relative L2 error 3.845e-02 (worst row 5.688e-02) [bound 0.096]"
+  },
+  {
+   "case": "window-v2-2040:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.945e-02 (worst row 7.782e-02) [bound 0.148]; attention input relative L2 error 3.851e-02 (worst row 5.403e-02) [bound 0.096]"
+  },
+  {
+   "case": "window-v2-2047:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.250e-02 (worst row 6.787e-02) [bound 0.131]; attention input relative L2 error 3.524e-02 (worst row 4.623e-02) [bound 0.088]"
+  },
+  {
+   "case": "window-v2-2047:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.925e-02 (worst row 7.170e-02) [bound 0.148]; attention input relative L2 error 3.863e-02 (worst row 5.160e-02) [bound 0.096]"
+  },
+  {
+   "case": "window-v2-2048:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.247e-02 (worst row 6.701e-02) [bound 0.131]; attention input relative L2 error 3.650e-02 (worst row 4.848e-02) [bound 0.091]"
+  },
+  {
+   "case": "window-v2-2048:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.901e-02 (worst row 8.655e-02) [bound 0.147]; attention input relative L2 error 3.726e-02 (worst row 5.714e-02) [bound 0.093]"
+  },
+  {
+   "case": "window-v2-2049:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.530e-02 (worst row 6.955e-02) [bound 0.138]; attention input relative L2 error 3.678e-02 (worst row 4.807e-02) [bound 0.092]"
+  },
+  {
+   "case": "window-v2-2049:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.112e-02 (worst row 7.895e-02) [bound 0.150]; attention input relative L2 error 4.044e-02 (worst row 5.146e-02) [bound 0.101]"
+  },
+  {
+   "case": "page64-d1:419731",
+   "ok": true,
+   "msg": "update relative L2 error 1.529e-02 (worst row 1.529e-02) [bound 0.107]; attention input relative L2 error 1.172e-02 (worst row 1.172e-02) [bound 0.081]"
+  },
+  {
+   "case": "page64-d1:427650",
+   "ok": true,
+   "msg": "update relative L2 error 7.124e-03 (worst row 7.124e-03) [bound 0.150]; attention input relative L2 error 5.472e-03 (worst row 5.472e-03) [bound 0.120]"
+  },
+  {
+   "case": "page64-v16-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.075e-02 (worst row 1.072e-01) [bound 0.148]; attention input relative L2 error 4.101e-02 (worst row 5.612e-02) [bound 0.100]"
+  },
+  {
+   "case": "page64-v16-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.113e-02 (worst row 9.763e-02) [bound 0.150]; attention input relative L2 error 4.092e-02 (worst row 6.028e-02) [bound 0.101]"
+  },
+  {
+   "case": "page64-v32-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.792e-02 (worst row 9.095e-02) [bound 0.141]; attention input relative L2 error 3.898e-02 (worst row 6.313e-02) [bound 0.095]"
+  },
+  {
+   "case": "page64-v32-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 5.984e-02 (worst row 8.880e-02) [bound 0.147]; attention input relative L2 error 3.976e-02 (worst row 6.081e-02) [bound 0.097]"
+  },
+  {
+   "case": "mixed-d24-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.302e-03 (worst row 1.366e-02) [bound 0.136]; attention input relative L2 error 5.024e-03 (worst row 7.281e-03) [bound 0.087]"
+  },
+  {
+   "case": "mixed-d24-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.617e-03 (worst row 1.144e-02) [bound 0.150]; attention input relative L2 error 4.676e-03 (worst row 5.801e-03) [bound 0.097]"
+  },
+  {
+   "case": "mixed-v24-s:419731",
+   "ok": true,
+   "msg": "update relative L2 error 5.473e-02 (worst row 1.043e-01) [bound 0.133]; attention input relative L2 error 3.646e-02 (worst row 6.215e-02) [bound 0.089]"
+  },
+  {
+   "case": "mixed-v24-s:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.081e-02 (worst row 1.117e-01) [bound 0.150]; attention input relative L2 error 4.026e-02 (worst row 7.310e-02) [bound 0.100]"
+  },
+  {
+   "case": "ctx96k-v24-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 6.229e-02 (worst row 8.586e-02) [bound 0.150]; attention input relative L2 error 4.123e-02 (worst row 5.937e-02) [bound 0.102]"
+  },
+  {
+   "case": "ctx96k-v24-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.526e-02 (worst row 9.254e-02) [bound 0.150]; attention input relative L2 error 4.372e-02 (worst row 6.341e-02) [bound 0.108]"
+  },
+  {
+   "case": "ctx96k-d48-f:419731",
+   "ok": true,
+   "msg": "update relative L2 error 7.474e-03 (worst row 1.392e-02) [bound 0.150]; attention input relative L2 error 5.412e-03 (worst row 1.091e-02) [bound 0.102]"
+  },
+  {
+   "case": "ctx96k-d48-f:427650",
+   "ok": true,
+   "msg": "update relative L2 error 6.494e-03 (worst row 9.046e-03) [bound 0.149]; attention input relative L2 error 4.637e-03 (worst row 5.830e-03) [bound 0.094]"
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GLUE_CL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "LT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_PORT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_X_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_G_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_P8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PG_RAW",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_pf_GROUPED_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SP_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P7_PREFETCH_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CPP",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SMALLM_VAR_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "NF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PARTIAL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "cs_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

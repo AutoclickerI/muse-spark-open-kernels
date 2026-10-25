@@ -1,0 +1,195 @@
+{
+  "base": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s15.py",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "arms": {
+    "E": {
+      "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s15e.py",
+      "sha256": "084e004b797991bc6f0302fc2d04efe7157998e9e6c25b0bdee1706e26d161fa",
+      "changes": [
+        {
+          "group": "attention",
+          "source": "ATTN_PORT_CUDA_SRC",
+          "producer": "attn_main consumer: wait before qkv; entry trigger already present",
+          "before": "498e93ccda4854843881290cec33d583303b7a577c9eb86dacb303804459cc4c",
+          "after": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259"
+        },
+        {
+          "group": "moe",
+          "source": "SMALLM_VAR_CUDA",
+          "producer": "moe_var: implicit exit -> entry; existing input wait retained",
+          "before": "c023c946188354887f01426ead0edd4b1e4192026a59e48b8906456a12f4df55",
+          "after": "65aabb05ec6249340012a1f5c095c63812d1bc1bcee062e3fb0d6d0844966754"
+        },
+        {
+          "group": "moe",
+          "source": "V9_CUDA_SRC",
+          "producer": "moe_fused: implicit exit -> entry; ordinary input launch retained",
+          "before": "f5e1fbf84c56f6f1b9be4fc8fa373a501c17378a6340f5a11a05fc9edcf7830a",
+          "after": "e76d39a00f2f4d69d55ba71f7625e4e6a2636a17c8b347c98b108a2ca07b1507"
+        },
+        {
+          "group": "moe",
+          "source": "NF_CUDA",
+          "producer": "route_live,heavy/light gemm,phase,finish: entry releases and launch/wait pairs",
+          "before": "0a31e25150f5de7ed10cdc23f5b295e5198d247f513e71e139a6fdf564616994",
+          "after": "2e9f72ae8e04c29851ec393d6ae56d78bd5b4d62a6a2ca2f201d8a73b42482d5"
+        },
+        {
+          "group": "projections",
+          "source": "_vdsk_gemm",
+          "producer": "VDSK qkv: implicit exit -> entry; input independent"
+        }
+      ]
+    },
+    "no_attention": {
+      "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/no_attention.py",
+      "sha256": "bb0f25e3af9cd4bdc2dc9d7a5c7e22aa2606b3d49966853afb53d7efdb61d9d7",
+      "changes": [
+        {
+          "group": "moe",
+          "source": "SMALLM_VAR_CUDA",
+          "producer": "moe_var: implicit exit -> entry; existing input wait retained",
+          "before": "c023c946188354887f01426ead0edd4b1e4192026a59e48b8906456a12f4df55",
+          "after": "65aabb05ec6249340012a1f5c095c63812d1bc1bcee062e3fb0d6d0844966754"
+        },
+        {
+          "group": "moe",
+          "source": "V9_CUDA_SRC",
+          "producer": "moe_fused: implicit exit -> entry; ordinary input launch retained",
+          "before": "f5e1fbf84c56f6f1b9be4fc8fa373a501c17378a6340f5a11a05fc9edcf7830a",
+          "after": "e76d39a00f2f4d69d55ba71f7625e4e6a2636a17c8b347c98b108a2ca07b1507"
+        },
+        {
+          "group": "moe",
+          "source": "NF_CUDA",
+          "producer": "route_live,heavy/light gemm,phase,finish: entry releases and launch/wait pairs",
+          "before": "0a31e25150f5de7ed10cdc23f5b295e5198d247f513e71e139a6fdf564616994",
+          "after": "2e9f72ae8e04c29851ec393d6ae56d78bd5b4d62a6a2ca2f201d8a73b42482d5"
+        },
+        {
+          "group": "projections",
+          "source": "_vdsk_gemm",
+          "producer": "VDSK qkv: implicit exit -> entry; input independent"
+        }
+      ]
+    },
+    "no_moe": {
+      "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/no_moe.py",
+      "sha256": "d417ebe3463cc087fcd8368d79b647e614f70fcc218c711243fd79b40fc0fc15",
+      "changes": [
+        {
+          "group": "attention",
+          "source": "ATTN_PORT_CUDA_SRC",
+          "producer": "attn_main consumer: wait before qkv; entry trigger already present",
+          "before": "498e93ccda4854843881290cec33d583303b7a577c9eb86dacb303804459cc4c",
+          "after": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259"
+        },
+        {
+          "group": "projections",
+          "source": "_vdsk_gemm",
+          "producer": "VDSK qkv: implicit exit -> entry; input independent"
+        }
+      ]
+    },
+    "no_projections": {
+      "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/no_projections.py",
+      "sha256": "2ee567930c6ea02df564a05cc8b11616d76ed947ae40b2896da699d20414a6bd",
+      "changes": [
+        {
+          "group": "attention",
+          "source": "ATTN_PORT_CUDA_SRC",
+          "producer": "attn_main consumer: wait before qkv; entry trigger already present",
+          "before": "498e93ccda4854843881290cec33d583303b7a577c9eb86dacb303804459cc4c",
+          "after": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259"
+        },
+        {
+          "group": "moe",
+          "source": "SMALLM_VAR_CUDA",
+          "producer": "moe_var: implicit exit -> entry; existing input wait retained",
+          "before": "c023c946188354887f01426ead0edd4b1e4192026a59e48b8906456a12f4df55",
+          "after": "65aabb05ec6249340012a1f5c095c63812d1bc1bcee062e3fb0d6d0844966754"
+        },
+        {
+          "group": "moe",
+          "source": "V9_CUDA_SRC",
+          "producer": "moe_fused: implicit exit -> entry; ordinary input launch retained",
+          "before": "f5e1fbf84c56f6f1b9be4fc8fa373a501c17378a6340f5a11a05fc9edcf7830a",
+          "after": "e76d39a00f2f4d69d55ba71f7625e4e6a2636a17c8b347c98b108a2ca07b1507"
+        },
+        {
+          "group": "moe",
+          "source": "NF_CUDA",
+          "producer": "route_live,heavy/light gemm,phase,finish: entry releases and launch/wait pairs",
+          "before": "0a31e25150f5de7ed10cdc23f5b295e5198d247f513e71e139a6fdf564616994",
+          "after": "2e9f72ae8e04c29851ec393d6ae56d78bd5b4d62a6a2ca2f201d8a73b42482d5"
+        }
+      ]
+    },
+    "no_glue": {
+      "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/no_glue.py",
+      "sha256": "084e004b797991bc6f0302fc2d04efe7157998e9e6c25b0bdee1706e26d161fa",
+      "changes": [
+        {
+          "group": "attention",
+          "source": "ATTN_PORT_CUDA_SRC",
+          "producer": "attn_main consumer: wait before qkv; entry trigger already present",
+          "before": "498e93ccda4854843881290cec33d583303b7a577c9eb86dacb303804459cc4c",
+          "after": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259"
+        },
+        {
+          "group": "moe",
+          "source": "SMALLM_VAR_CUDA",
+          "producer": "moe_var: implicit exit -> entry; existing input wait retained",
+          "before": "c023c946188354887f01426ead0edd4b1e4192026a59e48b8906456a12f4df55",
+          "after": "65aabb05ec6249340012a1f5c095c63812d1bc1bcee062e3fb0d6d0844966754"
+        },
+        {
+          "group": "moe",
+          "source": "V9_CUDA_SRC",
+          "producer": "moe_fused: implicit exit -> entry; ordinary input launch retained",
+          "before": "f5e1fbf84c56f6f1b9be4fc8fa373a501c17378a6340f5a11a05fc9edcf7830a",
+          "after": "e76d39a00f2f4d69d55ba71f7625e4e6a2636a17c8b347c98b108a2ca07b1507"
+        },
+        {
+          "group": "moe",
+          "source": "NF_CUDA",
+          "producer": "route_live,heavy/light gemm,phase,finish: entry releases and launch/wait pairs",
+          "before": "0a31e25150f5de7ed10cdc23f5b295e5198d247f513e71e139a6fdf564616994",
+          "after": "2e9f72ae8e04c29851ec393d6ae56d78bd5b4d62a6a2ca2f201d8a73b42482d5"
+        },
+        {
+          "group": "projections",
+          "source": "_vdsk_gemm",
+          "producer": "VDSK qkv: implicit exit -> entry; input independent"
+        }
+      ]
+    }
+  },
+  "glue": "no-op: every selected owned glue kernel already releases at entry",
+  "diff": {
+    "add": 7,
+    "remove": 1289
+  },
+  "expanded_cuda_diff": [
+    {
+      "source": "V9_CUDA_SRC",
+      "add": 1,
+      "remove": 0
+    },
+    {
+      "source": "ATTN_PORT_CUDA_SRC",
+      "add": 5,
+      "remove": 2
+    },
+    {
+      "source": "SMALLM_VAR_CUDA",
+      "add": 1,
+      "remove": 0
+    },
+    {
+      "source": "NF_CUDA",
+      "add": 20,
+      "remove": 6
+    }
+  ]
+}

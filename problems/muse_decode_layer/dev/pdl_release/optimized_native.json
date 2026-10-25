@@ -1,0 +1,409 @@
+[
+  {
+    "name": "ATTN_PORT_CUDA_SRC",
+    "sha256": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259",
+    "ok": true,
+    "compiler": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/native/ATTN_PORT_CUDA_SRC.cu(92): warning #177-D: function \"<unnamed>::ld_cluster_f32\" was declared but never referenced\n      float ld_cluster_f32(uint32_t a) {\n            ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\nptxas info    : 24 bytes gmem\nptxas info    : Compiling entry function '_ZN54_GLOBAL__N__809fa3ae_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi8ELi3EEEvNS_6ParamsE' for 'sm_90a'\nptxas info    : Function properties for _ZN54_GLOBAL__N__809fa3ae_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi8ELi3EEEvNS_6ParamsE\n    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 235 registers, used 1 barriers, 32 bytes cumulative stack size, 128 bytes smem\nptxas info    : Compile time = 402.856 ms\nptxas info    : Compiling entry function '_ZN54_GLOBAL__N__809fa3ae_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi1ELi4EEEvNS_6ParamsE' for 'sm_90a'\nptxas info    : Function properties for _ZN54_GLOBAL__N__809fa3ae_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi1ELi4EEEvNS_6ParamsE\n    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 120 registers, used 1 barriers, 32 bytes cumulative stack size, 128 bytes smem\nptxas info    : Compile time = 140.966 ms\n",
+    "functions": [
+      {
+        "symbol": "_ZN54_GLOBAL__N__809fa3ae_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi8ELi3EEEvNS_6ParamsE",
+        "instructions": 7032,
+        "trigger_instruction": [
+          5
+        ],
+        "wait_instruction": [
+          286
+        ],
+        "first_global_load": [
+          15
+        ],
+        "snippets": [
+          "/*0050*/                   PREEXIT ;                                                     /* 0x000000000000782d */",
+          "/*00f0*/                   LDG.E R14, desc[UR8][R14.64] ;                                /* 0x000000080e0e7981 */",
+          "/*11e0*/                   ACQBULK ;                                                     /* 0x000000000000782e */"
+        ]
+      },
+      {
+        "symbol": "_ZN54_GLOBAL__N__809fa3ae_21_ATTN_PORT_CUDA_SRC_cu_7c2dbf149attn_mainILi1ELi4EEEvNS_6ParamsE",
+        "instructions": 3552,
+        "trigger_instruction": [
+          5
+        ],
+        "wait_instruction": [
+          302
+        ],
+        "first_global_load": [
+          16
+        ],
+        "snippets": [
+          "/*0050*/                   PREEXIT ;                                                     /* 0x000000000000782d */",
+          "/*0100*/                   LDG.E R86, desc[UR8][R86.64] ;                                /* 0x0000000856567981 */",
+          "/*12e0*/                   ACQBULK ;                                                     /* 0x000000000000782e */"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "SMALLM_VAR_CUDA",
+    "sha256": "65aabb05ec6249340012a1f5c095c63812d1bc1bcee062e3fb0d6d0844966754",
+    "ok": true,
+    "compiler": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function '_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm' for 'sm_90a'\nptxas info    : Function properties for _ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 203 registers, used 2 barriers\nptxas info    : Compile time = 157.872 ms\nptxas info    : Compiling entry function '_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi0EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm' for 'sm_90a'\nptxas info    : Function properties for _ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi0EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 125 registers, used 2 barriers\nptxas info    : Compile time = 141.620 ms\nptxas info    : Compiling entry function '_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm' for 'sm_90a'\nptxas info    : Function properties for _ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 119 registers, used 2 barriers\nptxas info    : Compile time = 83.619 ms\nptxas info    : Compiling entry function '_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm' for 'sm_90a'\nptxas info    : Function properties for _ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 125 registers, used 2 barriers\nptxas info    : Compile time = 136.812 ms\n",
+    "functions": [
+      {
+        "symbol": "_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi2ELi2117EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+        "instructions": 3352,
+        "trigger_instruction": [
+          10
+        ],
+        "wait_instruction": [
+          107
+        ],
+        "first_global_load": [
+          118
+        ],
+        "snippets": [
+          "/*00a0*/                   PREEXIT ;                                                            /* 0x000000000000782d */",
+          "/*06b0*/                   ACQBULK ;                                                            /* 0x000000000000782e */",
+          "/*0760*/              @!P2 LDG.E.STRONG.GPU R183, desc[UR12][R10.64+0x88] ;                     /* 0x0000880c0ab7a981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi95EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+        "instructions": 2024,
+        "trigger_instruction": [
+          9
+        ],
+        "wait_instruction": [
+          94
+        ],
+        "first_global_load": [
+          103
+        ],
+        "snippets": [
+          "/*0090*/                   PREEXIT ;                                                            /* 0x000000000000782d */",
+          "/*05e0*/                   ACQBULK ;                                                            /* 0x000000000000782e */",
+          "/*0670*/              @!P3 LDG.E.CONSTANT R4, desc[UR10][R4.64] ;                               /* 0x0000000a0404b981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN51_GLOBAL__N__a300260e_18_SMALLM_VAR_CUDA_cu_56e15e617moe_varILi1ELi69EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iiiPm",
+        "instructions": 3168,
+        "trigger_instruction": [
+          10
+        ],
+        "wait_instruction": [
+          104
+        ],
+        "first_global_load": [
+          111
+        ],
+        "snippets": [
+          "/*00a0*/                   PREEXIT ;                                                            /* 0x000000000000782d */",
+          "/*0680*/                   ACQBULK ;                                                            /* 0x000000000000782e */",
+          "/*06f0*/              @!P2 LDG.E.STRONG.GPU R110, desc[UR12][R10.64+0x88] ;                     /* 0x0000880c0a6ea981 */"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "NF_CUDA",
+    "sha256": "2e9f72ae8e04c29851ec393d6ae56d78bd5b4d62a6a2ca2f201d8a73b42482d5",
+    "ok": true,
+    "compiler": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/native/NF_CUDA.cu(26): warning #177-D: variable \"mwbr::BK\" was declared but never referenced\n  constexpr int BK=64,KT=128,S=4,BIG=1<<30;\n                ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\n/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/native/NF_CUDA.cu(26): warning #177-D: variable \"mwbr::BIG\" was declared but never referenced\n  constexpr int BK=64,KT=128,S=4,BIG=1<<30;\n                                 ^\n\n/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/pdl_release/out/native/NF_CUDA.cu(396): warning #177-D: variable \"pmz::LA_MASK\" was declared but never referenced\n  constexpr uint32_t LA_MASK = 0x60306030u;\n                     ^\n\nptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function '_ZN3pmz5phaseILi1ELb0ELb1ELb0ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii' for 'sm_90a'\nptxas info    : Function properties for _ZN3pmz5phaseILi1ELb0ELb1ELb0ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 109 registers, used 2 barriers\nptxas info    : Compile time = 90.003 ms\nptxas info    : Compiling entry function '_ZN3pmz5phaseILi1ELb0ELb1ELb0ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii' for 'sm_90a'\nptxas info    : Function properties for _ZN3pmz5phaseILi1ELb0ELb1ELb0ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 109 registers, used 2 barriers\nptxas info    : Compile time = 81.200 ms\nptxas info    : Compiling entry function '_ZN3pmz5phaseILi1ELb1ELb1ELb1ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii' for 'sm_90a'\nptxas info    : Function properties for _ZN3pmz5phaseILi1ELb1ELb1ELb1ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 112 registers, used 2 barriers\nptxas info    : Compile time = 80.720 ms\nptxas info    : Compiling entry function '_ZN3pmz5phaseILi1ELb1ELb1ELb1ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii' for 'sm_90a'\nptxas info    : Function properties for _ZN3pmz5phaseILi1ELb1ELb1ELb1ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 112 registers, used 2 barriers\nptxas info    : Compile time = 84.586 ms\nptxas info    : Compiling entry function '_ZN4mwbr6finishILi16EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr6finishILi16EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 9.106 ms\nptxas info    : Compiling entry function '_ZN4mwbr6finishILi8EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr6finishILi8EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 8.831 ms\nptxas info    : Compiling entry function '_ZN4mwbr6finishILi4EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr6finishILi4EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 8.819 ms\nptxas info    : Compiling entry function '_ZN4mwbr6finishILi2EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr6finishILi2EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 8.109 ms\nptxas info    : Compiling entry function '_ZN4mwbr6finishILi1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr6finishILi1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 8.050 ms\nptxas info    : Compiling entry function '_ZN4mwbr10route_liveILb0EEEvPKiPiS3_S3_S3_S3_S3_S3_S3_iii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr10route_liveILb0EEEvPKiPiS3_S3_S3_S3_S3_S3_S3_iii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 27 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 13.160 ms\nptxas info    : Compiling entry function '_ZN4mwbr10route_liveILb1EEEvPKiPiS3_S3_S3_S3_S3_S3_S3_iii' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr10route_liveILb1EEEvPKiPiS3_S3_S3_S3_S3_S3_S3_iii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 30 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 13.826 ms\nptxas info    : Compiling entry function '_ZN4mwbr4gemmILi16ELb0ELi6ELi1ELi8ELi16EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr4gemmILi16ELb0ELi6ELi1ELi8ELi16EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 82 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 50.873 ms\nptxas info    : Compiling entry function '_ZN4mwbr4gemmILi16ELb1ELi7ELi1ELi8ELi16EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr4gemmILi16ELb1ELi7ELi1ELi8ELi16EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 1 barriers\nptxas info    : Compile time = 62.039 ms\nptxas info    : Compiling entry function '_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 1 barriers, 1024 bytes smem\nptxas info    : Compile time = 66.656 ms\nptxas info    : Compiling entry function '_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'\nptxas info    : Function properties for _ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 95 registers, used 1 barriers\nptxas info    : Compile time = 76.085 ms\n",
+    "functions": [
+      {
+        "symbol": "_ZN3pmz5phaseILi1ELb0ELb1ELb0ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii",
+        "instructions": 2056,
+        "trigger_instruction": [
+          8
+        ],
+        "wait_instruction": [
+          75
+        ],
+        "first_global_load": [
+          82
+        ],
+        "snippets": [
+          "/*0080*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*04b0*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0520*/                   LDG.E R4, desc[UR12][R4.64] ;                                    /* 0x0000000c04047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN3pmz5phaseILi1ELb0ELb1ELb0ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii",
+        "instructions": 2056,
+        "trigger_instruction": [
+          8
+        ],
+        "wait_instruction": [
+          75
+        ],
+        "first_global_load": [
+          82
+        ],
+        "snippets": [
+          "/*0080*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*04b0*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0520*/                   LDG.E R4, desc[UR12][R4.64] ;                                    /* 0x0000000c04047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN3pmz5phaseILi1ELb1ELb1ELb1ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii",
+        "instructions": 1928,
+        "trigger_instruction": [
+          8
+        ],
+        "wait_instruction": [
+          78
+        ],
+        "first_global_load": [
+          84
+        ],
+        "snippets": [
+          "/*0080*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*04e0*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0540*/                   LDG.E R6, desc[UR12][R6.64] ;                                    /* 0x0000000c06067981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN3pmz5phaseILi1ELb1ELb1ELb1ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii",
+        "instructions": 1928,
+        "trigger_instruction": [
+          8
+        ],
+        "wait_instruction": [
+          78
+        ],
+        "first_global_load": [
+          84
+        ],
+        "snippets": [
+          "/*0080*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*04e0*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0540*/                   LDG.E R6, desc[UR12][R6.64] ;                                    /* 0x0000000c06067981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr6finishILi16EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "instructions": 224,
+        "trigger_instruction": [
+          6
+        ],
+        "wait_instruction": [
+          7
+        ],
+        "first_global_load": [
+          15
+        ],
+        "snippets": [
+          "/*0060*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0070*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*00f0*/                   LDG.E.CONSTANT R4, desc[UR10][R4.64] ;                           /* 0x0000000a04047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr6finishILi8EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "instructions": 224,
+        "trigger_instruction": [
+          5
+        ],
+        "wait_instruction": [
+          6
+        ],
+        "first_global_load": [
+          14
+        ],
+        "snippets": [
+          "/*0050*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0060*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*00e0*/                   LDG.E.CONSTANT R4, desc[UR10][R4.64] ;                           /* 0x0000000a04047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr6finishILi4EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "instructions": 224,
+        "trigger_instruction": [
+          6
+        ],
+        "wait_instruction": [
+          7
+        ],
+        "first_global_load": [
+          15
+        ],
+        "snippets": [
+          "/*0060*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0070*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*00f0*/                   LDG.E.CONSTANT R4, desc[UR10][R4.64] ;                           /* 0x0000000a04047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr6finishILi2EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "instructions": 224,
+        "trigger_instruction": [
+          6
+        ],
+        "wait_instruction": [
+          7
+        ],
+        "first_global_load": [
+          15
+        ],
+        "snippets": [
+          "/*0060*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0070*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*00f0*/                   LDG.E.CONSTANT R4, desc[UR10][R4.64] ;                           /* 0x0000000a04047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr6finishILi1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "instructions": 216,
+        "trigger_instruction": [
+          6
+        ],
+        "wait_instruction": [
+          7
+        ],
+        "first_global_load": [
+          13
+        ],
+        "snippets": [
+          "/*0060*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0070*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*00d0*/                   LDG.E.CONSTANT R6, desc[UR12][R6.64] ;                           /* 0x0000000c06067981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr10route_liveILb0EEEvPKiPiS3_S3_S3_S3_S3_S3_S3_iii",
+        "instructions": 376,
+        "trigger_instruction": [
+          6
+        ],
+        "wait_instruction": [
+          14
+        ],
+        "first_global_load": [
+          34
+        ],
+        "snippets": [
+          "/*0060*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*00e0*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0220*/              @!P0 LDG.E R20, desc[UR8][R6.64] ;                                    /* 0x0000000806148981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr10route_liveILb1EEEvPKiPiS3_S3_S3_S3_S3_S3_S3_iii",
+        "instructions": 432,
+        "trigger_instruction": [
+          6
+        ],
+        "wait_instruction": [
+          14
+        ],
+        "first_global_load": [
+          34
+        ],
+        "snippets": [
+          "/*0060*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*00e0*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0220*/              @!P0 LDG.E R20, desc[UR8][R6.64] ;                                    /* 0x0000000806148981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr4gemmILi16ELb0ELi6ELi1ELi8ELi16EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "instructions": 1088,
+        "trigger_instruction": [
+          3
+        ],
+        "wait_instruction": [
+          4
+        ],
+        "first_global_load": [
+          5
+        ],
+        "snippets": [
+          "/*0030*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0040*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0050*/                   LDG.E R2, desc[UR8][R2.64+0x80] ;                                /* 0x0000800802027981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr4gemmILi16ELb1ELi7ELi1ELi8ELi16EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "instructions": 1200,
+        "trigger_instruction": [
+          3
+        ],
+        "wait_instruction": [
+          4
+        ],
+        "first_global_load": [
+          5
+        ],
+        "snippets": [
+          "/*0030*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0040*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0050*/                   LDG.E R2, desc[UR8][R2.64+0x80] ;                                /* 0x0000800802027981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "instructions": 1248,
+        "trigger_instruction": [
+          3
+        ],
+        "wait_instruction": [
+          4
+        ],
+        "first_global_load": [
+          5
+        ],
+        "snippets": [
+          "/*0030*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0040*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0050*/                   LDG.E R2, desc[UR8][R2.64+0x80] ;                                /* 0x0000800802027981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "instructions": 1392,
+        "trigger_instruction": [
+          3
+        ],
+        "wait_instruction": [
+          4
+        ],
+        "first_global_load": [
+          5
+        ],
+        "snippets": [
+          "/*0030*/                   PREEXIT ;                                                        /* 0x000000000000782d */",
+          "/*0040*/                   ACQBULK ;                                                        /* 0x000000000000782e */",
+          "/*0050*/                   LDG.E R2, desc[UR8][R2.64+0x80] ;                                /* 0x0000800802027981 */"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "V9_CUDA_SRC",
+    "sha256": "e76d39a00f2f4d69d55ba71f7625e4e6a2636a17c8b347c98b108a2ca07b1507",
+    "ok": true,
+    "compiler": "ptxas info    : 28 bytes gmem\nptxas info    : Compiling entry function '_ZN47_GLOBAL__N__7dcf288f_14_V9_CUDA_SRC_cu_56e15e619moe_fusedILi1EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iii' for 'sm_90a'\nptxas info    : Function properties for _ZN47_GLOBAL__N__7dcf288f_14_V9_CUDA_SRC_cu_56e15e619moe_fusedILi1EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 121 registers, used 2 barriers\nptxas info    : Compile time = 167.469 ms\n",
+    "functions": [
+      {
+        "symbol": "_ZN47_GLOBAL__N__7dcf288f_14_V9_CUDA_SRC_cu_56e15e619moe_fusedILi1EEEvPK13__nv_bfloat16PKiPKfS3_PKhS9_S7_S7_PS1_PfSB_PiSA_iii",
+        "instructions": 3696,
+        "trigger_instruction": [
+          13
+        ],
+        "wait_instruction": [],
+        "first_global_load": [
+          84
+        ],
+        "snippets": [
+          "/*00d0*/                   PREEXIT ;                                                           /* 0x000000000000782d */",
+          "/*0540*/                   LDG.E.STRONG.GPU R107, desc[UR12][R10.64+0x88] ;                    /* 0x0000880c0a6b7981 */"
+        ]
+      }
+    ]
+  }
+]

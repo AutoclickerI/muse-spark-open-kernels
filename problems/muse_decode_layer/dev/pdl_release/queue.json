@@ -1,0 +1,25 @@
+{
+  "wrapper": "problems/muse_decode_layer/lab/lab_release_payload.py",
+  "wrapper_sha256": "f067eb263e1a67ac5277cec91b032fa33de4891ec3a12fdba9a24b23ae3797bc",
+  "sender_id": 1416137,
+  "waiting_metadata": "runs/waiting/1416137.json",
+  "host": "muse_decode_layer",
+  "check": true,
+  "priority": 3.0,
+  "not_before_epoch": 1792972800.0,
+  "not_before": "2026-10-26T00:00:00+00:00",
+  "sender_log": "runs/detached/f067eb263e1a67ac.log",
+  "job_id": null,
+  "status": "held until reset",
+  "arms": [
+    "A",
+    "A2",
+    "E",
+    "no_attention",
+    "no_moe",
+    "no_projections",
+    "no_glue"
+  ],
+  "seeds": 8,
+  "replays": 8
+}
