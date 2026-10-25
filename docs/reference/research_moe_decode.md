@@ -1,66 +1,97 @@
-Serves: G2, G1. Read when choosing an NVFP4 expert or whole-layer design.
-
 # NVFP4 experts and decode-layer structures
+Serves: G2, G1. Read when designing an NVFP4 expert kernel or a fused / persistent whole-layer schedule: model
+invariants, external design donors and what their numbers do and don't transfer.
 
-Current Muse shapes, H200 receipts, closed recipes, and failures belong in [FINDINGS](../FINDINGS.md) and [SOTA](../SOTA.md). This file keeps mechanisms that remain useful after those measurements move. The standalone bank and decode-layer ABI are specified in [V9_ABI](../../problems/muse_moe_w4a16/dev/V9_ABI.md).
+Our H200 receipts, closed recipes and failures are in [FINDINGS](../FINDINGS.md); prior-work status and headline
+numbers in [SOTA](../SOTA.md); the bank layout in [expert_layout](expert_layout.md) and the standalone ABI in
+[V9_ABI](../../problems/muse_moe_w4a16/dev/V9_ABI.md). No checked source reports a Hopper NVFP4 group-16,
+BF16-activation grouped kernel with Muse's post-expert norm at our shapes: FP8, MXFP4, INT4, BF16, H100/H800,
+Blackwell and distributed results below are design references, not Muse H200 numbers.
 
 ## Model invariants
 
-The routed expert has 256 global experts, top-8 routing, 32 local experts per EP8 rank, hidden width 8192, and expert intermediate width 4096. W13 is `[32, 8192, 4096]` before packing and W2 is `[32, 4096, 4096]`; inputs and intermediate activations remain BF16. The standalone problem's token loads are 1, 8, 16, 32, 128 and 256; the decode-layer verify block is eight tokens per request. Do not size work as if all `8*T` routes are local: local expert popularity is skewed and the scored rank is the busiest rank. The exact load weights and nearby correctness shapes are in the problem `TASK.md` files and [FINDINGS](../FINDINGS.md).
+256 global experts, top-8 routing, 32 local experts per EP8 rank, hidden 8192, expert intermediate 4096: W13
+`[32, 8192, 4096]` and W2 `[32, 4096, 4096]` before packing; inputs and intermediates BF16. Decode-layer token
+counts per call are M = 1, 8, 16, 32, 128, 256 (verify = 8 tokens per request). Local expert popularity is skewed and
+the scored rank is the busiest one: never size work as if all `8*M` routes are local.
 
-Muse's post-expert order is part of the function. Sum every split-K down-projection partial for a row, apply the zero-centered norm parameter as `1 + w`, RMS-normalize the complete 4096-vector, then multiply by the routing weight and accumulate experts. W13's K reduction must finish before SwiGLU. Applying routing before this norm, or normalizing a partial or the already weighted sum, changes the model. Keep the BF16 materialization points required by SGLang and FP32 global-scale and accumulation semantics.
+Post-expert order is part of the function: sum every split-K partial of a W2 row, apply the zero-centred norm
+weight as `1 + w`, RMS-normalize the complete 4096-vector, then multiply by the routing weight and accumulate
+experts. W13's K reduction finishes before SwiGLU. Normalizing a partial or the weighted sum changes the model.
+Keep SGLang's BF16 materialization points and FP32 global-scale and accumulation semantics.
 
-## Grouped NVFP4 design options
+## Exact NVFP4 decode
 
-**Humming indexed/grouped scheduling.** [Humming](https://github.com/vllm-project/humming) separates ModelOpt NVFP4 format, indexed versus contiguous grouped GEMM, and SM90 tuning policy. Its schema uses group-16 E4M3 scales and an FP32 per-expert scale; schedules include MMA, WGMMA, TMA/warp specialization and Stream-K. Use it as a scheduling donor, not as evidence that its published MXFP4 results transfer to Muse NVFP4. The authors' H200 announcement reports about 2x Marlin for selected MXFP4 W4A16 cases, while its H20 W4A8 end-to-end numbers use a different format and activation path: [announcement](https://vllm-project.github.io/2026/10/19/humming.html).
+Hopper has no E2M1 converter ([hardware](hardware.md) "Format and decode"). Lossless families: Marlin's exponent-bias
+bit placement and the rotate/AND reconstruction
+([Marlin `dequant.h`](https://github.com/vllm-project/vllm/blob/ccd4e4030f4b86f959a3cb3435437c0f592c88b1/csrc/quantization/marlin/dequant.h),
+[arXiv:2408.11743](https://arxiv.org/abs/2408.11743)); a register E2M1 LUT with `prmt`, sign assembly and BF16 scale
+multiply (Quack, below; [FLUTE](https://arxiv.org/abs/2407.10960),
+[code](https://github.com/HanGuo97/flute/blob/9eb83a12d56949bbe7fe9c836ba97a67bd1e3761/flute/csrc/qgemm_kernel_example.cu));
+TileLang's bit-twiddled Hopper example
+([`example_dequant_gemm_bf16_fp4_hopper.py`](https://github.com/tile-ai/tilelang/blob/cb26ee0fafe57a1274050a4a8d0ea6817618613a/examples/dequantize_gemm/example_dequant_gemm_bf16_fp4_hopper.py)).
+Preserve E4M3 subnormals and the separate W13 gate/up global scales. A power-of-two rescale of tiny block scales
+with global-scale compensation is lossless; an unchecked exponent shift is not
+([vLLM PR 34577](https://github.com/vllm-project/vllm/pull/34577)). On our bank a PRMT rebuild lost to V9's
+bit-plane decode (FINDINGS "Closed recipes"); a prepare-time scale recode is exact and made NT1 9-12% faster
+(`58ae2e2c`).
 
-A useful recipe is device-side expert-count bucketing: build fixed-capacity task records, bucket experts by token count, and select narrow or wide token-N tiles without a host decision. Pool work over all active local experts before introducing inter-CTA K splitting. Split-K adds partial-output traffic and delays SwiGLU/norm; it becomes useful only when the pooled output grid or final wave cannot occupy the GPU. Stream-K is a tail-repair mechanism, not a universal improvement. Recompute starvation over the grouped grid rather than per expert.
+## Grouped NVFP4 scheduling
 
-The Humming source commit `db930afa2256cba49b3e46c0589323c3e80b0bfb` also exposes compact SM90 policies, stage/resource constraints, and separate MMA/TMA decisions in [`humming/tune/sm90.py`](https://github.com/vllm-project/humming/blob/db930afa2256cba49b3e46c0589323c3e80b0bfb/humming/tune/sm90.py); policy existence is not a Muse performance result. Its nearby dense H200 INT4/FP16 JSON ([`humming_w4a16_int4_float16.json`](https://github.com/vllm-project/humming/blob/db930afa2256cba49b3e46c0589323c3e80b0bfb/benchmarks/results/h200/dense_n8192_k8192_g0/humming_w4a16_int4_float16.json)) reports M=256 at 58.815 us/584.20 TFLOP/s (59.1% of nominal 989 TFLOP/s), M=1024 at 201.124 us/683.35 TFLOP/s (69.1%), and M=4096 at 801.593 us/685.83 TFLOP/s (69.3%). Those figures use per-channel INT4 scales and FP16 activations, so they are a dense comparator for mainloop efficiency only.
+- **Humming** ([repo](https://github.com/vllm-project/humming); `humming_kernels` 0.1.12 is in the image): ModelOpt
+  NVFP4 schema, indexed vs contiguous grouped GEMM, SM90 policies with MMA, WGMMA, TMA, warp specialization and
+  Stream-K ([`tune/sm90.py`](https://github.com/vllm-project/humming/blob/db930afa2256cba49b3e46c0589323c3e80b0bfb/humming/tune/sm90.py)).
+  On our loaded weights its default WGMMA variants fail the FP32 check (only forced MMA passes), and at M=128/256 it
+  streams 0.6-1.2 TB/s (FINDINGS "MoE real-routing labs"). Its dense H200 INT4/FP16 JSON (M=256: 58.8 us, 59% of
+  989 TFLOP/s) is a mainloop comparator only.
+- **Device-side expert bucketing:** fixed-capacity task records, experts bucketed by token count, narrow or wide
+  token-N tiles chosen on device. Pool work over all active experts before splitting K across CTAs: split-K adds
+  partial traffic and delays SwiGLU and the norm, and Stream-K repairs tails, nothing more. A fixed wide tile for
+  every expert lost (FINDINGS "Closed recipes", Humming4/5). DA-MoE supports distribution-aware tiles on B200
+  ([arXiv:2607.23099](https://arxiv.org/html/2607.23099v1#S5)).
+- **Quack RS-WGMMA** ([`gemm_w4.py`](https://github.com/Dao-AILab/quack/blob/77a750c0d9548d4a6e23c0f64062d61b3ea420ff/quack/gemm_w4.py),
+  [`nvfp4_utils.py`](https://github.com/Dao-AILab/quack/blob/77a750c0d9548d4a6e23c0f64062d61b3ea420ff/quack/blockscaled/nvfp4_utils.py)):
+  repacks E2M1 plus group-16 E4M3 into a register-A WGMMA layout, weights and scales as shared B, FP32 global scale in
+  the epilogue. Open option: RS-WGMMA with per-expert N buckets, a strip of K=16 scales held across fragments and
+  decode overlapped with WGMMA.
+- **Mixed-input CUTLASS, Machete, TRT-LLM:** producer/consumer mainloops and pre-shuffled fragments are donors; their
+  scale formats are not. CUTLASS examples 55/69
+  ([55](https://github.com/NVIDIA/cutlass/blob/91843b71d90737e0a9b86f7d9df213cff5a3526f/examples/55_hopper_mixed_dtype_gemm/README.md),
+  [69](https://github.com/NVIDIA/cutlass/blob/91843b71d90737e0a9b86f7d9df213cff5a3526f/examples/69_hopper_mixed_dtype_grouped_gemm/README.md))
+  need scales of two or more bytes, groups spanning the K tile and identical grouped shapes; Machete
+  ([`machete_mainloop.cuh`](https://github.com/vllm-project/vllm/blob/ccd4e4030f4b86f959a3cb3435437c0f592c88b1/csrc/quantization/machete/machete_mainloop.cuh))
+  is INT4 dense; TRT-LLM's Hopper `use_wfp4a16` launcher
+  ([`moe_gemm_tma_ws_mixed_input_launcher.inl`](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/tensorrt_llm/kernels/moe/cutlass/launchers/moe_gemm_tma_ws_mixed_input_launcher.inl),
+  vendored by FlashInfer) selects MXFP4 group-32 UE8M0, which can't encode our E4M3 group-16 scales losslessly. A
+  FlashInfer path named `sm90` can still be Blackwell-only (`moe_nvfp4_swapab/kernel_fc12.py` uses `tcgen05`).
 
-**Quack RS-WGMMA.** Quack's [W4 path](https://github.com/Dao-AILab/quack/blob/77a750c0d9548d4a6e23c0f64062d61b3ea420ff/quack/gemm_w4.py), [NVFP4 transforms](https://github.com/Dao-AILab/quack/blob/77a750c0d9548d4a6e23c0f64062d61b3ea420ff/quack/blockscaled/nvfp4_utils.py), and operand formats at commit `77a750c0d9548d4a6e23c0f64062d61b3ea420ff` repack E2M1 plus group-16 E4M3 into a register-A WGMMA layout. The weight/scales are the shared-memory B operand and the FP32 global scale belongs in the epilogue. The exact finite E2M1×E4M3 product fits BF16's significand before the global scale, so lossless in-kernel conversion is possible; do not create a permanent BF16 bank.
+## Persistent and fused layers
 
-A remaining design option is RS-WGMMA with expert-specific N buckets: expert-count-dependent narrow and wide tiles, a strip of K=16 scales held across fragments, and conversion overlapped with WGMMA. A fixed wide tile for every expert is contradicted by the closed Humming recipe in [FINDINGS](../FINDINGS.md). The [DA-MoE paper](https://arxiv.org/html/2607.23099v1#S5) supports distribution-aware tiling on B200, but its conditional-graph dispatch and speedups are not Muse H200 evidence.
+Fuse a reduction with its consumer only where dependency and rounding order stay exact: attention norm/residual
+with the pre-FFN norm, pooler/router input preparation, post-expert norm with the weighted sum, post-FFN residual with
+the next input norm. The two 8192-wide residual norms and the 4096-wide pooled norm are true joins, and expert
+addresses exist only after top-8 selection. Our own scoping (design, op estimates, why the persistent chain
+`87dc944b` lost) is [megakernel](../../problems/muse_decode_layer/dev/megakernel/README.md); the bound on all such
+fixes is [bound](bound.md) "Whole-layer excess".
 
-**Exact dequantization.** Hopper has no hardware E2M1 converter. Two lossless families are useful: Marlin's packed exponent/bit placement and the native rotate/AND reconstruction, or Quack's E2M1 register LUT with `prmt`, sign assembly and BF16 scale multiplication. [Marlin dequant](https://github.com/vllm-project/vllm/blob/ccd4e4030f4b86f959a3cb3435437c0f592c88b1) and [FLUTE](https://arxiv.org/abs/2407.10960) are source references; FLUTE's reported gains use other quantization/grouping and do not establish Muse performance. Preserve E4M3 subnormals and separate W13 gate/up global scales. vLLM PR #34577 documents a small-scale BF16 underflow fix using lossless power-of-two rescaling and global-scale compensation; an unchecked exponent shift is not equivalent: [PR #34577](https://github.com/vllm-project/vllm/pull/34577).
+| Donor | Mechanism to take | Doesn't transfer |
+|---|---|---|
+| MonoMoE ([arXiv:2609.04244](https://arxiv.org/html/2609.04244v1), [`moe.cuh`](https://github.com/flashinfer-ai/flashinfer/blob/8ec9464ce81d81c9e3670aa09acd1a8780f83695/csrc/fused_moe/monomoe/src/moe.cuh)) | Decode tokens on MMA N; routing, both GEMMs, activation and reduction in one graph-safe kernel; completion flags and next-weight prefetch | FP8 weights, fixed K2048/N512/M <= 8 |
+| Cohere megakernel ([`megakernel.cuh`](https://github.com/cohere-ai/cohere-megakernel/blob/67d0b9ca22ea3652796b715d1d1863459e0e2c3c/src/decode/megakernel.cuh)) | n8 BF16 WGMMA, dynamic expert task records, completion counters, weights fetched before activation waits | Parallel attention/MoE branches that backfill each other (Muse's MoE waits on attention); BF16 |
+| Hazy No Bubbles ([`megakernel.cuh`](https://github.com/HazyResearch/Megakernels/blob/7309cec801537b61fea3b50d7dfe454a6cde578e/include/megakernel.cuh)) | Per-SM instruction stream, dependency counters, shared pages so the next op fetches operands early | Dense BF16 Llama-1B |
+| MPK / Mirage ([arXiv:2512.22219](https://arxiv.org/html/2512.22219v1), [`persistent_kernel.cuh`](https://github.com/mirage-project/mirage/blob/63af900000d8928a885f7af7889a3448621e18a9/include/mirage/persistent_kernel/persistent_kernel.cuh)) | SM-level tasks, readiness events, decentralized queues | Host admission, reserved scheduler SMs, BF16 swap-AB tasks |
+| FlashFormer ([arXiv:2505.22758](https://arxiv.org/abs/2505.22758), [memory pipeline](https://github.com/cheetah-lang/flashformer/blob/4768b7684ddf94d4845e5c36e2370a3f3c5bd112/src/utils/memory_pipeline.py)) | Cross-operator weight pipeline; partial down-sums feeding a later full-row norm | Normalizing partials is invalid for Muse |
+| PDL megakernel reconstruction ([doc](https://github.com/tie-pilot-qxw/pdl-megakernel-reconstruction/blob/8664720072fefb62cc3a097c9c5bba8c936294c5/docs/reconstructing-a-megakernel-with-pdl.md)) | On H100, plain dependencies, PDL and a persistent kernel came out close | H100 dense model |
+| FlashMoE, Weave, DeepGEMM `sm90_fp8_mega_moe.cuh` ([FlashMoE](https://arxiv.org/abs/2506.04667v3), [Weave](https://arxiv.org/html/2609.21483v1), [DeepGEMM PR 323](https://github.com/deepseek-ai/DeepGEMM/pull/323)) | Readiness and SM-allocation ideas | Communication overlap (none in one-GPU kernels), FP8/FP32 arithmetic |
+| SGLang low-latency mode ([LMSYS](https://www.lmsys.org/blog/2026-10-18-sglang-low-latency-mode)) | Early PDL release, bitmap routing | GB300, multi-GPU epilogue publication |
 
-**Persistent readiness.** MonoMoE puts a 1–8-token decode tile on MMA N, fuses routing/projections/activation/reduction, and uses completion flags and prefetch to overlap experts: [paper](https://arxiv.org/html/2609.04244v1), source commit `8ec9464ce81d81c9e3670aa09acd1a8780f83695` ([source](https://github.com/flashinfer-ai/flashinfer/blob/8ec9464ce81d81c9e3670aa09acd1a8780f83695/csrc/fused_moe/monomoe/src/moe.cuh)). Its operands are FP8, so its arithmetic and reported results do not validate NVFP4/BF16. The transferable recipe is finer expert/token-tile readiness and next-weight prefetch, while preserving full-K, full-row and norm dependencies.
+## Excluded low-bit methods
 
-Cohere's resident task graph supplies a related dynamic-expert record and n8 WGMMA donor ([code](https://github.com/cohere-ai/cohere-megakernel/blob/67d0b9ca22ea3652796b715d1d1863459e0e2c3c/src/decode/megakernel.cuh)); its BF16 H100 measurements are a different model with parallel branches. Hazy's [No Bubbles](https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles), commit `7309cec801537b61fea3b50d7dfe454a6cde578e` ([code](https://github.com/HazyResearch/Megakernels/blob/7309cec801537b61fea3b50d7dfe454a6cde578e/include/megakernel.cuh)), is a boundary and resident-loader reference, not a Muse NVFP4 result.
-
-## Whole-layer fusion
-
-Fuse a reduction with its immediate consumer only when the dependency and rounding order remain exact: attention norm/residual and pre-FFN norm, pooler/router input preparation, post-expert norm plus weighted sum, and post-FFN residual/next-input norm. Hopper Programmatic Dependent Launch can release a consumer before producer exit, but the consumer must wait before reading dependent data and overlap is not guaranteed: [CUDA PDL guide](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/programmatic-dependent-launch.html). A matched H100 reconstruction found normal dependencies, PDL and persistent execution close in throughput, but it is not H200/Muse evidence: commit `8664720072fefb62cc3a097c9c5bba8c936294c5` ([reconstruction](https://github.com/tie-pilot-qxw/pdl-megakernel-reconstruction/blob/8664720072fefb62cc3a097c9c5bba8c936294c5/docs/reconstructing-a-megakernel-with-pdl.md)).
-
-Machete/CUTLASS are useful producer/consumer and mixed-input donors but not drop-in NVFP4. CUTLASS's [mixed-input example 55](https://github.com/NVIDIA/cutlass/blob/91843b71d90737e0a9b86f7d9df213cff5a3526f/examples/55_hopper_mixed_dtype_gemm/README.md) and [grouped example 69](https://github.com/NVIDIA/cutlass/blob/91843b71d90737e0a9b86f7d9df213cff5a3526f/examples/69_hopper_mixed_dtype_grouped_gemm/README.md), at commit `91843b71d90737e0a9b86f7d9df213cff5a3526f`, assume scale types and group layouts that do not match byte E4M3 every 16 K elements with irregular expert M. TRT-LLM's bundled Hopper FP4 launcher similarly selects MXFP4 group-32 UE8M0 scales, not Muse NVFP4: commit `9619d5b2ee08c3386338a9bdf9c85711a772627f` ([launcher](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/tensorrt_llm/kernels/moe/cutlass/launchers/moe_gemm_tma_ws_mixed_input_launcher.inl)). Do not substitute either format.
-
-Distributed task schedulers such as [MPK/Mirage](https://arxiv.org/html/2512.22219v1), [FlashMoE](https://arxiv.org/abs/2506.04667v3), [Weave](https://arxiv.org/html/2609.21483v1), and DeepGEMM's Hopper FP8 `sm90_fp8_mega_moe.cuh` provide readiness and resource-allocation ideas. Their communication, precision, model and workload assumptions differ; the one-GPU kernel problems have no communication to overlap. Do not import their headline speedups into Muse.
-
-## Evidence boundaries
-
-No checked primary source reports a complete Hopper NVFP4 group-16, BF16-activation grouped kernel with Muse's post-expert norm at the scored decode-layer shapes. Published FP8, MXFP4, INT4, BF16-only, H100/H800, and distributed results are design references only. Exact H200 candidate outcomes and closed recipes are maintained in [FINDINGS](../FINDINGS.md); repeat neither a closed recipe nor a superseded receipt from this file.
-
-## Donor kernels and exclusions
-
-These references remain useful as implementation donors or format boundaries; their published ratios are not Muse H200 results unless the text says so.
-
-**Marlin and exact conversion.** The original Marlin paper ([arXiv:2408.11743](https://arxiv.org/abs/2408.11743)) and vLLM's Hopper source at commit `ccd4e4030f4b86f959a3cb3435437c0f592c88b1` ([dequant.h](https://github.com/vllm-project/vllm/blob/ccd4e4030f4b86f959a3cb3435437c0f592c88b1/csrc/quantization/marlin/dequant.h)) establish packed fragment-friendly layouts, asynchronous loads, and exponent/bit placement for BF16 MMA. They do not establish NVFP4 Muse performance. The installed SGLang path is the source to compare against the native decoder.
-
-**Register LUT, FLUTE, and TileLang.** FLUTE's paper ([arXiv:2407.10960](https://arxiv.org/abs/2407.10960)) and commit `9eb83a12d56949bbe7fe9c836ba97a67bd1e3761` ([CUDA example](https://github.com/HanGuo97/flute/blob/9eb83a12d56949bbe7fe9c836ba97a67bd1e3761/flute/csrc/qgemm_kernel_example.cu)) use offline reshuffling and duplicated/vectorized LUT organization; reported 2–4x gains at batch below 32 and group size 128 use other quantization and are not NVFP4 group-16 H200 evidence. Keep Muse's fixed E2M1 codebook and lossless E4M3 scales. TileLang commit `cb26ee0fafe57a1274050a4a8d0ea6817618613a` contains [`example_dequant_gemm_bf16_fp4_hopper.py`](https://github.com/tile-ai/tilelang/blob/cb26ee0fafe57a1274050a4a8d0ea6817618613a/examples/dequantize_gemm/example_dequant_gemm_bf16_fp4_hopper.py) and `quantize/nvfp4.py`: its bit-twiddled/simple conversion and shared-memory staging are donor patterns, not a complete group-16 plus FP32-global MoE runner. TileLang 0.1.12 was installed, but inclusion of that exact example in the wheel was not established.
-
-**Machete and mixed-input CUTLASS.** Machete's author report ([article](https://developers.redhat.com/articles/2024/10/14/introducing-machete-mixed-input-gemm-kernel)) describes pre-shuffled wide loads and Hopper RS-WGMMA, competitive FP16 at batch/prefill sizes at least 128, and 29%/32% input/output serving-throughput gains for GPTQ Llama-3.1-70B on one H100. Those are INT4 dense comparisons; the article's roughly 37% older-MMA compute loss is not a Muse latency factor. The matching vLLM source is [`machete_mainloop.cuh`](https://github.com/vllm-project/vllm/blob/ccd4e4030f4b86f959a3cb3435437c0f592c88b1/csrc/quantization/machete/machete_mainloop.cuh) at the same commit, with `machete_prepacked_layout.cuh` and `generate.py`. CUTLASS mixed-input examples 55/69 (commit `91843b71d90737e0a9b86f7d9df213cff5a3526f`) require scale types of at least two bytes, groups spanning the CTA K tile or a multiple, and identical grouped shapes; Muse's byte E4M3 every 16 K elements and irregular expert M do not fit that interface. Use the producer/consumer mainloop and pre-shuffled fragments, not its scale type or an INT4 substitution.
-
-**TRT-LLM mixed-input MoE.** TRT-LLM commit `9619d5b2ee08c3386338a9bdf9c85711a772627f` exposes a grouped TMA mainloop and fused epilogue in [`moe_gemm_tma_ws_mixed_input_launcher.inl`](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/tensorrt_llm/kernels/moe/cutlass/launchers/moe_gemm_tma_ws_mixed_input_launcher.inl), `moe_gemm_kernels_bf16_fp4.cu`, and `fpA_intB_gemm_template_sm90.h`; FlashInfer vendors it under `data/csrc/nv_internal/tensorrt_llm/`. Its `use_wfp4a16` path selects MXFP4 group size and `cutlass::float_ue8m0_t`, not NVFP4 group-16 E4M3 plus an FP32 global scale. Replacing the scales is lossy; the useful donor is scheduling only. TRT-LLM's Nemotron 1.4.0rc0 deployment guide ([guide](https://nvidia.github.io/TensorRT-LLM/1.4.0rc0/deployment-guide/deployment-guide-for-nemotron-3-on-trtllm.html)) advertises NVFP4 W4A16 on Hopper, establishing runtime capability but not that this bundled launcher accepts Muse's format or wins Marlin. A FlashInfer path named `sm90` can still be Blackwell-only: `moe_nvfp4_swapab/kernel_fc12.py` declares `Sm100SwapABSwigluFp4Fc12Kernel` and uses `tcgen05`.
-
-**Persistent and layer task graphs.** Cohere's commit `67d0b9ca22ea3652796b715d1d1863459e0e2c3c` ([decode megakernel](https://github.com/cohere-ai/cohere-megakernel/blob/67d0b9ca22ea3652796b715d1d1863459e0e2c3c/src/decode/megakernel.cuh)) supplies n8 BF16 WGMMA, dynamic expert task records, completion counters, and resident-worker scheduling. Its H100 North Mini Code measurements ([blog](https://cohere.com/blog/megakernels)) are 292 versus 185 tok/s at B=1 (1.58x), 1000 versus 757 at B=8 (1.32x), and 1.25–1.41x on real prompts; parallel attention/MoE branches and BF16 arithmetic make these non-Muse evidence. Hazy's No Bubbles implementation at commit `7309cec801537b61fea3b50d7dfe454a6cde578e` ([code](https://github.com/HazyResearch/Megakernels/blob/7309cec801537b61fea3b50d7dfe454a6cde578e/include/megakernel.cuh)) reports 78% H100 bandwidth and over 1.5x existing systems for a BF16 Llama-3.2-1B one-sequence workload; its loader/consumer/storer pattern is a boundary donor. ThunderKittens commit `67845f5fa48d05343dbbc1ba1403f11061f08d2d` ([educational H100 GEMM](https://github.com/HazyResearch/ThunderKittens/tree/67845f5fa48d05343dbbc1ba1403f11061f08d2d/kernels/gemm/educational_h100)) supplies Hopper tile/pipeline building blocks, but neither package is a Muse NVFP4 kernel. FlashFormer v1 ([paper](https://arxiv.org/html/2505.22758v1), [arXiv](https://arxiv.org/abs/2505.22758v1)) fuses GLU and cross-operator memory: H100 BF16 Llama-3.1-8B B=1 gives 182 versus 146 tok/s at a 128-token prefix and 174 versus 108 at 6144; GPTQ 70B gives 48 versus 47 and 45 versus 40 at longer prefix. Its current source is `cheetah-lang/flashformer@4768b7684ddf94d4845e5c36e2370a3f3c5bd112` ([memory pipeline](https://github.com/cheetah-lang/flashformer/blob/4768b7684ddf94d4845e5c36e2370a3f3c5bd112/src/utils/memory_pipeline.py)); partial down sums may feed a later full-row norm, but normalizing partials is invalid and its dense B=1 results do not establish a Muse gain.
-
-**MPK/Mirage and distributed MoE.** MPK ([arXiv:2512.22219](https://arxiv.org/html/2512.22219v1)) uses decentralized SM tasks, gather-GEMM, heterogeneous MoE balancing and in-kernel NVSHMEM; its 1.0–1.7x range spans A100/H100/B200 and its 1.1–1.4x 8x-H100 TP result does not test eight-token verification. Mirage commit `63af900000d8928a885f7af7889a3448621e18a9` ([persistent kernel](https://github.com/mirage-project/mirage/blob/63af900000d8928a885f7af7889a3448621e18a9/include/mirage/persistent_kernel/persistent_kernel.cuh)) has BF16 Hopper swap-AB tasks, not native NVFP4 group-16. Use device task queues and readiness ideas only; host admission, dynamic page allocation, reserved scheduler SMs, and unavailable compiler runtimes do not belong inside this captured call.
-
-FlashMoE ([paper](https://arxiv.org/abs/2506.04667v3), [task code](https://github.com/osayamenja/FlashMoE/blob/9cc0c32443d2a2da6825a68af5ef83060329483b/csrc/include/flashmoe/infra/task.cuh), [README](https://github.com/osayamenja/FlashMoE/blob/9cc0c32443d2a2da6825a68af5ef83060329483b/README.md), commit `9cc0c32443d2a2da6825a68af5ef83060329483b`) reports up to 6x latency reduction/5.7x throughput on 8x H100 at up to 128 experts and 16K tokens, using FP32 versus FP16; its README lists FP8/lower precision as future work. Weave v1 ([paper](https://arxiv.org/html/2609.21483v1)) reports 2.89x geomean MoE-layer and 1.33x end-to-end on 4x H100, using live routing to allocate communication/compute SMs; no NVFP4 small-verify result or source was verified. DeepGEMM's Hopper FP8 `sm90_fp8_mega_moe.cuh` is in the image; [PR #323](https://github.com/deepseek-ai/DeepGEMM/pull/323) records the Hopper adaptation. These are scheduler/readiness donors, not NVFP4 arithmetic or communication gains for the one-GPU problems.
-
-**Low-bit methods to exclude.** LiquidGEMM ([arXiv:2509.01229](https://arxiv.org/abs/2509.01229v1)) reports up to 2.90x W4A8 kernel and 4.94x system speedups, with 1.12–1.63x over TRT-LLM; its LiquidQuant and 8-bit activations change the arithmetic. Practical FP4 Training for Large-Scale MoE Models on Hopper ([arXiv:2603.02731](https://arxiv.org/abs/2603.02731v1)) has FP8 core MoE math and FP4 activation/communication compression; its 12.5% training gain is not inference. ExactMoE ([arXiv:2608.15383](https://arxiv.org/abs/2608.15383v1)) uses INT4 group-128 weights and host caching/offload, a memory-capacity problem absent from resident timed calls. MiLo ([arXiv:2504.02658](https://arxiv.org/abs/2504.02658)) uses requantization and low-rank compensation, changing supplied weights. Hardware-Native Joint Sparse-Quantization ([arXiv:2610.02241](https://arxiv.org/abs/2610.02241)) changes sparsity/quantization on B200. None is an eligible drop-in; only asynchronous operand preparation without extra shared-memory round trips transfers.
-
-SGLang's NVFP4 fallback PR ([#19652](https://github.com/sgl-project/sglang/pull/19652)) and DeepSeek-V4 roadmap ([#23602](https://github.com/sgl-project/sglang/issues/23602)) distinguish Marlin W4A16 from FlashInfer MXFP4 W4A16; this is format/dispatch support, not a fast NVFP4 Hopper architecture. The exact PR page was not fetched, so no implementation detail beyond that distinction is asserted.
-
-The SGLang low-latency report ([LMSYS](https://www.lmsys.org/blog/2026-10-18-sglang-low-latency-mode)) reports 96.8 to 68.4 us on 4x GB300 with six rows/request from early PDL release, GEMM-epilogue peer publication, and bitmap routing; this is a Blackwell speculative-verification reference, not a Hopper/Muse measurement.
-
+They change the arithmetic or the supplied weights (CONSTRAINTS 5-6): LiquidGEMM W4A8
+([arXiv:2509.01229](https://arxiv.org/abs/2509.01229v1)), FP4 MoE training on Hopper (FP8 math,
+[arXiv:2603.02731](https://arxiv.org/abs/2603.02731v1)), ExactMoE (INT4 group 128, host offload,
+[arXiv:2608.15383](https://arxiv.org/abs/2608.15383v1)), MiLo (requantization plus low-rank,
+[arXiv:2504.02658](https://arxiv.org/abs/2504.02658)), joint sparse-quantization on B200
+([arXiv:2610.02241](https://arxiv.org/abs/2610.02241)), FlashInfer `cutlass_fused_moe` WFP4A16 (MXFP4 only).
+SGLang's NVFP4 fallback PR [19652](https://github.com/sgl-project/sglang/pull/19652) distinguishes Marlin W4A16 from
+FlashInfer MXFP4 W4A16: dispatch support, not a faster Hopper kernel.

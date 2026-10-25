@@ -1,39 +1,73 @@
-Serves: G2, G1. Read when designing paged attention or skinny BF16 projections.
-
 # Attention and small-M GEMM structures
+Serves: G2, G1. Read when designing paged decode/verify attention or skinny BF16 projections: external mechanisms
+and their exact source constraints.
 
-The decode-layer verify attention shape is q_len=8 with GQA=8 and a page-size-1 FP8 KV cache; the projection problem covers BF16 M values from 1 through 256. Current H200 outcomes and candidate profiles belong in [FINDINGS](../FINDINGS.md) and [SOTA](../SOTA.md). This file keeps portable mechanisms and exact source constraints.
+The decode layer's verify attention is q_len 8 with GQA 8, head dim 64 and a page-size-1 FP8 KV cache; its dense
+projections run at M = 1-256. Our H200 results and closed recipes are in [FINDINGS](../FINDINGS.md); prior-work
+status and headline numbers are in [SOTA](../SOTA.md). Precision, all-keys and graph-capture limits are
+CONSTRAINTS 4-7: host-derived lengths or allocations don't belong in `kernel_fn`; fixed buffers and shape branches
+do.
 
 ## Packed GQA attention
 
-TRT-LLM XQA's SM90 swap-AB layout is the closest external mapping. With eight query positions and eight query heads per KV head, pack 64 logical query rows, put K/V tiles on MMA M, query heads on N, and reuse each page-1 K/V row across the eight heads. The public implementation has TMA page loaders and split-stat reduction, but its page contract is 16/32/64/128, so its wrapper rejects the scored page size 1: [XQA `mha_sm90.cu`](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/kernels/xqa/mha_sm90.cu), [FlashInfer XQA JIT](https://github.com/flashinfer-ai/flashinfer/blob/8ec9464ce81d81c9e3670aa09acd1a8780f83695/flashinfer/jit/xqa.py), and [XQA blog](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/docs/source/blogs/XQA-kernel.md).
+TRT-LLM XQA's SM90 swap-AB layout is the closest mapping: with eight query positions and eight heads per KV head,
+pack 64 logical query rows, put K/V tiles on MMA M and the query rows on N, and reuse each page-1 K/V row across
+the eight heads. Its TMA page loaders need page size 16/32/64/128, so the wrapper rejects page 1
+([`mha_sm90.cu`](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/kernels/xqa/mha_sm90.cu),
+[FlashInfer XQA JIT](https://github.com/flashinfer-ai/flashinfer/blob/8ec9464ce81d81c9e3670aa09acd1a8780f83695/flashinfer/jit/xqa.py),
+[XQA blog](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/docs/source/blogs/XQA-kernel.md)).
 
-The Muse-specific recipe is a fixed q8 logical M=64 path in `problems/muse_attention_decode/submission.py`: compute the physical row from the page table in the device loader, read each aligned FP8 K/V row once per KV head, preserve the causal mask for all eight positions, and merge split `(max, sum, output)` statistics in a fixed graph-safe workspace. Sliding attention can use a low-split specialization; full attention needs a long-context scheduler. Attend to every key.
+Our q8 recipe (PLAN P5): compute each physical row from the page table in the device loader, read each aligned FP8
+K/V row once per KV head, keep the causal mask for all eight positions, and merge split `(max, sum, output)`
+statistics in a fixed graph-safe workspace. QK runs as native FP8 WGMMA (an FP8 `mma.sync` is emulated on sm_90:
+[hardware](hardware.md) "TMA, WGMMA and pipelines"). Sliding layers want a low-split specialization; full layers
+a long-context scheduler.
 
-FoldAttention makes softmax partials additive by fixing a finite reference before reading K/V. Its optional low-weight gating is incompatible with the challenge's all-keys rule, but the additive `(sum P, sum PV)` merge is a potential split-K mechanism: [paper](https://arxiv.org/abs/2609.33410). Keep P in BF16 or FP32/two-level accumulation for long-context correctness; FP8 probability accumulation has been reported to fail needle-in-a-haystack near 100K keys, while the two-level path preserves it ([SOTA](../SOTA.md), vLLM FP8 KV study).
+FA3 (`sgl_kernel.flash_attn`, the incumbent) already meets every constraint: FP8 E4M3 KV, FP8 query rounding,
+graph-safe metadata. Its [Hopper tree](https://github.com/Dao-AILab/flash-attention/tree/main/hopper) is the
+reference for GQA packing, FP8 conversion, split heuristics (`heuristics.h`) and staging
+([paper](https://arxiv.org/abs/2407.08608)).
 
-LeanAttention treats online softmax as an associative reduction and spreads long K tiles across SMs: [paper](https://arxiv.org/abs/2405.10480), [SGLang PR](https://github.com/sgl-project/sglang/pull/33576). It supplies a long-context scheduler, not a page loader, GQA pack, QK norm, KV store, or q8 causal mask.
+## Split-K and long-context scheduling
 
-FlashInfer supplies paged layouts, head-query fusion, split-K workspace, and a graph mode when planned ahead: [paper](https://arxiv.org/abs/2501.01005), [paged decode API](https://docs.flashinfer.ai/api/attention.html), [KV layout](https://docs.flashinfer.ai/tutorials/kv_layout.html). Its normal `plan()` derives lengths on the host and its released decode policies start at page size 16; neither can be placed inside a graph-captured `kernel_fn` for page-1 without a fixed-shape wrapper and a custom loader.
-
-FA3 remains the safe Hopper reference: it already uses FP8 E4M3 KV, allowed FP8 query rounding, graph-compatible metadata, and the required attention semantics. Its paper documents Hopper GQA/inference design: [FlashAttention-3](https://github.com/Dao-AILab/flash-attention/tree/10b74d98fb26113b014b33d947c8bbe4e83fbf7a), [paper](https://arxiv.org/abs/2407.08608). The current custom candidate's H200 ratios and FA3 comparisons are in [FINDINGS](../FINDINGS.md); do not repeat those values here.
+- FoldAttention fixes a finite softmax reference before reading K/V, so split partials `(sum P, sum PV)` simply
+  add ([arXiv:2609.33410](https://arxiv.org/abs/2609.33410)). Its optional low-weight gating skips keys and is
+  forbidden. Keep P in BF16, or FP32 two-level accumulation, at long context: FP8 probability accumulation lost
+  needle-in-a-haystack near 100K keys (SOTA, vLLM FP8 KV blog).
+- LeanAttention treats online softmax as an associative reduction and spreads long K ranges across SMs
+  ([arXiv:2405.10480](https://arxiv.org/abs/2405.10480), [SGLang PR 33576](https://github.com/sgl-project/sglang/pull/33576)):
+  a scheduler only, without page loader, GQA pack, QK norm, KV store or q8 mask.
+- FlashInfer has paged layouts, head-query fusion and split-K workspaces
+  ([arXiv:2501.01005](https://arxiv.org/abs/2501.01005), [API](https://docs.flashinfer.ai/api/attention.html)), but
+  `plan()` derives lengths on the host, so it runs outside the call. On the judge at page 1 it measured ~1.8x our
+  q1 kernel and ~2.3x FA3 at q8 (FINDINGS `8ffbac2d`).
+- FlashMLA ([0f11e178](https://github.com/deepseek-ai/FlashMLA/tree/0f11e178da1f67becb087a324b400854931ec3)) fuses
+  norm, RoPE, attention and cast for DeepSeek MLA; its 2026-09-30 release dropped Hopper. Fusion order only.
+- POD-Attention and tree-verification papers overlap prefill with decode or select keys sparsely, outside one
+  attention call or forbidden; take only mask and scheduling ideas
+  ([POD-Attention](https://github.com/microsoft/vattention/tree/main/pod_attn),
+  [SpecInfer](https://arxiv.org/abs/2305.09781), [arXiv:2512.21911](https://arxiv.org/abs/2512.21911),
+  [FlashPrefill V2](https://arxiv.org/abs/2608.19758)).
 
 ## Skinny BF16 projections
 
-SGLang's Hopper GEMV streams BF16 weights, stages the input in shared memory, and uses evict-first loads. Its checked dispatch is conservative (`m == 1`, `k % 512 == 0`, selected N), while Muse qkv/o/pooler/unpooler dimensions fit the M=1 family. Source: `serving/sglang/python/sglang/kernels/ops/gemm/hopper_bf16_gemv.py` and `csrc/gemm/hopper_bf16_gemv.cuh`; upstream [file](https://github.com/sgl-project/sglang/blob/f967418a35cf125cc9840df21066a66258023364/python/sglang/kernels/ops/gemm/hopper_bf16_gemv.py). The H200 stream and per-shape receipts are maintained in [FINDINGS](../FINDINGS.md).
+SGLang's Hopper GEMV streams BF16 weights, stages the input in shared memory and uses evict-first loads; its
+dispatch is narrow (`m == 1`, `k % 512 == 0`, selected N) and Muse's qkv/o/pooler/unpooler fit that family
+([`hopper_bf16_gemv.py`](https://github.com/sgl-project/sglang/blob/f967418a35cf125cc9840df21066a66258023364/python/sglang/kernels/ops/gemm/hopper_bf16_gemv.py),
+`csrc/gemm/hopper_bf16_gemv.cuh`).
 
-For M=8/16/32, a legal design option is a fixed multi-row tile that performs one in-kernel K reduction instead of a separate split-K reduction. For M=128/256, CUTLASS Stream-K/batched GEMV and DeepGEMM SM90 BF16 are source options, but generic defaults have fixed descriptor/launch overhead and no Muse-shaped result. Sources: [CUTLASS 4.4 changelog](https://docs.nvidia.com/cutlass/4.4.2/CHANGELOG.html), [CUTLASS GEMV](https://github.com/NVIDIA/cutlass/blob/91843b71d90737e0a9b86f7d9df213cff5a3526f/include/cutlass/gemm/device/gemv.h), and [DeepGEMM SM90 BF16](https://github.com/deepseek-ai/DeepGEMM/blob/5081f8513af57e61696de4f4f04b0e707ffb503e/csrc/jit_kernels/impls/sm90_bf16_gemm.hpp).
-
-FlashDecoding++ supplies a useful shape rule—pad flat GEMM to 8 rather than 64, double-buffer, and choose FastGEMV at batch 1—but its published gains are on other implementations and GPUs: [paper](https://arxiv.org/abs/2311.01282). TRT-LLM `cudaCoreGemm`, llama.cpp MMVF/MMVQ, and quantized ThunderKittens examples change the weight/activation arithmetic and are not drop-in BF16 Muse kernels: [cudaCoreGemm](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/tensorrt_llm/kernels/weightOnlyBatchedGemv/cudaCoreGemm.cu), [MMVF](https://github.com/ggml-org/llama.cpp/blob/f5027fb21307eb264aed483242603d68c87b0fe3/ggml/src/ggml-cuda/mmvf.cu), [MMVQ](https://github.com/ggml-org/llama.cpp/blob/f5027fb21307eb264aed483242603d68c87b0fe3/ggml/src/ggml-cuda/mmvq.cu), [ThunderKittens](https://github.com/HazyResearch/ThunderKittens/tree/67845f5fa48d05343dbbc1ba1403f11061f08d2d).
-
-## Precision and capture boundaries
-
-Precision, full-key attention, CUDA-graph capture, and correctness limits are hard constraints in [CONSTRAINTS](../CONSTRAINTS.md) and the problem `TASK.md` files. Host-derived lengths or allocations do not belong in `kernel_fn`; fixed buffers and shape/config branches are graph-safe.
-
-POD-Attention's prefill/decode overlap and tree-verification papers are outside a single fixed attention call; their sparse or gated key selection is also disallowed. Use only legal mask/scheduling ideas: [POD-Attention](https://github.com/microsoft/vattention/tree/main/pod_attn), [SpecInfer](https://arxiv.org/abs/2305.09781), [sparse verification](https://arxiv.org/abs/2512.21911), [FlashPrefill V2](https://arxiv.org/abs/2608.19758).
-
-## Additional Hopper attention donor
-
-FlashMLA's repository at commit `0f11e178da1f67becb087a324b400854931ec3` ([source](https://github.com/deepseek-ai/FlashMLA/tree/0f11e178da1f67becb087a324b400854931ec3)) is an MLA-specific fused norm/RoPE/attention/cast design. The 2026-09-30 release removed Hopper and earlier-model support; the older Hopper path targets DeepSeek MLA layouts, not Muse dense GQA. Its fusion order is a structural reference only, not a direct Muse/Hopper kernel.
-
-The Hopper FA3 source tree ([repository](https://github.com/Dao-AILab/flash-attention/tree/main/hopper)) is the implementation reference for the incumbent FP8 paged path. It is useful for checking GQA packing, FP8 query/cache conversion, split heuristics, and Hopper staging before changing the q8 page-1 loader; current candidate results remain in [FINDINGS](../FINDINGS.md).
+- M = 8-32: a fixed multi-row tile with one in-kernel K reduction instead of a separate split-K reduction.
+- M = 128-256: CUTLASS Stream-K / batched GEMV and DeepGEMM SM90 BF16 are source options
+  ([CUTLASS 4.4 changelog](https://docs.nvidia.com/cutlass/4.4.2/CHANGELOG.html),
+  [CUTLASS GEMV](https://github.com/NVIDIA/cutlass/blob/91843b71d90737e0a9b86f7d9df213cff5a3526f/include/cutlass/gemm/device/gemv.h),
+  [DeepGEMM SM90 BF16](https://github.com/deepseek-ai/DeepGEMM/blob/5081f8513af57e61696de4f4f04b0e707ffb503e/csrc/jit_kernels/impls/sm90_bf16_gemm.hpp));
+  generic defaults carry descriptor and launch overhead. Our own weight-wide TMA/WGMMA split-K lost to cuBLAS at
+  every role (`19f3a13b`), and cuBLAS itself streams only 1.7-2.4 TB/s there.
+- FlashDecoding++: pad flat GEMMs to 8, not 64; double-buffer; FastGEMV at batch 1
+  ([arXiv:2311.01282](https://arxiv.org/abs/2311.01282)).
+- TRT-LLM `cudaCoreGemm`, llama.cpp MMVF/MMVQ and quantized ThunderKittens change the weight or activation
+  arithmetic; they're not drop-in BF16 kernels
+  ([cudaCoreGemm](https://github.com/NVIDIA/TensorRT-LLM/blob/9619d5b2ee08c3386338a9bdf9c85711a772627f/cpp/tensorrt_llm/kernels/weightOnlyBatchedGemv/cudaCoreGemm.cu),
+  [MMVF](https://github.com/ggml-org/llama.cpp/blob/f5027fb21307eb264aed483242603d68c87b0fe3/ggml/src/ggml-cuda/mmvf.cu),
+  [MMVQ](https://github.com/ggml-org/llama.cpp/blob/f5027fb21307eb264aed483242603d68c87b0fe3/ggml/src/ggml-cuda/mmvq.cu),
+  [ThunderKittens](https://github.com/HazyResearch/ThunderKittens/tree/67845f5fa48d05343dbbc1ba1403f11061f08d2d)).

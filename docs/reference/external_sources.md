@@ -1,47 +1,48 @@
-Serves: G2, G1. Read when choosing decode-layer kernels from work outside SGLang; source snapshots live under `/home/jihoon/scratch_muse_external_20261024a/`.
+# External kernels and evaluators
+Serves: G2, G1. Read when choosing decode-layer kernels from work outside SGLang (vLLM's Muse kernels, runNburn,
+GPU MODE), or when comparing our local timing with a judge. Source snapshots: `/home/jihoon/scratch_muse_external_20261024a/`.
 
-## Ranked take
+## Take
 
-1. **Measure Humming W4A16 on the real H200 bank.** vLLM's current Humming path selects indexed or grouped-contiguous expert GEMMs under EP, defers activation processing when the input is BF16, and has a W4A16 route (`vllm/model_executor/layers/fused_moe/experts/fused_humming_moe.py`, commit `e4db46c79bca354fef07197465faea14ca563c09`; `vllm/model_executor/layers/quantization/moe_wna16.py`). The H200 probe is queued as `prof/lab/humming_nvfp4_probe.py`; no receipt has landed yet.
-2. **Compare the finalize schedule against the decode-layer incumbent.** vLLM's `fused_finalize.py` fuses per-route RMSNorm, router weighting, remote-route masking and top-k reduction in one Triton program. That is the same boundary where our V9 path still pays substantial work. Port or measure only the exact finalize schedule; do not replace the already faster V9 producer based on a library claim.
-3. **Use runNburn's device-resident sequencing as a design reference.** Its CUDA Muse path keeps hidden/KV state on device, overlaps Q/K/V work, and chains attention through the dense tail, but it is Muse Glimmer (dense, Q4_K/Q6_K, head dimension 128), not Muse Spark (NVFP4 W4A16, MoE, head dimension 64). The reported RTX 3090 wins are useful mechanisms, not H200 evidence.
-4. **Do not port GPU MODE's NVFP4 winners to H200.** The public winners use Blackwell `tcgen05`/TMA block-scaled MMA. They are useful for scale/layout reasoning, but Hopper cannot execute those instructions and the challenge requires BF16 activations.
+1. **Humming W4A16** is measured on our bank (FINDINGS "MoE real-routing labs"): default WGMMA variants fail the
+   FP32 check and its tiles stream 0.6-1.2 TB/s at M=128/256. vLLM's Humming path
+   (`fused_humming_moe.py`, `moe_wna16.py` at vLLM `e4db46c7`) adds nothing new for us. The standalone probe
+   (`problems/muse_moe_w4a16/lab/lab_humming_nvfp4_probe.py`) timed only M=1 (W13+W2 101 us, `376ef26b`) before
+   Humming's launcher rejected the next shape (`shape_m is not within any range defined in configs`).
+2. **vLLM's fused finalize** does per-route RMSNorm, routing weight, remote-route masking and top-k reduction in one
+   Triton program: the boundary where our W2 epilogue and finalizer still pay (PLAN P3a). Compare its reduction
+   order and masking with ours; don't replace our producer on a source reading.
+3. **runNburn's device-resident sequencing** is a scheduling reference only: different model (Muse Glimmer: dense,
+   Q4_K/Q6_K, head dim 128), RTX 3090.
+4. **GPU MODE's NVFP4 winners** use Blackwell `tcgen05` / TMA block-scaled MMA: not runnable on H200.
+5. A `gh search code` sweep (2026-10-24) found no public Hopper Muse Spark W4A16 grouped-MoE or q_len-8 FP8-KV
+   kernel with H200 measurements; the rest is Blackwell-only, W4A4/FP8-activation or other models.
 
-## vLLM Muse kernel mechanisms
+## vLLM Muse kernels (commit `ae065918`)
 
-| Source | Mechanism / measured facts | Map to this repo | Verdict |
-|---|---|---|---|
-| `vllm` commit `ae065918640a198a56f6f17eb45e251c3229fe41`, `vllm/models/muse_spark/common/ops/fused_finalize.py` | `_post_expert_finalize_kernel` does route masking, optional permutation lookup, FP32 per-route RMSNorm, top-k weighting and reduction in one Triton launch; a loop variant handles tiles too large for the single tile. | Our V9 already fuses expert math and uses a dedicated finalize. The useful comparison is reduction ordering and masking of EP-remote routes. | **Measure** only as a finalize comparison; do not replace V9 on source inspection. |
-| Same commit, `common/ops/fused_routing.py` | One program/token loads all 256 router scores, supports sigmoid or stable softmax, adds bias only for selection, gathers unbiased selected scores, then normalizes with route scale and optional epsilon. | Confirms the router semantics we must preserve; our decode fixtures already carry the real FP32 router. | **Keep** semantics; port only if a direct H200 timing isolates the router. |
-| Same commit, `common/ops/fused_rmsnorm.py` | Fuses RMSNorm with residual/gated residual, keeps FP32 math until the final store, and uses Kahan compensation for multi-tile rows. | Matches our norm/residual fusion target; Kahan is relevant only to wide non-single-tile norms. | **Measure** on the dense/proj lane if a real H200 shape is uncovered; otherwise current fusion is sufficient. |
-| Same commit, `common/ops/fused_qk_norm_rope_kv.py` | Fuses Q/K norm, RoPE and KV-cache insertion through the backend's physical slot mapping; explicitly keeps an unfused path for NVFP4 KV layouts and disables under DCP/backends that own cache writes. | Our FA3 QK-norm/KV-store path has the same policy constraints and an exact local cache check. | **Port policy ideas**, not code; H200 FA3 remains unverified. |
-| Same commit, `amd/muse_moe_runner.py` | Muse's non-CUDA implementation uses Triton or AITER experts and calls the fused finalize after TP reduction; it requires DP1/PCP1 and uses BF16 reduction when configured. | Useful ordering reference for post-expert norm versus TP reduction; AMD restrictions do not apply to the one-GPU decode-layer target. | **Skip** direct port. |
+| Source (`vllm/models/muse_spark/...`) | Mechanism | Use |
+|---|---|---|
+| `common/ops/fused_finalize.py` | `_post_expert_finalize_kernel`: route masking, optional permutation lookup, FP32 per-route RMSNorm, top-k weighting and reduction in one launch; a loop variant for oversized tiles | Measure as a finalize comparison |
+| `common/ops/fused_routing.py` | One program per token loads all 256 scores, sigmoid or stable softmax, bias for selection only, unbiased selected scores normalized with route scale | Semantics we must keep; port only if a timing isolates the router |
+| `common/ops/fused_rmsnorm.py` | RMSNorm with residual / gated residual, FP32 until the final store, Kahan compensation across tiles | Kahan matters only for multi-tile rows |
+| `common/ops/fused_qk_norm_rope_kv.py` | Q/K norm, RoPE and KV insert through the physical slot mapping; unfused for NVFP4 KV and DCP | Policy ideas for our QK prep |
+| `amd/muse_moe_runner.py` | Triton/AITER experts, finalize after TP reduction | Ordering reference only |
 
-## Router precision source
+Megatron-Bridge (`f9a494e1`, `docs/models/muse_spark_open/muse-spark-open.md`) keeps FP32 router tensors and FP32
+residual gates and warns against casting router weights to BF16: consistent with CONSTRAINTS 5.
 
-| Source | Mechanism / measured facts | Map to this repo | Verdict |
-|---|---|---|---|
-| Megatron-Bridge commit `f9a494e1f607ccddc062c4f6169c44f8c50b017c`, `docs/models/muse_spark_open/muse-spark-open.md` | Verified GB200 training/import cards preserve FP32 router tensors and FP32 residual gates; export warns against casting router weights to BF16. No serving benchmark or H200 serving kernel is provided. | Reinforces the hard precision rule for router/accumulation. | **Keep precision**, **skip** for kernels. |
+## runNburn CUDA decode (commit `f71c7eda`)
 
-## runNburn CUDA decode
+`crates/rnb-backend/cuda/src/runtime/decode_device.rs:46-447` keeps Q/K/V/O/FFN weights resident, fuses QKV with the
+attention gate, does Q/K norm + RoPE + KV write + decode attention, then a dense chain with no host round trip.
+Its commit log reports RTX 3090 Glimmer decode -33.7% (`054bc69`), fused QKV/MMQ -14.2% decode (`4c75f7c`),
+-26.5% (`5ddf0ae`): mechanisms, no score credit.
 
-| Source | Mechanism / measured facts | Map to this repo | Verdict |
-|---|---|---|---|
-| runNburn commit `f71c7edac628d5f9b2bc08b6bf3c0fc9e74fc7a`, `crates/rnb-backend/cuda/src/runtime/decode_device.rs:46-447` | Device-resident layer path pins Q/K/V/O/FFN weights, fuses QKV+attention gate where possible, performs Q/K norm + RoPE + F16 KV write + decode attention, then calls a dense chain without host materialization. It uses Q4_K/Q6_K weights and Q8 dot paths. | The sequencing (resident weights, no host round trip, fused QKV/gate) is directly relevant; the quantization and dense architecture are not. | **Port scheduling ideas**, **skip** direct kernel. |
-| runNburn commit messages (`git log` at `f71c7ed...`) | `054bc69`: RTX 3090 Muse Glimmer decode 4287.854→2842.285 ms (-33.713%), total -15.226%; `4c75f7c`: fused QKV/MMQ prefill -15.896%, decode -14.193%, cold total -9.204%; `5ddf0ae`: decode -26.499%; `f6a2993`: prefill attention-through-FFN -20.018%. These are RTX 3090/Muse Glimmer measurements, not H200/Muse Spark. | They beat their baselines, but cannot be compared to our H200 receipts. | **Port/measure mechanism**, no score credit. |
+## GPU MODE evaluator vs ours
 
-## GPU MODE evaluator and NVFP4 public winners
-
-| Source | Mechanism / measured facts | Map to this repo | Verdict |
-|---|---|---|---|
-| GPU MODE reference-kernels commit `f3295bb6bd559bae4659d2d8fc45edb1394251b1`, `problems/nvidia/eval.py:50-58,107-126,202-271,429-476` | Seeds combine by Cantor pairing `a + (a+b)(a+b+1)//2`; stats use sample standard deviation (`runs-1`) and standard error. Each timed replay clears L2, records CUDA events, synchronizes, and stops after relative error <0.1%, 10 s of samples or 120 s. Leaderboard mode pre-runs test 0, then regenerates inputs with `seed += 13` and permits up to 1000 repeats/30 s per test. | `tools/local_eval.py` uses graph capture, a 1-GiB uint8 flush, static buffers copied from three fresh input sets, 20 paired replays, fixed-cost subtraction and seeds spaced by 7919. It is a useful local ranker, **not an evaluator match**. | **Do not infer H200 numbers from local timing**; the mismatch is now documented. |
-| GPU MODE `problems/nvidia/utils.py` at the same commit | L2 flush is a newly allocated `torch.randn((1024,1024,1024), device="cuda")` (4 GiB FP32), not the local uint8 buffer. | This can materially change cold-cache behavior for weight-heavy kernels. | **Keep judge receipts authoritative**. |
-| OKC audit commit `0a68efe41f9372478e3986283c954f39df7484a7`, `probes/seed-comparison.json` | Returned judge seeds fit the same Cantor formula modulo `2**63-1`; this identifies matching behavior from public receipts, not the unavailable server implementation. | Explains why local seed values are only admission evidence. | **Use as audit**, no kernel change. |
-| `gpu-mode-kernels` commit `fb291890aa1fe356487bf7b2731056240bcabf` (public B200 solutions), `nvidia/nvfp4_gemv/README.md` | GEMV worklog progresses from `cvt.rn.f16x2.e2m1x2`, cache-streaming loads and coarsening to persistent kernels; table reports best listed v2h 18.4/28.0/12.6 us (18.65 us geomean) versus SOL 8.58/17.17/4.30 us. | Conversion and streaming ideas are informative, but B200 tcgen05/NVFP4 contest shapes are not H200 W4A16. | **Skip direct port**; only test general cache/layout ideas. |
-| Same commit, `nvidia/nvfp4_gemm/README.md` and `nvidia/nvfp4_group_gemm/README.md` | GEMM uses tcgen05 block-scale MMA, TMA/mbarrier and split-K; listed GEMM v4 is 18.2/8.3/6.63 us (10.01 geomean), grouped v6 is 27.9/19.7/8.5/6.43 us (13.17 geomean) against SOL 3.04 and 5.211 geomean respectively. Grouped variants add persistent scheduling, CTA2, TMA multicast and pipelined epilogues. | These are Blackwell instruction paths and cannot run on H200; our Hopper W4A16 path needs BF16 MMA/dequant instead. | **Skip** direct port; use only scheduling vocabulary. |
-| Broad `gh search code` sweep (2026-10-24) | Found current vLLM Humming (`fused_humming_moe.py`), SGLang Humming, vLLM NVFP4 FlashInfer CUTEDSL/TRTLLM backends, and public persistent-decoder/TMA projects. No newer public Hopper Muse Spark W4A16 grouped-MoE or q_len-8 FP8-KV kernel with H200 measurements was found. | Humming is the only external W4A16 candidate worth a direct H200 probe; the others are Blackwell-only, W4A4/FP8 activation, or different models. | **Measure Humming; skip the rest pending a shape-matched receipt.** |
-
-## Lab jobs
-
-- **Queued:** `prof/lab/humming_nvfp4_probe.py`, sent through `tools/h200_lab.py` on `muse_moe_w4a16` at priority **1.2**. It converts the host's real NVFP4 bank through Humming's ModelOpt schema and times W13+W2 at decode-stage batch sizes 1, 8, 16, 32, 128 and 256. It has not produced a receipt yet.
-- Existing project lab receipts were not treated as external-source evidence; they remain the authority for our current V9/Humming comparisons.
+| Source | Fact | Consequence |
+|---|---|---|
+| reference-kernels `f3295bb6`, `problems/nvidia/eval.py:50-58,107-126,202-271,429-476` | Seeds combine by Cantor pairing; sample std and standard error; each timed replay clears L2, records CUDA events and synchronizes, stopping at <0.1% relative error, 10 s of samples or 120 s; leaderboard mode reruns with `seed += 13`, up to 1000 repeats / 30 s per test | `tools/local_eval.py` (graph capture, 1 GiB uint8 flush, three fresh input sets, 20 paired replays, fixed-cost subtraction, seeds 7919 apart) ranks locally; it doesn't reproduce the judge |
+| same, `problems/nvidia/utils.py` | L2 flush allocates `torch.randn((1024,1024,1024))` (4 GiB FP32) | Cold-cache behaviour can differ for weight-heavy kernels |
+| OKC audit `0a68efe4`, `probes/seed-comparison.json` | Returned judge seeds fit the same Cantor formula modulo `2**63-1` | Explains local seeds; the judge's harness is in FINDINGS "The judge's H200" |
+| gpu-mode-kernels `fb291890`, `nvidia/nvfp4_gemv`, `nvfp4_gemm`, `nvfp4_group_gemm` READMEs | B200 GEMV v2h 18.65 us geomean vs SOL 8.58/17.17/4.30; GEMM v4 10.01 vs 3.04; grouped v6 13.17 vs 5.21 | Blackwell instructions; cache and layout vocabulary only |

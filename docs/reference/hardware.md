@@ -1,35 +1,97 @@
-Serves: G1, G2. Read when sizing a decode-layer kernel or interpreting a H200 bound.
-
 # H200 and Hopper hardware
+Serves: G2, G1. Read when sizing a kernel for the judge's H200, or when one nears a bandwidth, issue, cache or
+register limit.
 
-Only judge receipts measure H200 kernel performance; current values and profiles are in [FINDINGS](../FINDINGS.md). This file keeps hardware specifications and laws that remain valid across candidates. Local sm_120 timing is for correctness and loose ranking, not H200 evidence; machine access is documented in [RESOURCES](../RESOURCES.md).
+What the judge's H200 measurably reaches (streams, gathers, L2, PDL, small-N MMA) is in [bound](bound.md)
+"Practical ceilings"; candidate timings are in [FINDINGS](../FINDINGS.md). The local RTX PRO 6000 (sm_120) and GB10
+(sm_121) run neither WGMMA/TMA nor FA3 and have other memory systems: their timings rank loosely, never as H200
+evidence. A microbenchmark's warm-cache or stream-launch number is not a scored result either: the judge replays a
+captured graph after an L2 flush.
 
 ## H200 facts
 
 | Parameter | Value | Source |
 |---|---:|---|
 | HBM3e | 141 GB, 4.8 TB/s | [NVIDIA H200](https://www.nvidia.com/en-us/data-center/h200/) |
-| Hopper die | 132-SM H200 SXM configuration; six-stack/full-GH100 descriptions explain the architecture | [Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/), [DeepGEMM issue 107](https://github.com/deepseek-ai/DeepGEMM/issues/107) |
+| SMs, clocks | 132 SMs; the judge reports 1980 MHz SM, 3201 MHz memory, 700 W limit | receipts `7fb3e930`, `849bd4b6` (`machine`) |
+| L2 | 60 MB, driver-reported | [DeepGEMM issue 107](https://github.com/deepseek-ai/DeepGEMM/issues/107) |
 | Shared memory | 228 KB per SM, 227 KB per block | [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
-| Registers | 64K 32-bit registers per SM; up to 255 per thread | [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) |
-| Dense tensor rates | 989 TFLOP/s BF16 and 1,979 TFLOP/s FP8 are the model's H200 rates | [NVIDIA H200](https://www.nvidia.com/en-us/data-center/h200/), [FINDINGS](../FINDINGS.md) |
+| Registers | 64K 32-bit per SM, up to 255 per thread | same |
+| Dense tensor rates | BF16 989, FP8 1,979 TFLOP/s (half the sparse figures NVIDIA lists) | [NVIDIA H200](https://www.nvidia.com/en-us/data-center/h200/) |
+| Scalar issue, cc 9.0, per SM per clock | 32-bit integer add, bitwise AND/OR/XOR, shift, compare: 64; FP32 FMA: 128 | [CUDA guide throughput table](https://docs.nvidia.com/cuda/archive/12.6.0/cuda-c-programming-guide/index.html) (checked 2026-10-25) |
 
-H200 uses Hopper sm_90; WGMMA/TMA paths requiring `sm_90a` are available on the judge. The local RTX PRO 6000 sm_120 and GB10 sm_121 machines have different memory systems and execute neither Hopper WGMMA/TMA nor FA3; do not transfer their timings.
+H200 is sm_90; WGMMA and TMA need `sm_90a` builds, which the judge runs. Architecture-specific code doesn't port
+across architectures ([Hopper compatibility guide](https://docs.nvidia.com/cuda/hopper-compatibility-guide/)).
 
-## Format and execution laws
+## Memory requests and cache policy
 
-Hopper has no hardware E2M1 (FP4) conversion and no INT4 WGMMA mode. NVFP4 W4A16 therefore needs integer/logic or LUT reconstruction, E4M3 block scales, BF16 activation/accumulation points, and an FP32 global-scale epilogue. Hopper supports packed FP8 E4M3 conversion such as `cvt.rn.f16x2.e4m3x2`. The precision and activation contract is in [CONSTRAINTS](../CONSTRAINTS.md). Sources: [PTX conversion and WGMMA](https://docs.nvidia.com/cuda/parallel-thread-execution/), [Hopper SASS study](https://arxiv.org/abs/2501.12084).
+HBM rate is a request-concurrency problem: aligned, coalesced rows, several independent loads per thread and
+enough resident CTAs. A 128-bit load sets request width, not memory-level parallelism (the judge's LDG rate grows
+0.64 -> 3.01 TB/s with CTAs and loads in flight, `849bd4b6`). TMA pays off when a block reuses a tile; for a
+one-pass skinny stream its barrier and descriptor cost can lose to plain loads (H800 study: vector loads reach
+90-91% of bandwidth, TMA helps mainly large matrices; [arXiv:2501.12084](https://arxiv.org/abs/2501.12084),
+[arXiv:2402.13499](https://arxiv.org/abs/2402.13499)).
 
-HBM rate is a request-concurrency problem: aligned, coalesced loads and enough independent requests matter more than a single wide load. TMA avoids per-thread register staging and is appropriate for reused tiles; it can lose to ordinary global loads for a one-pass skinny stream. WGMMA RS uses register A/shared B; SS uses shared A/B. H800 measurements show N-dependent RS/SS behavior but are not H200 Muse timings: [Hopper microbenchmarks](https://arxiv.org/abs/2501.12084), [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html).
+PTX cache controls (`L1::no_allocate`, `L2::evict_first/last`, prefetch-size hints, `createpolicy`,
+`prefetch.global.L2`) are hints the hardware may ignore ([PTX ISA](https://docs.nvidia.com/cuda/parallel-thread-execution/)).
+Stream one-pass weights so they don't evict reusable inputs; keep L2 reuse for tiles several tokens read. L2
+persistence across the per-replay flush is forbidden (CONSTRAINTS "Boundary cases"); the access-policy window is
+probabilistic anyway ([L2 cache control](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/l2-cache-control.html)).
+H800's near/far L2 partitions are a locality model, not an H200 bank map.
 
-CUDA cache modifiers, prefetch sizes, PDL, graph replay, register allocation, and cluster behavior are performance mechanisms with no universal gain. Their detailed constraints and unresolved H200 facts are in [research_hw_lowlevel](research_hw_lowlevel.md). The judge's fixed replay adjustment and all candidate-specific bandwidth/timing claims belong in [FINDINGS](../FINDINGS.md), not here.
+## TMA, WGMMA and pipelines
 
-## Sources and unresolved values
+TMA moves 1D-5D tiles without per-thread register staging. A reused grouped-MoE or prefill tile can use a producer
+warpgroup, a TMA ring, `mbarrier`, consumer WGMMA and `wgmma.commit_group/wait_group`. `setmaxnreg.dec/inc` gives
+producer and consumer warpgroups different register budgets; every warp of the group must execute the same aligned
+instruction, and an increase can block on the CTA's register pool
+([Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html),
+[CUTLASS Hopper tutorials](https://github.com/NVIDIA/cutlass/tree/main/examples/cute/tutorial/hopper)).
 
-Primary sources: [H200 product page](https://www.nvidia.com/en-us/data-center/h200/), [Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/), [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html), [CUDA throughput table](https://docs.nvidia.com/cuda/archive/12.6.0/cuda-c-programming-guide/index.html), [PTX ISA](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html), and Hopper microbenchmarks [arXiv:2501.12084](https://arxiv.org/abs/2501.12084).
+`wgmma.mma_async` is an sm_90a warpgroup operation: RS takes A from registers and B from shared memory, SS both from
+shared memory. RS saves a shared round trip at the cost of live registers and occupancy. WGMMA reaches peak only
+at N >= 64; at N = 8-16 `mma.sync` from registers beats WGMMA SS on the judge (bound "Practical ceilings"). WGMMA
+has no INT4 mode, and its FP8 form needs both operands FP8; an FP8 `mma.sync` on sm_90 is emulated (12 conversions
+plus two FP16 HMMAs per instruction, FINDINGS "P5 producer mechanism").
 
-H200 HBM latency, L2 near/far latency and bandwidth, bank mapping, TLB reach, Hopper PDL saving, cluster launch cost, LOP3/PRMT throughput, and clock locking remain unverified for the judge unless [FINDINGS](../FINDINGS.md) records a receipt.
+## Format and decode
 
-External measurements provide bounds, not portable constants. The H100/H200 power-cap study ([arXiv:2604.11391](https://arxiv.org/abs/2604.11391)) is the source for the observed memory-bound versus tensor-heavy clock ranges. H100 global-load-concurrency work ([arXiv:2608.15764](https://arxiv.org/abs/2608.15764)) supports the unloaded-memory-latency/concurrency model; its roughly 350–400 ns latency is H100 evidence, not an H200 specification. The H200 NVL deviceQuery record ([cluster-gpu wiki](https://deac-wiki.readthedocs.io/en/latest/cluster-gpu.html)) corroborates the driver-reported 60 MB L2 observation.
+Hopper has no E2M1 (FP4) conversion: PTX restricts the packed E2M1 forms to sm_100+. NVFP4 W4A16 therefore needs
+integer/logic (LOP3) or LUT (`prmt`) reconstruction, E4M3 block scales, BF16 activations and accumulation points,
+and an FP32 global scale in the epilogue. Packed FP8 conversion exists (`cvt.rn.f16x2.e4m3x2`), and the query may
+round to E4M3 (CONSTRAINTS 6). Every finite E2M1 x E4M3 product is exact in BF16 (4,064 values), so a product table
+or in-register decode is lossless. The issue cost of decode is in [bound](bound.md) "NVFP4 decode issue".
 
-The graph-boundary issue ([frontiers issue](https://github.com/vectorware-inc/frontiers-feedback/issues/24)) reports about 1.0 us empty-kernel and 1.3 us graph versus 2.1 us stream launch behavior; it is H100-era evidence for why graph tails matter, not an H200 fixed cost.
+## Graphs, PDL and persistent grids
+
+CUDA Graphs move launch setup to instantiation; they don't remove GPU-side tails or let a consumer see data before
+its producer ends ([CUDA Graphs](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html)).
+Programmatic Dependent Launch can start a consumer early, but it must execute `griddepcontrol.wait` before reading
+dependent data and overlap isn't guaranteed
+([PDL](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/programmatic-dependent-launch.html)):
+it hides independent setup or prefetch only. A full-grid kernel leaves no SMs for a side-stream branch, so a
+prefetch must be issued from inside the running kernels (FINDINGS `d5a90258`). Persistent grids and clusters help
+only when their residency and shared-tile assumptions hold; a resident grid can block dependent work.
+
+With page size 1, each logical page is one token row: coalesce a whole aligned K/V row and reuse it across the
+query heads of its KV head. The logical page table says nothing about physical pages, TLB reach or bank mapping;
+test address permutations instead of assuming a layout.
+
+## Registers and binary inspection
+
+Read `ptxas` resource output and SASS for spills (LDL/STL), load groups (`LDG`, `LDGSTS`, TMA), GMMA/HMMA, LOP3/PRMT,
+barriers and dependency chains (`cuobjdump -sass`, `nvdisasm`:
+[CUDA binary utilities](https://docs.nvidia.com/cuda/cuda-binary-utilities/)). On these memory-bound shapes a spill
+usually costs more than one fewer resident warp; unroll only far enough to create independent requests.
+`-maxrregcount`, `-dlcm` and similar flags are experiments, not gains. A large fused kernel can outgrow the
+instruction cache, whose H200 size no primary source gives: compare SASS sizes rather than assume a threshold.
+CuAssembler is unofficial and unvalidated for sm_90a; a patched cubin is allowed (CONSTRAINTS "Boundary cases") but
+needs its own H200 correctness and timing.
+
+## Unverified on the H200
+
+No primary source or receipt yet gives H200 HBM or L2 near/far latency, bank mapping, TLB reach, cluster launch
+cost or clock behaviour under load. External figures bound them only: H100 unloaded memory latency ~350-400 ns
+([arXiv:2608.15764](https://arxiv.org/abs/2608.15764)); memory-bound vs tensor-heavy clock ranges under power caps
+([arXiv:2604.11391](https://arxiv.org/abs/2604.11391)); ~1.0 us empty kernel and 1.3 us graph vs 2.1 us stream
+launch on H100 ([frontiers issue 24](https://github.com/vectorware-inc/frontiers-feedback/issues/24)).
