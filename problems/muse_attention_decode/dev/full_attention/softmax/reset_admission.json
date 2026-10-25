@@ -1,0 +1,43 @@
+{
+  "base": "S14 final f1c77ce6",
+  "host": "muse_bf16_proj",
+  "host_base": "f3786341611f4f1f",
+  "board_sha256": "030864131ce8d08f238ea779fd7df676ca553ef0e7defff848844c23c0d929b3",
+  "payload_sha256": "e9423a0da334bf04d05e591161bc58f03cd4ced9d7981c773b5b17aa5ea95c65",
+  "variants": [
+    "ref",
+    "mix25",
+    "mix50",
+    "gap",
+    "mixgap",
+    "tc25",
+    "ping",
+    "ping25"
+  ],
+  "normal": {
+    "tests": 9,
+    "static": 3
+  },
+  "actual_prepare_lab": {
+    "full80K_cases": 2,
+    "seeds": 3,
+    "cold_rotating_replays": 16,
+    "all_native_branches_use_explicit_sm120_arithmetic_standins": true
+  },
+  "native_units": 16,
+  "all_spill_free": true,
+  "all_no_c75": true,
+  "independent_attention_fixtures": 32,
+  "not_before": "2026-10-26T09:00:00+09:00",
+  "attention_attempt": {
+    "dispatch": "f5b9af868f449de9",
+    "accepted": false,
+    "quota_used": 0,
+    "canceled_waiter_pid": 3061078
+  },
+  "results_pending": true,
+  "queued_file": "problems/muse_bf16_proj/lab/lab_softmax_mix_lab.py",
+  "dispatch": "030864131ce8d08f",
+  "waiter_pid": 3171016,
+  "not_before_epoch": 1792972800.0
+}

@@ -12,6 +12,7 @@ import h200_lab
 
 ap=argparse.ArgumentParser()
 ap.add_argument('payload',nargs='*',default=['phases_lab.py'])
+ap.add_argument('-o','--out')
 a=ap.parse_args()
 ps = [H / p for p in a.payload]
 # Pin the host as well as the measured S13 kernels, so a later board improvement
@@ -34,6 +35,6 @@ def prepare(weights=None):
     return state
 '''
 s += '\n# Full-attention diagnostic boot: attention has no harness prepare hook.\nif torch.cuda.is_available() and torch.cuda.get_device_capability()[0] == 9:\n    prepare()\n'
-out = H / ('_'.join(p.stem.removesuffix('_lab') for p in ps)+'_board.py')
+out = H / (a.out or ('_'.join(p.stem.removesuffix('_lab') for p in ps)+'_board.py'))
 out.write_text(s)
 print(out, 'base', base, hashlib.sha256(s.encode()).hexdigest())

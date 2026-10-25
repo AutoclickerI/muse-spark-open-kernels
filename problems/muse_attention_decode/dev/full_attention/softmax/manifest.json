@@ -1,0 +1,54 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s14_final.py",
+  "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "variants": [
+    {
+      "name": "ref",
+      "mix": 0,
+      "gap": 0,
+      "tc": false,
+      "cuda_sha256": "b578a22a17d702fe909f5b8c25f869b8317842b92c8330870478d9ff623775ac",
+      "driver_sha256": "280854a58a88b0fbac7a8f42173a44f5ffc5e1bb116fbb4056697dbc6d2f8ead"
+    },
+    {
+      "name": "mix25",
+      "mix": 25,
+      "gap": 0,
+      "tc": false,
+      "cuda_sha256": "a446ec88fbff745e2aceaf8625707f70fb1975aa95d804b0db60676680e430aa",
+      "driver_sha256": "0e732ed148f436ad65bdbac690d6640294c76957d5a4a3a191bcdf8673e7d020"
+    },
+    {
+      "name": "mix50",
+      "mix": 50,
+      "gap": 0,
+      "tc": false,
+      "cuda_sha256": "7f0c8e5b2794e6fe4aa6daf06fd8d67c47065ce191182d42a7bc6f6652e00316",
+      "driver_sha256": "0d246b6e19372bc3e2f8673426a98cf5cfc8f317a874d7b28400c28527167821"
+    },
+    {
+      "name": "gap",
+      "mix": 0,
+      "gap": 800,
+      "tc": false,
+      "cuda_sha256": "7be9a163c3ec0b4e9606bc4dcd5382509a39dd9b349f4eb560c6fe26c62c11f4",
+      "driver_sha256": "3ee76101aeac06aeeccbe601ee563a390154932ad664b3df1f2905945bde4aa5"
+    },
+    {
+      "name": "mixgap",
+      "mix": 25,
+      "gap": 800,
+      "tc": false,
+      "cuda_sha256": "2a820f378ac5cdf703d2301ed61ed665a38ede148baa5ab0a0319e04b77d9298",
+      "driver_sha256": "bf67d8957fbc8622891c4f08a27aedbc2c8918156f88123ad0c0058d7b193b9e"
+    },
+    {
+      "name": "tc25",
+      "mix": 25,
+      "gap": 0,
+      "tc": true,
+      "cuda_sha256": "18fa0e626172d98e6093ddf561bfb77930a4e31afbe43f38c4f4db4c4095a40b",
+      "driver_sha256": "c4ee689a29f3be74f62d373bb18fbe5063cc87d491d3dcaa8f4c2bd7c12451d0"
+    }
+  ]
+}

@@ -14,7 +14,7 @@ s = p.read_text()
 old = '# Full-attention diagnostic boot: attention has no harness prepare hook.\nif torch.cuda.is_available() and torch.cuda.get_device_capability()[0] == 9:\n    prepare()\n'
 assert s.count(old) == 1
 forced = s.replace(old, old.replace('torch.cuda.get_device_capability()[0] == 9', 'True'))
-f = H / 'phases_board_force.py'
+f = p.with_name(p.stem+'_force.py')
 f.write_text(forced)
 linecache.cache[str(f)] = (len(forced), None, forced.splitlines(True), str(f))
 ns = {}
@@ -25,6 +25,6 @@ log = buf.getvalue()
 print(log, flush=True)
 assert ns['_lab_ran'] and sum(r.startswith('R B') for r in log.splitlines()) == a.rows, log
 assert not any(s in log for s in ('LAB_ERROR', 'ERROR B', 'SKIP B')), log
-(H / ('board_boot.json' if a.board=='phases_board.py' else p.stem+'_boot.json')).write_text(json.dumps(dict(passed=True,
+(H / 'board_boot.json' if a.board=='phases_board.py' else p.with_name(p.stem+'_boot.json')).write_text(json.dumps(dict(passed=True,
     sha256=hashlib.sha256(p.read_bytes()).hexdigest(), cases=a.rows, ctx=80000,
     forced_change='last capability guard only; payload, seeds and full context unchanged'), indent=2) + '\n')

@@ -1,0 +1,7 @@
+{
+  "sent": false,
+  "reason": "Compared a freshly captured graph output before replaying it. CUDA capture records kernels but does not execute them.",
+  "variant": "ref",
+  "kernel": "all independent full-attention and clock-bitwise gates already pass",
+  "fix": "Replay and synchronize diagnostic graph before comparing output; no tolerance or gate change."
+}

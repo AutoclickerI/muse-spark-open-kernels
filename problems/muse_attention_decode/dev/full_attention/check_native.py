@@ -11,6 +11,7 @@ H = Path(__file__).resolve().parent
 ap=argparse.ArgumentParser()
 ap.add_argument('sources',nargs='+')
 ap.add_argument('-D',dest='defines',action='append',default=[])
+ap.add_argument('--out',default='native_admission.json')
 a=ap.parse_args()
 rows = []
 with tempfile.TemporaryDirectory(prefix='full-attn-native-') as tmp:
@@ -18,7 +19,7 @@ with tempfile.TemporaryDirectory(prefix='full-attn-native-') as tmp:
         flags=['-D'+d for d in a.defines]
         p = H / f
         r = subprocess.run(['nvcc', '-std=c++20', '-O3', '-lineinfo', '-gencode=arch=compute_90a,code=sm_90a',
-            '-Xptxas=-v', '-c', str(p), '-o', str(Path(tmp) / (f + '.o'))] + flags,
+            '-Xptxas=-v', '-c', str(p), '-o', str(Path(tmp) / (hashlib.sha256(f.encode()).hexdigest()[:12] + '.o'))] + flags,
             capture_output=True, text=True)
         assert r.returncode == 0, r.stderr
         assert not re.search(r'C75\d+', r.stderr), r.stderr
@@ -26,5 +27,5 @@ with tempfile.TemporaryDirectory(prefix='full-attn-native-') as tmp:
             assert int(stores) == int(loads) == 0, r.stderr
         rows.append(dict(file=f, sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
                          ok=True, flags=flags, log=r.stderr))
-(H / 'native_admission.json').write_text(json.dumps(rows, indent=2) + '\n')
+(H / a.out).write_text(json.dumps(rows, indent=2) + '\n')
 print('Native admission passes: no spills or C75')

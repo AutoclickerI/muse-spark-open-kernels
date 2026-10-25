@@ -1,0 +1,16 @@
+{
+  "source_sha256_prefixes": [
+    "7521584e",
+    "f1b4ace0"
+  ],
+  "sent": false,
+  "local_attention_passed": true,
+  "native_passed": false,
+  "warnings": [
+    "C7515",
+    "C7517"
+  ],
+  "spills": 0,
+  "cause": "Pending O accumulator crosses reconvergent phase control flow",
+  "fix": "Complete each MMA phase before cross-WG boundary; the other WG still performs softmax during that phase; original strict checker unchanged."
+}
