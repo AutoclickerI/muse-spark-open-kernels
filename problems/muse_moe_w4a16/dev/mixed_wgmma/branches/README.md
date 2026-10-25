@@ -157,6 +157,47 @@ padding and pipeline mechanism; the old lab did not isolate a single cause. Repe
 those costs is closed. A multicast rebuild must share activation slices and demonstrate adequate residency.
 
 
+### Pending quota: native decode-once + cluster activation multicast
+
+`cluster_build.py` / `cluster.cu.inc` produce payload **eb677a8b**, CUDA **075ce977**. The paired arms
+are exact **S12**, measured **N16G4**, **ONCE_CS1**, and **ONCE_CS4**. Both new arms retain N16G4 for
+light experts (NT1<=8, N16 for9-16) and replace heavy N32 with native N32/N64/N96/N128/N160/N192/N224/N256
+RS-WGMMA. Thus **every expert weight tile is read/decoded once for all tokens at M<=256**, including the
+light experts. Rounding to32 preserves N32's token padding; it avoids old N64's65-96->128 padding.
+The wider registers are direct MMA accumulators; no shared decoded-weight round trip.
+
+A timed BF16 gather makes heavy X rows contiguous. Four adjacent output-channel CTAs form a cluster and
+multicast the same activation K slice. CS1 is the same algorithm without sharing; CS4 isolates multicast
+plus cluster scheduling. Separate width classes have compact two-stage (<=128) or one-stage (>128)
+activation buffers, **41,984 /74,752 /54,272 /70,656 B** dynamic smem. Four class streams plus the N16
+light stream join before F4; NT1<=8 runs on the parent. W13->W2 dependencies stay within each class/row.
+The first version retained NT1 for9-16 too; the queued replacement retains the landed N16 winner so
+that the experiment tests the whole-MoE read-once recipe. The serialized class launches, gather, cluster
+barriers and register occupancy are real costs, absent from the optimistic155.8/186.7us model bound.
+[NVIDIA's multicast PTX form](https://nvidia.github.io/cccl/unstable/libcudacxx/ptx/instructions/cp_async_bulk_tensor.html)
+is the source for the TMA instruction; correctness/performance still need the judge.
+
+`cluster_check.py` / `cluster_validation.json`: **392** poisoned captured checks, all class boundaries,
+empty/hot/skewed routes, sizes127/128/255/256/257; max L2/row **0.004129 /0.004782**. Portable CS1 and
+forced-CS4 outputs bit-equal98/98. This exercises the actual math, gather and five side-stream joins on
+sm120; **Hopper multicast synchronization is not locally verified**. A local257-tail failure in the first
+version was fixed (the final partial group of a heavy expert must remain heavy), then the complete screen
+was rerun. The failed version stayed local.
+
+`cluster_audit.py`, `cluster_resources.json`, `cluster_sass.json`: sm90a compiles all16 specializations
+without stack/spills. W13 registers114-190, W2 125-254; group wait1 remains, with intentional group0 waits
+for the single-stage buffers. KT128 loop **235-266 instructions**, **32 HMUL2,5 LDGSTS,2 TMA**; these are
+static loop-body counts, not retired instructions. Instructions per stage rise relative to PERMW188,
+but stages per expert tile fall by the measured1.6x/2.2x heavy weight multiplicity. CS4 must earn its
+barrier/register cost on H200; neither arm is promoted before the paired result.
+
+MoE and prefill quota are exhausted until **09:00 KST**. The lab tool reports only decode checks available;
+those remain for integration. The multicast payload is queued on the MoE host for reset, **no H200 job ID yet**.
+Queued wrapper **d5a4529b6e59529b** replaces4ba6d8b1 via h200_lab; the old waiting send was removed.
+Track `runs/detached/d5a4529b6e59529b.log` for the eventual accepted job ID.
+Remaining empirical step: collect the reset run, compare CS1/CS4 to both S12 and N16G4 across seeds, then
+hand over only a winner for whole-layer pairing. Target132.6/158.5us remains unmet.
+
 The earlier FP16 magic proposal is audited separately, not pursued as the main lever: `magic_audit.py` /
 `magic_audit.json` exhaust **65,024 FP4-pair x finite E4M3-code cases**. FP16 subnormal placement followed by
 HMUL2 and an actual BF16 conversion is bit-exact in every case. Its raw FP16 bits mismatch BF16 in **63,456**
