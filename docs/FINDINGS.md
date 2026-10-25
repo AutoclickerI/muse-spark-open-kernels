@@ -64,7 +64,8 @@ is 1.255x the floor, ~3.82 TB/s effective. The model's assumed rates set those c
   valid but address-dependent tricks don't.
 - Prepare's critical path (S9, local sm_120, forced Hopper glue, `CCACHE_DISABLE=1`): 229.8 s cold (S8 took 215.0 s
   on the judge). The native pool waits on prefill_score (68.1 s), nt2 57.3, v9_recoded 51.4; then the main thread
-  compiles LT (48.9 s) and the layer attention ext (31.0) serially: both into the pool at prepare start cuts ~80 s.
+  compiles LT (48.9 s) and the layer attention ext (31.0) serially. S10 starts both in the pool: 186.0 s locally
+  (pool critical path 68 -> 79 s, prefill_score under 13 concurrent compiles), 133.5 s on the judge (`43049b80`).
   A fresh TORCH_EXTENSIONS_DIR is still warm (the image's nvcc goes through ccache: 92.2 s), so cold timing needs
   `CCACHE_DISABLE=1` (local; `problems/muse_decode_layer/dev/s9/forced.log`).
 - Server static checks reject sources that read harness frames; a rebound CUDA event or graph-replay method fails
@@ -139,6 +140,15 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   moved -6.8..+2.6 us per case). FA3's public `layer` scheduler at q8 is within ~2-4% of every split setting and
   1.65x / 2.63x faster than sp16t / sp8n at verify 1 full.
 
+- Whole-layer paired A/B on S10 (`ff3b9aca`, decode check; 16 seeds x 8 rotating rounds, `lab_cold_l2` per replay,
+  r = mean per-seed time ratio vs S10; A:A 0.995-1.003): S8's moe_fused at small M (F) r 1.054 / 1.028 / 1.017 /
+  1.037 at decode 1 / 16 / 32 / verify 1 (route+MoE +3.4 to +5.8 us per layer); no BF16 front (N) 0.994 / 1.032 / 1.002
+  / 1.003 (qkv+attention+O +5.2 us at decode 16 sliding, +5.1 full, ~0 elsewhere); verify-1 qkv pinned to cuBLAS (Qc)
+  0.990, Lt (Ql) 0.998. So S9's small-M flags and front win in the layer; S9's flat scored run was run noise.
+  `problems/muse_decode_layer/dev/s10/ablate_lab.py.inc`.
+- The prepare tuners choose differently per run and move whole-layer time: verify-1 qkv_gate went Lt split-K (S8's
+  run), Triton split-K (S9's) and cuBLAS (S10's); the Triton choice leaves FP32 splits that qk_prep sums (2.6 -> 4.0
+  us sliding, 1.2 -> 3.6 full). The tuner times each projection alone, not with its consumer, over 3 graph repeats.
 ### Stage accounting and the lever model
 - Stage excess over a 3.6 TB/s one-read stream per layer, from the reset profile `c0e74bed` (kernel sums, which
   include PDL waits and overlap): decode 1 sliding 105.0 us summed vs 58.3 one-read (+46.7), full 120.0 vs 63.9
@@ -224,6 +234,16 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Static decode cost per 16 weights: 17 unpack + 8 BF16 multiplies + 2 amortized scale instructions = 27 (LOP3: 26;
   fold25 16 + 1 + 8 at 124 registers, retired: it widened the scales, "Weight encoding").
 
+- Decode-once in registers loses at M=16/32 (`c768a8e3`, `daf0c1aa`; 16 seeds, router+MoE node vs INC): NT2
+  (16-token blocks, 8 warps, 203 registers, 1 CTA/SM) +11.8 / +7.9 us, W16 (16 K-split warps, 123 registers) +19.0 /
+  +17.2, while flags 69 (NT1, 2 CTAs/SM) are -4.7 / -4.5. NT2 cuts W13 units 37% but each 2-block unit costs 1.84x an
+  NT1 unit per SM (per-tile latency at 16 warps/SM, not decode issue; NT1 runs ~1.5 IPC per SM); register-held
+  16-token activations can't fit 2 CTAs/SM.
+- M=32 critical path with flags 69 (`c768a8e3`, one seed): route 4.2, W13 36.1, W2-ready wait 11.6, W2 17.6, grid
+  barrier 5.0, combine 1.2 us of a 76 us CTA span; the wait ends ~4 us after the last W13 end, so the
+  expert-completion publish (fence + barrier + atomic under a saturated memory system) and every expert finishing
+  together cost ~12 us on the critical CTA. NT1 already keeps gate rows 0-7 and up rows 8-15 in one thread after the
+  K-split reduce, and its W2 norm uses a shuffle plus one atomic per token per tile (no CTA barrier).
 ## MoE M=128
 
 - Best measured, N_full (`c01b1916`, read flush; 12 seeds x 3, A:A abs 0.58 us, every TASK.md check passes, bit-equal
@@ -255,6 +275,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   seeds. Humming (`896866402`, eager spans) reads unique bytes at 0.70-1.18 TB/s in W13, 0.63-1.07 in W2; block-M 32
   328.0 vs 355.3 us (`e8968e36`, R0); masked-TMA ~3% faster than masked (`7156d8d8`).
 
+- Headroom (estimate from fixture counts and static SASS): the lab fixtures activate 16.1 (11-20) of 32 local experts
+  at M=128 (202 pairs) and 18.2 (12-23) at M=256 (409 pairs); their unique bytes (27 MiB per expert) are a 95 / 107 us
+  floor, and N_full runs at 2.1x / 2.8x it; ~71 SASS instructions per 16 weights put M=128's dequant issue at ~107 us.
 ## MoE M=256
 
 - In S7R, R_full: light/heavy branches with S6's kernels (`110599ba`, zero_()-flushed; 12 seeds x 3 fixtures, AB/BA
@@ -302,6 +325,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   raises fill to 64.7% with the same 28 weight tiles.
 - Floor at fixture R0: 21 experts, 414 pairs, 594.5 MB, 124 us at 4.8 TB/s, 41.7 GFLOP (BF16 tensor floor 39.38 us).
 
+- Lean K loop in the heavy N32 kernel (kinds 20/21: one descriptor/pointer update per stage, no dummy LDS, scale
+  prep hoisted) vs N_swap (`858ff2fa`, 12 seeds x 3, bit-equal): M=128 0.9613 (197.16 vs 205.19 us), M=256 0.9426
+  (279.38 vs 296.72). SASS per KT=128 stage 254 -> 207 (63.5 -> 51.8 per 16 weights); the dequant core is 128 per
+  stage (32 per 16 weights: LOP3 9, SHF 7, HMUL2 8, PRMT 4, LEA 4); the other ~79 are descriptors ~15, pointer
+  increments 8, cp.async 9, LDS ~11, sync ~5. `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/README.md`.
 ## Attention
 
 ### Shapes, floors and the incumbents
@@ -364,6 +392,17 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   the reference's own FP8 error (verify 32 full 0.028 vs bound 0.084; `dev/vq8/check.py`). The first build lost on
   the H200 ("Closed recipes"); the fixed build (see "Failures") is H200-unmeasured.
 
+- vq8's producer and consumer serialize: a consumer step waits for tile rr+1 while holding rr, and the publish of rr+1
+  waits on the release of rr-1, so the period is consumer + producer work: 2,677 / 2,883 cycles per 64-key tile at
+  B32 full, consumers waiting 51-55% on full slots, the producer 46-48% on empty ones (also at q_len 1: B32 full
+  429-450 us, 2.2x attn_main's 199 us on the same bytes). A timed model (consumer 1,300, producer 1,400 cycles,
+  4,500-cycle loads) reproduces it and predicts ~1,400 cycles (the slower side) for publish-first with LAG <= ST-2
+  (model). A page-table lookahead unrolled 6-8x costs ~30 us at B32 full; PD stays 4.
+- vq8 on the decode ABI (`5d54b589`, `f0a79d79`; after a 37.7 MB projection stand-in, PDL, vs qk_prep + FA3 +
+  norm_gate): only B1 sliding wins, st4mt1 14.40 vs 17.47 us; B16 / B32 sliding 19.4 / 26.6 vs 15.7 / 21.0; B1 / B16 /
+  B32 full 31.2 / 228 / 439 vs 29.6 / 190 / 378. vq8's main CTA holds the whole register file (168 x 384), so PDL
+  overlaps only its launch with the projection. Attention board `d5bcbc7d` (d98ae45d with vq8 where it wins): 1.4088x
+  vs 1.4027x (vq8 at verify 16 sliding 29.3 vs 30.3 us and verify 1 sliding).
 ## Projections and verify dense
 
 - SGLang (`7fb3e930`): cuBLAS BF16 GEMM (qkv_gate, o, pooler, unpooler) 2.8 us + bytes / 3.54 TB/s, 47-76% of floor
@@ -420,6 +459,12 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Pre-wait weight loads at O -> b1 -> pool_router (`5cefdbc4`, paired, read flush; vs balanced 64/6), delta us at t =
   1 / 16 / 32: first weight tile in registers before `griddepcontrol.wait` +0.13 / +1.21 / +5.75, two tiles +1.99 /
   +3.61 / +8.87, four tiles L2-prefetched +0.07 / +0.78 / +0.20: no gain anywhere (`prof/lab/gemv_pre.py`).
+- Balanced split-K in S8's chains (`5cefdbc4`, chain `c2b2da75`, paired AB/BA x24, A:A 0.990-1.014), medians us S8 ->
+  balanced at t = 1 / 16 / 32: POOL (O -> b1 -> pool_router -> route, b64/6) 39.26 -> 37.50 / 40.50 -> 38.85 / 45.17
+  -> 41.10; QKV (qkv -> sum+cast, b64/7) 18.14 -> 16.74 / 18.61 -> 17.02 / 20.22 -> 17.81; UNPOOL (b64/2 vs cuBLAS) t=16
+  26.35 -> 25.44, t=32 27.04 -> 26.43: -3.2 / -4.2 / -7.1 us per decode 1 / 16 / 32 layer. BN 32 loses in every chain.
+  Gate-split critical path (medians): full qkv 17.89 / 18.30 / 20.06; q,k,v rows only (1,280, b64/10) 13.28 / 13.41 /
+  14.22; gate rows (1,024, b64/8) 12.06 / 12.19 / 12.48.
 - Verify dense at a kernel running max(read, compute) would save ~12 us per verify-16 layer and ~10 per verify-32
   (~+1% score; cuBLAS GEMM-only at M=128 runs +41-97% over the read, M=256 near its ~700 TFLOP/s compute floor);
   Triton split-K and DeepGEMM only tie cuBLAS apart from M=128 qkv (inferred from `b15a3bde` and `9cd95e72`).
@@ -573,7 +618,9 @@ Failures whose cause was not obvious, so they are not repeated.
 | An optional GPU adapter set up on a side thread fails graph capture | Global stream-capture mode rejects GPU work issued from another thread during capture | Finish all GPU adapter setup before the first capture; CPU-side native compilation may still run in parallel (best6 `c582f342`) | local | git `e8d710f:problems/muse_decode_layer/dev/best6/README.md` |
 | A lab run fails at 304 s of prepare | The payload pushed prepare past the 300 s cap | Budget every payload against a deadline below ~280 s | one MoE-host run | `8ffbac2d` |
 | A lab payload measures nothing (`14f942d5`'s M=128 half) | The lab's 60 s pre-compile gate tripped with 57.3 s left in a two-payload run | Pre-compile gate cut to 25 s; resent as `c01b1916` | one payload | `14f942d5` |
-| Scored runs don't rank changes under ~3%: S8 vs S7R scored +0.05% with our load times -2.2% (the baseline also -2.2%); S9 vs S8 scored +2.1% with our load times +0.8% (decode 32 +2.8%, verify 1 +4.7%; verify 16 -2.2%) and the baseline ~+2.9% | Each run draws its own weights, routes and inputs (common-mode shifts in both sides) and the baseline's own run-to-run noise; neither our time nor the ratio across runs isolates a change | Rank changes by a paired whole-layer A/B on identical inputs; a scored run only confirms | S8's and S9's small-M and front wins unconfirmed in the layer | `a5b2f55b`, `b7c59570`, `c1fbd0cf` |
+| Scored runs don't rank changes under ~3%: S8 vs S7R scored +0.05% with our load times -2.2% (the baseline also -2.2%); S9 vs S8 scored +2.1% with our load times +0.8% (decode 32 +2.8%, verify 1 +4.7%; verify 16 -2.2%) and the baseline ~+2.9% | Each run draws its own weights, routes and inputs (common-mode shifts in both sides) and the baseline's own run-to-run noise; neither our time nor the ratio across runs isolates a change | Rank changes by a paired whole-layer A/B on identical inputs in one run (`ff3b9aca` confirmed both S9 changes); a scored run only confirms | none lost; S9 looked flat | `a5b2f55b`, `b7c59570`, `c1fbd0cf` |
+| A lab payload builds locally but fails on the judge (`d902de71`: "ATen.h: C++20 or later compatible compiler is required") | The payload's `load_inline` passed `-std=c++17`; a host conda torch accepts it, the judge image's torch doesn't | `-std=c++20`, and screen every payload in the judge image (RESOURCES "Setup", `tools/img`) | one proj lab | `d902de71`, resend `35c875e6` |
+| An attention candidate fails tests 0-5 and passes 6-15 (`c9c4ef99`) | `sorted(fa3)` over (us, (splits, pack_gqa)) tuples compares bool with None when two pack_gqa settings time exactly equal (32 ns event quanta); `d98ae45d` passed by luck | `sorted(fa3, key=lambda x: x[0])` (`problems/muse_attention_decode/dev/vq8/build_cand.py`) | one attention run | `c9c4ef99` |
 | A lab ran on a withdrawn, inadmissible host (bf16moe 1.461x) | `tools/h200_lab.py` picked the best scored run as host | Host selection skips withdrawn runs | one lab | `b63389f0` |
 | The judge rejects a send before queueing: `edits loaded modules` (exec'd module in `sys.modules`), `starts processes` (a docstring naming the subprocess module) | Static source checks; the second probably tightened on 10-24 (20 earlier sources carry the same docstring, inference); both print only in `runs/detached/<key>.log` | Exec payloads in a plain dict; `okc_run.py send` refuses `REJECTED_WORDS`; read the detached log right after a send | two sends, ~1 h each | `runs/detached/731545a5def446ad.log`, `0d7b6cf010101bd1.log` |
 | A send fails with 429 `daily cap of 10 runs ... counting runs not yet queued` while `okc problems` shows runs left | The cap counts accepted-but-unqueued sends | `okc_run.py` falls back to the next mode (check) | one MoE lab | `runs/detached/053c794fc0aba59a.log` |
