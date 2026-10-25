@@ -28,12 +28,14 @@
   3. Our rule readings were narrower than the rules (CONSTRAINTS "Boundary cases" widened: precision, not bytes per
      16 weights; routing by membership in any order; FP8 K/V expanded on chip; value-dependent work in kernels).
   4. The review's code items are in the rows (P3b, P5, P7); those already done or small are recorded there.
-- Limits (`problems/muse_decode_layer/dev/levers/scenarios.py`, S7R plus the paired wins S8 and S9 carry, modeled
-  1.674): every stage at 2.0 / 1.5 / 1.3 / 1.15x its floor gives 1.96 / 2.26 / 2.59 / 2.94; the leader is every stage
-  at ~1.5x. Per lever at 1.5x / 1.3x of its floor: attention +9.5 / +10.8% (sliding +5.2%, full verify +2.7 /
-  +3.2%), small-M MoE +5.8 / +9.4%, glue +5.9%, projections +1.9 / +5.9%, M=256 MoE +3.5 / +4.6%, M=128 MoE +1.3 /
-  +2.5% (independent counterfactuals); lossless dense coding +4 to +8% on top of projections. Inside each row,
-  deleting provably dead or repeated work comes first.
+- Ceilings on S11 (`dev/levers/current.json`, `863f502c` profile; per-layer us at decode 1 / 16 / 32, verify 1 / 16 / 32):
+  ours 95.7 / 179 / 243 / 139 / 333 / 462 = 1.707; every stage at its own stream roof (2.36 us + bytes at 4.58
+  TB/s each) 2.79; one continuous stream per layer 49.3 / 112 / 141 / 80 / 179 / 228 = 3.08; the 4.8 TB/s floor
+  3.31. The leader (2.285) sits at ~1.35x the continuous stream, we at ~1.8x. Most of our gap is inside stages
+  (decode 1: 35 us of in-stage excess over the stage roofs, 12 us of per-stage fixed cost; verify 32: 231 us
+  in-stage, mostly MoE M=256 and full verify attention). Latency-bound stages with almost no bytes (sliding
+  attention, boundaries, route, MoE waits) cost ~25-30 us per decode-1 layer that a continuous weight stream could
+  hide.
 - Agents: Codex is back (13:45 KST); the six lanes resumed on gpt-6.1-sol from the Claude lanes' committed state
   (2485ff4): integration (P4), attention (P5), glue/proj (P7), small-M (P3a), dense coding (P10), MoE M=128/256
   (P3b); P11 is parked.
