@@ -1,0 +1,17 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s13_final.py",
+  "base_sha256": "958f1258908f44834ec6cf0c33af00ff6c08ea62b2f5cc483a36f0a91f39d0b6",
+  "patches": [
+    {
+      "name": "light",
+      "path": "problems/muse_decode_layer/dev/s14/patch_light.py",
+      "sha256": "76e242b6177086cea6c69860e53c39b1cfabb9c552ad82255fbd6721a28ee56d",
+      "active_tokens": [
+        128,
+        256
+      ],
+      "out_sha256": "c7d63639ae632dc7e32b4df5c9e73dd1184408791b0d59a6c186a215bc99b896"
+    }
+  ],
+  "sha256": "c7d63639ae632dc7e32b4df5c9e73dd1184408791b0d59a6c186a215bc99b896"
+}

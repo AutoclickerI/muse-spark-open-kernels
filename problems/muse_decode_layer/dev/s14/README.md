@@ -56,7 +56,7 @@ Root cand_r3_best7_s14.py remains the rejected all-piece trial; stage2 is in `va
 No S14 final freeze or scored-source swap yet. Next: send stage2 after its wrapper screen, select bal2
 per load from the new paired evidence, then freeze only retained winning pieces with controls inside A:A.
 
-Stage3 contingency **f1c77ce6** keeps light + bal2 T32 only. Its normal13/12/24 passes; forced is running while stage2 is judged. No speculative third check is sent.
+Stage3 contingency **f1c77ce6** keeps light + bal2 T32 only. Its original normal run requires an OOM retry; forced is running while stage2 is judged. No speculative third check is sent.
 
 ## Second receipt 740c63afadc14e01
 
@@ -67,10 +67,22 @@ untouched controls pass. Light off **1.023051 / 1.018132** at verify16/32, both 
 (normalized1.003145); drop T8. Full S13-back ratios on retained loads: decode32 1.015313,
 verify16 1.023156, verify32 1.017248. Do not promote the raw host score by itself.
 
-Final conditional source **f1c77ce6** = light + bal2 T32 only. Its normal13/12/24 passed. Forced and wrapper
+Final conditional source **f1c77ce6** = light + bal2 T32 only. Its original normal run passed13 tests and24 static checks but two graph shapes hit the same allocation OOM. Forced and wrapper
 attempts hit GPU0 memory contention before any remote send, caused partly by local_eval.Timer's
 uint8.sum creating an8 GiB cast temporary. Timer now reads the identical1 GiB through an int64 view,
 matching h200_lab.lab_cold_l2; the memory proof is cold_flush_memory.json. No tests, input shapes, cold
 buffer bytes or judge code changed. Retry forced and wrapper serially, then send the final conditional.
 Failure evidence is preserved in trials/stage3_oom/; original stage2 manifests/patch are in
 trials/stage2_f1e61081/. Current pieces.json/patch_bal2.py stage the T32-only successor, not a promotion.
+
+## Final conditional queued
+
+T32-only source **f1c77ce6**, wrapper **e027349d**, accepted as **2bbb626c5ac2428a**. No final freeze yet.
+After fixing the flush temporary and retrying serially, complete normal and forced13/12/24 pass;
+normal's two earlier graph OOMs are preserved in trials/stage3_oom/normal_failure.json, not suppressed.
+The exact wrapper also passes all12 shapes/16seeds, all gates,32 rounds decode1/verify1 and8 elsewhere,
+then13 tests and24 static checks. Its lab completed in30.4s locally. admission.json stage3 pins all hashes.
+
+The light-only **c7d63639** source is a contingency; normal13/12/24 passes and forced is running while
+the final conditional is judged. It has not been sent. Freeze S14 only after retained-piece/load wins and
+unchanged controls pass; keep S13 scheduled until the final report names a promoted file.
