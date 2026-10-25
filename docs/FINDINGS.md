@@ -657,6 +657,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - All-thread cp.async staging with one CTA barrier (`c446fdab`, 3 seeds x 24 rounds) vs balanced: t = 1 / 8 qkv
   -1.32 / -0.95, pool_router -3.13 / -2.10, o -0.12 / +0.26, slice +0.21 / +0.28 us; t=16 qkv +0.04, pool_router -0.32;
   t=32 qkv 18.25 vs 12.39, pool_router 31.73 vs 22.31 (loses). Better than v3 at t <= 8.
+- Register-A WGMMA coded GEMV (one decode per weight, lossless repack into native A fragments, activations by TMA once
+  per CTA; `04d89c7d`, 3 seeds x 24 rounds, exact) vs balanced: the first coded kernel to win at t >= 16: qkv 0.969 /
+  1.048, unpooler 0.918 / 0.968, pool_router 0.996 / 1.09, o 1.10 / 1.20 at t = 16 / 32; t = 1 / 8 qkv 0.91 / 0.93,
+  pool_router 0.92 / 0.92 (cp.async staging is better there). A second balanced config (BK128 x 2 stages) runs
+  pool_router 20.5-20.9 vs 21.1-22.3 us.
 - Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
   samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
   cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
