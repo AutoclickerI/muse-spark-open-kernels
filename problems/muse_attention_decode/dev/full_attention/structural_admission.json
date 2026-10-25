@@ -1,0 +1,25 @@
+{
+  "board_sha256": "31313ea43987f6731b77cf082486a4cb8867dd0991ff7b4e532a001ee3795b6a",
+  "normal": {
+    "tests": 16,
+    "shapes": 12,
+    "static": 7
+  },
+  "forced_import": {
+    "passed": true,
+    "sha256": "31313ea43987f6731b77cf082486a4cb8867dd0991ff7b4e532a001ee3795b6a",
+    "cases": 4,
+    "ctx": 80000,
+    "forced_change": "last capability guard only; payload, seeds and full context unchanged"
+  },
+  "payloads": {
+    "pageflight_lab": "a8371964dc13b02a714c5cac86fdc113446281744a1561eff17bf357f366b16f",
+    "hybrid_lab": "ed3807d5bfbc726b9f4175aa1e4023f3f7002b75a9e4a7c0365efcabf7d9c509"
+  },
+  "native_spill_free": true,
+  "results_pending": false,
+  "job": "39949536680c4022",
+  "dispatch": "31313ea43987f673",
+  "status": "done",
+  "result": "page flight neutral0.99744/0.99664; FP16 PV loses1.49592/1.55370 at best stage4; no promotion"
+}

@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "source_sha256": "6b6496abeb32d8fbb86836d241d86d012d6e14db8c3782b8982938b1957a6f60",
+  "rows": [
+    {
+      "batch": 1,
+      "ctx": 257,
+      "page": 64,
+      "scale": 0.015625,
+      "plan": [
+        17,
+        1
+      ],
+      "bitwise": true,
+      "error": 0.004389418754726648
+    },
+    {
+      "batch": 16,
+      "ctx": 4096,
+      "page": 1,
+      "scale": 1,
+      "plan": [
+        11,
+        1
+      ],
+      "bitwise": true,
+      "error": 0.004293990321457386
+    },
+    {
+      "batch": 32,
+      "ctx": 80000,
+      "page": 1,
+      "scale": 1,
+      "plan": [
+        5,
+        5
+      ],
+      "bitwise": true,
+      "error": 0.003302843077108264
+    },
+    {
+      "batch": 3,
+      "ctx": 33,
+      "page": 64,
+      "scale": 1,
+      "plan": [
+        1,
+        1
+      ],
+      "bitwise": true,
+      "error": 0.00408420292660594
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "board_sha256": "e455ff98b938da230833dbfe3352fe77246bb80c37ec8ca08c8e38d72f0f337e",
+  "payload_sha256": "4a199d22b9370fbc48cfd48494c5609a9d709cfa9972da941432c8bfe52570b2",
+  "base": "S13 final 958f1258",
+  "normal": {
+    "tests": 16,
+    "shapes": 12,
+    "static": 7
+  },
+  "boot": {
+    "passed": true,
+    "sha256": "e455ff98b938da230833dbfe3352fe77246bb80c37ec8ca08c8e38d72f0f337e",
+    "cases": 4,
+    "ctx": 80000,
+    "forced_change": "last capability guard only; payload, seeds and full context unchanged"
+  },
+  "results_pending": false,
+  "native_compilation_no_C75": true,
+  "clocked_vq8_combine_resource_gate": {
+    "passed": false,
+    "spill_stores": 16,
+    "spill_loads": 8,
+    "note": "instrumented combine only; q1 and vq8 main spill-free; preserve strict check failure"
+  },
+  "job": "5c99583676994c2a",
+  "dispatch": "e455ff98b938da23",
+  "nonprobe_job": "f64ca258ec074675",
+  "nonprobe_speedup": 1.5872907132719187,
+  "result": "H200 phases landed: q1 gather path dominates; vq8 producer and softmax limit, clocks perturb wall time"
+}

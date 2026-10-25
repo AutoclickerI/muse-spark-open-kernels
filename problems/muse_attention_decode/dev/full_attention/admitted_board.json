@@ -1,0 +1,256 @@
+{
+ "problem": "muse_attention_decode",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/full_attention/phases_board.py",
+ "sha256": "e455ff98b938da230833dbfe3352fe77246bb80c37ec8ca08c8e38d72f0f337e",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 5.998701089993119e-05,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, heads tp8, layer sliding",
+   "first_call_s": 0.07545490504708141,
+   "ok": true,
+   "msg": "relative L2 error 5.880e-02 (worst row 5.880e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 2047, heads tp8, layer sliding",
+   "first_call_s": 0.0021913900272920728,
+   "ok": true,
+   "msg": "relative L2 error 8.552e-02 (worst row 1.032e-01) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 5, ctx 5000, heads tp8, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 0.0019225490395911038,
+   "ok": true,
+   "msg": "relative L2 error 7.807e-02 (worst row 1.391e-01) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 3000, heads tp8, layer full",
+   "first_call_s": 0.002185324963647872,
+   "ok": true,
+   "msg": "relative L2 error 7.728e-02 (worst row 8.438e-02) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 8, ctx 8192, heads dp, layer full, spread mixed",
+   "first_call_s": 0.003931725048460066,
+   "ok": true,
+   "msg": "relative L2 error 8.454e-02 (worst row 8.830e-02) [bound 0.150: 2.5 x the reference's 0.084 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 100000, heads tp8, layer full, q_len 8, page 1",
+   "first_call_s": 0.0023228999925777316,
+   "ok": true,
+   "msg": "relative L2 error 7.851e-02 (worst row 1.029e-01) [bound 0.150: 2.5 x the reference's 0.079 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, dist edges, page 1",
+   "first_call_s": 0.002089955029077828,
+   "ok": true,
+   "msg": "relative L2 error 7.701e-02 (worst row 1.013e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer full, q_len 8, dist edges",
+   "first_call_s": 0.002165657002478838,
+   "ok": true,
+   "msg": "relative L2 error 8.847e-02 (worst row 1.200e-01) [bound 0.150: 2.5 x the reference's 0.088 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, heads tp8, layer full, q_len 8",
+   "first_call_s": 0.0010721180005930364,
+   "ok": true,
+   "msg": "relative L2 error 8.568e-02 (worst row 9.508e-02) [bound 0.150: 2.5 x the reference's 0.086 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 4000, heads tp8, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "first_call_s": 0.002044850029051304,
+   "ok": true,
+   "msg": "relative L2 error 8.095e-02 (worst row 1.140e-01) [bound 0.150: 2.5 x the reference's 0.081 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 9000, heads tp8, layer full, kv_scale 0.015625",
+   "first_call_s": 0.003471367002930492,
+   "ok": true,
+   "msg": "relative L2 error 7.789e-02 (worst row 8.667e-02) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist soft",
+   "first_call_s": 0.007626101025380194,
+   "ok": true,
+   "msg": "relative L2 error 7.232e-02 (worst row 9.619e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, q_len 8, dist soft, page 1",
+   "first_call_s": 0.0020626590121537447,
+   "ok": true,
+   "msg": "relative L2 error 6.201e-02 (worst row 9.025e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist soft",
+   "first_call_s": 0.0022281590499915183,
+   "ok": true,
+   "msg": "relative L2 error 7.037e-02 (worst row 7.600e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist coherent, page 1",
+   "first_call_s": 0.002518719993531704,
+   "ok": true,
+   "msg": "relative L2 error 3.845e-02 (worst row 4.282e-02) [bound 0.111: 2.5 x the reference's 0.038 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist coherent",
+   "first_call_s": 0.0025318709667772055,
+   "ok": true,
+   "msg": "relative L2 error 3.554e-02 (worst row 4.771e-02) [bound 0.104: 2.5 x the reference's 0.035 with FP8 E4M3 queries + 0.015]"
+  }
+ ],
+ "shapes": [
+  {
+   "case": "batch 1, ctx 80000, dist soft, heads tp8, layer sliding, page 1",
+   "load": "decode 1",
+   "weight": 46,
+   "us": 14.33600066229701,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist coherent, heads tp8, layer full, page 1",
+   "load": "decode 1",
+   "weight": 16,
+   "us": 34.815998282283545,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, heads tp8, layer sliding, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 46,
+   "us": 18.432000186294317,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist coherent, heads tp8, layer full, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 16,
+   "us": 261.1199929378927,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, heads tp8, layer sliding, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 46,
+   "us": 24.576000403612852,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist coherent, heads tp8, layer full, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 16,
+   "us": 505.87201258167624,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 46,
+   "us": 17.407999839633703,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 16,
+   "us": 36.86399897560477,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 46,
+   "us": 20.480000879615545,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 16,
+   "us": 268.31999560818076,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 46,
+   "us": 26.62399923428893,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 16,
+   "us": 532.5119807384908,
+   "ok": true
+  }
+ ],
+ "loads": {
+  "decode 1": {
+   "us": 1216.5120029821992,
+   "base_us": 0.0
+  },
+  "decode 16": {
+   "us": 5025.791895575821,
+   "base_us": 0.0
+  },
+  "decode 32": {
+   "us": 9224.448219873011,
+   "base_us": 0.0
+  },
+  "verify 1": {
+   "us": 1390.5919762328267,
+   "base_us": 0.0
+  },
+  "verify 16": {
+   "us": 5235.199970193207,
+   "base_us": 0.0
+  },
+  "verify 32": {
+   "us": 9744.895656593144,
+   "base_us": 0.0
+  }
+ },
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "X_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "G_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}
