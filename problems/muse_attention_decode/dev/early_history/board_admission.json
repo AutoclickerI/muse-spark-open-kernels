@@ -1,0 +1,261 @@
+{
+ "problem": "muse_attention_decode",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/early_history/out/p5_early_history_board.py",
+ "sha256": "0cec67066689787d498240bfcef317bdf67827e26f3e23b38bb47f088bb59d98",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 0.00018881901632994413,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, heads tp8, layer sliding",
+   "first_call_s": 0.046219589945394546,
+   "ok": true,
+   "msg": "relative L2 error 5.868e-02 (worst row 5.868e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 2047, heads tp8, layer sliding",
+   "first_call_s": 0.033953133039176464,
+   "ok": true,
+   "msg": "relative L2 error 8.552e-02 (worst row 1.032e-01) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 5, ctx 5000, heads tp8, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 0.00039007101440802217,
+   "ok": true,
+   "msg": "relative L2 error 7.807e-02 (worst row 1.391e-01) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 3000, heads tp8, layer full",
+   "first_call_s": 0.0003111670375801623,
+   "ok": true,
+   "msg": "relative L2 error 7.728e-02 (worst row 8.438e-02) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 8, ctx 8192, heads dp, layer full, spread mixed",
+   "first_call_s": 0.00028627098072320223,
+   "ok": true,
+   "msg": "relative L2 error 8.454e-02 (worst row 8.830e-02) [bound 0.150: 2.5 x the reference's 0.084 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 100000, heads tp8, layer full, q_len 8, page 1",
+   "first_call_s": 0.00025313999503850937,
+   "ok": true,
+   "msg": "relative L2 error 7.851e-02 (worst row 1.029e-01) [bound 0.150: 2.5 x the reference's 0.079 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, dist edges, page 1",
+   "first_call_s": 0.00027802103431895375,
+   "ok": true,
+   "msg": "relative L2 error 7.701e-02 (worst row 1.013e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer full, q_len 8, dist edges",
+   "first_call_s": 0.00025087897665798664,
+   "ok": true,
+   "msg": "relative L2 error 8.847e-02 (worst row 1.200e-01) [bound 0.150: 2.5 x the reference's 0.088 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, heads tp8, layer full, q_len 8",
+   "first_call_s": 0.0007315789698623121,
+   "ok": true,
+   "msg": "relative L2 error 8.568e-02 (worst row 9.508e-02) [bound 0.150: 2.5 x the reference's 0.086 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 4000, heads tp8, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "first_call_s": 0.00039265298983082175,
+   "ok": true,
+   "msg": "relative L2 error 8.095e-02 (worst row 1.140e-01) [bound 0.150: 2.5 x the reference's 0.081 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 9000, heads tp8, layer full, kv_scale 0.015625",
+   "first_call_s": 0.00028333801310509443,
+   "ok": true,
+   "msg": "relative L2 error 7.789e-02 (worst row 8.667e-02) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist soft",
+   "first_call_s": 0.00033438397804275155,
+   "ok": true,
+   "msg": "relative L2 error 7.232e-02 (worst row 9.619e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, q_len 8, dist soft, page 1",
+   "first_call_s": 0.0005218909936957061,
+   "ok": true,
+   "msg": "relative L2 error 6.201e-02 (worst row 9.025e-02) [bound 0.150: 2.5 x the reference's 0.062 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist soft",
+   "first_call_s": 0.0005149850039742887,
+   "ok": true,
+   "msg": "relative L2 error 7.037e-02 (worst row 7.600e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist coherent, page 1",
+   "first_call_s": 0.00034026801586151123,
+   "ok": true,
+   "msg": "relative L2 error 3.845e-02 (worst row 4.282e-02) [bound 0.111: 2.5 x the reference's 0.038 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist coherent",
+   "first_call_s": 0.00034345698077231646,
+   "ok": true,
+   "msg": "relative L2 error 3.554e-02 (worst row 4.771e-02) [bound 0.104: 2.5 x the reference's 0.035 with FP8 E4M3 queries + 0.015]"
+  }
+ ],
+ "shapes": [
+  {
+   "case": "batch 1, ctx 80000, dist soft, heads tp8, layer sliding, page 1",
+   "load": "decode 1",
+   "weight": 46,
+   "us": 10.752000147476792,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist coherent, heads tp8, layer full, page 1",
+   "load": "decode 1",
+   "weight": 16,
+   "us": 32.768000615760684,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, heads tp8, layer sliding, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 46,
+   "us": 22.528000874444842,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist coherent, heads tp8, layer full, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 16,
+   "us": 281.6160030197352,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, heads tp8, layer sliding, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 46,
+   "us": 30.719999922439456,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist coherent, heads tp8, layer full, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 16,
+   "us": 521.7279947828501,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 46,
+   "us": 20.49600030295551,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 16,
+   "us": 35.32799961976707,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 46,
+   "us": 24.57599970512092,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 16,
+   "us": 279.5840061735362,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, heads tp8, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 46,
+   "us": 32.75200049392879,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist coherent, heads tp8, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 16,
+   "us": 542.2400094103068,
+   "ok": true
+  }
+ ],
+ "loads": {
+  "decode 1": {
+   "us": 1018.8800166361034,
+   "base_us": 0.0
+  },
+  "decode 16": {
+   "us": 5542.144088540226,
+   "base_us": 0.0
+  },
+  "decode 32": {
+   "us": 9760.767912957817,
+   "base_us": 0.0
+  },
+  "verify 1": {
+   "us": 1508.0640078522265,
+   "base_us": 0.0
+  },
+  "verify 16": {
+   "us": 5603.840085212141,
+   "base_us": 0.0
+  },
+  "verify 32": {
+   "us": 10182.432173285633,
+   "base_us": 0.0
+  }
+ },
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "X_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "G_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "eh_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

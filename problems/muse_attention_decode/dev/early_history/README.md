@@ -118,6 +118,8 @@ was promoted from the failed screen. Full native sixteen-seed checks remain pend
   critical increment **15.10 ->11.10us**. These numbers are not this experiment's.
 
 All new checks and resource facts are in `validation.json`, `sass_proof.json`,
-`residency.json`, `component_validation.json` and the local receipts. Next is
+`residency.json`, `component_validation.json` and `normal_admission.json`, `forced_admission.json`,
+`board_admission.json`, `payload_admission.json`. Local timings in those
+receipts are validation evidence only; they are not H200 performance claims. Next is
 this single packet's paired native result and its QKV/attention/gate timelines;
 select and hand integration a winner only after that evidence lands.
