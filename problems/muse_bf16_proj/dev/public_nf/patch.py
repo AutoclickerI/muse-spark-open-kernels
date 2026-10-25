@@ -33,7 +33,7 @@ def prepare(weights):
     state=_nf_port_base_prepare(weights)
     state['nf_port']=nf_prepare(weights,None if NF_PORT_FORCE else NF_PORT_SELECTED)
     return state
-'''.replace('__SELECTED__',repr(set(selected)))
+'''.replace('__SELECTED__',('{'+', '.join(repr(tuple(x)) for x in sorted(selected))+'}') if selected else 'set()')
     out=src+'\n'+notice+'\n'+body+'\n'+hook
     assert len(out.encode())<1_000_000,(len(out.encode()),'1 MB limit')
     compile(out,'<S15 NF port>','exec')

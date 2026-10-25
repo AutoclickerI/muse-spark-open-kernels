@@ -22,7 +22,7 @@ roots=['v18d_v18d_native_build','v18d_v18d_native_pack_format','v18d_v18d_native
  'dd_decodediet_cps_build','dd_decodediet_dd_cap2_b_cpssm_pack_format','dd_decodediet_dd_cap2_b_cpssm_stream',
  'mt_M16TRACE_SOURCES','mt_wp0_pack_format','mt_wp0_stream','BUNDLE_QKV_CUDA','SM_CPP','sm_stream',
  'tt_v10_m32x__q_build','tt_v10_m32x_m32x_pack_format','tt_v10_m32x_m32x_stream',
- 'b2q_tt_v10_m32x__q_build','b2p_tt_v10_m32x__build','b2p_tt_v10_m32x_m32x_pack_format',
+ 'b2q_tt_v10_m32x__q_build','b2q_tt_v10_m32x_m32x_pack_format','b2q_tt_v10_m32x_m32x_stream','b2p_tt_v10_m32x__build','b2p_tt_v10_m32x_m32x_pack_format',
  'dd_decodediet_tt_mw_build','dd_decodediet_tt_mw_pack_weight',
  'prepare_olayer_candidates','run_olayer_candidate','b2o_prepare_olayer_candidates','b2o_run_olayer_candidate',
  'tt_v10_tune_build_rl','tt_v10_tune_pack_weight','tt_v14_qkv_build_qkv','tt_v14_qkv_qbig_pack',

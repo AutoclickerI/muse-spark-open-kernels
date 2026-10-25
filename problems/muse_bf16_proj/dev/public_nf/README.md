@@ -223,25 +223,65 @@ as published implements this layer contract.
 
 The owner authorized source reuse. `source_audit.json` records the pre-execution review: the Python imports only torch/JIT, typing, hashes/compression, statistics/time and a preparation thread pool. No direct network, subprocess, filesystem-write or environment-read API was found in its Python or CUDA. PyTorch `load_inline` writes its JIT build directory. Diagnostic no-MMA/empty-kernel modes and clock-read/unreachable-trap compiler scheduling boundaries are present; selected production instantiations have DIAG=0. No timing or harness manipulation was found. `LICENSE.NathenFernandes` and the visible notice in every generated integration file retain the full MIT notice, copyright2026 Nathen Fernandes and pinned URL/commit.
 
-`nf_selected.py` is a compressed dependency closure of selected builders/packers, excluding the historical dispatcher. `port.py` adapts the call sites and native source. `build_port.py` creates a self-contained adapter; `patch.py` applies it only to **S14 final f1c77ce6**, preserving its light-expert and bal2 changes. `patch_manifest.json` records the current diagnostic candidate hash and byte count (about870 KB, below1 MB). Its selection set is empty until paired H200 evidence lands. `NF_PORT_FORCE` forces candidate branches for admission and is false in the production patch.
+`nf_selected.py` is a compressed dependency closure of reviewed builders/packers, excluding the historical dispatcher. `port.py` adapts their source. `patch.py` applies only to **S14 final f1c77ce6**, preserving its light-expert and bal2 changes. The current S15 candidate is **e3ce8f15**,872,053 bytes. `selection.json` contains nine stage-selected rows; **whole-layer H200 admission is pending**, so this is not a promoted S15 final. `NF_PORT_FORCE` exercises every candidate branch locally and is false in production.
 
-Adaptations already made: FP32 small-M outputs preserve our consumer boundaries; independent origins/tables for pooler/router-hi/router-lo keep the **N4608 fused pool_router** lossless; qkv3 supports N1280; entry PDL release/wait and programmatic launch attributes preserve graph dependency correctness; the specialized gate GEMV remains in S14 and keeps its same-stream overlap with attention. Existing t1 coded paths remain the control. Large O/qkv/unpool paths use selected WGMMA/LT kernels; the fused large pooler experiment uses register-A WGMMA rather than splitting router into separate launches.
+Adaptations: FP32 small-M outputs preserve consumer boundaries; independent origins/tables for pooler/router-hi/router-lo keep **N4608 fused pool_router** lossless; qkv3 supports N1280; entry PDL release/wait and launch attributes preserve graph dependencies. S14's specialized gate GEMV keeps its same-stream overlap. T1 coded full-QKV and pool/router remain S14. T1 qkv3 is a balanced GEMV in S14, not one of its coded rows, and is included in the trial selection.
 
-Normal and forced S15 local_eval each pass **13 tests,12 fresh-input graph shapes,24 static checks** on `be4f4a91` (the subsequent preparation-only pruning changes are awaiting the final selected-candidate rerun). Forced Hopper-only arithmetic uses explicit local stand-ins; actual unclustered warp-MMA paths execute on sm120. All16 adapted CUDA units independently compile for sm90a, including native cluster and TMA/WGMMA paths. Three-seed native warp-MMA/neighbor/escape/graph checks are in `port_validation.json`. This is not H200 runtime admission.
+H200 job **e3c637d10a584a0f** completed25 valid comparisons plus two qkv16 arithmetic errors, using8 identical-input seeds ×12 cold ABBA rounds and A:A. All passing port one-hot errors were zero; FP32 relative L2 was <=2.1e-6, and native raw-BF16 outputs <=1.7e-3. The producer and consumer run together. T32's explicit NS4 arm takes1.04127× S14 bal2; **bal2 stays**. The entire per-row table follows. Times are not directly comparable to the projection-board table above because these include the layer consumers.
 
-The paired lab uses exact S14 projection controls and their consumers, plus **explicit NS4 vs S14 bal2 NS2 at T32**. It uses eight identical-input seeds and cold ABBA repetitions with A:A. Qkv3 uses a materialization proxy and therefore needs a whole-layer comparison before promotion. Component times alone cannot promote a call-site choice.
+| T | Role | S14 µs | NF port µs | NF/S14 (8-seed range) | A:A max | Status |
+|---:|---|---:|---:|---|---:|---|
+| 1 | qkv_gate | 16.00 | 11.57 | 0.7226 [0.7185, 0.7352] | 0.0204 | keep S14 |
+| 1 | qkv3 | 13.75 | 9.73 | 0.7070 [0.6927, 0.7176] | 0.0165 | stage-selected; layer pending |
+| 1 | o | 9.72 | 8.24 | 0.8490 [0.8343, 0.8620] | 0.0338 | stage-selected; layer pending |
+| 1 | pool_router | 22.65 | 26.10 | 1.1509 [1.1451, 1.1586] | 0.0147 | keep S14 |
+| 1 | unpooler_slice | 7.66 | 7.43 | 0.9677 [0.9504, 0.9830] | 0.0204 | keep S14 |
+| 8 | qkv_gate | 15.03 | 14.42 | 0.9598 [0.9258, 0.9728] | 0.0595 | keep S14 |
+| 8 | o | 9.13 | 8.52 | 0.9298 [0.9049, 0.9551] | 0.0345 | stage-selected; layer pending |
+| 8 | pool_router | 25.07 | 26.70 | 1.0655 [1.0473, 1.0783] | 0.0229 | keep S14 |
+| 8 | unpooler_slice | 7.88 | 7.59 | 0.9687 [0.9462, 0.9958] | 0.0327 | keep S14 |
+| 16 | qkv_gate | — | — | arithmetic error ~0.71 | — | fixed packer; native recheck pending |
+| 16 | qkv3 | — | — | arithmetic error ~0.71 | — | fixed packer; native recheck pending |
+| 16 | o | 9.54 | 8.85 | 0.9271 [0.9188, 0.9388] | 0.0270 | stage-selected; layer pending |
+| 16 | pool_router | 25.36 | 29.44 | 1.1627 [1.1505, 1.1756] | 0.0189 | keep S14 |
+| 16 | unpooler | 21.36 | 17.32 | 0.8081 [0.7985, 0.8172] | 0.0267 | stage-selected; layer pending |
+| 32 | qkv_gate | 15.62 | 14.65 | 0.9391 [0.9264, 0.9571] | 0.0180 | stage-selected; layer pending |
+| 32 | qkv3 | 14.38 | 11.73 | 0.8165 [0.8061, 0.8308] | 0.0165 | stage-selected; layer pending |
+| 32 | o | 10.21 | 9.94 | 0.9611 [0.9401, 0.9792] | 0.0292 | stage-selected; layer pending |
+| 32 | pool_router | 25.22 | 34.89 | 1.3853 [1.3685, 1.4030] | 0.0089 | keep S14 |
+| 32 | unpooler | 22.30 | 20.05 | 0.9004 [0.8958, 0.9119] | 0.0093 | stage-selected; layer pending |
+| 128 | qkv_gate | 17.81 | 16.98 | 0.9529 [0.9418, 0.9674] | 0.0134 | layer/precision comparison pending |
+| 128 | o | 13.72 | 12.51 | 0.9083 [0.8922, 0.9250] | 0.0265 | layer/precision comparison pending |
+| 128 | pool_router | 29.58 | 56.56 | 1.9105 [1.8980, 1.9269] | 0.0307 | keep S14 |
+| 128 | unpooler | 25.68 | 25.49 | 0.9923 [0.9838, 1.0025] | 0.0137 | layer/precision comparison pending |
+| 256 | qkv_gate | 23.32 | 22.40 | 0.9599 [0.9399, 0.9748] | 0.0123 | layer/precision comparison pending |
+| 256 | o | 19.21 | 18.43 | 0.9618 [0.9555, 0.9681] | 0.0207 | layer/precision comparison pending |
+| 256 | pool_router | 33.90 | 84.60 | 2.4882 [2.4745, 2.5031] | 0.0099 | keep S14 |
+| 256 | unpooler | 35.35 | 34.81 | 0.9836 [0.9747, 0.9881] | 0.0077 | layer/precision comparison pending |
 
-Current H200 port status: **e3c637d10a584a0f** is running the27-comparison paired lab on the attention host. Prior failures are retained, not performance results:
+The fused pool/router port loses everywhere, particularly the provisional large-M WGMMA experiment; no pool row is selected. Small-M N4608 adds CTAs beyond the original N4096 geometry: e.g.144 instead of128 at WR2, or288 instead of256 at WR1. With one/two resident CTAs, this can add a scheduling tail on132 SMs. That is a **hypothesis**, not a measured occupancy cause. `pool_q16_lab.py.inc` tests WR1/WK8 and WR2/WK8 at T1/8, WR1/WK4 and WR2/WK4 at T16/32, CP1/CP2, and native attribute/occupancy queries. All16 pool variant/shape cases pass local native warp-MMA arithmetic; local ranks are not H200 claims.
 
-| Job | Result / diagnosis |
+Current stage-selected rows: O at T1/8/16/32; qkv3 at T1/32; full QKV at T32; unpool at T16/32. Stage times suggest roughly **+1.5–2% layer-score opportunity** from these rows, before PDL/interaction effects, not a measured gain. Large O/QKV/LT rows remain for a subsequent layer comparison. The older +5–7% estimate assumed projection-board advantages survive fusion and is not established by this first port.
+
+`layer_lab.py.inc` / `build_layer_lab.py` compare the exact S14 base against this selection:16 fresh seeds, all12 shapes, cold ABBA, A:A, six46-sliding/16-full loads, and per-role removals. The selected local pairing passes every gate. The diagnostic that enabled every port family changed routing IDs at T128/256 beyond the old S13 helper's2% ID threshold (`layer_lab_all_validation.json`). This is **not an authoritative task failure**: CONSTRAINTS boundary cases and TASK allow near ties by score, not an ID percentage. Large-QKV output rounding is a candidate cause; removing that arm removes most differences. The lab now also reports score deficits/missed decisive local experts/route coverage against S14's BF16 front, explicitly a diagnostic rather than an independent FP32 task oracle. No check was suppressed and no large row promoted on this evidence.
+
+`build_layer_batch.py` shares the embedded S14/adapter source between the layer experiment and pool/qkv16 probes, producing a607,435-byte host lab. Budget420 s applies to the attention **import-time lab**, not the candidate's300 s prepare allowance. The first whole-layer send was rejected before acceptance because its unnecessary new-module registration matched the judge filter; that statement was removed. Every host's quota is currently exhausted. The combined lab is queued for the2026-10-26 09:01 KST reset (`runs/detached/c4c247ddbdb91849.log`); no whole-layer job ID has been accepted yet.
+
+| H200 job | Result / numbers |
 |---|---|
-| `f4d1a1950d18449c` | Native preparation exited with stack smashing; no comparison numbers |
-| `c9e69082a6854d92` | Trace isolated qkv16/qkv3 warmup: this port appended PDL to a full two-element launch-attribute array |
-| `84ddc084a57644ec` | Corrected native preparation and all27 warmups completed; lab control incorrectly used `StreamingProjection` for O/config6, which S14 implements with `Best7ProjectionCell`; no paired results |
+| `bdc1f5a233d5405e` | Route-B lab invalid split config; no performance result |
+| `08fff0542ea1462b` | Route-B direct-X loses; T16 qkv13.10 vs11.93, pool22.69 vs20.79, unpool21.58 vs18.62 µs |
+| `a1ed67b7a9f04854` | Route-B pipelined-X: T8 pool18.91 vs shared19.60 µs; larger rows lose |
+| `f4d1a1950d18449c` | Stack smashing during port preparation; no comparison numbers |
+| `c9e69082a6854d92` | Trace isolated qkv16 attribute-array overflow introduced by this port |
+| `84ddc084a57644ec` | Corrected native preparation/all27 warmups; control failed on the wrong O/config6 class; no paired numbers |
+| `e3c637d10a584a0f` |25 passing paired rows above, two qkv16 arithmetic failures; host attention1.601955x is not a decode-layer score |
 
-The adapter now allocates one additional attribute slot. `test_host_glue.py` executes actual qkv16/32 C++ launch wrappers with empty device kernels and validates all three attributes under stack protection. The control now instantiates the exact S14 cell; that real cell also runs in the local glue screen. Both defects were in this port/lab, not the published kernels. No port has been promoted. Decode quota was exhausted before acceptance; its reset waiter was cancelled to prevent a duplicate send. Attention import-time labs are authorized by R-20261025-3 and synthesize weights when weights=None. `collect_results.py` extracts this lane's durable receipts into `h200_results.json` and successful paired rows into `paired_stages.json`.
+Port defects resolved: the PDL adapter now allocates one slot beyond each original attribute array; actual C++ launch wrappers pass all four qkv16/32 cases under stack protection (`host_glue_validation.json`). S14 O/config6 correctly constructs `Best7ProjectionCell`. Qkv16's final decoder requires a replicated base byte (`base*0x01010101`), whereas qkv32's older packer returns `base<<8|base<<24`; using that packer zeroed half its decoded values. The adapter now uses qkv16's own audited packer. `test_q16_decode.py` runs the actual decoder/MMA/FP32-store path with only S4 DSM replaced by CTA-local K reduction:3 seeds pass, maximum relative L2 4.71e-6. Native S4 validation and timing await the next lab; qkv16 is not selected.
 
-`layer_lab.py.inc` / `build_layer_lab.py` prepare the next whole-layer experiment on the exact S14 base:16 identical-input seeds, all12 shapes, cold ABBA, A:A, six46-sliding/16-full layer load ratios and per-role removal arms. Stage evidence chooses the initial selection; final promotion requires the layer result. `check_layer_lab.py` exercises that pairing glue locally with explicit Hopper stand-ins; its timing is not H200 evidence.
+Normal and forced local_eval on exact **e3ce8f15** each pass13 task tests,12 graph shapes and24 static checks. Per-branch call counts, selected16-seed pairing, native compile reports and decoder proofs are retained alongside the source. All16 adapted CUDA units and16 original selected units compile for sm90a; no selected port spills in our resource report. Explicit stand-ins identify Hopper-only local arithmetic. `collect_results.py` reconstructs durable H200 evidence; `paired_stages.json` and `paired_table.md` retain the current25 passing rows.
+
+Standalone router resources now also compile for sm90a (`router_compile.json`): scalar T1=32 registers; local4 T8/T16=60/74; SS-WGMMA T32=42; routerwide T128/T256=58/90. All have zero stack/spill bytes in this toolchain. Kernel registers bound resident CTAs (warp allocation rounded to8 registers/thread), not achieved H200 occupancy. In the port, pool1/8 at60 registers ×1024 threads admits at most1 CTA/SM, pool16/32 at96/92 ×256 at most2, and qkv8 at108 ×128 at most4. These bounds make the fused-pool tail hypothesis concrete, while the next lab queries actual resource/occupancy API results.
 
 Port resource highlights (our sm90a compile, all zero spill loads/stores): qkv1 79 registers; qkv8 selected fixed-M8 108; qkv16 71; qkv32 95; pool1/8 60; pool16/unpool16 96; pool32 92; O1/8/16 57/50/72; sliced unpool1/8 58; unpool32 RS-WGMMA91; large fused pool experiment108; O32/128/256 42/90/154; qkv12890. `resources.json` keeps full template identities and both original/adapted results. Active clusters and achieved occupancy still need a running H200 query/profile.
 
@@ -283,3 +323,18 @@ kernels, not standalone BF16 finalization, so absolute times must not be compare
 
 
 H200 route-B results (parked following route-A authorization): `08fff0542ea1462b` direct-X loses to the best S14-family control at almost every row (t16 qkv13.10 vs balanced11.93 us, pool22.69 vs bal2 20.79, unpool21.58 vs18.62). `a1ed67b7a9f04854` two-slot X improves t8 pool18.91 vs shared19.60 us but loses the largest t16/32 calls. `bdc1f5a233d5405e` had an invalid split config and supplies no performance result. The complete16-row tables and seed ranges are retained in `h200_results.json`. A route-B rewrite is justified only where the attributed port is blocked.
+
+
+## Rebuild / handoff
+
+From the repository root:
+
+```sh
+python3 problems/muse_bf16_proj/dev/public_nf/build_port.py
+python3 problems/muse_bf16_proj/dev/public_nf/patch.py
+python3 problems/muse_bf16_proj/dev/public_nf/build_layer_lab.py
+python3 problems/muse_bf16_proj/dev/public_nf/build_pool_q16_lab.py
+python3 problems/muse_bf16_proj/dev/public_nf/build_layer_batch.py
+```
+
+`patch.py` reads exact S14 final and the committed vendor, with deterministic selected-row order; no external checkout/expansion is needed. It writes `cand_nf_s15.py` plus its SHA manifest. Generated files are ignored; the patch, adapters, attributed vendor and evidence are committed. Route A next: read the combined lab, retain only rows with paired layer value beyond A:A, then extend to corrected qkv16 / tuned pool / large-token precision cases. Route B remains parked: direct/pipelined X alone did not reproduce the port's wins; reimplement only if a port path is blocked.

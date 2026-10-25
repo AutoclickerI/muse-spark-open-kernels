@@ -103,6 +103,7 @@ def _nf_group_pack(ns,w,name,family):
     if family in prefix:
         pack=ns[prefix[family]+'_pack_format']
         stream=ns[prefix[family]+'_stream']
+    elif family=='q16':pack=lambda w,fmt:ns['b2q_tt_v10_m32x_m32x_pack_format'](w,fmt,0,5);stream=ns['b2q_tt_v10_m32x_m32x_stream']
     elif family=='o16':pack=lambda w,fmt:ns['mt_wp0_pack_format'](w,fmt,0,0);stream=ns['mt_wp0_stream']
     else:
         pack=lambda w,fmt:ns['tt_v10_m32x_m32x_pack_format'](w,fmt,0,5 if family.startswith('q') else 0)

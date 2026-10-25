@@ -1,24 +1,6 @@
 [
   {
     "variant": "native_original",
-    "unit": "cps_sm_46bffa871493",
-    "symbol": "void dd_cap2_b_cpssm_gemv<1, 2, 1, 2, 0, 0, 256, 0, 8192, 4096, 2, 4, 16, 1, 2>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 94,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native_original",
-    "unit": "cps_sm_46bffa871493",
-    "symbol": "void dd_cap2_b_cpssm_gemv<1, 2, 1, 2, 0, 0, 256, 0, 4608, 8192, 1, 8, 16, 1, 2>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 94,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native_original",
     "unit": "cps_sm_4d54900e7017",
     "symbol": "void dd_cap2_b_cpssm_gemv<1, 2, 1, 2, 0, 0, 256, 0, 8192, 4096, 2, 4, 16, 1, 2>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
     "registers": 94,
@@ -190,6 +172,204 @@
   },
   {
     "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<4, 16, 4>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 158,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<2, 16, 4>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 114,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<1, 16, 4>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 94,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<4, 16, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 80,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<2, 16, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 64,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<1, 16, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 48,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<4, 8, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 158,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<2, 8, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 114,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_small_kernel<1, 8, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 92,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_kernel<32, 16, 4, 1, 2, 1>(CUtensorMap_st, CUtensorMap_st, float*, int)",
+    "registers": 42,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "router_generic",
+    "symbol": "void rr_scalar_kernel<1, 512, 2>(float const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 32,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<4, 16, 4>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 158,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<2, 16, 4>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 111,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<1, 16, 4>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 93,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<4, 16, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 80,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<2, 16, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 74,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<1, 16, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 60,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<4, 8, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 158,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<2, 8, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 114,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routertail",
+    "symbol": "void routertail_small_kernel<1, 8, 8>(int4 const*, __nv_bfloat16 const*, float*, int)",
+    "registers": 94,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routerwide128",
+    "symbol": "void rwdl_128_kernel<64, 8, 8, 1, 2, 1>(CUtensorMap_st, CUtensorMap_st, float*, int)",
+    "registers": 58,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
+    "unit": "routerwide256",
+    "symbol": "void rwdl_256_kernel<64, 4, 8, 0, 2, 3, 1, 0>(CUtensorMap_st, CUtensorMap_st, float*, int)",
+    "registers": 90,
+    "stack_bytes": 0,
+    "spill_stores": 0,
+    "spill_loads": 0
+  },
+  {
+    "variant": "native_original",
     "unit": "sm2",
     "symbol": "void smallm2_gemv<1, 1, 1, 2, 0, 0, 1024, 0, 8192, 1024, 4, 8, 2, 1, 7>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
     "registers": 49,
@@ -262,24 +442,6 @@
   },
   {
     "variant": "native",
-    "unit": "cps_sm_1c74a42f99fe",
-    "symbol": "void dd_cap2_b_cpssm_gemv<1, 2, 1, 2, 0, 0, 256, 0, 8192, 4096, 2, 4, 16, 1, 2>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 96,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "cps_sm_1c74a42f99fe",
-    "symbol": "void dd_cap2_b_cpssm_gemv<1, 2, 1, 2, 0, 0, 256, 0, 4608, 8192, 1, 8, 16, 1, 2>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 96,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
     "unit": "cps_sm_9e5b2427b2f7",
     "symbol": "void dd_cap2_b_cpssm_gemv<1, 2, 1, 2, 0, 0, 256, 0, 8192, 4096, 2, 4, 16, 1, 2>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
     "registers": 96,
@@ -328,42 +490,6 @@
     "unit": "m32x_qkv_3c87e0b8d14b",
     "symbol": "void m32x_q_gemv<1, 4, 1, 1, 5, 0, 128, 0, 0, 8192, 1, 4, 8, 4, 7, 1, 0>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
     "registers": 95,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "m32x_qkv_bad6db251799",
-    "symbol": "void m32x_q_gemv<0, 4, 1, 1, 5, 0, 128, 0, 0, 8192, 1, 4, 8, 4, 7, 1, 0>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 94,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "m32x_qkv_bad6db251799",
-    "symbol": "void m32x_q_gemv<1, 4, 1, 1, 5, 0, 128, 0, 0, 8192, 1, 4, 8, 4, 7, 1, 0>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 95,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "m32x_qkv_c79be48c9777",
-    "symbol": "void r3_qkv16_qkv_gate_push_d9_cap6_a_m32x_q_gemv<0, 2, 1, 1, 5, 0, 128, 0, 0, 8192, 1, 4, 8, 4, 7, 1, 0>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 70,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "m32x_qkv_c79be48c9777",
-    "symbol": "void r3_qkv16_qkv_gate_push_d9_cap6_a_m32x_q_gemv<1, 2, 1, 1, 5, 0, 128, 0, 0, 8192, 1, 4, 8, 4, 7, 1, 0>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 71,
     "stack_bytes": 0,
     "spill_stores": 0,
     "spill_loads": 0
@@ -479,24 +605,6 @@
   {
     "variant": "native",
     "unit": "r3_pool32_pooler_d9_cap2_a_m32x_pooler_05f6a2d226fb",
-    "symbol": "void r3_pool32_pooler_d9_cap2_a_m32x_gemv<1, 4, 1, 1, 0, 0, 256, 0, 0, 8192, 1, 8, 16, 1, 7, 1, 1>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 92,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "r3_pool32_pooler_d9_cap2_a_m32x_pooler_8c0c0ce5080f",
-    "symbol": "void r3_pool32_pooler_d9_cap2_a_m32x_gemv<0, 4, 1, 1, 0, 0, 256, 0, 0, 8192, 1, 8, 16, 1, 7, 1, 1>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
-    "registers": 86,
-    "stack_bytes": 0,
-    "spill_stores": 0,
-    "spill_loads": 0
-  },
-  {
-    "variant": "native",
-    "unit": "r3_pool32_pooler_d9_cap2_a_m32x_pooler_8c0c0ce5080f",
     "symbol": "void r3_pool32_pooler_d9_cap2_a_m32x_gemv<1, 4, 1, 1, 0, 0, 256, 0, 0, 8192, 1, 8, 16, 1, 7, 1, 1>(int4 const*, __nv_bfloat16 const*, void*, unsigned int const*, int, int, int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int)",
     "registers": 92,
     "stack_bytes": 0,
