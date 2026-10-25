@@ -68,14 +68,15 @@ TMA plus the portable arithmetic stand-in. Native sm90 has no stack/spills/C75.
 the original BF16 exponent with a packed-byte add, and remove per-output FP32
 scaling. It keeps all escapes at original precision. `direct_validation.json` passes
 all bit patterns and 936 WGMMA cases plus CP cases, max error 4.48e-6. The local
-24-cell lab also passes; H200 timing is next. It adds qkv3 and gate to measure the
+24-cell lab also passes; H200 job **a645a795307b4c77** is accepted, result pending. It adds qkv3 and gate to measure the
 actual S11 split path. This is unmeasured on H200 until its receipt lands.
 
 `build_rt2.py`: two 64-row A tiles share one CTA activation staging and TMA copy,
 reducing activation traffic repeated over output-row tiles. Preserve one decode
-per weight and measure register/residency costs. Screening is in progress.
+per weight and measure register/residency costs. It passes all-bit round trips and 936 local arithmetic/capture cases. Native sm90 has no stack/spills/C75; T32 takes 162/165 registers at WB1/2. The paired 18-cell lab passed locally and is queued on prefill (dispatch 523b0723f6c01ee9; job id not assigned yet).
 
-Next: hand integration the frozen S13 patch; pair direct exponent reconstruction
-and two-tile reuse on H200 (prefill or MoE host; proj quota spent). Promote only by
+Next: integration has the frozen S13 patch in commit 656cce1. Direct exponent reconstruction
+and two-tile reuse are queued on H200 (prefill host; proj quota spent). Read both results and
+apply only measured winners as separately removable whole-layer arms. Promote only by
 multi-seed identical-input whole-layer ratios. Then denser codes; `DENSER.md`
 records the escape-cost problem of naive 11-bit coding and a sparse-plane design.

@@ -668,6 +668,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   1.048, unpooler 0.918 / 0.968, pool_router 0.996 / 1.09, o 1.10 / 1.20 at t = 16 / 32; t = 1 / 8 qkv 0.91 / 0.93,
   pool_router 0.92 / 0.92 (cp.async staging is better there). A second balanced config (BK128 x 2 stages) runs
   pool_router 20.5-20.9 vs 21.1-22.3 us.
+- Direct-BF16 decoder (the code's high byte plus an even exponent origin: no per-output scale multiply; `a645a795`,
+  3 seeds x 16 rounds, all banks bit-checked) vs balanced: t=1 qkv 0.884, gate 0.877, pool_router 0.853 (-3.1 us),
+  o 0.974, slice 1.038; t=8 qkv 0.936, gate 0.894, pool_router 0.881; t=16 (register-A WGMMA form) pool_router
+  0.953, unpooler 0.938, qkv 0.996; t=32 unpooler 0.992, the rest lose. Balanced BK128 x 2 stages ("bal2") runs
+  pool_router 20.5-20.9 vs 21.3-22.3 us at every t.
 - Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
   samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
   cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
