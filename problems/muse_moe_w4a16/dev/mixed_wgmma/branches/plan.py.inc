@@ -133,29 +133,35 @@ BR_ARMS = {
     'B8R_full': (('n', 5), (4,), ('n8', 12, 9), (8,), 'full'),
 }
 BR_GRID = 1056 if BR_M == 128 else 2112
-# Heavy-kernel lab vs LI_swap (701d2867 winner: L_swap with gate/up rows interleaved by 8 in prepare, SwiGLU in registers).
-# F<s>: finalizer split over s blocks per token (bit-equal). Probes (BR_PROBES; timing only, TASK fails by design except LF):
-# LIF = LI_swap without the per-stage fence.proxy.async (its bit count vs control is the race diagnostic); P_heavy /
-# P_nt1 = one branch alone; P_nofin = no finalizer.
+# Heavy-kernel lab vs LI4 = LI_swap (701d2867: gate/up rows interleaved by 8 in prepare, SwiGLU in registers) with the
+# finalizer split over 4 blocks per token (5e197b5e: 0.9850 / 0.9885). 5e197b5e also showed heavy alone 99.8 / 177.7 us and
+# NT1 alone 127.6 / 133.7 us against 195.0 / 275.0 together: the branches barely overlap (heavy launched first takes every
+# SM's shared memory, 3 W13 CTAs per SM, so NT1's CTAs wait). G<g>: heavy as a persistent grid of g CTAs per SM so NT1
+# runs beside it; p5: NT1 grid halved (one CTA per SM). LIW: wide banks (3 LDS.128 per stage instead of 8). Probes
+# (timing only): PH heavy alone (default grid, 1 or 2 CTAs per SM), PH_nx / PH_nw heavy alone without the X / code+scale
+# copies (what the L2 X re-reads and the HBM weight stream cost), PN_p5 NT1 alone at half grid.
 LI = ((26,), ('n',), (21,), ('n',), 'full')
+HV = ((26,), (), (21,), (), 'full')
 BR_TUNE = {
-    'LIF_swap': ((29,), ('n',), (28,), ('n',), 'full'),
-    'F4': LI + (dict(fin=4),),
-    'F8': LI + (dict(fin=8),),
-    'F16': LI + (dict(fin=16),),
-    'LIW_swap': ((30,), ('n',), (31,), ('n',), 'full'),
-    'LIT_swap': ((32,), ('n',), (33,), ('n',), 'full'),
-    'LT2_swap': ((26,), ('n',), (33,), ('n',), 'full'),
-    'P_heavy': ((26,), (), (21,), (), 'full'),
-    'P_nt1': ((), ('n',), (), ('n',), 'full'),
-    'P_nofin': LI + (dict(nofin=True),),
+    'LI4': LI + (dict(fin=4),),
+    'LIW': ((30,), ('n',), (31,), ('n',), 'full', dict(fin=4)),
+    'G1': LI + (dict(fin=4, gs=1),),
+    'G2': LI + (dict(fin=4, gs=2),),
+    'G1p5': LI + (dict(fin=4, gs=1, pg=.5),),
+    'G2p5': LI + (dict(fin=4, gs=2, pg=.5),),
+    'PH': HV + (dict(fin=4),),
+    'PH_g1': HV + (dict(fin=4, gs=1),),
+    'PH_g2': HV + (dict(fin=4, gs=2),),
+    'PH_nx': ((40,), (), (41,), (), 'full', dict(fin=4)),
+    'PH_nw': ((42,), (), (43,), (), 'full', dict(fin=4)),
+    'PN_p5': ((), ('n',), (), ('n',), 'full', dict(fin=4, pg=.5)),
 }
-BR_PROBES = ('LIF_swap', 'P_heavy', 'P_nt1', 'P_nofin')
+BR_PROBES = ('PH', 'PH_g1', 'PH_g2', 'PH_nx', 'PH_nw', 'PN_p5')
 BR_ARMS.update(BR_TUNE)
 BR_ONLY = {'S6': 256, 'R_s6': 256, 'U16': 128}
 if BR_SET == 'tune':
-    BR_CONTROL = 'LI_swap'
-    BR_NAMES = [BR_CONTROL] + list(BR_TUNE)
+    BR_CONTROL = 'LI4'
+    BR_NAMES = list(BR_TUNE)
 else:
     BR_CONTROL = 'HH' if BR_M == 128 else 'S6'
     BR_NAMES = [BR_CONTROL] + [a for a in BR_ARMS if a not in (BR_CONTROL, 'N_swap', 'L_swap', 'LI_swap') and a not in BR_TUNE and BR_ONLY.get(a, BR_M) == BR_M]
@@ -271,7 +277,7 @@ def br_plan(data, hh, arm):
     s13, k13, s2, k2, mode = spec[:5]
     opts = spec[5] if len(spec) > 5 else {}
     grids = {f: max(1, int(hh['sms'] * mod.pmz_resident(stages, m, f) * opts.get('pg', 1.))) for f in (0, 1)}
-    hgrid = opts.get('grid', BR_GRID)
+    hgrid = opts['gs'] * hh['sms'] if 'gs' in opts else opts.get('grid', BR_GRID)
     skey = 'side_hi' if opts.get('hi') else 'side'
 
     def run(first, kinds, stream):
@@ -279,7 +285,7 @@ def br_plan(data, hh, arm):
             if k in ('n', 'n8'):
                 mod.pmz_run(pn, first, 16 if k == 'n' else 8, m, stages, grids[first], stream)
             else:
-                ptr = p28 if k == 12 else p13w if k == 30 else p2w if k == 31 else p13i if k in (26, 29, 32) else p13 if first else p2
+                ptr = p28 if k == 12 else p13w if k == 30 else p2w if k == 31 else p13i if k in (26, 29, 40, 42) else p13 if first else p2
                 mod.br_run(ptr, k, hgrid, m, stream)
 
     def route():

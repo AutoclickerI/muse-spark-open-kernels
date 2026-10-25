@@ -35,7 +35,9 @@ KINDS_HH = (  # on H_H's buffers: 0/1 and 4/5/8/9 run the heavy-only T32 list, 1
     (26, 32, 1, 3, 0, 0, 0),  # 20 with gate/up rows interleaved by 8 in prepare: SwiGLU in registers
     (28, 32, 0, 4, 0, 0, 0), (29, 32, 1, 5, 0, 0, 0),  # timing probe: 21/26 without the per-stage proxy fence
     (30, 32, 1, 7, 0, 0, 0), (31, 32, 0, 6, 0, 0, 0),  # 26/21 on the wide banks (nf_wide): 3 LDS.128 per stage instead of 8
-    (32, 32, 1, 11, 0, 0, 0), (33, 32, 0, 10, 0, 0, 0))  # 26/21 with the X tile by TMA (no per-stage proxy fence)
+    (33, 32, 0, 10, 0, 0, 0),  # 21 with the X tile by TMA (no per-stage proxy fence)
+    (40, 32, 1, 19, 0, 0, 0), (41, 32, 0, 18, 0, 0, 0),  # timing probes: 26/21 without the X copies
+    (42, 32, 1, 35, 0, 0, 0), (43, 32, 0, 34, 0, 0, 0))  # timing probes: 26/21 without the code/scale copies
 KINDS_S6 = ((4, 32, 1, 1, 2, 16, 32), (5, 16, 1, 1, 2, 0, 16), (8, 32, 0, 0, 2, 16, 32), (9, 16, 0, 0, 2, 0, 16))  # R_full of 110599ba
 
 

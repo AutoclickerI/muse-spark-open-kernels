@@ -17,6 +17,14 @@ both M, normal 13 PASS + 21 static, forced 13 PASS). S11 applies `dev/s7n/nf_pat
 the nf_ilv prepare edit); the earlier lean-K patch `nf_patch.py` 686e5025 stays as S11 loaded it. The lab kinds 30-33
 (wide banks, TMA-fed X) came after this cell.
 
+## Landed: probes and finalizer split, H200 job 5e197b5e (send 453c58e2; read flush)
+
+vs LI_swap (M=128 194.95, M=256 275.02 us), 12 seeds x3: F4 (finalizer over 4 blocks per token) 0.9850 / 0.9885, F8
+0.9863 / 0.9932, F16 0.9945 / 1.0064 (bit-equal; isolated finish 12.8 -> 9.1 us at M=128). No per-stage proxy fence
+(probe) 0.9935 / 0.9869. Probes (TASK FAIL by design): heavy alone 99.8 / 177.7 us, NT1 alone 127.6 / 133.7, no
+finalizer 0.9627 / 0.9691. The branches barely overlap (195.0 vs 99.8 + 127.6): heavy, launched first, fills every SM's
+shared memory (W13 ~57 KB x 3 per SM) and NT1's ~87 KB CTAs wait.
+
 ## Landed: gate/up interleave, H200 job 701d2867 (send 8007df6c; read flush)
 
 vs L_swap (M=128 196.15, M=256 279.62 us), 12 seeds x3, all TASK PASS: LI_swap (W13 rows interleaved by 8 in prepare so

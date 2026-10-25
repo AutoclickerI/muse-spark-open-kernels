@@ -134,8 +134,9 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
  const __nv_bfloat16*PNW,__nv_bfloat16*ACT,float*Y,float*SS,int M,const __grid_constant__ CUtensorMap tmx){
  constexpr int QB=64*KT/2,SB=64*KT/16,NS=4096/KT,N=FIRST?8192:4096,MT=N/64,NJ=NT>=16?NT/16:1;
  // Lean-loop flags (VEC-2): 1 = W13 gate/up interleave (SwiGLU in registers), 2 = no per-stage proxy fence (timing
- // probe), 4 = wide banks (nf_wide: 3 LDS.128 per stage), 8 = X tile by TMA (tmx, mbarrier per stage; no proxy fence).
- constexpr int FL=VEC>=2?VEC-2:0;constexpr bool ILV=FL&1,NOFENCE=FL&2,WIDE=FL&4,TMA=FL&8;
+ // probe), 4 = wide banks (nf_wide: 3 LDS.128 per stage), 8 = X tile by TMA (tmx, mbarrier per stage; no proxy fence),
+ // 16 / 32 = timing probes that skip the X / code+scale copies (stale smem: wrong output).
+ constexpr int FL=VEC>=2?VEC-2:0;constexpr bool ILV=FL&1,NOFENCE=FL&2,WIDE=FL&4,TMA=FL&8,NOX=FL&16,NOW=FL&32;
  constexpr int BS=((S*(QB+SB)+1023)&~1023);
  extern __shared__ __align__(1024) unsigned char typed_sm[];
  unsigned char*qs=typed_sm,*ss=qs+S*QB;auto*bs=(__nv_bfloat16*)(typed_sm+BS);
@@ -182,28 +183,25 @@ __global__ void __launch_bounds__(128,2) gemm(const int*Q,const unsigned char*SC
    #pragma unroll
    for(int j=0;j<NJ;++j){int r=t/8+j*16,k=(t&7)*8;xv[j]=src[j]>=0;xg[j]=X+(size_t)max(src[j],0)*4096+k;
     bd[j]=smaddr(bs+r*64+(k^((r&7)*8)));}
-   // TMA: warp 0 issues the stage's X tile (W13: one 64x1 box per row and K half, gathered rows, invalid rows out of
-   // bounds -> zeros; W2: one 64x32 box per K half over the expert's contiguous rows); lane 0 arms the stage barrier.
-   int kx=0,xrow=FIRST?(l<NT&&row+l<count?SLOTS[e*M+row+l]/8:M):offset+row;
+   // TMA (W2 only: its rows are the expert's contiguous ACT rows): lane 0 of warp 0 arms the stage barrier and loads
+   // one 64x32 box per K half; rows past count are padding the epilogue never stores.
+   static_assert(!(TMA&&FIRST),"W13 rows are gathered: one TMA per row serialises in warp 0");
+   int kx=0;const int xrow=offset+row;
    auto issue=[&](int slot){
     if constexpr(TMA){
-     if(w==0){unsigned mb=smaddr(&fullb[slot]),dst=smaddr(bs+slot*NT*KT);
-      if(l==0)asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _,[%0],%1;"::"r"(mb),"r"(NT*KT*2):"memory");
-      __syncwarp();
+     if(t==0){unsigned mb=smaddr(&fullb[slot]),dst=smaddr(bs+slot*NT*KT);
+      asm volatile("mbarrier.arrive.expect_tx.shared::cta.b64 _,[%0],%1;"::"r"(mb),"r"(NT*KT*2):"memory");
       #pragma unroll
-      for(int c=0;c<KT/64;++c){
-       if constexpr(FIRST){if(l<NT)tma2d(dst+(c*NT*64+l*64)*2,&tmx,kx+c*64,xrow,mb);}
-       else if(l==0)tma2d(dst+c*NT*64*2,&tmx,kx+c*64,xrow,mb);
-      }
+      for(int c=0;c<KT/64;++c)tma2d(dst+c*NT*64*2,&tmx,kx+c*64,xrow,mb);
      }
      kx+=KT;
     }
-    if(wq){
+    if(wq&&!NOW){
      #pragma unroll
      for(int g=0;g<KT/32;++g)asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(qd+slot*QB+(WIDE?(g>>1)*2048+(g&1)*256:g*1024)),"l"(qg+g*64):"memory");
      qg+=(KT/32)*64;}
-    if(ws){asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(sd+slot*SB),"l"(sg):"memory");sg+=(KT/32)*32;}
-    if constexpr(!TMA){
+    if(ws&&!NOW){asm volatile("cp.async.ca.shared.global [%0],[%1],16;"::"r"(sd+slot*SB),"l"(sg):"memory");sg+=(KT/32)*32;}
+    if constexpr(!TMA&&!NOX){
     #pragma unroll
     for(int c=0;c<KT/64;++c){
      #pragma unroll
@@ -383,16 +381,16 @@ template<int SPLIT>__global__ void finish(const int*__restrict__ OFF,const int*_
 // Pointer ABI for gemm: Q,SC,GS,X,C,OFF,ORDER,TASK,SLOTS,PNW,ACT,Y,SS.
 #define BR_ARGS(v) (const int*)v[0],(const unsigned char*)v[1],(const float*)v[2],(const __nv_bfloat16*)v[3],(const int*)v[4],(const int*)v[5],(const int*)v[6],(const int*)v[7],(const int*)v[8],(const __nv_bfloat16*)v[9],(__nv_bfloat16*)v[10],(float*)v[11],(float*)v[12]
 #define BR_INIT(ID,NT,F,V,FM,LO,HI) BR_CUDA_CHECK(cudaFuncSetAttribute(mwbr::gemm<NT,F,V,FM,LO,HI>,cudaFuncAttributeMaxDynamicSharedMemorySize,mwbr::smem_bytes<NT>()));
-// X tensor map for TMA kinds: W13 reads hidden_states [M,4096] one row per box, W2 the ACT buffer [M*8+32*128,4096] 32 rows per box.
-static CUtensorMap br_tmap(void*ptr,uint64_t rows,uint32_t box_rows){
+// X tensor map for TMA kinds (W2): the ACT buffer [M*8+32*128,4096], 64x32 boxes.
+static CUtensorMap br_tmap(void*ptr,uint64_t rows){
  static PFN_cuTensorMapEncodeTiled_v12000 enc=nullptr;
  if(!enc){cudaDriverEntryPointQueryResult q;BR_CUDA_CHECK(cudaGetDriverEntryPoint("cuTensorMapEncodeTiled",(void**)&enc,cudaEnableDefault,&q));BR_REQUIRE(q==cudaDriverEntryPointSuccess&&enc);}
- CUtensorMap m;cuuint64_t dims[2]={4096,rows},strides[1]={8192};cuuint32_t box[2]={64,box_rows},es[2]={1,1};
+ CUtensorMap m;cuuint64_t dims[2]={4096,rows},strides[1]={8192};cuuint32_t box[2]={64,32},es[2]={1,1};
  BR_REQUIRE(enc(&m,CU_TENSOR_MAP_DATA_TYPE_BFLOAT16,2,ptr,dims,strides,box,es,CU_TENSOR_MAP_INTERLEAVE_NONE,CU_TENSOR_MAP_SWIZZLE_128B,
   CU_TENSOR_MAP_L2_PROMOTION_L2_128B,CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE)==CUDA_SUCCESS);
  return m;
 }
-#define BR_GO(ID,NT,F,V,FM,LO,HI) case ID:{CUtensorMap m{};if((V)>=2&&(((V)-2)&8))m=br_tmap((void*)v[3],F?(uint64_t)M:(uint64_t)(M*8+32*128),F?1:32);\
+#define BR_GO(ID,NT,F,V,FM,LO,HI) case ID:{CUtensorMap m{};if((V)>=2&&(((V)-2)&8))m=br_tmap((void*)v[3],(uint64_t)(M*8+32*128));\
  mwbr::gemm<NT,F,V,FM,LO,HI><<<grid,128,mwbr::smem_bytes<NT>(),(cudaStream_t)stream>>>(BR_ARGS(v),(int)M,m);}break;
 #define BR_INFO(ID,NT,F,V,FM,LO,HI) case ID:{cudaFuncAttributes a{};int n;BR_CUDA_CHECK(cudaFuncGetAttributes(&a,mwbr::gemm<NT,F,V,FM,LO,HI>));BR_CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&n,mwbr::gemm<NT,F,V,FM,LO,HI>,128,mwbr::smem_bytes<NT>()));return {a.numRegs,(int64_t)a.localSizeBytes,(int64_t)a.sharedSizeBytes,(int64_t)mwbr::smem_bytes<NT>(),n};}
 int64_t br_init(){BR_KINDS(BR_INIT) return 0;}
