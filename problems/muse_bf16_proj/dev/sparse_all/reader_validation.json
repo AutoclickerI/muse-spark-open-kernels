@@ -1,0 +1,90 @@
+{
+  "source_sha256": "e438e3a2d4330d82d5f16a4e2b995f4386da93759b5abd09f5d32f9dc8128fa0",
+  "passed": true,
+  "rows": [
+    {
+      "fmt": 0,
+      "distribution": "uniform",
+      "cp_async": false,
+      "exact": true
+    },
+    {
+      "fmt": 0,
+      "distribution": "uniform",
+      "cp_async": true,
+      "exact": true
+    },
+    {
+      "fmt": 0,
+      "distribution": "sparse",
+      "cp_async": false,
+      "exact": true
+    },
+    {
+      "fmt": 0,
+      "distribution": "sparse",
+      "cp_async": true,
+      "exact": true
+    },
+    {
+      "fmt": 1,
+      "distribution": "uniform",
+      "cp_async": false,
+      "exact": true
+    },
+    {
+      "fmt": 1,
+      "distribution": "uniform",
+      "cp_async": true,
+      "exact": true
+    },
+    {
+      "fmt": 1,
+      "distribution": "sparse",
+      "cp_async": false,
+      "exact": true
+    },
+    {
+      "fmt": 1,
+      "distribution": "sparse",
+      "cp_async": true,
+      "exact": true
+    },
+    {
+      "fmt": 2,
+      "distribution": "uniform",
+      "cp_async": false,
+      "exact": true
+    },
+    {
+      "fmt": 2,
+      "distribution": "uniform",
+      "cp_async": true,
+      "exact": true
+    },
+    {
+      "fmt": 2,
+      "distribution": "sparse",
+      "cp_async": false,
+      "exact": true
+    },
+    {
+      "fmt": 2,
+      "distribution": "sparse",
+      "cp_async": true,
+      "exact": true
+    },
+    {
+      "reader": "CUDA point (O32 shared producer)",
+      "n": 8192,
+      "k": 1024,
+      "exact": true
+    },
+    {
+      "reader": "CUDA point (O32 shared producer)",
+      "n": 256,
+      "k": 8192,
+      "exact": true
+    }
+  ]
+}

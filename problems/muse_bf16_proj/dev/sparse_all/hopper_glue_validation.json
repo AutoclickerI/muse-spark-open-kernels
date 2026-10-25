@@ -1,0 +1,158 @@
+{
+  "passed": true,
+  "candidate_sha256": "fe1995032a852971809709cb549c422caf663f81401ed5e8a1efef187a3dae89",
+  "rows": [
+    {
+      "role": "qkv3",
+      "t": 1,
+      "seed": 61791,
+      "error": 1.1360782738790805e-06
+    },
+    {
+      "role": "qkv3",
+      "t": 1,
+      "seed": 14357,
+      "error": 4.66638611729976e-07
+    },
+    {
+      "role": "qkv3",
+      "t": 1,
+      "seed": 92003,
+      "error": 4.6721898925957733e-07
+    },
+    {
+      "role": "o",
+      "t": 32,
+      "seed": 61791,
+      "error": 0.001661350135605278
+    },
+    {
+      "role": "o",
+      "t": 32,
+      "seed": 14357,
+      "error": 0.0016629667893887502
+    },
+    {
+      "role": "o",
+      "t": 32,
+      "seed": 92003,
+      "error": 0.0016614824843514157
+    },
+    {
+      "role": "qkv3",
+      "t": 32,
+      "seed": 61791,
+      "error": 1.0650209120115076e-06
+    },
+    {
+      "role": "qkv3",
+      "t": 32,
+      "seed": 14357,
+      "error": 4.771725180853664e-07
+    },
+    {
+      "role": "qkv3",
+      "t": 32,
+      "seed": 92003,
+      "error": 4.769559682948504e-07
+    },
+    {
+      "role": "qkv_gate",
+      "t": 32,
+      "seed": 61791,
+      "error": 8.426899081120615e-07
+    },
+    {
+      "role": "qkv_gate",
+      "t": 32,
+      "seed": 14357,
+      "error": 4.1349072064350586e-07
+    },
+    {
+      "role": "qkv_gate",
+      "t": 32,
+      "seed": 92003,
+      "error": 4.1433006397211213e-07
+    },
+    {
+      "role": "unpooler",
+      "t": 32,
+      "seed": 61791,
+      "error": 4.397139765714816e-06
+    },
+    {
+      "role": "unpooler",
+      "t": 32,
+      "seed": 14357,
+      "error": 4.410988226969474e-06
+    },
+    {
+      "role": "unpooler",
+      "t": 32,
+      "seed": 92003,
+      "error": 4.400356493137986e-06
+    }
+  ],
+  "calls": [
+    {
+      "role": "qkv3",
+      "t": 1,
+      "entry": "v18d_native_launch",
+      "captured": false
+    },
+    {
+      "role": "qkv3",
+      "t": 1,
+      "entry": "v18d_native_launch",
+      "captured": true
+    },
+    {
+      "role": "o",
+      "t": 32,
+      "entry": "r3_o32_o_direct_a_ol_launch",
+      "captured": false
+    },
+    {
+      "role": "o",
+      "t": 32,
+      "entry": "r3_o32_o_direct_a_ol_launch",
+      "captured": true
+    },
+    {
+      "role": "qkv3",
+      "t": 32,
+      "entry": "m32x_q_launch",
+      "captured": false
+    },
+    {
+      "role": "qkv3",
+      "t": 32,
+      "entry": "m32x_q_launch",
+      "captured": true
+    },
+    {
+      "role": "qkv_gate",
+      "t": 32,
+      "entry": "m32x_q_launch",
+      "captured": false
+    },
+    {
+      "role": "qkv_gate",
+      "t": 32,
+      "entry": "m32x_q_launch",
+      "captured": true
+    },
+    {
+      "role": "unpooler",
+      "t": 32,
+      "entry": "launch",
+      "captured": false
+    },
+    {
+      "role": "unpooler",
+      "t": 32,
+      "entry": "launch",
+      "captured": true
+    }
+  ]
+}

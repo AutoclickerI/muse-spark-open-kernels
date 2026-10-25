@@ -1,0 +1,215 @@
+{
+  "provenance": "sizes/native_sizes seed5353; one logical stream; 46 sliding +16 full layers averaged; no physical HBM measurement",
+  "loads": [
+    {
+      "t": 1,
+      "stages": {
+        "qkv": {
+          "control_bytes": 32679936.0,
+          "code_bytes": 27263360.0,
+          "saved_direct": 5416576.0,
+          "saved_B": 5416576.0,
+          "materializes_B": false
+        },
+        "o": {
+          "control_bytes": 13139968.0,
+          "code_bytes": 12505024.0,
+          "saved_direct": 634944.0,
+          "saved_B": 634944.0,
+          "materializes_B": false
+        },
+        "pool_router": {
+          "control_bytes": 56800268.0,
+          "code_bytes": 54541392.0,
+          "saved_direct": 2258876.0,
+          "saved_B": 2258876.0,
+          "materializes_B": false
+        },
+        "unpooler": {
+          "control_bytes": 8388608.0,
+          "code_bytes": 6072368.0,
+          "saved_direct": 2316240.0,
+          "saved_B": 2316240.0,
+          "materializes_B": false
+        }
+      },
+      "saved_direct": 10626636.0,
+      "saved_B": 10626636.0
+    },
+    {
+      "t": 8,
+      "stages": {
+        "qkv": {
+          "control_bytes": 37748736.0,
+          "code_bytes": 27283184.0,
+          "saved_direct": 10465552.0,
+          "saved_B": 10465552.0,
+          "materializes_B": false
+        },
+        "o": {
+          "control_bytes": 13139968.0,
+          "code_bytes": 12505024.0,
+          "saved_direct": 634944.0,
+          "saved_B": 634944.0,
+          "materializes_B": false
+        },
+        "pool_router": {
+          "control_bytes": 75497472.0,
+          "code_bytes": 54695888.0,
+          "saved_direct": 20801584.0,
+          "saved_B": 20801584.0,
+          "materializes_B": false
+        },
+        "unpooler": {
+          "control_bytes": 8388608.0,
+          "code_bytes": 6072368.0,
+          "saved_direct": 2316240.0,
+          "saved_B": 2316240.0,
+          "materializes_B": false
+        }
+      },
+      "saved_direct": 34218320.0,
+      "saved_B": 34218320.0
+    },
+    {
+      "t": 16,
+      "stages": {
+        "qkv": {
+          "control_bytes": 37748736.0,
+          "code_bytes": 27283302.70967742,
+          "saved_direct": 10465433.29032258,
+          "saved_B": 10465433.29032258,
+          "materializes_B": false
+        },
+        "o": {
+          "control_bytes": 12861440.0,
+          "code_bytes": 12226496.0,
+          "saved_direct": 634944.0,
+          "saved_B": 634944.0,
+          "materializes_B": false
+        },
+        "pool_router": {
+          "control_bytes": 75497472.0,
+          "code_bytes": 54695888.0,
+          "saved_direct": 20801584.0,
+          "saved_B": 20801584.0,
+          "materializes_B": false
+        },
+        "unpooler": {
+          "control_bytes": 50610176.0,
+          "code_bytes": 48997872.0,
+          "saved_direct": 1612304.0,
+          "saved_B": 1612304.0,
+          "materializes_B": false
+        }
+      },
+      "saved_direct": 33514265.29032258,
+      "saved_B": 33514265.29032258
+    },
+    {
+      "t": 32,
+      "stages": {
+        "qkv": {
+          "control_bytes": 29671357.93548387,
+          "code_bytes": 27251595.870967742,
+          "saved_direct": 2419762.064516127,
+          "saved_B": 2419762.064516127,
+          "materializes_B": false
+        },
+        "o": {
+          "control_bytes": 16777216.0,
+          "code_bytes": 12127808.0,
+          "saved_direct": 4649408.0,
+          "saved_B": 4649408.0,
+          "materializes_B": false
+        },
+        "pool_router": {
+          "control_bytes": 75497472.0,
+          "code_bytes": 54695888.0,
+          "saved_direct": 20801584.0,
+          "saved_B": 20801584.0,
+          "materializes_B": false
+        },
+        "unpooler": {
+          "control_bytes": 50872320.0,
+          "code_bytes": 49259280.0,
+          "saved_direct": 1613040.0,
+          "saved_B": 1613040.0,
+          "materializes_B": false
+        }
+      },
+      "saved_direct": 29483794.064516127,
+      "saved_B": 29483794.064516127
+    },
+    {
+      "t": 128,
+      "stages": {
+        "qkv": {
+          "control_bytes": 37748736.0,
+          "code_bytes": 27283184.0,
+          "saved_direct": 10465552.0,
+          "saved_B": 10465552.0,
+          "materializes_B": false
+        },
+        "o": {
+          "control_bytes": 16777216.0,
+          "code_bytes": 12127808.0,
+          "saved_direct": 4649408.0,
+          "saved_B": -28905024.0,
+          "materializes_B": true
+        },
+        "pool_router": {
+          "control_bytes": 75497472.0,
+          "code_bytes": 54695888.0,
+          "saved_direct": 20801584.0,
+          "saved_B": -130193360.0,
+          "materializes_B": true
+        },
+        "unpooler": {
+          "control_bytes": 67108864.0,
+          "code_bytes": 48644336.0,
+          "saved_direct": 18464528.0,
+          "saved_B": -115753200.0,
+          "materializes_B": true
+        }
+      },
+      "saved_direct": 54381072.0,
+      "saved_B": -264386032.0
+    },
+    {
+      "t": 256,
+      "stages": {
+        "qkv": {
+          "control_bytes": 37748736.0,
+          "code_bytes": 27283184.0,
+          "saved_direct": 10465552.0,
+          "saved_B": -65031920.0,
+          "materializes_B": true
+        },
+        "o": {
+          "control_bytes": 16777216.0,
+          "code_bytes": 12127808.0,
+          "saved_direct": 4649408.0,
+          "saved_B": -28905024.0,
+          "materializes_B": true
+        },
+        "pool_router": {
+          "control_bytes": 75497472.0,
+          "code_bytes": 54695888.0,
+          "saved_direct": 20801584.0,
+          "saved_B": -130193360.0,
+          "materializes_B": true
+        },
+        "unpooler": {
+          "control_bytes": 67108864.0,
+          "code_bytes": 48644336.0,
+          "saved_direct": 18464528.0,
+          "saved_B": -115753200.0,
+          "materializes_B": true
+        }
+      },
+      "saved_direct": 54381072.0,
+      "saved_B": -339883504.0
+    }
+  ]
+}

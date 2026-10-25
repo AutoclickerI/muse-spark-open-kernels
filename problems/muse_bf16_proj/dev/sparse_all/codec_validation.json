@@ -1,0 +1,139 @@
+{
+  "passed": true,
+  "candidate_sha256": "fe1995032a852971809709cb549c422caf663f81401ed5e8a1efef187a3dae89",
+  "rows": [
+    {
+      "matrix": "qkv_gate",
+      "shape": [
+        2304,
+        8192
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 18874368,
+        "raw16_bytes": 37748736,
+        "raw12_bytes": 28311552,
+        "body_bytes": 27120540,
+        "total_bytes": 27281376,
+        "bits_per_weight": 11.5633544921875,
+        "body_bits": 11.495183308919271,
+        "rotation": 4,
+        "occupied": 0.4326290488243103
+      }
+    },
+    {
+      "matrix": "o",
+      "shape": [
+        8192,
+        1024
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 8388608,
+        "raw16_bytes": 16777216,
+        "raw12_bytes": 12582912,
+        "body_bytes": 12047036,
+        "total_bytes": 12121088,
+        "bits_per_weight": 11.5595703125,
+        "body_bits": 11.488948822021484,
+        "rotation": 4,
+        "occupied": 0.4263267517089844
+      }
+    },
+    {
+      "matrix": "gate",
+      "shape": [
+        1024,
+        8192
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 8388608,
+        "raw16_bytes": 16777216,
+        "raw12_bytes": 12582912,
+        "body_bytes": 12053700,
+        "total_bytes": 12125200,
+        "bits_per_weight": 11.563491821289062,
+        "body_bits": 11.495304107666016,
+        "rotation": 4,
+        "occupied": 0.4326820373535156
+      }
+    },
+    {
+      "matrix": "pooler",
+      "shape": [
+        4096,
+        8192
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 33554432,
+        "raw16_bytes": 67108864,
+        "raw12_bytes": 50331648,
+        "body_bytes": 48218228,
+        "total_bytes": 48504112,
+        "bits_per_weight": 11.564281463623047,
+        "body_bits": 11.496121406555176,
+        "rotation": 4,
+        "occupied": 0.4335908889770508
+      }
+    },
+    {
+      "matrix": "unpooler",
+      "shape": [
+        8192,
+        4096
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 33554432,
+        "raw16_bytes": 67108864,
+        "raw12_bytes": 50331648,
+        "body_bytes": 48332748,
+        "total_bytes": 48626352,
+        "bits_per_weight": 11.593425750732422,
+        "body_bits": 11.523425102233887,
+        "rotation": 4,
+        "occupied": 0.4608945846557617
+      }
+    },
+    {
+      "matrix": "router_hi",
+      "shape": [
+        256,
+        8192
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 2097152,
+        "raw16_bytes": 4194304,
+        "raw12_bytes": 3145728,
+        "body_bytes": 3013308,
+        "total_bytes": 3031120,
+        "bits_per_weight": 11.56280517578125,
+        "body_bits": 11.494857788085938,
+        "rotation": 4,
+        "occupied": 0.4318695068359375
+      }
+    },
+    {
+      "matrix": "router_lo",
+      "shape": [
+        256,
+        8192
+      ],
+      "exact": true,
+      "stats": {
+        "weights": 2097152,
+        "raw16_bytes": 4194304,
+        "raw12_bytes": 3145728,
+        "body_bytes": 3012968,
+        "total_bytes": 3030976,
+        "bits_per_weight": 11.562255859375,
+        "body_bits": 11.493560791015625,
+        "rotation": 4,
+        "occupied": 0.430572509765625
+      }
+    }
+  ]
+}
