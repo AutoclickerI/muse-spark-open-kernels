@@ -17,7 +17,8 @@ The lab file is the host's best scored source (ledger) with prepare() wrapped: t
 first and its state is returned unchanged, so the run still scores, and the board keeps our best anyway.
 Each payload's source is embedded as a string and executed in its own namespace (a copy of the host
 module's globals, so host functions stay reachable and payload names can't collide), one after another,
-each with an equal share of the time left. Several payloads for one host go in one judge run: our runs
+each with an equal share of the time left. Payloads make L2 cold with `lab_cold_l2()` (a read, as the judge
+does), never with a zero_() write. Several payloads for one host go in one judge run: our runs
 start one at a time, so batching labs is the cheapest way to more H200 answers per hour. `send` also folds
 in a lab still waiting for a judge slot on the same host (up to MERGE_MAX payloads per run; a payload of
 the same name is replaced by the new one), so lanes that send separately still share runs. The judge calls
@@ -60,6 +61,16 @@ WRAPPER = '''
 _LAB_PAYLOADS = {payloads!r}
 _lab_base_prepare = prepare
 _lab_ran = False
+_lab_flush_buf = None
+
+
+def lab_cold_l2():
+    # The judge's cold-L2 step (TASK.md): read a buffer larger than L2 before each timed replay. Never flush with
+    # zero_()/fill_(): that leaves ~50 MB of dirty lines for the timed call to write back (+5-16 us at M=1-32).
+    global _lab_flush_buf
+    if _lab_flush_buf is None:
+        _lab_flush_buf = torch.empty(1 << 30, dtype=torch.uint8, device="cuda")
+    _lab_flush_buf.sum()
 
 
 def _lab_run_one(name, src, deadline, weights, state):
