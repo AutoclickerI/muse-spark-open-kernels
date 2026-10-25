@@ -11,13 +11,14 @@ RESET='c0e74bedf7b74be5';SCALE='58ae2e2cf8df45ef';W2='97be11d4631b44d6'
 # pmnt), S6 mixed_parallel (mwfx/mwrc/mwwi, fx_), S7R R_full and S9 N_full branches (mwbr gemm/route_live/finish; N_full's
 # NT1 side is pmz::phase).
 MOE_KERNELS=('moe_fused','moe_var<','humming<','_pf_','_best6_pool','_best6_positions','mwfx::','mwrc::','mwwi::','mwbr::','idist::','pmnt::','pmz::','pm_meta_kernel','fx_')
-# MoE engines that fork side-stream branches (S6 mixed_parallel W13; S7R R_full and S9 N_full W13 and W2): the profile
-# sums both branches' durations, so the overlap (total minus 'GPU busy') comes off the MoE stage.
-FORKED_MOE=('mixed_parallel_m256',)
+# MoE engines that fork side-stream branches (M=256: S6 mixed_parallel W13, S7R R_full, S9+ N_full; M=128: S9+ N_full under
+# the hh_m128 name): the profile sums both branches' durations, so the overlap (total minus 'GPU busy') comes off the MoE
+# stage. A row without a 'GPU busy' line has no overlap to take.
+FORKED_MOE=('mixed_parallel_m256','hh_m128')
 STAGES=('qkv_gate','o','pool_router','unpooler','attention','moe','boundaries','route','other')
 ROLES=STAGES[:4]
 NAMES=dict(qkv_gate='QKV+gate',o='O',pool_router='Pool+router',unpooler='Unpool',attention='Attention',moe='MoE',boundaries='Boundaries x2',route='Route+norm',other='Other/unreported')
-CANDIDATES=(('S9', 'cand_r3_best7_s9', 'f55f616254a88e33781e897de0a8bfbfb82a410d1a03f1da8e8cae0f2de23f6e'), ('S8', 'cand_r3_best7_s8', 'cb84645d1af8b813529a64cfe746dd5846160860deebbe8afd8154007a23c366'), ('S7R', 'cand_r3_best7_s7r', '56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101'), ('S7', 'cand_r3_best7_s7', 'bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390'), ('S6', 'cand_r3_best7_s6', '4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f'), ('S5', 'cand_r3_best7_s5', 'f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284'), ('S4', 'cand_r3_best7_s4', '9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e'), ('S3', 'cand_r3_best7_scale_recoded_m256', 'cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7'), ('S2', 'cand_r3_best7_scale_w2fix', 'b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337'), ('S1', 'cand_r3_best7_scale', '42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7'))
+CANDIDATES=(('S10', 'cand_r3_best7_s10', '6688fad999783d53a4660d85d40ee82862b87a209e03d289e44c95e41a3ffbc1'), ('S9', 'cand_r3_best7_s9', 'f55f616254a88e33781e897de0a8bfbfb82a410d1a03f1da8e8cae0f2de23f6e'), ('S8', 'cand_r3_best7_s8', 'cb84645d1af8b813529a64cfe746dd5846160860deebbe8afd8154007a23c366'), ('S7R', 'cand_r3_best7_s7r', '56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101'), ('S7', 'cand_r3_best7_s7', 'bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390'), ('S6', 'cand_r3_best7_s6', '4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f'), ('S5', 'cand_r3_best7_s5', 'f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284'), ('S4', 'cand_r3_best7_s4', '9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e'), ('S3', 'cand_r3_best7_scale_recoded_m256', 'cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7'), ('S2', 'cand_r3_best7_scale_w2fix', 'b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337'), ('S1', 'cand_r3_best7_scale', '42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7'))
 
 
 def read_receipt(job):

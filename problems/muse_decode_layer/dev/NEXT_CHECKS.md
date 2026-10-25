@@ -2,22 +2,22 @@
 
 ## Ranking: one lane at 1.3x its floor
 
-**Basis:** H200 profile `a5b2f55be30f4f47`; mode **S8**. Current **S8** profile; already-integrated deltas are not applied again.
+**Basis:** H200 profile `43049b80dbd34a08`; mode **S10**. Current **S10** profile; already-integrated deltas are not applied again.
 
 | Rank | Lever | Owning lane | Overall score gain |
 |---|---|---|---:|
-| 1 | Attention, all scored shapes | attention | +11.84% |
-| 2 | Small-M MoE M1/8/16/32 | small-M MoE | +9.81% |
-| 3 | Dense projections, all four roles | proj GEMV | +6.88% |
-| 4 | Boundaries and route | glue | +5.74% |
-| 5 | MoE M256 | free M256 | +5.65% |
-| 6 | MoE M128 | MoE M128 | +4.95% |
+| 1 | Attention, all scored shapes | attention | +11.75% |
+| 2 | Small-M MoE M1/8/16/32 | small-M MoE | +7.33% |
+| 3 | Dense projections, all four roles | proj GEMV | +6.75% |
+| 4 | Boundaries and route | glue | +6.08% |
+| 5 | MoE M256 | free M256 | +4.59% |
+| 6 | MoE M128 | MoE M128 | +3.88% |
 
-Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/stages; gains are independent counterfactuals and must not be added. Projection totals and the lane ranking do not depend on the modeled per-role split. MoE/attention gains use visible rows only; unreported rows can raise them (bounds below). These are optimistic profile-duration headrooms, not measured speedups. Ranks3-6 span 1.93 percentage points: treat them as close priorities under router/profile/overlap uncertainty, not a resolved performance ordering.
+Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/stages; gains are independent counterfactuals and must not be added. Projection totals and the lane ranking do not depend on the modeled per-role split. MoE/attention gains use visible rows only; unreported rows can raise them (bounds below). These are optimistic profile-duration headrooms, not measured speedups. Ranks3-6 span 2.87 percentage points: treat them as close priorities under router/profile/overlap uncertainty, not a resolved performance ordering.
 
 ## What is measured and what is modeled
 
-- Source: [12-shape profile](../profiles/cand_r3_best7_s8.a5b2f55be30f4f47.json) and [source log](../profiles/cand_r3_best7_s8.a5b2f55be30f4f47.log). The adjusted benchmark fields reproduce **1.574181x** exactly. The corrected six-load accounting gives **1.574181x**, a composition model rather than a new score.
+- Source: [12-shape profile](../profiles/cand_r3_best7_s10.43049b80dbd34a08.json) and [source log](../profiles/cand_r3_best7_s10.43049b80dbd34a08.log). The adjusted benchmark fields reproduce **1.621438x** exactly. The corrected six-load accounting gives **1.621438x**, a composition model rather than a new score.
 - Scale bank: paired receipt `58ae2e2cf8df45ef`; subtract 7.91/9.31/14.43/38.53 us at M8/16/32/128 from MoE and adjusted layer latency. No paired M1 delta exists, so M1 keeps its measured time. M256: `97be11d4631b44d6`, masked447.6 minus CTA1g2112 385.2 = **62.4 us**, subtracted once on S/F. These deltas transfer across router seeds and whole-layer overlap only as a model. Paired glue/FA3 setting changes from reset to S1 are not assigned extra savings; their composition needs the S1–S6 profiles. [Scale receipt](../../../runs/muse_decode_layer/20261024T141927Z_check_58ae2e2cf8df45ef.json) · [M256 receipt](../../../runs/muse_moe_w4a16/20261024T142924Z_check_97be11d4631b44d6.json).
 - **Projection role attribution:** the judge merges repeated kernel names. Only a unique custom GEMV role can be timed directly. Other roles in the same custom/library group are allocated in proportion to their one-read resource floors and marked **~**. This is an estimate, not recovered per-role telemetry. Exact group totals and mathematical attribution ranges are retained in JSON.
 - **Overlap:** profile rows include PDL dependency waits and, in S6, parallel W13 execution; sums can be above or below the paired benchmark median. The signed residual is shown separately, never called spare/idle time or added to a stage. Savings below assume the removed duration was exposed on the critical path; the profiles alone cannot prove that.
@@ -28,18 +28,18 @@ Ranks 1-5 are the current five levers. Each row changes only that lane's shapes/
 
 | Shape | QKV+gate | O | Pool+router | Unpool | Proj sum | Attention | MoE | Boundaries x2 | Route+norm | Other |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| decode 1 S | 14.4 / 7.864 | 7.2 / 3.495 | ~24.3 / 15.729 | ~2.7 / 1.748 | 48.6 / 28.84 | 10.3 / 0.111 | 31.8 / 14.747 | 5.2 / 0.017 | 3.6 / 0.002 | 0.0 / n/a |
-| decode 1 F | 13.7 / 7.864 | 6.8 / 3.495 | ~24.0 / 15.729 | ~2.7 / 1.748 | 47.2 / 28.84 | 19.3 / 4.333 | 37.2 / 14.747 | 4.9 / 0.017 | 3.8 / 0.002 | 0.0 / n/a |
-| decode 16 S | ~12.1 / 7.864 | ~5.7 / 3.495 | ~24.2 / 15.729 | ~23.0 / 13.981 | 65.0 / 41.07 | 16.2 / 1.775 | 83.7 / 44.946 | 5.6 / 0.017 | 3.8 / 0.002 | 0.0 / n/a |
-| decode 16 F | ~11.8 / 7.864 | ~5.7 / 3.495 | ~23.7 / 15.729 | ~22.9 / 13.981 | 64.1 / 41.07 | 106.4 / 69.334 | 77.4 / 43.885 | 5.6 / 0.017 | 3.8 / 0.002 | 5.7 / n/a |
-| decode 32 S | ~13.1 / 7.864 | ~5.8 / 3.495 | 24.2 / 15.729 | ~23.2 / 13.981 | 66.3 / 41.07 | 16.6 / 3.550 | 114.4 / 52.732 | 7.0 / 0.017 | 6.7 / 0.002 | 0.0 / n/a |
-| decode 32 F | ~12.8 / 7.864 | ~5.7 / 3.495 | 26.7 / 15.729 | ~22.8 / 13.981 | 68.0 / 41.07 | 198.8 / 138.668 | 111.8 / 53.440 | 7.0 / 0.017 | 6.1 / 0.002 | 0.0 / n/a |
-| verify 1 S | ~14.7 / 7.864 | ~6.6 / 3.495 | ~24.4 / 15.729 | ~2.7 / 1.748 | 48.4 / 28.84 | 20.0 / 0.111 | 59.7 / 44.239 | 5.5 / 0.017 | 3.7 / 0.002 | 0.0 / n/a |
-| verify 1 F | ~14.6 / 7.864 | ~6.5 / 3.495 | ~24.6 / 15.729 | ~2.7 / 1.748 | 48.4 / 28.84 | 31.3 / 4.334 | 91.6 / 44.239 | 5.4 / 0.017 | 3.6 / 0.002 | 0.0 / n/a |
-| verify 16 S | 14.5 / 7.864 | ~5.8 / 3.495 | ~25.9 / 15.729 | ~23.0 / 13.981 | 69.2 / 41.07 | >=22.2 / 1.781 | >=231.4 / 108.411 | 11.3 / 0.017 | 0.0 / 0.002 | 11.5 / n/a |
-| verify 16 F | 14.3 / 7.864 | ~5.7 / 3.495 | ~25.8 / 15.729 | ~22.9 / 13.981 | 68.7 / 41.07 | >=202.0 / 69.340 | >=255.0 / 109.119 | 11.0 / 0.017 | 0.0 / 0.002 | 11.9 / n/a |
-| verify 32 S | ~17.5 / 9.771 | ~7.8 / 4.343 | ~35.1 / 19.542 | ~31.2 / 17.371 | 91.6 / 51.03 | >=24.2 / 3.562 | >=314.5 / 125.693 | 19.2 / 0.017 | 3.9 / 0.002 | 8.9 / n/a |
-| verify 32 F | ~17.4 / 9.771 | ~7.7 / 4.343 | ~34.9 / 19.542 | ~31.0 / 17.371 | 91.0 / 51.03 | >=386.6 / 138.681 | >=306.6 / 126.106 | 18.8 / 0.017 | 0.0 / 0.002 | 9.6 / n/a |
+| decode 1 S | 14.3 / 7.864 | 7.4 / 3.495 | ~24.5 / 15.729 | ~2.7 / 1.748 | 48.9 / 28.84 | 9.8 / 0.111 | 33.3 / 14.747 | 5.3 / 0.017 | 3.6 / 0.002 | 0.0 / n/a |
+| decode 1 F | 13.8 / 7.864 | 6.8 / 3.495 | ~24.2 / 15.729 | ~2.7 / 1.748 | 47.5 / 28.84 | 19.4 / 4.333 | 32.6 / 14.747 | 5.2 / 0.017 | 3.6 / 0.002 | 0.0 / n/a |
+| decode 16 S | ~11.8 / 7.864 | ~5.3 / 3.495 | ~23.5 / 15.729 | ~21.4 / 13.981 | 62.0 / 41.07 | 12.8 / 1.775 | 70.8 / 44.946 | 5.6 / 0.017 | 3.9 / 0.002 | 1.4 / n/a |
+| decode 16 F | ~12.2 / 7.864 | ~5.4 / 3.495 | ~24.4 / 15.729 | ~21.4 / 13.981 | 63.4 / 41.07 | 105.5 / 69.334 | 79.7 / 43.885 | 5.8 / 0.017 | 4.1 / 0.002 | 1.6 / n/a |
+| decode 32 S | ~12.7 / 7.864 | ~5.6 / 3.495 | 24.7 / 15.729 | ~22.5 / 13.981 | 65.5 / 41.07 | 16.6 / 3.550 | 94.6 / 52.732 | 6.7 / 0.017 | 6.1 / 0.002 | 0.0 / n/a |
+| decode 32 F | ~12.7 / 7.864 | ~5.6 / 3.495 | 27.9 / 15.729 | ~22.6 / 13.981 | 68.8 / 41.07 | 198.2 / 138.668 | 103.8 / 53.440 | 7.0 / 0.017 | 9.2 / 0.002 | 0.0 / n/a |
+| verify 1 S | ~14.8 / 7.864 | ~6.6 / 3.495 | ~23.7 / 15.729 | ~2.6 / 1.748 | 47.7 / 28.84 | 20.3 / 0.111 | 64.4 / 44.239 | 5.4 / 0.017 | 3.8 / 0.002 | 0.0 / n/a |
+| verify 1 F | ~14.7 / 7.864 | ~6.6 / 3.495 | ~24.4 / 15.729 | ~2.7 / 1.748 | 48.4 / 28.84 | 31.7 / 4.334 | 72.7 / 44.239 | 8.5 / 0.017 | 3.7 / 0.002 | 0.0 / n/a |
+| verify 16 S | 14.5 / 7.864 | ~5.8 / 3.495 | ~26.2 / 15.729 | ~23.3 / 13.981 | 69.9 / 41.07 | >=22.8 / 1.781 | >=207.9 / 108.411 | 11.4 / 0.017 | 0.0 / 0.002 | 8.3 / n/a |
+| verify 16 F | 14.6 / 7.864 | ~5.8 / 3.495 | ~26.1 / 15.729 | ~23.2 / 13.981 | 69.7 / 41.07 | >=199.3 / 69.340 | >=231.7 / 109.119 | 11.3 / 0.017 | 0.0 / 0.002 | 8.9 / n/a |
+| verify 32 S | ~17.3 / 9.771 | ~7.7 / 4.343 | ~34.7 / 19.542 | ~30.8 / 17.371 | 90.5 / 51.03 | >=24.2 / 3.562 | >=286.3 / 125.693 | 20.3 / 0.017 | 4.3 / 0.002 | 9.3 / n/a |
+| verify 32 F | ~17.2 / 9.771 | ~7.7 / 4.343 | ~34.5 / 19.542 | ~30.6 / 17.371 | 90.0 / 51.03 | >=381.0 / 138.681 | >=281.0 / 126.106 | 18.8 / 0.017 | 0.0 / 0.002 | 9.4 / n/a |
 
 S/F=sliding/full; decode M=B, verify M=8B. QKV includes the gate rows; Pool+router includes the FP32 router's BF16 hi+lo products. Attention includes QK/cache preparation, main, combine, FA3 scheduler and norm/gate. MoE includes expert gather/activation/norm/combine where visible. Boundaries and route are separate. Split-K reductions belong to their projection group.
 
@@ -49,32 +49,32 @@ A cell changes that one stage in that one shape, retaining the other eleven. **A
 
 | Shape | QKV+gate | O | Pool+router | Unpool | Proj sum | Attention | MoE | Boundaries x2 | Route+norm | Other |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| decode 1 S | +0.52% | +0.33% | ~+0.48% | ~+0.05% | +1.42% | +1.29% | +1.62% | +0.64% | +0.44% | n/a |
-| decode 1 F | +0.15% | +0.10% | ~+0.15% | ~+0.02% | +0.42% | +0.59% | +0.78% | +0.21% | +0.16% | n/a |
-| decode 16 S | ~+0.12% | ~+0.08% | ~+0.25% | ~+0.32% | +0.78% | +0.94% | +1.76% | +0.37% | +0.25% | n/a |
-| decode 16 F | ~+0.04% | ~+0.03% | ~+0.07% | ~+0.11% | +0.25% | +0.37% | +0.47% | +0.13% | +0.09% | n/a |
-| decode 32 S | ~+0.14% | ~+0.06% | +0.19% | ~+0.26% | +0.66% | +0.62% | +2.51% | +0.36% | +0.34% | n/a |
-| decode 32 F | ~+0.05% | ~+0.02% | +0.11% | ~+0.08% | +0.26% | +0.33% | +0.76% | +0.12% | +0.11% | n/a |
-| verify 1 S | ~+0.40% | ~+0.17% | ~+0.34% | ~+0.04% | +0.98% | +1.83% | +0.19% | +0.48% | +0.32% | n/a |
-| verify 1 F | ~+0.13% | ~+0.06% | ~+0.12% | ~+0.01% | +0.33% | +0.79% | +1.06% | +0.16% | +0.11% | n/a |
-| verify 16 S | +0.14% | ~+0.04% | ~+0.18% | ~+0.16% | +0.52% | +0.66% | +3.27% | +0.37% | +0.00% | n/a |
-| verify 16 F | +0.05% | ~+0.01% | ~+0.06% | ~+0.05% | +0.17% | +1.32% | +1.33% | +0.12% | +0.00% | n/a |
-| verify 32 S | ~+0.11% | ~+0.05% | ~+0.23% | ~+0.20% | +0.60% | +0.46% | +4.04% | +0.45% | +0.09% | n/a |
-| verify 32 F | ~+0.04% | ~+0.02% | ~+0.08% | ~+0.07% | +0.20% | +1.78% | +1.21% | +0.15% | +0.00% | n/a |
-| **All shapes** | +1.90% | +0.97% | +2.29% | +1.38% | +6.88% | +11.84% | +21.76% | +3.65% | +1.94% | n/a |
+| decode 1 S | +0.51% | +0.36% | ~+0.51% | ~+0.06% | +1.48% | +1.24% | +1.85% | +0.66% | +0.45% | n/a |
+| decode 1 F | +0.15% | +0.10% | ~+0.16% | ~+0.02% | +0.44% | +0.60% | +0.59% | +0.22% | +0.15% | n/a |
+| decode 16 S | ~+0.11% | ~+0.05% | ~+0.21% | ~+0.22% | +0.61% | +0.74% | +0.88% | +0.39% | +0.27% | n/a |
+| decode 16 F | ~+0.05% | ~+0.02% | ~+0.10% | ~+0.08% | +0.24% | +0.37% | +0.55% | +0.14% | +0.10% | n/a |
+| decode 32 S | ~+0.12% | ~+0.06% | +0.22% | ~+0.22% | +0.63% | +0.62% | +1.39% | +0.34% | +0.31% | n/a |
+| decode 32 F | ~+0.04% | ~+0.02% | +0.13% | ~+0.08% | +0.28% | +0.32% | +0.62% | +0.12% | +0.16% | n/a |
+| verify 1 S | ~+0.40% | ~+0.17% | ~+0.28% | ~+0.03% | +0.90% | +1.82% | +0.60% | +0.46% | +0.33% | n/a |
+| verify 1 F | ~+0.13% | ~+0.06% | ~+0.12% | ~+0.01% | +0.33% | +0.79% | +0.46% | +0.25% | +0.11% | n/a |
+| verify 16 S | +0.15% | ~+0.04% | ~+0.20% | ~+0.18% | +0.58% | +0.73% | +2.53% | +0.40% | +0.00% | n/a |
+| verify 16 F | +0.05% | ~+0.02% | ~+0.07% | ~+0.06% | +0.20% | +1.38% | +1.12% | +0.14% | +0.00% | n/a |
+| verify 32 S | ~+0.11% | ~+0.05% | ~+0.22% | ~+0.20% | +0.59% | +0.48% | +3.31% | +0.50% | +0.10% | n/a |
+| verify 32 F | ~+0.04% | ~+0.02% | ~+0.08% | ~+0.07% | +0.20% | +1.79% | +1.01% | +0.16% | +0.00% | n/a |
+| **All shapes** | +1.89% | +0.97% | +2.33% | +1.23% | +6.75% | +11.75% | +16.61% | +3.89% | +2.02% | n/a |
 
 Gain ranges from unresolved attribution (not confidence intervals):
 
 | Stage | Central all-shape gain | Source-attribution range |
 |---|---:|---:|
-| QKV+gate | +1.90% | 0.86..10.10% |
-| O | +0.97% | 0.42..13.65% |
-| Pool+router | +2.29% | 0.30..7.69% |
-| Unpool | +1.38% | 0.00..15.52% |
-| Attention | +11.84% | 11.84..12.86% |
-| MoE | +21.76% | 21.76..23.09% |
-| Boundaries x2 | +3.65% | 3.65..3.65% |
-| Route+norm | +1.94% | 1.94..1.94% |
+| QKV+gate | +1.89% | 0.87..10.20% |
+| O | +0.97% | 0.46..13.83% |
+| Pool+router | +2.33% | 0.35..7.94% |
+| Unpool | +1.23% | 0.00..15.49% |
+| Attention | +11.75% | 11.75..12.66% |
+| MoE | +16.61% | 16.61..17.66% |
+| Boundaries x2 | +3.89% | 3.89..3.89% |
+| Route+norm | +2.02% | 2.02..2.02% |
 
 Ranges permit a shared kernel group to belong entirely to one of its roles; such extrema cannot happen for all roles at once. Attention/MoE maxima each assign all M256 omitted mass to that stage; again these maxima are mutually exclusive. They do not bound PDL critical-path exposure.
 
@@ -82,27 +82,27 @@ Ranges permit a shared kernel group to belong entirely to one of its roles; such
 
 | Shape | Receipt layer | Scale saving | M256 saving | Model layer | Profile sum after deltas | Layer minus profile |
 |---|---:|---:|---:|---:|---:|---:|
-| decode 1 S | 99.93 | 0.00 | 0.00 | 99.93 | 99.50 | 0.43 |
-| decode 1 F | 107.66 | 0.00 | 0.00 | 107.66 | 112.40 | -4.74 |
-| decode 16 S | 164.51 | 0.00 | 0.00 | 164.51 | 174.30 | -9.79 |
-| decode 16 F | 259.74 | 0.00 | 0.00 | 259.74 | 262.90 | -3.16 |
-| decode 32 S | 200.34 | 0.00 | 0.00 | 200.34 | 210.90 | -10.56 |
-| decode 32 F | 376.05 | 0.00 | 0.00 | 376.05 | 391.70 | -15.65 |
-| verify 1 S | 139.75 | 0.00 | 0.00 | 139.75 | 137.30 | 2.45 |
-| verify 1 F | 152.87 | 0.00 | 0.00 | 152.87 | 180.60 | -27.73 |
-| verify 16 S | 337.89 | 0.00 | 0.00 | 337.89 | 345.60 | -7.71 |
-| verify 16 F | 511.37 | 0.00 | 0.00 | 511.37 | 548.60 | -37.23 |
-| verify 32 S | 437.85 | 0.00 | 0.00 | 437.85 | 462.30 | -24.45 |
-| verify 32 F | 795.32 | 0.00 | 0.00 | 795.32 | 812.60 | -17.28 |
+| decode 1 S | 98.94 | 0.00 | 0.00 | 98.94 | 100.90 | -1.96 |
+| decode 1 F | 104.88 | 0.00 | 0.00 | 104.88 | 108.40 | -3.52 |
+| decode 16 S | 154.37 | 0.00 | 0.00 | 154.37 | 156.60 | -2.23 |
+| decode 16 F | 251.80 | 0.00 | 0.00 | 251.80 | 260.10 | -8.30 |
+| decode 32 S | 195.92 | 0.00 | 0.00 | 195.92 | 189.50 | 6.42 |
+| decode 32 F | 377.86 | 0.00 | 0.00 | 377.86 | 387.00 | -9.14 |
+| verify 1 S | 142.16 | 0.00 | 0.00 | 142.16 | 141.60 | 0.56 |
+| verify 1 F | 155.27 | 0.00 | 0.00 | 155.27 | 165.10 | -9.83 |
+| verify 16 S | 313.23 | 0.00 | 0.00 | 313.23 | 320.30 | -7.07 |
+| verify 16 F | 483.65 | 0.00 | 0.00 | 483.65 | 520.90 | -37.25 |
+| verify 32 S | 424.33 | 0.00 | 0.00 | 424.33 | 434.90 | -10.57 |
+| verify 32 F | 772.10 | 0.00 | 0.00 | 772.10 | 780.20 | -8.10 |
 
 | Load | Adjusted receipt load us | Modeled load us |
 |---|---:|---:|
-| decode 1 | 6319.40 | 6319.40 |
-| decode 16 | 11723.14 | 11723.14 |
-| decode 32 | 15232.56 | 15232.56 |
-| verify 1 | 8874.42 | 8874.42 |
-| verify 16 | 23724.96 | 23724.96 |
-| verify 32 | 32866.27 | 32866.27 |
+| decode 1 | 6229.42 | 6229.42 |
+| decode 16 | 11129.76 | 11129.76 |
+| decode 32 | 15057.96 | 15057.96 |
+| verify 1 | 9023.64 | 9023.64 |
+| verify 16 | 22146.73 | 22146.73 |
+| verify 32 | 31872.98 | 31872.98 |
 
 For a selected stage set, `dS/dF = sum(max(0, time - 1.3*floor))` within each shape. Then `gain% = 100 * (product_load[T / (T - 46*dS - 16*dF)]^(1/6) - 1)`. Use adjusted `median_ns` anchors above, never the sum of PDL durations. No regression is assumed if a stage already beats the target.
 
