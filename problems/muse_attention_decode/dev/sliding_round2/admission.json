@@ -1,0 +1,4693 @@
+{
+  "files": {
+    "build_packet.py": "aa5fc257fe92a562b866e8cb6622bedab53302843e6ead623f88971a63c637d5",
+    "check_lab.py": "b2315b44f8bd12724e0a661f4b7e1e50e2d9f5d4ce80a3da0d879ea286acec66",
+    "check_variants.py": "5b1730c5bad33431756b2600869f0a6f39c1e4d6f1207027bd249d095b9fcb1a",
+    "coverage.py": "3eceae27fc2b35c234f027c22f0ee90b3ef4dca0703e76d67b91a416de7af60a",
+    "followups.py": "6b8cb9fdfb2b555be94caf80100020650719a69d3a58549bfbbd355bdc74c78c",
+    "freeze.py": "32ddec39773ba37fcee8998d57a765d9a8596f425e6844d2fa9d50c439e66db5",
+    "kernels.py": "7bb147bb03b5d6973ecc55f157150fa43b4bd4a7bbf58241d0fe85a482c5e8ba",
+    "lab_body.inc": "d051f2aa7a85e1b50741301aeed4d77a1d011d437ae0e3fecac7b77d754586f1",
+    "layer_patch.py": "ee1f57869bcf619e8bec4974d5e69efb40f2185b5b17e0d064167379d5f578d0",
+    "report.py": "74bc7ac21d5eba5ac9d9653348946a7a6fbf3eda1b42075d3990f4046515f592",
+    "runtime.py": "da90ac15fd2f6c944256b05c8ff26f02aa95c1d9ed383f4a8c278570aa584405",
+    "sass_check.py": "8ad0b262dd59865e01d03a49ccb4774d4d0545b7412bbde9c665adce0515c494",
+    "screen.py": "72c2a1ef33c6666f160b7b32dfab084f7d18b83f79e1eefa5d71600e2aa2718f",
+    "screen_layer.py": "a188b0154877607803d5b390e36401e292291908184f3c20b7e231c1f046d521"
+  },
+  "board_sha256": "295a2792bb092012c09c91d521a1d26ebe67e4cedcf7d5eb055d250fe516b7ff",
+  "layer_sha256": "d2711401db5161b8e0bd070f999911639570aa385c49b3609bb762447739247d",
+  "payload_sha256": "e6476a576e3b0358b4934d6c8af413094074f5707d02737bb147991f6d577f35",
+  "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "native": [
+    {
+      "kind": "last",
+      "cuda_sha256": "9118a17c9ccf87bb9ac4a1f85bc067dd05c758901d2d3fb83d88fec96f7ea291",
+      "sass_sha256": "7660115e8dfe1edacf9a7405c76451294dd54b041005e9dbf08ff1cb5dbde7f6",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/sliding_round2/out/last.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:254 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE:\n  REG:164 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE:\n  REG:157 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE:\n  REG:139 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:139 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE:\n  REG:139 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE:\n  REG:139 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1f10"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR12][R14.64], !P4"
+            },
+            {
+              "pc": "0xaa0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR12][R16.64], !P4"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR12][R18.64], !P3"
+            },
+            {
+              "pc": "0xb70",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR12][R20.64], !P3"
+            },
+            {
+              "pc": "0xc00",
+              "op": "LDGSTS.E.BYPASS.128 [R9+0x1000], desc[UR12][R12.64], !P2"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R9+0x5000], desc[UR12][R10.64], !P2"
+            },
+            {
+              "pc": "0xc50",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R14.64], !P1"
+            },
+            {
+              "pc": "0xc60",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x5000], desc[UR12][R16.64], !P1"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR12][R12.64], !P3"
+            },
+            {
+              "pc": "0x13e0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR12][R14.64], !P3"
+            },
+            {
+              "pc": "0x1480",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR12][R16.64], !P2"
+            },
+            {
+              "pc": "0x14c0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR12][R18.64], !P2"
+            },
+            {
+              "pc": "0x1530",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR12][R10.64], !P1"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR12][R12.64], !P1"
+            },
+            {
+              "pc": "0x1580",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR12][R14.64], !P0"
+            },
+            {
+              "pc": "0x1590",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x7000], desc[UR12][R16.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x2120"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa40",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR14][R6.64], !P4"
+            },
+            {
+              "pc": "0xa80",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR14][R8.64], !P4"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR14][R10.64], !P3"
+            },
+            {
+              "pc": "0xb70",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR14][R12.64], !P3"
+            },
+            {
+              "pc": "0xbe0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR14][R4.64], !P2"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR14][R6.64], !P2"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR14][R8.64], !P1"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR14][R10.64], !P1"
+            },
+            {
+              "pc": "0x1380",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR14][R8.64], !P3"
+            },
+            {
+              "pc": "0x1440",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R10.64], !P2"
+            },
+            {
+              "pc": "0x1470",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR14][R12.64], !P2"
+            },
+            {
+              "pc": "0x1500",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0x1540",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR14][R6.64], !P1"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR14][R8.64], !P0"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x7000], desc[UR14][R10.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x2150"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa50",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR14][R6.64], !P4"
+            },
+            {
+              "pc": "0xa90",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR14][R8.64], !P4"
+            },
+            {
+              "pc": "0xb50",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR14][R10.64], !P3"
+            },
+            {
+              "pc": "0xb80",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR14][R12.64], !P3"
+            },
+            {
+              "pc": "0xbe0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR14][R4.64], !P2"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR14][R6.64], !P2"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR14][R8.64], !P1"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR14][R10.64], !P1"
+            },
+            {
+              "pc": "0x1380",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR14][R8.64], !P3"
+            },
+            {
+              "pc": "0x1440",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R10.64], !P2"
+            },
+            {
+              "pc": "0x1480",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR14][R12.64], !P2"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0x1550",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR14][R6.64], !P1"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR14][R8.64], !P0"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x7000], desc[UR14][R10.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x20e0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa10",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR14][R14.64], !P4"
+            },
+            {
+              "pc": "0xa50",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR14][R16.64], !P4"
+            },
+            {
+              "pc": "0xb60",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR14][R18.64], !P3"
+            },
+            {
+              "pc": "0xb90",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR14][R20.64], !P3"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR14][R12.64], !P2"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR14][R14.64], !P2"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR14][R16.64], !P1"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x5000], desc[UR14][R18.64], !P1"
+            },
+            {
+              "pc": "0x1370",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR14][R14.64], !P3"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x7000], desc[UR14][R16.64], !P3"
+            },
+            {
+              "pc": "0x1440",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR14][R18.64], !P2"
+            },
+            {
+              "pc": "0x1480",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR14][R20.64], !P2"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR14][R12.64], !P1"
+            },
+            {
+              "pc": "0x1550",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x7000], desc[UR14][R14.64], !P1"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR14][R16.64], !P0"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR14][R18.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b00",
+            "0x5be0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa50",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR16][R6.64], !P4"
+            },
+            {
+              "pc": "0xa80",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR16][R18.64], !P4"
+            },
+            {
+              "pc": "0xb50",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR16][R22.64], !P3"
+            },
+            {
+              "pc": "0xb80",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR16][R24.64], !P3"
+            },
+            {
+              "pc": "0xc00",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR16][R4.64], !P2"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x5000], desc[UR16][R6.64], !P2"
+            },
+            {
+              "pc": "0xc50",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x1000], desc[UR16][R18.64], !P1"
+            },
+            {
+              "pc": "0xc60",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x5000], desc[UR16][R22.64], !P1"
+            },
+            {
+              "pc": "0x1390",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR16][R6.64], !P3"
+            },
+            {
+              "pc": "0x13d0",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x7000], desc[UR16][R18.64], !P3"
+            },
+            {
+              "pc": "0x1470",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR16][R22.64], !P2"
+            },
+            {
+              "pc": "0x14a0",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR16][R24.64], !P2"
+            },
+            {
+              "pc": "0x1540",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x3000], desc[UR16][R4.64], !P1"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x7000], desc[UR16][R6.64], !P1"
+            },
+            {
+              "pc": "0x1580",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x3000], desc[UR16][R18.64], !P0"
+            },
+            {
+              "pc": "0x1590",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x7000], desc[UR16][R22.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b70",
+            "0x4600"
+          ],
+          "prewait": [
+            {
+              "pc": "0xad0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR18][R6.64], !P4"
+            },
+            {
+              "pc": "0xb00",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR18][R18.64], !P4"
+            },
+            {
+              "pc": "0xbc0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR18][R20.64], !P3"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR18][R24.64], !P3"
+            },
+            {
+              "pc": "0xc60",
+              "op": "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR18][R4.64], !P2"
+            },
+            {
+              "pc": "0xca0",
+              "op": "LDGSTS.E.BYPASS.128 [R11+0x5000], desc[UR18][R6.64], !P2"
+            },
+            {
+              "pc": "0xcc0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR18][R18.64], !P1"
+            },
+            {
+              "pc": "0xcd0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR18][R20.64], !P1"
+            },
+            {
+              "pc": "0x1420",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR18][R6.64], !P3"
+            },
+            {
+              "pc": "0x1460",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR18][R18.64], !P3"
+            },
+            {
+              "pc": "0x14e0",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR18][R20.64], !P2"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR18][R24.64], !P2"
+            },
+            {
+              "pc": "0x15a0",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x3000], desc[UR18][R4.64], !P1"
+            },
+            {
+              "pc": "0x15e0",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x7000], desc[UR18][R6.64], !P1"
+            },
+            {
+              "pc": "0x15f0",
+              "op": "LDGSTS.E.BYPASS.128 [R35+0x3000], desc[UR18][R18.64], !P0"
+            },
+            {
+              "pc": "0x1600",
+              "op": "LDGSTS.E.BYPASS.128 [R35+0x7000], desc[UR18][R20.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b90",
+            "0x3aa0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xac0",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR18][R18.64], !P4"
+            },
+            {
+              "pc": "0xb20",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR18][R20.64], !P4"
+            },
+            {
+              "pc": "0xbc0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR18][R22.64], !P3"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR18][R24.64], !P3"
+            },
+            {
+              "pc": "0xc90",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR18][R6.64], !P2"
+            },
+            {
+              "pc": "0xcb0",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR18][R18.64], !P2"
+            },
+            {
+              "pc": "0xcc0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR18][R20.64], !P1"
+            },
+            {
+              "pc": "0xcd0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR18][R22.64], !P1"
+            },
+            {
+              "pc": "0x1410",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR18][R18.64], !P3"
+            },
+            {
+              "pc": "0x1440",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR18][R20.64], !P3"
+            },
+            {
+              "pc": "0x14e0",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x3000], desc[UR18][R22.64], !P2"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x7000], desc[UR18][R24.64], !P2"
+            },
+            {
+              "pc": "0x15b0",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x3000], desc[UR18][R6.64], !P1"
+            },
+            {
+              "pc": "0x15e0",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x7000], desc[UR18][R18.64], !P1"
+            },
+            {
+              "pc": "0x15f0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR18][R20.64], !P0"
+            },
+            {
+              "pc": "0x1600",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR18][R22.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN39_GLOBAL__N__bedb8911_7_last_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1af0",
+            "0x2e50"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR16][R6.64], !P5"
+            },
+            {
+              "pc": "0xac0",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR16][R22.64], !P5"
+            },
+            {
+              "pc": "0xb80",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR16][R24.64], !P4"
+            },
+            {
+              "pc": "0xbb0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR16][R26.64], !P4"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR16][R4.64], !P3"
+            },
+            {
+              "pc": "0xc60",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x5000], desc[UR16][R6.64], !P3"
+            },
+            {
+              "pc": "0xc70",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x1000], desc[UR16][R22.64], !P2"
+            },
+            {
+              "pc": "0xc80",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x5000], desc[UR16][R24.64], !P2"
+            },
+            {
+              "pc": "0x1390",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR16][R6.64], !P4"
+            },
+            {
+              "pc": "0x13d0",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR16][R22.64], !P4"
+            },
+            {
+              "pc": "0x1480",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x3000], desc[UR16][R24.64], !P3"
+            },
+            {
+              "pc": "0x14c0",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x7000], desc[UR16][R26.64], !P3"
+            },
+            {
+              "pc": "0x1540",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x3000], desc[UR16][R4.64], !P2"
+            },
+            {
+              "pc": "0x1580",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x7000], desc[UR16][R6.64], !P2"
+            },
+            {
+              "pc": "0x15a0",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x3000], desc[UR16][R22.64], !P1"
+            },
+            {
+              "pc": "0x15b0",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x7000], desc[UR16][R24.64], !P1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "early",
+      "cuda_sha256": "c7a41b46ab52e8ed77eba248c02438108313fb884706c72f4caf828d58b70286",
+      "sass_sha256": "8aa17a77ca08a82765a7fe252a9171cba1aa97faf77bda4e18b8451aa56e8951",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/sliding_round2/out/early.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:254 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE:\n  REG:163 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE:\n  REG:162 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE:\n  REG:138 STACK:0 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE:\n  REG:139 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:2048 LOCAL:0 CONSTANT[0]:736 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x19e0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR12][R14.64], !P3"
+            },
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR12][R16.64], !P3"
+            },
+            {
+              "pc": "0xaf0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR12][R18.64], !P2"
+            },
+            {
+              "pc": "0xb30",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR12][R20.64], !P2"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x1000], desc[UR12][R4.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R3+0x3000], desc[UR12][R14.64], !P1"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R7+0x1000], desc[UR12][R16.64], !P0"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R7+0x3000], desc[UR12][R18.64], !P0"
+            },
+            {
+              "pc": "0xe60",
+              "op": "LDSM.16.MT88.4 R20, [R18+UR5]"
+            },
+            {
+              "pc": "0xfd0",
+              "op": "LDSM.16.MT88.4 R32, [R12+UR5]"
+            },
+            {
+              "pc": "0x1080",
+              "op": "LDSM.16.MT88.4 R36, [R17+UR5]"
+            },
+            {
+              "pc": "0x1110",
+              "op": "LDSM.16.MT88.4 R32, [R16+UR5]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b20"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa50",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR12][R14.64], !P3"
+            },
+            {
+              "pc": "0xa80",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR12][R16.64], !P3"
+            },
+            {
+              "pc": "0xb10",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR12][R18.64], !P2"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR12][R20.64], !P2"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR12][R2.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR12][R14.64], !P1"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR12][R16.64], !P0"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR12][R18.64], !P0"
+            },
+            {
+              "pc": "0xe60",
+              "op": "LDSM.16.MT88.4 R20, [R18+UR5]"
+            },
+            {
+              "pc": "0xfc0",
+              "op": "LDSM.16.MT88.4 R28, [R12+UR5]"
+            },
+            {
+              "pc": "0x1060",
+              "op": "LDSM.16.MT88.4 R36, [R17+UR5]"
+            },
+            {
+              "pc": "0x10f0",
+              "op": "LDSM.16.MT88.4 R40, [R16+UR5]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1ae0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa20",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR12][R14.64], !P3"
+            },
+            {
+              "pc": "0xa50",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR12][R16.64], !P3"
+            },
+            {
+              "pc": "0xb00",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR12][R18.64], !P2"
+            },
+            {
+              "pc": "0xb30",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR12][R20.64], !P2"
+            },
+            {
+              "pc": "0xbd0",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR12][R4.64], !P1"
+            },
+            {
+              "pc": "0xc00",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR12][R14.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R16.64], !P0"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR12][R18.64], !P0"
+            },
+            {
+              "pc": "0xe70",
+              "op": "LDSM.16.MT88.4 R20, [R18+UR8]"
+            },
+            {
+              "pc": "0xf00",
+              "op": "LDSM.16.MT88.4 R24, [R14+UR8]"
+            },
+            {
+              "pc": "0xf90",
+              "op": "LDSM.16.MT88.4 R20, [R17+UR8]"
+            },
+            {
+              "pc": "0x1020",
+              "op": "LDSM.16.MT88.4 R24, [R4+UR8]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1af0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR12][R14.64], !P3"
+            },
+            {
+              "pc": "0xa70",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR12][R16.64], !P3"
+            },
+            {
+              "pc": "0xb00",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR12][R18.64], !P2"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR12][R20.64], !P2"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R11+0x1000], desc[UR12][R12.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R11+0x3000], desc[UR12][R14.64], !P1"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R16.64], !P0"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR12][R18.64], !P0"
+            },
+            {
+              "pc": "0xe70",
+              "op": "LDSM.16.MT88.4 R28, [R18+UR5]"
+            },
+            {
+              "pc": "0xfa0",
+              "op": "LDSM.16.MT88.4 R32, [R12+UR5]"
+            },
+            {
+              "pc": "0x1060",
+              "op": "LDSM.16.MT88.4 R36, [R17+UR5]"
+            },
+            {
+              "pc": "0x10f0",
+              "op": "LDSM.16.MT88.4 R32, [R18+UR5]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x16d0",
+            "0x57c0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R16.64], !P3"
+            },
+            {
+              "pc": "0xb00",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR14][R18.64], !P2"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR14][R24.64], !P2"
+            },
+            {
+              "pc": "0xbd0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R6.64], !P1"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR14][R16.64], !P0"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R18.64], !P0"
+            },
+            {
+              "pc": "0xe40",
+              "op": "LDSM.16.MT88.4 R24, [R16+UR5]"
+            },
+            {
+              "pc": "0x1000",
+              "op": "LDSM.16.MT88.4 R36, [R4+UR5]"
+            },
+            {
+              "pc": "0x10a0",
+              "op": "LDSM.16.MT88.4 R44, [R17+UR5]"
+            },
+            {
+              "pc": "0x1170",
+              "op": "LDSM.16.MT88.4 R36, [R6+UR5]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1730",
+            "0x41d0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR14][R4.64], !P3"
+            },
+            {
+              "pc": "0xa90",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x3000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0xb20",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR14][R14.64], !P2"
+            },
+            {
+              "pc": "0xb60",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR14][R16.64], !P2"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR14][R2.64], !P1"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x3000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR14][R6.64], !P0"
+            },
+            {
+              "pc": "0xc50",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x3000], desc[UR14][R14.64], !P0"
+            },
+            {
+              "pc": "0xe90",
+              "op": "LDSM.16.MT88.4 R24, [R15+UR6]"
+            },
+            {
+              "pc": "0x1010",
+              "op": "LDSM.16.MT88.4 R28, [R4+UR6]"
+            },
+            {
+              "pc": "0x10a0",
+              "op": "LDSM.16.MT88.4 R36, [R7+UR6]"
+            },
+            {
+              "pc": "0x1160",
+              "op": "LDSM.16.MT88.4 R28, [R16+UR6]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1740",
+            "0x3630"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa50",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR14][R4.64], !P3"
+            },
+            {
+              "pc": "0xa80",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR14][R20.64], !P2"
+            },
+            {
+              "pc": "0xb70",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R22.64], !P2"
+            },
+            {
+              "pc": "0xc00",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR14][R2.64], !P1"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR14][R6.64], !P0"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R20.64], !P0"
+            },
+            {
+              "pc": "0xea0",
+              "op": "LDSM.16.MT88.4 R20, [R13+UR6]"
+            },
+            {
+              "pc": "0x1010",
+              "op": "LDSM.16.MT88.4 R28, [R2+UR6]"
+            },
+            {
+              "pc": "0x10b0",
+              "op": "LDSM.16.MT88.4 R36, [R7+UR6]"
+            },
+            {
+              "pc": "0x1180",
+              "op": "LDSM.16.MT88.4 R28, [R6+UR6]"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN40_GLOBAL__N__2ee019d7_8_early_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x15c0",
+            "0x2930"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR14][R4.64], !P3"
+            },
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x3000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0xb00",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR14][R22.64], !P2"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R24.64], !P2"
+            },
+            {
+              "pc": "0xbd0",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR14][R2.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x3000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR14][R6.64], !P0"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R22.64], !P0"
+            },
+            {
+              "pc": "0xe40",
+              "op": "LDSM.16.MT88.4 R24, [R15+UR5]"
+            },
+            {
+              "pc": "0xf10",
+              "op": "LDSM.16.MT88.4 R28, [R3+UR5]"
+            },
+            {
+              "pc": "0xfb0",
+              "op": "LDSM.16.MT88.4 R24, [R6+UR5]"
+            },
+            {
+              "pc": "0x1080",
+              "op": "LDSM.16.MT88.4 R28, [R15+UR5]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "dsm",
+      "cuda_sha256": "0f250847cd8dbc3cbc8583425f4fef9e441e538c340b90d91448dccc125ab4a9",
+      "sass_sha256": "2578478715681ed5d7c7f9b1c831b6fe9ccba8475c77bcdd8eac76af48e4bd89",
+      "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/sliding_round2/out/dsm.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:254 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE:\n  REG:160 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE:\n  REG:162 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE:\n  REG:138 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE:\n  REG:139 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE:\n  REG:139 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+      "kernels": [
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1e90"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR12][R10.64], !P4"
+            },
+            {
+              "pc": "0xa70",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR12][R12.64], !P4"
+            },
+            {
+              "pc": "0xb70",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR12][R14.64], !P3"
+            },
+            {
+              "pc": "0xb90",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR12][R16.64], !P3"
+            },
+            {
+              "pc": "0xbc0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR12][R6.64], !P2"
+            },
+            {
+              "pc": "0xc00",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR12][R10.64], !P2"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR12][R12.64], !P1"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR12][R14.64], !P1"
+            },
+            {
+              "pc": "0x1350",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR12][R10.64], !P3"
+            },
+            {
+              "pc": "0x1380",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x7000], desc[UR12][R12.64], !P3"
+            },
+            {
+              "pc": "0x1430",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR12][R14.64], !P2"
+            },
+            {
+              "pc": "0x1460",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR12][R16.64], !P2"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR12][R6.64], !P1"
+            },
+            {
+              "pc": "0x1530",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR12][R10.64], !P1"
+            },
+            {
+              "pc": "0x1540",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x3000], desc[UR12][R12.64], !P0"
+            },
+            {
+              "pc": "0x1550",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x7000], desc[UR12][R14.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi2ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x20e0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa10",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x1000], desc[UR16][R6.64], !P4"
+            },
+            {
+              "pc": "0xa60",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x5000], desc[UR16][R8.64], !P4"
+            },
+            {
+              "pc": "0xaf0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR16][R10.64], !P3"
+            },
+            {
+              "pc": "0xb30",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR16][R12.64], !P3"
+            },
+            {
+              "pc": "0xbc0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R4.64], !P2"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR16][R6.64], !P2"
+            },
+            {
+              "pc": "0xc00",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR16][R8.64], !P1"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x5000], desc[UR16][R10.64], !P1"
+            },
+            {
+              "pc": "0x1330",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR16][R6.64], !P3"
+            },
+            {
+              "pc": "0x1360",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR16][R8.64], !P3"
+            },
+            {
+              "pc": "0x1410",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR16][R10.64], !P2"
+            },
+            {
+              "pc": "0x1450",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR16][R12.64], !P2"
+            },
+            {
+              "pc": "0x14e0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR16][R4.64], !P1"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR16][R6.64], !P1"
+            },
+            {
+              "pc": "0x1520",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR16][R8.64], !P0"
+            },
+            {
+              "pc": "0x1530",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x7000], desc[UR16][R10.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi4ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x20f0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa10",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR14][R6.64], !P4"
+            },
+            {
+              "pc": "0xa80",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR14][R8.64], !P4"
+            },
+            {
+              "pc": "0xb10",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR14][R10.64], !P3"
+            },
+            {
+              "pc": "0xb50",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR14][R12.64], !P3"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR14][R4.64], !P2"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR14][R6.64], !P2"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR14][R8.64], !P1"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x5000], desc[UR14][R10.64], !P1"
+            },
+            {
+              "pc": "0x1370",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R6.64], !P3"
+            },
+            {
+              "pc": "0x13a0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR14][R8.64], !P3"
+            },
+            {
+              "pc": "0x1430",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R10.64], !P2"
+            },
+            {
+              "pc": "0x1460",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR14][R12.64], !P2"
+            },
+            {
+              "pc": "0x1500",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR14][R4.64], !P1"
+            },
+            {
+              "pc": "0x1540",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR14][R6.64], !P1"
+            },
+            {
+              "pc": "0x1550",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR14][R8.64], !P0"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x7000], desc[UR14][R10.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi8ELi8ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x20e0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R9+0x1000], desc[UR14][R14.64], !P4"
+            },
+            {
+              "pc": "0xa70",
+              "op": "LDGSTS.E.BYPASS.128 [R9+0x5000], desc[UR14][R16.64], !P4"
+            },
+            {
+              "pc": "0xb00",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR14][R18.64], !P3"
+            },
+            {
+              "pc": "0xb40",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR14][R20.64], !P3"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R5+0x1000], desc[UR14][R12.64], !P2"
+            },
+            {
+              "pc": "0xc10",
+              "op": "LDGSTS.E.BYPASS.128 [R5+0x5000], desc[UR14][R14.64], !P2"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R9+0x1000], desc[UR14][R16.64], !P1"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R9+0x5000], desc[UR14][R18.64], !P1"
+            },
+            {
+              "pc": "0x1380",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR14][R14.64], !P3"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR14][R16.64], !P3"
+            },
+            {
+              "pc": "0x1430",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR14][R18.64], !P2"
+            },
+            {
+              "pc": "0x1460",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR14][R20.64], !P2"
+            },
+            {
+              "pc": "0x14f0",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR14][R12.64], !P1"
+            },
+            {
+              "pc": "0x1530",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x7000], desc[UR14][R14.64], !P1"
+            },
+            {
+              "pc": "0x1540",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR14][R16.64], !P0"
+            },
+            {
+              "pc": "0x1550",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR14][R18.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b30",
+            "0x5bf0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa40",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R6.64], !P4"
+            },
+            {
+              "pc": "0xa80",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R16.64], !P4"
+            },
+            {
+              "pc": "0xb20",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR16][R20.64], !P3"
+            },
+            {
+              "pc": "0xb60",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR16][R22.64], !P3"
+            },
+            {
+              "pc": "0xbf0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R4.64], !P2"
+            },
+            {
+              "pc": "0xc30",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R6.64], !P2"
+            },
+            {
+              "pc": "0xc40",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R16.64], !P1"
+            },
+            {
+              "pc": "0xc50",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR16][R20.64], !P1"
+            },
+            {
+              "pc": "0x1380",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR16][R6.64], !P3"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR16][R16.64], !P3"
+            },
+            {
+              "pc": "0x1440",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x3000], desc[UR16][R20.64], !P2"
+            },
+            {
+              "pc": "0x1470",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x7000], desc[UR16][R22.64], !P2"
+            },
+            {
+              "pc": "0x1510",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR16][R4.64], !P1"
+            },
+            {
+              "pc": "0x1550",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR16][R6.64], !P1"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR16][R16.64], !P0"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x7000], desc[UR16][R20.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi2ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b90",
+            "0x4600"
+          ],
+          "prewait": [
+            {
+              "pc": "0xab0",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR18][R4.64], !P4"
+            },
+            {
+              "pc": "0xae0",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x5000], desc[UR18][R6.64], !P4"
+            },
+            {
+              "pc": "0xb80",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR18][R14.64], !P3"
+            },
+            {
+              "pc": "0xbc0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR18][R18.64], !P3"
+            },
+            {
+              "pc": "0xc70",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x1000], desc[UR18][R2.64], !P2"
+            },
+            {
+              "pc": "0xc90",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x5000], desc[UR18][R4.64], !P2"
+            },
+            {
+              "pc": "0xca0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR18][R6.64], !P1"
+            },
+            {
+              "pc": "0xcb0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR18][R14.64], !P1"
+            },
+            {
+              "pc": "0x13d0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR18][R4.64], !P3"
+            },
+            {
+              "pc": "0x1400",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR18][R6.64], !P3"
+            },
+            {
+              "pc": "0x14c0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x3000], desc[UR18][R14.64], !P2"
+            },
+            {
+              "pc": "0x14f0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x7000], desc[UR18][R18.64], !P2"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR18][R2.64], !P1"
+            },
+            {
+              "pc": "0x15b0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR18][R4.64], !P1"
+            },
+            {
+              "pc": "0x15c0",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x3000], desc[UR18][R6.64], !P0"
+            },
+            {
+              "pc": "0x15d0",
+              "op": "LDGSTS.E.BYPASS.128 [R13+0x7000], desc[UR18][R14.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi4ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1bb0",
+            "0x3b20"
+          ],
+          "prewait": [
+            {
+              "pc": "0xab0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x1000], desc[UR18][R4.64], !P4"
+            },
+            {
+              "pc": "0xaf0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x5000], desc[UR18][R6.64], !P4"
+            },
+            {
+              "pc": "0xbb0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR18][R12.64], !P3"
+            },
+            {
+              "pc": "0xbe0",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR18][R14.64], !P3"
+            },
+            {
+              "pc": "0xc50",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x1000], desc[UR18][R2.64], !P2"
+            },
+            {
+              "pc": "0xc90",
+              "op": "LDGSTS.E.BYPASS.128 [R19+0x5000], desc[UR18][R4.64], !P2"
+            },
+            {
+              "pc": "0xca0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x1000], desc[UR18][R6.64], !P1"
+            },
+            {
+              "pc": "0xcb0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x5000], desc[UR18][R12.64], !P1"
+            },
+            {
+              "pc": "0x13b0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x3000], desc[UR18][R4.64], !P3"
+            },
+            {
+              "pc": "0x13f0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x7000], desc[UR18][R6.64], !P3"
+            },
+            {
+              "pc": "0x14b0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR18][R12.64], !P2"
+            },
+            {
+              "pc": "0x14f0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR18][R14.64], !P2"
+            },
+            {
+              "pc": "0x1560",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x3000], desc[UR18][R2.64], !P1"
+            },
+            {
+              "pc": "0x15a0",
+              "op": "LDGSTS.E.BYPASS.128 [R21+0x7000], desc[UR18][R4.64], !P1"
+            },
+            {
+              "pc": "0x15c0",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x3000], desc[UR18][R6.64], !P0"
+            },
+            {
+              "pc": "0x15d0",
+              "op": "LDGSTS.E.BYPASS.128 [R15+0x7000], desc[UR18][R12.64], !P0"
+            }
+          ]
+        },
+        {
+          "symbol": "_ZN38_GLOBAL__N__496e387d_6_dsm_cu_ab5716f012sliding_mainILi1ELi8ELi128EEEvNS_2VPE",
+          "waits": [
+            "0x1b20",
+            "0x2ed0"
+          ],
+          "prewait": [
+            {
+              "pc": "0xa30",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x1000], desc[UR16][R4.64], !P5"
+            },
+            {
+              "pc": "0xa90",
+              "op": "LDGSTS.E.BYPASS.128 [R23+0x5000], desc[UR16][R6.64], !P5"
+            },
+            {
+              "pc": "0xb90",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x1000], desc[UR16][R18.64], !P4"
+            },
+            {
+              "pc": "0xbc0",
+              "op": "LDGSTS.E.BYPASS.128 [R25+0x5000], desc[UR16][R20.64], !P4"
+            },
+            {
+              "pc": "0xc20",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x1000], desc[UR16][R2.64], !P3"
+            },
+            {
+              "pc": "0xc50",
+              "op": "LDGSTS.E.BYPASS.128 [R17+0x5000], desc[UR16][R4.64], !P3"
+            },
+            {
+              "pc": "0xc60",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x1000], desc[UR16][R6.64], !P1"
+            },
+            {
+              "pc": "0xc70",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x5000], desc[UR16][R18.64], !P1"
+            },
+            {
+              "pc": "0x13c0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x3000], desc[UR16][R4.64], !P4"
+            },
+            {
+              "pc": "0x13f0",
+              "op": "LDGSTS.E.BYPASS.128 [R27+0x7000], desc[UR16][R6.64], !P4"
+            },
+            {
+              "pc": "0x1490",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x3000], desc[UR16][R18.64], !P3"
+            },
+            {
+              "pc": "0x14c0",
+              "op": "LDGSTS.E.BYPASS.128 [R29+0x7000], desc[UR16][R20.64], !P3"
+            },
+            {
+              "pc": "0x1530",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x3000], desc[UR16][R2.64], !P1"
+            },
+            {
+              "pc": "0x1570",
+              "op": "LDGSTS.E.BYPASS.128 [R31+0x7000], desc[UR16][R4.64], !P1"
+            },
+            {
+              "pc": "0x1580",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x3000], desc[UR16][R6.64], !P0"
+            },
+            {
+              "pc": "0x1590",
+              "op": "LDGSTS.E.BYPASS.128 [R33+0x7000], desc[UR16][R18.64], !P0"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "component": {
+    "records": [
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "L4",
+        "arm": [
+          "last",
+          1,
+          4
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.631e-02 (worst row 9.325e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "L4",
+        "arm": [
+          "last",
+          1,
+          4
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.631e-02 (worst row 9.325e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "L8",
+        "arm": [
+          "last",
+          1,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.643e-02 (worst row 9.518e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "L8",
+        "arm": [
+          "last",
+          1,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.643e-02 (worst row 9.518e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "L16",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.628e-02 (worst row 9.506e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "L16",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.628e-02 (worst row 9.506e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          4
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.631e-02 (worst row 9.325e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          4
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.631e-02 (worst row 9.325e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          2
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.644e-02 (worst row 9.291e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          2
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.644e-02 (worst row 9.291e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "E16",
+        "arm": [
+          "early",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.628e-02 (worst row 9.506e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "E16",
+        "arm": [
+          "early",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.628e-02 (worst row 9.506e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "D4",
+        "arm": [
+          "dsm",
+          1,
+          4
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.662e-02 (worst row 9.344e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "D4",
+        "arm": [
+          "dsm",
+          1,
+          4
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.662e-02 (worst row 9.344e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          1,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.662e-02 (worst row 9.344e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          1,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.662e-02 (worst row 9.344e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "DQ2",
+        "arm": [
+          "dsm",
+          2,
+          4
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.662e-02 (worst row 9.344e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 16,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          16,
+          1
+        ],
+        "name": "DQ2",
+        "arm": [
+          "dsm",
+          2,
+          4
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.662e-02 (worst row 9.344e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L2",
+        "arm": [
+          "last",
+          1,
+          2
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.192e-02 (worst row 1.067e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L2",
+        "arm": [
+          "last",
+          1,
+          2
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.192e-02 (worst row 1.067e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L4",
+        "arm": [
+          "last",
+          1,
+          4
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.184e-02 (worst row 1.059e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L4",
+        "arm": [
+          "last",
+          1,
+          4
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.184e-02 (worst row 1.059e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L8",
+        "arm": [
+          "last",
+          1,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.177e-02 (worst row 1.048e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L8",
+        "arm": [
+          "last",
+          1,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.177e-02 (worst row 1.048e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L16",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.160e-02 (worst row 1.047e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "L16",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.160e-02 (worst row 1.047e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          2
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.192e-02 (worst row 1.067e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          2
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.192e-02 (worst row 1.067e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "E16",
+        "arm": [
+          "early",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.160e-02 (worst row 1.047e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "E16",
+        "arm": [
+          "early",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.160e-02 (worst row 1.047e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "D2",
+        "arm": [
+          "dsm",
+          1,
+          2
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.229e-02 (worst row 1.092e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "D2",
+        "arm": [
+          "dsm",
+          1,
+          2
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.229e-02 (worst row 1.092e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "D4",
+        "arm": [
+          "dsm",
+          1,
+          4
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 7.229e-02 (worst row 1.092e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 32,
+          "ctx": 80000,
+          "page": 1,
+          "spread": "agentic",
+          "dist": "soft"
+        },
+        "key": [
+          32,
+          1
+        ],
+        "name": "D4",
+        "arm": [
+          "dsm",
+          1,
+          4
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 7.229e-02 (worst row 1.092e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ1",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ1",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L8Q8",
+        "arm": [
+          "last",
+          8,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.788e-02 (worst row 9.168e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L8Q8",
+        "arm": [
+          "last",
+          8,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.788e-02 (worst row 9.168e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L16Q8",
+        "arm": [
+          "last",
+          8,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L16Q8",
+        "arm": [
+          "last",
+          8,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E4",
+        "arm": [
+          "early",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E4",
+        "arm": [
+          "early",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E8",
+        "arm": [
+          "early",
+          8,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E8",
+        "arm": [
+          "early",
+          8,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.786e-02 (worst row 9.194e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          4,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          4,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D16",
+        "arm": [
+          "dsm",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D16",
+        "arm": [
+          "dsm",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "DQ8",
+        "arm": [
+          "dsm",
+          8,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "DQ8",
+        "arm": [
+          "dsm",
+          8,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "RESET_D16",
+        "arm": [
+          "dsm_old",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 80000,
+          "page": 1,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "RESET_D16",
+        "arm": [
+          "dsm_old",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.791e-02 (worst row 9.305e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ1",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ1",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L8Q8",
+        "arm": [
+          "last",
+          8,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L8Q8",
+        "arm": [
+          "last",
+          8,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L16Q8",
+        "arm": [
+          "last",
+          8,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L16Q8",
+        "arm": [
+          "last",
+          8,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E4",
+        "arm": [
+          "early",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E4",
+        "arm": [
+          "early",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E8",
+        "arm": [
+          "early",
+          8,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E8",
+        "arm": [
+          "early",
+          8,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.432e-02 (worst row 8.031e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          4,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          4,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D16",
+        "arm": [
+          "dsm",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D16",
+        "arm": [
+          "dsm",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "DQ8",
+        "arm": [
+          "dsm",
+          8,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "DQ8",
+        "arm": [
+          "dsm",
+          8,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "RESET_D16",
+        "arm": [
+          "dsm_old",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 10,
+          "page": 64,
+          "dist": "edges"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "RESET_D16",
+        "arm": [
+          "dsm_old",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 4.482e-02 (worst row 8.105e-02) [bound 0.127: 2.5 x the reference's 0.045 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ1",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ1",
+        "arm": [
+          "last",
+          1,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ2",
+        "arm": [
+          "last",
+          2,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "LQ4",
+        "arm": [
+          "last",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L8Q8",
+        "arm": [
+          "last",
+          8,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.514e-02 (worst row 7.961e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L8Q8",
+        "arm": [
+          "last",
+          8,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.514e-02 (worst row 7.961e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L16Q8",
+        "arm": [
+          "last",
+          8,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "L16Q8",
+        "arm": [
+          "last",
+          8,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E4",
+        "arm": [
+          "early",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E4",
+        "arm": [
+          "early",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E8",
+        "arm": [
+          "early",
+          8,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "E8",
+        "arm": [
+          "early",
+          8,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.546e-02 (worst row 7.975e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          4,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D8",
+        "arm": [
+          "dsm",
+          4,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D16",
+        "arm": [
+          "dsm",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "D16",
+        "arm": [
+          "dsm",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "DQ8",
+        "arm": [
+          "dsm",
+          8,
+          8
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "DQ8",
+        "arm": [
+          "dsm",
+          8,
+          8
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "RESET_D16",
+        "arm": [
+          "dsm_old",
+          4,
+          16
+        ],
+        "splits": 0,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      },
+      {
+        "case": {
+          "batch": 1,
+          "q_len": 8,
+          "ctx": 2305,
+          "page": 64,
+          "kv_scale": 0.015625,
+          "dist": "soft"
+        },
+        "key": [
+          1,
+          8
+        ],
+        "name": "RESET_D16",
+        "arm": [
+          "dsm_old",
+          4,
+          16
+        ],
+        "splits": 3,
+        "ok": true,
+        "msg": "relative L2 error 6.540e-02 (worst row 8.015e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+      }
+    ],
+    "standins": [
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        8
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        8
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        8
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        1,
+        8
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        2,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        2,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        2,
+        4
+      ],
+      [
+        16,
+        1,
+        "dsm",
+        2,
+        4
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        2
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        2
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        2
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        2
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        32,
+        1,
+        "dsm",
+        1,
+        4
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm",
+        8,
+        8
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ],
+      [
+        1,
+        8,
+        "dsm_old",
+        4,
+        16
+      ]
+    ]
+  },
+  "index": {
+    "cases": 80,
+    "passed": true
+  },
+  "H200_job_ids": [],
+  "promotion": "none; native pair pending",
+  "normal_board": {
+    "tests": 16,
+    "shapes": 12,
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "X_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "G_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "P8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "ok": true
+  },
+  "forced_board": {
+    "tests": 16,
+    "shapes": 12,
+    "static": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "X_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "G_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "P8_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "ok": true
+  },
+  "sliding_round2_lab": {
+    "payload_sha256": "e6476a576e3b0358b4934d6c8af413094074f5707d02737bb147991f6d577f35",
+    "cases": [
+      "d16S",
+      "d32S",
+      "v1S"
+    ],
+    "arms": {
+      "d16S": [
+        "L4",
+        "L8",
+        "L16",
+        "LQ2",
+        "LQ4",
+        "E16",
+        "D4",
+        "D8",
+        "DQ2"
+      ],
+      "d32S": [
+        "L2",
+        "L4",
+        "L8",
+        "L16",
+        "LQ2",
+        "E16",
+        "D2",
+        "D4"
+      ],
+      "v1S": [
+        "LQ1",
+        "LQ2",
+        "LQ4",
+        "L8Q8",
+        "L16Q8",
+        "E4",
+        "E8",
+        "D8",
+        "D16",
+        "DQ8",
+        "RESET_D16"
+      ]
+    },
+    "task_passed": {
+      "d16S": {
+        "A": 2,
+        "A2": 2,
+        "L4": 2,
+        "L8": 2,
+        "L16": 2,
+        "LQ2": 2,
+        "LQ4": 2,
+        "E16": 2,
+        "D4": 2,
+        "D8": 2,
+        "DQ2": 2
+      },
+      "d32S": {
+        "A": 2,
+        "A2": 2,
+        "L2": 2,
+        "L4": 2,
+        "L8": 2,
+        "L16": 2,
+        "LQ2": 2,
+        "E16": 2,
+        "D2": 2,
+        "D4": 2
+      },
+      "v1S": {
+        "A": 2,
+        "A2": 2,
+        "LQ1": 2,
+        "LQ2": 2,
+        "LQ4": 2,
+        "L8Q8": 2,
+        "L16Q8": 2,
+        "E4": 2,
+        "E8": 2,
+        "D8": 2,
+        "D16": 2,
+        "DQ8": 2,
+        "RESET_D16": 2
+      }
+    },
+    "local_only": true,
+    "one_attention_node": true
+  },
+  "followup_dsm": {
+    "payload_sha256": "aea32de1bf7c1745496729ba1822217aa82437e86c93f3107a811e732509652a",
+    "cases": [
+      "v1S",
+      "v16S",
+      "v32S"
+    ],
+    "arms": {
+      "v1S": [
+        "RESET",
+        "COOP",
+        "HALF",
+        "DOUBLE"
+      ],
+      "v16S": [
+        "RESET",
+        "COOP",
+        "HALF",
+        "DOUBLE"
+      ],
+      "v32S": [
+        "RESET",
+        "COOP",
+        "HALF",
+        "DOUBLE"
+      ]
+    },
+    "task_passed": {
+      "v1S": {
+        "A": 2,
+        "A2": 2,
+        "RESET": 2,
+        "COOP": 2,
+        "HALF": 2,
+        "DOUBLE": 2
+      },
+      "v16S": {
+        "A": 2,
+        "A2": 2,
+        "RESET": 2,
+        "COOP": 2,
+        "HALF": 2,
+        "DOUBLE": 2
+      },
+      "v32S": {
+        "A": 2,
+        "A2": 2,
+        "RESET": 2,
+        "COOP": 2,
+        "HALF": 2,
+        "DOUBLE": 2
+      }
+    },
+    "local_only": true,
+    "one_attention_node": true
+  },
+  "followup_history": {
+    "payload_sha256": "1aa623eb36a48a04be05995e15fe0da9d5c435842134767a75ae9c3e0d1ad722",
+    "cases": [
+      "d1S"
+    ],
+    "arms": {
+      "d1S": [
+        "EARLY",
+        "LAST"
+      ]
+    },
+    "task_passed": {
+      "d1S": {
+        "A": 2,
+        "A2": 2,
+        "EARLY": 2,
+        "LAST": 2
+      }
+    },
+    "local_only": true,
+    "one_attention_node": true
+  },
+  "dependencies": {
+    "prof/lab/last_sliding_timeline.py": "2726c40a1d2726f9a523e0cf4f32ecafb30054795712c04f483c7340746d63bb",
+    "problems/muse_attention_decode/dev/early_history/lab_body.inc": "23fdd89e0c56f746935146dcc6f87e2d622be374498e755f3a54791e43e9e637",
+    "problems/muse_attention_decode/dev/early_history/history_build.py": "5d350dcb4dab6dd28a5c683f8e6bf626254ff27e7d067095e5229369e887bbf7",
+    "problems/muse_decode_layer/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "problems/muse_decode_layer/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "problems/muse_decode_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163"
+  },
+  "packing": {
+    "archive_characters": 3323,
+    "seeds": 2,
+    "raw_samples_preserved": true
+  },
+  "layer_screens": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 24,
+      "ok": true
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 24,
+      "ok": true
+    }
+  },
+  "queues": [
+    {
+      "pid": 2411468,
+      "priority": 0,
+      "t": 1792927118.258989,
+      "problem": "muse_decode_layer",
+      "file": "problems/muse_decode_layer/lab/lab_p5_global_attention.py",
+      "sha256": "0ccc25484dbe581002136aada0f66ca065d37a18ad8564c887102ca997e48d53",
+      "note": "P5 h200_lab: validate paired sliding+fullverify winners host 8e091fcb; one-launch decode1 full NS128/shared merge weights plus sliding B1/16/32 vs S11/last/direct-partials 16 seeds x8",
+      "not_before": 0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1029989,
+      "priority": 4.0,
+      "t": 1792947906.1692176,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/sliding_round2/out/sliding_round2_board.py",
+      "sha256": "295a2792bb092012c09c91d521a1d26ebe67e4cedcf7d5eb055d250fe516b7ff",
+      "note": "P5 second round: decode16/32 and verify1 sliding, one-launch token-aware last-CTA plus query partitions1/2/4/8, early-history, cooperative DSM and exact reset DSM control. One exact-S14 whole-layer payload:28 candidate shape-arms +A/A2,16 fresh seeds x12cold rounds, full public TASK checker20pct margin everyseed, CUPTI QKV/attn/gate/O increments, raw samples retained. Native3families x8specializations compile; early loads+V transpose before PDL wait SASS.100 fresh partial/page/scale/counter cells pass; board normal+forced16tests/12graphs/7static each, exact forced whole-layer payload all3shapes/allarms2seeds pass. Result-independent; priority4 behind existing0ccc2548/f1c270e6/0cec6706 reset queue; no replacement senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 3038721,
+      "priority": 2,
+      "t": 1792932711.092709,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/cluster_sliding/out/p5_dsm_board.py",
+      "sha256": "f1c270e6e12b7cb2abba0d00db7c54ce7aba10022427e605e3ff4730305264de",
+      "note": "P5 final attention check: sliding verify N128 DSM gang1/2/4/8/16, one-wave16/4/2 atB1/16/32; distribute norm/gate rows acrossSMs after global last-CTA serialized. Frozen e43 shader already native-gated79061182; 8 seeds x8, A2, strided partial gates. Exact normal+forced16/12/11 pass; sm120 uses genuine1CTA launch stand-in. Whole-layer pair built for reset.",
+      "not_before": 0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 3549805,
+      "priority": 3.0,
+      "t": 1792937178.918709,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/early_history/out/p5_early_history_board.py",
+      "sha256": "0cec67066689787d498240bfcef317bdf67827e26f3e23b38bb47f088bb59d98",
+      "note": "P5 early sliding history: finish 2048-key gather plus LDSM.T V transpose before PDL wait; 53.5KB to28.9KB dynamic shared. One batched exact-S14 f1c77ce6 whole-layer lab A/A2/OLD4/E4/E2/E1/L4,16 fresh seeds x12 cold rounds, full public TASK checks with20pct margin, CUPTI attention/gate/QKV increments and phase clocks. Normal+forced layer13/12/25, board16/12/8, 40 fresh partial/page/scale/counter cells; exact sm90a copy+transpose-before-ACQBULK proof. Preserve existing f1c270e6 and0ccc2548 senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    }
+  ]
+}
