@@ -1,25 +1,25 @@
 # AGENTS
 
 Our entry in the Muse Spark Open Kernel Challenge (openkernelchallenge.dev): the highest score on the overall
-kernel board, which is our decode-layer speedup. Owner: Jihoon.
+kernel board, which by our fit (GOAL) is our decode-layer speedup. Owner: Jihoon.
 
 **Before any work, read [docs/GOAL.md](docs/GOAL.md) and [docs/CONSTRAINTS.md](docs/CONSTRAINTS.md).**
 On demand: [PLAN](docs/PLAN.md) · [RESOURCES](docs/RESOURCES.md) · [FINDINGS](docs/FINDINGS.md) ·
 [SOTA](docs/SOTA.md) · [RULINGS](docs/RULINGS.md) · `docs/reference/` (each file opens with when to read it).
-The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/TASK.md` and `problems/<name>/AGENTS.md`.
+Organizer files are authoritative: `upstream/llms.txt`, `problems/<name>/{TASK,AGENTS}.md`.
 `docs/serving/` is parked until the serving round; don't work from it.
 
 ## Practice
 
-- Next work: the highest-ranked `active` or `next` row in [PLAN](docs/PLAN.md) "Ranked work" that no lane owns.
+- Next work: the row your brief names. Without a brief you orchestrate: keep a lane working every `active` or `next`
+  row of [PLAN](docs/PLAN.md) "Ranked work", read receipts, integrate winners and fold results into the docs.
 - Judge every change by the decode layer's score (GOAL "Terms").
 - The critical path is judge latency (PLAN "Critical path"): never idle on it.
 - Take the widest reading the rules allow (CONSTRAINTS "Boundary cases"); ask Jihoon if unclear.
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
 - Remote runs only through `tools/okc_run.py send <file> --note "<what changed>"` (`h200_lab.py` wraps it): scored while any are
   left; receipts in `runs/`. Screen with `tools/local_eval.py` first; a local test failure stays local (default).
-- H200 labs: `tools/h200_lab.py send <payload> [more ...]` on any host with quota (synthetic weights
-  where it lacks them); batch labs per host.
+- H200 labs: `tools/h200_lab.py send <payload> [more ...]` on any host with quota; batch labs per host.
 - Local timing (sm_120) ranks loosely; H200 claims need `runs/` receipts.
 - Hopper-only paths can't run here: force each Hopper branch's glue locally with a stand-in kernel.
 - Run `tools/sync_upstream.sh` first; read the diff if official files changed.
