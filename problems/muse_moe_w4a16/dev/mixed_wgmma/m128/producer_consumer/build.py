@@ -47,14 +47,14 @@ void pc_probe(std::vector<int64_t>v,int64_t stream){pc_decode_probe<<<1,128,0,(c
 '''
     (HERE/'pc.cu').write_text(cuda)
     helpers=subset((ROOT/'prof/lab/moe_m128_phase_mix.py').read_text(),('dc_weights','dc_fixtures','dc_oracles','MWGraph','pm_error'))
-    hh=(BASE/'hh_cell.py').read_text();assert hashlib.sha256(hh.encode()).hexdigest()=='970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f'
+    hh=(BASE/'hh_cell.py').read_text();assert hashlib.sha256(hh.encode()).hexdigest()=='365b623992367a1d45d3dae06a2096ddd0e6879deffab2e3924678a47997b621'
     small=(ROOT/'problems/muse_decode_layer/dev/nt1_branches/nt1_lop3_cell.py').read_text()
     text=helpers+'\n'+hh+'\n'+small+'\nimport gc\nimport time\nimport statistics\n'
     text+='PC_CUDA='+repr(cuda)+'\nPC_CPP='+repr(cpp)+'\n'+(HERE/'driver.py.inc').read_text()
     assert not rejected_words(text),rejected_words(text)
     out=ROOT/'prof/lab/moe_m128_producer_consumer.py';out.write_text(text)
     manifest=dict(payload=str(out.relative_to(ROOT)),sha256=hashlib.sha256(text.encode()).hexdigest(),CUDA_sha256=hashlib.sha256(cuda.encode()).hexdigest(),
-        control_HH='770809cf159f41e2',H_H_sha256=hashlib.sha256(hh.encode()).hexdigest(),small_cell_sha256=hashlib.sha256(small.encode()).hexdigest(),
+        control_HH='u8 hh_cell (S7 idist; bit-identical to 770809cf u16 H_H)',H_H_sha256=hashlib.sha256(hh.encode()).hexdigest(),small_cell_sha256=hashlib.sha256(small.encode()).hexdigest(),
         prerequisite_send='d8d3a89cb3436100',state='Ready only after local admission; no send until prerequisite lands.',
         N_limits=[32,64,128],ring_stages=[2,3],producer_threads=128,consumer_threads=128,token_capacities=[32,128],
         bank='same-size u8 recoded scales; producer dequantizes each expert/channel/K64 tile once; no prepared dequant bank')

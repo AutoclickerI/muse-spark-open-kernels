@@ -4,8 +4,9 @@ Serves G1/G2: lower MoE time inside the decode-layer score. H200
 **770809cf159f41e2 is complete and H_H wins**:234.44 us vs D32g272.70 and
 NT1-recoded289.62 across12 seeds x3 fixtures, paired ratio0.8629 vsD32g.
 All36 numeric gates pass; maxL2/row0.00413/0.00469, A:A abs mean1.580 us.
-The fixed H_H S5 handoff is [hh_cell.py](hh_cell.py), SHA-256
-`970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f`.
+The fixed H_H handoff is [hh_cell.py](hh_cell.py), SHA-256
+`365b623992367a1d45d3dae06a2096ddd0e6879deffab2e3924678a47997b621`: uint8 scale codes,
+BF16 scale word formed in registers (the S7 kernel; bit-identical to the u16-word cell 770809cf timed).
 `hh_prepare(weights)` then `hh_experts(x,scores,local_ids,state,local_start=0)`
 at M128. Both phases use one-LOP3 recoded NT1 for count<=16 and packed
 WGMMA32 config1/grid1056 above16, then distributed per-token finalization.
@@ -13,15 +14,6 @@ The actual fixed wrapper passes25 signed/zero/subnormal/separate-global and
 changed-route graph gates; decode FOCUS has the path/hash for S5. No whole-layer
 H200 gain is claimed yet. `build_hh_cell.py` reads the accepted payload and
 retains exact native kernels, packing, recipe, lifetime and stream behavior.
-
-The fixed D32g handoff is [d32g_cell.py](d32g_cell.py), SHA-256
-`a7afb63d9cb17c920412c8f3003640bf956599ab6caa874a9631f290798dce82`.
-Call `bank=d32g_prepare(weights)` once, then
-`d32g_experts(x,scores,local_ids,bank,local_start=0)` at M128. CUDA, packing,
-word conversion, allocations and launches are the source-pinned S4 definitions
-from the accepted payload; S4 already incorporates them. `build_d32g_cell.py`
-reproduces the cell and asserts its hash. It contains only the admitted D32
-engine. H_H is the admitted standalone winner; whole-layer composition remains unverified.
 
 Completed MoE-host lab: send **7d9404dc53d78d6f**, judge
 **770809cf159f41e2**. `h200_result.json` pins all measured values. H_D32238.89,

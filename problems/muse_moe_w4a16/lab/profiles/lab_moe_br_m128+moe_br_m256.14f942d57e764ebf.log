@@ -1,0 +1,59 @@
+MOE_PHASE M=1 ctas=264 route=5448/5755/6117 p1=20198/24403/30021 wait=2413/8584/13937 barrier=1276/5377/9772 p2=20332/23217/27524 norm=1118/1826/2519 final=97/148/2345 p1_tiles=5/6/6 p2_tiles=2/3/3 atomics=16/24/24
+MOE_TIME M=1 v9=0.0856ms v12=0.0775ms v16=0.1051ms wide=0.5064ms selected=v9
+MOE_PHASE M=16 ctas=264 route=5485/5835/6184 p1=128943/161583/182988 wait=1466/4859/47391 barrier=1253/19402/63636 p2=73567/79569/123185 norm=10458/13035/16345 final=103/157/2977 p1_tiles=38/39/39 p2_tiles=19/19/20 atomics=152/152/160
+MOE_TIME M=16 v9=0.2064ms v12=0.2278ms v16=0.2332ms wide=0.3245ms selected=v9
+MOE_PHASE M=32 ctas=264 route=5916/6148/6372 p1=148126/187230/208226 wait=862/6522/62117 barrier=1308/26855/78130 p2=83052/90196/144163 norm=12366/15021/19366 final=103/165/3111 p1_tiles=44/45/45 p2_tiles=22/22/23 atomics=176/176/184
+MOE_TIME M=32 v9=0.2338ms v12=0.2536ms v16=0.2619ms wide=0.3608ms selected=v9
+MOE_PHASE M=8 ctas=264 route=5625/5847/6015 p1=73033/89657/102486 wait=895/7659/34046 barrier=1281/12299/41113 p2=41896/48843/76155 norm=5619/6926/10231 final=97/150/2470 p1_tiles=21/21/22 p2_tiles=10/11/11 atomics=80/88/88
+MOE_TIME M=8 v9=0.1386ms v12=0.1473ms v16=0.1616ms wide=0.2269ms selected=v9
+MOE_PHASE M=128 ctas=264 route=7573/7933/8193 p1=250511/309378/346142 wait=793/5793/100788 barrier=1052/31938/121743 p2=138182/145807/235443 norm=21038/25991/30482 final=122/1970/4291 p1_tiles=75/76/76 p2_tiles=37/38/38 atomics=296/304/304
+MOE_TIME M=128 v9=0.3495ms v12=0.3967ms v16=0.3820ms wide=0.5009ms selected=v9
+MOE_PHASE M=256 ctas=264 route=10382/10767/11097 p1=400814/494119/546469 wait=907/8768/150377 barrier=1280/49254/186801 p2=216551/229873/368859 norm=33760/42290/48751 final=1034/3975/8336 p1_tiles=120/120/121 p2_tiles=60/60/61 atomics=480/480/488
+MOE_TIME M=256 v9=0.4945ms v12=0.6036ms v16=0.5585ms wide=0.5368ms selected=wide
+MUSE_V9_PHASE_DISPATCH {1: 'v9', 8: 'v9', 16: 'v9', 32: 'v9', 128: 'v9', 256: 'wide', 753: 'wide', 3012: 'wide', 16384: 'wide'} {1: {'v9': 0.08563199639320374, 'v12': 0.07753600180149078, 'v16': 0.1050880029797554, 'wide': 0.5063999891281128}, 16: {'v9': 0.20640000700950623, 'v12': 0.22784000635147095, 'v16': 0.23315200209617615, 'wide': 0.3245120048522949}, 32: {'v9': 0.2338239997625351, 'v12': 0.25360000133514404, 'v16': 0.26185598969459534, 'wide': 0.36076799035072327}, 8: {'v9': 0.13859200477600098, 'v12': 0.14732800424098969, 'v16': 0.1616320013999939, 'wide': 0.2269439995288849}, 128: {'v9': 0.3495360016822815, 'v12': 0.3967359960079193, 'v16': 0.3819519877433777, 'wide': 0.5009279847145081}, 256: {'v9': 0.4944959878921509, 'v12': 0.6036159992218018, 'v16': 0.558463990688324, 'wide': 0.5367680191993713}}
+LAB_BEGIN moe_br_m128 b767b7fcdb637177
+META M128 vs HH = exact S7 H_H (u8 codes; route128 zero-fill + pm_meta SS clear; NT1<=16 then WGMMA32>16 per phase; finish). U16 = exact u16-word H_H (S6). HH_u8: H_H with this lab's typed-smem WGMMA. Other arms: live route 1CTA (T32/T8 lists), small W13 zeroes its SS rows, n=NT1<=16; N: heavy N32; NR: heavy remainder rows<=16 on N16 beside NT1; NRm: remainder on the heavy stream; B8: W2 NT1<=8 + N16 for 8<count<=16 beside it. phase=fork/join per phase, full=fork once, join at finish. 12 seeds x3 fresh routes, judge-style read flush (lab_cold_l2), AB/BA x6 vs control, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to HH output (diagnostic). Phase means are diagnostics.
+BUDGET before compile
+END M=128 seeds=0/12 used=0.0 left=57.3
+LAB_END lab_s=6.6 prepare_s=163.9
+LAB_BEGIN moe_br_m256 a6a40f731cf36fbb
+META M256 vs S6 = exact S6 mixed_parallel. HH = H_H policy on u8 (NT1<=16, WGMMA32>16). R_s6 = 110599ba R_full (S6 buffers). HH_u8: H_H with this lab's typed-smem WGMMA. Other arms: live route 1CTA (T32/T8 lists), small W13 zeroes its SS rows, n=NT1<=16; N: heavy N32; NR: heavy remainder rows<=16 on N16 beside NT1; NRm: remainder on the heavy stream; B8: W2 NT1<=8 + N16 for 8<count<=16 beside it. phase=fork/join per phase, full=fork once, join at finish. 12 seeds x3 fresh routes, judge-style read flush (lab_cold_l2), AB/BA x6 vs control, A:A.
+GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to S6 output (diagnostic). Phase means are diagnostics.
+BUILD s=11.7 left=109.4
+S0 0.987 0.917 0.945 0.904 0.859 0.924 0.966 0.863 0.957
+S1 0.957 0.921 0.921 0.883 0.851 0.889 0.913 0.859 0.916
+S2 0.991 0.919 0.947 0.910 0.868 0.941 0.980 0.882 0.974
+S3 0.990 0.924 0.939 0.899 0.862 0.936 1.005 0.875 0.963
+S4 1.035 0.943 0.973 0.945 0.912 0.967 1.017 0.912 0.988
+S5 1.012 0.938 0.942 0.908 0.879 0.937 0.982 0.879 0.965
+S6 1.045 0.930 0.960 0.927 0.884 0.960 1.030 0.899 0.992
+S7 0.987 0.920 0.941 0.904 0.869 0.909 0.930 0.874 0.933
+S8 0.923 0.909 0.887 0.854 0.825 0.881 0.906 0.829 0.908
+S9 1.038 0.924 0.977 0.939 0.901 0.964 1.014 0.911 0.995
+S10 0.995 0.913 0.950 0.912 0.874 0.943 0.992 0.877 0.975
+S11 0.968 0.918 0.926 0.891 0.859 0.914 0.937 0.862 0.946
+ORDER HH R_s6 HH_u8 N_phase N_full NR_full NRm_full B8_full B8R_full
+MEAN S6 n=36 us=342.80 med=336.22 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN HH n=36 us=340.50 med=329.94 pair=0.9941 lo/hi=0.893/1.065 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN R_s6 n=36 us=316.70 med=307.01 pair=0.9230 lo/hi=0.906/0.946 L2/row=0.00412/0.00465 TASK=PASS bit=36
+MEAN HH_u8 n=36 us=323.31 med=313.82 pair=0.9424 lo/hi=0.859/1.009 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN N_phase n=36 us=310.84 med=301.80 pair=0.9063 lo/hi=0.829/0.972 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN N_full n=36 us=298.68 med=289.90 pair=0.8701 lo/hi=0.798/0.936 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN NR_full n=36 us=319.43 med=313.78 pair=0.9305 lo/hi=0.829/0.989 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN NRm_full n=36 us=333.88 med=327.36 pair=0.9725 lo/hi=0.838/1.063 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN B8_full n=36 us=300.83 med=294.27 pair=0.8768 lo/hi=0.819/0.937 L2/row=0.00412/0.00465 TASK=PASS bit=0
+MEAN B8R_full n=36 us=329.29 med=322.72 pair=0.9595 lo/hi=0.859/1.019 L2/row=0.00412/0.00465 TASK=PASS bit=0
+PH S6 10.2/211.3/123.3/14.3
+PH HH 12.6/216.0/116.4/14.3
+PH R_s6 6.7/307.3/14.3
+PH HH_u8 12.4/202.0/112.5/14.1
+PH N_phase 6.6/197.8/107.9/14.4
+PH N_full 6.5/288.7/14.2
+PH NR_full 6.5/309.4/14.3
+PH NRm_full 6.6/325.0/14.3
+PH B8_full 6.6/292.1/14.5
+PH B8R_full 6.6/321.2/14.3
+AA signed/abs/max=0.113/0.450/1.520
+END M=256 seeds=12/12 used=63.6 left=57.5
+LAB_END lab_s=63.6 prepare_s=227.5

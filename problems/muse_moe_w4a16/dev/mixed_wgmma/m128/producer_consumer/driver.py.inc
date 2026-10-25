@@ -15,7 +15,7 @@ def pc_plan(data,state,which=1,grid=1056,mask=3,cut=16,pcut=None):
     x=data['hidden_states'];m=x.shape[0];dev=x.device
     if not 1<=m<=128:raise ValueError('producer capacity covers M1..128')
     if pcut is None:pcut=cut
-    base=state['base'];word=state['word'];native=state['native'];cap=m*8+32*128
+    base=state['base'];native=state['native'];cap=m*8+32*128
     c=torch.empty(32,device=dev,dtype=torch.int32);off=torch.empty(33,device=dev,dtype=torch.int32);order=torch.empty_like(c)
     tasks=[torch.empty_like(off) for _ in range(4)];slots=torch.empty((32,m),device=dev,dtype=torch.int32)
     ids=data['topk_ids'].int().contiguous();tw=data['topk_weights'].float().contiguous();pos=torch.empty_like(ids)
@@ -26,9 +26,9 @@ def pc_plan(data,state,which=1,grid=1056,mask=3,cut=16,pcut=None):
     def vector(bank,first,task):
         v=[bank['w13' if first else 'w2'],bank['w13_sf' if first else 'w2_sf'],bank['w13_gs' if first else 'w2_gs'],x if first else act]+common+[part]+tail
         v[7]=task;return v
-    v13=vector(base,1,tasks[1]);v2=vector(base,0,tasks[1]);h13=vector(word,1,tasks[2]);h2=vector(word,0,tasks[2])
+    v13=vector(base,1,tasks[1]);v2=vector(base,0,tasks[1]);h13=vector(base,1,tasks[2]);h2=vector(base,0,tasks[2])
     nv=[x,base['pnw'],native['w13p'],native['w2p'],base['w13_gs'],base['w2_gs'],c,off,slots,act,y,ss]
-    mid13=vector(word,1,tasks[3]);mid2=vector(word,0,tasks[3])
+    mid13=vector(base,1,tasks[3]);mid2=vector(base,0,tasks[3])
     ptrs=[[v.data_ptr() for v in row] for row in (v13,v2,h13,h2,nv,mid13,mid2)]
     rp=[v.data_ptr() for v in (ids,c,off,order,tasks[0],slots,pos,counts,out)]
     mp=[v.data_ptr() for v in (c,order,tasks[1],tasks[2],tasks[3],ss)]
@@ -74,7 +74,7 @@ PC_CHOICES=tuple((*v,16) for v in (('HH_route',1,1056,0),('P32s2',0,1056,3),('P6
 PC_NAMES=('HH_admitted',)+tuple(v[0] for v in PC_CHOICES)
 
 
-def pc_measure(w,state,ds,flush,small=False):
+def pc_measure(w,state,ds,small=False):
     wants=dc_oracles(ds,w)
     if small:
         tiny=lop3_bind(state['native'])
@@ -94,7 +94,7 @@ def pc_measure(w,state,ds,flush,small=False):
             if repeat%2:order.reverse()
             aa=[]
             for j in order:
-                flush.zero_();a.record();graphs[j].replay();b.record();b.synchronize();us=a.elapsed_time(b)*1000.
+                lab_cold_l2();a.record();graphs[j].replay();b.record();b.synchronize();us=a.elapsed_time(b)*1000.
                 samples[j].append(us)
                 if j==0:aa.append(us)
             noise.append(aa[1]-aa[0])
@@ -107,7 +107,7 @@ def pc_measure(w,state,ds,flush,small=False):
     return records
 
 
-def pc_phases(data,state,which,grid,mask,pcut,flush):
+def pc_phases(data,state,which,grid,mask,pcut):
     plan=pc_plan(data,state,which,grid,mask,16,pcut);steps=plan['components'];result=[]
     for f in steps:f()
     a=torch.cuda.Event(enable_timing=True);b=torch.cuda.Event(enable_timing=True)
@@ -117,7 +117,7 @@ def pc_phases(data,state,which,grid,mask,pcut,flush):
         samples=[]
         for _ in range(3):
             for prep in steps[:index]:prep()
-            flush.zero_();a.record();graph.replay();b.record();b.synchronize();samples.append(a.elapsed_time(b)*1000.)
+            lab_cold_l2();a.record();graph.replay();b.record();b.synchronize();samples.append(a.elapsed_time(b)*1000.)
         result.append(statistics.median(samples))
     return result
 
@@ -126,20 +126,20 @@ def lab(deadline,weights,state=None):
     global PC_ROWS,PC_SMALL
     PC_ROWS=[];PC_SMALL=[];started=time.monotonic();dev=next(v.device for v in weights.values() if torch.is_tensor(v))
     lines=['META corrected PC:128 producer/128 WGMMA consumer threads,2/3-slot full/empty mbarriers; each expert/channel/K64 packed tile decoded once, shared by every N subgroup; exact u8 recode; no prepared expanded expert weights.',
-        'META12 public synthetic MoE/router seeds x3 identical routes; M128 vs exact H_H, M16/32 vs NT1lop;6 cold128MiB AB/BA,A:A,independent FP32 before/after. ORDER '+','.join(PC_NAMES)]
+        'META12 public synthetic MoE/router seeds x3 identical routes; M128 vs exact S7 H_H (u8 codes), M16/32 vs NT1lop;6 cold AB/BA (judge-style read: lab_cold_l2),A:A,independent FP32 before/after. ORDER '+','.join(PC_NAMES)]
     if deadline-time.monotonic()<50:return lines+['INCOMPLETE before_compile']
     m128_hh_pm_module();mod=pc_module();nt1_module('lop3')
     lines.append(f'BUILD s={time.monotonic()-started:.1f} left={deadline-time.monotonic():.1f}')
     for cfg in (0,1,2,3):lines.append(f'RES cfg{cfg} M128 W13/W2='+str([mod.pc_info(cfg,128,f) for f in (1,0)]))
-    flush=torch.empty(128<<20,device=dev,dtype=torch.uint8);phases=[]
+    phases=[]
     for seed in range(12):
         if deadline-time.monotonic()<12:lines.append(f'INCOMPLETE seed={seed}');break
         w=dc_weights(5353+7919*seed,dev);w['w13_gs_gate']=w['w13_gs'];w['w13_gs_up']=w['w13_gs']
-        bank=hh_prepare(w);ds=dc_fixtures(w,128);rows=pc_measure(w,bank,ds,flush);PC_ROWS.extend(dict(seed=seed,**v) for v in rows)
+        bank=hh_prepare(w);ds=dc_fixtures(w,128);rows=pc_measure(w,bank,ds);PC_ROWS.extend(dict(seed=seed,**v) for v in rows)
         if seed==0:
             for name,c,g,p,q in PC_CHOICES:
-                if p==3 or p==0:phases.append('PH '+name+' r/Al/Ah/Bl/Bh/f='+','.join(f'{v:.1f}' for v in pc_phases(ds[0],bank,c,g,p,q,flush)))
-        for M in (16,32):PC_SMALL.extend(dict(seed=seed,**v) for v in pc_measure(w,bank,dc_fixtures(w,M),flush,True))
+                if p==3 or p==0:phases.append('PH '+name+' r/Al/Ah/Bl/Bh/f='+','.join(f'{v:.1f}' for v in pc_phases(ds[0],bank,c,g,p,q)))
+        for M in (16,32):PC_SMALL.extend(dict(seed=seed,**v) for v in pc_measure(w,bank,dc_fixtures(w,M),True))
         lines.append('S'+str(seed)+' us='+','.join(f'{statistics.mean(v["us"][j] for v in rows):.1f}' for j in range(len(PC_NAMES))))
         del bank,w,ds;gc.collect()
     lines+=phases

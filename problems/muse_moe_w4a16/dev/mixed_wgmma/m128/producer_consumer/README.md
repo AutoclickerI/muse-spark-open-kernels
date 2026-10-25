@@ -4,7 +4,10 @@ Serves G1/G2: improve M128 MoE inside the decode-layer score. The fixed H_H
 incumbent is234.44us on H200770809cf: NT1 for expert count<=16 and packed
 WGMMA32 above16 in both W13 and W2, then distributed norm/combine. The
 threshold sweep (send d8d3a89cb3436100) runs as judge job `4c469bf9ef9645b1`.
-This lab is built and unsent; it makes no performance claim yet.
+The lab's H_H control and its route/selective arms now run the u8 `hh_cell.py` (S7's
+in-register scale word; bit-identical to the u16 cell 770809cf timed), and every timed replay
+starts from the judge-style read flush `lab_cold_l2()`. Locally (sm_120, no WGMMA) the consumer is
+mma.sync from the same shared tiles, so local ranks say nothing about the SS-WGMMA consumer.
 
 ## Why the small-M D split lost
 
@@ -111,7 +114,7 @@ those shapes authorizes a small-M handoff. The source is already available
 to the small-M lane through this FINDINGS-linked directory; no winner is claimed.
 
 The one intended proj-host payload uses12 public synthetic MoE/router seeds,
-three identical generated real-route fixtures per seed, six cold128MiB
+three identical generated real-route fixtures per seed, six cold (1 GiB read)
 rotated/reversed AB/BA orders, duplicate control A:A, and independent finite/
 FP32 gates before and after timing. It prints full seed means, paired ratios,
 resources, phase components, and small-M results. Failure raises; partial seeds

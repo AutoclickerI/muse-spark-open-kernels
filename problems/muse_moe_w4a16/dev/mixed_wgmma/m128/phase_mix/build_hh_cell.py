@@ -21,6 +21,10 @@ def main():
     codes={p:(HERE/(p+'.cu')).read_text() for p in ('idist','norig','or_rs','pm_nt','pm_meta')}
     assert '\n'.join(codes.values())==cuda
     selected=('idist','pm_nt','pm_meta')
+    # Scales stay packed uint8 codes; the BF16 word forms in registers (S7, commit 69da04e).
+    import sys;sys.path.insert(0,str(ROOT/'problems/muse_decode_layer/dev/s7'));from build import CUDA_EDITS
+    for old,new,count in CUDA_EDITS:
+        assert codes['idist'].count(old)==count,old;codes['idist']=codes['idist'].replace(old,new)
     cpp=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='PM_CPP')
     cpp='\n'.join(l for l in cpp.splitlines() if l.startswith('#include') or l.startswith(('int64_t idist_','int64_t pm_nt_')))+'\n'
     funs=['idist_'+f for f in ('init','info','route','run','finish')]+['pm_nt_'+f for f in ('init','smem','resident','run')]+['pm_meta']
@@ -28,7 +32,9 @@ def main():
     for n in ast.walk(module):
         if isinstance(n,ast.Constant) and n.value==('idist','or_rs','norig','pm_nt'):n.value=('idist','pm_nt')
         if isinstance(n,ast.Tuple) and ast.literal_eval(n)==('idist','or_rs','norig','pm_nt'):n.elts=[ast.Constant('idist'),ast.Constant('pm_nt')]
-    plan=fn['pm_plan'];plan.args.args=plan.args.args[:4];plan.args.defaults=[]
+    plan=fn['pm_plan'];plan.args.args=[plan.args.args[i] for i in (0,1,3)];plan.args.defaults=[]
+    for n in ast.walk(plan):
+        if isinstance(n,ast.Name) and n.id=='word':n.id='base'
     body=[]
     for n in plan.body:
         if isinstance(n,ast.Assign):
@@ -46,9 +52,9 @@ mod.idist_run(ptrs[2 if which else 3],which,1,1056,start,1,0,m,cap,stream())
             n.body=ast.parse('phase('+('1' if n.name=='w13' else '0')+')').body
         body.append(n)
     plan.body=body
-    call=fn['pm_call'];call.args.args=call.args.args[:4];call.args.defaults=[]
+    call=fn['pm_call'];call.args.args=[call.args.args[i] for i in (0,1,3)];call.args.defaults=[]
     for n in ast.walk(call):
-        if isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='pm_plan':n.args=n.args[:4]
+        if isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='pm_plan':n.args=[n.args[i] for i in (0,1,3)]
     for n in tree.body:
         if isinstance(n,ast.Assign):
             key=getattr(n.targets[0],'id','')
@@ -63,7 +69,7 @@ mod.idist_run(ptrs[2 if which else 3],which,1,1056,start,1,0,m,cap,stream())
             for target in n.targets:
                 for v in ast.walk(target):
                     if isinstance(v,ast.Name) and isinstance(v.ctx,ast.Store):bindings[v.id]=n
-    selected_nodes=set();pending=['issue_prepare','issue_word_bank','issue_nt_prepare','pm_call']
+    selected_nodes=set();pending=['issue_prepare','issue_nt_prepare','pm_call']
     while pending:
         n=bindings.get(pending.pop())
         if n is None or id(n) in selected_nodes:continue
@@ -80,23 +86,23 @@ mod.idist_run(ptrs[2 if which else 3],which,1,1056,start,1,0,m,cap,stream())
         def visit_FunctionDef(self,n):n.name=names.get(n.name,n.name);return self.generic_visit(n)
         def visit_Name(self,n):n.id=names.get(n.id,n.id);return n
     tree=ast.fix_missing_locations(Rename().visit(tree))
-    text='"""H200770809cf admitted H_H M128: NT1<=16, WGMMA32>16 in both phases."""\nimport functools\nimport hashlib\nimport torch\nfrom torch.utils.cpp_extension import load_inline\n'+ast.unparse(tree)+'\n'
+    text='"""H_H M128 (H200 770809cf recipe): NT1<=16, WGMMA32>16 in both phases; packed uint8 scale codes (S7 kernel)."""\nimport functools\nimport hashlib\nimport torch\nfrom torch.utils.cpp_extension import load_inline\n'+ast.unparse(tree)+'\n'
     text+='''
 def hh_prepare(weights):
     w=dict(weights,post_norm_w=weights.get('post_expert_norm',weights.get('post_norm_w')))
     base=m128_hh_issue_prepare(w)
-    return dict(base=base,word=m128_hh_issue_word_bank(base),native=m128_hh_issue_nt_prepare(w))
+    return dict(base=base,native=m128_hh_issue_nt_prepare(w))
 
 def hh_experts(x,scores,local_ids,state,local_start=0):
     assert x.shape[0]==128, 'H_H cell is selected only for M128'
     data=dict(hidden_states=x,topk_ids=local_ids,topk_weights=scores,config=dict(local_start=local_start))
-    return m128_hh_pm_call(data,state['base'],state['word'],state['native'])
+    return m128_hh_pm_call(data,state['base'],state['native'])
 '''
-    assert 'or_rs' not in text and 'norig' not in text
+    assert 'or_rs' not in text and 'norig' not in text and 'word_bank' not in text and 'torch.int16' not in text
     out=HERE/'hh_cell.py';out.write_text(text)
     meta=dict(path=str(out.relative_to(ROOT)),sha256=hashlib.sha256(text.encode()).hexdigest(),ready=True,receipt='770809cf159f41e2',
         prepare='hh_prepare(weights)',call='hh_experts(x,scores,local_ids,state,local_start=0)',tokens=128,
-        backend='both W13 and W2: recoded one-LOP3 NT1 for count<=16; exact-u16-scale WGMMA32 config1/grid1056 for count>16; distributed finalizer',
+        backend='both W13 and W2: recoded one-LOP3 NT1 for count<=16; uint8-scale WGMMA32 config1/grid1056 for count>16 (S7 kernel, BF16 word in registers); distributed finalizer',
         mean_us=234.44,D32g_us=272.70,mean_paired_ratio=.8629,fixtures=36,seed_count=12,
         source_payload_sha256=sha,embedded_sources={p:hashlib.sha256(codes[p].encode()).hexdigest() for p in selected},
         note='Fixed specialization of accepted launch/packing/bodies; actual public wrapper local gate required; whole-layer H200 gain unverified.')

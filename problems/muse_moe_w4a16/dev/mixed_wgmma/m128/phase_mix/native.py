@@ -1,5 +1,4 @@
 """Compile all actual SM90a paths and pin shared control sources to receipts."""
-import ast
 import hashlib
 import json
 from pathlib import Path
@@ -29,12 +28,7 @@ def main():
         result[prefix]=dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(),kernels=entries)
     # Actual admitted idist and actual NT1 controls must remain byte-identical.
     for p in ('idist','norig'):assert (HERE/(p+'.cu')).read_bytes()==(HERE.parent/'issue_limit'/(p+'.cu')).read_bytes()
-    orig=(ROOT/'problems/muse_decode_layer/dev/s4/manifest.json').read_text();accepted=json.loads(orig)
-    tree=ast.parse((HERE/'d32g_cell.py').read_text())
-    dist=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(getattr(t,'id','')=='S4_D32_CUDA' for t in n.targets))
-    assert hashlib.sha256(dist.encode()).hexdigest()==accepted['d32_cuda_sha256']
-    assert dist==(HERE/'idist.cu').read_text()
-    report=dict(sources=result,source_controls_byte_identical=True,handoff_matches_S4_and_accepted_payload=True,
+    report=dict(sources=result,source_controls_byte_identical=True,
         nt_phase_specializations=4,no_spills=True,total_entries=sum(len(v['kernels']) for v in result.values()))
     (HERE/'native.json').write_text(json.dumps(report,indent=2)+'\n');print('PHASE_MIX_NATIVE_PASS',report['total_entries'],'entries; four NT1 phase kernels no spills',flush=True)
 

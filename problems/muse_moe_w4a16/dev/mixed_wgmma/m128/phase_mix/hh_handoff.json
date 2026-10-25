@@ -1,12 +1,12 @@
 {
   "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/m128/phase_mix/hh_cell.py",
-  "sha256": "970663d44d993f8a029cd4289e2a9716bd2bf5897098799a6e0605e0abf21f0f",
+  "sha256": "365b623992367a1d45d3dae06a2096ddd0e6879deffab2e3924678a47997b621",
   "ready": true,
   "receipt": "770809cf159f41e2",
   "prepare": "hh_prepare(weights)",
   "call": "hh_experts(x,scores,local_ids,state,local_start=0)",
   "tokens": 128,
-  "backend": "both W13 and W2: recoded one-LOP3 NT1 for count<=16; exact-u16-scale WGMMA32 config1/grid1056 for count>16; distributed finalizer",
+  "backend": "both W13 and W2: recoded one-LOP3 NT1 for count<=16; uint8-scale WGMMA32 config1/grid1056 for count>16 (S7 kernel, BF16 word in registers); distributed finalizer",
   "mean_us": 234.44,
   "D32g_us": 272.7,
   "mean_paired_ratio": 0.8629,
@@ -14,14 +14,14 @@
   "seed_count": 12,
   "source_payload_sha256": "f3c2796944c60b77aa5d63fd61e766a386bcdcfaf526b8ed01ab19e5367e5736",
   "embedded_sources": {
-    "idist": "1942a25f32bba908bde7f6f210113a3cc821959a601c61bb440a0ec1f174dfb2",
+    "idist": "ab348da4682ed9f77caa363d647310c07c8158b9eac434f22931b63b47ae2cba",
     "pm_nt": "f13cd7011ac4d7ec8f8e6dc4244e908eeb369c5f971d9d29ec321336cea24278",
     "pm_meta": "9dc2225b26ff05995f96289d9a538d2d4de1ff7d7cd8d0942c3d08513c9a3d7c"
   },
-  "note": "Fixed specialization of accepted source and recipe; actual public wrapper passes25 changed-input graph gates. Whole-layer H200 gain unverified.",
+  "note": "Receipt 770809cf timed the u16-word predecessor (970663d4); this u8 cell runs the S7 idist kernel, bit-identical to it on 60 fixtures (problems/muse_decode_layer/dev/s7/bitexact.json). Public wrapper passes the local graph gates below.",
   "local": {
     "checks": 25,
-    "max_L2": 0.004101728089153767,
+    "max_L2": 0.004267987795174122,
     "max_row": 0.004600831773132086,
     "signed_zero_subnormal_scales": true,
     "separate_gate_up_globals": true

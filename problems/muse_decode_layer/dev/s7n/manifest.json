@@ -1,0 +1,31 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_s7n.py",
+  "sha256": "381054dbcc5d08ac062845176f57ca0b8c2fd6d5a2191a56e50f4272c8ace3d3",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s7r.py",
+  "base_sha256": "56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101",
+  "nf_cuda_sha256": "e494160713e4f37bcb01b55b21f55fecb2103225118019ae5c87ccfe812b5bdb",
+  "deleted": [
+    "FX_CUDA",
+    "FX_CPP",
+    "FX_CONFIGS",
+    "WI_CPP",
+    "fx_module",
+    "fx_prepare",
+    "fx_from_packed",
+    "fx_plan",
+    "wi_prepare",
+    "wi_plan",
+    "wi_call",
+    "RF_CUDA",
+    "RF_CPP",
+    "rf_module",
+    "rf_plan",
+    "rf_call",
+    "rc_masks",
+    "RC_SIGNS",
+    "RC_ZEROS",
+    "rc_repack"
+  ],
+  "lab": "14f942d57e764ebf N_full 298.68 vs mixed_parallel 342.80 us (0.8701), R_full 316.70 (0.9230)",
+  "change": "M256 MoE: live route + fork-once NT1<=16 (W13->W2) || heavy N32 (W13->W2) on the H_H u8 + NT1 banks; mixed_parallel engine deleted"
+}
