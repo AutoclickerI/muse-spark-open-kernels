@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Run any H200 measurement inside the prepare() of a problem's best scored source (a lab run).
+"""Run H200 measurements in prepare() or at import of a problem's best scored source (a lab run).
 
     tools/h200_lab.py send prof/lab/moe_skew.py [more.py ...] --note "V9 vs grouped at real routing" [--host muse_moe_w4a16] [--priority 1]
     tools/h200_lab.py build prof/lab/moe_skew.py [more.py ...] -o /tmp/x.py   # write the lab file only (to screen it)
     tools/h200_lab.py read <job | receipt.json> [name]                        # print the lab sections from a receipt
 
 The payload is one self-contained file defining `lab(deadline, weights[, state]) -> list[str]`: `deadline` is a
-time.monotonic() value (prepare's 300 s cap minus a margin, counted from prepare's start), `weights` is
+time.monotonic() deadline (prepare's 300 s cap minus a margin, or --import-budget seconds for hosts
+without prepare). Payloads must honor it; it does not interrupt running code. `weights` is
 what the host problem's prepare() receives (proj: qkv_gate, o, pooler, unpooler and the real router;
 MoE: the packed NVFP4 experts). Inline its CUDA/Triton (load_inline under a unique name); no imports of
 our modules, since the judge gets the one file. The optional third argument is the state returned by the
 host's already-completed base prepare; it avoids rebuilding a long tuner when a lab measures that state.
+Without prepare(), payloads run once after the host's definitions at module import, with weights=None and
+state=None; payloads needing weights must synthesize them. The import budget starts at the wrapper,
+after any import work already present in the best source. Neither kernel nor kernel_fn is changed.
 The judge's image has torch, triton and SGLang's kernels.
 
 The lab file is the host's best scored source (ledger) with prepare() wrapped: the base prepare runs
@@ -28,9 +32,9 @@ prints between its own LAB_BEGIN and LAB_END; over its share, the middle lines g
 CUDA error (lab b63389f0) still fails the run after printing them and kills the payloads after it, so put a
 risky payload last.
 
-Hosts: proj and MoE have 30 runs a day that their own boards barely use (G3 counts only the decode
-layer); decode, attention and prefill have 20, prefill is off the overall board, and attention has no prepare. Lab runs default to the
-proj host at the priority of the problem the measurement serves (--priority).
+Hosts: proj, MoE, prefill, decode and attention, sharing each host's board quota. Prefill is off the
+overall board. Attention has no judge-called prepare(), so uses import-time labs (--import-budget,
+default 45 s). Lab runs default to proj at the priority of the measurement's problem (--priority).
 """
 
 import argparse
@@ -53,13 +57,13 @@ from screen_all import local_imports  # noqa: E402
 
 LIMIT = 9000          # characters of lab output kept between the markers
 MARGIN_S = 15         # left of prepare's 300 s after the payload's deadline
-HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer")
+HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer", "muse_attention_decode")
+IMPORT_BUDGET_S = 45  # H200 probe cd9e07cf650e4839 completed 45 s; the parent's maximum is unknown
 MERGE_MAX = 2        # payloads per run: base prepares take ~130 s on the H200, leaving each ~80 s
 
 WRAPPER = '''
 # ---- h200_lab wrapper: payloads {names} on base {base} ----
 _LAB_PAYLOADS = {payloads!r}
-_lab_base_prepare = prepare
 _lab_ran = False
 _lab_flush_buf = None
 
@@ -83,25 +87,27 @@ def _lab_run_one(name, src, deadline, weights, state):
     return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)
 
 
-def prepare(weights):
+def _lab_run(weights, state, _start, _end, _phase):
     global _lab_ran
     import time as _t
-    _start = _t.monotonic()
-    state = _lab_base_prepare(weights)
     if not _lab_ran:
         _lab_ran = True
         import traceback as _tb
-        _end = _start + {budget}
         for _i, (_name, _sha, _src) in enumerate(_LAB_PAYLOADS):
             _t0 = _t.monotonic()
             _deadline = _t0 + max(0.0, _end - _t0) / (len(_LAB_PAYLOADS) - _i)
             _lines = []
             try:
+                if _t0 >= _end:
+                    raise TimeoutError("lab budget exhausted before this payload")
                 _lines = [str(x) for x in (_lab_run_one(_name, _src, _deadline, weights, state) or [])]
                 torch.cuda.synchronize()  # inside the try: a sticky CUDA error still prints this payload's lines
                 torch.cuda.empty_cache()
             except BaseException as _e:  # the error is the result; a sticky CUDA error still fails the run after
                 _lines += [f"LAB_ERROR {{type(_e).__name__}}: {{_e}}"] + _tb.format_exc().splitlines()[-8:]
+                if weights is None:
+                    _lines += ["LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them "
+                               "(state is also None on import-time hosts)"]
             # Over the cap, keep the first two lines (META) and the last lines (summaries, errors) and drop the middle.
             _cap = {limit} // len(_LAB_PAYLOADS)
             _head, _tail, _n = _lines[:2], [], sum(len(_l) + 1 for _l in _lines[:2]) + 40
@@ -117,8 +123,25 @@ def prepare(weights):
             print(f"LAB_BEGIN {{_name}} {{_sha}}", flush=True)
             for _l in _out:
                 print(_l, flush=True)
-            print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} prepare_s={{_t.monotonic() - _start:.1f}}", flush=True)
+            print(f"LAB_END lab_s={{_t.monotonic() - _t0:.1f}} {{_phase}}_s={{_t.monotonic() - _start:.1f}}", flush=True)
+'''
+
+PREPARE_WRAPPER = '''
+_lab_base_prepare = prepare
+
+
+def prepare(weights):
+    import time as _t
+    _start = _t.monotonic()
+    state = _lab_base_prepare(weights)
+    _lab_run(weights, state, _start, _start + {budget}, "prepare")
     return state
+'''
+
+IMPORT_WRAPPER = '''
+import time as _lab_time
+_lab_import_start = _lab_time.monotonic()
+_lab_run(None, None, _lab_import_start, _lab_import_start + {budget}, "import")
 '''
 
 
@@ -228,16 +251,24 @@ def absorb_waiting(host: str, embedded: list, priority: float, note: str):
     return embedded, priority, note
 
 
-def build(embedded: list, host: str) -> tuple[str, str]:
+def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S) -> tuple[str, str]:
+    if not 1 <= len(embedded) <= MERGE_MAX:
+        sys.exit(f"a lab needs 1 to {MERGE_MAX} payloads")
+    if not 0 < import_budget < float("inf"):
+        sys.exit("--import-budget must be positive and finite")
     if len({name for name, _, _ in embedded}) < len(embedded):
         sys.exit("payload names must differ (they label the receipt's sections)")
     base = best_source(host)
     src = (REPO / base["source"]).read_text()
-    if not re.search(r"^def prepare\(", src, re.M):
-        sys.exit(f"{host} best source {base['source']} has no prepare(); pick another --host")
+    # Attention's judge never calls prepare. Its best source may still define a private,
+    # zero-argument prepare() tuner that it calls itself during import; leave that intact.
+    has_prepare = host != "muse_attention_decode" and any(
+        isinstance(n, ast.FunctionDef) and n.name == "prepare" for n in ast.parse(src).body)
     out = src.rstrip() + "\n\n" + WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
-        budget=300 - MARGIN_S, limit=LIMIT)
+        limit=LIMIT)
+    out += (PREPARE_WRAPPER if has_prepare else IMPORT_WRAPPER).format(
+        budget=300 - MARGIN_S if has_prepare else import_budget)
     return out, base["job"]
 
 
@@ -245,6 +276,9 @@ def read(ref: str, name: str | None = None):
     p = Path(ref)
     if not p.exists():
         hits = sorted(REPO.glob(f"runs/*/*_{ref}.json"))
+        if not hits and (REPO / "runs/pending" / f"{ref}.json").exists():
+            subprocess.run([sys.executable, str(REPO / "tools/okc_run.py"), "collect", ref], cwd=REPO, check=True)
+            hits = sorted(REPO.glob(f"runs/*/*_{ref}.json"))
         if not hits:
             sys.exit(f"no receipt for {ref} (still running? `tools/okc_run.py collect {ref}`)")
         p = hits[-1]
@@ -271,6 +305,8 @@ def main():
         s = sub.add_parser(name)
         s.add_argument("payloads", type=Path, nargs="+")
         s.add_argument("--host", default="muse_bf16_proj", choices=HOSTS)
+        s.add_argument("--import-budget", type=float, default=IMPORT_BUDGET_S,
+                       help="payload deadline budget in seconds on hosts without prepare() (default: %(default)s)")
         if name == "send":
             s.add_argument("--note", required=True)
             s.add_argument("--priority", type=float, default=1.0)
@@ -286,7 +322,7 @@ def main():
         return read(args.ref, args.name)
     embedded = [embed(p) for p in args.payloads]
     if args.cmd == "build":
-        src, base = build(embedded, args.host)
+        src, base = build(embedded, args.host, args.import_budget)
         args.o.write_text(src)
         return print(f"{args.o}: {len(src)} bytes, base {base}")
     left = quota()
@@ -299,7 +335,7 @@ def main():
     # An explicitly scheduled lab must not pull another lane's ready payload
     # into its delay. Other sends also skip this held entry via its until field.
     embedded, priority, note = (embedded, args.priority, note) if args.not_before else absorb_waiting(args.host, embedded, args.priority, note)
-    src, base = build(embedded, args.host)
+    src, base = build(embedded, args.host, args.import_budget)
     out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in embedded)}.py"
     out.parent.mkdir(exist_ok=True)
     out.write_text(src)
