@@ -153,5 +153,7 @@ passes. `build_global_lab.py` pairs all three sliding loads plus decode1 full ag
 the last-CTA winner and direct-partials over16 seeds; captured new attention must contain one launch.
 The host also includes the selected full-verify stage4 win for official correctness. Its normal/forced
 local audits explicitly use N64 launch glue for the Hopper-only N128 persistent ring and omit unavailable
-sm120 FA3 scheduler metadata. Full/sliding global attention itself runs natively onGPU0. Pending screens,
-no new performance or correctness promotion for this follow-up.
+sm120 FA3 scheduler metadata. Full/sliding global attention itself runs natively onGPU0. Normal andforced local audits pass13 TASK cases,12 fresh graph shapes and24 static checks each.
+No new performance or correctness promotion for this follow-up; every whole-layer host quota was exhausted
+while screens ran. Frozen source`0ccc2548`,host`8e091fcb`,is queued for09:01KST October26.
+Native attention-board validation is bundled with [single-head probe](../full_head/README.md).

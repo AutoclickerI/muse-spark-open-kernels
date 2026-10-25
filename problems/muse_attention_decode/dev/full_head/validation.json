@@ -1,0 +1,27 @@
+{
+  "cuda_sha256": "3422fb9c7358313a98e92b75eadb1b319ee8604537907a9c36a93b8ac44640de",
+  "actual_local_persistent_stages": 2,
+  "attention_checks_passed": 24,
+  "fresh_graph_replays_each": 8,
+  "native_sm90a": {
+    "main_registers": 168,
+    "main_stack_bytes": 32,
+    "main_spill_store_bytes": 0,
+    "main_spill_load_bytes": 0,
+    "C75": false,
+    "combine_spill_store_bytes": 16,
+    "combine_spill_load_bytes": 8
+  },
+  "board_sha256": "db96f359c62502991e57db1a6dd96195c3bb85d6fd6268cc650ce8031156db85",
+  "normal": {
+    "tests": 16,
+    "shapes": 12,
+    "static": 10
+  },
+  "forced": {
+    "tests": 16,
+    "shapes": 12,
+    "static": 10
+  },
+  "h200_status": "pending; native stage evidence only; whole-layer host quotas exhausted"
+}
