@@ -1,0 +1,19 @@
+{
+  "status": "queued_not_judge_accepted",
+  "pid": 1290600,
+  "sender_sha256": "77150f5f5046c333b29095428f3b4db702c108ab0ca4d2fa4ff66113e12fd085",
+  "host": "muse_prefill_layer",
+  "priority": 11.0,
+  "not_before_epoch": 1792972860.0,
+  "not_before_KST": "2026-10-26 09:01",
+  "waiting_file": "runs/waiting/1290600.json",
+  "file": "problems/muse_prefill_layer/lab/lab_tail_payload.py",
+  "snapshot": "runs/sent/77150f5f5046c333/lab_tail_payload.py",
+  "payload_sha256": "abc1631d5d23bdcb1cb8f056ca16c5df137788e1dc3f48046d57ed7994b531ee",
+  "job_id": null,
+  "prior_senders_unchanged": [
+    "f867a8b74a243d1e",
+    "71a7126383e39952"
+  ],
+  "queue_basis": "Before this send: prefill2 waiting, MoE4; all existing senders priority<=10. New prefill priority11 leaves reset and round2 intact. Prefill resets to20 checks at00:00UTC."
+}

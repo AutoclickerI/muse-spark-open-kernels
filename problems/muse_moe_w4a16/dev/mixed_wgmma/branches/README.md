@@ -48,3 +48,12 @@ behind the unchanged reset sender above; no judge job ID yet.
 Decision: all new arms send independently; reset S3 win prioritizes CTA2S3, otherwise CTA2. Promote only
 by paired whole-MoE gains at each affected M followed by whole-layer integration. No new production patch.
 The 132.6/158.5us target remains unverified; the traffic/time model and its overlap assumptions are in round2.
+
+
+Next structural batch: [round3/README.md](round3/README.md), payload **abc1631d**, compact expert-major
+N16+CTA2 tail (static / device queue / S3), paired directly against both S14 and CTA2. Point predictions
+are169.9/222.7us static and161.9/196.6us queue; explicit recovery assumptions and component ledger are
+beside every arm. Three local_eval screens and1,235 graph/metadata checks pass.
+Sender **77150f5f5046c333**, prefill host, PID1290600, priority11, not-before1792972860, behind all existing
+senders. No judge job ID yet. Round2's full-overlap model is corrected to146.0/144.5us by enforcing the
+combined weight-stream floor; its conservative CTA2 prediction remains177.8/248.7us. Existing senders unchanged.

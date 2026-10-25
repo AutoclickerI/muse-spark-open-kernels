@@ -1,0 +1,96 @@
+{
+  "128": {
+    "target_us": 132.6,
+    "components": {
+      "unique_weights_4TBs_us": 120.324096,
+      "heavy_activation_L2_service_us": 13.00469750030931,
+      "light_activation_L2_service_us": 16.518144,
+      "heavy_stage_decode_epilogue_residual_us": 29.036164292794126,
+      "light_stage_decode_epilogue_residual_us": 21.49931200000001,
+      "route_finish_and_unattributed_tail_us": 16,
+      "overlap_credit_us": 38.53999999999999,
+      "launch_topology_increment_assumed_us": 0,
+      "launch_tail_limitation": "Launch/topology and terminal CTA tail are not independently measured. They remain inside shell/residual; zero means no assumed incremental launch win."
+    },
+    "arms": {
+      "S14": {
+        "point_us": 185.43,
+        "source": "8ee003db observed mean; contextual182.4/256.4 uses an earlier receipt"
+      },
+      "CTA2": {
+        "point_us": 177.84241379310345,
+        "design_bound_us": 146.03
+      },
+      "CTA2S3": {
+        "point_us": 177.84241379310345,
+        "design_bound_us": 146.03,
+        "assumption": "No extra S3 credit before the attribution receipt"
+      },
+      "TAIL_STATIC": {
+        "point_us": 169.88931034482758,
+        "design_bound_us": 146.03,
+        "assumption": "Compact list/fused N16 removes one quarter of the remaining scheduling deficit"
+      },
+      "TAIL_QUEUE": {
+        "point_us": 161.9362068965517,
+        "design_bound_us": 146.03,
+        "assumption": "Expert-major claiming removes one half of the scheduling deficit"
+      },
+      "TAIL_QUEUE_S3": {
+        "point_us": 161.9362068965517,
+        "design_bound_us": 146.03,
+        "assumption": "Same queue recovery; no extra S3 credit before measurement"
+      }
+    },
+    "scheduling_deficit_us": 31.812413793103445,
+    "stream_weight_floor_4_58TBs_us": 105.08654672489082,
+    "limitation": "Scenario estimates, not causal attribution: fixed-fixture phase/count data plus whole-MoE mean control from8ee003db. ACT rates borrow3e8996f8. Residual combines decode, issue, synchronization, epilogue and tail; cannot isolate these from existing receipts. Queue recovery fractions are explicit hypotheses tested by paired runs."
+  },
+  "256": {
+    "target_us": 158.5,
+    "components": {
+      "unique_weights_4TBs_us": 127.401984,
+      "heavy_activation_L2_service_us": 20.769923166769605,
+      "light_activation_L2_service_us": 16.518144,
+      "heavy_stage_decode_epilogue_residual_us": 47.00364744410906,
+      "light_stage_decode_epilogue_residual_us": 19.975088000000007,
+      "route_finish_and_unattributed_tail_us": 17.079999999999984,
+      "overlap_credit_us": 0.0,
+      "launch_topology_increment_assumed_us": 0,
+      "launch_tail_limitation": "Launch/topology and terminal CTA tail are not independently measured. They remain inside shell/residual; zero means no assumed incremental launch win."
+    },
+    "arms": {
+      "S14": {
+        "point_us": 261.03,
+        "source": "8ee003db observed mean; contextual182.4/256.4 uses an earlier receipt"
+      },
+      "CTA2": {
+        "point_us": 248.74878661087865,
+        "design_bound_us": 144.48198399999998
+      },
+      "CTA2S3": {
+        "point_us": 248.74878661087865,
+        "design_bound_us": 144.48198399999998,
+        "assumption": "No extra S3 credit before the attribution receipt"
+      },
+      "TAIL_STATIC": {
+        "point_us": 222.68208595815898,
+        "design_bound_us": 144.48198399999998,
+        "assumption": "Compact list/fused N16 removes one quarter of the remaining scheduling deficit"
+      },
+      "TAIL_QUEUE": {
+        "point_us": 196.6153853054393,
+        "design_bound_us": 144.48198399999998,
+        "assumption": "Expert-major claiming removes one half of the scheduling deficit"
+      },
+      "TAIL_QUEUE_S3": {
+        "point_us": 196.6153853054393,
+        "design_bound_us": 144.48198399999998,
+        "assumption": "Same queue recovery; no extra S3 credit before measurement"
+      }
+    },
+    "scheduling_deficit_us": 104.26680261087867,
+    "stream_weight_floor_4_58TBs_us": 111.26810829694323,
+    "limitation": "Scenario estimates, not causal attribution: fixed-fixture phase/count data plus whole-MoE mean control from8ee003db. ACT rates borrow3e8996f8. Residual combines decode, issue, synchronization, epilogue and tail; cannot isolate these from existing receipts. Queue recovery fractions are explicit hypotheses tested by paired runs."
+  }
+}

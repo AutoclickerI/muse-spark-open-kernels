@@ -1,0 +1,20 @@
+{
+  "payload_sha256": "abc1631d5d23bdcb1cb8f056ca16c5df137788e1dc3f48046d57ed7994b531ee",
+  "seeds": 24,
+  "device": "sm120 GPU0",
+  "weights": null,
+  "cold_L2": false,
+  "rows": [
+    "M128 S14 n=72 us=367.89 pairS14=1.0000 pairCTA2=0.9955 lo/hi=1.000/1.000 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 CTA2 n=72 us=369.96 pairS14=1.0135 pairCTA2=1.0000 lo/hi=0.915/1.164 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 TAIL_STATIC n=72 us=372.98 pairS14=1.0277 pairCTA2=1.0152 lo/hi=0.940/1.257 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 TAIL_QUEUE n=72 us=373.66 pairS14=1.0253 pairCTA2=1.0209 lo/hi=0.946/1.184 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 TAIL_QUEUE_S3 n=72 us=362.91 pairS14=0.9942 pairCTA2=0.9852 lo/hi=0.776/1.132 L2/row=0.004132/0.004947 TASK=PASS",
+    "M256 S14 n=72 us=526.66 pairS14=1.0000 pairCTA2=1.0739 lo/hi=1.000/1.000 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 CTA2 n=72 us=491.55 pairS14=0.9383 pairCTA2=1.0000 lo/hi=0.789/1.070 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 TAIL_STATIC n=72 us=493.84 pairS14=0.9448 pairCTA2=1.0047 lo/hi=0.803/1.081 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 TAIL_QUEUE n=72 us=494.26 pairS14=0.9448 pairCTA2=1.0015 lo/hi=0.816/1.074 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 TAIL_QUEUE_S3 n=72 us=483.18 pairS14=0.9228 pairCTA2=0.9813 lo/hi=0.801/1.081 L2/row=0.004124/0.005018 TASK=PASS"
+  ],
+  "note": "Entry/deadline/correctness screen. Local timings are not H200 predictions or promotion evidence."
+}

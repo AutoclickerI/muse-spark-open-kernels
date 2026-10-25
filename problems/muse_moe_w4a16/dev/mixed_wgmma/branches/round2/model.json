@@ -1,5 +1,7 @@
 {
   "128": {
+    "all_unique_weight_MB": 481.296384,
+    "weight_stream_4TBs_us": 120.324096,
     "heavy_counts": [
       17,
       20,
@@ -85,6 +87,8 @@
     }
   },
   "256": {
+    "all_unique_weight_MB": 509.607936,
+    "weight_stream_4TBs_us": 127.401984,
     "heavy_counts": [
       40,
       18,
@@ -112,7 +116,7 @@
         "decoded_B_smem": 16384,
         "estimated_heavy_service_us": 249.6772223346915,
         "estimated_whole_same_overlap_us": 381.10722233469147,
-        "estimated_whole_full_overlap_us": 265.67722233469146,
+        "estimated_whole_full_overlap_us": 266.7572223346915,
         "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
       },
       "TRANS128": {
@@ -125,7 +129,7 @@
         "decoded_B_smem": 32768,
         "estimated_heavy_service_us": 150.22818467778774,
         "estimated_whole_same_overlap_us": 281.6581846777877,
-        "estimated_whole_full_overlap_us": 166.22818467778774,
+        "estimated_whole_full_overlap_us": 167.30818467778772,
         "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
       },
       "CTA2": {
@@ -138,7 +142,7 @@
         "decoded_B_smem": 0,
         "estimated_heavy_service_us": 117.31878661087867,
         "estimated_whole_same_overlap_us": 248.74878661087865,
-        "estimated_whole_full_overlap_us": 133.31878661087867,
+        "estimated_whole_full_overlap_us": 144.48198399999998,
         "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
       },
       "CTA2S3": {
@@ -151,7 +155,7 @@
         "decoded_B_smem": 0,
         "estimated_heavy_service_us": 117.31878661087867,
         "estimated_whole_same_overlap_us": 248.74878661087865,
-        "estimated_whole_full_overlap_us": 133.31878661087867,
+        "estimated_whole_full_overlap_us": 144.48198399999998,
         "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
       }
     },

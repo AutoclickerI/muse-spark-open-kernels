@@ -12,7 +12,8 @@ for m,cs in counts.items():
  hot=[n for n in cs if n>16];o=observed[m];tiles32=sum(math.ceil(n/32) for n in hot);tiles64=sum(math.ceil(n/64) for n in hot);pad32=tiles32*32;pad64=tiles64*64
  # All Q plus recoded uint8 scales, no widening in prepare.
  uniqueW=len(hot)*(8192+4096)*4096*(.5+1/16)
- q=dict(heavy_counts=hot,unique_weight_MB=uniqueW/1e6,control_weight_ratio=tiles32/len(hot),new_weight_ratio=1.,
+ allW=sum(n>0 for n in cs)*(8192+4096)*4096*(.5+1/16)
+ q=dict(all_unique_weight_MB=allW/1e6,weight_stream_4TBs_us=allW/4e6,heavy_counts=hot,unique_weight_MB=uniqueW/1e6,control_weight_ratio=tiles32/len(hot),new_weight_ratio=1.,
   control_X_MB=[pad32*4096*2*(8192//64)/1e6,pad32*4096*2*(4096//64)/1e6],arms={})
  for name,nc,pad,smem in (('TRANS64',64,pad64,16384),('TRANS128',128,pad64,32768),('CTA2',128,pad32,0),('CTA2S3',128,pad32,0)):
   x=[pad*4096*2*(8192//nc),pad*4096*2*(4096//nc)]
@@ -28,7 +29,7 @@ for m,cs in counts.items():
   # These overlap scenarios are sensitivity, not fitted predictions.
   fixed_overlap=baseH+l+16-o['control']
   same_overlap=h+l+16-fixed_overlap
-  full_overlap=max(h,l)+16
+  full_overlap=max(h,l,allW/4e6)+max(16,o["control"]-baseH-l)
   q['arms'][name]=dict(X_MB=[v/1e6 for v in x],X_ratio_vs_control=sum(x)/(sum(q['control_X_MB'])*1e6),timed_pack_MB=pack_read_write/1e6,decoded_B_smem=smem,
    estimated_heavy_service_us=h,estimated_whole_same_overlap_us=same_overlap,estimated_whole_full_overlap_us=full_overlap,
    extra_transport_cost='Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included.')

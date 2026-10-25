@@ -1,0 +1,8 @@
+{
+  "checks": 1355,
+  "cuda_sha256": "a5ef94e634701ed7f47f1e39ec78db58da0285d50fe36b0bfac8f90a92d2614f",
+  "coverage": "All expert counts0..1024, MT32/64, empty/full lists and grids1/2/4/132/264.",
+  "progress": "Only bounded tile computation and monotonic atomic claiming. No cross-CTA wait or resident-grid assumption. W13/W2 have independent heads, both reset by the route kernel every replay.",
+  "ordering": "Route completes before fork; each stream waits on fork. W2 follows the full compact W13 kernel on the same stream. Every tile retires WGMMA and crosses a CTA barrier before ticket/scratch reuse. Parent copy_sync_check.py covers the unchanged S2/S3 rings.",
+  "limitation": "Contract model and source coverage; hardware race freedom not exhaustively tested."
+}
