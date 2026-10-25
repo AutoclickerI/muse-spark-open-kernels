@@ -146,6 +146,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   / 1.003 (qkv+attention+O +5.2 us at decode 16 sliding, +5.1 full, ~0 elsewhere); verify-1 qkv pinned to cuBLAS (Qc)
   0.990, Lt (Ql) 0.998. So S9's small-M flags and front win in the layer; S9's flat scored run was run noise.
   `problems/muse_decode_layer/dev/s10/ablate_lab.py.inc`.
+- Whole-layer paired A/B on S11's base (S10 + balanced GEMVs; `e605532e`, same protocol): S10's projections back (V)
+  r 1.029 / 1.024 / 1.031 / 1.019 at decode 1 / 16 / 32 / verify 1 (~+1.7% score); one role back: pool_router 1.017 /
+  1.007 / 1.014 / 1.009, qkv 1.010 / 1.006 / 1.014 / 1.009, unpooler 1.011 / 1.005 at decode 16 / 32; at verify 1 the
+  other qkv choices lose (cuBLAS 1.022, Lt 1.017). A:A 0.997-1.009.
 - The prepare tuners choose differently per run and move whole-layer time: verify-1 qkv_gate went Lt split-K (S8's
   run), Triton split-K (S9's) and cuBLAS (S10's); the Triton choice leaves FP32 splits that qk_prep sums (2.6 -> 4.0
   us sliding, 1.2 -> 3.6 full). The tuner times each projection alone, not with its consumer, over 3 graph repeats.
@@ -411,7 +415,7 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   norm_gate): only verify-1 sliding (B1, q_len 8) wins, st4mt1 14.40 vs 17.47 us (at decode-1 sliding attn_main 14.0 vs
   vq8 19.8 us, `d5bcbc7d`); verify B16 / B32 sliding 19.4 / 26.6 vs 15.7 / 21.0; B1 / B16 /
   B32 full 31.2 / 228 / 439 vs 29.6 / 190 / 378. vq8's main CTA holds the whole register file (168 x 384), so PDL
-  overlaps only its launch with the projection. Attention board `d5bcbc7d` (d98ae45d with vq8 where it wins): 1.4088x
+  overlaps only its launch with the projection. Attention board `1b993e2f` (publish-order fix): 1.5331x; `d5bcbc7d` (d98ae45d with vq8 where it wins): 1.4088x
   vs 1.4027x (vq8 at verify 16 sliding 29.3 vs 30.3 us and verify 1 sliding).
 ## Projections and verify dense
 
