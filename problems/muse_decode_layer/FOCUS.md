@@ -21,9 +21,9 @@ Cell handoffs (path, SHA-256; all in S6):
 - Not in S1-S6: verify-1 sliding single launch `dev/verify1_sliding_pick.py` 46b940320048047cace11d16807e160c11cdd84f364ff902cd04bacf81ee263e,
   19.55 vs FA3 path 20.16 us at partials=0 (`a1679f9c`)
 
-In flight: S7 (MoE lane); labs M256 mix `ec44b322` and branches `110599ba` (MoE), bulk ring `87b2667f` and verify split-K `b15a3bde` (proj),
+In flight: labs M256 mix `ec44b322` and branches `110599ba` (MoE), bulk ring `87b2667f` and verify split-K `b15a3bde` (proj),
 M=1 timeline `28fc0380` (prefill). Landed: M128 sweep `4c469bf9`.
 Next: S7 = the best measured S plus each landed lab win and the verify-1 sliding cell; rerun `dev/levers/build.py` when S5/S6 land.
-Withdrawn: S4-S6 (`ad858b58`, `e2f45792`, `fecc29af`) carry D32g/H_H's 16-bit scale words, a dequantized copy
-of the scales (CONSTRAINTS 5); S7 = S6 with H_H on uint8 scales (MoE lane). Clean best: S2 1.4742x `4e212ec2`.
+Withdrawn: S4-S6 (16-bit scale words, CONSTRAINTS 5). Incumbent: S7 `cand_r3_best7_s7.py` bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390,
+1.5597x `2f6471d5` (S6 with H_H on uint8 scales; verify 16 within noise of S6).
 Parked: megakernel at +1.74% estimated (`dev/megakernel/README.md`). Glue recipes lost: `80b70f7f` (bug), `9eeb39ba`.
