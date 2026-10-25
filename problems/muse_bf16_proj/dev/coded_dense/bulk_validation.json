@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "bulk_body_sha256": "99c7b1949580c58318a287ca7d59585babc186d46fd851aaa28892cb10c7f3c2",
+  "exact_cases": 6,
+  "gemv_cases": 234,
+  "max_error": 4.477308093827857e-06,
+  "actual_tma_layout": true,
+  "arithmetic": "mma.sync stand-in for sm90 WGMMA",
+  "exact": [
+    {
+      "case": "all bf16 bit patterns",
+      "kmajor": true
+    },
+    {
+      "case": "2304x8192",
+      "kmajor": true
+    },
+    {
+      "case": "4608x8192",
+      "kmajor": true
+    },
+    {
+      "case": "8192x1024",
+      "kmajor": true
+    },
+    {
+      "case": "1024x4096",
+      "kmajor": true
+    },
+    {
+      "case": "8192x4096",
+      "kmajor": true
+    }
+  ]
+}

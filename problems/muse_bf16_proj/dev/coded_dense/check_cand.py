@@ -43,6 +43,12 @@ def main():
     cand, out = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()
     forced = '--forced' in sys.argv[3:]
     out.mkdir(parents=True, exist_ok=True)
+    if '--reuse-static' in sys.argv[3:]:
+        # Integration's source/flag keyed cache recompiles changed units at bounded
+        # concurrency. Python checks and all normal/forced runtime checks still run.
+        sys.path.insert(0, str(R / 'problems/muse_decode_layer/dev/s12'))
+        import compile_cache
+        compile_cache.install(local_eval)
     # Native compilation is independent of the forced Python dispatch. Reuse the completed
     # normal compile proof only for the byte-identical candidate; all runtime checks still run.
     normal = out.parent / 'normal'
@@ -97,7 +103,10 @@ def main():
                     for role, c in state['coded_dense'].items()}
                 state['direct_coded'] = {role: {k: v.clone() if isinstance(v, m.torch.Tensor) else v for k, v in c.items()}
                                          for role, c in state.get('direct_coded', {}).items()}
+                state['wgmma_coded'] = {role: {k: v.clone() if isinstance(v, m.torch.Tensor) else v for k, v in c.items()}
+                                        for role, c in state.get('wgmma_coded', {}).items()}
                 banks = list(state['coded_dense'].items()) + [(('direct', role), c) for role, c in state['direct_coded'].items()]
+                banks += [(('wg', role), c) for role, c in state['wgmma_coded'].items()]
                 for key, c in banks:
                     family, role = (key[0], key[1]) if isinstance(key, tuple) else ('cp', key)
                     state[role] = state[role].clone()

@@ -1,0 +1,11 @@
+{
+  "reason": "C7513: compiler aliases live register-A operands and serializes WGMMA",
+  "source_sha256": "444ca8255115de23f04786718b6f985854cc6aab79d07510f3f0a5b9321834d8",
+  "local_arithmetic_passed": true,
+  "remote_sent": false,
+  "diagnostics": [
+    "ptxas info    : (C7513) Potential Performance Loss: wgmma.mma_async instructions are serialized due to non wgmma instructions defining input registers of a wgmma between start and end of the pipeline stage in the function '_ZN3cdg7wg_gemvILi32ELi2EEEvPK5uint4PKfPKiPK4int2PK13__nv_bfloat16iiPfiiiiii14CUtensorMap_st'",
+    "ptxas info    : (C7513) Potential Performance Loss: wgmma.mma_async instructions are serialized due to non wgmma instructions defining input registers of a wgmma between start and end of the pipeline stage in the function '_ZN3cdg7wg_gemvILi16ELi2EEEvPK5uint4PKfPKiPK4int2PK13__nv_bfloat16iiPfiiiiii14CUtensorMap_st'",
+    "ptxas info    : (C7513) Potential Performance Loss: wgmma.mma_async instructions are serialized due to non wgmma instructions defining input registers of a wgmma between start and end of the pipeline stage in the function '_ZN3cdg7wg_gemvILi8ELi2EEEvPK5uint4PKfPKiPK4int2PK13__nv_bfloat16iiPfiiiiii14CUtensorMap_st'"
+  ]
+}
