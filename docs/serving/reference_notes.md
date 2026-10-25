@@ -236,27 +236,27 @@ Decode and prefill contributions compound only inside this workload model. A mod
 
 For serving interconnect, the NVSHMEM 8x-H200 study ([arXiv:2606.05951](https://arxiv.org/abs/2606.05951)) reports roughly 2.4–3.1 us for its best small all-reduces, while SiFAR's 8x-H200 results ([arXiv:2607.08973](https://arxiv.org/abs/2607.08973)) and NCCL/NVLS measurements support about 5–7 us for 8–32 KB TP8 reductions and roughly 276 GB/s algorithm bandwidth for large NVLS reductions. These are implementation measurements, not a guarantee for the serving harness.
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 The immediate priority is the **verify MoE path inside the full decode layer**, followed by prefill expert GEMMs and the replicated prefill projections. Attention v2 helps the kernel board’s one-token loads but regresses every verify shape. A decode-only tuning result is insufficient evidence for a serving port. The whole-layer verify path still uses Marlin; the isolated best MoE has not yet been incorporated into that measured layer.
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 python3 -I -S -B tools/profile_report.py muse_decode_layer --serving
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 python3 -B -m sim.serving
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 3. **Replicated pooler/unpooler**: each full matrix is ~67 MB per rank per layer. At prefill their redundant math matters more than a marginal standalone skinny win; `docs/serving/serving_levers.md` proposes row split. Even the best sweep loses verify16/32. Keep the faster operations selectively; do not extrapolate the verify1 1.277× across token counts.
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 ### muse_prefill_layer
 
-Best H200: `cand_v3.py`, 1.3454×, CI 1.3252–1.3656; [20261023T090922Z_check_82a4e50b54294a2a.json](../../runs/muse_prefill_layer/20261023T090922Z_check_82a4e50b54294a2a.json). Calibration: [muse_prefill_layer_sglang.499cbe8c9d784741.json](../../runs/calibration/profiles/muse_prefill_layer_sglang.499cbe8c9d784741.json). Full kernel diff: [report](../../prof/report.md).
+Best H200: `cand_v3.py`, 1.3454×, CI 1.3252–1.3656; [20261023T090922Z_check_82a4e50b54294a2a.json](../../runs/muse_prefill_layer/20261023T090922Z_check_82a4e50b54294a2a.json). Calibration: [muse_prefill_layer_sglang.499cbe8c9d784741.json](../../runs/calibration/profiles/muse_prefill_layer_sglang.499cbe8c9d784741.json). Full kernel diff: `prof/write_report.py`.
 
 | Load | Ours judge ms H200 | Paired stock ms H200 | Speedup H200 | Ours / stock profile ms H200 | Practical ms MODEL |
 |---|---:|---:|---:|---:|---:|
@@ -301,7 +301,7 @@ These are target-layer prefill loads, not end-to-end TTFT: prefill all-reduces, 
 
 ### How the planned ports move score
 
-All results below are **MODEL**, `tau=4.16`, 13 turns × 220 output tokens, stock prefill ~4.21 s per conversation. Ratios from isolated H200 kernels are projected onto the corresponding component. Expert ports exclude the two BF16 layers and their modeled byte surcharge; whole-layer ports conservatively leave those two layers fully stock. Prefill savings are scaled by 60/62 for the same reason. Routing distributions and integration differ, so these are sensitivities, not serving predictions or measurements. Whole-layer and component ports overlap and must **not** be added. The score interpolates/extrapolates throughput at equal stock interactivity; the second score caps concurrency at 32. Exact inputs and arithmetic: [helper](../../prof/analyze.py), [output](../../prof/analysis.json).
+All results below are **MODEL**, `tau=4.16`, 13 turns × 220 output tokens, stock prefill ~4.21 s per conversation. Ratios from isolated H200 kernels are projected onto the corresponding component. Expert ports exclude the two BF16 layers and their modeled byte surcharge; whole-layer ports conservatively leave those two layers fully stock. Prefill savings are scaled by 60/62 for the same reason. Routing distributions and integration differ, so these are sensitivities, not serving predictions or measurements. Whole-layer and component ports overlap and must **not** be added. The score interpolates/extrapolates throughput at equal stock interactivity; the second score caps concurrency at 32. Exact inputs and arithmetic: [helper](../../prof/analyze.py) (writes `prof/analysis.json`, ignored).
 
 | Port / sensitivity | Step saving c1 / c4 / c16 / c32 ms MODEL | Prefill saving / conversation MODEL | Score × MODEL extrapolated / capped |
 |---|---:|---:|---:|
@@ -323,11 +323,11 @@ The measured-quality port set (whole decode v3 + whole prefill v3) models about 
 
 Scheduler/CPU is **unknown**, not measured zero. With this model, adding 100 us unhidden CPU per step changes score to ~0.997× stock; adding 1 ms changes it to ~0.968×. These sensitivities do not bound TTFT, graph misses, batching or CPU stalls in a real server. Collect an end-to-end nsys trace in the first authorized node run; local sm120 or a device-only profile cannot establish this part of the path.
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 ; serving 3 checks + 1 scored/day ([README](../../README.md), [serving rules](../../serving/RULES.md))
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
 ## Implementation options
 
@@ -344,7 +344,7 @@ Expected gains below are explicitly hypotheses or model sensitivities except the
 | 7. Judge queue and check yield | Bundle N candidate variants into one **diagnostic timed callable**, each with distinct kernel names, all work included in the timed graph; return a correctness-checked output and inspect per-kernel profiles. Keep N small enough for compilation/test limits. | N=4 can reduce four sequential queue waits to one: roughly 3×35–73 = 105–219 minutes saved in serial turnaround, and 4→1 checks. This is arithmetic on observed waits, not queue-throughput prediction. Combined timing is not a competitive speedup. | Verify each variant independently locally; preserve cold-cache caveat (later variants are warm), correctness and source rules. No input-dependent timing/work in prepare, no harness changes or timing patches. |
 | 8. Communication / drafter | Fuse finalize into all-reduce only after its producer writes the real workspace; token-gate dense sharding; shard drafter replicated FC with all-gather. | MODEL all-reduce 0.80→2.77 ms c1→32; FC estimate 0.15 ms/step gives only ~1.004× score. Unconditional pooler sharding loses ~0.45 ms at c32; gate ≤128 tokens pending measurements. | Actual TP8 NVSwitch latency, multicast availability, overlap and final output agreement. |
 
-## Source: `docs/reference/profile.md`
+## Source: `docs/reference/profile.md` (commit 0fd3ddc^)
 
  Full-node serving is additionally required for all-reduce/multicast, CPU/scheduler, prefill interference, acceptance/tau and the hidden workload/score curve. There is no measured serving score in this report.
 

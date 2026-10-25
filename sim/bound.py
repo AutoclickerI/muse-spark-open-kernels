@@ -8,8 +8,8 @@ This is deliberately more exact than :mod:`sim.problems`' organizer-floor model:
   compulsory input/output activations, and the router's BF16-hi+lo arithmetic are explicit;
 * QK uses the allowed FP8-query x FP8-key peak, while PV and every other matrix product use
   the dense BF16 peak;
-* NVFP4 decode has both a theoretical packed-LUT issue floor and docs/reference/profile.md's audited
-  1.5-integer-instructions/weight floor; and
+* NVFP4 decode has both a theoretical packed-LUT issue floor and the SASS audit's
+  1.5-integer-instructions/weight floor (docs/reference/bound.md); and
 * raw graph time adds one measured replay cost.  The competition subtracts this cost, so
   speedup ceilings use the replay-adjusted resource time.
 
@@ -68,7 +68,7 @@ REPLAY_US = 4.224000033
 # H200 measured state in the same receipt: 132 SMs at 1.980 GHz.  docs/reference/hardware.md cites 64 integer /
 # logic issues per SM-cycle.  A 256-entry packed LUT can map one byte (two E2M1 codes) to f16x2
 # in one load/permute, hence 0.5 issue instructions/weight is the widest defensible theoretical
-# minimum.  docs/reference/profile.md's static source/SASS audit is about 1.5 integer instructions/weight.
+# minimum.  The static source/SASS audit (docs/reference/bound.md) is about 1.5 integer instructions/weight.
 INT_ISSUES_PER_S = 132 * 1.980e9 * 64
 DEQUANT_THEORY_INST_PER_WEIGHT = 0.5
 DEQUANT_AUDIT_INST_PER_WEIGHT = 1.5
