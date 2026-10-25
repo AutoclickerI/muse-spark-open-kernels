@@ -5,95 +5,138 @@ class TimelineGraph:
     def replay(self):self.graph.replay();return self.out
 
 
-def timeline_timing(old,new,flush,repeats=6):
+def timeline_timing(old,new,repeats=12):
     a,b=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
     aa,bb,ratios=[],[],[]
     def measured(graph):
-        flush.zero_();a.record();graph.replay();b.record();b.synchronize();return a.elapsed_time(b)*1000
+        lab_cold_l2();a.record();graph.replay();b.record();b.synchronize();return a.elapsed_time(b)*1000
     for rep in range(repeats):
         order=(old,new) if rep%2==0 else (new,old);v=[measured(g) for g in order]
         x,y=v if rep%2==0 else v[::-1];aa.append(x);bb.append(y);ratios.append(y/x)
-    return statistics.median(aa),statistics.median(bb),statistics.median(ratios),[b-a for a,b in zip(aa,bb)]
+    return statistics.median(aa),statistics.median(bb),statistics.median(ratios)
 
 
-def timeline_gate(out,want,label,m,seed):
-    err,row=nt1_error(out,want)
-    if not bool(torch.isfinite(out).all()) or err>.01 or row>.05:
-        token=int((out.float()-want).norm(dim=-1).argmax());raise ValueError(f'{label} M{m} seed{seed}: FP32 L2/row={err:.6f}/{row:.6f} token={token}')
-    return err,row
+def task_check(out,want):
+    """TASK.md: output relative L2 <= 1.5% vs FP32, every row <= 5x (near-zero rows vs a tenth of the mean row), finite."""
+    err,row=nt1_error(out,want);ok=bool(torch.isfinite(out).all()) and err<=.015 and row<=.075
+    return ok,err,row
+
+
+DIAG_BY_M={1:('RTRACEALLnl','RTRACEDYN')}  # v4: M=1 critical path, 95 vs 95+DYN (v3 05e21862 has the M=32 one)
+# R = the decode layer's context (router node + MoE node). R95/R93 = 849e4017's winners; R77 drops NREG, R69 drops
+# NREG and RSQ; R1119 = R95 with the dynamic M=1 schedule (DYN). ECAP = INC on the same routes with every local expert capped at 8 tokens (DIAGNOSTIC, no gate): the
+# most that decode-once / no-reread for multi-block experts could save.
+SMALLM_ARMS={1:dict(E={},R={'RINC':None,'R95':95,'R1119':95|F_DYN})}
+for _m in (8,16,32):
+    SMALLM_ARMS[_m]=dict(E={},R={'RINC':None,'R93':93,'R77':77,'R69':69})
+
+
+def cap_fixture(d,cap=8):
+    """Same fixture, each local expert keeps its first `cap` (token, slot) pairs; the rest become remote (-1)."""
+    ids=d['topk_ids'].clone();flat=ids.view(-1);local=flat-d['config']['local_start']
+    for e in range(32):
+        hit=((local>=0)&(local<32)&(local==e)).nonzero().flatten()
+        if len(hit)>cap:flat[hit[cap:]]=-1
+    return dict(d,topk_ids=ids)
+
+
+def blocks(d):
+    local=(d['topk_ids']-d['config']['local_start']).flatten();local=local[(local>=0)&(local<32)]
+    n=torch.bincount(local.long(),minlength=32);return int(((n+7)//8).sum()),int((n>0).sum())
 
 
 def lab(deadline,weights):
     from concurrent.futures import ThreadPoolExecutor
     begin=time.monotonic();deadline-=5;device=weights['w13'].device
-    lines=['META complete graph-node/CTA globaltimer accounting; INC=accepted one-LOP3 recoded NT1; Z=norm-slot zero in W13 before expert release; no extra launch',
-        'META E=fixed routes, R=router+experts (2 nodes); RMETA=router final-CTA emits shared v1, RMETAZ=both; cold128MiB paired AB/BA + independent A:A, target12/min8 router seeds, official near-tie gates']
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        for mod in pool.map(nt1_module,NT1_SOURCES):pass
-    control_module()
+    lines=['META small-M NT1: E=MoE node alone (fixed real routes), R=router node+MoE node; INC=admitted one-LOP3 NT1; F0=same math in the flag harness; Z=norm-slot zero in W13 tile0; SLOT=M1 top-8 slot dispatch; ZOUT=W2 stores v(1+w); RSQ=finalizer scale once per pair; NREG=norm sums in registers per tile run; LAST=last CTA finalizes; PDL=MoE launched as programmatic dependent',
+        'META v4: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs its INC, independent INC A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; M1 globaltimer critical path of 95 vs 95+DYN (ACCOUNT/CRITICAL/SKEW)']
+    errors=[]
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        jobs={name:pool.submit(fn) for name,fn in (('INC',lambda:nt1_module('INC')),('VAR',var_module),('CONTROL',control_module),('CUPTI',activity_module))}
+        for name,job in jobs.items():
+            try:job.result()
+            except Exception as e:errors.append(f'BUILD_ERROR {name} {type(e).__name__}: {str(e)[-200:]}')
+    lines+=errors
+    if any(name in e for e in errors for name in ('BUILD_ERROR INC','BUILD_ERROR VAR')):return lines
     lines.append(f'BUILD seconds={time.monotonic()-begin:.2f} left={deadline-time.monotonic():.1f}')
-    flush=torch.empty(128<<20,device=device,dtype=torch.uint8)
-    labels=('EINC','EZ','RINC','RZ','RMETA','RMETAZ');rows={(m,k):[] for m in (1,8,16,32) for k in labels}
-    noise={(m,k):[] for m in (1,8,16,32) for k in ('E','R')};worst=0.;rowmax=0.;flips=0;paircounts={m:[] for m in (1,8,16,32)}
-    complete=0;peak=0.;previous=torch.backends.cuda.matmul.allow_tf32;torch.backends.cuda.matmul.allow_tf32=False
+    rows={};deltas={};caps={};noise={m:{'E':[],'R':[]} for m in SMALLM_ARMS};worst={};failed={};flips=0;complete=0;peak=0.
+    previous=torch.backends.cuda.matmul.allow_tf32;torch.backends.cuda.matmul.allow_tf32=False
     try:
-        for seed in range(12):
-            if deadline-time.monotonic()<max(5.,peak*1.3+1.):
+        for seed in range(16):
+            if deadline-time.monotonic()<max(8.,peak*1.25+2.):
                 lines.append(f'BUDGET before_seed={seed}');break
             started=time.monotonic();w=rg_generate_weights(5353+7919*seed,device=device);w['post_norm_w']=w['post_expert_norm'];state=nt1_banks(w)
             if seed==0:
-                # Same real-router two-expert fixture as the fixed-route timing.
-                d0=fx_make_fixture(w,1,9001)
-                diag=timeline_diagnose(d0,state,flush);lines.extend(timeline_lines(diag))
-                for kind in NT1_SOURCES:
-                    mod=nt1_module(kind);lines.append(f'GRID {kind} M1 grid={min(264,state["sms"]*mod.resident_blocks(1,2,1))} stages=2 smem={mod.smem_needed(1,2,1)}')
-            for m in (1,8,16,32):
-                d=fx_make_fixture(w,m,9000+m);want=nt1_fp32(d,w)
-                pr,rs=routed_fixture(w,m,9000+m);xr,score,bias=route_reference(pr,rs);start=int(rs['start'])
-                graphs={'EINC':TimelineGraph(lambda:nt1_call(d,state,'INC')),'EZ':TimelineGraph(lambda:nt1_call(d,state,'Z'))}
-                for label,kind,emit in (('RINC','INC',False),('RZ','Z',False),('RMETA','META',True),('RMETAZ','METAZ',True)):
-                    graphs[label]=TimelineGraph(lambda k=kind,e=emit:routed_experts(pr,rs,state,k,e))
-                truths={};ids_seen={}
-                for label,g in graphs.items():
-                    out=g.replay();torch.cuda.synchronize()
-                    if label.startswith('E'):got=out;truth=want
-                    else:
-                        got,x,ids,tw,lids,meta=out
-                        flips+=route_gate(ids,bias,start)
-                        if not torch.allclose(x.float(),xr.float(),rtol=.01,atol=.01):raise ValueError(f'{label} pooled norm M{m} seed{seed}')
-                        expected=score.gather(1,ids.long());expected=(expected/expected.sum(-1,keepdim=True)).float()
-                        if not torch.allclose(tw,expected,rtol=.001,atol=1e-5):raise ValueError('router weights')
-                        # Each arm is judged on its own legal picks; near-tie flips are retained.
-                        key=tuple(ids.flatten().cpu().tolist())
-                        if key not in truths:
-                            rd=dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0});truths[key]=nt1_fp32(rd,w)
-                        truth=truths[key];ids_seen[label]=ids
-                    e,r=timeline_gate(got,truth,label,m,seed);worst=max(worst,e);rowmax=max(rowmax,r)
-                paircounts[m].append(int((d['topk_ids']>=0).sum()))
-                # Independent captures for both graph positions establish the noise floor.
-                controls={'E':TimelineGraph(lambda:nt1_call(d,state,'INC')),
-                    'R':TimelineGraph(lambda:routed_experts(pr,rs,state,'INC',False))}
-                for prefix in ('E','R'):
-                    base=graphs[prefix+'INC'];a,b,ratio,deltas=timeline_timing(base,controls[prefix],flush)
-                    noise[m,prefix].extend(deltas);rows[m,prefix+'INC'].append(a)
-                others=['EZ','RZ','RMETA','RMETAZ']
-                if seed%2:others.reverse()
-                for label in others:
-                    baseline=label[0]+'INC';a,b,ratio,_=timeline_timing(graphs[baseline],graphs[label],flush)
-                    rows[m,label].append(rows[m,baseline][-1]*ratio)
+                for mt,cases in DIAG_BY_M.items():
+                    try:lines.extend(f'M{mt} '+l for l in timeline_lines(timeline_diagnose(fx_make_fixture(w,mt,9001),state,routed_fixture(w,mt,9001),cases),False))
+                    except Exception as e:lines.append(f'DIAG_ERROR M{mt} {type(e).__name__}: {str(e)[:200]}')
+            for m,arms in SMALLM_ARMS.items():
+                d=fx_make_fixture(w,m,9000+m+97*seed);want=nt1_fp32(d,w)
+                pr,rs=routed_fixture(w,m,9000+m+97*seed);xr,score,bias=route_reference(pr,rs);start=int(rs['start'])
+                graphs={};truths={}
+                dcap=cap_fixture(d) if 'ECAP' in arms['E'] else None
+                if dcap is not None:caps.setdefault(m,[]).append(blocks(d)+blocks(dcap))
+                for label,flags in arms['E'].items():
+                    if label in failed:continue
+                    try:graphs[label]=TimelineGraph(lambda:nt1_call(d,state,'INC')) if flags is None else \
+                        TimelineGraph(lambda:nt1_call(dcap,state,'INC')) if label=='ECAP' else TimelineGraph(lambda f=flags:var_call(d,state,f))
+                    except Exception as e:failed[label]=f'M{m} seed{seed} capture {type(e).__name__}: {str(e)[:80]}'
+                for label,flags in arms['R'].items():
+                    if label in failed:continue
+                    try:
+                        graphs[label]=TimelineGraph(lambda:routed_experts(pr,rs,state,'INC')) if flags is None else \
+                            TimelineGraph(lambda f=flags:routed_var(pr,rs,state,f))
+                    except Exception as e:failed[label]=f'M{m} seed{seed} capture {type(e).__name__}: {str(e)[:80]}'
+                def gate(label,first=False):
+                    if label=='ECAP':return
                     out=graphs[label].replay();torch.cuda.synchronize()
-                    if label.startswith('E'):got,truth=out,want
+                    if label[0]=='E':got,truth=out,want
                     else:
-                        got=out[0];truth=truths[tuple(out[2].flatten().cpu().tolist())]
-                    timeline_gate(got,truth,label,m,seed)
-                graphs={};controls={};truths={}
+                        got,x,ids,tw,lids=out
+                        n=route_gate(ids,bias,start)
+                        if not torch.allclose(x.float(),xr.float(),rtol=.01,atol=.01):raise ValueError('pooled norm')
+                        key=tuple(ids.flatten().cpu().tolist())
+                        if key not in truths:truths[key]=nt1_fp32(dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0}),w)
+                        truth=truths[key]
+                        if label=='RINC' and first:route_flips[0]+=n
+                    ok,err,row=task_check(got,truth)
+                    worst[label]=max(worst.get(label,(0.,0.)),(err,row))
+                    if not ok:raise ValueError(f'TASK gate L2/row={err:.5f}/{row:.5f}')
+                route_flips=[0]
+                for label in list(graphs):
+                    try:gate(label,True)
+                    except Exception as e:
+                        failed[label]=f'M{m} seed{seed} {type(e).__name__}: {str(e)[:100]}';graphs.pop(label)
+                flips+=route_flips[0]
+                for prefix in ('E','R'):
+                    base=prefix+'INC'
+                    if base not in graphs:continue
+                    ctl=TimelineGraph(lambda:nt1_call(d,state,'INC')) if prefix=='E' else TimelineGraph(lambda:routed_experts(pr,rs,state,'INC'))
+                    a,b,_=timeline_timing(graphs[base],ctl);noise[m][prefix].append(b-a);rows.setdefault((m,base),[]).append(a)
+                    others=[k for k in graphs if k[0]==prefix and k!=base]
+                    if seed%2:others.reverse()
+                    for label in others:
+                        a,b,ratio=timeline_timing(graphs[base],graphs[label])
+                        rows.setdefault((m,label),[]).append(rows[m,base][-1]*ratio);deltas.setdefault((m,label),[]).append(rows[m,base][-1]*(ratio-1))
+                        try:gate(label)
+                        except Exception as e:failed[label]=f'M{m} seed{seed} post-timing {type(e).__name__}: {str(e)[:100]}'
+                graphs={};truths={}
             complete+=1;peak=max(peak,time.monotonic()-started)
     finally:torch.backends.cuda.matmul.allow_tf32=previous
-    lines.append(f'GATE FP32maxL2/row={worst:.6f}/{rowmax:.6f} legal_neartie_token_flips={flips}; no dispatch promoted')
-    # Keep summaries last so the wrapper's 9k-character retention preserves them.
-    for m in (1,8,16,32):
-        vals=','.join(f'{statistics.mean(rows[m,k]):.2f}' if rows[m,k] else '-' for k in labels)
-        ns=','.join(prefix+':'+('/'.join(f'{v:.2f}' for v in (statistics.mean(noise[m,prefix]),statistics.mean(map(abs,noise[m,prefix])),max(map(abs,noise[m,prefix]))))) for prefix in ('E','R')) if complete else '-'
-        lines.append(f'AGG M{m} n={complete}/12 labels='+','.join(labels)+' mean_us='+vals+f' AA_signed/abs/max={ns} pairs_mean={statistics.mean(paircounts[m]) if complete else 0:.1f}')
-    lines.append(f'END min8_required={complete>=8} seeds={complete}/12 seconds={time.monotonic()-begin:.1f} left={deadline-time.monotonic():.1f}')
+    for m,v in sorted(caps.items()):
+        lines.append(f'CAP M{m} blocks/experts {statistics.mean(x[0] for x in v):.2f}/{statistics.mean(x[1] for x in v):.2f} -> {statistics.mean(x[2] for x in v):.2f}/{statistics.mean(x[3] for x in v):.2f} n={len(v)}')
+    for label,why in failed.items():lines.append(f'FAIL {label} {why}')
+    lines.append(f'GATE TASK.md L2/row worst '+','.join(f'{k}:{v[0]:.4f}/{v[1]:.4f}' for k,v in sorted(worst.items()))+f'; RINC near-tie flips={flips}')
+    for m in SMALLM_ARMS:
+        for prefix in ('E','R'):
+            base=(m,prefix+'INC')
+            if base not in rows:continue
+            nz=noise[m][prefix];parts=[f'{prefix}INC={statistics.mean(rows[base]):.2f}']
+            for label in SMALLM_ARMS[m][prefix]:
+                if label==prefix+'INC' or (m,label) not in deltas:continue
+                dl=deltas[m,label];se=statistics.stdev(dl)/len(dl)**.5 if len(dl)>1 else 0.
+                parts.append(f'{label}={statistics.mean(rows[m,label]):.2f}({statistics.mean(dl):+.2f}+-{se:.2f},n{len(dl)})')
+            parts.append(f'AA={statistics.mean(nz):+.2f}/{statistics.mean(map(abs,nz)):.2f}/{max(map(abs,nz)):.2f}')
+            lines.append(f'AGG M{m} '+' '.join(parts))
+    lines.append(f'END seeds={complete} min8={complete>=8} seconds={time.monotonic()-begin:.1f} left={deadline-time.monotonic():.1f}; nothing promoted here')
     return lines

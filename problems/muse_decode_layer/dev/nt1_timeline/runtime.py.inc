@@ -24,25 +24,39 @@ def nt1_module(kind):
     return NT1_MODULES[kind]
 
 
-CONTROL_MODULE=None
+CONTROL_MODULE=[]
+ACTIVITY_MODULE=[]
+
+
 def control_module():
-    global CONTROL_MODULE
-    if CONTROL_MODULE is None:
-        cpp=ACTIVITY_CPP+'''
+    if not CONTROL_MODULE:
+        cpp='''#include <pybind11/pybind11.h>
+#include <stdint.h>
 void mark(int64_t,int64_t,int64_t);
+void resolution(int64_t,int64_t);
 void empty(int64_t,int64_t,int64_t,int64_t,int64_t);
 void streaming(int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
 int64_t control_optin();
 '''
         tag=hashlib.sha256((cpp+CONTROL_CUDA).encode()).hexdigest()[:12]
-        CONTROL_MODULE=load_inline(name='muse_timeline_control_'+tag,cpp_sources=cpp,cuda_sources=CONTROL_CUDA,
-            functions=['profile_begin','profile_end','mark','empty','streaming','control_optin'],
+        mod=load_inline(name='muse_timeline_control_'+tag,cpp_sources=cpp,cuda_sources=CONTROL_CUDA,
+            functions=['mark','resolution','empty','streaming','control_optin'],
             no_implicit_headers=True,with_pytorch_error_handling=False,
             extra_cuda_cflags=['-O3','-std=c++20','-lineinfo',
-                *(['-gencode=arch=compute_90a,code=sm_90a'] if NT1_HOPPER else [])],
-            extra_ldflags=['-L/usr/local/cuda/lib64','-Wl,-rpath,/usr/local/cuda/lib64','-lcupti'],verbose=False)
-        CONTROL_MODULE.control_optin()
-    return CONTROL_MODULE
+                *(['-gencode=arch=compute_90a,code=sm_90a'] if NT1_HOPPER else [])],verbose=False)
+        mod.control_optin();CONTROL_MODULE.append(mod)
+    return CONTROL_MODULE[0]
+
+
+def activity_module():
+    """CUPTI kernel records (graph-node start/end); optional: the stamps stand without it."""
+    if not ACTIVITY_MODULE:
+        tag=hashlib.sha256(ACTIVITY_CPP.encode()).hexdigest()[:12]
+        ACTIVITY_MODULE.append(load_inline(name='muse_timeline_activity_'+tag,cpp_sources=ACTIVITY_CPP,
+            functions=['profile_begin','profile_end'],no_implicit_headers=True,with_pytorch_error_handling=False,
+            extra_include_paths=['/usr/local/cuda/include'],
+            extra_ldflags=['-L/usr/local/cuda/lib64','-Wl,-rpath,/usr/local/cuda/lib64','-lcupti'],verbose=False))
+    return ACTIVITY_MODULE[0]
 
 
 def nt1_banks(w):
@@ -55,7 +69,7 @@ def nt1_banks(w):
         sms=torch.cuda.get_device_properties(dev).multi_processor_count)
 
 
-def nt1_call(d,state,kind='INC',grid=264,stages=2,trace_out=False,metadata=None):
+def nt1_call(d,state,kind='INC',grid=264,stages=2,trace_out=False):
     x=d['hidden_states'].contiguous();m=len(x);dev=x.device;mod=nt1_module(kind)
     if mod.smem_needed(1,stages,m)>mod.smem_optin:raise ValueError('stage depth exceeds shared capacity')
     grid=min(grid,state['sms']*mod.resident_blocks(1,stages,m))
@@ -65,9 +79,6 @@ def nt1_call(d,state,kind='INC',grid=264,stages=2,trace_out=False,metadata=None)
     tensors=[x,ids,tw,state['pnw'],state['bank']['w13p'],state['bank']['w2p'],state['gs13'],state['gs2'],inter,y,ss,state['counters'][kind],out]
     stamps=torch.empty((grid,64),device=dev,dtype=torch.int64) if kind.startswith('TRACE') else None
     if stamps is not None:tensors.append(stamps)
-    if kind in ('META','METAZ'):
-        if metadata is None:raise ValueError('metadata must be emitted by the preceding router node')
-        tensors.append(metadata)
     mod.run([v.data_ptr() for v in tensors],m,d['config']['local_start'],stages,grid,torch.cuda.current_stream(dev).cuda_stream)
     return (out,stamps) if trace_out else out
 

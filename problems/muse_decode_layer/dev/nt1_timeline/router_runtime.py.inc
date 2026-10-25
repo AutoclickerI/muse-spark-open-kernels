@@ -1,19 +1,17 @@
-def route_call(pr,rs,emit=False):
+def route_call(pr,rs):
     p,s=pr;m=p.shape[1];dev=p.device
     x=torch.empty((m,4096),device=dev,dtype=torch.bfloat16)
     ids=torch.empty((m,8),device=dev,dtype=torch.int32);lids=torch.empty_like(ids);tw=torch.empty((m,8),device=dev)
-    meta=torch.empty(736,device=dev,dtype=torch.int32)
     warps=4 if m==8 else 8
     timeline_route[(m,1)](p,s,p.stride(0),p.stride(1),rs['bias'],rs['pre'],rs['start'],x,ids,tw,lids,
-        meta,rs['arrive'],M=m,EMIT=emit,REPLICAS=1,USE_PDL=True,launch_pdl=True,num_warps=warps)
-    return x,ids,tw,lids,meta
+        REPLICAS=1,USE_PDL=True,launch_pdl=True,num_warps=warps)
+    return x,ids,tw,lids
 
 
-def routed_experts(pr,rs,state,kind='INC',emit=False):
-    x,ids,tw,lids,meta=route_call(pr,rs,emit)
+def routed_experts(pr,rs,state,kind='INC'):
+    x,ids,tw,lids=route_call(pr,rs)
     d=dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0})
-    out=nt1_call(d,state,kind,metadata=meta if emit else None)
-    return out,x,ids,tw,lids,meta
+    return nt1_call(d,state,kind),x,ids,tw,lids
 
 
 def routed_fixture(w,m,seed):
@@ -30,7 +28,7 @@ def routed_fixture(w,m,seed):
     biased=torch.sigmoid(logits*.1767766952966369)+w['router_bias'].float()
     ids=biased.topk(8,-1).indices;start=int(torch.bincount((ids//32).flatten(),minlength=8).argmax())*32
     rs=dict(bias=w['router_bias'].float().contiguous(),pre=(1+w['pre_expert_norm'].float()).contiguous(),
-        start=torch.tensor([start],device=device,dtype=torch.int32),arrive=torch.zeros(1,device=device,dtype=torch.int32))
+        start=torch.tensor([start],device=device,dtype=torch.int32))
     return (p,1),rs
 
 

@@ -31,6 +31,12 @@ __global__ void stream_banks(const uint8_t* w13,const uint8_t* w2,const int* exp
    stamps[b*4]=entry;stamps[b*4+1]=first0;stamps[b*4+2]=first1;stamps[b*4+3]=timeline_gt();}
 }
 
+__global__ void gt_resolution(uint64_t* out){
+ uint64_t prev=timeline_gt(),first=prev,mind=~0ull;int changes=0;
+ for(int i=0;i<40000;++i){uint64_t t=timeline_gt();if(t!=prev){mind=t-prev<mind?t-prev:mind;++changes;prev=t;}}
+ out[0]=mind;out[1]=changes;out[2]=prev-first;
+}
+void resolution(int64_t out,int64_t stream){gt_resolution<<<1,1,0,(cudaStream_t)stream>>>((uint64_t*)out);}
 void mark(int64_t stamps,int64_t after,int64_t stream){
  if(after)node_after<<<1,32,0,(cudaStream_t)stream>>>((uint64_t*)stamps);
  else node_before<<<1,32,0,(cudaStream_t)stream>>>((uint64_t*)stamps);
