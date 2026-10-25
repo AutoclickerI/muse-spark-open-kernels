@@ -27,7 +27,12 @@ prefill is ignored; the overall `solved` field (1-4 boards) is a presence count,
 Alternatives fit worse on the fitted snapshot (tau all / top 300): time-weighted arithmetic 0.9133 / 0.8248, weighted
 geometric 0.9030 / 0.7870, time-weighted harmonic 0.8928 / 0.7592, rank sums and Borda <= 0.7722 / 0.8054;
 solved-first ordering didn't help. Consequence: every top-50 team's modeled score is its decode-layer speedup (their
-component composites are lower), so a component board moves our rank only through the decode layer (SOTA "Leaderboard").
+component composites are lower; the leader's is 1.87 vs its 2.285x), so a component board moves our rank only through the
+decode layer (SOTA "Leaderboard").
+
+The leaders beat our "practical" model (`python -m sim`: 75% of 4.8 TB/s plus per-kernel launch costs) on snapshot
+`20261025T014433Z`: MoE board 2.52x vs its 2.35x ceiling, decode layer 2.285x vs 2.25x; the projection leader's 1.61x
+is 1.255x the floor, ~3.82 TB/s effective. The model's assumed rates set those ceilings, not the hardware (model).
 
 ## Judge, quotas and loop
 
@@ -37,7 +42,7 @@ component composites are lower), so a component board moves our rank only throug
 |---|---|---|---|
 | GPU state | H200, 132 SMs, SM 1980 MHz, memory 3201 MHz, 700 W limit, ~130 W idle; endpoint clocks, not sampled | measured | `7fb3e930` (`machine`), `849bd4b6` |
 | Graph replay fixed cost the judge subtracts | ~4.2 us (raw median minus reported median; `replay_overhead` 4.26 us in `0a43baec`) | measured | `7fb3e930`, `0a43baec` |
-| Plain cold read, 256 MiB | 74.33 us = 3.61 TB/s (normal allocation, random bytes): the practical roof for a byte-bound stage, 1.33x the 4.8 TB/s floor | measured | `4233660b` |
+| Plain cold read, 256 MiB | 74.33 us = 3.61 TB/s (normal allocation, random bytes), 1.33x the 4.8 TB/s floor: one kernel's rate, not the roof (next row; the leaders, "Boards") | measured | `4233660b` |
 | Historical read sweep, 52-61 MB | 12.8-14.6 us = 4.04-4.25 TB/s, best at 132 CTAs x 1024 threads, 4 x 16 B per thread; warm 4-16 MB 8.2-9.6 TB/s. CUDA events with baseline subtraction, a different protocol from the 256 MiB control | measured | `problems/muse_bf16_proj/profiles/cand_sweep2.62bd26b45aeb4992.log` |
 | Bytes in flight vs rate (64 MiB regions, 256 threads/CTA; flight = nominal request footprint per SM) | LDG128 at 66/132/264 CTAs x U1/2/4: 0.64-1.61 / 1.16-2.49 / 1.95-3.01 TB/s. cp.async U1-8: 0.55-1.89 / 1.01-2.64 / 1.72-3.15. 1-D `cp.async.bulk` U1-8: 0.44-1.77 / 0.85-2.46 / 1.46-2.88. Rate grows with independent requests and CTAs; at matched request groups shared staging without reuse costs more. The same check's 528-CTA weight stream reached 3.80 TB/s | measured | `849bd4b6` (HBM log; source `problems/muse_bf16_proj/cand_probe_hw.py`, log `profiles/cand_probe_hw.849bd4b650e54c7f.log`) |
 | Random page-1 row gather (1,048,576 x 128 B rows, one warp per row, 4 rows per warp, warm, no FP8 math) | 132 / 528 / 1056 CTAs: 0.459 / 1.615 / 2.558 TB/s | measured | `849bd4b6` |
@@ -56,6 +61,11 @@ component composites are lower), so a component board moves our rank only throug
   run). Its tensors in plain dict/list/tuple are cloned into up to 16 copies behind random pads (decode 1-3, MoE
   4-16, proj 10-16 in our receipts) and cases rotate over them; other objects are shared, so cached pointers stay
   valid but address-dependent tricks don't.
+- Prepare's critical path (S9, local sm_120, forced Hopper glue, `CCACHE_DISABLE=1`): 229.8 s cold (S8 took 215.0 s
+  on the judge). The native pool waits on prefill_score (68.1 s), nt2 57.3, v9_recoded 51.4; then the main thread
+  compiles LT (48.9 s) and the layer attention ext (31.0) serially: both into the pool at prepare start cuts ~80 s.
+  A fresh TORCH_EXTENSIONS_DIR is still warm (the image's nvcc goes through ccache: 92.2 s), so cold timing needs
+  `CCACHE_DISABLE=1` (local; `problems/muse_decode_layer/dev/s9/forced.log`).
 - Server static checks reject sources that read harness frames; a rebound CUDA event or graph-replay method fails
   the run; exit code 112 is any validation failure, compile errors included. Rejected words: "Failures".
 - Run-to-run noise: the starter's speedup CI was +-1.5%; the decode layer's MoE time moves with the run's router
@@ -109,6 +119,7 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 | `fecc29af` (scored, withdrawn) | S6 (`4c98f12f`): S5 + mixed_parallel at M=256, o config6 at M=1 | 1.628 | 1.609 | 1.398 | 1.760 | 1.458 | 1.403 | 1.5370 |
 | `2f6471d5` (scored 10-25) | S7 (`bd3932d1`): S6 with H_H reading uint8 scale codes (BF16 word formed in registers) | 1.645 | 1.626 | 1.418 | 1.802 | 1.459 | 1.445 | 1.5597 (CI 1.5363-1.5831) |
 | `c1fbd0cf` (scored 10-25) | S7R (`56c51fa0`): S7 + M=256 on R_full (light/heavy branches, "MoE M=256") | 1.638 | 1.601 | 1.459 | 1.821 | 1.498 | 1.455 | 1.5735 (CI 1.5499-1.5971) |
+| `a5b2f55b` (scored 10-25) | S8 (`cb84645d`): S7R + attention early release, M=128 verify qkv split-K, cluster glue at t <= 32 | 1.703 | 1.605 | 1.413 | 1.826 | 1.435 | 1.504 | 1.5742 |
 
 - The M=256 cells hold in the layer: verify 32 sliding / full 565.6 / 925.4 us (S1, Humming) -> 519.0 / 875.2 (S2)
   -> 492.2 / 862.3 (S3) -> 482.2 / 828.5 (S7) -> 449.2 / 799.2 (S7R). S3's lower score than S2 is noise (next bullet).
@@ -136,7 +147,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Lever model (`problems/muse_decode_layer/dev/levers/`, on S7R `c1fbd0cf`; table in `dev/NEXT_CHECKS.md`): a stage
   saving dS (sliding) / dF (full) per layer gives prod_load[T / (T - 46 dS - 16 dF)]^(1/6) overall. Levers are
   independent counterfactuals (they don't add), and profile durations include PDL waits, so predicted savings are
-  not measured critical-path gains (model).
+  not measured critical-path gains (model). A forked M=256 MoE's two branches overlap: S7R's verify 32 rows sum 535.8
+  / 942.2 us of kernel time against 442.9 / 831.1 us busy, so `build.py` subtracts the overlap (`FORKED_MOE`; the
+  M=256 lever falls from +10.18% to +5.15% on S7R).
 
 ## MoE M=1-32
 
@@ -200,11 +213,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   bounded by ~9 / ~35 us at M=16 / 32. M=32 timeline: W13 34-36 us, W2-ready wait 11-13 on the critical CTA (median
   CTA 7-8), W2 16-17, barrier 4-5.5, W13 end p50/max 43/48 us; a pure stream of the same 84.9 MB takes 23.4 us (3.6
   TB/s) vs the 75-77 us node. `problems/muse_decode_layer/dev/nt1_timeline/lab.py.inc` (ECAP, SKEW).
-- DYN (local sm_120 only; flags 1119 = 95 + DYN): the M=1 producer grabs 1-4 units from a global counter, all W13
-  before W2, and the consumer reads each stage's queued unit before its copy lands: -1.9 to -2.1 us on top of 95 (16
-  seeds; critical-CTA W2-ready wait 12.6 -> 6.8 us); a static early-experts-first order removes the wait but gains
-  nothing; at M=32 DYN loses +3 to +19 us (chunks split a multi-block expert's tile reuse across CTAs and add operand
-  reloads). `runs/screen/nt1_timeline_check.log`, `problems/muse_decode_layer/dev/nt1_timeline/var_kernel.cu.inc`.
+- DYN (1119 = 95 + DYN: the M=1 producer grabs units from a global counter) won locally (-1.9 to -2.1 us on 95) and
+  loses on the H200 (`eb9e0382`, 16 seeds, router+MoE): 1119 -1.78 +- 0.48 us vs 95 -5.68 +- 0.11. It removes the
+  W2-ready wait (median 2.46 -> 0.59 us, critical 5.92 -> 2.42) but slows every CTA's W13 (end p50 14.5 -> 18.5 us),
+  consistent with an L2 atomic round trip ahead of each 1-2 tile copies on the producer's path. Same run: 69 -3.87 /
+  -4.51 / -4.67 at M=8/16/32 vs 93 -3.16 / -4.30 / -3.42. `problems/muse_decode_layer/dev/nt1_timeline/README.md`.
 - Static decode cost per 16 weights: 17 unpack + 8 BF16 multiplies + 2 amortized scale instructions = 27 (LOP3: 26;
   fold25 16 + 1 + 8 at 124 registers, retired: it widened the scales, "Weight encoding").
 
@@ -247,6 +260,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   320.61 vs mixed_parallel 347.13 us, paired 0.9227 (lo/hi 0.891/0.944). Expert-class split E_full 0.9275; one join
   per phase 0.955-0.960; the same kernels on one stream lose (E_seq 1.0165, R_seq 1.0156), so the gain is branch
   concurrency; N8 for <= 8-row remainders loses (R8_full 0.9958). `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/`.
+- N_full stream assignment (`880c3881`, 12 seeds x 3, read flush, A:A abs 0.40 / 0.32 us): the heavy WGMMA branch on
+  the forked side stream (launched before NT1) runs 0.9799 at M=128 (203.43 vs 207.60 us) and 0.9882 at M=256 (295.71
+  vs 299.49); stream priority adds nothing; prioritising NT1 loses (1.04); shrinking NT1's grid loses (1.02-1.08);
+  heavy grid /2 or x2 is neutral. Inferred: the heavy branch is the critical path, and the first launch takes the SMs.
 - Best measured, N_full (`14f942d5`, read flush; 12 seeds x 3, A:A abs 0.45 us, every TASK.md check passes): NT1 for
   <= 16-token experts (W13 then W2 on a side stream) beside N32 WGMMA on the heavy-only task list, one fork joined
   before the finalizer, one-CTA route: 298.68 vs mixed_parallel 342.80 us, paired 0.8701 (lo/hi 0.798/0.936). Same
@@ -384,6 +401,22 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - cuBLAS split-K costs a node and a round trip: qkv M=128 main 12.5 + reduction 3.1 us; router M=128 two mains 9.0 +
   two reductions 3.9 + add 1.1 us (`458c6d3e` profiles 20, 24). Inferred from kernel tile names: unsplit qkv M=128 /
   256 has 48 / 96 output tiles, o / pooler / unpooler 128: 0.36-0.97 of one 132-SM wave.
+- GEMV vs a plain read of the same bytes (`9cd95e72` gemv_roof, standalone, `lab_cold_l2`): read qkv 37.7 MB 10.7-10.9
+  us (3.48 TB/s), pool_router 75.5 MB 18.7-19.1 (~4.0), unpooler 67 MB 17.0 (3.95), unpool slice 8.4 MB 4.1, o 16.8
+  MB 5.8. S8's Triton GEMV: qkv 12.62 / 12.72 us (t=1 / 16, +16-18%), pool_router 22.90 / 22.46 (+20%), slice 4.66,
+  o 6.35; cuBLAS at t=32 qkv 15.25 (+43%), pool_router 24.21 (+28%), unpooler 18.98 (+12%); S6's GEMV_CFG +30-55%;
+  CUDA-core warp-per-row GEMVs lose everywhere. Excess over the read ~6.9 / ~8 / ~12 us per decode 1 / 16 / 32 layer;
+  mechanism not isolated (wave tails: qkv 576 CTAs over ~528 slots, pool_router 2.2 waves; per-CTA ramp).
+- Balanced split-K Triton GEMV (S8's `_gemv_kernel` with runtime k-block ranges, BK 128, 4 stages, BN 64, 2 CTAs/SM at
+  80 KB smem; `26fd09a7`, `a1927852`, two runs agree, standalone cold), us at t = 1 / 16 / 32: qkv S 7 (252 CTAs)
+  11.62-11.70 / 11.81-11.92 / 12.26-12.35 vs S8 12.51 / 12.77 / 15.34; pool_router S 6 (432 CTAs) 20.94-21.18 /
+  21.09-21.33 / 21.98-22.05 vs 23.1 / 22.6-23.0 / 24.7-25.6; unpooler S 2 18.19-18.27 / 18.66-18.88 vs cuBLAS 18.85 /
+  19.01; o and the slice no gain. Left to a plain read: qkv ~0.6-1.4 us, pool_router ~2-3. A tile-contiguous repack
+  adds only 0.1-0.35 us (DRAM page locality is not the gap). Estimate -3.1 / -3.1 / ~-6.9 us per decode 1 / 16 / 32
+  layer; chain pairing in flight. `problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py`.
+- Verify dense at a kernel running max(read, compute) would save ~12 us per verify-16 layer and ~10 per verify-32
+  (~+1% score; cuBLAS GEMM-only at M=128 runs +41-97% over the read, M=256 near its ~700 TFLOP/s compute floor);
+  Triton split-K and DeepGEMM only tie cuBLAS apart from M=128 qkv (inferred from `b15a3bde` and `9cd95e72`).
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;
   at M=256 qkv / pooler / unpooler are tensor-bound and o narrowly HBM-bound.
 - A fused FP32 router (hi + lo staged into the same FP32 accumulators per real-K tile, one kernel instead of five)
@@ -398,6 +431,9 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   ('cl', 8, 256, 1) b1 -1.01 / -0.53 / -1.14 / -0.53 us, b2 -1.42 / -1.04 / -1.71 / -0.61; route ('cl', 8, 256, 0)
   -0.26 / -0.38 / -0.37 / -1.41; per layer -2.7 / -1.9 / -3.2 / -2.6 us (~1% score, estimate); route ids exact,
   boundary <= 3.5e-5 relative; mechanism not isolated. Loses at t = 128 / 256. `problems/muse_bf16_proj/dev/glue_cluster/`.
+- The cluster route kernel already takes an integer-key top-8 (`__reduce_max_sync` on order-preserving keys, ties by
+  id, no sort; in S8). Analysis only, not built: a router beside the pooler hides <= 0.5-1 us (the GEMVs share DRAM,
+  and a graph fork/join cost ~1 us in `e1a56ee7`); the T <= 8 zero tail in boundary 2 is worth < 0.3 us.
 - Shared routing metadata ABI: `MoERouteMeta` v1, 2,944 B of int32 (`problems/muse_decode_layer/dev/nt1_branches/route_meta.h`).
   Its producer fused into the cluster route kernel (the last-arriving token's rank-0 CTA writes it; arrival counter
   reset in-call; no CTA waits) matches `make_route_meta` in all 711 field words at t = 1..32 (local, eager and graph
@@ -430,8 +466,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   (0.908), M32 140.0 -> 125.5 (0.897), M128 322.2 -> 283.6 (0.880). On the fused M=256 path the recode gains 2.4-6.2%
   across grids (`9e8a6a15`). A reader that converts raw E4M3 per call pays this tax.
 - 16-bit scale words: D32g and H_H stored each scale as a precomputed BF16 bit word, `(code << 4) + 0x7000`
-  (`issue_word_bank`, int16), made in prepare: a dequantized copy of the scales that grows the bank 9 -> 10 B per 16
-  weights (+11.1%) and moves part of the decode out of the timed call. Forbidden (CONSTRAINTS 5, like `07d07d96`);
+  (`issue_word_bank`, int16), made in prepare: a widened (BF16-valued) copy of the scales that moves part of the
+  decode out of the timed call; the +11.1% bank size (9 -> 10 B per 16 weights) was a symptom, not the test. Forbidden (CONSTRAINTS 5, like `07d07d96`);
   S4-S6 (`ad858b58`, `e2f45792`, `fecc29af`) were withdrawn on 2026-10-25. The M=256 mix and S1-S3 keep uint8 codes.
 - S7's H_H forms that word in registers from the uint8 code (byte_perm, x16, +0x7000): +4.5 SASS instructions per 16
   weights in the W13 hot loop (66.8 -> 71.3) and +3.75 in W2 (64.8 -> 68.5), one LEA per scale, no spills; bit-exact
@@ -440,6 +476,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - NVFP4 decoders, synthetic (`849bd4b6`, 134M weights): 4-LOP3 decoder 0.98 T weights/s (136.6 us), one-PRMT LUT
   decoder 1.89 T weights/s (71.0 us, 1.92x); both exclude scales, BF16 packing and MMA. All 4,064 E2M1 x E4M3
   products are exact in BF16 (static).
+- Dense BF16 weights are `randn(n, k) / sqrt(k)` (`reference.generate_weights`). On that distribution (static, 4M
+  samples): exponent entropy 2.545 bits, so 10.54 bits per weight is the lossless ideal (-34%); 16 contiguous exponents
+  cover 99.9928% (72 per 1M outside), 8 cover 98.64%, 4 cover 85.5%; no zeros. A 12-bit code (sign + 7 mantissa bits
+  in a byte, a 4-bit exponent index, exact escapes) cuts 25%: ~34.6 MB of the ~138 MB a decode-1 layer reads.
 - No candidate keeps a BF16/FP8 expansion of NVFP4 weights; BF16 dense modules are BF16 only (static audit,
   `problems/muse_moe_w4a16/dev/tma_grouped/README.md`). A BF16-resident bank is inadmissible ("Closed recipes").
 
@@ -511,7 +551,7 @@ Failures whose cause was not obvious, so they are not repeated.
 | Lab MoE times run above the judge's (NT1 M=1 lab 42.75 us vs the judge's decode-1 median 38.0) | Most lab payloads flush L2 with `zero_()` (`87b2667f`: `add_(1)`), a write that leaves dirty lines for the timed call to write back; the judge reads a buffer larger than L2. On the H200, 8 seeds paired vs a read flush, `zero_()` adds +1.82 / +4.88 / +2.72 / +1.87 us to the MoE alone and +1.93 / +4.51 / +2.75 / +1.28 to router + MoE at M=1/8/16/32 (sm_120: +5.5 / +10.2 / +13.0 / +15.7) | Flush with `lab_cold_l2()` (tools/h200_lab.py, a read); read absolute times of zero_()-flushed small-M labs as ~2-5 us high, and bandwidth-saving variants as judged under extra write traffic | ~68 lab payloads; small-M accounting | `849e4017` (FLUSH lines; payload `prof/lab/moe_nt1_timeline.py`); local `runs/screen/nt1_timeline_lab_local.log` |
 | A local lab slows 5x (21.6 -> 110 s) and finishes 30/36 rows | `lab_cold_l2()`'s flush, a uint8 `.sum()` over 1 GiB, costs 39 ms per call on sm_120 (an int32 view of the same buffer 11 ms; GPU0 shared with another lane) | Sum through a wider view or a smaller buffer; labs with ~1,000 timed replays per seed check the flush's H200 cost | one local lab | `problems/muse_moe_w4a16/dev/mixed_wgmma/m128/producer_consumer/agreement.json` |
 | A local 22% win is 0.6% on the H200: typed `__align__(1024)` shared-memory W2 vs S6's runtime-aligned raw smem, sm_120 289.6 -> 224.6 us, H200 124.49 -> 123.67 (RL_eq 0.9831 vs RL 0.9883) | A shared-memory alignment effect on sm_120 only (not isolated) | Don't rank smem-alignment changes locally | none | `110599ba`; `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/gemm.cu.inc` |
-| Three scored decode runs (S4-S6) had to be withdrawn after landing | D32g/H_H's prepare built a 16-bit BF16 copy of the NVFP4 scales (`issue_word_bank`); lane gates checked exactness and speed, not the bank's encoding, and the integration copied the cell as it was | Before a cell enters a candidate, list every tensor its prepare() keeps for the timed call with dtype and bytes per 16 weights; NVFP4 stays at <= 9 B per 16 weights with FP4 codes and 8-bit scales | 3 decode runs; S5's 1.5397x off the board | `ad858b58`, `e2f45792`, `fecc29af` |
+| Three scored decode runs (S4-S6) had to be withdrawn after landing | D32g/H_H's prepare built a 16-bit BF16 copy of the NVFP4 scales (`issue_word_bank`); lane gates checked exactness and speed, not the bank's encoding, and the integration copied the cell as it was | Before a cell enters a candidate, list every tensor its prepare() keeps for the timed call and what it holds at what precision: NVFP4 codes and E4M3 scales (or lossless recodes) in any layout, duplicates and padding are fine; a widened value (BF16/FP16/FP8 or its bit pattern) is not | 3 decode runs; S5's 1.5397x off the board | `ad858b58`, `e2f45792`, `fecc29af` |
 | A lab "route flip" aborted `8a3d7181` (all timings lost) and disabled 3 cells of `9eeb39ba` (case 10 = M=256 sliding, seed 188741, token 15) | Our exact-ID gate compares ordered top-8 lists; experts 172 / 173 swapped slots 6 / 7 inside the same set (score delta 2.8e-6, 8th-9th gap 0.00135, cutoff loss 0, output L2 9.4e-6); the legacy pool epilogue reproduces it (`LEGACY_CASE10`). TASK.md:83-88 checks the picked set (within 0.05 of the reference's 8th score; clear top-8 members must appear), so this is no routing error | Compare sorted ID sets and the 8th/9th gap; never treat slot order as a flip | one lab's timings, 3 cells | `9eeb39ba` |
 | A paired decode lab passes locally but fails on the H200 with `router FP32 route IDs differ` | The FP32 router oracle sums split-K partials in another order than the tuned kernel; a near-tie at the 8th expert flips (inferred) | Exact top-k oracles allow flips where the 8th/9th scores are within FP32 noise and report count and gap | one decode check | `7307be78` |
 | A small-M MoE lab passes locally but fails agreement on the H200 (relative error ~1.8-1.9) | The lab built its bank with recoded E4M3 bytes and fed them to raw-E4M3 readers (stored `0x70` read as `0xe0` = -32) | Build lab banks from the candidate's current code; check the inverse bank; print the first mismatching expert/row/channel | two checks | `3920d3f0`, `948044d4`; fixed `fee5f3b0`, `b741f04a` |

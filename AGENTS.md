@@ -18,8 +18,8 @@ The organizers' files are authoritative: `upstream/llms.txt`, `problems/<name>/T
 - No conservative or incremental steps, fallbacks or ritual checks; delete stale docs when you touch them.
 - Remote runs only through `tools/okc_run.py send <file> --note "<what changed>"` (`h200_lab.py` wraps it): scored while any are
   left; receipts in `runs/`. Screen with `tools/local_eval.py` first; a local test failure stays local (default).
-- H200 timing without decode runs: `tools/h200_lab.py send <payload> [more ...]` on a host with quota (proj, MoE
-  or prefill), synthetic weights where it lacks them; batch labs per host. Decode's runs go to candidates.
+- H200 labs: `tools/h200_lab.py send <payload> [more ...]` on a proj, MoE or prefill host with quota (synthetic
+  weights where it lacks them); batch labs per host.
 - Local timing (sm_120) ranks loosely; H200 claims need `runs/` receipts.
 - Hopper-only paths can't run here: force each Hopper branch's glue locally with a stand-in kernel.
 - Run `tools/sync_upstream.sh` first; read the diff if official files changed.

@@ -51,7 +51,7 @@ Protocols and full rows: FINDINGS "The judge's H200" and "P8 hardware probes".
 
 | Ceiling | Value | What it bounds | Receipt |
 |---|---|---|---|
-| Plain cold HBM stream | 256 MiB in 74.33 us = **3.61 TB/s = 1.33x the floor's rate**; a 528-CTA ~130 MB stream 3.80 TB/s (raw events); 52-61 MB with event baseline subtraction 4.04-4.25 TB/s | A byte-bound stage reaches ~1.3x its floor at best | `4233660b`, `849bd4b6`, `cand_sweep2.62bd26b4` |
+| Plain cold HBM stream | 256 MiB in 74.33 us = 3.61 TB/s (1.33x the floor's rate) for one plain kernel; a 528-CTA ~130 MB stream 3.80 TB/s (raw events); 52-61 MB with event baseline subtraction 4.04-4.25 TB/s (1.13-1.19x). The leaders' boards beat our 3.61-based model (FINDINGS "Boards"); the judge's best recipe per stage size is unmeasured (PLAN P7) | A byte-bound stage can get within ~1.15x of its floor | `4233660b`, `849bd4b6`, `cand_sweep2.62bd26b4` |
 | Hardware memory compression | Granted, but real NVFP4 and BF16 weights read at 0.997-1.002x (zeros 2.03x) | Closed: only software coding can lower the byte floor | `4233660b` |
 | Page-1 random KV gather (128 B rows) | 0.46 / 1.62 / 2.56 TB/s at 132 / 528 / 1056 CTAs | Attention's KV read; more independent rows in flight | `849bd4b6` |
 | One launch reading one weight (8-75 MB) | 0.96-2.45 TB/s, ~5.2 us launch/ramp envelope | Small dense stages' per-launch cost | `feb7b287` |
@@ -94,12 +94,15 @@ one run's router-seed noise. (`build.py` doesn't yet classify S7R's M=256 kernel
 |---|---:|---:|
 | 2.0x its floor | 1.955 | 1.942 |
 | 1.5x | 2.296 | 2.341 |
-| 1.3x (byte-bound stages at the measured 3.61 TB/s stream) | 2.637 | 2.710 |
+| 1.3x (byte-bound stages at 3.61 TB/s) | 2.637 | 2.710 |
 
-The two bases differ because a capped layer keeps its profile's residual (adjusted graph minus kernel sum: kernel
+On the current model (S7R plus S8 and S9's paired wins, 1.674), 2.0 / 1.5 / 1.3 / 1.15x give 1.96 / 2.26 / 2.59 /
+2.94; 1.15x is byte-bound stages at ~4.2 TB/s. The two bases differ because a capped layer keeps its profile's residual (adjusted graph minus kernel sum: kernel
 durations include PDL waits) and its run's baseline: read these as +-3%. The board leader (2.285x on 10-25, SOTA)
 corresponds to every stage at ~1.5x its floor at once. 1.3x is not reachable everywhere: glue and small attention
-floors are near zero, so a cap there assumes their fixed work is fused away.
+floors are near zero, so a cap there assumes their fixed work is fused away. Lossless coding of the dense BF16
+weights lowers their floor itself (12-bit code: -25% of the dense bytes; FINDINGS "Weight encoding"): +4 to +8% on
+top of any cap (model).
 
 | Lever on S7, capped at 1.5x / 1.3x its floor | Score gain on 1.573 |
 |---|---|

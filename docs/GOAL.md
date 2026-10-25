@@ -2,19 +2,19 @@
 
 ## G0: the highest score on the overall kernel board
 By the kernel close (2026-11-05 16:59 KST): the highest score on the overall kernel board
-(openkernelchallenge.dev/leaderboard), aiming for 1st place; the only goal (R-20261025-1). Final places are
-medians of reruns (CONSTRAINTS 2), so promote a change by its six-load score on identical inputs and its spread
-across seeds; a stage's seed mean is only a diagnostic.
+(openkernelchallenge.dev/leaderboard), aiming for 1st place; the only goal (R-20261025-1). Promote a change by its
+six-load score on identical inputs and its spread across seeds (places are rerun medians, CONSTRAINTS 2).
 
-The organizers publish ranks only; our fit of them (FINDINGS "Boards") makes a top-50 team's overall score its
-`muse_decode_layer` speedup, so every other kernel counts only inside the decode layer.
+Ranks are all that's published; our fit (FINDINGS "Boards"): overall = max(decode layer, a weighted sum of the
+component boards); the sum stays below the decode layer even at the leaders' components (1.87 vs 2.285x), so other
+kernels count only inside the decode layer.
 
 ## Subgoals (ranked)
 
 | Rank | Id | Subgoal | Serves G0 by | Done when |
 |---|---|---|---|---|
 | 1 | G1 | Our decode-layer speedup on the board | It is the overall score | Our scored decode-layer run tops the board at the close, and our six-load score on many seeds beats the leader too |
-| 2 | G2 | H200-verified stage kernels inside the decode layer at its 12 scored shapes (M = 1-256): MoE, attention, projections, glue | G1 is built from them | Each beats the incumbent in a whole-layer paired lab and passes TASK.md's checks with margin on many seeds |
+| 2 | G2 | H200-verified stage kernels inside the decode layer at its 12 scored shapes (M = 1-256): MoE, attention, projections, glue | G1 is built from them (the leader: every stage at ~1.5x its floor) | Each stage at <= 1.3x its floor (byte-bound ones at the judge's best measured stream) or below it through lossless weight coding, in a whole-layer paired lab that passes TASK.md's checks with margin on many seeds |
 
 ## Optimize vs spend (R-20261024-2)
 The board score is the only target; loop speed counts only because it buys score (pack new information into each
@@ -23,7 +23,7 @@ judge run). Everything no hard limit bounds is a resource to spend, never minimi
 
 ## Non-goals
 - Serving (patch, board, prefill, drafter) until the serving round (R-20261025-1); parked in [serving/](serving/README.md).
-- Component and prefill boards for their own sake (by our fit, no effect on a top-50 overall score).
+- Component and prefill boards for their own sake (fit above; prefill isn't on the overall board).
 - Renting an H200: H200 numbers come from the judge (R-20261023-3).
 
 ## Decision rights

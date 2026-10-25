@@ -1,0 +1,312 @@
+{
+ "board": "muse_attention_decode",
+ "call_id": "sfo3b:kc-c9c4ef99cb114218",
+ "cluster": "sfo3b",
+ "content_hash": "67c0b068d4dddbe563904deb24d042931ae3d9dc00b4a20833510bd3be87e4da",
+ "created_at": 1792893038.125741,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792894078.8203373,
+ "id": "c9c4ef99cb114218",
+ "mode": "run",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/287783f9e5752d5e/profiles/cand_vq8.c9c4ef99cb114218.log"
+ },
+ "payload_ref": "muse_attention_decode/67c0b068d4dddbe563904deb24d042931ae3d9dc00b4a20833510bd3be87e4da.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "1d519ebf2014fef91b41ffea9bcd7e9c5066784ef5a2a5e2cf06a8cec554d188",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_attention_decode/baseline.py": "37f51207283f85a65eb393b1dfb1344759d7df0bdec5450e34d24e7139f56ecc",
+    "problems/muse_attention_decode/reference.py": "386f7f67a1d788501e8fb9005d340423d098a0946e23810ba10878228c11a37b",
+    "problems/muse_attention_decode/task.yml": "645f889fbbd52d1d731bf5eb53356aa7ef6eea8fab3073f0a2a3dd582fe6e4bb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "04] l2 0.001278\nPORTFOLIO_SHAPE 32 0 fa3 (128, True) us 391.36 reps [394.304, 391.36, 388.576] l2 0.001278\nPORTFOLIO_SHAPE 32 0 fa3 (128, False) us 741.568 reps [741.568, 738.464, 741.952] l2 0.008187\nPORTFOLIO_MECH 32 0 reuse_q_rows_per_kv_page 64 raw_kv_bytes 704577536 fa3_us 391.36 best_custom_us 481.632 decode_math (2,) fa3_speedup_over_custom 1.2307 fa3_gather_tbps_ref 2.558 custom_effective_tbps 1.4629\nPORTFOLIO_DECODE_MATH 32 0 us 481.632 setting (2,) effective_tbps 1.4629 vs_fa3 0.8126\nPORTFOLIO_DECODE_MATH_TWOG 32 0 us 636.512 setting (1,) effective_tbps 1.1069 vs_fa3 0.6149\nPORTFOLIO_MECH_SPLITS 32 0 (128, True):391.36;(32, None):392.51;(64, None):392.64;(4, True):393.02;(4, None):393.28;(8, True):393.57;(8, None):393.95;(64, True):393.95;(16, None):394.14;(16, True):394.21;(32, True):394.30;(128, None):394.30;(0, True):396.90;(2, True):397.38;(0, None):397.54;(2, None):398.62;(16, False):737.44;(8, False):739.01;(2, False):740.77;(128, False):741.57;(64, False):741.60;(32, False):741.66;(1, True):742.05;(1, None):742.59;(0, False):743.07;(4, False):743.26;(1, False):747.52\nPORTFOLIO_PLAN 32 0 selected ('fa3', (128, True)) best_us 391.36 accepted 57 candidates 59 all_us decode_math:(1,):544.54;decode_math:(2,):481.63;decode_math:(4,):553.47;decode_math_twog:(1,):636.51;decode_math_twog:(2,):698.05;decode_math_twog:(4,):818.05;xqa_group:('group', 5, 1):1706.56;xqa_group:('group', 5, 2):1542.05;xqa_group:('group', 5, 4):1390.50;xqa_group:('group', 5, 8):1313.44;xqa_group:('group', 7, 1):1691.26;xqa_group:('group', 7, 2):1550.43;xqa_group:('group', 7, 4):1395.07;xqa_group:('group', 7, 8):1321.57;xqa_warp:('warp', 3, 1):1119.74;xqa_warp:('warp', 3, 2):1026.75;xqa_warp:('warp', 3, 4):950.30;xqa_warp:('warp', 3, 8):908.54;xqa_warp:('warp', 4, 1):1160.93;xqa_warp:('warp', 4, 2):1029.50;xqa_warp:('warp', 4, 4):956.42;xqa_warp:('warp', 4, 8):913.79;xqa_fp8_pv:(3, 1):2139.14;xqa_fp8_pv:(3, 2):2212.06;xqa_fp8_pv:(3, 4):1983.01;xqa_fp8_pv:(3, 8):1792.90;xqa_fp8_pv:(5, 1):2151.65;xqa_fp8_pv:(5, 2):2215.68;xqa_fp8_pv:(5, 4):1987.10;xqa_fp8_pv:(5, 8):1787.26;fa3:(0, None):397.54;fa3:(0, True):396.90;fa3:(0, False):743.07;fa3:(1, None):742.59;fa3:(1, True):742.05;fa3:(1, False):747.52;fa3:(2, None):398.62;fa3:(2, True):397.38;fa3:(2, False):740.77;fa3:(4, None):393.28;fa3:(4, True):393.02;fa3:(4, False):743.26;fa3:(8, None):393.95;fa3:(8, True):393.57;fa3:(8, False):739.01;fa3:(16, None):394.14;fa3:(16, True):394.21;fa3:(16, False):737.44;fa3:(32, None):392.51;fa3:(32, True):394.30;fa3:(32, False):741.66;fa3:(64, None):392.64;fa3:(64, True):393.95;fa3:(64, False):741.60;fa3:(128, None):394.30;fa3:(128, True):391.36;fa3:(128, False):741.57\nPORTFOLIO_SUMMARY 1 1 winner ('decode_math_twog', (2,)) choices decode_math:(1,)=29.6;decode_math:(2,)=29.7;decode_math:(4,)=29.8;decode_math:(8,)=29.4;decode_math_twog:(1,)=23.4;decode_math_twog:(2,)=23.1;decode_math_twog:(4,)=23.1;decode_math_twog:(8,)=23.5;xqa_group:('group', 5, 1)=74.8;xqa_group:('group', 5, 2)=73.4;xqa_group:('group', 5, 4)=73.3;xqa_group:('group', 5, 8)=73.2;xqa_group:('group', 7, 1)=75.9;xqa_group:('group', 7, 2)=75.2;xqa_group:('group', 7, 4)=73;xqa_group:('group', 7, 8)=72.8;xqa_warp:('warp', 3, 1)=39;xqa_warp:('warp', 3, 2)=38.6;xqa_warp:('warp', 3, 4)=39.6;xqa_warp:('warp', 3, 8)=39.6;xqa_warp:('warp', 4, 1)=38.4;xqa_warp:('warp', 4, 2)=39.8;xqa_warp:('warp', 4, 4)=39.7;xqa_warp:('warp', 4, 8)=38.6;xqa_fp8_pv:(3, 1)=107;xqa_fp8_pv:(3, 2)=107;xqa_fp8_pv:(3, 4)=106;xqa_fp8_pv:(3, 8)=107;xqa_fp8_pv:(5, 1)=106;xqa_fp8_pv:(5, 2)=109;xqa_fp8_pv:(5, 4)=108;xqa_fp8_pv:(5, 8)=108;fa3:(0, None)=31.2;fa3:(0, True)=30.8;fa3:(0, False)=32.7;fa3:(1, None)=46;fa3:(1, True)=46.6;fa3:(1, False)=47.1;fa3:(2, None)=38.8;fa3:(2, True)=39.9;fa3:(2, False)=38.9;fa3:(4, None)=34.2;fa3:(4, True)=33.6;fa3:(4, False)=35;fa3:(8, None)=32.6;fa3:(8, True)=31.9;fa3:(8, False)=32.7;fa3:(16, None)=30.8;fa3:(16, True)=31;fa3:(16, False)=32.9;fa3:(32, None)=30.7;fa3:(32, True)=30.9;fa3:(32, False)=32.1;fa3:(64, None)=31.6;fa3:(64, True)=30.4;fa3:(64, False)=32.3;fa3:(128, None)=30.3;fa3:(128, True)=30.7;fa3:(128, False)=31\nPORTFOLIO_SUMMARY 1 0 winner ('fa3', (64, None)) choices decode_math:(1,)=56.5;decode_math_twog:(1,)=63.7;xqa_group:('group', 5, 1)=124;xqa_group:('group', 5, 2)=121;xqa_group:('group', 5, 4)=117;xqa_group:('group', 5, 8)=119;xqa_group:('group', 7, 1)=118;xqa_group:('group', 7, 2)=117;xqa_group:('group', 7, 4)=118;xqa_group:('group', 7, 8)=120;xqa_warp:('warp', 3, 1)=80.8;xqa_warp:('warp', 3, 2)=79.6;xqa_warp:('warp', 3, 4)=78.8;xqa_warp:('warp', 3, 8)=78;xqa_warp:('warp', 4, 1)=78.6;xqa_warp:('warp', 4, 2)=78.2;xqa_warp:('warp', 4, 4)=77.2;xqa_warp:('warp', 4, 8)=79.4;xqa_fp8_pv:(3, 1)=234;xqa_fp8_pv:(3, 2)=233;xqa_fp8_pv:(3, 4)=234;xqa_fp8_pv:(3, 8)=233;xqa_fp8_pv:(5, 1)=233;xqa_fp8_pv:(5, 2)=224;xqa_fp8_pv:(5, 4)=228;xqa_fp8_pv:(5, 8)=228;fa3:(0, None)=43.6;fa3:(0, True)=45;fa3:(0, False)=110;fa3:(1, None)=739;fa3:(1, True)=742;fa3:(1, False)=739;fa3:(2, None)=372;fa3:(2, True)=372;fa3:(2, False)=370;fa3:(4, None)=196;fa3:(4, True)=196;fa3:(4, False)=196;fa3:(8, None)=110;fa3:(8, True)=113;fa3:(8, False)=110;fa3:(16, None)=70.2;fa3:(16, True)=71.4;fa3:(16, False)=107;fa3:(32, None)=54.2;fa3:(32, True)=52.2;fa3:(32, False)=112;fa3:(64, None)=43.2;fa3:(64, True)=44.9;fa3:(64, False)=109;fa3:(128, None)=43.8;fa3:(128, True)=45;fa3:(128, False)=107\nPORTFOLIO_SUMMARY 16 1 winner ('fa3', (16, True)) choices decode_math:(1,)=46.1;decode_math:(2,)=62.8;decode_math:(4,)=61.4;decode_math:(8,)=63.3;decode_math_twog:(1,)=56.2;decode_math_twog:(2,)=82.5;decode_math_twog:(4,)=83.3;decode_math_twog:(8,)=82.6;xqa_group:('group', 5, 1)=94.4;xqa_group:('group', 5, 2)=101;xqa_group:('group', 5, 4)=126;xqa_group:('group', 5, 8)=170;xqa_group:('group', 7, 1)=94.1;xqa_group:('group', 7, 2)=104;xqa_group:('group', 7, 4)=125;xqa_group:('group', 7, 8)=173;xqa_warp:('warp', 3, 1)=56.4;xqa_warp:('warp', 3, 2)=60.9;xqa_warp:('warp', 3, 4)=75.5;xqa_warp:('warp', 3, 8)=76.5;xqa_warp:('warp', 4, 1)=56.7;xqa_warp:('warp', 4, 2)=61.1;xqa_warp:('warp', 4, 4)=75.6;xqa_warp:('warp', 4, 8)=77.8;xqa_fp8_pv:(3, 1)=91.2;xqa_fp8_pv:(3, 2)=101;xqa_fp8_pv:(3, 4)=124;xqa_fp8_pv:(3, 8)=165;xqa_fp8_pv:(5, 1)=92.4;xqa_fp8_pv:(5, 2)=101;xqa_fp8_pv:(5, 4)=121;xqa_fp8_pv:(5, 8)=167;fa3:(0, None)=36.5;fa3:(0, True)=37.4;fa3:(0, False)=46.2;fa3:(1, None)=47.4;fa3:(1, True)=48.1;fa3:(1, False)=46.7;fa3:(2, None)=41.6;fa3:(2, True)=41.3;fa3:(2, False)=46.8;fa3:(4, None)=36;fa3:(4, True)=37;fa3:(4, False)=46.6;fa3:(8, None)=36.8;fa3:(8, True)=37.4;fa3:(8, False)=46.6;fa3:(16, None)=35.9;fa3:(16, True)=35.9;fa3:(16, False)=47.9;fa3:(32, None)=35.9;fa3:(32, True)=36.6;fa3:(32, False)=47.4;fa3:(64, None)=36.6;fa3:(64, True)=36.4;fa3:(64, False)=46.1;fa3:(128, None)=38.1;fa3:(128, True)=37.6;fa3:(128, False)=47.1\nPORTFOLIO_SUMMARY 16 0 winner ('fa3', (4, True)) choices decode_math:(1,)=313;decode_math:(2,)=290;decode_math_twog:(1,)=377;decode_math_twog:(2,)=444;xqa_group:('group', 5, 1)=1.05e+03;xqa_group:('group', 5, 2)=837;xqa_group:('group', 5, 4)=756;xqa_group:('group', 5, 8)=739;xqa_group:('group', 7, 1)=1.05e+03;xqa_group:('group', 7, 2)=847;xqa_group:('group', 7, 4)=755;xqa_group:('group', 7, 8)=745;xqa_warp:('warp', 3, 1)=688;xqa_warp:('warp', 3, 2)=574;xqa_warp:('warp', 3, 4)=514;xqa_warp:('warp', 3, 8)=499;xqa_warp:('warp', 4, 1)=683;xqa_warp:('warp', 4, 2)=575;xqa_warp:('warp', 4, 4)=513;xqa_warp:('warp', 4, 8)=502;xqa_fp8_pv:(3, 1)=1.29e+03;xqa_fp8_pv:(3, 2)=1.26e+03;xqa_fp8_pv:(3, 4)=1.05e+03;xqa_fp8_pv:(3, 8)=940;xqa_fp8_pv:(5, 1)=1.28e+03;xqa_fp8_pv:(5, 2)=1.26e+03;xqa_fp8_pv:(5, 4)=1.06e+03;xqa_fp8_pv:(5, 8)=944;fa3:(0, None)=212;fa3:(0, True)=213;fa3:(0, False)=730;fa3:(1, None)=739;fa3:(1, True)=736;fa3:(1, False)=734;fa3:(2, None)=386;fa3:(2, True)=383;fa3:(2, False)=733;fa3:(4, None)=212;fa3:(4, True)=211;fa3:(4, False)=727;fa3:(8, None)=213;fa3:(8, True)=211;fa3:(8, False)=722;fa3:(16, None)=213;fa3:(16, True)=213;fa3:(16, False)=724;fa3:(32, None)=212;fa3:(32, True)=211;fa3:(32, False)=730;fa3:(64, None)=212;fa3:(64, True)=212;fa3:(64, False)=725;fa3:(128, None)=212;fa3:(128, True)=212;fa3:(128, False)=726\nPORTFOLIO_SUMMARY 32 1 winner ('fa3', (0, True)) choices decode_math:(1,)=83.1;decode_math:(2,)=126;decode_math:(4,)=148;decode_math:(8,)=149;decode_math_twog:(1,)=113;decode_math_twog:(2,)=173;decode_math_twog:(4,)=208;decode_math_twog:(8,)=207;xqa_group:('group', 5, 1)=111;xqa_group:('group', 5, 2)=119;xqa_group:('group', 5, 4)=150;xqa_group:('group', 5, 8)=195;xqa_group:('group', 7, 1)=112;xqa_group:('group', 7, 2)=120;xqa_group:('group', 7, 4)=150;xqa_group:('group', 7, 8)=196;xqa_warp:('warp', 3, 1)=67.9;xqa_warp:('warp', 3, 2)=76.5;xqa_warp:('warp', 3, 4)=89.2;xqa_warp:('warp', 3, 8)=117;xqa_warp:('warp', 4, 1)=68.8;xqa_warp:('warp', 4, 2)=75.8;xqa_warp:('warp', 4, 4)=89.6;xqa_warp:('warp', 4, 8)=118;xqa_fp8_pv:(3, 1)=116;xqa_fp8_pv:(3, 2)=129;xqa_fp8_pv:(3, 4)=138;xqa_fp8_pv:(3, 8)=168;xqa_fp8_pv:(5, 1)=118;xqa_fp8_pv:(5, 2)=133;xqa_fp8_pv:(5, 4)=141;xqa_fp8_pv:(5, 8)=168;fa3:(0, None)=42.8;fa3:(0, True)=42.5;fa3:(0, False)=47.5;fa3:(1, None)=49.4;fa3:(1, True)=47.5;fa3:(1, False)=48.9;fa3:(2, None)=43;fa3:(2, True)=42.5;fa3:(2, False)=48.1;fa3:(4, None)=48.1;fa3:(4, True)=49.2;fa3:(4, False)=48.6;fa3:(8, None)=48.6;fa3:(8, True)=48.6;fa3:(8, False)=47.1;fa3:(16, None)=50.1;fa3:(16, True)=49.2;fa3:(16, False)=48.2;fa3:(32, None)=49.5;fa3:(32, True)=48.3;fa3:(32, False)=49.2;fa3:(64, None)=49.2;fa3:(64, True)=48.7;fa3:(64, False)=49;fa3:(128, None)=49.2;fa3:(128, True)=49.3;fa3:(128, False)=47.7\nPORTFOLIO_SUMMARY 32 0 winner ('fa3', (128, True)) choices decode_math:(1,)=545;decode_math:(2,)=482;decode_math:(4,)=553;decode_math_twog:(1,)=637;decode_math_twog:(2,)=698;decode_math_twog:(4,)=818;xqa_group:('group', 5, 1)=1.71e+03;xqa_group:('group', 5, 2)=1.54e+03;xqa_group:('group', 5, 4)=1.39e+03;xqa_group:('group', 5, 8)=1.31e+03;xqa_group:('group', 7, 1)=1.69e+03;xqa_group:('group', 7, 2)=1.55e+03;xqa_group:('group', 7, 4)=1.4e+03;xqa_group:('group', 7, 8)=1.32e+03;xqa_warp:('warp', 3, 1)=1.12e+03;xqa_warp:('warp', 3, 2)=1.03e+03;xqa_warp:('warp', 3, 4)=950;xqa_warp:('warp', 3, 8)=909;xqa_warp:('warp', 4, 1)=1.16e+03;xqa_warp:('warp', 4, 2)=1.03e+03;xqa_warp:('warp', 4, 4)=956;xqa_warp:('warp', 4, 8)=914;xqa_fp8_pv:(3, 1)=2.14e+03;xqa_fp8_pv:(3, 2)=2.21e+03;xqa_fp8_pv:(3, 4)=1.98e+03;xqa_fp8_pv:(3, 8)=1.79e+03;xqa_fp8_pv:(5, 1)=2.15e+03;xqa_fp8_pv:(5, 2)=2.22e+03;xqa_fp8_pv:(5, 4)=1.99e+03;xqa_fp8_pv:(5, 8)=1.79e+03;fa3:(0, None)=398;fa3:(0, True)=397;fa3:(0, False)=743;fa3:(1, None)=743;fa3:(1, True)=742;fa3:(1, False)=748;fa3:(2, None)=399;fa3:(2, True)=397;fa3:(2, False)=741;fa3:(4, None)=393;fa3:(4, True)=393;fa3:(4, False)=743;fa3:(8, None)=394;fa3:(8, True)=394;fa3:(8, False)=739;fa3:(16, None)=394;fa3:(16, True)=394;fa3:(16, False)=737;fa3:(32, None)=393;fa3:(32, True)=394;fa3:(32, False)=742;fa3:(64, None)=393;fa3:(64, True)=394;fa3:(64, False)=742;fa3:(128, None)=394;fa3:(128, True)=391;fa3:(128, False)=742\nVQ8_COMPILE_S 54.6\nVQ8_RES st=4 regs,local,static_smem,dyn_smem,ctas_per_sm=[161, 32, 4096, 122880, 1]\nVQ8_RES st=6 regs,local,static_smem,dyn_smem,ctas_per_sm=[161, 32, 4096, 172032, 1]\nVQ8_RES st=8 regs,local,static_smem,dyn_smem,ctas_per_sm=[161, 32, 4096, 221184, 1]\nVQ8_GATE ok=1 errs=0.0065,0.0098,0.0068,0.0094,0.0068,0.0111,0.0080,0.0120\nVQ8_LAB L=8 B=1 W=2048 base=23.2 st8mt2=28.3 st6mt2=27.4 st4mt2=26.8 st8mt4=32.1 st8mt8=35.1 st8mt1=21.2 pick=st8mt1\nVQ8_CLK L=8 B=1 W=2048 st8mt1 ctas=33 tiles=0-1 entry_max=0.26 sched=2.30 q_ready=5.12 first=6.91/6.91 wg0_end=9.73/9.98 wg1_end_max=9.98 prod_end_max=6.91 cwait=0.25/0.25 pempty=0.00 pcp=0.00 comb_entry=27.65 comb_go=28.93 comb_end=31.74 cyc_per_tile=13894\nVQ8_LAB L=8 B=1 W=0 base=41.0 st8mt2=41.5 st6mt2=41.6 st4mt2=41.1 st8mt4=41.7 st8mt8=41.0 st8mt1=41.6 pick=base\nVQ8_CLK L=8 B=1 W=0 st8mt8 ctas=132 tiles=9-10 entry_max=0.26 sched=2.56 q_ready=4.61 first=15.10/16.13 wg0_end=24.58/29.44 wg1_end_max=29.44 prod_end_max=21.50 cwait=0.53/0.54 pempty=0.06 pcp=0.00 comb_entry=25.34 comb_go=30.21 comb_end=36.86 cyc_per_tile=4550\nVQ8_LAB L=8 B=16 W=2048 base=34.5 st8mt2=34.1 st6mt2=33.9 st4mt2=32.9 st8mt4=33.9 st8mt8=37.2 st8mt1=34.3 pick=st4mt2\nVQ8_CLK L=8 B=16 W=2048 st4mt2 ctas=132 tiles=3-4 entry_max=0.26 sched=2.30 q_ready=5.12 first=9.47/13.31 wg0_end=15.62/20.74 wg1_end_max=20.74 prod_end_max=12.54 cwait=0.41/0.42 pempty=0.00 pcp=0.01 comb_entry=16.13 comb_go=21.50 comb_end=27.14 cyc_per_tile=6166\nVQ8_LAB L=8 B=16 W=0 base=209.1 st8mt2=230.5 st6mt2=228.7 st4mt2=237.8 st8mt4=230.3 st8mt8=232.2 st8mt1=230.4 pick=base\nVQ8_CLK L=8 B=16 W=0 st6mt2 ctas=132 tiles=149-151 entry_max=0.26 sched=2.30 q_ready=4.86 first=13.31/13.82 wg0_end=232.96/240.64 wg1_end_max=240.64 prod_end_max=237.06 cwait=0.51/0.52 pempty=0.46 pcp=0.00 comb_entry=229.63 comb_go=241.41 comb_end=246.78 cyc_per_tile=2717\nVQ8_LAB L=8 B=32 W=2048 base=39.6 st8mt2=42.9 st6mt2=41.0 st4mt2=40.8 st8mt4=42.5 st8mt8=42.6 st8mt1=43.0 pick=base\nVQ8_CLK L=8 B=32 W=2048 st4mt2 ctas=132 tiles=7-8 entry_max=0.26 sched=2.05 q_ready=5.12 first=12.29/14.59 wg0_end=23.81/28.67 wg1_end_max=28.67 prod_end_max=24.83 cwait=0.51/0.51 pempty=0.15 pcp=0.01 comb_entry=23.81 comb_go=29.18 comb_end=38.40 cyc_per_tile=4884\nVQ8_LAB L=8 B=32 W=0 base=394.6 st8mt2=439.1 st6mt2=431.9 st4mt2=451.8 st8mt4=438.0 st8mt8=438.5 st8mt1=438.2 pick=base\nVQ8_CLK L=8 B=32 W=0 st6mt2 ctas=132 tiles=302-304 entry_max=0.26 sched=2.30 q_ready=4.61 first=14.08/14.59 wg0_end=455.17/464.13 wg1_end_max=464.13 prod_end_max=460.03 cwait=0.51/0.52 pempty=0.48 pcp=0.00 comb_entry=449.28 comb_go=464.90 comb_end=474.11 cyc_per_tile=2677\nVQ8_LAB L=1 B=1 W=2048 base=14.0 st8mt2=26.7 st6mt2=25.6 st4mt2=25.1 st8mt4=30.6 st8mt8=33.8 st8mt1=20.1 pick=base\nVQ8_CLK L=1 B=1 W=2048 st8mt1 ctas=33 tiles=0-1 entry_max=0.00 sched=2.30 q_ready=5.38 first=8.19/8.19 wg0_end=11.01/11.52 wg1_end_max=11.52 prod_end_max=8.19 cwait=0.33/0.33 pempty=0.00 pcp=0.00 comb_entry=2.82 comb_go=12.29 comb_end=19.46 cyc_per_tile=16047\nVQ8_LAB L=1 B=1 W=0 base=22.7 st8mt2=40.0 st6mt2=39.9 st4mt2=39.7 st8mt4=40.0 st8mt8=39.9 st8mt1=39.7 pick=base\nVQ8_CLK L=1 B=1 W=0 st4mt2 ctas=132 tiles=9-10 entry_max=0.26 sched=3.07 q_ready=5.38 first=12.03/12.03 wg0_end=26.11/29.70 wg1_end_max=29.70 prod_end_max=24.58 cwait=0.54/0.55 pempty=0.18 pcp=0.00 comb_entry=26.62 comb_go=30.46 comb_end=36.86 cyc_per_tile=4480\nVQ8_LAB L=1 B=16 W=2048 base=16.8 st8mt2=33.0 st6mt2=32.4 st4mt2=32.2 st8mt4=32.7 st8mt8=34.5 st8mt1=32.7 pick=base\nVQ8_CLK L=1 B=16 W=2048 st4mt2 ctas=132 tiles=3-4 entry_max=0.26 sched=2.30 q_ready=5.89 first=12.29/12.54 wg0_end=17.92/22.78 wg1_end_max=22.78 prod_end_max=15.10 cwait=0.46/0.46 pempty=0.00 pcp=0.01 comb_entry=17.41 comb_go=23.55 comb_end=28.67 cyc_per_tile=7098\nVQ8_LAB L=1 B=16 W=0 base=108.1 st8mt2=227.1 st6mt2=224.1 st4mt2=233.2 st8mt4=226.5 st8mt8=226.0 st8mt1=226.3 pick=base\nVQ8_CLK L=1 B=16 W=0 st6mt2 ctas=132 tiles=149-151 entry_max=0.26 sched=2.30 q_ready=4.61 first=13.06/13.57 wg0_end=228.61/234.75 wg1_end_max=234.75 prod_end_max=230.91 cwait=0.51/0.52 pempty=0.46 pcp=0.00 comb_entry=225.28 comb_go=235.52 comb_end=240.64 cyc_per_tile=2696\nVQ8_LAB L=1 B=32 W=2048 base=20.7 st8mt2=37.6 st6mt2=36.1 st4mt2=35.8 st8mt4=37.9 st8mt8=37.8 st8mt1=37.6 pick=base\nVQ8_CLK L=1 B=32 W=2048 st4mt2 ctas=132 tiles=7-8 entry_max=0.26 sched=2.30 q_ready=5.12 first=11.01/12.29 wg0_end=22.53/26.88 wg1_end_max=26.88 prod_end_max=22.53 cwait=0.46/0.47 pempty=0.16 pcp=0.01 comb_entry=22.02 comb_go=27.65 comb_end=32.77 cyc_per_tile=4590\nVQ8_LAB L=1 B=32 W=0 base=198.7 st8mt2=429.6 st6mt2=424.2 st4mt2=441.9 st8mt4=428.4 st8mt8=429.3 st8mt1=428.7 pick=base\nVQ8_CLK L=1 B=32 W=0 st6mt2 ctas=132 tiles=302-304 entry_max=0.26 sched=2.30 q_ready=4.61 first=13.82/14.08 wg0_end=451.07/460.29 wg1_end_max=460.29 prod_end_max=456.45 cwait=0.51/0.52 pempty=0.47 pcp=0.00 comb_entry=444.16 comb_go=461.06 comb_end=466.43 cyc_per_tile=2661\nVQ8_LAB_S 55.7\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 121.67,
+    "power.limit": 700,
+    "temperature.gpu": 35
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 132.15,
+    "power.limit": 700,
+    "temperature.gpu": 35
+   },
+   "node": "n-wsbc7j2d6xnjjdziaz2kmgurhe"
+  },
+  "passed": false,
+  "records": [
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 10,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 3866946180177871151
+    },
+    "event": "test",
+    "index": 0,
+    "message": "TypeError: '<' not supported between instances of 'bool' and 'NoneType'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 2047,
+     "heads": "tp8",
+     "layer": "sliding",
+     "seed": 3866973731117751267
+    },
+    "event": "test",
+    "index": 1,
+    "message": "TypeError: '<' not supported between instances of 'bool' and 'NoneType'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 5,
+     "ctx": 5000,
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 3867001282057631384,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 2,
+    "message": "TypeError: '<' not supported between instances of 'bool' and 'NoneType'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 3000,
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 3867028832997511502
+    },
+    "event": "test",
+    "index": 3,
+    "message": "TypeError: '<' not supported between instances of 'bool' and 'NoneType'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 8,
+     "ctx": 8192,
+     "heads": "dp",
+     "layer": "full",
+     "seed": 3867056383937391621,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 4,
+    "message": "TypeError: '<' not supported between instances of 'bool' and 'NoneType'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 100000,
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "q_len": 8,
+     "seed": 3867083934877271741
+    },
+    "event": "test",
+    "index": 5,
+    "message": "TypeError: '<' not supported between instances of 'bool' and 'NoneType'",
+    "status": "fail"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "seed": 3867111485817151862
+    },
+    "event": "test",
+    "index": 6,
+    "message": "relative L2 error 4.490e-03 (worst row 4.854e-03) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "edges",
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 3867139036757031984
+    },
+    "event": "test",
+    "index": 7,
+    "message": "relative L2 error 8.239e-02 (worst row 1.100e-01) [bound 0.150: 2.5 x the reference's 0.081 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 1,
+     "ctx": 1048576,
+     "heads": "tp8",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 3867166587696912107
+    },
+    "event": "test",
+    "index": 8,
+    "message": "relative L2 error 1.022e-01 (worst row 1.225e-01) [bound 0.150: 2.5 x the reference's 0.103 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 3,
+     "ctx": 4000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 3867331893336192866
+    },
+    "event": "test",
+    "index": 9,
+    "message": "relative L2 error 8.050e-02 (worst row 1.078e-01) [bound 0.150: 2.5 x the reference's 0.080 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 9000,
+     "heads": "tp8",
+     "kv_scale": 0.015625,
+     "layer": "full",
+     "seed": 3867359444276072996
+    },
+    "event": "test",
+    "index": 10,
+    "message": "relative L2 error 6.169e-03 (worst row 6.576e-03) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "full",
+     "seed": 3867194138636792231,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 11,
+    "message": "relative L2 error 5.047e-03 (worst row 6.069e-03) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 6000,
+     "dist": "soft",
+     "heads": "tp8",
+     "layer": "sliding",
+     "page": 1,
+     "q_len": 8,
+     "seed": 3867221689576672356
+    },
+    "event": "test",
+    "index": 12,
+    "message": "relative L2 error 6.577e-02 (worst row 9.494e-02) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "soft",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 3867249240516552482
+    },
+    "event": "test",
+    "index": 13,
+    "message": "relative L2 error 6.914e-02 (worst row 7.612e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 4,
+     "ctx": 80000,
+     "dist": "coherent",
+     "heads": "tp8",
+     "layer": "full",
+     "page": 1,
+     "seed": 3867276791456432609,
+     "spread": "mixed"
+    },
+    "event": "test",
+    "index": 14,
+    "message": "relative L2 error 3.252e-03 (worst row 4.325e-03) [bound 0.108: 2.5 x the reference's 0.037 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   },
+   {
+    "case": {
+     "batch": 2,
+     "ctx": 20000,
+     "dist": "coherent",
+     "heads": "dp",
+     "layer": "full",
+     "q_len": 8,
+     "seed": 3867304342396312737
+    },
+    "event": "test",
+    "index": 15,
+    "message": "relative L2 error 4.114e-02 (worst row 4.745e-02) [bound 0.115: 2.5 x the reference's 0.040 with FP8 E4M3 queries + 0.015]",
+    "status": "pass"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792893853.6986146,
+ "status": "done",
+ "team": "AutoclickerI"
+}
