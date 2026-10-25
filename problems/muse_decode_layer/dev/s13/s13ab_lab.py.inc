@@ -37,8 +37,12 @@ def s13_namespace(name, spec, state):
     for key, code in s13_assignments(source).items():
         if key not in ('_GEMV_CHOICES', 'NF_OPTS', '_CD_MOD') and host_assign.get(key) == code and key in g and not callable(g[key]):
             ns[key] = g[key]
-    # Seed the source's actual projection choices, independently of the S13 host's mutable choices.
-    ns['_seed_v9_gemv_choices'](state)
+    # All these experiments preserve the balanced GEMV / split-QKV choices. Reseeding only V9
+    # drops _gate_split_prepare's QKV3 entry and makes unchanged decode arms slower.
+    for key in ('GB_ROWS', 'GATE_SPLIT_QKV3', 'GATE_SPLIT_ROWS'):
+        assert ns[key] == g[key], (name, key)
+    ns['_GEMV_CHOICES'] = dict(g['_GEMV_CHOICES'])
+    assert ns['_GEMV_CHOICES'] == g['_GEMV_CHOICES']
     return ns
 
 
@@ -58,6 +62,7 @@ def lab(deadline, weights, state):
     def native(name, v):
         try:
             v['nf_module']()
+            if 'nf128_module' in v:v['nf128_module']()
             if 'cd_module' in v:v['cd_module']()
             compiled[name] = True
         except Exception as exc:errors[name] = f'{type(exc).__name__}:{str(exc)[:100]}'
@@ -84,9 +89,11 @@ def lab(deadline, weights, state):
             st['s4_nt1_bank'] = state['s4_nt1_bank']
             bank_states[code] = st
         states[name] = bank_states[code]
-        # A reverted coded implementation may use a different packed-row layout and ABI.
-        # Rebuild its lossless bank from the identical original BF16 state, outside timing.
-        if name in ('cpall', 'S12'):
+        # Any changed coded ABI/layout needs a bank encoded by that exact arm, not the host's bank.
+        tree = ast.parse(spec['source'])
+        functions = {n.name: ast.dump(n) for n in tree.body if isinstance(n, ast.FunctionDef)}
+        host_functions = {n.name: ast.dump(n) for n in ast.parse(S13_HOST_SOURCE).body if isinstance(n, ast.FunctionDef)}
+        if 'cd_encode' in functions and any(functions[k] != host_functions[k] for k in ('cd_encode', '_cd_prepare')):
             threads[name].join(max(0., deadline - 30 - time.monotonic()))
             if not compiled.get(name):raise RuntimeError(name + ': ' + errors.get(name, 'compile pending'))
             states[name] = dict(states[name])
@@ -101,12 +108,13 @@ def lab(deadline, weights, state):
         data = mk(AB_SEEDS[0])
         variants = {'A': (ns['A'], state), 'A2': (ns['A'], state)}
         for name, spec in S13_VARIANTS.items():
-            if name == 'S12' or t in spec['active_tokens']:
+            if name in ('S12', 'S11') or t in spec['active_tokens']:
                 if t in (1, 128, 256):
                     threads[name].join(max(0., deadline - 30 - time.monotonic()))
                     if not compiled.get(name):
                         incomplete.append(name + ':' + ab_label(key) + ':' + errors.get(name, 'compile pending'));continue
                 variants[name] = (ns[name], states[name])
+        variants['S12_AA'] = variants['S12']
         graphs, gates = {}, {}
         for name, (v, st) in variants.items():
             try:graphs[name] = ab_graph(lambda v=v, st=st: v['kernel_fn'](data, st))
@@ -128,6 +136,7 @@ def lab(deadline, weights, state):
             results[key] = (ab_summary(per_seed), gates)
             seed_times[key] = per_seed
         for name, (ratio, se, delta, a_us, count) in sorted(results.get(key, ({}, {}))[0].items()):
+            if name == 'S12_AA' and name not in gates:continue
             lines.append(f'L {ab_label(key)} {name} r={ratio:.4f} se={se:.4f} d={delta:+.2f} A={a_us:.1f} n={count}'
                          + (f' FAIL {gates[name]}' if name in gates else ''))
         for name, reason in gates.items():
@@ -143,13 +152,17 @@ def lab(deadline, weights, state):
         aa_se = statistics.stdev(aa) / math.sqrt(len(aa)) if len(aa) > 1 else float('nan')
         lines.append(f'AA {load} mean={statistics.mean(aa):.6f} lo={min(aa):.6f} hi={max(aa):.6f} '
                      f'se={aa_se:.6f} n={len(aa)}')
+        aa12 = [(46*left['S12_AA']+16*right['S12_AA'])/(46*left['S12']+16*right['S12'])
+                for left,right in zip(*(seed_times[k] for k in keys))]
+        lines.append(f'AA12 {load} mean={statistics.mean(aa12):.6f} lo={min(aa12):.6f} hi={max(aa12):.6f} '
+                     f'se={statistics.stdev(aa12)/math.sqrt(len(aa12)):.6f} n={len(aa12)}')
         for name in ['A2'] + list(S13_VARIANTS):
             if all(name not in results[k][0] for k in keys):continue
             rows = [results[k][0].get(name, (1., 0., 0., results[k][0]['A2'][3], 0)) for k in keys]
             num = sum(wt * row[3] * row[0] for row, wt in zip(rows, (46, 16)))
             den = sum(wt * row[3] for row, wt in zip(rows, (46, 16)))
             lines.append(f'LOAD {load} {name} r={num / den:.6f}')
-            if all(name in seed_times[k][0] for k in keys):
+            if name in ('attention','cpall','permw','S12') and all(name in seed_times[k][0] for k in keys):
                 ratios=[(46*left[name]+16*right[name])/(46*left['A']+16*right['A'])
                         for left,right in zip(*(seed_times[k] for k in keys))]
                 normalized=[r/a for r,a in zip(ratios,aa)]
@@ -157,6 +170,14 @@ def lab(deadline, weights, state):
                              f'se={statistics.stdev(ratios)/math.sqrt(len(ratios)):.6f} '
                              f'norm={statistics.mean(normalized):.6f} '
                              f'normse={statistics.stdev(normalized)/math.sqrt(len(normalized)):.6f} n={len(ratios)}')
+        for arm in ('S12_nocode', 'S12_noF4', 'S11'):
+            if not all(arm in seed_times[k][0] for k in keys):continue
+            ratios=[(46*left[arm]+16*right[arm])/(46*left['S12']+16*right['S12'])
+                    for left,right in zip(*(seed_times[k] for k in keys))]
+            norm=[r/a for r,a in zip(ratios,aa12)]
+            lines.append(f'SUBPAIR {load} {arm} mean={statistics.mean(ratios):.6f} '
+                         f'se={statistics.stdev(ratios)/math.sqrt(len(ratios)):.6f} '
+                         f'norm={statistics.mean(norm):.6f} n={len(ratios)}')
     if incomplete:lines.append('INCOMPLETE ' + ' '.join(incomplete))
     lines.append(f'END shapes={len(results)}/12 elapsed={time.monotonic() - started:.1f}s left={deadline - time.monotonic():.1f}s')
     return lines

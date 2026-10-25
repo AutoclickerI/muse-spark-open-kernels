@@ -1,6 +1,6 @@
 {
   "source": "problems/muse_decode_layer/cand_r3_best7_s13.py",
-  "sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540",
+  "sha256": "4bb0fdd5cabd2f484b3d3f4eb746a588d08c2d3b547d9aa6d4cb4efc24a81baa",
   "base": "problems/muse_decode_layer/cand_r3_best7_s12_final.py",
   "base_sha256": "240248b2c27c890bf5055a77e87d2fc9c4429b747a04d714e51d5f67e936bb3e",
   "patches": [
@@ -25,12 +25,11 @@
     {
       "name": "permw",
       "path": "problems/muse_decode_layer/dev/s13/patch_permw.py",
-      "sha256": "021410770114caa91af043cce4da976acf3927589e4e68718c66576dea9ea501",
+      "sha256": "587518e9715833cd22db9aa2e783af9d0b4d140fddc22e0d9211585bbc4f9d91",
       "active_tokens": [
-        128,
         256
       ],
-      "out_sha256": "62eca97e0cef32754f85022e0325aec12396a23737fd55479ff76fdcd19a1540"
+      "out_sha256": "4bb0fdd5cabd2f484b3d3f4eb746a588d08c2d3b547d9aa6d4cb4efc24a81baa"
     }
   ]
 }

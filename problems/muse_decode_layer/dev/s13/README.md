@@ -60,7 +60,7 @@ This revalidates the frozen S12 selection without another dedicated quota slot. 
 M=128 uses its exact original F4 kernel and original packed bank. `NF128_CUDA` is the pinned original CUDA
 source; its separately cached module is prepared in the native pool. M256 uses its own wide/rotated bank.
 This adds only lossless duplicate packed codes/scales in prepare. Normal passes 13 tests, 12 graph shapes,
-and **25** static checks (including the original M128 CUDA); forced and corrected wrapper admission pending.
+and **25** static checks (including the original M128 CUDA); forced passes the same full screen. Corrected wrapper **776a0e27** (918,122 bytes) passes its complete 12-shape/16-seed/8-round lab, all gates, 13 tests and 25 static checks. It is accepted as decode check **4de869d41148400e**; result pending.
 
 LZMA replaces zlib in the lossless lab bundles to fit both module sources and the new S12 audit arms under
 the server's 1,000,000-byte limit. The outer Python-comment removal still asserts an identical AST.
@@ -68,5 +68,4 @@ the server's 1,000,000-byte limit. The outer Python-comment removal still assert
 is in the H200 receipt. The old no-cpall **d67e734a** / wrapper **1bf6c9ff** was locally admitted but never sent;
 it is superseded by the evidence that cpall should be rechecked with corrected choices.
 
-Next: finish normal/forced and full corrected-wrapper local admission, send the corrected decode check,
-then freeze only pieces/loads that clear their actual A:A envelope with unchanged controls inside it.
+Next: collect **4de869d41148400e**, revalidate S12 directly, and select S13 by corrected per-piece/load ratios. The current no-cpall successor is being screened while the judge runs. Freeze only retained pieces/loads that clear A:A with unchanged controls inside it.
