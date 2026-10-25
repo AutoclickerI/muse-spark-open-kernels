@@ -1,0 +1,49 @@
+{
+  "original": {
+    "b1_b2": {
+      "instructions": 664,
+      "wait_pc": "0110",
+      "loads_before_wait": [],
+      "global_loads_after_wait": 21
+    },
+    "route": {
+      "instructions": 2128,
+      "wait_pc": "00b0",
+      "loads_before_wait": [],
+      "global_loads_after_wait": 60
+    }
+  },
+  "preload": {
+    "b1_b2": {
+      "instructions": 664,
+      "wait_pc": "0240",
+      "loads_before_wait": [
+        "/*0190*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ",
+        "/*01c0*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64] ",
+        "/*01f0*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ",
+        "/*0230*/                   LDG.E.128.STRONG.SM R8, desc[UR12][R8.64] "
+      ],
+      "global_loads_after_wait": 17
+    },
+    "route": {
+      "instructions": 2128,
+      "wait_pc": "01d0",
+      "loads_before_wait": [
+        "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ",
+        "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ",
+        "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] "
+      ],
+      "global_loads_after_wait": 57
+    }
+  },
+  "ptxas": {
+    "original": {
+      "boundary": "0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 57 registers, used 1 barriers, 384 bytes smem\nptxas info    :",
+      "route": "0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 64 registers, used 1 barriers, 3396 bytes smem\nptxas info    :"
+    },
+    "preload": {
+      "boundary": "0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 57 registers, used 1 barriers, 384 bytes smem\nptxas info    :",
+      "route": "0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 64 registers, used 1 barriers, 3396 bytes smem\nptxas info    :"
+    }
+  }
+}

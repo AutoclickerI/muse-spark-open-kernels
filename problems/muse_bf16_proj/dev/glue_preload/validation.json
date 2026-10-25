@@ -1,0 +1,246 @@
+{
+  "cuda_sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9",
+  "trial_sha256": "0b8d8c9d4f1d9f123c788f3429b43d98ef662a815989a415a7618b9ee8ea1762",
+  "cells": [
+    {
+      "t": 1,
+      "role": "b1",
+      "n": 8192,
+      "s": 1,
+      "dtype": "torch.bfloat16",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 1,
+      "role": "b1",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 1,
+      "role": "b2",
+      "n": 1024,
+      "s": 8,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 1,
+      "role": "b2",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 1,
+      "role": "route",
+      "n": 4608,
+      "s": 6,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 1,
+      "role": "route",
+      "n": 4608,
+      "s": 1,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 8,
+      "role": "b1",
+      "n": 8192,
+      "s": 1,
+      "dtype": "torch.bfloat16",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 8,
+      "role": "b1",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 8,
+      "role": "b2",
+      "n": 1024,
+      "s": 8,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 8,
+      "role": "b2",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 8,
+      "role": "route",
+      "n": 4608,
+      "s": 6,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 8,
+      "role": "route",
+      "n": 4608,
+      "s": 1,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 16,
+      "role": "b1",
+      "n": 8192,
+      "s": 1,
+      "dtype": "torch.bfloat16",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 16,
+      "role": "b1",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 16,
+      "role": "b2",
+      "n": 1024,
+      "s": 8,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 16,
+      "role": "b2",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 16,
+      "role": "route",
+      "n": 4608,
+      "s": 6,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 16,
+      "role": "route",
+      "n": 4608,
+      "s": 1,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 32,
+      "role": "b1",
+      "n": 8192,
+      "s": 1,
+      "dtype": "torch.bfloat16",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 32,
+      "role": "b1",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 32,
+      "role": "b2",
+      "n": 1024,
+      "s": 8,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 32,
+      "role": "b2",
+      "n": 8192,
+      "s": 2,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 32,
+      "role": "route",
+      "n": 4608,
+      "s": 6,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    },
+    {
+      "t": 32,
+      "role": "route",
+      "n": 4608,
+      "s": 1,
+      "dtype": "torch.float32",
+      "replays": 16,
+      "exact": true,
+      "worst_l2": 0.0
+    }
+  ]
+}

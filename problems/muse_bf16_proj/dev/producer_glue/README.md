@@ -1,4 +1,8 @@
-# Producer epilogues (P7)
+# Producer epilogues (P7, historical S11 prototype)
+
+Current integration base is S13 final `958f1258`. The prototypes below are
+frozen S11 experiments, not patches to apply to S13. P10b now owns projection
+kernels; P7 retains b1/route/b2 glue. Pure S13 glue work is in `../glue_preload/`.
 
 Base: `problems/muse_decode_layer/cand_r3_best7_s11_final.py`, SHA256 `acda6c62`.
 Nothing in this directory is promoted. `patch.py` leaves `PG_ROLES=()` until a
@@ -114,8 +118,67 @@ or publication protocol. Fixed local admission: eight whole-layer fixtures and
 timelines clean, 120 changed-path poison/zero/wrap replays, four embedded-source
 sm90 compile cells. `admission.json` separates these checks from the earlier
 normal/forced screens. Fixed trial `3395fd7e`; paired payload `294fe739`.
-Job `15abb9c1e1c74b0b` on prefill is pending. The lab now retains completed arms
-if a different arm fails and records the innermost exception cause.
+Job `15abb9c1e1c74b0b` on prefill completed all eight fixtures, 12 seeds x6,
+with clean gates. Every individual role still loses. The lab now retains
+completed arms if another arm fails and records the innermost exception cause.
+
+| Load | A:A | b1 | route | b2 | all, no meta | all + meta | raw producers |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| decode1 | 1.00140 | 1.03595 | 1.05454 | 1.08492 | 1.15822 | 1.17747 | 1.03268 |
+| decode16 | 1.00018 | 1.02303 | 1.03243 | 1.02106 | 1.06388 | 1.07749 | 1.01593 |
+| decode32 | .99873 | 1.02533 | 1.02287 | 1.02154 | 1.06478 | 1.07903 | 1.00754 |
+| verify1 | .99998 | 1.03049 | 1.01576 | 1.07223 | 1.09559 | 1.11001 | 1.03393 |
+
+## Mechanism, H200 9845398be06b4c37
+
+`build_mechanism.py` freezes the losing 294fe739 recipe, adding phase stamps
+only in traced variants. CUPTI independently captures A/B1/R/B2/F/FM/RAW.
+`build_mechanism_decode.py` uses unchanged S13 final as the lab host, since all
+component quotas were spent. Its wrapper `86b84a87` passed normal and forced
+screens (13 tests, 12 graph shapes, 25 static checks each). The earlier prefill
+send `40dbd323e752dd6c` had no judge ID: it waited for the reset and was cancelled
+before rerouting. It consumed no H200 run.
+
+The decode-host lab completed all four sliding fixtures with clean gates;
+`h200_9845398be06b4c37.json` retains per-role CUPTI stage envelopes and phase
+data. These are diagnostic fixtures, not multi-seed promotion measurements.
+At decode1, combined completion increments are:
+
+| Arm | O+b1 | pool+route | unpool+b2 |
+|---|---:|---:|---:|
+| A | 4.160 | 23.712 | 7.072 |
+| B1 | 7.520 | 23.200 | 7.007 |
+| R | 4.160 | 27.457 | 7.103 |
+| B2 | 4.160 | 24.576 | 13.920 |
+| RAW | 4.192 | 26.848 | 7.744 |
+
+Phase maxima after the last producer partial store (us):
+
+| Shape/role | stats ready | published | owners past wait | apply ready | top8 ready | metadata ready | final store |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| d1 b1 native | .800 | 1.504 | 1.952 | 2.976 | — | — | 4.192 |
+| d1 route | 1.408 | 2.016 | 2.208 | 3.040 | 5.152 | 6.592 | 6.624 |
+| d1 b2 sliced | 7.712 | 8.320 | 8.512 | 9.824 | — | — | 9.824 |
+| d32 b1 | 3.936 | 5.088 | 5.280 | 9.920 | — | — | 9.952 |
+| d32 b2 full | 2.720 | 3.392 | 3.584 | 8.416 | — | — | 8.416 |
+| v1 b2 sliced | 8.608 | 9.248 | 9.664 | 11.232 | — | — | 11.232 |
+
+For native O, apply-ready means norm parameters ready, before the final output
+loop. For Triton it means apply stores issued. Each column is a maximum across
+CTAs, not one CTA's serial trace or a hardware node-completion timestamp.
+
+Measured: sliced b2's statistics dominate its tail (79% at d1, 77% at v1);
+route's top8 takes another 2.11 us after apply and metadata another 1.44 us at
+d1; full-width d32 b1/b2 spend 4.64/4.83 us between wait and apply. Publication
+plus wait adds roughly .8–1.3 us after statistics. The raw producer comparison
+localizes most d1 raw-body overhead to pool/router, not O. Thus blaming a global
+barrier alone would miss the dominant statistics/apply work.
+
+Source explanation supported by these phases: sliced b2 walks eight residual
+slices serially in each last-split CTA, retaining the GEMV's padded token extent
+(16 even at M=1); top8 uses a 64-bit Triton selection rather than the incumbent's
+native integer reductions; the metadata epilogue adds work without changing the
+expert consumer. These are the next epilogue redesign targets. No role wins.
 
 ## Integration
 
@@ -128,7 +191,7 @@ python3 problems/muse_bf16_proj/dev/producer_glue/patch.py \
 python3 problems/muse_bf16_proj/dev/producer_glue/build.py
 ```
 
-Next: use the hybrid H200 paired ratios and combined timeline increments to
-choose a concrete bottleneck. A passed correctness gate does not admit a
-slower role. If any role wins, freeze only its winning shape/role rows as a patch
-onto acda6c62 and retest the resulting whole-layer candidate before handoff.
+Integration receives no prototype patch. Any future winning glue shape/role
+rows must be frozen and paired onto S13 final `958f1258` with its projection
+kernels retained. Next: remove the measured serial sliced statistics and
+expensive apply/top8 tails, and test the independent preload repair separately.
