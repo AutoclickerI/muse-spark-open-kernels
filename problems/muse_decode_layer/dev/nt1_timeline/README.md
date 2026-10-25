@@ -301,3 +301,31 @@ barriers both before the epilogue overwrites it and after reduction before the n
 The first local DECODED edge test exposed that overwrite race; it was fixed before any send.
 
 No integration win or patch. The incumbent small-M map stays `{1:95,8:69,16:69,32:69}`.
+
+
+Activation payload `prof/lab/moe_nt1_activation.py` **1c9d63ab**: attention job **2fad2371ab5b42eb**, landed: all gates pass, all performance arms lose.
+ACT cell **b36eb1fa**, DECODED **c84eca66**; each1320 checks +6forced launches and all16seed local
+routed gates pass. Native performance builds128regs with24B/16B stack respectively (spills recorded).
+No local timing is used for promotion. The first DECODED race was fixed and the exact sent source retested.
+
+Cache payload `prof/lab/moe_nt1_cache.py` **c81aede1**, attention job **b5659458e309480b**, pending.
+COMPACT cell **34840e3a**: aliases route-prefix scratch and moves one B0 word to a register, saving1288B.
+AtM32,99328 dynamic bytes plus1KiB reserved perCTA allow two CTAs in196KiB; preferred Hopper carveout85pct.
+PREFETCH cell **74f5e89e** additionally prefetches extra-block activation rows into L1 before dequant.
+Both1320 component/replay checks +6forced launches and16seed routed gates pass. Every untraced local arm
+runs native2 stages; trace-only stand-ins use1. See `phase_findings.md` for the official cache geometry source,
+measured phase contrasts, native resources, and limits of the causal claims. No S13 win yet.
+
+
+Activation H20016seed results (`2fad2371`): ACT/S13=1.16281/1.31943/1.78173,
+DECODED=1.20567/1.35690/1.78453 atM8/16/32. DECODED/BUNDLE=1.07301/1.16644/1.44518;
+new transfers/spills/shared operand traffic outweigh overlap. W13 NB4 math BUNDLE8.99us ->ACT12.48 ->DECODED15.77;
+critical grid-barrier mean32.09->74.10/73.56us across the8phase seeds. Weight waits remain~0.1–0.2us.
+This rules out these two transport implementations; it does not prove every extra-block stall is a load.
+Observer/off1.016/1.014/1.055 forBUNDLE/ACT/DECODED; all gates pass,16performance seeds. No S13 promotion.
+
+The cache lab is the remaining H200 decision. `patch_s13.py` can make a reviewable patch for each arm onto
+frozenS13 `958f1258`, with a complete map. Its generated experimental COMPACT-M32 patch8410e29a,
+candidate1cb67165, applies cleanly; it has no whole-layer validation or promotion. Native untraced COMPACT
+and PREFETCH run2 stages locally (1320 checks plus6forced each); a decode candidate will be screened with
+normal and forced `local_eval.py` before a whole-layer remote send if H200 supports promotion.
