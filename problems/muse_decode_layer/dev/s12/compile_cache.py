@@ -50,7 +50,8 @@ def install(local_eval):
     assert hashlib.sha256(BASE.read_bytes()).hexdigest() == BASE_SHA
     root = H / 'final_screen/normal'
     assert json.loads((root / 'audit.json').read_text())['sha256'] == BASE_SHA
-    seed = json.loads((root / 'normal_local.json').read_text())
+    seed = json.loads((H / 'final_static.json').read_text())
+    assert seed['source_sha256'] == BASE_SHA
     cached = {row['name']: row for row in seed['static'] if row['ok']}
     original = local_eval.hopper_compile
     # Exact compiler implementation; only reduce simultaneous compiler processes under memory pressure.
