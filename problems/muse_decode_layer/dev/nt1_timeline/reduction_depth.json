@@ -1,0 +1,12 @@
+{
+  "PAIR": {
+    "maximum_dependent_FADD_depth_in_marked_W13": 8,
+    "FADD": 17,
+    "caveat": "static contiguous add-chain register dependency only; excludes load/MUFU latency and interleaved scheduling"
+  },
+  "TREE": {
+    "maximum_dependent_FADD_depth_in_marked_W13": 3,
+    "FADD": 15,
+    "caveat": "static contiguous add-chain register dependency only; excludes load/MUFU latency and interleaved scheduling"
+  }
+}

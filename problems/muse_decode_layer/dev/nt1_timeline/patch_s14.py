@@ -3,11 +3,14 @@ import argparse,ast,difflib,hashlib,json
 from pathlib import Path
 from build_epilogue import source
 from build_epilogue_pair import source as pair_source
+from build_epi_next import source as next_source,KINDS as NEXT
 ROOT=Path(__file__).resolve().parents[4];BASE=ROOT/'problems/muse_decode_layer/cand_r3_best7_s14_final.py'
-KINDS={'base':0,'vec':1,'producer':2,'norm':3,'pair':4}
+KINDS={'base':0,'vec':1,'producer':2,'norm':3,'pair':4,**{k:5+i for i,k in enumerate(NEXT)}}
 def build(kind,out):
  base=BASE.read_text();assert hashlib.sha256(base.encode()).hexdigest()=='f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac'
- mode=KINDS[kind];prefix=('epib','epiv','epip','epin','epit')[mode];cell=(pair_source() if mode==4 else source(mode))[0]
+ mode=KINDS[kind]
+ if kind in NEXT:prefix=NEXT[kind];cell=next_source(kind)[0]
+ else:prefix=('epib','epiv','epip','epin','epit')[mode];cell=(pair_source() if mode==4 else source(mode))[0]
  cell=cell.replace(prefix.upper()+'_FLAGS_BUILT','SMALLM_FLAGS_BUILT').replace(prefix.upper()+'_','SMALLM_VAR_').replace('_'+prefix.upper()+'_MODULE','_SMALLM_MODULE').replace(prefix+'_','smallm_')
  a=base.index('SMALLM_VAR_CUDA = ');b=base.index('def _s4_prepare_banks(',a)
  candidate=base[:a]+cell.rstrip()+'\n\n\n'+base[b:];ast.parse(candidate)
