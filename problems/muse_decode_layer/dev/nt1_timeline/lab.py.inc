@@ -22,14 +22,14 @@ def task_check(out,want):
     return ok,err,row
 
 
-DIAG_BY_M={1:('RTRACEBASE1','RTRACEOROT1')}  # v9: critical paths + tile/publish split
+DIAG_BY_M={32:('RTRACEZZP','RTRACEWPUB')}  # v10: critical paths + tile/publish split
 # R = the decode layer's context (router node + MoE node). R95/R93 = 849e4017's winners; R77 drops NREG, R69 drops
 # NREG and RSQ; ECAP = INC on the same routes with every local expert capped at 8 tokens (DIAGNOSTIC, no gate): the
 # most that decode-once / no-reread for multi-block experts could save.
 BASE_FLAGS={1:95,8:69,16:69,32:69}
-SMALLM_ARMS={1:dict(E={},R={'RBASE':95,'RINC':None,'R16463':16463})}
+SMALLM_ARMS={1:dict(E={},R={'RBASE':95,'R65615':65615})}
 for _m in (8,16,32):
-    SMALLM_ARMS[_m]=dict(E={},R={'RBASE':69,'RINC':None,'R8261':69|F_RND,'R16453':69|F_ROT,'R24645':69|F_RND|F_ROT,'R41029':69|F_RND|F_PIPE,'R57413':69|F_RND|F_PIPE|F_ROT})
+    SMALLM_ARMS[_m]=dict(E={},R={'RBASE':69,'R65605':65605,'R73797':73797,'R139333':139333,'R204869':204869})
 
 
 def cap_fixture(d,cap=8):
@@ -50,7 +50,7 @@ def lab(deadline,weights):
     from concurrent.futures import ThreadPoolExecutor
     begin=time.monotonic();deadline-=5;device=weights['w13'].device
     lines=['META small-M NT1: E=MoE node alone (fixed real routes), R=router node+MoE node; INC=admitted one-LOP3 NT1; F0=same math in the flag harness; Z=norm-slot zero in W13 tile0; SLOT=M1 top-8 slot dispatch; ZOUT=W2 stores v(1+w); RSQ=finalizer scale once per pair; NREG=norm sums in registers per tile run; LAST=last CTA finalizes; PDL=MoE launched as programmatic dependent',
-        'META v9: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs S11 map {1:95,8/16/32:69}, independent S11 A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; arms 69, 69+RND (two rounds split at the expert boundary nearest half the W13 units), 69+ROT (no per-tile CTA barrier: arrival counters, last arriver refills, tile t epilogue on warp t%8 one tile later) and 69+RND+ROT, 69+RND+PIPE (interleave the rounds W13/W2), and +ROT at M8/16/32; M1 base95 and ROT16463 critical paths with TILE (per-tile waits, barrier/epilogue spin, publish fence) lines']
+        'META v10: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs S11 map {1:95,8/16/32:69}, independent S11 A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; WPUB (two writer warps publish without a CTA barrier), WPUB+RND, ALIGN (RND with parallel split search and per-round m-chunks), ALIGN+WPUB at M8/16/32, WPUB at M1; M32 base69 and WPUB critical paths with TILE (per-tile waits, publish fence) lines']
     errors=[]
     with ThreadPoolExecutor(max_workers=4) as pool:
         jobs={name:pool.submit(fn) for name,fn in (('INC',lambda:nt1_module('INC')),('VAR',var_module),('CONTROL',control_module),('CUPTI',activity_module))}

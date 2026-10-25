@@ -9,7 +9,7 @@ w=n['rg_generate_weights'](5353);w['post_norm_w']=w['post_expert_norm'];lab_stat
 s4=dict(gs13=lab_state['gs13'],gs2=lab_state['gs2'],pnw=lab_state['pnw'],sms=lab_state['sms'],
         counters={'lop3':torch.zeros(64,device='cuda',dtype=torch.int32)},banks={'lop3':dict(lab_state['bank'])})
 built=cell['SMALLM_FLAGS_BUILT']
-choice={1:[95],**{m:[f for f in (69,8261,16453,24645,41029,57413) if f in built] for m in (8,16,32)}}
+choice={1:[f for f in (95,16463,65615) if f in built],**{m:[f for f in (69,8261,16453,24645,41029,57413,65605,73797,139333,204869) if f in built] for m in (8,16,32)}}
 for m,fs in choice.items():
     for f in fs:cell['smallm_bind'](s4,{m:f})
 worst=0.

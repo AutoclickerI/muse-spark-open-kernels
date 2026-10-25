@@ -12,6 +12,8 @@ enum {
   F_W16 = 4096, // F_NT2 with 16 consumer warps (each half of a K slice): 16 warps/SM as NT1, operands in 64 registers
   F_RND = 8192, // two rounds split at the expert boundary nearest half the W13 units: every CTA runs its share of the
                 // first experts' W13, then the rest; W2 likewise, so the first experts' W2 runs while the rest publish
+  F_ALIGN = 131072, // F_RND: parallel split search and m-chunks sized for each round, rather than for the full pass
+  F_WPUB = 65536, // W13 writer warps publish independently after their own global stores; no publish CTA barrier
   F_PIPE = 32768, // F_RND: W13 group A, W2 group A, W13 group B, W2 group B
   F_ROT = 16384 // no per-tile CTA barrier: warps count their arrival per tile in shared memory, the last one refills
                 // the stage, and tile t's epilogue runs on warp t % 8 after its next tile (nstage + 2 reduce buffers)
@@ -85,7 +87,9 @@ __global__ void __launch_bounds__(threads_of<F>, NT == 1 ? 2 : 1) moe_var(
   static_assert(((F & F_NT2) != 0) == (NT == 2) && !(NT == 2 && SLOT), "F_NT2 selects NT=2 (M>1 dispatch)");
   constexpr bool W16 = F & F_W16, RND = F & F_RND;
   static_assert(!(RND && SLOT), "F_RND is the M>1 dispatch");
-  constexpr bool ROT = F & F_ROT, PIPE = F & F_PIPE;
+  constexpr bool ROT = F & F_ROT, PIPE = F & F_PIPE, WPUB = F & F_WPUB, ALIGN = F & F_ALIGN;
+  static_assert(!ALIGN || (RND && !PIPE), "F_ALIGN requires non-interleaved F_RND");
+  static_assert(!WPUB || (NT == 1 && !ROT), "F_WPUB: two fixed writer warps, non-ROT epilogue");
   static_assert(!PIPE || RND, "F_PIPE requires F_RND");
   static_assert(!ROT || (NT == 1 && !W16 && !NREG), "F_ROT: NT=1, 8 warps, norm atomics per tile");
   static_assert(!W16 || NT == 2, "F_W16 widens the NT2 CTA");
@@ -214,7 +218,31 @@ __global__ void __launch_bounds__(threads_of<F>, NT == 1 ? 2 : 1) moe_var(
     a1 = static_cast<int>((long long)U1 * c / G); b1 = static_cast<int>((long long)U1 * (c + 1) / G);
     a2 = static_cast<int>((long long)U2 * c / G); b2 = static_cast<int>((long long)U2 * (c + 1) / G);
     first_count = b1 - a1; total_count = first_count + b2 - a2;
-    if constexpr (RND) {
+    if constexpr (ALIGN) {
+      // Parallel nearest-boundary search, ties by lower expert index. Only lane 0 constructs the four runs.
+      if (warp == 0) {
+        const int b = rt->us1[lane];
+        int key = (lane && b > 0 && b < U1) ? abs(2 * b - U1) * 32 + lane : 0x7fffffff;
+#pragma unroll
+        for (int d = 16; d; d >>= 1) key = min(key, __shfl_xor_sync(~0u, key, d));
+        if (lane == 0) {
+          const int be = key == 0x7fffffff ? NLOC : (key & 31);
+          const int B1 = rt->us1[be], B2 = rt->us2[be];
+          rt->c1 = min(NT1, max(1, (max(B1, U1 - B1) + G / 2) / G));
+          rt->c2 = min(NT2, max(1, (max(B2, U2 - B2) + G / 2) / G));
+          const int lo[4] = {0, B1, 0, B2}, hi[4] = {B1, U1, B2, U2};
+#pragma unroll
+          for (int i = 0; i < 4; ++i) {
+            const int w = hi[i] - lo[i];
+            rt->sa[i] = lo[i] + static_cast<int>((long long)w * c / G);
+            rt->sn[i] = lo[i] + static_cast<int>((long long)w * (c + 1) / G) - rt->sa[i];
+            rt->sp[i] = i >> 1;
+          }
+        }
+      }
+      __syncthreads();
+      first_count = rt->sn[0] + rt->sn[1]; total_count = first_count + rt->sn[2] + rt->sn[3];
+    } else if constexpr (RND) {
       int B1 = U1, B2 = U2, best = U1;   // no interior expert boundary: round 1 is empty
       for (int e = 1; e < NLOC; ++e) {
         const int b = rt->us1[e];
@@ -328,12 +356,26 @@ __global__ void __launch_bounds__(threads_of<F>, NT == 1 ? 2 : 1) moe_var(
   auto publish = [&](const int pe, const int tiles) {
     uint64_t p0 = 0, p1 = 0;
     if constexpr (TRACE) { if (tid == 0) p0 = tg(); }
+    if constexpr (WPUB) {
+      // Only warps 0 and 1 store W13's 64 outputs. Each publishes its own writes after all its lanes fenced.
+      // Their independent tile counts sum to 2 * NT1 * nblk: observing that total means both halves are visible.
+      if (warp < 2) {
+        __threadfence();
+        __syncwarp();
+        if constexpr (TRACE) { if (tid == 0) p1 = tg(); }
+        if (lane == 0) {
+          atomicAdd(cnt + C_DONE + pe, tiles);
+          if constexpr (TRACE) { if (tid == 0) { const uint64_t p2 = tg(); probe[17] += p1 - p0; probe[19] += p2 - p1; probe[18] = p2; } }
+        }
+      }
+    } else {
     __threadfence();
     if constexpr (TRACE) { if (tid == 0) p1 = tg(); }
     bar_cta<CT>();
     if (tid == 0) {
       atomicAdd(cnt + C_DONE + pe, tiles);
       if constexpr (TRACE) { const uint64_t p2 = tg(); probe[17] += p1 - p0; probe[19] += p2 - p1; probe[18] = p2; }
+    }
     }
   };
 
@@ -407,7 +449,7 @@ __global__ void __launch_bounds__(threads_of<F>, NT == 1 ? 2 : 1) moe_var(
       if (pass == 1) {
         uint64_t wait0 = 0;
         if constexpr (TRACE) { if (tid == 0) wait0 = tg(); }
-        const int target = NT1 * (SLOT ? 1 : rt->nblk[e]);
+        const int target = (WPUB ? 2 : 1) * NT1 * (SLOT ? 1 : rt->nblk[e]);
         while (ld_acquire(cnt + C_DONE + e) < target) __nanosleep(64);
         if constexpr (!Z) { while (ld_acquire(cnt + C_ZERO) < G) __nanosleep(64); }
         if constexpr (TRACE) { if (tid == 0) probe[16] += tg() - wait0; }
@@ -685,8 +727,7 @@ size_t smem_bytes(int nt, int nstage, int M) {
          sizeof(Route) + ((npairs + 15) & ~15) + 4 * npairs;
 }
 
-#define VAR_FLAGS(X) X(0) X(1) X(2) X(4) X(8) X(16) X(128) X(159) X(29) X(64) X(66) X(223) X(93) X(130) X(31) \
-  X(95) X(69) X(77) X(256) X(415) X(287) X(320) X(351) X(479) X(285) X(349) X(325) X(2048) X(2117) X(2304) X(2373) X(6213) X(6469) X(8261) X(8517) X(16453) X(16709) X(24645) X(24901) X(16463) X(16719) X(41029) X(41285) X(57413) X(57669)
+#define VAR_FLAGS(X) X(0) X(69) X(95) X(325) X(351) X(8261) X(8517) X(16453) X(16709) X(24645) X(24901) X(16463) X(16719) X(41029) X(41285) X(57413) X(57669) X(65605) X(65861) X(73797) X(74053) X(65615) X(65871) X(139333) X(139589) X(204869) X(205125)
 }  // namespace
 
 int64_t max_smem_attr() {

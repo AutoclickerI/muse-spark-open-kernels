@@ -31,7 +31,7 @@ Lane notes for PLAN P3a. Incumbent: the admitted one-LOP3 NT1 (`inc.cu`, identic
 `smallm_experts(data, state['s4_nt1_bank'], FLAGS[m])`. PDL needs nothing else: S7 launches only `torch.empty`
 between the router (both routers trigger at start) and the MoE on every nt1_lop3 row.
 
-## Phase schedule at M=16/32 (in progress)
+## Phase schedule at M=16/32
 M=32 critical CTA with 69 (c768a8e3, one seed): route 4.2, W13 36.1, W2-ready wait 11.6, W2 17.6, grid barrier 5.0 us
 of a 76 us span. Every CTA holds a contiguous unit range, so all experts finish W13 together and W2 waits on the slowest
 CTA of its expert plus the publish (the wait ends ~4 us after the last W13-end stamp). RND (flag 8192): two rounds
@@ -40,7 +40,7 @@ rest, and W2 in the same order, so the first experts' W2 covers the second round
 time (tile waits of warp 0 and warp 7, per-tile barrier, publish fence and barrier): TILE lines.
 The prior v7 hash `1be7ce445ced8f66` has no ledger/receipt and is unmeasured.
 
-Current takeover: F_RND, F_ROT (16384: delayed rotating warp epilogues, shared arrival counts in place of the
+Takeover admission: F_RND, F_ROT (16384: delayed rotating warp epilogues, shared arrival counts in place of the
 per-tile CTA barrier), and F_PIPE (32768, requires F_RND: W13-A, W2-A, W13-B, W2-B) build and pass `test_cell.py`.
 `sm_90a` static compile also passes. v9 uses the S11 flags as the directly paired control (M1 95, M8/16/32 69),
 16 seeds, read flush, alternating order, with per-seed ratios and win counts. M1 also tests 16463 (ROT, drops NREG).
@@ -48,12 +48,12 @@ Local `run_local.py` and `screen.py` now read the flush buffer through an int64 
 the byte sum had allocated an 8 GiB temporary and OOMed under concurrent GPU0 use. Local timings with other lanes
 using GPU0 are not H200 evidence. Expanded checks include no local routes, one expert, and eight local experts.
 
-- v8 payload `6b3d185c`: H200 MoE check **17512d86f3a74f27**, source `0d031529`, accepted; results pending.
+- v8 payload `6b3d185c`: H200 MoE check **17512d86f3a74f27**, source `0d031529`, landed (see results below).
   R69/R8261/R16453/R24645 at M8/16/32 versus INC, 16 seeds, TILE publish/barrier diagnostics.
-- v9 payload `8e107b90`: prefill host send requested; direct S11 pairing, adds PIPE and M1 ROT. Results pending.
+- v9 payload `8e107b90`: prefill job **3af06b40b5f944a6** (source `aa1511c8`); direct S11 pairing, adds PIPE and M1 ROT. Results pending.
 - Local v8: 918 math checks + 17 forced Hopper glue checks, worst TASK L2 0.00239, maximum relative vs INC 0.000263.
   v9 including the extra edge cases: 1860 math checks + 24 forced glue checks, worst TASK L2 0.00239 and
-  max relative vs INC 0.000333. Cell (`b58da13c`) worst relative vs INC 0.000347. No promotion without H200 results and a whole-layer paired follow-up.
+  max relative vs INC 0.000333. Cell (`b58da13c`) worst relative vs INC 0.000347. Promotion requires H200 results and a whole-layer paired follow-up.
 
 ## H200 accounting (849e4017, M=1, INC, read flush)
 Event 36.21 = CUPTI node 31.81 + 4.40 event framing. Node = launch 1.0 + CTA span 32.2 + drain 1.3; the critical
@@ -92,3 +92,46 @@ Local v9 (`runs/screen/nt1_takeover_lab_v9.log`, 16 seeds, GPU0 shared, **not H2
 ROT r=1.00798 / 0.99782 / 0.98143 at M8/16/32 (M32 -3.03 us, wins 15/16). RND r=1.01270 / 1.01890 / 1.02828;
 PIPE r=1.03540 / 1.04143 / 1.05378. A:A at M32 has 2.41 us mean absolute drift, so these local measurements
 only rank the next H200 questions. All cells passed the TASK gate (L2/row ~0.0024).
+
+## Landed takeover results and pending experiments
+
+H200 MoE check **17512d86f3a74f27** (16 seeds, read flush, router+MoE graphs, all gates pass):
+
+| M | S11 69 us | RND 8261 us | ROT 16453 us | RND+ROT 24645 us |
+|---|---:|---:|---:|---:|
+| 8 | 70.93 | 74.99 | 73.99 | 76.32 |
+| 16 | 81.58 | 88.31 | 85.78 | 89.97 |
+| 32 | 110.81 | 117.27 | 118.73 | 119.92 |
+
+All lose to S11: derived ratios RND 1.0572/1.0825/1.0583, ROT 1.0431/1.0515/1.0715, combination
+1.0760/1.1028/1.0822 (these are ratios of the aggregate arms paired to INC; v9 directly pairs each to S11).
+At M32 RND cuts the critical W2-ready wait 11.20 -> 2.11 us, but W13 grows 37.41 -> 41.09 and the grid
+barrier 4.34 -> 12.66 us; node 79.95 -> 85.36. ROT cuts warp7's accumulated tile barrier 11.89 -> 0.91 us,
+but node 81.34 vs 79.95 in the traced seed and 118.73 vs 110.81 across seeds. This overturns the local ranking.
+Publish fence median is ~1 us, publish barrier ~0.10 us (ROT 0.85); latest publish follows last W13 end by
+2.29 us (baseline), 1.01 (RND), 2.43 (ROT). No integration win.
+
+v10 (`c6165434` payload; `b091e0d1` cell) keeps S11 as control, tests **WPUB** (65536: two W13 writer
+warps independently fence and publish, readiness target doubled; removes the publish CTA barrier) and **ALIGN**
+(131072 + RND: parallel split search and m-chunks sized for a round's units, avoiding the extra partial-block
+reloads of splitting a full-pass chunk). It does not repeat the closed ROT/PIPE arms. Words: M1 65615
+(WPUB, drops NREG), M8/16/32 65605 (WPUB), 73797 (WPUB+RND), 139333 (ALIGN+RND), 204869 (+WPUB).
+Cell, 1404 edge/math checks, 16 forced glue checks, and sm90 static compilation pass. Old closed NT2/W16
+instantiations were removed from the active lab build and admission suite; their evidence remains above.
+`patch_s11.py` creates a candidate, standalone cell and unified patch onto frozen S11 `acda6c62`, with an
+explicit complete flag map; its WPUB experiment patch passes `git apply --check`. It is not a promotion.
+
+H200 v10 MoE check **4dd00540cb8c46df** (source `dc7b0c84`, payload `c6165434`) accepted; result pending.
+Local v10 completed all 16 seeds and gates (`runs/screen/nt1_takeover_lab_v10.log`): WPUB/S11 ratios at
+M1/8/16/32 1.00819/0.99755/0.99570/1.00033; ALIGN/S11 at M8/16/32 1.00877/1.01491/1.03486.
+A:A mean absolute drift 0.92/0.92/1.46/3.54 us: no local claim of a win. There is no integration promotion.
+
+Current artifacts: `smallm_var_cell.py` `b091e0d1`, `var.cu` / `var_kernel.cu.inc` generated by `build_var.py`,
+`prof/lab/moe_nt1_timeline.py` `c6165434`, `validation.json` bound to that payload's hash before the run starts.
+The experimental WPUB-M32 candidate/patch under `runs/screen/nt1_s11_wpub.*` are generated by `patch_s11.py`,
+map {1:95,8:69,16:69,32:65605}, onto frozen S11 `acda6c62`; patch `b11d43c4`, candidate `bb60b792`,
+standalone cell `fc474b84`. It passes patch applicability and cell admission, not whole-layer tests or H200
+promotion. Next: read **3af06b40b5f944a6** (v9) and **4dd00540cb8c46df** (v10); select any robust winner's
+per-M map, generate its patch, run normal and forced local_eval, then give integration the paired whole-layer
+measurement. If both lose, keep S11's map and target a different multi-block storage/scheduling mechanism;
+repeating RND, ROT or PIPE unchanged is closed.

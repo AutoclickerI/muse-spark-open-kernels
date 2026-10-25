@@ -4,20 +4,20 @@ from pathlib import Path
 import hashlib,json,runpy,sys
 import torch
 ROOT=Path(__file__).resolve().parents[4];DEV=Path(__file__).resolve().parent
+payload_sha=hashlib.sha256((ROOT/'prof/lab/moe_nt1_timeline.py').read_bytes()).hexdigest()
 n=runpy.run_path(str(ROOT/'prof/lab/moe_nt1_timeline.py'));g=n['var_call'].__globals__
-F=dict((k,n[k]) for k in ('F_Z','F_SLOT','F_ZOUT','F_RSQ','F_NREG','F_PDL','F_LAST','F_TRACE','F_NT2','F_W16','F_RND','F_ROT','F_PIPE'))
+F=dict((k,n[k]) for k in ('F_Z','F_SLOT','F_ZOUT','F_RSQ','F_NREG','F_PDL','F_LAST','F_TRACE','F_NT2','F_W16','F_RND','F_ROT','F_PIPE','F_WPUB','F_ALIGN'))
 gen=torch.Generator(device='cuda').manual_seed(67182)
 
 w=n['rg_generate_weights'](5353);w['post_norm_w']=w['post_expert_norm'];state=n['nt1_banks'](w)
 checks=0;worst={};vsinc={}
 # the handed-over words and every lab arm: E = MoE alone on edge fixtures, R = router+MoE graphs with fresh inputs
 NT2=F['F_NT2'];W16=F['F_W16'];RND=F['F_RND'];ROT=F['F_ROT']
-HANDOFF={1:{'95':95,'16463':79|ROT},8:{'69':69,'77':77,'93':93},16:{'69':69,'77':77,'93':93,'2048':NT2,'2117':69|NT2,'6213':69|NT2|W16},
-    32:{'69':69,'77':77,'93':93,'2048':NT2,'2117':69|NT2,'6213':69|NT2|W16}}
+HANDOFF={1:{'95':95,'16463':16463,'65615':65615},**{m:{'69':69} for m in (8,16,32)}}
 for m,a in n['SMALLM_ARMS'].items():HANDOFF.setdefault(m,{}).update({k[1:]:v for k,v in a['R'].items() if v is not None})
 ecks={m:{'E'+k:v for k,v in a.items()} for m,a in HANDOFF.items()}
 arms={m:{'R':{'R'+k:v for k,v in a.items()}} for m,a in HANDOFF.items()}
-TRACED={1:(95,79|ROT),8:(69|RND,69|ROT),16:(69,69|NT2,69|NT2|W16,69|RND,69|ROT),32:(69,69|NT2,69|NT2|W16,69|RND,69|ROT,69|RND|ROT,41029,57413)}
+TRACED={m:tuple(a.values()) for m,a in HANDOFF.items()}
 def rel(a,b):return float((a.float()-b.float()).norm()/b.float().norm().clamp_min(1e-12))
 def edge_fixtures(m,seed):
  d=n['fx_make_fixture'](w,m,9000+m+97*seed);yield 'real',d
@@ -92,5 +92,5 @@ for m in (1,8,32):
   out=n['var_call'](d,state,flags);torch.cuda.synchronize();assert rel(out,inc)<2e-3,(label,'forced');forced+=1
 g['VAR_MODULE'][0]=real;g['NT1_HOPPER']=False
 result=dict(math_checks=checks,forced_hopper_glue=forced,worst_task_l2=worst,max_rel_vs_inc=vsinc,
-  architecture=torch.cuda.get_device_capability(),payload_sha256=hashlib.sha256((ROOT/'prof/lab/moe_nt1_timeline.py').read_bytes()).hexdigest())
+  architecture=torch.cuda.get_device_capability(),payload_sha256=payload_sha)
 (DEV/'validation.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True)

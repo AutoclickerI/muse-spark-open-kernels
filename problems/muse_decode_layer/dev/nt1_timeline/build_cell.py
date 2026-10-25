@@ -69,7 +69,7 @@ def smallm_experts(data, state, flags, grid=264):
 '''
 
 
-def build(keep=None):
+def source(keep=None):
     """keep: the flags words to instantiate (the decode lane's per-M choice); None keeps every non-trace word."""
     import re
     cuda = var_source()
@@ -78,7 +78,11 @@ def build(keep=None):
     flags = sorted(set(keep)) if keep else [f for f in built if f < 256]
     assert set(flags) <= set(built), set(flags) - set(built)
     cuda = cuda[:a] + '#define VAR_FLAGS(X) ' + ' '.join(f'X({f})' for f in flags) + '\n' + cuda[cuda.index('}  // namespace', a):]
-    body = TEMPLATE.format(cuda=cuda, flags=flags)
+    return TEMPLATE.format(cuda=cuda, flags=flags)
+
+
+def build(keep=None):
+    body = source(keep)
     out = DEV / 'smallm_var_cell.py'; out.write_text(body)
     print(out.name, hashlib.sha256(body.encode()).hexdigest())
 
