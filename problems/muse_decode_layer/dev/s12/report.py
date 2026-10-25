@@ -1,5 +1,6 @@
 """Summarize a landed S12 leave-one-out receipt without mistaking unchanged loads for gains."""
 import argparse
+import hashlib
 import json
 import math
 import re
@@ -18,6 +19,8 @@ def main():
     assert len(paths) == 1, paths
     receipt = json.loads(paths[0].read_text())
     manifest = json.loads(args.manifest.read_text())
+    sent_sha = hashlib.sha256(paths[0].with_suffix('.py').read_bytes()).hexdigest()
+    assert sent_sha == manifest['sha256'], 'use the manifest archived for this exact sent wrapper'
     log = receipt['result']['log_tail']
     shapes = re.findall(r'^L (\w+) (\w+) r=([\d.]+) se=([\d.]+) d=([+\-\d.]+) A=([\d.]+) n=(\d+)(.*)$', log, re.M)
     loads = {load: {} for load in ('decode 1', 'decode 16', 'decode 32', 'verify 1', 'verify 16', 'verify 32')}

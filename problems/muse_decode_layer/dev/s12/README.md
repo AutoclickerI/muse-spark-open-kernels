@@ -1,7 +1,9 @@
 # P4: S12 integration
 
 Base: `cand_r3_best7_s11_final.py` **acda6c62** (full SHA in build.py). Current candidate:
-`cand_r3_best7_s12.py` **a92b6619**; normal/forced local screens in progress. No final freeze yet.
+`cand_r3_best7_s12.py` **a92b6619**; normal/forced screens pass 13 tests, 12 graph captures and 23 static checks
+each. Compact wrapper **c64aed26** also passes 13 tests, 23 static checks and its complete 12-shape/16-seed/8-round
+lab. Second decode check **937801feb77b4302** is accepted; no final freeze yet.
 
 `build.py` asserts the base and every snapshot hash in `pieces.json`, records intermediate hashes in
 `manifest.json`, and supports `--without <name>`. `patch.py` **f186750c** is the aggregate repository handoff
@@ -61,7 +63,8 @@ The old source is preserved by git **99f1ede** / **08b85ce**. Use the archived m
 
 Original **7d4216dd** passed normal and forced: 13 tests, 12 graph captures, 23 static checks each. Retained
 state inventories contain 78 normal /118 forced tensors. [Precision audit](PRECISION.md); archived admission
-pins those exact hashes. New a92b6619 requires its own screens before sending.
+pins those exact hashes. Current a92b6619 passes the same full screens; `admission.json` pins its candidate and
+wrapper hashes. There are no T=8 coded calls in either current local audit.
 
 `s12ab_build.py` composes each complete arm source independently, then stores one compressed shared source
 plus lossless line edits. Every restored arm SHA is checked at build and runtime. The first 4.25 MB wrapper
@@ -74,6 +77,6 @@ behavior; H200 uses the original scheduler. Fresh arm namespaces retain independ
 globals and GEMV-choice dictionaries, with compatible unchanged runtime caches. The wide reversion has its
 own original-layout expert bank, while every arm now shares unchanged small-M state.
 
-Next: finish a92b6619 normal/forced screens, screen its compact lab, and send a second decode check. If all
+Next: land a92b6619's second decode check. If all
 piece/load arms win and unchanged controls pass A:A, freeze cand_r3_best7_s12_final.py, commit/push and tell
 the orchestrator. Preserve S11 final's scored handoff until that freeze is explicit. No scored runs here.
