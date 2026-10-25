@@ -4,8 +4,9 @@ the host's functions rebound into a copy of its globals (the host never changes)
   A   S11 as prepared;  A2 a second capture (A:A)
   V   balanced split-K GEMV off: every balanced row back to S10's V9 tile / cuBLAS choice      (t <= 32)
   Q   vq8 off: the routed verify rows (1 sliding, 16 full, 32 full) back to S10's attention     (routed rows)
-  K   lean K loop off: S10's N_full cell (NF_CUDA kinds 0/1, nf_plan, nf_call; embedded verbatim, compiled in a
-      thread at lab start) in place of S11's                                                    (M = 128 / 256)
+  K   S11's N_full heavy kernel off: S10's N_full cell (NF_CUDA kinds 0/1, nf_plan, nf_call; embedded verbatim,
+      compiled in a thread at lab start) on S10's s5_hh_base (issue_prepare without nf_ilv's W13 row interleave),
+      in place of S11's                                                                         (M = 128 / 256)
   S10 all of V, Q, K at once (S10's kernels on S11's pinned plan)
 Seeds AB_SEEDS x AB_ROUNDS rounds, rotating order, lab_cold_l2 before each replay. Lines: L, LOAD (46 sliding + 16
 full weighted), END; r = mean per-seed time ratio vs A (> 1: the reverted arm is slower, i.e. S11's change wins).
@@ -41,6 +42,8 @@ def lab(deadline, weights, state):
     ns = {'A': ab_namespace({}), 'V': ab_namespace({'_GEMV_CHOICES': vchoices}), 'K': vk}
     vall = s11ab_k_namespace();vall['_GEMV_CHOICES'] = vchoices;ns['S10'] = vall
     noq = dict(state, vq8_rows={})
+    kstate = dict(state, s5_hh_base=kernel_fn.__globals__['issue_prepare'](dict(weights, post_norm_w=weights['post_expert_norm'])))
+    kstate_noq = dict(kstate, vq8_rows={})
     lines.append(f'SETUP vq8_rows={state.get("vq8_rows")} pins={kernel_fn.__globals__.get("PROJ_PINS")} {time.monotonic() - started:.1f}s')
     results = {};incomplete = []
     order = [k for k in AB_CASES if k[0] * k[1] <= 32] + [k for k in AB_CASES if k[0] * k[1] > 32]
@@ -58,8 +61,8 @@ def lab(deadline, weights, state):
         variants = {'A': (ns['A'], state), 'A2': (ns['A'], state)}
         if t <= 32:variants['V'] = (ns['V'], state)
         if routed:variants['Q'] = (ns['A'], noq)
-        if kok:variants['K'] = (ns['K'], state)
-        if t <= 32 or routed or kok:variants['S10'] = (ns['S10'] if kok else ns['V'], noq)
+        if kok:variants['K'] = (ns['K'], kstate)
+        if t <= 32 or routed or kok:variants['S10'] = (ns['S10'], kstate_noq) if kok else (ns['V'], noq)
         if heavy and not kok:lines.append(f'K {ab_label(key)} unavailable {_S11AB_NF.get("err", "compile not done")}')
         graphs = {};gates = {}
         for n, (v, st) in variants.items():

@@ -4,11 +4,16 @@ Default patches:
 - balanced split-K GEMV (glue lane, `problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py`): qkv 64/7 and
   pool_router 64/6 at t = 1/8/16/32, unpooler 64/2 at t = 16/32. Whole layer on S11, paired (e605532e): S10's
   projections cost +2.9 / +2.4 / +3.1 / +1.9% at decode 1 / 16 / 32 / verify 1; every role contributes.
-- lean K loop in N_full's heavy N32 kernel (MoE lane, `dev/s7n/nf_patch.py`, cell nf_cell 97dcd77b; kinds 20/21):
-  858ff2fa M128 0.9613, M256 0.9426 vs N_swap, bit-equal.
-- vq8 at verify 1 sliding, verify 16 full, verify 32 full (attention lane,
-  `problems/muse_attention_decode/dev/vq8/patch_vq8_verify.py` with its checked vq8.cu 69132eea, dev/s11/patch_vq8.py; 44aa67ba: 15.30 vs 16.83, 153.9 vs 192.2,
-  278.5 vs 381.4 us after a projection stand-in).
+- N_full's heavy N32 kernel with the lean K loop and W13 gate/up rows interleaved in prepare so SwiGLU finishes in
+  registers (MoE lane, `dev/s7n/nf_patch_e200b0ee.py`, cell nf_cell e86f6fb3; kinds 26/21; nf_ilv permutes the u8
+  W13 rows of s5_hh_base, same codes): lean K 858ff2fa M128 0.9613, M256 0.9426 vs N_swap; interleave 701d2867
+  M128 0.9923, M256 0.9838 on top; bit-equal.
+- vq8 page-ring kernel at verify 1 sliding / 1 full / 16 full / 32 full (attention lane,
+  `problems/muse_attention_decode/dev/vq8/patch_vq8_ring.py`, kernel out/vq8_c262e4c5.cu; 5928ced8 after a
+  projection stand-in: 1 full 26.3 vs 28.2, 16 full 141.6 vs 191.9, 32 full 250.6 vs 378.9 us; 1 sliding 44aa67ba
+  15.30 vs 16.83 on the previous kernel).
+- pinned tuner choices (`dev/s11/patch_pin.py`): every projection row at t = 1-256 and attention at decode 16 / 32 set
+  to the whole-layer sweep's winner (4bea7724) instead of per-run timing of one stage alone.
 S10 is the base (not S8 + cells) so cell edits made since S10 cannot drift in.
 
     python3 problems/muse_decode_layer/dev/s11/build.py [--patch MODULE ...] [--out PATH]
@@ -27,10 +32,11 @@ spec.loader.exec_module(s9)
 
 BASE = D / 'cand_r3_best7_s10.py'
 BASE_SHA = '6688fad999783d53a4660d85d40ee82862b87a209e03d289e44c95e41a3ffbc1'
-PATCHES = [R / 'problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py', D / 'dev/s7n/nf_patch.py',
-           H / 'patch_vq8.py']
+PATCHES = [R / 'problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py', D / 'dev/s7n/nf_patch_e200b0ee.py',
+           R / 'problems/muse_attention_decode/dev/vq8/patch_vq8_ring.py', H / 'patch_pin.py']
 LABS = dict(gemv_bal='26fd09a7 (standalone) + 5cefdbc4 (S8 chains) + e605532e (S11 whole layer, paired)',
-            lean_k='858ff2fa (M128 0.9613, M256 0.9426, bit-equal)', vq8='44aa67ba (projection chain, cold L2)')
+            nfull='858ff2fa lean K (M128 0.9613, M256 0.9426) + 701d2867 interleave (0.9923, 0.9838), bit-equal',
+            vq8='5928ced8 page ring (projection chain, cold L2) + 44aa67ba', pins='4bea7724 (whole-layer sweep)')
 
 
 def compose(patches, tag='S11'):

@@ -11,8 +11,20 @@ goes into BEST7_SETTINGS' attention column, gated by _best7_gate_attention like 
 import ast
 import re
 
-PROJ = {}
-ATTN = {}
+# Whole-layer one-factor sweep on S11 cf493665 (4bea7724, 12 seeds x 6 rounds, cold L2; r = LOAD ratio vs that run's
+# tuner pick). t <= 32: custom (balanced / V9 tile) beats every cuBLAS / cuBLASLt variant in the layer; the run's
+# tuner picked cuBLAS for o at t = 8 / 16 / 32 (r 0.981 / 0.986 / 0.994), qkv and unpooler at t = 16 (0.984, 0.992).
+# t = 128 / 256: every variant within 0.5% of the next; the sweep's best.
+PROJ = {**{(t, r): 'custom' for t in (1, 8, 16, 32) for r in ('qkv_gate', 'pool_router')},
+        (1, 'unpooler_slice'): 'custom', (8, 'unpooler_slice'): 'custom', (16, 'unpooler'): 'custom', (32, 'unpooler'): 'custom',
+        (8, 'o'): 'custom', (16, 'o'): 'custom', (32, 'o'): 'custom',
+        (128, 'qkv_gate'): ('vdsk', (128, 64, 64, 8, 4, 1), 3), (128, 'o'): ('lt', 0), (128, 'pool_router'): 'cublas',
+        (128, 'unpooler'): ('short_lt', 1, 0),
+        (256, 'qkv_gate'): ('lt', 0), (256, 'o'): 'custom', (256, 'pool_router'): 'custom', (256, 'unpooler'): ('short_lt', 0, 0)}
+# Attention at decode 16 / 32 (BEST7_SETTINGS 'auto'): attn_main wins all four in 4bea7724; 'layer' costs +0.6 / +6.5 /
+# +0.25 / +8.4% (d16S / d16F / d32S / d32F), FA3 +6 to +56%.
+ATTN = {(16, 1, 2048): ('attn_main', None), (16, 1, 0): ('attn_main', None), (32, 1, 2048): ('attn_main', None),
+        (32, 1, 0): ('attn_main', None)}
 
 EDITS = (
     ('            scores=[]\n            want=None\n',

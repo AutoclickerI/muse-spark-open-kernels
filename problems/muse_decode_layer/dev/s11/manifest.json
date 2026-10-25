@@ -1,6 +1,6 @@
 {
   "source": "problems/muse_decode_layer/cand_r3_best7_s11.py",
-  "sha256": "cf4936656e133cfe45f89d8dade1b624a34fab0f1eee39bf86073ff75f8a0f65",
+  "sha256": "dbcb26bbd5ba36c0447817748d9e304297e48d8563a294cc532c0ced3460952b",
   "base": "problems/muse_decode_layer/cand_r3_best7_s10.py",
   "base_sha256": "6688fad999783d53a4660d85d40ee82862b87a209e03d289e44c95e41a3ffbc1",
   "patches": [
@@ -10,19 +10,25 @@
       "out_sha256": "65fd9a93ef239c45be25d3540f71bd7a1db93237c3005a5f4e9f6714eceaaeb9"
     },
     {
-      "path": "problems/muse_decode_layer/dev/s7n/nf_patch.py",
-      "sha256": "686e5025ed0ec17fa37398ec1f8c9703d021712efbbdcb642456eff5ae17763e",
-      "out_sha256": "9f660ce153b27e3526d9e654804518a211af1081a7a3bb130822adbbf46216eb"
+      "path": "problems/muse_decode_layer/dev/s7n/nf_patch_e200b0ee.py",
+      "sha256": "b22421b28f7a0fab8e95b658163a6eeae4bb83a74f60e6fd6a96aca4fb7ad13e",
+      "out_sha256": "951f7bcafa23909ae9c3a3fb4af8db25bdfade47a3e5791b6e26cf7471fd53bb"
     },
     {
-      "path": "problems/muse_decode_layer/dev/s11/patch_vq8.py",
-      "sha256": "7076f746d8ed97e65e417acb8f2e35adaba677c5abd1ce5fe95ae07fd61c704e",
-      "out_sha256": "d689a5e3d165bc8ef89543fd43664344f7350fbd40765f3d77d64f3496718b9f"
+      "path": "problems/muse_attention_decode/dev/vq8/patch_vq8_ring.py",
+      "sha256": "db6651832ec6d46e769ab3140eb16c68e4b5ea5a9b408e2258a3345a1bab6d68",
+      "out_sha256": "4a95ca539ac2fab78b0996b5a6c1e676705c760a7b9669fae778dc8f54334c2d"
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/s11/patch_pin.py",
+      "sha256": "5638d29f4bc6781b5ec9a996534bbaa2dda0f3ed47ff5243150b73b1aaf81f4b",
+      "out_sha256": "bf063b2f07009e9f20834918445aea3f3c606b0fb2136f93c7e5f69cee0f0fdc"
     }
   ],
   "labs": {
     "gemv_bal": "26fd09a7 (standalone) + 5cefdbc4 (S8 chains) + e605532e (S11 whole layer, paired)",
-    "lean_k": "858ff2fa (M128 0.9613, M256 0.9426, bit-equal)",
-    "vq8": "44aa67ba (projection chain, cold L2)"
+    "nfull": "858ff2fa lean K (M128 0.9613, M256 0.9426) + 701d2867 interleave (0.9923, 0.9838), bit-equal",
+    "vq8": "5928ced8 page ring (projection chain, cold L2) + 44aa67ba",
+    "pins": "4bea7724 (whole-layer sweep)"
   }
 }
