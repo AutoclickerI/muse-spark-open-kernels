@@ -366,6 +366,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   one FP32 partial, 21.25 vs 21.79 with four; FA3's best5 setting is no better (20.35 / 20.80 / 22.14): <= ~0.6 us per
   layer (`32f2f07a`'s 12.1 vs 16.2 us gap was against `attn_main_twog<4>`). `dev/verify1_sliding_pick.py` (`46b94032`).
 
+- Attention inside the layer (S7 `2f6471d5` profile, us per layer, sliding / full): decode 1 10.2 / 19.4, decode 16
+  16.3 / 104.1, decode 32 16.7 / 191.2, verify 1 20.7 / 31.8, verify 16 22.5 / 199.1, verify 32 24.5 / 381.4. Sliding
+  sits 3-200x its floor in 46 layers per load (5 kernels at verify); full decode at 1.5-1.65x, full verify at ~3x.
+
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
   conversions + two FP16 `HMMA.16816.F32` (sm_120 gets one native `QMMA`), so the FlashDecoding producer
