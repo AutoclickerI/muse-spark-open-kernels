@@ -481,6 +481,12 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   1.08-1.30 at sliding decode and 1.25-1.27 at full decode; verify-1 sliding 0.973 and 1.002 in two parts of the run
   (no win). An FP32 polynomial in place of ex2 for the probabilities at full verify loses (`9407b461`: degree 2 / 3
   1.080 / 1.087 at verify 16, 1.105 / 1.114 at verify 32).
+- Full attention structural pass (attention host, candidate / S13, paired): phase probe q1 105.86 / 193.39 us and q8
+  147.44 / 262.98 us at B16 / 32 (`5c995836`); vq8 at full verify spends ~907 of ~1,690 cycles per 64-key tile in
+  softmax (`f4d1a195` VQ8_CLK smx). Losses: more pages in flight neutral 0.997 / 0.997, FP16 PV 1.50 / 1.55
+  (`39949536`); scalar register-V 1.43 / 1.47 (`bdfeb0e9`); one-head CTA160 occupancy forms, raw V 1.23 / 1.26, P in
+  registers 1.06 / 1.11 (`6ec9d43d`); LDSM.T register-A N64 1.09 / 1.12 (`5cca1296`). Sources:
+  `problems/muse_attention_decode/dev/full_attention/`.
 
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
