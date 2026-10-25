@@ -171,6 +171,13 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   GEMV at t=1 + PERMW; `3dbcaccd`, same protocol, host 1.7433x): at decode 1 attention off +4.1%, cp.async off
   +2.0%, all of S12 back +4.9% (A:A +0.6%); PERMW off +0.14 / +0.63% at verify 16 / 32; S12 back +0.9% at decode 16
   and verify 1, +0.1% at decode 32.
+- S13 final `958f1258` (`cb38a050`, host 1.7186x): attention off 1.0377 at decode 1; PERMW256 off pooled 1.0038
+  (worst A:A 1.0033); the cp.async coded GEMV's standalone win fell to 0.9969 against A:A in the corrected run
+  (`4de869d4`) and was dropped.
+- S14 on S13 final (`0441f9fc`, `740c63af`, `2bbb626c`; 16 seeds; host runs 1.7174 / 1.7530 / 1.7324x): light experts
+  off +6.2 / +2.8%, +2.3 / +1.8%, +1.7 / +1.7% at verify 16 / 32 in the three runs; bal2 at t=32 off pooled 1.0104
+  (worst A:A radius 0.0054; neutral in the last run); direct-BF16 qkv3 0.981 and bal2 at t=16 0.982 (both lose),
+  direct O 0.997 (noise). S14 final `f1c77ce6` keeps light experts and bal2 at t=32.
 - One-factor sweep of every tuned choice (`4bea7724`, 12 seeds x 6 rounds): at t <= 32 our GEMVs beat every cuBLAS /
   cuBLASLt variant at every role by 1-6% (the run's tuner had picked cuBLAS for o at t = 8 / 16 / 32 and qkv /
   unpooler at t=16: -1.9 / -1.4 / -0.6 / -1.6 / -0.8% when pinned); attention at decode 16 / 32 is attn_main at all
@@ -410,6 +417,8 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - Light experts decoded once (`eea9d87b`, 48 fixtures per M, all TASK PASS): an N16 kernel for 9-16-token experts on
   a third stream, NT1 only for <= 8, heavy on PERMW: 0.9447 / 0.9526 (2 CTAs per SM) and 0.9328 / 0.9485 (4) at
   M=128 / 256 vs S12 final (196.2 -> 182.4 us, 270.6 -> 256.4 us).
+- A whole-MoE shared queue on top of N16G4 loses (`ea794250`, all PASS): phased N8 / N16 / N32 queue 1.034 / 1.037,
+  expert-ready persistent DAG 1.100 / 1.107 at M=128 / 256.
 ## Attention
 
 ### Shapes, floors and the incumbents
@@ -629,6 +638,12 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   1.05-1.11 per load, route (norm + top-8 + MoERouteMeta) in pool_router's 1.10-1.15, b2 in the unpooler's 1.03-1.06,
   all three 1.12-1.21. A last-CTA epilogue runs the boundary on one CTA's tail; the separate glue kernel spreads it
   over the GPU (closed recipe: late row-owner epilogues).
+- The second producer-glue build (last-split statistics, distributed b1 / b2 apply, fused routing metadata) loses 1.158
+  at decode 1, 1.177 with metadata (`15abb9c1`). CUPTI increments at decode 1 (`9845398b`): b1 4.16 -> 7.52 us, route
+  23.71 -> 27.46, b2 7.07 -> 13.92; the sliced-b2 statistics take 7.71 us, the route's score / top-8 block 2.11, metadata
+  1.44. S13's intended immutable preloads were compiled after the PDL dependency wait (inline PTX keeps them before
+  it). Joint b1 / route / b2 preloads: 0.977 at decode 1 in the pilot (`0110a781`); held out (`1a880faf`) full 0.987
+  (A:A 0.995), sliding 1.001: kept for decode-1 full only (~+0.06%).
 - Balanced GEMV issue sweep (`d3666d18`, projection + sum-cast graph, standalone): pool_router at BK=128 with 2
   stages 0.977 / 0.959 / 0.960 at t = 1 / 16 / 32 (-0.6 to -1.1 us); every other role and setting within +-2%.
 - Roofline (model, 989 TFLOP/s and 4.8 TB/s on compulsory bytes): at M=128 all four BF16 projections are HBM-bound;
