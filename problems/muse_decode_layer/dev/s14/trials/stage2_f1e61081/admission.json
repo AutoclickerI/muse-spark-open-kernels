@@ -1,0 +1,67 @@
+{
+  "normal": {
+    "sha256": "72bb46f68f214febe05a8026b69bdd7cad5ec152e4986c736a0273420286bff8",
+    "tests": 13,
+    "graph_shapes": 12,
+    "static_checks": 24,
+    "retained_tensors": 86
+  },
+  "forced": {
+    "sha256": "72bb46f68f214febe05a8026b69bdd7cad5ec152e4986c736a0273420286bff8",
+    "tests": 13,
+    "graph_shapes": 12,
+    "static_checks": 24,
+    "retained_tensors": 126
+  },
+  "lab": {
+    "sha256": "9f8261e196c8ef13dc7410b9a11369d832fb55f6f5968279748c18b81c8fa61a",
+    "tests": 13,
+    "static_checks": 24,
+    "graph_shapes": 12,
+    "seeds": 16,
+    "rounds": 8,
+    "decode1_rounds": 32,
+    "failed_arms": 0
+  },
+  "no_o": {
+    "normal": {
+      "sha256": "054147b0cdb19f80abd6945bc133e0069a710794e207925c298c308598063882",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24
+    },
+    "forced": {
+      "sha256": "054147b0cdb19f80abd6945bc133e0069a710794e207925c298c308598063882",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24
+    }
+  },
+  "stage2": {
+    "normal": {
+      "sha256": "f1e6108132a7fa18e6fc88b43f86b55f353b8a6b6e05bd5e636e030d849357e7",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24,
+      "retained_tensors": 78
+    },
+    "forced": {
+      "sha256": "f1e6108132a7fa18e6fc88b43f86b55f353b8a6b6e05bd5e636e030d849357e7",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24,
+      "retained_tensors": 118
+    },
+    "lab": {
+      "sha256": "90482ea2f3ec70e49bbd846dcb260fe7443f33e275f5043ce3f5688338fdd762",
+      "tests": 13,
+      "static_checks": 24,
+      "graph_shapes": 12,
+      "seeds": 16,
+      "decode1_rounds": 32,
+      "verify1_rounds": 32,
+      "other_rounds": 8,
+      "failed_arms": 0
+    }
+  }
+}

@@ -57,3 +57,20 @@ No S14 final freeze or scored-source swap yet. Next: send stage2 after its wrapp
 per load from the new paired evidence, then freeze only retained winning pieces with controls inside A:A.
 
 Stage3 contingency **f1c77ce6** keeps light + bal2 T32 only. Its normal13/12/24 passes; forced is running while stage2 is judged. No speculative third check is sent.
+
+## Second receipt 740c63afadc14e01
+
+Conditional **f1e61081**, wrapper **90482ea2**, official PASS **1.75300445x** [1.72670938,1.77929951].
+All12 shapes x16 seeds, decode1/verify1 have32 rounds; other loads8. All output gates and per-piece
+untouched controls pass. Light off **1.023051 / 1.018132** at verify16/32, both beyond A:A. Bal2 off
+**1.021117** at decode32 clears A:A .004398. Verify1 **1.007686** remains inside A:A .016528
+(normalized1.003145); drop T8. Full S13-back ratios on retained loads: decode32 1.015313,
+verify16 1.023156, verify32 1.017248. Do not promote the raw host score by itself.
+
+Final conditional source **f1c77ce6** = light + bal2 T32 only. Its normal13/12/24 passed. Forced and wrapper
+attempts hit GPU0 memory contention before any remote send, caused partly by local_eval.Timer's
+uint8.sum creating an8 GiB cast temporary. Timer now reads the identical1 GiB through an int64 view,
+matching h200_lab.lab_cold_l2; the memory proof is cold_flush_memory.json. No tests, input shapes, cold
+buffer bytes or judge code changed. Retry forced and wrapper serially, then send the final conditional.
+Failure evidence is preserved in trials/stage3_oom/; original stage2 manifests/patch are in
+trials/stage2_f1e61081/. Current pieces.json/patch_bal2.py stage the T32-only successor, not a promotion.

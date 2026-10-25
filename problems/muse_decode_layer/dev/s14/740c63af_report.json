@@ -1,0 +1,255 @@
+{
+  "job": "740c63afadc14e01",
+  "source_sha256": "f1e6108132a7fa18e6fc88b43f86b55f353b8a6b6e05bd5e636e030d849357e7",
+  "complete": true,
+  "loads": {
+    "decode 1": {
+      "A2": 0.994664,
+      "light": 0.999203,
+      "bal2": 0.993702,
+      "S13": 0.996594
+    },
+    "decode 16": {
+      "A2": 1.00702,
+      "light": 0.998974,
+      "bal2": 1.00973,
+      "S13": 1.003427
+    },
+    "decode 32": {
+      "A2": 0.998688,
+      "light": 0.997995,
+      "bal2": 1.021117,
+      "S13": 1.015313
+    },
+    "verify 1": {
+      "A2": 1.004538,
+      "light": 0.993324,
+      "bal2": 1.007686,
+      "S13": 0.997817
+    },
+    "verify 16": {
+      "A2": 1.001153,
+      "light": 1.023051,
+      "bal2": 1.000939,
+      "S13": 1.023156
+    },
+    "verify 32": {
+      "A2": 1.000478,
+      "light": 1.018132,
+      "bal2": 0.999158,
+      "S13": 1.017248
+    }
+  },
+  "A_A": {
+    "decode 1": {
+      "mean": 0.994664,
+      "lo": 0.990114,
+      "hi": 0.998798,
+      "se": 0.000599,
+      "n": 16
+    },
+    "decode 16": {
+      "mean": 1.00702,
+      "lo": 0.991204,
+      "hi": 1.024345,
+      "se": 0.00258,
+      "n": 16
+    },
+    "decode 32": {
+      "mean": 0.998688,
+      "lo": 0.995602,
+      "hi": 1.002771,
+      "se": 0.000531,
+      "n": 16
+    },
+    "verify 1": {
+      "mean": 1.004538,
+      "lo": 0.98881,
+      "hi": 1.016528,
+      "se": 0.001731,
+      "n": 16
+    },
+    "verify 16": {
+      "mean": 1.001153,
+      "lo": 0.997026,
+      "hi": 1.005687,
+      "se": 0.000622,
+      "n": 16
+    },
+    "verify 32": {
+      "mean": 1.000478,
+      "lo": 0.993346,
+      "hi": 1.003293,
+      "se": 0.000631,
+      "n": 16
+    }
+  },
+  "decisions": {
+    "light": {
+      "verify 16": {
+        "ratio": 1.023051,
+        "AA_radius": 0.005686999999999998,
+        "wins": true,
+        "paired": {
+          "mean": 1.023051,
+          "se": 0.004182,
+          "norm": 1.021866,
+          "normse": 0.00402,
+          "n": 16
+        }
+      },
+      "verify 32": {
+        "ratio": 1.018132,
+        "AA_radius": 0.006654000000000049,
+        "wins": true,
+        "paired": {
+          "mean": 1.018132,
+          "se": 0.004161,
+          "norm": 1.017632,
+          "normse": 0.003895,
+          "n": 16
+        }
+      }
+    },
+    "bal2": {
+      "decode 32": {
+        "ratio": 1.021117,
+        "AA_radius": 0.004398000000000013,
+        "wins": true,
+        "paired": {
+          "mean": 1.021117,
+          "se": 0.000989,
+          "norm": 1.022461,
+          "normse": 0.001038,
+          "n": 16
+        }
+      },
+      "verify 1": {
+        "ratio": 1.007686,
+        "AA_radius": 0.016528000000000098,
+        "wins": false,
+        "paired": {
+          "mean": 1.007686,
+          "se": 0.002072,
+          "norm": 1.003145,
+          "normse": 0.001636,
+          "n": 16
+        }
+      }
+    },
+    "S13": {
+      "decode 32": {
+        "ratio": 1.015313,
+        "AA_radius": 0.004398000000000013,
+        "wins": true,
+        "paired": {
+          "mean": 1.015313,
+          "se": 0.00146,
+          "norm": 1.016647,
+          "normse": 0.001403,
+          "n": 16
+        }
+      },
+      "verify 1": {
+        "ratio": 0.997817,
+        "AA_radius": 0.016528000000000098,
+        "wins": false,
+        "paired": {
+          "mean": 0.997817,
+          "se": 0.001925,
+          "norm": 0.99332,
+          "normse": 0.001419,
+          "n": 16
+        }
+      },
+      "verify 16": {
+        "ratio": 1.023156,
+        "AA_radius": 0.005686999999999998,
+        "wins": true,
+        "paired": {
+          "mean": 1.023156,
+          "se": 0.004149,
+          "norm": 1.021971,
+          "normse": 0.003998,
+          "n": 16
+        }
+      },
+      "verify 32": {
+        "ratio": 1.017248,
+        "AA_radius": 0.006654000000000049,
+        "wins": true,
+        "paired": {
+          "mean": 1.017248,
+          "se": 0.004342,
+          "norm": 1.016748,
+          "normse": 0.004063,
+          "n": 16
+        }
+      }
+    }
+  },
+  "controls": {
+    "light": {
+      "decode 1": {
+        "ratio": 0.999203,
+        "AA_radius": 0.00988599999999995,
+        "within_AA": true
+      },
+      "decode 16": {
+        "ratio": 0.998974,
+        "AA_radius": 0.02434500000000006,
+        "within_AA": true
+      },
+      "decode 32": {
+        "ratio": 0.997995,
+        "AA_radius": 0.004398000000000013,
+        "within_AA": true
+      },
+      "verify 1": {
+        "ratio": 0.993324,
+        "AA_radius": 0.016528000000000098,
+        "within_AA": true
+      }
+    },
+    "bal2": {
+      "decode 1": {
+        "ratio": 0.993702,
+        "AA_radius": 0.00988599999999995,
+        "within_AA": true
+      },
+      "decode 16": {
+        "ratio": 1.00973,
+        "AA_radius": 0.02434500000000006,
+        "within_AA": true
+      },
+      "verify 16": {
+        "ratio": 1.000939,
+        "AA_radius": 0.005686999999999998,
+        "within_AA": true
+      },
+      "verify 32": {
+        "ratio": 0.999158,
+        "AA_radius": 0.006654000000000049,
+        "within_AA": true
+      }
+    },
+    "S13": {
+      "decode 1": {
+        "ratio": 0.996594,
+        "AA_radius": 0.00988599999999995,
+        "within_AA": true
+      },
+      "decode 16": {
+        "ratio": 1.003427,
+        "AA_radius": 0.02434500000000006,
+        "within_AA": true
+      }
+    }
+  },
+  "failures": [],
+  "pieces_win": false,
+  "controls_pass": true,
+  "changed_loads_win": false,
+  "freeze_gate": false,
+  "six_load_S13_over_S14": 1.0088747811695864
+}

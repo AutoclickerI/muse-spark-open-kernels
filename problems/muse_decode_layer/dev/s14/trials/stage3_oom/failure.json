@@ -1,0 +1,8 @@
+{
+  "reason": "Concurrent GPU0 workloads plus local Timer uint8.sum materializing 8 GiB temporary",
+  "allocation_gib": 8,
+  "free_gib": 2.15,
+  "candidate_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "remote_sent": false,
+  "fix": "Read identical 1 GiB through int64 view, matching h200_lab.lab_cold_l2; retry full forced and wrapper screens serially"
+}

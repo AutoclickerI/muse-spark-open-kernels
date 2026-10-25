@@ -184,7 +184,7 @@ class Timer:
         self.fixed_us = statistics.median(self.replay_us(graph) for _ in range(50))
 
     def replay_us(self, graph) -> float:
-        self.flush_buf.sum()  # cold L2: read a buffer larger than it
+        self.flush_buf.view(torch.int64).sum()  # same cold-L2 read; avoid an 8x uint8-to-int64 temporary
         self.start.record()
         graph.replay()
         self.end.record()
