@@ -358,6 +358,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   split over 4 blocks per token 0.9850 / 0.9885 (bit-equal; isolated finish 12.8 -> 9.1 us); the per-stage
   `fence.proxy.async` costs 0.65 / 1.3% (no-fence probe), and a per-row TMA for W13's gathered X serialises (1.6-1.9x
   locally).
+- Co-residency of N_full's branches loses (`f976b09d`, vs LI_swap + finalizer split, 12 seeds x3, all TASK PASS): a
+  persistent heavy grid of 2 / 3 CTAs per SM so NT1 runs beside it 1.024 / 1.029 at M=128, 1.059 / 1.043 at M=256;
+  1 CTA per SM 1.24 / 1.40; NT1 grid halved worse still. Serial branches beat shared SMs: the heavy branch needs every
+  SM's bandwidth. Wide banks (3 LDS.128 per stage instead of 8) 0.9936 / 0.9900; the W2 X tile by TMA (no proxy
+  fence) 0.999 / 1.002.
 ## Attention
 
 ### Shapes, floors and the incumbents
