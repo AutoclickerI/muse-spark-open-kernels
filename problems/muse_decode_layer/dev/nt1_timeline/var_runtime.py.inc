@@ -5,7 +5,7 @@ VAR_CPP='''#include <pybind11/pybind11.h>
 int64_t max_smem_attr();int64_t smem_needed(int64_t,int64_t,int64_t);int64_t resident_blocks(int64_t,int64_t,int64_t);
 void run(std::vector<int64_t>,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t);
 '''
-F_Z,F_SLOT,F_ZOUT,F_RSQ,F_NREG,F_PDL,F_LAST,F_TRACE,F_NT2,F_W16,F_RND,F_ROT=1,2,4,8,16,64,128,256,2048,4096,8192,16384
+F_Z,F_SLOT,F_ZOUT,F_RSQ,F_NREG,F_PDL,F_LAST,F_TRACE,F_NT2,F_W16,F_RND,F_ROT,F_PIPE=1,2,4,8,16,64,128,256,2048,4096,8192,16384,32768
 VAR_MODULE=[]
 
 

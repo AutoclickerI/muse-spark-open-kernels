@@ -6,7 +6,7 @@ import linecache
 _buf=[]
 def lab_cold_l2():
     if not _buf:_buf.append(torch.empty(1<<30,dtype=torch.uint8,device='cuda'))
-    _buf[0].sum()
+    _buf[0].view(torch.int64).sum()
 src=(ROOT/'prof/lab/moe_nt1_timeline.py').read_text();ns={'__name__':'h200lab','lab_cold_l2':lab_cold_l2};fname='<h200_lab moe_nt1_timeline>'
 linecache.cache[fname]=(len(src),None,src.splitlines(True),fname)
 exec(compile(src,fname,'exec'),ns)

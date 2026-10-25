@@ -5,7 +5,7 @@ import hashlib,json,runpy,sys
 import torch
 ROOT=Path(__file__).resolve().parents[4];DEV=Path(__file__).resolve().parent
 n=runpy.run_path(str(ROOT/'prof/lab/moe_nt1_timeline.py'));g=n['var_call'].__globals__
-F=dict((k,n[k]) for k in ('F_Z','F_SLOT','F_ZOUT','F_RSQ','F_NREG','F_PDL','F_LAST','F_TRACE','F_NT2','F_W16','F_RND','F_ROT'))
+F=dict((k,n[k]) for k in ('F_Z','F_SLOT','F_ZOUT','F_RSQ','F_NREG','F_PDL','F_LAST','F_TRACE','F_NT2','F_W16','F_RND','F_ROT','F_PIPE'))
 gen=torch.Generator(device='cuda').manual_seed(67182)
 
 w=n['rg_generate_weights'](5353);w['post_norm_w']=w['post_expert_norm'];state=n['nt1_banks'](w)
@@ -17,7 +17,7 @@ HANDOFF={1:{'95':95,'16463':79|ROT},8:{'69':69,'77':77,'93':93},16:{'69':69,'77'
 for m,a in n['SMALLM_ARMS'].items():HANDOFF.setdefault(m,{}).update({k[1:]:v for k,v in a['R'].items() if v is not None})
 ecks={m:{'E'+k:v for k,v in a.items()} for m,a in HANDOFF.items()}
 arms={m:{'R':{'R'+k:v for k,v in a.items()}} for m,a in HANDOFF.items()}
-TRACED={1:(95,79|ROT),8:(69|RND,69|ROT),16:(69,69|NT2,69|NT2|W16,69|RND,69|ROT),32:(69,69|NT2,69|NT2|W16,69|RND,69|ROT,69|RND|ROT)}
+TRACED={1:(95,79|ROT),8:(69|RND,69|ROT),16:(69,69|NT2,69|NT2|W16,69|RND,69|ROT),32:(69,69|NT2,69|NT2|W16,69|RND,69|ROT,69|RND|ROT,41029,57413)}
 def rel(a,b):return float((a.float()-b.float()).norm()/b.float().norm().clamp_min(1e-12))
 def edge_fixtures(m,seed):
  d=n['fx_make_fixture'](w,m,9000+m+97*seed);yield 'real',d
@@ -30,6 +30,9 @@ def edge_fixtures(m,seed):
   # distinct ids per token
   e['topk_ids']=torch.stack([torch.randperm(32,device='cuda',generator=gen)[:8] for _ in range(m)]).int();yield 'uniform',e
   e=dict(d);e['hidden_states']=torch.zeros_like(d['hidden_states']);yield 'zero_x',e
+  e=dict(d);e['topk_ids']=torch.full_like(d['topk_ids'],-1);yield 'none',e
+  e=dict(e);e['topk_ids']=e['topk_ids'].clone();e['topk_ids'][:,0]=31;yield 'one_expert',e
+  e=dict(d);e['topk_ids']=torch.arange(8,device='cuda',dtype=torch.int32).expand(m,8).contiguous();yield 'all8local',e
 for seed in (0,1):
  for m in (1,8,16,32):
   for name,d in edge_fixtures(m,seed):

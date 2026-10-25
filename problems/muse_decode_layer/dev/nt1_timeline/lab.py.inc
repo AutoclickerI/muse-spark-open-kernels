@@ -22,13 +22,14 @@ def task_check(out,want):
     return ok,err,row
 
 
-DIAG_BY_M={16:('RTRACEZZP','RTRACEZZPR','RTRACEZZPO'),32:('RTRACEZZP','RTRACEZZPR','RTRACEZZPO','RTRACEZZPRO')}  # v8: critical paths + tile/publish split
+DIAG_BY_M={1:('RTRACEBASE1','RTRACEOROT1')}  # v9: critical paths + tile/publish split
 # R = the decode layer's context (router node + MoE node). R95/R93 = 849e4017's winners; R77 drops NREG, R69 drops
 # NREG and RSQ; ECAP = INC on the same routes with every local expert capped at 8 tokens (DIAGNOSTIC, no gate): the
 # most that decode-once / no-reread for multi-block experts could save.
-SMALLM_ARMS={}
+BASE_FLAGS={1:95,8:69,16:69,32:69}
+SMALLM_ARMS={1:dict(E={},R={'RBASE':95,'RINC':None,'R16463':16463})}
 for _m in (8,16,32):
-    SMALLM_ARMS[_m]=dict(E={},R={'RINC':None,'R69':69,'R8261':69|F_RND,'R16453':69|F_ROT,'R24645':69|F_RND|F_ROT})
+    SMALLM_ARMS[_m]=dict(E={},R={'RBASE':69,'RINC':None,'R8261':69|F_RND,'R16453':69|F_ROT,'R24645':69|F_RND|F_ROT,'R41029':69|F_RND|F_PIPE,'R57413':69|F_RND|F_PIPE|F_ROT})
 
 
 def cap_fixture(d,cap=8):
@@ -49,7 +50,7 @@ def lab(deadline,weights):
     from concurrent.futures import ThreadPoolExecutor
     begin=time.monotonic();deadline-=5;device=weights['w13'].device
     lines=['META small-M NT1: E=MoE node alone (fixed real routes), R=router node+MoE node; INC=admitted one-LOP3 NT1; F0=same math in the flag harness; Z=norm-slot zero in W13 tile0; SLOT=M1 top-8 slot dispatch; ZOUT=W2 stores v(1+w); RSQ=finalizer scale once per pair; NREG=norm sums in registers per tile run; LAST=last CTA finalizes; PDL=MoE launched as programmatic dependent',
-        'META v8: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs its INC, independent INC A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; arms 69, 69+RND (two rounds split at the expert boundary nearest half the W13 units), 69+ROT (no per-tile CTA barrier: arrival counters, last arriver refills, tile t epilogue on warp t%8 one tile later) and 69+RND+ROT at M8/16/32; M16/32 critical paths with TILE (per-tile waits, barrier/epilogue spin, publish fence) lines']
+        'META v9: cold = lab_cold_l2() (wrapper; judge-style read); paired AB/BA x6 per arm vs S11 map {1:95,8/16/32:69}, independent S11 A:A; 16 seeds of public weights/routers; TASK.md gate (1.5% L2, row 5x) per cell; arms 69, 69+RND (two rounds split at the expert boundary nearest half the W13 units), 69+ROT (no per-tile CTA barrier: arrival counters, last arriver refills, tile t epilogue on warp t%8 one tile later) and 69+RND+ROT, 69+RND+PIPE (interleave the rounds W13/W2), and +ROT at M8/16/32; M1 base95 and ROT16463 critical paths with TILE (per-tile waits, barrier/epilogue spin, publish fence) lines']
     errors=[]
     with ThreadPoolExecutor(max_workers=4) as pool:
         jobs={name:pool.submit(fn) for name,fn in (('INC',lambda:nt1_module('INC')),('VAR',var_module),('CONTROL',control_module),('CUPTI',activity_module))}
@@ -59,7 +60,7 @@ def lab(deadline,weights):
     lines+=errors
     if any(name in e for e in errors for name in ('BUILD_ERROR INC','BUILD_ERROR VAR')):return lines
     lines.append(f'BUILD seconds={time.monotonic()-begin:.2f} left={deadline-time.monotonic():.1f}')
-    rows={};deltas={};caps={};noise={m:{'E':[],'R':[]} for m in SMALLM_ARMS};worst={};failed={};flips=0;complete=0;peak=0.
+    rows={};deltas={};paired={};caps={};noise={m:{'E':[],'R':[]} for m in SMALLM_ARMS};worst={};failed={};flips=0;complete=0;peak=0.
     previous=torch.backends.cuda.matmul.allow_tf32;torch.backends.cuda.matmul.allow_tf32=False
     try:
         for seed in range(16):
@@ -98,7 +99,7 @@ def lab(deadline,weights):
                         key=tuple(ids.flatten().cpu().tolist())
                         if key not in truths:truths[key]=nt1_fp32(dict(hidden_states=x,topk_ids=lids,topk_weights=tw,config={'local_start':0}),w)
                         truth=truths[key]
-                        if label=='RINC' and first:route_flips[0]+=n
+                        if label=='RBASE' and first:route_flips[0]+=n
                     ok,err,row=task_check(got,truth)
                     worst[label]=max(worst.get(label,(0.,0.)),(err,row))
                     if not ok:raise ValueError(f'TASK gate L2/row={err:.5f}/{row:.5f}')
@@ -109,14 +110,15 @@ def lab(deadline,weights):
                         failed[label]=f'M{m} seed{seed} {type(e).__name__}: {str(e)[:100]}';graphs.pop(label)
                 flips+=route_flips[0]
                 for prefix in ('E','R'):
-                    base=prefix+'INC'
+                    base=prefix+'BASE'
                     if base not in graphs:continue
-                    ctl=TimelineGraph(lambda:nt1_call(d,state,'INC')) if prefix=='E' else TimelineGraph(lambda:routed_experts(pr,rs,state,'INC'))
+                    ctl=TimelineGraph(lambda:nt1_call(d,state,'INC')) if prefix=='E' else TimelineGraph(lambda:routed_var(pr,rs,state,BASE_FLAGS[m]))
                     a,b,_=timeline_timing(graphs[base],ctl);noise[m][prefix].append(b-a);rows.setdefault((m,base),[]).append(a)
                     others=[k for k in graphs if k[0]==prefix and k!=base]
                     if seed%2:others.reverse()
                     for label in others:
                         a,b,ratio=timeline_timing(graphs[base],graphs[label])
+                        paired.setdefault((m,label),[]).append(ratio)
                         rows.setdefault((m,label),[]).append(rows[m,base][-1]*ratio);deltas.setdefault((m,label),[]).append(rows[m,base][-1]*(ratio-1))
                         try:gate(label)
                         except Exception as e:failed[label]=f'M{m} seed{seed} post-timing {type(e).__name__}: {str(e)[:100]}'
@@ -129,13 +131,13 @@ def lab(deadline,weights):
     lines.append(f'GATE TASK.md L2/row worst '+','.join(f'{k}:{v[0]:.4f}/{v[1]:.4f}' for k,v in sorted(worst.items()))+f'; RINC near-tie flips={flips}')
     for m in SMALLM_ARMS:
         for prefix in ('E','R'):
-            base=(m,prefix+'INC')
+            base=(m,prefix+'BASE')
             if base not in rows:continue
-            nz=noise[m][prefix];parts=[f'{prefix}INC={statistics.mean(rows[base]):.2f}']
+            nz=noise[m][prefix];parts=[f'{prefix}BASE{BASE_FLAGS[m]}={statistics.mean(rows[base]):.2f}']
             for label in SMALLM_ARMS[m][prefix]:
-                if label==prefix+'INC' or (m,label) not in deltas:continue
+                if label==prefix+'BASE' or (m,label) not in deltas:continue
                 dl=deltas[m,label];se=statistics.stdev(dl)/len(dl)**.5 if len(dl)>1 else 0.
-                parts.append(f'{label}={statistics.mean(rows[m,label]):.2f}({statistics.mean(dl):+.2f}+-{se:.2f},n{len(dl)})')
+                rat=paired[m,label];parts.append(f'{label}={statistics.mean(rows[m,label]):.2f}({statistics.mean(dl):+.2f}+-{se:.2f},r={statistics.mean(rat):.5f},win={sum(r<1 for r in rat)}/{len(rat)})')
             parts.append(f'AA={statistics.mean(nz):+.2f}/{statistics.mean(map(abs,nz)):.2f}/{max(map(abs,nz)):.2f}')
             lines.append(f'AGG M{m} '+' '.join(parts))
     lines.append(f'END seeds={complete} min8={complete>=8} seconds={time.monotonic()-begin:.1f} left={deadline-time.monotonic():.1f}; nothing promoted here')

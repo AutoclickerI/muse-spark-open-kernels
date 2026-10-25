@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[4]
 _buf=[]
 def lab_cold_l2():
     if not _buf:_buf.append(torch.empty(1<<30,dtype=torch.uint8,device='cuda'))
-    _buf[0].sum()
+    _buf[0].view(torch.int64).sum()
 src=(ROOT/'prof/lab/moe_nt1_timeline.py').read_text();n={'__name__':'h200lab','lab_cold_l2':lab_cold_l2};f='<lab>'
 linecache.cache[f]=(len(src),None,src.splitlines(True),f);exec(compile(src,f,'exec'),n)
 flags=[int(x) for x in sys.argv[1:] if '=' not in x];deltas={x:[] for x in flags};base=[]

@@ -9,7 +9,7 @@ def var_source():
     old = '  PrefetchState pre;\n};'
     assert old in head
     head = head.replace(old, '  PrefetchState pre;\n  int erank[8];  // F_SLOT: local expert of each local rank\n  int P;         // F_SLOT: local pairs\n'
-                        '  int sa[4], sn[4];  // F_RND: first unit and count of each (pass, round) run of this CTA\n'
+                        '  int sa[4], sn[4], sp[4];  // F_RND: first unit and count of each (pass, round) run of this CTA\n'
                         '  int tcnt[8];       // F_ROT: per reduce buffer, warp arrivals (monotonic)\n};')
     old = '  volatile int e, nb, m, mb, me;'
     assert old in head

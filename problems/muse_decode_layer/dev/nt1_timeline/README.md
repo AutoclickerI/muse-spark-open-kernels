@@ -38,7 +38,22 @@ CTA of its expert plus the publish (the wait ends ~4 us after the last W13-end s
 split at the expert boundary nearest half the W13 units; each CTA runs its share of the first experts' W13, then the
 rest, and W2 in the same order, so the first experts' W2 covers the second round's publish. Traces now split per-tile
 time (tile waits of warp 0 and warp 7, per-tile barrier, publish fence and barrier): TILE lines.
-H200 v7 `1be7ce445ced8f66` (queued): 69 vs 69+RND at M=8/16/32, M=16/32 critical paths of both.
+The prior v7 hash `1be7ce445ced8f66` has no ledger/receipt and is unmeasured.
+
+Current takeover: F_RND, F_ROT (16384: delayed rotating warp epilogues, shared arrival counts in place of the
+per-tile CTA barrier), and F_PIPE (32768, requires F_RND: W13-A, W2-A, W13-B, W2-B) build and pass `test_cell.py`.
+`sm_90a` static compile also passes. v9 uses the S11 flags as the directly paired control (M1 95, M8/16/32 69),
+16 seeds, read flush, alternating order, with per-seed ratios and win counts. M1 also tests 16463 (ROT, drops NREG).
+Local `run_local.py` and `screen.py` now read the flush buffer through an int64 view, matching the remote wrapper;
+the byte sum had allocated an 8 GiB temporary and OOMed under concurrent GPU0 use. Local timings with other lanes
+using GPU0 are not H200 evidence. Expanded checks include no local routes, one expert, and eight local experts.
+
+- v8 payload `6b3d185c`: H200 MoE check **17512d86f3a74f27**, source `0d031529`, accepted; results pending.
+  R69/R8261/R16453/R24645 at M8/16/32 versus INC, 16 seeds, TILE publish/barrier diagnostics.
+- v9 payload `8e107b90`: prefill host send requested; direct S11 pairing, adds PIPE and M1 ROT. Results pending.
+- Local v8: 918 math checks + 17 forced Hopper glue checks, worst TASK L2 0.00239, maximum relative vs INC 0.000263.
+  v9 including the extra edge cases: 1860 math checks + 24 forced glue checks, worst TASK L2 0.00239 and
+  max relative vs INC 0.000333. Cell (`b58da13c`) worst relative vs INC 0.000347. No promotion without H200 results and a whole-layer paired follow-up.
 
 ## H200 accounting (849e4017, M=1, INC, read flush)
 Event 36.21 = CUPTI node 31.81 + 4.40 event framing. Node = launch 1.0 + CTA span 32.2 + drain 1.3; the critical
@@ -72,3 +87,8 @@ finalizer ~2.4 left. zero_() vs read flush on the H200: +1.8 / +4.9 / +2.7 / +1.
   while 69 is -4.7 / -4.5 (c768a8e3, 16 seeds). NT2 cuts W13 units 37% but a 2-block unit costs 1.84x an NT1 unit
   per SM, so the multi-block price is per-tile latency at 16 warps/SM, not decode issue; 16-token register
   operands do not fit 2 CTAs/SM. ECAP (each expert capped at 8 tokens) had bounded it at -9.3 / -34.5 us.
+
+Local v9 (`runs/screen/nt1_takeover_lab_v9.log`, 16 seeds, GPU0 shared, **not H200 evidence**): directly versus 69,
+ROT r=1.00798 / 0.99782 / 0.98143 at M8/16/32 (M32 -3.03 us, wins 15/16). RND r=1.01270 / 1.01890 / 1.02828;
+PIPE r=1.03540 / 1.04143 / 1.05378. A:A at M32 has 2.41 us mean absolute drift, so these local measurements
+only rank the next H200 questions. All cells passed the TASK gate (L2/row ~0.0024).
