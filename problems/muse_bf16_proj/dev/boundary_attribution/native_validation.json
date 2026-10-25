@@ -1,0 +1,56 @@
+[
+  {
+    "t": 16,
+    "role": "b1",
+    "split": 1,
+    "dtype": "torch.bfloat16",
+    "exact": false,
+    "worst_l2": 8.957277896115556e-05,
+    "replays": 16
+  },
+  {
+    "t": 16,
+    "role": "b1",
+    "split": 2,
+    "dtype": "torch.float32",
+    "exact": false,
+    "worst_l2": 2.176100133510772e-05,
+    "replays": 16
+  },
+  {
+    "t": 16,
+    "role": "b2",
+    "split": 2,
+    "dtype": "torch.float32",
+    "exact": false,
+    "worst_l2": 2.2219262973521836e-05,
+    "replays": 16
+  },
+  {
+    "t": 32,
+    "role": "b1",
+    "split": 1,
+    "dtype": "torch.bfloat16",
+    "exact": false,
+    "worst_l2": 6.203766679391265e-05,
+    "replays": 16
+  },
+  {
+    "t": 32,
+    "role": "b1",
+    "split": 2,
+    "dtype": "torch.float32",
+    "exact": false,
+    "worst_l2": 3.0079283533268608e-05,
+    "replays": 16
+  },
+  {
+    "t": 32,
+    "role": "b2",
+    "split": 2,
+    "dtype": "torch.float32",
+    "exact": false,
+    "worst_l2": 1.7398473573848605e-05,
+    "replays": 16
+  }
+]

@@ -1,0 +1,84 @@
+{
+  "decode 16": {
+    "profile_boundary_residence_weighted_us": 1237.0,
+    "profile_excess_weighted_us": 1235.6244266666667,
+    "profile_floor_per_layer_us": 0.017066666666666667,
+    "per_layer_residence_us": 19.951612903225808,
+    "warning": "node residence includes PDL dependency waits; not additive critical-path work",
+    "timeline": {
+      "d16S": [
+        {
+          "stage": "b1",
+          "span_us": 7.65,
+          "increment_us": 2.4,
+          "read_MB": 1.671
+        },
+        {
+          "stage": "b2",
+          "span_us": 19.17,
+          "increment_us": 2.78,
+          "read_MB": 1.704
+        }
+      ],
+      "d16F": [
+        {
+          "stage": "b1",
+          "span_us": 10.24,
+          "increment_us": 2.4,
+          "read_MB": 1.671
+        },
+        {
+          "stage": "b2",
+          "span_us": 19.42,
+          "increment_us": 2.66,
+          "read_MB": 1.704
+        }
+      ]
+    },
+    "timeline_weighted_span_us": 1708.2800000000002,
+    "timeline_weighted_increment_us": 319.24,
+    "timeline_increment_per_layer_us": 5.1490322580645165,
+    "models_use_different_fixtures": true
+  },
+  "decode 32": {
+    "profile_boundary_residence_weighted_us": 1545.8000000000002,
+    "profile_excess_weighted_us": 1544.4244266666667,
+    "profile_floor_per_layer_us": 0.017066666666666667,
+    "per_layer_residence_us": 24.93225806451613,
+    "warning": "node residence includes PDL dependency waits; not additive critical-path work",
+    "timeline": {
+      "d32S": [
+        {
+          "stage": "b1",
+          "span_us": 9.06,
+          "increment_us": 2.82,
+          "read_MB": 3.244
+        },
+        {
+          "stage": "b2",
+          "span_us": 21.95,
+          "increment_us": 3.14,
+          "read_MB": 3.277
+        }
+      ],
+      "d32F": [
+        {
+          "stage": "b1",
+          "span_us": 8.8,
+          "increment_us": 2.94,
+          "read_MB": 3.244
+        },
+        {
+          "stage": "b2",
+          "span_us": 21.06,
+          "increment_us": 2.88,
+          "read_MB": 3.277
+        }
+      ]
+    },
+    "timeline_weighted_span_us": 1904.2199999999998,
+    "timeline_weighted_increment_us": 367.28000000000003,
+    "timeline_increment_per_layer_us": 5.923870967741936,
+    "models_use_different_fixtures": true
+  }
+}

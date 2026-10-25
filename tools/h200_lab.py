@@ -6,13 +6,12 @@
     tools/h200_lab.py read <job | receipt.json> [name]                        # print the lab sections from a receipt
 
 The payload is one self-contained file defining `lab(deadline, weights[, state]) -> list[str]`: `deadline` is a
-time.monotonic() deadline (prepare's 300 s cap minus a margin, or --import-budget seconds for hosts
-without prepare). Payloads must honor it; it does not interrupt running code. `weights` is
+time.monotonic() deadline (prepare's 300 s cap minus a margin, or --import-budget seconds for import-phase labs). Payloads must honor it; it does not interrupt running code. `weights` is
 what the host problem's prepare() receives (proj: qkv_gate, o, pooler, unpooler and the real router;
 MoE: the packed NVFP4 experts). Inline its CUDA/Triton (load_inline under a unique name); no imports of
 our modules, since the judge gets the one file. The optional third argument is the state returned by the
 host's already-completed base prepare; it avoids rebuilding a long tuner when a lab measures that state.
-Without prepare(), payloads run once after the host's definitions at module import, with weights=None and
+With --phase import (also automatic without prepare), payloads run once after the host's definitions at module import, with weights=None and
 state=None; payloads needing weights must synthesize them. The import budget starts at the wrapper,
 after any import work already present in the best source. Neither kernel nor kernel_fn is changed.
 The judge's image has torch, triton and SGLang's kernels.
@@ -239,6 +238,12 @@ def absorb_waiting(host: str, embedded: list, priority: float, note: str):
             lab = REPO / w["file"]
             if w["problem"] != host or lab.parent != REPO / "problems" / host / "lab" or w.get("until", 0) > time.time():
                 continue
+            # A self-preparing import lab cannot be rebuilt as a prepare-time lab.
+            # Attention is always import-time, including its default auto phase.
+            if host != "muse_attention_decode" and any(
+                    isinstance(n, ast.Assign) and any(getattr(t, "id", None) == "_lab_import_start" for t in n.targets)
+                    for n in ast.parse(lab.read_text()).body):
+                continue
             names = {n for n, _, _ in embedded}
             kept = [e for e in lab_payloads(lab) if e[0] not in names]
             if not kept or len(kept) + len(embedded) > MERGE_MAX:
@@ -251,7 +256,7 @@ def absorb_waiting(host: str, embedded: list, priority: float, note: str):
     return embedded, priority, note
 
 
-def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, base_file: Path | None = None) -> tuple[str, str]:
+def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, phase: str = "auto", base_file: Path | None = None) -> tuple[str, str]:
     if not 1 <= len(embedded) <= MERGE_MAX:
         sys.exit(f"a lab needs 1 to {MERGE_MAX} payloads")
     if not 0 < import_budget < float("inf"):
@@ -264,7 +269,9 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, bas
         sys.exit("lab base must target --host")
     # Attention's judge never calls prepare. Its best source may still define a private,
     # zero-argument prepare() tuner that it calls itself during import; leave that intact.
-    has_prepare = host != "muse_attention_decode" and any(
+    if phase not in ("auto", "import"):
+        sys.exit("--phase must be auto or import")
+    has_prepare = phase != "import" and host != "muse_attention_decode" and any(
         isinstance(n, ast.FunctionDef) and n.name == "prepare" for n in ast.parse(src).body)
     out = src.rstrip() + "\n\n" + WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
@@ -307,9 +314,11 @@ def main():
         s = sub.add_parser(name)
         s.add_argument("payloads", type=Path, nargs="+")
         s.add_argument("--host", default="muse_bf16_proj", choices=HOSTS)
-        s.add_argument("--base-file", type=Path, help="explicit screened candidate to validate as the lab host")
         s.add_argument("--import-budget", type=float, default=IMPORT_BUDGET_S,
                        help="payload deadline budget in seconds on hosts without prepare() (default: %(default)s)")
+        s.add_argument("--phase", choices=("auto", "import"), default="auto",
+                       help="force import-time labs when payloads own setup; host prepare remains unchanged")
+        s.add_argument("--base-file", type=Path, help="explicit screened candidate to validate as the lab host")
         if name == "send":
             s.add_argument("--note", required=True)
             s.add_argument("--priority", type=float, default=1.0)
@@ -326,7 +335,7 @@ def main():
         return read(args.ref, args.name)
     embedded = [embed(p) for p in args.payloads]
     if args.cmd == "build":
-        src, base = build(embedded, args.host, args.import_budget, base_file=args.base_file)
+        src, base = build(embedded, args.host, args.import_budget, args.phase, args.base_file)
         args.o.write_text(src)
         return print(f"{args.o}: {len(src)} bytes, base {base}")
     left = quota()
@@ -338,8 +347,9 @@ def main():
     note = f"h200_lab {' '.join(map(str, args.payloads))}: {args.note}"
     # An explicitly scheduled lab must not pull another lane's ready payload
     # into its delay. Other sends also skip this held entry via its until field.
-    embedded, priority, note = (embedded, args.priority, note) if args.not_before else absorb_waiting(args.host, embedded, args.priority, note)
-    src, base = build(embedded, args.host, args.import_budget, base_file=args.base_file)
+    # Import-phase payloads own setup and must not absorb a prepare-phase waiter.
+    embedded, priority, note = (embedded, args.priority, note) if args.not_before or args.phase == "import" else absorb_waiting(args.host, embedded, args.priority, note)
+    src, base = build(embedded, args.host, args.import_budget, args.phase, args.base_file)
     out = REPO / "problems" / args.host / "lab" / f"lab_{'+'.join(n for n, _, _ in embedded)}.py"
     out.parent.mkdir(exist_ok=True)
     out.write_text(src)
