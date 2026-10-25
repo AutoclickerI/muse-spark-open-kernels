@@ -263,6 +263,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   expert-completion publish (fence + barrier + atomic under a saturated memory system) and every expert finishing
   together cost ~12 us on the critical CTA. NT1 already keeps gate rows 0-7 and up rows 8-15 in one thread after the
   K-split reduce, and its W2 norm uses a shuffle plus one atomic per token per tile (no CTA barrier).
+- Two-round schedules lose to flags 69 (`17512d86`, 16 seeds, router+MoE node, TASK gate passed): RND (two rounds
+  split at the expert boundary nearest half the W13 units) +0.0 / +6.7 / +6.5 us at M=8 / 16 / 32, ROT +3.1 / +4.2 /
+  +7.9, both +5.4 / +8.4 / +9.1. At M=32 RND moves the W2-ready wait 11.2 -> 2.1 us, but the grid barrier grows 4.3
+  -> 12.7 and W13 37.4 -> 41.1 (per-unit 2.61 -> 2.85 us): the wait moves to the barrier instead of vanishing.
 ## MoE M=128
 
 - Best measured, N_full (`c01b1916`, read flush; 12 seeds x 3, A:A abs 0.58 us, every TASK.md check passes, bit-equal
