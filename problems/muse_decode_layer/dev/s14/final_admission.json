@@ -1,0 +1,40 @@
+{
+  "source": "problems/muse_decode_layer/cand_r3_best7_s14_final.py",
+  "sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "base_sha256": "958f1258908f44834ec6cf0c33af00ff6c08ea62b2f5cc483a36f0a91f39d0b6",
+  "patch": "problems/muse_decode_layer/dev/s14/final_patch.py",
+  "patch_sha256": "65704e9026fd11f5ed4c89c0c77c5f07b6bc14f6a788af426d9e29661cfe6202",
+  "exact_screened_source": "variants/stage3.py",
+  "screens": {
+    "normal": {
+      "sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24,
+      "retained_tensors": 78
+    },
+    "forced": {
+      "sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "tests": 13,
+      "graph_shapes": 12,
+      "static_checks": 24,
+      "retained_tensors": 118
+    },
+    "lab": {
+      "sha256": "e027349d707957a364e93d7756a2a2fe945a8485f3df03936f42d431ba2c73ab",
+      "tests": 13,
+      "static_checks": 24,
+      "graph_shapes": 12,
+      "seeds": 16,
+      "decode1_rounds": 32,
+      "verify1_rounds": 32,
+      "other_rounds": 8,
+      "failed_arms": 0
+    }
+  },
+  "pooled_report_sha256": "2f5523e8c5e585f882d9d7a5aa40b4499c67db6c33914bf907994d54a3570574",
+  "pooled_gate": true,
+  "latest_single_run_gate": false,
+  "judge_job": "2bbb626c5ac2428a",
+  "scheduled_by": "orchestrator; pending source swap"
+}

@@ -1,8 +1,8 @@
 """Build a whole-layer leave-one-out check, using identical S14 weights/state for every arm.
 
 Each reverted source is composed independently from S13 final. Full namespaces preserve decorator/global
-bindings (notably nf_module's lru_cache); no hand-written inverse patch is needed. Current admitted patches
-only add coded dense banks or change runtime kernels, so the prepared S14 state serves every arm exactly.
+bindings (notably nf_module's lru_cache); no hand-written inverse patch is needed. Each arm restores its
+prepared projection plans and expert layout while sharing exact unchanged host banks and counters.
 """
 import argparse
 import ast
