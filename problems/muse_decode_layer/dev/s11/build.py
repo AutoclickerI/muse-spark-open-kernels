@@ -1,9 +1,15 @@
 """S11: the frozen S10 file (6688fad9) + patch modules, applied in order (each module's patch(src) -> src).
 
-Default patch: the glue lane's balanced split-K GEMV (`problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py`):
-qkv 64/7 and pool_router 64/6 at t = 1/8/16/32, unpooler 64/2 at t = 16/32. Standalone (26fd09a7) and in S8's
-chains (5cefdbc4, paired, cold L2: POOL r = 0.949 / 0.960 / 0.906, QKV 0.923 / 0.905 / 0.877, UNPOOL 0.958 / 0.979
-at t = 1 / 16 / 32, A:A within 1.4%). S10 is the base (not S8 + cells) so cell edits made since S10 cannot drift in.
+Default patches:
+- balanced split-K GEMV (glue lane, `problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py`): qkv 64/7 and
+  pool_router 64/6 at t = 1/8/16/32, unpooler 64/2 at t = 16/32. Whole layer on S11, paired (e605532e): S10's
+  projections cost +2.9 / +2.4 / +3.1 / +1.9% at decode 1 / 16 / 32 / verify 1; every role contributes.
+- lean K loop in N_full's heavy N32 kernel (MoE lane, `dev/s7n/nf_patch.py`, cell nf_cell 97dcd77b; kinds 20/21):
+  858ff2fa M128 0.9613, M256 0.9426 vs N_swap, bit-equal.
+- vq8 at verify 1 sliding, verify 16 full, verify 32 full (attention lane,
+  `problems/muse_attention_decode/dev/vq8/patch_vq8_verify.py` with its checked vq8.cu 69132eea, dev/s11/patch_vq8.py; 44aa67ba: 15.30 vs 16.83, 153.9 vs 192.2,
+  278.5 vs 381.4 us after a projection stand-in).
+S10 is the base (not S8 + cells) so cell edits made since S10 cannot drift in.
 
     python3 problems/muse_decode_layer/dev/s11/build.py [--patch MODULE ...] [--out PATH]
 """
@@ -21,8 +27,10 @@ spec.loader.exec_module(s9)
 
 BASE = D / 'cand_r3_best7_s10.py'
 BASE_SHA = '6688fad999783d53a4660d85d40ee82862b87a209e03d289e44c95e41a3ffbc1'
-PATCHES = [R / 'problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py']
-LABS = dict(gemv_bal='26fd09a7 (standalone) + 5cefdbc4 (S8 chains, paired)')
+PATCHES = [R / 'problems/muse_bf16_proj/dev/gemv_bal/patch_gemv_bal.py', D / 'dev/s7n/nf_patch.py',
+           H / 'patch_vq8.py']
+LABS = dict(gemv_bal='26fd09a7 (standalone) + 5cefdbc4 (S8 chains) + e605532e (S11 whole layer, paired)',
+            lean_k='858ff2fa (M128 0.9613, M256 0.9426, bit-equal)', vq8='44aa67ba (projection chain, cold L2)')
 
 
 def compose(patches, tag='S11'):

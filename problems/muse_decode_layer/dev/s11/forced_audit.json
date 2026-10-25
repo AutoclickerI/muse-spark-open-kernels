@@ -434,13 +434,13 @@
       ],
       "('moe', 16, 'nt1_lop3')": {
         "source": "three public streams, forward/reverse fresh route graph replays",
-        "fp32": 0.0016594346379861236,
+        "fp32": 0.0016594345215708017,
         "worst_row": 0.001727238530293107,
         "variant": "nt1_lop3"
       },
       "('moe', 32, 'nt1_lop3')": {
         "source": "three public streams, forward/reverse fresh route graph replays",
-        "fp32": 0.0016635661013424397,
+        "fp32": 0.0016635657520964742,
         "worst_row": 0.0017097427044063807,
         "variant": "nt1_lop3"
       },
@@ -451,8 +451,8 @@
         "variant": "nt1_lop3"
       },
       "('attention', 8, 2048, \"('layer', None)\", 'best6')": [
-        0.073316790163517,
-        0.08087240904569626
+        0.07322754710912704,
+        0.08380573987960815
       ],
       "('attention', 8, 0, \"('layer', None)\", 'best6')": [
         0.07193760573863983,
@@ -494,89 +494,95 @@
       "name": "muse_decode_attn_port_120",
       "start_s": 0.01,
       "seconds": 0.0,
-      "thread": "ThreadPoolExecutor-0_8"
+      "thread": "ThreadPoolExecutor-0_9"
     },
     {
       "name": "muse_decode_attn_xqa_group_120",
       "start_s": 0.01,
       "seconds": 0.0,
-      "thread": "ThreadPoolExecutor-0_8"
-    },
-    {
-      "name": "muse_decode_attn_p8_120",
-      "start_s": 0.01,
-      "seconds": 0.0,
-      "thread": "ThreadPoolExecutor-0_9"
+      "thread": "ThreadPoolExecutor-0_10"
     },
     {
       "name": "muse_decode_attn_xqa_warp_120",
       "start_s": 0.01,
       "seconds": 0.0,
-      "thread": "ThreadPoolExecutor-0_8"
+      "thread": "ThreadPoolExecutor-0_10"
     },
     {
-      "name": "nf_m256_e494160713e4",
+      "name": "muse_decode_attn_p8_120",
       "start_s": 0.01,
-      "seconds": 0.06,
-      "thread": "ThreadPoolExecutor-0_5"
+      "seconds": 0.0,
+      "thread": "ThreadPoolExecutor-0_10"
     },
     {
       "name": "muse_smallm_var_c023c9461883",
       "start_s": 0.01,
-      "seconds": 0.07,
+      "seconds": 0.03,
+      "thread": "ThreadPoolExecutor-0_7"
+    },
+    {
+      "name": "nf_m256_515ca2532276",
+      "start_s": 0.01,
+      "seconds": 0.03,
       "thread": "ThreadPoolExecutor-0_6"
     },
     {
       "name": "muse_decode_attn_split_120",
       "start_s": 0.0,
-      "seconds": 0.18,
+      "seconds": 0.09,
       "thread": "ThreadPoolExecutor-0_1"
     },
     {
-      "name": "muse_decode_glue_cl_120",
-      "start_s": 0.01,
-      "seconds": 0.18,
-      "thread": "ThreadPoolExecutor-0_7"
+      "name": "muse_vq8_69132eea2b81_120",
+      "start_s": 0.0,
+      "seconds": 0.09,
+      "thread": "ThreadPoolExecutor-0_2"
     },
     {
       "name": "prefill_score_b04d432aa049",
       "start_s": 0.0,
-      "seconds": 0.19,
+      "seconds": 0.1,
       "thread": "ThreadPoolExecutor-0_0"
-    },
-    {
-      "name": "muse_moe_w4a16_v9_recoded_e10a30d8df23",
-      "start_s": 0.01,
-      "seconds": 0.2,
-      "thread": "ThreadPoolExecutor-0_4"
     },
     {
       "name": "muse_best5_v9_nt2_1140e67f25b2",
       "start_s": 0.01,
-      "seconds": 0.21,
-      "thread": "ThreadPoolExecutor-0_3"
+      "seconds": 0.1,
+      "thread": "ThreadPoolExecutor-0_4"
+    },
+    {
+      "name": "muse_decode_glue_cl_120",
+      "start_s": 0.01,
+      "seconds": 0.1,
+      "thread": "ThreadPoolExecutor-0_8"
+    },
+    {
+      "name": "muse_moe_w4a16_v9_recoded_e10a30d8df23",
+      "start_s": 0.01,
+      "seconds": 0.1,
+      "thread": "ThreadPoolExecutor-0_5"
     },
     {
       "name": "muse_decode_lt_b639848bd06d",
-      "start_s": 0.01,
-      "seconds": 0.21,
-      "thread": "ThreadPoolExecutor-0_2"
+      "start_s": 0.0,
+      "seconds": 0.1,
+      "thread": "ThreadPoolExecutor-0_3"
     },
     {
       "name": "muse_moe_w4a16_v9_cfac6fbfa1fe",
-      "start_s": 0.49,
-      "seconds": 0.03,
+      "start_s": 0.39,
+      "seconds": 0.02,
       "thread": "MainThread"
     },
     {
       "name": "muse_decode_measured_lt_f2321ff78424_120",
-      "start_s": 9.77,
+      "start_s": 9.38,
       "seconds": 0.01,
       "thread": "MainThread"
     },
     {
       "name": "muse_gemv_fixed_c26e6f40e67bc82e",
-      "start_s": 44.62,
+      "start_s": 51.44,
       "seconds": 0.01,
       "thread": "MainThread"
     }
@@ -825,13 +831,13 @@
     },
     "('moe', 16, 'nt1_lop3')": {
       "source": "three public streams, forward/reverse fresh route graph replays",
-      "fp32": 0.0016594346379861236,
+      "fp32": 0.0016594345215708017,
       "worst_row": 0.001727238530293107,
       "variant": "nt1_lop3"
     },
     "('moe', 32, 'nt1_lop3')": {
       "source": "three public streams, forward/reverse fresh route graph replays",
-      "fp32": 0.0016635661013424397,
+      "fp32": 0.0016635657520964742,
       "worst_row": 0.0017097427044063807,
       "variant": "nt1_lop3"
     },
@@ -857,5 +863,5 @@
       "schedule": "N_full: NT1<=16 W13->W2 beside heavy N32 W13->W2, forked once, joined before the finalizer"
     }
   },
-  "sha256": "0e59545f3aa94afbb2ceebce68fffcbef772ba3cd7d93fbbad32a78db7a1fa31"
+  "sha256": "cf4936656e133cfe45f89d8dade1b624a34fab0f1eee39bf86073ff75f8a0f65"
 }
