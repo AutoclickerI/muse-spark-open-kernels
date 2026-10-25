@@ -14,7 +14,9 @@
   choices) beats S10 by ~4.4% geomean in a paired whole-layer A/B (`e42953c4`: +3.7 / +2.8 / +4.0 / +1.7 / +5.2 /
   +9.4% per load with S10's pieces back); its host run judged 1.6917x. The final S11 `acda6c62`
   (`cand_r3_best7_s11_final.py`; + gate split + late glue) wins every leave-one-out arm (`863f502c`: S10's pieces back
-  +1.9 to +9.95% per load; host run 1.7068x) and goes scored at the 00:00 UTC reset (09:00 KST).
+  +1.9 to +9.95% per load; host run 1.7068x). S12 final `240248b2` (S11 + coded GEMV at t=1 + finalizer split;
+  `937801fe`, host 1.7148x) goes scored at the 00:00 UTC reset (09:00 KST) unless S13 freezes first (`3dbcaccd`:
+  direct-partials attention +4.1%, cp.async coded GEMV +2.0% at decode 1; host 1.7433x).
 - What the plan was missing (review of `88b5251` plus the board against our model):
   1. Our ceilings sat below the field: the leaders' MoE (2.52x) and decode (2.28x) boards beat our "practical" model
      (2.35x, 2.25x). A cold read on the judge costs 2.36 us + bytes at 4.58 TB/s (`7b6c96b5`), not a flat 3.61 TB/s:
