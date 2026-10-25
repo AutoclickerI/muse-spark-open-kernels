@@ -39,7 +39,7 @@ floor" (today's leader = every stage at ~1.5x its floor). Receipts are in `runs/
 
 | Repo | Board standing | What is public | Status |
 |---|---|---|---|
-| NathenFernandes/muse-bf16-proj @ 86aff75 (MIT) | proj #14, 1.5186x | judged v18 proj submission and per-shape times; 0.62-0.96x our time at every shape (FINDINGS "Projections") | read; port under R-20261025-2 (P10) |
+| NathenFernandes/muse-bf16-proj @ 86aff75 (MIT) | proj #14, 1.5186x | judged v18 proj submission and per-shape times; 0.62-0.96x our proj-board time, but in our layer the port wins only qkv / O / unpooler shapes (+1.5-2% est.; FINDINGS "Projections") | ported under R-20261025-2 (P10) |
 | lee101/openkernels (Apache-2.0) | below us (decode 1.348 by its README) | every judged version per problem; MoE ablations: removing activation L2 traffic -20% at bs128/256, removing dequant -15% | checked |
 | theluckystrike/muse-spark-open-kernels | decode #30, 1.954x | placeholder; code after Nov 4 | checked |
 | Lurrobert/Lurrobert | decode #6, 2.162x | profile only; points to guild.1nterface.ai (we don't join) | checked |

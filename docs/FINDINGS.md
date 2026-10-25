@@ -545,8 +545,12 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   24.29 / 23.32. Their weights are 12 bits per BF16 weight (low byte + 4-bit code: 3 bits index an 8-entry
   high-byte table by PRMT, plus the sign; exact escapes), the same ratio as our coded GEMV, so the gap is kernel
   structure (`mma.sync` m16n8k16 with weights on M, `ld.global.nc.L1::no_allocate`, cluster reductions, pinned
-  cuBLASLt at large M). Summed per load it is worth ~+5-7% on the decode-layer score before overlap. Port under
-  R-20261025-2: `problems/muse_bf16_proj/dev/public_nf/`.
+  cuBLASLt at large M). Ported under R-20261025-2 and paired at our layer's call sites against S14's kernels
+  (`e3c637d1`, 25 valid comparisons; port / ours): qkv 0.707 at t=1, 0.96 at t=8, 0.817 at t=32 (qkv3); O 0.849 /
+  0.930 / 0.927 / 0.961 at t = 1 / 8 / 16 / 32, 0.91-0.96 at 128 / 256; unpooler 0.808 at t=16, 0.900 at t=32,
+  0.97-0.99 elsewhere; the fused pool / router port loses at every t (1.07-2.49). The board comparison overstated the
+  gap (it was against an older proj receipt; S12-S14 improved our in-layer kernels); estimated layer gain +1.5-2%,
+  unmeasured whole-layer. `problems/muse_bf16_proj/dev/public_nf/README.md`.
 - SGLang (`7fb3e930`): cuBLAS BF16 GEMM (qkv_gate, o, pooler, unpooler) 2.8 us + bytes / 3.54 TB/s, 47-76% of floor
   per shape; FP32 router 10.3-26.3 us vs a 1.8-2.7 us floor; sliced unpooler (<= 8 tokens, 8.4 MB) 6.8-6.9 us vs 1.75.
 - best7 dense roles vs a 3.6 TB/s read (`95ab383d` graph times incl. replay overhead; bytes = one read of the BF16
