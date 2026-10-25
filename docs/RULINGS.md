@@ -121,6 +121,15 @@ question-tool label is Jihoon's word; the question and option text are agent con
   MIT copyright and permission notice in the shipped source. Covers this repo only; other teams' code is asked
   case by case.
 
+## R-20261025-3 — 2026-10-25 20:40 KST — H200 labs at import time of an attention submission
+> Allowed (Recommended)
+
+- Source: question-tool answer in this session. The question: the proj, MoE and prefill lab hosts were out of checks
+  until 09:00 KST; attention had 20 checks but no prepare(); may labs run in the attention submission at import time,
+  untimed and computing nothing kernel_fn returns, the same reading as R-20261024-3? The chosen option read: "Same
+  principle as prepare-time labs: nothing the timed calls return is computed outside them."
+- Effect: `tools/h200_lab.py` may use muse_attention_decode as a host, running payloads at module import.
+
 ## Dropped agent rules (do not reintroduce)
 
 | Rule an agent introduced | Dropped | Match |
