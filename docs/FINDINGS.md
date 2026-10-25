@@ -487,6 +487,18 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   (`39949536`); scalar register-V 1.43 / 1.47 (`bdfeb0e9`); one-head CTA160 occupancy forms, raw V 1.23 / 1.26, P in
   registers 1.06 / 1.11 (`6ec9d43d`); LDSM.T register-A N64 1.09 / 1.12 (`5cca1296`). Sources:
   `problems/muse_attention_decode/dev/full_attention/`.
+- Last-CTA sliding attention (one launch: global FP32 partials, release/acquire arrival counter, non-spinning last-CTA
+  epilogue; no reset or combine kernel; `7e93cc81`, 16 seeds x 8 cold replays, whole-S11 CUPTI increments): decode-1
+  sliding N128 0.959 (15.10 -> 11.10 us), 0.980 vs direct-partials (-1.43 us, SE 0.0013); decode 16 / 32 0.989 / 0.995.
+  Patch `cluster_sliding/s11_last_decode1.patch` (B1 sliding only).
+- Register-fold N128 full verify at stage 4 (`9d9a01e1`, 16 seeds): 0.977 / 0.948 at verify 16 / 32 (critical
+  152.9 -> 141.4, 265.4 -> 229.7 us); before the register fold it lost 1.30 / 1.45 (`7e93cc81`); stage 3 loses
+  1.048 / 1.071. Register-V N128 from the full-attention lane: 0.996 / 1.065 (`cf79aa07`). Patch
+  `full128/s11_regmax_full_verify.patch`.
+- Attention losses (P5): fused full-QKV N128 projection + gated attention 1.003 / 1.005 / 0.968 at decode 1 / 16 / 32
+  vs the split-gate producer's 0.990 / 0.990 / 0.968 (`c773699a`); single-head N128 verify 1.24 / 1.31 vs two-head
+  (`6d47827c`); decode-1 full specialization 1.39 (`58d6a596`); FAST/VQ8 at verify 1.11-1.61 (`2f8b702d`). Report:
+  `problems/muse_attention_decode/dev/cluster_sliding/REPORT.md`.
 
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
