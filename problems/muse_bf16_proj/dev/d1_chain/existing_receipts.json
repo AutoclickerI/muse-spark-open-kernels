@@ -1,0 +1,108 @@
+{
+  "timestamp_trace_job": "9845398be06b4c37",
+  "timestamp_trace_base": "958f1258",
+  "timestamp_trace_is_s14": false,
+  "trace": [
+    {
+      "case": "d1S",
+      "roles": {
+        "b1": {
+          "residence_us": 6.047999999999998,
+          "tail_after_producer_us": 2.0479999999999983,
+          "overlap_us": 4.0,
+          "start_us": 24.672,
+          "end_us": 30.72,
+          "producer": "o",
+          "producer_end_us": 28.672
+        },
+        "route": {
+          "residence_us": 11.456000000000003,
+          "tail_after_producer_us": 3.584000000000003,
+          "overlap_us": 7.872,
+          "start_us": 42.976,
+          "end_us": 54.432,
+          "producer": "pool_router",
+          "producer_end_us": 50.848
+        },
+        "b2": {
+          "residence_us": 6.3359999999999985,
+          "tail_after_producer_us": 2.784000000000006,
+          "overlap_us": 3.5519999999999925,
+          "start_us": 72.896,
+          "end_us": 79.232,
+          "producer": "unpooler_slice",
+          "producer_end_us": 76.448
+        }
+      }
+    }
+  ],
+  "s14_paired": [
+    {
+      "case": "d1S",
+      "seeds": 16,
+      "ratios": {
+        "A2": {
+          "latency_ratio": 1.0042379674638635,
+          "ci95": 0.0021970617892124477
+        },
+        "M": {
+          "latency_ratio": 0.9898818142394451,
+          "ci95": 0.00375654590964477
+        },
+        "D": {
+          "latency_ratio": 0.9951097557142803,
+          "ci95": 0.0033091432940499364
+        }
+      }
+    },
+    {
+      "case": "d1F",
+      "seeds": 16,
+      "ratios": {
+        "A2": {
+          "latency_ratio": 0.9993869629748182,
+          "ci95": 0.0032811637425729898
+        },
+        "M": {
+          "latency_ratio": 0.9904248996934609,
+          "ci95": 0.003018312109950271
+        },
+        "D": {
+          "latency_ratio": 0.9812867067714662,
+          "ci95": 0.004218939925653125
+        }
+      }
+    }
+  ],
+  "shared_jit_control": false,
+  "s14_sass_selected": [
+    {
+      "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+      "instructions": 2128,
+      "waits": [
+        11
+      ],
+      "releases": [
+        10
+      ],
+      "independent_candidates_before_first_wait": [],
+      "load_source_lines_after_wait": []
+    },
+    {
+      "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+      "instructions": 664,
+      "waits": [
+        17
+      ],
+      "releases": [
+        16
+      ],
+      "independent_candidates_before_first_wait": [],
+      "load_source_lines_after_wait": []
+    }
+  ],
+  "s14_pair_job": "0f74021a2c53445e",
+  "s14_pair_base": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "s14_timestamp_trace_available": false,
+  "warning": "Existing S14 paired receipt has no per-role timestamps. S13 overlap is context only. New lab captures S14; no numerical wait cycles inferred."
+}

@@ -1,0 +1,149 @@
+{
+  "candidates": {
+    "weights": "754b640f9fb3b2309e6a86887acc6430e3dc5f77306e22f217cbbcb6610e4e40",
+    "late_prew": "533246079a7c13fd1ad3d47ec79a39f561ad8ea7d7e6c286a90fe730da931892",
+    "hints": "778cb72a8e655da50d429669a23bfd614eecc8ef21cbfd38434e0ad5a2548da5",
+    "stream": "502c4c65ec22e708bfb11298e99ea991fb122508321d8646ab2f267648cc77c4",
+    "c4": "26d30643b4db8f250d38d614bebca4e57bdcd7bce9a2560905202d9fc5775c3a"
+  },
+  "cells": [
+    {
+      "role": "b1",
+      "n": 8192,
+      "split": 1,
+      "dtype": "torch.bfloat16",
+      "replays": 32,
+      "exact": {
+        "weights": true,
+        "late_prew": true,
+        "hints": true,
+        "stream": true,
+        "c4": false,
+        "A": true
+      },
+      "worst_l2": {
+        "weights": 0.0,
+        "late_prew": 0.0,
+        "hints": 0.0,
+        "stream": 0.0,
+        "c4": 9.202921091855387e-08,
+        "A": 0.0
+      }
+    },
+    {
+      "role": "b1",
+      "n": 8192,
+      "split": 2,
+      "dtype": "torch.float32",
+      "replays": 32,
+      "exact": {
+        "weights": true,
+        "late_prew": true,
+        "hints": true,
+        "stream": true,
+        "c4": false,
+        "A": true
+      },
+      "worst_l2": {
+        "weights": 0.0,
+        "late_prew": 0.0,
+        "hints": 0.0,
+        "stream": 0.0,
+        "c4": 8.360573701793328e-05,
+        "A": 0.0
+      }
+    },
+    {
+      "role": "b2",
+      "n": 1024,
+      "split": 8,
+      "dtype": "torch.float32",
+      "replays": 32,
+      "exact": {
+        "weights": true,
+        "late_prew": true,
+        "hints": true,
+        "stream": true,
+        "c4": true,
+        "A": true
+      },
+      "worst_l2": {
+        "weights": 0.0,
+        "late_prew": 0.0,
+        "hints": 0.0,
+        "stream": 0.0,
+        "c4": 0.0,
+        "A": 0.0
+      }
+    },
+    {
+      "role": "b2",
+      "n": 8192,
+      "split": 2,
+      "dtype": "torch.float32",
+      "replays": 32,
+      "exact": {
+        "weights": true,
+        "late_prew": true,
+        "hints": true,
+        "stream": true,
+        "c4": false,
+        "A": true
+      },
+      "worst_l2": {
+        "weights": 0.0,
+        "late_prew": 0.0,
+        "hints": 0.0,
+        "stream": 0.0,
+        "c4": 1.7478154745731445e-07,
+        "A": 0.0
+      }
+    },
+    {
+      "role": "route",
+      "n": 4608,
+      "split": 6,
+      "dtype": "torch.float32",
+      "replays": 32,
+      "exact": {
+        "weights": true,
+        "late_prew": true,
+        "hints": true,
+        "stream": true,
+        "c4": true,
+        "A": true
+      },
+      "worst_l2": {
+        "weights": 0.0,
+        "late_prew": 0.0,
+        "hints": 0.0,
+        "stream": 0.0,
+        "c4": 0.0,
+        "A": 0.0
+      }
+    },
+    {
+      "role": "route",
+      "n": 4608,
+      "split": 1,
+      "dtype": "torch.bfloat16",
+      "replays": 32,
+      "exact": {
+        "weights": true,
+        "late_prew": true,
+        "hints": true,
+        "stream": true,
+        "c4": true,
+        "A": true
+      },
+      "worst_l2": {
+        "weights": 0.0,
+        "late_prew": 0.0,
+        "hints": 0.0,
+        "stream": 0.0,
+        "c4": 0.0,
+        "A": 0.0
+      }
+    }
+  ]
+}

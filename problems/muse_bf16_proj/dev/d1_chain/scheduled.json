@@ -1,0 +1,11 @@
+{
+  "pid": 975835,
+  "priority": 1.1,
+  "t": 1792947483.5829406,
+  "problem": "muse_prefill_layer",
+  "file": "problems/muse_prefill_layer/lab/lab_lab_d1_chain.py",
+  "sha256": "d490ac854840bcd39b4b5716092b7118d12ab73077c5aece6266d819eb34ac6a",
+  "note": "h200_lab problems/muse_bf16_proj/dev/d1_chain/lab_d1_chain.py: P7 second round behind unchanged d29911c5 reset batch: S14 decode1 b1/route/b2 PTX preloads, late-prew, hints, b1-residual, C4 and role ablations;11 arms x32 seeds x10 cold READ, CUPTI/DAG and ready-input controls;5 candidates+3 role ablations normal/forced local_eval pass; independent of reset result",
+  "not_before": 1792972800.0,
+  "until": 1792972800.0
+}

@@ -1,0 +1,309 @@
+[
+  {
+    "mode": "baseline",
+    "symbol": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      11
+    ],
+    "pre_wait": [],
+    "source_sha256": "6a25b68c887cac21aae02eed077645e263a609d6ec7dcc790896afc9e9534fc6"
+  },
+  {
+    "mode": "baseline",
+    "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      11
+    ],
+    "pre_wait": [],
+    "source_sha256": "6a25b68c887cac21aae02eed077645e263a609d6ec7dcc790896afc9e9534fc6"
+  },
+  {
+    "mode": "baseline",
+    "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 80,
+    "local_bytes": 0,
+    "waits": [
+      12
+    ],
+    "pre_wait": [],
+    "source_sha256": "6a25b68c887cac21aae02eed077645e263a609d6ec7dcc790896afc9e9534fc6"
+  },
+  {
+    "mode": "baseline",
+    "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 57,
+    "local_bytes": 0,
+    "waits": [
+      17
+    ],
+    "pre_wait": [],
+    "source_sha256": "6a25b68c887cac21aae02eed077645e263a609d6ec7dcc790896afc9e9534fc6"
+  },
+  {
+    "mode": "weights",
+    "symbol": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      29
+    ],
+    "pre_wait": [
+      "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ;                     /* 0x0000000a10037981 */",
+      "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ;                 /* 0x0000000a0c089981 */",
+      "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] ;                     /* 0x0000000a0e028981 */"
+    ],
+    "source_sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9"
+  },
+  {
+    "mode": "weights",
+    "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      29
+    ],
+    "pre_wait": [
+      "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ;                     /* 0x0000000a10037981 */",
+      "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ;                 /* 0x0000000a0c089981 */",
+      "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] ;                     /* 0x0000000a0e028981 */"
+    ],
+    "source_sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9"
+  },
+  {
+    "mode": "weights",
+    "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 80,
+    "local_bytes": 0,
+    "waits": [
+      52
+    ],
+    "pre_wait": [
+      "/*0220*/                   LDG.E.128.CONSTANT R44, desc[UR6][R72.64] ;                  /* 0x00000006482c7981 */",
+      "/*0230*/               @P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64] ;                 /* 0x000000060e100981 */",
+      "/*0240*/               @P0 LDG.E.128.STRONG.SM R4, desc[UR6][R2.64] ;                   /* 0x0000000602040981 */",
+      "/*0290*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */",
+      "/*02b0*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */",
+      "/*02d0*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */",
+      "/*02f0*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */",
+      "/*0310*/                   LDG.E.128.STRONG.SM R36, desc[UR6][R36.64] ;                 /* 0x0000000624247981 */",
+      "/*0330*/                   LDG.E.128.STRONG.SM R40, desc[UR6][R40.64] ;                 /* 0x0000000628287981 */"
+    ],
+    "source_sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9"
+  },
+  {
+    "mode": "weights",
+    "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 57,
+    "local_bytes": 0,
+    "waits": [
+      36
+    ],
+    "pre_wait": [
+      "/*0190*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */",
+      "/*01c0*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64] ;                 /* 0x0000000c06180981 */",
+      "/*01f0*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ;                /* 0x0000000c0c0c7981 */",
+      "/*0230*/                   LDG.E.128.STRONG.SM R8, desc[UR12][R8.64] ;                  /* 0x0000000c08087981 */"
+    ],
+    "source_sha256": "1832a60d299f8cc6f78f7ac076d401342dff45da97d7359b732c742a28fda7e9"
+  },
+  {
+    "mode": "late_prew",
+    "symbol": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      22
+    ],
+    "pre_wait": [
+      "/*0130*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R6.64] ;                      /* 0x0000000a06028981 */",
+      "/*0150*/                   LDG.E.STRONG.SM R3, desc[UR10][R12.64] ;                     /* 0x0000000a0c037981 */"
+    ],
+    "source_sha256": "90cde04b3925b24b22651f6544c3b065570d808cadcacc07aad0c41f7e271acc"
+  },
+  {
+    "mode": "late_prew",
+    "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      22
+    ],
+    "pre_wait": [
+      "/*0130*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R6.64] ;                      /* 0x0000000a06028981 */",
+      "/*0150*/                   LDG.E.STRONG.SM R3, desc[UR10][R12.64] ;                     /* 0x0000000a0c037981 */"
+    ],
+    "source_sha256": "90cde04b3925b24b22651f6544c3b065570d808cadcacc07aad0c41f7e271acc"
+  },
+  {
+    "mode": "late_prew",
+    "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 80,
+    "local_bytes": 0,
+    "waits": [
+      46
+    ],
+    "pre_wait": [
+      "/*01d0*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */",
+      "/*0280*/               @P0 LDG.E.128.STRONG.SM R16, desc[UR6][R14.64] ;                 /* 0x000000060e100981 */",
+      "/*02a0*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */",
+      "/*02b0*/               @P0 LDG.E.128.STRONG.SM R4, desc[UR6][R8.64] ;                   /* 0x0000000608040981 */",
+      "/*02c0*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */",
+      "/*02d0*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */"
+    ],
+    "source_sha256": "90cde04b3925b24b22651f6544c3b065570d808cadcacc07aad0c41f7e271acc"
+  },
+  {
+    "mode": "late_prew",
+    "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 57,
+    "local_bytes": 0,
+    "waits": [
+      33
+    ],
+    "pre_wait": [
+      "/*01a0*/                   LDG.E.128.STRONG.SM R20, desc[UR12][R20.64] ;                /* 0x0000000c14147981 */",
+      "/*01e0*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR12][R6.64] ;                 /* 0x0000000c06180981 */",
+      "/*0200*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ;                /* 0x0000000c0c0c7981 */"
+    ],
+    "source_sha256": "90cde04b3925b24b22651f6544c3b065570d808cadcacc07aad0c41f7e271acc"
+  },
+  {
+    "mode": "hints",
+    "symbol": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      33
+    ],
+    "pre_wait": [
+      "/*01b0*/              @!P0 CCTL.E.PF2 [R4] ;                                            /* 0x000000000400898f */",
+      "/*01e0*/              @!P2 CCTL.E.PF2 [R6] ;                                            /* 0x000000000600a98f */",
+      "/*0200*/              @!P2 CCTL.E.PF2 [R12] ;                                           /* 0x000000000c00a98f */"
+    ],
+    "source_sha256": "e6165381049be29c994562fad1f14251dcae81d2f95a47d78649ae2cdfe200fa"
+  },
+  {
+    "mode": "hints",
+    "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      33
+    ],
+    "pre_wait": [
+      "/*01b0*/              @!P1 CCTL.E.PF2 [R4] ;                                            /* 0x000000000400998f */",
+      "/*01e0*/              @!P2 CCTL.E.PF2 [R6] ;                                            /* 0x000000000600a98f */",
+      "/*0200*/              @!P2 CCTL.E.PF2 [R12] ;                                           /* 0x000000000c00a98f */"
+    ],
+    "source_sha256": "e6165381049be29c994562fad1f14251dcae81d2f95a47d78649ae2cdfe200fa"
+  },
+  {
+    "mode": "hints",
+    "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 80,
+    "local_bytes": 0,
+    "waits": [
+      57
+    ],
+    "pre_wait": [
+      "/*0190*/                   CCTL.E.PF2 [R2] ;                                            /* 0x000000000200798f */",
+      "/*01b0*/                   CCTL.E.PF2 [R4] ;                                            /* 0x000000000400798f */",
+      "/*01e0*/                   CCTL.E.PF2 [R8] ;                                            /* 0x000000000800798f */",
+      "/*01f0*/               @P0 CCTL.E.PF2 [R10] ;                                           /* 0x000000000a00098f */",
+      "/*02d0*/                   CCTL.E.PF2 [R2] ;                                            /* 0x000000000200798f */",
+      "/*02f0*/                   CCTL.E.PF2 [R4] ;                                            /* 0x000000000400798f */",
+      "/*0320*/                   CCTL.E.PF2 [R8] ;                                            /* 0x000000000800798f */",
+      "/*0330*/               @P0 CCTL.E.PF2 [R10] ;                                           /* 0x000000000a00098f */"
+    ],
+    "source_sha256": "e6165381049be29c994562fad1f14251dcae81d2f95a47d78649ae2cdfe200fa"
+  },
+  {
+    "mode": "hints",
+    "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 63,
+    "local_bytes": 0,
+    "waits": [
+      35
+    ],
+    "pre_wait": [
+      "/*0160*/                   CCTL.E.PF2 [R8] ;                                            /* 0x000000000800798f */",
+      "/*0180*/                   CCTL.E.PF2 [R10] ;                                           /* 0x000000000a00798f */",
+      "/*01b0*/                   CCTL.E.PF2 [R12] ;                                           /* 0x000000000c00798f */",
+      "/*01c0*/               @P0 CCTL.E.PF2 [R14] ;                                           /* 0x000000000e00098f */"
+    ],
+    "source_sha256": "e6165381049be29c994562fad1f14251dcae81d2f95a47d78649ae2cdfe200fa"
+  },
+  {
+    "mode": "stream",
+    "symbol": "_ZN7glue_cl8route_clILi4ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      29
+    ],
+    "pre_wait": [
+      "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ;                     /* 0x0000000a10037981 */",
+      "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ;                 /* 0x0000000a0c089981 */",
+      "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] ;                     /* 0x0000000a0e028981 */"
+    ],
+    "source_sha256": "6bcb1b61255ab3bbb142e70c3acc28b6c2c6774e4c4da4e8324a9879d4d22a10"
+  },
+  {
+    "mode": "stream",
+    "symbol": "_ZN7glue_cl8route_clILi8ELi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_PNS_12MoERouteMetaEPj",
+    "registers": 64,
+    "local_bytes": 0,
+    "waits": [
+      29
+    ],
+    "pre_wait": [
+      "/*0190*/                   LDG.E.STRONG.SM R3, desc[UR10][R16.64] ;                     /* 0x0000000a10037981 */",
+      "/*01a0*/              @!P1 LDG.E.128.STRONG.SM R8, desc[UR10][R12.64] ;                 /* 0x0000000a0c089981 */",
+      "/*01c0*/              @!P0 LDG.E.STRONG.SM R2, desc[UR10][R14.64] ;                     /* 0x0000000a0e028981 */"
+    ],
+    "source_sha256": "6bcb1b61255ab3bbb142e70c3acc28b6c2c6774e4c4da4e8324a9879d4d22a10"
+  },
+  {
+    "mode": "stream",
+    "symbol": "_ZN7glue_cl11boundary_clILi4ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 80,
+    "local_bytes": 0,
+    "waits": [
+      59
+    ],
+    "pre_wait": [
+      "/*0140*/              @!P0 LDG.E.128.STRONG.SM R48, desc[UR6][R8.64] ;                  /* 0x0000000608308981 */",
+      "/*0280*/                   LDG.E.128.STRONG.SM R32, desc[UR6][R32.64] ;                 /* 0x0000000620207981 */",
+      "/*02d0*/               @P0 LDG.E.128.STRONG.SM R40, desc[UR6][R14.64] ;                 /* 0x000000060e280981 */",
+      "/*0300*/                   LDG.E.128.STRONG.SM R28, desc[UR6][R28.64] ;                 /* 0x000000061c1c7981 */",
+      "/*0330*/              @!P0 LDG.E.128.STRONG.SM R36, desc[UR6][R8.64] ;                  /* 0x0000000608248981 */",
+      "/*0350*/               @P0 LDG.E.128.STRONG.SM R44, desc[UR6][R10.64] ;                 /* 0x000000060a2c0981 */",
+      "/*0370*/                   LDG.E.128.STRONG.SM R24, desc[UR6][R24.64] ;                 /* 0x0000000618187981 */",
+      "/*0380*/                   LDG.E.128.STRONG.SM R20, desc[UR6][R20.64] ;                 /* 0x0000000614147981 */",
+      "/*0390*/                   LDG.E.128.STRONG.SM R16, desc[UR6][R16.64] ;                 /* 0x0000000610107981 */",
+      "/*03a0*/                   LDG.E.128.STRONG.SM R12, desc[UR6][R12.64] ;                 /* 0x000000060c0c7981 */"
+    ],
+    "source_sha256": "6bcb1b61255ab3bbb142e70c3acc28b6c2c6774e4c4da4e8324a9879d4d22a10"
+  },
+  {
+    "mode": "stream",
+    "symbol": "_ZN7glue_cl11boundary_clILi8ELi256ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_",
+    "registers": 59,
+    "local_bytes": 0,
+    "waits": [
+      39
+    ],
+    "pre_wait": [
+      "/*0130*/              @!P0 LDG.E.128.STRONG.SM R20, desc[UR12][R6.64] ;                 /* 0x0000000c06148981 */",
+      "/*0220*/               @P0 LDG.E.128.STRONG.SM R24, desc[UR12][R28.64] ;                /* 0x0000000c1c180981 */",
+      "/*0240*/                   LDG.E.128.STRONG.SM R16, desc[UR12][R16.64] ;                /* 0x0000000c10107981 */",
+      "/*0250*/                   LDG.E.128.STRONG.SM R12, desc[UR12][R12.64] ;                /* 0x0000000c0c0c7981 */",
+      "/*0260*/                   LDG.E.128.STRONG.SM R8, desc[UR12][R8.64] ;                  /* 0x0000000c08087981 */"
+    ],
+    "source_sha256": "6bcb1b61255ab3bbb142e70c3acc28b6c2c6774e4c4da4e8324a9879d4d22a10"
+  }
+]
