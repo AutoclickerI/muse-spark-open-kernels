@@ -7,10 +7,17 @@ R=Path(__file__).resolve().parents[4];H=Path(__file__).parent;P=R/'problems/muse
 sys.path.insert(0,str(R))
 from sim import bound, hw
 RESET='c0e74bedf7b74be5';SCALE='58ae2e2cf8df45ef';W2='97be11d4631b44d6'
+# MoE kernels by family: v9 NT1 (moe_fused), small-M flag variants (moe_var, S9), Humming/portfolio, S5-S7 H_H (idist,
+# pmnt), S6 mixed_parallel (mwfx/mwrc/mwwi, fx_), S7R R_full and S9 N_full branches (mwbr gemm/route_live/finish; N_full's
+# NT1 side is pmz::phase).
+MOE_KERNELS=('moe_fused','moe_var<','humming<','_pf_','_best6_pool','_best6_positions','mwfx::','mwrc::','mwwi::','mwbr::','idist::','pmnt::','pmz::','pm_meta_kernel','fx_')
+# MoE engines that fork side-stream branches (S6 mixed_parallel W13; S7R R_full and S9 N_full W13 and W2): the profile
+# sums both branches' durations, so the overlap (total minus 'GPU busy') comes off the MoE stage.
+FORKED_MOE=('mixed_parallel_m256',)
 STAGES=('qkv_gate','o','pool_router','unpooler','attention','moe','boundaries','route','other')
 ROLES=STAGES[:4]
 NAMES=dict(qkv_gate='QKV+gate',o='O',pool_router='Pool+router',unpooler='Unpool',attention='Attention',moe='MoE',boundaries='Boundaries x2',route='Route+norm',other='Other/unreported')
-CANDIDATES=(('S7R', 'cand_r3_best7_s7r', '56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101'), ('S7', 'cand_r3_best7_s7', 'bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390'), ('S6', 'cand_r3_best7_s6', '4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f'), ('S5', 'cand_r3_best7_s5', 'f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284'), ('S4', 'cand_r3_best7_s4', '9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e'), ('S3', 'cand_r3_best7_scale_recoded_m256', 'cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7'), ('S2', 'cand_r3_best7_scale_w2fix', 'b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337'), ('S1', 'cand_r3_best7_scale', '42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7'))
+CANDIDATES=(('S9', 'cand_r3_best7_s9', 'f55f616254a88e33781e897de0a8bfbfb82a410d1a03f1da8e8cae0f2de23f6e'), ('S8', 'cand_r3_best7_s8', 'cb84645d1af8b813529a64cfe746dd5846160860deebbe8afd8154007a23c366'), ('S7R', 'cand_r3_best7_s7r', '56c51fa026210357f9865d114e6bf7e609c52049e40b263f589d23ade95a8101'), ('S7', 'cand_r3_best7_s7', 'bd3932d1cc3c0c82d60145772148fd19fc779465dd360bda610d214385401390'), ('S6', 'cand_r3_best7_s6', '4c98f12fc7fab9730b90d3bae2f7f014ce85bae35439fb688282d98bd167c59f'), ('S5', 'cand_r3_best7_s5', 'f7064fc0127e80a955c7dc9aa5c68eb6aefada179c2841c5c58bce8dabd20284'), ('S4', 'cand_r3_best7_s4', '9b2b2a48337aa13ba1daa45eec8a30b566cc3e59c7e1bb317d39695413d3404e'), ('S3', 'cand_r3_best7_scale_recoded_m256', 'cadef19a6eced1ae1fa0f3deaffa9ee21e083aa5ba6fe46784707bb8df52a7c7'), ('S2', 'cand_r3_best7_scale_w2fix', 'b080544708544fd67ee23b82aca111bf0b9bb82c30a5eb86315044cd9bf92337'), ('S1', 'cand_r3_best7_scale', '42f543a0e25f98058099e417ad2f8b95a71e1ab33c7371b3af6a4499905cbad7'))
 
 
 def read_receipt(job):
@@ -62,7 +69,7 @@ def choose_source(explicit):
 
 
 def correction_for(tag,tokens,scale,w2):
-    if tag not in ('reset','S1','S2','S3','S4','S5','S6','S7','S7R'):raise ValueError(tag)
+    if tag!='reset' and tag not in {c[0] for c in CANDIDATES}:raise ValueError(tag)
     return (scale.get(tokens,0.) if tag=='reset' else 0.,
             w2 if tokens==256 and tag in ('reset','S1') else 0.)
 
@@ -101,11 +108,12 @@ def parse_profile(report,plan,tokens,floors):
         if not match:continue
         name,us,calls=match[1],float(match[2]),int(match[3]);kernels.append(dict(name=name,us=us,calls=calls))
     assert kernels
-    custom=[];fixed=[]
+    custom=[];fixed=[];vdsk=[]
     for role,choice in plan['projection'].items():
         normalized='unpooler' if role=='unpooler_slice' else role
         if choice=='custom' and tokens<=64 and normalized!='unpooler':custom.append(normalized)
         elif choice=='custom' and tokens<=8 and normalized=='unpooler':custom.append(normalized)
+        elif isinstance(choice,(tuple,list)) and choice and choice[0]=='vdsk':vdsk.append(normalized)
         elif isinstance(choice,(tuple,list)) and tuple(choice)==('stream',6,1):
             assert (tokens,normalized)==(1,'o'),(tokens,normalized,choice)
             fixed.append(normalized)
@@ -116,21 +124,25 @@ def parse_profile(report,plan,tokens,floors):
             assert custom,(plan,n)
             groups_by.setdefault(tuple(custom),dict(us=0.,names=[]))
             g=groups_by[tuple(custom)];g['us']+=u;g['names'].append(n)
+        elif '_vdsk_gemm' in n:
+            assert vdsk,(plan,n)
+            g=groups_by.setdefault(tuple(vdsk),dict(us=0.,names=[]));g['us']+=u;g['names'].append(n)
         elif 'gf::direct<' in n:
             assert fixed==['o'],(plan,n)
             g=groups_by.setdefault(tuple(fixed),dict(us=0.,names=[]));g['us']+=u;g['names'].append(n)
         elif any(x in n for x in ('nvjet_','cublasLt::splitKreduce')):
-            roles=tuple(r for r in ROLES if r not in custom and r not in fixed)
+            roles=tuple(r for r in ROLES if r not in custom and r not in fixed and r not in vdsk)
             assert roles,(plan,n)
             g=groups_by.setdefault(roles,dict(us=0.,names=[]));g['us']+=u;g['names'].append(n)
-        elif any(x in n for x in ('moe_fused','humming<','_pf_','_best6_pool','_best6_positions','mwfx::','mwrc::','mwwi::','idist::','pmnt::','pm_meta_kernel','fx_')):values['moe']+=u
+        elif any(x in n for x in MOE_KERNELS):values['moe']+=u
         elif any(x in n for x in ('attn_main','attn_combine','flash::','_qk_prep_kernel','_norm_gate_kernel')):values['attention']+=u
-        elif '_boundary_' in n or '_best7_old_boundary' in n:values['boundaries']+=u
-        elif '_route_' in n or '_best7_old_route' in n:values['route']+=u
+        elif any(x in n for x in ('_boundary_','_best7_old_boundary','boundary_cl<')):values['boundaries']+=u
+        elif any(x in n for x in ('_route_','_best7_old_route','route_cl<')):values['route']+=u
         else:values['other']+=u
     assert sum(k['calls'] for k in kernels if '_gemv_kernel' in k['name'])==len(custom),(tokens,custom,kernels)
     assert sum(k['calls'] for k in kernels if 'gf::direct<' in k['name'])==len(fixed),(tokens,fixed,kernels)
-    assert sum(k['calls'] for k in kernels if 'nvjet_' in k['name'])==4-len(custom)-len(fixed),(tokens,custom,fixed,kernels)
+    assert sum(k['calls'] for k in kernels if '_vdsk_gemm' in k['name'])==len(vdsk),(tokens,vdsk,kernels)
+    assert sum(k['calls'] for k in kernels if 'nvjet_' in k['name'])==4-len(custom)-len(fixed)-len(vdsk),(tokens,custom,fixed,vdsk,kernels)
     role_bounds={r:[0.,0.] for r in ROLES};estimated=[]
     for roles,g in groups_by.items():
         denom=sum(floors[r] for r in roles)
@@ -143,8 +155,11 @@ def parse_profile(report,plan,tokens,floors):
     truncated=re.search(r'^\.\.\. (\d+) more',report,re.M)
     missing=max(0.,total-shown) if truncated else 0.
     values['other']+=missing
+    busy=re.search(r'^GPU busy.*?([\d.]+) µs',report,re.M)
+    overlap=total-float(busy[1]) if busy and plan['moe'] in FORKED_MOE else 0.
+    values['moe']-=overlap;total-=overlap
     assert abs(sum(values.values())-total)<=.05*(len(kernels)+1)+1e-9,(values,total)
-    return values,groups,role_bounds,estimated,missing,total,kernels
+    return values,groups,role_bounds,estimated,missing,total,kernels,overlap
 
 
 def overall_gain(rows,loads,saved):
@@ -168,13 +183,13 @@ def make_model(tag,path,d):
         assert p['case']==b['case'];c=dict(p['case']);t=c['batch']*c.get('q_len',1)
         key=c['batch'],c.get('q_len',1),2048 if c['layer']=='sliding' else 0
         f,work=floor_data(c,b)
-        v,groups,ranges,estimated,missing,total,kernels=parse_profile(p['report'],plans[key],t,f)
+        v,groups,ranges,estimated,missing,total,kernels,overlap=parse_profile(p['report'],plans[key],t,f)
         delta_scale,delta_w2=correction_for(tag,t,scale,w2)
         delta=delta_scale+delta_w2
         v['moe']-=delta
         assert v['moe']>0
         row=dict(index=p['index'],case=c,tokens=t,stages_us=v,floors_us=f,work=work,role_bounds_us=ranges,
-                 estimated_roles=estimated,projection_groups=groups,unreported_us=missing,profile_total_us=total,
+                 estimated_roles=estimated,projection_groups=groups,unreported_us=missing,moe_branch_overlap_us=overlap,profile_total_us=total,
                  reset_profile_total_after_deltas_us=total-delta,base_adjusted_us=b['median_ns']/1000.,modeled_adjusted_us=b['median_ns']/1000.-delta,
                  delta_scale_us=delta_scale,delta_m256_us=delta_w2,base_moe_us=v['moe']+delta,benchmark_baseline_us=b['baseline_ns']/1000.,
                  kernels=kernels,plan=plans[key])
@@ -344,7 +359,7 @@ def main():
     for tokens in (1,8,16,32,128,256):
         assert correction_for('S2',tokens,scale,w2)==(0.,0.)
         assert correction_for('S3',tokens,scale,w2)==(0.,0.)
-        for integrated_tag in ('S4','S5','S6','S7','S7R'):assert correction_for(integrated_tag,tokens,scale,w2)==(0.,0.)
+        for integrated_tag in [c[0] for c in CANDIDATES if c[0] not in ('S1','S2','S3')]:assert correction_for(integrated_tag,tokens,scale,w2)==(0.,0.)
         assert correction_for('S1',tokens,scale,w2)==(0.,w2 if tokens==256 else 0.)
     all_moe=model['stage_gains']['moe']['estimate']/100.+1.
     moe_lanes=[x for x in model['ranking'] if x['owner'] in ('small-M MoE','MoE M128','free M256')]

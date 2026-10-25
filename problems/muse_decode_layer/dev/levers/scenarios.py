@@ -24,7 +24,7 @@ import math
 from pathlib import Path
 
 LAYERS = {'sliding': 46, 'full': 16}
-ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R')
+ORDER = ('reset', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S7R', 'S8', 'S9')
 PROJ = ('qkv_gate', 'o', 'pool_router', 'unpooler')
 GLUE = ('boundaries', 'route')
 # 4233660b: a plain cold 256 MiB read takes 74.33 us on the judge, 3.61 TB/s = the 4.8 TB/s floor x 1.329.
@@ -46,8 +46,8 @@ LEVERS = {
 GROUPS = {'attention': ('attention',), 'moe': ('moe',), 'proj': PROJ, 'glue': GLUE}
 
 
-def pending(mode: str) -> list[tuple[int, str, object, str]]:
-    """Paired-lab stage wins (tokens, stage, new-time function, source) not yet in a `mode` profile."""
+def pending(mode: str) -> list[tuple]:
+    """Paired-lab stage wins (tokens, stage, new-time function, source[, layer]) not yet in a `mode` profile."""
     i = ORDER.index(mode)
     out = []
     if i < ORDER.index('S4'):  # one-LOP3 NT1 vs recoded NT1, dc3fea0a
@@ -62,6 +62,25 @@ def pending(mode: str) -> list[tuple[int, str, object, str]]:
         out.append((1, 'o', lambda us: us - 0.35, 'O config6 c42e9fcc'))
     if i < ORDER.index('S7R'):  # R_full 0.9227x mixed_parallel's M=256 MoE (paired, zero_()-flushed), 110599ba
         out.append((256, 'moe', lambda us: us * 0.9227, 'R_full 110599ba'))
+    if i < ORDER.index('S8'):  # P7c: cluster glue 1365a290 (b1+b2, route per layer), attention early release 4d995f13
+        # (decode 1 attention -> O chain), verify-dense split-K qkv at M=128 b15a3bde (23.26 -> 20.42 us)
+        for t, b, r in ((1, 2.43, 0.26), (8, 1.57, 0.38), (16, 2.85, 0.37), (32, 1.14, 1.41)):
+            out.append((t, 'boundaries', lambda us, d=b: us - d, 'cluster glue 1365a290'))
+            out.append((t, 'route', lambda us, d=r: us - d, 'cluster glue 1365a290'))
+        out.append((1, 'attention', lambda us: us - 0.95, 'early release 4d995f13', 'sliding'))
+        out.append((1, 'attention', lambda us: us - 2.06, 'early release 4d995f13', 'full'))
+        out.append((128, 'qkv_gate', lambda us: us - 2.84, 'vdsk qkv b15a3bde'))
+    if i < ORDER.index('S9'):  # BF16 qkv front 87cd3a84 (attention input: one PDL sum+cast instead of torch's two kernels);
+        # small-M flags 95 / 69, router+MoE, mean of cf1de160 and eb9e0382; N_full vs H_H 0.8842 (c01b1916) and vs R_full
+        # 0.8701 / 0.9230 (14f942d5)
+        out.append((1, 'attention', lambda us: us - 4.21, 'BF16 qkv front 87cd3a84', 'sliding'))
+        out.append((1, 'attention', lambda us: us - 4.46, 'BF16 qkv front 87cd3a84', 'full'))
+        out.append((16, 'attention', lambda us: us - 1.52, 'BF16 qkv front 87cd3a84', 'sliding'))
+        out.append((16, 'attention', lambda us: us - 5.25, 'BF16 qkv front 87cd3a84', 'full'))
+        for t, d in {1: 5.63, 8: 3.99, 16: 4.67, 32: 4.57}.items():
+            out.append((t, 'moe', lambda us, d=d: us - d, 'small-M flags cf1de160+eb9e0382'))
+        out.append((128, 'moe', lambda us: us * 0.8842, 'N_full M128 c01b1916'))
+        out.append((256, 'moe', lambda us: us * 0.8701 / 0.9230, 'N_full M256 14f942d5'))
     return out
 
 
@@ -102,8 +121,8 @@ def main() -> None:
     rows = copy.deepcopy(model['rows'])
     deltas = pending(mode)
     for r in rows:
-        for t, k, fn, _ in deltas:
-            if r['tokens'] == t:
+        for t, k, fn, _, *layer in deltas:
+            if r['tokens'] == t and (not layer or r['case']['layer'] == layer[0]):
                 r['stages_us'][k] = fn(r['stages_us'][k])
     base, est = model['modeled_speedup'], score(model, rows)
     print(f"model {mode} `{model['job']}`: measured {model['baseline_source_speedup']:.3f}, model {base:.3f}; "
