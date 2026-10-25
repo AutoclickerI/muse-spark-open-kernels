@@ -79,7 +79,80 @@ complete compressed samples beneath the wrapper's log cap. `check_lab.py`
 tests this orchestration locally using S14's portable paths; it does not claim
 to execute Hopper-only VQ8 instructions on sm120.
 
-H200 job `8db4213240c6420d` is pending on the attention import-time host
+H200 job `8db4213240c6420d` completed on the attention import-time host
 (payload `c638acca`, candidate `04d4ba68`, budget 550 s). The only
 authorized lab host for this work is attention;
 decode checks remain reserved for integration and P10b.
+
+
+Additional native admission: `check_glue.py` passes 24 cells / 384 changed-input
+replays bit-exactly; `check_partial.py` passes eight cells / 192 changed-input
+replays bit-exactly (L1/L8, both windows, BF16 and seven FP32 splits, changing
+positions and non-unit scales). The latter executes the actual partial-attention
+kernels on sm120, including cluster support, rather than a launch stand-in.
+
+The standalone prior full-decode recipe is rebased in `patch_d1_s14.py`
+(`5716052b`), producing `d1_s14_trial.py` (`54515aa9`). Its S13 evidence does not
+establish a new S14 gain. The broad patch tests its glue change as part of all fixes.
+
+`build_hint.py` creates a low-register follow-up: preserve the original GEMV
+pipeline and request its first tile's cachelines before wait. This retains all
+other fixes while removing the long first-weight register lifetime. It is not
+part of job `8db4213240c6420d`; H200 performance is unmeasured.
+
+
+Resource attribution: native MoE flag95 remains 119 registers, VQ8 main ST6
+remains 161 registers, and VQ8 combine remains 64 registers. Partial L1 rises
+120 to 126 registers; L8 remains 254. Native shared/local allocations are
+unchanged. In the low-register follow-up, representative balanced/GI kernels
+return from 150 to 48 registers while retaining one pre-wait cache request
+instruction. These compiler facts do not establish H200 performance.
+
+
+## H200 8db4213240c6420d — all-fixes loss
+
+All twelve fixtures / sixteen seeds passed; import-time lab took 192.2 s.
+Ratios below aggregate each seed's 46 sliding + 16 full layer times; errors
+are standard errors across the sixteen seeds.
+
+| Load | A:A | All fixes / S14 |
+|---|---:|---:|
+| decode1 | .998631 ± .001151 | 1.108637 ± .002651 |
+| decode16 | 1.002417 ± .000638 | 1.242469 ± .002222 |
+| decode32 | .998995 ± .000630 | 1.231254 ± .002164 |
+| verify1 | .990772 ± .000825 | 1.223309 ± .002500 |
+| verify16 | .997619 ± .000587 | .997104 ± .000547 |
+| verify32 | .999442 ± .000450 | 1.005398 ± .000460 |
+
+Aggregate six-load speedup .884950; per-seed speedup .885126 ± .000701.
+A:A per-seed speedup 1.002036 ± .000348. No all-fixes integration patch wins.
+The strong losses concentrate at the loads using small GEMVs. Their changed
+first-weight tiles raised registers and altered the loop prologue; this is the
+leading mechanism hypothesis, not yet a paired attribution. Native and large-M
+metadata changes remain mixed into this arm.
+
+`build_followup.py` prepares a same-run attribution: F repeats the exact losing
+recipe, B uses low-register weight hints, M keeps only metadata ordering changes,
+and D applies only the rebased prior d1-full glue recipe. A/A2 are unchanged S14.
+All share baseline choices and weights; repaired native modules are shared only
+when their source bytes match. The new input seeds are held out. Per-arm output
+quality also records bit-exactness, route differences and worst L2 without hiding
+rows that change routes. Follow-up H200 result is unmeasured.
+
+
+`weight_pipeline_mechanism.json` narrows the mechanism further. The new
+conditional first tile changes the software pipeline as well as register
+lifetime: balanced GEMV LDGSTS instruction count 40→8 and LDG count 0→16,
+while tensor-core instruction count remains eight. The hint variant restores
+40 LDGSTS / zero LDG and 48 registers. Fixed-time losses in the first run are
+similar between sliding/full at each small-M load: d1 +8.25/+7.96 us,
+d16 +36.24/+38.64 us, d32 +44.46/+42.98 us, v1 +26.58/+26.70 us.
+These are compiler evidence and a whole-layer signature; the direct attribution
+is in pending job `0f74021a2c53445e` (payload `f9f651bb`).
+
+Every follow-up variant passed normal and forced full-layer screens: F/B/M
+13 tests, 12 graph shapes, 24 static checks; D has 25 static checks including
+its extra native glue source. Local six-arm orchestration passed all twelve
+fixtures / sixteen seeds, maximum whole-output L2 .001338. Its complete output
+is 8,027 bytes, below the 9,000-byte single-payload cap. Native admission remains
+bit-exact as recorded above. No Hopper performance is inferred from local timing.

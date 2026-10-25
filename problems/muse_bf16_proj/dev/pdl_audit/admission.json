@@ -20,7 +20,10 @@
   "local_lab_fixtures": 12,
   "local_lab_seeds": 16,
   "local_lab_paths": "portable; Hopper kernels audited/compiled separately",
-  "status": "H200 queued; not promoted",
+  "status": "all-fixes H200 rejected: paired six-load speedup .88495; follow-up attribution prepared",
   "h200_job": "8db4213240c6420d",
-  "payload_sha256": "c638acca812650c7aa9791d278ab84e9bff25ae77639426bc9ad9482c01b48d5"
+  "payload_sha256": "c638acca812650c7aa9791d278ab84e9bff25ae77639426bc9ad9482c01b48d5",
+  "native_glue_bitexact_replays": 384,
+  "native_partial_bitexact_replays": 192,
+  "h200_all_fixes_speedup": 0.8849504621475803
 }
