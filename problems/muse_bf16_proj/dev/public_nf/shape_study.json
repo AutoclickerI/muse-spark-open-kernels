@@ -28,9 +28,9 @@
   {
     "layer": "qkv_gate",
     "m": 16,
-    "kernel": "Q16 push",
+    "kernel": "Q16 D9 push",
     "config": "1/4/8/4; 2/1/1",
-    "mechanism": "R+P+D5+cap6",
+    "mechanism": "R+P+D9+cap6",
     "weight_bytes": 28311552,
     "logical_bytes": 28647424,
     "nf_us": 10.254692990351371,

@@ -14,7 +14,7 @@ us={(r['case']['m'],r['case']['layer']):r['baseline_ns']/r['speedup']/1000 for r
 rows={
 ('qkv_gate',1):('Q1 D9','1/4/8/4; 1/1/2','R+P+D9',1.5),
 ('qkv_gate',8):('Q8 D5','1/4/8/4; 1/1/2','R+P+D5',1.5),
-('qkv_gate',16):('Q16 push','1/4/8/4; 2/1/1','R+P+D5+cap6',1.5),
+('qkv_gate',16):('Q16 D9 push','1/4/8/4; 2/1/1','R+P+D9+cap6',1.5),
 ('qkv_gate',32):('Q32 push','1/4/8/4; 4/1/1','R+P+D5+cap5',1.5),
 ('qkv_gate',128):('Qbig SS','64,36,128,3,8,539,5','T+P; raw BF16',2),
 ('qkv_gate',256):('LT','layout0; [66,124,1,0,0,0,35,0,2]','L; raw BF16',2),

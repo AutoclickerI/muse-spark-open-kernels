@@ -50,7 +50,7 @@ weight reads, and library workspace traffic. Metadata corrections are given belo
 |---|---:|---|---:|---:|---:|---:|---|
 | qkv_gate | 1 | Q1 D9: `1/4/8/4; 1/1/2` | 9.34 | 12.76 | 28.33 | 3.03 | R+P+D9 |
 | qkv_gate | 8 | Q8 D5: `1/4/8/4; 1/1/2` | 9.69 | 12.86 | 28.48 | 2.94 | R+P+D5 |
-| qkv_gate | 16 | Q16 push: `1/4/8/4; 2/1/1` | 10.25 | 13.90 | 28.65 | 2.79 | R+P+D5+cap6 |
+| qkv_gate | 16 | Q16 D9 push: `1/4/8/4; 2/1/1` | 10.25 | 13.90 | 28.65 | 2.79 | R+P+D9+cap6 |
 | qkv_gate | 32 | Q32 push: `1/4/8/4; 4/1/1` | 12.16 | 13.84 | 28.98 | 2.38 | R+P+D5+cap5 |
 | qkv_gate | 128 | Qbig SS: `64,36,128,3,8,539,5` | 13.99 | 17.08 | 40.44 | 2.89 | T+P; raw BF16 |
 | qkv_gate | 256 | LT: `layout0; [66,124,1,0,0,0,35,0,2]` | 17.09 | 19.87 | 43.12 | 2.52 | L; raw BF16 |
@@ -148,10 +148,11 @@ Decoder counts per eight weights (common path, not escapes/address arithmetic):
 
 - **Table** (pool1/8, O1/8/16, unpool1/8): 6 PRMT, one selector AND, one selector shift, four sign merges
   (AND/OR/shifts may combine into LOP3/SHF). Count is PTX-level operations; exact SASS unmeasured.
-- **D5** (qkv8/16/32): one SHF, four PRMT, four mask/add pairs =13 explicit PTX operations; compiler can
+- **D5** (qkv8/32): one SHF, four PRMT, four mask/add pairs =13 explicit PTX operations; compiler can
   fold parts, exact SASS unmeasured. It constructs packed BF16 then biases its high bits.
-- **D9** (qkv1, pool16/32, unpool16/32): one SHF, two mask/add pairs, four PRMT =9 explicit operations.
+- **D9** (qkv1/16, pool16/32, unpool16/32): one SHF, two mask/add pairs, four PRMT =9 explicit operations.
   This already matches the mechanism in our direct-BF16 decoder. The label “nine” is a source count.
+- Qkv16 retains a `DC2_DECODE=5` macro but its final `dec` body is the nine-operation D9 expression, unlike qkv8/32. Its replicated-base packer matches that body; macro names alone are insufficient to select the packer.
 - Raw BF16 / router hi+lo / FP32 paths have zero lossless decode operations. Router hi+lo doubles its
   BF16 tensor-core products; it does not reduce router storage below FP32.
 
