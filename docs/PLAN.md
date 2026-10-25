@@ -18,12 +18,7 @@
   `937801fe`, host 1.7148x) goes scored at the 00:00 UTC reset (09:00 KST) unless S13 freezes first (`3dbcaccd`:
   direct-partials attention +4.1%, cp.async coded GEMV +2.0% at decode 1; host 1.7433x).
 - What the plan was missing (review of `88b5251` plus the board against our model):
-  1. Our ceilings sat below the field: the leaders' MoE (2.52x) and decode (2.28x) boards beat our "practical" model
-     (2.35x, 2.25x). A cold read on the judge costs 2.36 us + bytes at 4.58 TB/s (`7b6c96b5`), not a flat 3.61 TB/s:
-     a 75 MB stage can reach 1.2x its floor, a 17 MB one 1.7x. The 2.36 us doesn't hide behind a predecessor: oracle
-     ceilings with the bytes warm are <= 0.7 us (attention -> O) and <= 2 us (pool_router), real recipes lose
-     (`cc718d3f`, closed). Target: every
-     stage at <= 1.3x its floor (2.59 modeled; every stage at 1.15x: 2.94).
+  1. Our ceilings sat below the field (now measured: see "Ceilings" and "Where the time goes" below).
   2. Lossless coding of the dense weights (P10) was parked on a stale premise: the GEMVs now sit within 16-20% of a
      plain read. 12-bit codes cut 25% of the ~138 MB per decode-1 layer (+4 to +8% modeled; the only lever that
      lowers a floor); the first coded GEMV is decode-bound (`35c875e6`).
