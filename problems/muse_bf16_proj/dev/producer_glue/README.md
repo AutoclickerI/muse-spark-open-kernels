@@ -103,8 +103,19 @@ The H200 wrapper discarded the innermost compilation cause. `build_diag.py`
 creates a small synthetic payload retaining the full exception chain;
 `check_embedded.py` checks the exact embedded source with the Hopper target.
 The embedded-source Hopper check passes four cells locally as well. Diagnostic
-job `ebe45a997c6445ae` on MoE, payload `b13968d2`, is pending; it uses synthetic
-weights and reports the full causal error chain without full-layer setup.
+job `ebe45a997c6445ae` on MoE, payload `b13968d2`, found the cause: native O+b1
+passes, but the judge's Triton rejects a `triton.next_power_of_2` call inside the
+JIT epilogue (torch 2.14.1+cu130, Triton 3.8.0, sm90). This is a compiler
+compatibility failure, not a performance result.
+
+The fix computes the statistics extent in Python and passes a constexpr; the
+metadata extent uses only constexpr integer branches. It changes no arithmetic
+or publication protocol. Fixed local admission: eight whole-layer fixtures and
+timelines clean, 120 changed-path poison/zero/wrap replays, four embedded-source
+sm90 compile cells. `admission.json` separates these checks from the earlier
+normal/forced screens. Fixed trial `3395fd7e`; paired payload `294fe739`.
+Job `15abb9c1e1c74b0b` on prefill is pending. The lab now retains completed arms
+if a different arm fails and records the innermost exception cause.
 
 ## Integration
 

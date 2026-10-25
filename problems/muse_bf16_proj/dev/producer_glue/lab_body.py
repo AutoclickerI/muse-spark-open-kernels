@@ -3,6 +3,14 @@ PG_SEEDS=tuple(172903+7919*i for i in range(12))
 PG_RESULTS=[]
 
 
+def pg_error(exc):
+    chain=[]
+    while exc is not None:
+        chain.append(type(exc).__name__+': '+str(exc).replace('\n',' '))
+        exc=exc.__cause__ or exc.__context__
+    return chain[-1][:240]
+
+
 def pg_host(weights):
     if 'PG_EXISTING_HOST' in globals():return PG_EXISTING_HOST
     name='<producer_glue_s11>'
@@ -138,7 +146,7 @@ def lab(deadline,weights,state=None):
                     finally:act.profile_end()
                     graphs[n]=(gr,out);maps[n]=mp
                 else:graphs[n]=ab_graph(lambda arm=arm:host.kernel_fn(data,arm))
-            except Exception as exc:gates[n]=type(exc).__name__+':'+str(exc)[:110]
+            except Exception as exc:gates[n]=pg_error(exc)
         if 'A' not in graphs:
             lines.append(f'FAIL {label} control {gates}');continue
         samples=[]
@@ -163,7 +171,7 @@ def lab(deadline,weights,state=None):
             lines.append(f'INC {label} A='+','.join(f'{v:.2f}' for v in ai)+' FM='+','.join(f'{v:.2f}' for v in fi)+
                          f' wall={profiles["A"]["wall"]:.2f}/{profiles["FM"]["wall"]:.2f}')
             PG_RESULTS.append(dict(case=label,profiles=profiles,paired=summary,gates=gates))
-        if time.monotonic()<deadline-5:
+        if 'FM' in graphs and time.monotonic()<deadline-5:
             traced=pg_state(host,st,t,('b1','route','b2'),trace=True)
             trace_graph,trace_out=ab_graph(lambda:host.kernel_fn(data,traced))
             spans=[]

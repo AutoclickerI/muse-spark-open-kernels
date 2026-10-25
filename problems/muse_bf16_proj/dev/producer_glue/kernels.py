@@ -64,7 +64,8 @@ def _pg_route(P,OUT,IDS,WTS,LIDS,PREW,BIAS,START,t,
 @triton.jit
 def _pg_meta(LIDS,META,START,T:tl.constexpr):
     i=tl.arange(0,256);e=tl.arange(0,32)
-    j=tl.arange(0,triton.next_power_of_2(T*8))
+    MP:tl.constexpr=8 if T<=1 else 16 if T<=2 else 32 if T<=4 else 64 if T<=8 else 128 if T<=16 else 256
+    j=tl.arange(0,MP)
     lids=tl.load(LIDS+j,j<T*8,-1,cache_modifier='.cg')
     counts=tl.histogram(tl.maximum(lids,0),32,mask=lids>=0)
     ends=tl.cumsum(counts,0);offsets=ends-counts

@@ -46,8 +46,8 @@ def _ps_tile(P,A,B,STATS,STREAM,ALPHA,BETA,POSTW,pn,
 
 @triton.jit
 def _ps_apply(A,B,STATS,OUT,SOUT,PREW,t,group,
-              N:tl.constexpr,BN:tl.constexpr,G:tl.constexpr,ROLE:tl.constexpr,DEP):
-    c=tl.arange(0,triton.next_power_of_2(N//BN))
+              N:tl.constexpr,BN:tl.constexpr,NC2:tl.constexpr,G:tl.constexpr,ROLE:tl.constexpr,DEP):
+    c=tl.arange(0,NC2)
     sp=STATS+(t*(N//BN)+c)*4+DEP
     m0=tl.sum(tl.load(sp,c<N//BN,0.,cache_modifier='.cg'),0)
     if ROLE==1:
@@ -88,7 +88,7 @@ def _ps_topk(P,IDS,WTS,LIDS,BIAS,START,t,T:tl.constexpr,S:tl.constexpr,DEP):
 def _ps_gemv(X,W,P,COUNT,GEN,SPLITS,A,B,STATS,STREAM,SOUT,OUT,ALPHA,BETA,PREW,POSTW,
              BIAS,START,IDS,WTS,LIDS,ROUTE_COUNT,META,STAMP,
              T:tl.constexpr,N:tl.constexpr,K:tl.constexpr,S:tl.constexpr,XS:tl.constexpr,
-             BN:tl.constexpr,BK:tl.constexpr,TB:tl.constexpr,NS:tl.constexpr,G:tl.constexpr,
+             BN:tl.constexpr,BK:tl.constexpr,TB:tl.constexpr,NS:tl.constexpr,G:tl.constexpr,NC2:tl.constexpr,
              ROLE:tl.constexpr,POST:tl.constexpr,OWNER:tl.constexpr,EMIT_META:tl.constexpr,
              FUSE:tl.constexpr,TRACE:tl.constexpr):
     pid=tl.program_id(0);nc=N//BN;total=nc*S
@@ -119,7 +119,7 @@ def _ps_gemv(X,W,P,COUNT,GEN,SPLITS,A,B,STATS,STREAM,SOUT,OUT,ALPHA,BETA,PREW,PO
             arrived=_pg_wait(COUNT,target);dep=(arrived-target).to(tl.int32)
             token=owner//G;group=owner%G
             if TRACE:tl.store(STAMP+pid*3+1,_pg_clock())
-            _ps_apply(A,B,STATS,OUT,SOUT,PREW,token,group,N=N,BN=BN,G=G,ROLE=ROLE,DEP=dep)
+            _ps_apply(A,B,STATS,OUT,SOUT,PREW,token,group,N=N,BN=BN,NC2=NC2,G=G,ROLE=ROLE,DEP=dep)
             if ROLE==1 and group==0:
                 _ps_topk(P,IDS,WTS,LIDS,BIAS,START,token,T=T,S=S,DEP=dep)
                 if EMIT_META:
@@ -156,7 +156,7 @@ class ProducerStats(ProducerGlue):
             stream if stream is not None else sout,sout,out,alpha,beta,prew,state['post_ffn_w'],
             state['router_bias'],start if start is not None else ids,ids,wts,lids,self.route_count,self.meta,self.stamps,
             T=t,N=n,K=k,S=s,XS=x.stride(0),BN=self.bn,BK=128,TB=max(16,triton.next_power_of_2(t)),NS=self.stages,
-            G=self.groups,ROLE=int(route),POST=post,OWNER=self.owner,EMIT_META=self.emit_meta,FUSE=self.fuse,
+            G=self.groups,NC2=triton.next_power_of_2(n//self.bn),ROLE=int(route),POST=post,OWNER=self.owner,EMIT_META=self.emit_meta,FUSE=self.fuse,
             TRACE=self.trace,num_warps=4,launch_pdl=True)
         if not self.fuse:return self.p,self.s
         return (out,ids,wts,lids) if route else (out,sout)
