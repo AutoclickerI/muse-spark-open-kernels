@@ -1,0 +1,32 @@
+{
+  "payload_sha256": "67eca44eb93d9531bc0dd243ef1f5a780bd55ea20b53ef17fbc942f34a49110c",
+  "device": "sm120 GPU0",
+  "cold_L2": false,
+  "weights": null,
+  "seeds": 24,
+  "rows": [
+    "M128 S14 n=72 us=367.83 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 TRANS64 n=72 us=394.91 pair=1.0790 lo/hi=0.924/1.415 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 TRANS128 n=72 us=500.66 pair=1.3866 lo/hi=1.064/2.117 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 CTA2 n=72 us=367.48 pair=1.0071 lo/hi=0.877/1.204 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 CTA2S3 n=72 us=363.00 pair=0.9941 lo/hi=0.915/1.102 L2/row=0.004132/0.004947 TASK=PASS",
+    "M256 S14 n=72 us=530.83 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 TRANS64 n=72 us=548.62 pair=1.0456 lo/hi=0.856/1.266 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 TRANS128 n=72 us=702.89 pair=1.3473 lo/hi=1.046/1.684 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 CTA2 n=72 us=497.76 pair=0.9470 lo/hi=0.790/1.070 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 CTA2S3 n=72 us=488.26 pair=0.9263 lo/hi=0.767/1.070 L2/row=0.004124/0.005018 TASK=PASS"
+  ],
+  "phases": [
+    "PHASE M128 S14 H13/H2/pack_us=139.39/73.39/0.00",
+    "PHASE M128 TRANS64 H13/H2/pack_us=172.42/108.91/7.73",
+    "PHASE M128 TRANS128 H13/H2/pack_us=246.32/128.00/7.94",
+    "PHASE M128 CTA2 H13/H2/pack_us=129.74/82.26/0.00",
+    "PHASE M128 CTA2S3 H13/H2/pack_us=128.35/83.10/0.00",
+    "PHASE M256 S14 H13/H2/pack_us=262.42/130.37/0.00",
+    "PHASE M256 TRANS64 H13/H2/pack_us=310.48/187.55/7.73",
+    "PHASE M256 TRANS128 H13/H2/pack_us=422.46/260.99/7.65",
+    "PHASE M256 CTA2 H13/H2/pack_us=264.19/154.08/0.00",
+    "PHASE M256 CTA2S3 H13/H2/pack_us=259.14/154.56/0.00"
+  ],
+  "note": "Correctness and entry/deadline screen; local timings do not establish H200 performance."
+}

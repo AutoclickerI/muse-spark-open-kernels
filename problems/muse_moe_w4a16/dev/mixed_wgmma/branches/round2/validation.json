@@ -1,0 +1,18 @@
+{
+  "local_start64_checks": 15,
+  "payload_sha256": "67eca44eb93d9531bc0dd243ef1f5a780bd55ea20b53ef17fbc942f34a49110c",
+  "checks": 995,
+  "input_cases": 98,
+  "bit_equal_to_control": [
+    33,
+    21,
+    98,
+    98
+  ],
+  "worst_L2_row": [
+    0.004128823056817055,
+    0.004781694617122412
+  ],
+  "device": "GPU0 sm120",
+  "coverage": "All arms forced on all sizes, class/hot/empty/real routes, forward transitions, NaN ACT/Y/SS/OUT and -1 AF scratch, two graph replays. WGMMA replaced only by matching mma.sync on sm120."
+}

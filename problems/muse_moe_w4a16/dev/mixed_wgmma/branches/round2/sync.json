@@ -1,0 +1,97 @@
+{
+  "copy_ring_checks": 19278,
+  "checks": 2758,
+  "cases": [
+    {
+      "ng": 1,
+      "k": 2,
+      "checks": 4
+    },
+    {
+      "ng": 1,
+      "k": 3,
+      "checks": 6
+    },
+    {
+      "ng": 1,
+      "k": 63,
+      "checks": 126
+    },
+    {
+      "ng": 1,
+      "k": 64,
+      "checks": 128
+    },
+    {
+      "ng": 1,
+      "k": 65,
+      "checks": 130
+    },
+    {
+      "ng": 2,
+      "k": 2,
+      "checks": 8
+    },
+    {
+      "ng": 2,
+      "k": 3,
+      "checks": 12
+    },
+    {
+      "ng": 2,
+      "k": 63,
+      "checks": 252
+    },
+    {
+      "ng": 2,
+      "k": 64,
+      "checks": 256
+    },
+    {
+      "ng": 2,
+      "k": 65,
+      "checks": 260
+    },
+    {
+      "ng": 4,
+      "k": 2,
+      "checks": 16
+    },
+    {
+      "ng": 4,
+      "k": 3,
+      "checks": 24
+    },
+    {
+      "ng": 4,
+      "k": 63,
+      "checks": 504
+    },
+    {
+      "ng": 4,
+      "k": 64,
+      "checks": 512
+    },
+    {
+      "ng": 4,
+      "k": 65,
+      "checks": 520
+    }
+  ],
+  "negative_wait2": "('live A overwrite', 2, 1, 0, -1, [0, 1])",
+  "B_and_A2_layout_bijective": true,
+  "packed_weight_source_counts": {
+    "64": {
+      "Q_u32": 32768,
+      "scale_u8": 16384,
+      "multiplicity": 1
+    },
+    "128": {
+      "Q_u32": 65536,
+      "scale_u8": 32768,
+      "multiplicity": 1
+    }
+  },
+  "cuda_sha256": "3b837a915ad2c8ba3001115bd658fbd4183a3bd16dc1a9d4e4452407de351d42",
+  "limitation": "Contract/layout model, not a hardware race test. Matching sm120 tensor-core execution checked separately."
+}

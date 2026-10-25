@@ -1,0 +1,175 @@
+{
+  "128": {
+    "heavy_counts": [
+      17,
+      20,
+      22,
+      51
+    ],
+    "unique_weight_MB": 113.246208,
+    "control_weight_ratio": 1.25,
+    "new_weight_ratio": 1.0,
+    "control_X_MB": [
+      167.77216,
+      83.88608
+    ],
+    "arms": {
+      "TRANS64": {
+        "X_MB": [
+          268.435456,
+          134.217728
+        ],
+        "X_ratio_vs_control": 1.5999999999999999,
+        "timed_pack_MB": 4.194304,
+        "decoded_B_smem": 16384,
+        "estimated_heavy_service_us": 152.72889034783918,
+        "estimated_whole_same_overlap_us": 260.2188903478392,
+        "estimated_whole_full_overlap_us": 168.72889034783918,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      },
+      "TRANS128": {
+        "X_MB": [
+          134.217728,
+          67.108864
+        ],
+        "X_ratio_vs_control": 0.7999999999999999,
+        "timed_pack_MB": 4.194304,
+        "decoded_B_smem": 32768,
+        "estimated_heavy_service_us": 93.4847524168047,
+        "estimated_whole_same_overlap_us": 200.9747524168047,
+        "estimated_whole_full_overlap_us": 146.03,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      },
+      "CTA2": {
+        "X_MB": [
+          83.88608,
+          41.94304
+        ],
+        "X_ratio_vs_control": 0.49999999999999994,
+        "timed_pack_MB": 0.0,
+        "decoded_B_smem": 0,
+        "estimated_heavy_service_us": 70.35241379310344,
+        "estimated_whole_same_overlap_us": 177.84241379310345,
+        "estimated_whole_full_overlap_us": 146.03,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      },
+      "CTA2S3": {
+        "X_MB": [
+          83.88608,
+          41.94304
+        ],
+        "X_ratio_vs_control": 0.49999999999999994,
+        "timed_pack_MB": 0.0,
+        "decoded_B_smem": 0,
+        "estimated_heavy_service_us": 70.35241379310344,
+        "estimated_whole_same_overlap_us": 177.84241379310345,
+        "estimated_whole_full_overlap_us": 146.03,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      }
+    },
+    "target_us": 132.6,
+    "observed": {
+      "control": 185.43,
+      "heavy": [
+        43.38,
+        34.56
+      ],
+      "light": [
+        80.86,
+        49.17
+      ],
+      "direct": [
+        65.97,
+        41.41
+      ]
+    }
+  },
+  "256": {
+    "heavy_counts": [
+      40,
+      18,
+      27,
+      54,
+      95,
+      26,
+      31
+    ],
+    "unique_weight_MB": 198.180864,
+    "control_weight_ratio": 1.5714285714285714,
+    "new_weight_ratio": 1.0,
+    "control_X_MB": [
+      369.098752,
+      184.549376
+    ],
+    "arms": {
+      "TRANS64": {
+        "X_MB": [
+          536.870912,
+          268.435456
+        ],
+        "X_ratio_vs_control": 1.4545454545454546,
+        "timed_pack_MB": 8.388608,
+        "decoded_B_smem": 16384,
+        "estimated_heavy_service_us": 249.6772223346915,
+        "estimated_whole_same_overlap_us": 381.10722233469147,
+        "estimated_whole_full_overlap_us": 265.67722233469146,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      },
+      "TRANS128": {
+        "X_MB": [
+          268.435456,
+          134.217728
+        ],
+        "X_ratio_vs_control": 0.7272727272727273,
+        "timed_pack_MB": 8.388608,
+        "decoded_B_smem": 32768,
+        "estimated_heavy_service_us": 150.22818467778774,
+        "estimated_whole_same_overlap_us": 281.6581846777877,
+        "estimated_whole_full_overlap_us": 166.22818467778774,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      },
+      "CTA2": {
+        "X_MB": [
+          184.549376,
+          92.274688
+        ],
+        "X_ratio_vs_control": 0.5,
+        "timed_pack_MB": 0.0,
+        "decoded_B_smem": 0,
+        "estimated_heavy_service_us": 117.31878661087867,
+        "estimated_whole_same_overlap_us": 248.74878661087865,
+        "estimated_whole_full_overlap_us": 133.31878661087867,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      },
+      "CTA2S3": {
+        "X_MB": [
+          184.549376,
+          92.274688
+        ],
+        "X_ratio_vs_control": 0.5,
+        "timed_pack_MB": 0.0,
+        "decoded_B_smem": 0,
+        "estimated_heavy_service_us": 117.31878661087867,
+        "estimated_whole_same_overlap_us": 248.74878661087865,
+        "estimated_whole_full_overlap_us": 133.31878661087867,
+        "extra_transport_cost": "Unmeasured decoded-B STS/SHFL/barriers for TRANS; CTA2 occupancy and issue effects unmeasured. Padding and timed pack included."
+      }
+    },
+    "target_us": 158.5,
+    "observed": {
+      "control": 261.03,
+      "heavy": [
+        81.89,
+        47.71
+      ],
+      "light": [
+        70.16,
+        44.19
+      ],
+      "direct": [
+        109.9,
+        75.79
+      ]
+    }
+  }
+}

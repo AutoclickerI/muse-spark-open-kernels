@@ -1,0 +1,19 @@
+{
+  "status": "queued_not_judge_accepted",
+  "pid": 1073793,
+  "sender_sha256": "71a7126383e399520ace94fead880c02d69a1fa7410d5cdbcedeb14b8f481b98",
+  "host": "muse_moe_w4a16",
+  "priority": 10.0,
+  "not_before_epoch": 1792972860.0,
+  "not_before_KST": "2026-10-26 09:01",
+  "requested_reset_epoch": 1792972800,
+  "gate_reason": "Match the unchanged reset batch existing 09:01 eligibility, priority10 places this independent follow-up behind priority1 f867a8b.",
+  "waiting_file": "runs/waiting/1073793.json",
+  "file": "problems/muse_moe_w4a16/lab/lab_payload.py",
+  "snapshot": "runs/sent/71a7126383e39952/lab_payload.py",
+  "job_id": null,
+  "payload_sha256": "67eca44eb93d9531bc0dd243ef1f5a780bd55ea20b53ef17fbc942f34a49110c",
+  "reset_sender": "f867a8b74a243d1e",
+  "reset_pid": 3408321,
+  "decision": "Independent packet: send all five arms. Reset result only guides which mechanism and S2/S3 arm to prioritize when interpreting paired whole-MoE results."
+}

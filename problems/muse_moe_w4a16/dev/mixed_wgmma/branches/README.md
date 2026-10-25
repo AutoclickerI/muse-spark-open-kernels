@@ -39,4 +39,12 @@ Pending H200 senders (not judge-accepted at handoff):
 
 - PID 3408321, wrapper `f867a8b74a243d1e`, [lab_cluster_schedule_payload.py](../../../../muse_attention_decode/lab/lab_cluster_schedule_payload.py); [sender log](../../../../../runs/detached/f867a8b74a243d1e.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3408321.json`.
 
-Next: Read f867a8b74a243d1e; decide ordinary launch/class scheduling from paired phase and whole-MoE evidence before changing tiles. No new production patch. Evidence: 3e8996f86bc74d45, eea9d87b8d1640cf.
+Second-round batch is built, screened and queued: [round2/README.md](round2/README.md), payload **67eca44e**.
+It compares S14 with transposed register-A/shared-B N64/N128 and intra-CTA two-consumer X reuse S2/S3
+in one24-seed payload. All four local_eval screens pass;995 captured/shifted checks pass.
+Sender **71a7126383e39952**, PID1073793, MoE host, priority10, not-before1792972860 (09:01KST),
+behind the unchanged reset sender above; no judge job ID yet.
+
+Decision: all new arms send independently; reset S3 win prioritizes CTA2S3, otherwise CTA2. Promote only
+by paired whole-MoE gains at each affected M followed by whole-layer integration. No new production patch.
+The 132.6/158.5us target remains unverified; the traffic/time model and its overlap assumptions are in round2.
