@@ -486,6 +486,11 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   -1.50 / -0.62 / -1.99, 4 -1.31 / -0.18 / -1.46; bulk L2 prefetch of 2 / 4 / all blocks before the wait +0.6 to +10.8.
   Unpooler: t=1 slice warm -1.36; t=16 / 32 12.6 / 25 / 42 MB warm -1.7 / -3.1 / -4.6 and -1.4 / -2.5 / -3.7 (bytes
   read before the call, not ramp).
+- Gate split (`9b7ffda0`, paired AB/BA x24, read flush; qkv3 balanced + ungated attention + a PDL gate GEMV with S
+  splits vs qkv -> sum+cast -> attention -> O -> b1), us at decode 1 S / 1 F / 16 S / 32 S / 16 F / 32 F: gs4 -1.99 /
+  -0.64 / -0.77 / +0.02 / +0.88 / -1.91, split (S 8) +0.39 / -0.72 / +0.25 / -0.47 / +2.53 / -0.83, gs16 worse; A:A
+  0.986-1.003. The ~4.6 us estimate from the qkv-only critical path didn't appear (mechanism not isolated); worth
+  ~+0.1-0.3% only with per-shape selection.
 - Verify dense at a kernel running max(read, compute) would save ~12 us per verify-16 layer and ~10 per verify-32
   (~+1% score; cuBLAS GEMM-only at M=128 runs +41-97% over the read, M=256 near its ~700 TFLOP/s compute floor);
   Triton split-K and DeepGEMM only tie cuBLAS apart from M=128 qkv (inferred from `b15a3bde` and `9cd95e72`).
