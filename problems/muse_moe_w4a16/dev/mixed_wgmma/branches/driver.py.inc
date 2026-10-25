@@ -37,10 +37,12 @@ def br_phases(data, bank, arm, ev0, ev1):
 
 BR_META_TUNE = ('META heavy-kernel lab at M%d vs LI4 (LI_swap 701d2867: N_full, heavy N32 lean K loop, W13 gate/up rows '
                 'interleaved by 8 with SwiGLU in registers, grid %d, launched first on the side stream || NT1<=16; live route; one '
-                'join; finalizer split over 4 blocks per token, 5e197b5e). G<g>: heavy persistent grid of g CTAs per SM so NT1 runs '
-                'beside it; p5: NT1 grid halved. LIW: wide banks (3 LDS.128 per stage instead of 8). Probes (TASK FAIL by design): '
-                'PH heavy alone (grid default / 1 / 2 per SM), PH_nx / PH_nw heavy alone without X / code+scale copies, PN_p5 NT1 '
-                'alone at half grid. 12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
+                'join; finalizer split over 4 blocks per token, 5e197b5e). LIW: wide packed banks; TYP/TYPW: static typed '
+                'activation smem (base/wide); WP: four W2 per-warp norm partials summed by finalizer; PAIR2/4: one decode '
+                'feeds two separate N32 WGMMA accumulators, 2/4 pipeline stages (no N64 WGMMA). '
+                'Adaptive lab: AD64/128D/P/PW uses only live independent N32 groups, capacity 64/128, S2; '
+                'D=hoisted descriptor, P=rotated packed scale words, PW=P+wide. PERM/PERMW applies P/PW on N32 S4. '
+                '12 seeds x3 fresh routes, lab_cold_l2, AB/BA x6, A:A.')
 BR_META = {
     128: 'META M128 vs HH = exact S7 H_H (u8 codes; route128 zero-fill + pm_meta SS clear; NT1<=16 then WGMMA32>16 per phase; finish). '
          'U16 = exact u16-word H_H (S6). ',
@@ -58,7 +60,7 @@ def lab(deadline, weights, state=None):
     start = time.monotonic()
     names = BR_NAMES
     ctl = BR_CONTROL
-    lines = [BR_META_TUNE % (BR_M, BR_GRID) if BR_SET == 'tune' else BR_META[BR_M] + BR_META_TAIL,
+    lines = [BR_META_TUNE % (BR_M, BR_GRID) if BR_SET in ('tune','adaptive') else BR_META[BR_M] + BR_META_TAIL,
              f'GATE TASK FP32 L2<=.015,row<=.075,finite before+after timing (failures recorded, still timed); bit=equal to {ctl} output (diagnostic). Phase means are diagnostics.']
     rows, phases, aa = [], [], []
     try:

@@ -39,6 +39,42 @@ def br_hh_module():
 
 
 @functools.lru_cache(None)
+def br_wp_module():
+    # NT1's 64 norm bins become the first of four per tile; the other three stay zero.
+    # No wider weights: only the FP32 activation-side norm scratch grows.
+    cu = BR_HH_CUDA
+    cu = cu.replace('z < NB * 64;', 'z < NB * 256;').replace('(z >> 6)', '(z >> 8)')
+    cu = cu.replace('ss[static_cast<size_t>(off + zi) * 64 + (z & 63)]',
+                    'ss[static_cast<size_t>(off + zi) * 256 + (z & 255)]')
+    cu = cu.replace('ss + (size_t)(off+idx)*64+(m>>2)', 'ss + (size_t)(off+idx)*256+(m>>2)*4')
+    mod = br_compile('brwp', BR_HH_CPP, cu, BR_FUNCS + ['pmz_init', 'pmz_smem', 'pmz_resident', 'pmz_run'])
+    mod.br_init();mod.pmz_init()
+    return mod
+
+
+@functools.lru_cache(None)
+def br_pair_module(stages):
+    cu = BR_HH_CUDA.replace('KT=128,S=4,', f'KT=128,S={stages},')
+    cu = cu.replace('ns>16?(ns+31)/32:0', 'ns>16?(ns+63)/64:0')
+    mod = br_compile('brpair'+str(stages), BR_HH_CPP, cu, BR_FUNCS + ['pmz_init', 'pmz_smem', 'pmz_resident', 'pmz_run'])
+    mod.br_init();mod.pmz_init()
+    return mod
+
+
+@functools.lru_cache(None)
+def br_adapt_module(nt):
+    macro = '#define BR_KINDS(F) ' + ' '.join(
+        f'F({i},{nt},{str(bool(first)).lower()},{514+first+flags},0,0,0)'
+        for i,first,flags in ((60,1,0),(61,0,0),(62,1,256),(63,0,256),(64,1,260),(65,0,260),(66,1,1280),(67,0,1280),(68,1,1284),(69,0,1284))) + '\n'
+    cu = macro+BR_HH_CUDA[BR_HH_CUDA.index('\n')+1:]
+    cu = cu.replace('KT=128,S=4,','KT=128,S=2,')
+    cu = cu.replace('ns>16?(ns+31)/32:0',f'ns>16?(ns+{nt-1})/{nt}:0')
+    mod=br_compile('bradapt'+str(nt),BR_HH_CPP,cu,BR_FUNCS+['pmz_init','pmz_smem','pmz_resident','pmz_run'])
+    mod.br_init();mod.pmz_init()
+    return mod
+
+
+@functools.lru_cache(None)
 def br_s6_module():
     mod = br_compile('brs6', BR_S6_CPP, BR_S6_CUDA, BR_FUNCS)
     mod.br_init()
@@ -56,7 +92,13 @@ def br_u16_module():
 def br_modules():
     m128_hh_pm_module()
     br_hh_module()
+    if BR_SET == 'adaptive':
+        br_adapt_module(64);br_adapt_module(128)
+        return
     if BR_SET == 'tune':
+        br_wp_module()
+        br_pair_module(2)
+        br_pair_module(4)
         return
     if BR_M == 128:
         br_u16_module()
@@ -100,10 +142,16 @@ def br_prepare(weights):
     dev = hh['base']['w13'].device
     hh.update(side=torch.cuda.Stream(device=dev), side_hi=torch.cuda.Stream(device=dev, priority=-1), fork_ev=torch.cuda.Event(), join_ev=torch.cuda.Event(), mod=br_hh_module(),
               sms=torch.cuda.get_device_properties(dev).multi_processor_count)
-    if BR_SET == 'tune':
+    if BR_SET in ('tune','adaptive'):
         hh['base_ilv'] = br_ilv_bank(weights)
         wide = br_wide(dict(hh['base'], w13=hh['base_ilv']['w13'], w13_sf=hh['base_ilv']['w13_sf']))
         hh['base_wide'] = dict(hh['base'], **wide)
+        perm = dict(hh['base'], **hh['base_ilv'])
+        for k in ('w13_sf','w2_sf'):
+            sf=perm[k];v=sf.contiguous().reshape(-1).view(torch.int32).to(torch.int64)&0xffffffff
+            perm[k]=(((v<<4)|(v>>28))&0xffffffff).to(torch.int32).view(torch.uint8).reshape(sf.shape)
+        hh['base_perm']=perm
+        hh['base_pw']=dict(perm,**br_wide(perm))
     elif BR_M == 128:
         hh['u16_sf'] = {k: ((hh['base'][k].to(torch.int32) << 4) + 0x7000).to(torch.int16) for k in ('w13_sf', 'w2_sf')}
     else:
@@ -145,23 +193,27 @@ HV = ((26,), (), (21,), (), 'full')
 BR_TUNE = {
     'LI4': LI + (dict(fin=4),),
     'LIW': ((30,), ('n',), (31,), ('n',), 'full', dict(fin=4)),
-    'G1': LI + (dict(fin=4, gs=1),),
-    'G2': LI + (dict(fin=4, gs=2),),
-    'G1p5': LI + (dict(fin=4, gs=1, pg=.5),),
-    'G2p5': LI + (dict(fin=4, gs=2, pg=.5),),
-    'PH': HV + (dict(fin=4),),
-    'PH_g1': HV + (dict(fin=4, gs=1),),
-    'PH_g2': HV + (dict(fin=4, gs=2),),
-    'PH_nx': ((40,), (), (41,), (), 'full', dict(fin=4)),
-    'PH_nw': ((42,), (), (43,), (), 'full', dict(fin=4)),
-    'PN_p5': ((), ('n',), (), ('n',), 'full', dict(fin=4, pg=.5)),
+    'TYP': ((44,), ('n',), (45,), ('n',), 'full', dict(fin=4)),
+    'TYPW': ((46,), ('n',), (47,), ('n',), 'full', dict(fin=4)),
+    'WP': ((26,), ('n',), (48,), ('n',), 'full', dict(fin=104, wp=True)),
+    'PAIR2': ((50,), ('n',), (51,), ('n',), 'full', dict(fin=4, pair=2)),
+    'PAIR4': ((50,), ('n',), (51,), ('n',), 'full', dict(fin=4, pair=4)),
+    'DESC': ((52,), ('n',), (53,), ('n',), 'full', dict(fin=4)),
 }
-BR_PROBES = ('PH', 'PH_g1', 'PH_g2', 'PH_nx', 'PH_nw', 'PN_p5')
+BR_PROBES = ()
 BR_ARMS.update(BR_TUNE)
+BR_ADAPT = {'LI4': BR_TUNE['LI4'], 'LIW': BR_TUNE['LIW']}
+BR_ADAPT['PERM']=((54,),('n',),(55,),('n',),'full',dict(fin=4))
+BR_ADAPT['PERMW']=((56,),('n',),(57,),('n',),'full',dict(fin=4))
+for nt in (64,128):
+    for suffix,kind in (('D',62),('P',66),('PW',68)):
+        BR_ADAPT[f'AD{nt}{suffix}']=((kind,),('n',),(kind+1,),('n',),'full',dict(fin=4,adapt=nt))
+if BR_SET=='adaptive':
+    BR_ARMS.update(BR_ADAPT)
 BR_ONLY = {'S6': 256, 'R_s6': 256, 'U16': 128}
-if BR_SET == 'tune':
+if BR_SET in ('tune','adaptive'):
     BR_CONTROL = 'LI4'
-    BR_NAMES = list(BR_TUNE)
+    BR_NAMES = list(BR_TUNE if BR_SET=='tune' else BR_ADAPT)
 else:
     BR_CONTROL = 'HH' if BR_M == 128 else 'S6'
     BR_NAMES = [BR_CONTROL] + [a for a in BR_ARMS if a not in (BR_CONTROL, 'N_swap', 'L_swap', 'LI_swap') and a not in BR_TUNE and BR_ONLY.get(a, BR_M) == BR_M]
@@ -222,8 +274,13 @@ def br_plan(data, hh, arm):
     plan = m128_hh_pm_plan(data, base, native)
     if spec is None:
         return plan
-    mod, hmod = hh['mod'], m128_hh_pm_module()
+    opts = spec[5] if isinstance(spec, tuple) and len(spec)>5 else {}
+    mod = br_wp_module() if opts.get('wp') else br_pair_module(opts['pair']) if opts.get('pair') else br_adapt_module(opts['adapt']) if opts.get('adapt') else hh['mod']
+    hmod = m128_hh_pm_module()
     v13, tasks = plan['v13'], plan['tasks']
+    if opts.get('wp'):
+        scratch = torch.empty((v13[16].shape[0],256),device=v13[16].device)
+        v13[16]=scratch;plan['v2'][16]=scratch
     t8 = torch.empty_like(tasks[0])
     x, c, off, order, slots, act = v13[3], v13[4], v13[5], v13[6], v13[8], v13[9]
     ids, tw, pos, y, ss, out = v13[11], v13[12], v13[13], v13[15], v13[16], v13[19]
@@ -235,11 +292,15 @@ def br_plan(data, hh, arm):
     h13i = [hh['base_ilv']['w13'], hh['base_ilv']['w13_sf']] + h13[2:] if 'base_ilv' in hh else h13
     wb = hh.get('base_wide', base)
     h13w, h2w = [wb['w13'], wb['w13_sf']] + h13[2:], [wb['w2'], wb['w2_sf']] + h2[2:]
+    pb=hh.get('base_perm',base)
+    h13p,h2p=[pb['w13'],pb['w13_sf']]+h13[2:],[pb['w2'],pb['w2_sf']]+h2[2:]
+    pwb=hh.get('base_pw',base)
+    h13pw,h2pw=[pwb['w13'],pwb['w13_sf']]+h13[2:],[pwb['w2'],pwb['w2_sf']]+h2[2:]
     nv = [x, base['pnw'], native['w13p'], native['w2p'], base['w13_gs'], base['w2_gs'], c, off, slots, act, y, ss]
-    p13, p2, p28, p13i, p13w, p2w, pn = ([t.data_ptr() for t in v] for v in (h13, h2, h28, h13i, h13w, h2w, nv))
+    p13, p2, p28, p13i, p13w, p2w, p13p, p2p, p13pw, p2pw, pn = ([t.data_ptr() for t in v] for v in (h13, h2, h28, h13i, h13w, h2w, h13p, h2p, h13pw, h2pw, nv))
     rp = [t.data_ptr() for t in (ids, c, off, order, tasks[0], slots, pos, tasks[1], t8)]
     fp = [t.data_ptr() for t in (off, ids, tw, pos, y, ss, out)]
-    owners = (plan, h13, h2, h28, h13i, h13w, h2w, nv, t8)
+    owners = (plan, h13, h2, h28, h13i, h13w, h2w, h13p, h2p, h13pw, h2pw, nv, t8)
     plan = dict(plan, tasks=list(tasks) + [t8])
     ostages = 2
     while ostages > 1 and hmod.pm_nt_smem(ostages, m) > M128_HH_ISSUE_OPTS['pm_nt']:
@@ -285,7 +346,7 @@ def br_plan(data, hh, arm):
             if k in ('n', 'n8'):
                 mod.pmz_run(pn, first, 16 if k == 'n' else 8, m, stages, grids[first], stream)
             else:
-                ptr = p28 if k == 12 else p13w if k == 30 else p2w if k == 31 else p13i if k in (26, 29, 40, 42) else p13 if first else p2
+                ptr = p28 if k == 12 else p13pw if k in (56,68) else p2pw if k in (57,69) else p13p if k in (54,66) else p2p if k in (55,67) else p13w if k in (30,46,64) else p2w if k in (31,47,65) else p13i if k in (26,29,40,42,44,50,52,60,62) else p13 if first else p2
                 mod.br_run(ptr, k, hgrid, m, stream)
 
     def route():

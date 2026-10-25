@@ -36,6 +36,13 @@ KINDS_HH = (  # on H_H's buffers: 0/1 and 4/5/8/9 run the heavy-only T32 list, 1
     (28, 32, 0, 4, 0, 0, 0), (29, 32, 1, 5, 0, 0, 0),  # timing probe: 21/26 without the per-stage proxy fence
     (30, 32, 1, 7, 0, 0, 0), (31, 32, 0, 6, 0, 0, 0),  # 26/21 on the wide banks (nf_wide): 3 LDS.128 per stage instead of 8
     (33, 32, 0, 10, 0, 0, 0),  # 21 with the X tile by TMA (no per-stage proxy fence)
+    (44, 32, 1, 67, 0, 0, 0), (45, 32, 0, 66, 0, 0, 0),  # static typed storage
+    (46, 32, 1, 71, 0, 0, 0), (47, 32, 0, 70, 0, 0, 0),  # static typed + wide banks
+    (48, 32, 0, 130, 0, 0, 0),  # four norm partials per output tile (no CTA reduction)
+    (50, 64, 1, 3, 0, 0, 0), (51, 64, 0, 2, 0, 0, 0),  # one decode, paired independent N32 WGMMA accumulators
+    (52, 32, 1, 259, 0, 0, 0), (53, 32, 0, 258, 0, 0, 0),  # one descriptor built per expert/channel tile
+    (54, 32, 1, 1283, 0, 0, 0), (55, 32, 0, 1282, 0, 0, 0),  # descriptor + nibble-rotated packed scale words
+    (56, 32, 1, 1287, 0, 0, 0), (57, 32, 0, 1286, 0, 0, 0),  # wide + descriptor + rotated scales
     (40, 32, 1, 19, 0, 0, 0), (41, 32, 0, 18, 0, 0, 0),  # timing probes: 26/21 without the X copies
     (42, 32, 1, 35, 0, 0, 0), (43, 32, 0, 34, 0, 0, 0))  # timing probes: 26/21 without the code/scale copies
 KINDS_S6 = ((4, 32, 1, 1, 2, 16, 32), (5, 16, 1, 1, 2, 0, 16), (8, 32, 0, 0, 2, 16, 32), (9, 16, 0, 0, 2, 0, 16))  # R_full of 110599ba

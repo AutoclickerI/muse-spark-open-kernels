@@ -65,13 +65,30 @@ def main():
               f'BR_U16_CUDA = {u16!r}\n')
     manifest = dict(S6_sha256=sources.S6_SHA, HH_cell_sha256=HH_SHA, cu_hh_sha256=hashlib.sha256(src['cu_hh'].encode()).hexdigest(),
                     cu_s6_sha256=hashlib.sha256(src['cu_s6'].encode()).hexdigest(), u16_sha256=hashlib.sha256(u16.encode()).hexdigest())
-    for name, kind in (('moe_br_m', 'branch'), ('moe_nf_tune_m', 'tune')):
+    for name, kind in (('moe_br_m', 'branch'), ('moe_nf_tune_m', 'tune'), ('moe_p3b_adapt_m', 'adaptive')):
         for m in (128, 256):
             body = (helpers() + '\n' + IMPORTS + strip_imports(hh) + '\n' + (engine + '\n' if m == 256 and kind == 'branch' else '')
                     + common + f'BR_M = {m}\nBR_SET = {kind!r}\n' + (H / 'plan.py.inc').read_text() + '\n' + (H / 'driver.py.inc').read_text())
             assert not dupes(body), dupes(body)
             manifest[f'{name}{m}'] = write(f'{name}{m}', body, {})
     (H / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    # One payload shares compilation across both M and uses its complete host budget.
+    wrapper = '''
+_stage_lab = lab
+def lab(deadline, weights, state=None):
+    global BR_M, BR_GRID, BR_DEADLINE
+    BR_DEADLINE=deadline
+    br_modules()
+    lines=[]
+    for m in (128,256):
+        BR_M=m;BR_GRID=1056 if m==128 else 2112
+        end=time.monotonic()+(deadline-time.monotonic())/(2 if m==128 else 1)
+        lines += _stage_lab(end,weights,state)
+    return lines
+'''
+    for name,prefix in (('moe_p3b_stage','moe_nf_tune'),('moe_p3b_adaptive','moe_p3b_adapt')):
+        body=(R / f'prof/lab/{prefix}_m128.py').read_text()+wrapper
+        write(name, body, {})
 
 
 if __name__ == '__main__':

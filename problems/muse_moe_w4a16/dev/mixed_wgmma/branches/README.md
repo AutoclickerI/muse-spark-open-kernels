@@ -14,11 +14,15 @@ S11-final patches (2026-10-25, P3b takeover):
   retaining its nf_plan). Changes only nf_plan's finalizer argument 1 -> 4: the CUDA already contains finish<4>.
   Generated `s11_f4.py` **9696416e**. `check_f4.py` / `f4_bitexact.json`: bit-equal against split 1 on the SAME S11
   producer Y/SS (3 fixtures at each M), plus captured synthetic finalizers at both M and local_start=64.
-  Local whole-layer normal: 13 PASS; forced screen in progress. H200 paired evidence: `5e197b5e` 0.9850 / 0.9885.
+  Local whole-layer normal: 13 PASS + 23 static; forced adapters: 13 PASS + 23 static (one decode-32 benchmark
+  exhausted GPU0 memory while other lanes ran). That adapter screen cycles other expert engines; the actual
+  nf portable math is verified by the separate cell comparisons above.
+  H200 paired evidence: `5e197b5e` 0.9850 / 0.9885.
 - `patch_s11_wide.py` **b2748e23** applies onto S11 final, before or after F4; changes only heavy packed-bank
   layout and its loads. Generated F4+wide **e9ce6986**. H200 `f976b09d3fc445eb` (collected): LIW vs LI4
   **0.9936 / 0.9900**, 12 seeds x3, all TASK PASS, bit 35/36 at each M (NT1 norm atomic replay difference).
-  Local integrated validation pending; integration should pair it separately before promotion.
+  `check_wide.py` / `wide_equiv.json`: integrated F4+LIW **18/18 bit-equal** against S11 final's cell on identical
+  inputs (3 seeds x3 fixtures x2 M), all TASK gates pass. Integration should pair it separately before promotion.
 
 `f976b09d` co-residency cap LOST on H200: G1 **1.2351 / 1.4045**, G2 **1.0242 / 1.0586**, G3
 **1.0285 / 1.0433**, G1p5 **1.1951 / 1.3436**, G2p5 **1.1115 / 1.0882** (M128/M256, vs LI4).
@@ -26,8 +30,49 @@ The local 0.957 / 0.944 did not transfer. W2 TMA LT2 **0.9993 / 1.0015** is neut
 Controls 191.79 / 270.98 us; LIW 190.22 / 268.18 us. A:A abs 0.565 / 0.440 us.
 Receipt: `runs/muse_moe_w4a16/20261025T044440Z_check_f976b09d3fc445eb.json`.
 
-Next experiments: static typed-smem to remove uniform descriptor setup (S11 already has aligned dynamic-smem),
-W2 per-warp SS partials, and two register-A accumulators reusing each decoded weight across two N32 token groups.
+Landed **89608c595a9f4f6f** (`prof/lab/moe_p3b_stage.py`, send **ec6bc578**): both M, LI4 vs LIW, TYP/TYPW
+(activation tile in static typed-smem; packed weights still dynamic), WP (W2 per-warp norm partials; finalizer sums
+them in the old order), PAIR2/PAIR4 (one decode feeds two independent N32 accumulators; no N64 WGMMA), DESC (one
+base descriptor per expert/channel tile). Local screens: M128 80/80 bit-equal on route-transition cases, M256
+70/70 before the DESC-only edit; nearby sizes and local_start=64 pass. sm90a compile passes.
+
+12 seeds x3, all TASK PASS (M128/M256 paired ratios vs LI4):
+
+| Arm | M128 | M256 | Decision |
+|---|---:|---:|---|
+| LIW | 0.9924 | 0.9884 | Repeats f976b09d's win |
+| TYP | 1.0012 | 0.9993 | Neutral |
+| TYPW | 0.9918 | 0.9857 | Almost all gain is wide layout; static storage alone adds little |
+| WP | 0.9990 | 1.0017 | Neutral; no integration |
+| PAIR2 | 1.0225 | 0.9794 | M256 win but fixture spread 0.902-1.041; adaptive successor pending |
+| PAIR4 | 1.0130 | 1.0040 | Loses |
+| DESC | 0.9978 | 0.9960 | Small repeated gain; combine in next batch |
+
+Controls 191.00 / 270.99 us, A:A abs 0.503 / 0.465 us. PAIR2 194.93 / 264.69 us;
+TYPW 189.53 / 266.82 us. Receipt: `runs/muse_moe_w4a16/20261025T050111Z_check_89608c595a9f4f6f.json`.
+
+DESC's H200 SASS removes **31/32 ULOP3** and most descriptor UMOVs from the unrolled four-stage K loop:
+W13 1449 -> 1401 static instructions, W2 1294 -> 1246 (not dynamic instruction counts). The 128-instruction dequant
+core in that batch remains: 4 x (9 LOP3 + 7 SHF + 8 HMUL2 + 4 PRMT + 4 LEA). Static typed-smem by itself keeps
+the descriptor ULOP3s. Proxy fences remain required after non-bulk cp.async ([NVIDIA PTX ISA](https://docs.nvidia.com/cuda/parallel-thread-execution/),
+9.7.10.28.3.1 / 9.7.17.7.1); the old no-fence arm remains a diagnostic only.
+
+Next built: `prof/lab/moe_p3b_adaptive.py`: 64/128 token capacity, two pipeline slots, each decoded weight feeds
+only the live independent N32 accumulators; dead token groups issue no WGMMA. Base / hoisted descriptor / wide
+variants. M128 and M256 local 80/80 bit-equal plus nearby cases before the scale-permutation addition; five
+paired local M256 seeds: AD64D / AD64W 0.8898 / 0.8840, AD128D / AD128W 1.0263 / 1.0201 (local rankings only).
+
+Scale-core successor: rotate each packed 32-bit scale word left four bits in prepare (lossless same-sized u8
+bank). Kernel forms even/odd BF16 scale pairs with 2 LOP3 + 1 SHF, then 4 PRMT duplicates. Its scale base is a
+kernel argument so ptxas can use one register constant across all iterations (two immediate inputs otherwise
+split each LOP3 into AND+OR). Dequant **128 -> 124 instructions per KT128**. SASS with hoisted descriptor:
+W13 1401 -> 1385, W2 1246 -> 1238; no spills. New adaptive payload compares PERM/PERMW (N32 S4) and
+AD64D/P/PW, AD128D/P/PW (live N32 groups, S2); P=rotated scale words, W=wide layout.
+Final payload **3bf3b5f2**: M128 and M256 each **100/100 bit-equal** on poisoned route-transition checks, nearby
+sizes and local_start=64 pass. Both capacity-64 and capacity-128 kernels compile for sm90a without spills.
+Sent on the MoE check host as wrapper **779b8fe6**; job id follows in the detached receipt.
+
+## Earlier integrated base (S7 -> S11)
 
 `nf_cell.py` e86f6fb36a467233b2460c18689456d0108f37ef52a68eb7536de0a2da91ebdd: N_full at M=128 and M=256 (live route; heavy
 N32 W13->W2 with the lean K loop, W13 kind 26 = gate/up rows interleaved by 8 (`nf_ilv` in prepare) with SwiGLU in

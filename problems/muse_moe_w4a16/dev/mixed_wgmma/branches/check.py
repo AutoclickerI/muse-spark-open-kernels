@@ -22,7 +22,9 @@ def lab_cold_l2():
 
 def main():
     M = int(sys.argv[1])
-    p = R / (f'prof/lab/moe_br_m{M}.py' if len(sys.argv) < 5 else f'prof/lab/moe_nf_tune_m{M}.py')
+    kind = sys.argv[4] if len(sys.argv)>4 else ''
+    prefix = 'moe_p3b_adapt' if kind=='adaptive' else 'moe_nf_tune' if kind else 'moe_br'
+    p = R / f'prof/lab/{prefix}_m{M}.py'
     m = runpy.run_path(str(p), init_globals=dict(lab_cold_l2=lab_cold_l2))
     arms = [a for a in m['BR_NAMES'] if a not in m.get('BR_PROBES', ())]  # probes are timing-only
     ctl = m['BR_CONTROL']
@@ -89,7 +91,7 @@ def main():
     report = '\n'.join(lines)
     print(report)
     print('LAB_SECONDS', round(time.monotonic() - t0, 1), 'CHARS', len(report))
-    (H / f'check{M}{"" if len(sys.argv) < 5 else "_tune"}.json').write_text(json.dumps(dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(), seeds=seeds, checks=checks,
+    (H / f'check{M}{"_"+kind if kind else ""}.json').write_text(json.dumps(dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(), seeds=seeds, checks=checks,
                                                      bit_equal_to_control=bit, worst_L2_row=worst, arms=arms,
                                                      lab_seconds=round(time.monotonic() - t0, 1), lab_chars=len(report), lines=lines), indent=2) + '\n')
 
