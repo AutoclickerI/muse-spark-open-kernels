@@ -424,6 +424,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
 - One-launch attn_main reading the projection partials directly (PDL, cached KV gather; `9aff77cc`, same protocol)
   wins at every decode (q1) shape: sliding 0.963 / 0.979 / 0.968 and full 0.979 / 0.979 / 0.988 at decode 1 / 16 /
   32 (-1.0 to -2.9 us per layer); fast sincos adds nothing; at q8 it loses 1.20-1.57 (decode loads only).
+- vq8 with a balanced native softmax at full verify 16 / 32 (`8b8e4e2b`): 1.005-1.020 vs S11's vq8 (per-tile clocks:
+  132 CTAs, 150 / 300 tiles, producer ends ~3 us before the consumers); the revised shared-RoPE cooperative prep loses
+  1.08-1.30 at sliding decode and 1.25-1.27 at full decode; verify-1 sliding 0.973 and 1.002 in two parts of the run
+  (no win).
 
 ### Our kernels (losses in "Closed recipes")
 - FP8 `mma.sync.m16n8k32.e4m3` on sm_90 is emulated: the image's CUDA 13.0.88 lowers it to 12 FP8-to-FP16
