@@ -1,0 +1,369 @@
+{
+  "job": "0441f9fc583c42be",
+  "source_sha256": "72bb46f68f214febe05a8026b69bdd7cad5ec152e4986c736a0273420286bff8",
+  "complete": true,
+  "loads": {
+    "decode 1": {
+      "A2": 1.004709,
+      "light": 1.00267,
+      "qkv3": 0.981311,
+      "o": 0.997478,
+      "bal2": 1.007994,
+      "S13": 0.978632
+    },
+    "decode 16": {
+      "A2": 1.00774,
+      "light": 1.014646,
+      "qkv3": 1.005522,
+      "o": 1.010394,
+      "bal2": 0.982068,
+      "S13": 0.9809
+    },
+    "decode 32": {
+      "A2": 1.000768,
+      "light": 1.002217,
+      "qkv3": 0.998854,
+      "o": 0.999428,
+      "bal2": 1.009553,
+      "S13": 1.011363
+    },
+    "verify 1": {
+      "A2": 0.99889,
+      "light": 1.003436,
+      "qkv3": 1.001509,
+      "o": 1.005921,
+      "bal2": 1.006125,
+      "S13": 1.002875
+    },
+    "verify 16": {
+      "A2": 1.000057,
+      "light": 1.061934,
+      "qkv3": 1.000189,
+      "o": 0.999909,
+      "bal2": 1.000786,
+      "S13": 1.062448
+    },
+    "verify 32": {
+      "A2": 0.999985,
+      "light": 1.027835,
+      "qkv3": 1.000246,
+      "o": 0.999315,
+      "bal2": 0.999785,
+      "S13": 1.027877
+    }
+  },
+  "A_A": {
+    "decode 1": {
+      "mean": 1.004709,
+      "lo": 0.999094,
+      "hi": 1.010321,
+      "se": 0.000766,
+      "n": 16
+    },
+    "decode 16": {
+      "mean": 1.00774,
+      "lo": 0.993396,
+      "hi": 1.025521,
+      "se": 0.002317,
+      "n": 16
+    },
+    "decode 32": {
+      "mean": 1.000768,
+      "lo": 0.997605,
+      "hi": 1.005321,
+      "se": 0.000685,
+      "n": 16
+    },
+    "verify 1": {
+      "mean": 0.99889,
+      "lo": 0.992854,
+      "hi": 1.001676,
+      "se": 0.000531,
+      "n": 16
+    },
+    "verify 16": {
+      "mean": 1.000057,
+      "lo": 0.9966,
+      "hi": 1.003399,
+      "se": 0.000414,
+      "n": 16
+    },
+    "verify 32": {
+      "mean": 0.999985,
+      "lo": 0.997616,
+      "hi": 1.001977,
+      "se": 0.000274,
+      "n": 16
+    }
+  },
+  "decisions": {
+    "light": {
+      "verify 16": {
+        "ratio": 1.061934,
+        "AA_radius": 0.0033999999999999586,
+        "wins": true,
+        "paired": {
+          "mean": 1.061934,
+          "se": 0.005135,
+          "norm": 1.061872,
+          "normse": 0.005097,
+          "n": 16
+        }
+      },
+      "verify 32": {
+        "ratio": 1.027835,
+        "AA_radius": 0.0023840000000000527,
+        "wins": true,
+        "paired": {
+          "mean": 1.027835,
+          "se": 0.003693,
+          "norm": 1.02785,
+          "normse": 0.00367,
+          "n": 16
+        }
+      }
+    },
+    "qkv3": {
+      "decode 1": {
+        "ratio": 0.981311,
+        "AA_radius": 0.010321000000000025,
+        "wins": false,
+        "paired": {
+          "mean": 0.981311,
+          "se": 0.000952,
+          "norm": 0.976716,
+          "normse": 0.00093,
+          "n": 16
+        }
+      }
+    },
+    "o": {
+      "decode 1": {
+        "ratio": 0.997478,
+        "AA_radius": 0.010321000000000025,
+        "wins": false,
+        "paired": {
+          "mean": 0.997478,
+          "se": 0.000782,
+          "norm": 0.992807,
+          "normse": 0.000818,
+          "n": 16
+        }
+      }
+    },
+    "bal2": {
+      "decode 16": {
+        "ratio": 0.982068,
+        "AA_radius": 0.025520999999999905,
+        "wins": false,
+        "paired": {
+          "mean": 0.982068,
+          "se": 0.00164,
+          "norm": 0.974576,
+          "normse": 0.00204,
+          "n": 16
+        }
+      },
+      "decode 32": {
+        "ratio": 1.009553,
+        "AA_radius": 0.005320999999999909,
+        "wins": true,
+        "paired": {
+          "mean": 1.009553,
+          "se": 0.000898,
+          "norm": 1.008784,
+          "normse": 0.001055,
+          "n": 16
+        }
+      },
+      "verify 1": {
+        "ratio": 1.006125,
+        "AA_radius": 0.007145999999999986,
+        "wins": false,
+        "paired": {
+          "mean": 1.006125,
+          "se": 0.001426,
+          "norm": 1.007246,
+          "normse": 0.001463,
+          "n": 16
+        }
+      }
+    },
+    "S13": {
+      "decode 1": {
+        "ratio": 0.978632,
+        "AA_radius": 0.010321000000000025,
+        "wins": false,
+        "paired": {
+          "mean": 0.978632,
+          "se": 0.00096,
+          "norm": 0.97405,
+          "normse": 0.001066,
+          "n": 16
+        }
+      },
+      "decode 16": {
+        "ratio": 0.9809,
+        "AA_radius": 0.025520999999999905,
+        "wins": false,
+        "paired": {
+          "mean": 0.9809,
+          "se": 0.001999,
+          "norm": 0.973401,
+          "normse": 0.001837,
+          "n": 16
+        }
+      },
+      "decode 32": {
+        "ratio": 1.011363,
+        "AA_radius": 0.005320999999999909,
+        "wins": true,
+        "paired": {
+          "mean": 1.011363,
+          "se": 0.000996,
+          "norm": 1.010596,
+          "normse": 0.001309,
+          "n": 16
+        }
+      },
+      "verify 1": {
+        "ratio": 1.002875,
+        "AA_radius": 0.007145999999999986,
+        "wins": false,
+        "paired": {
+          "mean": 1.002875,
+          "se": 0.001239,
+          "norm": 1.003992,
+          "normse": 0.001297,
+          "n": 16
+        }
+      },
+      "verify 16": {
+        "ratio": 1.062448,
+        "AA_radius": 0.0033999999999999586,
+        "wins": true,
+        "paired": {
+          "mean": 1.062448,
+          "se": 0.00523,
+          "norm": 1.062385,
+          "normse": 0.005189,
+          "n": 16
+        }
+      },
+      "verify 32": {
+        "ratio": 1.027877,
+        "AA_radius": 0.0023840000000000527,
+        "wins": true,
+        "paired": {
+          "mean": 1.027877,
+          "se": 0.003693,
+          "norm": 1.027892,
+          "normse": 0.003669,
+          "n": 16
+        }
+      }
+    }
+  },
+  "controls": {
+    "light": {
+      "decode 1": {
+        "ratio": 1.00267,
+        "AA_radius": 0.010321000000000025,
+        "within_AA": true
+      },
+      "decode 16": {
+        "ratio": 1.014646,
+        "AA_radius": 0.025520999999999905,
+        "within_AA": true
+      },
+      "decode 32": {
+        "ratio": 1.002217,
+        "AA_radius": 0.005320999999999909,
+        "within_AA": true
+      },
+      "verify 1": {
+        "ratio": 1.003436,
+        "AA_radius": 0.007145999999999986,
+        "within_AA": true
+      }
+    },
+    "qkv3": {
+      "decode 16": {
+        "ratio": 1.005522,
+        "AA_radius": 0.025520999999999905,
+        "within_AA": true
+      },
+      "decode 32": {
+        "ratio": 0.998854,
+        "AA_radius": 0.005320999999999909,
+        "within_AA": true
+      },
+      "verify 1": {
+        "ratio": 1.001509,
+        "AA_radius": 0.007145999999999986,
+        "within_AA": true
+      },
+      "verify 16": {
+        "ratio": 1.000189,
+        "AA_radius": 0.0033999999999999586,
+        "within_AA": true
+      },
+      "verify 32": {
+        "ratio": 1.000246,
+        "AA_radius": 0.0023840000000000527,
+        "within_AA": true
+      }
+    },
+    "o": {
+      "decode 16": {
+        "ratio": 1.010394,
+        "AA_radius": 0.025520999999999905,
+        "within_AA": true
+      },
+      "decode 32": {
+        "ratio": 0.999428,
+        "AA_radius": 0.005320999999999909,
+        "within_AA": true
+      },
+      "verify 1": {
+        "ratio": 1.005921,
+        "AA_radius": 0.007145999999999986,
+        "within_AA": true
+      },
+      "verify 16": {
+        "ratio": 0.999909,
+        "AA_radius": 0.0033999999999999586,
+        "within_AA": true
+      },
+      "verify 32": {
+        "ratio": 0.999315,
+        "AA_radius": 0.0023840000000000527,
+        "within_AA": true
+      }
+    },
+    "bal2": {
+      "decode 1": {
+        "ratio": 1.007994,
+        "AA_radius": 0.010321000000000025,
+        "within_AA": true
+      },
+      "verify 16": {
+        "ratio": 1.000786,
+        "AA_radius": 0.0033999999999999586,
+        "within_AA": true
+      },
+      "verify 32": {
+        "ratio": 0.999785,
+        "AA_radius": 0.0023840000000000527,
+        "within_AA": true
+      }
+    },
+    "S13": {}
+  },
+  "failures": [],
+  "pieces_win": false,
+  "controls_pass": true,
+  "changed_loads_win": false,
+  "freeze_gate": false,
+  "six_load_S13_over_S14": 1.0102785700190655
+}

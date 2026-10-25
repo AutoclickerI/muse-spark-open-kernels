@@ -29,3 +29,29 @@ s14ab_manifest.json, admission.json. No S14 promotion before the whole-layer res
 is being screened while the judge runs. S15's incoming projection port will be evaluated separately.
 
 No-O conditional source passes normal/forced 13/12/24; its A/B wrapper is built as `s14noo`. The no-direct projection variant is also being admitted while the first judge check runs.
+
+## First H200 receipt 0441f9fc583c42be
+
+All-piece **72bb46f6**, wrapper **9f8261e1**: official PASS, host **1.71742141x** [1.69166009,1.74318273],
+all12 shapes x16 seeds, 32 rounds decode1/8 elsewhere, all diagnostic gates pass; prepare195.6s includinglab25.7s.
+Every piece's untouched-load controls pass. Reverted/host paired ratios (>1 favors the piece):
+
+| Piece | Changed loads | Decision |
+|---|---|---|
+| Light N16G4 | verify16 **1.061934**, verify32 **1.027835** | Both clear A:A; retain |
+| Direct qkv3 | decode1 **0.981311**, normalized .976716 | Loses; drop |
+| Direct O | decode1 **0.997478**, normalized .992807 | No win; drop |
+| bal2 | decode16 **.982068**, decode32 **1.009553**, verify1 **1.006125** | Drop T16; T32 clears A:A; recheck T8 (inside .007146 A:A radius) |
+
+Raw full-trial S13/host six-load geomean1.010279 is not sufficient for promotion because decode1/16 lose.
+S13's balanced pool uses the same BN64/S6/BK128 geometry; bal2 changes stages4->2. Standalone evidence did
+not predict the T16 chain result; no unmeasured cause is claimed. Direct qkv3 also increases partials10->32,
+and direct O replaces one BF16 output with8 FP32 partials, increasing the consumers' reduction work.
+Those ABI differences are source-verified; their timing contribution has not been isolated.
+
+Current conditional **f1e61081** = light + bal2 at T8/32 only, omitting direct qkv3/O. Full normal/forced
+13/12/24 pass. Wrapper **90482ea2** is built, with32 rounds at decode1 and verify1 (16 seeds),8 elsewhere;
+local full wrapper admission is running. Snapshot the first receipt via `trials/all4_72bb46f6/`.
+Root cand_r3_best7_s14.py remains the rejected all-piece trial; stage2 is in `variants/stage2.py`.
+No S14 final freeze or scored-source swap yet. Next: send stage2 after its wrapper screen, select bal2
+per load from the new paired evidence, then freeze only retained winning pieces with controls inside A:A.

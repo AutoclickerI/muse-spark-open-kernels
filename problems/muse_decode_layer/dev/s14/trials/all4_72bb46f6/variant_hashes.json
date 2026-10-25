@@ -1,0 +1,41 @@
+{
+  "without_qkv3": {
+    "sha256": "cd8d891d98a9d84b33ad21aee12363199436ada00920fd7e4b6a403d8dade7e7",
+    "retained": [
+      "light",
+      "o",
+      "bal2"
+    ]
+  },
+  "without_o": {
+    "sha256": "054147b0cdb19f80abd6945bc133e0069a710794e207925c298c308598063882",
+    "retained": [
+      "light",
+      "qkv3",
+      "bal2"
+    ]
+  },
+  "without_light": {
+    "sha256": "3778478211f0bec1153a6afe51ac51cef711e017d3fc7eba87d393fdf6e91af4",
+    "retained": [
+      "qkv3",
+      "o",
+      "bal2"
+    ]
+  },
+  "without_bal2": {
+    "sha256": "ee2f011b54e3c6934c6e5a719d9424a061280f81d568c561eec67097cc449d62",
+    "retained": [
+      "light",
+      "qkv3",
+      "o"
+    ]
+  },
+  "without_qkv3_o": {
+    "sha256": "17f692a55b76c2e7b80249eb1c2adc42fa094a2fb7b1670f18bd52a5ec10dfa2",
+    "retained": [
+      "light",
+      "bal2"
+    ]
+  }
+}

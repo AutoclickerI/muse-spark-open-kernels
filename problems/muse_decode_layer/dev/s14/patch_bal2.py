@@ -10,5 +10,5 @@ def patch(src):
     assert len(parts)==2
     old='def _gb_gemv(x, w, choice):\n'
     assert src.count(old)==1
-    src=src.replace(old,old+"    if x.shape[0] in (8,16,32) and tuple(w.shape)==(4608,8192):\n        return gi_run(x,w,6,(128,2,0,0)),6\n")
+    src=src.replace(old,old+"    if x.shape[0] in (8,32) and tuple(w.shape)==(4608,8192):\n        return gi_run(x,w,6,(128,2,0,0)),6\n")
     return src+'\n\n'+'\n\n'.join(parts)+'\n'

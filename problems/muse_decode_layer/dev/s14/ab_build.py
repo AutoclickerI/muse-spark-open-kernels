@@ -98,7 +98,7 @@ def main():
     assert len(wrapped.encode()) <= 1_000_000, len(wrapped.encode())
     out.write_text(wrapped)
     manifest = dict(source=str(out.relative_to(R)), sha256=build.sha(out), host_sha256=build.sha(candidate),
-        payload_sha256=build.sha(payload), source_bytes=len(wrapped.encode()), seeds=16, rounds=8, decode1_rounds=32,
+        payload_sha256=build.sha(payload), source_bytes=len(wrapped.encode()), seeds=16, rounds=8, decode1_rounds=32, verify1_rounds=32,
         arms={k: {n: v for n, v in arm.items() if n != 'source'} for k, arm in variants.items()}, patches=meta['patches'])
     (H / (args.tag + '_manifest.json')).write_text(json.dumps(manifest, indent=2) + '\n')
     print(manifest['source'], manifest['sha256'])
