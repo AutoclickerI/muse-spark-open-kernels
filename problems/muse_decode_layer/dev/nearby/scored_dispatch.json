@@ -1,0 +1,1150 @@
+{
+  "prepared_projection_alternatives": 120,
+  "scored_shapes": 12,
+  "identical": 12,
+  "rows": [
+    {
+      "key": [
+        1,
+        1,
+        2048
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "attn_main",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {
+            "o": [
+              "stream",
+              6,
+              1
+            ]
+          },
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": true,
+        "attention": "_cluster_attention",
+        "moe": "nt1_lop3",
+        "flags": 95,
+        "projection": [
+          [
+            "qkv3",
+            [
+              "NF",
+              [
+                1,
+                "qkv3"
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                1,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "coded",
+              [
+                8,
+                1,
+                2,
+                11,
+                1,
+                3,
+                1
+              ]
+            ]
+          ],
+          [
+            "unpooler_slice",
+            [
+              "gemv",
+              [
+                64,
+                512,
+                128
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 1024
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        1,
+        1,
+        0
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "attn_main",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {
+            "o": [
+              "stream",
+              6,
+              1
+            ]
+          },
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": true,
+        "attention": "_layer_partial_port",
+        "moe": "nt1_lop3",
+        "flags": 95,
+        "projection": [
+          [
+            "qkv3",
+            [
+              "NF",
+              [
+                1,
+                "qkv3"
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                1,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "coded",
+              [
+                8,
+                1,
+                2,
+                11,
+                1,
+                3,
+                1
+              ]
+            ]
+          ],
+          [
+            "unpooler_slice",
+            [
+              "gemv",
+              [
+                64,
+                512,
+                128
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 1024
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        16,
+        1,
+        2048
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "attn_main",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": true,
+        "attention": [
+          "portfolio",
+          [
+            "attn_main",
+            null
+          ]
+        ],
+        "moe": "nt1_lop3",
+        "flags": 69,
+        "projection": [
+          [
+            "qkv3",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                10,
+                4
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                16,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                6,
+                4
+              ]
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              "NF",
+              [
+                16,
+                "unpooler"
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        16,
+        1,
+        0
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "attn_main",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "portfolio",
+          [
+            "attn_main",
+            null
+          ]
+        ],
+        "moe": "nt1_lop3",
+        "flags": 69,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                7,
+                4
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                16,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                6,
+                4
+              ]
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              "NF",
+              [
+                16,
+                "unpooler"
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        32,
+        1,
+        2048
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "attn_main",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "portfolio",
+          [
+            "attn_main",
+            null
+          ]
+        ],
+        "moe": "nt1_lop3",
+        "flags": 69,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              "NF",
+              [
+                32,
+                "qkv_gate"
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                32,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                6,
+                4
+              ]
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              "NF",
+              [
+                32,
+                "unpooler"
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        32,
+        1,
+        0
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "attn_main",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": true,
+        "attention": [
+          "portfolio",
+          [
+            "attn_main",
+            null
+          ]
+        ],
+        "moe": "nt1_lop3",
+        "flags": 69,
+        "projection": [
+          [
+            "qkv3",
+            [
+              "NF",
+              [
+                32,
+                "qkv3"
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                32,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                6,
+                4
+              ]
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              "NF",
+              [
+                32,
+                "unpooler"
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        1,
+        8,
+        2048
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "layer",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "portfolio",
+          [
+            "layer",
+            null
+          ]
+        ],
+        "moe": "nt1_lop3",
+        "flags": 69,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                7,
+                4
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                8,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                6,
+                4
+              ]
+            ]
+          ],
+          [
+            "unpooler_slice",
+            [
+              "gemv",
+              [
+                64,
+                512,
+                128
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 1024
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        1,
+        8,
+        0
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              "cl",
+              8,
+              256,
+              1
+            ],
+            "route": [
+              "cl",
+              8,
+              256,
+              0
+            ],
+            "b2": [
+              "cl",
+              8,
+              256,
+              1
+            ]
+          },
+          "attention": [
+            "layer",
+            null
+          ],
+          "moe": "nt1_lop3",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "portfolio",
+          [
+            "layer",
+            null
+          ]
+        ],
+        "moe": "nt1_lop3",
+        "flags": 69,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                7,
+                4
+              ]
+            ]
+          ],
+          [
+            "o",
+            [
+              "NF",
+              [
+                8,
+                "o"
+              ]
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "gemv",
+              [
+                "bal",
+                64,
+                6,
+                4
+              ]
+            ]
+          ],
+          [
+            "unpooler_slice",
+            [
+              "gemv",
+              [
+                64,
+                512,
+                128
+              ]
+            ]
+          ]
+        ],
+        "unpool_rows": 1024
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        16,
+        8,
+        2048
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              16,
+              1
+            ],
+            "route": [
+              4,
+              1
+            ],
+            "b2": [
+              8,
+              1
+            ]
+          },
+          "attention": [
+            "layer",
+            null
+          ],
+          "moe": "hh_m128",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "portfolio",
+          [
+            "layer",
+            null
+          ]
+        ],
+        "moe": "hh_m128",
+        "flags": null,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              [
+                "vdsk",
+                [
+                  128,
+                  64,
+                  64,
+                  8,
+                  4,
+                  1
+                ],
+                3
+              ],
+              null
+            ]
+          ],
+          [
+            "o",
+            [
+              [
+                "lt",
+                0
+              ],
+              128
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "cublas",
+              null
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              [
+                "short_lt",
+                1,
+                0
+              ],
+              128
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        16,
+        8,
+        0
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              16,
+              1
+            ],
+            "route": [
+              4,
+              1
+            ],
+            "b2": [
+              8,
+              1
+            ]
+          },
+          "attention": [
+            "layer",
+            null
+          ],
+          "moe": "hh_m128",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "vq8",
+          [
+            4,
+            8
+          ]
+        ],
+        "moe": "hh_m128",
+        "flags": null,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              [
+                "vdsk",
+                [
+                  128,
+                  64,
+                  64,
+                  8,
+                  4,
+                  1
+                ],
+                3
+              ],
+              null
+            ]
+          ],
+          [
+            "o",
+            [
+              [
+                "lt",
+                0
+              ],
+              128
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "cublas",
+              null
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              [
+                "short_lt",
+                1,
+                0
+              ],
+              128
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        32,
+        8,
+        2048
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              16,
+              1
+            ],
+            "route": [
+              4,
+              1
+            ],
+            "b2": [
+              16,
+              1
+            ]
+          },
+          "attention": [
+            "layer",
+            null
+          ],
+          "moe": "mixed_parallel_m256",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "portfolio",
+          [
+            "layer",
+            null
+          ]
+        ],
+        "moe": "mixed_parallel_m256",
+        "flags": null,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              [
+                "lt",
+                0
+              ],
+              256
+            ]
+          ],
+          [
+            "o",
+            [
+              "custom",
+              null
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "custom",
+              null
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              [
+                "short_lt",
+                0,
+                0
+              ],
+              256
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    },
+    {
+      "key": [
+        32,
+        8,
+        0
+      ],
+      "dispatch": {
+        "plan": {
+          "glue": "best6",
+          "geometry": {
+            "b1": [
+              16,
+              1
+            ],
+            "route": [
+              4,
+              1
+            ],
+            "b2": [
+              16,
+              1
+            ]
+          },
+          "attention": [
+            "layer",
+            null
+          ],
+          "moe": "mixed_parallel_m256",
+          "projection": {},
+          "prefetch": 0,
+          "dense_chain": false
+        },
+        "gate_split": false,
+        "attention": [
+          "vq8",
+          [
+            4,
+            8
+          ]
+        ],
+        "moe": "mixed_parallel_m256",
+        "flags": null,
+        "projection": [
+          [
+            "qkv_gate",
+            [
+              [
+                "lt",
+                0
+              ],
+              256
+            ]
+          ],
+          [
+            "o",
+            [
+              "custom",
+              null
+            ]
+          ],
+          [
+            "pool_router",
+            [
+              "custom",
+              null
+            ]
+          ],
+          [
+            "unpooler",
+            [
+              [
+                "short_lt",
+                0,
+                0
+              ],
+              256
+            ]
+          ]
+        ],
+        "unpool_rows": 8192
+      },
+      "identical": true
+    }
+  ],
+  "method": "same prepared choices; stage dispatch and dimensional guards traced",
+  "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "s15n_sha256": "ebceda91ed055adc0ece9161a350934dc92b93cd78277bc6b25e54ce66d890a6"
+}

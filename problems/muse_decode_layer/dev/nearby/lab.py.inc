@@ -41,6 +41,28 @@ def nearby_delta(a,b):
             for x,y in zip(a[:2],b[:2])]
 
 
+def nearby_s15n(base):
+    import ast,hashlib
+    lines=base['_s15_source'].splitlines(True)
+    for a,b,patch in reversed(S15N_EDITS):lines[a:b]=[patch]
+    source=''.join(lines)
+    assert hashlib.sha256(source.encode()).hexdigest()==S15N_SHA
+    path='<nearby-s15n-'+S15N_SHA[:12]+'>'
+    linecache.cache[path]=(len(source),None,source.splitlines(True),path)
+    module=types.ModuleType('nearby_s15n');module.__file__=path
+    ns=module.__dict__;exec(compile(source,path,'exec'),ns)
+    if install:=globals().get('NEARBY_LOCAL_INSTALL'):install(module)
+    assignments=lambda src:{n.targets[0].id:ast.dump(n) for n in ast.parse(src).body
+        if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)}
+    old,new=assignments(base['_s15_source']),assignments(source)
+    for key,value in base.items():
+        if key in new and old.get(key)==new[key] and not callable(value):ns[key]=value
+        elif key in ns and hasattr(value,'src') and hasattr(value,'warmup'):
+            assert ns[key].src==value.src,key
+            ns[key]=value
+    return ns
+
+
 def lab(deadline,weights,state):
     began=time.monotonic();base=kernel_fn.__globals__
     inputs=nearby_namespace('inputs',INPUT_SOURCE)
@@ -53,7 +75,8 @@ def lab(deadline,weights,state):
     baseline_state=None;baseline_error=None
     try:baseline_state=baseline['prepare'](weights)
     except Exception as exc:baseline_error=type(exc).__name__+':'+str(exc)[:160]
-    calls={'s15':lambda d:base['kernel_fn'](d,state)}
+    n=nearby_s15n(base)
+    calls={'s15':lambda d:base['kernel_fn'](d,state),'s15n':lambda d:n['kernel_fn'](d,state)}
     if baseline_state is not None:calls['sglang']=lambda d:baseline['kernel_fn'](d,baseline_state)
     ev0=torch.cuda.Event(enable_timing=True);ev1=torch.cuda.Event(enable_timing=True)
     def replay(g):
@@ -88,7 +111,7 @@ def lab(deadline,weights,state):
                 for name,(_,out) in graphs.items():
                     if reason:=nearby_schema(out,data):gates.append(name+':'+reason)
                 if 'sglang' in graphs:diff.append(nearby_delta(graphs['s15'][1],graphs['sglang'][1]))
-                times={name:[] for name in graphs};ratios=[]
+                times={name:[] for name in graphs};ratios={name:[] for name in graphs if name!='s15'}
                 names=list(graphs)
                 # Swapped order, paired on identical input/cache rows. The only
                 # modified cache entries belong to this block and are overwritten
@@ -96,32 +119,20 @@ def lab(deadline,weights,state):
                 for r in range(8):
                     for name in names if r%2==0 else names[::-1]:
                         times[name].append(max(.001,replay(graphs[name][0])-fixed))
-                    if r%2 and 'sglang' in times:
-                        ratios.append((times['sglang'][-2]+times['sglang'][-1])/
+                    if r%2:
+                        for name in ratios:ratios[name].append((times[name][-2]+times[name][-1])/
                                       (times['s15'][-2]+times['s15'][-1]))
                 per.append(dict(us={k:statistics.median(v) for k,v in times.items()},
-                                speedup=statistics.median(ratios) if ratios else None))
-            row=dict(k=label,n=len(per),us=[round(statistics.median(p['us']['s15'] for p in per),2)],
-                     seq=ranges,ok=not gates)
-            if 'sglang' in graphs:
-                rr=[p['speedup'] for p in per]
-                row['us'].append(round(statistics.median(p['us']['sglang'] for p in per),2))
-                row.update(r=round(statistics.median(rr),4),rr=[round(v,4) for v in rr],delta=diff)
-            if gates:row['gates']=gates
-            rows.append(row)
+                                ratios={k:statistics.median(v) for k,v in ratios.items()}))
+            rows.append([label]+[round(statistics.median(p['us'][name] for p in per),2) for name in calls]
+                        +[round(p['ratios']['s15n'],5) for p in per]+[not gates])
         except Exception as exc:
             errors.append(label+':'+type(exc).__name__+':'+str(exc)[:110])
         graphs=data=None;gc.collect();torch.cuda.empty_cache()
-    result=dict(candidate=S15_SHA,shape_count=len(CASES),seeds=SEEDS,replays=8,
+    result=dict(candidate=S15_SHA,s15n=S15N_SHA,shape_count=len(CASES),seeds=SEEDS,replays=8,
                 fixed_us=round(fixed,3),baseline_error=baseline_error,rows=rows,errors=errors,
                 elapsed=round(time.monotonic()-began,2),complete=len(rows)==len(CASES) and not errors)
-    # Compact all rows into the wrapper's 9k tail budget, while retaining timing
-    # and per-seed paired ratios. Detailed checks/ranges are in local evidence.
-    compact=[]
-    for row in rows:
-        compact.append([row['k'],*row['us'],row.get('r'),row.get('rr'),row['ok']])
-    result['rows']=compact
     text=json.dumps(result,separators=(',',':'))
     if len(text)>8400:raise ValueError('receipt exceeds 8400 chars '+str(len(text)))
-    return ['META S15 nearby audit; us=[S15,SGLang]; r=SGLang/S15; two seeds,8 cold ABBA replays; no TASK oracle on remote',
+    return ['META S15 nearby audit; columns=[label,S15_us,S15n_us,SGLang_us,N/A_seed0,N/A_seed1,finite];2 seeds,8 cold ABBA replays;shared prepared state;no remote TASK oracle',
             'RESULT '+text]

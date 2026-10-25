@@ -31,6 +31,10 @@ def main():
             m.NEARBY_LOCAL_FLASH=sys.modules['sgl_kernel.flash_attn'].flash_attn_with_kvcache
             import local_standins
             local_standins.install(m)
+            def install_variant(v):
+                if a.forced:helper.install(v,False)
+                local_standins.install(v)
+            m.NEARBY_LOCAL_INSTALL=install_variant
             fn=m._lab_run_one
             def run(name,source,deadline,weights,state):
                 lines=fn(name,source,time.monotonic()+1800,weights,state)
@@ -48,6 +52,7 @@ def main():
         (H/f'host_{mode}.json').write_text(json.dumps(result,indent=2)+'\n')
         assert 'result' in result and result['result']['complete'],result
         assert not result['result']['baseline_error'],result['result']['baseline_error']
+        assert all(len(row)==7 and row[-1] for row in result['result']['rows']),result['result']['rows']
 
 
 if __name__=='__main__':main()

@@ -68,29 +68,69 @@ The test driver initially had a duplicate `page` keyword in its own case builder
 fixture executed. The builder was corrected and both complete screens rerun. This was not an S15
 failure; no candidate code or tolerance was modified.
 
+## S15n: supported range dispatch
+
+Candidate [cand_r3_best7_s15n.py](../../cand_r3_best7_s15n.py), SHA256
+`ebceda91ed055adc0ece9161a350934dc92b93cd78277bc6b25e54ce66d890a6`.
+[build_s15n.py](build_s15n.py) applies asserted edits to frozen S15;87 changed lines
+(68 additions/19 removals; exact counts in `s15n.patch`). All36 source literals,
+including every CUDA and attributed vendor body, are byte-identical to S15. No second
+runtime implementation or fail-open alternative is appended. Four short helpers select
+valid ranges; the existing kernel families execute the work.
+
+| Lookup replaced | Supported range / dimensional guard |
+|---|---|
+| Best7 B/L/window row | Nearest B1/16/32 at unchanged q_len/window; no `other` route for nearby requests. |
+| Small-M flags | M1 uses95 (SLOT requires exactly1); M2–64 uses69; counters remain prepared separately per flags word. |
+| Expert family | T<=64 small-M;65–128 heavy/light N_full family;T>128 mixed N_full family. Both large families use the existing dynamic-M `nf_plan`, actual routing, scratch sizes and occupancy. Tested through T264. |
+| Glue geometry | Nearest total-T anchor1/8/16/32/128/256, preserving the special verify1/T8 cluster geometry; larger tokens use existing row/late-load geometry. |
+| Last-CTA sliding, full decode partials | Nearest B1/16/32. B1–8 uses last-CTA sliding or full direct-partials. Remaining decode groups use attn_main. Planners derive actual splits/pages/span. |
+| N128 verify full | Every B>1,L8,full uses nearest16/32 setting; B1 retains its scored FA3 path. Split/partial sizes are computed from actual B. |
+| Gate split | Nearest B1/16/32 per layer; q_len1 only, original gate kernel receives actual T and resets its counters. |
+| Coded dense | Nearest token anchor; t1 coding extends to T2–4, then nearest original specialization. Exact BF16 codes and decode are unchanged. |
+| Balanced GEMV and bal2 | Nearest seeded M for the same N/K, with actual-T masks/next-power-of-two tile. Pool anchor32 chooses bal2; dense GEMV's existing64-token resource boundary remains. |
+| NF roles | Nearest anchor **among valid templates**: qkv3/d9<=8, qkv32<=32, O small<=8/16, unpool small<=16. O32 and unpool32 WGMMA mask actual M and support larger rows. Unselected anchors preserve the original S15 role choice. No unsupported plan is called. |
+| Projection pins / Lt / VDSK | Nearest prepared choice per role. Lt descriptors bind M: choose a prepared ceiling, pad rows inside the timed call and trim output; above the largest plan, row chunks use the same full role. VDSK uses actual M and masks tails. No descriptor is reused with the wrong M. |
+| T<=8 unpooler | Unchanged, always determined by the **whole call's T**. Lt row chunks above T8 continue using the full unpooler; they never use the shortcut. |
+
+Normal and forced S15n screens each pass143 fixtures (13 official +65×2 seeds),
+eagerly and after graph replay:572 TASK checks total. All25 static checks pass in
+each mode. Evidence: `s15n_normal.json`, `s15n_forced.json` and their local_eval reports.
+No S15n correctness failures were found. Hopper-specific device execution remains
+unverified locally; the explicit launch stand-ins above are retained.
+
+Scored dispatch proof: [prove_dispatch.py](prove_dispatch.py) traces each of the12
+scored shapes under the same prepared state. Entire selected plan, gate split,
+attention family/setting, MoE family/flags, projection family/algorithm and unpooler
+width match S15. It also checks every prepared projection point against five possible
+tuner choices, so the equality does not assume one local Lt outcome. The machine-readable
+[scored_dispatch.json](scored_dispatch.json) records12/12 matches and candidate identities.
+
 ## Reset lab
 
-[build.py](build.py) and [lab.py.inc](lab.py.inc) produce one self-contained decode-host payload,
-with the exact S15 host, a public-spec input generator and the exact SGLang baseline inlined.
-No reference import or external repository path is shipped. Native H200 FA3 scheduler metadata
-is constructed normally. Baseline and S15 use identical inputs and the same input-derived busiest
-expert range; both overwrite their own new-cache slots. Two fresh seeds,8 alternating cold graph
-replays per side,1GiB **read** flush, measured empty-graph subtraction.65 shapes, one payload.
+[build.py](build.py) and [lab.py.inc](lab.py.inc) now generate a three-way payload:
+**S15 / S15n / exact SGLang baseline**, all65 shapes,2 fresh seeds,8 cold alternating
+CUDA-graph replays per side,1GiB read flush and measured empty-graph subtraction.
+S15n is restored by a hash-checked source diff and uses S15's exact prepared weights,
+Lt choices, lossless codes and counters; identical Triton functions and compiled modules
+are shared. This avoids a second tuner and isolates dispatch. Both kernels still derive
+all outputs from each live input. The public input generator and baseline are inlined;
+no reference imports are shipped. Schema/finite checks are diagnostics; the independent
+TASK gates above establish local correctness. Native H200 performance remains pending.
 
-Remote schema/finite checks are diagnostics; the FP32 TASK correctness claims come from local checks
-and the host's official tests, not a comparison with a rounded baseline. The payload honors prepare's
-remaining deadline and reports missing cases as incomplete. The exact shipped wrapper passes normal and forced local_eval:65 shapes×2 seeds×8
-replays against SGLang,13 official host tests and2 wrapper static checks in each mode. Native FA3
-is substituted only locally; schema/finite gates pass on all65 pairs. Local payload elapsed134.15s
-normal (first baseline JIT),67.53s forced (warm cache); neither is an H200 timing.
-[validation.json](validation.json) records the exact screened wrapper hash. No native numbers are claimed before
-its receipt. Decode check quota (preserving scored runs for candidates). Priority5, not-before1792972800 (2026-10-26 00:00 UTC/09:00 KST); sender **PID 1113126**, wrapper `a357ab6f8bc5a74b`.
-No judge job ID yet; the gate prevents an early send. Exact identity: [queue.json](queue.json).
+Both exact wrapper screens pass65 shapes×2 seeds×8 replays,13 official host tests and
+2 wrapper static checks per mode. Local payload elapsed80.05s normal /60.60s forced;
+these timings do not rank H200 performance.
 
-Receipt analysis: compare SGLang/S15 for nearby vs their matching scored controls. A lower ratio flags
-a lost speedup; report raw S15/SGLang times too, separating the task-mandated T8/9 unpooler jump.
-A local pass is insufficient to close P4's “not much slower” criterion until this H200 result lands.
+Sender1113126 was stopped under the dispatch lock after checking its PID,command,
+wrapper SHA and held state. Its metadata was removed by its own signal handler; no
+judge request had occurred. No other sender was signaled. Replacement **PID 1293482**,
+wrapper **`5d0893419ae88280`**: decode check,priority5,not-before1792972800
+(2026-10-26 00:00 UTC/09:00 KST). No judge job ID yet. Exact identity:
+[queue.json](queue.json); prior identity: [superseded_queue.json](superseded_queue.json).
 
-Reproduce: `CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_decode_layer/dev/nearby/screen.py`
-and the same with `--forced`; `build.py` generates the lab, `screen_lab.py` / `--forced` screen
-the exact host/payload. Run `read.py <receipt.json>` after `h200_lab.py read <job>` lands.
+Reproduce: run `build_s15n.py`, then `screen.py --candidate problems/muse_decode_layer/cand_r3_best7_s15n.py`
+and the same with `--forced` in `CUDA_VISIBLE_DEVICES=0 tools/img python ...`.
+Run `build.py`, `h200_lab.py build ...` and `screen_lab.py` / `--forced` for the exact lab.
+After its native receipt lands, `read.py <receipt.json>` prints paired S15n/S15 and
+SGLang-relative times. P4's performance criterion remains open until that receipt.

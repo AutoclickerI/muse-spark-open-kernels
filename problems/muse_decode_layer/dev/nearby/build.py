@@ -2,6 +2,7 @@
 import ast
 import base64
 import hashlib
+import difflib
 import json
 import lzma
 from pathlib import Path
@@ -31,6 +32,10 @@ def main():
     enc=lambda s:base64.b85encode(lzma.compress(s.encode(),preset=9)).decode()
     payload='import torch,time,statistics,math,json,gc,base64,lzma,linecache,types\n'
     payload+='CASES='+repr(cases())+'\nSEEDS='+repr(SEEDS)+'\nS15_SHA='+repr(S15_SHA)+'\n'
+    nsource=(p/'cand_r3_best7_s15n.py').read_text()
+    before=candidate.read_text().splitlines(True);after=nsource.splitlines(True)
+    edits=[(a,b,''.join(after[c:d])) for op,a,b,c,d in difflib.SequenceMatcher(None,before,after,autojunk=False).get_opcodes() if op!='equal']
+    payload+='S15N_SHA='+repr(hashlib.sha256(nsource.encode()).hexdigest())+'\nS15N_EDITS='+repr(edits)+'\n'
     payload+='INPUT_SOURCE=lzma.decompress(base64.b85decode('+repr(enc(inputs))+')).decode()\n'
     payload+='BASELINE_SOURCE=lzma.decompress(base64.b85decode('+repr(enc(baseline))+')).decode()\n'
     payload+=(H/'lab.py.inc').read_text()
@@ -40,7 +45,7 @@ def main():
     host=(p/'dev/s15/s15ab_host.py').read_text()
     assert S15_SHA in host
     (H/'nearby_host.py').write_text(host)
-    meta=dict(candidate_sha256=S15_SHA,cases=len(cases()),nearby=len(cases())-12,
+    meta=dict(candidate_sha256=S15_SHA,s15n_sha256=hashlib.sha256(nsource.encode()).hexdigest(),cases=len(cases()),nearby=len(cases())-12,
               seeds=SEEDS,replays=8,cold_l2='1GiB read before each side',
               source_sha256={str(f.relative_to(R)):hashlib.sha256(f.read_bytes()).hexdigest()
                 for f in (candidate,p/'reference.py',p/'baseline.py',H/'nearby_host.py',H/'nearby_payload.py')})

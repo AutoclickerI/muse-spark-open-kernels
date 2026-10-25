@@ -19,8 +19,12 @@ from cases import S15_SHA, SEEDS, cases
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true')
     ap.add_argument('--wrapper',type=Path);ap.add_argument('--only',nargs='*')
+    ap.add_argument('--candidate',type=Path)
     a=ap.parse_args();mode='forced' if a.forced else 'normal'
-    result=dict(mode=mode,candidate_sha256=S15_SHA,seeds=SEEDS,tests=[],dispatch={},complete=False)
+    candidate=a.candidate.resolve() if a.candidate else R/'problems/muse_decode_layer/cand_r3_best7_s15.py'
+    if a.candidate:mode='s15n_'+mode
+    digest=hashlib.sha256(candidate.read_bytes()).hexdigest()
+    result=dict(mode=mode,candidate_sha256=digest,seeds=SEEDS,tests=[],dispatch={},complete=False)
     original_loader=ev.load_module;holder={}
     def loader(name,path):
         m=original_loader(name,path)
@@ -85,8 +89,8 @@ def main():
         result['complete']=len(result['tests'])==len(todo)
         return [dict(case=r['label']+':'+str(r['seed']),ok=r['ok'],msg=r.get('error',r.get('graph_msg',''))) for r in result['tests']]
     ev.run_tests=run_tests
-    target=a.wrapper.resolve() if a.wrapper else R/'problems/muse_decode_layer/cand_r3_best7_s15.py'
-    if not a.wrapper:assert hashlib.sha256(target.read_bytes()).hexdigest()==S15_SHA
+    target=a.wrapper.resolve() if a.wrapper else candidate
+    if not a.wrapper and not a.candidate:assert hashlib.sha256(target.read_bytes()).hexdigest()==S15_SHA
     sys.argv=['local_eval.py',str(target),'--tests-only','--json',str(H/f'{mode}_local_eval.json')]
     try:ev.main()
     finally:(H/f'{mode}.json').write_text(json.dumps(result,indent=2)+'\n')

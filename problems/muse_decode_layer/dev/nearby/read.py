@@ -18,20 +18,15 @@ def main():
         d=matching[0]
     print('complete:',d['complete'],'baseline prepared:',not d['baseline_error'],'errors:',d['errors'])
     specs={c['label']:c for c in cases()};rows={r[0]:r for r in d['rows']}
-    print('| case | S15 us | SGLang us | baseline/S15 | scored controls | nearby/control speedup |')
-    print('|---|---:|---:|---:|---|---|')
+    print('| case | S15 us | S15n us | SGLang us | N/S15 | SGLang/S15n |')
+    print('|---|---:|---:|---:|---:|---:|')
     ranked=[]
-    for name,row in rows.items():
-        c=specs[name];q=c['q_len'];b=c['batch'];layer=c['layer'][0]
-        bs=(1,16,32);below=max((x for x in bs if x<=b),default=1);above=min((x for x in bs if x>=b),default=32)
-        controls=[f'scored-{"d" if q==1 else "v"}{x}-{layer}' for x in sorted({below,above})]
-        ratios=[row[3]/rows[k][3] for k in controls if len(row)==6 and k in rows and len(rows[k])==6]
-        ranked.append((min(ratios,default=1),name,row,controls,ratios))
-    for _,name,row,controls,ratios in sorted(ranked):
-        if len(row)!=6:
-            print('|',name,'| baseline missing |');continue
-        print(f'| {name} | {row[1]:.2f} | {row[2]:.2f} | {row[3]:.4f} | {", ".join(controls)} | '+
-              ', '.join(f'{v:.4f}' for v in ratios)+' |')
+    for row in d['rows']:
+        if len(row)!=7:raise ValueError('expected S15/S15n/SGLang three-way row')
+        name,old,new,base,r0,r1,ok=row
+        ranked.append(((r0+r1)/2,name,old,new,base,ok))
+    for ratio,name,old,new,base,ok in sorted(ranked):
+        print(f'| {name} | {old:.2f} | {new:.2f} | {base:.2f} | {ratio:.5f} | {base/new:.4f} |'+(' FAIL' if not ok else ''))
     print('Local sm120 timings do not predict H200. No review cutoff is assumed; read TASK gates separately.')
 
 
