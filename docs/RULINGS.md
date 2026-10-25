@@ -110,6 +110,17 @@ question-tool label is Jihoon's word; the question and option text are agent con
   decode-layer speedup and its stage kernels (GOAL). Serving goals, rules and work leave the live docs; their
   material and Jihoon's serving answers are parked in `docs/serving/` until the serving round opens.
 
+## R-20261025-2 — 2026-10-25 18:10 KST — port NathenFernandes's MIT proj kernels with attribution
+> Port with attribution (Recommended)
+
+- Source: question-tool answer in this session. The question: NathenFernandes (proj board #14) published their
+  judged proj kernels under MIT (github.com/NathenFernandes/muse-bf16-proj @ 86aff75); on the same judge protocol
+  they take 0.62-0.96x our time at every shape; how may we use their code? The chosen option read: "Review their
+  CUDA, run it in our H200 labs, and put the winners into our decode layer with their MIT notice."
+- Effect: that repo's code may be reviewed, built, run on the judge and shipped in our decode layer, keeping the
+  MIT copyright and permission notice in the shipped source. Covers this repo only; other teams' code is asked
+  case by case.
+
 ## Dropped agent rules (do not reintroduce)
 
 | Rule an agent introduced | Dropped | Match |

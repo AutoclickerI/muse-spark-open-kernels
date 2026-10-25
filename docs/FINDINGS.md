@@ -522,6 +522,16 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   vs 1.4027x (vq8 at verify 16 sliding 29.3 vs 30.3 us and verify 1 sliding).
 ## Projections and verify dense
 
+- NathenFernandes's judged v18 proj kernels (MIT, github.com/NathenFernandes/muse-bf16-proj @ 86aff75, proj board
+  #14 at 1.5186x; `results/v18_shapes.csv` there) against our best proj-board receipt (`be263140`, 1.190x; same
+  judge protocol, SGLang baselines within 3%): theirs take 0.62-0.96x our time at every shape. Ours / theirs in us:
+  t=1 qkv_gate 12.76 / 9.34, o 6.70 / 5.10, pooler 18.56 / 13.29, unpooler 5.03 / 3.72, router 6.30 / 3.94; t=16
+  pooler 19.74 / 13.98, unpooler 18.36 / 13.74; t=32 pooler 21.86 / 16.13; t=256 pooler 30.18 / 24.19, unpooler
+  24.29 / 23.32. Their weights are 12 bits per BF16 weight (low byte + 4-bit code: 3 bits index an 8-entry
+  high-byte table by PRMT, plus the sign; exact escapes), the same ratio as our coded GEMV, so the gap is kernel
+  structure (`mma.sync` m16n8k16 with weights on M, `ld.global.nc.L1::no_allocate`, cluster reductions, pinned
+  cuBLASLt at large M). Summed per load it is worth ~+5-7% on the decode-layer score before overlap. Port under
+  R-20261025-2: `problems/muse_bf16_proj/dev/public_nf/`.
 - SGLang (`7fb3e930`): cuBLAS BF16 GEMM (qkv_gate, o, pooler, unpooler) 2.8 us + bytes / 3.54 TB/s, 47-76% of floor
   per shape; FP32 router 10.3-26.3 us vs a 1.8-2.7 us floor; sliced unpooler (<= 8 tokens, 8.4 MB) 6.8-6.9 us vs 1.75.
 - best7 dense roles vs a 3.6 TB/s read (`95ab383d` graph times incl. replay overhead; bytes = one read of the BF16
