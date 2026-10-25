@@ -14,9 +14,11 @@ the eight tensor-core instructions are retained. The broad recipe loses
 
 `build_hint.py` instead issues the first tile's weight cache requests before
 wait and preserves the original software pipeline. It restores the baseline
-register allocation and LDGSTS schedule. Direct attribution against the exact
-losing recipe, metadata-only changes, and S14 is pending in `0f74021a2c53445e`.
-It is not yet a winning projection recipe.
+register allocation and LDGSTS schedule. Direct attribution in `0f74021a2c53445e` repeats the register-tile loss
+(F .8870 six-load speedup); cache hints reach 1.00269 and metadata-only 1.00317.
+These small gains need shared-JIT confirmation: unchanged kernels originally
+had separate device handles. The corrected payload is locally validated but
+H200 quota-blocked until 09:00 KST. No projection recipe is promoted.
 
 GLUE_CL_CUDA has a separate source-to-machine-code issue: 17/19 specializations
 sink intended immutable norm/bias/local-start loads past ACQBULK. Inline vector

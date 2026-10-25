@@ -20,10 +20,21 @@
   "local_lab_fixtures": 12,
   "local_lab_seeds": 16,
   "local_lab_paths": "portable; Hopper kernels audited/compiled separately",
-  "status": "all-fixes H200 rejected: paired six-load speedup .88495; follow-up attribution prepared",
+  "status": "H200 small gains provisional: shared-JIT confirmation blocked by all-host quota; no pending run",
   "h200_job": "8db4213240c6420d",
   "payload_sha256": "c638acca812650c7aa9791d278ab84e9bff25ae77639426bc9ad9482c01b48d5",
   "native_glue_bitexact_replays": 384,
   "native_partial_bitexact_replays": 192,
-  "h200_all_fixes_speedup": 0.8849504621475803
+  "h200_all_fixes_speedup": 0.8849504621475803,
+  "followup_job": "0f74021a2c53445e",
+  "followup_all_gates_clean": true,
+  "followup_shapes": 12,
+  "followup_seeds": 16,
+  "shared_jit_local_fixtures": 12,
+  "shared_jit_local_seeds": 16,
+  "shared_jit_actual_handle_check": true,
+  "confirmation_payload_sha256": "6cb428bc12b1180f6072a064ff9444dc7616ec2bdd3bc171ef3f13e26e3c99f8",
+  "confirmation_job": null,
+  "integration_patch_sha256": "f39bc1f3d61b44c2dcb5d293c9b43786c5cc6d6823968ec6816f39038d07c6f7",
+  "integration_candidate_sha256": "5f4e6aa95071308ef24d4e36188a34c85482f65886c3e3eace2409f3dcb7d750"
 }

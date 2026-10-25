@@ -1,0 +1,96 @@
+{
+  "base": "problems/muse_decode_layer/cand_r3_best7_s14_final.py",
+  "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "patch": "problems/muse_bf16_proj/dev/pdl_audit/patch_metadata_s14.py",
+  "patch_sha256": "f39bc1f3d61b44c2dcb5d293c9b43786c5cc6d6823968ec6816f39038d07c6f7",
+  "candidate": "problems/muse_bf16_proj/dev/pdl_audit/meta_trial.py",
+  "candidate_sha256": "5f4e6aa95071308ef24d4e36188a34c85482f65886c3e3eace2409f3dcb7d750",
+  "h200_job": "0f74021a2c53445e",
+  "arm": "M",
+  "six_load_speedup": {
+    "mean": 1.0031699167524852,
+    "se": 0.0003172640786437132,
+    "n": 16
+  },
+  "control_speedup": {
+    "mean": 1.00073027974252,
+    "se": 0.00017963863986949672,
+    "n": 16
+  },
+  "loads": {
+    "d1": {
+      "A2": 1.0028682609713442,
+      "F": 1.0991694246832568,
+      "B": 0.9879705246554475,
+      "M": 0.9900351538552628,
+      "D": 0.9912067556975446
+    },
+    "d16": {
+      "A2": 0.9966272184137395,
+      "F": 1.2380472446713648,
+      "B": 0.9933048399552312,
+      "M": 0.9960773549521751,
+      "D": 0.9963152845261574
+    },
+    "d32": {
+      "A2": 0.9996714942603923,
+      "F": 1.2281967497974227,
+      "B": 0.9986733464974068,
+      "M": 0.9970906222147312,
+      "D": 0.9985165871628171
+    },
+    "v1": {
+      "A2": 0.9974719895705233,
+      "F": 1.2237324713120303,
+      "B": 0.9986358987965582,
+      "M": 0.9944890406866517,
+      "D": 0.9973807451447642
+    },
+    "v16": {
+      "A2": 1.0000456498358417,
+      "F": 0.9989381147079018,
+      "B": 0.9997357730274824,
+      "M": 0.9983957521592143,
+      "D": 0.9994525694399536
+    },
+    "v32": {
+      "A2": 0.9990901871563115,
+      "F": 1.0048567998850166,
+      "B": 1.005686505416619,
+      "M": 1.0050209800341785,
+      "D": 1.0001361301594938
+    }
+  },
+  "local": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 24
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 24
+    }
+  },
+  "projection_functions_unchanged": [
+    "_gemv_kernel",
+    "_gb_kernel",
+    "_gi_kernel",
+    "_gate_split_kernel",
+    "_vdsk_gemm",
+    "gemv",
+    "_gb_gemv",
+    "_best7_project"
+  ],
+  "status": "provisional paired gain; shared-JIT confirmation quota-blocked; not applied to incumbent",
+  "limitation": "unchanged JIT kernels used separate device handles; small gain with verify32 regression; larger glue target remains unmet",
+  "confirmation": {
+    "payload": "problems/muse_bf16_proj/dev/pdl_audit/lab_pdl_shared_followup.py",
+    "payload_sha256": "6cb428bc12b1180f6072a064ff9444dc7616ec2bdd3bc171ef3f13e26e3c99f8",
+    "status": "not accepted: no H200 quota; own reset-wait sender cancelled",
+    "next_quota": "2026-10-26 09:00 KST"
+  },
+  "legacy_patch": "problems/muse_bf16_proj/dev/pdl_audit/patch_d1_s14.py",
+  "legacy_patch_sha256": "5716052b770f0f0757125f4882468c81828080e493510c74c9e46ca22c1e1d1d"
+}

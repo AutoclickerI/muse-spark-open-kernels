@@ -1,3 +1,20 @@
+PA_SHARE_IDENTICAL_JIT=False
+
+
+def pa_share_jit(base,target):
+    # Match executable source and its JIT dependency closure, ignoring debug line numbers.
+    names={name for name,value in base.items() if isinstance(getattr(value,'src',None),str)
+        and hasattr(value,'warmup') and name in target and getattr(target[name],'src',None)==value.src}
+    dependencies={name:{node.id for node in ast.walk(ast.parse(base[name].src)) if isinstance(node,ast.Name)
+        and hasattr(base.get(node.id),'warmup')} for name in names}
+    while True:
+        kept={name for name in names if dependencies[name]<=names}
+        if kept==names:break
+        names=kept
+    for name in names:target[name]=base[name]
+    return sorted(names)
+
+
 def pa_share(base,target,source,private=()):
     old,new=pa_assignments(PA_BASE),pa_assignments(source)
     for key,value in old.items():
@@ -34,10 +51,18 @@ def lab(deadline,weights,state=None):
     for key,plan in d1state['best7_plans'].items():plan['gp_key']=key
     states=dict(A=state,A2=state,F=changed,B=changed,M=changed,D=d1state)
     ns['A2']=base
+    reused={}
+    if PA_SHARE_IDENTICAL_JIT:
+        reused={name:pa_share_jit(base,ns[name]) for name in ('F','B','M','D')}
+        for name in ('M','D'):
+            for kernel in ('_gemv_kernel','_gb_kernel','_gi_kernel','_gate_split_kernel','_norm_gate_kernel'):
+                assert ns[name][kernel] is base[kernel],(name,kernel)
+        assert ns['F']['_gb_kernel'] is not base['_gb_kernel']
     if torch.cuda.get_device_capability()!=(9,0):base['_ap_fa3_scheduler_metadata']=lambda *a,**kw:None
-    seeds=tuple(2100911+104729*i for i in range(16))
+    seed_base=3100973 if PA_SHARE_IDENTICAL_JIT else 2100911
+    seeds=tuple(seed_base+104729*i for i in range(16))
     lines=['META S14 PDL attribution; F=first-weight registers+metadata, B=first-weight hints+metadata, M=metadata only, D=prior d1-full glue',
-        'META A2=A:A;16 held-out seeds x8 rotated cold READ rounds; same synthetic weights and baseline S14 plans; all12 fixtures']
+        'META A2=A:A;16 held-out seeds x8 rotated cold READ rounds; same synthetic weights and baseline S14 plans; all12 fixtures; shared-JIT='+str(PA_SHARE_IDENTICAL_JIT)]
     records=[];results={}
     for b,q in ((1,1),(16,1),(32,1),(1,8),(16,8),(32,8)):
         for window in (2048,0):
@@ -81,7 +106,7 @@ def lab(deadline,weights,state=None):
     for cell in records:
         cell['samples']=[{n:round(v,3) for n,v in sample.items()} for sample in cell['samples']]
     archive=dict(cells=records,loads=loads,base_sha=hashlib.sha256(PA_BASE.encode()).hexdigest(),
-        candidate_sha=hashlib.sha256(PA_HINT.encode()).hexdigest(),variants={n:hashlib.sha256(s.encode()).hexdigest() for n,s in sources.items()})
+        candidate_sha=hashlib.sha256(PA_HINT.encode()).hexdigest(),variants={n:hashlib.sha256(s.encode()).hexdigest() for n,s in sources.items()},shared_jit=reused)
     encoded=base64.b85encode(lzma.compress(json.dumps(archive,separators=(',',':')).encode(),preset=9)).decode()
     lines.append('PDL_AUDIT_XZ85 '+encoded)
     return lines

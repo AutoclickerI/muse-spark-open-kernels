@@ -4,7 +4,11 @@ import base64
 import hashlib
 import lzma
 from pathlib import Path
+import sys
 from patch import patch
+from build_hint import patch_hint
+from patch_d1_s14 import patch as patch_d1
+from build_lab import main as build_primary_lab
 
 HERE=Path(__file__).resolve().parent;REPO=HERE.parents[3]
 
@@ -21,16 +25,25 @@ def metadata_only(base):
 
 def main():
     base=(REPO/'problems/muse_decode_layer/cand_r3_best7_s14_final.py').read_text()
+    # Rebuild every ignored input from committed sources, including on a fresh checkout.
+    (HERE/'audit_trial.py').write_text(patch(base))
+    (HERE/'hint_trial.py').write_text(patch_hint(base))
+    (HERE/'d1_s14_trial.py').write_text(patch_d1(base))
+    build_primary_lab()
     meta=metadata_only(base);(HERE/'meta_trial.py').write_text(meta)
     prefix=(HERE/'lab_body_generated.py.inc').read_text().split('\ndef lab(',1)[0]
     prefix+='\nPA_HINT='+repr((HERE/'hint_trial.py').read_text())+'\nPA_META='+repr(meta)+'\nPA_D1='+repr((HERE/'d1_s14_trial.py').read_text())+'\n'
-    body=prefix+(HERE/'followup_body.inc').read_text();compile(body,'pdl_followup','exec')
-    (HERE/'followup_generated.py.inc').write_text(body);tag=hashlib.sha256(body.encode()).hexdigest()
+    shared='--shared-jit' in sys.argv
+    suffix=(HERE/'followup_body.inc').read_text()
+    if shared:suffix=suffix.replace('PA_SHARE_IDENTICAL_JIT=False','PA_SHARE_IDENTICAL_JIT=True',1)
+    body=prefix+suffix;compile(body,'pdl_followup','exec')
+    stem='shared_followup' if shared else 'followup'
+    (HERE/(stem+'_generated.py.inc')).write_text(body);tag=hashlib.sha256(body.encode()).hexdigest()
     compressed=base64.b85encode(lzma.compress(body.encode(),preset=9)).decode()
     boot='import base64,lzma,linecache,hashlib\n_PA_BODY=lzma.decompress(base64.b85decode('+repr(compressed)+')).decode()\n'
     boot+='assert hashlib.sha256(_PA_BODY.encode()).hexdigest()=='+repr(tag)+'\n_PA_FILE="<pdl-followup-'+tag[:12]+'>"\n'
     boot+='linecache.cache[_PA_FILE]=(len(_PA_BODY),None,_PA_BODY.splitlines(True),_PA_FILE)\nexec(compile(_PA_BODY,_PA_FILE,"exec"),globals())\n_PA_LAB=lab\ndef lab(deadline,weights,state=None):\n    return _PA_LAB(deadline,weights,state)\n'
-    p=HERE/'lab_pdl_followup.py';p.write_text(boot)
+    p=HERE/('lab_pdl_'+stem+'.py');p.write_text(boot)
     print('meta',hashlib.sha256(meta.encode()).hexdigest(),'payload',hashlib.sha256(boot.encode()).hexdigest(),'body',tag,'bytes',len(boot))
 
 

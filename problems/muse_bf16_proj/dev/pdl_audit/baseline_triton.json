@@ -18,7 +18,10 @@
     "registers": 40,
     "shared": 61440,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "be3995575e0bce346fdb1aaf3947f61c434603e7c22624962d6b28fe5aae9af1",
+    "cubin_sha256": "9c1843d8037f50454e367ced74c7cb762422136a5c16a4e0af588510274126cf",
+    "sass_sha256": "811a378c91419d372f97502804eba266336c773cb5f79dc5570b0df02d7cffe1"
   },
   {
     "name": "_attn_sumcast_kernel",
@@ -30,7 +33,10 @@
     "registers": 32,
     "shared": 0,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "21906f60cd35bfcc3ecc06c0b856149ab2078979c3466a11d967e61e0a62852f",
+    "cubin_sha256": "05b83e289bf3bae3674ce916bf596c2dd20868d3dd6d9fa47e925d9949cead13",
+    "sass_sha256": "2932c4b11a115a695224f6cf70e80ff436511a463b9bbe4a4823c33435f03c1c"
   },
   {
     "name": "_gb_kernel",
@@ -42,7 +48,10 @@
     "registers": 48,
     "shared": 81920,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "febee8712960ad838ff93a066642669788728785ae91916ce3cd96d60ffac4fd",
+    "cubin_sha256": "028ad9c6e64bd72517b604f97df8200cf295f9290cf78e83ccd7e2a416153849",
+    "sass_sha256": "274047e3b3aad328ba53d40cc94e94322939ac38ee28fc32a4513b7a4c978641"
   },
   {
     "name": "_gate_split_kernel",
@@ -86,7 +95,10 @@
     "registers": 48,
     "shared": 61440,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "2c5ff9564a7087093a388e749e300317bc44726de341623339b6f0c18fb8c87c",
+    "cubin_sha256": "9cd4af0c1cf7dcca7cdbabf2e43ee5a322abd386b0a3aa761d3b1b874d1ad62b",
+    "sass_sha256": "53dce9314531e71c71fc00ad3655b8480faa1ce93d34a2b47096d4f702fa4721"
   },
   {
     "name": "_qk_prep_kernel",
@@ -115,7 +127,10 @@
     "registers": 70,
     "shared": 4096,
     "local_loads": 30,
-    "local_stores": 20
+    "local_stores": 20,
+    "ptx_sha256": "2a83bc6272ac37bac590de67ded4679df8daf6ca31b0604a04ab85bd4d37a74a",
+    "cubin_sha256": "536d296b3afd81985025e2cf341e95b79c16ebb6e0f0b020157a2b5eea46d17c",
+    "sass_sha256": "3631882c19bbbe35435c11e59393ae4eb30c653003e138563edda6b296376e9a"
   },
   {
     "name": "_attn_split_kernel",
@@ -129,7 +144,10 @@
     "registers": 128,
     "shared": 22784,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "e7b7946ae2ea91f2d57a1bc4a4ede1ca6725238a8848217e5583449aa4aaac63",
+    "cubin_sha256": "4315b72199ef8121fa08e77d65332926fabdb48dffdf33e22d9243bc9278191f",
+    "sass_sha256": "99e8ced7ce446cca4db4a776b4d7ab8c6e1ec8e8dbabd90e5a504f6adad9eedf"
   },
   {
     "name": "_attn_combine_kernel",
@@ -141,7 +159,10 @@
     "registers": 40,
     "shared": 64,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "0e9a8cdf183b758c9b4e7c2c2c65b60d2dd3f9c7c02d7a5ad59ed5c73b09c5a5",
+    "cubin_sha256": "8907872c6eaefe5294ca2933747b498ef7b39ac250a2098ca716ac18a4a256b0",
+    "sass_sha256": "18daf1f5fd436a78b505105a43138369d336b216d82c62ef629943675fd91d6b"
   },
   {
     "name": "_norm_gate_kernel",
@@ -153,7 +174,10 @@
     "registers": 29,
     "shared": 0,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "68058656def2eb8f854efbaa040db00f0fb41d23c2eeab5e413d06a564918369",
+    "cubin_sha256": "1d85b46ddbb18aa65eee69eb69a5024de9dc314cf19ab9dc04b58e985d411bed",
+    "sass_sha256": "210b18c16c0ded9efc5cc52f54735ac8a397a61f9a27a8aad7c5e554e2441975"
   },
   {
     "name": "_boundary_fast",
@@ -230,7 +254,10 @@
     "registers": 255,
     "shared": 4096,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "155e4d5dda72d7ee6f5e5444fd8547eab05a1ac6c20e220839e8e1b9c84de67d",
+    "cubin_sha256": "a537cfe04619414521bdec808503cb76bdf3eaf4c14c61271d783ed0f0c32794",
+    "sass_sha256": "1c0f8d5bbdc9443f04659d66fc7a9a6b2303a35d6afbea3e469a242da5589ce0"
   },
   {
     "name": "_boundary_late",
@@ -242,7 +269,10 @@
     "registers": 180,
     "shared": 4096,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "3a66154622975543054104d6941ddd72fd75c869e476a37e0328aae587e9e3d5",
+    "cubin_sha256": "beb89fe71dd78ee562b80e7cbc658289f744f48823fcb7b0eac7cf1ea61278b6",
+    "sass_sha256": "fa08bce1c4f20f266083a4ec1046ebbbb2d1efd491702c1ac0793872cc5a2e83"
   },
   {
     "name": "_route_fast",
@@ -265,7 +295,10 @@
     "registers": 132,
     "shared": 1024,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "d0648233f96190ea8026c288cd6bc5c05c4318bb573da890c48f14b23c992ee4",
+    "cubin_sha256": "89b837abfe72b8c30ebe9c32f0a1963136accf8207d16a6762743ae960c1dd43",
+    "sass_sha256": "306bc83d0b74d8efcf9b65c40e0133303e2f2edffbd428603db537f3d0c5c605"
   },
   {
     "name": "_best7_old_qk_prep_kernel",
@@ -277,7 +310,10 @@
     "registers": 54,
     "shared": 4096,
     "local_loads": 30,
-    "local_stores": 20
+    "local_stores": 20,
+    "ptx_sha256": "1bbfeea4b805b3a6c0b78cd3ea6b88766c8a6f509f4be72c6eb1cb76e4d0ecc1",
+    "cubin_sha256": "4c909b783a0252a37361799b3ebaf4ec8bc64d1a5de1e4ede9ecd283d7bab3a8",
+    "sass_sha256": "d78f763eddaf9fd1a172ddb1ab23dd6efe71a859bf60b82575813068c7665b63"
   },
   {
     "name": "_best7_old_boundary_kernel",
@@ -294,7 +330,10 @@
     "registers": 32,
     "shared": 16,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "86aad286e3ddf724a30ac5d4e4d05d22d866f267f26439beca3f7dac4980496c",
+    "cubin_sha256": "e8e2b9d2c2f3bc89401396aac128447c06f7429ce6a757e99e6aaa9c44b58f21",
+    "sass_sha256": "7d679b91986a87ccb546765b9d565073c01fc8192649c9f8cba3f6f61206d9d2"
   },
   {
     "name": "_best7_old_route_norm_kernel",
@@ -316,7 +355,10 @@
     "registers": 96,
     "shared": 32,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "ec1ac91b5359d9dff0db8848a68f4c896d5c7c411c51b7e1fa2e82bbbe84fddc",
+    "cubin_sha256": "33ea7d4148cc4b43582f2eddc22cd07f3f7baa08d8a0a5ef8b30de2a680a2f2e",
+    "sass_sha256": "fd094c140f452b88c756181dd41fef96f6d5770c6515868137c2ad53b3d8cdb5"
   },
   {
     "name": "_gi_kernel",
@@ -328,6 +370,9 @@
     "registers": 48,
     "shared": 40960,
     "local_loads": 0,
-    "local_stores": 0
+    "local_stores": 0,
+    "ptx_sha256": "fb65b3509ba6124930e6aa4c7fffa8b259d1c01f34a6cda6fd78e5383b327db4",
+    "cubin_sha256": "b9b5cfa222f9e192e19e4a9aca6d4b9d0758e7318956d03e336378bd2bea4a24",
+    "sass_sha256": "f34b8e735b5a19f07d69df56a4fb8ae16f5a2832f1479f79d1d858725b045b3f"
   }
 ]

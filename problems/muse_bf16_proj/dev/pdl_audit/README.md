@@ -3,8 +3,13 @@
 Frozen base: `problems/muse_decode_layer/cand_r3_best7_s14_final.py`, SHA256
 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
 This is glue/load ordering work; projection algorithms, layouts, split counts,
-attention algorithms and expert consumers remain S14's choices. P10b owns
-projection algorithms. Nothing here is promoted without the paired H200 result.
+attention algorithms and expert consumers remain S14's choices. P10b owns projection algorithms.
+
+Current handoff: `patch_metadata_s14.py` (`f39bc1f3`) produces the exact measured
+metadata-only candidate `5f4e6aa9`. Its small paired gain is **provisional**:
+unchanged JIT kernels were compiled separately in the original lab namespaces.
+Shared-device-function confirmation is ready but quota-blocked until 09:00 KST.
+No incumbent change or promotion was made; no lane-owned lab remains pending.
 
 ## Scope and safety
 
@@ -61,8 +66,9 @@ routing; the two fixed-size 32-expert global-scale vectors can be loaded early.
 
 ## Build and validation
 
-`patch.py::patch(source)` is self-contained and rejects any base hash except
-S14 final. Run `python3 problems/muse_bf16_proj/dev/pdl_audit/patch.py` to write
+`patch_metadata_s14.py::patch(source)` is the self-contained integration artifact
+and rejects any base hash except S14 final. `patch.py` builds the rejected broad
+register-hoisted experiment. Run `python3 problems/muse_bf16_proj/dev/pdl_audit/patch.py` to write
 the candidate, then run the two audit scripts with `--candidate ... --label fixed`.
 `report_sass.py` maps native load instructions back to source lines. The normal
 and forced full-layer screens use `../verify_epilogue/screen.py`; unchanged
@@ -98,7 +104,7 @@ establish a new S14 gain. The broad patch tests its glue change as part of all f
 `build_hint.py` creates a low-register follow-up: preserve the original GEMV
 pipeline and request its first tile's cachelines before wait. This retains all
 other fixes while removing the long first-weight register lifetime. It is not
-part of job `8db4213240c6420d`; H200 performance is unmeasured.
+part of job `8db4213240c6420d`; its provisional H200 result is arm B in `0f74021a2c53445e`.
 
 
 Resource attribution: native MoE flag95 remains 119 registers, VQ8 main ST6
@@ -126,10 +132,9 @@ are standard errors across the sixteen seeds.
 
 Aggregate six-load speedup .884950; per-seed speedup .885126 ± .000701.
 A:A per-seed speedup 1.002036 ± .000348. No all-fixes integration patch wins.
-The strong losses concentrate at the loads using small GEMVs. Their changed
-first-weight tiles raised registers and altered the loop prologue; this is the
-leading mechanism hypothesis, not yet a paired attribution. Native and large-M
-metadata changes remain mixed into this arm.
+The strong losses concentrate at the loads using small GEMVs. Their changed first-weight tiles raised registers and altered the async
+pipeline. The exact F/M attribution below isolates those three projection
+prologues; native and other metadata fixes are identical in F and M.
 
 `build_followup.py` prepares a same-run attribution: F repeats the exact losing
 recipe, B uses low-register weight hints, M keeps only metadata ordering changes,
@@ -137,7 +142,7 @@ and D applies only the rebased prior d1-full glue recipe. A/A2 are unchanged S14
 All share baseline choices and weights; repaired native modules are shared only
 when their source bytes match. The new input seeds are held out. Per-arm output
 quality also records bit-exactness, route differences and worst L2 without hiding
-rows that change routes. Follow-up H200 result is unmeasured.
+rows that change routes. Its completed H200 result is below.
 
 
 `weight_pipeline_mechanism.json` narrows the mechanism further. The new
@@ -148,7 +153,7 @@ while tensor-core instruction count remains eight. The hint variant restores
 similar between sliding/full at each small-M load: d1 +8.25/+7.96 us,
 d16 +36.24/+38.64 us, d32 +44.46/+42.98 us, v1 +26.58/+26.70 us.
 These are compiler evidence and a whole-layer signature; the direct attribution
-is in pending job `0f74021a2c53445e` (payload `f9f651bb`).
+is in completed job `0f74021a2c53445e` (payload `f9f651bb`).
 
 Every follow-up variant passed normal and forced full-layer screens: F/B/M
 13 tests, 12 graph shapes, 24 static checks; D has 25 static checks including
@@ -156,3 +161,63 @@ its extra native glue source. Local six-arm orchestration passed all twelve
 fixtures / sixteen seeds, maximum whole-output L2 .001338. Its complete output
 is 8,027 bytes, below the 9,000-byte single-payload cap. Native admission remains
 bit-exact as recorded above. No Hopper performance is inferred from local timing.
+
+
+Pairing audit before integration: original lab namespaces retained separate
+unchanged Triton JIT objects. Shifted source lines changed cache keys even when
+executable source matched. Therefore the small 0f74021a gains remain provisional
+pending shared-object confirmation. `build_followup.py --shared-jit` shares
+source-identical JIT objects only when their complete JIT dependency closure is
+also unchanged. Changed kernels remain private; Python stage functions keep
+their own globals. Exact candidate source hashes and baseline plans are retained.
+
+
+## H200 0f74021a2c53445e — attribution, provisional small gain
+
+All twelve fixtures / sixteen new seeds passed; 223.4 s import-time lab.
+Zero changed route memberships; worst whole-output L2 .000289 across all arms,
+including A:A. Ratios below are arm/A latency, aggregated per seed.
+
+| Load | A:A | F register tile | B cache hints | M metadata only | D prior d1-full |
+|---|---:|---:|---:|---:|---:|
+| decode1 | 1.002776 | 1.098952 | .987959 | .990014 | .991264 |
+| decode16 | .996629 | 1.237942 | .993301 | .996089 | .996302 |
+| decode32 | .999669 | 1.228076 | .998670 | .997095 | .998514 |
+| verify1 | .997464 | 1.223450 | .998656 | .994498 | .997399 |
+| verify16 | 1.000032 | .998923 | .999736 | .998415 | .999439 |
+| verify32 | .999080 | 1.004844 | 1.005680 | 1.005023 | 1.000135 |
+
+Aggregate six-load speedups: A:A 1.0007067; F .8870202; B 1.0026880;
+M 1.0031687; D 1.0028444. M's per-seed speedup is 1.003170 ± .000317;
+A:A 1.000730 ± .000180. M/A2 speedup is 1.002438 ± .000346. Metadata-only
+retains all projection functions and source strings. Verify32 still regresses
+~.5%. D's targeted full decode1 latency ratio is .981287 ± .002153; the larger
+13%-of-wall glue target remains unmet.
+
+The source/dependency-identical kernels had distinct compiled CUDA function
+handles in the original namespaces, confirmed by `check_pairing.py`. Its
+shared-object version proves actual device function equality while changed
+kernels remain private. The revised local six-arm lab passes all twelve fixtures
+and sixteen seeds, with 26 unchanged JIT objects shared for M and 35 for D;
+its output is 7,308 bytes. This verification addresses small-gain attribution,
+not the large F regression's compiler mechanism.
+
+## Capacity block and resume
+
+The confirmation payload `lab_pdl_shared_followup.py` (`6cb428bc`) uses sixteen
+fresh seeds starting at 3100973. Its send was **not accepted**: all H200 hosts
+were out of scored/check quota until 2026-10-26 09:00 KST. The lane's own
+reset-wait sender (PID 3107418, wrapper `c8ab1506`) was cancelled; no third job ID
+exists, and neither completed job remains pending. `handoff.json` records the
+provisional status and exact patch/candidate hashes.
+
+Rebuild the complete confirmation from committed sources, then resume after reset:
+
+```sh
+python3 problems/muse_bf16_proj/dev/pdl_audit/build_followup.py --shared-jit
+python3 tools/h200_lab.py send problems/muse_bf16_proj/dev/pdl_audit/lab_pdl_shared_followup.py --host muse_attention_decode --import-budget 550 --priority 1 --note "P7 S14 preload shared-JIT confirmation; A:A and F/B/M/D,16 new seeds"
+```
+
+Decode quota remains reserved for integration/P10b. Integration may instead
+confirm the exact metadata patch in its own paired composition, sharing
+unchanged kernels. Do not promote solely on the provisional .3% gain.

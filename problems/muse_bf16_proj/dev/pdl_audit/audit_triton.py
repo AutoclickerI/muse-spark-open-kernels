@@ -58,6 +58,8 @@ def main():
             waits=[i for i,s in enumerate(ins) if 'ACQBULK' in s]
             pre=[s for s in ins[:waits[0]] if re.search(r'\b(?:LDG|LDGSTS|CCTL)\b',s)] if waits else []
             row=dict(name=name,source_sha256=hashlib.sha256(kernel.src.encode()).hexdigest(),waits=waits,
+                ptx_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),cubin_sha256=hashlib.sha256(cubin.read_bytes()).hexdigest(),
+                sass_sha256=hashlib.sha256(sass.encode()).hexdigest(),
                 independent_candidates_before_first_wait=pre,registers=nregs,shared=c.metadata.shared,
                 local_loads=c.asm['ptx'].count('ld.local'),local_stores=c.asm['ptx'].count('st.local'))
             rows.append(row);print(name,'waits',waits,'preload instructions',len(pre),'registers',nregs,flush=True)
