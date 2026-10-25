@@ -1,0 +1,87 @@
+{
+  "native": [
+    {
+      "symbol": "_ZN2br5routeILi512EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_:",
+      "registers": 38,
+      "local_bytes": 0
+    },
+    {
+      "symbol": "_ZN2br5routeILi256EEEvPKviixxPKfS4_PKiP13__nv_bfloat16PiPfS9_:",
+      "registers": 48,
+      "local_bytes": 0
+    },
+    {
+      "symbol": "_ZN2br8boundaryILi2ELi512EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_PKi:",
+      "registers": 44,
+      "local_bytes": 0
+    },
+    {
+      "symbol": "_ZN2br8boundaryILi2ELi256EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_PKi:",
+      "registers": 60,
+      "local_bytes": 0
+    },
+    {
+      "symbol": "_ZN2br8boundaryILi1ELi512EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_PKi:",
+      "registers": 54,
+      "local_bytes": 0
+    },
+    {
+      "symbol": "_ZN2br8boundaryILi1ELi256EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_PKi:",
+      "registers": 80,
+      "local_bytes": 0
+    }
+  ],
+  "publication": [
+    {
+      "t": 16,
+      "name": "_gb_kernel",
+      "registers": 48,
+      "local_bytes": 0,
+      "shared": 81920,
+      "ldgsts": 40,
+      "mma": 8,
+      "before_release": [],
+      "cubin_sha256": "cc30f3652073c9a57175c7a9ef4ccdda1cf52987a319097e50196c0d7e181446"
+    },
+    {
+      "t": 16,
+      "name": "_br_publish_kernel",
+      "registers": 48,
+      "local_bytes": 0,
+      "shared": 81920,
+      "ldgsts": 40,
+      "mma": 8,
+      "before_release": [
+        "/*0160*/                   MEMBAR.ALL.GPU ;",
+        "/*0190*/                   STG.E.STRONG.GPU desc[UR20][R2.64], RZ ;"
+      ],
+      "cubin_sha256": "9c46933ab509a8f48b393363a41f68b547e6453b0d4dc719831cfafda2c05d01"
+    },
+    {
+      "t": 32,
+      "name": "_gb_kernel",
+      "registers": 64,
+      "local_bytes": 0,
+      "shared": 98304,
+      "ldgsts": 48,
+      "mma": 8,
+      "before_release": [],
+      "cubin_sha256": "24558a8091d616edb85451bb4c8a6826a62120fcd91fb534acb79bdb6bf2ed8d"
+    },
+    {
+      "t": 32,
+      "name": "_br_publish_kernel",
+      "registers": 56,
+      "local_bytes": 0,
+      "shared": 98304,
+      "ldgsts": 48,
+      "mma": 8,
+      "before_release": [
+        "/*0160*/                   MEMBAR.ALL.GPU ;",
+        "/*0190*/                   STG.E.STRONG.GPU desc[UR20][R2.64], RZ ;"
+      ],
+      "cubin_sha256": "2729a14479043d1efe16c4a7de2cdbb5e36903486a1005969d549c2c27e2f402"
+    }
+  ],
+  "native_source_sha256": "5b7c4d51c3fc189f6a3ce9062920d9fe5fc23ac5a376f3f6112a4e85148b6005"
+}
