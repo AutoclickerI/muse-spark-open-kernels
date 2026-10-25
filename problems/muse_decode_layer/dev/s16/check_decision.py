@@ -23,7 +23,7 @@ def main():
  epi=[]
  for m in (1,8,16,32):
   epi += [f'AA M{m} abs=0.010 us']
-  epi += [f'PAIR M{m} {kind} us=80.000 r={.8 if kind=="NORM" else 1.:.5f} se=0.00010' for kind in ('VEC','PROD','NORM','PAIR')]
+  epi += [f'PAIR M{m} {kind} us=80.000 r={.8 if kind=="NORM" else 1.:.5f} se=0.00010' for kind in ('VEC','PROD','NORM','PAIR','ONCE','ONCE_VEC','ONCE_PAIR')]
  epi+=['END seeds=16 seconds=1']
  heavy=['AA signed/abs/max=0.000/0.010/0.020','END seeds=16 used=1']
  for m in (128,256):
@@ -52,10 +52,20 @@ def main():
  names={s['name'] for s in selected}
  assert names=={'global_C64','early_E4','dsm_4','soft_mix25','epi_NORM','heavy_DIRECT_NORMAL'},names
  for spec in selected:
-  if spec['family'] in ('epi','heavy'):assert {r[2] for r in spec['rows']}=={True,False},spec
+  if spec['family'] in ('epi','reuse','heavy'):assert {r[2] for r in spec['rows']}=={True,False},spec
+ # A source-wide policy keeps its true affected scope even when the stage
+ # batch only measured M16/M32. S16 then has to win its M1/M8 loads too.
+ policy_binary=list(binary)
+ for cell in bound:
+  for i in range(16):policy_binary[cell['sample_offset']+i*len(cell['sample_columns'])+2]=19999
+ policy_raw=struct.pack('<I',len(head))+head+struct.pack('<'+'I'*len(policy_binary),*policy_binary)
+ policy_receipts=dict(receipts,boundary=dict(log='BD_BATCH_XZ85 '+base64.b85encode(lzma.compress(policy_raw)).decode()))
+ policies,_=decide.nominate(policy_receipts)
+ policy=next(s for s in policies if s['name']=='boundary_R')
+ assert {tuple(r) for r in policy['rows']}==set(patches.registry()['boundary_R']['rows'])
  source,meta=patches.compose(selected);compile(source,'<synthetic-selection>','exec')
  report=dict(passed=True,synthetic_only=True,performance_claim=False,selected=selected,
-             checks=['wins beyond A:A','neutral rejected','incomplete seeds rejected','all seven receipt schemas decoded','both unchanged layer variants retained for token policies','selected source composition parses'])
+             checks=['wins beyond A:A','neutral rejected','incomplete seeds rejected','all seven receipt schemas decoded','both unchanged layer variants retained for token policies','source-wide policy retains every affected row','selected source composition parses'])
  (H/'decision_validation.json').write_text(json.dumps(report,indent=2)+'\n')
  print('PASS synthetic receipt schemas, policy scope and compound emission; not H200 evidence')
 if __name__=='__main__':main()

@@ -24,7 +24,7 @@ def body(s):
 def driver(s,prefix):
  nodes=[]
  for n in ast.parse(s).body:
-  if isinstance(n,ast.FunctionDef) and n.name.startswith(prefix) and n.name[len(prefix):] in ('module','plan','attention','bind','experts'):nodes.append(n)
+  if isinstance(n,ast.FunctionDef) and n.name.startswith(prefix) and n.name[len(prefix):] in ('module','plan','attention','bind','experts','geometry'):nodes.append(n)
   elif isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id.startswith(prefix) for t in n.targets):
    try:ast.literal_eval(n.value);nodes.append(n)
    except (ValueError,TypeError):pass
@@ -46,17 +46,19 @@ def delta(old,new):
  return out
 
 def main():
- p=H/'generated/payloads';p.mkdir(parents=True,exist_ok=True)
+ p=H/'generated/payloads';p.mkdir(parents=True,exist_ok=True);queued={}
  for entry in json.loads((H/'reset_inventory.json').read_text()):
-  wrapper=(R/entry['file']).read_text();assert hashlib.sha256(wrapper.encode()).hexdigest()==entry['sha256'],entry['file']
+  snapshot=R/'runs/sent'/entry['sha256'][:16]/Path(entry['file']).name
+  wrapper=snapshot.read_text();assert hashlib.sha256(wrapper.encode()).hexdigest()==entry['sha256'],str(snapshot)
+  queued[entry['sha256'][:8]]=wrapper
   for n in ast.parse(wrapper).body:
    if isinstance(n,ast.Assign) and any(getattr(t,'id','')=='_LAB_PAYLOADS' for t in n.targets):
     for name,digest,text in ast.literal_eval(n.value):(p/(name+'.py')).write_text(text)
  s14=(R/'problems/muse_decode_layer/cand_r3_best7_s14_final.py').read_text();cells={}
+ assert hashlib.sha256(s14.encode()).hexdigest()=='f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac'
  glob=(p/'global_attention_pair.py').read_text();cells['global']=dict(code=driver(glob,'cs_'))
- board=(R/'problems/muse_attention_decode/dev/cluster_sliding/out/p5_dsm_board.py').read_text()
+ board=queued['f1c270e6']
  code=driver(board,'cc_');v=values(board);cpp='#include <cstdint>\n#include <vector>\n'+'\n'.join(re.search(r'(?:void|std::vector<int64_t>) '+fn+r'\([^)]*\)',v['cc_CUDA'],re.S).group(0)+';' for fn in ('sliding_forward','sliding_resources'))
- code=re.sub(r'^cc_CPP=.*$', 'cc_CPP = '+repr(cpp).replace('\\','\\\\'),code,flags=re.M) if False else code
  # The queued board recomputes CPP with re at import; retain its exact computed declarations.
  ls=code.splitlines(True)
  for n in reversed(ast.parse(code).body):
@@ -78,6 +80,11 @@ def main():
   # Include the exact CUDA/CPP/flag/cache assignments preceding its driver functions.
   code='\n'.join(k+' = '+repr(ev[k]) for k in (prefix.upper()+'_CUDA',prefix.upper()+'_CPP',prefix.upper()+'_FLAGS_BUILT','_'+prefix.upper()+'_MODULE'))+'\n'+code
   cells['epi'][name]=dict(code=code,prefix=prefix)
+ cells['reuse']={}
+ for name,prefix,mode in [('ONCE','reusee',0),('ONCE_VEC','reusee',2),('ONCE_PAIR','reuseh',2)]:
+  code=driver(epi,prefix+'_')
+  code='\n'.join(k+' = '+repr(ev[k]) for k in (prefix.upper()+'_CUDA',prefix.upper()+'_CPP','_'+prefix.upper()+'_MODULE'))+'\n'+code
+  cells['reuse'][name]=dict(code=code,prefix=prefix,mode=mode)
  heavy=(p/'cluster_schedule_payload.py').read_text();hv=values(heavy)
  # Include only the preparation/route/launch closure, not synthetic fixtures or profiling.
  defs={n.name:n for n in ast.parse(heavy).body if isinstance(n,ast.FunctionDef)}
@@ -100,7 +107,6 @@ def main():
  pa=values(body(bd['BD_CONFIRM_SOURCE']))
  # Confirmation already pins complete S14 variants. Exclude the measured, grossly losing
  # all-register-tile F control; B/M/D are production-capable distinct recipes.
- print('PA bindings',[(k,len(v) if isinstance(v,str) else type(v).__name__) for k,v in pa.items() if k.startswith('PA_')])
  cells['pdl']={name:delta(s14,pa[key]) for name,key in [('B','PA_HINT'),('M','PA_META'),('D','PA_D1')]}
  result=dict(base_sha256=hashlib.sha256((R/'problems/muse_decode_layer/cand_r3_best7_s15.py').read_bytes()).hexdigest(),cells=cells)
  (H/'cells.json').write_text(json.dumps(result,separators=(',',':'))+'\n')

@@ -1,6 +1,6 @@
 {
   "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
-  "cells_sha256": "3ae99bef5043689b207998f636a7a653579ab4dc2a646607135ca3b1e8f073d1",
+  "cells_sha256": "1eca7d55295734f3a6b569f820cfae15af7d915463452f98739e24fd9b9182ce",
   "arms": {
     "global_C64": {
       "name": "global_C64",
@@ -629,6 +629,147 @@
       ],
       "kind": "PAIR"
     },
+    "reuse_ONCE": {
+      "name": "reuse_ONCE",
+      "family": "reuse",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "ONCE"
+    },
+    "reuse_ONCE_VEC": {
+      "name": "reuse_ONCE_VEC",
+      "family": "reuse",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "ONCE_VEC"
+    },
+    "reuse_ONCE_PAIR": {
+      "name": "reuse_ONCE_PAIR",
+      "family": "reuse",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "kind": "ONCE_PAIR"
+    },
     "heavy_DIRECT_CLUSTER1": {
       "name": "heavy_DIRECT_CLUSTER1",
       "family": "heavy",
@@ -1060,7 +1201,6 @@
     }
   },
   "diagnostics_excluded": [
-    "fixed-work ONCE variants do not execute the model",
     "ready-input boundaries are attribution controls",
     "CUPTI/occupancy/phase clocks do not implement a new model path",
     "P7 all-register-tile F is an already measured loss; B/M/D are retained reset experiments"

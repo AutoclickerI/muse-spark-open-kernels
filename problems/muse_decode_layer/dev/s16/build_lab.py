@@ -34,8 +34,14 @@ def main():
         name=n.name if isinstance(n,ast.FunctionDef) else getattr(n.targets[0],'id','') if isinstance(n,ast.Assign) else ''
         if name in wanted:nodes.append(ast.get_source_segment(helper,n))
     bundle=base64.b85encode(lzma.compress(json.dumps(dict(host=source,arms=arms),separators=(',',':')).encode(),preset=9)).decode()
+    problem=R/'problems/muse_decode_layer'
+    reference='\n'.join(line for line in (problem/'reference.py').read_text().splitlines()
+                        if not line.startswith(('from checks import','from nvfp4 import')))
+    checker='\n'.join(line for text in ((problem/'checks.py').read_text(),(problem/'nvfp4.py').read_text(),reference)
+                      for line in text.splitlines() if not line.startswith('from __future__ import'))
     body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS=tuple(4910273+104729*i for i in range(16))\n'
     body+='import base64,lzma,json\nS16_BUNDLE=json.loads(lzma.decompress(base64.b85decode('+repr(bundle)+')))\n'
+    body+='S16_CHECKER='+repr(checker)+'\n'
     body+=(H/'lab.py.inc').read_text()
     packed=base64.b85encode(lzma.compress(body.encode(),preset=9)).decode()
     payload='import base64,lzma,linecache,hashlib\n_body=lzma.decompress(base64.b85decode('+repr(packed)+')).decode()\n'
@@ -47,7 +53,7 @@ def main():
     outer='# okc: problem=muse_decode_layer\n'+notice+'\nimport torch,base64,lzma,linecache,hashlib\n_source=lzma.decompress(base64.b85decode('+repr(src)+')).decode()\n'
     outer+='assert hashlib.sha256(_source.encode()).hexdigest()=='+repr(sha(source))+'\n_f="<s16-expanded-'+sha(source)[:12]+'>"\nlinecache.cache[_f]=(len(_source),None,_source.splitlines(True),_f)\nexec(compile(_source,_f,"exec"),globals())\n'
     outer+='''
-_s16_original_origin=_s16_origin_prepare
+_s16_original_origin=globals()['_s16_origin_prepare']
 def _s16_clone_state(value):
     if isinstance(value,dict):return {k:_s16_clone_state(v) for k,v in value.items()}
     if isinstance(value,list):return [_s16_clone_state(v) for v in value]
@@ -67,7 +73,7 @@ def prepare(weights):return _candidate_prepare(weights)
     assert len(wrapped.encode())<1_000_000,len(wrapped.encode())
     target=R/'problems/muse_decode_layer/lab/lab_s16_payload.py';target.write_text(wrapped)
     meta.update(candidate=str(candidate.relative_to(R)),wrapper=str(target.relative_to(R)),wrapper_sha256=sha(wrapped),
-                payload=str(pp.relative_to(R)),payload_sha256=sha(payload),host_file=str(host.relative_to(R)),arms=arms)
+                payload=str(pp.relative_to(R)),payload_sha256=sha(payload),host_file=str(host.relative_to(R)),arms=arms,checker_sha256=sha(checker))
     (H/'generated/lab_manifest.json').write_text(json.dumps(meta,indent=2)+'\n')
     print('S16 candidate',meta['sha256'],'wrapper',meta['wrapper_sha256'],'bytes',len(wrapped))
 

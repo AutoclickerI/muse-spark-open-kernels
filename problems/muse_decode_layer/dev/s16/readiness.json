@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "arms": 40,
+  "normal_forced_task_checks": 13,
+  "graph_shapes": 12,
+  "native_arms": 40,
+  "rehearsal_elapsed_s": 334.3538315310143,
+  "reset_senders_unchanged": [
+    2411468,
+    3038721,
+    3171016,
+    3360739,
+    3408321,
+    3517006,
+    3526702,
+    3549805
+  ],
+  "new_h200_jobs": [],
+  "depends_on_reset": true,
+  "response_command": "python3 problems/muse_decode_layer/dev/s16/respond.py"
+}

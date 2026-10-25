@@ -44,7 +44,7 @@ def s16_namespace(name,source,base):
     for key,code in target.items():
         if host.get(key)!=code or key not in base or callable(base[key]):continue
         if any(word in key.upper() for word in ('MOD','EXT','OPTS')) and not native_identical:continue
-        if key in ('_GEMV_CHOICES',):continue
+        if key in ('_GEMV_CHOICES','_s16_native_builds'):continue
         v[key]=base[key]
     assert all(v[key]==base[key] for key in ('GB_ROWS','GATE_SPLIT_ROWS','GATE_SPLIT_QKV3'))
     v['_GEMV_CHOICES']=dict(base['_GEMV_CHOICES'])
@@ -53,8 +53,11 @@ def s16_namespace(name,source,base):
 
 def lab(deadline,weights,state):
     started=time.monotonic();base=kernel_fn.__globals__;device=weights['qkv_gate'].device
+    # Independent unchanged public TASK criteria, never used by a candidate or
+    # timed graph. Host-equivalence is diagnostic for arithmetic replacements.
+    checker={};exec(compile(S16_CHECKER,'<s16-independent-TASK>','exec'),checker)
     original=base['_S16_LAB_BASE_STATE'];sources={'A':S16_BUNDLE['host']}
-    ns={'A':base};states={'A':state};shared={};failures=[]
+    ns={'A':base};states={'A':state};shared={};failures=[];agreements={};task_checks=0
     for name,spec in S16_BUNDLE['arms'].items():
         source=s16_source(spec);sources[name]=source
         v,shared[name]=s16_namespace(name,source,base);ns[name]=v
@@ -84,8 +87,23 @@ def lab(deadline,weights,state):
             if seed!=AB_SEEDS[0]:ab_copy(data,make(seed))
             for graph,_ in graphs.values():graph.replay()
             torch.cuda.synchronize()
-            for name,(_,output) in graphs.items():
-                if name!='A' and (why:=ab_gate(output,graphs['A'][1])):gates.setdefault(name,why)
+            front_fn=checker['ref_front'];back_fn=checker['ref_back'];front_cache={};back_cache={}
+            def front(d,w,query_dtype=torch.bfloat16):
+                assert d is data and w is weights
+                if query_dtype not in front_cache:front_cache[query_dtype]=front_fn(d,w,query_dtype)
+                return front_cache[query_dtype]
+            def back(f,w,ids):
+                key=id(f),tuple(ids.reshape(-1).tolist())
+                if key not in back_cache:back_cache[key]=back_fn(f,w,ids)
+                return back_cache[key]
+            checker['ref_front']=front;checker['ref_back']=back
+            try:
+                for name,(_,output) in graphs.items():
+                    if name!='A' and (why:=ab_gate(output,graphs['A'][1])):agreements.setdefault(label+':'+name,why)
+                    ok,message=checker['check_implementation'](data,checker['collect'](data,output),weights);task_checks+=1
+                    if not ok:gates.setdefault(name,'TASK:'+message)
+            finally:checker['ref_front']=front_fn;checker['ref_back']=back_fn
+            front_cache=back_cache=None
             values=ab_time(graphs,16 if b*q<=8 else 8)
             per.append({name:statistics.mean(v) for name,v in values.items()})
         if gates:failures.append(label+':'+str(gates))
@@ -104,9 +122,15 @@ def lab(deadline,weights,state):
             load['r'][name]=dict(mean=statistics.mean(rr),se=statistics.stdev(rr)/len(rr)**.5,normalized=statistics.mean(r/a for r,a in zip(rr,aa)))
         loads[label]=load
     result=dict(host_sha256=hashlib.sha256(S16_BUNDLE['host'].encode()).hexdigest(),shapes=shapes,loads=loads,
-                failures=failures,shared_jit=shared,seeds=16,elapsed=time.monotonic()-started,left=deadline-time.monotonic())
-    result['complete']=not failures and len(shapes)==12 and len(loads)==6 and all(s['n']==16 and len(s['r'])==len(S16_BUNDLE['arms'])+1 for s in shapes.values())
-    blob=base64.b85encode(lzma.compress(json.dumps(result,separators=(',',':')).encode())).decode()
+                failures=failures,shared_jit=shared,seeds=16,task_checks=task_checks,agreement_diagnostics=agreements,
+                checker_sha256=hashlib.sha256(S16_CHECKER.encode()).hexdigest(),elapsed=time.monotonic()-started,left=deadline-time.monotonic())
+    result['complete']=not failures and len(shapes)==12 and len(loads)==6 and task_checks==12*16*(len(S16_BUNDLE['arms'])+2) and all(s['n']==16 and len(s['r'])==len(S16_BUNDLE['arms'])+1 for s in shapes.values())
+    def compact(value):
+        if isinstance(value,float):return round(value,8)
+        if isinstance(value,dict):return {k:compact(v) for k,v in value.items()}
+        if isinstance(value,list):return [compact(v) for v in value]
+        return value
+    blob=base64.b85encode(lzma.compress(json.dumps(compact(result),separators=(',',':')).encode())).decode()
     assert len(blob)<8500,len(blob)
     return ['META S16 paired 16 fresh seeds; every selected piece off,S15 back,A:A; cold read; no promotion by host score',
             'S16_XZ85 '+blob,'END complete='+str(result['complete'])]

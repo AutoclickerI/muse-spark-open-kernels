@@ -70,7 +70,7 @@ def nominate(receipts):
         spec=copy.deepcopy(registry[name]);spec['rows']=[list(row)]
         family=spec['family']
         # Attention families compete at a shape; epi/heavy policies compete at a token count.
-        key=('attention',tuple(row)) if family in ('global','dsm','early','soft') else ('policy',name) if family in ('pdl','boundary') else (family,row[0]*row[1])
+        key=('attention',tuple(row)) if family in ('global','dsm','early','soft') else ('policy',name) if family in ('pdl','boundary') else ('small' if family in ('epi','reuse') else family,row[0]*row[1])
         if key in choices and choices[key][0]['name']==name:
             if list(row) not in choices[key][0]['rows']:choices[key][0]['rows'].append(list(row))
         elif key not in choices or proof['ratio']<choices[key][1]:choices[key]=(spec,proof['ratio'])
@@ -121,12 +121,12 @@ def nominate(receipts):
         for m in (1,8,16,32):
             noise_match=re.search(rf'^AA M{m} abs=([\d.]+) us',epi,re.M);assert noise_match
             aa_us=float(noise_match[1])
-            for kind in ('VEC','PROD','NORM','PAIR'):
+            for kind in ('VEC','PROD','NORM','PAIR','ONCE','ONCE_VEC','ONCE_PAIR'):
                 match=re.search(rf'^PAIR M{m} {kind} us=([\d.]+) r=([\d.]+) se=([\d.]+)',epi,re.M);assert match
                 us,mean,se=map(float,match.groups());radius=aa_us/max(us/mean,1e-12)
                 proof=dict(ratio=mean,se=se,n=16,AA_radius=radius,wins=mean+1.96*se<1-radius)
                 b,q=(1,8) if m==8 else (m,1)
-                for w in (True,False):candidate('epi_'+kind,(b,q,w),proof)
+                for w in (True,False):candidate(('reuse_' if kind.startswith('ONCE') else 'epi_')+kind,(b,q,w),proof)
 
     def parse_heavy():
         heavy=receipts['heavy']['log'];assert re.search(r'END seeds=16\b',heavy)
@@ -142,6 +142,7 @@ def nominate(receipts):
 
     def parse_boundary():
         boundary=decode_boundary(receipts['boundary']['log'])
+        assert len(boundary['confirmation']['cells'])==12 and len(boundary['boundaries'])==4,'incomplete boundary archive'
         for family,cells,arms in [('pdl',boundary['confirmation']['cells'],('B','M','D')),('boundary',boundary['boundaries'],('R','P','RP','C','S'))]:
             for kind in arms:
                 spec=registry[family+'_'+kind];rows=[];proofs=[]
@@ -178,6 +179,10 @@ def nominate(receipts):
     policies=[v for v in grouped.values() if v['family'] in ('pdl','boundary')]
     if policies:
         keep=min(policies,key=lambda s:statistics.mean(e['ratio'] for e in evidence if e['arm']==s['name'] and e.get('wins') and 'ratio' in e))
+        # These edits are source-wide. R/RP also change unmeasured M1/M8 in
+        # the component batch; S16 must test those as affected loads, never
+        # mislabel them as untouched just because only M16/M32 were sampled.
+        keep['rows']=copy.deepcopy(registry[keep['name']]['rows'])
         for s in policies:
             if s is not keep:grouped.pop(s['name'],None)
     return list(grouped.values()),evidence
@@ -206,7 +211,9 @@ def main():
     assert selected,'no executable reset arm cleared its measured A:A envelope'
     admission=json.loads((H/'admission.json').read_text())
     for spec in selected:
-        assert all(admission[spec['name']][m]['passed'] for m in ('normal','forced')),spec['name']
+        digest=patches.compose([spec['name']])[1]['sha256']
+        assert all(admission[spec['name']][m]['passed'] and admission[spec['name']][m]['sha256']==digest
+                   for m in ('normal','forced')),spec['name']
     source,meta=patches.compose(selected)
     out=H/'generated/s16.py';out.write_text(source)
     result=dict(meta,source=str(out.relative_to(R)),status='experimental; combined local screen and whole-layer A/B required',

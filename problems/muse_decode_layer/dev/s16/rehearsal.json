@@ -1,0 +1,40 @@
+{
+  "rehearsal": true,
+  "performance_claim": false,
+  "remote_send": false,
+  "patches": [
+    "early_E4",
+    "soft_mix25",
+    "epi_PAIR",
+    "heavy_DIRECT_NORMAL",
+    "pdl_M"
+  ],
+  "screens": {
+    "normal": {
+      "tests": 13,
+      "graph_shapes": 12,
+      "static": 29,
+      "packed_tests": 13,
+      "packed_shapes": 12,
+      "paired_shapes": 12,
+      "seeds": 16,
+      "task_checks": 1536,
+      "failures": []
+    },
+    "forced": {
+      "tests": 13,
+      "graph_shapes": 12,
+      "static": 29,
+      "packed_tests": 13,
+      "packed_shapes": 12,
+      "paired_shapes": 12,
+      "seeds": 16,
+      "task_checks": 1536,
+      "failures": []
+    }
+  },
+  "elapsed_s": 334.3538315310143,
+  "expanded_sha256": "25b388fe93fe237beb079cf8b1ac59f7194d43dec1b44c93d303b78f1baffb8c",
+  "wrapper_sha256": "5370a5a4b9edb41406397c95b00001db4165f956bd46bfd63e9f9403ebf5d978",
+  "passed": true
+}

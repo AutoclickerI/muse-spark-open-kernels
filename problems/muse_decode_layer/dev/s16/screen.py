@@ -66,6 +66,8 @@ def install(module,forced=False):
             row=counts.setdefault(_name,dict(eager=0,captured=0));row['captured' if m.torch.cuda.is_current_stream_capturing() else 'eager']+=1
             return _fn(*args,**kw)
         setattr(m,name,counted)
+    if hasattr(m,'_s16_native_builds'):
+        m._s16_native_builds=[getattr(m,fn.__name__,fn) for fn in m._s16_native_builds]
     print('S16_LOCAL_STANDINS',stubs,flush=True)
     return counts
 

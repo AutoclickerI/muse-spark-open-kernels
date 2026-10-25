@@ -1,6 +1,6 @@
 """Production patches for the reset's executable arms, rebased onto S15.
 
-Only selected cells are emitted. Diagnostic ready-input/fixed-work/profiler controls
+Only selected cells are emitted. Diagnostic ready-input/profiler controls
 are intentionally not production candidates. Native code is pinned in cells.json.
 """
 import ast
@@ -104,6 +104,7 @@ def registry():
         add('soft_'+kind,'soft',[(16,8,False),(32,8,False)],kind=kind)
     small=[(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8)) for w in (True,False)]
     for kind in ('VEC','PROD','NORM','PAIR'):add('epi_'+kind,'epi',small,kind=kind)
+    for kind in ('ONCE','ONCE_VEC','ONCE_PAIR'):add('reuse_'+kind,'reuse',small,kind=kind)
     for arm,kind in enumerate(('DIRECT_CLUSTER1','DIRECT_NORMAL','DIRECT_SERIAL','DEEP_SERIAL'),1):
         add('heavy_'+kind,'heavy',[(b,8,w) for b in (16,32) for w in (True,False)],arm=arm)
     for kind in ('R','P','RP','C','S'):add('boundary_'+kind,'boundary',[(b,1,w) for b in (16,32) for w in (True,False)] if kind in ('P','C','S') else [(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8)) for w in (True,False)],kind=kind)
@@ -120,6 +121,13 @@ def patch(source,spec):
     cells=json.loads((H/'cells.json').read_text())['cells']
     family=spec['family'];name=spec['name'];prefix='_s16_'+re.sub(r'\W','_',name)+'_'
     rows=tuple(tuple(r) for r in spec['rows']);tail='';warm=[];setup=[]
+    if '_s16_native_builds' not in bindings(source):
+        anchor='    with ThreadPoolExecutor(max_workers=15) as native_pool:\n'
+        assert source.count(anchor)==1
+        source=source.replace(anchor,anchor+'        s16_futures=[native_pool.submit(fn) for fn in _s16_native_builds]\n',1)
+        anchor='        glue_cl_future.result()\n';assert source.count(anchor)==1
+        source=source.replace(anchor,anchor+'        for future in s16_futures:future.result()\n',1)
+        tail+='\n_s16_native_builds=[]\n'
     if family in ('global','dsm','early'):
         if family=='global':
             cell=driver_cell(cells['global']['code'],prefix)
@@ -128,7 +136,8 @@ def patch(source,spec):
             args=f"nk={spec['nk']},cs={cs}"
         elif family=='dsm':
             cell=driver_cell(cells['dsm']['code'],prefix);fn=prefix+'cc_attention';module=prefix+'cc_module'
-            args='nk=128,cs='+repr(spec['clusters'])+"[cfg['batch']]"
+            clusters={int(k):v for k,v in spec['clusters'].items()}
+            args='nk=128,cs='+repr(clusters)+"[cfg['batch']]"
         else:
             cell=driver_cell(cells['early']['early' if spec['early'] else 'late'],prefix)
             fn=prefix+'attention';module=prefix+'module';args=f"nk=128,cs=16,qt={spec['qt']}"
@@ -167,15 +176,16 @@ def _best7_attention(qkv,data,state,plan):
     return {prefix}base_attention(qkv,data,state,plan)
 '''
         warm.append(prefix+'module()')
-    elif family=='epi':
-        cell=cells['epi'][spec['kind']];code=driver_cell(cell['code'],prefix);tail+=code
+    elif family in ('epi','reuse'):
+        cell=cells[family][spec['kind']];code=driver_cell(cell['code'],prefix);tail+=code
         fn=prefix+cell['prefix']+'_experts';module=prefix+cell['prefix']+'_module'
-        setup.append(f"{prefix+cell['prefix']+'_bind'}(state['s4_nt1_bank'],SMALLM_FLAGS)")
+        setup.append(f"{prefix+cell['prefix']+'_bind'}(state['s4_nt1_bank']"+(',SMALLM_FLAGS)' if family=='epi' else ')'))
         tokens=sorted({b*q for b,q,w in rows})
+        call=f'{fn}(data,state,flags,stages,grid)' if family=='epi' else f"{fn}(data,state,mode={cell['mode']})"
         tail+=f'''
 {prefix}base_experts=smallm_experts
 def smallm_experts(data,state,flags,stages=2,grid=264):
-    if data['hidden_states'].shape[0] in {tokens!r}:return {fn}(data,state,flags,stages,grid)
+    if data['hidden_states'].shape[0] in {tokens!r}:return {call}
     return {prefix}base_experts(data,state,flags,stages,grid)
 '''
         warm.append(module+'()')
@@ -192,6 +202,8 @@ def {prefix}module():
             functions=['br_init','br_info','br_run','br_route','br_finish','pmz_init','pmz_smem','pmz_resident','pmz_run','oc_run','oc_info','oc_gather','oc_topology'],
             no_implicit_headers=True,with_pytorch_error_handling=False,extra_cuda_cflags=['-O3','-std=c++20',f'-gencode=arch=compute_{{arch}},code=sm_{{arch}}'])
         {prefix}MOD.br_init();{prefix}OPTS['pmz']={prefix}MOD.pmz_init()
+        for n in (64,128,192,256):
+            for first in (0,1):{prefix}MOD.oc_info(n,first,1)
     return {prefix}MOD
 '''
         tail+=rename(part['code'],mapping)
@@ -231,7 +243,10 @@ def nf_call(data,state):
     else:raise AssertionError(family)
     # Every patched source exposes one incremental setup hook, so labs can share
     # the base's immutable prepared banks without rerunning the original tuner.
-    if family in ('epi','heavy'):
+    for call in warm:
+        assert call.endswith('()')
+        tail+=f'\n_s16_native_builds.append({call[:-2]})\n'
+    if family in ('epi','reuse','heavy'):
         # These calls are also used by the incumbent's prepare-time FP32 expert
         # gates. Install new banks/counters before those gates, never fall through
         # to old math merely because final prepare has not returned yet.
@@ -284,6 +299,8 @@ def _port_cuda(src,**kwargs):
 def compose(names,base=None):
     source=BASE.read_text() if base is None else base
     assert hashlib.sha256(source.encode()).hexdigest()==BASE_SHA
+    manifest=json.loads((H/'manifest.json').read_text())
+    assert hashlib.sha256((H/'cells.json').read_bytes()).hexdigest()==manifest['cells_sha256']
     choices=registry();selected=[]
     for item in names:
         spec=choices[item] if isinstance(item,str) else item

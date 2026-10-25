@@ -1,0 +1,15 @@
+{
+  "heavy_dynamic_smem": {
+    "failed_source_sha256": "b2f23de0",
+    "error": "oc_run invalid argument at prepare-time FP32 gate",
+    "cause": "The lab initialized oc_info before launch; the integration module initially omitted its per-kernel dynamic-shared-memory opt-in.",
+    "fix": "Query oc_info for all four count classes/both phases before any graph or timed call; exact same native source, no alternate math.",
+    "remote_sent": false
+  },
+  "disk_full": {
+    "affected": "heavy_DEEP_SERIAL forced",
+    "evidence": "screen.log empty; admission exit nonzero with zero checks at 03:22 KST; root disk was full per orchestrator",
+    "retry": "rerun exact source after recovery; do not count incomplete run",
+    "remote_sent": false
+  }
+}

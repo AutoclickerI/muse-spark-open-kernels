@@ -1,0 +1,193 @@
+{
+  "observed": "2026-10-25T18:45:00Z",
+  "scope": "Later follow-up/profile/component batches, not prerequisites of the original S16 reset integration.",
+  "senders": [
+    {
+      "pid": 1005738,
+      "priority": 1.1,
+      "t": 1792947728.8935628,
+      "problem": "muse_moe_w4a16",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_nt1_epi_next.py",
+      "sha256": "e23854aca7a11da1272db413d863504c76f812d5d9b6508342c674b3d92254eb",
+      "note": "h200_lab prof/lab/moe_nt1_epi_next.py: P3a independent second round behind unchanged917e79f3 reset batch. Exact S14 f1c77ce6+queued PAIR controls; TREE FADD depth8to3, FOUR4 half-active bank-safe writers, LOCAL CTA-local norm sums with final gather removes all FP32 global norm atomics, FOUR_LOCAL combination.32seeds M8/16/32 readflush ABBA, direct PAIR pairs,A:A,CUPTI nodes+unique TBs;16phase seeds at eachM,observer/effectiveGHz/export/gather and perM issue model. Every arm528+6 component and normal+forced whole-layer13cases12shapes24static gates in judge image; exact final payload32seeds all gates/nodes/traces pass locally. Native125/125/125/127regs0spill,same128HMUL2/32HMMA. Independent of reset results. Hold until epoch1792972800; do not replace first batch.",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1029989,
+      "priority": 4.0,
+      "t": 1792947906.1692176,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/dev/sliding_round2/out/sliding_round2_board.py",
+      "sha256": "295a2792bb092012c09c91d521a1d26ebe67e4cedcf7d5eb055d250fe516b7ff",
+      "note": "P5 second round: decode16/32 and verify1 sliding, one-launch token-aware last-CTA plus query partitions1/2/4/8, early-history, cooperative DSM and exact reset DSM control. One exact-S14 whole-layer payload:28 candidate shape-arms +A/A2,16 fresh seeds x12cold rounds, full public TASK checker20pct margin everyseed, CUPTI QKV/attn/gate/O increments, raw samples retained. Native3families x8specializations compile; early loads+V transpose before PDL wait SASS.100 fresh partial/page/scale/counter cells pass; board normal+forced16tests/12graphs/7static each, exact forced whole-layer payload all3shapes/allarms2seeds pass. Result-independent; priority4 behind existing0ccc2548/f1c270e6/0cec6706 reset queue; no replacement senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1073793,
+      "priority": 10.0,
+      "t": 1792948254.792386,
+      "problem": "muse_moe_w4a16",
+      "file": "problems/muse_moe_w4a16/lab/lab_payload.py",
+      "sha256": "71a7126383e399520ace94fead880c02d69a1fa7410d5cdbcedeb14b8f481b98",
+      "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round2/payload.py: P3b round2 whole MoE S14 vs transposed register-A shared-B N64/N128 and intra-CTA two-WG activation reuse S2/S3. Four new variants, 24 seeds, phase attribution. All four local_eval screens and 995 poisoned/shifted graph checks pass. Independent follow-up behind unchanged f867a8b reset packet.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1134936,
+      "priority": 4.5,
+      "t": 1792948668.0178764,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/lab/lab_p10_sparse_pool_lab.py",
+      "sha256": "1a03dfa6906c8242f25c8d808aec8ef96ab6de960f905257195369842bf021dd",
+      "note": "h200_lab problems/muse_bf16_proj/dev/sparse_plane/p10_sparse_pool_lab.py: P10 round2 independent of reset: fused4608 pool_router on attributed NF warp MMA;4 geometries x12bit/scalar sparse/vector sparse=12arms,4M,8seeds x12cold ABBA+A:A+route consumer.11.451b/weight(-4.57% encoded bytes); escape tables exact.12arms local9tests30graphs;12sm90a zero spills;6bitwise reader/120projection cases. Native resource queries. Behind reset and P12. Unique payload name; old generic-name own waiter cancelled.",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1290600,
+      "priority": 11.0,
+      "t": 1792949974.6221812,
+      "problem": "muse_prefill_layer",
+      "file": "problems/muse_prefill_layer/lab/lab_tail_payload.py",
+      "sha256": "77150f5f5046c333b29095428f3b4db702c108ab0ca4d2fa4ff66113e12fd085",
+      "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py: P3b round3 compact expert-major N16+CTA2 tail: STATIC vs device QUEUE, plus S3. Exact S14 and CTA2 controls; direct ABBA pairs against both. 24 seeds x3/M. Three official local_eval screens, 1235 forced graph/metadata checks PASS. Follow-up behind every existing sender.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1293482,
+      "priority": 5.0,
+      "t": 1792949995.8500905,
+      "problem": "muse_decode_layer",
+      "file": "problems/muse_decode_layer/lab/lab_nearby_payload.py",
+      "sha256": "5d0893419ae8828070b8705bff53d3b905b709ee13e171dfb4505e8835c5e5db",
+      "note": "h200_lab problems/muse_decode_layer/dev/nearby/nearby_payload.py: P4 S15n ebceda91 range dispatch vs frozen S15 60254883 and SGLang:65 shapes,2 seeds,8 cold ABBA replays;shared exact prepared plans;12/12 scored dispatch identical;normal+forced candidate and complete payload screens pass;replaces held sender1113126 only",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1298945,
+      "priority": 1.2,
+      "t": 1792950044.9199085,
+      "problem": "muse_prefill_layer",
+      "file": "problems/muse_prefill_layer/lab/lab_lab_boundary_rebuild.py",
+      "sha256": "2a76a8c1c1a265d2f7b6b417b4e9893552c6d35f75eaf873ca3614b2a28b97b4",
+      "note": "h200_lab problems/muse_bf16_proj/dev/boundary_rebuild/lab_boundary_rebuild.py: P7 boundary rebuild behind unchanged d29911c5 and d490ac85: S14 decode16/32+verify16/32, moment/exact singleCTA b1+b2, serialized control, route CTA, chain, decode b2 per-tile publication;10arms x24seeds x8coldREAD, own S14 DAG/role timelines and ready controls;all6 candidates+2 role ablations normal/forced local_eval pass;independent attribution test",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1416137,
+      "priority": 3.0,
+      "t": 1792951058.2097526,
+      "problem": "muse_decode_layer",
+      "file": "problems/muse_decode_layer/lab/lab_release_payload.py",
+      "sha256": "f067eb263e1a67ac5277cec91b032fa33de4891ec3a12fdba9a24b23ae3797bc",
+      "note": "h200_lab problems/muse_decode_layer/dev/pdl_release/out/release_payload.py: P7 S15e 084e004b producer release audit: S15,A:A,E,minus-attention/MoE/projections/glue (glue no-op),12 shapes6 loads8 seeds8 cold replays;early MoE+VDSK and PDL/wait consumer edges;normal+forced143fixtures and full7-arm screens pass;optimized sm90a placement proven",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1465956,
+      "priority": 5.0,
+      "t": 1792951520.183782,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_attention_decode/lab/lab_resident_verify_lab.py",
+      "sha256": "a6c3423dcb2dab7d6521d95d34f52d5cc4fac6de85c090d9974082661fe266e0",
+      "note": "h200_lab problems/muse_attention_decode/dev/verify_resident/out/resident_verify_lab.py: P5 structural verify32/16: resident history before GDC wait; launch-completion graph edge preserves S14 QKV. CS2/4/8/16 pipeline, CS4/8 serial, RAW4/8 scheduling controls, A/A2; 24 fresh seeds x12 cold rounds; full TASK20pct margin every arm/seed with immediate cache checks; CUPTI critical increments and QKV/attention resources. Normal+forced16tests/12shapes/7static,72component cells,6native SASS prewait/noC75, actual graph-port visibility probe. Independent of reset; priority5 behind prior four P5 senders.",
+      "not_before": 1792972860.0,
+      "until": 1792972860.0
+    },
+    {
+      "pid": 1539344,
+      "priority": 2.0,
+      "t": 1792952173.9550126,
+      "problem": "muse_decode_layer",
+      "file": "problems/muse_decode_layer/lab/lab_lab_s15_timeline.py",
+      "sha256": "d8b2e3c7129a22fe42a20af337e3ff86bb040c7d2c75e36c0ed58239dcfb61fe",
+      "note": "h200_lab problems/muse_decode_layer/dev/s15_timeline/lab_s15_timeline.py: P7 S15 critical-path timeline final: exact 60254883 host/prepare/kernels unchanged;CUPTI timestamps kernels+memcpy+memset on all streams, full PDL/event DAG;12shapes x3 busiest-shard seeds x3 cold profiles;untouched/mapped schedule fingerprints and gates match;logical byte/FLOP roofs+PLAN decoder;normal/forced 108 profiles each monotone, wall accounting error <2.18e-16;replaces own prior kernel-only timeline sender",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1557027,
+      "priority": 12.0,
+      "t": 1792952306.1321688,
+      "problem": "muse_prefill_layer",
+      "file": "problems/muse_prefill_layer/lab/lab_p10_all_roles_lab.py",
+      "sha256": "d50be2e7d31519d68877a08613c11ab0bdac83caa74086708ca177382dae914b",
+      "note": "h200_lab problems/muse_bf16_proj/dev/sparse_all/p10_all_roles_lab.py: P10 all dense BF16 sparse-plane: 57 role/shape A:A:B comparisons +17 direct GEMM arms, 8 seeds/cold ABBA; screened normal/forced; S15 60254883 controls; leave layer integration to P4",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 1579130,
+      "priority": 4.0,
+      "t": 1792952467.8112552,
+      "problem": "muse_decode_layer",
+      "file": "problems/muse_decode_layer/lab/lab_library_payload.py",
+      "sha256": "54aa3bedc460bbc8880892042a76993872a384a308fb90b5e007fd97b7fe8b2c",
+      "note": "h200_lab problems/muse_decode_layer/dev/library_chain/out/library_payload.py: S15L 233239ad owned library boundaries: S15+A:A+L+five per-replacement leave-outs; six loads, eight seeds/eight cold rotated graph replays; unchanged TASK checker every arm/seed; normal+forced screened",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 939577,
+      "priority": 4.0,
+      "t": 1792947172.0984516,
+      "problem": "muse_moe_w4a16",
+      "file": "problems/muse_decode_layer/dev/p12_components/cand_s15_moe.py",
+      "sha256": "4127d934adc31a29e21a8498341ef12706fb6d7776d8e5271acae67af16286be",
+      "note": "P12 frozen S15 60254883 MoE component: NT1 flags and heavy/light/NT1 streams. Normal+forced5tests6shapes25static pass;3 fresh inputs. Component receipt for leader gap, no layer promotion.",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 939623,
+      "priority": 4.0,
+      "t": 1792947172.3406215,
+      "problem": "muse_attention_decode",
+      "file": "problems/muse_decode_layer/dev/p12_components/cand_s15_attention.py",
+      "sha256": "f38b9ae3bb3cd1179e92c409f80b192c9c2b973183fec634dbb92770ab82c6d4",
+      "note": "P12 frozen S15 60254883 attention component: last-CTA decode1 sliding, partial full, attn_main, N128 VQ8 full verify. Normal+forced16tests12shapes25static pass; DP-head contract covered. Leader-gap measurement.",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 939656,
+      "priority": 4.0,
+      "t": 1792947172.58841,
+      "problem": "muse_bf16_proj",
+      "file": "problems/muse_decode_layer/dev/p12_components/cand_s15_projection.py",
+      "sha256": "01f80a780d5a19162b7cacc4a40d62ca285f703423933e9e80b14332508563c0",
+      "note": "P12 frozen S15 60254883 projection component: selected NF O/QKV32/unpool paths and incumbent coded/balanced/Lt. Normal+forced9tests30shapes25static pass; hi+lo router and nearby/outlier cases. Separate board ABI documented.",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 949154,
+      "priority": 2.5,
+      "t": 1792947262.997918,
+      "problem": "muse_bf16_proj",
+      "file": "problems/muse_bf16_proj/lab/lab_decode_softmax_lab.py",
+      "sha256": "06e39759a67ca29741597a259f5e608f3ddd14c9cf704b0e7569c2b80ad1fe58",
+      "note": "h200_lab problems/muse_attention_decode/dev/full_attention/decode/decode_softmax_lab.py: P5b day-second-round independent full decode16/32:10 arms attn_main MUFU/FMA25/50%,FP16-P TC row sums, native two-WG q1 exp split/ping-pong;8 seeds8rotating cold pairs+A:A+phase clocks. 80 independent fixtures;normal+forced local_eval every arm,20 native units no spills/C75,exact proj host9tests3static and complete lab passes. Queue behind unchanged verify03086413;not dependent on its result.",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    },
+    {
+      "pid": 975835,
+      "priority": 1.1,
+      "t": 1792947483.5829406,
+      "problem": "muse_prefill_layer",
+      "file": "problems/muse_prefill_layer/lab/lab_lab_d1_chain.py",
+      "sha256": "d490ac854840bcd39b4b5716092b7118d12ab73077c5aece6266d819eb34ac6a",
+      "note": "h200_lab problems/muse_bf16_proj/dev/d1_chain/lab_d1_chain.py: P7 second round behind unchanged d29911c5 reset batch: S14 decode1 b1/route/b2 PTX preloads, late-prew, hints, b1-residual, C4 and role ablations;11 arms x32 seeds x10 cold READ, CUPTI/DAG and ready-input controls;5 candidates+3 role ablations normal/forced local_eval pass; independent of reset result",
+      "not_before": 1792972800.0,
+      "until": 1792972800.0
+    }
+  ]
+}

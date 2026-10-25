@@ -10,6 +10,8 @@ def main():
     assert hashlib.sha256(a.receipt.with_suffix('.py').read_bytes()).hexdigest()==manifest['wrapper_sha256']
     log=receipt['result']['log_tail'];blob=next(line.split(' ',1)[1] for line in log.splitlines() if line.startswith('S16_XZ85 '))
     raw=json.loads(lzma.decompress(base64.b85decode(blob)));assert raw['host_sha256']==manifest['sha256']
+    assert raw['checker_sha256']==manifest['checker_sha256'] and raw['seeds']==16
+    assert raw['task_checks']==12*16*(len(manifest['arms'])+2)
     wins={};controls={}
     def rows(arm):return {tuple(r) for r in manifest['arms'][arm]['rows']}
     for label,shape in raw['shapes'].items():
@@ -29,8 +31,11 @@ def main():
     (H/'s16_report.json').write_text(json.dumps(result,indent=2)+'\n')
     if gate:
         source=(R/manifest['candidate']).read_text();assert hashlib.sha256(source.encode()).hexdigest()==manifest['sha256']
-        from pack import pack
-        final=R/'problems/muse_decode_layer/cand_r3_best7_s16_final.py';final.write_text(pack(source))
+        response=json.loads((H/'response.json').read_text())
+        assert response['expanded_sha256']==manifest['sha256']
+        shipped=R/response['shipped_source'];packed=shipped.read_bytes()
+        assert hashlib.sha256(packed).hexdigest()==response['shipped_sha256']
+        final=R/'problems/muse_decode_layer/cand_r3_best7_s16_final.py';final.write_bytes(packed)
         print(final,hashlib.sha256(final.read_bytes()).hexdigest(),'expanded',manifest['sha256'])
     else:print('S16 not frozen; retain report and remove/retest losing or noisy pieces')
 

@@ -26,20 +26,30 @@ def main():
         with (out/'screen.log').open('w') as log:subprocess.run(cmd,cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
         data=json.loads((out/'local.json').read_text());assert data['sha256']==manifest['sha256']
         assert len(data['tests'])==13 and len(data['shapes'])==12 and all(row['ok'] for k in ('tests','shapes','static') for row in data[k])
+        shipped_out=H/'generated/packed_screen'/mode;shipped_out.mkdir(parents=True,exist_ok=True)
+        with (shipped_out/'screen.log').open('w') as log:
+            subprocess.run([str(R/'tools/img'),'python',str(H/'screen.py'),str(shipped),'--out',str(shipped_out)]+(['--forced'] if mode=='forced' else []),cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
+        packed_report=json.loads((shipped_out/'local.json').read_text())
+        assert packed_report['sha256']==hashlib.sha256(shipped.read_bytes()).hexdigest()
+        assert len(packed_report['tests'])==13 and len(packed_report['shapes'])==12 and all(row['ok'] for k in ('tests','shapes','static') for row in packed_report[k])
         log=H/'generated'/('lab_'+mode+'.log')
         with log.open('w') as f:subprocess.run([str(R/'tools/img'),'python',str(H/'screen_lab.py')]+(['--forced'] if mode=='forced' else []),cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT,check=True)
         validation=json.loads((H/'generated'/('lab_'+mode+'_validation.json')).read_text())
-        assert validation['complete'] and validation['host_sha256']==manifest['sha256']
-        screens[mode]=dict(tests=13,shapes=12,static=len(data['static']),paired_seeds=16,paired_shapes=12)
+        assert validation['complete'] and validation['host_sha256']==manifest['sha256'] and validation['checker_sha256']==manifest['checker_sha256']
+        screens[mode]=dict(tests=13,shapes=12,static=len(data['static']),packed_tests=13,packed_shapes=12,paired_seeds=16,paired_shapes=12,task_checks=validation['task_checks'])
     result=dict(candidate=manifest['candidate'],expanded_sha256=manifest['sha256'],shipped_source=str(shipped.relative_to(R)),shipped_sha256=hashlib.sha256(shipped.read_bytes()).hexdigest(),wrapper_sha256=manifest['wrapper_sha256'],screens=screens,
                 elapsed_s=time.monotonic()-started,queued=False,status='screened experimental; freeze waits on paired S16 receipt')
     if not a.screen_only:
-        command=[sys.executable,str(R/'tools/h200_lab.py'),'send',str(R/manifest['payload']),'--host','muse_decode_layer',
-                 '--base-file',str(R/manifest['host_file']),'--priority','-0.9','--check',
-                 '--note','P4 S16 second-round reset winners on admitted S15; all retained pieces off,S15 back,A:A,16 fresh seeds,all12 shapes,normal+forced per-arm/composed/wrapper pass; candidates selected from exact reset receipts.']
-        subprocess.run(command,cwd=R,check=True)
+        # Send the exact screened wrapper. h200_lab.send may absorb other
+        # waiting payloads, which would change both their queues and our bytes.
         wrapper=R/manifest['wrapper'];assert hashlib.sha256(wrapper.read_bytes()).hexdigest()==manifest['wrapper_sha256']
-        result['queued']=True;result['command']=command
+        command=[sys.executable,str(R/'tools/okc_run.py'),'send',str(wrapper),'--priority','-0.9','--check',
+                 '--note','P4 S16 second-round reset winners on admitted S15; all retained pieces off,S15 back,A:A,16 fresh seeds,all12 shapes,normal+forced per-arm/composed/wrapper pass; candidates selected from exact reset receipts.']
+        sent=subprocess.run(command,cwd=R,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        print(sent.stdout,end='');sent.check_returncode()
+        result.update(queued=True,command=command,send_stdout=sent.stdout,
+                      sender_log='runs/detached/'+manifest['wrapper_sha256'][:16]+'.log')
+    result['elapsed_s']=time.monotonic()-started
     (H/'response.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
 

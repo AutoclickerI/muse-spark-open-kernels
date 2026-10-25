@@ -4,6 +4,7 @@ import hashlib
 import inspect
 import json
 import tempfile
+import fcntl
 from pathlib import Path
 
 H=Path(__file__).resolve().parent
@@ -52,4 +53,8 @@ def install(local_eval):
         assert set(rows)==set(nodes)
         print('S16_STATIC',len(rows),'exact CUDA units',flush=True)
         return [rows[name] for name in nodes]
-    local_eval.hopper_compile=check
+    def locked(path):
+        with (cache/'compile.lock').open('a') as lock:
+            fcntl.flock(lock,fcntl.LOCK_EX)
+            return check(path)
+    local_eval.hopper_compile=locked
