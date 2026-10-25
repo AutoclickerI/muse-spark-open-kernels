@@ -160,6 +160,10 @@ Per-load speedups recomputed from each receipt's case medians (loads decode 1/16
   / +1.9 / +5.8 / +9.95% at decode 1 / 16 / 32, verify 1 / 16 / 32; balanced GEMVs off +1.7 / +1.9 / +3.4 / +1.9%
   (t <= 32); gate split off +1.4% at decode 1, +0.1% at decode 16 / 32; late glue off +0.7% at verify 32; vq8 off
   +4.4 / +8.2% at verify 16 / 32; S10's N_full cell +1.2 / +1.1%. No piece loses at any load.
+- Leave-one-out A/B on S12 `7d4216dd` (S11 final + coded qkv / pool_router at t <= 8 + finalizer split F4 + wide
+  banks; `c5f4f018`, same protocol, A:A -0.15..+0.29%; host run 1.7161x): coded off +3.4% at decode 1 but -0.34% at
+  verify 1 (t = 8, a loss); F4 off +0.73 / +0.72% and wide banks off +0.23 / +0.48% at verify 16 / 32; all of S11
+  back +4.1 / +0.85 / +0.36 / -0.1 / +0.91 / +1.09% at decode 1 / 16 / 32, verify 1 / 16 / 32.
 - One-factor sweep of every tuned choice (`4bea7724`, 12 seeds x 6 rounds): at t <= 32 our GEMVs beat every cuBLAS /
   cuBLASLt variant at every role by 1-6% (the run's tuner had picked cuBLAS for o at t = 8 / 16 / 32 and qkv /
   unpooler at t=16: -1.9 / -1.4 / -0.6 / -1.6 / -0.8% when pinned); attention at decode 16 / 32 is attn_main at all
