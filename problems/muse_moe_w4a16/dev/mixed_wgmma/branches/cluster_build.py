@@ -119,6 +119,8 @@ def main():
     rt=once(rt,'cpp_sources=OP_CPP,cuda_sources=c,',"cpp_sources=OP_CPP if ai>=2 else OP_CPP.split('void oc_gather(')[0],cuda_sources=c,")
     rt=once(rt,"'pmz_resident','pmz_run'],","'pmz_resident','pmz_run']+(['oc_run','oc_info','oc_gather'] if ai>=2 else []),")
     rt=once(rt,'mod.br_init();NF_OPTS', '\n        if ai>=2:[mod.oc_info(n,f,c) for n in (64,128,192,256) for f in (0,1) for c in (1,4)]\n        mod.br_init();NF_OPTS')
+    rt=once(rt,"next(t.device for t in weights.values() if torch.is_tensor(t))",
+            "next(t.device for t in weights.values() if torch.is_tensor(t)) if weights is not None else torch.device('cuda')")
     rt=once(rt,'return dict(bases=(base,perm,base,perm),native=native,\n                streams=[(torch.cuda.Stream(),torch.cuda.Event(),torch.cuda.Event()) for _ in OP_NAMES])',
             'return dict(bases=(base,perm,perm,perm),native=native,\n                streams=[(torch.cuda.Stream(),torch.cuda.Event(),torch.cuda.Event()) if a==0 else (torch.cuda.Stream(),torch.cuda.Event(),torch.cuda.Event(),torch.cuda.Stream(),torch.cuda.Event()) if a==1 else ([torch.cuda.Stream() for _ in range(5)],torch.cuda.Event(),[torch.cuda.Event() for _ in range(5)]) for a in range(4)])')
     rt=once(rt,"    return nf_plan(data,bank['bases'][arm],bank['native'],bank['streams'][arm])", "    if arm==1:return nf_light_plan(data,bank['bases'][arm],bank['native'],bank['streams'][arm],4)\n    if arm>=2:return oc_plan(data,bank['bases'][arm],bank['native'],bank['streams'][arm],4 if arm==3 and torch.cuda.get_device_capability()==(9,0) else 1)\n    return nf_plan(data,bank['bases'][arm],bank['native'],bank['streams'][arm])")

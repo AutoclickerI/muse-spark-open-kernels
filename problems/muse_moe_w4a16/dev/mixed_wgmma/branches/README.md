@@ -8,12 +8,18 @@ flight, no fills; META adds the heavy-only T32 and 8<count<=16 T8 lists) and the
 
 ## Handoff (current)
 
-**N16G4 handoff, H200 eea9d87b8d1640cf:** `patch_s12_light.py` **6aaf9a3d** applies onto exact
+Current integration base: **S14 final f1c77ce6**, `cand_r3_best7_s14_final.py`. It already carries N16G4
+and uses PERMW banks at both M128/M256. `s14_cell_equiv.py/json` proves the cluster lab's N16G4 control
+has exactly S14's NF_CUDA/NF_CPP, normalized plan AST and bank-transform ASTs. Future patches pin S14.
+No new integration patch is promoted from the losing queue or native-wide TMA recipes below.
+
+
+**Historical S12 N16G4 handoff, H200 eea9d87b8d1640cf:** `patch_s12_light.py` **6aaf9a3d** applies onto exact
 S12 final **240248b2**, producing `s12_light.py` **98ed03ef**. It includes the pinned PERMW/wide
 changes and the measured N16G4 stream geometry. Requires sibling patch/build files; no project imports in
 its output. `check_light_patch.py` / `light_patch_equiv.json`: **18/18 bit-equal to the measured arm**,
 3 seeds x3 fixtures x2 M, all TASK gates pass. Normal `local_eval`: **13 tests +23 static PASS**
-(`light_normal.json`); forced **13 tests +12 graph shapes +23 static PASS** (`light_forced.json`). Actual N16 math also has the direct equivalence/poison checks below. Whole-layer pairing is still required.
+(`light_normal.json`); forced **13 tests +12 graph shapes +23 static PASS** (`light_forced.json`). Actual N16 math also has the direct equivalence/poison checks below. S14 subsequently promoted this bundle after whole-layer jobs0441f9fc/740c63af/2bbb626c; use the S14 base now.
 
 
 **PERMW for S12 final:** `patch_s12_permw.py` **a42a5832** applies onto exact **240248b2**,
@@ -28,7 +34,7 @@ wide **0.9940 / 0.9904**. Adaptive AD64PW **1.0152 / 0.9762** has larger fixture
 0.904-1.045), so PERMW was the component handoff at both M. AD128PW loses **1.1506 / 1.0995**. All TASK gates pass.
 Receipt: `runs/muse_moe_w4a16/20261025T051654Z_check_b88d04fe86aa45a7.json`.
 **Whole-layer promotion overrides these component timings:** integration's S13 `3dbcaccd` finds M128 PERMW
-neutral; it currently retains PERMW only at M256. Do not broaden that selection from this lane's standalone wins.
+neutral. S14 now retains PERMW at both M as part of its paired N16G4 bundle; this does not establish a standalone M128 PERMW gain.
 
 New structural diagnostic: `roof_build.py` freezes the exact S12 nf CUDA. Four arms per heavy/NT1 branch and
 W13/W2 phase: unchanged, trivial dequant with original copies/math, loads-only with original load schedule,
@@ -157,7 +163,7 @@ padding and pipeline mechanism; the old lab did not isolate a single cause. Repe
 those costs is closed. A multicast rebuild must share activation slices and demonstrate adequate residency.
 
 
-### Pending quota: native decode-once + cluster activation multicast
+### Native decode-once + multicast: measured loss
 
 `cluster_build.py` / `cluster.cu.inc` produce payload **eb677a8b**, CUDA **075ce977**. The paired arms
 are exact **S12**, measured **N16G4**, **ONCE_CS1**, and **ONCE_CS4**. Both new arms retain N16G4 for
@@ -191,12 +197,37 @@ static loop-body counts, not retired instructions. Instructions per stage rise r
 but stages per expert tile fall by the measured1.6x/2.2x heavy weight multiplicity. CS4 must earn its
 barrier/register cost on H200; neither arm is promoted before the paired result.
 
-MoE and prefill quota are exhausted until **09:00 KST**. The lab tool reports only decode checks available;
-those remain for integration. The multicast payload is queued on the MoE host for reset, **no H200 job ID yet**.
-Queued wrapper **d5a4529b6e59529b** replaces4ba6d8b1 via h200_lab; the old waiting send was removed.
-Track `runs/detached/d5a4529b6e59529b.log` for the eventual accepted job ID.
-Remaining empirical step: collect the reset run, compare CS1/CS4 to both S12 and N16G4 across seeds, then
-hand over only a winner for whole-layer pairing. Target132.6/158.5us remains unmet.
+Attention import-time host support landed in tool commit **9de3048**, under R-20261025-3. The only
+payload change was handling `weights=None` with synthetic CUDA weights; CUDA stayed **075ce977**.
+The four-seed local None-entry screen passes12 fixtures/M. Payload **2780bb07**, attention wrapper
+**e4e2eb3d**, import budget150s. **5fdb668cc2964cdf** landed:16 seeds x3/M, all TASK PASS,
+import lab53.5s. A:A signed/abs/max0.050/0.481/2.752us. The old MoE reset waiter1730916 / wrapper
+**d5a4529b** was cancelled under the dispatch lock; its waiting entry is gone, with no duplicate judge job.
+
+| M | S12 us | N16G4 us (ratio) | Native CS1 us (ratio) | Native CS4 us (ratio) |
+|---|---:|---:|---:|---:|
+|128|196.84|184.00 (0.9365)|257.69 (1.3187)|258.83 (1.3222)|
+|256|271.70|258.97 (0.9536)|339.05 (1.2516)|341.40 (1.2598)|
+
+**Both native-wide TMA recipes lose; no integration.** Multicast gives no measurable gain in this
+implementation. The optimistic155.8/186.7us estimate omitted important protocol/occupancy costs and is
+rejected by the receipt. H200 residency for MAX64/128/192/256 W13 is4/3/3/2 CTAs/SM; W2 is4/2/2/2.
+This receipt does not isolate wider accumulators from the TMA/barrier path or gather/class-launch costs.
+
+Multicast ordering: [CLUSTER_SYNC.md](CLUSTER_SYNC.md), `cluster_sync_check.py/json`. The proof covers
+per-rank arming, byte counts, uniform participation, shared-slot retirement, A-register reuse and even
+barrier parity across expert tiles. **36,864 checks +1,888 launch-class checks** pass; deliberately wrong
+wait limits, missing cross-rank retirement and odd-K parity are rejected. The96 H200 output gates add
+actual hardware execution evidence, not an exhaustive race test.
+
+Next diagnostic is `cluster_copy_build.py`: S14 nf control, original TMA CS4, lean TMA CS4, parallel
+cp.async CS1, and direct-gather cp.async CS1. Lean unrolls the S2 stage ring; W2 norms reuse Q staging
+only after the final wait0, removing a static-shared occupancy boundary. Lean/COPY use eight warp-owned
+gather rows per CTA; DIRECT loads original BF16 rows by SLOTS and removes the gather kernel. COPY and
+DIRECT retain the generic-to-async X publication fence. The packet includes isolated heavy/light
+W13/W2 service times and gather timing on one fixed fixture, explicitly not critical-path increments.
+New-arm validation/admission and the next attention job are recorded below when complete.
+Target **132.6 /158.5us** remains unmet.
 
 The earlier FP16 magic proposal is audited separately, not pursued as the main lever: `magic_audit.py` /
 `magic_audit.json` exhaust **65,024 FP4-pair x finite E4M3-code cases**. FP16 subnormal placement followed by

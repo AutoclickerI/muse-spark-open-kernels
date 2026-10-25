@@ -1,13 +1,17 @@
 {
-  "status": "waiting for MoE quota reset; not accepted by judge yet",
-  "host": "muse_moe_w4a16",
-  "payload_sha256": "eb677a8b63aaf7f8186b2656953fa7b86b0e7c2b2829d21c6f5ec0dce98e5b95",
-  "wrapper": "problems/muse_moe_w4a16/lab/lab_cluster_payload.py",
-  "wrapper_sha256": "d5a4529b6e59529be7fd19f6c3b5bfad1cad36946b2b278f9fa6dcc0136f638a",
-  "managed_log": "runs/detached/d5a4529b6e59529b.log",
-  "scheduled_reset": "2026-10-26T09:01:00+09:00",
-  "job_id": null,
-  "superseded_wrapper": "4ba6d8b1e69b1ab9",
+  "status": "completed on attention import-time host; native-wide TMA CS1/CS4 lost",
+  "host": "muse_attention_decode",
+  "job_id": "5fdb668cc2964cdf",
+  "payload_sha256": "2780bb07e6cb8e253bcfe405bfd6e8ba5cd9f2491d964fc8fedc521c195697a0",
+  "wrapper": "problems/muse_attention_decode/lab/lab_cluster_payload.py",
+  "wrapper_sha256": "e4e2eb3d252831bc09da9e2b32d5cb595a5d82d6ac903bd7a8a4569a9d851493",
+  "managed_log": "runs/detached/e4e2eb3d252831bc.log",
+  "import_budget_s": 150,
+  "obsolete_MoE_waiter": {
+    "pid": 1730916,
+    "wrapper": "d5a4529b6e59529b",
+    "status": "cancelled under dispatch lock; waiting entry removed before judge send"
+  },
   "arms": [
     "S12",
     "N16G4",
