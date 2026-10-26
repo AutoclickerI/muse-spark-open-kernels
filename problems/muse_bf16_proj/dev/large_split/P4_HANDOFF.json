@@ -1,0 +1,79 @@
+{
+  "lane": "P10",
+  "status": "NO NEW G0 WINNER; raw/packed SS rejected. Native-layout-only is an unpromoted optional P4 batch arm.",
+  "base": "S19",
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "G0": {
+    "job": "7f110a377fb843a7",
+    "receipt": "runs/muse_prefill_layer/20261026T103204Z_submit_7f110a377fb843a7.json",
+    "native_pack_R": 0.9998167063251123,
+    "native_pack_CI95": [
+      0.9990581951572297,
+      1.0005757933745547
+    ],
+    "promoted": false,
+    "SS": [
+      0.9715025424273408,
+      0.9702513064522361,
+      0.9727553919962174
+    ],
+    "PS": [
+      0.9777547459009495,
+      0.9767307738234305,
+      0.9787797914767584
+    ],
+    "AA": [
+      0.9996294514087566,
+      0.9987906636631086,
+      1.0004689435711636
+    ],
+    "heldout_seeds": 16,
+    "layer_TASK": 960,
+    "strict_projection_router_TASK": 48
+  },
+  "candidates": [],
+  "optional_unpromoted": {
+    "patch": "problems/muse_bf16_proj/dev/large_split/np_patch.py",
+    "command": "python3 problems/muse_bf16_proj/dev/large_split/np_patch.py BASE.py OUTPUT.py",
+    "source_sha256": "3ad4e729a4cd1968b234ecd6b8fbf6d8f23881531e8c4b9205a9f2d8cc1f551a",
+    "points": "T128 qkv_gate and fused pool_router; same native S19 tile/stage/warp/S3/CHAIN schedule, exact K-major weight bank",
+    "verify16_R": [
+      1.0041276519451878,
+      1.0020754920029427,
+      1.0061840145253202
+    ],
+    "added_prepare_s": 0.3155732380691916,
+    "GPU_bank_s": 0.00018495414406061172,
+    "resources": {
+      "qkv_gate": {
+        "registers": 94,
+        "shared": 196672
+      },
+      "pool_router": {
+        "registers": 90,
+        "shared": 163880
+      }
+    },
+    "recommendation": "Optional arm only inside an already-planned S20 composition batch; no separate confirmation requested. Neither isolated NP-only prepare nor S20 G0 is measured.",
+    "local_validation": {
+      "normal": "np_normal_validation.json",
+      "forced": "np_forced_validation.json",
+      "TASK_each": 13,
+      "scored_shapes_each": 12,
+      "Hopper_math": "stand-in locally; actual native arm checked in whole-layer receipt7f110a37"
+    }
+  },
+  "oracle": {
+    "job": "9ab81a3f3b054b92",
+    "report": "oracle_split.md",
+    "limits": "Explicit raw schedule bounds; opaque Lt math-free unmeasured. Residual includes event-boundary effects, checksum/prologue/weight issue and is not a physical HBM time."
+  },
+  "layout_evidence": {
+    "job": "6a7133f514cf4068",
+    "matched_geometry_ratios": "0.886\u20130.985, all24CI upper<1",
+    "report": "stage_ratios.md"
+  },
+  "old_winner": "dense_all/patch_gate.py remains with P4 for S20; this task does not change it",
+  "next": "Orchestrator re-rank the projection lever from the native G0 verdict; the private1.36x gap is still unidentified.",
+  "source_integrity": "source_integrity.json"
+}

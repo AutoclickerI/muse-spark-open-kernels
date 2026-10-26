@@ -1,0 +1,456 @@
+{
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/large_split/generated/ss_adapter.py",
+ "sha256": "426a8f6c3151e5417778705e836d67b601aca37de23fa6eff856d4da2bdebf29",
+ "tier": "screen",
+ "static": [
+  {
+   "name": "packaging",
+   "ok": true,
+   "msg": "single-file problem header and size"
+  },
+  {
+   "name": "local_imports",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "judge_packaging",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "state_keys",
+   "ok": true,
+   "msg": "dynamic state contract: requires changed-unit/H200 checks"
+  },
+  {
+   "name": "SS_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_G_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "ATTN_P8_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "ATTN_PORT_CUDA_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "ATTN_X_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "DENSE_CHAIN_CPP",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "DENSE_CHAIN_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "GF_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "GLUE_CL_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "LT_CUDA_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "NF_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "P7_PREFETCH_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "PARTIAL_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "PG_RAW",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "SMALLM_VAR_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "SP_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "V9_CPP_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "V9_CUDA_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "V9_NT2_CPP_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "V9_NT2_CUDA_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "_pf_GROUPED_SRC",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  },
+  {
+   "name": "cs_CUDA",
+   "ok": true,
+   "msg": "identical CUDA/flags to admitted S15 60254883"
+  }
+ ],
+ "problem": "muse_bf16_proj",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 1.6334886229597032,
+ "tests": [
+  {
+   "case": "m 1, layer qkv_gate",
+   "first_call_s": 0.8503514130134135,
+   "ok": true,
+   "msg": "relative L2 error 0.000e+00 (worst row 0.000e+00)"
+  },
+  {
+   "case": "m 7, layer pooler",
+   "first_call_s": 0.020213744952343404,
+   "ok": true,
+   "msg": "relative L2 error 1.139e-04 (worst row 1.730e-04); 2 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 33, layer o",
+   "first_call_s": 0.17088198300916702,
+   "ok": true,
+   "msg": "relative L2 error 6.717e-05 (worst row 1.961e-04); 2 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 130, layer unpooler",
+   "first_call_s": 0.0006602450739592314,
+   "ok": true,
+   "msg": "relative L2 error 3.034e-03 (worst row 3.399e-03); 19 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 5, layer unpooler",
+   "first_call_s": 0.017866246053017676,
+   "ok": true,
+   "msg": "relative L2 error 5.459e-05 (worst row 1.209e-04)"
+  },
+  {
+   "case": "m 8, layer router",
+   "first_call_s": 0.016531168017536402,
+   "ok": true,
+   "msg": "relative L2 error 2.783e-06 (worst row 3.010e-06); 2 probe rows exact to 2.7e-06"
+  },
+  {
+   "case": "m 9, layer router, dist outliers",
+   "first_call_s": 0.015138778020627797,
+   "ok": true,
+   "msg": "relative L2 error 3.426e-06 (worst row 3.764e-06); 2 probe rows exact to 2.6e-06"
+  },
+  {
+   "case": "m 512, layer qkv_gate, dist outliers",
+   "first_call_s": 0.0010325360344722867,
+   "ok": true,
+   "msg": "relative L2 error 3.361e-03 (worst row 3.776e-03); 55 probe rows exact to 0.0e+00"
+  },
+  {
+   "case": "m 1000, layer unpooler, dist outliers",
+   "first_call_s": 0.0021909259958192706,
+   "ok": true,
+   "msg": "relative L2 error 2.236e-03 (worst row 2.664e-03); 121 probe rows exact to 0.0e+00"
+  }
+ ],
+ "shapes": [
+  {
+   "case": "layer qkv_gate, m 1",
+   "load": "decode 1",
+   "weight": 62,
+   "us": 21.504000294953585,
+   "ok": true
+  },
+  {
+   "case": "layer o, m 1",
+   "load": "decode 1",
+   "weight": 62,
+   "us": 12.271999847143888,
+   "ok": true
+  },
+  {
+   "case": "layer pooler, m 1",
+   "load": "decode 1",
+   "weight": 62,
+   "us": 34.815998282283545,
+   "ok": true
+  },
+  {
+   "case": "layer unpooler, m 1",
+   "load": "decode 1",
+   "weight": 62,
+   "us": 8.192000444978476,
+   "ok": true
+  },
+  {
+   "case": "layer router, m 1",
+   "load": "decode 1",
+   "weight": 62,
+   "us": 8.192000444978476,
+   "ok": true
+  },
+  {
+   "case": "layer qkv_gate, m 16",
+   "load": "decode 16",
+   "weight": 62,
+   "us": 26.62399923428893,
+   "ok": true
+  },
+  {
+   "case": "layer o, m 16",
+   "load": "decode 16",
+   "weight": 62,
+   "us": 12.287999968975782,
+   "ok": true
+  },
+  {
+   "case": "layer pooler, m 16",
+   "load": "decode 16",
+   "weight": 62,
+   "us": 46.08000023290515,
+   "ok": true
+  },
+  {
+   "case": "layer unpooler, m 16",
+   "load": "decode 16",
+   "weight": 62,
+   "us": 36.86399897560477,
+   "ok": true
+  },
+  {
+   "case": "layer router, m 16",
+   "load": "decode 16",
+   "weight": 62,
+   "us": 10.736000258475542,
+   "ok": true
+  },
+  {
+   "case": "layer qkv_gate, m 32",
+   "load": "decode 32",
+   "weight": 62,
+   "us": 31.744000967592,
+   "ok": true
+  },
+  {
+   "case": "layer o, m 32",
+   "load": "decode 32",
+   "weight": 62,
+   "us": 17.407999839633703,
+   "ok": true
+  },
+  {
+   "case": "layer pooler, m 32",
+   "load": "decode 32",
+   "weight": 62,
+   "us": 49.15199941024184,
+   "ok": true
+  },
+  {
+   "case": "layer unpooler, m 32",
+   "load": "decode 32",
+   "weight": 62,
+   "us": 47.103998716920614,
+   "ok": true
+  },
+  {
+   "case": "layer router, m 32",
+   "load": "decode 32",
+   "weight": 62,
+   "us": 10.240000206977129,
+   "ok": true
+  },
+  {
+   "case": "layer qkv_gate, m 8",
+   "load": "verify 1",
+   "weight": 62,
+   "us": 27.647999580949545,
+   "ok": true
+  },
+  {
+   "case": "layer o, m 8",
+   "load": "verify 1",
+   "weight": 62,
+   "us": 12.287999968975782,
+   "ok": true
+  },
+  {
+   "case": "layer pooler, m 8",
+   "load": "verify 1",
+   "weight": 62,
+   "us": 46.08000023290515,
+   "ok": true
+  },
+  {
+   "case": "layer unpooler, m 8",
+   "load": "verify 1",
+   "weight": 62,
+   "us": 8.192000444978476,
+   "ok": true
+  },
+  {
+   "case": "layer router, m 8",
+   "load": "verify 1",
+   "weight": 62,
+   "us": 8.704000152647495,
+   "ok": true
+  },
+  {
+   "case": "layer qkv_gate, m 128",
+   "load": "verify 16",
+   "weight": 62,
+   "us": 1592.8320004604757,
+   "ok": true
+  },
+  {
+   "case": "layer o, m 128",
+   "load": "verify 16",
+   "weight": 62,
+   "us": 800.7679893635213,
+   "ok": true
+  },
+  {
+   "case": "layer pooler, m 128",
+   "load": "verify 16",
+   "weight": 62,
+   "us": 2287.1040417812765,
+   "ok": true
+  },
+  {
+   "case": "layer unpooler, m 128",
+   "load": "verify 16",
+   "weight": 62,
+   "us": 2176.511914934963,
+   "ok": true
+  },
+  {
+   "case": "layer router, m 128",
+   "load": "verify 16",
+   "weight": 62,
+   "us": 16.38399949297309,
+   "ok": true
+  },
+  {
+   "case": "layer qkv_gate, m 256",
+   "load": "verify 32",
+   "weight": 62,
+   "us": 2498.063953127712,
+   "ok": true
+  },
+  {
+   "case": "layer o, m 256",
+   "load": "verify 32",
+   "weight": 62,
+   "us": 1741.839976515621,
+   "ok": true
+  },
+  {
+   "case": "layer pooler, m 256",
+   "load": "verify 32",
+   "weight": 62,
+   "us": 4068.896086420864,
+   "ok": true
+  },
+  {
+   "case": "layer unpooler, m 256",
+   "load": "verify 32",
+   "weight": 62,
+   "us": 5746.688158717006,
+   "ok": true
+  },
+  {
+   "case": "layer router, m 256",
+   "load": "verify 32",
+   "weight": 62,
+   "us": 167.1839994378388,
+   "ok": true
+  }
+ ],
+ "loads": {
+  "decode 1": {
+   "us": 5268.511957488954,
+   "base_us": 0.0
+  },
+  "decode 16": {
+   "us": 8220.703917555511,
+   "base_us": 0.0
+  },
+  "decode 32": {
+   "us": 9650.175946764648,
+   "base_us": 0.0
+  },
+  "verify 1": {
+   "us": 6380.5440235883,
+   "base_us": 0.0
+  },
+  "verify 16": {
+   "us": 426163.196654059,
+   "base_us": 0.0
+  },
+  "verify 32": {
+   "us": 881805.6748015806,
+   "base_us": 0.0
+  }
+ }
+}

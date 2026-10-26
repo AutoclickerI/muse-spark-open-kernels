@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "payload_sha256": "a92a56c4ff5652059396f65e7b723026e8b88f52a77c1370ebc749da6a2388a2",
+  "oracle_shapes": 8,
+  "candidate_shapes": 8,
+  "oracle_dispatches": 72,
+  "candidate_dispatches": 192,
+  "all_gemm_and_FP32_router_TASK": true,
+  "paired_timing_samples_lossless": true,
+  "actual_wrapper_schema": true,
+  "wire_bytes": 8254,
+  "minimum_output_headroom": 489,
+  "limits": "Only post-check metadata serialized compactly; no timing samples or TASK gates dropped; native Hopper math replaced locally"
+}

@@ -1,0 +1,221 @@
+{
+  "passed": true,
+  "units": [
+    {
+      "mode": "raw",
+      "source_sha256": "a8c550eef6e81aeb252d456b9ca479a485215edd786829ffb417f6ead0a4cf07",
+      "registers": [
+        209,
+        145
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 16,
+      "TMA": 8,
+      "global_loads": 40,
+      "global_stores": 10
+    },
+    {
+      "mode": "smem_x",
+      "source_sha256": "abe19768b3d59cd5bce8555a64145dda92c1925e797f33b32f55468d84763ca3",
+      "registers": [
+        210,
+        143
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 16,
+      "TMA": 4,
+      "global_loads": 36,
+      "global_stores": 10
+    },
+    {
+      "mode": "mathfree",
+      "source_sha256": "32850e341fde2be88a5639379cd6cbc273e14346a06c1461f0a30f1a56f56ced",
+      "registers": [
+        213,
+        150
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 0,
+      "TMA": 8,
+      "global_loads": 40,
+      "global_stores": 14
+    },
+    {
+      "mode": "no_epilogue",
+      "source_sha256": "05222ec1853d5ba5cca4f52d719c2564d7636794651b99d8d18bbce2fb2dedbb",
+      "registers": [
+        206,
+        142
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 16,
+      "TMA": 8,
+      "global_loads": 40,
+      "global_stores": 2
+    },
+    {
+      "mode": "x_mathfree",
+      "source_sha256": "01b27a593d9cc356228845dd71124188c8225eaa8b979fd05ac9d301b7cb1407",
+      "registers": [
+        167,
+        78
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 0,
+      "TMA": 4,
+      "global_loads": 4,
+      "global_stores": 10
+    },
+    {
+      "mode": "x_no_ep",
+      "source_sha256": "37929246a743014c5d7a047f7c6299789e6f2b49c9107985492a8e865f957e89",
+      "registers": [
+        210,
+        140
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 16,
+      "TMA": 4,
+      "global_loads": 36,
+      "global_stores": 2
+    },
+    {
+      "mode": "mathfree_no_ep",
+      "source_sha256": "b6a57b66dc4a33b71140c35ef8ce851faf70b1f1c3abdc5b7a6c6e1b1ae60fdb",
+      "registers": [
+        211,
+        148
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 0,
+      "TMA": 8,
+      "global_loads": 40,
+      "global_stores": 6
+    },
+    {
+      "mode": "x_mathfree_no_ep",
+      "source_sha256": "71077e9170b113be3b07a800fb866c6eaf2d3fdf6881e7fdda83e0a7fb418802",
+      "registers": [
+        81,
+        18
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 0,
+      "TMA": 4,
+      "global_loads": 4,
+      "global_stores": 2
+    },
+    {
+      "mode": "bf16",
+      "source_sha256": "9720a6f723d058e03ee35bbbe69cfba8bae6acf472ed09695ecc954f76a391d2",
+      "registers": [
+        208,
+        144
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "HGMMA": 16,
+      "TMA": 8,
+      "global_loads": 40,
+      "global_stores": 10
+    }
+  ]
+}

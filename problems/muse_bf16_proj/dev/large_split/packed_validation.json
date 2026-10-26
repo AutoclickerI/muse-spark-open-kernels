@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "payload_sha256": "f95fd37dac2e41487c6856b1e8de3d7c95d1beaa03cc0e827e417a91a9979fd5",
+  "cases": 8,
+  "seeds": 8,
+  "arms": 42,
+  "host_dispatches": 288,
+  "all_GEMM_and_original_FP32_router_TASK": true,
+  "all_banks_bitwise_exact": true,
+  "serialization_only_after_full_rehearsal": true,
+  "actual_wrapper_wire": 8480,
+  "wire_limit": 8744,
+  "headroom": 263,
+  "all_paired_timing_samples_retained": true
+}
