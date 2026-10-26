@@ -751,6 +751,54 @@ shell and confirm held-out six-load R. Next large recipe: share each X stage acr
 four output tiles with two consumer WGs, checking register/shared admission first;
 conditional half-X ceiling~8/22us does not hide the remaining39/48us service/shell.
 
+### P3b S18 activation-reuse verdict (2026-10-26)
+
+`4e1926c6185e4628`,16 fresh independent weight/router seeds,3fixtures/seed/M:
+all seven math arms pass native TASK before/after, worstL2/row .004133/.004738.
+A:A signed/absolute/max seed-mean us +.088/.323/.763(M128),+.167/.353/.960(M256).
+Runtime CUDA occupancy confirms2CTAs/SM for all six variants. Native TMA/multicast
+protocols are measured and correct. Ratios are whole-MoE new/S18, descriptive95%
+Student-t15 across seed means; no A:A or per-load significance veto is used.
+
+S18 controls173.140/226.723us and logical activation requests186.205/362.544MB.
+Local sizing used16seeds x3fixtures and retains every expert's count/bytes; native
+fixtures differ, so the table uses per-native-fixture counts. These are global
+requests, not HBM counters; gather read/write and padded TMA boxes are included.
+
+| Recipe | X MB M128/M256 | /S18 M128 [95% CI] | /S18 M256 [95% CI] | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|---|---|
+|PACK|188.890/368.780|1.096557 [1.088904,1.104209]|1.073146 [1.068733,1.077559]|Timed parallel heavy-X gather plus contiguous address generation; no point gain. Original8x16B lanes already fill aligned128B spans.|Activation reuse without all-rank stage barriers,smaller useful grids or register serialization;partial fusion remains open.|`4e1926c6185e4628`|
+|TMA1|231.948/444.835|1.284546 [1.254956,1.314137]|1.350137 [1.312048,1.388226]|Same gather plus single-CTA-cluster TMA ring/barriers. Loses;this controls the whole transport/sync recipe,not intrinsic TMA latency.|Activation reuse without all-rank stage barriers,smaller useful grids or register serialization;partial fusion remains open.|`4e1926c6185e4628`|
+|MC2|145.964/257.140|1.299130 [1.265084,1.333177]|1.365487 [1.321498,1.409476]|Same bounded token tiles,2CTA output-panel multicast,per-stage all-rank arm/retire barrier. Lower requests lose;all native gates pass.|Activation reuse without all-rank stage barriers,smaller useful grids or register serialization;partial fusion remains open.|`4e1926c6185e4628`|
+|MC4|102.973/163.292|1.328523 [1.288312,1.368735]|1.385554 [1.342586,1.428522]|4CTA output-panel multicast with same math/padding;largest byte reduction but loses32.9/38.6%.|Activation reuse without all-rank stage barriers,smaller useful grids or register serialization;partial fusion remains open.|`4e1926c6185e4628`|
+|W4N32|121.750/212.876|1.300076 [1.221830,1.378323]|1.695647 [1.565819,1.825475]|Two64-output tiles per WG share X;2CTAs,zero spills. Smaller output grid and heavy N32 blocks raise weight requests478.94→540.87 /609.29→770.31MB.|Activation reuse without all-rank stage barriers,smaller useful grids or register serialization;partial fusion remains open.|`4e1926c6185e4628`|
+|W4N64|121.750/212.876|1.222323 [1.122675,1.321971]|1.380142 [1.277689,1.482596]|Same shared-X reuse,original token blocks/weight counts.2CTAs,zero spills,but C7512 WGMMA serialization at127–128regs and smaller output grid.|Activation reuse without all-rank stage barriers,smaller useful grids or register serialization;partial fusion remains open.|`4e1926c6185e4628`|
+
+All6 native layouts fit2CTAs:PACK102400B dynamic124/128regs;TMA1/MC2/MC4 add1024B
+static,124–128regs;W4N32 106496B111/112regs,W4N64 104448B127/128regs. Admission is
+not proof of two useful heavy CTAs on every SM; output-panel counts halve for wide
+arms. TMA1 adds32.1/63.3us net over PACK;MC2/4 add further time despite request
+reductions. These comparisons do not isolate individual waits/transport/issue.
+
+The earlier +39/+100us oracle combined byte requests,request granularity,address
+issue and cache reuse. This new receipt does not support assigning that increment
+as a free activation-byte credit. It closes these exact barrier/grid/register
+tradeoffs,not the activation lever. Nonblocking remote-empty multicast handshakes
+and wider output schedules retaining useful parallelism require a new model/proof.
+
+Whole-block on-chip W13→W2 is **size-rejected,unmeasured**:N32 BF16 SwiGLU alone256KiB
+exceeds the115712B practical two-CTA budget. N8 rescue fits64KiB but local model
+needs1006.8/1736.4MB weights and only35.6/61.3 useful CTAs on132SMs;even its4.8TB/s
+weight-only floor209.8/361.8us exceeds S18 whole time. Partial-K fusion is not closed.
+Gather-only coalescing premise is false,as existing sectors are full;PACK is still
+tested as the necessary conversion control for multicast.
+
+No point winners at either M;`branches/actreuse/P4_HANDOFF.json` has no nominations.
+All12 exact normal/forced whole-layer screens pass13TASK/12graphs/38static;
+966changed-data replay checks over69cases are bit-equalS18. Builders reproduce
+root-applicable packed S18 patches with checked expanded hashes;no losing patch
+is retained as a fallback. Target132.6/158.5us remains unmet.
+
 ## Attention
 
 ### Shapes, floors and the incumbents

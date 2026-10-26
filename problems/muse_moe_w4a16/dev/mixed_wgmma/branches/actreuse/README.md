@@ -89,4 +89,71 @@ retains expert-level evidence. `read.py` will retain seed CIs and point nominati
 MoE check **`4e1926c6185e4628`**, sender **`022b2f617f7b1eb1`**, accepted at15:39KST.
 Payload`51dde34e`, wrapper`022b2f61`, import budget240s, no not-before gate.
 All twelve normal/forced whole-layer screens pass; exact packed16seed rehearsal
-passes5948characters. Native correctness and cluster admission await this receipt.
+passes5948characters. Native receipt complete: all TASK gates pass; all six variants admit2CTAs/SM.
+
+
+## Native verdict — 4e1926c6185e4628
+
+16 fresh independent weight/router seeds,48fixtures per M; all seven math arms pass
+TASK before/after timing, max L2/row .004133/.004738. Cold direct pairs against exact
+S18; A:A signed/absolute/max seed-mean us +.088/.323/.763(M128),+.167/.353/.960(M256).
+All runtime CUDA resource queries confirm2CTAs/SM, including1024B static multicast
+scratch. These are valid measured losses, not failed protocol or occupancy controls.
+
+Local and H200 generated fixtures differ; native request counts below come from each
+native fixture's route counts, retained in the seed archive. Do not substitute the
+local sizing table for these measured-workload logical counts. Neither is an HBM counter.
+
+| Arm | Native activation MB M128 / M256 | /S18 M128 [95% CI] | /S18 M256 [95% CI] |
+|---|---|---|---|
+|S18|186.205 / 362.544|1.000000 [1.000000,1.000000]|1.000000 [1.000000,1.000000]|
+|PACK|188.890 / 368.780|1.096557 [1.088904,1.104209]|1.073146 [1.068733,1.077559]|
+|TMA1|231.948 / 444.835|1.284546 [1.254956,1.314137]|1.350137 [1.312048,1.388226]|
+|MC2|145.964 / 257.140|1.299130 [1.265084,1.333177]|1.365487 [1.321498,1.409476]|
+|MC4|102.973 / 163.292|1.328523 [1.288312,1.368735]|1.385554 [1.342586,1.428522]|
+|W4N32|121.750 / 212.876|1.300076 [1.221830,1.378323]|1.695647 [1.565819,1.825475]|
+|W4N64|121.750 / 212.876|1.222323 [1.122675,1.321971]|1.380142 [1.277689,1.482596]|
+
+S18 controls173.140/226.723us. PACK189.566/243.533; TMA1 221.646/306.784;
+MC2 224.090/309.944; MC4 228.965/315.106; W4N32 222.879/383.930;
+W4N64 209.107/313.197us. All confidence intervals are descriptive Student-t15 across
+independent seed means, each averaging three correlated fixtures. All point estimates
+lose; no A:A or per-load significance veto is involved.
+
+Observed mechanisms, with the limits of attribution:
+
+- PACK adds about16.4/16.8us net. Its timed gather plus changed contiguous address
+  generation both contribute; this does not measure either cost in isolation. Original
+  sector utilization was already full, so a coalescing win was not predicted.
+- TMA1 adds another32.1/63.3us over PACK. It is a **one-CTA cluster-barrier** matched
+  control, not an optimized barrier-free unicast. This diagnoses the whole TMA/ring/
+  synchronization recipe, not intrinsic TMA latency.
+- MC2/MC4 reduce L2-side request counts but are slower than TMA1 too. Every ring refill
+  still synchronizes all destinations; multicast also delivers the stage to every CTA.
+  Reduced counted requests did not offset those net costs. Exact wait/transport times
+  are unmeasured; no per-phase additive attribution is claimed.
+- W4N32 is spill-free, but changes heavy weight requests478.94→540.87MB atM128 and
+  609.29→770.31MB atM256. It halves useful output-panel CTAs and repeats dequant for
+  N32 token blocks. W4N64 keeps weight requests fixed but hits recorded C7512 register
+  serialization and the same smaller output grid. Two-CTA *admission* is not proof of
+  two useful resident heavy CTAs on every SM. These exact width tradeoffs lose.
+
+The prior +39/+100us oracle increment combined activation requests, request granularity,
+address issue and cache reuse. It was not a separable activation-byte tax. This new batch
+confirms that halving counted requests alone does not confer that credit; the tested
+means cannot identify the performance of an implementation without these added costs.
+
+(c) remains size-rejected and unmeasured, not a correctness failure or measured loss.
+All six actual recipes close; partial fusion, nonblocking multicast handshakes and a
+wider-output schedule preserving useful parallelism remain open. A next multicast
+recipe would replace per-stage all-rank barriers with a remote empty-stage counter/
+producer wait and independent destination progress, without increasing token padding
+or losing two-CTA admission. It needs a new protocol proof and a competitive service
+model before another run; no automatic bandwidth or overlap gain is assigned.
+
+## P4 handoff
+
+`P4_HANDOFF.json` contains **no nominations** and keeps S18 at both M. It retains all
+seed CIs, before/after request counts and native resources. No losing patch is retained
+as a fallback. `build.py` can reproduce every tested root-applicable S18 patch; expanded
+bodies and packed hashes are pinned in `manifest.json`. Targets remain unmet.

@@ -1,0 +1,11 @@
+import hashlib,json
+from pathlib import Path
+H=Path(__file__).resolve().parent;ROOT=H.parents[5]
+r=json.loads((H/'results.json').read_text());assert r['native_H200'];mf=json.loads((H/'manifest.json').read_text());nom=[];best={}
+for m in (128,256):
+ rr=[x for x in r['arms'] if x['M']==m];b=min(rr,key=lambda x:x['ratio']['mean']);best[m]=b['arm']
+ for row in rr:
+  if not row['nominate_to_P4']:continue
+  arm=row['arm'];spec=mf[arm];patch=H/(arm.lower()+'.patch');assert hashlib.sha256(patch.read_bytes()).hexdigest()==spec['patch_sha256'];nom.append(dict(**row,patch=str(patch.relative_to(ROOT)),patch_sha256=spec['patch_sha256'],candidate=spec['packed_candidate'],candidate_sha256=spec['packed_sha256'],expanded_sha256=spec['candidate_sha256'],base_expanded_sha256=mf['base_expanded_sha256'],base_shipped_sha256=mf['base_shipped_sha256'],fixtures_per_seed=3))
+out=dict(receipt=r['receipt'],base='problems/muse_decode_layer/cand_r3_best7_s18_final.py',base_expanded_sha256=mf['base_expanded_sha256'],base_shipped_sha256=mf['base_shipped_sha256'],nominations=nom,default_point_choice=best,AA=r['AA'],resources=r['resources'],integration='Each patch applies to actual packed S18 e04635ec and replaces it with a checked packed body. Decompress source for P4 AST composition. It appends ACT_CUDA/activation_module/activation_plan and nf_call/prepare compile hook. The plan is S18 p3b_plan plus selected heavy producer and optional timed gather; original P7 mt_pmz_module W2 and mt_finish10 remain byte-for-byte. No low-expert ownership or weight layout change.',precision='NVFP4 unchanged; gathered X and shared stage BF16; SwiGLU remains BF16, accumulation unchanged FP32; TASK checker only.',screen='Six exact expanded candidates normal/forced13TASK12graphs38static,966current-input replay gates, exact16seed packed payload; each packed patch body SHA equals its screened expanded source. Native H200 correctness/resources are in receipt.',promotion='Every valid per-shape point gain against S18 goes to P4 with descriptive95pct Student-t seed CI and full seed samples. A:A is diagnostic; held-out six-load R confirms composition. W4N64 C7512 serialization is explicitly part of that recipe, not a general width verdict.')
+(H/'P4_HANDOFF.json').write_text(json.dumps(out,indent=2)+'\n');print(best,[(x['M'],x['arm']) for x in nom])

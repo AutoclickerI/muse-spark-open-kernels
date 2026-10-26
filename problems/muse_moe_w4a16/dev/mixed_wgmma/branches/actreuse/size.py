@@ -24,7 +24,7 @@ for seed in range(16):
    assert all(abs(sum(x['activation_bytes'][k] for x in per)/1e6-c['activation_MB'][k])<1e-8 for k in n['ACT_NAMES'])
    c['per_expert']=per;c.update(M=m,seed=seed,fused8_CTA_count=sum(math.ceil(v/8) for v in cc),fused8_weight_MB=sum(math.ceil(v/8) for v in cc)*28.311552,fused32_ACT_KiB=256,fused8_ACT_KiB=64);rows.append(c)
  del w;torch.cuda.empty_cache()
-(H/'counts.json').write_text(json.dumps(rows,indent=2)+'\n')
+(H/'counts.json').write_text('[\n'+',\n'.join(json.dumps(r,separators=(',',':')) for r in rows)+'\n]'+'\n')
 for m in (128,256):
  rr=[r for r in rows if r['M']==m]
  print(m,{a:sum(r['activation_MB'][a] for r in rr)/len(rr) for a in n['ACT_NAMES']},'fuse8 CTA/weightMB',sum(r['fused8_CTA_count'] for r in rr)/len(rr),sum(r['fused8_weight_MB'] for r in rr)/len(rr))

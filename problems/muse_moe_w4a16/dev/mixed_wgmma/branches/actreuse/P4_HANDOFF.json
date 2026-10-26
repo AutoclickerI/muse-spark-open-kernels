@@ -1,0 +1,82 @@
+{
+  "receipt": "runs/muse_moe_w4a16/20261026T063910Z_check_4e1926c6185e4628.json",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s18_final.py",
+  "base_expanded_sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "base_shipped_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+  "nominations": [],
+  "default_point_choice": {
+    "128": "S18",
+    "256": "S18"
+  },
+  "AA": {
+    "128": {
+      "signed_mean_us": 0.0883340835571289,
+      "absolute_mean_us": 0.3229990005493164,
+      "max_seed_mean_us": 0.762664794921875,
+      "ratio": {
+        "mean": 1.0005777987985667,
+        "SE": 0.0005599784702016896,
+        "CI95": [
+          0.9993842326882553,
+          1.001771364908878
+        ],
+        "seeds": 16,
+        "samples": [
+          0.9976505807577368,
+          1.0048594708541612,
+          1.0006326957926952,
+          0.9987744177753934,
+          1.003047947366917,
+          0.9964188703120759,
+          0.9976673461999742,
+          0.9992976934398003,
+          1.0027349187196883,
+          1.0009353414753075,
+          1.000699676411627,
+          1.000679059282708,
+          0.9998394305012562,
+          1.0018056845581658,
+          1.0018820095112524,
+          1.002319637818306
+        ]
+      }
+    },
+    "256": {
+      "signed_mean_us": 0.16733074188232422,
+      "absolute_mean_us": 0.35266780853271484,
+      "max_seed_mean_us": 0.959991455078125,
+      "ratio": {
+        "mean": 1.0007036401537004,
+        "SE": 0.000477907309725406,
+        "CI95": [
+          0.9996850046183862,
+          1.0017222756890145
+        ],
+        "seeds": 16,
+        "samples": [
+          1.0018938913518727,
+          1.0040659225680675,
+          0.9994675910781003,
+          0.9987727438175867,
+          1.0017843275272238,
+          1.0014195125167134,
+          1.0000642292956436,
+          1.00176066511545,
+          0.9998201771293864,
+          0.9996367214219677,
+          1.000987981392843,
+          1.0037059818880312,
+          0.9968794209613028,
+          1.0001447666743664,
+          1.0023671240954177,
+          0.9984871856252336
+        ]
+      }
+    }
+  },
+  "resources": "{'PACK': [[128, 8, 0, 102400, 2], [124, 0, 0, 102400, 2]], 'TMA1': [[128, 0, 1024, 102400, 2], [124, 0, 1024, 102400, 2]], 'MC2': [[128, 0, 1024, 102400, 2], [128, 0, 1024, 102400, 2]], 'MC4': [[128, 0, 1024, 102400, 2], [128, 0, 1024, 102400, 2]], 'W4N32': [[112, 0, 0, 106496, 2], [111, 0, 0, 106496, 2]], 'W4N64': [[128, 0, 0, 104448, 2], [127, 0, 0, 104448, 2]]}",
+  "integration": "Each patch applies to actual packed S18 e04635ec and replaces it with a checked packed body. Decompress source for P4 AST composition. It appends ACT_CUDA/activation_module/activation_plan and nf_call/prepare compile hook. The plan is S18 p3b_plan plus selected heavy producer and optional timed gather; original P7 mt_pmz_module W2 and mt_finish10 remain byte-for-byte. No low-expert ownership or weight layout change.",
+  "precision": "NVFP4 unchanged; gathered X and shared stage BF16; SwiGLU remains BF16, accumulation unchanged FP32; TASK checker only.",
+  "screen": "Six exact expanded candidates normal/forced13TASK12graphs38static,966current-input replay gates, exact16seed packed payload; each packed patch body SHA equals its screened expanded source. Native H200 correctness/resources are in receipt.",
+  "promotion": "Every valid per-shape point gain against S18 goes to P4 with descriptive95pct Student-t seed CI and full seed samples. A:A is diagnostic; held-out six-load R confirms composition. W4N64 C7512 serialization is explicitly part of that recipe, not a general width verdict."
+}

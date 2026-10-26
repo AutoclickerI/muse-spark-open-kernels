@@ -4,12 +4,13 @@
   "host": "muse_moe_w4a16",
   "mode": "check",
   "not_before": null,
-  "status": "pending",
+  "status": "done",
   "payload": {
     "sha256": "51dde34ebceead22685d850d5c1b43820689e7e4671f6315efea89da316ebb94",
     "bytes": 631186
   },
   "wrapper_sha256": "022b2f617f7b1eb173fd0b98867ecea124478a4c4f325d0550894d4bcb670674",
   "source": "runs/muse_moe_w4a16/20261026T063910Z_check_4e1926c6185e4628.py",
-  "decision": "All valid per-shape point gains vs S18 to P4 with seed SE/CI; G0 held-out whole-layer R confirms. MC/TMA correctness/resource gates are native; a failed protocol/control is unmeasured."
+  "decision": "All native controls and correctness pass; no per-shape point winner. P4 keeps S18 at128/256. Exact multicast/width/packing recipes close; activation reuse remains open with current barrier/grid/register costs explicit.",
+  "receipt": "runs/muse_moe_w4a16/20261026T063910Z_check_4e1926c6185e4628.json"
 }
