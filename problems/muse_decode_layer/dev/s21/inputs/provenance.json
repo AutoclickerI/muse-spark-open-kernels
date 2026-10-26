@@ -1,0 +1,16 @@
+{
+  "chain": {
+    "patch": "problems/muse_attention_decode/dev/full_attention/chain/candidate.patch",
+    "patch_sha256": "5f18b0a59e7b3214f288b153de7b27800f6954e38c6c069069ae06246cb15e6f",
+    "source_sha256": "dbeeb84752cfc7ca85b4286c4a22b885d4d15edd5469d1e7b0ce6cafff849508",
+    "tail_sha256": "8b24d7b92ae0ed3ce94fa9e70f5d7d01c1f04c7eff1830876e12f37d55bfdb70",
+    "receipt": "9dc1159a076b4e6b"
+  },
+  "native_layout": {
+    "patch": "problems/muse_bf16_proj/dev/large_split/np_patch.py",
+    "source_sha256": "3ad4e729a4cd1968b234ecd6b8fbf6d8f23881531e8c4b9205a9f2d8cc1f551a",
+    "tail_sha256": "0c3f2c5cba9092da5858da93636bd0fee40cf41cdeb224ae5292726d31f1f0fd",
+    "receipt": "7f110a377fb843a7",
+    "added_prepare_s": 0.3155732380691916
+  }
+}

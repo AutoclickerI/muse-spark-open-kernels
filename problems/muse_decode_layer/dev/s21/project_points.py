@@ -1,0 +1,39 @@
+"""Planning projection from measured stage deltas, with no duplicate M64 credit."""
+import json,math,statistics,sys
+from pathlib import Path
+H=Path(__file__).resolve().parent;R=H.parents[3];sys.path.insert(0,str(R/'tools'))
+from lab_packet import paired_evidence
+
+def main():
+    chain=json.loads((R/'problems/muse_attention_decode/dev/full_attention/chain/result.json').read_text())
+    dense=json.loads((R/'problems/muse_bf16_proj/dev/large_split/final_whole_results.json').read_text())
+    whole={(b,q,w):statistics.mean(row['values']['A']) for row in dense['raw']['rows'] for b,q,w in [row['case']]}
+    stage={}
+    for label,arm in chain['preferred'].items():
+        b,q=map(int,label[:-1].split('x'));w=2048 if label[-1]=='s' else 0;cell=chain['summary'][label]
+        stage[b,q,w]=dict(arm=arm,control_us=cell['control_us'],ratio=cell['ratios'][arm]['r'],saved_us=cell['control_us']*(1-cell['ratios'][arm]['r']))
+    gate=1.0044046459819183;c3=1.000967907286277;np_v16=1.0041276519451878
+    def project(baseline):
+        loads={}
+        for b,q in ((1,1),(16,1),(32,1),(1,8),(16,8),(32,8)):
+            old=sum(weight*baseline[b,q,w] for w,weight in ((2048,46),(0,16)))
+            saved=sum(weight*stage.get((b,q,w),{}).get('saved_us',0) for w,weight in ((2048,46),(0,16)))
+            ratio=old/(old-saved)
+            if (b,q)==(16,8):ratio*=np_v16
+            loads[f'{b}x{q}']=dict(old_load_us=old,stage_saved_us=saved,R=ratio)
+        r=math.exp(statistics.mean(math.log(v['R']) for v in loads.values()))*gate*c3
+        return dict(R=r,loads=loads)
+    receipt=next((R/'runs/muse_decode_layer').glob('*28b5c189*.json'));official=json.loads(receipt.read_text())
+    p=next((R/'runs/muse_prefill_layer').glob('*6ac9317e*.json'));s19=paired_evidence(json.loads(p.read_text())['result']['log_tail'],'S19')
+    adjusted={}
+    for rec in official['result']['records']:
+        if rec.get('event')!='benchmark':continue
+        c=rec['case'];b,q,w=c['batch'],c.get('q_len',1),2048 if c['layer']=='sliding' else 0
+        label=('d' if q==1 else 'v')+str(b)+('S' if w else 'F')
+        adjusted[b,q,w]=rec['median_ns']/1000/s19['shapes'][label]['r']['INC']
+    out=dict(planning_only=True,stage_points=chain['job'],whole_baseline=dense['job'],stage_deltas={str(k):v for k,v in stage.items()},
+        primary=project(whole),official_S18_adjusted_sensitivity=project(adjusted),factors=dict(gate=gate,C3=c3,NP_verify16=np_v16),
+        M64_credit='R64 replaces M64; projection uses R64/S19 directly and does not multiply prior M64 gain',
+        limitations='Different runs/weights/timing boundaries; assumes additive stage savings and independent dispatch effects. G0 requires the native composed held-out R lower bound, never this projection.')
+    (H/'projection.json').write_text(json.dumps(out,indent=2)+'\n');print('Point projection',out['primary']['R'],'official sensitivity',out['official_S18_adjusted_sensitivity']['R'])
+if __name__=='__main__':main()

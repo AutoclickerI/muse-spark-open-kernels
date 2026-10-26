@@ -1,21 +1,39 @@
 # S21 integration batch
 
-Current source **a72f6398**, shipment **a7966c4e**: exact S19 `62ea5bf4` plus **C3 d16F/d32F, M64 v1F,
-and exact12 fused gate d1S**. B1, PRIVATE M1, AFFINE M32 and H2 are absent; their CUDA, dispatches and bank
-ownership equal S19. `contracts.py` verifies this and all three leave-outs before GPU work.
+Current source **81404eb2**, shipment **d5c6dd24**: exact S19 `62ea5bf4` plus these six independently
+removable pieces:
 
-P5b all-FA3 scheduling/combine, P3a W13→W2, P5 producer-complete query setup and P10 large shapes have no new
-qualified handoff in this batch yet. `handoff_review.json` records the inspected files. The existing P5 H d32S
-point is unresolved (.999373, CI crosses 1; H/RAW 1.000746) and does not establish the awaited query-setup gain.
-No standalone confirmation of S20-no_B1 is sent.
+| Piece | Selected work |
+|---|---|
+| C3 | Full attention d16F/d32F |
+| GATE | Exact12 fused gate at d1S |
+| FA_CHAIN | P5b shape-only FA3 scheduling and parallel combine: v16S R4w4, v1F R64 |
+| VQ16 | P5b native full-attention v16F Rw4 |
+| VQ32 | P5b native full-attention v32F Rw4 |
+| NP | Lossless K-major banks for T128 qkv_gate and pool_router, native schedules |
 
-The current planning estimate is approximately **1.0065x**, multiplying P10's earlier 1.004405 whole-layer point
-by S20's C3 1.000968 and M64 1.001167 leave-out points. This is a rough ranking estimate across different
-backgrounds, not a composed result or a promotion claim. Hold the one paired lab for a larger overnight batch;
-release when its projected point exceeds roughly 1.01, or at **2026-10-27 09:00 KST** at the latest. S19's existing
-scored sender remains unchanged at 09:01 in the same reset. The queued source is an immutable snapshot: after
-adding a nominee and screening it, send the rebuilt `s21_pair.py` on the same host/path; the tools replace the
-unsent old snapshot. Omit `--not-before` if the batch has earned immediate release. Keep `--lane P4 --decision`.
+R64 includes M64's static split metadata; the old M64 interceptor is removed so it cannot mask the new
+combine. The FA_CHAIN leave-out retains M64, measuring the incremental chain gain. Each VQ row has its own
+leave-out because v32F's isolated CI crosses 1. NP is a per-shape point, not an isolated G0 winner; its leave-out
+covers both verify16 layers. B1, PRIVATE M1, AFFINE M32 and H2 remain absent, with their CUDA, dispatches and
+bank ownership equal to S19. `contracts.py` checks these identities before GPU work.
+
+The exact lane patches are snapshotted under `inputs/`, with provenance and the FA3 BSD notice. The combined
+P5b patch is `5f18b0a5`, measured source `dbeeb847`, receipt `9dc1159a076b4e6b` (928 TASK). NP comes from P10's
+native-only point in `7f110a377fb843a7`; no SS or packed-SS rebuild is included.
+
+The point projection is **1.008688x (+0.87%) over S19**, with **1.008412x** using official S18 shape times
+adjusted by the S19 lab as a sensitivity. `project_points.py` weights isolated attention-call microseconds by
+46 sliding / 16 full, then combines the C3/gate and verify16 NP points. It does not count M64 twice or treat an
+11% attention-call saving as an 11% layer saving. Different runs, weights and timing boundaries make this a
+planning estimate; only the composed native held-out R and CI through `tools/promotion.py` can pass G0.
+
+The single paired lab remains due **2026-10-27 09:00 KST**, unless further nominees lift the point estimate
+above roughly 1.01. Fold qualified P3a/P5 patches arriving before roughly 08:30 into this batch, with contracts
+and both screens; later patches go to S22. P5's new consumer-deletion oracle `ca022370c1f34adc` has no candidate
+nominee, and P3a's new ladder has no handoff yet. `handoff_review.json` records every inspected nomination file.
+The queued snapshot must be replaced through `h200_lab.py send` after an addition. S19 scored sender 4046452
+remains unchanged; no S21 scored run or new freeze precedes the required native evidence and S19 official TASK.
 
 ## 0640cce4 forensics
 
@@ -67,32 +85,35 @@ bias subtraction, outlier deletion or new confidence estimator is applied.
   and the old selected seed is excluded from confirmation. They may distinguish recurrence from a one-off,
   but cannot retroactively assign a hardware cause to an uninstrumented old round.
 
-Candidate prepare is expected near S19's 147.7 s plus about 9 s for the gate; this is an estimate until H200.
+Candidate prepare starts from S19's measured 147.7 s, with the gate's measured +9.2 s and NP's +0.316 s.
+The new FA3 bridge/reducer/VQ builds join the existing parallel prepare pool; native composed prepare remains
+unmeasured, with a target under about 200 s. The lab records the total, per-build and delta times.
 The separate old-fixture prepare runs only in the import lab, after primary timing; the total run budget is 820 s
-inside the judge's 900 s limit. Nearby checks remain 260; the current core primary/leave-out TASK count is 2560.
+inside the judge's 900 s limit. Nearby checks remain 260; the expanded primary/leave-out TASK count is 2880.
 
 Reproduce with `compose.py`, `contracts.py`, `build_lab.py`; then `screen.py` normal and forced on GPU0 and
-`screen_lab.py --forced`. `python3 -m unittest discover -s tools/tests -v` checks gate regressions, declared
+`screen_lab.py --forced`; `native_compile.py` also checks dictionary-held chain CUDA for sm_90a. `python3 -m unittest discover -s tools/tests -v` checks gate regressions, declared
 round admission, linear order-drift cancellation, injected-spike retention, and sample-codec round trips.
 Neither S19 nor S21 is newly frozen before S19's official scored TASK result.
 
 ## Current verification and queue
 
-- **742/742 contracts pass**, including exact removal of the four S20 pieces and all three leave-outs.
-- Normal and forced GPU0 screens: **13 TASK cases and 12 scored-shape graphs each**, all pass; changed
-  sm_90a native compile and packaging/transport preflight pass.
-- Exact packed local rehearsal: **2560/2560 TASK + 260/260 nearby**, plus **5/5 old-fixture TASK checks**.
-  This uses explicit Hopper stand-ins on sm_120 and establishes no new H200 speedup or incident cause.
-- Every primary/control sampling plan is admitted by `tools/promotion.py`; **32/32 tool tests pass**.
-  The historical S20 R and CI reproduce exactly, including the outlier.
-- Actual checksum-protected wire: **10,328 bytes**. It validates in the final 16,000-character tail after a
-  4,000-character suffix. The old ordinary-host 8,744-byte payload cap blocked this evidence; lab-only
-  payloads now use their existing 12,000-byte reservation (maximum 11,744 including the packet's newline,
-  with 256 bytes for markers). Ordinary hosts retain their 8,744-byte cap. No seed or diagnostic round was
-  dropped to fit transport.
+- **1340/1340 contracts pass**, including dropped-piece identities and all six leave-outs.
+- Normal and forced GPU0 screens: **13 TASK cases and 12 scored-shape graphs each**, all pass. Changed
+  sm_90a bridge/reducer compile, dictionary-held VQ compile, packaging and transport preflight pass.
+- Exact packed local rehearsal: **2880/2880 TASK + 260/260 nearby**, plus **5/5 old-fixture TASK checks**.
+  This uses explicit Hopper arithmetic stand-ins on sm_120 and establishes no H200 composed gain or prepare.
+  The native-layout bank round-trips bit-for-bit to the original BF16 weights in both screens.
+- All nine arms' declared sampling plans are admitted by `tools/promotion.py`; **32/32 tool tests pass**.
+  The historical S20 R and CI remain unchanged, including the outlier.
+- Actual checksum-protected wire: **11,463 bytes** of the declared 11,700-byte payload reservation. It validates
+  in the final 16,000-character tail after a 4,000-character suffix. All seed/arm samples, protocol counts and
+  retained round/telemetry traces survive the round trip.
 
-The single import-time paired lab is queued on **prefill check quota**, sender **1990194**, for
-**2026-10-27 09:00 KST**, with `--lane P4` and the decision in `queue.json`. The current point projection is
-**1.006550**, below the ~1% immediate-release threshold. The four overnight work products are still pending;
-they must be integrated, contracted and screened before replacing this unsent snapshot. No S21 scored run or
-freeze is queued. S19 sender **4046452** remains alive, unchanged, at 09:01 KST.
+The single import-time paired lab is queued on **prefill check quota**, sender **2627539**, for
+**2026-10-27 09:00 KST**, with `--lane P4` and the decision in `queue.json`. It replaces sender **1990194**
+through the normal send tool. Wrapper SHA256 **`627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1`**;
+inner paired payload SHA256 **`bb4e7ec97dc6248a04d8ab786d176a67417898ff8fc91f53f355e5920f311520`**.
+The point projection **1.008688** is below the ~1% early-release threshold. Qualified nominees arriving before
+08:30 require a screened replacement of this snapshot; later ones go to S22. No S21 scored run or freeze is
+queued. S19 sender **4046452** remains alive, unchanged, at 09:01 KST.

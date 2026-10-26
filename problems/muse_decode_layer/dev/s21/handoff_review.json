@@ -1,6 +1,14 @@
 {
   "files": [
     {
+      "path": "problems/muse_attention_decode/dev/consumer_finish/P4_HANDOFF.json",
+      "sha256": "1d828f9ca3654946122fe707c4ab386917a380018543dc3a3288762a2a314fe9"
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/chain/P4_HANDOFF.json",
+      "sha256": "1b05c5e5fbad18b5392bacb2954365004d8b9c47f845ccb3ab38941999bf7c4d"
+    },
+    {
       "path": "problems/muse_attention_decode/dev/full_attention/fixed/P4_HANDOFF.json",
       "sha256": "04fe27b9bc3a1eef70cf9302f95d4ca5594725578ca505ccdaca9d85542286b2"
     },
@@ -29,6 +37,10 @@
       "sha256": "c80a9ab0449e0041844e424411446797e4e0dfa79c8232138c1f6fc2d324b945"
     },
     {
+      "path": "problems/muse_attention_decode/dev/producer_finish/P4_HANDOFF.json",
+      "sha256": "d494d9cd5f22df29c3d4d3d814d73357e9194bc2c1e437e68ba24d575bede66e"
+    },
+    {
       "path": "problems/muse_attention_decode/dev/setup_tree/P4_HANDOFF.json",
       "sha256": "97e085f68ebfe58ce28d063f02a528ab668c4b5fd901de0ff2585f14cacc5e1b"
     },
@@ -50,7 +62,7 @@
     },
     {
       "path": "problems/muse_bf16_proj/dev/large_split/P4_HANDOFF.json",
-      "sha256": "bb11fc8a00a4b07d076f97bb06f2a7d6ca5b1494b4879a274b4356248bea332d"
+      "sha256": "f1ab797e138d4844a0d8917c05888c0e8bd9a4af30f8c78fd1122fee37c6d18a"
     },
     {
       "path": "problems/muse_bf16_proj/dev/moe_tail/point_nominations.json",
@@ -82,11 +94,11 @@
     },
     {
       "path": "problems/muse_decode_layer/dev/nt1_timeline/point_nominations.json",
-      "sha256": "502150823a435c0bc3e91443c597b1b8c5b5434a49c4fd47b7713e9cc83ad05a"
+      "sha256": "5e72a96d42e73c25460542ed2b9d9826c88c43a5e411d1c24d9459adc1129eaa"
     },
     {
       "path": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/P4_HANDOFF.json",
-      "sha256": "026339ff646d74c5becce34d9635019253a771b5558d0e5a059af225564b552f"
+      "sha256": "efce4e2a004d101e310a72a9716624f62248c4b60ad5212a984c0bf3bd5c78d0"
     },
     {
       "path": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/P4_HANDOFF.json",
@@ -119,14 +131,15 @@
   ],
   "included": [
     "C3",
-    "M64",
-    "GATE"
+    "GATE",
+    "FA_CHAIN",
+    "VQ16",
+    "VQ32",
+    "NP"
   ],
   "waiting": [
-    "P5b all-FA3 shape-only scheduling and fused combine",
-    "P3a W13->W2",
-    "P5 query setup",
-    "P10 large shapes"
+    "P3a small-M MoE ladder",
+    "P5 consumer-prologue finish fusion"
   ],
   "exclusions": "B1, PRIVATE1, AFFINE32 and H2 dropped after S20 leave-outs; no standalone confirmation of S20-noB1"
 }

@@ -1,0 +1,108 @@
+{
+  "planning_only": true,
+  "stage_points": "9dc1159a076b4e6b",
+  "whole_baseline": "7f110a377fb843a7",
+  "stage_deltas": {
+    "(16, 8, 2048)": {
+      "arm": "R4w4",
+      "control_us": 22.8625,
+      "ratio": 0.8900658863610281,
+      "saved_us": 2.5133686730709948
+    },
+    "(1, 8, 0)": {
+      "arm": "R64",
+      "control_us": 29.7745,
+      "ratio": 0.8880902871877048,
+      "saved_us": 3.332055744129684
+    },
+    "(16, 8, 0)": {
+      "arm": "Rw4",
+      "control_us": 133.599,
+      "ratio": 0.9921109598161157,
+      "saved_us": 1.0539678795267524
+    },
+    "(32, 8, 0)": {
+      "arm": "Rw4",
+      "control_us": 223.6515,
+      "ratio": 0.9977627520290063,
+      "saved_us": 0.5003638645846913
+    }
+  },
+  "primary": {
+    "R": 1.0086880169255856,
+    "loads": {
+      "1x1": {
+        "old_load_us": 4117.382,
+        "stage_saved_us": 0,
+        "R": 1.0
+      },
+      "16x1": {
+        "old_load_us": 8711.346,
+        "stage_saved_us": 0,
+        "R": 1.0
+      },
+      "32x1": {
+        "old_load_us": 11384.368,
+        "stage_saved_us": 0,
+        "R": 1.0
+      },
+      "1x8": {
+        "old_load_us": 6673.676,
+        "stage_saved_us": 53.312891906074945,
+        "R": 1.0080528652334635
+      },
+      "16x8": {
+        "old_load_us": 18378.21,
+        "stage_saved_us": 132.4784450336938,
+        "R": 1.0114184130497392
+      },
+      "32x8": {
+        "old_load_us": 22609.596,
+        "stage_saved_us": 8.00582183335506,
+        "R": 1.0003542149809037
+      }
+    }
+  },
+  "official_S18_adjusted_sensitivity": {
+    "R": 1.0084118150444787,
+    "loads": {
+      "1x1": {
+        "old_load_us": 5258.671936616802,
+        "stage_saved_us": 0,
+        "R": 1.0
+      },
+      "16x1": {
+        "old_load_us": 10918.73859460285,
+        "stage_saved_us": 0,
+        "R": 1.0
+      },
+      "32x1": {
+        "old_load_us": 13719.350643362937,
+        "stage_saved_us": 0,
+        "R": 1.0
+      },
+      "1x8": {
+        "old_load_us": 7870.955911157053,
+        "stage_saved_us": 53.312891906074945,
+        "R": 1.0068195608030184
+      },
+      "16x8": {
+        "old_load_us": 19411.615523494427,
+        "stage_saved_us": 132.4784450336938,
+        "R": 1.0110276116998
+      },
+      "32x8": {
+        "old_load_us": 24893.46396415496,
+        "stage_saved_us": 8.00582183335506,
+        "R": 1.0003217068292483
+      }
+    }
+  },
+  "factors": {
+    "gate": 1.0044046459819183,
+    "C3": 1.000967907286277,
+    "NP_verify16": 1.0041276519451878
+  },
+  "M64_credit": "R64 replaces M64; projection uses R64/S19 directly and does not multiply prior M64 gain",
+  "limitations": "Different runs/weights/timing boundaries; assumes additive stage savings and independent dispatch effects. G0 requires the native composed held-out R lower bound, never this projection."
+}

@@ -33,7 +33,7 @@ def main():
     evidence=paired_evidence(tail,'S21');assert evidence is not None,lines[-8:]
     raw=rep.decode(evidence);mode='forced' if forced else 'normal'
     from promotion import _protocol_arm_valid
-    assert all(_protocol_arm_valid(raw,meta,n,len(raw['seed_ids'])) for n in ('A','A2','INC'))
+    assert all(_protocol_arm_valid(raw,meta,n,len(raw['seed_ids'])) for n in ('A','A2',*meta['arms']))
     repeat=raw['original_pair_repeat']
     assert repeat['complete'] and all(v['passed'] for v in repeat['TASK'].values()),repeat
     keep=('complete','failures','task_checks','expected_task_checks','nearby_task_checks','nearby_expected_checks','agreement_diagnostics','host_prepare_s','build_s','delta_s','attention_plan','host_sha256')

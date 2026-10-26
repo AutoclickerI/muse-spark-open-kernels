@@ -1,10 +1,10 @@
 {
-  "source_sha256": "a72f63984d68fc10cc7061f96c15d97759483dcb38565f7ff2cf431d4fbccb26",
-  "shipped_sha256": "a7966c4e443f721a80c8cd8e251bd3999e332f147c179769416ac825ce0e197f",
+  "source_sha256": "81404eb2a725d60192f0bd1397284814dc0cf73ae0d3822824d8dc02235f7526",
+  "shipped_sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
   "contracts": {
     "passed": true,
-    "checks": 742,
-    "source_sha256": "a72f63984d68fc10cc7061f96c15d97759483dcb38565f7ff2cf431d4fbccb26"
+    "checks": 1340,
+    "source_sha256": "81404eb2a725d60192f0bd1397284814dc0cf73ae0d3822824d8dc02235f7526"
   },
   "tool_tests": {
     "passed": true,
@@ -12,37 +12,49 @@
   },
   "lab": {
     "mode": "forced",
-    "wrapper_sha256": "7f4a56c6b0d6c87f9f14ec54a4cd05d21cf882e5190f04e245e049c10be465e9",
-    "import_s": 229.1,
-    "blob_chars": 9805,
+    "wrapper_sha256": "627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1",
+    "import_s": 248.9,
+    "wire_bytes": 11463,
+    "tail_with_4000_suffix_pass": true,
     "complete": true,
     "failures": [],
-    "task_checks": 2560,
-    "expected_task_checks": 2560,
+    "task_checks": 2880,
+    "expected_task_checks": 2880,
     "nearby_task_checks": 260,
     "nearby_expected_checks": 260,
-    "agreement_diagnostics": {},
-    "host_prepare_s": 3.139027,
+    "agreement_diagnostics": {
+      "v16S:INC": "ids12/128",
+      "v16S:no_FA_CHAIN": "ids3/128",
+      "v16S:no_NP": "ids10/128",
+      "v16F:INC": "ids21/128",
+      "v16F:no_VQ16": "ids3/128",
+      "v16F:no_NP": "ids20/128",
+      "v32F:INC": "ids7/256",
+      "v32F:no_VQ32": "ids7/256"
+    },
+    "host_prepare_s": 3.752979,
     "build_s": {
-      "_s19_sgq_build": 0.12,
-      "rvc_nbase1_module": 0.06,
-      "_s16_epi_PAIR_epit_module": 0.14,
-      "rvc_nbase2_module": 0.08,
-      "_s16_epi_NORM_epin_module": 0.16,
-      "_s19_wr_build": 0.17,
-      "_s16_global_C128_cs_module": 0.16,
-      "gp_module": 0.09,
-      "_r2_build": 0.1,
-      "rvc_nfidx0_module": 0.13,
-      "_measured_lt_build": 0.13
+      "_s19_sgq_build": 0.21,
+      "rvc_nbase1_module": 0.1,
+      "rvc_nbase2_module": 0.1,
+      "_s16_epi_NORM_epin_module": 0.17,
+      "_s16_epi_PAIR_epit_module": 0.19,
+      "_s19_wr_build": 0.25,
+      "_s16_global_C128_cs_module": 0.2,
+      "rvc_nfidx0_module": 0.16,
+      "_measured_lt_build": 0.15,
+      "gp_module": 0.22,
+      "_r2_build": 0.22,
+      "_s21_chain_build": 0.4
     },
     "delta_s": {
-      "join": 1e-05,
-      "RAW2": 5.9e-05,
-      "P10": 0.040221,
-      "GATE": 0.066852,
-      "M64": 3.3e-05,
-      "warm": 0.228002
+      "join": 1.6e-05,
+      "RAW2": 7.8e-05,
+      "P10": 0.055071,
+      "GATE": 0.083516,
+      "CHAIN": 0.077609,
+      "NP": 0.007668,
+      "warm": 0.433495
     },
     "attention_plan": {
       "(16, 1, False)": "None",
@@ -50,7 +62,7 @@
       "(16, 8, True)": "None",
       "(32, 8, True)": "None"
     },
-    "host_sha256": "a72f63984d68fc10cc7061f96c15d97759483dcb38565f7ff2cf431d4fbccb26",
+    "host_sha256": "81404eb2a725d60192f0bd1397284814dc0cf73ae0d3822824d8dc02235f7526",
     "sampling_protocol": {
       "name": "palindromic-cohort-v1",
       "rounds": 16,
@@ -79,7 +91,7 @@
         "no_H2": "5788a1ef67e27e91610996c724b185f97b296d700aee70d4bbc31c87df13f5ff",
         "no_B1": "a9cecb841c4815558230d90e81075fc5734b4df5d7189050a6ac26861fd204de"
       },
-      "prepare_s": 1.613178,
+      "prepare_s": 2.676519,
       "TASK": {
         "A": {
           "passed": true,
@@ -102,31 +114,29 @@
           "message": "update relative L2 error 5.588e-02 (worst row 1.041e-01) [bound 0.137]; attention input relative L2 error 3.460e-02 (worst row 5.532e-02) [bound 0.084]"
         }
       },
-      "elapsed_s": 4.591156,
+      "elapsed_s": 6.602077,
       "ratios": {
         "legacy": {
           "A": 1.0,
-          "A2": 1.000473,
-          "INC": 0.998931,
-          "no_H2": 1.002655,
-          "no_B1": 1.001088
+          "A2": 0.998613,
+          "INC": 0.999217,
+          "no_H2": 1.00021,
+          "no_B1": 0.999014
         },
         "symmetric": {
           "A": 1.0,
-          "A2": 1.002366,
-          "INC": 1.000929,
-          "no_H2": 1.007371,
-          "no_B1": 1.002307
+          "A2": 1.00148,
+          "INC": 1.002854,
+          "no_H2": 1.002071,
+          "no_B1": 1.001088
         }
       }
     },
-    "wire_bytes": 10328,
-    "tail_with_4000_suffix_pass": true,
-    "verified_from_actual_wire": true
+    "all_nine_arms_protocol_admitted": true
   },
   "transport": {
     "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/s21/generated/wrapper.py",
-    "sha256": "7f4a56c6b0d6c87f9f14ec54a4cd05d21cf882e5190f04e245e049c10be465e9",
+    "sha256": "627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1",
     "tier": "wrapper",
     "static": [
       {
@@ -166,9 +176,9 @@
       }
     ]
   },
-  "changed": {
+  "changed_native": {
     "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s21_final.py",
-    "sha256": "a7966c4e443f721a80c8cd8e251bd3999e332f147c179769416ac825ce0e197f",
+    "sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
     "tier": "changed",
     "static": [
       {
@@ -205,6 +215,16 @@
         "name": "ATTN_PORT_CUDA_SRC",
         "ok": true,
         "msg": ""
+      },
+      {
+        "name": "_P5B_BRIDGE_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "_P5B_REDUCE_SRC",
+        "ok": true,
+        "msg": ""
       }
     ],
     "changed_units": [
@@ -220,7 +240,23 @@
       "DA_TIMES",
       "DA_WIDE",
       "DA_WIDE_STANDIN",
-      "_S20_META64",
+      "NP_ACTIVE",
+      "NP_CONFIG",
+      "NP_LOCAL_MM",
+      "_P5B_BRIDGE",
+      "_P5B_BRIDGE_SRC",
+      "_P5B_FA_META",
+      "_P5B_FA_PICKS",
+      "_P5B_FA_SMS",
+      "_P5B_FA_STORAGE",
+      "_P5B_MERGE_SELECTION",
+      "_P5B_REDUCE",
+      "_P5B_REDUCE_SRC",
+      "_P5B_VQ_MOD",
+      "_P5B_VQ_SELECTION",
+      "_P5B_VQ_SOURCES",
+      "_VDSK_TD",
+      "_attention_fa3_public",
       "_best7_attention",
       "_best7_project",
       "_best7_run",
@@ -229,13 +265,27 @@
       "_da_layer_gate_apply",
       "_da_layer_project",
       "_da_reduce",
+      "_fa3_call",
       "_file",
       "_gate_split_apply",
+      "_np_gemm",
+      "_np_layout_best7",
+      "_np_layout_variant",
+      "_p5b_merge_main",
+      "_p5b_merge_original_fa",
+      "_p5b_merge_setup",
+      "_p5b_sched_fa",
+      "_p5b_sched_init",
+      "_p5b_sched_original_call",
+      "_p5b_sched_original_public",
+      "_p5b_sched_split",
+      "_p5b_vq_module",
+      "_p5b_vq_original_attention",
       "_project_variant",
+      "_s19_prior_CHAIN",
       "_s19_prior_GATE",
-      "_s19_prior_M64",
-      "_s20_before_m64",
-      "_s20_m64_attention",
+      "_s19_prior_NP",
+      "_s21_chain_build",
       "_source",
       "da_build_small",
       "da_materialize",
@@ -243,90 +293,104 @@
       "da_project",
       "da_small_source",
       "da_vendor",
-      "da_wide_source"
+      "da_wide_source",
+      "np_prepare",
+      "np_project"
     ]
   },
+  "dictionary_native": [
+    {
+      "name": "CHAIN_N",
+      "ok": true,
+      "msg": ""
+    }
+  ],
+  "archived_S20_gate_unchanged": true,
+  "queued_sender_pid": 2627539,
+  "release_time": "2026-10-27T09:00:00+09:00",
+  "native_composed_R": null,
+  "native_composed_prepare_s": null,
   "normal": {
-    "sha256": "a7966c4e443f721a80c8cd8e251bd3999e332f147c179769416ac825ce0e197f",
+    "sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
     "cc": "12.0",
-    "prepare_s": 6.135705646011047,
+    "prepare_s": 3.522592485998757,
     "tests": [
       {
         "case": "batch 1, ctx 10, layer sliding",
-        "first_call_s": 0.007379674003459513,
+        "first_call_s": 0.0026495750062167645,
         "ok": true,
         "msg": "update relative L2 error 7.604e-03 (worst row 7.604e-03) [bound 0.085]; attention input relative L2 error 4.333e-03 (worst row 4.333e-03) [bound 0.042]"
       },
       {
         "case": "batch 1, ctx 3000, layer full",
-        "first_call_s": 0.006459062919020653,
+        "first_call_s": 0.0017658700235188007,
         "ok": true,
         "msg": "update relative L2 error 7.007e-03 (worst row 7.007e-03) [bound 0.150]; attention input relative L2 error 4.962e-03 (worst row 4.962e-03) [bound 0.108]"
       },
       {
         "case": "batch 8, ctx 2047, layer sliding",
-        "first_call_s": 0.009381821961142123,
+        "first_call_s": 0.0037288330495357513,
         "ok": true,
         "msg": "update relative L2 error 6.936e-03 (worst row 9.408e-03) [bound 0.150]; attention input relative L2 error 4.901e-03 (worst row 6.330e-03) [bound 0.098]"
       },
       {
         "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
-        "first_call_s": 0.010126392939127982,
+        "first_call_s": 0.0037635030457749963,
         "ok": true,
         "msg": "update relative L2 error 7.467e-03 (worst row 9.545e-03) [bound 0.150]; attention input relative L2 error 5.643e-03 (worst row 6.789e-03) [bound 0.117]"
       },
       {
         "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
-        "first_call_s": 0.01567664509639144,
+        "first_call_s": 0.004505071090534329,
         "ok": true,
         "msg": "update relative L2 error 6.539e-02 (worst row 9.696e-02) [bound 0.150]; attention input relative L2 error 3.441e-02 (worst row 5.048e-02) [bound 0.086]"
       },
       {
         "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
-        "first_call_s": 0.02315655699931085,
+        "first_call_s": 0.009711622027680278,
         "ok": true,
         "msg": "update relative L2 error 3.406e-03 (worst row 3.721e-03) [bound 0.150]; attention input relative L2 error 3.065e-03 (worst row 3.450e-03) [bound 0.116]"
       },
       {
         "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
-        "first_call_s": 0.016587437014095485,
+        "first_call_s": 0.003589821979403496,
         "ok": true,
-        "msg": "update relative L2 error 7.399e-03 (worst row 1.001e-02) [bound 0.150]; attention input relative L2 error 5.305e-03 (worst row 7.509e-03) [bound 0.116]"
+        "msg": "update relative L2 error 7.399e-03 (worst row 1.001e-02) [bound 0.150]; attention input relative L2 error 5.305e-03 (worst row 7.510e-03) [bound 0.116]"
       },
       {
         "case": "batch 2, ctx 300000, layer sliding, q_len 8",
-        "first_call_s": 0.046419741003774107,
+        "first_call_s": 0.004116966971196234,
         "ok": true,
         "msg": "update relative L2 error 3.379e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.955e-03 (worst row 3.274e-03) [bound 0.128]"
       },
       {
         "case": "batch 1, ctx 1048576, layer full, q_len 8",
-        "first_call_s": 0.07008805498480797,
+        "first_call_s": 0.011785471928305924,
         "ok": true,
-        "msg": "update relative L2 error 8.250e-02 (worst row 9.633e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.014e-02) [bound 0.136]"
+        "msg": "update relative L2 error 3.400e-03 (worst row 3.671e-03) [bound 0.150]; attention input relative L2 error 2.794e-03 (worst row 3.051e-03) [bound 0.135]"
       },
       {
         "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
-        "first_call_s": 0.017181975999847054,
+        "first_call_s": 0.006306080031208694,
         "ok": true,
         "msg": "update relative L2 error 3.455e-03 (worst row 3.691e-03) [bound 0.150]; attention input relative L2 error 3.060e-03 (worst row 3.359e-03) [bound 0.109]"
       },
       {
         "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
-        "first_call_s": 0.0031978769693523645,
+        "first_call_s": 0.0012146179797127843,
         "ok": true,
         "msg": "update relative L2 error 5.138e-03 (worst row 5.138e-03) [bound 0.118]; attention input relative L2 error 3.804e-03 (worst row 3.804e-03) [bound 0.075]"
       },
       {
         "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
-        "first_call_s": 0.036180158029310405,
+        "first_call_s": 0.010773360962048173,
         "ok": true,
         "msg": "update relative L2 error 3.452e-03 (worst row 3.623e-03) [bound 0.150]; attention input relative L2 error 3.070e-03 (worst row 3.339e-03) [bound 0.101]"
       },
       {
         "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
-        "first_call_s": 0.002865192014724016,
+        "first_call_s": 0.0018606879748404026,
         "ok": true,
         "msg": "update relative L2 error 6.654e-03 (worst row 8.813e-03) [bound 0.150]; attention input relative L2 error 4.814e-03 (worst row 6.301e-03) [bound 0.097]"
       }
@@ -366,86 +430,86 @@
     ]
   },
   "forced": {
-    "sha256": "a7966c4e443f721a80c8cd8e251bd3999e332f147c179769416ac825ce0e197f",
+    "sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
     "cc": "12.0",
-    "prepare_s": 3.8727522789267823,
+    "prepare_s": 3.52273737906944,
     "tests": [
       {
         "case": "batch 1, ctx 10, layer sliding",
-        "first_call_s": 0.002124591963365674,
+        "first_call_s": 0.002104401937685907,
         "ok": true,
         "msg": "update relative L2 error 7.604e-03 (worst row 7.604e-03) [bound 0.085]; attention input relative L2 error 4.333e-03 (worst row 4.333e-03) [bound 0.042]"
       },
       {
         "case": "batch 1, ctx 3000, layer full",
-        "first_call_s": 0.0014513599453493953,
+        "first_call_s": 0.001718668034300208,
         "ok": true,
         "msg": "update relative L2 error 7.007e-03 (worst row 7.007e-03) [bound 0.150]; attention input relative L2 error 4.962e-03 (worst row 4.962e-03) [bound 0.108]"
       },
       {
         "case": "batch 8, ctx 2047, layer sliding",
-        "first_call_s": 0.003397907014004886,
+        "first_call_s": 0.0032546829897910357,
         "ok": true,
         "msg": "update relative L2 error 6.936e-03 (worst row 9.408e-03) [bound 0.150]; attention input relative L2 error 4.901e-03 (worst row 6.330e-03) [bound 0.098]"
       },
       {
         "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
-        "first_call_s": 0.005691734026186168,
+        "first_call_s": 0.004384271102026105,
         "ok": true,
         "msg": "update relative L2 error 7.424e-03 (worst row 9.433e-03) [bound 0.150]; attention input relative L2 error 5.630e-03 (worst row 6.843e-03) [bound 0.117]"
       },
       {
         "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
-        "first_call_s": 0.007556158001534641,
+        "first_call_s": 0.0039094979874789715,
         "ok": true,
         "msg": "update relative L2 error 6.539e-02 (worst row 9.696e-02) [bound 0.150]; attention input relative L2 error 3.441e-02 (worst row 5.048e-02) [bound 0.086]"
       },
       {
         "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
-        "first_call_s": 0.012070943950675428,
+        "first_call_s": 0.014226228930056095,
         "ok": true,
         "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.868e-02) [bound 0.116]"
       },
       {
         "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
-        "first_call_s": 0.00565009203273803,
+        "first_call_s": 0.006531078019179404,
         "ok": true,
         "msg": "update relative L2 error 7.407e-03 (worst row 9.991e-03) [bound 0.150]; attention input relative L2 error 5.305e-03 (worst row 7.482e-03) [bound 0.116]"
       },
       {
         "case": "batch 2, ctx 300000, layer sliding, q_len 8",
-        "first_call_s": 0.004602305009029806,
+        "first_call_s": 0.01554954203311354,
         "ok": true,
         "msg": "update relative L2 error 7.541e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.113e-02 (worst row 6.990e-02) [bound 0.128]"
       },
       {
         "case": "batch 1, ctx 1048576, layer full, q_len 8",
-        "first_call_s": 0.01151525299064815,
+        "first_call_s": 0.010841521085239947,
         "ok": true,
-        "msg": "update relative L2 error 8.250e-02 (worst row 9.633e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.014e-02) [bound 0.136]"
+        "msg": "update relative L2 error 8.254e-02 (worst row 9.641e-02) [bound 0.150]; attention input relative L2 error 5.445e-02 (worst row 7.022e-02) [bound 0.136]"
       },
       {
         "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
-        "first_call_s": 0.012289728969335556,
+        "first_call_s": 0.011762562091462314,
         "ok": true,
         "msg": "update relative L2 error 6.472e-02 (worst row 9.082e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.504e-02) [bound 0.109]"
       },
       {
         "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
-        "first_call_s": 0.0022395659470930696,
+        "first_call_s": 0.0023225739132612944,
         "ok": true,
         "msg": "update relative L2 error 5.138e-03 (worst row 5.138e-03) [bound 0.118]; attention input relative L2 error 3.804e-03 (worst row 3.804e-03) [bound 0.075]"
       },
       {
         "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
-        "first_call_s": 0.0048778270138427615,
+        "first_call_s": 0.006108739995397627,
         "ok": true,
         "msg": "update relative L2 error 6.004e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.067e-02 (worst row 5.826e-02) [bound 0.101]"
       },
       {
         "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
-        "first_call_s": 0.0015581219922751188,
+        "first_call_s": 0.001195276970975101,
         "ok": true,
         "msg": "update relative L2 error 6.631e-03 (worst row 8.839e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.321e-03) [bound 0.097]"
       }
@@ -483,15 +547,5 @@
         "msg": "dynamic state contract: requires changed-unit/H200 checks"
       }
     ]
-  },
-  "archived_S20_gate_unchanged": true,
-  "transport_change": {
-    "previous_inner_blob_chars": 10320,
-    "reason": "fixed ordinary-host per-payload cap was smaller than lab-only reserved capacity",
-    "lab_only_wire_reservation": 11700,
-    "total_lab_only_reservation": 12000,
-    "suffix_reservation": 4000
-  },
-  "queued_sender_pid": 1990194,
-  "release_time": "2026-10-27T09:00:00+09:00"
+  }
 }

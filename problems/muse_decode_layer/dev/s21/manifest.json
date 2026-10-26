@@ -1,21 +1,24 @@
 {
-  "sha256": "a72f63984d68fc10cc7061f96c15d97759483dcb38565f7ff2cf431d4fbccb26",
+  "sha256": "81404eb2a725d60192f0bd1397284814dc0cf73ae0d3822824d8dc02235f7526",
   "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
   "enabled": [
     "C3",
-    "M64",
-    "GATE"
+    "GATE",
+    "FA_CHAIN",
+    "VQ16",
+    "VQ32",
+    "NP"
   ],
   "series": "S21",
   "candidate": "problems/muse_decode_layer/dev/s21/generated/s21.py",
   "shipped_source": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
-  "shipped_sha256": "a7966c4e443f721a80c8cd8e251bd3999e332f147c179769416ac825ce0e197f",
+  "shipped_sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
   "host": "muse_prefill_layer",
   "import_budget": 820.0,
   "payload": "problems/muse_decode_layer/dev/s21/generated/s21_pair.py",
-  "payload_sha256": "bda62e889f24777fb684d7690926dd3edb5c44418e6b416a3e1d775a4116617d",
+  "payload_sha256": "bb4e7ec97dc6248a04d8ab786d176a67417898ff8fc91f53f355e5920f311520",
   "wrapper": "problems/muse_decode_layer/dev/s21/generated/wrapper.py",
-  "wrapper_sha256": "7f4a56c6b0d6c87f9f14ec54a4cd05d21cf882e5190f04e245e049c10be465e9",
+  "wrapper_sha256": "627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1",
   "sent_wrapper": "problems/muse_prefill_layer/lab/lab_s21_pair.py",
   "checker_sha256": "63c76da556b07a1e80be88445cbe0ea84d17278731979bb40586c4e605ffe4d7",
   "baseline_arm": "INC",
@@ -30,22 +33,42 @@
       "rows": []
     },
     "no_C3": {
-      "sha256": "2e4493b96a8204f6df2d2155329ab4784940b5716d22a8e179738bdfdbb7392a",
+      "sha256": "d8c064e919eda445b46d96b95a0a0b7c7d691b717ad08db77a6076064cc767e1",
       "rows": [
         "d16F",
         "d32F"
       ]
     },
-    "no_M64": {
-      "sha256": "1a698d364d2c0ed0e3362f6224dfeab243ac4bc16c923fef2029efe53fee1636",
+    "no_GATE": {
+      "sha256": "eab3cbdd7477d4e4eeaf3bbb240c8e87f9c7991ab1ee10bf5582f31bbf864f4e",
       "rows": [
+        "d1S"
+      ]
+    },
+    "no_FA_CHAIN": {
+      "sha256": "7f876958c2c72e7e6396dac3683bdc8dd33fbf7f242e1c0894f1921afec3b76e",
+      "rows": [
+        "v16S",
         "v1F"
       ]
     },
-    "no_GATE": {
-      "sha256": "1bc77ed77a35182447d61bb1553ae82e4b8bcc1c79aa4b3f9f7f5139cf85d949",
+    "no_VQ16": {
+      "sha256": "c075c829f1c72a0dde6ab8c16b3ad304a6e6cd6dd63735ebdaa5ce1228acafbc",
       "rows": [
-        "d1S"
+        "v16F"
+      ]
+    },
+    "no_VQ32": {
+      "sha256": "0cc8034c005305a0ef5bb57049ff44af66ba26690e1e22d28725606d1357a617",
+      "rows": [
+        "v32F"
+      ]
+    },
+    "no_NP": {
+      "sha256": "c2494c3e91cef5dad1e510ef71364106374119ce372b186e44a8f648d8c47293",
+      "rows": [
+        "v16S",
+        "v16F"
       ]
     }
   },
@@ -339,6 +362,14 @@
     5415386,
     5520115,
     5624844,
+    5671243,
+    5679162,
+    5687081,
+    5695000,
+    5702919,
+    5710838,
+    5718757,
+    5726676,
     5729573,
     5834302,
     5939031,
@@ -654,6 +685,22 @@
     53361550,
     53466279,
     53571008,
+    65000087,
+    65104816,
+    65209545,
+    65314274,
+    65419003,
+    65523732,
+    65628461,
+    65733190,
+    85000121,
+    85104850,
+    85209579,
+    85314308,
+    85419037,
+    85523766,
+    85628495,
+    85733224,
     104910273,
     105015002,
     105119731,
@@ -843,7 +890,7 @@
   ],
   "weight_seed": 193400001,
   "router_seed": 193400005,
-  "expected_TASK_checks": 2560,
+  "expected_TASK_checks": 2880,
   "measurement_protocol": {
     "name": "palindromic-cohort-v1",
     "rounds": 16,

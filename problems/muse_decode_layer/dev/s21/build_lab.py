@@ -26,7 +26,7 @@ def seed_manifest():
     seeds=[193400003+104729*i for i in range(PROTOCOL['seed_count'])];assert not selected.intersection(seeds)
     out=dict(selection_seeds=sorted(selected),confirmation_seeds=seeds,weight_seed=193400001,router_seed=193400005)
     (H/'seed_manifest.json').write_text(json.dumps(out,indent=1)+'\n');(H/'handoff_review.json').write_text(json.dumps(dict(files=review,included=list(compose.DEFAULT),
-        waiting=['P5b all-FA3 shape-only scheduling and fused combine','P3a W13->W2','P5 query setup','P10 large shapes'],
+        waiting=['P3a small-M MoE ladder','P5 consumer-prologue finish fusion'],
         exclusions='B1, PRIVATE1, AFFINE32 and H2 dropped after S20 leave-outs; no standalone confirmation of S20-noB1'),indent=2)+'\n')
     return out
 
