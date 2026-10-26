@@ -1,0 +1,18 @@
+{
+  "payload_sha256": "bbd85de2a7a39920a405c0b09636d839cb2a31c0c45078291ca793fc77dbf2ed",
+  "checks": 966,
+  "cases": 69,
+  "bit_equal": {
+    "CH4": 69,
+    "B8": 69,
+    "B4": 56,
+    "B2": 49,
+    "B0": 41,
+    "ONE": 41
+  },
+  "worst_L2_row": [
+    0.004226631950587034,
+    0.004770186264067888
+  ],
+  "standin": "All native WGMMA fragments execute existing mma.sync on sm120; CH4 depth4 becomes depth3 to fit local shared memory. All route masks, branch transfers, N32/64 coverage and joins execute."
+}

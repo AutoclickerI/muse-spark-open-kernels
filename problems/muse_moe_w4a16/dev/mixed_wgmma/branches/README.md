@@ -1,6 +1,7 @@
 # branches
 
-Current cluster/direct-copy scheduling and light/heavy MoE working set; S14 is the paired control.
+Current work: [count routing and matched stream attribution](balance/README.md),
+paired against S15 and CHUNK4. Earlier cluster/direct-copy receipts remain below.
 
 Files (one entry per retained direct file):
 
