@@ -13,7 +13,7 @@
       ],
       "library": [],
       "source_sha256": "fb5db86faea57077af2305e7c01f4c4107640f1079c8b12944535783b81c4b20",
-      "patch_sha256": "f7e6a95b977b2f46ea63760b46328275a8f2d4094d65bb443b92e8f9b2233184"
+      "patch_sha256": "1d3dfc41effc9898e0f15b50096d76f23dc7086e5cebc15248c1c61c6fb710aa"
     },
     "large": {
       "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/large.patch",
@@ -22,7 +22,7 @@
       ],
       "library": [],
       "source_sha256": "78652aabf55d269bee2441fbde4abfd086f98a8a7c7157b8accf7ba3a0eafc25",
-      "patch_sha256": "4fc00f01b07ded26dffc77cc06ac8c4acdb9393cd91d83db63161e666372a93a"
+      "patch_sha256": "647eb277acbb645209b675e7ae78b586f53fc73f44a2b29a1ff8346fc6735dc8"
     },
     "vdsk": {
       "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/vdsk.patch",
@@ -31,7 +31,7 @@
       ],
       "library": [],
       "source_sha256": "c6674aff5d20c1229dad1efc14b8fa692ef80163b43821ca8bc1c05dfde0a33c",
-      "patch_sha256": "f13437d5e1fcb84c5cf6fe0780cea11043b24a1d3e63f98559505fcade1a637c"
+      "patch_sha256": "d8ecd8c245759fe16c42c6ba7aa662b7e49b1ba8579d9b08dbb2593b97c39fcd"
     },
     "O": {
       "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/O.patch",
@@ -40,7 +40,7 @@
         "o"
       ],
       "source_sha256": "4f7f8fce25c95e2ad0798da11c04072505ef04d2bcb7ba4c226805fb726e4f10",
-      "patch_sha256": "9732347e68d7906097cd49a945a97114556abbdc8597f06bc600def75afdeeab"
+      "patch_sha256": "6a555c922de91f80befc1b832254a9d8cf7b9cef12b6fb2a4c2c0086fb91860d"
     },
     "pool": {
       "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/pool.patch",
@@ -49,7 +49,7 @@
         "pool"
       ],
       "source_sha256": "50862539bcff054e0efe61b6301d626385b634748268907f3ccc0af02cf854db",
-      "patch_sha256": "e9b280de1887e7532766b8c9b0b25510c10911ee6087ba7f60ec5a6def74f967"
+      "patch_sha256": "72870f13547d6b81d8350d33e02b04b520ed7da970cd2283cc47077c86175ca2"
     },
     "P": {
       "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/P.patch",
@@ -60,7 +60,7 @@
       ],
       "library": [],
       "source_sha256": "911383a1e3effc960ea3d645e9992a2362875453210886906a823d58d7e9c9b0",
-      "patch_sha256": "033513aff06661469330885b6a307150f6d8f6591d90e6322cce3a5dae8dbf96"
+      "patch_sha256": "e55b30cab24ecfa5d7e47f6a0ccd880559cb3626b0c383b2ce510964625f84df"
     },
     "C": {
       "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/C.patch",
@@ -74,7 +74,7 @@
         "pool"
       ],
       "source_sha256": "2f93745e1025ee73ab02fea87e846cf9d5a48efd1a9a3444c0a30594a035ec99",
-      "patch_sha256": "38e3c67907897bdd775b2b84d1ad589869220f5926c6f01ff100f04bbbebc170"
+      "patch_sha256": "71b83bcc2a21c9781c8435090f65393299f9d2a9996c41032e5119de79623da7"
     }
   },
   "excluded": [
@@ -84,5 +84,8 @@
     "native verify32 sliding st4/mt2",
     "O256 unresolved"
   ],
-  "confirmation": "confirmation/README.md"
+  "confirmation": "confirmation/README.md",
+  "projection_selection_note": "Pure VDSK release affects qkv T128 only. Its v16 marginal E/no-projections=.988099 is useful; the six-load aggregate marginal is contaminated by unchanged-load variation, especially the failed d1 A:A. Confirm the pure VDSK arm rather than treating that aggregate as a measured loss.",
+  "confirmation_sender": 760641,
+  "patch_validation": "confirmation/patch_validation.json"
 }

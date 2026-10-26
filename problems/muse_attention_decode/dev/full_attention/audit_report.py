@@ -41,7 +41,8 @@ def parse(path):
         controls=controls,
         unmeasured_loads_due_to_control_drift=[load for load,c in controls.items() if not c['unity_inside_seed_range']],
         paired_six_load_score=paired,
-        score_confidence='Unavailable: this frozen payload omitted per-seed times. Mean ratios are descriptive; held-out per-seed six-load confirmation is required.',
+        score_confidence=('Paired eight-seed six-load log-R interval uses Student t(7), two-sided95%; inspect TASK and A:A before promotion.' if paired else
+            'Unavailable: this frozen payload omitted per-seed times. Mean ratios are descriptive; held-out per-seed six-load confirmation is required.'),
         correctness_passed=bool(result['complete'] and not result['errors'] and not result['failures']),
         measured_loads=[load for load,c in controls.items() if c['unity_inside_seed_range']],
         measured=bool(result['complete'] and not result['errors'] and not result['failures']

@@ -1,7 +1,7 @@
 # Held-out S15 release and library confirmation
 
 Base S15 `60254883`. Candidate C `2f93745e`; `C.patch` SHA256
-`38e3c67907897bdd775b2b84d1ad589869220f5926c6f01ff100f04bbbebc170`.
+`71b83bcc2a21c9781c8435090f65393299f9d2a9996c41032e5119de79623da7`.
 This is a nomination, not a promoted candidate.
 
 Reset PDL receipt `f88fda4aac144374` passes native parity/routing gates. Full E
@@ -46,3 +46,5 @@ See local_resource_failure.json and candidate_resource_failure.json.
 Control qualification: d1 is **unmeasured** in both reset audit recipes because every A:A seed ratio exceeds1. Its point estimates do not establish a d1 gain or loss. The fresh confirmation retests d1; no whole-composition promotion is claimed from the frozen reset summaries.
 
 Final admission: C passes143/143 scored/nearby/official fixtures eagerly and after two graph replays in both modes,25/25 full-source static checks each. Exact wrapper7127261f passes1,440 TASK gates,13 official host tests and2 static checks per mode. Native combined VDSK has one release before all loads, a dependent-only wait,94/90 registers at qkv/pool and zero local memory. **Queued sender760641**, decode check priority5.5, not-before1792972800. `admission.json`, `native_compile.json`, `queue.json` retain the evidence.
+
+All seven handoff patches pass git apply --check at repo root and round-trip from exact S15 to the recorded candidate hash in isolated temporary trees. Headers use the real S15 repository path; source/math and queued payload bytes are unchanged. `patch_validation.json` records hashes.

@@ -3,7 +3,6 @@ import ast
 import difflib
 import hashlib
 import json
-import re
 from pathlib import Path
 H=Path(__file__).resolve().parent;R=H.parents[3];out=H/'pvsum';out.mkdir(exist_ok=True)
 base=(R/'problems/muse_decode_layer/cand_r3_best7_s15.py').read_text()
@@ -47,7 +46,7 @@ DI void pv_sum64(float (&o)[9][4],const uint32_t (&a)[8],const uint8_t* VT){
 '''
 
 
-def cuda(kind):
+def cuda():
     c=original
     c=one(c,'DI void pv128(float (&o)[8][4]',HELPER+'\nDI void pv128(float (&o)[9][4]')
     c=one(c,'wg_rs(o,a[4*j],a[4*j+1],a[4*j+2],a[4*j+3],va);',
@@ -71,7 +70,7 @@ def cuda(kind):
 
 
 def main():
-    c=cuda('fused');tag=hashlib.sha256(c.encode()).hexdigest()[:12]
+    c=cuda();tag=hashlib.sha256(c.encode()).hexdigest()[:12]
     lines=base.splitlines(True);lines[node.lineno-1:node.end_lineno]=['VQ8_CUDA = '+repr(c)+'\n']
     s=''.join(lines).replace('muse_vq8_9a23ca9a98dd_','muse_vq8_'+tag+'_')
     compile(s,'s15_pvsum','exec');(out/'candidate.py').write_text(s);(out/'pvsum.cu').write_text(c)

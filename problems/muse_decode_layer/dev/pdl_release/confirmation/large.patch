@@ -1,5 +1,5 @@
---- cand_r3_best7_s15.py
-+++ large.py
+--- a/problems/muse_decode_layer/cand_r3_best7_s15.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s15.py
 @@ -7469,7 +7469,7 @@
  # bit-equal) and M=256 (0.8701 vs mixed_parallel); heavy on the side stream, launched first: a further 0.9799 / 0.9882;
  # heavy kernel's lean K loop (858ff2fa): a further 0.9613 / 0.9426; W13 gate/up rows interleaved by 8 in prepare with

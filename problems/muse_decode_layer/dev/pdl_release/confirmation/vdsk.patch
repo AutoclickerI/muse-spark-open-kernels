@@ -1,5 +1,5 @@
---- cand_r3_best7_s15.py
-+++ vdsk.py
+--- a/problems/muse_decode_layer/cand_r3_best7_s15.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s15.py
 @@ -36,6 +36,7 @@
  @triton.jit
  def _vdsk_gemm(X, W, P, x_desc, w_desc, M, N, K, S,

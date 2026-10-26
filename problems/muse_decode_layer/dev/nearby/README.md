@@ -132,6 +132,6 @@ SGLang-relative times. P4's performance criterion remains open until that receip
 
 The unsent original lacked a top-level AST `kernel_fn`. P4 repaired only the entry; payload math, seeds and gates are identical. The original was retired under the dispatch lock after checking PID, command and source identities. `reset_superseded.json` preserves the evidence.
 
-Repaired wrapper e5a7d14f restored as sender **587925**, priority4.9, same reset gate and full prepare budget; awaiting acceptance. h200_lab automatically absorbed89627 into an unsent combined wrapper; only that new owned sender579268 was retired. `reset_restored_queue.json` records the restored exact wrapper.
+Repaired wrapper e5a7d14f restored as sender **587925**, priority4.9, same reset gate and full prepare budget; accepted as **a793c99eb9d447df**. h200_lab automatically absorbed89627 into an unsent combined wrapper; only that new owned sender579268 was retired. `reset_restored_queue.json` records the restored exact wrapper.
 
 `speedup_report.py <receipt> --out reset_result.json` reports every load’s nearby/scored SGLang-relative speedup; groups use the nearest scored B with ties toward smaller B, retaining all53 nearby cases. The native TASK follow-up is ready in `native_validation/`: guarded S15n9cc90d2e vs S15,67shapes,268checks per mode. Send if the timing/control result supports retaining a range path; no promotion before native TASK validation. The B<=64 guard fixes NSMAX capacity beyond the65 timed cases. `native_validation/s15n_guarded.patch` applies onto exact S15 60254883.

@@ -53,7 +53,8 @@ for name,groups,lib in [('O',(),('o',)),('pool',(),('pool',)),('OP',(),('o','poo
 specs={};meta={}
 for name,groups in arms.items():
     s=source(groups,extras[name]);(out/(name+'.py')).write_text(s)
-    diff=''.join(difflib.unified_diff(base.splitlines(True),s.splitlines(True),fromfile='cand_r3_best7_s15.py',tofile=name+'.py'))
+    diff=''.join(difflib.unified_diff(base.splitlines(True),s.splitlines(True),
+        fromfile='a/problems/muse_decode_layer/cand_r3_best7_s15.py',tofile='b/problems/muse_decode_layer/cand_r3_best7_s15.py'))
     (out/(name+'.patch')).write_text(diff)
     edits=[(a,z,''.join(s.splitlines(True)[c:d])) for op,a,z,c,d in difflib.SequenceMatcher(None,base.splitlines(True),s.splitlines(True),autojunk=False).get_opcodes() if op!='equal']
     specs[name]=dict(edits=edits,sha256=hashlib.sha256(s.encode()).hexdigest())
