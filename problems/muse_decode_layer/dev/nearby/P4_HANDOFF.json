@@ -1,0 +1,11 @@
+{
+  "status": "Timing nomination; native TASK proof pending",
+  "job": "a793c99eb9d447df",
+  "candidate_sha256": "9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "patch": "problems/muse_decode_layer/dev/nearby/native_validation/s15n_guarded.patch",
+  "patch_sha256": "792eacc392e557f2bfc2fdd1350e27ae0db5bf80a63f37e653c99cbf6d830efb",
+  "same65_dispatch_as_measured": true,
+  "native_validation_sender": 1096763,
+  "decision": "Require native TASK/cache/graph correctness before integrating range dispatch; scored dispatch unchanged."
+}

@@ -9,7 +9,7 @@ P5 owns sliding/decode1; this lane does not edit those implementations.
 | Decode softmax, S14 attn_main | `e4fcf732f35b425d` | All gates pass; mix25 1.00182/1.00284, tc 1.00976/1.00704, padded-WG reference 1.33968/1.28368. A:A .99964/1.00105. No winner. |
 | S15e PDL release | `f88fda4aac144374` | Repaired entry-only wrapper accepted; complete; selected edits enter held-out confirmation. |
 | S15L library boundaries | `f22020d25d234be6` | Repaired entry-only wrapper accepted; complete; selected edits enter held-out confirmation. |
-| S15/S15n/SGLang,65 shapes | restored sender587925 | Accepted a793c99eb9d447df; report nearby/scored speedup by nearest scored batch, no invented cutoff. |
+| S15/S15n/SGLang,65 shapes | restored sender587925 | Complete a793c99eb9d447df; nearby/scored ratios improve strongly, guarded native TASK follow-up sent. |
 
 Ratios are new/old time; lower is faster. Per-recipe numbers, A:A ranges and
 phase clocks are in `softmax/reset_result.json`, `decode/reset_result.json`

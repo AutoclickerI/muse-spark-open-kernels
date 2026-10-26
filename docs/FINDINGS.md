@@ -509,6 +509,8 @@ Library's d1 A:A is1.013075 (1.004542–1.022814); other means are
 | Native N128 VQ8 st4/mt2 at v1 full | L/no-v1full 1.007972 at v1 | Every full key/current token retained; TASK passes | Close this FA3 replacement recipe in the full layer; alternative native designs remain open | `f22020d25d234be6` |
 | Native N128 VQ8 st4/mt2 at v32 sliding | L/no-v32slide 1.006421 at v32 | Every window key retained; TASK passes; increased seed spread | Drop this replacement; no claim that all native sliding loses | `f22020d25d234be6` |
 
+| S15 vs range-dispatch S15n vs SGLang,65 shapes | Nearby/scored speedup by d1/d16/d32/v1/v16/v32: S15 .9547/.8651/.8184/.8119/.7327/.7263; S15n1.0292/1.0142/.8884/.8682/1.0050/.9360 | Complete2seeds×8coldreplays, SGLang available, finite/schema gates pass; many unknown-B calls otherwise lose specialized MoE/attention/projection/glue. Same scored dispatch control ranges .97794–1.03416/.99554–1.00231/.99239–.99919/.99428–1.00065/.99491–1.00196/1.00054–1.00283; no independent A:A and slight d32/v32 drift | Large nearby cliffs improve; no scored gain claim or correctness promotion. Native TASK67-shape validation of guarded S15n9cc90d2e sent; B<=64 guard preserves all65 timed cases. Other neighboring contexts/batches and final integration remain open | `a793c99eb9d447df` |
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

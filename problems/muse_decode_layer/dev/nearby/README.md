@@ -135,3 +135,22 @@ The unsent original lacked a top-level AST `kernel_fn`. P4 repaired only the ent
 Repaired wrapper e5a7d14f restored as sender **587925**, priority4.9, same reset gate and full prepare budget; accepted as **a793c99eb9d447df**. h200_lab automatically absorbed89627 into an unsent combined wrapper; only that new owned sender579268 was retired. `reset_restored_queue.json` records the restored exact wrapper.
 
 `speedup_report.py <receipt> --out reset_result.json` reports every load’s nearby/scored SGLang-relative speedup; groups use the nearest scored B with ties toward smaller B, retaining all53 nearby cases. The native TASK follow-up is ready in `native_validation/`: guarded S15n9cc90d2e vs S15,67shapes,268checks per mode. Send if the timing/control result supports retaining a range path; no promotion before native TASK validation. The B<=64 guard fixes NSMAX capacity beyond the65 timed cases. `native_validation/s15n_guarded.patch` applies onto exact S15 60254883.
+
+## Native timing receipt and decision
+
+Job **a793c99eb9d447df**, complete65shapes,2seeds×8coldreplays, SGLang available, no runtime/schema/finite failures. This payload has no remote TASK oracle; native correctness is a separate gate.
+
+| Load | S15 scored speedup | S15 nearby speedup | nearby/scored | S15n scored speedup | S15n nearby speedup | nearby/scored |
+|---|---:|---:|---:|---:|---:|---:|
+| decode 1 | 2.2148 | 2.1146 | 0.9547 | 2.1991 | 2.2633 | 1.0292 |
+| decode 16 | 1.8422 | 1.5937 | 0.8651 | 1.8393 | 1.8654 | 1.0142 |
+| decode 32 | 1.6192 | 1.3252 | 0.8184 | 1.6233 | 1.4421 | 0.8884 |
+| verify 1 | 1.9892 | 1.6150 | 0.8119 | 1.9954 | 1.7324 | 0.8682 |
+| verify 16 | 1.8443 | 1.3513 | 0.7327 | 1.8442 | 1.8534 | 1.0050 |
+| verify 32 | 1.9107 | 1.3877 | 0.7263 | 1.9081 | 1.7860 | 0.9360 |
+
+All53 nearby cases are included in the diagnostic aggregation, grouped by nearest scored batch at the same q_len;46/16 layer weighting is retained. This is not the official score. Identical-dispatch scored S15n/S15 seed ranges by load are .97794–1.03416/.99554–1.00231/.99239–.99919/.99428–1.00065/.99491–1.00196/1.00054–1.00283. There is no independently captured A:A arm; d32 and v32 controls have small directional drift. Large nearby gains exceed that drift; scored dispatch is identical, so no scored speed claim is made.
+
+Decision: range dispatch repairs substantial nearby cliffs, especially verify24/31/33 and decode2/24/48. Guarded S15n9cc90d2e keeps every timed case identical to the measured ebceda91, with the B<=64 native N128 capacity guard. Send native TASK validation now, then nominate the exact guarded patch to P4 only on native TASK/cache/replay pass. The timing recipe is measured; correctness remains unproven until that receipt. No arbitrary quantitative reviewer cutoff is assumed.
+
+Native validation queued on attention as **sender1096763**, wrapper2ba5fcff, priority4, not-before1792972800; `native_validation/queue.json`. Exact patch and pending gate are indexed in `P4_HANDOFF.json`.
