@@ -15,5 +15,12 @@
   "state": "waiting for judge slot; sender alive",
   "trigger_receipt": "16c180784f414576",
   "classified_arm": "ILP; small dependency contrast, full-kernel effect unmeasured",
-  "merged_payload": "P3b round2 payload"
+  "merged_payload": "P3b round2 payload",
+  "merged_receipt_capacity_check": {
+    "screened_output_chars": 3014,
+    "per_payload_cap_chars": 4500,
+    "fits": true,
+    "payload_count": 2,
+    "payload_sha256_matches_local_screen": true
+  }
 }

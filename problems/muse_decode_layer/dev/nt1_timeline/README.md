@@ -46,7 +46,8 @@ log `runs/detached/de47736b9f588673.log`; live metadata is in `followup_queue.js
 It shares the run with P3b's already-waiting round2 payload. All four FLIGHT / ILP / K16 / LUT arms
 remain packed together with exact S14, 32 seeds per M, ABBA read flush, A:A, before/after TASK gates,
 consumer nodes and unique-byte rates. The payload bytes match the existing local screen.
-A local timing result remains local evidence; the follow-up receipt will determine kernel performance.
+The screened local output is3,014 characters, within the merged per-payload cap of4,500; the merge
+therefore preserves its complete controls and summaries. A local timing result remains local evidence; the follow-up receipt will determine kernel performance.
 
 The trigger is the small shared-math ILP contrast at identical 2-CTA/16-active-warp residency.
 Work-normalized ratios are .98973 / .98177 / .98275. No saturated operational pipe is established.
