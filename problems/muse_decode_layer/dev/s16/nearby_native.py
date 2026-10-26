@@ -1,5 +1,5 @@
 """Retarget the admitted 67-shape TASK lab to the exact S16 nearby merge."""
-import argparse,base64,difflib,hashlib,json,lzma,os,select,subprocess,sys
+import argparse,ast,base64,difflib,hashlib,json,lzma,os,select,subprocess,sys
 from pathlib import Path
 import patches
 from respond import process_exit_fd,wait_gpu_capacity
@@ -20,6 +20,11 @@ def main():
     assert meta['sha256'].startswith('435df5f7')
     near=(H/'generated/nearby_on_s16.py').read_text();digest=hashlib.sha256(near.encode()).hexdigest();assert digest.startswith('6e43a367')
     template=(H.parent/'nearby/native_validation/payload.py').read_text();template=template[:template.index('\ndef lab(deadline,weights,state):')]
+    lines=template.splitlines(True)
+    for node in reversed(ast.parse(template).body):
+        if isinstance(node,ast.Assign) and any(getattr(t,'id','') in ('VALIDATION_BASE','S15N_SHA','S15N_EDITS') for t in node.targets):
+            lines[node.lineno-1:node.end_lineno]=[]
+    template=''.join(lines)
     before,after=base.splitlines(True),near.splitlines(True)
     edits=[(lo,hi,''.join(after[c:d])) for op,lo,hi,c,d in difflib.SequenceMatcher(None,before,after,autojunk=False).get_opcodes() if op!='equal']
     text=template+'\nVALIDATION_BASE='+repr(base)+'\nS15N_SHA='+repr(digest)+'\nS15N_EDITS='+repr(edits)+'\n'

@@ -1,0 +1,195 @@
+{
+  "candidate": "problems/muse_decode_layer/dev/s16/generated/s16.py",
+  "expanded_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
+  "shipped_source": "problems/muse_decode_layer/cand_r3_best7_s16_ee5fe24973f4.py",
+  "shipped_sha256": "4ca750a529a4d3d590c00d75247fb6a05eef3924a60686abb380145f1c3649ef",
+  "wrapper_sha256": "378db0044fe8de49aaceb7384db426da293dacd5cc0ed076b44b388bf3943c0e",
+  "screens": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 2,
+      "paired_seeds": 16,
+      "paired_shapes": 12,
+      "task_checks": 1536
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 2,
+      "paired_seeds": 16,
+      "paired_shapes": 12,
+      "task_checks": 1536
+    }
+  },
+  "queued": true,
+  "status": "experimental integration; S16 frozen until held-out six-load R lower95pct bound>1 and TASK",
+  "expanded_audit": {
+    "expanded_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
+    "shipped_sha256": "4ca750a529a4d3d590c00d75247fb6a05eef3924a60686abb380145f1c3649ef",
+    "checks": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "GLUE_CL_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_CPP_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "LT_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_PORT_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_X_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_G_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_P8_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "PG_RAW",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_NT2_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_NT2_CPP_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_pf_GROUPED_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "SP_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "P7_PREFETCH_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "DENSE_CHAIN_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "DENSE_CHAIN_CPP",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "SMALLM_VAR_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "NF_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "GF_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "PARTIAL_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "cs_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_epi_PAIR_EPIT_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      }
+    ],
+    "passed": true
+  },
+  "elapsed_s": 591.2760307909921,
+  "scored": {
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "/home/jihoon/competitions/muse_kernel/tools/okc_run.py",
+      "send",
+      "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s16_ee5fe24973f4.py",
+      "--scored",
+      "--priority",
+      "-1.1",
+      "--note",
+      "P4 integration scored vs S16: global_OLD, global_PP, epi_PAIR, layer_coop_v1, layer_release_attention. Exact normal+forced screens; held-out six-load confirmation follows."
+    ],
+    "stdout": "queued /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s16_ee5fe24973f4.py at priority -1.1; progress in runs/detached/4ca750a529a4d3d5.log, the receipt in runs/ when the judge finishes\n",
+    "sender_log": "runs/detached/4ca750a529a4d3d5.log"
+  },
+  "confirmation": {
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "/home/jihoon/competitions/muse_kernel/tools/okc_run.py",
+      "send",
+      "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s16_ee5fe24973f4.py",
+      "--check",
+      "--priority",
+      "-1.0",
+      "--note",
+      "P4 held-out confirmation vs S16: exact screened composition, each piece off, A:A;16 disjoint input seeds starting 204910273 plus fresh weights/router;46/16 weighted six-load R and Student-t95pct CI; unchanged official TASK every arm/seed. Import lab620s; private state discarded before real judge prepare."
+    ],
+    "stdout": "queued /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s16_ee5fe24973f4.py at priority -1.0; progress in runs/detached/378db0044fe8de49.log, the receipt in runs/ when the judge finishes\n",
+    "sender_log": "runs/detached/378db0044fe8de49.log"
+  }
+}
