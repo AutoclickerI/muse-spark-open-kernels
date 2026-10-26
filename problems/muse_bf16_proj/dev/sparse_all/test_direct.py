@@ -2,8 +2,8 @@
 import importlib.util,json,hashlib,math
 from pathlib import Path
 import torch
-H=Path(__file__).resolve().parent
-sp=importlib.util.spec_from_file_location('dc_direct_test',H/'candidate.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
+H=Path(__file__).resolve().parent;block='--block' in __import__('sys').argv;candidate=H/('block_candidate.py' if block else 'candidate.py')
+sp=importlib.util.spec_from_file_location('dc_direct_test',candidate);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
 g=torch.Generator(device='cuda').manual_seed(61791)
 def dense(n,k):return (torch.randn((n,k),device='cuda',generator=g)/math.sqrt(k)).bfloat16()
 w=dict(qkv_gate=dense(2304,8192),o=dense(8192,1024),pooler=dense(4096,8192),router=.045*torch.randn((256,8192),device='cuda',generator=g),unpooler=dense(8192,4096))
@@ -21,4 +21,4 @@ for name,a in roles.items():
             err=float((got-ref).norm()/ref.norm());probe=float((got[-1]-ref[-1]).norm()/ref[-1].norm())
             assert err<3e-5 and probe<1e-5,(name,t,seed,err,probe)
             rows.append(dict(role=name,t=t,seed=seed,error=err,probe=probe));print('PASS',name,t,seed,err,flush=True)
-(H/'direct_validation.json').write_text(json.dumps(dict(passed=True,sha256=hashlib.sha256((H/'candidate.py').read_bytes()).hexdigest(),rows=rows),indent=2)+'\n')
+(H/('block_direct_validation.json' if block else 'direct_validation.json')).write_text(json.dumps(dict(passed=True,sha256=hashlib.sha256((candidate).read_bytes()).hexdigest(),rows=rows),indent=2)+'\n')

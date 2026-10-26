@@ -12,9 +12,19 @@ Purpose: get current H200 per-shape receipts against the component leaders. Thes
 
 Queue policy for this task: scored, priority4, not-before epoch1792972800 = 2026-10-26T00:00:00+00:00 (09:00 KST), behind existing reset labs. No candidate depends on the reset outcome: they measure frozen S15 paths. `compare.py` matches exact source SHA through the ledger, reads actual benchmark records, ranks aggregate time ratios to each component leader, and preserves our per-shape receipt rows. Board snapshots do not publish leader per-shape times; do not infer them. Rank actual layer value with stage fractions and the fusion/protocol differences above after receipts arrive.
 
-Final queued component snapshots: MoE **4127d934**, sender **939577**; attention **f38b9ae3**, sender **939623**; projections **01f80a78**, sender **939656**. All have no accepted job yet and retain epoch1792972800 / priority4. `queue.json` records exact full hashes; all normal and forced screens are pinned in `admission.json`.
+Final queued component snapshots: MoE **4127d934**, sender **939577**; attention **f38b9ae3**, sender **939623**; projections **01f80a78**, sender **939656**. They were queued with epoch1792972800 / priority4; current receipts are recorded below and in `leader_gap.json`. `queue.json` records exact full hashes; all normal and forced screens are pinned in `admission.json`.
 
 
-Reset audit: all three senders were still unsent at 09:25 KST. The current `okc leaderboard <problem> --json` snapshots are `leader_moe.json`, `leader_attention.json`, and `leader_projection.json`. They contain aggregate value/speedup only; their rows do not publish per-shape leader times. The documented job endpoint is owner-only (`upstream/llms.txt:78`). Consequently the comparison reports our actual per-shape times and aggregate gaps; it does not fabricate leader shape times. Component receipts have the official paired SGLang controls and confidence interval, with no independent A:A arm. They are diagnostics for stage priority, not paired whole-layer promotions.
+Reset audit: the MoE receipt is complete; attention and projections still await receipts. The current `okc leaderboard <problem> --json` snapshots are `leader_moe.json`, `leader_attention.json`, and `leader_projection.json`. They contain aggregate value/speedup only; their rows do not publish per-shape leader times. The documented job endpoint is owner-only (`upstream/llms.txt:78`). Consequently the comparison reports our actual per-shape times and aggregate gaps; it does not fabricate leader shape times. Component receipts have the official paired SGLang controls and confidence interval, with no independent A:A arm. They are diagnostics for stage priority, not paired whole-layer promotions.
 
 `watch.py` waits on receipt-directory events, starts `tools/h200_lab.py read <job>` as each of the five P10/P12 jobs is accepted, and stops after all five receipts land. It never sends or promotes code. `leader_gap.json` records the current exact-SHA receipt state.
+
+## Receipt results
+
+Leader per-shape times are not published. Ratios below compare aggregate component times; the official confidence interval covers our SGLang speedup, and no independent A:A was captured.
+
+| Stage | Our speedup | 95% interval | Time / leader | Tests / shapes | Job |
+|---|---:|---|---:|---|---|
+| moe | 2.02924 | [1.9988011252708926, 2.059678316903508] | 1.25835 | 5 / 6 | `97f5e7f3c3fc4159` |
+
+MoE per-shape us at T1/8/16/32/128/256: **30.878 /72.944 /105.207 /138.927 /207.993 /268.911**. All five required tests and six timed-shape checks passed. This completes the MoE diagnostic; it does not propose a new layer kernel. Attention and projections still await receipts before the stage ranking is complete.

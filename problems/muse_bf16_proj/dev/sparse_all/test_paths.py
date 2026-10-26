@@ -2,7 +2,7 @@
 import importlib.util,math,json,hashlib,time
 from pathlib import Path
 import torch
-H=Path(__file__).resolve().parent;vector='--vector' in __import__('sys').argv;view='--view' in __import__('sys').argv;candidate=H/('view_candidate.py' if view else 'vector_candidate.py' if vector else 'candidate.py')
+H=Path(__file__).resolve().parent;vector='--vector' in __import__('sys').argv;view='--view' in __import__('sys').argv;block='--block' in __import__('sys').argv;candidate=H/('block_candidate.py' if block else 'view_candidate.py' if view else 'vector_candidate.py' if vector else 'candidate.py')
 candidate_sha=hashlib.sha256(candidate.read_bytes()).hexdigest()
 sp=importlib.util.spec_from_file_location('dc_all_test',candidate);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
 g=torch.Generator(device='cuda').manual_seed(61791)
@@ -31,4 +31,4 @@ for t in (1,8,16,32):
  with torch.cuda.graph(graph):out=m.dc_gate_apply(x,y,state['sparse']['gate'])
  graph.replay();ref=y.float()*torch.sigmoid(x.double()@state['roles']['gate'].double().T).float();err=float((out-ref).norm()/ref.norm());assert err<.004,(t,err)
  rows.append(dict(t=t,role='gate',error=err));print('PASS gate',t,err,flush=True)
-(H/('view_path_validation.json' if view else 'vector_path_validation.json' if vector else 'path_validation.json')).write_text(json.dumps(dict(passed=True,sha256=candidate_sha,rows=rows),indent=2)+'\n')
+(H/('block_path_validation.json' if block else 'view_path_validation.json' if view else 'vector_path_validation.json' if vector else 'path_validation.json')).write_text(json.dumps(dict(passed=True,sha256=candidate_sha,rows=rows),indent=2)+'\n')

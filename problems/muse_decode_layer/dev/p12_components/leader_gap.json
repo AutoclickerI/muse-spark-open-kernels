@@ -1,11 +1,137 @@
 {
-  "updated_utc": "2026-10-26T00:52:07.825261+00:00",
+  "updated_utc": "2026-10-26T01:49:32.650856+00:00",
   "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
   "per_shape_limitation": "leaderboard JSON contains aggregate value/speedup only; jobs endpoint is owner-only (upstream/llms.txt:78)",
   "pending": [
-    "moe",
     "attention",
     "projection"
   ],
-  "ranking": []
+  "ranking": [
+    {
+      "role": "moe",
+      "job": "97f5e7f3c3fc4159",
+      "receipt": "runs/muse_moe_w4a16/20261026T011916Z_submit_97f5e7f3c3fc4159.json",
+      "sha256": "4127d934adc31a29e21a8498341ef12706fb6d7776d8e5271acae67af16286be",
+      "status": "done",
+      "passed": true,
+      "error": null,
+      "tests": 5,
+      "shapes": 6,
+      "aa": null,
+      "aa_reason": "official component receipt has SGLang paired controls; no independent A:A arm",
+      "leader_team": "colinlikescode",
+      "leader_job": "b03e628f4b54440e",
+      "leader_speedup": 2.5535,
+      "leader_score_us": 5266.719928518109,
+      "leader_per_shape_available": false,
+      "board_snapshot": "problems/muse_decode_layer/dev/p12_components/leader_moe.json",
+      "our_speedup": 2.0292397210872006,
+      "our_score_us": 6627.358936574892,
+      "speedup_ci": [
+        1.9988011252708926,
+        2.059678316903508
+      ],
+      "time_ratio_to_component_leader": 1.2583465660836126,
+      "normalized_time_ratio": 1.258353053838271,
+      "aggregate_excess_us": 1360.6390080567835,
+      "our_shapes": [
+        {
+          "case": {
+            "bs": 1,
+            "load": "decode 1",
+            "seed": 4794332779554315749,
+            "sharding": "ep8",
+            "weight": 60
+          },
+          "us": 30.87815253718144,
+          "baseline_us": 79.4080002233386,
+          "speedup": 2.5716564528179178,
+          "runs": 100,
+          "ratio_min": 2.17611,
+          "ratio_max": 2.96625,
+          "status": "pass"
+        },
+        {
+          "case": {
+            "bs": 16,
+            "load": "decode 16",
+            "seed": 4794405706772244492,
+            "sharding": "ep8",
+            "weight": 60
+          },
+          "us": 105.2065203370869,
+          "baseline_us": 191.42400473356247,
+          "speedup": 1.819507043101801,
+          "runs": 100,
+          "ratio_min": 1.70137,
+          "ratio_max": 2.08744,
+          "status": "pass"
+        },
+        {
+          "case": {
+            "bs": 32,
+            "load": "decode 32",
+            "seed": 4794478633990173236,
+            "sharding": "ep8",
+            "weight": 60
+          },
+          "us": 138.92691571221962,
+          "baseline_us": 205.32799838110805,
+          "speedup": 1.477956933892026,
+          "runs": 100,
+          "ratio_min": 1.3225,
+          "ratio_max": 1.58311,
+          "status": "pass"
+        },
+        {
+          "case": {
+            "bs": 8,
+            "load": "verify 1",
+            "seed": 4794551561208101981,
+            "sharding": "ep8",
+            "weight": 60
+          },
+          "us": 72.94449511835357,
+          "baseline_us": 142.57600298151374,
+          "speedup": 1.9545820798427895,
+          "runs": 100,
+          "ratio_min": 1.75985,
+          "ratio_max": 2.24872,
+          "status": "pass"
+        },
+        {
+          "case": {
+            "bs": 128,
+            "load": "verify 16",
+            "seed": 4794624488426030727,
+            "sharding": "ep8",
+            "weight": 60
+          },
+          "us": 207.99260329723998,
+          "baseline_us": 458.5760021582246,
+          "speedup": 2.204770722076489,
+          "runs": 100,
+          "ratio_min": 2.01332,
+          "ratio_max": 2.4115,
+          "status": "pass"
+        },
+        {
+          "case": {
+            "bs": 256,
+            "load": "verify 32",
+            "seed": 4794697415643959474,
+            "sharding": "ep8",
+            "weight": 60
+          },
+          "us": 268.9108332391781,
+          "baseline_us": 630.0320024602115,
+          "speedup": 2.3429030168518366,
+          "runs": 100,
+          "ratio_min": 2.04327,
+          "ratio_max": 2.62081,
+          "status": "pass"
+        }
+      ]
+    }
+  ]
 }

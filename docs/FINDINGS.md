@@ -507,6 +507,15 @@ after wait; fixing all loses 0.885 speedup ratio. Register-hoisted tiles grow 48
 LDGSTS 40→8; hints 1.0027, metadata 1.0032 (A:A 1.0007), tiles 0.887. Confirmation pending;
 `problems/muse_bf16_proj/dev/pdl_audit/`.
 
+### P10/P12 reset measurements
+
+Recipe ratios are candidate/control (lower is faster), except the explicitly labelled component speedups. Full shape/seed evidence and code pins: `problems/muse_bf16_proj/dev/sparse_all/results.json` and `problems/muse_decode_layer/dev/p12_components/leader_gap.json`.
+
+| Recipe | Ratio and control spread | Mechanism | What remains open / decision | Receipt job |
+|---|---|---|---|---|
+| P12 S15 moe component | SGLang/ours 2.02924 [1.99880,2.05968]; ours/leader 1.25835; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 5 tests/6 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. | 97f5e7f3c3fc4159 |
+<!-- P10/P12 measurements end -->
+
 ## Glue and routing
 
 Current t<=32: DSM cluster of 8 CTAs/token x 256 threads with PDL; row slices reduce norms,

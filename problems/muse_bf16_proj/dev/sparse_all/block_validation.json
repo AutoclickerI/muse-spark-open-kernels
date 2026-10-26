@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "source_sha256": "13e0911e00d1655dacef55496acb7e34bfbcc574813d140ae31286d65439bd00",
+  "rows": [
+    {
+      "role": "qkv_gate",
+      "n": 2304,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "qkv3",
+      "n": 1280,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "gate",
+      "n": 1024,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "o",
+      "n": 8192,
+      "k": 1024,
+      "exact": true
+    },
+    {
+      "role": "pooler",
+      "n": 4096,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "router_hi",
+      "n": 256,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "router_lo",
+      "n": 256,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "pool_router",
+      "n": 4608,
+      "k": 8192,
+      "exact": true
+    },
+    {
+      "role": "unpooler",
+      "n": 8192,
+      "k": 4096,
+      "exact": true
+    },
+    {
+      "role": "unpooler_slice",
+      "n": 1024,
+      "k": 4096,
+      "exact": true
+    }
+  ]
+}

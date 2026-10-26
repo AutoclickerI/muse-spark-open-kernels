@@ -1,0 +1,971 @@
+{
+  "passed": true,
+  "sha256": "915df053a44fdb5694abbddc198d27a976ab69697c971d0c7c95a6759029ce7b",
+  "rows": [
+    {
+      "t": 1,
+      "role": "qkv_gate",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "qkv_gate",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "qkv_gate",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "qkv3",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "qkv3",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "qkv3",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "o",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "o",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "o",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "pooler",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "pooler",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "pooler",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "router_hi",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "router_hi",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "router_hi",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "router_lo",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "router_lo",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "router_lo",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "pool_router",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "pool_router",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "pool_router",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "unpooler_slice",
+      "seed": 61791,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "unpooler_slice",
+      "seed": 14357,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "unpooler_slice",
+      "seed": 92003,
+      "error": 0.0,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "qkv_gate",
+      "seed": 61791,
+      "error": 2.6478361028331884e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "qkv_gate",
+      "seed": 14357,
+      "error": 1.0697505780031971e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "qkv_gate",
+      "seed": 92003,
+      "error": 1.0802468538227621e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "o",
+      "seed": 61791,
+      "error": 1.2412751851546419e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "o",
+      "seed": 14357,
+      "error": 1.2805520171017877e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "o",
+      "seed": 92003,
+      "error": 1.2273507063851496e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "pooler",
+      "seed": 61791,
+      "error": 1.321422211461173e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "pooler",
+      "seed": 14357,
+      "error": 1.3116086452408023e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "pooler",
+      "seed": 92003,
+      "error": 1.3115247290917043e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "router_hi",
+      "seed": 61791,
+      "error": 1.3043378426835433e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "router_hi",
+      "seed": 14357,
+      "error": 1.2999831854472897e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "router_hi",
+      "seed": 92003,
+      "error": 1.3212721096582519e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "router_lo",
+      "seed": 61791,
+      "error": 1.5104297506648223e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "router_lo",
+      "seed": 14357,
+      "error": 1.5555027047293314e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "router_lo",
+      "seed": 92003,
+      "error": 1.5422228933486593e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "pool_router",
+      "seed": 61791,
+      "error": 1.312835297773555e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "pool_router",
+      "seed": 14357,
+      "error": 1.3057665902776517e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "pool_router",
+      "seed": 92003,
+      "error": 1.3166187541076647e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "unpooler_slice",
+      "seed": 61791,
+      "error": 4.198118737192352e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "unpooler_slice",
+      "seed": 14357,
+      "error": 4.1890315170633937e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 8,
+      "role": "unpooler_slice",
+      "seed": 92003,
+      "error": 4.0825198987060967e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "qkv_gate",
+      "seed": 61791,
+      "error": 2.6493810904322488e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "qkv_gate",
+      "seed": 14357,
+      "error": 1.112552805982021e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "qkv_gate",
+      "seed": 92003,
+      "error": 1.1212563012044796e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "qkv3",
+      "seed": 61791,
+      "error": 1.7995274865725446e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "qkv3",
+      "seed": 14357,
+      "error": 7.485179062464661e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "qkv3",
+      "seed": 92003,
+      "error": 7.568148369866719e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "o",
+      "seed": 61791,
+      "error": 2.2764549893643066e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "o",
+      "seed": 14357,
+      "error": 2.3179968365836296e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "o",
+      "seed": 92003,
+      "error": 2.254984173060619e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "pooler",
+      "seed": 61791,
+      "error": 1.3478290309390691e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "pooler",
+      "seed": 14357,
+      "error": 1.3360029396913817e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "pooler",
+      "seed": 92003,
+      "error": 1.3378005591070787e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "router_hi",
+      "seed": 61791,
+      "error": 1.3306645254972464e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "router_hi",
+      "seed": 14357,
+      "error": 1.3362788480028405e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "router_hi",
+      "seed": 92003,
+      "error": 1.336636275804163e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "router_lo",
+      "seed": 61791,
+      "error": 1.528330972467902e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "router_lo",
+      "seed": 14357,
+      "error": 1.546191874893971e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "router_lo",
+      "seed": 92003,
+      "error": 1.5421287609546758e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "pool_router",
+      "seed": 61791,
+      "error": 1.339004919615407e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "pool_router",
+      "seed": 14357,
+      "error": 1.3361422021775777e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "pool_router",
+      "seed": 92003,
+      "error": 1.337203236952962e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "unpooler",
+      "seed": 61791,
+      "error": 9.87254315058117e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "unpooler",
+      "seed": 14357,
+      "error": 9.888944924455272e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 16,
+      "role": "unpooler",
+      "seed": 92003,
+      "error": 9.806169354543223e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "qkv_gate",
+      "seed": 61791,
+      "error": 8.388679707545884e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "qkv_gate",
+      "seed": 14357,
+      "error": 4.087377251202115e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "qkv_gate",
+      "seed": 92003,
+      "error": 4.1168230632969015e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "qkv3",
+      "seed": 61791,
+      "error": 1.0656369893614667e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "qkv3",
+      "seed": 14357,
+      "error": 4.681965740991094e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "qkv3",
+      "seed": 92003,
+      "error": 4.708431668584122e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "o",
+      "seed": 61791,
+      "error": 0.0016464354043778191,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "o",
+      "seed": 14357,
+      "error": 0.001648718441112523,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "o",
+      "seed": 92003,
+      "error": 0.0016475810978505098,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "pooler",
+      "seed": 61791,
+      "error": 1.354344031903624e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "pooler",
+      "seed": 14357,
+      "error": 1.3490354625422695e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "pooler",
+      "seed": 92003,
+      "error": 1.3551053048484739e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "router_hi",
+      "seed": 61791,
+      "error": 1.3518835125790716e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "router_hi",
+      "seed": 14357,
+      "error": 1.356226180557406e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "router_hi",
+      "seed": 92003,
+      "error": 1.3473992370863845e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "router_lo",
+      "seed": 61791,
+      "error": 1.5267592398303555e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "router_lo",
+      "seed": 14357,
+      "error": 1.5591493310176527e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "router_lo",
+      "seed": 92003,
+      "error": 1.5411581099941377e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "pool_router",
+      "seed": 61791,
+      "error": 1.3530888122243194e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "pool_router",
+      "seed": 14357,
+      "error": 1.3526790600572281e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "pool_router",
+      "seed": 92003,
+      "error": 1.351173809957124e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "unpooler",
+      "seed": 61791,
+      "error": 4.377461285095568e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "unpooler",
+      "seed": 14357,
+      "error": 4.3895633180629e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 32,
+      "role": "unpooler",
+      "seed": 92003,
+      "error": 4.382448813013022e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "qkv_gate",
+      "seed": 61791,
+      "error": 2.3788716566323756e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "qkv_gate",
+      "seed": 14357,
+      "error": 9.99095719905944e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "qkv_gate",
+      "seed": 92003,
+      "error": 1.0003721820387874e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "o",
+      "seed": 61791,
+      "error": 0.0016582643694934827,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "o",
+      "seed": 14357,
+      "error": 0.0016576000491433727,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "o",
+      "seed": 92003,
+      "error": 0.001657108200515925,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "pooler",
+      "seed": 61791,
+      "error": 0.0023684994737814082,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "pooler",
+      "seed": 14357,
+      "error": 0.0023626478484007805,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "pooler",
+      "seed": 92003,
+      "error": 0.0023747555239068342,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "router_hi",
+      "seed": 61791,
+      "error": 3.024815248947496e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "router_hi",
+      "seed": 14357,
+      "error": 3.014530124364111e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "router_hi",
+      "seed": 92003,
+      "error": 3.018799210200393e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "router_lo",
+      "seed": 61791,
+      "error": 3.6260045012350415e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "router_lo",
+      "seed": 14357,
+      "error": 3.631802988550603e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "router_lo",
+      "seed": 92003,
+      "error": 3.628446053574569e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "pool_router",
+      "seed": 61791,
+      "error": 2.867726998053707e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "pool_router",
+      "seed": 14357,
+      "error": 2.8689187425300764e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "pool_router",
+      "seed": 92003,
+      "error": 2.866234102254376e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "unpooler",
+      "seed": 61791,
+      "error": 0.0028846178745100585,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "unpooler",
+      "seed": 14357,
+      "error": 0.00288721270472092,
+      "probe": 0.0
+    },
+    {
+      "t": 128,
+      "role": "unpooler",
+      "seed": 92003,
+      "error": 0.002882565177004124,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "qkv_gate",
+      "seed": 61791,
+      "error": 0.0020370232833277642,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "qkv_gate",
+      "seed": 14357,
+      "error": 0.002376695115266604,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "qkv_gate",
+      "seed": 92003,
+      "error": 0.0023847218818299743,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "o",
+      "seed": 61791,
+      "error": 0.0016607016687100466,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "o",
+      "seed": 14357,
+      "error": 0.0016582617723762759,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "o",
+      "seed": 92003,
+      "error": 0.0016583368244454334,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "pooler",
+      "seed": 61791,
+      "error": 0.0028872636516529353,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "pooler",
+      "seed": 14357,
+      "error": 0.0028864668650443064,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "pooler",
+      "seed": 92003,
+      "error": 0.0028819204726851077,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "router_hi",
+      "seed": 61791,
+      "error": 2.5348233852975074e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "router_hi",
+      "seed": 14357,
+      "error": 2.5220285019164884e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "router_hi",
+      "seed": 92003,
+      "error": 2.52195035644389e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "router_lo",
+      "seed": 61791,
+      "error": 3.0278048465180024e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "router_lo",
+      "seed": 14357,
+      "error": 3.012748748100912e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "router_lo",
+      "seed": 92003,
+      "error": 3.0255354932384974e-07,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "pool_router",
+      "seed": 61791,
+      "error": 1.6615849997801305e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "pool_router",
+      "seed": 14357,
+      "error": 1.6603576554488396e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "pool_router",
+      "seed": 92003,
+      "error": 1.6621480900932923e-06,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "unpooler",
+      "seed": 61791,
+      "error": 0.002885508732552258,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "unpooler",
+      "seed": 14357,
+      "error": 0.00288761198946398,
+      "probe": 0.0
+    },
+    {
+      "t": 256,
+      "role": "unpooler",
+      "seed": 92003,
+      "error": 0.0028851558912911246,
+      "probe": 0.0
+    },
+    {
+      "t": 1,
+      "role": "gate",
+      "error": 0.0016419056337326765
+    },
+    {
+      "t": 8,
+      "role": "gate",
+      "error": 0.0016401744214817882
+    },
+    {
+      "t": 16,
+      "role": "gate",
+      "error": 0.0016837160801514983
+    },
+    {
+      "t": 32,
+      "role": "gate",
+      "error": 0.0016354278195649385
+    }
+  ]
+}

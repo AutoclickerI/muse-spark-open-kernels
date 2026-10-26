@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "payload_sha256": "2c8576d0b02e36dd6fe915038a1b8a29b2ea98f08cc8667b04a62f2e5c762282",
+  "wrapper_sha256": "f2188bce15168edfbbe96324afc778468108263e52e0103db533359b1f602639",
+  "wrapper_bytes": 680090,
+  "decoder_admission_sha256": "6fc1981a3bc39d9e0183763ea89533a5f4063d9ba526d98e3eee8dfaad59be8c",
+  "block_candidate_sha256": "915df053a44fdb5694abbddc198d27a976ab69697c971d0c7c95a6759029ce7b",
+  "checks": {
+    "normal": {
+      "tests": 9,
+      "shapes": 30,
+      "inputs": 3,
+      "static": 25
+    },
+    "forced": {
+      "tests": 9,
+      "shapes": 30,
+      "inputs": 3,
+      "static": 25
+    },
+    "block_path_validation.json": {
+      "rows": 139,
+      "sha256": "27221a9bab903fa6c97de45dca794b8b6bb74e2a529c4376d4c4539a5d4f32d1"
+    },
+    "block_direct_validation.json": {
+      "rows": 48,
+      "sha256": "af52134979059c82edb916043124654f6604f21e5d04f538a956922b151263a5"
+    }
+  },
+  "cells": 30,
+  "seeds": 8,
+  "local_seconds": 69.30767487798585,
+  "rehearsal_sha256": "068532da32e49a744b4c1ff6c761edfa3b71fa5b99a3c658933ef248ec394f17"
+}

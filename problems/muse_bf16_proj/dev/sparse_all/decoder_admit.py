@@ -1,6 +1,6 @@
 """Pin the prepared follow-up before any outcome-dependent judge send."""
 from pathlib import Path
-import json,hashlib
+import json,hashlib,ast
 H=Path(__file__).resolve().parent
 def read(name):return json.loads((H/name).read_text())
 def sha(name):return hashlib.sha256((H/name).read_bytes()).hexdigest()
@@ -25,5 +25,8 @@ assert proof['lines'][-1].startswith('END complete=10/10') and sum(len(x)+1 for 
 checks['rehearsal']=dict(sha256=sha('decoder_validation.json'),rows=10,seeds=8)
 out=dict(passed=True,payload_sha256=manifest['payload_sha256'],checks=checks,
     decision='Send after a valid pool/all-role receipt. Compare same-bank scalar/vector/hoisted-view, not a whole-layer promotion. If a receipt fails setup/control, repair that implementation and preserve the valid control before using its timings.')
-if (H/'decoder_host.py').exists():out['wrapper_sha256']=sha('decoder_host.py');out['wrapper_bytes']=(H/'decoder_host.py').stat().st_size;assert out['wrapper_bytes']<1000000
+if (H/'decoder_host.py').exists():
+    tree=ast.parse((H/'decoder_host.py').read_text());embedded=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(getattr(t,'id','')=='_LAB_PAYLOADS' for t in n.targets))
+    assert len(embedded)==1 and hashlib.sha256(embedded[0][2].encode()).hexdigest()==manifest['payload_sha256'],'stale wrapper'
+    out['wrapper_sha256']=sha('decoder_host.py');out['wrapper_bytes']=(H/'decoder_host.py').stat().st_size;assert out['wrapper_bytes']<1000000
 (H/'decoder_admission.json').write_text(json.dumps(out,indent=2)+'\n');print('DECODER_ADMITTED',out['payload_sha256'][:8])
