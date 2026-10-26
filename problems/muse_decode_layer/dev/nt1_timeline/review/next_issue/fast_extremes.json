@@ -1,0 +1,8 @@
+{
+  "helper_sha256": "5b5c9d56f5e6d7cfed8b08f393cb09df4b1efee626b8a3fd252af1a7f57f78e8",
+  "helper_cases": 224,
+  "helper_worst_relative": 9.320672944568287e-08,
+  "complete_MoE_extreme_TASK_checks": 16,
+  "metadata": "FP32 float4: min(1,q\u00b2),4096*min(1,1/q\u00b2),64*sign(q)*min(1,abs(q)),original_gs2; q=256*gs2/sqrt(eps)",
+  "timed_math": "sum==0?0:num*rsqrt(fma(sum,mul,eps)); no FP64,sign or exponent branch"
+}

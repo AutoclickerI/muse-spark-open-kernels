@@ -1,0 +1,207 @@
+{
+  "BASE": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "parent": "measured c49 per-M composition",
+    "candidate": "runs/screen/p3a_next_issue/base.py",
+    "candidate_sha256": "45c043e154968a4e609c5d835b3b204358726ab2b37985085c34b3c387c8ef62",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base.patch",
+    "patch_sha256": "fdcabc194c3faf8fa9dfb084e96d86a637c38e7350af201bbaa82cd3e42fd433",
+    "prefix": "rvc_nbase",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base0_cell.py",
+        "cell_sha256": "d82d404108f6a655ba98c40bc355de21510e78e4732829628b0db0cfb7b36a79",
+        "cuda_sha256": "e6d3c42b0b4479d2b3921615652ab827a2d2b67f650dff529c2af730d3ff3c2f",
+        "prefix": "rvc_nbase0",
+        "features": [
+          "SHARD2"
+        ],
+        "M": [
+          1
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base1_cell.py",
+        "cell_sha256": "7eb2f6e773b243c17b7d20a81d3dc319dd9c2e493af2edd58975e703b977874c",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "prefix": "rvc_nbase1",
+        "features": [
+          "PAIR"
+        ],
+        "M": [
+          8
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base2_cell.py",
+        "cell_sha256": "9fde4d89d30f313b6dbfcc7a5fbd95ce0d8f29192752cf89996a215670f23dae",
+        "cuda_sha256": "0c7fdaf4e4959a33b8993a8e55540fe60d508e04390fc9c06e67cc0f35c91569",
+        "prefix": "rvc_nbase2",
+        "features": [
+          "PAIR",
+          "BLOCK"
+        ],
+        "M": [
+          16,
+          32
+        ]
+      }
+    ]
+  },
+  "FAST": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "parent": "measured c49 per-M composition",
+    "candidate": "runs/screen/p3a_next_issue/fast.py",
+    "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+    "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753",
+    "prefix": "rvc_nfast",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast0_cell.py",
+        "cell_sha256": "fe2150f341eb2f66a3a83dae91d32df8270d6360a19dc75856244d60c1c16d5f",
+        "cuda_sha256": "d46fc3cefbc63e847835a313828aeab5f6c187c1ec31ee3cff203912368f237f",
+        "prefix": "rvc_nfast0",
+        "features": [
+          "SHARD2",
+          "FAST"
+        ],
+        "M": [
+          1
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast1_cell.py",
+        "cell_sha256": "c8e47a73b2784d083bdcc3c5e5acaab717ea5c183c04c2dc1456b9bd672da8d6",
+        "cuda_sha256": "f16f3ba94ed8a6b93b16e3a6eb3056b179d3d2bfc0b63c3659a818607684ed79",
+        "prefix": "rvc_nfast1",
+        "features": [
+          "PAIR",
+          "FAST"
+        ],
+        "M": [
+          8
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast2_cell.py",
+        "cell_sha256": "6389325d814dce6eb6ef73689d21765ab33707b660e5440380b7a298eaabe274",
+        "cuda_sha256": "3eebb144b7f264c9b84ddcf808c7f356e126c1a99d1cc6edbb7e2be94cb269a9",
+        "prefix": "rvc_nfast2",
+        "features": [
+          "PAIR",
+          "BLOCK",
+          "FAST"
+        ],
+        "M": [
+          16,
+          32
+        ]
+      }
+    ]
+  },
+  "INDEX": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "parent": "measured c49 per-M composition",
+    "candidate": "runs/screen/p3a_next_issue/index.py",
+    "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+    "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0",
+    "prefix": "rvc_nindex",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index0_cell.py",
+        "cell_sha256": "75d6d0caac4605c7eb0d7e45532d8ec730b2dd218401472ccdfbb352a718751e",
+        "cuda_sha256": "3e32f9cd2bcc5e7edcf1c6473acf32e35dd041d3c8261d7dd57fec3236884047",
+        "prefix": "rvc_nindex0",
+        "features": [
+          "SHARD2",
+          "INDEX"
+        ],
+        "M": [
+          1
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index1_cell.py",
+        "cell_sha256": "98c232fca0952955f8abef6db725e47253f56dc57e6a075fab2472cb69e44552",
+        "cuda_sha256": "f78fa9a041dd1d97f6fd84f282c1fc236ec398a164904ef45e4702e72afe4433",
+        "prefix": "rvc_nindex1",
+        "features": [
+          "PAIR",
+          "INDEX"
+        ],
+        "M": [
+          8
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index2_cell.py",
+        "cell_sha256": "0500436d51d9a724af3be8e4e88f4d96819cc2ac510cbb6bb4440a395a1bac5d",
+        "cuda_sha256": "5330cd856809131520a9fdfed687268db9789b39d2ad21b400f425392dbd8dfe",
+        "prefix": "rvc_nindex2",
+        "features": [
+          "PAIR",
+          "BLOCK",
+          "INDEX"
+        ],
+        "M": [
+          16,
+          32
+        ]
+      }
+    ]
+  },
+  "FLUSH1": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "parent": "measured c49 per-M composition",
+    "candidate": "runs/screen/p3a_next_issue/flush1.py",
+    "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+    "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b",
+    "prefix": "rvc_nflush1",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush10_cell.py",
+        "cell_sha256": "24d82ff990c724607f328f7d219204d3ebb44bdf7d422b6c0e8ae488a1b1c400",
+        "cuda_sha256": "98b8977a6e6c98bd19754d3ffeb9da44f42af64b0c82bd18d084405cf958566c",
+        "prefix": "rvc_nflush10",
+        "features": [
+          "SHARD2",
+          "FLUSH1"
+        ],
+        "M": [
+          1
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush11_cell.py",
+        "cell_sha256": "1a7533239cf3c89e5b3039f38c92bda15f5a2029a7de52dceb2dd4906b2d9eac",
+        "cuda_sha256": "5648e9c35c1f83f8384df634845127167a4324a5c5afdbb20a398999d07a2243",
+        "prefix": "rvc_nflush11",
+        "features": [
+          "PAIR",
+          "FLUSH1"
+        ],
+        "M": [
+          8
+        ]
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush12_cell.py",
+        "cell_sha256": "1d0c79cf453b4374e080e98a500368326295f0669264896334df4bcedf71eaf6",
+        "cuda_sha256": "d0560961c746a64f10914623cc607d87ebfcfb14515a95742d0717e5477d3a9c",
+        "prefix": "rvc_nflush12",
+        "features": [
+          "PAIR",
+          "BLOCK",
+          "FLUSH1"
+        ],
+        "M": [
+          16,
+          32
+        ]
+      }
+    ]
+  }
+}

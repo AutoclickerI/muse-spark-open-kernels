@@ -23,7 +23,7 @@ Measured classification at M8/16/32:
 The ILP contrast triggered the already-prepared four-arm paired lab, sender4124752, merged wrapper
 `de47736b9f588673`, on MoE. `followup_queue.json` records dispatch. FLIGHT/K16/LUT travel in that
 packed batch but are not identified fixes; no rebuilt kernel is promoted. PAIR's separate epilogue
-receipts nominate it to P4; TREE adds no gain. Whole-kernel and whole-layer controls still decide.
+receipts nominate it to P4; TREE also has small M8/M16 point wins and remains an alternative. Whole-kernel and whole-layer controls still decide.
 
 That full-kernel follow-up is now measured: **`dd539517bc8344dd`**,32 seeds/M,all native/official gates pass.
 FLIGHT/S14 is1.07662/1.05285/1.03119; K16 is1.20394/1.21153/1.23270; LUT is1.59959/1.62315/1.67379.
@@ -144,7 +144,7 @@ All derive from S14, preserve original M1, and cover2<=M<=32 when the small-M pa
 | Shared-only math improves with independent chains, without a saturated pipe | ILP (`pilp_cell.py`) | Alternate two MMA accumulator chains; reject if new registers or final sum erase the benefit |
 | Shared-only math improves at32 versus16 active warps, after normalizing work and residency | K16/r64 (`pk16_cell.py`) | K256/warp,16 math warps/CTA,64 regs, last eight B operands cached in timed shared; two H200 CTAs fit |
 | Integer/PRMT throughput is close to the measured same-op envelope while shared has headroom | FP4-only LUT (`plut_cell.py`) |1KiB code-pair table, scale math unchanged; moves integer decode work to shared. Reject if predicted or measured bank service becomes the tighter roof |
-| Shared gather/epi serialization dominates | Existing PAIR/TREE cells | Completed tests nominate PAIR; TREE is tied; do not rerun these as a new recipe |
+| Shared gather/epi serialization dominates | Existing PAIR/TREE cells | Completed tests nominate PAIR; TREE has small point wins versus PAIR at M8/M16; no rerun is needed for nomination |
 
 If evidence conflicts or no diagnostic isolates a limit, none of these is sent as a purported solution.
 A classified branch must still beat S14 in a paired kernel lab and then the six-load whole-layer score.
@@ -167,3 +167,36 @@ all decoded integer code pairs and all scale bytes across the full banks, then e
 layout. It replaces the old aggregate cap that incorrectly rejected legal duplicates. No wider weight
 values are retained in prepare. This differs from the closed joint weight/scale lookup recipe: only an
 FP4 code pair indexes a fixed1KiB table; scaling stays in the timed HMUL2 path.
+
+## c49 composition and next cuts
+
+`c49dbdffe92d491a` confirms the SHARD2/PAIR/PAIR+BLOCK per-M composition is TASK-correct on16 fresh
+seeds/M. COMBO/S15=.997261/.988757/.970993/.979561;direct COMBO/PAIR at M16/M32=.995504/.993125.
+A:A mean absolute .225/.480/.309/.362us. Every point winner goes to P4 with SE,seeds and exact
+`review/combo/combo.patch`6b3990b2;only P4's held-out six-load R promotes the whole layer.
+
+The new cuts are on that measured parent,not a synthetic math clock. `review/next_issue/sass_cost.json`
+compiles actual CUDA and marked fill bodies with sm90a,-O3,-lineinfo:
+
+- CANCEL/S15 has the same125regs/zero spills,but adds16 shared expert-map loads,23 static global loads,
+  sign/range predicates,and FP64 exceptional tails. Main-kernel text50688→65152B;ordinary finite epsilon
+  takes the FP32 path. Static FP64 text does not prove ordinary FP64 execution or a unique bottleneck.
+- FAST represents the same norm identity by bounded FP32 metadata and one fma/rsqrt/multiply with a
+  zero-norm guard. Sign is in its numerator. No runtime FP64/sign/exponent branch;224 native extreme
+  helper cases and16 captured full-MoE scale cases pass. New PAIR+BLOCK FAST uses124regs,zero spills.
+- INDEX hoists row-valid/pass branches outside8 fills and uses one bounded32bit vector index per
+  segment. Marked integer/address/control counts W13 31→13,W2 26→8,while each retains16 vector loads.
+  Save18/(16*L)=1.125/L per16 requested weights at actual segment length L. In the narrower original
+  SHF/LOP3/LEA/IMAD class alone,the reductions are15(W13) and17(W2) per segment. The core per-tile
+  decoder remains17 instructions in that class; this amortized setup cut does not close that gap.
+- FLUSH1 deletes the second consecutive norm flush after the first has resetnv0=0. Every necessary
+  flush/store/fence/publish/acquire remains. Count-build PAIR+BLOCK text3352→3296 instructions,
+  ATOMG7→6,125regs/zero spills. Its measured latency benefit is still open.
+
+These are three independent arms,not a combined gain claim. All9 variants pass810 native TASK/replay
+checks. Normal/forced screens and the packed paired follow-up are under `review/next_issue/`.
+The restricted same-mask3-pure-rotations-per-word+one-LOP3 search has no layout with zero rotation in
+both source words;that rejects only this cheap one-SHF-saving repack,not other lossless decoders.
+No new throughput/saturation claim is inferred from the static instruction cuts.
+
+Instruction-cut follow-up accepted as MoE check`d7fb2d8bddae4b8c`,sender1971066,wrapper`76a7f192a080d0b6`. All6 full screens and the exact16seed/64AA local payload pass. H200 timings are pending;no new cut is promoted from static counts alone.

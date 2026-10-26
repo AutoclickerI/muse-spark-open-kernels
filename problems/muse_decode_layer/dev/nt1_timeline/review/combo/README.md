@@ -17,7 +17,7 @@ CANCEL and PACK5 are excluded because their independent implementations lose at 
 The identity and smaller lossless encodings remain open via other implementations.
 
 `manifest.json` pins the exact candidate6884c929 and S15 patch `combo.patch` (6b3990b2).
-The composition is unmeasured. `admission.json` verifies:
+The composition is measured by c49dbdffe92d491a and nominates at all4 M versus S15. `admission.json` verifies:
 
 - 90 native TASK checks per variant,270 total: real/empty/zero/all8 routes,M1/8/9/16/24/32,
   nonzero expert starts and changing captured inputs.
@@ -33,4 +33,6 @@ The composition is unmeasured. `admission.json` verifies:
 P4 confirms the whole-layer composition by held-out six-load R; no additive gain is assumed.
 
 Sent on MoE as a check,priority1.2,import budget240s: sender1548101,wrapperda4bfcfab9f0b0db.
-Accepted judge job**`c49dbdffe92d491a`**;`queue.json` pins the exact submitted source. Receipt pending. No prefill host is used.
+Accepted judge job**`c49dbdffe92d491a`**;`queue.json` pins the exact submitted source. Receipt complete;all16seeds/TASK gates pass. No prefill host is used.
+
+Measured COMBO/S15 at M1/8/16/32:.997261/.988757/.970993/.979561;direct COMBO/BEST at M16/M32:.995504/.993125. `results.json` contains SE,seeds,A:A and exact-source audit;every point winner is handed P4.

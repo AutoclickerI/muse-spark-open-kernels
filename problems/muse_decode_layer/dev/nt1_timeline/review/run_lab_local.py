@@ -15,7 +15,7 @@ for line in lines:print(line,flush=True)
 archive=next(l.split(' ',1)[1] for l in lines if l.startswith('P3A_REVIEW_XZ85 '));data=n['review_unpack'](archive)
 assert data['seeds']==16 and not data['failures'],data
 assert len(data['AA_rows'])==64
-for name in n['REVIEW_ARMS']:
+for name in data['arm_names'][1:]:
  idx=data['arm_names'].index(name);assert sum(len(r)==7 and r[2]==idx and r[3]==0 for r in data['rows'])==64
 assert sum(len(l)+1 for l in lines)<9000,'complete archive exceeds receipt cap'
 args.output.write_text(json.dumps(dict(payload_sha256=hashlib.sha256(text.encode()).hexdigest(),device='GPU0 sm120 native review math; local timing only',seeds=16,AA_rows=64,complete=True,output_chars=sum(len(l)+1 for l in lines),gates=data['gates'],failures=data['failures'],elapsed_seconds=data['elapsed_seconds'],archive=archive),indent=2)+'\n');print('LOCAL_COMPLETE',len(lines),sum(len(l)+1 for l in lines),data['elapsed_seconds'],flush=True)

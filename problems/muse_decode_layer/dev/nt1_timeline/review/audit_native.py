@@ -2,11 +2,11 @@
 import argparse,collections,hashlib,json,re,subprocess,sys
 from pathlib import Path
 D=Path(__file__).resolve().parent;R=D.parents[4];rows={}
-parser=argparse.ArgumentParser();parser.add_argument('arms',nargs='*');parser.add_argument('--manifest',type=Path,default=D/'manifest.json');parser.add_argument('--output',type=Path,default=D/'native_audit.json');args=parser.parse_args();m=json.loads(args.manifest.read_text())
+parser=argparse.ArgumentParser();parser.add_argument('arms',nargs='*');parser.add_argument('--manifest',type=Path,default=D/'manifest.json');parser.add_argument('--output',type=Path,default=D/'native_audit.json');parser.add_argument('--source-dir',type=Path,default=R/'runs/screen/p3a_review');args=parser.parse_args();m=json.loads(args.manifest.read_text())
 if args.arms and args.output.exists():rows=json.loads(args.output.read_text())
 for arm,spec in m.items():
  if args.arms and arm not in args.arms:continue
- cu=R/'runs/screen/p3a_review'/f'{arm.lower()}.cu';obj=cu.with_suffix('.o');log=cu.with_suffix('.compile.log')
+ cu=args.source_dir/f'{arm.lower()}.cu';obj=cu.with_suffix('.o');log=cu.with_suffix('.compile.log')
  r=subprocess.run(['nvcc','-O3','-std=c++20','-arch=sm_90a','-c',str(cu),'-o',str(obj),'-Xptxas=-v'],capture_output=True,text=True);log.write_text(r.stdout+r.stderr);r.check_returncode()
  sass=subprocess.check_output(['cuobjdump','--dump-sass',str(obj)],text=True);cu.with_suffix('.sass').write_text(sass)
  name,body=next((n,b) for n,b in re.findall(r'Function : (\S+)\n(.*?)(?=\n\s*Function : |\Z)',sass,re.S) if 'moe_varILi1ELi69E' in n)

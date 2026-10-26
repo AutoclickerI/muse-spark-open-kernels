@@ -427,13 +427,55 @@ are unchanged by the receipt repair. `review/results.json` retains every seed ra
 Next: one per-shape composition arm, **SHARD2 at M1, PAIR at M8, PAIR+BLOCK at M16/M32**, compared
 with S15,PAIR and the best independent choice on fresh weight seeds275353+7919*s and routing279000+M+97*s.
 CANCEL/PACK5 are excluded by their measured losses. No additive or whole-layer gain is claimed;
-P4 composes and confirms held-out six-load R. Exact unmeasured composition: `review/combo/combo.patch`.
+P4 composes and confirms held-out six-load R. Exact submitted composition: `review/combo/combo.patch`;measured receipt follows.
 
 Composition admission:270 native component/replay checks; normal/forced each pass13 TASK cases,
 12 dispatch shapes,28 static checks and eager/captured calls for every variant. Exact packed lab
 passes16 fresh seeds/64AA,4,371characters/79.9s locally; no local timing claim. Sent as MoE check,
-sender**1548101**,wrapper**`da4bfcfab9f0b0db`**,priority1.2/import budget240s; accepted judge check**`c49dbdffe92d491a`**,receipt pending.
+sender**1548101**,wrapper**`da4bfcfab9f0b0db`**,priority1.2/import budget240s; accepted judge check**`c49dbdffe92d491a`**,receipt complete (audited below).
 Exact patch `review/combo/combo.patch`,candidate6884c929; admission and queue records under `review/combo/`.
+
+### P3a held-out composition receipt and next instruction cuts (2026-10-26)
+
+Check **`c49dbdffe92d491a`** is complete:16 fresh seeds per M1/8/16/32,256 paired comparisons,64 A:A pairs;
+all native/official TASK gates pass,no failures,worst total/row .002419/.002520. Exact source audit and seed matrix:
+`review/combo/results.json`. A:A mean absolute .225/.480/.309/.362us,max.688/1.552/1.136/.912.
+These spreads describe uncertainty; the stage point gate nominates all4 M versus S15. Only P4 confirms whole-layer R.
+
+| Recipe | Ratio vs S15 (SE),n16; /BEST (SE) | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| SHARD2 M1 | 0.997261 (0.001758); /BEST 1.001877 (0.001619) | Fresh-seed point win; CUDA matches the independent control,so direct difference is control noise. Nominate to P4. | Whole-layer held-out R,nearby shapes,and other per-shape alternatives. | `c49dbdffe92d491a` |
+| PAIR M8 | 0.988757 (0.002226); /BEST 1.001757 (0.001838) | Fresh-seed point win; CUDA matches the independent control,so direct difference is control noise. Nominate to P4. | Whole-layer held-out R,nearby shapes,and other per-shape alternatives. | `c49dbdffe92d491a` |
+| PAIR+BLOCK M16 | 0.970993 (0.002883); /BEST 0.995504 (0.002804) | Own-block W2 readiness composes with PAIR; point win also versus the direct PAIR/BEST control. Nominate to P4. | Whole-layer held-out R,nearby shapes,and other per-shape alternatives. | `c49dbdffe92d491a` |
+| PAIR+BLOCK M32 | 0.979561 (0.003839); /BEST 0.993125 (0.002482) | Own-block W2 readiness composes with PAIR; point win also versus the direct PAIR/BEST control. Nominate to P4. | Whole-layer held-out R,nearby shapes,and other per-shape alternatives. | `c49dbdffe92d491a` |
+
+P4 exact combined patch `review/combo/combo.patch`,SHA256`6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a`,
+onto S15`60254883`,candidate`6884c929`. `point_nominations.json` includes every eligible COMBO/PAIR/BEST point comparison,
+SE,seed indices/recipes and exact patch; M16/M32 direct ratios .995504/.993125 also nominate. No per-shape confidence veto.
+
+Next arms use this measured per-M parent. Count builds use sm90a,-O3,-lineinfo; complete SASS opcode/resource evidence
+is `review/next_issue/sass_cost.json`. Whole static instruction counts include exceptional paths; they are not dynamic issue/stall counts.
+
+| Recipe / audit | Ratio / prerequisite | Mechanism / decision | Leaves open | Receipt / evidence |
+|---|---|---|---|---|
+| Original CANCEL cost | Measured /S15 1.00167/1.02266/1.01870/1.01407; flags69 whole static instructions3168→4072,text50688→65152B | Added expert gathers,metadata loads,sign/range predicates and duplicated FP64 tails:LDG77→100,LDS143→159,FSETP15→76,64DMUL+169DFMA. Both125regs,zero spills: there is no added register count or spilling to explain the loss. Ordinary finite epsilon takes the FP32 path; FP64 text alone does not prove normal FP64 execution. | Dynamic attribution among the extra common-path work and text footprint. | `b57d691d689046a8`;`next_issue/sass_cost.json` |
+| FAST cancellation | H200 unmeasured; helper224 cases,worst9.33e-8 relative;16 full-MoE scale TASK checks pass | Same identity with bounded FP32 metadata(q=a/sqrt(eps),mul=min(1,q²),bias=4096*min(1,1/q²),num=64*sign(q)*min(1,abs(q))). Factor=num*rsqrt(fma(sum,mul,bias)),zero norm guarded. No runtime FP64 or sign/range branch. FAST/S15 static3264 instructions,84LDG,23FSETP; PAIR+BLOCK FAST uses124regs,zero spills. | Whether fewer instructions beat the remaining expert gathers/vector-metadata cost on H200. | `next_issue/fast_extremes.json`,`native_audit.json` |
+| INDEX B-fill | H200 unmeasured; marked W13 integer/address/control31→13,W2 26→8;16 vector loads retained each | Hoist row-valid/pass branches outside8 fills; one bounded32bit vector index per segment. Save18/(16*L)=1.125/L instructions per16 requested weights,where L is actual segment tiles. Core decoder unchanged; full static counts are not a per-tile count. PAIR+BLOCK registers125→122,zero spills. | H200 benefit after segment-length amortization; reductions in the per-tile decoder itself. | `next_issue/sass_cost.json`,marked-fill probes |
+| FLUSH1 | H200 unmeasured; two consecutive calls confirmed after first resetsnv0=0 | Delete only the second zero norm flush at a segment transition; retain every required publication/fence and final flush. Count build PAIR+BLOCK static3352→3296,ATOMG7→6;125regs,zero spills. | H200 benefit from less atomic/control work; other reduction ownership. | `next_issue/build.py`,`sass_cost.json` |
+
+All9 new cell variants pass90 native TASK/replay checks each,810 total (including empty/all8 routes,
+M9/M24,nonzero expert starts and changed captured inputs). The three arms remain separate so the effect is readable.
+Normal/forced screens and packed H200 follow-up are recorded under `review/next_issue/`.
+
+Next paired check accepted as **`d7fb2d8bddae4b8c`**,sender**1971066**,wrapper**`76a7f192a080d0b6`**,
+MoE,priority1.2/import budget240s. FAST/INDEX/FLUSH1 are separate arms versus the measured c49 BASE and S15,
+16 fresh seeds/M1/8/16/32,448 paired ratios,64 A:A pairs,TASK before/after. All6 normal/forced screens pass
+13 TASK cases,12 shapes,28 static checks each;810 native component/replay checks,224 helper extreme cases
+and16 captured full-MoE scale tests pass. Exact packed local lab completes16seeds/64AA,5,919characters/94.7s;
+local timing is not H200 evidence. Entropy-independent receipt bound7,288characters;wrapper975,473B.
+`review/next_issue/admission.json` and `queue.json` pin the exact admitted source. All new H200 ratios remain
+unmeasured; no static instruction reduction is treated as a measured gain. Leaves open dynamic attribution,
+segment-length amortization,other decoder layouts,and P4's whole-layer R.
 
 ## MoE M=128
 

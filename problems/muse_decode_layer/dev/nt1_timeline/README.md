@@ -70,7 +70,7 @@ assembly remains open. [review/README.md](review/README.md) retains all code-pre
 The next single composition arm uses **SHARD2 M1, PAIR M8, PAIR+BLOCK M16/M32**. CANCEL and PACK5
 are excluded by their measured losses. It compares with S15,PAIR and per-shape best independent on
 16 fresh seeds (weights275353+7919*s,routes279000+M+97*s),with A:A and TASK before/after.
-`review/combo/manifest.json` and `combo.patch` pin the exact unmeasured candidate. No additive gain
+`review/combo/manifest.json` and `combo.patch` pin the exact submitted candidate. No additive gain
 or whole-layer promotion is claimed. P4's held-out six-load R confirmation remains the only promotion gate.
 
 ## Evidence
@@ -83,4 +83,23 @@ uses explicit stand-ins only for Hopper-only glue. Local timings are never H200 
 
 
 Follow-up accepted as MoE check**`c49dbdffe92d491a`**: sender1548101,wrapper`da4bfcfab9f0b0db`; `review/combo/queue.json`.
-Normal/forced each pass13TASK/12shapes/28static;270 component/replay checks; exact packed16seed/64AA lab passes4371characters. H200 composition receipt pending.
+Normal/forced each pass13TASK/12shapes/28static;270 component/replay checks; exact packed16seed/64AA lab passes4371characters. H200 composition receipt c49dbdffe92d491a is complete:all16seeds/TASK gates pass.
+
+## c49 composition and next instruction cuts
+
+`c49dbdffe92d491a` completes16 fresh seeds/M,all TASK gates pass. COMBO/S15 at M1/8/16/32:
+**.997261/.988757/.970993/.979561**,SE .001758/.002226/.002883/.003839.
+Direct COMBO/BEST at M16/M32 **.995504/.993125**,SE .002804/.002482. A:A mean absolute
+.225/.480/.309/.362us,max.688/1.552/1.136/.912. Every point winner,including fresh PAIR/SHARD2
+comparisons,is in `point_nominations.json`;P4 receives exact combined `review/combo/combo.patch`6b3990b2.
+M1/M8 are the same CUDA as independent SHARD2/PAIR;their direct control differences are noise.
+P4 confirms the whole-layer held-out R; these stage wins do not promote a whole-layer candidate.
+
+[review/next_issue/README.md](review/next_issue/README.md) records SASS-led follow-up:
+FAST replaces CANCEL's duplicated FP64/sign/range paths with bounded FP32 norm metadata;
+INDEX saves18 integer/address/control instructions per B-fill segment (1.125/L per16 weights);
+FLUSH1 removes the second consecutive zero norm flush. All are separate changes on the measured c49 parent.
+All9 variants pass810 native component/replay checks; FAST adds224 extreme helper and16 full-MoE scale checks.
+Normal/forced screens,packed-lab admission and queue state live under `review/next_issue/`.
+
+Sent check**`d7fb2d8bddae4b8c`**,sender1971066,wrapper`76a7f192a080d0b6`,on MoE. All6 normal/forced13TASK/12shape/28static screens pass; exact packed16seed/64AA local lab passes5919characters/94.7s. `review/next_issue/admission.json` and `queue.json` pin the send. H200 result pending.

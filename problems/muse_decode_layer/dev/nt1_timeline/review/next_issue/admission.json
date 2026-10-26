@@ -1,0 +1,47 @@
+{
+  "payload_sha256": "62965790562774e7a20c876bf5257b29f2228275febcc1e02dbe4208f83466a6",
+  "candidates": {
+    "FAST": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+    "INDEX": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+    "FLUSH1": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27"
+  },
+  "normal_forced_screens": 6,
+  "each_screen": {
+    "TASK_cases": 13,
+    "dispatch_shapes": 12,
+    "static_checks": 28,
+    "eager_and_capture_all_variants": true
+  },
+  "native_component_replay_TASK_checks": 810,
+  "fast_extremes": {
+    "helper_sha256": "5b5c9d56f5e6d7cfed8b08f393cb09df4b1efee626b8a3fd252af1a7f57f78e8",
+    "helper_cases": 224,
+    "helper_worst_relative": 9.320672944568287e-08,
+    "complete_MoE_extreme_TASK_checks": 16,
+    "metadata": "FP32 float4: min(1,q\u00b2),4096*min(1,1/q\u00b2),64*sign(q)*min(1,abs(q)),original_gs2; q=256*gs2/sqrt(eps)",
+    "timed_math": "sum==0?0:num*rsqrt(fma(sum,mul,eps)); no FP64,sign or exponent branch"
+  },
+  "packed_lab": {
+    "seeds": 16,
+    "AA_pairs": 64,
+    "seed_pair_ratios": 448,
+    "complete": true,
+    "output_chars": 5919,
+    "elapsed_seconds": 94.68155245098751,
+    "all_TASK_pass": true
+  },
+  "receipt_bound": {
+    "max_full_rows": 448,
+    "max_AA_rows": 64,
+    "max_header_bytes": 1600,
+    "max_binary_bytes": 5188,
+    "max_archive_chars": 6488,
+    "max_other_lines_chars": 800,
+    "max_payload_output_chars": 7288,
+    "wrapper_bytes": 975473,
+    "source_cap": 1000000,
+    "payload_sha256": "62965790562774e7a20c876bf5257b29f2228275febcc1e02dbe4208f83466a6",
+    "entropy_independent": true
+  },
+  "status": "all required screens passed; new H200 arms unmeasured"
+}

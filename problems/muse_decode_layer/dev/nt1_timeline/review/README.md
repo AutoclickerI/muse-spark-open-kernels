@@ -85,4 +85,4 @@ nonzero expert starts and changed captured inputs. `combo/manifest.json` pins so
 `build_combo_lab.py` pairs S15/PAIR/BEST/COMBO on16 fresh seeds,retains direct COMBO/BEST and64AAs,
 with the bounded receipt. COMBO is unmeasured until H200 returns; no additive or whole-layer claim.
 
-Composition accepted as MoE check**`c49dbdffe92d491a`**,sender1548101,wrapper`da4bfcfab9f0b0db`;receipt pending. `combo/admission.json` pins both13/12/28 screens,270 native checks,and complete16seed/64AA packed lab at4371characters.
+Composition accepted as MoE check**`c49dbdffe92d491a`**,sender1548101,wrapper`da4bfcfab9f0b0db`;receipt complete;all16seeds/TASK gates pass. `combo/admission.json` pins both13/12/28 screens,270 native checks,and complete16seed/64AA packed lab at4371characters.

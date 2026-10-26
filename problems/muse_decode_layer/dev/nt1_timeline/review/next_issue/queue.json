@@ -1,0 +1,18 @@
+{
+  "utc": "20261026T034754Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "d7fb2d8bddae4b8c",
+  "sha256": "76a7f192a080d0b63a3a3a401b271898ebc75926685ddaba391a343ea3e678d8",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_next_issue.py",
+  "source": "runs/muse_moe_w4a16/20261026T034754Z_check_d7fb2d8bddae4b8c.py",
+  "git": "6a1b74d+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_next_issue.py: P3a next on measured c49 parent SHARD2 M1/PAIR M8/PAIR+BLOCK M16,32: independent FAST bounded FP32 W2-scale cancellation(no runtime FP64/sign/range path),INDEX32 vector B-fill(31to13/26to8 integer control per segment,same16loads),FLUSH1 remove duplicate zero norm flush. S15 and BASE controls,16 fresh seeds64AA,448 direct pairs. All6 normal+forced13TASK12shapes28static screens pass;810 native replay gates;FAST224 helper extrema9.33e-8 and16 captured scale checks. Exact packed local16seed lab allTASKpass5919chars. New recipes unmeasured; every point winner to P4,R confirms.",
+  "snapshot": "runs/sent/76a7f192a080d0b6/lab_moe_p3a_next_issue.py",
+  "sender": 1971066,
+  "sender_log": "runs/detached/76a7f192a080d0b6.log",
+  "payload": "prof/lab/moe_p3a_next_issue.py",
+  "payload_sha256": "62965790562774e7a20c876bf5257b29f2228275febcc1e02dbe4208f83466a6",
+  "state": "accepted; all screens passed; H200 receipt pending",
+  "admission": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/admission.json"
+}

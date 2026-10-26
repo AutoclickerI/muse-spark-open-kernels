@@ -2232,6 +2232,866 @@
         "routing": "179000+M+97*seed"
       },
       "control_alias": false
+    },
+    {
+      "M": 1,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.9985223125,
+      "SE": 0.002183420652933431,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.001402,
+      "AA_SE": 0.0016643895953171576,
+      "AA_mean_abs_us": 0.225,
+      "AA_max_abs_us": 0.688,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.9951481875,
+      "SE": 0.0017479588339421052,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.001402,
+      "AA_SE": 0.0016643895953171576,
+      "AA_mean_abs_us": 0.225,
+      "AA_max_abs_us": 0.688,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/shard2.py",
+        "candidate_sha256": "bf3b3c396334893847769888b4ef92e34f0fdce752b96d51aefc998dab8d969c",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/shard2_cell.py",
+        "cell_sha256": "4395f9ef216c6cadb40a09b8c1e602c11dd84bbc2635d2c7905725bcca6a4a60",
+        "cuda_sha256": "e6d3c42b0b4479d2b3921615652ab827a2d2b67f650dff529c2af730d3ff3c2f",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/shard2.patch",
+        "patch_sha256": "d11b5e09ea53c93744a491a315672ff8fb055695863aea82bf28c37e1136bbeb",
+        "prefix": "rvs2",
+        "parent": "PAIR",
+        "one_change": "SHARD2"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9972606875000001,
+      "SE": 0.0017579723114020435,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.001402,
+      "AA_SE": 0.0016643895953171576,
+      "AA_mean_abs_us": 0.225,
+      "AA_max_abs_us": 0.688,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.987562375,
+      "SE": 0.0023074960344404327,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00274175,
+      "AA_SE": 0.002085928187682083,
+      "AA_mean_abs_us": 0.48,
+      "AA_max_abs_us": 1.552,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.9868604375,
+      "SE": 0.002111609658469002,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00274175,
+      "AA_SE": 0.002085928187682083,
+      "AA_mean_abs_us": 0.48,
+      "AA_max_abs_us": 1.552,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9887571875,
+      "SE": 0.0022261299326011724,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00274175,
+      "AA_SE": 0.002085928187682083,
+      "AA_mean_abs_us": 0.48,
+      "AA_max_abs_us": 1.552,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.9758740625,
+      "SE": 0.0026620008678760634,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.9760036875,
+      "SE": 0.003688651042633733,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9709925,
+      "SE": 0.0028832398501223134,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "COMBO",
+      "control": "BEST",
+      "ratio": 0.995504,
+      "SE": 0.0028035276096969935,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.98611675,
+      "SE": 0.0030024223033244344,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.984295125,
+      "SE": 0.002925694544142469,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9795609375,
+      "SE": 0.0038392447786736537,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "COMBO",
+      "control": "BEST",
+      "ratio": 0.9931249375,
+      "SE": 0.002481961644326168,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
     }
   ],
   "patches": {
@@ -3746,7 +4606,869 @@
     },
     "verified": true
   },
-  "unmeasured_composition_followup": {
+  "composition_rows": [
+    {
+      "M": 1,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.9985223125,
+      "SE": 0.002183420652933431,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.001402,
+      "AA_SE": 0.0016643895953171576,
+      "AA_mean_abs_us": 0.225,
+      "AA_max_abs_us": 0.688,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.9951481875,
+      "SE": 0.0017479588339421052,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.001402,
+      "AA_SE": 0.0016643895953171576,
+      "AA_mean_abs_us": 0.225,
+      "AA_max_abs_us": 0.688,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/shard2.py",
+        "candidate_sha256": "bf3b3c396334893847769888b4ef92e34f0fdce752b96d51aefc998dab8d969c",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/shard2_cell.py",
+        "cell_sha256": "4395f9ef216c6cadb40a09b8c1e602c11dd84bbc2635d2c7905725bcca6a4a60",
+        "cuda_sha256": "e6d3c42b0b4479d2b3921615652ab827a2d2b67f650dff529c2af730d3ff3c2f",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/shard2.patch",
+        "patch_sha256": "d11b5e09ea53c93744a491a315672ff8fb055695863aea82bf28c37e1136bbeb",
+        "prefix": "rvs2",
+        "parent": "PAIR",
+        "one_change": "SHARD2"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9972606875000001,
+      "SE": 0.0017579723114020435,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.001402,
+      "AA_SE": 0.0016643895953171576,
+      "AA_mean_abs_us": 0.225,
+      "AA_max_abs_us": 0.688,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.987562375,
+      "SE": 0.0023074960344404327,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00274175,
+      "AA_SE": 0.002085928187682083,
+      "AA_mean_abs_us": 0.48,
+      "AA_max_abs_us": 1.552,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.9868604375,
+      "SE": 0.002111609658469002,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00274175,
+      "AA_SE": 0.002085928187682083,
+      "AA_mean_abs_us": 0.48,
+      "AA_max_abs_us": 1.552,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9887571875,
+      "SE": 0.0022261299326011724,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00274175,
+      "AA_SE": 0.002085928187682083,
+      "AA_mean_abs_us": 0.48,
+      "AA_max_abs_us": 1.552,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.9758740625,
+      "SE": 0.0026620008678760634,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.9760036875,
+      "SE": 0.003688651042633733,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9709925,
+      "SE": 0.0028832398501223134,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "COMBO",
+      "control": "BEST",
+      "ratio": 0.995504,
+      "SE": 0.0028035276096969935,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0019469375,
+      "AA_SE": 0.0013718718370312791,
+      "AA_mean_abs_us": 0.309,
+      "AA_max_abs_us": 1.136,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "PAIR",
+      "control": "S15",
+      "ratio": 0.98611675,
+      "SE": 0.0030024223033244344,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "BEST",
+      "control": "S15",
+      "ratio": 0.984295125,
+      "SE": 0.002925694544142469,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_review/pair.py",
+        "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+        "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+        "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+        "prefix": "rvp",
+        "parent": "S15",
+        "one_change": "PAIR"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "COMBO",
+      "control": "S15",
+      "ratio": 0.9795609375,
+      "SE": 0.0038392447786736537,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "COMBO",
+      "control": "BEST",
+      "ratio": 0.9931249375,
+      "SE": 0.002481961644326168,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.000951625,
+      "AA_SE": 0.0009693569770514521,
+      "AA_mean_abs_us": 0.362,
+      "AA_max_abs_us": 0.912,
+      "point_nominee": true,
+      "invalid": [],
+      "job": "c49dbdffe92d491a",
+      "batch": "S15 composition",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_combo.py",
+        "candidate_sha256": "6884c9292230317d0834c52780219a0902ac1bfcda2df578b3cbd399d94976b6",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
+        "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "275353+7919*seed",
+        "routing": "279000+M+97*seed"
+      }
+    }
+  ],
+  "composition_followup": {
     "queue": {
       "utc": "20261026T030526Z",
       "problem": "muse_moe_w4a16",
@@ -3759,13 +5481,14 @@
       "note": "h200_lab prof/lab/moe_p3a_combo.py: P3a follow-up to measured b57d691d689046a8 (1da2153 archive lost): COMBO=SHARD2 M1,PAIR M8,PAIR+BLOCK M16/M32; CANCEL and PACK5 lost all shapes and excluded. S15/PAIR/best-independent controls, fresh16seeds,64AA, direct COMBO/BEST. Exact candidate6884c929 normal+forced13TASK12shapes28static pass;270 native component/replay gates; sm90a PAIR+BLOCK125regs zero spills32HMMA128HMUL2. Complete packed local16seeds passes4371chars. Every point winner handed P4 with exact patch; R confirms only at whole layer.",
       "snapshot": "runs/sent/da4bfcfab9f0b0db/lab_moe_p3a_combo.py",
       "sender": 1548101,
-      "state": "accepted; H200 receipt pending; all required screens pass",
+      "state": "complete16seeds/64AA; all native/official TASK gates pass; COMBO nominates all4 M versus S15 and M16/M32 versus PAIR",
       "payload": "prof/lab/moe_p3a_combo.py",
       "payload_sha256": "6c6c405a756fa40ae389f240adb8e7342cf1c3a37b58e247b3d28b2cd285c5e5",
-      "sender_log": "runs/detached/da4bfcfab9f0b0db.log"
+      "sender_log": "runs/detached/da4bfcfab9f0b0db.log",
+      "receipt": "runs/muse_moe_w4a16/20261026T030526Z_check_c49dbdffe92d491a.json"
     },
     "manifest": {
-      "receipt": "b57d691d689046a8",
+      "receipt": "c49dbdffe92d491a",
       "selection": {
         "1": {
           "features": [
@@ -3847,8 +5570,41 @@
       "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/combo/combo.patch",
       "patch_sha256": "6b3990b2e7bdcf0f4862df49f2e5ce0bfe882a1b1d862fd973a6f9582bb38b6a",
       "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
-      "status": "unmeasured composition of per-shape nominees; no additive claim"
+      "status": "Measured c49 point nominee at all4 M versus S15; direct M16/M32 wins versus PAIR/BEST. P4 held-out R unconfirmed."
     },
-    "status": "Unmeasured composition; no additive gain or P4 promotion claimed"
+    "source_audit": {
+      "verified": true,
+      "wrapper_sha256": "da4bfcfab9f0b0db7e79eccf5a1cd9815de2f6ccbde47485aa01cb18e6ed9154",
+      "payload_sha256": "6c6c405a756fa40ae389f240adb8e7342cf1c3a37b58e247b3d28b2cd285c5e5",
+      "expanded_sha256": "03edf7562ce1dcab419f3b24f39181f823dcde3c713474711bc14fdbc9434c46",
+      "seed_pairs": 256,
+      "AA_pairs": 64,
+      "exact_cells_verified": true,
+      "official_and_native_TASK_pass": true
+    },
+    "status": "Measured point nominee; P4 held-out six-load R confirmation remains required"
+  },
+  "next_instruction_followup": {
+    "queue": {
+      "utc": "20261026T034754Z",
+      "problem": "muse_moe_w4a16",
+      "mode": "check",
+      "job": "d7fb2d8bddae4b8c",
+      "sha256": "76a7f192a080d0b63a3a3a401b271898ebc75926685ddaba391a343ea3e678d8",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_next_issue.py",
+      "source": "runs/muse_moe_w4a16/20261026T034754Z_check_d7fb2d8bddae4b8c.py",
+      "git": "6a1b74d+dirty",
+      "note": "h200_lab prof/lab/moe_p3a_next_issue.py: P3a next on measured c49 parent SHARD2 M1/PAIR M8/PAIR+BLOCK M16,32: independent FAST bounded FP32 W2-scale cancellation(no runtime FP64/sign/range path),INDEX32 vector B-fill(31to13/26to8 integer control per segment,same16loads),FLUSH1 remove duplicate zero norm flush. S15 and BASE controls,16 fresh seeds64AA,448 direct pairs. All6 normal+forced13TASK12shapes28static screens pass;810 native replay gates;FAST224 helper extrema9.33e-8 and16 captured scale checks. Exact packed local16seed lab allTASKpass5919chars. New recipes unmeasured; every point winner to P4,R confirms.",
+      "snapshot": "runs/sent/76a7f192a080d0b6/lab_moe_p3a_next_issue.py",
+      "sender": 1971066,
+      "sender_log": "runs/detached/76a7f192a080d0b6.log",
+      "payload": "prof/lab/moe_p3a_next_issue.py",
+      "payload_sha256": "62965790562774e7a20c876bf5257b29f2228275febcc1e02dbe4208f83466a6",
+      "state": "accepted; all screens passed; H200 receipt pending",
+      "admission": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/admission.json"
+    },
+    "manifest": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/manifest.json",
+    "admission": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/admission.json",
+    "status": "FAST/INDEX/FLUSH1 are independently screened but H200-unmeasured"
   }
 }
