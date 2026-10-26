@@ -6,7 +6,7 @@ H=Path(__file__).resolve().parent;R=H.parents[3]
 
 
 def main():
-    report=json.loads((H/'s16_report.json').read_text());assert report['freeze_gate'] and report['job']=='37c2879f62554dff'
+    report=json.loads((H/'batches/504e1fa66298bf9e/promotion.json').read_text());assert report['freeze_gate'] and report['job']=='37c2879f62554dff'
     archived=json.loads((H/'batches/504e1fa66298bf9e/selection.json').read_text())
     source,meta=patches.compose(archived['patches']);assert meta['sha256']==report['source_sha256']
     baseline=H/'generated/frozen_s16.py';baseline.write_text(source)
