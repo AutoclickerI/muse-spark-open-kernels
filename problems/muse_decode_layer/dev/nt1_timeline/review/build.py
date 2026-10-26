@@ -14,9 +14,10 @@ def original():
  cell=text[a:b];cuda=next(ast.literal_eval(n.value) for n in ast.parse(cell).body if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='SMALLM_VAR_CUDA')
  return text,cell,cuda
 
-def source(arm):
+def source(arm,initial=None,rename=True):
  base,cell,cuda=original()
- if arm=='PAIR' or arm.startswith('SHARD'):
+ if initial is not None:cell,cuda=initial
+ elif arm=='PAIR' or arm.startswith('SHARD'):
   cell,cuda=pair_source();cell=cell.replace('epit_','smallm_').replace('EPIT_','SMALLM_VAR_').replace('_SMALLM_VAR_MODULE','_SMALLM_MODULE').replace('SMALLM_VAR_FLAGS_BUILT','SMALLM_FLAGS_BUILT')
   # Pair's module/cell is the previously H200-gated implementation, rebased onto identical S15 math.
  old=cuda
@@ -44,8 +45,12 @@ __device__ __forceinline__ float cancel_norm(const float* meta,int e,float sum){
   change('struct PrefetchState {',helper+'\nstruct PrefetchState {',1)
   change('      const float sc = gs2[e] * 256.f;','',1)
   change('        v *= sc;','',1)
-  change('rsqrtf(__ldcg(ss + posl) * (1.f / HD) + 1e-8f)','cancel_norm(gs2,SLOT?rt->erank[posl]:(int)eflat[pair_of[posl]],__ldcg(ss+posl))',1)
-  change('rsqrtf(__ldcg(ss + pos) * (1.f / HD) + 1e-8f)','cancel_norm(gs2,SLOT?rt->erank[pos]:(int)eflat[pair_of[pos]],__ldcg(ss+pos))',1)
+  if 'float v0=a*scale,v1=b*scale' in cuda:
+   change('}else{float scale=gs2[e]*256.f,p0=', '}else{float p0=',1)
+   change('float v0=a*scale,v1=b*scale,','float v0=a,v1=b,',1)
+  for pos in ('posl','pos'):
+   expr=f'shard_sum(ss,{pos})' if 'constexpr int SHARDS=' in cuda else f'__ldcg(ss + {pos})'
+   change(f'rsqrtf({expr} * (1.f / HD) + 1e-8f)',f'cancel_norm(gs2,SLOT?rt->erank[{pos}]:(int)eflat[pair_of[{pos}]],{expr.replace("ss + ","ss+")})',1)
   anchor='    return state\n\n\ndef smallm_experts'
   assert anchor in cell
   cell=cell.replace(anchor,"    a=state['gs2'].double()*256.0\n    state['cancel_meta']=torch.cat((state['gs2'],(1e-8/(a*a)).float(),a.sign().float())).contiguous()\n"+anchor)
@@ -72,7 +77,8 @@ for(int sh=0;sh<SHARDS;++sh)v+=__ldcg(ss+pos*SHARDS+sh);return v;}\n'''
  assert repr(old) in cell,(arm,'CUDA literal not present')
  cell=cell.replace(repr(old),repr(cuda),1)
  if arm=='PACK5':cell+='\n'+(D/'pack5_python.py.inc').read_text()
- tag=PREFIX[arm];cell=cell.replace('smallm_',tag+'_').replace('_SMALLM_MODULE','_'+tag.upper()+'_MODULE').replace('SMALLM_FLAGS_BUILT',tag.upper()+'_FLAGS_BUILT').replace('SMALLM_VAR_',tag.upper()+'_')
+ if rename:
+  tag=PREFIX[arm];cell=cell.replace('smallm_',tag+'_').replace('_SMALLM_MODULE','_'+tag.upper()+'_MODULE').replace('SMALLM_FLAGS_BUILT',tag.upper()+'_FLAGS_BUILT').replace('SMALLM_VAR_',tag.upper()+'_')
  ast.parse(cell)
  return cell,cuda
 

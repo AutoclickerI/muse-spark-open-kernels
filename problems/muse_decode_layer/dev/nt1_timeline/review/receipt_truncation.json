@@ -1,0 +1,15 @@
+{
+  "job": "1da2153a0f5543b9",
+  "official_host_pass": true,
+  "log_tail": "LAB_BEGIN moe_p3a_review ffec78b9ef9ddd9d\nMETA P3a S15 independent BLOCK/CANCEL/PACKET5 and PAIR+SHARD2/4/8;16 fresh seeds,M1/8/16/32;same complete routed work/precision. A:A diagnostic; point estimates nominate,P4 confirms six-load R.\nMETA BLOCK uses 32x4 release counters; CANCEL removes W2 global scale with eps/a^2/sign/zero+extreme handling;SHARD2/4/8 only change PAIR norm slots;PACK5 uses exact256-scale packets with raw fallback and timed decode. No W13 scale cancellation.\nLAB_TRUNCATED 2 middle lines\nEND seeds=16 seconds=27.4 left=207.6;nomination only,no six-load promotion\nLAB_END lab_s=27.4 import_s=27.4\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:39] profiler_start\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:46] profiler_stop\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:39] profiler_start\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:46] profiler_stop\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:39] profiler_start\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:46] profiler_stop\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:39] profiler_start\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:46] profiler_stop\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:39] profiler_start\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:46] profiler_stop\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:39] profiler_start\nUSDT:2026-10-26 02:31:33 77:77 SyncActivityProfilerHandler.cpp:46] profiler_stop\n",
+  "all_arms": "unmeasured",
+  "cause": "Wrapper dropped GATE and archive after entropy-dependent compressed output exceeded9000 chars. Local archive length was not a remote upper bound.",
+  "repair": "Raw bounded seed-ratio matrix; every per-seed1ppm ratio and A:A1ns pair retained; absolute arm times/CUPTI nodes omitted from transport",
+  "max_header_bytes": 1600,
+  "max_full_rows": 640,
+  "max_AA_rows": 64,
+  "max_archive_chars": 7928,
+  "max_output_chars": 8845,
+  "old_local_seed_ratios_AA_and_gates_roundtrip": true,
+  "kernels_unchanged": true
+}

@@ -13,7 +13,7 @@
   "sender": 1191843,
   "sender_log": "runs/detached/a2344c10505b0e44.log",
   "judge_job": "1da2153a0f5543b9",
-  "state": "accepted by judge; all14 screens and exact packed16-seed local lab passed; H200 receipt pending",
+  "state": "unmeasured: wrapper discarded GATE and full timing archive; official host passed",
   "phase": "import",
   "import_budget_seconds": 240,
   "host": "muse_moe_w4a16",
@@ -24,5 +24,7 @@
   "replaces_rejected_sender": 1113484,
   "receipt_archive": "P3A_REVIEW_XZ85; review/read.py decodes complete seed-level records",
   "nomination": "every valid per-shape point estimate below1; P4 confirms held-out six-load R",
-  "source": "runs/muse_moe_w4a16/20261026T022534Z_submit_1da2153a0f5543b9.py"
+  "source": "runs/muse_moe_w4a16/20261026T022534Z_submit_1da2153a0f5543b9.py",
+  "replacement_job": "b57d691d689046a8",
+  "truncation_evidence": "problems/muse_decode_layer/dev/nt1_timeline/review/receipt_truncation.json"
 }

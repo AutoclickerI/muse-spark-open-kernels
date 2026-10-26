@@ -1,0 +1,16 @@
+{
+  "utc": "20261026T030526Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "c49dbdffe92d491a",
+  "sha256": "da4bfcfab9f0b0db7e79eccf5a1cd9815de2f6ccbde47485aa01cb18e6ed9154",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_combo.py",
+  "source": "runs/muse_moe_w4a16/20261026T030526Z_check_c49dbdffe92d491a.py",
+  "git": "e32851a+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_combo.py: P3a follow-up to measured b57d691d689046a8 (1da2153 archive lost): COMBO=SHARD2 M1,PAIR M8,PAIR+BLOCK M16/M32; CANCEL and PACK5 lost all shapes and excluded. S15/PAIR/best-independent controls, fresh16seeds,64AA, direct COMBO/BEST. Exact candidate6884c929 normal+forced13TASK12shapes28static pass;270 native component/replay gates; sm90a PAIR+BLOCK125regs zero spills32HMMA128HMUL2. Complete packed local16seeds passes4371chars. Every point winner handed P4 with exact patch; R confirms only at whole layer.",
+  "snapshot": "runs/sent/da4bfcfab9f0b0db/lab_moe_p3a_combo.py",
+  "state": "accepted; H200 receipt pending; all screens passed",
+  "sender_log": "runs/detached/da4bfcfab9f0b0db.log",
+  "payload": "prof/lab/moe_p3a_combo.py",
+  "payload_sha256": "6c6c405a756fa40ae389f240adb8e7342cf1c3a37b58e247b3d28b2cd285c5e5"
+}

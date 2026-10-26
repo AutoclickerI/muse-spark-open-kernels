@@ -1,7 +1,9 @@
 """Serial GPU0 screens; no failed native or runtime check is reused."""
-import hashlib,json,os,subprocess,sys
+import argparse,hashlib,json,os,subprocess,sys
 from pathlib import Path
-D=Path(__file__).resolve().parent;R=D.parents[4];manifest=json.loads((D/'manifest.json').read_text());reports={}
+D=Path(__file__).resolve().parent;R=D.parents[4]
+p=argparse.ArgumentParser();p.add_argument('--manifest',type=Path,default=D/'manifest.json');p.add_argument('--output',type=Path,default=D/'screens.json');args=p.parse_args()
+manifest=json.loads(args.manifest.read_text());reports={}
 for arm,spec in manifest.items():
  reports[arm]={}
  for mode in ('normal','forced'):
@@ -18,4 +20,5 @@ for arm,spec in manifest.items():
   assert len(report['tests'])==13 and len(report['shapes'])==12 and all(x['ok'] for k in ('tests','shapes','static') for x in report[k])
   calls=json.loads((out/'calls.json').read_text());assert calls and all(v['eager'] and v['captured'] for v in calls.values()),calls
   reports[arm][mode]=dict(candidate_sha256=spec['candidate_sha256'],tests=13,shapes=12,static=len(report['static']),calls=calls,report=str((out/'local.json').relative_to(R)))
-  (D/'screens.json').write_text(json.dumps(reports,indent=2)+'\n');print('PASS',arm,mode,reports[arm][mode],flush=True)
+  args.output.write_text(json.dumps(reports,indent=2)+'\n');print('PASS',arm,mode,reports[arm][mode],flush=True)
+args.output.write_text(json.dumps(reports,indent=2)+'\n')

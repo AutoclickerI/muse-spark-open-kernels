@@ -359,15 +359,15 @@ PAIR A:A mean absolute .488/.377/.364us,max1.424/.928/1.648 at M8/16/32.
 
 `review/claims.json` pins the actual S15 source60254883 and CUDAc023c946. S15's small-M CUDA is
 byte-identical to S14's. Each accepted claim is one arm; shards have the already-measured PAIR parent,
-which is also included as a control. New H200 performance is unmeasured until the packed batch returns.
+which is also included as a control. Audited H200 ratios are below; the first wrapper lost its archive and the bounded retry completed.
 
 | Recipe | Ratio / measured prerequisite | Mechanism / decision | Leaves open | Receipt / evidence |
 |---|---|---|---|---|
-| BLOCK | H200 unmeasured; expert-wide `NT1*nblk[e]` wait confirmed in S15 | W2 acquires `done[e,nb]` againstNT1;128 done slots/512B at M32. W13 store→fence→barrier→publish→acquire preserved. Only M16/M32 | Actual wait reduction and counter-address cost on H200 | `review/claims.json`, `review/manifest.json` |
-| CANCEL | H200 unmeasured; W2 `v*=256*gs2[e]` before post-norm/RMS confirmed | Drop that element multiply,adjust eps/a²,retain sign,guard zero scale/norm and handle epsilon range in double. W13/SwiGLU unchanged | H200 savings versus finalizer/metadata cost and six-load score | `review/extreme_validation.json`:160 helper cases; `component_validation.json`:94 TASK checks |
-| SHARD2 | H200 unmeasured; PAIR's single norm slot confirmed |2 atomic slots per pair,CTA-indexed; W13 zeros both,finalizer sums2 | Contention relief versus extra zero/load work; no LOCAL export | `review/component_validation.json`,exact patch |
-| SHARD4 | H200 unmeasured; same PAIR parent |4 independent norm slots per pair | Same trade-off at4 shards; interactions with block readiness | `review/component_validation.json`,exact patch |
-| SHARD8 | H200 unmeasured; same PAIR parent |8 independent norm slots per pair | Same trade-off at8 shards; other reduction ownership | `review/component_validation.json`,exact patch |
+| BLOCK | Premise confirmed; expert-wide `NT1*nblk[e]` wait confirmed in S15 | W2 acquires `done[e,nb]` againstNT1;128 done slots/512B at M32. W13 store→fence→barrier→publish→acquire preserved. Only M16/M32 | Actual wait reduction and counter-address cost on H200 | `review/claims.json`, `review/manifest.json` |
+| CANCEL | Premise confirmed; W2 `v*=256*gs2[e]` before post-norm/RMS confirmed | Drop that element multiply,adjust eps/a²,retain sign,guard zero scale/norm and handle epsilon range in double. W13/SwiGLU unchanged | H200 savings versus finalizer/metadata cost and six-load score | `review/extreme_validation.json`:160 helper cases; `component_validation.json`:94 TASK checks |
+| SHARD2 | Premise confirmed; PAIR's single norm slot confirmed |2 atomic slots per pair,CTA-indexed; W13 zeros both,finalizer sums2 | Contention relief versus extra zero/load work; no LOCAL export | `review/component_validation.json`,exact patch |
+| SHARD4 | Premise confirmed; same PAIR parent |4 independent norm slots per pair | Same trade-off at4 shards; interactions with block readiness | `review/component_validation.json`,exact patch |
+| SHARD8 | Premise confirmed; same PAIR parent |8 independent norm slots per pair | Same trade-off at8 shards; other reduction ownership | `review/component_validation.json`,exact patch |
 | TWO_BASE | Same-work sm90a decoder integer instructions37→406,registers30→31;8,128 signed-format half checks pass | Identity confirmed,but this sign/exponent assembly grows integer issue;**dropped before H200** | More efficient packed exponent assembly; this does not close every two-base decoder | `review/decode_issue.json`,`audit_decode.py` |
 | PACK5 | Actual official seed5353 weight tensors:100,663,296 scale bytes,all256-byte packets fit32 symbols; final byte cut**4.05816%** | Exact5-bit packets with per-packet raw fallback,32B tile header,8B offsets,timed TMA/decode. Full bank bit proof and raw transfers pass | H200 benefit after extra decode/metadata issue; other packet layouts and checkpoint distributions | `review/scale_compressibility.json`,`component_validation.json`,`raw_moe_validation.json` |
 
@@ -382,9 +382,49 @@ Failed OOM/proof attempts stay local and are not admission. `review/queue.json` 
 send: MoE sender**1191843**,wrapper**`a2344c10505b0e44`**,priority1.2,import budget240s,
 full9000-character allocation; prefill is excluded. All new H200 ratios remain unmeasured.
 
-Review batch accepted as judge**`1da2153a0f5543b9`**,sender1191843,wrapper`a2344c10505b0e44`
-(975,472 bytes after lossless source packing). The first1,432,371-byte wrapper was rejected before a job;
-`review/source_limit_rejection.json` preserves it. No new H200 result is claimed before the receipt.
+Review job**`1da2153a0f5543b9`** passed its official host, but the wrapper emitted
+`LAB_TRUNCATED 2 middle lines`, discarding GATE and the full timing archive. **Every arm is unmeasured**;
+this closes no recipe and nominates nothing. The local6,399-character compressed archive did not bound
+H200 clock entropy. `review/receipt_truncation.json` preserves the receipt and cause.
+The fixed raw transport retains every per-seed1ppm ratio and every independent1ns A:A pair; it omits
+candidate absolute times/CUPTI nodes from transport. Worst-case output8,845characters, independent of
+entropy. Exact packed local payload passes16seeds/64AA at7,726characters/49.4s. Kernels are byte-identical
+to all14 successful screens. Retry check**`b57d691d689046a8`**,sender1365722,wrapper`3457baa10244c861`,
+completed on MoE; audited per-arm results are below. The first1,432,371-byte source rejection remains separate evidence.
+
+### P3a S15 review receipt and composition (2026-10-26)
+
+Original `1da2153a0f5543b9` remains unmeasured: its wrapper discarded both correctness and timing archive.
+Retry **`b57d691d689046a8`** is complete:16 fresh seeds per M1/8/16/32; all official/native TASK gates pass,
+no arm failures, worst total/row .002401/.002545. Candidate/control time ratios below; SE in parentheses.
+A:A mean absolute us **.200/.541/.409/.391**, maxima .736/1.280/1.312/.896, ordered M1/8/16/32.
+A:A mean ratios1.000615/1.002764/1.000122/1.000417; descriptive, never a per-shape veto.
+
+| Recipe | Ratio vs S15 at M1 / 8 / 16 / 32 (SE),n16 | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| BLOCK | 0.99371/1.00218/0.99237/0.99406 (0.00168/0.00129/0.00208/0.00292) | Own-token-block release/acquire readiness; store/fence/barrier/publish order preserved. Nominate M16/M32; M1/M8 are exact S15 control aliases. | PAIR+BLOCK interaction and whole-layer held-out R; other dependency schedules. | `b57d691d689046a8` |
+| CANCEL | 1.00167/1.02266/1.01870/1.01407 (0.00182/0.00210/0.00144/0.00107) | W2 scale removed with sign,eps/a²,zero/extreme handling; tested implementation is slower at every M. No nomination. | Cheaper metadata/finalizer realization of this valid identity; W13 is not cancellable through SwiGLU. | `b57d691d689046a8` |
+| PAIR | 1.00192/0.98090/0.97231/0.97999 (0.00168/0.00239/0.00291/0.00283) | Two writer warps and contiguous pair planes; nominate M8/M16/M32. New M1 estimate loses; earlier positive M1 receipt remains evidence. | Block readiness composition, M1 choice versus NORM/shards, and held-out whole-layer R. | `b57d691d689046a8` |
+| SHARD2 | 0.99646/0.98603/0.97600/0.98517 (0.00126/0.00299/0.00390/0.00341); /PAIR 0.99179/1.00362/1.00351/1.00674 | PAIR plus2 norm slots; nominate all4 M versus S15 and M1 versus PAIR. At M8+ it loses directly to PAIR. | M1 held-out gain; other shard ownership or layouts. This closes only2-slot choice relative to PAIR at M8+. | `b57d691d689046a8` |
+| SHARD4 | 1.00410/0.98385/0.97798/0.98561 (0.00226/0.00348/0.00353/0.00327); /PAIR 0.99911/1.00073/1.00716/1.00332 | PAIR plus4 slots; nominate M8/M16/M32 versus S15 and M1 versus PAIR (M1/S15 loses). Direct M8+ loses. | Per-shape whole-layer choice; different reduction ownership. This does not close all sharding. | `b57d691d689046a8` |
+| SHARD8 | 0.99876/0.98759/0.98019/0.98910 (0.00162/0.00345/0.00292/0.00306); /PAIR 0.99646/1.00698/1.00636/1.01027 | PAIR plus8 slots; nominate all4 M versus S15 and M1 versus PAIR. Direct M8+ loses. | Held-out M1 alternative; different placement/ownership and six-load score. | `b57d691d689046a8` |
+| PACK5 | 1.28466/1.39238/1.40819/1.45243 (0.00788/0.00895/0.00554/0.00492) | Lossless scale packets cut net bytes4.058%; timed unpack/metadata costs outweigh the byte saving,1.28–1.45x. Close this exact format/decoder. | Lower-issue packet layouts/decoders and checkpoint distributions; lossless scale compression itself remains open. | `b57d691d689046a8` |
+
+`point_nominations.json` now includes all19 implementation point-win comparisons plus the explicitly marked
+BLOCK M1 control alias (handoff=false; no changed implementation at M1), with SE,16 seed indices,weight/router seed recipes and exact S15 patches/hashes.
+SHARD4 M1 is included for its direct PAIR point win despite its S15 loss. The original independent kernels
+are unchanged by the receipt repair. `review/results.json` retains every seed ratio and A:A pair.
+
+Next: one per-shape composition arm, **SHARD2 at M1, PAIR at M8, PAIR+BLOCK at M16/M32**, compared
+with S15,PAIR and the best independent choice on fresh weight seeds275353+7919*s and routing279000+M+97*s.
+CANCEL/PACK5 are excluded by their measured losses. No additive or whole-layer gain is claimed;
+P4 composes and confirms held-out six-load R. Exact unmeasured composition: `review/combo/combo.patch`.
+
+Composition admission:270 native component/replay checks; normal/forced each pass13 TASK cases,
+12 dispatch shapes,28 static checks and eager/captured calls for every variant. Exact packed lab
+passes16 fresh seeds/64AA,4,371characters/79.9s locally; no local timing claim. Sent as MoE check,
+sender**1548101**,wrapper**`da4bfcfab9f0b0db`**,priority1.2/import budget240s; judge receipt pending.
+Exact patch `review/combo/combo.patch`,candidate6884c929; admission and queue records under `review/combo/`.
 
 ## MoE M=128
 

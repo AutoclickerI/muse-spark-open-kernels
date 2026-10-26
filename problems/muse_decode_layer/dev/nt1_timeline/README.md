@@ -42,25 +42,36 @@ retain their instruction/latency evidence. The old58.7us math clock belongs to O
 - No per-load confidence margin, strict routing-identity gate or component-equivalence threshold is added.
   P4's whole-layer TASK checks and held-out R confirmation decide the final composition.
 
-## New review batch
+## S15 review: measured, then composed
 
-[review/README.md](review/README.md), `review/claims.json` and `review/manifest.json` pin the actual S15
-premises, independent candidates and exact patches:
+Original `1da2153a0f5543b9` is **unmeasured**: its host passed, but the wrapper dropped GATE and
+its timing archive. This closes no recipe. The receipt codec is now bounded below9,000characters
+independent of timing entropy; all seed ratios and independent A:A pairs survive.
 
-| Item | Status |
-|---|---|
-| BLOCK: W2 waits on own `done[e,nb]` | Confirmed and built,512B done region; fence/publish/acquire ordering retained; M16/M32 only. |
-| CANCEL: remove W2 global scale through RMSNorm | Confirmed and built; eps/a²,sign,zero and extreme handling. W13/SwiGLU untouched. |
-| SHARD2 / SHARD4 / SHARD8 | Confirmed and built as3 separate changes to PAIR's norm slots; direct PAIR control retained. |
-| TWO_BASE sign/exponent decoder | Exact finite identity confirmed, **dropped before H200**: integer instructions37→406,registers30→31 for this implementation. |
-| PACK5 exact scale packets with raw fallback | Complete official layer seed5353 tensors measured first; final metadata-inclusive cut **4.058%**. Built and full-bank bit proof passes, plus actual raw-fallback MoE launches. |
+Retry check **`b57d691d689046a8`**,sender1365722,wrapper`3457baa10244c861`, completes16seeds/M,
+all official/native TASK gates pass,worst total/row .002401/.002545. `review/results.json` retains
+ratio,SE,seed indices and A:A; `point_nominations.json` has every point winner and exact S15 patch.
+Candidate/control ratios below; M1/8/16/32 order.
 
-The packed payload pairs all surviving arms and PAIR with S15 at16fresh seeds/M, M1/8/16/32, A:A and
-native TASK gates. `review/lab_local_validation.json`: complete,6,399characters,52.4s locally.
-All14 normal/forced exact-hash whole-layer screens pass13 tests,12 shapes and26 static checks each
-(`review/screens.json`). Sent on MoE as sender**1191843**,wrapper**`a2344c10505b0e44`**,
-priority1.2,import budget240s,full9000-character allocation (`review/queue.json`).
-No H200 speedup is claimed for this batch before its receipt. Prefill is excluded for this task.
+| Recipe | /S15 | Nomination / closure |
+|---|---|---|
+| BLOCK | 0.99371 / 1.00218 / 0.99237 / 0.99406 | M16/M32 nominate. M1/M8 execute the identical S15 control; M1 noise is marked as an alias. |
+| CANCEL | 1.00167 / 1.02266 / 1.01870 / 1.01407 | No point win; close this eps/metadata/finalizer implementation, leaving a cheaper identity realization open. |
+| PAIR | 1.00192 / 0.98090 / 0.97231 / 0.97999 | M8/M16/M32 nominate; earlier positive M1 evidence remains an alternative. |
+| SHARD2 | 0.99646 / 0.98603 / 0.97600 / 0.98517 | All4 M nominate versus S15; M1 versus PAIR .99179. M8+ loses directly to PAIR. |
+| SHARD4 | 1.00410 / 0.98385 / 0.97798 / 0.98561 | M8/M16/M32 versus S15 and M1 versus PAIR .99911 nominate. M8+ loses directly to PAIR. |
+| SHARD8 | 0.99876 / 0.98759 / 0.98019 / 0.98910 | All4 M versus S15 and M1 versus PAIR .99646 nominate. M8+ loses directly to PAIR. |
+| PACK5 | 1.28466 / 1.39238 / 1.40819 / 1.45243 | Net4.058% byte cut loses after timed decoding. Close this exact packet/decoder; other encodings remain open. |
+
+A:A mean absolute us **.200/.541/.409/.391**,max.736/1.280/1.312/.896; descriptive,not a veto.
+Two-base assembly was dropped before H200:37→406 integer instructions,30→31registers; other packed
+assembly remains open. [review/README.md](review/README.md) retains all code-premise and exact-format proofs.
+
+The next single composition arm uses **SHARD2 M1, PAIR M8, PAIR+BLOCK M16/M32**. CANCEL and PACK5
+are excluded by their measured losses. It compares with S15,PAIR and per-shape best independent on
+16 fresh seeds (weights275353+7919*s,routes279000+M+97*s),with A:A and TASK before/after.
+`review/combo/manifest.json` and `combo.patch` pin the exact unmeasured candidate. No additive gain
+or whole-layer promotion is claimed. P4's held-out six-load R confirmation remains the only promotion gate.
 
 ## Evidence
 
@@ -70,4 +81,6 @@ No H200 speedup is claimed for this batch before its receipt. Prefill is exclude
 All earlier local source/hash/normal/forced receipts remain in the stage's validation JSONs; GPU0 sm120
 uses explicit stand-ins only for Hopper-only glue. Local timings are never H200 evidence.
 
-Judge accepted job**`1da2153a0f5543b9`** (sender1191843,wrapper`a2344c10505b0e44`); receipt pending.
+
+Follow-up sent as MoE check: sender1548101,wrapper`da4bfcfab9f0b0db`; `review/combo/queue.json`.
+Normal/forced each pass13TASK/12shapes/28static;270 component/replay checks; exact packed16seed/64AA lab passes4371characters. H200 composition receipt pending.

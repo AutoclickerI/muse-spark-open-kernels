@@ -1,11 +1,12 @@
 """TASK-gated current-input/replay checks for independently built review arms."""
-import hashlib,json,linecache,sys,time,types
+import argparse,hashlib,json,linecache,sys,time,types
 from pathlib import Path
 import torch
 D=Path(__file__).resolve().parent;P=D.parent;R=D.parents[4]
 text=(R/'prof/lab/moe_nt1_reuse.py').read_text();f='<review fixtures>';linecache.cache[f]=(len(text),None,text.splitlines(True),f)
 n={'__name__':'review_fixture'};exec(compile(text,f,'exec'),n)
-manifest=json.loads((D/'manifest.json').read_text());names=sys.argv[1:] or list(manifest)
+parser=argparse.ArgumentParser();parser.add_argument('arms',nargs='*');parser.add_argument('--manifest',type=Path,default=D/'manifest.json');parser.add_argument('--output',type=Path,default=D/'component_validation.json');args=parser.parse_args()
+manifest=json.loads(args.manifest.read_text());names=args.arms or list(manifest)
 modules={}
 for arm in names:
  p=R/manifest[arm]['cell'];s=p.read_text();f='<review cell '+arm+'>';linecache.cache[f]=(len(s),None,s.splitlines(True),f);c={**n,'__name__':'cell_'+arm};exec(compile(s,f,'exec'),c);modules[arm]=c
@@ -46,12 +47,12 @@ for start in (96,224):
     v=result[arm];v['TASK_checks']+=1;v['worst_total']=max(v['worst_total'],total);v['worst_row']=max(v['worst_row'],row)
 # Cancellation: zero, negative, tiny and huge global scales. Use a direct FP64 norm of the unscaled
 # W2 tensor to avoid an FP32 reference overflow falsely accusing a valid identity.
-if 'CANCEL' in modules:
- c=modules['CANCEL'];tag=manifest['CANCEL']['prefix'];original=state['gs2'].clone();data=n['fx_make_fixture'](w,16,19801)
+for cancel_arm in [arm for arm in modules if arm=='CANCEL' or 'CANCEL' in manifest[arm].get('features',[])]:
+ c=modules[cancel_arm];tag=manifest[cancel_arm]['prefix'];original=state['gs2'].clone();data=n['fx_make_fixture'](w,16,19801)
  # Judge-relevant scales first use the unchanged TASK reference, including negative and zero.
  for factor in (0.,-1.,1e-10,1e10):
   state['gs2'].copy_(original*factor);w['w2_gs']=state['gs2'];c[tag+'_bind'](state,{8:69})
-  got=c[tag+'_experts'](data,state,69);torch.cuda.synchronize();want=n['nt1_fp32'](data,w);ok,total,row=n['task_check'](got,want);assert ok,(factor,total,row);result['CANCEL']['TASK_checks']+=1
+  got=c[tag+'_experts'](data,state,69);torch.cuda.synchronize();want=n['nt1_fp32'](data,w);ok,total,row=n['task_check'](got,want);assert ok,(factor,total,row);result[cancel_arm]['TASK_checks']+=1
  state['gs2'].copy_(original);w['w2_gs']=state['gs2'];c[tag+'_bind'](state,{8:69})
 # Packet proof includes complete original code banks and an explicit wide-scale/raw packet.
 if 'PACK5' in modules:
@@ -75,4 +76,4 @@ if 'PACK5' in modules:
  # Force raw packet serialization independently of the official narrow scales.
  raw=torch.randint(0,256,(2,36864),device='cuda',dtype=torch.uint8);enc=c['pack5_bank'](raw);assert enc.numel()>raw.numel();proof['raw_fallback_constructed']=True
  result['PACK5']['full_bank_proof']=proof
-(D/'component_validation.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2),flush=True)
+args.output.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2),flush=True)
