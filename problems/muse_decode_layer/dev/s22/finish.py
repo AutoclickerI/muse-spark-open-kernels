@@ -7,6 +7,7 @@ H=compose.H;R=compose.R
 def facts():
  m=json.loads((H/'manifest.json').read_text());q=json.loads((H/'queue.json').read_text()) if (H/'queue.json').exists() else {};s=json.loads((H/'state.json').read_text()) if (H/'state.json').exists() else {}
  r=json.loads((H/'results.json').read_text()) if (H/'results.json').exists() else {};v=json.loads((H/'validation.json').read_text()) if (H/'validation.json').exists() else {}
+ if (H/'worker.json').exists():s['worker_pid']=json.loads((H/'worker.json').read_text())['pid']
  return m,q,s,r,v
 
 def description():

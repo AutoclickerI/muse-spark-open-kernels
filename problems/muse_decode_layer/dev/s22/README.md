@@ -1,6 +1,6 @@
 # S22 integration
 
-native G0/per-cell CIs pending; all hosts quota0 at send, awaiting reset; phase0, source4b8c803d, shipmentd1ccdc35; dropped=[], disabled hybrids=[]; sender3725147, payload403ff22fe051272d; finite follow-through worker3737877 selects resolved losers, confirms on new64seeds, scores only after passing G0.
+native G0/per-cell CIs pending; all hosts quota0 at send, awaiting reset; phase0, source4b8c803d, shipmentd1ccdc35; dropped=[], disabled hybrids=[]; sender3725147, payload403ff22fe051272d; finite follow-through worker3807459 selects resolved losers, confirms on new64seeds, scores only after passing G0.
 
 Base is accepted S21 `eacc087b` / expanded `109c0135`; its scored sender3225144 is unchanged.
 Exact12 gate at d1S, native-layout T128 banks, C3 full d16/d32 and v32F Rw4 remain.
@@ -24,4 +24,4 @@ Checks: **2024 contracts**, normal/forced **13 TASK + 12 graphs each**; exact pa
 
 Payload SHA256 `403ff22fe051272ddc3b2e154de6b7529998399a4ab284ae62cb47b1264caf9a`; wrapper `f923c406edb9ce95d7578ddab0486481aead7d00753ae904278f6f35883ef1c3`.
 
-Current queue/state: [queue.json](queue.json), [state.json](state.json). Worker 3737877 waits on this one sender completion event. Each phase is archived under `stages/pN/`; canonical receipts remain in `runs/`.
+Current queue/state: [queue.json](queue.json), [state.json](state.json). Worker 3807459 waits on this one sender completion event. Each phase is archived under `stages/pN/`; canonical receipts remain in `runs/`.
