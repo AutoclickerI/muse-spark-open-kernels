@@ -1,0 +1,3454 @@
+{
+  "job": "45ab5a9beecd407b",
+  "receipt": "runs/muse_attention_decode/20261026T032211Z_check_45ab5a9beecd407b.json",
+  "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "TASK_complete": true,
+  "cells": [
+    {
+      "B": 1,
+      "window": 2048,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 22.01422221130795,
+            "SE": 0.12685930030248738
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.5957734274966127,
+            "SE": 0.01037779919214139
+          },
+          "event_us": {
+            "mean": 35.127111193206574,
+            "SE": 0.041919499091034845
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.3674902954125958,
+            "SE": 0.009432594215433618
+          },
+          "event_us": {
+            "mean": 30.103111225697727,
+            "SE": 0.19949166954140735
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 1.1512846263443985,
+            "SE": 0.00964744917504533
+          },
+          "event_us": {
+            "mean": 25.3422221996718,
+            "SE": 0.07223547913828585
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 1.0613455904862819,
+            "SE": 0.011547970373828698
+          },
+          "event_us": {
+            "mean": 23.361777576307457,
+            "SE": 0.11915082305039283
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 1.0034211754812867,
+            "SE": 0.0053240095741304274
+          },
+          "event_us": {
+            "mean": 22.088888929122025,
+            "SE": 0.12554428242931742
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 2.912,
+              "start_us": 0.0,
+              "end_us": 2.912,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.368,
+              "start_us": 3.2,
+              "end_us": 5.568,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 9.6,
+              "start_us": 3.872,
+              "end_us": 13.472,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.904,
+              "start_us": 11.936,
+              "end_us": 15.84,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.312,
+              "start_us": 15.744,
+              "end_us": 17.056,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 17.056
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 2.816,
+              "start_us": 0.0,
+              "end_us": 2.816,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.112,
+              "start_us": 3.104,
+              "end_us": 5.216,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 25.92,
+              "start_us": 3.744,
+              "end_us": 29.664,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.376,
+              "start_us": 29.696,
+              "end_us": 31.072,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 31.072
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.072,
+              "start_us": 0.0,
+              "end_us": 3.072,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.4,
+              "start_us": 3.36,
+              "end_us": 5.76,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.36,
+              "start_us": 4.032,
+              "end_us": 15.392,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.2,
+              "start_us": 14.272,
+              "end_us": 17.472,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.408,
+              "start_us": 17.376,
+              "end_us": 18.784,
+              "grid": [
+                8,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 18.784
+        }
+      }
+    },
+    {
+      "B": 8,
+      "window": 2048,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 24.241777861283886,
+            "SE": 0.23104963182453464
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.4125902453416104,
+            "SE": 0.013377212604037006
+          },
+          "event_us": {
+            "mean": 34.23822215861745,
+            "SE": 0.15556309596265175
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.2395964496500882,
+            "SE": 0.012172977156621584
+          },
+          "event_us": {
+            "mean": 30.044444422754975,
+            "SE": 0.036993082826222545
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 1.0518314500751302,
+            "SE": 0.0076051919415538495
+          },
+          "event_us": {
+            "mean": 25.495111010968685,
+            "SE": 0.1108655432397773
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 0.9835980581019759,
+            "SE": 0.01020658154635906
+          },
+          "event_us": {
+            "mean": 23.839999921619892,
+            "SE": 0.11405530671627483
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 0.9853134822568876,
+            "SE": 0.007222013339695789
+          },
+          "event_us": {
+            "mean": 23.882666809691322,
+            "SE": 0.09237620876782644
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.104,
+              "start_us": 0.0,
+              "end_us": 3.104,
+              "grid": [
+                64,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.336,
+              "start_us": 3.392,
+              "end_us": 5.728,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.776,
+              "start_us": 4.032,
+              "end_us": 15.808,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.0,
+              "start_us": 14.432,
+              "end_us": 18.432,
+              "grid": [
+                8,
+                1,
+                8
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.568,
+              "start_us": 18.272,
+              "end_us": 19.84,
+              "grid": [
+                64,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 19.84
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.296,
+              "start_us": 0.0,
+              "end_us": 3.296,
+              "grid": [
+                64,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.048,
+              "start_us": 3.584,
+              "end_us": 5.632,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 24.224,
+              "start_us": 4.224,
+              "end_us": 28.448,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.408,
+              "start_us": 28.576,
+              "end_us": 29.984,
+              "grid": [
+                64,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 29.984
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.232,
+              "start_us": 0.0,
+              "end_us": 3.232,
+              "grid": [
+                64,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.272,
+              "start_us": 3.52,
+              "end_us": 5.792,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.648,
+              "start_us": 4.16,
+              "end_us": 15.808,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.616,
+              "start_us": 14.784,
+              "end_us": 18.4,
+              "grid": [
+                8,
+                1,
+                8
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.504,
+              "start_us": 18.304,
+              "end_us": 19.808,
+              "grid": [
+                64,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 19.808
+        }
+      }
+    },
+    {
+      "B": 16,
+      "window": 512,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 23.19999991191758,
+            "SE": 0.03428842692994738
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 0.940850689789815,
+            "SE": 0.00303226272321093
+          },
+          "event_us": {
+            "mean": 21.82755557199319,
+            "SE": 0.04539426733903188
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.0497275862767121,
+            "SE": 0.0021086737645604797
+          },
+          "event_us": {
+            "mean": 24.35377778278457,
+            "SE": 0.07797943929545038
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 0.9993970922736395,
+            "SE": 0.0036623188091326657
+          },
+          "event_us": {
+            "mean": 23.185777891841198,
+            "SE": 0.054418486800066716
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 1.0000827817977003,
+            "SE": 0.0024122844645472316
+          },
+          "event_us": {
+            "mean": 23.201778013673092,
+            "SE": 0.031602511754682115
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 1.0042277502415737,
+            "SE": 0.005068532063285428
+          },
+          "event_us": {
+            "mean": 23.29777760638131,
+            "SE": 0.0888889448510272
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.169,
+              "start_us": 0.0,
+              "end_us": 3.169,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.336,
+              "start_us": 3.424,
+              "end_us": 5.76,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 10.368,
+              "start_us": 4.096,
+              "end_us": 14.464,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.968,
+              "start_us": 12.832,
+              "end_us": 16.8,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.6,
+              "start_us": 16.673,
+              "end_us": 18.273,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 18.273
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.296,
+              "start_us": 0.0,
+              "end_us": 3.296,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.304,
+              "start_us": 3.584,
+              "end_us": 5.888,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.968,
+              "start_us": 4.256,
+              "end_us": 16.224,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.536,
+              "start_us": 16.448,
+              "end_us": 17.984,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 17.984
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.136,
+              "start_us": 0.0,
+              "end_us": 3.136,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.304,
+              "start_us": 3.392,
+              "end_us": 5.696,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 10.336,
+              "start_us": 4.064,
+              "end_us": 14.4,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.392,
+              "start_us": 13.408,
+              "end_us": 16.8,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.568,
+              "start_us": 16.672,
+              "end_us": 18.24,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 18.24
+        }
+      }
+    },
+    {
+      "B": 16,
+      "window": 1024,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 25.17866674396727,
+            "SE": 0.08000009175823965
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.036455971597599,
+            "SE": 0.00536831558753998
+          },
+          "event_us": {
+            "mean": 26.09599992218945,
+            "SE": 0.10039326523010808
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.045523048396643,
+            "SE": 0.009496233665999018
+          },
+          "event_us": {
+            "mean": 26.323555554780697,
+            "SE": 0.1712305860226987
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 0.9958521414240589,
+            "SE": 0.004334341499728
+          },
+          "event_us": {
+            "mean": 25.073777987725204,
+            "SE": 0.08361235390464485
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 0.9977821726171153,
+            "SE": 0.006551950514146291
+          },
+          "event_us": {
+            "mean": 25.121777628858883,
+            "SE": 0.0847947098131031
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 0.9972293982802451,
+            "SE": 0.004476074008511928
+          },
+          "event_us": {
+            "mean": 25.1093330896563,
+            "SE": 0.1725177109207544
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.168,
+              "start_us": 0.0,
+              "end_us": 3.168,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.4,
+              "start_us": 3.456,
+              "end_us": 5.856,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.808,
+              "start_us": 4.096,
+              "end_us": 15.904,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.896,
+              "start_us": 14.304,
+              "end_us": 19.2,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.6,
+              "start_us": 19.072,
+              "end_us": 20.672,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 20.672
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.296,
+              "start_us": 0.0,
+              "end_us": 3.296,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.272,
+              "start_us": 3.584,
+              "end_us": 5.856,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 16.256,
+              "start_us": 4.256,
+              "end_us": 20.512,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.44,
+              "start_us": 20.768,
+              "end_us": 22.208,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 22.208
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.264,
+              "start_us": 0.0,
+              "end_us": 3.264,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.432,
+              "start_us": 3.552,
+              "end_us": 5.984,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.872,
+              "start_us": 4.288,
+              "end_us": 16.16,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.48,
+              "start_us": 15.04,
+              "end_us": 19.52,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.664,
+              "start_us": 19.36,
+              "end_us": 21.024,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 21.024
+        }
+      }
+    },
+    {
+      "B": 16,
+      "window": 2048,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 27.34044452922212,
+            "SE": 0.10940195219143065
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.267436734188741,
+            "SE": 0.007413803417389027
+          },
+          "event_us": {
+            "mean": 34.650666639208794,
+            "SE": 0.06488293711970106
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.1280318017455495,
+            "SE": 0.009326174323320556
+          },
+          "event_us": {
+            "mean": 30.839111242029404,
+            "SE": 0.15858128154372989
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 1.0036334116202017,
+            "SE": 0.007229622221237973
+          },
+          "event_us": {
+            "mean": 27.438222223685848,
+            "SE": 0.09021230696740183
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 1.015415481420244,
+            "SE": 0.016892227001502887
+          },
+          "event_us": {
+            "mean": 27.75822217679686,
+            "SE": 0.3493548275606433
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 1.0112047612533104,
+            "SE": 0.003421720448429111
+          },
+          "event_us": {
+            "mean": 27.646222358776463,
+            "SE": 0.07347180381445922
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.104,
+              "start_us": 0.0,
+              "end_us": 3.104,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.56,
+              "start_us": 3.36,
+              "end_us": 5.92,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 14.144,
+              "start_us": 4.032,
+              "end_us": 18.176,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.064,
+              "start_us": 16.864,
+              "end_us": 20.928,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.632,
+              "start_us": 20.832,
+              "end_us": 22.464,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 22.464
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.264,
+              "start_us": 0.0,
+              "end_us": 3.264,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.08,
+              "start_us": 3.552,
+              "end_us": 5.632,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 24.64,
+              "start_us": 4.192,
+              "end_us": 28.832,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.472,
+              "start_us": 29.056,
+              "end_us": 30.528,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 30.528
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.456,
+              "start_us": 0.0,
+              "end_us": 3.456,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.464,
+              "start_us": 3.744,
+              "end_us": 6.208,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 14.08,
+              "start_us": 4.384,
+              "end_us": 18.464,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.032,
+              "start_us": 17.472,
+              "end_us": 21.504,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.696,
+              "start_us": 21.344,
+              "end_us": 23.04,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 23.04
+        }
+      }
+    },
+    {
+      "B": 16,
+      "window": 4096,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 31.69955551210377,
+            "SE": 0.12478691023445439
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.6498248532896234,
+            "SE": 0.010069565397689993
+          },
+          "event_us": {
+            "mean": 52.29688911802239,
+            "SE": 0.22188088313621018
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.2558556695130794,
+            "SE": 0.004085629156099171
+          },
+          "event_us": {
+            "mean": 39.80977709094683,
+            "SE": 0.173048267073333
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 1.0076430616484144,
+            "SE": 0.0020294400876624875
+          },
+          "event_us": {
+            "mean": 31.94133306129111,
+            "SE": 0.06227292872225985
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 1.0476260991076976,
+            "SE": 0.051497263028764194
+          },
+          "event_us": {
+            "mean": 33.19644400229057,
+            "SE": 1.4954948887441604
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 1.0097154249419213,
+            "SE": 0.0028123508158168216
+          },
+          "event_us": {
+            "mean": 32.007111339933346,
+            "SE": 0.10241899872224729
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.296,
+              "start_us": 0.0,
+              "end_us": 3.296,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.528,
+              "start_us": 3.552,
+              "end_us": 6.08,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 18.368,
+              "start_us": 4.224,
+              "end_us": 22.592,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.0,
+              "start_us": 21.312,
+              "end_us": 25.312,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.888,
+              "start_us": 25.184,
+              "end_us": 27.072,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 27.072
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.392,
+              "start_us": 0.0,
+              "end_us": 3.392,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.24,
+              "start_us": 3.68,
+              "end_us": 5.92,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 41.792,
+              "start_us": 4.32,
+              "end_us": 46.112,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.504,
+              "start_us": 46.464,
+              "end_us": 47.968,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 47.968
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.521,
+              "start_us": 0.0,
+              "end_us": 3.521,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.303,
+              "start_us": 3.809,
+              "end_us": 6.112,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 18.752,
+              "start_us": 4.449,
+              "end_us": 23.201,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.936,
+              "start_us": 22.016,
+              "end_us": 25.952,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.696,
+              "start_us": 25.857,
+              "end_us": 27.553,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 27.553
+        }
+      }
+    },
+    {
+      "B": 16,
+      "window": 8192,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 41.02755565610197,
+            "SE": 0.10506960999679447
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 2.1175123305290766,
+            "SE": 0.008287728222022749
+          },
+          "event_us": {
+            "mean": 86.87466631333034,
+            "SE": 0.13621744763422244
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.3831050701092433,
+            "SE": 0.002846923105455657
+          },
+          "event_us": {
+            "mean": 56.74488904575507,
+            "SE": 0.06790589159423313
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 0.989650746929322,
+            "SE": 0.003565826629631837
+          },
+          "event_us": {
+            "mean": 40.60266642934746,
+            "SE": 0.14380218881856532
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 1.089569077285271,
+            "SE": 0.09450323708733581
+          },
+          "event_us": {
+            "mean": 44.71822227868769,
+            "SE": 3.977758100854646
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 0.9953715237006387,
+            "SE": 0.0032854818231892323
+          },
+          "event_us": {
+            "mean": 40.837332813276184,
+            "SE": 0.12541825252996355
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.104,
+              "start_us": 0.0,
+              "end_us": 3.104,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.56,
+              "start_us": 3.36,
+              "end_us": 5.92,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 27.744,
+              "start_us": 4.032,
+              "end_us": 31.776,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.776,
+              "start_us": 30.336,
+              "end_us": 34.112,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.888,
+              "start_us": 33.952,
+              "end_us": 35.84,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 35.84
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.264,
+              "start_us": 0.0,
+              "end_us": 3.264,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.112,
+              "start_us": 3.52,
+              "end_us": 5.632,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 75.968,
+              "start_us": 4.192,
+              "end_us": 80.16,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.888,
+              "start_us": 80.352,
+              "end_us": 82.24,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 82.24
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.328,
+              "start_us": 0.0,
+              "end_us": 3.328,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.304,
+              "start_us": 3.616,
+              "end_us": 5.92,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 32,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 27.488,
+              "start_us": 4.256,
+              "end_us": 31.744,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.872,
+              "start_us": 30.752,
+              "end_us": 34.624,
+              "grid": [
+                8,
+                1,
+                16
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.984,
+              "start_us": 34.528,
+              "end_us": 36.512,
+              "grid": [
+                128,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 36.512
+        }
+      }
+    },
+    {
+      "B": 32,
+      "window": 512,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 26.545777916908264,
+            "SE": 0.10416312749590415
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 0.8445774128732052,
+            "SE": 0.002657811097972572
+          },
+          "event_us": {
+            "mean": 22.419555423160393,
+            "SE": 0.05981370895545115
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 0.9887883200756785,
+            "SE": 0.005099852216431287
+          },
+          "event_us": {
+            "mean": 26.24711073521111,
+            "SE": 0.03850021537205097
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 0.9941250563175209,
+            "SE": 0.0026273822176376173
+          },
+          "event_us": {
+            "mean": 26.38933321254121,
+            "SE": 0.0518002074314325
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 0.991516761242125,
+            "SE": 0.0031508026648749327
+          },
+          "event_us": {
+            "mean": 26.319999972151386,
+            "SE": 0.04809866310193726
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 0.9934760585265546,
+            "SE": 0.00500912404034244
+          },
+          "event_us": {
+            "mean": 26.371555609835518,
+            "SE": 0.030843153759662335
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.136,
+              "start_us": 0.0,
+              "end_us": 3.136,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.112,
+              "start_us": 3.392,
+              "end_us": 5.504,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 12.32,
+              "start_us": 4.032,
+              "end_us": 16.352,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 5.216,
+              "start_us": 15.072,
+              "end_us": 20.288,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 2.016,
+              "start_us": 20.096,
+              "end_us": 22.112,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 22.112
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.393,
+              "start_us": 0.0,
+              "end_us": 3.393,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.176,
+              "start_us": 3.68,
+              "end_us": 5.856,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 11.937,
+              "start_us": 4.32,
+              "end_us": 16.257,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.663,
+              "start_us": 16.417,
+              "end_us": 18.08,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 18.08
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.424,
+              "start_us": 0.0,
+              "end_us": 3.424,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.176,
+              "start_us": 3.712,
+              "end_us": 5.888,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 12.416,
+              "start_us": 4.32,
+              "end_us": 16.736,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.544,
+              "start_us": 15.68,
+              "end_us": 20.224,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.952,
+              "start_us": 20.064,
+              "end_us": 22.016,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 22.016
+        }
+      }
+    },
+    {
+      "B": 32,
+      "window": 1024,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 27.973333270185524,
+            "SE": 0.09644327061918997
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 0.9517075720205148,
+            "SE": 0.0036527860549386993
+          },
+          "event_us": {
+            "mean": 26.622222219076423,
+            "SE": 0.11481467057991372
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 0.9985198665630609,
+            "SE": 0.007038150452027357
+          },
+          "event_us": {
+            "mean": 27.93066669255495,
+            "SE": 0.1131788493302769
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 0.9966470161702393,
+            "SE": 0.00299038944101067
+          },
+          "event_us": {
+            "mean": 27.87911126183139,
+            "SE": 0.06534402071681593
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 0.9983007365690838,
+            "SE": 0.0029074010918033783
+          },
+          "event_us": {
+            "mean": 27.92533342209127,
+            "SE": 0.05342213149034659
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 0.995752228664537,
+            "SE": 0.0017491856050840004
+          },
+          "event_us": {
+            "mean": 27.854222079945934,
+            "SE": 0.06005110289342957
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.392,
+              "start_us": 0.0,
+              "end_us": 3.392,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.144,
+              "start_us": 3.68,
+              "end_us": 5.824,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 14.592,
+              "start_us": 4.288,
+              "end_us": 18.88,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.544,
+              "start_us": 17.632,
+              "end_us": 22.176,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.856,
+              "start_us": 22.016,
+              "end_us": 23.872,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 23.872
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.36,
+              "start_us": 0.0,
+              "end_us": 3.36,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 1.919,
+              "start_us": 3.649,
+              "end_us": 5.568,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 16.32,
+              "start_us": 4.256,
+              "end_us": 20.576,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.696,
+              "start_us": 20.769,
+              "end_us": 22.465,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 22.465
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.265,
+              "start_us": 0.0,
+              "end_us": 3.265,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.176,
+              "start_us": 3.553,
+              "end_us": 5.729,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 14.496,
+              "start_us": 4.193,
+              "end_us": 18.689,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.352,
+              "start_us": 17.633,
+              "end_us": 21.985,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.983,
+              "start_us": 21.793,
+              "end_us": 23.776,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 23.776
+        }
+      }
+    },
+    {
+      "B": 32,
+      "window": 2048,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 32.47644421127107,
+            "SE": 0.08160415650461558
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.0853046511847064,
+            "SE": 0.004071998527203484
+          },
+          "event_us": {
+            "mean": 35.246221762564446,
+            "SE": 0.06052294845309408
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.006789031498277,
+            "SE": 0.0004957917559860073
+          },
+          "event_us": {
+            "mean": 32.6968886786037,
+            "SE": 0.0756963285965109
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 1.00165795100009,
+            "SE": 0.003543710904664804
+          },
+          "event_us": {
+            "mean": 32.529777743750145,
+            "SE": 0.05730376439899274
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 0.9940598221380019,
+            "SE": 0.00577727666671497
+          },
+          "event_us": {
+            "mean": 32.28266619973713,
+            "SE": 0.11797785860192245
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 0.9971087286688023,
+            "SE": 0.003806658949100629
+          },
+          "event_us": {
+            "mean": 32.38222189247608,
+            "SE": 0.10668155989475919
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.2,
+              "start_us": 0.0,
+              "end_us": 3.2,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.049,
+              "start_us": 3.487,
+              "end_us": 5.536,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 19.392,
+              "start_us": 4.096,
+              "end_us": 23.488,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.416,
+              "start_us": 22.112,
+              "end_us": 26.528,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.857,
+              "start_us": 26.399,
+              "end_us": 28.256,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 28.256
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.424,
+              "start_us": 0.0,
+              "end_us": 3.424,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 1.952,
+              "start_us": 3.712,
+              "end_us": 5.664,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 24.896,
+              "start_us": 4.352,
+              "end_us": 29.248,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.728,
+              "start_us": 29.408,
+              "end_us": 31.136,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 31.136
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.552,
+              "start_us": 0.0,
+              "end_us": 3.552,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.143,
+              "start_us": 3.84,
+              "end_us": 5.983,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 19.232,
+              "start_us": 4.448,
+              "end_us": 23.68,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.904,
+              "start_us": 22.4,
+              "end_us": 26.304,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.855,
+              "start_us": 26.144,
+              "end_us": 27.999,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 27.999
+        }
+      }
+    },
+    {
+      "B": 32,
+      "window": 4096,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 41.9057777358426,
+            "SE": 0.101629624014377
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.273955741134559,
+            "SE": 0.0038361047693546706
+          },
+          "event_us": {
+            "mean": 53.3866665015618,
+            "SE": 0.26912613440310085
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.0066791770867825,
+            "SE": 0.00392762263301194
+          },
+          "event_us": {
+            "mean": 42.184888488716545,
+            "SE": 0.06692089564900927
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 1.000812829804776,
+            "SE": 0.0018425938878825219
+          },
+          "event_us": {
+            "mean": 41.939555563860466,
+            "SE": 0.06606523562523907
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 0.9983706817201814,
+            "SE": 0.005209189383006873
+          },
+          "event_us": {
+            "mean": 41.8364442884922,
+            "SE": 0.1176693566915073
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 1.0036627412646812,
+            "SE": 0.005804339679746244
+          },
+          "event_us": {
+            "mean": 42.06044433845414,
+            "SE": 0.34538342743843087
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.232,
+              "start_us": 0.0,
+              "end_us": 3.232,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.112,
+              "start_us": 3.52,
+              "end_us": 5.632,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 27.776,
+              "start_us": 4.128,
+              "end_us": 31.904,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.744,
+              "start_us": 30.88,
+              "end_us": 34.624,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 2.208,
+              "start_us": 34.432,
+              "end_us": 36.64,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 36.64
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.36,
+              "start_us": 0.0,
+              "end_us": 3.36,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 1.952,
+              "start_us": 3.648,
+              "end_us": 5.6,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 42.4,
+              "start_us": 4.256,
+              "end_us": 46.656,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 1.952,
+              "start_us": 46.784,
+              "end_us": 48.736,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 48.736
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.456,
+              "start_us": 0.0,
+              "end_us": 3.456,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.112,
+              "start_us": 3.744,
+              "end_us": 5.856,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 28.416,
+              "start_us": 4.352,
+              "end_us": 32.768,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.744,
+              "start_us": 31.648,
+              "end_us": 35.392,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 2.112,
+              "start_us": 35.264,
+              "end_us": 37.376,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 37.376
+        }
+      }
+    },
+    {
+      "B": 32,
+      "window": 8192,
+      "seed_ids": [
+        19100023,
+        19204752,
+        19309481
+      ],
+      "arms": {
+        "0": {
+          "ratio": {
+            "mean": 1.0,
+            "SE": 0.0
+          },
+          "event_us": {
+            "mean": 59.99466673367553,
+            "SE": 0.16570549688055158
+          }
+        },
+        "1": {
+          "ratio": {
+            "mean": 1.4751350671223484,
+            "SE": 0.0049636633446958735
+          },
+          "event_us": {
+            "mean": 88.49955557121172,
+            "SE": 0.29631354815908295
+          }
+        },
+        "2": {
+          "ratio": {
+            "mean": 1.002953069220214,
+            "SE": 0.0035526697569600836
+          },
+          "event_us": {
+            "mean": 60.170666832062935,
+            "SE": 0.052527242318443045
+          }
+        },
+        "4": {
+          "ratio": {
+            "mean": 0.9991470360957353,
+            "SE": 0.002621349699915779
+          },
+          "event_us": {
+            "mean": 59.943110992511116,
+            "SE": 0.1706761301785229
+          }
+        },
+        "8": {
+          "ratio": {
+            "mean": 1.0006779759252882,
+            "SE": 0.005051389363816983
+          },
+          "event_us": {
+            "mean": 60.033777521716225,
+            "SE": 0.160276625182691
+          }
+        },
+        "A2": {
+          "ratio": {
+            "mean": 1.001419139371962,
+            "SE": 0.0052393882209783756
+          },
+          "event_us": {
+            "mean": 60.078222097622024,
+            "SE": 0.17710977158998753
+          }
+        }
+      },
+      "phases": {
+        "0": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.328,
+              "start_us": 0.0,
+              "end_us": 3.328,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.08,
+              "start_us": 3.584,
+              "end_us": 5.664,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 46.944,
+              "start_us": 4.224,
+              "end_us": 51.168,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 3.808,
+              "start_us": 50.08,
+              "end_us": 53.888,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 2.08,
+              "start_us": 53.664,
+              "end_us": 55.744,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 55.744
+        },
+        "1": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.585,
+              "start_us": 0.0,
+              "end_us": 3.585,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 1.953,
+              "start_us": 3.872,
+              "end_us": 5.825,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 77.696,
+              "start_us": 4.512,
+              "end_us": 82.208,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 2.143,
+              "start_us": 82.337,
+              "end_us": 84.48,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 84.48
+        },
+        "8": {
+          "nodes": [
+            {
+              "role": "_qk_prep_kernel",
+              "duration_us": 3.585,
+              "start_us": 0.0,
+              "end_us": 3.585,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 2048,
+              "registers": 37
+            },
+            {
+              "role": "scheduler",
+              "duration_us": 2.208,
+              "start_us": 3.873,
+              "end_us": 6.081,
+              "grid": [
+                1,
+                1,
+                1
+              ],
+              "threads": 64,
+              "shared": 0,
+              "registers": 17
+            },
+            {
+              "role": "main",
+              "duration_us": 46.783,
+              "start_us": 4.481,
+              "end_us": 51.264,
+              "grid": [
+                132,
+                1,
+                1
+              ],
+              "threads": 256,
+              "shared": 56320,
+              "registers": 255
+            },
+            {
+              "role": "combine",
+              "duration_us": 4.032,
+              "start_us": 50.081,
+              "end_us": 54.113,
+              "grid": [
+                8,
+                1,
+                32
+              ],
+              "threads": 256,
+              "shared": 17536,
+              "registers": 48
+            },
+            {
+              "role": "_norm_gate_kernel",
+              "duration_us": 2.208,
+              "start_us": 53.825,
+              "end_us": 56.033,
+              "grid": [
+                256,
+                1,
+                1
+              ],
+              "threads": 128,
+              "shared": 0,
+              "registers": 29
+            }
+          ],
+          "span_us": 56.033
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "B": 16,
+      "intercept_including_replay_us": 22.497999990634895,
+      "us_per_key": 0.00226538699597645,
+      "max_abs_residual_us": 0.4578782206572578,
+      "effective_KV_slope_TB_s": 1.8080795940273773,
+      "note": "Slope includes gather, tensor math, softmax and scheduling; this is not a DRAM-bandwidth measurement. The intercept also includes replay overhead."
+    },
+    {
+      "B": 32,
+      "intercept_including_replay_us": 23.76237031745,
+      "us_per_key": 0.0044155839390519775,
+      "max_abs_residual_us": 0.5226286226636523,
+      "effective_KV_slope_TB_s": 1.8552472590428926,
+      "note": "Slope includes gather, tensor math, softmax and scheduling; this is not a DRAM-bandwidth measurement. The intercept also includes replay overhead."
+    }
+  ],
+  "targets": [
+    {
+      "B": 16,
+      "unique_KV_bytes": 8417280,
+      "KV_floor_us": 1.7536,
+      "target_1_3_us": 2.27968
+    },
+    {
+      "B": 32,
+      "unique_KV_bytes": 16834560,
+      "KV_floor_us": 3.5072,
+      "target_1_3_us": 4.55936
+    }
+  ],
+  "conclusions": [
+    "prepare_v abbreviated symbol is prepare_varlen_num_blocks, not V transpose",
+    "five launches at default split; qk prep, scheduler, persistent main, combine, norm/gate",
+    "one split removes combine but loses at2048; split tuning does not close the target gap",
+    "fuse launches and combine; mainloop work also needs reduction/overlap; copy vs SFU is not isolated by this cost fit"
+  ]
+}

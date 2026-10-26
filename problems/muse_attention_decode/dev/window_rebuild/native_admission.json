@@ -1,0 +1,114 @@
+[
+  {
+    "name": "WG2C2",
+    "cuda_sha256": "143dcc49c3b32d70454a0d290483654a074a036d2d5ad577de9b67c1e2783076",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/WG2C2.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN40_GLOBAL__N__df6a523c_8_WG2C2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:233 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN40_GLOBAL__N__df6a523c_8_WG2C2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x33a0",
+        "prewait_copy_instructions": 32
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "WG2C4",
+    "cuda_sha256": "9073e8ad3c091d9ced57ccb3425eec7d32128e26d9982d83fd67c1ae6708eba7",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/WG2C4.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN40_GLOBAL__N__fa010de0_8_WG2C4_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:233 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN40_GLOBAL__N__fa010de0_8_WG2C4_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x2280",
+        "prewait_copy_instructions": 16
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "STREAM2",
+    "cuda_sha256": "f755216970a712469304811466226233f9df78e9de93d96fe2259c57a991d80e",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/STREAM2.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN43_GLOBAL__N__b611a94e_10_STREAM2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:172 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN43_GLOBAL__N__b611a94e_10_STREAM2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x1b30",
+        "prewait_copy_instructions": 16
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "STREAM4",
+    "cuda_sha256": "5d053e9bb7b814f39f8fe0eb5aa489057723a9d0e9ef6d7995ff96e024790790",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/STREAM4.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN43_GLOBAL__N__937af692_10_STREAM4_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:172 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN43_GLOBAL__N__937af692_10_STREAM4_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x1b30",
+        "prewait_copy_instructions": 16
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "STREAM2_CLOCK",
+    "cuda_sha256": "1c77cb17573605f9d859721fc79d08c222022e90f5e9b31ae0a8726bca3a30bb",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/STREAM2_CLOCK.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN49_GLOBAL__N__02a04360_16_STREAM2_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:161 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN49_GLOBAL__N__02a04360_16_STREAM2_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x1c50",
+        "prewait_copy_instructions": 16
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "WG2C2_CLOCK",
+    "cuda_sha256": "227747bda1ffebbd21bde558ceb843ab1fa428f6a948291d91bf9090c5519115",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/WG2C2_CLOCK.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN47_GLOBAL__N__809659d4_14_WG2C2_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:227 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN47_GLOBAL__N__809659d4_14_WG2C2_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x3b10",
+        "prewait_copy_instructions": 32
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "PIPE2",
+    "cuda_sha256": "921e315ea8e85bef78a6ed7b62b23bbf59b76999f29335deac3f2f828c084c40",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/PIPE2.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN40_GLOBAL__N__4fec7b89_8_PIPE2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:255 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN40_GLOBAL__N__4fec7b89_8_PIPE2_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x1b40",
+        "prewait_copy_instructions": 16
+      }
+    ],
+    "no_C75": true
+  },
+  {
+    "name": "PIPE2_CLOCK",
+    "cuda_sha256": "5aeefc0316a348d7f10555b2e20726e7cc9b41a1adba132881f662a902386a27",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/window_rebuild/out/PIPE2_CLOCK.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN47_GLOBAL__N__3361c770_14_PIPE2_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:255 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "two_WG_named_barriers": true,
+    "evidence": [
+      {
+        "symbol": "_ZN47_GLOBAL__N__3361c770_14_PIPE2_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE",
+        "first_wait": "0x1c70",
+        "prewait_copy_instructions": 16
+      }
+    ],
+    "no_C75": true
+  }
+]

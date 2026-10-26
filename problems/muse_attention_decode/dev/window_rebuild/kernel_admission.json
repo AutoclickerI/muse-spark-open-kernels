@@ -1,0 +1,515 @@
+{
+  "rows": [
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.026e-02 (worst row 9.869e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.026e-02 (worst row 9.869e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.026e-02 (worst row 9.869e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.026e-02 (worst row 9.869e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.033e-02 (worst row 9.865e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.033e-02 (worst row 9.865e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.026e-02 (worst row 9.869e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.026e-02 (worst row 9.869e-02) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.858e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.858e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.858e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "WG2C4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.858e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.872e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.872e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.858e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "STREAM4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.858e-02 (worst row 1.039e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "WG2C2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.618e-02 (worst row 8.767e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "WG2C2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.618e-02 (worst row 8.767e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "WG2C4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.618e-02 (worst row 8.767e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "WG2C4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.618e-02 (worst row 8.767e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "STREAM2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.629e-02 (worst row 8.843e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "STREAM2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.629e-02 (worst row 8.843e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "STREAM4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 6.618e-02 (worst row 8.767e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "ctx": 4000,
+        "page": 1,
+        "kv_scale": 0.015625,
+        "dist": "soft"
+      },
+      "name": "STREAM4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 6.618e-02 (worst row 8.767e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "WG2C2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "WG2C2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "WG2C4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "WG2C4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "STREAM2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "STREAM2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "STREAM4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "name": "STREAM4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 4.705e-02 (worst row 6.162e-02) [bound 0.133: 2.5 x the reference's 0.047 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "WG2C2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.436e-02 (worst row 1.074e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "WG2C2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.436e-02 (worst row 1.074e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "WG2C4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.436e-02 (worst row 1.074e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "WG2C4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.436e-02 (worst row 1.074e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "STREAM2",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.454e-02 (worst row 1.072e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "STREAM2",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.454e-02 (worst row 1.072e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "STREAM4",
+      "splits": 0,
+      "ok": true,
+      "msg": "relative L2 error 7.436e-02 (worst row 1.074e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "edges"
+      },
+      "name": "STREAM4",
+      "splits": 3,
+      "ok": true,
+      "msg": "relative L2 error 7.436e-02 (worst row 1.074e-01) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    }
+  ],
+  "standin": "Two real WGs per CTA; C4 slices for shared capacity, nonspinning global last-WG reduction instead of native DSM; H200 source compiles separately",
+  "source_sha256": {
+    "WG2C2": "572d85021402658959d6f82e6de4a4761aa41f08ffd353390113f60fdafacf57",
+    "WG2C4": "f640faf55a2a3e4251873d88f895193f936d54558f20c5fcd4eead38183dd8be",
+    "STREAM2": "6bc3ea444fb1152665a680bd55a9fe1e3ba260295e07e0ca0e408ccd53f0ea00",
+    "STREAM4": "05698e8cb2faa3c25ea0e087b7c4e5eb7f5300bf8b79299e5713f462a68fa18c"
+  }
+}

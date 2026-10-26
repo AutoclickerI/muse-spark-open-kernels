@@ -1,0 +1,43 @@
+{
+  "diagnostic": {
+    "job": "45ab5a9beecd407b",
+    "state": "done",
+    "host": "muse_attention_decode",
+    "mode": "check",
+    "wrapper_sha256": "43f4044d30b944d9c762fba0d3b753ddfc634611453e2faf72262b46a7944237",
+    "payload_sha256": "e7aed5384c7cf8d0951419e26ce1ff8f611978b991483c93a9d018a18771e045",
+    "receipt": "runs/muse_attention_decode/20261026T032211Z_check_45ab5a9beecd407b.json",
+    "sender_id": "43f4044d30b944d9"
+  },
+  "pair": {
+    "job": "af563b6bc1af490f",
+    "sender_pid": 2003770,
+    "state": "done",
+    "host": "muse_attention_decode",
+    "mode": "check",
+    "wrapper_sha256": "e89475da9585670697e2cd16d293ede335f756b45f6ba07173c52f21c1bd2ad5",
+    "payload_sha256": "c10ebea44fbc546cab2162546c4314affa7ef017feb0971da70d83cedb632828",
+    "source": "runs/muse_attention_decode/20261026T035143Z_check_af563b6bc1af490f.py",
+    "seeds": 24,
+    "rounds": 10,
+    "arms": 8,
+    "shapes": 2,
+    "receipt": "runs/muse_attention_decode/20261026T035143Z_check_af563b6bc1af490f.json",
+    "TASK_passed": 384
+  },
+  "pipeline": {
+    "job": "47e1f9d82ee745e9",
+    "sender_pid": 2882877,
+    "state": "running",
+    "host": "muse_attention_decode",
+    "mode": "check",
+    "wrapper_sha256": "27e41a30735dacfa9544309fd25654c9be044fdf7949bc76dbc2ab5be3fe81e9",
+    "payload_sha256": "326c8941efb598983dba30e05676c800652bb69b1a119a7b0f9d989d0bfa5e46",
+    "seeds": 18,
+    "rounds": 10,
+    "arms": 4,
+    "shapes": 2,
+    "note": "A/A2/RAW2/PIPE2, ordinary edges, same FP8 work; one scheduling change follows af563b6b clocks; no native result yet",
+    "read": "python3 tools/h200_lab.py read 47e1f9d82ee745e9"
+  }
+}

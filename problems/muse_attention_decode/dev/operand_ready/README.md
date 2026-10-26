@@ -26,8 +26,11 @@ the static VQ8 table and no other assignment enables sliding VQ8.
 Native cross-check: S15 timeline receipt `7eaa262a30ec483e`, with the same
 source hash, records `sliding_main` at d1S, `attn_main` at d16S/d32S, and
 `_qk_prep_kernel`, `flash::prepare_v`, two CUTLASS attention kernels and
-`_norm_gate_kernel` at every verify sliding load. Thus the observed V
-preparation is a separate FA3 launch, not the claimed VQ8 producer barrier.
+`_norm_gate_kernel` at every verify sliding load. Receipt45ab5a9beecd407b resolves the abbreviated `flash::prepare_v` name
+as `prepare_varlen_num_blocks_kernel`: this is scheduling metadata, not V
+transpose. The earlier interpretation as V preparation was wrong. The
+VQ8-sliding dispatch claim remains dropped; the FA3 cost is now measured
+in `../window_rebuild/diagnostic_analysis.json`.
 The retained native dispatch excerpt is in `audit.json`; the timeline's
 full evidence belongs to `muse_decode_layer/dev/s15_timeline/`.
 

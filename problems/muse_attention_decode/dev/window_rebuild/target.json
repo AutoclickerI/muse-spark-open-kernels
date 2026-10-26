@@ -1,0 +1,23 @@
+{
+  "receipt": "7eaa262a30ec483e",
+  "raw_trace_s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "rows": [
+    {
+      "B": 16,
+      "S15_attention_us": 22.923,
+      "KV_floor_us": 1.7536,
+      "target_1_3_us": 2.27968,
+      "weighted_table_contribution_us": 17.007387096774192,
+      "mechanical_sliding_saving_us_per_load": 949.59272
+    },
+    {
+      "B": 32,
+      "S15_attention_us": 28.490333333333332,
+      "KV_floor_us": 3.5072,
+      "target_1_3_us": 4.55936,
+      "weighted_table_contribution_us": 21.137989247311825,
+      "mechanical_sliding_saving_us_per_load": 1100.8247733333333
+    }
+  ],
+  "caveat": "Weighted table entries are46/62 times sliding-layer time. Replacing critical work is an optimistic accounting bound, not a measured composed score gain."
+}

@@ -1,0 +1,98 @@
+{
+  "status": "P4 per-shape point nominations; held-out six-load confirmation remains with P4",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s15.py",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "job": "af563b6bc1af490f",
+  "seed_ids": [
+    22100027,
+    22204756,
+    22309485,
+    22414214,
+    22518943,
+    22623672,
+    22728401,
+    22833130,
+    22937859,
+    23042588,
+    23147317,
+    23252046,
+    23356775,
+    23461504,
+    23566233,
+    23670962,
+    23775691,
+    23880420,
+    23985149,
+    24089878,
+    24194607,
+    24299336,
+    24404065,
+    24508794
+  ],
+  "A_A": {
+    "mean": 1.0002912908431967,
+    "SE": 0.0003850597149983221,
+    "changed": false,
+    "nominate_to_P4": false
+  },
+  "nominees": [
+    {
+      "case": "v32S",
+      "arm": "RAW2",
+      "ratio": 0.9829302823026851,
+      "SE": 0.0017880696143378755,
+      "seeds": 24,
+      "kernel": "STREAM2",
+      "early": false,
+      "candidate_sha256": "f47ece749ad0309ba77575cd050641cd87908f3e3ebfab9c490d91e599e62052",
+      "patch": "P4_raw32.patch",
+      "generator": "build_layer.py; default v32 only, ordinary edge"
+    },
+    {
+      "case": "v32S",
+      "arm": "STREAM2",
+      "ratio": 0.9978953865989147,
+      "SE": 0.002300660246920266,
+      "seeds": 24,
+      "kernel": "STREAM2",
+      "early": true,
+      "candidate_sha256": "91a73f52037dad855b3f76069990d5b6107acc5bb5482877412d89bbfc127f31",
+      "generator": "build_layer.patch(base,{(32,8):(\"STREAM2\",True)})"
+    }
+  ],
+  "preferred": "RAW2 at v32 only; preserve S15 FA3 at v16",
+  "scope": "Native ratios are whole-layer sliding-shape times against exact S15, not isolated stage times or six-load score",
+  "open": [
+    "P4 current-base composition and held-out six-load R",
+    "1.3x KV target remains unmet; first-capture RAW2 attention increment24.160us vsA28.992us",
+    "early-edge and raw differ in graph admission; cause of whole-layer ordering is not isolated by first-capture clocks"
+  ],
+  "preferred_candidate_screens": {
+    "normal": {
+      "TASK": 13,
+      "graph_shapes": 12,
+      "static": 25,
+      "result_sha256": "7ddde9779265a0da13dd4f53f9c1354571b1e08b64b61baa6dca39f4196859dd"
+    },
+    "forced": {
+      "TASK": 13,
+      "graph_shapes": 12,
+      "static": 25,
+      "result_sha256": "a35f15756972e93d53870d7f36118b0d0919330f0d35ceacd12398ed59004e25"
+    }
+  },
+  "integration_lane": "P4 Claude S18, problems/muse_decode_layer/dev/s18; rebase shape patch onto current base and confirm held-out six-load G0",
+  "decode16_decode32_handoff": "../sliding_round2/P4_decode_points.json",
+  "decode16_decode32_status": "Exact D8/D4 patch already pushed in db59ef3; S18 README confirms both composed as leave-out arms",
+  "followup": {
+    "job": "47e1f9d82ee745e9",
+    "arms": [
+      "A",
+      "A2",
+      "RAW2",
+      "PIPE2"
+    ],
+    "state": "running",
+    "nomination_rule": "Every per-shape changed point ratio below1 with SE/seeds; native TASK and controls must establish measurement"
+  }
+}

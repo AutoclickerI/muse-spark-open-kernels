@@ -1,0 +1,705 @@
+{
+  "payload_sha256": "c10ebea44fbc546cab2162546c4314affa7ef017feb0971da70d83cedb632828",
+  "shapes": 2,
+  "arms": 8,
+  "seeds": 2,
+  "TASK_passed": 32,
+  "standins": [
+    "all S15 Hopper glue forced",
+    "native two-WG DSM replaced by nonspinning global last-WG merge",
+    "residentC2 uses C4 capacity on sm120; streaming slice geometry unchanged",
+    "unrelated S15 full N128 uses frozen N64 math",
+    "FA3 split8 arm uses baseline portable attention; native API already checked by45ab5a9b"
+  ],
+  "archive_chars": 3982,
+  "clocks": [
+    [
+      {
+        "name": "WG2C2",
+        "phase_ns": {
+          "0": {
+            "n": 256,
+            "min": 0,
+            "median": 480.0,
+            "p90": 672,
+            "max": 736
+          },
+          "1": {
+            "n": 256,
+            "min": 704,
+            "median": 2464.0,
+            "p90": 3360,
+            "max": 5216
+          },
+          "2": {
+            "n": 256,
+            "min": 3040,
+            "median": 7728.0,
+            "p90": 9440,
+            "max": 9920
+          },
+          "3": {
+            "n": 256,
+            "min": 3744,
+            "median": 8464.0,
+            "p90": 10176,
+            "max": 10688
+          },
+          "4": {
+            "n": 256,
+            "min": 7936,
+            "median": 8912.0,
+            "p90": 10592,
+            "max": 11008
+          },
+          "5": {
+            "n": 256,
+            "min": 13760,
+            "median": 14400.0,
+            "p90": 15936,
+            "max": 16768
+          },
+          "6": {
+            "n": 256,
+            "min": 21664,
+            "median": 21664.0,
+            "p90": 22816,
+            "max": 23136
+          },
+          "7": null,
+          "8": {
+            "n": 32,
+            "min": 38912,
+            "median": 39200.0,
+            "p90": 39488,
+            "max": 39648
+          }
+        },
+        "deltas_ns": {
+          "0->1": {
+            "n": 256,
+            "min": 512,
+            "median": 2080.0,
+            "p90": 3040,
+            "max": 4672
+          },
+          "1->2": {
+            "n": 256,
+            "min": 1792,
+            "median": 5056.0,
+            "p90": 6208,
+            "max": 8896
+          },
+          "2->3": {
+            "n": 256,
+            "min": 672,
+            "median": 736.0,
+            "p90": 800,
+            "max": 864
+          },
+          "3->4": {
+            "n": 256,
+            "min": 256,
+            "median": 544.0,
+            "p90": 2240,
+            "max": 4192
+          },
+          "4->5": {
+            "n": 256,
+            "min": 4608,
+            "median": 5632.0,
+            "p90": 5984,
+            "max": 6112
+          },
+          "5->6": {
+            "n": 256,
+            "min": 4896,
+            "median": 7328.0,
+            "p90": 7808,
+            "max": 8928
+          },
+          "6->7": null,
+          "7->8": null
+        },
+        "graph_event_us": [
+          77.82399654388428,
+          77.82399654388428,
+          75.77600330114365
+        ],
+        "phase_labels": [
+          "metadata_entry",
+          "history_issued",
+          "copy_ready_or_first_tile_ready",
+          "transpose_done_or_first_tile_transpose",
+          "PDL_wait_done",
+          "Q_ready",
+          "history_and_new_tile_math_done",
+          "partials_published",
+          "merge_gate_done"
+        ],
+        "note": "Instrumented source has different registers; phases diagnose ordering/critical work, not uninstrumented speed. Streaming only its initial tiles are prefetched before wait.",
+        "sample_rows": [
+          [
+            96,
+            928,
+            5024,
+            5728,
+            7968,
+            14016,
+            21696,
+            0,
+            0
+          ],
+          [
+            96,
+            1952,
+            7328,
+            8096,
+            8352,
+            14016,
+            21664,
+            0,
+            0
+          ],
+          [
+            128,
+            2784,
+            7872,
+            8640,
+            8928,
+            13984,
+            21664,
+            0,
+            39648
+          ],
+          [
+            128,
+            1568,
+            5120,
+            5824,
+            7968,
+            13984,
+            21664,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "STREAM2",
+        "phase_ns": {
+          "0": {
+            "n": 128,
+            "min": 0,
+            "median": 48.0,
+            "p90": 96,
+            "max": 96
+          },
+          "1": {
+            "n": 128,
+            "min": 1248,
+            "median": 2304.0,
+            "p90": 2784,
+            "max": 3200
+          },
+          "2": {
+            "n": 128,
+            "min": 5760,
+            "median": 6160.0,
+            "p90": 6592,
+            "max": 6848
+          },
+          "3": {
+            "n": 128,
+            "min": 6016,
+            "median": 6432.0,
+            "p90": 6848,
+            "max": 7104
+          },
+          "4": {
+            "n": 128,
+            "min": 3264,
+            "median": 3936.0,
+            "p90": 4384,
+            "max": 4864
+          },
+          "5": {
+            "n": 128,
+            "min": 5312,
+            "median": 5856.0,
+            "p90": 6272,
+            "max": 6528
+          },
+          "6": {
+            "n": 128,
+            "min": 14720,
+            "median": 16096.0,
+            "p90": 18624,
+            "max": 19872
+          },
+          "7": null,
+          "8": {
+            "n": 32,
+            "min": 31968,
+            "median": 33120.0,
+            "p90": 34080,
+            "max": 35136
+          }
+        },
+        "deltas_ns": {
+          "0->1": {
+            "n": 128,
+            "min": 1152,
+            "median": 2240.0,
+            "p90": 2720,
+            "max": 3136
+          },
+          "1->4": {
+            "n": 128,
+            "min": 992,
+            "median": 1632.0,
+            "p90": 1920,
+            "max": 2336
+          },
+          "4->5": {
+            "n": 128,
+            "min": 1408,
+            "median": 2048.0,
+            "p90": 2176,
+            "max": 2240
+          },
+          "5->2": {
+            "n": 128,
+            "min": 192,
+            "median": 320.0,
+            "p90": 352,
+            "max": 480
+          },
+          "2->3": {
+            "n": 128,
+            "min": 192,
+            "median": 256.0,
+            "p90": 256,
+            "max": 384
+          },
+          "3->6": {
+            "n": 128,
+            "min": 8192,
+            "median": 9648.0,
+            "p90": 12064,
+            "max": 13024
+          },
+          "6->7": null,
+          "7->8": null
+        },
+        "graph_event_us": [
+          73.7600028514862,
+          69.63200122117996,
+          69.63200122117996
+        ],
+        "phase_labels": [
+          "metadata_entry",
+          "history_issued",
+          "copy_ready_or_first_tile_ready",
+          "transpose_done_or_first_tile_transpose",
+          "PDL_wait_done",
+          "Q_ready",
+          "history_and_new_tile_math_done",
+          "partials_published",
+          "merge_gate_done"
+        ],
+        "note": "Instrumented source has different registers; phases diagnose ordering/critical work, not uninstrumented speed. Streaming only its initial tiles are prefetched before wait.",
+        "sample_rows": [
+          [
+            32,
+            1792,
+            6464,
+            6752,
+            4064,
+            6144,
+            16032,
+            0,
+            0
+          ],
+          [
+            32,
+            2528,
+            6496,
+            6688,
+            3936,
+            6176,
+            16032,
+            0,
+            0
+          ],
+          [
+            32,
+            2592,
+            6272,
+            6496,
+            3936,
+            5952,
+            16384,
+            0,
+            0
+          ],
+          [
+            32,
+            1760,
+            6272,
+            6560,
+            3712,
+            5952,
+            18752,
+            0,
+            33920
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "name": "WG2C2",
+        "phase_ns": {
+          "0": {
+            "n": 512,
+            "min": 0,
+            "median": 1232.0,
+            "p90": 28576,
+            "max": 28704
+          },
+          "1": {
+            "n": 512,
+            "min": 768,
+            "median": 5536.0,
+            "p90": 30656,
+            "max": 32064
+          },
+          "2": {
+            "n": 512,
+            "min": 1792,
+            "median": 11744.0,
+            "p90": 33152,
+            "max": 34496
+          },
+          "3": {
+            "n": 512,
+            "min": 2624,
+            "median": 12528.0,
+            "p90": 33824,
+            "max": 35232
+          },
+          "4": {
+            "n": 512,
+            "min": 8928,
+            "median": 12976.0,
+            "p90": 34176,
+            "max": 35648
+          },
+          "5": {
+            "n": 512,
+            "min": 16128,
+            "median": 18592.0,
+            "p90": 39200,
+            "max": 40864
+          },
+          "6": {
+            "n": 512,
+            "min": 23968,
+            "median": 24000.0,
+            "p90": 43008,
+            "max": 44832
+          },
+          "7": null,
+          "8": {
+            "n": 64,
+            "min": 43968,
+            "median": 44944.0,
+            "p90": 59744,
+            "max": 60384
+          }
+        },
+        "deltas_ns": {
+          "0->1": {
+            "n": 512,
+            "min": 672,
+            "median": 3424.0,
+            "p90": 4768,
+            "max": 5312
+          },
+          "1->2": {
+            "n": 512,
+            "min": 832,
+            "median": 5728.0,
+            "p90": 6848,
+            "max": 9600
+          },
+          "2->3": {
+            "n": 512,
+            "min": 608,
+            "median": 736.0,
+            "p90": 800,
+            "max": 1088
+          },
+          "3->4": {
+            "n": 512,
+            "min": 224,
+            "median": 576.0,
+            "p90": 3040,
+            "max": 7072
+          },
+          "4->5": {
+            "n": 512,
+            "min": 4160,
+            "median": 5600.0,
+            "p90": 5856,
+            "max": 7200
+          },
+          "5->6": {
+            "n": 512,
+            "min": 2848,
+            "median": 5440.0,
+            "p90": 6656,
+            "max": 8128
+          },
+          "6->7": null,
+          "7->8": null
+        },
+        "graph_event_us": [
+          118.78400295972824,
+          114.68800157308578,
+          114.68800157308578
+        ],
+        "phase_labels": [
+          "metadata_entry",
+          "history_issued",
+          "copy_ready_or_first_tile_ready",
+          "transpose_done_or_first_tile_transpose",
+          "PDL_wait_done",
+          "Q_ready",
+          "history_and_new_tile_math_done",
+          "partials_published",
+          "merge_gate_done"
+        ],
+        "note": "Instrumented source has different registers; phases diagnose ordering/critical work, not uninstrumented speed. Streaming only its initial tiles are prefetched before wait.",
+        "sample_rows": [
+          [
+            0,
+            768,
+            1792,
+            2624,
+            8928,
+            16128,
+            23968,
+            0,
+            0
+          ],
+          [
+            0,
+            1088,
+            2144,
+            2944,
+            8960,
+            16160,
+            23968,
+            0,
+            0
+          ],
+          [
+            160,
+            3296,
+            9408,
+            10144,
+            11392,
+            17344,
+            24000,
+            0,
+            45024
+          ],
+          [
+            128,
+            1312,
+            7392,
+            8096,
+            11424,
+            17344,
+            24000,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "STREAM2",
+        "phase_ns": {
+          "0": {
+            "n": 256,
+            "min": 0,
+            "median": 96.0,
+            "p90": 1024,
+            "max": 1056
+          },
+          "1": {
+            "n": 256,
+            "min": 1696,
+            "median": 3984.0,
+            "p90": 5184,
+            "max": 6624
+          },
+          "2": {
+            "n": 256,
+            "min": 9504,
+            "median": 10592.0,
+            "p90": 11680,
+            "max": 11872
+          },
+          "3": {
+            "n": 256,
+            "min": 9728,
+            "median": 10880.0,
+            "p90": 11936,
+            "max": 12160
+          },
+          "4": {
+            "n": 256,
+            "min": 5568,
+            "median": 8160.0,
+            "p90": 8960,
+            "max": 9472
+          },
+          "5": {
+            "n": 256,
+            "min": 9024,
+            "median": 10304.0,
+            "p90": 11296,
+            "max": 11520
+          },
+          "6": {
+            "n": 256,
+            "min": 19456,
+            "median": 22096.0,
+            "p90": 24064,
+            "max": 26176
+          },
+          "7": null,
+          "8": {
+            "n": 64,
+            "min": 36512,
+            "median": 38592.0,
+            "p90": 39872,
+            "max": 40576
+          }
+        },
+        "deltas_ns": {
+          "0->1": {
+            "n": 256,
+            "min": 1600,
+            "median": 3616.0,
+            "p90": 4544,
+            "max": 5760
+          },
+          "1->4": {
+            "n": 256,
+            "min": 2432,
+            "median": 4064.0,
+            "p90": 4928,
+            "max": 5696
+          },
+          "4->5": {
+            "n": 256,
+            "min": 1504,
+            "median": 2304.0,
+            "p90": 2848,
+            "max": 3616
+          },
+          "5->2": {
+            "n": 256,
+            "min": 160,
+            "median": 352.0,
+            "p90": 384,
+            "max": 512
+          },
+          "2->3": {
+            "n": 256,
+            "min": 192,
+            "median": 256.0,
+            "p90": 288,
+            "max": 416
+          },
+          "3->6": {
+            "n": 256,
+            "min": 8960,
+            "median": 10976.0,
+            "p90": 13408,
+            "max": 14272
+          },
+          "6->7": null,
+          "7->8": null
+        },
+        "graph_event_us": [
+          95.23200243711472,
+          94.2080020904541,
+          94.2080020904541
+        ],
+        "phase_labels": [
+          "metadata_entry",
+          "history_issued",
+          "copy_ready_or_first_tile_ready",
+          "transpose_done_or_first_tile_transpose",
+          "PDL_wait_done",
+          "Q_ready",
+          "history_and_new_tile_math_done",
+          "partials_published",
+          "merge_gate_done"
+        ],
+        "note": "Instrumented source has different registers; phases diagnose ordering/critical work, not uninstrumented speed. Streaming only its initial tiles are prefetched before wait.",
+        "sample_rows": [
+          [
+            96,
+            4768,
+            10560,
+            10880,
+            8832,
+            10400,
+            20800,
+            0,
+            0
+          ],
+          [
+            64,
+            3968,
+            10336,
+            10592,
+            7840,
+            10048,
+            20800,
+            0,
+            0
+          ],
+          [
+            96,
+            3936,
+            9920,
+            10240,
+            8192,
+            9728,
+            19904,
+            0,
+            0
+          ],
+          [
+            96,
+            2240,
+            9696,
+            9920,
+            6720,
+            9376,
+            22688,
+            0,
+            37248
+          ]
+        ]
+      }
+    ]
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "candidate": "problems/muse_attention_decode/dev/window_rebuild/out/s15_window_raw32.py",
+  "sha256": "f47ece749ad0309ba77575cd050641cd87908f3e3ebfab9c490d91e599e62052",
+  "selection": {
+    "32,8": [
+      "STREAM2",
+      false
+    ]
+  },
+  "native_job": "af563b6bc1af490f",
+  "screens": {
+    "normal": {
+      "TASK": 13,
+      "graph_shapes": 12,
+      "static": 25,
+      "result_sha256": "7ddde9779265a0da13dd4f53f9c1354571b1e08b64b61baa6dca39f4196859dd"
+    },
+    "forced": {
+      "TASK": 13,
+      "graph_shapes": 12,
+      "static": 25,
+      "result_sha256": "a35f15756972e93d53870d7f36118b0d0919330f0d35ceacd12398ed59004e25"
+    }
+  },
+  "whole_layer_TASK_checks": 384,
+  "kernel_cells": 40
+}
