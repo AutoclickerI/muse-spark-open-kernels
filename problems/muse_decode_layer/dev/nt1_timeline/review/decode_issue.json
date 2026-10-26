@@ -1,0 +1,54 @@
+{
+  "source_sha256": "b9eb68d124db582635e1f510d496f241c23575e449b8bb5949d129c8eebd409b",
+  "architecture": "sm90a",
+  "same_work": "16 output BF16x2 registers per lane, original recoded code words and scale input",
+  "finite_format_packed_half_checks": 8128,
+  "rows": {
+    "two_base": {
+      "integer_instructions": 406,
+      "registers": 31,
+      "ops": {
+        "LDC": 5,
+        "S2R": 1,
+        "S2UR": 1,
+        "IMAD": 5,
+        "ULDC": 1,
+        "LDG": 2,
+        "LOP3": 194,
+        "SHF": 46,
+        "ISETP": 64,
+        "VIADD": 1,
+        "HFMA2": 1,
+        "SEL": 64,
+        "IADD3": 32,
+        "STG": 16,
+        "EXIT": 1,
+        "BRA": 1,
+        "NOP": 13
+      },
+      "function": "_ZN57_GLOBAL__N__11e5afa7_17_two_base_probe_cu_b85c7d17_79549015two_base_decodeEPK5uint4PKjPS0_"
+    },
+    "old": {
+      "integer_instructions": 37,
+      "registers": 30,
+      "ops": {
+        "LDC": 5,
+        "S2R": 1,
+        "S2UR": 1,
+        "IMAD": 5,
+        "ULDC": 1,
+        "LDG": 2,
+        "LOP3": 18,
+        "SHF": 14,
+        "HFMA2": 8,
+        "HMUL2": 8,
+        "STG": 16,
+        "EXIT": 1,
+        "BRA": 1,
+        "NOP": 15
+      },
+      "function": "_ZN57_GLOBAL__N__11e5afa7_17_two_base_probe_cu_b85c7d17_79549010old_decodeEPK5uint4PKjPS0_"
+    }
+  },
+  "decision": "Dropped before any H200 run: integer issue grows. This closes this scalar two-base assembly implementation, not every possible packed exponent decoder."
+}

@@ -1,0 +1,198 @@
+{
+  "BLOCK": {
+    "normal": {
+      "candidate_sha256": "6ec68ab94494ccc72eb0dfe848ea585053f05b5aaa280e7ee6036288af196cb6",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvb_experts": {
+          "eager": 17,
+          "captured": 6
+        }
+      },
+      "report": "runs/screen/p3a_review/block/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "6ec68ab94494ccc72eb0dfe848ea585053f05b5aaa280e7ee6036288af196cb6",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvb_experts": {
+          "eager": 17,
+          "captured": 6
+        }
+      },
+      "report": "runs/screen/p3a_review/block/forced/local.json"
+    }
+  },
+  "CANCEL": {
+    "normal": {
+      "candidate_sha256": "6d522c2a14fb70db9995f71c0ddf23efffa616cf4bf7592d541ad0e6a045a429",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvc_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/cancel/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "6d522c2a14fb70db9995f71c0ddf23efffa616cf4bf7592d541ad0e6a045a429",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvc_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/cancel/forced/local.json"
+    }
+  },
+  "PAIR": {
+    "normal": {
+      "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvp_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/pair/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvp_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/pair/forced/local.json"
+    }
+  },
+  "SHARD2": {
+    "normal": {
+      "candidate_sha256": "bf3b3c396334893847769888b4ef92e34f0fdce752b96d51aefc998dab8d969c",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvs2_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/shard2/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "bf3b3c396334893847769888b4ef92e34f0fdce752b96d51aefc998dab8d969c",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvs2_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/shard2/forced/local.json"
+    }
+  },
+  "SHARD4": {
+    "normal": {
+      "candidate_sha256": "88c19cb31fcd60c8a3e401e3431bd282a61c83ec0a79a17916eed7511f71799a",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvs4_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/shard4/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "88c19cb31fcd60c8a3e401e3431bd282a61c83ec0a79a17916eed7511f71799a",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvs4_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/shard4/forced/local.json"
+    }
+  },
+  "SHARD8": {
+    "normal": {
+      "candidate_sha256": "94696185d95959b27dae6a60685afca6dd8fe2a7af0c7ee7c17edf4be2b980f2",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvs8_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/shard8/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "94696185d95959b27dae6a60685afca6dd8fe2a7af0c7ee7c17edf4be2b980f2",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvs8_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/shard8/forced/local.json"
+    }
+  },
+  "PACK5": {
+    "normal": {
+      "candidate_sha256": "cdbbd82983638e64b4991a7506543d923efcd510dccf8e24f0d36b129f5d63eb",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvq_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/pack5/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "cdbbd82983638e64b4991a7506543d923efcd510dccf8e24f0d36b129f5d63eb",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "rvq_experts": {
+          "eager": 37,
+          "captured": 12
+        }
+      },
+      "report": "runs/screen/p3a_review/pack5/forced/local.json"
+    }
+  }
+}

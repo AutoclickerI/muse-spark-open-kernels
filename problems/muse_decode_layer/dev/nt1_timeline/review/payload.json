@@ -1,0 +1,108 @@
+{
+  "payload": "prof/lab/moe_p3a_review.py",
+  "sha256": "ffec78b9ef9ddd9db84ed3080c1d6a5b83133f8c4c2725c951209d333acad079",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "expanded_sha256": "ae7b3cf18e8cdfe50cf3eb7e430a7adf9b383060dd608a7e3d7b8ab96cff8ad6",
+  "expanded_bytes": 497798,
+  "packed_bytes": 53576,
+  "arms": {
+    "BLOCK": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/block.py",
+      "candidate_sha256": "6ec68ab94494ccc72eb0dfe848ea585053f05b5aaa280e7ee6036288af196cb6",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/block_cell.py",
+      "cell_sha256": "2e4459b12e1f9d79d18f508d724c12f9b987cea3b83691ebf64cffda3a99cc1c",
+      "cuda_sha256": "3200389da3d974ee2aaacc00b5d6246dc051d3abff6a3a86d69a2aaa46f7b4ce",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/block.patch",
+      "patch_sha256": "6031b6d471cc6417af129399785d04256542f32fc8e82f7ae39737acb51c72ce",
+      "prefix": "rvb",
+      "parent": "S15",
+      "one_change": "BLOCK"
+    },
+    "CANCEL": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/cancel.py",
+      "candidate_sha256": "6d522c2a14fb70db9995f71c0ddf23efffa616cf4bf7592d541ad0e6a045a429",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/cancel_cell.py",
+      "cell_sha256": "2620d29cc3897a9d96414ece3449bb701ce7246838b668038833201acb8aba71",
+      "cuda_sha256": "7a88d6f07c2a3610f5f89367b23f0aefc53921d68ec2d0c9b2c278f9d2b6b9b0",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/cancel.patch",
+      "patch_sha256": "64a2000887800899852b478ed45dcb6980cafc572125ba628c63bcfa9a0b6550",
+      "prefix": "rvc",
+      "parent": "S15",
+      "one_change": "CANCEL"
+    },
+    "PAIR": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/pair.py",
+      "candidate_sha256": "c6ec588b00455ce47c964da4db6091ef885c87eb06059ca715c3b68033f2742d",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pair_cell.py",
+      "cell_sha256": "29bf302f0bbe7e93db29b8b64a61f043afc597518fcd9cfd48bd84ed848f31dd",
+      "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pair.patch",
+      "patch_sha256": "3589fb88002ac5520e464834726084332e657aa042fd1af06460723502d5ff99",
+      "prefix": "rvp",
+      "parent": "S15",
+      "one_change": "PAIR"
+    },
+    "SHARD2": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/shard2.py",
+      "candidate_sha256": "bf3b3c396334893847769888b4ef92e34f0fdce752b96d51aefc998dab8d969c",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/shard2_cell.py",
+      "cell_sha256": "4395f9ef216c6cadb40a09b8c1e602c11dd84bbc2635d2c7905725bcca6a4a60",
+      "cuda_sha256": "e6d3c42b0b4479d2b3921615652ab827a2d2b67f650dff529c2af730d3ff3c2f",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/shard2.patch",
+      "patch_sha256": "d11b5e09ea53c93744a491a315672ff8fb055695863aea82bf28c37e1136bbeb",
+      "prefix": "rvs2",
+      "parent": "PAIR",
+      "one_change": "SHARD2"
+    },
+    "SHARD4": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/shard4.py",
+      "candidate_sha256": "88c19cb31fcd60c8a3e401e3431bd282a61c83ec0a79a17916eed7511f71799a",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/shard4_cell.py",
+      "cell_sha256": "14ae7b2ea27b2eea96f954954e846aec35c618fd51b4adc62b08cf341290b183",
+      "cuda_sha256": "061bedd22ec353a0145f8db96d36412e9817d38d429cc3bc0a3f9b398452b9cb",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/shard4.patch",
+      "patch_sha256": "ce0a1bd9b29b9d108e8d58b692816a59076821974c1e7344aa5173392f91b645",
+      "prefix": "rvs4",
+      "parent": "PAIR",
+      "one_change": "SHARD4"
+    },
+    "SHARD8": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/shard8.py",
+      "candidate_sha256": "94696185d95959b27dae6a60685afca6dd8fe2a7af0c7ee7c17edf4be2b980f2",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/shard8_cell.py",
+      "cell_sha256": "1ecc1b6e1ecb20664253866b1df6b97751808f7c6a3ad3b000b2bc7638c6c79b",
+      "cuda_sha256": "1ce9e38bffb16ec42b0f9738769f01ab92d1361b8fc58244cef5d659df9c7119",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/shard8.patch",
+      "patch_sha256": "bed84718955e87d607976b8f295bba52a99e6d33e092b44ef10d8a6fb9eb19e6",
+      "prefix": "rvs8",
+      "parent": "PAIR",
+      "one_change": "SHARD8"
+    },
+    "PACK5": {
+      "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+      "candidate": "runs/screen/p3a_review/pack5.py",
+      "candidate_sha256": "cdbbd82983638e64b4991a7506543d923efcd510dccf8e24f0d36b129f5d63eb",
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/pack5_cell.py",
+      "cell_sha256": "dba3f3faedb1db785d9f648978426d040815854562c76999948610e0b3c1345a",
+      "cuda_sha256": "b336da2208fcd2acd0f045844b937cec44f7cff87a8506a9e0ebc6ca9c6df14a",
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/pack5.patch",
+      "patch_sha256": "78571ca346023bbe20f619dd273b1d9f6f56adb09068e959bdf8d7d7f5a3dc47",
+      "prefix": "rvq",
+      "parent": "S15",
+      "one_change": "PACK5"
+    }
+  },
+  "requested_seeds": 16,
+  "M": [
+    1,
+    8,
+    16,
+    32
+  ]
+}

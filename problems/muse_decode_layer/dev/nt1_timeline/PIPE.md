@@ -1,5 +1,8 @@
 # S14 pipe, dependency and TMA-flight identification
 
+Current nomination gate: every TASK-gated per-shape point estimate below1 goes to P4, with ratio,SE
+and seeds. Confidence/A:A summaries below are descriptive only. P4 confirms the held-out six-load R.
+
 Receipt **`16c180784f414576`** is complete:16 routed seeds,96 pipe probes,66 work rows,6 latency rows.
 Official host and correct S14/phase gates pass; PDIA is deliberately wrong math. `h200_pipe.txt` is the
 losslessly decoded matrix; `read_reset.py` verifies it and records decisions in `h200_results.json`.
@@ -26,10 +29,10 @@ That full-kernel follow-up is now measured: **`dd539517bc8344dd`**,32 seeds/M,al
 FLIGHT/S14 is1.07662/1.05285/1.03119; K16 is1.20394/1.21153/1.23270; LUT is1.59959/1.62315/1.67379.
 Close those exact recipes, leaving other issuing schedules, K/occupancy layouts and lossless decoder
 methods open. ILP/S14 is .99055/.99041/.99046; A:A .487/.316/.314us. Its upper95%+A:A is
-1.000762/.996981/.996081, so **M16/M32 only** nominate to P4. This confirms a small dependency lever
-in the full kernel; it does not establish one dominant hardware pipe. M8's gain is inconclusive.
+1.000762/.996981/.996081, but **M8/M16/M32** now nominate by point estimate. This confirms a small dependency lever
+in the full kernel; it does not establish one dominant hardware pipe. The old M8 uncertainty veto is removed.
 `pipe_s14_ilp.patch` is the exact admitted patch. Fresh-seed direct ILP/PAIR comparison is queued as
-sender479906, wrapper`af7b4526022c8d75`; whole-layer and combined ILP+PAIR gains remain unmeasured.
+sender479906, wrapper`af7b4526022c8d75`; direct result1b135b70835f4634 favors PAIR over ILP at all3 M; whole-layer and combined gains remain unmeasured.
 
 The earlier58.7 us math/activation clock is ONCE, not S14. Counts28.56/34.30/45.43 per unique group
 are S14's repeated-block model. They must not be compared as the same schedule. The new lab measures

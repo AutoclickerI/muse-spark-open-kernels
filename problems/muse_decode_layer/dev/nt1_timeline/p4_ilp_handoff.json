@@ -15,10 +15,21 @@
     "32": 69
   },
   "measured_winner_M": [
+    8,
     16,
     32
   ],
   "nominate_rows": [
+    [
+      1,
+      8,
+      true
+    ],
+    [
+      1,
+      8,
+      false
+    ],
     [
       16,
       1,
@@ -40,7 +51,7 @@
       false
     ]
   ],
-  "M8": "not admitted; upper95+AA=1.000762",
+  "M8": "point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto",
   "M1": "retain incumbent95",
   "component_and_local_screens": {
     "checks": 528,
@@ -62,7 +73,89 @@
     }
   },
   "whole_layer_verified": false,
-  "comparison_to_PAIR_verified": false,
-  "policy": "P4 must restrict the nomination to M16/M32. The exact screened S14 source includes the general small-M driver; do not apply it globally as a measured winner.",
-  "next": "fresh-seed ILP/PAIR direct comparison with S14 back; combined ILP+PAIR is unmeasured"
+  "comparison_to_PAIR_verified": true,
+  "policy": "Per-shape point winners nominate; P4 composes and confirms held-out six-load R.",
+  "next": "fresh-seed ILP/PAIR direct comparison with S14 back; combined ILP+PAIR is unmeasured",
+  "direct_PAIR_receipt": "1b135b70835f4634",
+  "direct_comparison": [
+    {
+      "M": 8,
+      "arm": "ILP",
+      "control": "PAIR",
+      "control_us": 67.992,
+      "arm_us": 68.832,
+      "ratio": 1.01094,
+      "SE": 0.00178,
+      "seeds": 32,
+      "wins": 3,
+      "delta_us": 0.839,
+      "point_nominee": false
+    },
+    {
+      "M": 8,
+      "arm": "S14",
+      "control": "PAIR",
+      "control_us": 67.877,
+      "arm_us": 69.361,
+      "ratio": 1.02243,
+      "SE": 0.00226,
+      "seeds": 32,
+      "wins": 0,
+      "delta_us": 1.484,
+      "point_nominee": false
+    },
+    {
+      "M": 16,
+      "arm": "ILP",
+      "control": "PAIR",
+      "control_us": 77.777,
+      "arm_us": 79.314,
+      "ratio": 1.02063,
+      "SE": 0.00242,
+      "seeds": 32,
+      "wins": 2,
+      "delta_us": 1.538,
+      "point_nominee": false
+    },
+    {
+      "M": 16,
+      "arm": "S14",
+      "control": "PAIR",
+      "control_us": 77.806,
+      "arm_us": 79.86,
+      "ratio": 1.02739,
+      "SE": 0.00254,
+      "seeds": 32,
+      "wins": 0,
+      "delta_us": 2.054,
+      "point_nominee": false
+    },
+    {
+      "M": 32,
+      "arm": "ILP",
+      "control": "PAIR",
+      "control_us": 110.582,
+      "arm_us": 111.854,
+      "ratio": 1.0119,
+      "SE": 0.0022,
+      "seeds": 32,
+      "wins": 4,
+      "delta_us": 1.271,
+      "point_nominee": false
+    },
+    {
+      "M": 32,
+      "arm": "S14",
+      "control": "PAIR",
+      "control_us": 110.534,
+      "arm_us": 112.727,
+      "ratio": 1.02071,
+      "SE": 0.00283,
+      "seeds": 32,
+      "wins": 2,
+      "delta_us": 2.193,
+      "point_nominee": false
+    }
+  ],
+  "direct_ranking": "PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14"
 }

@@ -10,8 +10,9 @@
   "payload": "prof/lab/moe_nt1_ilp_vs_pair.py",
   "payload_sha256": "d1e40f35147230fa3f97b4cf778893db029451e23189c786b267678a3842ebd9",
   "sender_log": "runs/detached/af7b4526022c8d75.log",
-  "judge_job": null,
-  "state": "waiting for judge slot; sender alive",
+  "judge_job": "1b135b70835f4634",
+  "state": "done; all32 seeds and native/official gates pass; PAIR beats ILP at each measured M",
   "trigger_receipt": "dd539517bc8344dd",
-  "decision": "ILP nominates M16/M32 only against S14. Direct PAIR comparison must be measured; no additive or whole-layer gain assumed."
+  "decision": "ILP nominates M16/M32 only against S14. Direct PAIR comparison must be measured; no additive or whole-layer gain assumed.",
+  "receipt": "runs/muse_moe_w4a16/20261026T013338Z_submit_1b135b70835f4634.json"
 }

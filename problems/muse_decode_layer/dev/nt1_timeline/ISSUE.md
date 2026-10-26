@@ -3,10 +3,10 @@
 H200 decisions: `d650c04ead114119` and `29ad388de976432c` pass all native gates.
 PAIR/S14 is .97493/.97262/.97932 (16 seeds) and .97830/.97462/.97778 (32 seeds) at M8/16/32,
 above A:A uncertainty. TREE/PAIR .99904/.99811/1.00007 does not establish a benefit from the shorter
-add chain. FOUR, LOCAL and FOUR_LOCAL lose versus PAIR: fewer modeled bank requests or zero norm
+add chain beyond noise, but its direct point wins at M8/M16 now nominate to P4. FOUR, LOCAL and FOUR_LOCAL lose versus PAIR: fewer modeled bank requests or zero norm
 atomics are insufficient to predict a win. LOCAL's traced M32 export/gather is .234/1.110 us and its
 combine is2.112 us versus PAIR1.498; this supports the tail-cost explanation, with observer tax and
-overlapping clocks preventing additive attribution. PAIR is nominated to P4, pending whole-layer pairing.
+overlapping clocks preventing additive attribution. PAIR,TREE and LOCAL point wins versus S14 are handed to P4; only its held-out six-load R promotes.
 Exact ratios, controls and remaining hypotheses are in README.md and `h200_results.json`.
 
 The 4 TB/s target counts unique packed expert bytes, including scale codes (9 bytes/16 weights).

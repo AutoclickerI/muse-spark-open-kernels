@@ -210,6 +210,12 @@ coding lowers the dense byte floors. Small attention/glue floors exclude their f
 
 ## MoE M=1-32
 
+Current nomination rule (97e98f3): every valid per-shape point estimate below1 is handed to P4,
+with ratio,SE,seeds and A:A. Only P4's held-out six-load R lower confidence bound above1 promotes.
+No per-load/row uncertainty veto or strict routing-identity check applies. `point_nominations.json`
+and `review/point_*.patch` contain every earlier point winner and its exact patch; old confidence
+calculations below describe uncertainty only.
+
 ### Common to every M
 
 SGLang standalone (`ea3d5b6a`), M1/8/16/32/128/256: 77.3 / 142.5 / 192.0 / 207.2 /
@@ -261,7 +267,7 @@ Ratios are candidate time / control time, at M8 / 16 / 32 unless specified; belo
 All three official hosts pass, all requested seeds complete, and no lab is truncated. Correct arms
 pass before/after native TASK gates (worst total/row <.00247 versus .015/.075 limits).
 First/second/pipe S14 A:A mean absolute drift is .415/.235/.225, .442/.363/.322 and
-.443/.250/.336 us respectively. First-run M1 A:A is .243 us; every M1 epilogue arm is neutral.
+.443/.250/.336 us respectively. First-run M1 A:A is .243 us; PAIR (.99890 SE.00232,n16) and NORM (.99839 SE.00213,n16) now nominate by point estimate.
 These A:A summaries are not maximum per-seed envelopes. Exact rows, hashes and reproducible admission
 checks: `dev/nt1_timeline/h200_results.json`, `read_reset.py`; complete pipe matrix: `h200_pipe.txt`.
 
@@ -276,9 +282,9 @@ checks: `dev/nt1_timeline/h200_results.json`, `read_reset.py`; complete pipe mat
 | ONCE_VEC / S14 | 1.23515 / 1.24645 / 1.31428 | Vector epilogue improves ONCE, still loses to S14; close this combination | Reuse without extra activation-gather cost | `d650c04ead114119` |
 | ONCE_PAIR / S14 | 1.24614 / 1.25036 / 1.29410 | Pair epilogue does not rescue this reuse schedule | Alternative reuse mechanisms | `d650c04ead114119` |
 | PAIR / S14, 32-seed confirmation | **.97830 / .97462 / .97778** | 31/31/32 wins; confirms first run beyond A:A and upper95% summary bound | P4 integration and whole-layer interaction | `29ad388de976432c` |
-| TREE / PAIR (and / S14) | .99904 / .99811 / 1.00007 (.97888 / .97404 / .97746) | Balanced FADD depth8→3 gives no incremental gain; keep admitted PAIR | Other dependency cuts, not this tree | `29ad388de976432c` |
+| TREE / PAIR (and / S14) | .99904 / .99811 / 1.00007 (.97888 / .97404 / .97746) | Balanced FADD depth8→3 has point wins over PAIR at M8/M16; hand those pieces to P4 | Held-out whole-layer effect of the small point gains and other dependency cuts | `29ad388de976432c` |
 | FOUR / PAIR (and / S14) | 1.02215 / 1.02842 / 1.03432 (1.00178 / 1.00521 / 1.01047) | Four half-active writers spend more instructions; close exact recipe | Other bank/ownership layouts | `29ad388de976432c` |
-| LOCAL / PAIR (and / S14) | 1.01213 / 1.00951 / 1.00939 (.99212 / .98615 / .98488) | Removing global norm atomics costs export/final gather; worse than PAIR | Different reduction with less export/tail cost | `29ad388de976432c` |
+| LOCAL / PAIR (and / S14) | 1.01213 / 1.00951 / 1.00939 (.99212 / .98615 / .98488) | Removing global norm atomics costs export/final gather; worse than PAIR but a point winner versus S14 at all3 M | Different reduction with less export/tail cost | `29ad388de976432c` |
 | FOUR_LOCAL / PAIR (and / S14) | 1.03406 / 1.04155 / 1.04617 (1.01140 / 1.01404 / 1.02290) | Combined four-writer/local-norm ownership loses; close combination | Neither general atomics removal nor all ownership rebuilds are closed | `29ad388de976432c` |
 | PDIA / S14, deliberately wrong math | .90404 / .89884 / .82615 | Removing decoder/MMA while retaining loads exposes headroom; **not a correctness-gated candidate** | No promotable gain; retained sync/epi still costs time | `16c180784f414576` |
 | Hot-L2 / cold-HBM math probe | .87069 / .94082 / .96439 | Cold math is slower; not sufficient to identify inadequate flight | Cache working set and interaction with full-kernel scheduling | `16c180784f414576` |
@@ -287,11 +293,11 @@ checks: `dev/nt1_timeline/h200_results.json`, `read_reset.py`; complete pipe mat
 | Shared W16 / W8, same2 CTAs, work-normalized | 1.01796 / 1.02019 / 1.01646 | 32 active warps do not improve normalized work over16; no K16 nomination | Full K16 kernel differs from microprobe and remains unmeasured | `16c180784f414576` |
 | TMA36KiB hot / cold completion, grid1/132/264 | .47337 / .51825 / .52800; cold .676 / 1.096 / 2.000 us | At264 CTAs, 72KiB lookahead / 60,606 required unique-stream bytes =1.217 coverage | All-miss repeated-load traffic and average outstanding bytes unmeasured | `16c180784f414576` |
 
-PAIR clears `mean ratio + 1.96*SE + A:A/control_us < 1` in both runs at every affected M.
-P4 nomination: admitted `epi_PAIR` at `(1,8,*)/(16,1,*)/(32,1,*)`, original M1 flags95 retained.
-The current P4 selector was verified on the real receipt after P4 independently fixed its missing
-ONCE/M1 handling; no whole-layer win or freeze is claimed here. TREE ties PAIR; the other second-round
-additions are closed only as tested. Phase probes have 4–8% observer tax and overlapping intervals;
+PAIR's summary confidence calculation clears1 at every affected M, but that is descriptive, not a
+nomination requirement. P4 now receives all point wins: ILP at M8/16/32; TREE at M8/16 versus PAIR and
+M8/16/32 versus S14; LOCAL at M8/16/32 versus S14; PROD/NORM alternatives and M1 PAIR/NORM.
+`point_nominations.json` includes ratio,SE,seeds,shape policy and exact patches; P4 composes and
+confirms by R. EPBASE's point-winning control aliases are included for deduplication. Phase probes have 4–8% observer tax and overlapping intervals;
 their subclocks cannot be added as isolated costs. SHF/PRMT cap8 dependent-probe clocks are anomalous
 (1.336/1.447 GHz versus ~1.96 elsewhere), so their >2 issue rates are not used as pipeline limits.
 
@@ -313,27 +319,65 @@ Ratios below are candidate/S14 time; lower wins. Exact hash/control audit: `read
 | Recipe | Ratio versus S14 at M8 / 16 / 32 | Mechanism / decision | Leaves open | Receipt job |
 |---|---|---|---|---|
 | FLIGHT, bulk L2 prefetch beyond2 raw slots | 1.07662 / 1.05285 / 1.03119; 0/32 wins each M | +5.617/+4.229/+3.502 us. Extra prefetch does not rescue the pipeline; close this exact schedule | Other lookahead distances, issuing agents and schedules that avoid competing with useful TMA work; no hardware counter identifies the regression | `dd539517bc8344dd` |
-| ILP, alternate2 MMA accumulator chains | **.99055 / .99041 / .99046**;26/30/30 wins of32 | -.680/-.765/-1.040 us. Upper95%+A:A =1.000762/.996981/.996081: nominate **M16/M32 only** to P4; close M8 as a claimed margin-safe gain | M8's small gain needs a stronger control; other chain/register schedules, combination with PAIR and the six-load whole-layer gain are unmeasured | `dd539517bc8344dd` |
+| ILP, alternate2 MMA accumulator chains | **.99055 / .99041 / .99046**;26/30/30 wins of32 | -.680/-.765/-1.040 us. Upper95%+A:A =1.000762/.996981/.996081: nominate **M8/M16/M32** to P4; the old M8 A:A veto is removed | Held-out six-load effect, other chain/register schedules and combination with PAIR remain open | `dd539517bc8344dd` |
 | K16/r64,16 warps/CTA and shared B cache | 1.20394 / 1.21153 / 1.23270;0/32 wins each M | +14.984/+16.942/+26.007 us despite measured2 CTAs/SM,64regs,16-byte local stack. Close exact partition/cache recipe | Other K partitions and occupancy layouts without this B-cache/epilogue cost; higher occupancy generally is not closed | `dd539517bc8344dd` |
 | LUT, fixed1KiB FP4-pair lookup, scale math unchanged | 1.59959 / 1.62315 / 1.67379;0/32 wins each M | +44.005/+49.545/+75.436 us,2 CTAs/SM,128regs. Close this exact code-pair table/layout; no measured saturated-port attribution | Other lossless code layouts and decoder instruction reductions without this table/packing/shared-service cost | `dd539517bc8344dd` |
 
 ILP's consumer nodes are67.083/72.868/104.667 us versus S14's67.652/73.791/105.861, consistent
 with a small kernel gain. Neither the static128-register ILP footprint nor the diagnostic microprobe
 identifies a unique physical bottleneck. The failed recipes do not close flight, occupancy or lookup
-methods in general. All4 arms are implemented and gated, so their losses are measured; the M8 ILP
-margin failure is inconclusive for promotion rather than proof of no gain.
+methods in general. All4 arms are implemented and gated, so their losses are measured; the old M8 ILP
+margin calculation no longer vetoes its point nomination.
 
 P4 handoff: `dev/nt1_timeline/pipe_s14_ilp.patch`, SHA256 `b55c2970a7737c3708b0e5f251ab24b31ef1888bdae55f812c8e155d9eac230d`,
 onto exact S14 `f1c77ce6`; screened candidate `f71a0206`, cell `809bef8e`. The patch preserves M1;
-P4 must restrict the **measured nomination to M16/M32**, retaining PAIR at M8 as the stronger existing
-stage result. `p4_ilp_handoff.json` pins full hashes, flags,4 affected sliding/full shapes and local
+P4 receives the **point nomination at M8/M16/M32**. PAIR is faster in the direct comparison below;
+ILP remains a valid alternative to S14. `p4_ilp_handoff.json` pins full hashes, flags,4 affected sliding/full shapes and local
 normal/forced admission. No whole-layer gain or additive PAIR+ILP gain is claimed.
 
 Next sent: `prof/lab/moe_nt1_ilp_vs_pair.py` `d1e40f35`, sender**479906**, wrapper**`af7b4526022c8d75`**,
 on MoE at priority1.2. Direct ILP/PAIR comparison plus S14 back,32 fresh seeds/M,readflush ABBAx6,
 before/after TASK gates,A:A mean/max,CUPTI nodes. The exact payload passes all32 local seeds on GPU0,
 with unchanged admitted native cells; `ilp_vs_pair_validation.json` pins its1,725-character output.
-Its receipt and every whole-layer/composed gain remain unmeasured; `ilp_vs_pair_queue.json` tracks dispatch.
+Its measured receipt follows; every whole-layer/composed gain remains unmeasured.
+
+
+### P3a direct PAIR confirmation
+
+`1b135b70835f4634`,32 fresh seeds: official/native TASK gates pass,all seeds and output complete.
+PAIR A:A mean absolute .488/.377/.364us,max1.424/.928/1.648 at M8/16/32.
+
+| Recipe | Ratio at M8 / 16 / 32 (SE) | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| ILP / PAIR | 1.01094/1.02063/1.01190 (.00178/.00242/.00220),n32 | PAIR is faster directly. ILP remains a point alternative versus S14,including M8 | ILP+PAIR composition and held-out whole-layer effect; no additive claim | `1b135b70835f4634` |
+| S14 / PAIR | 1.02243/1.02739/1.02071 (.00226/.00254/.00283),n32 | Confirms PAIR's gain on new weights/routes | Whole-layer R and interactions with the new review arms | `1b135b70835f4634` |
+
+### P3a S15 dependency/identity/packet review
+
+`review/claims.json` pins the actual S15 source60254883 and CUDAc023c946. S15's small-M CUDA is
+byte-identical to S14's. Each accepted claim is one arm; shards have the already-measured PAIR parent,
+which is also included as a control. New H200 performance is unmeasured until the packed batch returns.
+
+| Recipe | Ratio / measured prerequisite | Mechanism / decision | Leaves open | Receipt / evidence |
+|---|---|---|---|---|
+| BLOCK | H200 unmeasured; expert-wide `NT1*nblk[e]` wait confirmed in S15 | W2 acquires `done[e,nb]` againstNT1;128 done slots/512B at M32. W13 store→fence→barrier→publish→acquire preserved. Only M16/M32 | Actual wait reduction and counter-address cost on H200 | `review/claims.json`, `review/manifest.json` |
+| CANCEL | H200 unmeasured; W2 `v*=256*gs2[e]` before post-norm/RMS confirmed | Drop that element multiply,adjust eps/a²,retain sign,guard zero scale/norm and handle epsilon range in double. W13/SwiGLU unchanged | H200 savings versus finalizer/metadata cost and six-load score | `review/extreme_validation.json`:160 helper cases; `component_validation.json`:94 TASK checks |
+| SHARD2 | H200 unmeasured; PAIR's single norm slot confirmed |2 atomic slots per pair,CTA-indexed; W13 zeros both,finalizer sums2 | Contention relief versus extra zero/load work; no LOCAL export | `review/component_validation.json`,exact patch |
+| SHARD4 | H200 unmeasured; same PAIR parent |4 independent norm slots per pair | Same trade-off at4 shards; interactions with block readiness | `review/component_validation.json`,exact patch |
+| SHARD8 | H200 unmeasured; same PAIR parent |8 independent norm slots per pair | Same trade-off at8 shards; other reduction ownership | `review/component_validation.json`,exact patch |
+| TWO_BASE | Same-work sm90a decoder integer instructions37→406,registers30→31;8,128 signed-format half checks pass | Identity confirmed,but this sign/exponent assembly grows integer issue;**dropped before H200** | More efficient packed exponent assembly; this does not close every two-base decoder | `review/decode_issue.json`,`audit_decode.py` |
+| PACK5 | Actual official seed5353 weight tensors:100,663,296 scale bytes,all256-byte packets fit32 symbols; final byte cut**4.05816%** | Exact5-bit packets with per-packet raw fallback,32B tile header,8B offsets,timed TMA/decode. Full bank bit proof and raw transfers pass | H200 benefit after extra decode/metadata issue; other packet layouts and checkpoint distributions | `review/scale_compressibility.json`,`component_validation.json`,`raw_moe_validation.json` |
+
+All7 native flags69 images retain32 HMMA/128 HMUL2,zero spills;125regs except PACK5127regs.
+Components:90 TASK checks per arm,94 CANCEL,worst total/row.002391/.002481; raw-packet whole-MoE
+adds9 captured checks. Local full payload:16 fresh seeds at each M1/8/16/32,64 independent A:A pairs,
+TASK before/after,all7 arms and direct shard/PAIR comparisons. Complete seed-level archive uses
+6,399 characters and took52.4s locally (`review/lab_local_validation.json`); local timings are not H200
+claims. All14 normal/forced whole-layer screens pass13 cases,12 shapes and26 static checks each
+(`review/screens.json`).
+Failed OOM/proof attempts stay local and are not admission. `review/queue.json` records the screened
+send: MoE sender**1191843**,wrapper**`a2344c10505b0e44`**,priority1.2,import budget240s,
+full9000-character allocation; prefill is excluded. All new H200 ratios remain unmeasured.
 
 ## MoE M=128
 

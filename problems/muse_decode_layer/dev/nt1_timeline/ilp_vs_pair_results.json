@@ -1,0 +1,104 @@
+{
+  "job": "1b135b70835f4634",
+  "receipt": "runs/muse_moe_w4a16/20261026T013338Z_submit_1b135b70835f4634.json",
+  "receipt_sha256": "f6fef312badd4b0fd621a24442a0787844fef93119164a3f062039d7b7a21d2a",
+  "official_passed": true,
+  "rows": [
+    {
+      "M": 8,
+      "arm": "ILP",
+      "control": "PAIR",
+      "control_us": 67.992,
+      "arm_us": 68.832,
+      "ratio": 1.01094,
+      "SE": 0.00178,
+      "seeds": 32,
+      "wins": 3,
+      "delta_us": 0.839,
+      "point_nominee": false
+    },
+    {
+      "M": 8,
+      "arm": "S14",
+      "control": "PAIR",
+      "control_us": 67.877,
+      "arm_us": 69.361,
+      "ratio": 1.02243,
+      "SE": 0.00226,
+      "seeds": 32,
+      "wins": 0,
+      "delta_us": 1.484,
+      "point_nominee": false
+    },
+    {
+      "M": 16,
+      "arm": "ILP",
+      "control": "PAIR",
+      "control_us": 77.777,
+      "arm_us": 79.314,
+      "ratio": 1.02063,
+      "SE": 0.00242,
+      "seeds": 32,
+      "wins": 2,
+      "delta_us": 1.538,
+      "point_nominee": false
+    },
+    {
+      "M": 16,
+      "arm": "S14",
+      "control": "PAIR",
+      "control_us": 77.806,
+      "arm_us": 79.86,
+      "ratio": 1.02739,
+      "SE": 0.00254,
+      "seeds": 32,
+      "wins": 0,
+      "delta_us": 2.054,
+      "point_nominee": false
+    },
+    {
+      "M": 32,
+      "arm": "ILP",
+      "control": "PAIR",
+      "control_us": 110.582,
+      "arm_us": 111.854,
+      "ratio": 1.0119,
+      "SE": 0.0022,
+      "seeds": 32,
+      "wins": 4,
+      "delta_us": 1.271,
+      "point_nominee": false
+    },
+    {
+      "M": 32,
+      "arm": "S14",
+      "control": "PAIR",
+      "control_us": 110.534,
+      "arm_us": 112.727,
+      "ratio": 1.02071,
+      "SE": 0.00283,
+      "seeds": 32,
+      "wins": 2,
+      "delta_us": 2.193,
+      "point_nominee": false
+    }
+  ],
+  "AA": {
+    "8": {
+      "mean_abs_us": 0.488,
+      "max_abs_us": 1.424,
+      "seeds": 32
+    },
+    "16": {
+      "mean_abs_us": 0.377,
+      "max_abs_us": 0.928,
+      "seeds": 32
+    },
+    "32": {
+      "mean_abs_us": 0.364,
+      "max_abs_us": 1.648,
+      "seeds": 32
+    }
+  },
+  "decision": "PAIR wins direct point comparison at M8/16/32. ILP remains a valid alternative versus S14; composition with PAIR remains unmeasured."
+}

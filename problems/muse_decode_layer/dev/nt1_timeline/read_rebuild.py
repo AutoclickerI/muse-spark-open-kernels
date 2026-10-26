@@ -78,8 +78,8 @@ def audit(path):
         radius = aa[m] / control if m in aa else None
         upper = ratio + 1.96 * se + radius if radius is not None else None
         lower = ratio - 1.96 * se - radius if radius is not None else None
-        decision = ('unmeasured' if reasons else 'nominate to P4' if upper < 1
-                    else 'close exact recipe at this M; no measured gain')
+        decision = ('unmeasured' if reasons else 'nominate to P4' if ratio < 1
+                    else 'close exact recipe at this M; point estimate is slower')
         rows.append(dict(M=m, arm=arm, control_us=control, arm_us=candidate, ratio=ratio, se=se,
             n=n, wins=int(wins), delta_us=delta, AA_mean_abs_us=aa.get(m), AA_fraction=radius,
             upper95_plus_AA=upper, lower95_minus_AA=lower, decision=decision, invalid_reasons=reasons,
@@ -97,6 +97,8 @@ def audit(path):
         gates=gates, AA_mean_abs_us=aa, arm_failures=failures, rows=rows,
         nominated_M_by_arm={arm: [row['M'] for row in rows if row['arm'] == arm and row['decision'] == 'nominate to P4']
                            for arm in ARMS},
+        nomination_gate='valid TASK-gated point estimate below one; uncertainty retained as evidence, not a veto',
+        promotion_gate='held-out per-seed six-load geomean lower confidence bound above one; P4 composes and confirms',
         whole_layer_verified=False, comparison_with_PAIR_verified=False)
 
 

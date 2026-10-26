@@ -1,0 +1,1052 @@
+{
+  "direct_PAIR_receipt": {
+    "job": "1b135b70835f4634",
+    "receipt": "runs/muse_moe_w4a16/20261026T013338Z_submit_1b135b70835f4634.json",
+    "receipt_sha256": "f6fef312badd4b0fd621a24442a0787844fef93119164a3f062039d7b7a21d2a",
+    "official_passed": true,
+    "rows": [
+      {
+        "M": 8,
+        "arm": "ILP",
+        "control": "PAIR",
+        "control_us": 67.992,
+        "arm_us": 68.832,
+        "ratio": 1.01094,
+        "SE": 0.00178,
+        "seeds": 32,
+        "wins": 3,
+        "delta_us": 0.839,
+        "point_nominee": false
+      },
+      {
+        "M": 8,
+        "arm": "S14",
+        "control": "PAIR",
+        "control_us": 67.877,
+        "arm_us": 69.361,
+        "ratio": 1.02243,
+        "SE": 0.00226,
+        "seeds": 32,
+        "wins": 0,
+        "delta_us": 1.484,
+        "point_nominee": false
+      },
+      {
+        "M": 16,
+        "arm": "ILP",
+        "control": "PAIR",
+        "control_us": 77.777,
+        "arm_us": 79.314,
+        "ratio": 1.02063,
+        "SE": 0.00242,
+        "seeds": 32,
+        "wins": 2,
+        "delta_us": 1.538,
+        "point_nominee": false
+      },
+      {
+        "M": 16,
+        "arm": "S14",
+        "control": "PAIR",
+        "control_us": 77.806,
+        "arm_us": 79.86,
+        "ratio": 1.02739,
+        "SE": 0.00254,
+        "seeds": 32,
+        "wins": 0,
+        "delta_us": 2.054,
+        "point_nominee": false
+      },
+      {
+        "M": 32,
+        "arm": "ILP",
+        "control": "PAIR",
+        "control_us": 110.582,
+        "arm_us": 111.854,
+        "ratio": 1.0119,
+        "SE": 0.0022,
+        "seeds": 32,
+        "wins": 4,
+        "delta_us": 1.271,
+        "point_nominee": false
+      },
+      {
+        "M": 32,
+        "arm": "S14",
+        "control": "PAIR",
+        "control_us": 110.534,
+        "arm_us": 112.727,
+        "ratio": 1.02071,
+        "SE": 0.00283,
+        "seeds": 32,
+        "wins": 2,
+        "delta_us": 2.193,
+        "point_nominee": false
+      }
+    ],
+    "AA": {
+      "8": {
+        "mean_abs_us": 0.488,
+        "max_abs_us": 1.424,
+        "seeds": 32
+      },
+      "16": {
+        "mean_abs_us": 0.377,
+        "max_abs_us": 0.928,
+        "seeds": 32
+      },
+      "32": {
+        "mean_abs_us": 0.364,
+        "max_abs_us": 1.648,
+        "seeds": 32
+      }
+    },
+    "decision": "PAIR wins direct point comparison at M8/16/32. ILP remains a valid alternative versus S14; composition with PAIR remains unmeasured."
+  },
+  "gate": "Every valid TASK-gated per-shape point estimate below1 nominates; SE and A:A are descriptive. P4 composes and confirms six-load R on held-out seeds.",
+  "rows": [
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 1,
+      "arm": "NORM",
+      "control": "S14",
+      "ratio": 0.99839,
+      "se": 0.00213,
+      "n": 16,
+      "wins": 11,
+      "arm_us": 36.354,
+      "AA_mean_abs_us": 0.243,
+      "AA_fraction": 0.00667350965505859,
+      "upper95_plus_AA": 1.0092383096550586,
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00213,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 1,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.9989,
+      "se": 0.00232,
+      "n": 16,
+      "wins": 9,
+      "arm_us": 36.611,
+      "AA_mean_abs_us": 0.243,
+      "AA_fraction": 0.006630048346125482,
+      "upper95_plus_AA": 1.0100772483461256,
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00232,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 8,
+      "arm": "EPBASE",
+      "control": "S14",
+      "ratio": 0.99656,
+      "se": 0.00174,
+      "n": 16,
+      "wins": 11,
+      "arm_us": 70.892,
+      "AA_mean_abs_us": 0.415,
+      "AA_fraction": 0.0058338373864469896,
+      "upper95_plus_AA": 1.005804237386447,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00174,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 8,
+      "arm": "PROD",
+      "control": "S14",
+      "ratio": 0.98056,
+      "se": 0.00308,
+      "n": 16,
+      "wins": 16,
+      "arm_us": 69.896,
+      "AA_mean_abs_us": 0.415,
+      "AA_fraction": 0.005821969783678608,
+      "upper95_plus_AA": 0.9924187697836786,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00308,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 8,
+      "arm": "NORM",
+      "control": "S14",
+      "ratio": 0.98142,
+      "se": 0.00344,
+      "n": 16,
+      "wins": 15,
+      "arm_us": 69.78,
+      "AA_mean_abs_us": 0.415,
+      "AA_fraction": 0.005836762682717111,
+      "upper95_plus_AA": 0.9939991626827172,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00344,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 8,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.97493,
+      "se": 0.00235,
+      "n": 16,
+      "wins": 16,
+      "arm_us": 69.454,
+      "AA_mean_abs_us": 0.415,
+      "AA_fraction": 0.005825380107697181,
+      "upper95_plus_AA": 0.9853613801076971,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00235,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 16,
+      "arm": "EPBASE",
+      "control": "S14",
+      "ratio": 0.99979,
+      "se": 0.00213,
+      "n": 16,
+      "wins": 8,
+      "arm_us": 81.499,
+      "AA_mean_abs_us": 0.235,
+      "AA_fraction": 0.0028828654339317045,
+      "upper95_plus_AA": 1.0068476654339316,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00213,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 16,
+      "arm": "PROD",
+      "control": "S14",
+      "ratio": 0.97831,
+      "se": 0.00254,
+      "n": 16,
+      "wins": 16,
+      "arm_us": 79.647,
+      "AA_mean_abs_us": 0.235,
+      "AA_fraction": 0.002886522405112559,
+      "upper95_plus_AA": 0.9861749224051126,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00254,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 16,
+      "arm": "NORM",
+      "control": "S14",
+      "ratio": 0.9834,
+      "se": 0.00313,
+      "n": 16,
+      "wins": 15,
+      "arm_us": 79.913,
+      "AA_mean_abs_us": 0.235,
+      "AA_fraction": 0.0028918824221340705,
+      "upper95_plus_AA": 0.9924266824221342,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00313,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 16,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.97262,
+      "se": 0.00357,
+      "n": 16,
+      "wins": 16,
+      "arm_us": 79.237,
+      "AA_mean_abs_us": 0.235,
+      "AA_fraction": 0.002884582959980817,
+      "upper95_plus_AA": 0.9825017829599809,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00357,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 32,
+      "arm": "PROD",
+      "control": "S14",
+      "ratio": 0.98517,
+      "se": 0.00236,
+      "n": 16,
+      "wins": 15,
+      "arm_us": 108.915,
+      "AA_mean_abs_us": 0.225,
+      "AA_fraction": 0.0020351948767387412,
+      "upper95_plus_AA": 0.9918307948767388,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00236,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 32,
+      "arm": "NORM",
+      "control": "S14",
+      "ratio": 0.99,
+      "se": 0.0032,
+      "n": 16,
+      "wins": 13,
+      "arm_us": 109.606,
+      "AA_mean_abs_us": 0.225,
+      "AA_fraction": 0.002032279254785322,
+      "upper95_plus_AA": 0.9983042792547854,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.0032,
+      "seeds": 16
+    },
+    {
+      "job": "d650c04ead114119",
+      "batch": "epilogue",
+      "M": 32,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.97932,
+      "se": 0.0028,
+      "n": 16,
+      "wins": 16,
+      "arm_us": 108.289,
+      "AA_mean_abs_us": 0.225,
+      "AA_fraction": 0.002034805012512813,
+      "upper95_plus_AA": 0.9868428050125129,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.0028,
+      "seeds": 16
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 8,
+      "arm": "LOCAL",
+      "control": "S14",
+      "ratio": 0.99212,
+      "se": 0.00191,
+      "n": 32,
+      "wins": 25,
+      "arm_us": 72.566,
+      "AA_mean_abs_us": 0.442,
+      "AA_fraction": 0.006043009673951989,
+      "upper95_plus_AA": 1.001906609673952,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00191,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 8,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.9783,
+      "se": 0.00228,
+      "n": 32,
+      "wins": 31,
+      "arm_us": 71.652,
+      "AA_mean_abs_us": 0.442,
+      "AA_fraction": 0.006034843409814102,
+      "upper95_plus_AA": 0.9888036434098141,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00228,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 8,
+      "arm": "TREE",
+      "control": "S14",
+      "ratio": 0.97888,
+      "se": 0.00233,
+      "n": 32,
+      "wins": 32,
+      "arm_us": 71.628,
+      "AA_mean_abs_us": 0.442,
+      "AA_fraction": 0.006040444518903222,
+      "upper95_plus_AA": 0.9894872445189031,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00233,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 16,
+      "arm": "LOCAL",
+      "control": "S14",
+      "ratio": 0.98615,
+      "se": 0.00188,
+      "n": 32,
+      "wins": 29,
+      "arm_us": 78.172,
+      "AA_mean_abs_us": 0.363,
+      "AA_fraction": 0.004579292457657473,
+      "upper95_plus_AA": 0.9944140924576574,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00188,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 16,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.97462,
+      "se": 0.0025,
+      "n": 32,
+      "wins": 31,
+      "arm_us": 77.386,
+      "AA_mean_abs_us": 0.363,
+      "AA_fraction": 0.004571719174010803,
+      "upper95_plus_AA": 0.9840917191740108,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.0025,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 16,
+      "arm": "TREE",
+      "control": "S14",
+      "ratio": 0.97404,
+      "se": 0.00235,
+      "n": 32,
+      "wins": 32,
+      "arm_us": 77.37,
+      "AA_mean_abs_us": 0.363,
+      "AA_fraction": 0.00456994338891043,
+      "upper95_plus_AA": 0.9832159433889105,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00235,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 32,
+      "arm": "LOCAL",
+      "control": "S14",
+      "ratio": 0.98488,
+      "se": 0.00193,
+      "n": 32,
+      "wins": 30,
+      "arm_us": 109.714,
+      "AA_mean_abs_us": 0.322,
+      "AA_fraction": 0.002890527735749312,
+      "upper95_plus_AA": 0.9915533277357492,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00193,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 32,
+      "arm": "PAIR",
+      "control": "S14",
+      "ratio": 0.97778,
+      "se": 0.00221,
+      "n": 32,
+      "wins": 32,
+      "arm_us": 108.818,
+      "AA_mean_abs_us": 0.322,
+      "AA_fraction": 0.0028933187524122846,
+      "upper95_plus_AA": 0.9850049187524123,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00221,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 32,
+      "arm": "TREE",
+      "control": "S14",
+      "ratio": 0.97746,
+      "se": 0.00216,
+      "n": 32,
+      "wins": 32,
+      "arm_us": 108.914,
+      "AA_mean_abs_us": 0.322,
+      "AA_fraction": 0.002889822428705217,
+      "upper95_plus_AA": 0.9845834224287051,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00216,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 8,
+      "arm": "TREE",
+      "control": "PAIR",
+      "ratio": 0.99904,
+      "se": 0.00132,
+      "n": 32,
+      "wins": 16,
+      "arm_us": 71.637,
+      "AA_mean_abs_us": 0.442,
+      "AA_fraction": 0.00616407275569887,
+      "upper95_plus_AA": 1.0077912727556988,
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00132,
+      "seeds": 32
+    },
+    {
+      "job": "29ad388de976432c",
+      "batch": "epilogue_next",
+      "M": 16,
+      "arm": "TREE",
+      "control": "PAIR",
+      "ratio": 0.99811,
+      "se": 0.00119,
+      "n": 32,
+      "wins": 17,
+      "arm_us": 77.372,
+      "AA_mean_abs_us": 0.363,
+      "AA_fraction": 0.004682752546140723,
+      "upper95_plus_AA": 1.0051251525461409,
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00119,
+      "seeds": 32
+    },
+    {
+      "job": "dd539517bc8344dd",
+      "batch": "rebuild",
+      "control": "S14",
+      "M": 8,
+      "arm": "ILP",
+      "control_us": 73.075,
+      "arm_us": 72.396,
+      "ratio": 0.99055,
+      "se": 0.00181,
+      "n": 32,
+      "wins": 26,
+      "delta_us": -0.68,
+      "AA_mean_abs_us": 0.487,
+      "AA_fraction": 0.006664385904892233,
+      "upper95_plus_AA": 1.0007619859048922,
+      "lower95_minus_AA": 0.9803380140951078,
+      "decision": "nominate to P4",
+      "invalid_reasons": [],
+      "leaves_open": "Other chain assignments, decode/activation dependency cuts and register budgets; combination with PAIR is unmeasured.",
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00181,
+      "seeds": 32
+    },
+    {
+      "job": "dd539517bc8344dd",
+      "batch": "rebuild",
+      "control": "S14",
+      "M": 16,
+      "arm": "ILP",
+      "control_us": 79.316,
+      "arm_us": 78.55,
+      "ratio": 0.99041,
+      "se": 0.00132,
+      "n": 32,
+      "wins": 30,
+      "delta_us": -0.765,
+      "AA_mean_abs_us": 0.316,
+      "AA_fraction": 0.00398406374501992,
+      "upper95_plus_AA": 0.9969812637450199,
+      "lower95_minus_AA": 0.9838387362549801,
+      "decision": "nominate to P4",
+      "invalid_reasons": [],
+      "leaves_open": "Other chain assignments, decode/activation dependency cuts and register budgets; combination with PAIR is unmeasured.",
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00132,
+      "seeds": 32
+    },
+    {
+      "job": "dd539517bc8344dd",
+      "batch": "rebuild",
+      "control": "S14",
+      "M": 32,
+      "arm": "ILP",
+      "control_us": 111.42,
+      "arm_us": 110.38,
+      "ratio": 0.99046,
+      "se": 0.00143,
+      "n": 32,
+      "wins": 30,
+      "delta_us": -1.04,
+      "AA_mean_abs_us": 0.314,
+      "AA_fraction": 0.0028181654999102496,
+      "upper95_plus_AA": 0.9960809654999102,
+      "lower95_minus_AA": 0.9848390345000898,
+      "decision": "nominate to P4",
+      "invalid_reasons": [],
+      "leaves_open": "Other chain assignments, decode/activation dependency cuts and register budgets; combination with PAIR is unmeasured.",
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "handoff": true,
+      "SE": 0.00143,
+      "seeds": 32
+    }
+  ],
+  "patches": {
+    "EPBASE": {
+      "kind": "base",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "3175a2a7a3e4e28e59426bd0558b7ec31132b5003f7e7364a5e11f0636b5001c",
+      "cell_sha256": "92bd07699144c4fe6d1d3658f193c87b29243736c1212f3f6bf5ef6d2a890197",
+      "patch_sha256": "3930e0ae78b217d526f6478b37817d95083ebbb3bafe401b342aaaf516d31283",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_epbase.patch"
+    },
+    "ILP": {
+      "kind": "ilp",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "f71a020685ab1f33e91e2cf1694e951fa1fea716ddf5d3c480258fd68177468d",
+      "cell_sha256": "809bef8e6721f2ac7dd873349edca127cc9547c4f008e2adca1d707fa32efc1c",
+      "patch_sha256": "b55c2970a7737c3708b0e5f251ab24b31ef1888bdae55f812c8e155d9eac230d",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_ilp.patch"
+    },
+    "LOCAL": {
+      "kind": "local",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "b6c0cf9ff7259eac6456d7e9c5a628f42bebaa308268d088af85781f04563641",
+      "cell_sha256": "a543e902a0adb6ff8f51f585354d6df6e02921b10c558e1577a420efb86aabb5",
+      "patch_sha256": "41245f9b92bb853e3de09025aed97ddb89254649e27984460a70a88f6da58fc3",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_local.patch"
+    },
+    "NORM": {
+      "kind": "norm",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "4138338191c5749b42cee4adcbbad99e632f5fae53cf395592e864930a55dfe1",
+      "cell_sha256": "1c9a8d8e3296bc6aee762cc642bc38c43a499197a742466bb3239212d38f223e",
+      "patch_sha256": "f9ef172ce4772e3ccd22891d233fd239405f26d0306f57ee8faefb731ba76dc6",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_norm.patch"
+    },
+    "PAIR": {
+      "kind": "pair",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "1f7379477f1cefc77e5f9cdc709e14a258f6999356507db5d8bd6511ae31eb22",
+      "cell_sha256": "23e1492fb04ea15daff23a71f59de6ea7ee05de8850ff00af35c9400eaf48299",
+      "patch_sha256": "786a5ecb50cabc7f555f75836d105073958c48507bd21b5f04453827f49c32f5",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_pair.patch"
+    },
+    "PROD": {
+      "kind": "producer",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "2fa78ca6e3fdd5beda572efc524824e4171437b82c9699de5dbfe284c3ff0833",
+      "cell_sha256": "f85d1768db15b355067f9c339cf23b65222ab5f6b3cfc5fe4d03299b2450c5ef",
+      "patch_sha256": "af23dbd8dfa3938f08e20762b82ce4d9d656f7f5ec1aaa9076be00d9c3c5b412",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_prod.patch"
+    },
+    "TREE": {
+      "kind": "tree",
+      "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+      "candidate_sha256": "2dd1246369ea719670cf385c01105efc526d12f8c52e0993f92579b728ae2f4b",
+      "cell_sha256": "becea36c8cde102424b2752745dbe9d1445e4e9511ba6fcc6b3b37125ddd2c3d",
+      "patch_sha256": "4802f579e99743c190bfa9e323902dc42c681e77232d1cef2e7be1f8e055b001",
+      "flag_map": {
+        "1": 95,
+        "8": 69,
+        "16": 69,
+        "32": 69
+      },
+      "promoted": false,
+      "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/point_tree.patch"
+    }
+  },
+  "changed_verdicts": [
+    "ILP M8 now nominates: .99055 SE .00181 n32.",
+    "M1 PAIR .99890 SE .00232 n16 and NORM .99839 SE .00213 n16 now nominate despite A:A.",
+    "TREE direct gains over PAIR at M8/M16 (.99904/.99811) now nominate; TREE versus S14 nominates M8/M16/M32.",
+    "LOCAL versus S14 nominates M8/M16/M32 even though it loses to PAIR; alternative, not a combined claim.",
+    "PROD and NORM point wins are retained as alternatives to PAIR; EPBASE control-alias point wins are exported for completeness/deduplication.",
+    "FLIGHT/K16/LUT and ONCE families remain slower; PDIA remains deliberately incorrect and ineligible."
+  ]
+}

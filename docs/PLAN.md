@@ -1,14 +1,14 @@
 # Plan
 
-## Status (2026-10-26 10:50 KST, day 5 of 14; the kernel track closes 2026-11-05 16:59 KST)
+## Status (2026-10-26 11:30 KST, day 5 of 14; the kernel track closes 2026-11-05 16:59 KST)
 - G0 (R-20261025-1): the highest score on the overall kernel board; by our fit (GOAL) that is our decode-layer
-  speedup. Board: S15 `9c5fc18d` 1.8003x places ~94th of 698 (S14 final `9b94c126` 1.7428x); leader 2.3443x,
-  10th 2.1665x, 50th 1.9218x, all rising (SOTA "Leaderboard").
+  speedup. Board (11:30 KST): S16 `c6cc2874` 1.8242x, 94th of 705 (S15 `9c5fc18d` 1.8003x); leader 2.3601x,
+  10th 2.1665x, 50th 1.9357x, all rising (SOTA "Leaderboard").
 - Incumbent S15 `60254883` (`problems/muse_decode_layer/cand_r3_best7_s15.py` = S14 + the public proj port's
   winning shapes + last-CTA decode-1 sliding + register-fold N128 full verify): paired over S14 at a geomean of
   1.026 (`281b1383`, FINDINGS "Our kernels on the H200"). Our old gate
-  had rejected it for v1 alone; the gates now follow the score (Ranked work). S16 composes the reset labs' winners (P4).
-- **What 1st takes:** ~1.30x over S15. The leader sits at ~1.3x the one-continuous-stream bound (3.08x); their
+  had rejected it for v1 alone; the gates now follow the score (Ranked work). S16 (`435df5f78a0d`: DSM cluster sliding at v1 / v16, PAIR epilogue, early release, library O / pool) awaits its paired confirmation `37c2879f`; S17 adds S15n, ILP and later nominations (P4).
+- **What 1st takes:** ~1.29x over S16. The leader sits at ~1.3x the one-continuous-stream bound (3.08x); their
   component boards run 1.4-1.8x ours (attention 2.91 vs 1.59, MoE 2.52 vs 1.69, proj 1.61 vs 1.19; P12 is
   re-measuring ours with S15's kernels). No single stage closes the gap. Each lane removes its stage's time
   above roof by whatever removes it: structural rebuilds, and the waits, recomputation and work our winning kernels

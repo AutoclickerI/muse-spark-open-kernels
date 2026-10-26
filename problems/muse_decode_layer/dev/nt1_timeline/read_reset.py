@@ -94,32 +94,16 @@ def main():
         'This supports a dependency hypothesis, not a proven full-kernel win; microprobes lack independent A:A. '
         'Send the prepared packed four-arm batch for paired TASK-gated measurement. '
         'More flight, more warps, and LUT are not identified fixes; PDIA cannot be promoted.')
-    pair_rows = [row for row in report['runs']['epilogue']['rows']
-                 if row['arm'] == 'PAIR' and row['M'] != 1]
-    confirmation = [row for row in report['runs']['epilogue_next']['rows']
-                    if row['arm'] == 'PAIR' and row['control'] == 'S14']
-    assert len(pair_rows) == len(confirmation) == 3
-    assert all(row['clears_summary_control'] for row in pair_rows + confirmation)
-    report['P4_nomination'] = dict(arm='epi_PAIR', M=[8, 16, 32], keep_M1_flags=95,
-        rows=[[b, q, w] for b, q in ((1, 8), (16, 1), (32, 1)) for w in (True, False)],
-        kernel_winner=True, whole_layer_verified=False,
-        screened_S15_candidate_sha256='af86073f101381a365affa7e66f0cebe4505d6b2fb45ea9fbfb38a56eb9bf601')
-    # Audit the current P4 reader without editing the integration lane's source.
-    target = R / 'problems/muse_decode_layer/dev/s16/decide.py'
-    source = target.read_text()
-    rel = str(target.relative_to(R))
-    sys.path.insert(0, str(target.parent))
-    spec = importlib.util.spec_from_file_location('p3a_p4_decide', target)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    selected, evidence = module.nominate({'epi': {'log': logs['epilogue']}})
-    assert len(selected) == 1 and selected[0]['name'] == 'epi_PAIR'
-    assert sorted(selected[0]['rows']) == sorted(report['P4_nomination']['rows'])
-    report['P4_parser_status'] = dict(target=rel, source_sha256=digest(source.encode()),
-        actual_receipt_selects=selected, status='P4 concurrently repaired absent ONCE/M1 handling; verified',
-        edited_by_P3a=False)
+    candidates=[]
+    for batch,run in report['runs'].items():
+        for row in run['rows']:
+            if row['arm'] not in ('S14','PDIA') and row.get('ratio',1)<1:
+                candidates.append(dict(job=run['job'],batch=batch,**row))
+    report['P4_point_estimate_candidates']=candidates
+    report['nomination_gate']='valid TASK-gated per-shape point estimate below one; SE and A:A describe uncertainty'
+    report['promotion_gate']='P4 held-out per-seed six-load geomean lower confidence bound above one'
     (D / 'h200_results.json').write_text(json.dumps(report, indent=2) + '\n')
-    print('3 official-passing receipts; 96 pipe / 66 work / 6 latency rows; PAIR nominates 6 shapes; current P4 parser verified')
+    print('3 official-passing receipts; 96 pipe / 66 work / 6 latency rows; all per-shape point winners handed to P4')
 
 
 if __name__ == '__main__':

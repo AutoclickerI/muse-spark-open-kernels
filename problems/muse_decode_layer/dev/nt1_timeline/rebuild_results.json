@@ -50,7 +50,7 @@
       "AA_fraction": 0.006657735003007601,
       "upper95_plus_AA": 1.0916665350030077,
       "lower95_minus_AA": 1.0615734649969921,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other lookahead distances, issuing agents and schedules that avoid competing with useful TMA work."
     },
@@ -68,7 +68,7 @@
       "AA_fraction": 0.006664385904892233,
       "upper95_plus_AA": 1.0007619859048922,
       "lower95_minus_AA": 0.9803380140951078,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "nominate to P4",
       "invalid_reasons": [],
       "leaves_open": "Other chain assignments, decode/activation dependency cuts and register budgets; combination with PAIR is unmeasured."
     },
@@ -86,7 +86,7 @@
       "AA_fraction": 0.006669405642289784,
       "upper95_plus_AA": 1.2169206056422899,
       "lower95_minus_AA": 1.1909593943577101,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other K partitions and occupancy layouts without this shared B-cache/epilogue cost; higher occupancy generally is not closed."
     },
@@ -104,7 +104,7 @@
       "AA_fraction": 0.006661286572104666,
       "upper95_plus_AA": 1.6179132865721049,
       "lower95_minus_AA": 1.5812667134278953,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other lossless code layouts and decoder instruction reductions without this table/packing/shared-service cost."
     },
@@ -122,7 +122,7 @@
       "AA_fraction": 0.003987985562482648,
       "upper95_plus_AA": 1.0646583855624827,
       "lower95_minus_AA": 1.0410416144375174,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other lookahead distances, issuing agents and schedules that avoid competing with useful TMA work."
     },
@@ -158,7 +158,7 @@
       "AA_fraction": 0.0039852193762374985,
       "upper95_plus_AA": 1.2246684193762376,
       "lower95_minus_AA": 1.1983915806237624,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other K partitions and occupancy layouts without this shared B-cache/epilogue cost; higher occupancy generally is not closed."
     },
@@ -176,7 +176,7 @@
       "AA_fraction": 0.00398858960442279,
       "upper95_plus_AA": 1.640192189604423,
       "lower95_minus_AA": 1.6061078103955773,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other lossless code layouts and decoder instruction reductions without this table/packing/shared-service cost."
     },
@@ -194,7 +194,7 @@
       "AA_fraction": 0.0028179631690418926,
       "upper95_plus_AA": 1.039515563169042,
       "lower95_minus_AA": 1.022864436830958,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other lookahead distances, issuing agents and schedules that avoid competing with useful TMA work."
     },
@@ -230,7 +230,7 @@
       "AA_fraction": 0.0028194054107442694,
       "upper95_plus_AA": 1.2446726054107442,
       "lower95_minus_AA": 1.2207273945892556,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other K partitions and occupancy layouts without this shared B-cache/epilogue cost; higher occupancy generally is not closed."
     },
@@ -248,7 +248,7 @@
       "AA_fraction": 0.002820089093260526,
       "upper95_plus_AA": 1.6898596890932605,
       "lower95_minus_AA": 1.6577203109067393,
-      "decision": "close exact recipe at this M; no measured gain",
+      "decision": "close exact recipe at this M; point estimate is slower",
       "invalid_reasons": [],
       "leaves_open": "Other lossless code layouts and decoder instruction reductions without this table/packing/shared-service cost."
     }
@@ -256,12 +256,15 @@
   "nominated_M_by_arm": {
     "FLIGHT": [],
     "ILP": [
+      8,
       16,
       32
     ],
     "K16": [],
     "LUT": []
   },
+  "nomination_gate": "valid TASK-gated point estimate below one; uncertainty retained as evidence, not a veto",
+  "promotion_gate": "held-out per-seed six-load geomean lower confidence bound above one; P4 composes and confirms",
   "whole_layer_verified": false,
   "comparison_with_PAIR_verified": false
 }
