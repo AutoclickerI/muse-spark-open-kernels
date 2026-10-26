@@ -1,0 +1,36 @@
+--- decode_D8_D4.cu
++++ decode_EXP.cu
+@@ -533,6 +533,15 @@
+   }
+   __syncthreads();proxy_fence();
+ }
++
++// 2^x via an affine exponent/mantissa bit construction. The bias centers
++// the normal-range relative error at about +/-3.04%; values remain FP32.
++// Below the FP32 FTZ range return zero, as ex2.approx.ftz does.
++DI float probability_exp(float x){
++  if(x < -126.f)return 0.f;
++  return __int_as_float(__float2int_rn(fmaf(x,8388608.f,1064992256.f)));
++}
++
+ template<int L,int QT,int NK>
+ DI void prob(float (&s)[NK/8][4],float (&m)[2],float (&ls)[2],float (&alpha)[2],uint32_t (&pk)[NK/8],float sc,int key0,int seq,int end,int window) {
+   constexpr int H=8/QT,N=NK/8;
+@@ -561,7 +570,7 @@
+     float total=0.f;
+ #pragma unroll
+     for(int n=0;n<N;n++)for(int e=0;e<2;e++) {
+-      const float v=ex2(s[n][2*rh+e]-safe+8.f);s[n][2*rh+e]=v;total+=v;
++      const float v=probability_exp(s[n][2*rh+e]-safe+8.f);s[n][2*rh+e]=v;total+=v;
+     }
+     ls[rh]=ls[rh]*alpha[rh]+total;
+   }
+@@ -605,7 +614,7 @@
+     float mx=fmaxf(v0,v1);mx=fmaxf(mx,__shfl_xor_sync(0xffffffffu,mx,1));mx=fmaxf(mx,__shfl_xor_sync(0xffffffffu,mx,2));
+     const float mm=fmaxf(m[rh],mx),safe=mm==-INFINITY?0.f:mm;
+     alpha[rh]=ex2(m[rh]-safe);m[rh]=mm;
+-    v0=ex2(v0-safe+8.f);v1=ex2(v1-safe+8.f);
++    v0=probability_exp(v0-safe+8.f);v1=probability_exp(v1-safe+8.f);
+     ls[rh]=ls[rh]*alpha[rh]+v0+v1;
+     pk[rh]=(uint32_t)fp8pair(v0,v1);
+   }

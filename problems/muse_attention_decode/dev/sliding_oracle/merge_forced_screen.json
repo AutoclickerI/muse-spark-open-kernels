@@ -1,0 +1,301 @@
+{
+ "problem": "muse_decode_layer",
+ "file": "/data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/s15_sliding_merge.py",
+ "sha256": "b66ae11ebc67cac16dd91fe924091bcab8a08e5dd37f9996f0a469d8adf95ce2",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 90.04469375999179,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, layer sliding",
+   "first_call_s": 0.008369448012672365,
+   "ok": true,
+   "msg": "update relative L2 error 2.734e-02 (worst row 2.734e-02) [bound 0.085]; attention input relative L2 error 1.349e-02 (worst row 1.349e-02) [bound 0.042]"
+  },
+  {
+   "case": "batch 1, ctx 3000, layer full",
+   "first_call_s": 0.000920688034966588,
+   "ok": true,
+   "msg": "update relative L2 error 7.022e-03 (worst row 7.022e-03) [bound 0.150]; attention input relative L2 error 4.976e-03 (worst row 4.976e-03) [bound 0.108]"
+  },
+  {
+   "case": "batch 8, ctx 2047, layer sliding",
+   "first_call_s": 0.010666007059626281,
+   "ok": true,
+   "msg": "update relative L2 error 6.801e-03 (worst row 9.303e-03) [bound 0.150]; attention input relative L2 error 4.808e-03 (worst row 6.277e-03) [bound 0.098]"
+  },
+  {
+   "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+   "first_call_s": 0.03737982304301113,
+   "ok": true,
+   "msg": "update relative L2 error 7.313e-03 (worst row 9.438e-03) [bound 0.150]; attention input relative L2 error 5.545e-03 (worst row 6.768e-03) [bound 0.117]"
+  },
+  {
+   "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+   "first_call_s": 0.037099492037668824,
+   "ok": true,
+   "msg": "update relative L2 error 6.547e-02 (worst row 9.872e-02) [bound 0.150]; attention input relative L2 error 3.456e-02 (worst row 5.136e-02) [bound 0.086]"
+  },
+  {
+   "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+   "first_call_s": 0.031871440005488694,
+   "ok": true,
+   "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.870e-02) [bound 0.116]"
+  },
+  {
+   "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+   "first_call_s": 0.00790963601320982,
+   "ok": true,
+   "msg": "update relative L2 error 7.277e-03 (worst row 9.861e-03) [bound 0.150]; attention input relative L2 error 5.222e-03 (worst row 7.400e-03) [bound 0.116]"
+  },
+  {
+   "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+   "first_call_s": 0.019225184922106564,
+   "ok": true,
+   "msg": "update relative L2 error 7.540e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.112e-02 (worst row 6.990e-02) [bound 0.128]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, layer full, q_len 8",
+   "first_call_s": 0.0175875520799309,
+   "ok": true,
+   "msg": "update relative L2 error 8.249e-02 (worst row 9.637e-02) [bound 0.150]; attention input relative L2 error 5.442e-02 (worst row 7.016e-02) [bound 0.136]"
+  },
+  {
+   "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "first_call_s": 0.014884490054100752,
+   "ok": true,
+   "msg": "update relative L2 error 6.472e-02 (worst row 9.082e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.504e-02) [bound 0.109]"
+  },
+  {
+   "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+   "first_call_s": 0.0015828909818083048,
+   "ok": true,
+   "msg": "update relative L2 error 5.139e-03 (worst row 5.139e-03) [bound 0.118]; attention input relative L2 error 3.807e-03 (worst row 3.807e-03) [bound 0.075]"
+  },
+  {
+   "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+   "first_call_s": 0.005888377083465457,
+   "ok": true,
+   "msg": "update relative L2 error 6.004e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.067e-02 (worst row 5.826e-02) [bound 0.101]"
+  },
+  {
+   "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+   "first_call_s": 0.0032685729674994946,
+   "ok": true,
+   "msg": "update relative L2 error 6.627e-03 (worst row 8.837e-03) [bound 0.150]; attention input relative L2 error 4.794e-03 (worst row 6.344e-03) [bound 0.097]"
+  }
+ ],
+ "shapes": [
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1",
+   "load": "decode 1",
+   "weight": 46,
+   "us": 145.40800591930747,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer full, page 1",
+   "load": "decode 1",
+   "weight": 16,
+   "us": 172.03200003132224,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 46,
+   "us": 251.90401216968894,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer full, page 1, spread agentic",
+   "load": "decode 16",
+   "weight": 16,
+   "us": 518.143983092159,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, spread agentic",
+   "load": "decode 32",
+   "ok": false,
+   "msg": "OutOfMemoryError: CUDA out of memory. Tried to allocate 512.00 MiB. GPU 0 has a total capacity of 94.97 GiB of which 49.75 MiB is free. Process 3968394 has 15.17 GiB memory in use. Process 3986245 has 11.92 GiB memory in use. Including non-PyTorch memory, this process has 20.66 GiB memory in use. Process 3986247 has 19.15 GiB memory in use. Process 3990482 has 15.33 GiB memory in use. Process 3999692 has 12.56 GiB memory in use. Of the allocated memory 14.21 GiB is allocated by PyTorch, and 1.53 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)"
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer full, page 1, spread agentic",
+   "load": "decode 32",
+   "weight": 16,
+   "us": 3374.591977801174,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer sliding, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 46,
+   "us": 302.08000680431724,
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, dist soft, layer full, page 1, q_len 8",
+   "load": "verify 1",
+   "weight": 16,
+   "us": 337.92001148685813,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 46,
+   "us": 557.0879890583456,
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 16",
+   "weight": 16,
+   "us": 837.6639797352254,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer sliding, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 46,
+   "us": 860.6719984672964,
+   "ok": true
+  },
+  {
+   "case": "batch 32, ctx 80000, dist soft, layer full, page 1, q_len 8, spread agentic",
+   "load": "verify 32",
+   "weight": 16,
+   "us": 1973.2480361126363,
+   "ok": true
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GLUE_CL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "LT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_PORT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_X_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_G_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_P8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PG_RAW",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_pf_GROUPED_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SP_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P7_PREFETCH_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CPP",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SMALLM_VAR_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "NF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PARTIAL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "cs_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

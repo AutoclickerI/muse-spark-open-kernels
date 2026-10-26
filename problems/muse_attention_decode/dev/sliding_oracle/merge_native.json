@@ -1,0 +1,36 @@
+[
+  {
+    "name": "GLOBAL",
+    "sha256": "bdb668509fecb913e682fe5d2653ed4b97b53da575a3644dd81e46706620d7a4",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/GLOBAL.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN41_GLOBAL__N__3a9d9c2c_9_GLOBAL_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:172 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "counts": {
+      "MUFU.EX2": 78,
+      "F2I": 0,
+      "QGMMA": 9,
+      "LDGSTS": 24,
+      "ATOM": 1,
+      "MEMBAR": 6
+    },
+    "no_C75": true,
+    "nonspinning": true,
+    "device_acq_rel": true,
+    "cg_partial_reads": true
+  },
+  {
+    "name": "GLOBAL_CLOCK",
+    "sha256": "399d7f8cdcb2a908658f80bc2c686935e646c0b03c5d9d7f7af4ed1a089a4586",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/GLOBAL_CLOCK.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN48_GLOBAL__N__61fd31a0_15_GLOBAL_CLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:159 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:760 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "counts": {
+      "MUFU.EX2": 78,
+      "F2I": 0,
+      "QGMMA": 9,
+      "LDGSTS": 24,
+      "ATOM": 1,
+      "MEMBAR": 6
+    },
+    "no_C75": true,
+    "nonspinning": true,
+    "device_acq_rel": true,
+    "cg_partial_reads": true
+  }
+]

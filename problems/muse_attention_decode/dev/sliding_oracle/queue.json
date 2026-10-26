@@ -17,7 +17,7 @@
   "followup": {
     "job": "7bd3eced41e24402",
     "sender_pid": 3610930,
-    "state": "running",
+    "state": "done",
     "host": "muse_attention_decode",
     "mode": "check",
     "wrapper_sha256": "0f1a49c5d2116dc8d089539a5dca5a2a914b95ed4c4ad022d889e6519be674d8",
@@ -25,6 +25,22 @@
     "seeds": 16,
     "rounds": 10,
     "loads": 4,
-    "source": "runs/muse_attention_decode/20261026T065219Z_check_7bd3eced41e24402.py"
+    "source": "runs/muse_attention_decode/20261026T065219Z_check_7bd3eced41e24402.py",
+    "receipt": "runs/muse_attention_decode/20261026T065219Z_check_7bd3eced41e24402.json",
+    "TASK": 328,
+    "elapsed_lab_s": 272.50742520199856
+  },
+  "merge": {
+    "job": "3a9a31747042429a",
+    "sender_pid": 4068097,
+    "state": "running",
+    "host": "muse_attention_decode",
+    "mode": "check",
+    "wrapper_sha256": "2e901f9d2ba729ace5ed3c2b55fde9ba15728dae221ed9f95f711676b08c7af4",
+    "payload_sha256": "a8cb756c854452c6f0f23f802045a0a42f18e6a516bc38518c9e845cda870d9c",
+    "seeds": 16,
+    "rounds": 10,
+    "loads": 2,
+    "source": "runs/muse_attention_decode/20261026T073628Z_check_3a9a31747042429a.py"
   }
 }

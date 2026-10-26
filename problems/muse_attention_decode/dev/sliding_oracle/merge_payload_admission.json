@@ -1,0 +1,78 @@
+{
+  "payload_sha256": "a8cb756c854452c6f0f23f802045a0a42f18e6a516bc38518c9e845cda870d9c",
+  "layer_TASK": 20,
+  "producer_attention_TASK": 4,
+  "archive_chars": 3829,
+  "standins": [
+    "All S15 Hopper glue forced",
+    "decode C1 DSM every key",
+    "verify real two WGs/global last-WG merge",
+    "unrelated full N128 replaced by frozen S14 N64 arithmetic"
+  ],
+  "clock_glue": [
+    {
+      "B": 16,
+      "L": 8,
+      "clocks": [
+        {
+          "candidate": false,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            294912,
+            2304,
+            1
+          ]
+        },
+        {
+          "candidate": true,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            294912,
+            2304,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "B": 32,
+      "L": 8,
+      "clocks": [
+        {
+          "candidate": false,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            589824,
+            2304,
+            1
+          ]
+        },
+        {
+          "candidate": true,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            589824,
+            2304,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

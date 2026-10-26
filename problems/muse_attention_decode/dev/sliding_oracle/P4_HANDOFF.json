@@ -1,0 +1,123 @@
+{
+  "status": "Per-shape point nominations only; held-out six-load G0 remains with P4 S19",
+  "job": "7bd3eced41e24402",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "nominees": [
+    {
+      "case": "d16S",
+      "arm": "EXP",
+      "control": "INC",
+      "mean": 0.9961808313784971,
+      "SE": 0.005248599577345958,
+      "CI95": [
+        0.9849937061945379,
+        1.0073679565624565
+      ],
+      "n": 16,
+      "seed_ids": [
+        35000051,
+        35104780,
+        35209509,
+        35314238,
+        35418967,
+        35523696,
+        35628425,
+        35733154,
+        35837883,
+        35942612,
+        36047341,
+        36152070,
+        36256799,
+        36361528,
+        36466257,
+        36570986
+      ],
+      "A_A": {
+        "mean": 0.9885137797010368,
+        "SE": 0.004515776901239961,
+        "CI95": [
+          0.9788886290770396,
+          0.9981389303250341
+        ],
+        "n": 16
+      },
+      "EXP_over_RAW": {
+        "mean": 1.0050553794445067,
+        "SE": 0.005788862460505009,
+        "CI95": [
+          0.9927167111837553,
+          1.017394047705258
+        ],
+        "n": 16
+      }
+    },
+    {
+      "case": "d32S",
+      "arm": "EXP",
+      "control": "INC",
+      "mean": 0.9981382336446515,
+      "SE": 0.0048239747234894385,
+      "CI95": [
+        0.9878561749124781,
+        1.0084202923768248
+      ],
+      "n": 16,
+      "seed_ids": [
+        35000051,
+        35104780,
+        35209509,
+        35314238,
+        35418967,
+        35523696,
+        35628425,
+        35733154,
+        35837883,
+        35942612,
+        36047341,
+        36152070,
+        36256799,
+        36361528,
+        36466257,
+        36570986
+      ],
+      "A_A": {
+        "mean": 0.9986939065214694,
+        "SE": 0.0009493970949007867,
+        "CI95": [
+          0.9966703145149873,
+          1.0007174985279514
+        ],
+        "n": 16
+      },
+      "EXP_over_RAW": {
+        "mean": 0.9981897145783171,
+        "SE": 0.004521603717629618,
+        "CI95": [
+          0.988552144389174,
+          1.00782728476746
+        ],
+        "n": 16
+      }
+    }
+  ],
+  "source": "structural.source(family)",
+  "sources": {
+    "d": "959d531f5fab8fab4dc5f1139e1bb7a6188011ed6a610500767abb1b41e1c0cd",
+    "v": "5262c6c0b6ffc1fcebc0f902d18e32a6943b5663b79d98744b7614c3373cfac7"
+  },
+  "selected_candidate_sha256": "25325c56b3786afbadb5d9b795f936dd691d9833e3f2e7c0c38fff1e6d11ec24",
+  "patch": "P4_exp_decode.patch",
+  "readable_CUDA_patch": "P4_exp_decode.cuda.patch",
+  "selection": {
+    "(16, 1)": "dEA",
+    "(32, 1)": "dEA"
+  },
+  "verification": "All-shapes exact candidate babd11fe normal/forced13TASK12graphs25static,24fresh/partial unit TASK; native whole-layer320TASK plus8producer attention TASK. Selected derivative removes unselected dispatch rows/source only; retained CUDA/runtime bytes are identical.",
+  "caveats": [
+    "EXP loses both verify loads; preserve current FA3v16/RAW2v32.",
+    "d16 EXP/INC.996181 lies inside1.15pct duplicate-control drift and EXP/RAW1.005055; do not infer a shader win.",
+    "d32 EXP/INC.998138 has a wideCI; native probability cycles increase at all4 loads; fewerSFU sites did not reduce work time.",
+    "Port the separate shape hook and native kernel; do not replace the shared R2dsm kernel for untested v1/d1 shapes.",
+    "Preserve S19 full-attention, other stages, PDL policies, and all existing selections outside the nominated shapes."
+  ]
+}

@@ -1,6 +1,8 @@
 # P5 sliding mechanism oracle
 
-This ranks the next structural change at d16/d32 and v16/v32. Baselines are
+This ranks the next structural change at d16/d32 and v16/v32. The first
+oracle uses standalone, ready BF16 projection inputs; the confirmation
+records the real selected projection/partial layouts separately. Baselines are
 the native one-launch DSM D8/D4 decode kernels and RAW2 verify, plus exact
 S15 FA3 at the verify loads. All keys, FP8 Q/PV and the existing split geometry
 remain in the full-work controls. The scalar reference sees each kernel's
@@ -128,10 +130,64 @@ attention TASK gates. The exact payload passes40 layer+8 producer attention
 TASK gates locally with forced glue and explicit DSM substitutes.
 These probes preserve actual partial layouts (d16 qkv3/gate split included),
 record real PDL wait and clocks, and do not time a synthetic delay.
-Native result is pending; no new EXP nomination yet.
+Receipt7bd3eced is complete in272.51s private time: all320 layer TASK and8
+producer-attention TASK gates pass. Ratios are whole sliding-layer time/
+INC with95% t15 intervals on16 fresh paired seed ratios:
 
-Decision on the follow-up: establish every TASK count, source identity and
-INC2/INC controls. Rank EXP/INC, and EXP/RAW at v16 separately. Every
+| Load | EXP/INC [95%CI] | INC2/INC |
+|---|---:|---:|
+| d16 |0.996181 [0.984994,1.007368]|0.988514|
+| d32 |0.998138 [0.987856,1.008420]|0.998694|
+| v16 |1.013426 [1.004386,1.022467]|0.999121|
+| v32 |1.008693 [1.003643,1.013742]|1.000771|
+
+This revises the SFU-unit hypothesis. Despite fewer SFU sites, instrumented
+probability cycles increase2374→3086,4605→5962,8444→10575,8308→10322.
+The constant-softmax oracle removed max/exp/sum/packing together; it did
+not isolate exp-unit throughput. Affine exponent construction adds FMA/F2I
+issue and does not accelerate this block. Close this exponent recipe at
+verify, retaining FA3v16 and RAW2v32. Max/reduction/packing remain open.
+
+Hand both decode point estimates to P4, with the full CI/SE/seeds and1.15%
+d16 duplicate-control offset. D16 EXP/RAW is1.005055 with identical RAW/INC
+0.991353; no shader win is established there. The selected decode-only
+artifact25325c56 removes unselected source/dispatch rows, preserving the
+screened CUDA/runtime bytes. [P4_HANDOFF.json](P4_HANDOFF.json) and the
+exact/readable patches are the inbox; P4 confirms held-out six-load G0.
+
+Real-producer median waits are64/64/240/256ns (d16/d32/v16/v32). Baseline
+decode16 uses qkv3 with10 FP32 partials; decode32 uses one FP32 partial;
+verify16 uses3 FP32 partials and verify32 BF16. These real H200 layouts
+replace the local stand-in layout assumptions. PDL waiting is a small term
+in these ordinary-edge graphs. Full node resources/phase distributions,
+not only medians, are in [exp_result.json](exp_result.json).
+
+## Second structural response: global last-writer merge
+
+The independent real merge removal was about5us at verify. [merge.py](merge.py)
+keeps RAW2's CCTA2/two WG/four logical KV slices, all math, formats and
+per-query masks. It publishes FP32 partials to GPU memory; a device-scope
+acquire/release counter selects the last WG, which reduces once. Other WGs
+return without spinning. Counter reset follows completed reduction, and
+partial reads use cg loads. This uses the [CUDA device-scope memory model](https://nvidia.github.io/cccl/unstable/libcudacxx/extended_api/memory_model.html).
+The grid is no longer constrained to two-CTA clusters; QKV ordinary edges
+remain. Temporary values are written and consumed within the timed call.
+
+Native GLOBAL remains172 registers,94208B dynamic shared,9 QGMMA/24 LDGSTS/
+78 SFU-exp sites, with one publication atomic and no spills/C75. It passes
+12 fresh/strided-partial TASK checks including repeated graph/counter resets.
+The former local global-reduction substitute is now an intentional native
+arm with explicit publication ordering; no native performance is inferred
+from its local use. Normal/forced screens each pass13TASK/12graphs/25static, and the exact packed payload passes20layer+4real-producer attention TASK checks.
+
+Sent attention check **3a9a31747042429a**, sender4068097, wrapper2e901f9d,
+payloada8cb756c:16 new seeds x10 cold,160layer+4producer TASK gates expected.
+It compares GLOBAL to INC/INC2, native RAW2, and exact S15 at v16/v32.
+Native result is pending; this is an independent merge experiment, not a
+retest of the losing exponent recipe.
+
+Decision on each valid follow-up: establish every TASK count, source identity and
+INC2/INC controls. Rank new/INC, and new/RAW at v16 separately. Every
 affected measured point below1 goes to P4 with CI/SE/seeds and exact source;
 P4 confirms G0 on held-out six-load pairs. A loss closes only this exponent
 construction, not the softmax lever. No standalone small-increment run is
