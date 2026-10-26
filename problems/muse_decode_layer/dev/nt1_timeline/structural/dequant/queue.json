@@ -1,0 +1,18 @@
+{
+  "utc": "20261026T053532Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "11b3849eb86749df",
+  "sha256": "8f7217c145421dd04b3e05ab03401b157830ebd657026f1af97233ac7173b98c",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_dequant.py",
+  "source": "runs/muse_moe_w4a16/20261026T053532Z_check_11b3849eb86749df.py",
+  "git": "73f1f23+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_dequant.py: P3a structural dequant after48dc8b04 depth/phase losses: exact byte-pair64KiB lane-bank table,onePRMT+oneLDS perpair,HMUL2 retained. LUT1/2rawstages versus c49 PAIR/PAIR+BLOCK BASE and S15;all16freshseeds M8/16/32,240pairs48AA,TASK before/after,readflushABBA. Actual64KiB address helper32768checks and1.61B-code/rawscale exact bank proof pass;116 native TASK andall4normal/forced13TASK12shape27static screens pass. Local explicit32KiB table/one-stage standin absent from payload. Exact packed local16seeds all gates passes4417chars62.1s. Both exactsm90a127regs0spills;integerSHFLOP3 falls409to181-184,PRMT/LDSeach+128sites;table init/shared/residency costs measured,no static-count speedup claim. Every valid pointwinner exactpatch/SE/CI to P4 S18,wholelayerR confirms.",
+  "snapshot": "runs/sent/8f7217c145421dd0/lab_moe_p3a_dequant.py",
+  "sender": 2944970,
+  "sender_log": "runs/detached/8f7217c145421dd0.log",
+  "payload": "prof/lab/moe_p3a_dequant.py",
+  "payload_sha256": "b1682d7a1863cdf70f0fd57ea0670a14c2b5dfe126738444cd8e1cbc770efc20",
+  "state": "complete16seeds/TASK/AA/source audited",
+  "receipt": "runs/muse_moe_w4a16/20261026T053532Z_check_11b3849eb86749df.json"
+}

@@ -1,0 +1,11 @@
+{
+  "all256_code_pairs_all32_lanes_all4_byte_positions": true,
+  "checks": 32768,
+  "table_bytes": 65536,
+  "bank_mapping": "bank=lane for every code pair;entry64 words;upper32 replicas unused padding",
+  "runtime_decode": "onePRMT address andoneLDS per BF16x2 result;scale multiplication retained",
+  "table_is_fixed_all_possible_codes": true,
+  "no_weight_values_decoded_in_prepare": true,
+  "probe_sha256": "4a76ae5e6b25de16a53e7511d55d13598e590d93f42fde60a7c153a2fbc17604",
+  "source_file_sha256": "d3b3122409b0a9a45ff19fa9194ffb5d5ae8c98d7afdb3205d931689819460b9"
+}

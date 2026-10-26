@@ -1,0 +1,94 @@
+{
+  "LUT1": {
+    "normal": {
+      "candidate_sha256": "b0908f68d4720ae416f9a0bbadaa20c68723b79c77c0a1df395ecf64bf1a3b86",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_dq_lut1_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_dq1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_dq0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/lut1/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "b0908f68d4720ae416f9a0bbadaa20c68723b79c77c0a1df395ecf64bf1a3b86",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_dq_lut1_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_dq1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_dq0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/lut1/forced/local.json"
+    }
+  },
+  "LUT2": {
+    "normal": {
+      "candidate_sha256": "eee92f8f1529c445e17ced899c32684b56716f5eaea5dcfe95a6110cf6879e9f",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_dq_lut2_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_dq1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_dq0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/lut2/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "eee92f8f1529c445e17ced899c32684b56716f5eaea5dcfe95a6110cf6879e9f",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_dq_lut2_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_dq1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_dq0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/lut2/forced/local.json"
+    }
+  }
+}

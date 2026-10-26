@@ -1,0 +1,170 @@
+{
+  "BASE": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/base.py",
+    "candidate_sha256": "6695bf0c37ab7dba3db42dbe1027e6048a361e901ee120a441b571150860f26c",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/base.patch",
+    "patch_sha256": "666bfe57f516a166d17d66ead978f3d752e0d4dee50f65d4673edf1afa36614d",
+    "cells": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/fused0_cell.py",
+        "cell_sha256": "3378308881072312c8382e132d723a7cba0463c71f0df8fe329516f90acebffe",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "prefix": "rvc_struct_fused0",
+        "split": false,
+        "block": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/fused1_cell.py",
+        "cell_sha256": "abf2e52dda917731bb4c86f1160f39f7801572df035bf42c27bd873208f1e997",
+        "cuda_sha256": "0c7fdaf4e4959a33b8993a8e55540fe60d508e04390fc9c06e67cc0f35c91569",
+        "prefix": "rvc_struct_fused1",
+        "split": false,
+        "block": true
+      }
+    ],
+    "depth": 2,
+    "split": false,
+    "prefix": "rvc_struct_base"
+  },
+  "D3": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/d3.py",
+    "candidate_sha256": "f8ec247bea1be676b1b75b4272dc1fecc3c2caca60fe77cc56364b485aac6480",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/d3.patch",
+    "patch_sha256": "c1657b48d7c5d86bfc2195fdc1ddd91395a6d189618511162fdc32ddc8841a8a",
+    "cells": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/fused0_cell.py",
+        "cell_sha256": "3378308881072312c8382e132d723a7cba0463c71f0df8fe329516f90acebffe",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "prefix": "rvc_struct_fused0",
+        "split": false,
+        "block": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/fused1_cell.py",
+        "cell_sha256": "abf2e52dda917731bb4c86f1160f39f7801572df035bf42c27bd873208f1e997",
+        "cuda_sha256": "0c7fdaf4e4959a33b8993a8e55540fe60d508e04390fc9c06e67cc0f35c91569",
+        "prefix": "rvc_struct_fused1",
+        "split": false,
+        "block": true
+      }
+    ],
+    "depth": 3,
+    "split": false,
+    "prefix": "rvc_struct_d3"
+  },
+  "D4": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/d4.py",
+    "candidate_sha256": "fb5c2a8f6a0472a2f23a6e6488d3c24f9602b6dfbbc684df862165410b67e3ee",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/d4.patch",
+    "patch_sha256": "de37b27aec82249fac833e32638905ab15b96acf26041b6f6b4c0095737bf434",
+    "cells": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/fused0_cell.py",
+        "cell_sha256": "3378308881072312c8382e132d723a7cba0463c71f0df8fe329516f90acebffe",
+        "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+        "prefix": "rvc_struct_fused0",
+        "split": false,
+        "block": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/fused1_cell.py",
+        "cell_sha256": "abf2e52dda917731bb4c86f1160f39f7801572df035bf42c27bd873208f1e997",
+        "cuda_sha256": "0c7fdaf4e4959a33b8993a8e55540fe60d508e04390fc9c06e67cc0f35c91569",
+        "prefix": "rvc_struct_fused1",
+        "split": false,
+        "block": true
+      }
+    ],
+    "depth": 4,
+    "split": false,
+    "prefix": "rvc_struct_d4"
+  },
+  "SPLIT2": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/split2.py",
+    "candidate_sha256": "7dbb6237487678e8a591afbbc70fd984c136a4e416414604b02a328e61efb33b",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/split2.patch",
+    "patch_sha256": "1de5b3563b0de2ee55f84a418cd8f10bcf19ddbd1c9c7cca432f3133690e8952",
+    "cells": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/split0_cell.py",
+        "cell_sha256": "bda07961b48f8d470ee8a19d56283782285251e0de6ff8d6850d1abfa55954fb",
+        "cuda_sha256": "0cca00ade69cab6b6dca0bad44044465277141a7977fb4e2a4a3ce2137df0812",
+        "prefix": "rvc_struct_split0",
+        "split": true,
+        "block": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/split1_cell.py",
+        "cell_sha256": "a23fd280248cd02908de493acf266d2a40d757a2a6d55b4ea70835250aedfdc8",
+        "cuda_sha256": "a1975d2eb4b5ff781b4afaedf0987e36d4e63e983e37a74d4e088509533ce601",
+        "prefix": "rvc_struct_split1",
+        "split": true,
+        "block": true
+      }
+    ],
+    "depth": 2,
+    "split": true,
+    "prefix": "rvc_struct_split2"
+  },
+  "SPLIT3": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/split3.py",
+    "candidate_sha256": "18a4a20e30963759d3a38dac31c336d232cc88b5f14f881521cae62064fb26b4",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/split3.patch",
+    "patch_sha256": "fdbad60a70fb1ff27a1c3964e91b4b46ff5ae9f1d64123a06c0ac5c394af16de",
+    "cells": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/split0_cell.py",
+        "cell_sha256": "bda07961b48f8d470ee8a19d56283782285251e0de6ff8d6850d1abfa55954fb",
+        "cuda_sha256": "0cca00ade69cab6b6dca0bad44044465277141a7977fb4e2a4a3ce2137df0812",
+        "prefix": "rvc_struct_split0",
+        "split": true,
+        "block": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/split1_cell.py",
+        "cell_sha256": "a23fd280248cd02908de493acf266d2a40d757a2a6d55b4ea70835250aedfdc8",
+        "cuda_sha256": "a1975d2eb4b5ff781b4afaedf0987e36d4e63e983e37a74d4e088509533ce601",
+        "prefix": "rvc_struct_split1",
+        "split": true,
+        "block": true
+      }
+    ],
+    "depth": 3,
+    "split": true,
+    "prefix": "rvc_struct_split3"
+  },
+  "SPLIT4": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/split4.py",
+    "candidate_sha256": "9acebd8436932d35c05e74caa24a735f61ef6901e1419e0fb1c53b7ab51d521d",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/split4.patch",
+    "patch_sha256": "d767b5b1d59f9dd12d28c65f2fc2def36bec56324e62f6670e6bddaafc2e297c",
+    "cells": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/split0_cell.py",
+        "cell_sha256": "bda07961b48f8d470ee8a19d56283782285251e0de6ff8d6850d1abfa55954fb",
+        "cuda_sha256": "0cca00ade69cab6b6dca0bad44044465277141a7977fb4e2a4a3ce2137df0812",
+        "prefix": "rvc_struct_split0",
+        "split": true,
+        "block": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/split1_cell.py",
+        "cell_sha256": "a23fd280248cd02908de493acf266d2a40d757a2a6d55b4ea70835250aedfdc8",
+        "cuda_sha256": "a1975d2eb4b5ff781b4afaedf0987e36d4e63e983e37a74d4e088509533ce601",
+        "prefix": "rvc_struct_split1",
+        "split": true,
+        "block": true
+      }
+    ],
+    "depth": 4,
+    "split": true,
+    "prefix": "rvc_struct_split4"
+  }
+}

@@ -35,7 +35,7 @@ including the original FP32 global scale; no NVFP4 value is widened or predecode
 There is no runtime FP64 or sign/exponent branch. W13/SwiGLU is unchanged.
 `fast_extremes.json`:224 native helper checks,zero/signed/tiny/huge scales and norm sums down to1e-40,
 worst relative9.33e-8;16 captured complete-MoE zero/negative/1e-10/1e10 scale TASK checks pass.
-The new PAIR+BLOCK FAST image uses124 registers and zero spills. H200 timing remains unmeasured.
+The new PAIR+BLOCK FAST image uses124 registers and zero spills. H200 receipt d7fb2d8bddae4b8c is complete;the verdict is below.
 
 ## Next integer/address cut
 
@@ -60,7 +60,7 @@ layout with a zero rotation in both words; it does not close other packed decode
 FLUSH1 is independent: PAIR calls flush_vec_norm twice consecutively at segment transitions.
 The first call resets nv0; the second only adds zeros. Remove that second call,retain every required
 flush/publication/fence/acquire. The count build falls3352→3296 instructions,ATOMG7→6,125regs/zero spills.
-This also leaves other norm ownership/scheduling open. H200 decides whether either cut pays.
+This also leaves other norm ownership/scheduling open. The measured verdict below decides these exact cuts.
 
 ## Arms and validation
 
@@ -75,7 +75,7 @@ Changed MoE arithmetic runs natively on GPU0; local Hopper-only attention glue u
 64 independent BASE:A pairs,each arm paired against BASE and S15,TASK before/after,read-flushed AB/BA.
 Weights375353+7919*s,routes379000+M+97*s. The bounded receipt retains448 seed ratios and64 A:A times.
 The wrapper is975473 bytes,below the server1MB source limit. Local timing is never H200 evidence.
-Queue/admission records will pin the actual screened send; no prefill host is used.
+Queue/admission records pin the exact screened send on the MoE host.
 
 Reproduce:
 
@@ -89,4 +89,6 @@ python3 problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/build_lab.
 CUDA_VISIBLE_DEVICES=0 tools/img python3 problems/muse_decode_layer/dev/nt1_timeline/review/run_lab_local.py --payload prof/lab/moe_p3a_next_issue.py --output problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/lab_local_validation.json
 ```
 
-Sent check**`d7fb2d8bddae4b8c`**,sender1971066,wrapper`76a7f192a080d0b6`,on MoE. All6 normal/forced13TASK/12shape/28static screens pass; exact packed16seed/64AA local lab passes5919characters/94.7s. `admission.json` and `queue.json` pin the send. H200 result pending.
+Sent check**`d7fb2d8bddae4b8c`**,sender1971066,wrapper`76a7f192a080d0b6`,on MoE. All6 normal/forced13TASK/12shape/28static screens pass; exact packed16seed/64AA local lab passes5919characters/94.7s. `admission.json` and `queue.json` pin the send. H200 receipt complete;verdict below.
+
+Instruction-cut receipt d7fb2d8bddae4b8c is complete:all16seeds/TASK gates pass. FAST/INDEX direct M1 point wins go to P4;all3 recipes lose directly to BASE at M8/16/32. Exact per-M ratios,CI,seeds and patches are in `../../point_nominations.json`;no standalone small-cut rerun. Structural depth/phase batch48dc8b04902b40b1 is complete;see `../../structural/README.md`.

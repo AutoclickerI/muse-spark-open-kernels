@@ -200,3 +200,27 @@ both source words;that rejects only this cheap one-SHF-saving repack,not other l
 No new throughput/saturation claim is inferred from the static instruction cuts.
 
 Instruction-cut follow-up accepted as MoE check`d7fb2d8bddae4b8c`,sender1971066,wrapper`76a7f192a080d0b6`. All6 full screens and the exact16seed/64AA local payload pass. H200 timings are pending;no new cut is promoted from static counts alone.
+
+## Current structural verdicts
+
+The d7fb2d8bddae4b8c instruction batch completes16 seeds/all TASK gates. INDEX's18/segment setup cut
+wins only M1 directly (.992518,SE.002501);FAST's cheaper cancellation wins M1 .997548,SE.002243.
+All3 cuts lose versus exact c49 PAIR(+BLOCK) at M8/16/32. FLUSH1's duplicate-zero atomic removal has
+no direct point win. Every S15 point alternative and exact patch is in `point_nominations.json`.
+Static integer cuts did not establish a dynamic win;the per-tile decoder remains the larger issue lever.
+
+Depth/phase receipt48dc8b04902b40b1 completes16 seeds at M8/16/32,TASK/A:A/source audits pass.
+Depth3/4 lose7.5–11.5% against exact PAIR(+BLOCK);actual residency falls2→1. Ordered W13/W2/combine
+launches remove expert-ready publication/acquire and the final grid spin but pay extra launches/routes;
+SPLIT2 ratios1.02922/1.02973/1.00146 versus BASE. SPLIT2 M32/S15 .97691 SE.00388 remains a P4 alternative.
+This closes only those exact depth/residency and ordered-phase recipes. The old copy microprobes did
+not isolate a depth shortage;the full oracle360810b1 also removes readiness/finalizer/math. No additive
+9–16us depth or16.6us wait saving follows from those overlapping diagnostics.
+
+`structural/dequant/` tests a core decoder cut in one batch:fixed64KiB bank-replicated byte-pair table,
+onePRMT+oneLDS per pair,scale HMUL2 retained. Full-imageSHF+LOP3 falls409→181–184;PRMT/LDS each add128sites.
+Two raw depths expose the residency cost. Exact code/scale bank bitproof andnative32768-case address proof
+pass;static counts are not timing evidence. Receipt11b3849eb86749df completes16seeds/TASK:both table depths lose,LUT1 1.185/1.146/1.123,
+LUT2 1.175/1.191/1.222 versus BASE. LUT1 has2CTAs,so1CTA residency alone is not the cause.
+No decoder point nominee;other direct packed decoders andlower-footprint overlap remain open. Full CI/resources
+andremaining alternatives are in that README.

@@ -63,7 +63,36 @@ if review_path.exists():
   else:
    result['unmeasured_composition_followup']=dict(queue=cq,manifest=cm,status='Unmeasured composition; no additive gain or P4 promotion claimed')
  if (D/'next_issue/queue.json').exists():
-  result['next_instruction_followup']=dict(queue=json.loads((D/'next_issue/queue.json').read_text()),manifest=str((D/'next_issue/manifest.json').relative_to(R)),admission=str((D/'next_issue/admission.json').relative_to(R)),status='FAST/INDEX/FLUSH1 are independently screened but H200-unmeasured')
+  follow=dict(queue=json.loads((D/'next_issue/queue.json').read_text()),manifest=str((D/'next_issue/manifest.json').relative_to(R)),admission=str((D/'next_issue/admission.json').relative_to(R)))
+  if (D/'next_issue/results.json').exists():
+   nr=json.loads((D/'next_issue/results.json').read_text());assert nr['measured'] and not nr['invalid'] and nr['source_audit']['verified'];nm=json.loads((D/'next_issue/manifest.json').read_text());new=[]
+   for v in nr['summary']:
+    if not v['point_nominee'] or v['arm']=='S15':continue
+    spec={k:nm[v['arm']][k] for k in ('base_sha256','candidate','candidate_sha256','patch','patch_sha256')}
+    assert hashlib.sha256((R/spec['patch']).read_bytes()).hexdigest()==spec['patch_sha256']
+    new.append(dict(v,job=nr['job'],batch='S15 instruction cuts',handoff=True,exact_patch=spec,
+      shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='375353+7919*seed',routing='379000+M+97*seed')))
+   result['rows']+=new;result['instruction_rows']=new;follow.update(status='Measured; M1 FAST/INDEX direct point winners, M8+ alternatives versus S15 only',source_audit=nr['source_audit'])
+  else:follow['status']='FAST/INDEX/FLUSH1 are independently screened but H200-unmeasured'
+  result['next_instruction_followup']=follow
+ structural=D.parent/'structural'
+ if (structural/'results.json').exists():
+  sr=json.loads((structural/'results.json').read_text());assert sr['measured'] and not sr['invalid'] and sr['source_audit']['verified'];sm=json.loads((structural/'manifest.json').read_text());new=[]
+  for v in sr['summary']:
+   if not v['point_nominee'] or v['arm']=='S15':continue
+   spec={k:sm[v['arm']][k] for k in ('base_sha256','candidate','candidate_sha256','patch','patch_sha256')}
+   assert hashlib.sha256((R/spec['patch']).read_bytes()).hexdigest()==spec['patch_sha256']
+   new.append(dict(v,job=sr['job'],batch='structural depth-phase',handoff=True,exact_patch=spec,shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='475353+7919*seed',routing='479000+M+97*seed')))
+  result['rows']+=new;result['structural_rows']=new;result['structural_followup']=dict(queue=json.loads((structural/'queue.json').read_text()),source_audit=sr['source_audit'],status='All recipes lose versus c49;SPLIT2M32 versus S15 remains a point alternative for P4')
+dq=P/'structural/dequant'
+if (dq/'results.json').exists():
+ dr=json.loads((dq/'results.json').read_text());assert dr['measured'] and not dr['invalid'] and dr['source_audit']['verified'];dm=json.loads((dq/'manifest.json').read_text());new=[]
+ for v in dr['summary']:
+  if not v['point_nominee'] or v['arm']=='S15':continue
+  spec={k:dm[v['arm']][k] for k in ('base_sha256','candidate','candidate_sha256','patch','patch_sha256')}
+  assert hashlib.sha256((R/spec['patch']).read_bytes()).hexdigest()==spec['patch_sha256']
+  new.append(dict(v,job=dr['job'],batch='structural exact byte-pair decoder',handoff=True,exact_patch=spec,shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='575353+7919*seed',routing='579000+M+97*seed')))
+ result['rows']+=new;result['dequant_rows']=new;result['dequant_followup']=dict(queue=json.loads((dq/'queue.json').read_text()),source_audit=dr['source_audit'],status='Measured;every valid point winner exported;no A:A or per-shape CI veto;P4 confirms whole-layer R')
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')

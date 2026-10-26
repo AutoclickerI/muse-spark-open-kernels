@@ -1,0 +1,232 @@
+{
+  "D3": {
+    "normal": {
+      "candidate_sha256": "f8ec247bea1be676b1b75b4272dc1fecc3c2caca60fe77cc56364b485aac6480",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_d3_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_fused1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_fused0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/d3/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "f8ec247bea1be676b1b75b4272dc1fecc3c2caca60fe77cc56364b485aac6480",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_d3_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_fused1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_fused0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/d3/forced/local.json"
+    }
+  },
+  "D4": {
+    "normal": {
+      "candidate_sha256": "fb5c2a8f6a0472a2f23a6e6488d3c24f9602b6dfbbc684df862165410b67e3ee",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_d4_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_fused1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_fused0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/d4/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "fb5c2a8f6a0472a2f23a6e6488d3c24f9602b6dfbbc684df862165410b67e3ee",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_d4_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_fused1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_fused0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/d4/forced/local.json"
+    }
+  },
+  "SPLIT2": {
+    "normal": {
+      "candidate_sha256": "7dbb6237487678e8a591afbbc70fd984c136a4e416414604b02a328e61efb33b",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_split2_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_split1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_split0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 0,
+      "report": "runs/screen/p3a_structural/split2/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "7dbb6237487678e8a591afbbc70fd984c136a4e416414604b02a328e61efb33b",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_split2_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_split1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_split0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 0,
+      "report": "runs/screen/p3a_structural/split2/forced/local.json"
+    }
+  },
+  "SPLIT3": {
+    "normal": {
+      "candidate_sha256": "18a4a20e30963759d3a38dac31c336d232cc88b5f14f881521cae62064fb26b4",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_split3_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_split1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_split0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/split3/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "18a4a20e30963759d3a38dac31c336d232cc88b5f14f881521cae62064fb26b4",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_split3_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_split1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_split0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/split3/forced/local.json"
+    }
+  },
+  "SPLIT4": {
+    "normal": {
+      "candidate_sha256": "9acebd8436932d35c05e74caa24a735f61ef6901e1419e0fb1c53b7ab51d521d",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_split4_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_split1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_split0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/split4/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "9acebd8436932d35c05e74caa24a735f61ef6901e1419e0fb1c53b7ab51d521d",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 27,
+      "calls": {
+        "rvc_struct_split4_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_struct_split1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_struct_split0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_structural/split4/forced/local.json"
+    }
+  }
+}

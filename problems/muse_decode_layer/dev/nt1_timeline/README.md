@@ -67,8 +67,8 @@ A:A mean absolute us **.200/.541/.409/.391**,max.736/1.280/1.312/.896; descripti
 Two-base assembly was dropped before H200:37→406 integer instructions,30→31registers; other packed
 assembly remains open. [review/README.md](review/README.md) retains all code-premise and exact-format proofs.
 
-The next single composition arm uses **SHARD2 M1, PAIR M8, PAIR+BLOCK M16/M32**. CANCEL and PACK5
-are excluded by their measured losses. It compares with S15,PAIR and per-shape best independent on
+The measured c49 composition uses **SHARD2 M1, PAIR M8, PAIR+BLOCK M16/M32**. CANCEL and PACK5
+are excluded by their measured losses. It compared with S15,PAIR and per-shape best independent on
 16 fresh seeds (weights275353+7919*s,routes279000+M+97*s),with A:A and TASK before/after.
 `review/combo/manifest.json` and `combo.patch` pin the exact submitted candidate. No additive gain
 or whole-layer promotion is claimed. P4's held-out six-load R confirmation remains the only promotion gate.
@@ -102,4 +102,20 @@ FLUSH1 removes the second consecutive zero norm flush. All are separate changes 
 All9 variants pass810 native component/replay checks; FAST adds224 extreme helper and16 full-MoE scale checks.
 Normal/forced screens,packed-lab admission and queue state live under `review/next_issue/`.
 
-Sent check**`d7fb2d8bddae4b8c`**,sender1971066,wrapper`76a7f192a080d0b6`,on MoE. All6 normal/forced13TASK/12shape/28static screens pass; exact packed16seed/64AA local lab passes5919characters/94.7s. `review/next_issue/admission.json` and `queue.json` pin the send. H200 result pending.
+Sent check**`d7fb2d8bddae4b8c`**,sender1971066,wrapper`76a7f192a080d0b6`,on MoE. All6 normal/forced13TASK/12shape/28static screens pass; exact packed16seed/64AA local lab passes5919characters/94.7s. `review/next_issue/admission.json` and `queue.json` pin the send. H200 receipt complete;verdict below.
+
+Instruction-cut receipt d7fb2d8bddae4b8c is complete:all16seeds/TASK gates pass. FAST/INDEX direct M1 point wins go to P4;all3 recipes lose directly to BASE at M8/16/32. Exact per-M ratios,CI,seeds and patches are in `point_nominations.json`;no standalone small-cut rerun. Structural depth/phase receipt48dc8b04902b40b1 loses versus BASE;SPLIT2 M32/S15 .976908 SE.003876 is a P4 alternative. [structural/README.md](structural/README.md) records all ratios/CI and exact patches. The dequant structural step follows this measured verdict.
+
+
+## Structural depth,waits anddequant:complete
+
+[structural/README.md](structural/README.md) records48dc8b04902b40b1:depth3/4 loses7.5–11.5% versus
+c49 as2CTA residency becomes1. Split W13/W2/combine removes the ready/grid spins butpays launches/routes;
+SPLIT2 ratios1.02922/1.02973/1.00146 versus c49. ItsM32/S15 .976908,SE.003876,CI[.968646,.985169],16seeds
+is an exact-patch alternative in `point_nominations.json`. Fused dependency/low-footprint lookahead remain open.
+
+[structural/dequant/README.md](structural/dequant/README.md) records11b3849eb86749df:the exact64KiB
+lane-bank table decoder loses at allM8/16/32,LUT1 1.18504/1.14567/1.12330,LUT2 1.17463/1.19059/1.22229
+versus c49. No P4 decoder nominee. All16seeds/TASK/AA/source gates pass;the loss closes justthese layouts.
+The next structural hypothesis is recovering3-slot lookahead without losing2CTA residency,by reclaiming
+phase-local route/reduction scratch after auditing lifetimes/resources. No standalone sub1% run is sent.

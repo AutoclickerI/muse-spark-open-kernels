@@ -1,0 +1,673 @@
+{
+  "full_bank_bitproof": {
+    "weights_bit_exact": 1610612736,
+    "scale_codes_bit_exact": true,
+    "density_each_layout": 9.0,
+    "layouts": 2,
+    "retained_bits_per_weight_including_scale": 4.5
+  },
+  "arms": {
+    "LUT1": {
+      "candidate_sha256": "b0908f68d4720ae416f9a0bbadaa20c68723b79c77c0a1df395ecf64bf1a3b86",
+      "TASK_checks": 58,
+      "worst_total": 0.0023573124781250954,
+      "worst_row": 0.0024820503313094378
+    },
+    "LUT2": {
+      "candidate_sha256": "eee92f8f1529c445e17ced899c32684b56716f5eaea5dcfe95a6110cf6879e9f",
+      "TASK_checks": 58,
+      "worst_total": 0.0023573124781250954,
+      "worst_row": 0.0024820503313094378
+    }
+  },
+  "depth_standin_calls": [
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 9
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 24
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 8
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 16
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 1,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    },
+    {
+      "module": "rvc_dq1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "table_bytes": 32768,
+      "M": 32
+    }
+  ],
+  "scope": "M1 unchanged; changed M<=32 paths native decoder math tested. Full64KiB onePRMT address proved separately;H200 executes actual1/2 raw stages.",
+  "executed_local_depth": 1,
+  "table_bytes_local": 32768,
+  "table_bytes_hopper": 65536
+}

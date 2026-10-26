@@ -3092,6 +3092,874 @@
         "weights": "275353+7919*seed",
         "routing": "279000+M+97*seed"
       }
+    },
+    {
+      "M": 1,
+      "arm": "FAST",
+      "control": "BASE",
+      "ratio": 0.9975480625,
+      "SE": 0.0022429999507147204,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9927672212743596,
+        1.0023289037256404
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "INDEX",
+      "control": "BASE",
+      "ratio": 0.99251825,
+      "SE": 0.0025011851432537604,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9871871000630521,
+        0.997849399936948
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.998217875,
+      "SE": 0.0018943884564572118,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9941800815853715,
+        1.0022556684146287
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.9915625625,
+      "SE": 0.0015521658710995578,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9882541992594122,
+        0.9948709257405878
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.9952743125,
+      "SE": 0.003596296271534956,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.99634175,
+      "AA_SE": 0.0018206096197427924,
+      "AA_mean_abs_us": 0.606,
+      "AA_max_abs_us": 1.488,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9876089884463402,
+        1.0029396365536598
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.986109875,
+      "SE": 0.004110084568143544,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.99634175,
+      "AA_SE": 0.0018206096197427924,
+      "AA_mean_abs_us": 0.606,
+      "AA_max_abs_us": 1.488,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9773494371150201,
+        0.99487031288498
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "FLUSH1",
+      "control": "S15",
+      "ratio": 0.9861651875,
+      "SE": 0.002317740568633509,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.99634175,
+      "AA_SE": 0.0018206096197427924,
+      "AA_mean_abs_us": 0.606,
+      "AA_max_abs_us": 1.488,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9812250404182618,
+        0.9911053345817383
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/flush1.py",
+        "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+        "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.973281625,
+      "SE": 0.0038381642029697394,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0001079375,
+      "AA_SE": 0.0018196917927420862,
+      "AA_mean_abs_us": 0.438,
+      "AA_max_abs_us": 1.424,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9651007716537982,
+        0.9814624783462019
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.980996625,
+      "SE": 0.0030655602694491264,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0001079375,
+      "AA_SE": 0.0018196917927420862,
+      "AA_mean_abs_us": 0.438,
+      "AA_max_abs_us": 1.424,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9744625379567979,
+        0.987530712043202
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "FLUSH1",
+      "control": "S15",
+      "ratio": 0.9711675625,
+      "SE": 0.0036908248501845145,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0001079375,
+      "AA_SE": 0.0018196917927420862,
+      "AA_mean_abs_us": 0.438,
+      "AA_max_abs_us": 1.424,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9633007555503352,
+        0.9790343694496648
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/flush1.py",
+        "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+        "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.9794483125,
+      "SE": 0.003950055466613462,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.998953125,
+      "AA_SE": 0.0009411295557068648,
+      "AA_mean_abs_us": 0.252,
+      "AA_max_abs_us": 0.72,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9710289685707526,
+        0.9878676564292473
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.989036625,
+      "SE": 0.003174086602046595,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.998953125,
+      "AA_SE": 0.0009411295557068648,
+      "AA_mean_abs_us": 0.252,
+      "AA_max_abs_us": 0.72,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9822712195545018,
+        0.9958020304454982
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "FLUSH1",
+      "control": "S15",
+      "ratio": 0.9771976875,
+      "SE": 0.0035682018238868715,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.998953125,
+      "AA_SE": 0.0009411295557068648,
+      "AA_mean_abs_us": 0.252,
+      "AA_max_abs_us": 0.72,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9695922453440124,
+        0.9848031296559876
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/flush1.py",
+        "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+        "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "SPLIT2",
+      "control": "S15",
+      "ratio": 0.9769075625,
+      "SE": 0.0038758090531405514,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.9991100625,
+      "AA_SE": 0.0010980379868533274,
+      "AA_mean_abs_us": 0.334,
+      "AA_max_abs_us": 0.8,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9686464710550089,
+        0.9851686539449911
+      ],
+      "job": "48dc8b04902b40b1",
+      "batch": "structural depth-phase",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_structural/split2.py",
+        "candidate_sha256": "7dbb6237487678e8a591afbbc70fd984c136a4e416414604b02a328e61efb33b",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/split2.patch",
+        "patch_sha256": "1de5b3563b0de2ee55f84a418cd8f10bcf19ddbd1c9c7cca432f3133690e8952"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "475353+7919*seed",
+        "routing": "479000+M+97*seed"
+      }
     }
   ],
   "patches": {
@@ -5584,6 +6452,814 @@
     },
     "status": "Measured point nominee; P4 held-out six-load R confirmation remains required"
   },
+  "instruction_rows": [
+    {
+      "M": 1,
+      "arm": "FAST",
+      "control": "BASE",
+      "ratio": 0.9975480625,
+      "SE": 0.0022429999507147204,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9927672212743596,
+        1.0023289037256404
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "INDEX",
+      "control": "BASE",
+      "ratio": 0.99251825,
+      "SE": 0.0025011851432537604,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9871871000630521,
+        0.997849399936948
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.998217875,
+      "SE": 0.0018943884564572118,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9941800815853715,
+        1.0022556684146287
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 1,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.9915625625,
+      "SE": 0.0015521658710995578,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0044928124999999,
+      "AA_SE": 0.0013088768251785852,
+      "AA_mean_abs_us": 0.183,
+      "AA_max_abs_us": 0.384,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9882541992594122,
+        0.9948709257405878
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.9952743125,
+      "SE": 0.003596296271534956,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.99634175,
+      "AA_SE": 0.0018206096197427924,
+      "AA_mean_abs_us": 0.606,
+      "AA_max_abs_us": 1.488,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9876089884463402,
+        1.0029396365536598
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.986109875,
+      "SE": 0.004110084568143544,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.99634175,
+      "AA_SE": 0.0018206096197427924,
+      "AA_mean_abs_us": 0.606,
+      "AA_max_abs_us": 1.488,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9773494371150201,
+        0.99487031288498
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 8,
+      "arm": "FLUSH1",
+      "control": "S15",
+      "ratio": 0.9861651875,
+      "SE": 0.002317740568633509,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.99634175,
+      "AA_SE": 0.0018206096197427924,
+      "AA_mean_abs_us": 0.606,
+      "AA_max_abs_us": 1.488,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9812250404182618,
+        0.9911053345817383
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/flush1.py",
+        "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+        "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.973281625,
+      "SE": 0.0038381642029697394,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0001079375,
+      "AA_SE": 0.0018196917927420862,
+      "AA_mean_abs_us": 0.438,
+      "AA_max_abs_us": 1.424,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9651007716537982,
+        0.9814624783462019
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.980996625,
+      "SE": 0.0030655602694491264,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0001079375,
+      "AA_SE": 0.0018196917927420862,
+      "AA_mean_abs_us": 0.438,
+      "AA_max_abs_us": 1.424,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9744625379567979,
+        0.987530712043202
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "FLUSH1",
+      "control": "S15",
+      "ratio": 0.9711675625,
+      "SE": 0.0036908248501845145,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0001079375,
+      "AA_SE": 0.0018196917927420862,
+      "AA_mean_abs_us": 0.438,
+      "AA_max_abs_us": 1.424,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9633007555503352,
+        0.9790343694496648
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/flush1.py",
+        "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+        "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "FAST",
+      "control": "S15",
+      "ratio": 0.9794483125,
+      "SE": 0.003950055466613462,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.998953125,
+      "AA_SE": 0.0009411295557068648,
+      "AA_mean_abs_us": 0.252,
+      "AA_max_abs_us": 0.72,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9710289685707526,
+        0.9878676564292473
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/fast.py",
+        "candidate_sha256": "3a08c9eb15122c499ef2f5910f8befd4c668b712373817a65f0f26caec9791a5",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast.patch",
+        "patch_sha256": "17d6caaefeb2713da466fae0266cd7bd32f11843158bfc2347d03ecf9405a753"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "INDEX",
+      "control": "S15",
+      "ratio": 0.989036625,
+      "SE": 0.003174086602046595,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.998953125,
+      "AA_SE": 0.0009411295557068648,
+      "AA_mean_abs_us": 0.252,
+      "AA_max_abs_us": 0.72,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9822712195545018,
+        0.9958020304454982
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/index.py",
+        "candidate_sha256": "a6a3f3ee0dd22bfb9b8a8664e3e62ff51eb05f77193e792090c2c1fe2e3cf635",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index.patch",
+        "patch_sha256": "b1c29127d3a09cadb233c235aa2b985897eba9f4a8493cc5006da01235f766e0"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "FLUSH1",
+      "control": "S15",
+      "ratio": 0.9771976875,
+      "SE": 0.0035682018238868715,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.998953125,
+      "AA_SE": 0.0009411295557068648,
+      "AA_mean_abs_us": 0.252,
+      "AA_max_abs_us": 0.72,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9695922453440124,
+        0.9848031296559876
+      ],
+      "job": "d7fb2d8bddae4b8c",
+      "batch": "S15 instruction cuts",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_next_issue/flush1.py",
+        "candidate_sha256": "33dcd2725130845dce13cafcd896a5427de04fa42bbef75a756e5c03435eab27",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/flush1.patch",
+        "patch_sha256": "3c43ec47b4ceee689354d773397e8eb5f1e3be58025d93bd7d78f02199a6459b"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "375353+7919*seed",
+        "routing": "379000+M+97*seed"
+      }
+    }
+  ],
   "next_instruction_followup": {
     "queue": {
       "utc": "20261026T034754Z",
@@ -5600,11 +7276,147 @@
       "sender_log": "runs/detached/76a7f192a080d0b6.log",
       "payload": "prof/lab/moe_p3a_next_issue.py",
       "payload_sha256": "62965790562774e7a20c876bf5257b29f2228275febcc1e02dbe4208f83466a6",
-      "state": "accepted; all screens passed; H200 receipt pending",
-      "admission": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/admission.json"
+      "state": "complete16seeds;all native/officialTASK gates pass;M1 FAST/INDEX direct point winners;M8+ lose versus BASE",
+      "admission": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/admission.json",
+      "receipt": "runs/muse_moe_w4a16/20261026T034754Z_check_d7fb2d8bddae4b8c.json"
     },
     "manifest": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/manifest.json",
     "admission": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/admission.json",
-    "status": "FAST/INDEX/FLUSH1 are independently screened but H200-unmeasured"
+    "status": "Measured; M1 FAST/INDEX direct point winners, M8+ alternatives versus S15 only",
+    "source_audit": {
+      "job": "d7fb2d8bddae4b8c",
+      "wrapper_sha256": "76a7f192a080d0b63a3a3a401b271898ebc75926685ddaba391a343ea3e678d8",
+      "payload_sha256": "62965790562774e7a20c876bf5257b29f2228275febcc1e02dbe4208f83466a6",
+      "expanded_sha256": "6f3b6ae1622c431635d7a6d5a1c983303157b8a905ba7ef0aa491ad76ba10bef",
+      "all12_cells_in_submitted_payload": true,
+      "wrapper_bytes": 975473,
+      "source_cap": 1000000,
+      "verified": true
+    }
+  },
+  "structural_rows": [
+    {
+      "M": 32,
+      "arm": "SPLIT2",
+      "control": "S15",
+      "ratio": 0.9769075625,
+      "SE": 0.0038758090531405514,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.9991100625,
+      "AA_SE": 0.0010980379868533274,
+      "AA_mean_abs_us": 0.334,
+      "AA_max_abs_us": 0.8,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9686464710550089,
+        0.9851686539449911
+      ],
+      "job": "48dc8b04902b40b1",
+      "batch": "structural depth-phase",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_structural/split2.py",
+        "candidate_sha256": "7dbb6237487678e8a591afbbc70fd984c136a4e416414604b02a328e61efb33b",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/split2.patch",
+        "patch_sha256": "1de5b3563b0de2ee55f84a418cd8f10bcf19ddbd1c9c7cca432f3133690e8952"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "475353+7919*seed",
+        "routing": "479000+M+97*seed"
+      }
+    }
+  ],
+  "structural_followup": {
+    "queue": {
+      "utc": "20261026T041755Z",
+      "problem": "muse_moe_w4a16",
+      "mode": "check",
+      "job": "48dc8b04902b40b1",
+      "sha256": "fb490a1eca3ba79ba992bdd7e086cdbaa38e3de7dd0e182270c4d9542682ee89",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_structural.py",
+      "source": "runs/muse_moe_w4a16/20261026T041755Z_check_48dc8b04902b40b1.py",
+      "git": "b296476+dirty",
+      "note": "h200_lab prof/lab/moe_p3a_structural.py: P3a54percent-gap structural verdict from oracle360810b1/c768a8e3: fused D3/D4 and separate W13-W2-combine SPLIT2/3/4 versus c49 PAIR/PAIR+BLOCK BASE and S15. Split removes expert-ready publication/acquire spin and grid spin,pays launches+routing;depth pays residency. All5arms16freshseeds M8/16/32,528paired ratios48AA,TASK before/after. All10 normal/forced13TASK12shape screens pass;348 native current-input/replay TASK checks. Local Hopper-depth standin explicitly3/4to2;actual Hopper source compiled,splitphases124regs/combine40,zero spills. Exact packed local16seeds all gates passes7378chars/44.6s. No additive oracle or depth-attribution claim;every pointwinner to P4,R confirms.",
+      "snapshot": "runs/sent/fb490a1eca3ba79b/lab_moe_p3a_structural.py",
+      "sender": 2232818,
+      "sender_log": "runs/detached/fb490a1eca3ba79b.log",
+      "payload": "prof/lab/moe_p3a_structural.py",
+      "payload_sha256": "5ad839de0bbc2fd7d036cccfb8ea5aa85e5ac5ae3f064fcf2d5426e1c14cff5e",
+      "state": "complete16seeds/allTASK;all structural arms lose versus BASE;SPLIT2M32 pointwin versusS15",
+      "receipt": "runs/muse_moe_w4a16/20261026T041755Z_check_48dc8b04902b40b1.json"
+    },
+    "source_audit": {
+      "verified": true,
+      "job": "48dc8b04902b40b1",
+      "wrapper_sha256": "fb490a1eca3ba79ba992bdd7e086cdbaa38e3de7dd0e182270c4d9542682ee89",
+      "payload_sha256": "5ad839de0bbc2fd7d036cccfb8ea5aa85e5ac5ae3f064fcf2d5426e1c14cff5e",
+      "exact_cells": 4,
+      "paired_rows": 528,
+      "AA_rows": 48
+    },
+    "status": "All recipes lose versus c49;SPLIT2M32 versus S15 remains a point alternative for P4"
+  },
+  "dequant_rows": [],
+  "dequant_followup": {
+    "queue": {
+      "utc": "20261026T053532Z",
+      "problem": "muse_moe_w4a16",
+      "mode": "check",
+      "job": "11b3849eb86749df",
+      "sha256": "8f7217c145421dd04b3e05ab03401b157830ebd657026f1af97233ac7173b98c",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_dequant.py",
+      "source": "runs/muse_moe_w4a16/20261026T053532Z_check_11b3849eb86749df.py",
+      "git": "73f1f23+dirty",
+      "note": "h200_lab prof/lab/moe_p3a_dequant.py: P3a structural dequant after48dc8b04 depth/phase losses: exact byte-pair64KiB lane-bank table,onePRMT+oneLDS perpair,HMUL2 retained. LUT1/2rawstages versus c49 PAIR/PAIR+BLOCK BASE and S15;all16freshseeds M8/16/32,240pairs48AA,TASK before/after,readflushABBA. Actual64KiB address helper32768checks and1.61B-code/rawscale exact bank proof pass;116 native TASK andall4normal/forced13TASK12shape27static screens pass. Local explicit32KiB table/one-stage standin absent from payload. Exact packed local16seeds all gates passes4417chars62.1s. Both exactsm90a127regs0spills;integerSHFLOP3 falls409to181-184,PRMT/LDSeach+128sites;table init/shared/residency costs measured,no static-count speedup claim. Every valid pointwinner exactpatch/SE/CI to P4 S18,wholelayerR confirms.",
+      "snapshot": "runs/sent/8f7217c145421dd0/lab_moe_p3a_dequant.py",
+      "sender": 2944970,
+      "sender_log": "runs/detached/8f7217c145421dd0.log",
+      "payload": "prof/lab/moe_p3a_dequant.py",
+      "payload_sha256": "b1682d7a1863cdf70f0fd57ea0670a14c2b5dfe126738444cd8e1cbc770efc20",
+      "state": "complete16seeds/TASK/AA/source audited",
+      "receipt": "runs/muse_moe_w4a16/20261026T053532Z_check_11b3849eb86749df.json"
+    },
+    "source_audit": {
+      "verified": true,
+      "job": "11b3849eb86749df",
+      "wrapper_sha256": "8f7217c145421dd04b3e05ab03401b157830ebd657026f1af97233ac7173b98c",
+      "payload_sha256": "b1682d7a1863cdf70f0fd57ea0670a14c2b5dfe126738444cd8e1cbc770efc20",
+      "exact_cells": 4,
+      "paired_rows": 240,
+      "AA_rows": 48
+    },
+    "status": "Measured;every valid point winner exported;no A:A or per-shape CI veto;P4 confirms whole-layer R"
   }
 }

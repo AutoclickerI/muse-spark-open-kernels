@@ -1,0 +1,20 @@
+{
+  "LUT1": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/lut1.py",
+    "candidate_sha256": "b0908f68d4720ae416f9a0bbadaa20c68723b79c77c0a1df395ecf64bf1a3b86",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/dequant/lut1.patch",
+    "patch_sha256": "4a51a2ddc0a4bce9fb6c2dd464f4480dfa39212a4058c5c14d52510d68f2bdf7",
+    "prefix": "rvc_dq_lut1",
+    "depth": 1
+  },
+  "LUT2": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_structural/lut2.py",
+    "candidate_sha256": "eee92f8f1529c445e17ced899c32684b56716f5eaea5dcfe95a6110cf6879e9f",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/dequant/lut2.patch",
+    "patch_sha256": "90ce1945da4988e0f589899131338c3f66abe74fa5fee1889e65f5e92098a317",
+    "prefix": "rvc_dq_lut2",
+    "depth": 2
+  }
+}

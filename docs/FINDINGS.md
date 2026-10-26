@@ -485,8 +485,57 @@ MoE,priority1.2/import budget240s. FAST/INDEX/FLUSH1 are separate arms versus th
 and16 captured full-MoE scale tests pass. Exact packed local lab completes16seeds/64AA,5,919characters/94.7s;
 local timing is not H200 evidence. Entropy-independent receipt bound7,288characters;wrapper975,473B.
 `review/next_issue/admission.json` and `queue.json` pin the exact admitted source. All new H200 ratios remain
-unmeasured; no static instruction reduction is treated as a measured gain. Leaves open dynamic attribution,
-segment-length amortization,other decoder layouts,and P4's whole-layer R.
+measured below; static instruction reduction alone did not establish a gain. Dynamic attribution,
+segment-length amortization,other decoder layouts,and P4's whole-layer R remain open.
+
+### P3a instruction-cut verdict and structural lever (2026-10-26)
+
+**`d7fb2d8bddae4b8c`** completes16 seeds/M,448 paired comparisons and64 A:A pairs;all official/native TASK gates pass,
+no arm failures,worst total/row .002431/.002531. Controls are exact c49 per-M BASE plus S15; ratios are candidate/control time.
+A:A mean absolute .183/.606/.438/.252us,max.384/1.488/1.424/.720 at M1/8/16/32. Intervals below are
+descriptive95% Student-t across16 seed ratios (t15=2.13145);only P4 confirms held-out whole-layer R.
+
+| Recipe | Ratio / BASE [95% CI] at M1;M8;M16;M32 | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| FAST | 0.997548 [0.992767,1.002329]; 1.006293 [1.001147,1.011439]; 1.004684 [1.001688,1.007681]; 1.003011 [1.000561,1.005462]; /S15 0.998218/0.995274/0.973282/0.979448 | Bounded FP32 scale-cancellation metadata removed runtime sign/range/FP64 paths. M1 point win;M8+ lose directly. All4 M point-win versus S15 as alternatives. Every valid point win handed P4 with exact patch,SE,seeds and CI. | Other finalizer/gather layouts;the identity remains valid. No standalone sub1% confirmation run. | `d7fb2d8bddae4b8c` |
+| INDEX | 0.992518 [0.987187,0.997849]; 1.002460 [0.995847,1.009072]; 1.009998 [1.005204,1.014793]; 1.012458 [1.010286,1.014630]; /S15 0.991563/0.986110/0.980997/0.989037 | Hoisted B-fill branches and bounded32bit vector indices cut18 integer/control ops per segment. M1 wins;M8+ lose despite fewer instructions and122regs. All4 M win versus S15 as alternatives. Every valid point win handed P4 with exact patch,SE,seeds and CI. | Other schedules and per-tile decode cuts;static count reduction does not establish latency gain. | `d7fb2d8bddae4b8c` |
+| FLUSH1 | 1.003517 [0.999814,1.007219]; 1.000782 [0.994676,1.006888]; 1.000861 [0.996048,1.005674]; 1.000898 [0.998790,1.003007]; /S15 1.004497/0.986165/0.971168/0.977198 | Removed the duplicate zero norm flush/atomic. No point win versus BASE at any M;M8+ remain alternatives versus S15 through inherited PAIR gains. Every valid point win handed P4 with exact patch,SE,seeds and CI. | Other norm ownership;close only this removal as an incremental recipe. | `d7fb2d8bddae4b8c` |
+
+P4 handoff `point_nominations.json` includes all13 eligible FAST/INDEX/FLUSH1 comparisons;the direct S15/BASE M1
+control point difference is retained in the receipt,not a new kernel patch. No additional small-cut-only run is sent.
+
+Structural sizing reads the full oracle receipts,not just ratios: `360810b110a44d36` loads-only C removes readiness,
+activation/MMA and finalizer as well as dequant,and retains depth2. Its .74514/.72301/.66836 ratios therefore overlap
+with the dequant/readiness costs and do not isolate depth. `c768a8e361f54977` critical M32 CTA has W2-ready11.58us
+and grid barrier4.98us within75.98us;these are one diagnostic critical-path sample,not guaranteed additive savings.
+The structural depth/phase batch below tests these hypotheses directly;oracle savings are not added.
+
+### P3a depth and phase-boundary verdict (2026-10-26)
+
+**`48dc8b04902b40b1`** completes16 fresh seeds at M8/16/32,528 paired ratios and48 A:A pairs. All official/native TASK gates pass;no failed arms,worst total/row .002378/.002526. Ratios are candidate/control time;95% CI is descriptive Student-t15 across seed pairs. A:A mean absolute .525/.270/.334us,max1.280/.896/.800. BASE is exact c49 PAIR M8/PAIR+BLOCK M16/32.
+
+| Recipe | /BASE [95% CI], M8;M16;M32 | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| D3 | 1.075060 [1.067191,1.082929]; 1.100324 [1.085194,1.115454]; 1.107974 [1.093716,1.122232] | Three raw TMA slots;2→1resident CTA. Slower at all M. | Other layouts that deepen lookahead without halving residency. | `48dc8b04902b40b1` |
+| D4 | 1.086272 [1.077668,1.094876]; 1.110162 [1.095577,1.124748]; 1.115429 [1.101645,1.129213] | Four raw TMA slots;2→1resident CTA. Slower at all M. | More lookahead with smaller per-slot footprint or producer partitioning. | `48dc8b04902b40b1` |
+| SPLIT2 | 1.029222 [1.015666,1.042779]; 1.029733 [1.014861,1.044606]; 1.001459 [0.988354,1.014563] | Ordered W13/W2/combine launches remove W13 publication/W2 acquire and final grid spin;pay extra launches and repeated routes. No point win versus BASE;M32 /S15 .976908 [ .968646,.985169 ] is a P4 alternative. | A fused dependency schedule retaining2CTA residency and route reuse;whole-layer R for the M32 S15 alternative. | `48dc8b04902b40b1` |
+| SPLIT3 | 1.151537 [1.140801,1.162273]; 1.158436 [1.144424,1.172447]; 1.147482 [1.133501,1.161464] | Same spin removal with3 raw slots;1resident CTA. Slower at all M. | Dependency removal with smaller shared footprint and fewer route rebuilds. | `48dc8b04902b40b1` |
+| SPLIT4 | 1.176156 [1.163619,1.188694]; 1.180693 [1.166277,1.195108]; 1.161173 [1.146393,1.175954] | Same spin removal with4 raw slots;1resident CTA. Slower at all M. | A schedule that removes waits while retaining residency and one route construction. | `48dc8b04902b40b1` |
+
+H200 resources confirm fuseddepth2=2residentCTAs,125regs,84.2–85.1KiB dynamic shared;depth3/4=1CTA,121.1–122.0/157.9–158.9KiB. Split math124regs,combine40regs;zero local/spills. These measured losses close the exact residency/ordered-launch recipes,not the wait/depth lever. SPLIT2 M32/S15 point estimate and exact patch are in `dev/nt1_timeline/point_nominations.json`;P4 confirms whole-layer R. Next structural step is dequant issue with a lane-replicated exact byte-pair table,depth1/2 in one batch.
+
+### P3a structural dequant verdict (2026-10-26)
+
+**`11b3849eb86749df`** completes16 fresh seeds at M8/16/32,240 paired comparisons and48 A:A pairs;all official/native TASK gates pass,no failed arms,worst total/row .002377/.002512. Exact submitted payload/cells/selectors and code/scale preservation proofs are audited. Candidate/control time and descriptive95% Student-t15 CI below. A:A mean absolute .569/.344/.390us,max1.072/1.056/.752.
+
+| Recipe | /BASE [95% CI], M8;M16;M32 | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| LUT1 | 1.185044 [1.174661,1.195427]; 1.145672 [1.122240,1.169103]; 1.123305 [1.113185,1.133425] | Fixed64KiB lane-bank-replicated exact code-pair table replaces15 core SHF/LOP3 per16weights with8PRMT+8LDS;scale HMUL2 retained. One raw stage,2resident CTAs,127regs/zero local. The net initialization/shared/depth trade-off loses;individual costs are not separately timed. Loses every M versus BASE andS15;no P4 nomination. | Other direct packed decoders or smaller tables that retain lookahead;this does not close dequant issue. No dynamic pipe attribution is inferred from static counts. | `11b3849eb86749df` |
+| LUT2 | 1.174630 [1.161741,1.187520]; 1.190589 [1.169105,1.212072]; 1.222294 [1.208673,1.235915] | Same exact decoder with2 raw stages;64KiB static table lowers residency2→1. All math/codes/scales preserved;loses every M versus BASE andS15. | A decoder that removes integer work without this shared footprint/initialization cost;different overlap/scheduling. | `11b3849eb86749df` |
+
+H200 executes the actual64KiB table decoder and both raw depths;local sm120 full-kernel stand-in was explicitly32KiB/one stage,with separate32768-case native64KiB address proof. All4 normal/forced whole-layer screens pass13TASK/12shapes/27static each;116 native current-input/capture TASK checks and1.61B-code/raw-scale bitproof pass. Full-image static SHF+LOP3 changes409→181–184,PRMT/LDS add128sites each;counts are not measured stalls. Both layouts lose,including LUT1 with2CTA residency;residency alone is not a sufficient explanation.
+
+P4 S18 handoff `dev/nt1_timeline/point_nominations.json` retains all eligible d7 FAST/INDEX/FLUSH1 alternatives and48dc SPLIT2 M32/S15;no decoder point winner. Next largest open structural test:reclaim dead route/reduction scratch so extra raw lookahead can retain2CTA residency,first by exact code/lifetime/resource audit. Fused dependency ownership remains open after ordered-launch costs erased the spin savings.
 
 ## MoE M=128
 

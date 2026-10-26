@@ -1,0 +1,39 @@
+{
+  "payload_sha256": "b1682d7a1863cdf70f0fd57ea0670a14c2b5dfe126738444cd8e1cbc770efc20",
+  "candidates": {
+    "LUT1": "b0908f68d4720ae416f9a0bbadaa20c68723b79c77c0a1df395ecf64bf1a3b86",
+    "LUT2": "eee92f8f1529c445e17ced899c32684b56716f5eaea5dcfe95a6110cf6879e9f"
+  },
+  "native_component_TASK_checks": 116,
+  "normal_forced_screens": 4,
+  "each_screen": {
+    "TASK": 13,
+    "shapes": 12,
+    "static": 27
+  },
+  "bank_bitproof": {
+    "weights_bit_exact": 1610612736,
+    "scale_codes_bit_exact": true,
+    "density_each_layout": 9.0,
+    "layouts": 2,
+    "retained_bits_per_weight_including_scale": 4.5
+  },
+  "native_64KiB_address_checks": 32768,
+  "standin": "local32KiB,explicitaddress and1 raw stage;actual64KiB onePRMT1/2stagesHopper compile/address proof;standin absent from payload",
+  "packed_lab": {
+    "seeds": 16,
+    "M": [
+      8,
+      16,
+      32
+    ],
+    "AA": 48,
+    "pairs": 240,
+    "chars": 4417,
+    "seconds": 62.06428062100895,
+    "all_TASK_pass": true
+  },
+  "wrapper_sha256": "8f7217c145421dd04b3e05ab03401b157830ebd657026f1af97233ac7173b98c",
+  "source_bytes": 974370,
+  "status": "Measured11b3849eb86749df:all seeds/TASK/AA/source pass;both layouts lose at all M versus BASE/S15"
+}
