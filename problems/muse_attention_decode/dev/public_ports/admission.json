@@ -1,0 +1,280 @@
+{
+  "normal": {
+    "checks": {
+      "official": 128,
+      "ABI": 192,
+      "scored": 384
+    },
+    "failures": [],
+    "complete": true,
+    "elapsed": 39.57346598105505,
+    "host_TASK": 16,
+    "host_pass": true,
+    "wrapper_sha256": "65619a80a3c3272d02cab0c267e54d8e84a0f47b7e46491bae60567e195432a0"
+  },
+  "forced": {
+    "checks": {
+      "official": 128,
+      "ABI": 192,
+      "scored": 384
+    },
+    "failures": [],
+    "complete": true,
+    "elapsed": 38.96122346899938,
+    "host_TASK": 16,
+    "host_pass": true,
+    "wrapper_sha256": "65619a80a3c3272d02cab0c267e54d8e84a0f47b7e46491bae60567e195432a0"
+  },
+  "native_lee": [
+    {
+      "name": "lee",
+      "cuda_sha256": "cbe771ad2b657fb14501b779f35cf21344184ac21c6bf728c66947d1b114ef81",
+      "ok": true,
+      "registers": [
+        "96",
+        "96",
+        "96",
+        "80",
+        "126",
+        "153",
+        "157",
+        "153"
+      ],
+      "stack_spills": [
+        [
+          "16",
+          "24",
+          "32"
+        ],
+        [
+          "24",
+          "24",
+          "48"
+        ],
+        [
+          "24",
+          "24",
+          "48"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "c75": [],
+      "hgmma": 52,
+      "setmaxnreg": [
+        "/*1540*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*f050*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                         /* 0x00000020000079c8 */",
+        "/*0f60*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*e730*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                         /* 0x00000020000079c8 */",
+        "/*0b30*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+        "/*e630*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                         /* 0x00000020000079c8 */"
+      ],
+      "m64n8k32": []
+    }
+  ],
+  "native_operator": [
+    {
+      "kernel": "_g_full_decode",
+      "grid": [
+        16,
+        16
+      ],
+      "constants": {
+        "HQ": 16,
+        "HKV": 2,
+        "D": 64,
+        "NSPLIT": 16,
+        "NSP2": 16,
+        "BN": 128,
+        "STAGES": 3,
+        "W": 4
+      },
+      "options": {
+        "num_warps": 4
+      },
+      "registers": null,
+      "spills": null,
+      "shared": 100352,
+      "sha256": "a085dca64bd43fcadaf94fa49260fa4eab70bb6e16e57f51efcec3e55e6a9702",
+      "wgmma": 0
+    },
+    {
+      "kernel": "_g_full_decode",
+      "grid": [
+        32,
+        16
+      ],
+      "constants": {
+        "HQ": 16,
+        "HKV": 2,
+        "D": 64,
+        "NSPLIT": 16,
+        "NSP2": 16,
+        "BN": 128,
+        "STAGES": 3,
+        "W": 4
+      },
+      "options": {
+        "num_warps": 4
+      },
+      "registers": null,
+      "spills": null,
+      "shared": 100352,
+      "sha256": "a085dca64bd43fcadaf94fa49260fa4eab70bb6e16e57f51efcec3e55e6a9702",
+      "wgmma": 0
+    },
+    {
+      "kernel": "_g_full_verify",
+      "grid": [
+        16,
+        8,
+        2
+      ],
+      "constants": {
+        "HQ": 16,
+        "HKV": 2,
+        "D": 64,
+        "L": 8,
+        "NSPLIT": 8,
+        "NSP2": 8,
+        "BN": 128,
+        "STAGES": 4,
+        "PR": 24
+      },
+      "options": {
+        "num_warps": 4,
+        "maxnreg": 128
+      },
+      "registers": null,
+      "spills": null,
+      "shared": 86196,
+      "sha256": "a7c7cdfd3e5a14abd9007f427be2ca95b0e3faddcbe13a1635f77ebf694d8b19",
+      "wgmma": 13
+    },
+    {
+      "kernel": "_g_full_verify",
+      "grid": [
+        32,
+        8,
+        2
+      ],
+      "constants": {
+        "HQ": 16,
+        "HKV": 2,
+        "D": 64,
+        "L": 8,
+        "NSPLIT": 8,
+        "NSP2": 8,
+        "BN": 128,
+        "STAGES": 4,
+        "PR": 24
+      },
+      "options": {
+        "num_warps": 4,
+        "maxnreg": 128
+      },
+      "registers": null,
+      "spills": null,
+      "shared": 86196,
+      "sha256": "a7c7cdfd3e5a14abd9007f427be2ca95b0e3faddcbe13a1635f77ebf694d8b19",
+      "wgmma": 13
+    }
+  ],
+  "payload": {
+    "payload_sha256": "64cff748dea48dbedb38804be69b092bfe44d56bc4b1281fce5d5805ee117349",
+    "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "seeds": [
+      8671259,
+      8679178,
+      8687097,
+      8695016,
+      8702935,
+      8710854,
+      8718773,
+      8726692
+    ],
+    "rounds": 8,
+    "official_TASK": 128,
+    "ABI_TASK": 192,
+    "scored_TASK": 384,
+    "identities": {
+      "operator": "ab8067762a49b7ae4b7c93c3f282263ac82a29068da411888305143da9c4815f",
+      "lee": "6e03f13fd9638c2cbf2d470db432a87ed5e7bf613a06b4f1bf3f308312f733bf",
+      "input": "46822f1a5f9f9af26f616620e10b07ad8373c15ed0f1327fb2db67f9f6435388"
+    }
+  },
+  "sources": {
+    "operator_sha256": "ab8067762a49b7ae4b7c93c3f282263ac82a29068da411888305143da9c4815f",
+    "lee_sha256": "6e03f13fd9638c2cbf2d470db432a87ed5e7bf613a06b4f1bf3f308312f733bf",
+    "lee_cuda_sha256": "cbe771ad2b657fb14501b779f35cf21344184ac21c6bf728c66947d1b114ef81",
+    "notices_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e"
+  },
+  "transport": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_ports/out/preview.py",
+    "sha256": "65619a80a3c3272d02cab0c267e54d8e84a0f47b7e46491bae60567e195432a0",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_lab-only",
+        "ok": true,
+        "packets": 1
+      }
+    ]
+  },
+  "native_operator_resource_usage": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_decode:\n  REG:136 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_decode:\n  REG:136 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_verify:\n  REG:128 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_verify:\n  REG:128 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+  "queued_job": "26d5054ffce94231",
+  "sender": "3771b9736fbd86cf"
+}

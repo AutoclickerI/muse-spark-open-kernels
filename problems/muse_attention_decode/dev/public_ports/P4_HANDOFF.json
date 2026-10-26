@@ -1,0 +1,803 @@
+{
+  "base": "S19 exact shipped8b415553/expanded62ea5bf4",
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "job": "26d5054ffce94231",
+  "receipt": "runs/muse_bf16_proj/20261026T114622Z_check_26d5054ffce94231.json",
+  "payload_sha256": "64cff748dea48dbedb38804be69b092bfe44d56bc4b1281fce5d5805ee117349",
+  "TASK": {
+    "official": 128,
+    "ABI": 192,
+    "scored": 384
+  },
+  "seeds": [
+    8671259,
+    8679178,
+    8687097,
+    8695016,
+    8702935,
+    8710854,
+    8718773,
+    8726692
+  ],
+  "controls": {
+    "1x1s": {
+      "r": 0.9944193173838806,
+      "se": 0.016575802354932296,
+      "lo": 0.9552237731556248,
+      "hi": 1.0336148616121363,
+      "seed_ratios": [
+        0.9415,
+        1.0207667731629393,
+        0.9920212765957447,
+        1.0284061020515518,
+        0.9259443339960238,
+        1.0637837837837838,
+        1.0160955347871237,
+        0.9668367346938775
+      ]
+    },
+    "1x1f": {
+      "r": 0.9899609003335967,
+      "se": 0.004523899165690831,
+      "lo": 0.9792635786573255,
+      "hi": 1.0006582220098679,
+      "seed_ratios": [
+        0.9670184696569921,
+        1.0013537906137184,
+        1.0009088843444671,
+        0.9848687138406764,
+        0.9977608598298253,
+        0.9937791601866252,
+        0.9982050706753421,
+        0.9757922535211268
+      ]
+    },
+    "16x1s": {
+      "r": 0.9896116123003338,
+      "se": 0.008734721122656042,
+      "lo": 0.9689572789079793,
+      "hi": 1.0102659456926881,
+      "seed_ratios": [
+        0.9597892401552968,
+        1.0285289747399702,
+        0.9863965267727931,
+        0.9857640906449738,
+        0.9587107085775173,
+        1.0170520231213873,
+        0.9821219226260258,
+        0.9985294117647059
+      ]
+    },
+    "16x1f": {
+      "r": 0.998287695263386,
+      "se": 0.00216623783699488,
+      "lo": 0.9931653567405941,
+      "hi": 1.003410033786178,
+      "seed_ratios": [
+        0.9905142286570144,
+        0.998771196854264,
+        1.0047254358807234,
+        0.9965437788018433,
+        0.9891085925568684,
+        0.9979582669770101,
+        1.0044192175146969,
+        1.0042608448646675
+      ]
+    },
+    "32x1s": {
+      "r": 1.0099402277561573,
+      "se": 0.008356295375840093,
+      "lo": 0.9901807290619267,
+      "hi": 1.029699726450388,
+      "seed_ratios": [
+        0.9646139705882353,
+        1.0198347107438017,
+        0.9938130155820348,
+        1.0252742012398666,
+        0.9979161843019217,
+        1.0357478833490121,
+        1.0311694398875089,
+        1.0111524163568772
+      ]
+    },
+    "32x1f": {
+      "r": 0.9973643407619485,
+      "se": 0.0018606334025197126,
+      "lo": 0.9929646418961298,
+      "hi": 1.0017640396277672,
+      "seed_ratios": [
+        0.9947260934940192,
+        1.0070758413757586,
+        0.9931834726787409,
+        0.9984406326576075,
+        0.9935588118110584,
+        1.0033918864279616,
+        0.9956800599501885,
+        0.9928579277002527
+      ]
+    },
+    "1x8s": {
+      "r": 0.9982632583434586,
+      "se": 0.004931017215488307,
+      "lo": 0.9866032554536165,
+      "hi": 1.0099232612333007,
+      "seed_ratios": [
+        0.9902786779001944,
+        1.0162574651625746,
+        0.9725759059745348,
+        1.0038935756002596,
+        0.988569562377531,
+        1.0089463220675945,
+        1.0068807339449541,
+        0.998703823720026
+      ]
+    },
+    "1x8f": {
+      "r": 1.0002826364198807,
+      "se": 0.0031270824701043766,
+      "lo": 0.9928882613761949,
+      "hi": 1.0076770114635665,
+      "seed_ratios": [
+        1.0025520483546004,
+        1.016641861723718,
+        0.9970258212788968,
+        0.9966280010790397,
+        0.9945128479657388,
+        0.9989286192580689,
+        0.9878569522284494,
+        1.0081149394705335
+      ]
+    },
+    "16x8s": {
+      "r": 0.9965751317074727,
+      "se": 0.0037600353427048507,
+      "lo": 0.9876840609514957,
+      "hi": 1.0054662024634498,
+      "seed_ratios": [
+        0.9787613488975356,
+        1.0044977511244377,
+        0.9853401416570582,
+        1.0053745381256298,
+        0.9948047595106418,
+        1.0108821104699093,
+        0.9962239369561648,
+        0.9967164669184042
+      ]
+    },
+    "16x8f": {
+      "r": 0.999918477289445,
+      "se": 0.001609807644600591,
+      "lo": 0.9961118870935773,
+      "hi": 1.0037250674853129,
+      "seed_ratios": [
+        0.9949744260735102,
+        0.9998811151399869,
+        0.9992544435166408,
+        1.0070020048475419,
+        0.9979214848209842,
+        1.0046289338423158,
+        1.0020419034090908,
+        0.9936435066654895
+      ]
+    },
+    "32x8s": {
+      "r": 0.9977736995830269,
+      "se": 0.0050244463813755025,
+      "lo": 0.9858927718217771,
+      "hi": 1.0096546273442766,
+      "seed_ratios": [
+        0.9930489731437598,
+        0.9810755401356253,
+        0.9779100736330879,
+        1.0012708498808578,
+        1.0218989769820972,
+        1.0087315446896332,
+        0.9992072300618361,
+        0.9990464081373173
+      ]
+    },
+    "32x8f": {
+      "r": 0.9986557730237757,
+      "se": 0.0010808971353989682,
+      "lo": 0.9960998574445749,
+      "hi": 1.0012116886029765,
+      "seed_ratios": [
+        1.0010309088566116,
+        0.993351526584736,
+        1.0012861619839502,
+        0.9949303832992341,
+        0.9986874280782508,
+        0.9999267426101608,
+        1.0016798829500912,
+        0.9983531498271713
+      ]
+    }
+  },
+  "preferred": {
+    "16x1s": "L",
+    "16x1f": "O",
+    "32x1s": "L",
+    "1x8s": "O",
+    "1x8f": "L",
+    "16x8s": "L",
+    "16x8f": "L",
+    "32x8s": "L"
+  },
+  "points": [
+    {
+      "cell": "16x1s",
+      "arm": "O",
+      "r": 0.9969386067839328,
+      "se": 0.014110582412386202,
+      "lo": 0.9635723814158703,
+      "hi": 1.0303048321519952,
+      "seed_ratios": [
+        0.9645036051026068,
+        1.0106983655274888,
+        1.0078147612156296,
+        1.0136548518303312,
+        0.9179541822056473,
+        0.9904624277456647,
+        1.0474794841735053,
+        1.0229411764705882
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "16x1s",
+      "arm": "L",
+      "r": 0.9542556250157661,
+      "se": 0.014506538897386356,
+      "lo": 0.9199531113409315,
+      "hi": 0.9885581386906007,
+      "seed_ratios": [
+        0.9104270660011092,
+        0.9690936106983655,
+        0.9687409551374819,
+        1.0029052876234748,
+        0.876132125732552,
+        0.9578034682080925,
+        0.966295427901524,
+        0.9826470588235294
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "16x1f",
+      "arm": "O",
+      "r": 0.9915563053385564,
+      "se": 0.0026732380222279518,
+      "lo": 0.985235101882501,
+      "hi": 0.9978775087946119,
+      "seed_ratios": [
+        1.000956897986354,
+        0.9933235029081674,
+        0.9960892944435392,
+        0.9956797235023042,
+        0.982316534040672,
+        0.9786434725795256,
+        0.989864180012163,
+        0.9955768372357262
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "32x1s",
+      "arm": "O",
+      "r": 0.956675082919592,
+      "se": 0.006891185851227305,
+      "lo": 0.9403800177376319,
+      "hi": 0.9729701481015521,
+      "seed_ratios": [
+        0.9292279411764706,
+        0.9572609208972845,
+        0.9509624197983502,
+        0.9737720553171197,
+        0.9541560546422783,
+        0.9767168391345249,
+        0.9798453245840169,
+        0.9314591078066915
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "32x1s",
+      "arm": "L",
+      "r": 0.8608929926118315,
+      "se": 0.006309959827877113,
+      "lo": 0.8459723085799975,
+      "hi": 0.8758136766436655,
+      "seed_ratios": [
+        0.8419117647058824,
+        0.8618654073199528,
+        0.8467002749770852,
+        0.899856938483548,
+        0.8626996990043991,
+        0.8499529633113829,
+        0.8586829153972346,
+        0.8654739776951673
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "1x8s",
+      "arm": "O",
+      "r": 0.7808986568726756,
+      "se": 0.0033087310647812278,
+      "lo": 0.7730747511568569,
+      "hi": 0.7887225625884943,
+      "seed_ratios": [
+        0.7657161373946857,
+        0.7850033178500332,
+        0.7711394058112961,
+        0.7855288773523685,
+        0.7818419333768779,
+        0.7899271040424122,
+        0.7925950196592398,
+        0.7754374594944913
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "1x8f",
+      "arm": "L",
+      "r": 0.7577189838928423,
+      "se": 0.0024134513043704052,
+      "lo": 0.7520120784099205,
+      "hi": 0.7634258893757642,
+      "seed_ratios": [
+        0.7566151779717931,
+        0.7616019483155189,
+        0.7654454508584562,
+        0.7601834367413003,
+        0.7545503211991434,
+        0.7428686219365207,
+        0.7608753669602348,
+        0.7596115471597712
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "16x8s",
+      "arm": "O",
+      "r": 0.7794747385003113,
+      "se": 0.005507534512500355,
+      "lo": 0.7664514888288335,
+      "hi": 0.7924979881717892,
+      "seed_ratios": [
+        0.755674448767834,
+        0.797767782775279,
+        0.7769724921759184,
+        0.8009741350352704,
+        0.7900117311882018,
+        0.7690024732069249,
+        0.7755705138729273,
+        0.7698243309801346
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "16x8s",
+      "arm": "L",
+      "r": 0.7635922341703738,
+      "se": 0.004813631008843007,
+      "lo": 0.7522098055514981,
+      "hi": 0.7749746627892495,
+      "seed_ratios": [
+        0.7438391699092088,
+        0.7662835249042146,
+        0.7540767583594136,
+        0.7806516627477326,
+        0.7851516675046086,
+        0.7605935696619951,
+        0.7576752585782301,
+        0.7604662616975866
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "16x8f",
+      "arm": "L",
+      "r": 0.9681150360622482,
+      "se": 0.0027185611708882944,
+      "lo": 0.9616866603897388,
+      "hi": 0.9745434117347577,
+      "seed_ratios": [
+        0.9554537885095754,
+        0.9682874635915116,
+        0.964183466539425,
+        0.9664262844489662,
+        0.9666266576890424,
+        0.9828368751690764,
+        0.9720348011363636,
+        0.9690709514140254
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "32x8s",
+      "arm": "O",
+      "r": 0.7993161006467417,
+      "se": 0.004530860265421232,
+      "lo": 0.7886023185852344,
+      "hi": 0.810029882708249,
+      "seed_ratios": [
+        0.7875197472353871,
+        0.7809493770698628,
+        0.7875607081309729,
+        0.8030182684670373,
+        0.8136189258312021,
+        0.8101285918399747,
+        0.7983193277310925,
+        0.8134138588684043
+      ],
+      "nominated": true
+    },
+    {
+      "cell": "32x8s",
+      "arm": "L",
+      "r": 0.750479361854348,
+      "se": 0.003501804730028932,
+      "lo": 0.7421989094674551,
+      "hi": 0.758759814241241,
+      "seed_ratios": [
+        0.752132701421801,
+        0.7306418545970667,
+        0.7446341845527181,
+        0.7518665607625099,
+        0.7533567774936062,
+        0.7499603111605017,
+        0.7561439670207706,
+        0.7650985378258105
+      ],
+      "nominated": true
+    }
+  ],
+  "candidate": {
+    "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "source_sha256": "4a60c4e3feffabfe1d093fc21b463f923ffdd97c5ea748edca2b674bd09e5e54",
+    "patch_sha256": "97c8614349221495ee61b2a2a3ec14c8d5161b2edb1eb4064edb828c9fc98700",
+    "selection": {
+      "16x1s": "L",
+      "16x1f": "O",
+      "32x1s": "L",
+      "1x8s": "O",
+      "1x8f": "L",
+      "16x8s": "L",
+      "16x8f": "L",
+      "32x8s": "L"
+    },
+    "notices_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e",
+    "scope": "Only selected cells, S19 ABI, all other dispatch unchanged. P4 confirms actual full prepare and held-out G0."
+  },
+  "patch": "problems/muse_attention_decode/dev/public_ports/candidate.patch",
+  "alternatives": {
+    "operator_nominee": {
+      "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+      "source_sha256": "939a21edd03e165ad86f9273d7637aee2826e56e2f3db3ba5584d80d1e1a6c05",
+      "patch_sha256": "84c9e4095b8926068ad235e448fbdaae3a6ceca274b957697f52b469a67a27e2",
+      "selection": {
+        "16x1s": "O",
+        "16x1f": "O",
+        "32x1s": "O",
+        "1x8s": "O",
+        "16x8s": "O",
+        "32x8s": "O"
+      },
+      "notices_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e",
+      "scope": "Only selected cells, S19 ABI, all other dispatch unchanged. P4 confirms actual full prepare and held-out G0."
+    },
+    "lee_nominee": {
+      "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+      "source_sha256": "925e97787b3fe1997e431a12f2b9d1649f4e66f2a5baeea9c89933937c877594",
+      "patch_sha256": "299d9d8f08e62f2d11b4defbf1263b1937acda650dd2cfa0d675be1567482b6f",
+      "selection": {
+        "16x1s": "L",
+        "32x1s": "L",
+        "1x8f": "L",
+        "16x8s": "L",
+        "16x8f": "L",
+        "32x8s": "L"
+      },
+      "notices_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e",
+      "scope": "Only selected cells, S19 ABI, all other dispatch unchanged. P4 confirms actual full prepare and held-out G0."
+    }
+  },
+  "licenses": "R-20261026-1; keep _P5B_PUBLIC_NOTICES in shipped source; reviewed kernels retain MIT/Apache change headers",
+  "producer_ABI": "Any S split FP32 or BF16,1280 QKV-only or2304 QKV+gate; sum/cast/pad timed. QKV-only neutral sigmoid1 preserves external true gate.",
+  "overlap": "Interposes only selected _best7_attention cells. Selected cells bypass old FA3 and native row-merge wrappers; do not stack both. No qkv project or separate gate is replaced. d16F OP point is vsS19; P4 should compare it to its C3 selection. Other cells retain original dispatch.",
+  "prepare": "New donor CUDA compile overlaps unchanged S19 prepare in a two-thread pool; constant rotary table built in prepare. Actual complete prepare time unmeasured; P4 must confirm<=300s.",
+  "local": {
+    "normal": {
+      "checks": {
+        "official": 128,
+        "ABI": 192,
+        "scored": 384
+      },
+      "failures": [],
+      "complete": true,
+      "elapsed": 39.57346598105505,
+      "host_TASK": 16,
+      "host_pass": true,
+      "wrapper_sha256": "65619a80a3c3272d02cab0c267e54d8e84a0f47b7e46491bae60567e195432a0"
+    },
+    "forced": {
+      "checks": {
+        "official": 128,
+        "ABI": 192,
+        "scored": 384
+      },
+      "failures": [],
+      "complete": true,
+      "elapsed": 38.96122346899938,
+      "host_TASK": 16,
+      "host_pass": true,
+      "wrapper_sha256": "65619a80a3c3272d02cab0c267e54d8e84a0f47b7e46491bae60567e195432a0"
+    },
+    "native_lee": [
+      {
+        "name": "lee",
+        "cuda_sha256": "cbe771ad2b657fb14501b779f35cf21344184ac21c6bf728c66947d1b114ef81",
+        "ok": true,
+        "registers": [
+          "96",
+          "96",
+          "96",
+          "80",
+          "126",
+          "153",
+          "157",
+          "153"
+        ],
+        "stack_spills": [
+          [
+            "16",
+            "24",
+            "32"
+          ],
+          [
+            "24",
+            "24",
+            "48"
+          ],
+          [
+            "24",
+            "24",
+            "48"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "c75": [],
+        "hgmma": 52,
+        "setmaxnreg": [
+          "/*1540*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+          "/*f050*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                         /* 0x00000020000079c8 */",
+          "/*0f60*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+          "/*e730*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                         /* 0x00000020000079c8 */",
+          "/*0b30*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP1, 0x70 ;                                  /* 0x00000070000079c8 */",
+          "/*e630*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                         /* 0x00000020000079c8 */"
+        ],
+        "m64n8k32": []
+      }
+    ],
+    "native_operator": [
+      {
+        "kernel": "_g_full_decode",
+        "grid": [
+          16,
+          16
+        ],
+        "constants": {
+          "HQ": 16,
+          "HKV": 2,
+          "D": 64,
+          "NSPLIT": 16,
+          "NSP2": 16,
+          "BN": 128,
+          "STAGES": 3,
+          "W": 4
+        },
+        "options": {
+          "num_warps": 4
+        },
+        "registers": null,
+        "spills": null,
+        "shared": 100352,
+        "sha256": "a085dca64bd43fcadaf94fa49260fa4eab70bb6e16e57f51efcec3e55e6a9702",
+        "wgmma": 0
+      },
+      {
+        "kernel": "_g_full_decode",
+        "grid": [
+          32,
+          16
+        ],
+        "constants": {
+          "HQ": 16,
+          "HKV": 2,
+          "D": 64,
+          "NSPLIT": 16,
+          "NSP2": 16,
+          "BN": 128,
+          "STAGES": 3,
+          "W": 4
+        },
+        "options": {
+          "num_warps": 4
+        },
+        "registers": null,
+        "spills": null,
+        "shared": 100352,
+        "sha256": "a085dca64bd43fcadaf94fa49260fa4eab70bb6e16e57f51efcec3e55e6a9702",
+        "wgmma": 0
+      },
+      {
+        "kernel": "_g_full_verify",
+        "grid": [
+          16,
+          8,
+          2
+        ],
+        "constants": {
+          "HQ": 16,
+          "HKV": 2,
+          "D": 64,
+          "L": 8,
+          "NSPLIT": 8,
+          "NSP2": 8,
+          "BN": 128,
+          "STAGES": 4,
+          "PR": 24
+        },
+        "options": {
+          "num_warps": 4,
+          "maxnreg": 128
+        },
+        "registers": null,
+        "spills": null,
+        "shared": 86196,
+        "sha256": "a7c7cdfd3e5a14abd9007f427be2ca95b0e3faddcbe13a1635f77ebf694d8b19",
+        "wgmma": 13
+      },
+      {
+        "kernel": "_g_full_verify",
+        "grid": [
+          32,
+          8,
+          2
+        ],
+        "constants": {
+          "HQ": 16,
+          "HKV": 2,
+          "D": 64,
+          "L": 8,
+          "NSPLIT": 8,
+          "NSP2": 8,
+          "BN": 128,
+          "STAGES": 4,
+          "PR": 24
+        },
+        "options": {
+          "num_warps": 4,
+          "maxnreg": 128
+        },
+        "registers": null,
+        "spills": null,
+        "shared": 86196,
+        "sha256": "a7c7cdfd3e5a14abd9007f427be2ca95b0e3faddcbe13a1635f77ebf694d8b19",
+        "wgmma": 13
+      }
+    ],
+    "payload": {
+      "payload_sha256": "64cff748dea48dbedb38804be69b092bfe44d56bc4b1281fce5d5805ee117349",
+      "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+      "seeds": [
+        8671259,
+        8679178,
+        8687097,
+        8695016,
+        8702935,
+        8710854,
+        8718773,
+        8726692
+      ],
+      "rounds": 8,
+      "official_TASK": 128,
+      "ABI_TASK": 192,
+      "scored_TASK": 384,
+      "identities": {
+        "operator": "ab8067762a49b7ae4b7c93c3f282263ac82a29068da411888305143da9c4815f",
+        "lee": "6e03f13fd9638c2cbf2d470db432a87ed5e7bf613a06b4f1bf3f308312f733bf",
+        "input": "46822f1a5f9f9af26f616620e10b07ad8373c15ed0f1327fb2db67f9f6435388"
+      }
+    },
+    "sources": {
+      "operator_sha256": "ab8067762a49b7ae4b7c93c3f282263ac82a29068da411888305143da9c4815f",
+      "lee_sha256": "6e03f13fd9638c2cbf2d470db432a87ed5e7bf613a06b4f1bf3f308312f733bf",
+      "lee_cuda_sha256": "cbe771ad2b657fb14501b779f35cf21344184ac21c6bf728c66947d1b114ef81",
+      "notices_sha256": "c91b7a513ad45d811b5658a368060cf32256271545d93c4cb0350404dafe1b4e"
+    },
+    "transport": {
+      "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_ports/out/preview.py",
+      "sha256": "65619a80a3c3272d02cab0c267e54d8e84a0f47b7e46491bae60567e195432a0",
+      "tier": "wrapper",
+      "static": [
+        {
+          "name": "packaging",
+          "ok": true,
+          "msg": "single-file problem header and size"
+        },
+        {
+          "name": "local_imports",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "judge_packaging",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "undefined_names",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "call_signatures",
+          "ok": true,
+          "msg": ""
+        },
+        {
+          "name": "state_keys",
+          "ok": true,
+          "msg": "dynamic state contract: requires changed-unit/H200 checks"
+        },
+        {
+          "name": "wrapper_lab-only",
+          "ok": true,
+          "packets": 1
+        }
+      ]
+    },
+    "native_operator_resource_usage": "\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_decode:\n  REG:136 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_decode:\n  REG:136 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_verify:\n  REG:128 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n\nResource usage:\n Common:\n  GLOBAL:11 CONSTANT[4]:8\n Function _g_full_verify:\n  REG:128 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:664 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "queued_job": "26d5054ffce94231",
+    "sender": "3771b9736fbd86cf"
+  },
+  "screen_candidate": {
+    "normal": {
+      "sha256": "da67a687aee6451252011c05ce7c0f267f83c5ecf7b57b484d785ee3d300f8cc",
+      "allpass": true,
+      "tests": 28
+    },
+    "forced": {
+      "sha256": "da67a687aee6451252011c05ce7c0f267f83c5ecf7b57b484d785ee3d300f8cc",
+      "allpass": true,
+      "tests": 28
+    }
+  },
+  "decision": "Correct per-cell point<1 nominations. P4 held-out six-load whole-layer lower confidence bound>1 is sole promotion gate; this component selection is not a held-out G0 claim."
+}

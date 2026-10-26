@@ -1,0 +1,59 @@
+{
+  "operatorstack": {
+    "commit": "6d9b77656b6c295e421be9e1424b0f8f99299b0a",
+    "source_sha256": "c5a94b6031bd1df0392773dcee7501a5dcc0d6de8e28eda4cec6d2109e29ad64",
+    "identical_kernel_AST": [
+      "_combine",
+      "_combine_ml",
+      "_cos_sin",
+      "_counter",
+      "_emit",
+      "_emit_pre",
+      "_fused_attn",
+      "_g_full_decode",
+      "_g_full_verify",
+      "_g_head_finish",
+      "_g_head_loop",
+      "_g_head_q",
+      "_g_issue",
+      "_gluon_full_decode",
+      "_gluon_full_verify",
+      "_gv_consumer",
+      "_gv_producer",
+      "_gv_softmax_pv"
+    ],
+    "changed_host": "_fused removes unselected pair path; _hopper explicit local forcing; owned setup/attention ABI"
+  },
+  "lee101": {
+    "commit": "601c65413496cf63f942b4f15ca087839ef2f5cc",
+    "source_sha256": "b0b0e2cb067912e6739e5fcd331758fc11267fc1a84f0d6ed59bd7d0b5aa945b",
+    "identical_cuda_ranges": [
+      [
+        1,
+        33
+      ],
+      [
+        78,
+        108
+      ],
+      [
+        868,
+        2351
+      ],
+      [
+        2380,
+        2756
+      ],
+      [
+        3723,
+        4249
+      ],
+      [
+        4257,
+        4289
+      ]
+    ],
+    "changed_host": "Only selected launch families, original flags and smem layout, S19 tensor ABI, launch-error checks"
+  },
+  "pass": true
+}

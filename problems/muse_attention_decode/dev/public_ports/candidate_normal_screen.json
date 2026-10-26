@@ -1,0 +1,443 @@
+{
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_ports/out/candidate_attention.py",
+ "sha256": "da67a687aee6451252011c05ce7c0f267f83c5ecf7b57b484d785ee3d300f8cc",
+ "tier": "screen",
+ "static": [
+  {
+   "name": "packaging",
+   "ok": true,
+   "msg": "single-file problem header and size"
+  },
+  {
+   "name": "local_imports",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "judge_packaging",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "state_keys",
+   "ok": true,
+   "msg": "dynamic state contract: requires changed-unit/H200 checks"
+  },
+  {
+   "name": "GLUE_CL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "LT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_PORT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_X_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_G_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_P8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PG_RAW",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_pf_GROUPED_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SP_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P7_PREFETCH_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CPP",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SMALLM_VAR_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "NF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PARTIAL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "cs_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_s16_global_C128_cs_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_s16_epi_NORM_EPIN_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_s16_epi_PAIR_EPIT_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "MT_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "MT_PMZ_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P3B_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "RT_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "RT_FAST_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "RVC_NFIDX0_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "RVC_NBASE1_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "RVC_NBASE2_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GP_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ],
+ "problem": "muse_attention_decode",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 0.00011016998905688524,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, heads tp8, layer sliding",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 5.880e-02 (worst row 5.880e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 5.880e-02 (worst row 5.880e-02) [bound 0.150: 2.5 x the reference's 0.057 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 2047, heads tp8, layer sliding",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 5.580e-03 (worst row 6.168e-03) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 5.580e-03 (worst row 6.168e-03) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 5, ctx 5000, heads tp8, layer sliding, q_len 8, spread mixed, page 1",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 8.909e-04 (worst row 1.333e-03) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 8.909e-04 (worst row 1.333e-03) [bound 0.150: 2.5 x the reference's 0.078 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 3000, heads tp8, layer full",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 5.171e-03 (worst row 6.359e-03) [bound 0.150: 2.5 x the reference's 0.090 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 5.171e-03 (worst row 6.359e-03) [bound 0.150: 2.5 x the reference's 0.090 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 8, ctx 8192, heads dp, layer full, spread mixed",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 5.592e-03 (worst row 6.019e-03) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 5.592e-03 (worst row 6.019e-03) [bound 0.150: 2.5 x the reference's 0.085 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 100000, heads tp8, layer full, q_len 8, page 1",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 9.382e-02 (worst row 1.268e-01) [bound 0.150: 2.5 x the reference's 0.094 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 9.382e-02 (worst row 1.268e-01) [bound 0.150: 2.5 x the reference's 0.094 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, dist edges, page 1",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 5.804e-03 (worst row 6.786e-03) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 5.804e-03 (worst row 6.786e-03) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer full, q_len 8, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 8.339e-02 (worst row 1.087e-01) [bound 0.150: 2.5 x the reference's 0.083 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 8.339e-02 (worst row 1.087e-01) [bound 0.150: 2.5 x the reference's 0.083 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, ctx 1048576, heads tp8, layer full, q_len 8",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 4.263e-04 (worst row 6.860e-04) [bound 0.150: 2.5 x the reference's 0.098 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 4.263e-04 (worst row 6.860e-04) [bound 0.150: 2.5 x the reference's 0.098 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 3, ctx 4000, heads tp8, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.862e-04 (worst row 1.202e-03) [bound 0.150: 2.5 x the reference's 0.084 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.862e-04 (worst row 1.202e-03) [bound 0.150: 2.5 x the reference's 0.084 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 9000, heads tp8, layer full, kv_scale 0.015625",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 6.474e-03 (worst row 6.674e-03) [bound 0.150: 2.5 x the reference's 0.101 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 6.474e-03 (worst row 6.674e-03) [bound 0.150: 2.5 x the reference's 0.101 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist soft",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 4.541e-03 (worst row 4.840e-03) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 4.541e-03 (worst row 4.840e-03) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 6000, heads tp8, layer sliding, q_len 8, dist soft, page 1",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 1.129e-03 (worst row 1.413e-03) [bound 0.150: 2.5 x the reference's 0.061 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 1.129e-03 (worst row 1.413e-03) [bound 0.150: 2.5 x the reference's 0.061 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist soft",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 4.900e-03 (worst row 5.254e-03) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 4.900e-03 (worst row 5.254e-03) [bound 0.150: 2.5 x the reference's 0.070 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 4, ctx 80000, heads tp8, layer full, spread mixed, dist coherent, page 1",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 3.039e-03 (worst row 4.000e-03) [bound 0.104: 2.5 x the reference's 0.036 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 3.039e-03 (worst row 4.000e-03) [bound 0.104: 2.5 x the reference's 0.036 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 2, ctx 20000, heads dp, layer full, q_len 8, dist coherent",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 2.903e-03 (worst row 3.269e-03) [bound 0.106: 2.5 x the reference's 0.036 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 2.903e-03 (worst row 3.269e-03) [bound 0.106: 2.5 x the reference's 0.036 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, q_len 1, ctx 257, page 1, heads tp8, layer sliding, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.711e-02 (worst row 7.711e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.711e-02 (worst row 7.711e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, q_len 1, ctx 257, page 1, heads tp8, layer full, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 3.916e-03 (worst row 3.916e-03) [bound 0.150: 2.5 x the reference's 0.058 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 3.916e-03 (worst row 3.916e-03) [bound 0.150: 2.5 x the reference's 0.058 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 16, q_len 1, ctx 257, page 1, heads tp8, layer sliding, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.596e-02 (worst row 1.037e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.596e-02 (worst row 1.037e-01) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 16, q_len 1, ctx 257, page 1, heads tp8, layer full, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.487e-02 (worst row 9.331e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.487e-02 (worst row 9.331e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 32, q_len 1, ctx 257, page 1, heads tp8, layer sliding, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 6.917e-02 (worst row 9.991e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 6.917e-02 (worst row 9.991e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 32, q_len 1, ctx 257, page 1, heads tp8, layer full, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 4.385e-03 (worst row 7.148e-03) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 4.385e-03 (worst row 7.148e-03) [bound 0.150: 2.5 x the reference's 0.065 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, q_len 8, ctx 257, page 1, heads tp8, layer sliding, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 6.352e-02 (worst row 8.973e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 6.352e-02 (worst row 8.973e-02) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 1, q_len 8, ctx 257, page 1, heads tp8, layer full, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.559e-02 (worst row 9.988e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.559e-02 (worst row 9.988e-02) [bound 0.150: 2.5 x the reference's 0.076 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 16, q_len 8, ctx 257, page 1, heads tp8, layer sliding, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.170e-02 (worst row 1.172e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.170e-02 (worst row 1.172e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 16, q_len 8, ctx 257, page 1, heads tp8, layer full, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.237e-02 (worst row 1.150e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.237e-02 (worst row 1.150e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 32, q_len 8, ctx 257, page 1, heads tp8, layer sliding, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.375e-02 (worst row 1.301e-01) [bound 0.150: 2.5 x the reference's 0.074 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.375e-02 (worst row 1.301e-01) [bound 0.150: 2.5 x the reference's 0.074 with FP8 E4M3 queries + 0.015]"
+  },
+  {
+   "case": "batch 32, q_len 8, ctx 257, page 1, heads tp8, layer full, dist edges",
+   "eager_ok": true,
+   "eager_msg": "relative L2 error 7.263e-02 (worst row 1.270e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]",
+   "ok": true,
+   "replay_ok": true,
+   "msg": "relative L2 error 7.263e-02 (worst row 1.270e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+  }
+ ]
+}

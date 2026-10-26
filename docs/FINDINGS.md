@@ -1419,6 +1419,50 @@ PDL wait, not27us exposed merge. G4/G8 main alone v16 207.74/202.43 andv32
 Normal+forced exact payload each928TASK+16host/6static, actual transport7checks;
 selected candidate admission and exact patches in dev/full_attention/chain/P4_HANDOFF.json.
 
+### P5b licensed public attention ports on S19
+
+R-20261026-1, read-only external pinned clone review before use; no donor
+scripts/install/tests/notebooks executed. Operatorstack6d9b7765 MIT and
+Lee601c6541 v56 Apache notices embedded in the exact independent S19
+patch. Gluon/warp-specialization toolchain present. All12cells, **704native
+TASK gates**,8freshseeds x8symmetric cold rounds, all3072roundns kept.
+Per-seed ratios from all rounds;95%t7, no filtering. Every A:A CI covers1,
+point range .989612–1.009940 (d1 has±3.9% uncertainty). Component nomination
+only; P4 held-out whole-layer G0/prepare<=300s remains unmeasured.
+
+| Recipe | Port/S19 ratio [95% CI] | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Licensed public 1x1s (O/Lee) | O 1.262517[1.222107,1.302928]; L 1.232249[1.194636,1.269863] | Both-head block-diagonal decode; OP keys-on-M for full; Lee native fdec/attnd, fused norm/RoPE/KV/merge | Retain S19; closes only these pinned dispatches, not all transport/softmax recipes | `26d5054ffce94231` |
+| Licensed public 1x1f (O/Lee) | O 1.028181[1.016495,1.039868]; L 1.008982[0.999721,1.018243] | Both-head block-diagonal decode; OP keys-on-M for full; Lee native fdec/attnd, fused norm/RoPE/KV/merge | Retain S19; closes only these pinned dispatches, not all transport/softmax recipes | `26d5054ffce94231` |
+| Licensed public 16x1s (O/Lee) | O 0.996939[0.963572,1.030305]; L 0.954256[0.919953,0.988558] | Both-head block-diagonal decode; OP keys-on-M for full; Lee native fdec/attnd, fused norm/RoPE/KV/merge | Preferred L; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 16x1f (O/Lee) | O 0.991556[0.985235,0.997878]; L 1.112085[1.103138,1.121032] | Both-head block-diagonal decode; OP keys-on-M for full; Lee native fdec/attnd, fused norm/RoPE/KV/merge | Preferred O; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 32x1s (O/Lee) | O 0.956675[0.940380,0.972970]; L 0.860893[0.845972,0.875814] | Both-head block-diagonal decode; OP keys-on-M for full; Lee native fdec/attnd, fused norm/RoPE/KV/merge | Preferred L; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 32x1f (O/Lee) | O 1.026920[1.022488,1.031352]; L 1.107322[1.100255,1.114388] | Both-head block-diagonal decode; OP keys-on-M for full; Lee native fdec/attnd, fused norm/RoPE/KV/merge | Retain S19; closes only these pinned dispatches, not all transport/softmax recipes | `26d5054ffce94231` |
+| Licensed public 1x8s (O/Lee) | O 0.780899[0.773075,0.788723]; L 1.105711[1.089843,1.121578] | OP last-arriver Triton or Gluon producer/consumer; Lee page-row producer +2QK/PV consumer WGs, tensor-core P sums, balanced splits/early query loads | Preferred O; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 1x8f (O/Lee) | O 1.015518[1.009180,1.021855]; L 0.757719[0.752012,0.763426] | OP last-arriver Triton or Gluon producer/consumer; Lee page-row producer +2QK/PV consumer WGs, tensor-core P sums, balanced splits/early query loads | Preferred L; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 16x8s (O/Lee) | O 0.779475[0.766451,0.792498]; L 0.763592[0.752210,0.774975] | OP last-arriver Triton or Gluon producer/consumer; Lee page-row producer +2QK/PV consumer WGs, tensor-core P sums, balanced splits/early query loads | Preferred L; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 16x8f (O/Lee) | O 1.138588[1.128975,1.148201]; L 0.968115[0.961687,0.974543] | OP last-arriver Triton or Gluon producer/consumer; Lee page-row producer +2QK/PV consumer WGs, tensor-core P sums, balanced splits/early query loads | Preferred L; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 32x8s (O/Lee) | O 0.799316[0.788602,0.810030]; L 0.750479[0.742199,0.758760] | OP last-arriver Triton or Gluon producer/consumer; Lee page-row producer +2QK/PV consumer WGs, tensor-core P sums, balanced splits/early query loads | Preferred L; per-cell point nominations, actual whole-layer/PDL cost unmeasured | `26d5054ffce94231` |
+| Licensed public 32x8f (O/Lee) | O 1.377356[1.367078,1.387634]; L 1.076995[1.073106,1.080885] | OP last-arriver Triton or Gluon producer/consumer; Lee page-row producer +2QK/PV consumer WGs, tensor-core P sums, balanced splits/early query loads | Retain S19; closes only these pinned dispatches, not all transport/softmax recipes | `26d5054ffce94231` |
+
+The S19 ABI is FP32 split planes1/10/7/3 or BF16, width1280(QKV-only)
+or2304(QKV+gate). Sum/cast/pad is timed, +inf internal gate preserves S19's
+separate real gate. Native attention/merge1launch; FP32pack adds1. S19→port
+launches v1F/v16S5→2; v1S1→2 yet OP wins22%; v32S1→1, Lee wins25%.
+Full32 neither wins despite one fewer launch. No work/values moved to prepare.
+
+All12correct point<1 pieces(6O/6L), SE/seeds/A:A and8preferred cells in
+`public_ports/P4_HANDOFF.json`. Combined patch**97c86143**, source**4a60c4e3**,
+applies onto S19**8b415553**; alternative OP/Lee patches84c9e409/299d9d8f.
+Local normal/forced704TASK+16host each, final wrapper28eager+graph cases,
+reviewed kernels byte/AST provenance and sm90a compilation pass. Operator
+full verify emits13WGMMA; full decode `mma_v2` is not a native-WGMMA claim.
+Selected cells bypass older FA3/row-merge interceptors; P4 compares d16F OP
+point to its C3 variant. P5 producer_finish README records OP v1S fusedprep
+winner so the same fusion is not built twice. No further run queued.
+Lab-only host intentionally ends at prepare after complete evidence; outer
+`passed:false` is not a failed704TASK gate. [Evidence](../problems/muse_attention_decode/dev/public_ports/README.md).
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

@@ -186,3 +186,24 @@ Rebuilding the unchanged payload must produce `10fc86593b43f48f`.
 `P4_HANDOFF.json` pins the receipt, seeds, measured diagnostic CIs and
 unmeasured candidate status. P10's `stream_gap/README.md` records the same
 decision. No RULINGS entry or base-candidate change is made.
+
+## P5b licensed attention ports coordination
+
+Native receipt **26d5054ffce94231**: all704TASK gates pass on H200, eight
+fresh seeds/eight symmetric cold rounds, every raw round kept in
+`../public_ports/receipt_data.json`. Operatorstack's fused preprocessing +
+last-arriver attention **wins at v1 sliding .780899[.773075,.788723]** versus
+S19. Lee v56 is preferred at d16S .954256, d32S .860893, v1F .757719,
+v16S .763592, v16F .968115, v32S .750479; OP also nominates d16F .991556.
+95% paired-seed CIs/SE, A:A, all positive point pieces and exact independent
+licensed patches onto S19 are in `../public_ports/P4_HANDOFF.json`.
+
+**P5 should not duplicate operatorstack's winning v1S fused preprocessing.**
+The public paths fuse Q/K norm, RoPE, new-KV stores and output norm/gate;
+FP32 split sum/cast remains paid and timed, and QKV-only projections retain
+S19's external true gate. This measures the entire port, not an isolated
+finish-deletion gain. For d1S neither port wins: its native setup/consumer
+work remains open. Other P5 native/RAW2/query changes were not edited.
+P4 selects/composes and confirms held-out whole-layer G0; the component
+receipt does not promote by itself. Selected public cells bypass previous
+FA3/row-reduction interceptors; avoid double-wrapping that work.
