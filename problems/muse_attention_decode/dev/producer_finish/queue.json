@@ -1,0 +1,20 @@
+{
+  "utc": "20261026T101126Z",
+  "problem": "muse_prefill_layer",
+  "mode": "check",
+  "job": "116dd8976c844b54",
+  "sha256": "cba4104044783d57e10a46750847d6c6c98f5c9cf1a5f7db58ba4c089f9b9bc8",
+  "file": "problems/muse_prefill_layer/lab/lab_sizing.py",
+  "source": "runs/muse_prefill_layer/20261026T101126Z_check_116dd8976c844b54.py",
+  "git": "06652d6+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/producer_finish/out/sizing.py: P5 repair95b406f4 unequal baseline captures made d16/v1 controls invalid; fresh65000087+104729*i seeds, plain rotating A/A2, separate diagnostic CUPTI; finish excludes gate copy;24local layer+12ready-outputTASK, native40regs no spills; no fused candidate",
+  "snapshot": "runs/sent/cba4104044783d57/lab_sizing.py",
+  "lane": "P5",
+  "decision": "Repair producer-finish sizing controls on S19: identical A:A capture path, QKV-only finish; decide >1pct score case before fusion build",
+  "priority": 5,
+  "priority_override": false,
+  "payload_sha256": "10fc86593b43f48f8cee155971eb7ee8bcbca584755af24d19c6d294f4a234ef",
+  "state": "done",
+  "sender_pid": 1933097,
+  "receipt": "runs/muse_prefill_layer/20261026T101126Z_check_116dd8976c844b54.json"
+}

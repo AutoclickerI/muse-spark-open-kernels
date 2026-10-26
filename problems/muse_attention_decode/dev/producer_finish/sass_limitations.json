@@ -1,0 +1,9 @@
+{
+  "status": "Raw/VDSK representative compile excluded from actual-producer attribution",
+  "reason": "Generic AST specialization did not reproduce measured resource allocation (255regs vs actual H20048/94). It is not evidence of actual producer resource use or idle ALU.",
+  "attempted_source_sha256": {
+    "_gb_kernel": "5b45a47191940b80f6df1ff405229e5cfc31bc3d25f33d25cd575b9d4f92ceec",
+    "_vdsk_gemm": "a369bf3ba99a01df68dde84e4d35f2fcd0244acbc83d4fbf232ff06100213116"
+  },
+  "actual_evidence": "Exact selected coded-CUDA template SASS in sass_audit.json; raw/VDSK source and actual H200 launch/resources retained in sizing receipt."
+}

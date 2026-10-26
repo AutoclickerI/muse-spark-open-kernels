@@ -1,0 +1,415 @@
+{
+  "base": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "receipt": "runs/muse_prefill_layer/20261026T101126Z_check_116dd8976c844b54.json",
+  "job": "116dd8976c844b54",
+  "sender_pid": 1933097,
+  "kind": "sizing only, not a performance nomination",
+  "nominees": [],
+  "fused_candidate": {
+    "status": "unmeasured: global last-CTA finish cannot overlap its preceding weight stream; per-head fusion needs a new coordination/producer design",
+    "ratios": {
+      "decode 1": null,
+      "decode 16": null,
+      "decode 32": null,
+      "verify 1": null,
+      "verify 16": null,
+      "verify 32": null
+    }
+  },
+  "checks": {
+    "finish_TASK": 96,
+    "layer_TASK": 192
+  },
+  "loads": [
+    {
+      "B": 1,
+      "L": 1,
+      "label": "decode 1",
+      "seeds": [
+        65000087,
+        65104816,
+        65209545,
+        65314274,
+        65419003,
+        65523732,
+        65628461,
+        65733190
+      ],
+      "layer_A_A": {
+        "mean": 1.0049439501795643,
+        "SE": 0.002127881377431951,
+        "CI95": [
+          0.9999123102699761,
+          1.0099755900891525
+        ],
+        "n": 8
+      },
+      "finish_probe_ratio": {
+        "mean": 1.3478486075822627,
+        "SE": 0.007752018314697523,
+        "CI95": [
+          1.3295179970765374,
+          1.366179218087988
+        ],
+        "n": 8
+      },
+      "weighted_finish_minus_empty_per_layer_us": {
+        "mean": 4.014641129032258,
+        "SE": 0.08050567763220505,
+        "CI95": [
+          3.8242754513122352,
+          4.205006806752281
+        ],
+        "n": 8
+      }
+    },
+    {
+      "B": 16,
+      "L": 1,
+      "label": "decode 16",
+      "seeds": [
+        65000087,
+        65104816,
+        65209545,
+        65314274,
+        65419003,
+        65523732,
+        65628461,
+        65733190
+      ],
+      "layer_A_A": {
+        "mean": 1.0009231514928338,
+        "SE": 0.001029959237698514,
+        "CI95": [
+          0.9984876849012199,
+          1.0033586180844478
+        ],
+        "n": 8
+      },
+      "finish_probe_ratio": {
+        "mean": 1.581056355719575,
+        "SE": 0.0049387503190205205,
+        "CI95": [
+          1.5693780669426574,
+          1.5927346444964925
+        ],
+        "n": 8
+      },
+      "weighted_finish_minus_empty_per_layer_us": {
+        "mean": 7.548495967741935,
+        "SE": 0.04966823855014544,
+        "CI95": [
+          7.431049246332366,
+          7.665942689151505
+        ],
+        "n": 8
+      }
+    },
+    {
+      "B": 32,
+      "L": 1,
+      "label": "decode 32",
+      "seeds": [
+        65000087,
+        65104816,
+        65209545,
+        65314274,
+        65419003,
+        65523732,
+        65628461,
+        65733190
+      ],
+      "layer_A_A": {
+        "mean": 1.001440829218825,
+        "SE": 0.0014970064541427802,
+        "CI95": [
+          0.9979009714525681,
+          1.004980686985082
+        ],
+        "n": 8
+      },
+      "finish_probe_ratio": {
+        "mean": 1.2571183609058083,
+        "SE": 0.005624745836793986,
+        "CI95": [
+          1.2438179504910798,
+          1.2704187713205368
+        ],
+        "n": 8
+      },
+      "weighted_finish_minus_empty_per_layer_us": {
+        "mean": 4.049629032258064,
+        "SE": 0.07812906626849132,
+        "CI95": [
+          3.8648831474052896,
+          4.234374917110839
+        ],
+        "n": 8
+      }
+    },
+    {
+      "B": 1,
+      "L": 8,
+      "label": "verify 1",
+      "seeds": [
+        65000087,
+        65104816,
+        65209545,
+        65314274,
+        65419003,
+        65523732,
+        65628461,
+        65733190
+      ],
+      "layer_A_A": {
+        "mean": 1.0024323023470494,
+        "SE": 0.001731852314300355,
+        "CI95": [
+          0.9983371223644777,
+          1.006527482329621
+        ],
+        "n": 8
+      },
+      "finish_probe_ratio": {
+        "mean": 1.258842133039238,
+        "SE": 0.005685654652996392,
+        "CI95": [
+          1.2453976961605815,
+          1.2722865699178947
+        ],
+        "n": 8
+      },
+      "weighted_finish_minus_empty_per_layer_us": {
+        "mean": 3.697625,
+        "SE": 0.06826916265127209,
+        "CI95": [
+          3.5361940823588696,
+          3.8590559176411303
+        ],
+        "n": 8
+      }
+    },
+    {
+      "B": 16,
+      "L": 8,
+      "label": "verify 16",
+      "seeds": [
+        65000087,
+        65104816,
+        65209545,
+        65314274,
+        65419003,
+        65523732,
+        65628461,
+        65733190
+      ],
+      "layer_A_A": {
+        "mean": 1.0013735002774269,
+        "SE": 0.0014493036854953862,
+        "CI95": [
+          0.9979464416347817,
+          1.0048005589200721
+        ],
+        "n": 8
+      },
+      "finish_probe_ratio": {
+        "mean": 1.2858152035759502,
+        "SE": 0.005187476883118,
+        "CI95": [
+          1.2735487699335524,
+          1.2980816372183481
+        ],
+        "n": 8
+      },
+      "weighted_finish_minus_empty_per_layer_us": {
+        "mean": 5.07679435483871,
+        "SE": 0.07954221698816008,
+        "CI95": [
+          4.888706899523051,
+          5.264881810154369
+        ],
+        "n": 8
+      }
+    },
+    {
+      "B": 32,
+      "L": 8,
+      "label": "verify 32",
+      "seeds": [
+        65000087,
+        65104816,
+        65209545,
+        65314274,
+        65419003,
+        65523732,
+        65628461,
+        65733190
+      ],
+      "layer_A_A": {
+        "mean": 1.0018679828593142,
+        "SE": 0.0004948667537248855,
+        "CI95": [
+          1.0006978089321494,
+          1.003038156786479
+        ],
+        "n": 8
+      },
+      "finish_probe_ratio": {
+        "mean": 1.106338749672516,
+        "SE": 0.002848678989617505,
+        "CI95": [
+          1.0996026942486636,
+          1.1130748050963686
+        ],
+        "n": 8
+      },
+      "weighted_finish_minus_empty_per_layer_us": {
+        "mean": 2.6853185483870967,
+        "SE": 0.06407548409157007,
+        "CI95": [
+          2.5338041047716224,
+          2.836832992002571
+        ],
+        "n": 8
+      }
+    }
+  ],
+  "remaining_sliding_gap": {
+    "d1S": {
+      "attention_critical_us": {
+        "mean": 7.676,
+        "SE": 0.0535590461880291,
+        "CI95": [
+          7.549352980491609,
+          7.802647019508392
+        ],
+        "n": 8
+      },
+      "KV_target_us": 0.14199466666666666,
+      "remaining_sliding_gap_us": {
+        "mean": 7.534005333333334,
+        "SE": 0.0535590461880291,
+        "CI95": [
+          7.407358313824942,
+          7.660652352841725
+        ],
+        "n": 8
+      }
+    },
+    "d16S": {
+      "attention_critical_us": {
+        "mean": 11.836,
+        "SE": 0.11499083814436212,
+        "CI95": [
+          11.564089875412861,
+          12.10791012458714
+        ],
+        "n": 8
+      },
+      "KV_target_us": 2.2719146666666665,
+      "remaining_sliding_gap_us": {
+        "mean": 9.564085333333333,
+        "SE": 0.11499083814436212,
+        "CI95": [
+          9.292175208746194,
+          9.835995457920472
+        ],
+        "n": 8
+      }
+    },
+    "d32S": {
+      "attention_critical_us": {
+        "mean": 16.492,
+        "SE": 0.20010854197517058,
+        "CI95": [
+          16.01881848869464,
+          16.96518151130536
+        ],
+        "n": 8
+      },
+      "KV_target_us": 4.543829333333333,
+      "remaining_sliding_gap_us": {
+        "mean": 11.948170666666668,
+        "SE": 0.20010854197517058,
+        "CI95": [
+          11.474989155361307,
+          12.421352177972029
+        ],
+        "n": 8
+      }
+    },
+    "v1S": {
+      "attention_critical_us": {
+        "mean": 12.392,
+        "SE": 0.21172488888042543,
+        "CI95": [
+          11.891350193087558,
+          12.892649806912441
+        ],
+        "n": 8
+      },
+      "KV_target_us": 0.14248,
+      "remaining_sliding_gap_us": {
+        "mean": 12.249519999999999,
+        "SE": 0.21172488888042543,
+        "CI95": [
+          11.748870193087557,
+          12.75016980691244
+        ],
+        "n": 8
+      }
+    },
+    "v16S": {
+      "attention_critical_us": {
+        "mean": 22.83225,
+        "SE": 0.1742084906492377,
+        "CI95": [
+          22.420312378177435,
+          23.24418762182256
+        ],
+        "n": 8
+      },
+      "KV_target_us": 2.27968,
+      "remaining_sliding_gap_us": {
+        "mean": 20.55257,
+        "SE": 0.1742084906492377,
+        "CI95": [
+          20.140632378177436,
+          20.964507621822563
+        ],
+        "n": 8
+      }
+    },
+    "v32S": {
+      "attention_critical_us": {
+        "mean": 24.028125,
+        "SE": 0.07983653779978936,
+        "CI95": [
+          23.839341586555413,
+          24.216908413444585
+        ],
+        "n": 8
+      },
+      "KV_target_us": 4.55936,
+      "remaining_sliding_gap_us": {
+        "mean": 19.468765,
+        "SE": 0.07983653779978901,
+        "CI95": [
+          19.279981586555415,
+          19.657548413444587
+        ],
+        "n": 8
+      }
+    }
+  },
+  "decision": "Propose parking independent P5 builds; reopen for a concrete P10 head-local scheduling design and actual ready-consumer oracle across six loads, including d1/v1/full.",
+  "reason": "Global last-CTA finish follows the stream. Logical bandwidth/static SASS do not establish ALU slack. Coded tiles own16of64columns; v32 uses Lt. Four-load RAW2 free-prep scenario is below1% but is not a universal bound.",
+  "producer_patch": null,
+  "limitations": [
+    "SASS/static throughput do not establish dynamic ALU idle.",
+    "Standalone parallel finish cost is not a rigorous lower bound on a fused epilogue.",
+    "CUPTI critical increments have profiling perturbation and are not guaranteed recoverable savings.",
+    "RAW2 altered-work preparation estimates are not actual S19 FA3 timings or a bound on unmeasured d1/v1/full fusion."
+  ],
+  "prior_nomination": "../setup_tree/P4_HANDOFF.json"
+}

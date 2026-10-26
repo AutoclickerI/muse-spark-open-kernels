@@ -1,0 +1,70 @@
+{
+  "job": "95b406f48c8e45c7",
+  "receipt": "runs/muse_prefill_layer/20261026T095438Z_check_95b406f48c8e45c7.json",
+  "checks": {
+    "finish_TASK": 96,
+    "layer_TASK": 192
+  },
+  "elapsed_s": 232.4285197200079,
+  "base": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "status": "Unmeasured baseline comparison: A and A2 used different capture/profiling paths; d16/v1 A:A CIs exclude1. Retain output TASK and component diagnostics, do not promote/model as a validated fused gain.",
+  "superseded_by": "Identical capture-path repair with fresh65000087+104729*i seeds; Q/K/V-only finish probe",
+  "raw_evidence": "Checksum-verified full packet and exact payload remain in the immutable receipt and run source; no baseline gain or model from this capture is used.",
+  "invalid_control_scope": "A was captured with cs_profile and A2 with tl_capture; unequal procedures confound their whole-layer comparison.",
+  "A_A_loads": {
+    "decode 1": {
+      "mean": 0.9966357079502207,
+      "SE": 0.0024581698387270987,
+      "CI95": [
+        0.9908230599350327,
+        1.0024483559654087
+      ],
+      "n": 8
+    },
+    "decode 16": {
+      "mean": 0.9935461213479698,
+      "SE": 0.001328551642746204,
+      "CI95": [
+        0.9904045959140387,
+        0.9966876467819009
+      ],
+      "n": 8
+    },
+    "decode 32": {
+      "mean": 1.0007379824352818,
+      "SE": 0.0008902618910228035,
+      "CI95": [
+        0.9986328475775004,
+        1.0028431172930632
+      ],
+      "n": 8
+    },
+    "verify 1": {
+      "mean": 0.9953672238245137,
+      "SE": 0.001116726886688272,
+      "CI95": [
+        0.9927265843458449,
+        0.9980078633031825
+      ],
+      "n": 8
+    },
+    "verify 16": {
+      "mean": 0.9998799410493443,
+      "SE": 0.0012624555414265828,
+      "CI95": [
+        0.9968947080595293,
+        1.0028651740391592
+      ],
+      "n": 8
+    },
+    "verify 32": {
+      "mean": 0.9996368399055345,
+      "SE": 0.000835598454687858,
+      "CI95": [
+        0.9976609635349861,
+        1.0016127162760828
+      ],
+      "n": 8
+    }
+  }
+}

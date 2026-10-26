@@ -101,3 +101,34 @@ QKV dispatch receipt: `2b45988c88fb42a5`; outer host passed: True. Ratios are ca
 | 16 | qkv_gate | [4, 4, 2] | 0.978316 [0.968563,0.988168] | 1.005548 [0.997452,1.013709] |
 
 P4 receives arm4 (WK4/S4/ST1) at M8 full QKV, M16 full QKV and M16 QKV3. The M8 QKV3 win is retained as a diagnostic because that site is inactive in the current layer. patch_qkv.py prunes untimed prepare to those three instances/two banks. Applied to shipped S18 e04635ec it produces f9e4661d; layer_qkv_admission.json records 13 TASK tests and 12 graph shapes in normal and forced local modes, executing every changed site, plus three zero-spill Hopper builds. P4 G0 remains unmeasured; the additional H200 prepare cost on that base is also unmeasured.
+
+## P5 S19 producer-finish sizing handoff
+
+P5's [sizing record](../../../muse_attention_decode/dev/producer_finish/README.md)
+and [machine handoff](../../../muse_attention_decode/dev/producer_finish/P4_HANDOFF.json)
+pin exact S19 expanded62ea5bf4, prefill import check116dd8976c844b54
+(sender1933097), eight fresh seeds and all192 layer+96 ready-output TASK passes.
+
+The component useful-throughput figures above do not establish dynamic ALU
+slack. A global last-CTA finish follows all producer partial writes, so it
+cannot hide under that preceding weight stream. Exact d1/v1/d32 coded SASS
+shows16-column output ownership, four tiles per64-channel normalized head;
+K-cluster reduction alone does not complete a head. d16 and v16 emit10/3
+FP32 K partials; v32 is cuBLASLt BF16, not this editable CUDA epilogue.
+
+No production producer patch is nominated: the proposed free global tail
+fails dependency sizing. The reusable native `producer_finish/finish.cu`
+probe completes actual FP32/BF16 producer output, RMS/RoPE/E4M3 Q and current
+KV in a separate timed launch; its paid sliding tails are4.124/8.017/4.209/
+3.745/5.147/2.761us at d1/d16/d32/v1/v16/v32. These are not lower bounds
+for register-resident fusion. All paired CIs, controls and source hashes
+are in the handoff. QKV3/gate concurrency must survive a future producer edit.
+
+The prior RAW2 ready-BF16 deletion estimates do not time actual S19 FA3
+(v16) or FP32 reduction. Deleting those four supplied costs with zero added
+work models+0.563% six-load for sliding, +0.760% if blindly extended to all
+62 layers, d1/v1 unchanged. Neither is a six-load upper bound. A future
+joint design needs head-local readiness while other heads still stream,
+plus a real ready-consumer oracle across all six S/F paths before sizing
+it above1%. P5 proposes parking independent builds pending that concrete
+mechanism; this does not close P10 producer fusion generally.

@@ -1037,6 +1037,35 @@ score gate in GOAL; no per-load significance or extra correctness gate applies.
 
 | S19 H cooperative register page map before PDL;16 new seeds x10 cold,256 layer TASK; prefill-host import after attention quota spent | H/S19 d16 1.005026[1.002175,1.007876],d32 **.999373[.997703,1.001043] SE.000784**,v16 1.001271[.994404,1.008138],v32 1.000132[.998087,1.002178]. H/RAW1.000529/1.000746/**.997187[.995800,.998574]**/1.000536. A:A.997644/.998277/1.000299/.999751, all95pctCIs contain1 | Four quad lanes own four tiles; physical-page/row map loaded once/key into registers before PDL, quad shuffles supply copy sectors. Native LDG.E sites41→33 /35→27, four page LDGs in prelude and none in source-attributed copy loop. Regs138→140 /172→168, no new shared/spills, same occupancy.144 CPU cases/204800 sectors prove old/new coordinates, TASK covers fresh/partial/page64. Native v16 gains0.28pct vs RAW but remains above FA3; no native5us coordinate term recovered | **Hand only d32 H changed-recipe point to P4 S19**, with exact557deae0 selected shipment/patch, normal+forced13TASK12graphs6static each, all SE/seeds/control alternatives. D32 H/RAW1.000746 and A:A.998277 mean no isolated shader win. Preserve FA3v16/RAW2v32 and unselected shapes. Closes large-gain expectation for this coordinate recipe, not hoisting generally; producer fusion, copy/transpose and max/sum/packing remain. No standalone small-gain repeat; both receipts collected,568 native TASK total | `6b15d130e20f439f` |
 
+
+### P5 S19 producer-finish sizing (2026-10-26)
+
+The supplied2.115/2.183/3.750/3.605us preparation removals are old RAW2
+BF16-ready altered-work estimates, not actual S19 FP32 reduction/FA3 costs;
+S19v16 uses FA3. P10's logical bytes/time and static SASS cannot establish
+idle ALUs. Exact coded d1/v1/d32 output tiles own16of64head columns, and
+wait for K partials before output. A **global last-CTA finish starts after
+the weight stream**, so it cannot hide under that same stream. Head-local
+readiness could overlap other heads but needs another ownership/schedule;
+v32 uses cuBLASLt. No production fused patch or candidate ratio is measured.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Initial producer-finish sizing,8seeds/all12S/Fshapes | Whole-layer baseline comparison **unmeasured**: A profiled versus A2 plain capture;192layer+96finish TASK pass. d16/v1 A:A .99355/.99537 are retained, not treated as a speedup | Unequal capture procedures confound A:A; repaired in next receipt with identical plain captures and separate profiling | No closure/promotion from baseline timings; immutable source and invalidated analysis retained | `95b406f48c8e45c7` |
+| Repaired S19 producer+standalone ready-Q/KV finish versus producer+same-resource empty;8freshseeds,6cold | Weighted46S+16F **component PF/PE** d1/d16/d32/v1/v16/v32 **1.347849[1.329518,1.366179]/1.581056[1.569378,1.592735]/1.257118[1.243818,1.270419]/1.258842[1.245398,1.272287]/1.285815[1.273549,1.298082]/1.106339[1.099603,1.113075]**. Layer A:A1.004944/1.000923/1.001441/1.002432/1.001374/1.001868;192layer+96ready-output public TASK pass | Real FP32/BF16 ABI, reduce→BF16→RMS/RoPE→E4M3 Q/newKV;40regs/no spills. Paid S tails4.124/8.017/4.209/3.745/5.147/2.761us. v32 A:A+0.187% directional drift retained, no per-load veto | Standalone finish is not a lower bound for register-resident fusion or a candidate/S19 ratio. No new P4 nominee. Global free-tail premise fails, head-local fusion remains unmeasured | `116dd8976c844b54` |
+| S19 sliding completion-critical increments versus1.3KV byte targets, same eight seeds | Critical us7.676/11.836/16.492/12.392/22.832/24.028; targets.142/2.272/4.544/.142/2.280/4.559; **excess7.534/9.564/11.948/12.250/20.553/19.469us** | Separate CUPTI calibration per fresh fixture, not summed overlapping phases; all paired CIs/SEs/seeds retained | Profiling perturbation, small-batch latency and math/issue prevent calling all excess recoverable; large theoretical attention gap remains | `116dd8976c844b54` |
+
+The four supplied RAW2 deletion cells, d1/v1 unchanged, modelR1.005628 for
+46sliding layers or1.007604 if extended to62, at zero added producer/ready
+load cost. These are scenarios, **not six-load upper bounds or promotion**;
+CI in JSON covers baseline variation only. d1/v1/full actual deletion costs
+were not measured. Propose parking independent P5 builds by decision value:
+no supported >1% six-load concrete build remains in this batch. Reopen for a
+P10 head-local schedule plus real six-load ready-consumer oracle; this does
+not rule out producer fusion/attention generally. Prior d32 page-map point
+remains with P4. [Evidence, controls and handoff](../problems/muse_attention_decode/dev/producer_finish/README.md).
+
+
 ### Our kernels (losses in "Closed recipes")
 
 vq8 uses one persistent 384-thread CTA/SM, stream-K over request/head-pair/tile;

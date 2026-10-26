@@ -1,0 +1,11 @@
+{
+  "payload_sha256": "10fc86593b43f48f8cee155971eb7ee8bcbca584755af24d19c6d294f4a234ef",
+  "checks": {
+    "layer_TASK": 24,
+    "finish_TASK": 12
+  },
+  "case_count": 12,
+  "packet_bytes_one_seed": 2643,
+  "native_finish_sha256": "4de322f1b1a6b1ecfca28b2060e0eab8e8b76b7a8a0a27b14354f16b1e57a34a",
+  "standins": "Unchanged S19 forced Hopper stand-ins; native finish executes. Public attention TASK uses actual ready Q/cache; full-QKV gate is materialized only in the untimed checker, QKV3 uses a zero-gate attention fixture. Whole-layer A/A2 keep the real concurrent gate GEMV."
+}
