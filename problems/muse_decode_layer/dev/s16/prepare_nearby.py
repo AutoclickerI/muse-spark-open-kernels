@@ -19,7 +19,9 @@ def main():
     base_meta['sha256']=hashlib.sha256(base.encode()).hexdigest();assert base_meta['sha256']==frozen['expanded_sha256']
     source,meta=patches.compose(specs+['layer_nearby'])
     old=(H.parents[1]/'cand_r3_best7_s15n.py').read_text()
-    guarded=(H.parent/'nearby/native_validation/guarded_s15n.py').read_text()
+    marker="if cfg['batch']>1 and cfg['q_len']==8 and not cfg['window'] else None"
+    assert old.count(marker)==1
+    guarded=old.replace(marker,"if 1<cfg['batch']<=64 and cfg['q_len']==8 and not cfg['window'] else None")
     assert hashlib.sha256(old.encode()).hexdigest().startswith('ebceda91')
     assert hashlib.sha256(guarded.encode()).hexdigest()=='9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8'
     source=patches.apply_delta(source,capture.delta(old,guarded))
