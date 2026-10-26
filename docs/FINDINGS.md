@@ -555,7 +555,9 @@ Recipe ratios are candidate/control (lower is faster), except the explicitly lab
 
 | Recipe | Ratio and control spread | Mechanism | What remains open / decision | Receipt job |
 |---|---|---|---|---|
+| P12 S15 projection component | SGLang/ours 0.98059 [0.96588,0.99530]; ours/leader 1.65590; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 9 tests/30 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. Includes board sum/cast/router-add tax; one-reducer/producer-only follow-up queued. | d6ad694a27954c80 |
 | P12 S15 moe component | SGLang/ours 2.02924 [1.99880,2.05968]; ours/leader 1.25835; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 5 tests/6 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. | 97f5e7f3c3fc4159 |
+| P10 pool sparse batch | unmeasured: failed or incomplete control/gate | No recipe loss or promotion inferred | LAB_ERROR CompilationError: at 6:4:; AttributeError("'NoneType' object has no attribute 'startswith'"); AttributeError("'NoneType' object has no attribute 'startswith'"); LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts) | b02c4f27e71c4340 |
 <!-- P10/P12 measurements end -->
 
 ## Glue and routing
