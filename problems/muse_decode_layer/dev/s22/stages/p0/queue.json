@@ -1,0 +1,35 @@
+{
+  "phase": 0,
+  "source_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
+  "wrapper_sha256": "f923c406edb9ce95d7578ddab0486481aead7d00753ae904278f6f35883ef1c3",
+  "payload_sha256": "403ff22fe051272ddc3b2e154de6b7529998399a4ab284ae62cb47b1264caf9a",
+  "host": "muse_bf16_proj",
+  "sender_pid": 3725147,
+  "decision": "S22: d16S restore + direct-input hybrids, per-cell leave-outs",
+  "quota_at_send": {
+    "muse_bf16_proj": [
+      0,
+      0
+    ],
+    "muse_attention_decode": [
+      0,
+      0
+    ],
+    "muse_moe_w4a16": [
+      0,
+      0
+    ],
+    "muse_decode_layer": [
+      0,
+      0
+    ],
+    "muse_prefill_layer": [
+      0,
+      0
+    ]
+  },
+  "waiting_for_reset": true,
+  "receipt": null,
+  "followthrough_pid": 3807459
+}
