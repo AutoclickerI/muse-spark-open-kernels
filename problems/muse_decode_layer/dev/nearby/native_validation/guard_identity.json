@@ -1,0 +1,9 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "queued_s15n_sha256": "ebceda91ed055adc0ece9161a350934dc92b93cd78277bc6b25e54ce66d890a6",
+  "guarded_sha256": "9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8",
+  "patch_sha256": "792eacc392e557f2bfc2fdd1350e27ae0db5bf80a63f37e653c99cbf6d830efb",
+  "cause": "S15 N128 VQ8 has NSMAX=64 and throws for B*HKV/2>64; range lookup must enforce capacity",
+  "affects_65_audit_shapes": false,
+  "promotion": false
+}

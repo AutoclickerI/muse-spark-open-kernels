@@ -1,0 +1,25 @@
+{
+  "original": {
+    "pid": 1579130,
+    "priority": 4.0,
+    "t": 1792952467.8112552,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_library_payload.py",
+    "sha256": "54aa3bedc460bbc8880892042a76993872a384a308fb90b5e007fd97b7fe8b2c",
+    "note": "h200_lab problems/muse_decode_layer/dev/library_chain/out/library_payload.py: S15L 233239ad owned library boundaries: S15+A:A+L+five per-replacement leave-outs; six loads, eight seeds/eight cold rotated graph replays; unchanged TASK checker every arm/seed; normal+forced screened",
+    "not_before": 1792972800.0,
+    "until": 1792972800.0
+  },
+  "repair": {
+    "pid": 64202,
+    "priority": 3.9,
+    "t": 1792975220.4471047,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_s15_library_repaired.py",
+    "sha256": "2567c5a90528c832e27e93efdae5fccf6b5d7dedd3e2a307ad803b75aa9758f3",
+    "note": "P4 repaired S15 library layer audit: explicit top-level kernel entry only; original 54aa3bed payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection.",
+    "not_before": 0
+  },
+  "reason": "Static entry requirement; P4 already queued an entry-only screened replacement",
+  "action": "SIGTERM own unsent original under dispatch lock; replacement untouched"
+}

@@ -1,0 +1,17 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "arms": {
+    "V": "5c8ba960c84753938bed9588105f0e30e18430a633264fa9b8f8e361f6711d53",
+    "V2": "5c8ba960c84753938bed9588105f0e30e18430a633264fa9b8f8e361f6711d53",
+    "G": "7373da1076839bed4040af7a50c494fe2ad4678ec612d4c52345d3b183df3e1b"
+  },
+  "payload_sha256": "2d156c035595cdd1788d1c6cfc4705e048a67a57f6930e50506d8c56f3d52fc3",
+  "shapes": 12,
+  "loads": 6,
+  "seeds": 8,
+  "replays": 8,
+  "arms_including_controls": 5,
+  "task_checks": 480,
+  "probe": "native E4M3 P*ones plus alpha rescale, repeated identical V/V2 executable",
+  "resources": "V adds16B/thread main spills at168registers; no production C75 warnings; unchanged combine resources"
+}

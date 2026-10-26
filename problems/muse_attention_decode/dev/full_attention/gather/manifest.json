@@ -1,0 +1,7 @@
+{
+  "driver_sha256": "f0eec0113de9ea259bed07c0b7157f249f8e5269cf63240da502d7443ed54500",
+  "cuda_sha256": "5444a75496802e3ad7192eaf235482668fefb92b40e131fe3ab85dc1fe02a4f3",
+  "source": "frozen decode ref driver; only load_rows/issue mapping changes",
+  "target": "B16/32 q1 full, no sliding dispatch changes",
+  "promotion": false
+}

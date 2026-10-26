@@ -1,0 +1,24 @@
+{
+  "wrapper_sha256": "7127261f4018b43d8638c416c22bdc4a7e48a8f1e679cc7c4d442489b179a162",
+  "modes": {
+    "normal": {
+      "payload_task_checks": 1440,
+      "official_host_tests": 13,
+      "static": 2,
+      "elapsed": 91.81,
+      "candidate_functional": 143,
+      "candidate_static": 25
+    },
+    "forced": {
+      "payload_task_checks": 1440,
+      "official_host_tests": 13,
+      "static": 2,
+      "elapsed": 139.91,
+      "candidate_functional": 143,
+      "candidate_static": 25
+    }
+  },
+  "native": "native_compile.json",
+  "identity": "identity.json",
+  "promotion": false
+}

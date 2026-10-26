@@ -1,0 +1,22 @@
+{
+  "candidate_sha256": "2f93745e1025ee73ab02fea87e846cf9d5a48efd1a9a3444c0a30594a035ec99",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "changed_cuda_literals": [
+    "ATTN_PORT_CUDA_SRC",
+    "NF_CUDA"
+  ],
+  "preserved_cuda_literals": 34,
+  "native_reused_from_reset": {
+    "ATTN_PORT_CUDA_SRC": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259",
+    "NF_CUDA": "2e9f72ae8e04c29851ec393d6ae56d78bd5b4d62a6a2ca2f201d8a73b42482d5"
+  },
+  "smallm_v9_release_edits_excluded": true,
+  "scored_dispatch_changes": [
+    "q1 portfolio attention PDL enable/wait",
+    "N_full MoE PDL release/wait",
+    "VDSK qkv PDL release",
+    "NF O at T128 only",
+    "VDSK pool at T128 only"
+  ],
+  "promotion": false
+}

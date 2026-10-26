@@ -1,0 +1,25 @@
+{
+  "original": {
+    "pid": 1416137,
+    "priority": 3.0,
+    "t": 1792951058.2097526,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_release_payload.py",
+    "sha256": "f067eb263e1a67ac5277cec91b032fa33de4891ec3a12fdba9a24b23ae3797bc",
+    "note": "h200_lab problems/muse_decode_layer/dev/pdl_release/out/release_payload.py: P7 S15e 084e004b producer release audit: S15,A:A,E,minus-attention/MoE/projections/glue (glue no-op),12 shapes6 loads8 seeds8 cold replays;early MoE+VDSK and PDL/wait consumer edges;normal+forced143fixtures and full7-arm screens pass;optimized sm90a placement proven",
+    "not_before": 1792972800.0,
+    "until": 1792972800.0
+  },
+  "repair": {
+    "pid": 41235,
+    "priority": 2.9,
+    "t": 1792975060.9947255,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_s15_release_repaired.py",
+    "sha256": "02c19fbd6475cac5453f93d4246ab02715faa748322844034fda97ebe7cc7908",
+    "note": "P4 repaired S15 release layer audit: explicit top-level kernel entry only; original f067eb26 payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection.",
+    "not_before": 0
+  },
+  "reason": "Static entry requirement; P4 already queued an entry-only screened replacement",
+  "action": "SIGTERM own unsent original under dispatch lock; replacement untouched"
+}

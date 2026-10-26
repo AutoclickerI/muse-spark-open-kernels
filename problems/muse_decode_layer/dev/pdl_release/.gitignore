@@ -3,3 +3,15 @@ __pycache__/
 src/
 out/
 *.py.tmp
+
+confirmation/*.py
+confirmation/*.log
+confirmation/*.patch
+!confirmation/P.patch
+!confirmation/C.patch
+!confirmation/attention.patch
+!confirmation/large.patch
+!confirmation/vdsk.patch
+!confirmation/O.patch
+!confirmation/pool.patch
+confirmation/native/

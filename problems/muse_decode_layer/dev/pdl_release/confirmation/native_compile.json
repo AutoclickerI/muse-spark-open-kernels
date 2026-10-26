@@ -1,0 +1,30 @@
+[
+  {
+    "chain": false,
+    "ptx_sha256": "e89dfd83808eff2da53216a9267edd4d29a91880df5825e3377d8e6fe671c610",
+    "release": [
+      34
+    ],
+    "wait": [],
+    "first_load": [
+      232
+    ],
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _vdsk_gemm:\n  REG:94 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:952 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "shared": 196672
+  },
+  {
+    "chain": true,
+    "ptx_sha256": "10dbba1a49064a0d84fc882f20b7ae206aa4b4a9c5b1f63256014891ea803614",
+    "release": [
+      34
+    ],
+    "wait": [
+      36
+    ],
+    "first_load": [
+      276
+    ],
+    "resources": "\nResource usage:\n Common:\n  GLOBAL:0\n Function _vdsk_gemm:\n  REG:90 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:952 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "shared": 163880
+  }
+]

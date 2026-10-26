@@ -119,8 +119,7 @@ Hopper-only launch stand-ins. These cannot prove native Hopper concurrency.
 
 The standalone whole-file static screen compiles every CUDA literal for sm90a;
 [native.py](native.py) additionally compiles the four changed sources with -O3 and
-records the release/wait instructions in Hopper SASS. Native concurrency and its
-performance still require the paired H200 receipt.
+records the release/wait instructions in Hopper SASS. Native concurrency and paired performance are recorded in the reset receipt below.
 
 ## Batched paired H200 experiment
 
@@ -144,4 +143,28 @@ and priority0 P5. Identity and results are added below after admission.
 
 Current admission: {"base_sha256":"602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb","candidate_sha256":"084e004b797991bc6f0302fc2d04efe7157998e9e6c25b0bdee1706e26d161fa","candidate":{"normal":{"fixtures":143,"eager_checks":143,"replay_checks":143,"static":25},"forced":{"fixtures":143,"eager_checks":143,"replay_checks":143,"static":25}},"lab":{"normal":{"wrapper_sha256":"f067eb263e1a67ac5277cec91b032fa33de4891ec3a12fdba9a24b23ae3797bc","shapes":12,"loads":6,"seeds":8,"replays":8,"arms":7,"host_tests":13,"static":2,"elapsed_s":35.92},"forced":{"wrapper_sha256":"f067eb263e1a67ac5277cec91b032fa33de4891ec3a12fdba9a24b23ae3797bc","shapes":12,"loads":6,"seeds":8,"replays":8,"arms":7,"host_tests":13,"static":2,"elapsed_s":32.18}},"limitations":["sm120 screens use explicit launch stand-ins for Hopper-only attention","native Hopper concurrency/performance pending reset receipt","FA3/cuBLAS and normal CUDA event completion boundaries retained"],"optimized_hopper_compile":4,"sass_placement":"placement.json; isolated mapping sass_mapping.json"}
 
-Queued sender **1416137**, wrapper **`f067eb263e1a67ac`**. Not-before **1792972800.0**, priority **3.0**; no judge ID yet. See [queue.json](queue.json).
+
+## Current reset identity
+
+The unsent original lacked a top-level AST `kernel_fn`. P4 repaired only the entry; payload math, seeds and gates are identical. The original was retired under the dispatch lock after checking PID, command and source identities. `reset_superseded.json` preserves the evidence.
+
+Repaired sender **41235**; accepted job **f88fda4aac144374**.
+
+## Native reset result
+
+Job **f88fda4aac144374**, complete12shapes×8seeds, no compile/runtime or correctness failures. Native output/routing parity gates all pass.
+
+| Load | A:A mean [seed min,max] | E/S15 mean | SE |
+|---|---|---:|---:|
+| 1x1 | 1.009834 [1.000283,1.016426] | 1.018308 | 0.004748 |
+| 16x1 | 0.997998 [0.994593,1.001740] | 0.988901 | 0.000723 |
+| 32x1 | 0.998476 [0.996282,1.000505] | 0.991881 | 0.000757 |
+| 1x8 | 0.997318 [0.993044,1.000308] | 1.001564 | 0.000590 |
+| 16x8 | 0.998725 [0.994851,1.002511] | 0.977655 | 0.001127 |
+| 32x8 | 0.999697 [0.997835,1.002037] | 0.992563 | 0.000394 |
+
+The frozen payload omitted joint per-seed timings; its inverse geomean of mean ratios is descriptive only. No held-out six-load confidence claim is available. E-identical no-glue confirms the useful larger-load signal, while d1 A:A is biased upward. Attention consumer enable/wait at decode16/32 and large-M release/VDSK at verify16/32 are nominations. Small-M/V9 release is excluded from the new selected composition; no wholesale E promotion.
+
+The combined follow-up lives in [../pdl_release/confirmation/README.md](../pdl_release/confirmation/README.md): fifteen arms, eight held-out seeds, all12 shapes/six loads,1,440 actual TASK gates and per-seed weighted load times. It isolates each nominated producer/library edit and their interactions; the score gate is the six-load geomean R lower confidence bound above1. Exact patches target frozen S15 60254883. `reset_result.json` preserves the original receipt and all arm statistics.
+
+Control qualification: d1 is **unmeasured** in both reset audit recipes because every A:A seed ratio exceeds1. Its point estimates do not establish a d1 gain or loss. The fresh confirmation retests d1; no whole-composition promotion is claimed from the frozen reset summaries.

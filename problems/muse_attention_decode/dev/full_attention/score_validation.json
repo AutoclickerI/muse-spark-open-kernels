@@ -1,0 +1,22 @@
+{
+  "test": "Six unequal load speedups including losses, shared seed scale, paired geometric aggregation and zero-spread CI",
+  "expected_R": 1.0114449025027137,
+  "actual": {
+    "R": 1.0114449025027137,
+    "log_SE": 2.3852447794681094e-18,
+    "lower95": 1.0114449025027137,
+    "upper95": 1.0114449025027137,
+    "seed_R": [
+      1.0114449025027137,
+      1.0114449025027137,
+      1.0114449025027137,
+      1.0114449025027137,
+      1.0114449025027137,
+      1.0114449025027137,
+      1.0114449025027137,
+      1.0114449025027137
+    ]
+  },
+  "aa_R": 1,
+  "passed": true
+}

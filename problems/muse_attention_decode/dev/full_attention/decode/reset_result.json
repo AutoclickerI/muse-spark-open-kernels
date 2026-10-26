@@ -1,0 +1,458 @@
+{
+  "job": "e4fcf732f35b425d",
+  "receipt": "runs/muse_bf16_proj/20261026T001053Z_submit_e4fcf732f35b425d.json",
+  "receipt_sha256": "0888b42a0d211b5b4905b1dd73640f7cc4c2b2a76e91fba1661ffc547c3e3aa1",
+  "kind": "decode",
+  "host_status": "ok",
+  "host_passed": true,
+  "rows": [
+    {
+      "batch": 16,
+      "control_us": 104.36,
+      "aa": {
+        "us": 104.23,
+        "ratio": 0.99964,
+        "lo": 0.9931,
+        "hi": 1.00543,
+        "se": 0.00193
+      },
+      "arms": {
+        "A2": {
+          "us": 104.23,
+          "ratio": 0.99964,
+          "lo": 0.9931,
+          "hi": 1.00543,
+          "se": 0.00193
+        },
+        "mix25": {
+          "us": 104.63,
+          "ratio": 1.00182,
+          "lo": 0.9963,
+          "hi": 1.00745,
+          "se": 0.00134
+        },
+        "mix50": {
+          "us": 105.37,
+          "ratio": 1.00898,
+          "lo": 1.0057,
+          "hi": 1.01205,
+          "se": 0.00084
+        },
+        "tc": {
+          "us": 105.29,
+          "ratio": 1.00976,
+          "lo": 1.00458,
+          "hi": 1.0167,
+          "se": 0.00153
+        },
+        "tc25": {
+          "us": 105.31,
+          "ratio": 1.00814,
+          "lo": 1.0017,
+          "hi": 1.01493,
+          "se": 0.00153
+        },
+        "wgref": {
+          "us": 139.71,
+          "ratio": 1.33968,
+          "lo": 1.32931,
+          "hi": 1.36173,
+          "se": 0.00417
+        },
+        "wg25": {
+          "us": 145.69,
+          "ratio": 1.39793,
+          "lo": 1.38125,
+          "hi": 1.4173,
+          "se": 0.00458
+        },
+        "wg50": {
+          "us": 151.0,
+          "ratio": 1.44732,
+          "lo": 1.42686,
+          "hi": 1.46726,
+          "se": 0.00495
+        },
+        "ping": {
+          "us": 175.24,
+          "ratio": 1.68078,
+          "lo": 1.66824,
+          "hi": 1.70577,
+          "se": 0.00453
+        },
+        "ping25": {
+          "us": 182.04,
+          "ratio": 1.74657,
+          "lo": 1.72946,
+          "hi": 1.76993,
+          "se": 0.00476
+        }
+      },
+      "clear_winners": []
+    },
+    {
+      "batch": 32,
+      "control_us": 195.03,
+      "aa": {
+        "us": 195.13,
+        "ratio": 1.00105,
+        "lo": 0.99778,
+        "hi": 1.00871,
+        "se": 0.00117
+      },
+      "arms": {
+        "A2": {
+          "us": 195.13,
+          "ratio": 1.00105,
+          "lo": 0.99778,
+          "hi": 1.00871,
+          "se": 0.00117
+        },
+        "mix25": {
+          "us": 195.44,
+          "ratio": 1.00284,
+          "lo": 0.99869,
+          "hi": 1.00705,
+          "se": 0.00102
+        },
+        "mix50": {
+          "us": 196.95,
+          "ratio": 1.01133,
+          "lo": 1.00894,
+          "hi": 1.01864,
+          "se": 0.00107
+        },
+        "tc": {
+          "us": 196.55,
+          "ratio": 1.00704,
+          "lo": 1.00252,
+          "hi": 1.01674,
+          "se": 0.00149
+        },
+        "tc25": {
+          "us": 196.77,
+          "ratio": 1.00896,
+          "lo": 1.004,
+          "hi": 1.01287,
+          "se": 0.00104
+        },
+        "wgref": {
+          "us": 250.35,
+          "ratio": 1.28368,
+          "lo": 1.2667,
+          "hi": 1.29618,
+          "se": 0.00355
+        },
+        "wg25": {
+          "us": 259.87,
+          "ratio": 1.33255,
+          "lo": 1.31635,
+          "hi": 1.3417,
+          "se": 0.00277
+        },
+        "wg50": {
+          "us": 267.54,
+          "ratio": 1.37264,
+          "lo": 1.35724,
+          "hi": 1.39039,
+          "se": 0.00369
+        },
+        "ping": {
+          "us": 317.94,
+          "ratio": 1.63104,
+          "lo": 1.61256,
+          "hi": 1.65488,
+          "se": 0.00438
+        },
+        "ping25": {
+          "us": 326.61,
+          "ratio": 1.6745,
+          "lo": 1.65285,
+          "hi": 1.69539,
+          "se": 0.00479
+        }
+      },
+      "clear_winners": []
+    }
+  ],
+  "clocks": {
+    "B16": [
+      {
+        "n": "ref",
+        "clock_us": 125.34,
+        "tile_cyc": 3833.5,
+        "wait": 37.2,
+        "sync": 15.3,
+        "page_issue": 1539.3,
+        "qk": 447.5,
+        "smx": 618.2,
+        "pv": 334.3,
+        "max": 108.0,
+        "alpha_rescale": 161.2,
+        "exp_sum": 103.0,
+        "pack_sum": 28.7,
+        "max_static_fraction": 0.914
+      },
+      {
+        "n": "mix25",
+        "clock_us": 126.08,
+        "tile_cyc": 3855.0,
+        "wait": 36.8,
+        "sync": 15.4,
+        "page_issue": 1548.1,
+        "qk": 450.6,
+        "smx": 609.7,
+        "pv": 337.8,
+        "max": 107.9,
+        "alpha_rescale": 161.4,
+        "exp_sum": 91.9,
+        "pack_sum": 29.7,
+        "max_static_fraction": 0.914
+      },
+      {
+        "n": "mix50",
+        "clock_us": 127.12,
+        "tile_cyc": 3880.8,
+        "wait": 38.7,
+        "sync": 15.9,
+        "page_issue": 1569.2,
+        "qk": 452.9,
+        "smx": 610.9,
+        "pv": 343.0,
+        "max": 109.1,
+        "alpha_rescale": 164.5,
+        "exp_sum": 83.8,
+        "pack_sum": 29.9,
+        "max_static_fraction": 0.914
+      },
+      {
+        "n": "tc",
+        "clock_us": 125.89,
+        "tile_cyc": 3882.3,
+        "wait": 35.9,
+        "sync": 15.3,
+        "page_issue": 1565.0,
+        "qk": 448.0,
+        "smx": 660.0,
+        "pv": 317.8,
+        "max": 108.1,
+        "alpha_rescale": 161.4,
+        "exp_sum": 74.8,
+        "pack_sum": 94.6,
+        "max_static_fraction": 0.914
+      },
+      {
+        "n": "tc25",
+        "clock_us": 126.13,
+        "tile_cyc": 3874.7,
+        "wait": 38.3,
+        "sync": 15.4,
+        "page_issue": 1545.5,
+        "qk": 449.4,
+        "smx": 657.4,
+        "pv": 321.4,
+        "max": 108.8,
+        "alpha_rescale": 162.4,
+        "exp_sum": 68.2,
+        "pack_sum": 95.8,
+        "max_static_fraction": 0.914
+      },
+      {
+        "n": "wgref",
+        "clock_us": 194.61,
+        "tile_cyc": 2070.7,
+        "smx": 1157.8,
+        "issue": 71.1,
+        "qkw": 13.4,
+        "pvw": 8.5,
+        "publish": 368.0,
+        "gather_issue": 736.4
+      },
+      {
+        "n": "wg25",
+        "clock_us": 201.6,
+        "tile_cyc": 2100.9,
+        "smx": 1208.4,
+        "issue": 84.8,
+        "qkw": 30.1,
+        "pvw": 8.8,
+        "publish": 374.0,
+        "gather_issue": 727.4
+      },
+      {
+        "n": "wg50",
+        "clock_us": 208.9,
+        "tile_cyc": 2194.8,
+        "smx": 1285.1,
+        "issue": 89.2,
+        "qkw": 50.7,
+        "pvw": 8.6,
+        "publish": 380.5,
+        "gather_issue": 729.1
+      },
+      {
+        "n": "ping",
+        "clock_us": 332.72,
+        "tile_cyc": 3522.1,
+        "smx": 1784.0,
+        "issue": 77.9,
+        "qkw": 78.1,
+        "pvw": 0.0,
+        "publish": 351.3,
+        "gather_issue": 590.4
+      },
+      {
+        "n": "ping25",
+        "clock_us": 340.67,
+        "tile_cyc": 3604.0,
+        "smx": 1803.6,
+        "issue": 75.0,
+        "qkw": 71.3,
+        "pvw": 0.0,
+        "publish": 358.8,
+        "gather_issue": 609.3
+      }
+    ],
+    "B32": [
+      {
+        "n": "ref",
+        "clock_us": 238.7,
+        "tile_cyc": 3731.9,
+        "wait": 26.0,
+        "sync": 15.2,
+        "page_issue": 1596.6,
+        "qk": 444.7,
+        "smx": 614.9,
+        "pv": 332.1,
+        "max": 107.2,
+        "alpha_rescale": 160.4,
+        "exp_sum": 102.3,
+        "pack_sum": 28.5,
+        "max_static_fraction": 0.9495
+      },
+      {
+        "n": "mix25",
+        "clock_us": 241.23,
+        "tile_cyc": 3732.6,
+        "wait": 28.1,
+        "sync": 15.3,
+        "page_issue": 1585.0,
+        "qk": 446.7,
+        "smx": 605.9,
+        "pv": 334.7,
+        "max": 107.3,
+        "alpha_rescale": 160.5,
+        "exp_sum": 91.4,
+        "pack_sum": 29.5,
+        "max_static_fraction": 0.9495
+      },
+      {
+        "n": "mix50",
+        "clock_us": 241.52,
+        "tile_cyc": 3762.5,
+        "wait": 27.3,
+        "sync": 15.9,
+        "page_issue": 1600.4,
+        "qk": 452.6,
+        "smx": 605.0,
+        "pv": 340.1,
+        "max": 108.5,
+        "alpha_rescale": 162.8,
+        "exp_sum": 83.4,
+        "pack_sum": 29.7,
+        "max_static_fraction": 0.9495
+      },
+      {
+        "n": "tc",
+        "clock_us": 240.42,
+        "tile_cyc": 3747.6,
+        "wait": 25.9,
+        "sync": 15.3,
+        "page_issue": 1591.4,
+        "qk": 443.1,
+        "smx": 653.9,
+        "pv": 316.6,
+        "max": 107.7,
+        "alpha_rescale": 159.8,
+        "exp_sum": 74.5,
+        "pack_sum": 93.8,
+        "max_static_fraction": 0.9495
+      },
+      {
+        "n": "tc25",
+        "clock_us": 240.11,
+        "tile_cyc": 3731.4,
+        "wait": 25.6,
+        "sync": 15.3,
+        "page_issue": 1575.7,
+        "qk": 446.4,
+        "smx": 651.2,
+        "pv": 319.3,
+        "max": 108.4,
+        "alpha_rescale": 160.8,
+        "exp_sum": 67.5,
+        "pack_sum": 94.8,
+        "max_static_fraction": 0.9495
+      },
+      {
+        "n": "wgref",
+        "clock_us": 356.83,
+        "tile_cyc": 1999.0,
+        "smx": 1161.0,
+        "issue": 72.1,
+        "qkw": 14.0,
+        "pvw": 8.5,
+        "publish": 357.3,
+        "gather_issue": 731.8
+      },
+      {
+        "n": "wg25",
+        "clock_us": 367.12,
+        "tile_cyc": 2041.3,
+        "smx": 1212.2,
+        "issue": 87.7,
+        "qkw": 33.4,
+        "pvw": 8.8,
+        "publish": 370.0,
+        "gather_issue": 722.4
+      },
+      {
+        "n": "wg50",
+        "clock_us": 379.94,
+        "tile_cyc": 2116.5,
+        "smx": 1275.8,
+        "issue": 89.5,
+        "qkw": 53.3,
+        "pvw": 8.5,
+        "publish": 375.9,
+        "gather_issue": 719.1
+      },
+      {
+        "n": "ping",
+        "clock_us": 620.24,
+        "tile_cyc": 3446.2,
+        "smx": 1785.8,
+        "issue": 78.9,
+        "qkw": 78.6,
+        "pvw": 0.0,
+        "publish": 352.6,
+        "gather_issue": 586.4
+      },
+      {
+        "n": "ping25",
+        "clock_us": 646.45,
+        "tile_cyc": 3516.2,
+        "smx": 1802.7,
+        "issue": 73.5,
+        "qkw": 72.6,
+        "pvw": 0.0,
+        "publish": 353.8,
+        "gather_issue": 606.4
+      }
+    ]
+  },
+  "errors": [],
+  "payload": "decode_softmax_lab",
+  "complete": true,
+  "native_checks_completed": true
+}

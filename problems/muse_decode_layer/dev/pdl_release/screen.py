@@ -20,7 +20,10 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true')
     ap.add_argument('--wrapper',type=Path);ap.add_argument('--only',nargs='*')
     ap.add_argument('--candidate',type=Path)
+    ap.add_argument('--report-dir',type=Path,default=H)
+    ap.add_argument('--library-standins',action='store_true')
     a=ap.parse_args();mode='forced' if a.forced else 'normal'
+    report=a.report_dir.resolve();report.mkdir(parents=True,exist_ok=True)
     candidate=a.candidate.resolve() if a.candidate else R/'problems/muse_decode_layer/cand_r3_best7_s15.py'
     if a.candidate:mode='s15e_'+mode
     digest=hashlib.sha256(candidate.read_bytes()).hexdigest()
@@ -37,8 +40,13 @@ def main():
                 spec=importlib.util.spec_from_file_location('nearby_force',H.parent/'verify_best.py')
                 helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(helper)
                 helper.install(m,False)
-            import local_standins
-            result['standins']=local_standins.install(m)
+            if a.library_standins:
+                sys.path.insert(0,str(H.parent/'library_chain'))
+                import library_standins
+                result['standins']=library_standins.install(m)
+            else:
+                import local_standins
+                result['standins']=local_standins.install(m)
             for label in ('_best7_attention','_best7_expert','_best7_project'):
                 fn=getattr(m,label)
                 def trace(*args,_fn=fn,_label=label,**kw):
@@ -84,16 +92,16 @@ def main():
                 traceback.print_exc()
             result['tests'].append(row)
             print('NEARBY',mode,label,seed,'PASS' if row['ok'] else 'FAIL',row.get('error',row.get('graph_msg','')),flush=True)
-            (H/f'{mode}.json').write_text(json.dumps(result,indent=2)+'\n')
+            (report/f'{mode}.json').write_text(json.dumps(result,indent=2)+'\n')
             del graph,out,data;gc.collect();ev.torch.cuda.empty_cache()
         result['complete']=len(result['tests'])==len(todo)
         return [dict(case=r['label']+':'+str(r['seed']),ok=r['ok'],msg=r.get('error',r.get('graph_msg',''))) for r in result['tests']]
     ev.run_tests=run_tests
     target=a.wrapper.resolve() if a.wrapper else candidate
     if not a.wrapper and not a.candidate:assert hashlib.sha256(target.read_bytes()).hexdigest()==S15_SHA
-    sys.argv=['local_eval.py',str(target),'--tests-only','--json',str(H/f'{mode}_local_eval.json')]
+    sys.argv=['local_eval.py',str(target),'--tests-only','--json',str(report/f'{mode}_local_eval.json')]
     try:ev.main()
-    finally:(H/f'{mode}.json').write_text(json.dumps(result,indent=2)+'\n')
+    finally:(report/f'{mode}.json').write_text(json.dumps(result,indent=2)+'\n')
 
 
 if __name__=='__main__':main()

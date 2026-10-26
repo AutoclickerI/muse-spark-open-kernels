@@ -1,0 +1,1890 @@
+{
+  "shapes": 67,
+  "seeds": 2,
+  "arms": 2,
+  "task_checks": 268,
+  "errors": [],
+  "failures": [],
+  "complete": true,
+  "elapsed": 61.2,
+  "rows": [
+    [
+      "scored-d1-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 5.838e-03 (worst row 5.838e-03) [bound 0.150]; attention input relative L2 error 4.665e-03 (worst row 4.665e-03) [bound 0.110]"
+    ],
+    [
+      "scored-d1-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 5.838e-03 (worst row 5.838e-03) [bound 0.150]; attention input relative L2 error 4.665e-03 (worst row 4.665e-03) [bound 0.110]"
+    ],
+    [
+      "scored-d1-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.461e-03 (worst row 6.461e-03) [bound 0.125]; attention input relative L2 error 4.876e-03 (worst row 4.876e-03) [bound 0.082]"
+    ],
+    [
+      "scored-d1-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.461e-03 (worst row 6.461e-03) [bound 0.125]; attention input relative L2 error 4.876e-03 (worst row 4.876e-03) [bound 0.082]"
+    ],
+    [
+      "scored-d1-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.891e-03 (worst row 6.891e-03) [bound 0.150]; attention input relative L2 error 5.367e-03 (worst row 5.367e-03) [bound 0.118]"
+    ],
+    [
+      "scored-d1-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.891e-03 (worst row 6.891e-03) [bound 0.150]; attention input relative L2 error 5.367e-03 (worst row 5.367e-03) [bound 0.118]"
+    ],
+    [
+      "scored-d1-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 7.333e-03 (worst row 7.333e-03) [bound 0.145]; attention input relative L2 error 5.318e-03 (worst row 5.318e-03) [bound 0.096]"
+    ],
+    [
+      "scored-d1-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 7.333e-03 (worst row 7.333e-03) [bound 0.145]; attention input relative L2 error 5.318e-03 (worst row 5.318e-03) [bound 0.096]"
+    ],
+    [
+      "scored-d16-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.738e-03 (worst row 9.543e-03) [bound 0.136]; attention input relative L2 error 4.884e-03 (worst row 6.001e-03) [bound 0.089]"
+    ],
+    [
+      "scored-d16-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.738e-03 (worst row 9.543e-03) [bound 0.136]; attention input relative L2 error 4.884e-03 (worst row 6.001e-03) [bound 0.089]"
+    ],
+    [
+      "scored-d16-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.868e-03 (worst row 1.208e-02) [bound 0.150]; attention input relative L2 error 4.834e-03 (worst row 7.031e-03) [bound 0.098]"
+    ],
+    [
+      "scored-d16-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.868e-03 (worst row 1.208e-02) [bound 0.150]; attention input relative L2 error 4.834e-03 (worst row 7.031e-03) [bound 0.098]"
+    ],
+    [
+      "scored-d16-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.364e-03 (worst row 8.083e-03) [bound 0.150]; attention input relative L2 error 4.715e-03 (worst row 6.029e-03) [bound 0.099]"
+    ],
+    [
+      "scored-d16-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.364e-03 (worst row 8.083e-03) [bound 0.150]; attention input relative L2 error 4.716e-03 (worst row 6.029e-03) [bound 0.099]"
+    ],
+    [
+      "scored-d16-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.461e-03 (worst row 7.810e-03) [bound 0.150]; attention input relative L2 error 4.650e-03 (worst row 5.591e-03) [bound 0.095]"
+    ],
+    [
+      "scored-d16-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.461e-03 (worst row 7.810e-03) [bound 0.150]; attention input relative L2 error 4.650e-03 (worst row 5.591e-03) [bound 0.095]"
+    ],
+    [
+      "scored-d32-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 8.224e-03 (worst row 2.868e-02) [bound 0.134]; attention input relative L2 error 5.482e-03 (worst row 1.656e-02) [bound 0.086]"
+    ],
+    [
+      "scored-d32-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 8.224e-03 (worst row 2.868e-02) [bound 0.134]; attention input relative L2 error 5.482e-03 (worst row 1.656e-02) [bound 0.086]"
+    ],
+    [
+      "scored-d32-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 9.863e-03 (worst row 4.171e-02) [bound 0.150]; attention input relative L2 error 6.962e-03 (worst row 2.798e-02) [bound 0.103]"
+    ],
+    [
+      "scored-d32-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 9.863e-03 (worst row 4.171e-02) [bound 0.150]; attention input relative L2 error 6.962e-03 (worst row 2.798e-02) [bound 0.103]"
+    ],
+    [
+      "scored-d32-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.059e-03 (worst row 1.161e-02) [bound 0.147]; attention input relative L2 error 5.091e-03 (worst row 8.220e-03) [bound 0.095]"
+    ],
+    [
+      "scored-d32-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.059e-03 (worst row 1.161e-02) [bound 0.147]; attention input relative L2 error 5.091e-03 (worst row 8.223e-03) [bound 0.095]"
+    ],
+    [
+      "scored-d32-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.786e-03 (worst row 9.838e-03) [bound 0.150]; attention input relative L2 error 5.039e-03 (worst row 6.571e-03) [bound 0.107]"
+    ],
+    [
+      "scored-d32-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.786e-03 (worst row 9.838e-03) [bound 0.150]; attention input relative L2 error 5.039e-03 (worst row 6.571e-03) [bound 0.107]"
+    ],
+    [
+      "scored-v1-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.603e-03 (worst row 3.796e-03) [bound 0.135]; attention input relative L2 error 2.979e-03 (worst row 3.167e-03) [bound 0.090]"
+    ],
+    [
+      "scored-v1-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.603e-03 (worst row 3.796e-03) [bound 0.135]; attention input relative L2 error 2.983e-03 (worst row 3.195e-03) [bound 0.090]"
+    ],
+    [
+      "scored-v1-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.288e-03 (worst row 3.622e-03) [bound 0.150]; attention input relative L2 error 2.667e-03 (worst row 3.172e-03) [bound 0.104]"
+    ],
+    [
+      "scored-v1-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.288e-03 (worst row 3.622e-03) [bound 0.150]; attention input relative L2 error 2.667e-03 (worst row 3.172e-03) [bound 0.104]"
+    ],
+    [
+      "scored-v1-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.449e-03 (worst row 3.567e-03) [bound 0.146]; attention input relative L2 error 2.902e-03 (worst row 3.151e-03) [bound 0.097]"
+    ],
+    [
+      "scored-v1-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.449e-03 (worst row 3.567e-03) [bound 0.146]; attention input relative L2 error 2.902e-03 (worst row 3.151e-03) [bound 0.097]"
+    ],
+    [
+      "scored-v1-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.421e-03 (worst row 3.622e-03) [bound 0.150]; attention input relative L2 error 2.875e-03 (worst row 3.134e-03) [bound 0.110]"
+    ],
+    [
+      "scored-v1-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.421e-03 (worst row 3.622e-03) [bound 0.150]; attention input relative L2 error 2.875e-03 (worst row 3.134e-03) [bound 0.110]"
+    ],
+    [
+      "scored-v16-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.206e-02 (worst row 3.033e-02) [bound 0.132]; attention input relative L2 error 8.329e-03 (worst row 1.873e-02) [bound 0.088]"
+    ],
+    [
+      "scored-v16-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.206e-02 (worst row 3.033e-02) [bound 0.132]; attention input relative L2 error 8.329e-03 (worst row 1.873e-02) [bound 0.088]"
+    ],
+    [
+      "scored-v16-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.132e-02 (worst row 2.833e-02) [bound 0.150]; attention input relative L2 error 7.947e-03 (worst row 1.898e-02) [bound 0.100]"
+    ],
+    [
+      "scored-v16-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.132e-02 (worst row 2.833e-02) [bound 0.150]; attention input relative L2 error 7.947e-03 (worst row 1.898e-02) [bound 0.100]"
+    ],
+    [
+      "scored-v16-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.155e-02 (worst row 9.233e-02) [bound 0.150]; attention input relative L2 error 4.144e-02 (worst row 6.450e-02) [bound 0.101]"
+    ],
+    [
+      "scored-v16-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.155e-02 (worst row 9.233e-02) [bound 0.150]; attention input relative L2 error 4.144e-02 (worst row 6.450e-02) [bound 0.101]"
+    ],
+    [
+      "scored-v16-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.450e-02 (worst row 8.995e-02) [bound 0.150]; attention input relative L2 error 4.274e-02 (worst row 5.859e-02) [bound 0.106]"
+    ],
+    [
+      "scored-v16-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.450e-02 (worst row 8.995e-02) [bound 0.150]; attention input relative L2 error 4.274e-02 (worst row 5.859e-02) [bound 0.106]"
+    ],
+    [
+      "scored-v32-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.335e-02 (worst row 5.240e-02) [bound 0.134]; attention input relative L2 error 9.171e-03 (worst row 3.749e-02) [bound 0.089]"
+    ],
+    [
+      "scored-v32-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.335e-02 (worst row 5.240e-02) [bound 0.134]; attention input relative L2 error 9.171e-03 (worst row 3.749e-02) [bound 0.089]"
+    ],
+    [
+      "scored-v32-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.165e-02 (worst row 4.415e-02) [bound 0.150]; attention input relative L2 error 8.012e-03 (worst row 3.140e-02) [bound 0.099]"
+    ],
+    [
+      "scored-v32-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.165e-02 (worst row 4.415e-02) [bound 0.150]; attention input relative L2 error 8.012e-03 (worst row 3.140e-02) [bound 0.099]"
+    ],
+    [
+      "scored-v32-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.329e-02 (worst row 9.925e-02) [bound 0.150]; attention input relative L2 error 4.202e-02 (worst row 6.299e-02) [bound 0.103]"
+    ],
+    [
+      "scored-v32-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.329e-02 (worst row 9.925e-02) [bound 0.150]; attention input relative L2 error 4.202e-02 (worst row 6.299e-02) [bound 0.103]"
+    ],
+    [
+      "scored-v32-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.504e-02 (worst row 9.363e-02) [bound 0.150]; attention input relative L2 error 4.343e-02 (worst row 6.495e-02) [bound 0.107]"
+    ],
+    [
+      "scored-v32-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.504e-02 (worst row 9.363e-02) [bound 0.150]; attention input relative L2 error 4.343e-02 (worst row 6.495e-02) [bound 0.107]"
+    ],
+    [
+      "near-d2-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 5.871e-03 (worst row 6.269e-03) [bound 0.111]; attention input relative L2 error 4.398e-03 (worst row 4.920e-03) [bound 0.073]"
+    ],
+    [
+      "near-d2-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.042e-03 (worst row 6.487e-03) [bound 0.111]; attention input relative L2 error 4.498e-03 (worst row 5.075e-03) [bound 0.073]"
+    ],
+    [
+      "near-d2-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.854e-03 (worst row 7.144e-03) [bound 0.150]; attention input relative L2 error 5.160e-03 (worst row 5.480e-03) [bound 0.101]"
+    ],
+    [
+      "near-d2-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.825e-03 (worst row 6.959e-03) [bound 0.150]; attention input relative L2 error 5.148e-03 (worst row 5.358e-03) [bound 0.101]"
+    ],
+    [
+      "near-d2-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.616e-03 (worst row 7.053e-03) [bound 0.146]; attention input relative L2 error 4.770e-03 (worst row 5.331e-03) [bound 0.094]"
+    ],
+    [
+      "near-d2-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.700e-03 (worst row 7.133e-03) [bound 0.146]; attention input relative L2 error 4.821e-03 (worst row 5.398e-03) [bound 0.094]"
+    ],
+    [
+      "near-d2-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.075e-03 (worst row 6.639e-03) [bound 0.121]; attention input relative L2 error 4.779e-03 (worst row 5.253e-03) [bound 0.083]"
+    ],
+    [
+      "near-d2-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.327e-03 (worst row 6.910e-03) [bound 0.121]; attention input relative L2 error 4.891e-03 (worst row 5.342e-03) [bound 0.083]"
+    ],
+    [
+      "near-d8-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.369e-03 (worst row 8.343e-03) [bound 0.133]; attention input relative L2 error 4.714e-03 (worst row 5.700e-03) [bound 0.088]"
+    ],
+    [
+      "near-d8-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.542e-03 (worst row 8.640e-03) [bound 0.133]; attention input relative L2 error 4.806e-03 (worst row 5.889e-03) [bound 0.088]"
+    ],
+    [
+      "near-d8-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.485e-03 (worst row 7.362e-03) [bound 0.150]; attention input relative L2 error 4.674e-03 (worst row 5.390e-03) [bound 0.098]"
+    ],
+    [
+      "near-d8-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.594e-03 (worst row 7.564e-03) [bound 0.150]; attention input relative L2 error 4.767e-03 (worst row 5.541e-03) [bound 0.098]"
+    ],
+    [
+      "near-d8-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.454e-03 (worst row 7.206e-03) [bound 0.144]; attention input relative L2 error 4.817e-03 (worst row 5.267e-03) [bound 0.097]"
+    ],
+    [
+      "near-d8-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.588e-03 (worst row 7.504e-03) [bound 0.144]; attention input relative L2 error 4.882e-03 (worst row 5.319e-03) [bound 0.097]"
+    ],
+    [
+      "near-d8-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.265e-03 (worst row 7.265e-03) [bound 0.144]; attention input relative L2 error 4.574e-03 (worst row 5.413e-03) [bound 0.093]"
+    ],
+    [
+      "near-d8-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.333e-03 (worst row 7.355e-03) [bound 0.144]; attention input relative L2 error 4.612e-03 (worst row 5.427e-03) [bound 0.093]"
+    ],
+    [
+      "near-d24-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.626e-03 (worst row 1.458e-02) [bound 0.130]; attention input relative L2 error 4.829e-03 (worst row 9.680e-03) [bound 0.086]"
+    ],
+    [
+      "near-d24-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.780e-03 (worst row 1.468e-02) [bound 0.130]; attention input relative L2 error 4.920e-03 (worst row 9.732e-03) [bound 0.086]"
+    ],
+    [
+      "near-d24-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.338e-03 (worst row 1.152e-02) [bound 0.148]; attention input relative L2 error 4.622e-03 (worst row 8.066e-03) [bound 0.095]"
+    ],
+    [
+      "near-d24-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.469e-03 (worst row 1.155e-02) [bound 0.148]; attention input relative L2 error 4.692e-03 (worst row 8.091e-03) [bound 0.095]"
+    ],
+    [
+      "near-d24-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.993e-03 (worst row 1.851e-02) [bound 0.146]; attention input relative L2 error 4.922e-03 (worst row 7.128e-03) [bound 0.094]"
+    ],
+    [
+      "near-d24-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.003e-03 (worst row 1.851e-02) [bound 0.146]; attention input relative L2 error 4.922e-03 (worst row 7.128e-03) [bound 0.094]"
+    ],
+    [
+      "near-d24-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.690e-03 (worst row 8.996e-03) [bound 0.150]; attention input relative L2 error 4.899e-03 (worst row 5.840e-03) [bound 0.105]"
+    ],
+    [
+      "near-d24-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.695e-03 (worst row 8.996e-03) [bound 0.150]; attention input relative L2 error 4.912e-03 (worst row 5.841e-03) [bound 0.105]"
+    ],
+    [
+      "near-d48-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.291e-03 (worst row 9.025e-03) [bound 0.130]; attention input relative L2 error 4.614e-03 (worst row 6.891e-03) [bound 0.085]"
+    ],
+    [
+      "near-d48-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.298e-03 (worst row 9.075e-03) [bound 0.130]; attention input relative L2 error 4.618e-03 (worst row 6.963e-03) [bound 0.085]"
+    ],
+    [
+      "near-d48-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.438e-03 (worst row 9.425e-03) [bound 0.144]; attention input relative L2 error 4.704e-03 (worst row 6.099e-03) [bound 0.092]"
+    ],
+    [
+      "near-d48-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.438e-03 (worst row 9.415e-03) [bound 0.144]; attention input relative L2 error 4.707e-03 (worst row 6.084e-03) [bound 0.092]"
+    ],
+    [
+      "near-d48-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.996e-03 (worst row 3.143e-02) [bound 0.146]; attention input relative L2 error 5.746e-03 (worst row 2.237e-02) [bound 0.095]"
+    ],
+    [
+      "near-d48-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 8.088e-03 (worst row 3.134e-02) [bound 0.146]; attention input relative L2 error 5.799e-03 (worst row 2.229e-02) [bound 0.095]"
+    ],
+    [
+      "near-d48-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.394e-03 (worst row 7.702e-03) [bound 0.150]; attention input relative L2 error 4.682e-03 (worst row 6.000e-03) [bound 0.105]"
+    ],
+    [
+      "near-d48-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.548e-03 (worst row 7.867e-03) [bound 0.150]; attention input relative L2 error 4.772e-03 (worst row 6.144e-03) [bound 0.105]"
+    ],
+    [
+      "near-v2-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.454e-03 (worst row 3.665e-03) [bound 0.127]; attention input relative L2 error 3.068e-03 (worst row 3.355e-03) [bound 0.085]"
+    ],
+    [
+      "near-v2-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.453e-03 (worst row 3.682e-03) [bound 0.127]; attention input relative L2 error 3.070e-03 (worst row 3.379e-03) [bound 0.085]"
+    ],
+    [
+      "near-v2-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.386e-03 (worst row 3.622e-03) [bound 0.146]; attention input relative L2 error 3.018e-03 (worst row 3.265e-03) [bound 0.099]"
+    ],
+    [
+      "near-v2-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.386e-03 (worst row 3.622e-03) [bound 0.146]; attention input relative L2 error 3.017e-03 (worst row 3.257e-03) [bound 0.099]"
+    ],
+    [
+      "near-v2-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.445e-03 (worst row 3.638e-03) [bound 0.150]; attention input relative L2 error 3.106e-03 (worst row 3.335e-03) [bound 0.104]"
+    ],
+    [
+      "near-v2-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.163e-02 (worst row 7.787e-02) [bound 0.150]; attention input relative L2 error 4.236e-02 (worst row 5.670e-02) [bound 0.104]"
+    ],
+    [
+      "near-v2-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.302e-03 (worst row 3.555e-03) [bound 0.150]; attention input relative L2 error 2.906e-03 (worst row 3.362e-03) [bound 0.105]"
+    ],
+    [
+      "near-v2-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.398e-02 (worst row 8.269e-02) [bound 0.150]; attention input relative L2 error 4.221e-02 (worst row 6.223e-02) [bound 0.105]"
+    ],
+    [
+      "near-v24-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.330e-02 (worst row 3.881e-02) [bound 0.136]; attention input relative L2 error 9.166e-03 (worst row 2.843e-02) [bound 0.090]"
+    ],
+    [
+      "near-v24-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.343e-02 (worst row 3.892e-02) [bound 0.136]; attention input relative L2 error 9.244e-03 (worst row 2.851e-02) [bound 0.090]"
+    ],
+    [
+      "near-v24-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.075e-02 (worst row 3.241e-02) [bound 0.150]; attention input relative L2 error 7.553e-03 (worst row 2.330e-02) [bound 0.100]"
+    ],
+    [
+      "near-v24-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.093e-02 (worst row 3.252e-02) [bound 0.150]; attention input relative L2 error 7.665e-03 (worst row 2.335e-02) [bound 0.100]"
+    ],
+    [
+      "near-v24-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.091e-02 (worst row 3.079e-02) [bound 0.150]; attention input relative L2 error 7.601e-03 (worst row 1.943e-02) [bound 0.103]"
+    ],
+    [
+      "near-v24-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.286e-02 (worst row 9.376e-02) [bound 0.150]; attention input relative L2 error 4.167e-02 (worst row 6.053e-02) [bound 0.103]"
+    ],
+    [
+      "near-v24-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.066e-02 (worst row 3.372e-02) [bound 0.150]; attention input relative L2 error 7.429e-03 (worst row 2.289e-02) [bound 0.104]"
+    ],
+    [
+      "near-v24-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.427e-02 (worst row 9.490e-02) [bound 0.150]; attention input relative L2 error 4.237e-02 (worst row 5.815e-02) [bound 0.104]"
+    ],
+    [
+      "edge-d7-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.483e-03 (worst row 7.860e-03) [bound 0.122]; attention input relative L2 error 4.301e-03 (worst row 5.247e-03) [bound 0.071]"
+    ],
+    [
+      "edge-d7-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.729e-03 (worst row 8.154e-03) [bound 0.122]; attention input relative L2 error 4.445e-03 (worst row 5.398e-03) [bound 0.071]"
+    ],
+    [
+      "edge-d7-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.357e-03 (worst row 8.084e-03) [bound 0.149]; attention input relative L2 error 4.833e-03 (worst row 6.419e-03) [bound 0.101]"
+    ],
+    [
+      "edge-d7-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.350e-03 (worst row 7.979e-03) [bound 0.149]; attention input relative L2 error 4.853e-03 (worst row 6.341e-03) [bound 0.101]"
+    ],
+    [
+      "edge-d9-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.766e-03 (worst row 8.372e-03) [bound 0.134]; attention input relative L2 error 4.754e-03 (worst row 5.598e-03) [bound 0.084]"
+    ],
+    [
+      "edge-d9-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.954e-03 (worst row 8.348e-03) [bound 0.134]; attention input relative L2 error 4.863e-03 (worst row 5.723e-03) [bound 0.084]"
+    ],
+    [
+      "edge-d9-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.295e-03 (worst row 7.316e-03) [bound 0.150]; attention input relative L2 error 4.738e-03 (worst row 5.266e-03) [bound 0.104]"
+    ],
+    [
+      "edge-d9-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.465e-03 (worst row 7.561e-03) [bound 0.150]; attention input relative L2 error 4.853e-03 (worst row 5.557e-03) [bound 0.104]"
+    ],
+    [
+      "edge-d15-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.701e-03 (worst row 1.771e-02) [bound 0.131]; attention input relative L2 error 5.463e-03 (worst row 9.782e-03) [bound 0.085]"
+    ],
+    [
+      "edge-d15-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.761e-03 (worst row 1.767e-02) [bound 0.131]; attention input relative L2 error 5.508e-03 (worst row 9.757e-03) [bound 0.085]"
+    ],
+    [
+      "edge-d15-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.172e-03 (worst row 7.515e-03) [bound 0.143]; attention input relative L2 error 4.573e-03 (worst row 5.481e-03) [bound 0.093]"
+    ],
+    [
+      "edge-d15-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.298e-03 (worst row 7.789e-03) [bound 0.143]; attention input relative L2 error 4.661e-03 (worst row 5.666e-03) [bound 0.093]"
+    ],
+    [
+      "edge-d17-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.810e-03 (worst row 9.638e-03) [bound 0.128]; attention input relative L2 error 5.030e-03 (worst row 6.841e-03) [bound 0.085]"
+    ],
+    [
+      "edge-d17-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.888e-03 (worst row 9.614e-03) [bound 0.128]; attention input relative L2 error 5.077e-03 (worst row 6.940e-03) [bound 0.085]"
+    ],
+    [
+      "edge-d17-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.519e-03 (worst row 8.076e-03) [bound 0.137]; attention input relative L2 error 4.833e-03 (worst row 5.799e-03) [bound 0.092]"
+    ],
+    [
+      "edge-d17-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.627e-03 (worst row 7.951e-03) [bound 0.137]; attention input relative L2 error 4.906e-03 (worst row 5.992e-03) [bound 0.092]"
+    ],
+    [
+      "edge-d31-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.433e-03 (worst row 1.260e-02) [bound 0.131]; attention input relative L2 error 5.351e-03 (worst row 9.055e-03) [bound 0.086]"
+    ],
+    [
+      "edge-d31-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.444e-03 (worst row 1.260e-02) [bound 0.131]; attention input relative L2 error 5.356e-03 (worst row 9.056e-03) [bound 0.086]"
+    ],
+    [
+      "edge-d31-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.484e-03 (worst row 9.663e-03) [bound 0.150]; attention input relative L2 error 4.948e-03 (worst row 7.756e-03) [bound 0.103]"
+    ],
+    [
+      "edge-d31-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.489e-03 (worst row 9.665e-03) [bound 0.150]; attention input relative L2 error 4.947e-03 (worst row 7.714e-03) [bound 0.103]"
+    ],
+    [
+      "edge-d33-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.612e-03 (worst row 1.305e-02) [bound 0.128]; attention input relative L2 error 5.596e-03 (worst row 8.524e-03) [bound 0.086]"
+    ],
+    [
+      "edge-d33-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.606e-03 (worst row 1.309e-02) [bound 0.128]; attention input relative L2 error 5.592e-03 (worst row 8.568e-03) [bound 0.086]"
+    ],
+    [
+      "edge-d33-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.749e-03 (worst row 1.686e-02) [bound 0.148]; attention input relative L2 error 4.942e-03 (worst row 1.122e-02) [bound 0.098]"
+    ],
+    [
+      "edge-d33-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.742e-03 (worst row 1.689e-02) [bound 0.148]; attention input relative L2 error 4.936e-03 (worst row 1.123e-02) [bound 0.098]"
+    ],
+    [
+      "edge-d63-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.134e-03 (worst row 1.321e-02) [bound 0.131]; attention input relative L2 error 5.126e-03 (worst row 8.839e-03) [bound 0.085]"
+    ],
+    [
+      "edge-d63-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.135e-03 (worst row 1.332e-02) [bound 0.131]; attention input relative L2 error 5.127e-03 (worst row 8.816e-03) [bound 0.085]"
+    ],
+    [
+      "edge-d63-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.620e-03 (worst row 1.446e-02) [bound 0.145]; attention input relative L2 error 4.822e-03 (worst row 8.263e-03) [bound 0.095]"
+    ],
+    [
+      "edge-d63-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.623e-03 (worst row 1.444e-02) [bound 0.145]; attention input relative L2 error 4.820e-03 (worst row 8.214e-03) [bound 0.095]"
+    ],
+    [
+      "edge-d64-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 9.125e-03 (worst row 2.676e-02) [bound 0.133]; attention input relative L2 error 6.500e-03 (worst row 1.954e-02) [bound 0.088]"
+    ],
+    [
+      "edge-d64-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 9.121e-03 (worst row 2.676e-02) [bound 0.133]; attention input relative L2 error 6.496e-03 (worst row 1.943e-02) [bound 0.088]"
+    ],
+    [
+      "edge-d64-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.481e-03 (worst row 9.338e-03) [bound 0.144]; attention input relative L2 error 4.743e-03 (worst row 6.384e-03) [bound 0.095]"
+    ],
+    [
+      "edge-d64-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.489e-03 (worst row 9.345e-03) [bound 0.144]; attention input relative L2 error 4.747e-03 (worst row 6.403e-03) [bound 0.095]"
+    ],
+    [
+      "edge-d65-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 8.160e-03 (worst row 1.393e-02) [bound 0.126]; attention input relative L2 error 5.804e-03 (worst row 1.030e-02) [bound 0.082]"
+    ],
+    [
+      "edge-d65-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 8.159e-03 (worst row 1.387e-02) [bound 0.126]; attention input relative L2 error 5.805e-03 (worst row 1.024e-02) [bound 0.082]"
+    ],
+    [
+      "edge-d65-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 7.846e-03 (worst row 1.284e-02) [bound 0.147]; attention input relative L2 error 5.676e-03 (worst row 1.001e-02) [bound 0.097]"
+    ],
+    [
+      "edge-d65-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 7.830e-03 (worst row 1.279e-02) [bound 0.147]; attention input relative L2 error 5.664e-03 (worst row 9.959e-03) [bound 0.097]"
+    ],
+    [
+      "edge-v15-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.365e-02 (worst row 3.910e-02) [bound 0.138]; attention input relative L2 error 9.296e-03 (worst row 2.725e-02) [bound 0.091]"
+    ],
+    [
+      "edge-v15-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.379e-02 (worst row 3.912e-02) [bound 0.138]; attention input relative L2 error 9.384e-03 (worst row 2.727e-02) [bound 0.091]"
+    ],
+    [
+      "edge-v15-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.224e-02 (worst row 5.621e-02) [bound 0.150]; attention input relative L2 error 8.467e-03 (worst row 3.866e-02) [bound 0.103]"
+    ],
+    [
+      "edge-v15-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.238e-02 (worst row 5.629e-02) [bound 0.150]; attention input relative L2 error 8.553e-03 (worst row 3.874e-02) [bound 0.103]"
+    ],
+    [
+      "edge-v17-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.351e-02 (worst row 4.569e-02) [bound 0.135]; attention input relative L2 error 9.210e-03 (worst row 3.246e-02) [bound 0.089]"
+    ],
+    [
+      "edge-v17-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.364e-02 (worst row 4.576e-02) [bound 0.135]; attention input relative L2 error 9.292e-03 (worst row 3.253e-02) [bound 0.089]"
+    ],
+    [
+      "edge-v17-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.022e-02 (worst row 2.226e-02) [bound 0.149]; attention input relative L2 error 7.179e-03 (worst row 1.573e-02) [bound 0.099]"
+    ],
+    [
+      "edge-v17-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.039e-02 (worst row 2.237e-02) [bound 0.149]; attention input relative L2 error 7.282e-03 (worst row 1.582e-02) [bound 0.099]"
+    ],
+    [
+      "edge-v31-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.342e-02 (worst row 4.486e-02) [bound 0.133]; attention input relative L2 error 9.249e-03 (worst row 3.177e-02) [bound 0.088]"
+    ],
+    [
+      "edge-v31-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.355e-02 (worst row 4.490e-02) [bound 0.133]; attention input relative L2 error 9.330e-03 (worst row 3.182e-02) [bound 0.088]"
+    ],
+    [
+      "edge-v31-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.038e-02 (worst row 3.438e-02) [bound 0.148]; attention input relative L2 error 7.279e-03 (worst row 2.280e-02) [bound 0.099]"
+    ],
+    [
+      "edge-v31-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.056e-02 (worst row 3.438e-02) [bound 0.148]; attention input relative L2 error 7.388e-03 (worst row 2.281e-02) [bound 0.099]"
+    ],
+    [
+      "edge-v33-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.430e-02 (worst row 5.453e-02) [bound 0.135]; attention input relative L2 error 9.875e-03 (worst row 3.362e-02) [bound 0.089]"
+    ],
+    [
+      "edge-v33-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.442e-02 (worst row 5.453e-02) [bound 0.135]; attention input relative L2 error 9.951e-03 (worst row 3.365e-02) [bound 0.089]"
+    ],
+    [
+      "edge-v33-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.054e-02 (worst row 3.672e-02) [bound 0.149]; attention input relative L2 error 7.434e-03 (worst row 2.472e-02) [bound 0.100]"
+    ],
+    [
+      "edge-v33-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.072e-02 (worst row 3.686e-02) [bound 0.149]; attention input relative L2 error 7.548e-03 (worst row 2.482e-02) [bound 0.100]"
+    ],
+    [
+      "ctx64k-1x1-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 5.426e-03 (worst row 5.426e-03) [bound 0.100]; attention input relative L2 error 4.344e-03 (worst row 4.344e-03) [bound 0.069]"
+    ],
+    [
+      "ctx64k-1x1-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 5.426e-03 (worst row 5.426e-03) [bound 0.100]; attention input relative L2 error 4.344e-03 (worst row 4.344e-03) [bound 0.069]"
+    ],
+    [
+      "ctx64k-1x1-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.576e-03 (worst row 6.576e-03) [bound 0.150]; attention input relative L2 error 4.756e-03 (worst row 4.756e-03) [bound 0.115]"
+    ],
+    [
+      "ctx64k-1x1-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.576e-03 (worst row 6.576e-03) [bound 0.150]; attention input relative L2 error 4.756e-03 (worst row 4.756e-03) [bound 0.115]"
+    ],
+    [
+      "ctx64k-1x1-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.588e-03 (worst row 6.588e-03) [bound 0.132]; attention input relative L2 error 5.108e-03 (worst row 5.108e-03) [bound 0.093]"
+    ],
+    [
+      "ctx64k-1x1-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.588e-03 (worst row 6.588e-03) [bound 0.132]; attention input relative L2 error 5.108e-03 (worst row 5.108e-03) [bound 0.093]"
+    ],
+    [
+      "ctx64k-1x1-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 7.374e-03 (worst row 7.374e-03) [bound 0.150]; attention input relative L2 error 5.207e-03 (worst row 5.207e-03) [bound 0.101]"
+    ],
+    [
+      "ctx64k-1x1-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 7.374e-03 (worst row 7.374e-03) [bound 0.150]; attention input relative L2 error 5.207e-03 (worst row 5.207e-03) [bound 0.101]"
+    ],
+    [
+      "ctx64k-16x1-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.917e-03 (worst row 1.155e-02) [bound 0.129]; attention input relative L2 error 4.899e-03 (worst row 8.096e-03) [bound 0.081]"
+    ],
+    [
+      "ctx64k-16x1-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.917e-03 (worst row 1.155e-02) [bound 0.129]; attention input relative L2 error 4.899e-03 (worst row 8.096e-03) [bound 0.081]"
+    ],
+    [
+      "ctx64k-16x1-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 7.033e-03 (worst row 1.204e-02) [bound 0.148]; attention input relative L2 error 5.225e-03 (worst row 7.982e-03) [bound 0.101]"
+    ],
+    [
+      "ctx64k-16x1-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 7.033e-03 (worst row 1.204e-02) [bound 0.148]; attention input relative L2 error 5.225e-03 (worst row 7.982e-03) [bound 0.101]"
+    ],
+    [
+      "ctx64k-16x1-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.799e-03 (worst row 8.580e-03) [bound 0.144]; attention input relative L2 error 4.760e-03 (worst row 5.924e-03) [bound 0.091]"
+    ],
+    [
+      "ctx64k-16x1-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.799e-03 (worst row 8.580e-03) [bound 0.144]; attention input relative L2 error 4.760e-03 (worst row 5.924e-03) [bound 0.091]"
+    ],
+    [
+      "ctx64k-16x1-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.529e-03 (worst row 7.632e-03) [bound 0.150]; attention input relative L2 error 4.967e-03 (worst row 5.908e-03) [bound 0.113]"
+    ],
+    [
+      "ctx64k-16x1-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.529e-03 (worst row 7.632e-03) [bound 0.150]; attention input relative L2 error 4.967e-03 (worst row 5.906e-03) [bound 0.113]"
+    ],
+    [
+      "ctx64k-32x1-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.021e-03 (worst row 1.524e-02) [bound 0.129]; attention input relative L2 error 4.984e-03 (worst row 1.038e-02) [bound 0.084]"
+    ],
+    [
+      "ctx64k-32x1-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.021e-03 (worst row 1.524e-02) [bound 0.129]; attention input relative L2 error 4.984e-03 (worst row 1.038e-02) [bound 0.084]"
+    ],
+    [
+      "ctx64k-32x1-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.804e-03 (worst row 1.231e-02) [bound 0.134]; attention input relative L2 error 4.926e-03 (worst row 7.925e-03) [bound 0.088]"
+    ],
+    [
+      "ctx64k-32x1-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.804e-03 (worst row 1.231e-02) [bound 0.134]; attention input relative L2 error 4.926e-03 (worst row 7.925e-03) [bound 0.088]"
+    ],
+    [
+      "ctx64k-32x1-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.340e-03 (worst row 1.874e-02) [bound 0.140]; attention input relative L2 error 5.210e-03 (worst row 1.199e-02) [bound 0.091]"
+    ],
+    [
+      "ctx64k-32x1-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.340e-03 (worst row 1.874e-02) [bound 0.140]; attention input relative L2 error 5.210e-03 (worst row 1.199e-02) [bound 0.091]"
+    ],
+    [
+      "ctx64k-32x1-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.732e-03 (worst row 9.651e-03) [bound 0.150]; attention input relative L2 error 4.904e-03 (worst row 6.313e-03) [bound 0.097]"
+    ],
+    [
+      "ctx64k-32x1-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.732e-03 (worst row 9.651e-03) [bound 0.150]; attention input relative L2 error 4.904e-03 (worst row 6.313e-03) [bound 0.097]"
+    ],
+    [
+      "ctx64k-16x8-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.311e-02 (worst row 5.129e-02) [bound 0.135]; attention input relative L2 error 9.053e-03 (worst row 2.536e-02) [bound 0.089]"
+    ],
+    [
+      "ctx64k-16x8-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.311e-02 (worst row 5.129e-02) [bound 0.135]; attention input relative L2 error 9.053e-03 (worst row 2.536e-02) [bound 0.089]"
+    ],
+    [
+      "ctx64k-16x8-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.092e-02 (worst row 2.376e-02) [bound 0.150]; attention input relative L2 error 7.667e-03 (worst row 1.710e-02) [bound 0.103]"
+    ],
+    [
+      "ctx64k-16x8-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.092e-02 (worst row 2.376e-02) [bound 0.150]; attention input relative L2 error 7.667e-03 (worst row 1.710e-02) [bound 0.103]"
+    ],
+    [
+      "ctx64k-16x8-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.240e-02 (worst row 8.661e-02) [bound 0.150]; attention input relative L2 error 4.177e-02 (worst row 6.214e-02) [bound 0.102]"
+    ],
+    [
+      "ctx64k-16x8-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.240e-02 (worst row 8.661e-02) [bound 0.150]; attention input relative L2 error 4.177e-02 (worst row 6.214e-02) [bound 0.102]"
+    ],
+    [
+      "ctx64k-16x8-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.523e-02 (worst row 8.952e-02) [bound 0.150]; attention input relative L2 error 4.401e-02 (worst row 6.493e-02) [bound 0.109]"
+    ],
+    [
+      "ctx64k-16x8-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.523e-02 (worst row 8.952e-02) [bound 0.150]; attention input relative L2 error 4.401e-02 (worst row 6.493e-02) [bound 0.109]"
+    ],
+    [
+      "ctx64k-32x8-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.387e-02 (worst row 4.578e-02) [bound 0.134]; attention input relative L2 error 9.537e-03 (worst row 3.287e-02) [bound 0.090]"
+    ],
+    [
+      "ctx64k-32x8-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.387e-02 (worst row 4.578e-02) [bound 0.134]; attention input relative L2 error 9.537e-03 (worst row 3.287e-02) [bound 0.090]"
+    ],
+    [
+      "ctx64k-32x8-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.087e-02 (worst row 2.941e-02) [bound 0.149]; attention input relative L2 error 7.582e-03 (worst row 2.069e-02) [bound 0.099]"
+    ],
+    [
+      "ctx64k-32x8-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.087e-02 (worst row 2.941e-02) [bound 0.149]; attention input relative L2 error 7.582e-03 (worst row 2.069e-02) [bound 0.099]"
+    ],
+    [
+      "ctx64k-32x8-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.259e-02 (worst row 9.467e-02) [bound 0.150]; attention input relative L2 error 4.197e-02 (worst row 6.741e-02) [bound 0.103]"
+    ],
+    [
+      "ctx64k-32x8-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.259e-02 (worst row 9.467e-02) [bound 0.150]; attention input relative L2 error 4.197e-02 (worst row 6.741e-02) [bound 0.103]"
+    ],
+    [
+      "ctx64k-32x8-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.375e-02 (worst row 9.860e-02) [bound 0.150]; attention input relative L2 error 4.230e-02 (worst row 6.270e-02) [bound 0.104]"
+    ],
+    [
+      "ctx64k-32x8-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.375e-02 (worst row 9.860e-02) [bound 0.150]; attention input relative L2 error 4.230e-02 (worst row 6.270e-02) [bound 0.104]"
+    ],
+    [
+      "window-d1-63",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.664e-02 (worst row 1.664e-02) [bound 0.059]; attention input relative L2 error 8.435e-03 (worst row 8.435e-03) [bound 0.030]"
+    ],
+    [
+      "window-d1-63",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.664e-02 (worst row 1.664e-02) [bound 0.059]; attention input relative L2 error 8.435e-03 (worst row 8.435e-03) [bound 0.030]"
+    ],
+    [
+      "window-d1-63",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 8.138e-03 (worst row 8.138e-03) [bound 0.110]; attention input relative L2 error 5.957e-03 (worst row 5.957e-03) [bound 0.076]"
+    ],
+    [
+      "window-d1-63",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 8.138e-03 (worst row 8.138e-03) [bound 0.110]; attention input relative L2 error 5.957e-03 (worst row 5.957e-03) [bound 0.076]"
+    ],
+    [
+      "window-d1-64",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 4.496e-03 (worst row 4.496e-03) [bound 0.094]; attention input relative L2 error 3.996e-03 (worst row 3.996e-03) [bound 0.071]"
+    ],
+    [
+      "window-d1-64",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 4.496e-03 (worst row 4.496e-03) [bound 0.094]; attention input relative L2 error 3.996e-03 (worst row 3.996e-03) [bound 0.071]"
+    ],
+    [
+      "window-d1-64",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.445e-03 (worst row 6.445e-03) [bound 0.109]; attention input relative L2 error 4.459e-03 (worst row 4.459e-03) [bound 0.065]"
+    ],
+    [
+      "window-d1-64",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.445e-03 (worst row 6.445e-03) [bound 0.109]; attention input relative L2 error 4.459e-03 (worst row 4.459e-03) [bound 0.065]"
+    ],
+    [
+      "window-d1-65",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.622e-03 (worst row 6.622e-03) [bound 0.113]; attention input relative L2 error 5.578e-03 (worst row 5.578e-03) [bound 0.086]"
+    ],
+    [
+      "window-d1-65",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.622e-03 (worst row 6.622e-03) [bound 0.113]; attention input relative L2 error 5.578e-03 (worst row 5.578e-03) [bound 0.086]"
+    ],
+    [
+      "window-d1-65",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 5.368e-03 (worst row 5.368e-03) [bound 0.120]; attention input relative L2 error 3.809e-03 (worst row 3.809e-03) [bound 0.072]"
+    ],
+    [
+      "window-d1-65",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 5.368e-03 (worst row 5.368e-03) [bound 0.120]; attention input relative L2 error 3.809e-03 (worst row 3.809e-03) [bound 0.072]"
+    ],
+    [
+      "window-d1-2040",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.153e-03 (worst row 7.153e-03) [bound 0.150]; attention input relative L2 error 5.889e-03 (worst row 5.889e-03) [bound 0.113]"
+    ],
+    [
+      "window-d1-2040",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.153e-03 (worst row 7.153e-03) [bound 0.150]; attention input relative L2 error 5.889e-03 (worst row 5.889e-03) [bound 0.113]"
+    ],
+    [
+      "window-d1-2040",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 5.061e-03 (worst row 5.061e-03) [bound 0.131]; attention input relative L2 error 3.369e-03 (worst row 3.369e-03) [bound 0.069]"
+    ],
+    [
+      "window-d1-2040",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 5.061e-03 (worst row 5.061e-03) [bound 0.131]; attention input relative L2 error 3.369e-03 (worst row 3.369e-03) [bound 0.069]"
+    ],
+    [
+      "window-d1-2047",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.230e-03 (worst row 7.230e-03) [bound 0.119]; attention input relative L2 error 4.986e-03 (worst row 4.986e-03) [bound 0.074]"
+    ],
+    [
+      "window-d1-2047",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.230e-03 (worst row 7.230e-03) [bound 0.119]; attention input relative L2 error 4.986e-03 (worst row 4.986e-03) [bound 0.074]"
+    ],
+    [
+      "window-d1-2047",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.397e-03 (worst row 6.397e-03) [bound 0.150]; attention input relative L2 error 5.375e-03 (worst row 5.375e-03) [bound 0.129]"
+    ],
+    [
+      "window-d1-2047",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.397e-03 (worst row 6.397e-03) [bound 0.150]; attention input relative L2 error 5.375e-03 (worst row 5.375e-03) [bound 0.129]"
+    ],
+    [
+      "window-d1-2048",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.981e-02 (worst row 1.981e-02) [bound 0.150]; attention input relative L2 error 1.243e-02 (worst row 1.243e-02) [bound 0.098]"
+    ],
+    [
+      "window-d1-2048",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.981e-02 (worst row 1.981e-02) [bound 0.150]; attention input relative L2 error 1.243e-02 (worst row 1.243e-02) [bound 0.098]"
+    ],
+    [
+      "window-d1-2048",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 7.956e-03 (worst row 7.956e-03) [bound 0.150]; attention input relative L2 error 6.017e-03 (worst row 6.017e-03) [bound 0.140]"
+    ],
+    [
+      "window-d1-2048",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 7.956e-03 (worst row 7.956e-03) [bound 0.150]; attention input relative L2 error 6.017e-03 (worst row 6.017e-03) [bound 0.140]"
+    ],
+    [
+      "window-d1-2049",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.512e-02 (worst row 1.512e-02) [bound 0.150]; attention input relative L2 error 9.585e-03 (worst row 9.585e-03) [bound 0.101]"
+    ],
+    [
+      "window-d1-2049",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.512e-02 (worst row 1.512e-02) [bound 0.150]; attention input relative L2 error 9.585e-03 (worst row 9.585e-03) [bound 0.101]"
+    ],
+    [
+      "window-d1-2049",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 5.500e-03 (worst row 5.500e-03) [bound 0.147]; attention input relative L2 error 4.394e-03 (worst row 4.394e-03) [bound 0.103]"
+    ],
+    [
+      "window-d1-2049",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 5.500e-03 (worst row 5.500e-03) [bound 0.147]; attention input relative L2 error 4.394e-03 (worst row 4.394e-03) [bound 0.103]"
+    ],
+    [
+      "window-v2-2040",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.413e-03 (worst row 3.742e-03) [bound 0.143]; attention input relative L2 error 3.017e-03 (worst row 3.316e-03) [bound 0.096]"
+    ],
+    [
+      "window-v2-2040",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.414e-03 (worst row 3.742e-03) [bound 0.143]; attention input relative L2 error 3.022e-03 (worst row 3.316e-03) [bound 0.096]"
+    ],
+    [
+      "window-v2-2040",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.335e-03 (worst row 3.595e-03) [bound 0.147]; attention input relative L2 error 2.789e-03 (worst row 3.288e-03) [bound 0.095]"
+    ],
+    [
+      "window-v2-2040",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.335e-03 (worst row 3.595e-03) [bound 0.147]; attention input relative L2 error 2.789e-03 (worst row 3.288e-03) [bound 0.095]"
+    ],
+    [
+      "window-v2-2047",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.425e-03 (worst row 3.638e-03) [bound 0.131]; attention input relative L2 error 3.020e-03 (worst row 3.388e-03) [bound 0.088]"
+    ],
+    [
+      "window-v2-2047",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.425e-03 (worst row 3.638e-03) [bound 0.131]; attention input relative L2 error 3.020e-03 (worst row 3.388e-03) [bound 0.088]"
+    ],
+    [
+      "window-v2-2047",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.432e-03 (worst row 3.854e-03) [bound 0.148]; attention input relative L2 error 2.982e-03 (worst row 3.323e-03) [bound 0.096]"
+    ],
+    [
+      "window-v2-2047",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.429e-03 (worst row 3.854e-03) [bound 0.148]; attention input relative L2 error 2.984e-03 (worst row 3.323e-03) [bound 0.096]"
+    ],
+    [
+      "window-v2-2048",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.472e-03 (worst row 3.667e-03) [bound 0.131]; attention input relative L2 error 3.136e-03 (worst row 3.443e-03) [bound 0.091]"
+    ],
+    [
+      "window-v2-2048",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.472e-03 (worst row 3.667e-03) [bound 0.131]; attention input relative L2 error 3.137e-03 (worst row 3.446e-03) [bound 0.091]"
+    ],
+    [
+      "window-v2-2048",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.253e-03 (worst row 3.551e-03) [bound 0.149]; attention input relative L2 error 2.683e-03 (worst row 3.334e-03) [bound 0.093]"
+    ],
+    [
+      "window-v2-2048",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.254e-03 (worst row 3.551e-03) [bound 0.149]; attention input relative L2 error 2.683e-03 (worst row 3.334e-03) [bound 0.093]"
+    ],
+    [
+      "window-v2-2049",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 3.335e-03 (worst row 3.642e-03) [bound 0.138]; attention input relative L2 error 2.927e-03 (worst row 3.420e-03) [bound 0.092]"
+    ],
+    [
+      "window-v2-2049",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 3.336e-03 (worst row 3.642e-03) [bound 0.138]; attention input relative L2 error 2.925e-03 (worst row 3.420e-03) [bound 0.092]"
+    ],
+    [
+      "window-v2-2049",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 3.378e-03 (worst row 3.591e-03) [bound 0.150]; attention input relative L2 error 2.956e-03 (worst row 3.214e-03) [bound 0.101]"
+    ],
+    [
+      "window-v2-2049",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 3.380e-03 (worst row 3.606e-03) [bound 0.150]; attention input relative L2 error 2.959e-03 (worst row 3.214e-03) [bound 0.101]"
+    ],
+    [
+      "page64-d1",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.529e-02 (worst row 1.529e-02) [bound 0.107]; attention input relative L2 error 1.172e-02 (worst row 1.172e-02) [bound 0.081]"
+    ],
+    [
+      "page64-d1",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.529e-02 (worst row 1.529e-02) [bound 0.107]; attention input relative L2 error 1.172e-02 (worst row 1.172e-02) [bound 0.081]"
+    ],
+    [
+      "page64-d1",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 7.126e-03 (worst row 7.126e-03) [bound 0.150]; attention input relative L2 error 5.471e-03 (worst row 5.471e-03) [bound 0.120]"
+    ],
+    [
+      "page64-d1",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 7.124e-03 (worst row 7.124e-03) [bound 0.150]; attention input relative L2 error 5.472e-03 (worst row 5.472e-03) [bound 0.120]"
+    ],
+    [
+      "page64-v16-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 6.077e-02 (worst row 1.072e-01) [bound 0.148]; attention input relative L2 error 4.102e-02 (worst row 5.615e-02) [bound 0.100]"
+    ],
+    [
+      "page64-v16-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.077e-02 (worst row 1.072e-01) [bound 0.148]; attention input relative L2 error 4.102e-02 (worst row 5.615e-02) [bound 0.100]"
+    ],
+    [
+      "page64-v16-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.116e-02 (worst row 9.763e-02) [bound 0.150]; attention input relative L2 error 4.093e-02 (worst row 6.022e-02) [bound 0.101]"
+    ],
+    [
+      "page64-v16-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.116e-02 (worst row 9.763e-02) [bound 0.150]; attention input relative L2 error 4.093e-02 (worst row 6.022e-02) [bound 0.101]"
+    ],
+    [
+      "page64-v32-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 5.792e-02 (worst row 9.095e-02) [bound 0.141]; attention input relative L2 error 3.898e-02 (worst row 6.313e-02) [bound 0.095]"
+    ],
+    [
+      "page64-v32-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 5.792e-02 (worst row 9.095e-02) [bound 0.141]; attention input relative L2 error 3.898e-02 (worst row 6.313e-02) [bound 0.095]"
+    ],
+    [
+      "page64-v32-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 5.984e-02 (worst row 8.880e-02) [bound 0.147]; attention input relative L2 error 3.976e-02 (worst row 6.081e-02) [bound 0.097]"
+    ],
+    [
+      "page64-v32-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 5.984e-02 (worst row 8.880e-02) [bound 0.147]; attention input relative L2 error 3.976e-02 (worst row 6.081e-02) [bound 0.097]"
+    ],
+    [
+      "mixed-d24-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.302e-03 (worst row 1.366e-02) [bound 0.136]; attention input relative L2 error 5.023e-03 (worst row 7.281e-03) [bound 0.087]"
+    ],
+    [
+      "mixed-d24-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.287e-03 (worst row 1.367e-02) [bound 0.136]; attention input relative L2 error 5.013e-03 (worst row 7.271e-03) [bound 0.087]"
+    ],
+    [
+      "mixed-d24-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.617e-03 (worst row 1.144e-02) [bound 0.150]; attention input relative L2 error 4.676e-03 (worst row 5.801e-03) [bound 0.097]"
+    ],
+    [
+      "mixed-d24-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.627e-03 (worst row 1.145e-02) [bound 0.150]; attention input relative L2 error 4.688e-03 (worst row 5.781e-03) [bound 0.097]"
+    ],
+    [
+      "mixed-v24-s",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.295e-02 (worst row 3.842e-02) [bound 0.134]; attention input relative L2 error 8.922e-03 (worst row 2.736e-02) [bound 0.089]"
+    ],
+    [
+      "mixed-v24-s",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.309e-02 (worst row 3.852e-02) [bound 0.134]; attention input relative L2 error 9.007e-03 (worst row 2.748e-02) [bound 0.089]"
+    ],
+    [
+      "mixed-v24-s",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.113e-02 (worst row 3.518e-02) [bound 0.150]; attention input relative L2 error 7.698e-03 (worst row 2.019e-02) [bound 0.100]"
+    ],
+    [
+      "mixed-v24-s",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.128e-02 (worst row 3.518e-02) [bound 0.150]; attention input relative L2 error 7.792e-03 (worst row 2.020e-02) [bound 0.100]"
+    ],
+    [
+      "ctx96k-v24-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.127e-02 (worst row 2.745e-02) [bound 0.150]; attention input relative L2 error 7.813e-03 (worst row 1.907e-02) [bound 0.102]"
+    ],
+    [
+      "ctx96k-v24-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 6.265e-02 (worst row 8.608e-02) [bound 0.150]; attention input relative L2 error 4.151e-02 (worst row 5.957e-02) [bound 0.102]"
+    ],
+    [
+      "ctx96k-v24-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 9.779e-03 (worst row 2.184e-02) [bound 0.150]; attention input relative L2 error 6.921e-03 (worst row 1.524e-02) [bound 0.108]"
+    ],
+    [
+      "ctx96k-v24-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.556e-02 (worst row 9.365e-02) [bound 0.150]; attention input relative L2 error 4.392e-02 (worst row 6.373e-02) [bound 0.108]"
+    ],
+    [
+      "ctx96k-d48-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 7.474e-03 (worst row 1.392e-02) [bound 0.150]; attention input relative L2 error 5.413e-03 (worst row 1.091e-02) [bound 0.102]"
+    ],
+    [
+      "ctx96k-d48-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 7.549e-03 (worst row 1.393e-02) [bound 0.150]; attention input relative L2 error 5.451e-03 (worst row 1.094e-02) [bound 0.102]"
+    ],
+    [
+      "ctx96k-d48-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 6.494e-03 (worst row 9.046e-03) [bound 0.149]; attention input relative L2 error 4.637e-03 (worst row 5.830e-03) [bound 0.094]"
+    ],
+    [
+      "ctx96k-d48-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 6.592e-03 (worst row 9.105e-03) [bound 0.149]; attention input relative L2 error 4.693e-03 (worst row 5.883e-03) [bound 0.094]"
+    ],
+    [
+      "capacity-v64-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.685e-02 (worst row 4.818e-02) [bound 0.123]; attention input relative L2 error 1.146e-02 (worst row 3.226e-02) [bound 0.082]"
+    ],
+    [
+      "capacity-v64-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 5.255e-02 (worst row 9.462e-02) [bound 0.123]; attention input relative L2 error 3.492e-02 (worst row 6.576e-02) [bound 0.082]"
+    ],
+    [
+      "capacity-v64-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.548e-02 (worst row 5.836e-02) [bound 0.128]; attention input relative L2 error 1.051e-02 (worst row 3.962e-02) [bound 0.085]"
+    ],
+    [
+      "capacity-v64-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 5.396e-02 (worst row 1.053e-01) [bound 0.127]; attention input relative L2 error 3.588e-02 (worst row 6.808e-02) [bound 0.085]"
+    ],
+    [
+      "capacity-v65-f",
+      419731,
+      "S15",
+      true,
+      "update relative L2 error 1.626e-02 (worst row 5.645e-02) [bound 0.123]; attention input relative L2 error 1.107e-02 (worst row 3.887e-02) [bound 0.082]"
+    ],
+    [
+      "capacity-v65-f",
+      419731,
+      "S15n",
+      true,
+      "update relative L2 error 1.637e-02 (worst row 5.647e-02) [bound 0.123]; attention input relative L2 error 1.114e-02 (worst row 3.890e-02) [bound 0.082]"
+    ],
+    [
+      "capacity-v65-f",
+      427650,
+      "S15",
+      true,
+      "update relative L2 error 1.495e-02 (worst row 5.742e-02) [bound 0.125]; attention input relative L2 error 1.024e-02 (worst row 4.029e-02) [bound 0.083]"
+    ],
+    [
+      "capacity-v65-f",
+      427650,
+      "S15n",
+      true,
+      "update relative L2 error 1.506e-02 (worst row 5.745e-02) [bound 0.125]; attention input relative L2 error 1.031e-02 (worst row 4.026e-02) [bound 0.083]"
+    ]
+  ],
+  "wrapper_sha256": "0403aa4c1589cd34afce117bb831b2d0af5ab02492f4e490a6b87996d6123424",
+  "mode": "normal"
+}

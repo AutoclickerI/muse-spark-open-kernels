@@ -1,0 +1,25 @@
+{
+  "original": {
+    "pid": 1293482,
+    "priority": 5.0,
+    "t": 1792949995.8500905,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_nearby_payload.py",
+    "sha256": "5d0893419ae8828070b8705bff53d3b905b709ee13e171dfb4505e8835c5e5db",
+    "note": "h200_lab problems/muse_decode_layer/dev/nearby/nearby_payload.py: P4 S15n ebceda91 range dispatch vs frozen S15 60254883 and SGLang:65 shapes,2 seeds,8 cold ABBA replays;shared exact prepared plans;12/12 scored dispatch identical;normal+forced candidate and complete payload screens pass;replaces held sender1113126 only",
+    "not_before": 1792972800.0,
+    "until": 1792972800.0
+  },
+  "repair": {
+    "pid": 89627,
+    "priority": 4.9,
+    "t": 1792975383.3107295,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py",
+    "sha256": "e5a7d14f2749b3a4ccbfa6b26cea9310451a8485b5e9c5c14136e6e95f7acb78",
+    "note": "P4 repaired S15 nearby layer audit: explicit top-level kernel entry only; original 5d089341 payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection.",
+    "not_before": 0
+  },
+  "reason": "Static entry requirement; P4 already queued an entry-only screened replacement",
+  "action": "SIGTERM own unsent original under dispatch lock; replacement untouched"
+}

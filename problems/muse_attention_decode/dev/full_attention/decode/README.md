@@ -4,11 +4,7 @@ Base: S14 final **f1c77ce6**, full-decode `attn_main` CUDA **498e93cc**.
 This is P5b: full attention at B16/32 only. Sliding and decode1 remain with P5.
 No variant is promoted.
 
-Queued on proj: wrapper **06e39759a67ca297**, sender PID**949154**, not-before
-epoch**1792972800** (2026-10-26 09:00 KST), priority**2.5**. No judge job ID
-exists before acceptance. The unchanged verify batch is wrapper03086413,
-PID3171016, priority2.0 at the same time gate. Both live in runs/waiting until
-their sends. The new sender log is runs/detached/06e39759a67ca297.log.
+Reset job **e4fcf732f35b425d**, wrapper **06e39759a67ca297**; complete receipt in runs/.
 
 **Decision rule:** the decode batch is independent of the verify reset outcome
 and queues now behind it; after both receipts land, generate a patch only for a
@@ -100,19 +96,27 @@ python build_screen.py
 CUDA_VISIBLE_DEVICES=0 tools/img python screen.py
 ```
 
-`patch.py <arm>` is ready to generate a selected cell onto exact S14 f1c77ce6.
+`patch.py <arm>` generates a selected cell onto exact S15 60254883.
 It routes only full decode16/32 and leaves all other attention dispatch intact.
 FP32 projection partials are reduced and rounded at the existing BF16 boundary
 for `attn_main`, while the native WG prologue retains its direct partial ABI.
 Generated patches are experimental and say promotion=false. Do not integrate
 an arm before the native paired result and whole-layer screen/pair.
 
-Queued sender identities, time gate and the exact weighted-host screen are
-recorded in `admission.json`. The verify reset sender
-PID3171016 /03086413 remains unchanged, priority2. The decode batch uses a
-lower queue priority and the same not-before epoch1792972800 (09:00 KST).
+Reset receipt **e4fcf732f35b425d**, complete native probes/TASK/cache gates,
+8fresh seeds ×8cold rotating replays. No winner: mix25 **1.00182/1.00284**,
+mix50 **1.00898/1.01133**, tc **1.00976/1.00704**, tc25 **1.00814/1.00896**;
+WG reference **1.33968/1.28368**, WG25 **1.39793/1.33255**, WG50
+**1.44732/1.37264**, ping **1.68078/1.63104**, ping25 **1.74657/1.67450**.
+A:A **0.99964/1.00105**, ranges **0.99310–1.00543 /0.99778–1.00871**.
+No selected arm is sent to P4. `reset_result.json` retains ratios, controls and clocks.
 
-The wrapper and generated device/driver files are ignored build outputs;
-okc_run has frozen the sent bytes in runs/sent. `build_lab.py` and h200_lab
-regenerate the wrapper. `patch.py` is ready for the selected native winner;
-no unsent performance-dependent judge payload remains to be built.
+Gather/page issue is the larger phase:1539/1597 cycles versus softmax618/615.
+The prepared layer adapter was repaired before any promotion: attention-board
+`plan_for` requires `data['qkv']`; the layer supplies partials separately. The
+adapter now preserves the owned PDL BF16 sum/cast and gives the driver its raw
+operand. `patch.py` now targets exact S15 `60254883`, optionally selecting B16/B32.
+The mix25 adapter passes25 real whole-layer fixtures with eager/replay checks and
+26 static checks in both modes. This establishes adapter correctness only and
+is not a performance promotion. Future full-decode work targets page-row transport
+rather than applying the losing padded verify kernels.

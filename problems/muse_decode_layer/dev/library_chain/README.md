@@ -105,7 +105,7 @@ them. Final checks and native compilation are recorded separately.
 [native_compile.json](native_compile.json): four real sm90a specializations compile
 at O3, zero spills. OL128/RL256 use90/154 registers. VDSK pool/unpool use90/110,
 163880/163840 bytes of dynamic shared memory. SASS release/wait precedes the first
-global loads. Native Hopper runtime/concurrency remains unverified until reset.
+global loads. Native Hopper runtime and TASK correctness passed in the reset receipt below.
 
 One payload: **A=S15, A2=A:A, L, no_o, no_pool128, no_unpool128, no_v1full,
 no_v32slide**;12 shapes, six weighted loads,8 fresh seeds,8 rotated/swapped cold
@@ -125,7 +125,7 @@ an attention arithmetic replacement: the normal portable control keeps BF16 Q,
 where VQ8 uses permitted FP8 Q, and routing near ties may differ. S15e changed only
 scheduling and needed equivalence; S15L needs the actual TASK criteria. The rebuilt
 payload uses those unchanged criteria and retains A-comparison differences as
-diagnostics. Native correctness is still pending. No timings from sm120 are
+diagnostics. Native correctness passed in the reset receipt below. No timings from sm120 are
 promotion evidence. Full results are losslessly XZ/base85 packed so none of the
 checks, absolute times, ratios or failure diagnostics are truncated by the log cap.
 
@@ -140,6 +140,28 @@ no H200 gain is claimed before the receipt.
 
 Final local admission: **143/143 fixtures normal and forced**, each eager and after two graph replays (**572 TASK checks**); **25/25 static checks per mode**. Exact wrapper `54aa3bedc460bbc8`: all8 arms/12 shapes/8 seeds pass **768 independent TASK checks per mode** (normal55.15s, forced51.30s), plus13 official host tests and2 static checks per mode. [validation.json](validation.json) verifies identities and actual arm row selections. No local timing is a H200 claim.
 
-Queued sender **1579130**, wrapper **54aa3bedc460bbc8**, decode check, priority **4.0**, not-before **1792972800.0**. [queue.json](queue.json); log `runs/detached/54aa3bedc460bbc8.log`. No judge ID yet. The queued wrapper is byte-identical to the one screened in both modes. Read with `python3 tools/h200_lab.py read <job>`, then `python3 problems/muse_decode_layer/dev/library_chain/read.py <receipt.json>`. Keep only the paired six-load winners; assess interactions with the earlier S15e batch separately.
 
-Source/admission commit: **0b53131** (the shared index was committed concurrently by P7). Candidate and wrapper identities above were verified against that commit; history was preserved. Handoff base remains exact S15 `60254883`, not S15e. All remaining native correctness, paired performance and promotion decisions wait on the reset receipt.
+## Current reset identity
+
+The unsent original lacked a top-level AST `kernel_fn`. P4 repaired only the entry; payload math, seeds and gates are identical. The original was retired under the dispatch lock after checking PID, command and source identities. `reset_superseded.json` preserves the evidence.
+
+Repaired sender **64202**; accepted job **f22020d25d234be6**.
+
+## Native reset result
+
+Job **f22020d25d234be6**, complete12shapes×8seeds, no compile/runtime or correctness failures. All768 native TASK checks pass.
+
+| Load | A:A mean [seed min,max] | L/S15 mean | SE |
+|---|---|---:|---:|
+| 1x1 | 1.013075 [1.004542,1.022814] | 0.999802 | 0.001949 |
+| 16x1 | 0.998606 [0.992040,1.008489] | 0.999176 | 0.000781 |
+| 32x1 | 0.999222 [0.996336,1.002392] | 1.001312 | 0.000456 |
+| 1x8 | 0.998548 [0.993566,1.003576] | 1.006730 | 0.001003 |
+| 16x8 | 0.999198 [0.997946,1.000551] | 0.994152 | 0.000907 |
+| 32x8 | 0.999509 [0.997735,1.001910] | 1.005131 | 0.002977 |
+
+The frozen payload omitted joint per-seed timings; its inverse geomean of mean ratios is descriptive only. No held-out six-load confidence claim is available. The full L composition is neutral/slower. L/no-O at v16 is .995180, L/no-pool128 .998126; nominate O128 and tentatively pool128. Unpool128 1.003428, native v1 full1.007972 and v32 sliding1.006421 lose; close those exact replacement recipes. O256 is unresolved inside noise.
+
+The combined follow-up lives in [../pdl_release/confirmation/README.md](../pdl_release/confirmation/README.md): fifteen arms, eight held-out seeds, all12 shapes/six loads,1,440 actual TASK gates and per-seed weighted load times. It isolates each nominated producer/library edit and their interactions; the score gate is the six-load geomean R lower confidence bound above1. Exact patches target frozen S15 60254883. `reset_result.json` preserves the original receipt and all arm statistics.
+
+Control qualification: d1 is **unmeasured** in both reset audit recipes because every A:A seed ratio exceeds1. Its point estimates do not establish a d1 gain or loss. The fresh confirmation retests d1; no whole-composition promotion is claimed from the frozen reset summaries.

@@ -35,8 +35,16 @@ Files (one entry per retained direct file):
 Handoff: [build_patch.py](build_patch.py), SHA256 `3f13695b454606e23d86fec43d8c454a3983973375894c946cf24630981ff5ee`, applies onto S14 f1c77ce6, VQ8 CUDA c262e4c5.
 Base source: [S14 final](../../../../muse_decode_layer/cand_r3_best7_s14_final.py), SHA256 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
 
-Pending H200 senders (not judge-accepted at handoff):
-
-- PID 3171016, wrapper `030864131ce8d08f`, [lab_softmax_mix_lab.py](../../../../muse_bf16_proj/lab/lab_softmax_mix_lab.py); [sender log](../../../../../runs/detached/030864131ce8d08f.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3171016.json`.
-
-Next: Read 030864131ce8d08f; choose a native component winner, screen it, then require paired whole-layer evidence on fresh seeds.
+Reset result: **457f3c73b3214534** (wrapper03086413), complete native gates/probes,
+3seeds ×16cold rotating replays. Ratios16/32: mix25 **1.05012/1.04610**, mix50
+**1.08436/1.07352**, gap **1.00004/1.00126**, mixgap **1.05200/1.04865**,
+tc25 **1.03473/1.03452**, ping **1.15929/1.17091**, ping25 **1.22654/1.21961**.
+A:A **0.99941/0.99947**, ranges **0.99562–1.00164 /0.99608–1.00154**.
+No winner or P4 promotion. The mixed exps increase issue, and the tested ping-pong
+adds synchronization. TC25 reduces scalar alpha/sum work, but its standalone
+WGMMA group/wait and polynomial confound remain. The follow-up targets S15 N128:
+keep native MUFU, carry the denominator as four PV accumulator registers and
+issue P×ones in the existing PV group. It retains exact FP8 operands, max/rescale
+logic, all keys and the stage4 ring. `../pvsum_build.py` builds that candidate;
+independent denominator/rescale probes and native SASS gates precede any send.
+`reset_result.json` records the exact receipt and clocks; FINDINGS has one row per recipe.

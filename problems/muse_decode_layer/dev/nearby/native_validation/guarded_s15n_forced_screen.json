@@ -1,0 +1,354 @@
+{
+ "problem": "muse_decode_layer",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/nearby/native_validation/guarded_s15n.py",
+ "sha256": "9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "cc": "12.0",
+ "torch": "2.14.1+cu130",
+ "prepare_s": 98.83445518201916,
+ "tests": [
+  {
+   "case": "batch 1, ctx 10, layer sliding",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.624e-03 (worst row 7.624e-03) [bound 0.085]; attention input relative L2 error 4.359e-03 (worst row 4.359e-03) [bound 0.042]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.624e-03 (worst row 7.624e-03) [bound 0.085]; attention input relative L2 error 4.359e-03 (worst row 4.359e-03) [bound 0.042]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 3000, layer full",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.022e-03 (worst row 7.022e-03) [bound 0.150]; attention input relative L2 error 4.975e-03 (worst row 4.975e-03) [bound 0.108]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.020e-03 (worst row 7.020e-03) [bound 0.150]; attention input relative L2 error 4.975e-03 (worst row 4.975e-03) [bound 0.108]",
+   "ok": true
+  },
+  {
+   "case": "batch 8, ctx 2047, layer sliding",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.569e-03 (worst row 9.329e-03) [bound 0.148]; attention input relative L2 error 4.696e-03 (worst row 6.280e-03) [bound 0.094]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.569e-03 (worst row 9.329e-03) [bound 0.148]; attention input relative L2 error 4.696e-03 (worst row 6.280e-03) [bound 0.094]",
+   "ok": true
+  },
+  {
+   "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.502e-03 (worst row 1.018e-02) [bound 0.150]; attention input relative L2 error 5.397e-03 (worst row 7.446e-03) [bound 0.134]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.502e-03 (worst row 1.018e-02) [bound 0.150]; attention input relative L2 error 5.397e-03 (worst row 7.446e-03) [bound 0.134]",
+   "ok": true
+  },
+  {
+   "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.714e-02 (worst row 1.047e-01) [bound 0.150]; attention input relative L2 error 3.532e-02 (worst row 5.338e-02) [bound 0.087]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.714e-02 (worst row 1.047e-01) [bound 0.150]; attention input relative L2 error 3.532e-02 (worst row 5.338e-02) [bound 0.087]",
+   "ok": true
+  },
+  {
+   "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.704e-02 (worst row 9.976e-02) [bound 0.150]; attention input relative L2 error 4.482e-02 (worst row 6.239e-02) [bound 0.112]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.704e-02 (worst row 9.976e-02) [bound 0.150]; attention input relative L2 error 4.482e-02 (worst row 6.239e-02) [bound 0.112]",
+   "ok": true
+  },
+  {
+   "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.327e-03 (worst row 8.501e-03) [bound 0.150]; attention input relative L2 error 5.311e-03 (worst row 6.918e-03) [bound 0.114]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.327e-03 (worst row 8.501e-03) [bound 0.150]; attention input relative L2 error 5.311e-03 (worst row 6.923e-03) [bound 0.114]",
+   "ok": true
+  },
+  {
+   "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.034e-02 (worst row 1.018e-01) [bound 0.150]; attention input relative L2 error 4.786e-02 (worst row 7.012e-02) [bound 0.120]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.034e-02 (worst row 1.018e-01) [bound 0.150]; attention input relative L2 error 4.786e-02 (worst row 7.012e-02) [bound 0.120]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 1048576, layer full, q_len 8",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 8.267e-02 (worst row 1.032e-01) [bound 0.150]; attention input relative L2 error 5.408e-02 (worst row 6.676e-02) [bound 0.135]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 8.267e-02 (worst row 1.032e-01) [bound 0.150]; attention input relative L2 error 5.408e-02 (worst row 6.676e-02) [bound 0.135]",
+   "ok": true
+  },
+  {
+   "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.914e-02 (worst row 1.071e-01) [bound 0.150]; attention input relative L2 error 4.550e-02 (worst row 7.139e-02) [bound 0.114]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.914e-02 (worst row 1.071e-01) [bound 0.150]; attention input relative L2 error 4.550e-02 (worst row 7.139e-02) [bound 0.114]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.361e-03 (worst row 7.361e-03) [bound 0.138]; attention input relative L2 error 6.099e-03 (worst row 6.099e-03) [bound 0.105]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.361e-03 (worst row 7.361e-03) [bound 0.138]; attention input relative L2 error 6.099e-03 (worst row 6.099e-03) [bound 0.105]",
+   "ok": true
+  },
+  {
+   "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 5.987e-02 (worst row 8.378e-02) [bound 0.149]; attention input relative L2 error 4.032e-02 (worst row 5.770e-02) [bound 0.101]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 5.987e-02 (worst row 8.378e-02) [bound 0.149]; attention input relative L2 error 4.032e-02 (worst row 5.770e-02) [bound 0.101]",
+   "ok": true
+  },
+  {
+   "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 9.646e-03 (worst row 2.832e-02) [bound 0.145]; attention input relative L2 error 5.922e-03 (worst row 1.298e-02) [bound 0.097]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 9.646e-03 (worst row 2.832e-02) [bound 0.145]; attention input relative L2 error 5.922e-03 (worst row 1.298e-02) [bound 0.097]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, q_len 1, ctx 80000, layer sliding, page 1, dist soft, spread fixed",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 8.693e-03 (worst row 8.693e-03) [bound 0.150]; attention input relative L2 error 6.424e-03 (worst row 6.424e-03) [bound 0.123]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 8.693e-03 (worst row 8.693e-03) [bound 0.150]; attention input relative L2 error 6.424e-03 (worst row 6.424e-03) [bound 0.123]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, q_len 1, ctx 80000, layer full, page 1, dist soft, spread fixed",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.519e-03 (worst row 6.519e-03) [bound 0.137]; attention input relative L2 error 4.748e-03 (worst row 4.748e-03) [bound 0.088]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.519e-03 (worst row 6.519e-03) [bound 0.137]; attention input relative L2 error 4.749e-03 (worst row 4.749e-03) [bound 0.088]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, q_len 8, ctx 80000, layer sliding, page 1, dist soft, spread fixed",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 5.305e-02 (worst row 5.978e-02) [bound 0.132]; attention input relative L2 error 3.483e-02 (worst row 4.236e-02) [bound 0.087]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 5.305e-02 (worst row 5.978e-02) [bound 0.132]; attention input relative L2 error 3.483e-02 (worst row 4.236e-02) [bound 0.087]",
+   "ok": true
+  },
+  {
+   "case": "batch 1, q_len 8, ctx 80000, layer full, page 1, dist soft, spread fixed",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.091e-02 (worst row 6.808e-02) [bound 0.150]; attention input relative L2 error 4.016e-02 (worst row 4.468e-02) [bound 0.100]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.091e-02 (worst row 6.808e-02) [bound 0.150]; attention input relative L2 error 4.016e-02 (worst row 4.468e-02) [bound 0.100]",
+   "ok": true
+  },
+  {
+   "case": "batch 16, q_len 1, ctx 80000, layer sliding, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 7.875e-03 (worst row 1.885e-02) [bound 0.143]; attention input relative L2 error 5.338e-03 (worst row 1.002e-02) [bound 0.093]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 7.875e-03 (worst row 1.885e-02) [bound 0.143]; attention input relative L2 error 5.338e-03 (worst row 1.002e-02) [bound 0.093]",
+   "ok": true
+  },
+  {
+   "case": "batch 16, q_len 1, ctx 80000, layer full, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.376e-03 (worst row 7.152e-03) [bound 0.145]; attention input relative L2 error 4.691e-03 (worst row 5.509e-03) [bound 0.094]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.376e-03 (worst row 7.152e-03) [bound 0.145]; attention input relative L2 error 4.691e-03 (worst row 5.510e-03) [bound 0.094]",
+   "ok": true
+  },
+  {
+   "case": "batch 16, q_len 8, ctx 80000, layer sliding, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 5.690e-02 (worst row 1.092e-01) [bound 0.139]; attention input relative L2 error 3.815e-02 (worst row 7.869e-02) [bound 0.093]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 5.690e-02 (worst row 1.092e-01) [bound 0.139]; attention input relative L2 error 3.815e-02 (worst row 7.869e-02) [bound 0.093]",
+   "ok": true
+  },
+  {
+   "case": "batch 16, q_len 8, ctx 80000, layer full, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.464e-02 (worst row 9.972e-02) [bound 0.150]; attention input relative L2 error 4.306e-02 (worst row 7.066e-02) [bound 0.107]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.464e-02 (worst row 9.972e-02) [bound 0.150]; attention input relative L2 error 4.306e-02 (worst row 7.066e-02) [bound 0.107]",
+   "ok": true
+  },
+  {
+   "case": "batch 32, q_len 1, ctx 80000, layer sliding, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 9.113e-03 (worst row 2.440e-02) [bound 0.145]; attention input relative L2 error 6.575e-03 (worst row 1.540e-02) [bound 0.100]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 9.113e-03 (worst row 2.440e-02) [bound 0.145]; attention input relative L2 error 6.575e-03 (worst row 1.540e-02) [bound 0.100]",
+   "ok": true
+  },
+  {
+   "case": "batch 32, q_len 1, ctx 80000, layer full, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.819e-03 (worst row 9.103e-03) [bound 0.150]; attention input relative L2 error 5.101e-03 (worst row 7.441e-03) [bound 0.105]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.819e-03 (worst row 9.103e-03) [bound 0.150]; attention input relative L2 error 5.101e-03 (worst row 7.441e-03) [bound 0.105]",
+   "ok": true
+  },
+  {
+   "case": "batch 32, q_len 8, ctx 80000, layer sliding, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.351e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.250e-02 (worst row 6.761e-02) [bound 0.104]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.351e-02 (worst row 1.011e-01) [bound 0.150]; attention input relative L2 error 4.250e-02 (worst row 6.761e-02) [bound 0.104]",
+   "ok": true
+  },
+  {
+   "case": "batch 32, q_len 8, ctx 80000, layer full, page 1, dist soft, spread agentic",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 6.231e-02 (worst row 9.159e-02) [bound 0.150]; attention input relative L2 error 4.159e-02 (worst row 5.877e-02) [bound 0.102]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 6.231e-02 (worst row 9.159e-02) [bound 0.150]; attention input relative L2 error 4.159e-02 (worst row 5.877e-02) [bound 0.102]",
+   "ok": true
+  },
+  {
+   "case": "batch 64, q_len 8, ctx 129, layer full, page 1, dist soft, spread fixed",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 5.275e-02 (worst row 1.166e-01) [bound 0.125]; attention input relative L2 error 3.526e-02 (worst row 6.988e-02) [bound 0.083]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 5.275e-02 (worst row 1.166e-01) [bound 0.125]; attention input relative L2 error 3.526e-02 (worst row 6.988e-02) [bound 0.083]",
+   "ok": true
+  },
+  {
+   "case": "batch 65, q_len 8, ctx 129, layer full, page 1, dist soft, spread fixed",
+   "eager_ok": true,
+   "eager_msg": "update relative L2 error 5.249e-02 (worst row 1.035e-01) [bound 0.125]; attention input relative L2 error 3.522e-02 (worst row 6.360e-02) [bound 0.084]",
+   "replay_ok": true,
+   "msg": "update relative L2 error 5.249e-02 (worst row 1.035e-01) [bound 0.125]; attention input relative L2 error 3.522e-02 (worst row 6.360e-02) [bound 0.084]",
+   "ok": true
+  }
+ ],
+ "static": [
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GLUE_CL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "LT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_PORT_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_X_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_G_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "ATTN_P8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PG_RAW",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CUDA_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "V9_NT2_CPP_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "_pf_GROUPED_SRC",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SP_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "P7_PREFETCH_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "DENSE_CHAIN_CPP",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "SMALLM_VAR_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "NF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "GF_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "VQ8_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "PARTIAL_CUDA",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "cs_CUDA",
+   "ok": true,
+   "msg": ""
+  }
+ ]
+}

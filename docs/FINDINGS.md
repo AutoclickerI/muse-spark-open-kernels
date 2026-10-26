@@ -472,6 +472,36 @@ Clocked gather/page issue1539/1597 cycles dominates softmax618/615 (instrumentat
 |Two-WG25% /50% split|1.39793/1.33255;1.44732/1.37264|Adds polynomial issue on an already slower family|Other WG/Q layouts and exp implementations|`e4fcf732f35b425d`|
 |Two-WG ping /ping25|1.68078/1.63104;1.74657/1.67450|QK wait78/79 cycles plus the padded-query cost|Other overlap protocols|`e4fcf732f35b425d`|
 
+
+### P5b S15 audit reset receipts
+
+Ratios below are new/old time. Six-load order is d1/d16/d32/v1/v16/v32.
+The frozen audit payloads retained per-load mean/SE/ranges, not joint seed times;
+there is no exact six-load confidence interval to promote from these summaries.
+Treat d1 as unmeasured for both audit recipes: every A:A seed ratio exceeds1,
+so its drift cannot establish a d1 gain or loss.
+Held-out confirmation retains weighted per-load times for every seed. PDL's d1
+A:A is biased1.009834 (range1.000283–1.016426); other five A:A means are
+.997998/.998476/.997318/.998725/.999697, ranges .994593–1.001740 /
+.996282–1.000505 / .993044–1.000308 / .994851–1.002511 / .997835–1.002037.
+Library's d1 A:A is1.013075 (1.004542–1.022814); other means are
+.998606/.999222/.998548/.999198/.999509, ranges .992040–1.008489 /
+.996336–1.002392 / .993566–1.003576 / .997946–1.000551 / .997735–1.001910.
+
+| Recipe | Ratio vs control | Mechanism checked | Decision / what remains open | Receipt |
+|---|---|---|---|---|
+| S15e all release edits | 1.018308/.988901/.991881/1.001564/.977655/.992563 vs S15; E-identical no-glue1.018116/.987360/.991442/1.002360/.979613/.993467 | Native changed sources execute; equivalence/routing gates pass all12 shapes×8seeds. Most old producers already released at entry | No wholesale promotion: d1 control drifts and joint seed confidence was omitted. Selected producers go to held-out TASK/R confirmation | `f88fda4aac144374` |
+| q1 attention PDL consumer enable+wait | E/no-attention .992546/.993376 at d16/d32; A:A .997998/.998476 | Existing sumcast entry release can overlap the now-enabled attn_main prologue; wait precedes qkv reads | Nominate exact attention patch for confirmation; no change to decode1/sliding kernel math | `f88fda4aac144374` |
+| Large-M MoE route/GEMM/phase/finish entry release | E/no-MoE .988392/.993228 at v16/v32 | PDL enabled with consumer waits and existing full-completion side-stream joins; native output/routing parity passes | Isolate large-M from small-M release in held-out confirmation | `f88fda4aac144374` |
+| VDSK qkv producer entry release | E/no-projections .988099 at v16 | Original independent X/W prologue, downstream VQ8 wait retained; arithmetic unchanged | Confirm separately and with large-M MoE; unchanged-load variation forbids attributing all E gain to one producer | `f88fda4aac144374` |
+| Small-M/generic V9 entry release in grouped E | E/no-MoE 1.007300/.999919/.998656/1.001767 at d1/d16/d32/v1 | Changed native code compiled/executed; outputs agree | Drop this tested small-M release from selected confirmation; different wait/prologue schedules remain open | `f88fda4aac144374` |
+| S15L all library replacements | .999802/.999176/1.001312/1.006730/.994152/1.005131 vs S15; all768 TASK gates pass | Native NF O, VDSK pool/unpool and VQ8 rows replace external completion boundaries | Full composition is not a winner; isolate candidates below, do not blame all libraries or all native kernels | `f22020d25d234be6` |
+| Owned NF O128/O256 | L/no-O .995180/.998636 at v16/v32; A:A .999198/.999509 | Same BF16 inputs, owned release/wait chain; exact native kernels used | O128 to held-out confirmation and exact patch; O256 not resolved beyond noise | `f22020d25d234be6` |
+| Owned VDSK pool128 S3,128×128×64,st5/w8,TMA | L/no-pool128 .998126 at v16 | FP32 partials feed original route with PDL release/wait | Small tentative signal; confirm pool alone and beside O128/PDL | `f22020d25d234be6` |
+| Owned VDSK unpool128 S2 | L/no-unpool128 1.003428 at v16 | FP32 partials feed original boundary2; TASK passes | Close this tile/split recipe as a win; other owned unpool designs remain open | `f22020d25d234be6` |
+| Native N128 VQ8 st4/mt2 at v1 full | L/no-v1full 1.007972 at v1 | Every full key/current token retained; TASK passes | Close this FA3 replacement recipe in the full layer; alternative native designs remain open | `f22020d25d234be6` |
+| Native N128 VQ8 st4/mt2 at v32 sliding | L/no-v32slide 1.006421 at v32 | Every window key retained; TASK passes; increased seed spread | Drop this replacement; no claim that all native sliding loses | `f22020d25d234be6` |
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

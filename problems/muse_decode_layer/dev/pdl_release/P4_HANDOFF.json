@@ -1,0 +1,88 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "status": "nominations only; await held-out six-load confirmation",
+  "receipts": [
+    "f88fda4aac144374",
+    "f22020d25d234be6"
+  ],
+  "patches": {
+    "attention": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/attention.patch",
+      "groups": [
+        "attention"
+      ],
+      "library": [],
+      "source_sha256": "fb5db86faea57077af2305e7c01f4c4107640f1079c8b12944535783b81c4b20",
+      "patch_sha256": "f7e6a95b977b2f46ea63760b46328275a8f2d4094d65bb443b92e8f9b2233184"
+    },
+    "large": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/large.patch",
+      "groups": [
+        "moe"
+      ],
+      "library": [],
+      "source_sha256": "78652aabf55d269bee2441fbde4abfd086f98a8a7c7157b8accf7ba3a0eafc25",
+      "patch_sha256": "4fc00f01b07ded26dffc77cc06ac8c4acdb9393cd91d83db63161e666372a93a"
+    },
+    "vdsk": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/vdsk.patch",
+      "groups": [
+        "projections"
+      ],
+      "library": [],
+      "source_sha256": "c6674aff5d20c1229dad1efc14b8fa692ef80163b43821ca8bc1c05dfde0a33c",
+      "patch_sha256": "f13437d5e1fcb84c5cf6fe0780cea11043b24a1d3e63f98559505fcade1a637c"
+    },
+    "O": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/O.patch",
+      "groups": [],
+      "library": [
+        "o"
+      ],
+      "source_sha256": "4f7f8fce25c95e2ad0798da11c04072505ef04d2bcb7ba4c226805fb726e4f10",
+      "patch_sha256": "9732347e68d7906097cd49a945a97114556abbdc8597f06bc600def75afdeeab"
+    },
+    "pool": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/pool.patch",
+      "groups": [],
+      "library": [
+        "pool"
+      ],
+      "source_sha256": "50862539bcff054e0efe61b6301d626385b634748268907f3ccc0af02cf854db",
+      "patch_sha256": "e9b280de1887e7532766b8c9b0b25510c10911ee6087ba7f60ec5a6def74f967"
+    },
+    "P": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/P.patch",
+      "groups": [
+        "attention",
+        "moe",
+        "projections"
+      ],
+      "library": [],
+      "source_sha256": "911383a1e3effc960ea3d645e9992a2362875453210886906a823d58d7e9c9b0",
+      "patch_sha256": "033513aff06661469330885b6a307150f6d8f6591d90e6322cce3a5dae8dbf96"
+    },
+    "C": {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/C.patch",
+      "groups": [
+        "attention",
+        "moe",
+        "projections"
+      ],
+      "library": [
+        "o",
+        "pool"
+      ],
+      "source_sha256": "2f93745e1025ee73ab02fea87e846cf9d5a48efd1a9a3444c0a30594a035ec99",
+      "patch_sha256": "38e3c67907897bdd775b2b84d1ad589869220f5926c6f01ff100f04bbbebc170"
+    }
+  },
+  "excluded": [
+    "small-M and V9 release edits",
+    "unpool128 tile",
+    "native verify1 full st4/mt2",
+    "native verify32 sliding st4/mt2",
+    "O256 unresolved"
+  ],
+  "confirmation": "confirmation/README.md"
+}

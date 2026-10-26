@@ -1,0 +1,19 @@
+--- cand_r3_best7_s15.py
++++ vdsk.py
+@@ -36,6 +36,7 @@
+ @triton.jit
+ def _vdsk_gemm(X, W, P, x_desc, w_desc, M, N, K, S,
+                BT: tl.constexpr, BW: tl.constexpr, BK: tl.constexpr, NS: tl.constexpr, TMA: tl.constexpr):
++    tl.extra.cuda.gdc_launch_dependents()
+     pid = tl.program_id(0)
+     ps = tl.program_id(1)
+     nw = N // BW
+@@ -70,7 +71,7 @@
+     xd = _VDSK_TD.from_tensor(x, [BT, BK]) if TMA else None
+     wd = _VDSK_TD.from_tensor(w, [BW, BK]) if TMA else None
+     _vdsk_gemm[(-(-M // BT) * (N // BW), S)](x, w, P, xd, wd, M, N, K, S, BT=BT, BW=BW, BK=BK, NS=NS, TMA=TMA,
+-                                             num_warps=NWARPS, num_stages=NS)
++                                             num_warps=NWARPS, num_stages=NS, launch_pdl=True)
+     return P, S
+ 
+ 

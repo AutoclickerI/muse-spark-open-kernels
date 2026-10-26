@@ -1,0 +1,13 @@
+{
+  "sender": {
+    "pid": 579268,
+    "priority": 4.9,
+    "t": 1792978435.8720655,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/lab/lab_nearby_payload+payload.py",
+    "sha256": "5fcb675cfb85bc89b69308cf6de34b22497cb7e62d03575bf79b8778f20f6628",
+    "note": "h200_lab problems/muse_attention_decode/dev/full_attention/next/payload.py: P5b reset response: S15 vs PV-group denominator/V duplicate and full-q1 vector page gather; A:A,12 shapes/six loads,8 fresh seeds x8 cold rotated replays; exact TASK480 gates plus native packed-P/rescale probes; retain seed times for six-load R confidence. Exact top-level-entry wrapper18895a35 normal+forced full-payload pass; V adds16B main spills, experimental not promoted. || P4 repaired S15 nearby layer audit: explicit top-level kernel entry only; original 5d089341 payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection.",
+    "not_before": 0
+  },
+  "reason": "Automatic absorption split the prepare deadline between independently screened payloads; restore exact wrappers and budgets before acceptance."
+}

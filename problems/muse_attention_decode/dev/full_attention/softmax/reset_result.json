@@ -1,0 +1,446 @@
+{
+  "job": "457f3c73b3214534",
+  "receipt": "runs/muse_bf16_proj/20261026T001042Z_submit_457f3c73b3214534.json",
+  "receipt_sha256": "a9a7bfb1e2496e9d82d657c94fe59c88244e846fa6cec358d973c6b269467251",
+  "kind": "verify",
+  "host_status": "ok",
+  "host_passed": true,
+  "rows": [
+    {
+      "batch": 16,
+      "control_us": 145.96,
+      "aa": {
+        "us": 146.32,
+        "ratio": 0.99941,
+        "lo": 0.99562,
+        "hi": 1.00164,
+        "se": null
+      },
+      "arms": {
+        "A2": {
+          "us": 146.32,
+          "ratio": 0.99941,
+          "lo": 0.99562,
+          "hi": 1.00164,
+          "se": null
+        },
+        "ref": {
+          "us": 146.08,
+          "ratio": 0.99962,
+          "lo": 0.99646,
+          "hi": 1.00121,
+          "se": null
+        },
+        "mix25": {
+          "us": 153.48,
+          "ratio": 1.05012,
+          "lo": 1.04556,
+          "hi": 1.05521,
+          "se": null
+        },
+        "mix50": {
+          "us": 158.28,
+          "ratio": 1.08436,
+          "lo": 1.08043,
+          "hi": 1.08774,
+          "se": null
+        },
+        "gap": {
+          "us": 146.21,
+          "ratio": 1.00004,
+          "lo": 0.99738,
+          "hi": 1.00306,
+          "se": null
+        },
+        "mixgap": {
+          "us": 153.96,
+          "ratio": 1.052,
+          "lo": 1.05036,
+          "hi": 1.05335,
+          "se": null
+        },
+        "tc25": {
+          "us": 151.25,
+          "ratio": 1.03473,
+          "lo": 1.03358,
+          "hi": 1.03593,
+          "se": null
+        },
+        "ping": {
+          "us": 169.5,
+          "ratio": 1.15929,
+          "lo": 1.15839,
+          "hi": 1.1605,
+          "se": null
+        },
+        "ping25": {
+          "us": 179.49,
+          "ratio": 1.22654,
+          "lo": 1.22111,
+          "hi": 1.2298,
+          "se": null
+        }
+      },
+      "clear_winners": []
+    },
+    {
+      "batch": 32,
+      "control_us": 259.62,
+      "aa": {
+        "us": 259.68,
+        "ratio": 0.99947,
+        "lo": 0.99608,
+        "hi": 1.00154,
+        "se": null
+      },
+      "arms": {
+        "A2": {
+          "us": 259.68,
+          "ratio": 0.99947,
+          "lo": 0.99608,
+          "hi": 1.00154,
+          "se": null
+        },
+        "ref": {
+          "us": 260.09,
+          "ratio": 1.00161,
+          "lo": 1.00012,
+          "hi": 1.00254,
+          "se": null
+        },
+        "mix25": {
+          "us": 272.04,
+          "ratio": 1.0461,
+          "lo": 1.04549,
+          "hi": 1.04723,
+          "se": null
+        },
+        "mix50": {
+          "us": 278.87,
+          "ratio": 1.07352,
+          "lo": 1.06972,
+          "hi": 1.0776,
+          "se": null
+        },
+        "gap": {
+          "us": 260.06,
+          "ratio": 1.00126,
+          "lo": 0.9984,
+          "hi": 1.00494,
+          "se": null
+        },
+        "mixgap": {
+          "us": 272.28,
+          "ratio": 1.04865,
+          "lo": 1.04682,
+          "hi": 1.05051,
+          "se": null
+        },
+        "tc25": {
+          "us": 268.87,
+          "ratio": 1.03452,
+          "lo": 1.03192,
+          "hi": 1.03666,
+          "se": null
+        },
+        "ping": {
+          "us": 303.88,
+          "ratio": 1.17091,
+          "lo": 1.16857,
+          "hi": 1.17545,
+          "se": null
+        },
+        "ping25": {
+          "us": 317.0,
+          "ratio": 1.21961,
+          "lo": 1.2163,
+          "hi": 1.22129,
+          "se": null
+        }
+      },
+      "clear_winners": []
+    }
+  ],
+  "clocks": {
+    "B16": [
+      {
+        "n": "ref",
+        "us": 199.44,
+        "tile": 2096.9,
+        "smx": 1165.6,
+        "max": 190.9,
+        "exp_sum": 357.8,
+        "pack": 60.7,
+        "alpha_sum": 157.4,
+        "rescale": 86.6,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 13.5,
+        "pvw": 8.7,
+        "issue": 105.6
+      },
+      {
+        "n": "mix25",
+        "us": 206.88,
+        "tile": 2165.3,
+        "smx": 1223.6,
+        "max": 203.6,
+        "exp_sum": 386.3,
+        "pack": 64.7,
+        "alpha_sum": 163.7,
+        "rescale": 92.4,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 23.3,
+        "pvw": 9.0,
+        "issue": 123.2
+      },
+      {
+        "n": "mix50",
+        "us": 217.74,
+        "tile": 2283.6,
+        "smx": 1341.5,
+        "max": 223.6,
+        "exp_sum": 476.6,
+        "pack": 57.9,
+        "alpha_sum": 165.8,
+        "rescale": 96.5,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 38.7,
+        "pvw": 8.5,
+        "issue": 117.6
+      },
+      {
+        "n": "gap",
+        "us": 198.16,
+        "tile": 2064.3,
+        "smx": 1179.9,
+        "max": 197.0,
+        "exp_sum": 355.1,
+        "pack": 65.1,
+        "alpha_sum": 158.8,
+        "rescale": 65.0,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 11.0,
+        "pvw": 11.9,
+        "issue": 97.5
+      },
+      {
+        "n": "mixgap",
+        "us": 202.62,
+        "tile": 2103.8,
+        "smx": 1225.7,
+        "max": 204.1,
+        "exp_sum": 375.3,
+        "pack": 61.9,
+        "alpha_sum": 172.9,
+        "rescale": 68.7,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 18.5,
+        "pvw": 8.8,
+        "issue": 111.6
+      },
+      {
+        "n": "tc25",
+        "us": 205.34,
+        "tile": 2171.6,
+        "smx": 1234.2,
+        "max": 211.0,
+        "exp_sum": 381.9,
+        "pack": 59.5,
+        "alpha_sum": 72.2,
+        "rescale": 91.7,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 19.2,
+        "pvw": 9.5,
+        "issue": 130.2
+      },
+      {
+        "n": "ping",
+        "us": 320.46,
+        "tile": 3410.3,
+        "smx": 1695.5,
+        "max": 202.2,
+        "exp_sum": 337.4,
+        "pack": 57.1,
+        "alpha_sum": 185.6,
+        "rescale": 141.9,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 75.2,
+        "pvw": 0.0,
+        "issue": 71.7
+      },
+      {
+        "n": "ping25",
+        "us": 326.29,
+        "tile": 3483.9,
+        "smx": 1705.8,
+        "max": 191.3,
+        "exp_sum": 356.5,
+        "pack": 57.3,
+        "alpha_sum": 196.1,
+        "rescale": 141.7,
+        "rescale_calls": 19723,
+        "rescale_taken": 5852,
+        "skip": 0.7033,
+        "qkw": 73.8,
+        "pvw": 0.0,
+        "issue": 78.3
+      }
+    ],
+    "B32": [
+      {
+        "n": "ref",
+        "us": 365.76,
+        "tile": 2031.8,
+        "smx": 1175.6,
+        "max": 192.5,
+        "exp_sum": 360.4,
+        "pack": 61.3,
+        "alpha_sum": 155.7,
+        "rescale": 81.7,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 14.4,
+        "pvw": 8.6,
+        "issue": 106.0
+      },
+      {
+        "n": "mix25",
+        "us": 375.26,
+        "tile": 2080.4,
+        "smx": 1225.6,
+        "max": 204.6,
+        "exp_sum": 387.5,
+        "pack": 59.3,
+        "alpha_sum": 164.7,
+        "rescale": 84.9,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 25.8,
+        "pvw": 9.5,
+        "issue": 124.5
+      },
+      {
+        "n": "mix50",
+        "us": 396.26,
+        "tile": 2199.5,
+        "smx": 1332.7,
+        "max": 226.4,
+        "exp_sum": 473.4,
+        "pack": 59.7,
+        "alpha_sum": 160.3,
+        "rescale": 88.1,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 39.4,
+        "pvw": 8.5,
+        "issue": 115.2
+      },
+      {
+        "n": "gap",
+        "us": 359.92,
+        "tile": 1990.3,
+        "smx": 1179.1,
+        "max": 195.4,
+        "exp_sum": 352.3,
+        "pack": 66.8,
+        "alpha_sum": 158.3,
+        "rescale": 57.8,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 10.8,
+        "pvw": 8.5,
+        "issue": 96.9
+      },
+      {
+        "n": "mixgap",
+        "us": 368.94,
+        "tile": 2031.6,
+        "smx": 1225.0,
+        "max": 203.9,
+        "exp_sum": 374.1,
+        "pack": 62.1,
+        "alpha_sum": 168.3,
+        "rescale": 59.7,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 20.5,
+        "pvw": 8.7,
+        "issue": 112.5
+      },
+      {
+        "n": "tc25",
+        "us": 377.82,
+        "tile": 2108.2,
+        "smx": 1243.3,
+        "max": 213.1,
+        "exp_sum": 382.9,
+        "pack": 57.8,
+        "alpha_sum": 72.9,
+        "rescale": 85.5,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 21.2,
+        "pvw": 9.1,
+        "issue": 129.1
+      },
+      {
+        "n": "ping",
+        "us": 597.79,
+        "tile": 3317.6,
+        "smx": 1695.6,
+        "max": 201.8,
+        "exp_sum": 334.1,
+        "pack": 56.5,
+        "alpha_sum": 184.2,
+        "rescale": 134.0,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 75.7,
+        "pvw": 0.0,
+        "issue": 70.3
+      },
+      {
+        "n": "ping25",
+        "us": 603.62,
+        "tile": 3383.3,
+        "smx": 1711.9,
+        "max": 193.5,
+        "exp_sum": 352.6,
+        "pack": 57.7,
+        "alpha_sum": 198.5,
+        "rescale": 133.0,
+        "rescale_calls": 39645,
+        "rescale_taken": 7740,
+        "skip": 0.8048,
+        "qkw": 74.4,
+        "pvw": 0.0,
+        "issue": 77.2
+      }
+    ]
+  },
+  "errors": [],
+  "payload": "softmax_mix_lab",
+  "complete": true,
+  "native_checks_completed": true
+}
