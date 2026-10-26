@@ -54,6 +54,22 @@ scheduling; it does not establish physical DRAM saturation.** B1/B8 at2048
 are also retained. Mainloop work and the fixed multi-launch path both need
 to change; reducing combine alone is insufficient.
 
+
+| Batch | Window | Default event us | Profiled main us | Combine us |
+|---:|---:|---:|---:|---:|
+|1|2048|22.014|9.600|3.904|
+|8|2048|24.242|11.776|4.000|
+|16|512|23.200|10.368|3.968|
+|16|1024|25.179|11.808|4.896|
+|16|2048|27.340|14.144|4.064|
+|16|4096|31.700|18.368|4.000|
+|16|8192|41.028|27.744|3.776|
+|32|512|26.546|12.320|5.216|
+|32|1024|27.973|14.592|4.544|
+|32|2048|32.476|19.392|4.416|
+|32|4096|41.906|27.776|3.744|
+|32|8192|59.995|46.944|3.808|
+
 The full symbol resolves an earlier error: abbreviated `flash::prepare_v`
 is **prepare_varlen_num_blocks_kernel**, not V transpose. S15 still dispatches
 FA3 on sliding, and the reviewed VQ8 barrier still exists only on full.
@@ -144,8 +160,8 @@ confirms the held-out six-load G0 gate; neither point estimate is a composed
 score promotion. The exact v32-only RAW2 candidate is **f47ece74**,
 rebuilt by build_layer.py and delivered as [P4_raw32.patch](P4_raw32.patch).
 Normal and forced screens of that exact file each pass13 TASK/12 graphs/
-25 static checks, with full results in [normal_local.json](normal_local.json)
-and [forced_local.json](forced_local.json). The alternative early32 source
+25 static checks, with full results in [normal_screen.json](normal_screen.json)
+and [forced_screen.json](forced_screen.json). The alternative early32 source
 is91a73f52; its native arm is TASK-gated and its glue was exercised by the
 earlier dual-load early-edge candidate's normal/forced screens.
 
