@@ -1,0 +1,479 @@
+{
+  "files": [
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/fixed/P4_HANDOFF.json",
+      "sha256": "04fe27b9bc3a1eef70cf9302f95d4ca5594725578ca505ccdaca9d85542286b2",
+      "keys": [
+        "base",
+        "recipe",
+        "receipt",
+        "TASK_checks",
+        "points",
+        "preferred",
+        "controls",
+        "seeds",
+        "candidate_builder",
+        "policy",
+        "concrete_C3_patch"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/page_ring/P4_HANDOFF.json",
+      "sha256": "a11df58b39c57997f6311242d6b307518f82a86a301ac4157387f6289fd83cae",
+      "keys": [
+        "base",
+        "receipt",
+        "points",
+        "policy",
+        "preferred",
+        "TASK_checks",
+        "A_A",
+        "controls_note",
+        "integration_note",
+        "S18_ports"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/phases/P4_HANDOFF.json",
+      "sha256": "15133a49fa0498835158573739221c7b28094ca1229c2ee1f519417d555d3c31",
+      "keys": [
+        "base",
+        "job",
+        "seeds",
+        "TASK",
+        "controls",
+        "points",
+        "preferred",
+        "patch",
+        "builder",
+        "policy",
+        "new_piece",
+        "new_piece_patch",
+        "preferred_combination",
+        "preferred_combination_patch",
+        "alternative_q1_patch",
+        "alternative_q1_scope",
+        "control_note",
+        "mechanism_note"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/rebuild/P4_HANDOFF.json",
+      "sha256": "e71918ddc4b75f20f1e69e51bd59a2185e0fe38e2b9236bade794e075b3827fb",
+      "keys": [
+        "job",
+        "base_sha256",
+        "correctness_passed",
+        "TASK_checks",
+        "seeds",
+        "points",
+        "A_A",
+        "A_A_G0",
+        "score",
+        "decision"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/rejudgment/P4_HANDOFF.json",
+      "sha256": "4150c34c71e75453c72964a01d9b8e172136c1af60c0108c765a9d0010ce2507",
+      "keys": [
+        "policy",
+        "rows",
+        "nearby",
+        "changed_verdicts"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/reuse/P4_HANDOFF.json",
+      "sha256": "e04bd2c9361311541a31a6f034e30e0342e825071994d8e2fc1a198fbc1ecbaf",
+      "keys": [
+        "job",
+        "base",
+        "TASK_checks",
+        "points",
+        "occupancy",
+        "A_A",
+        "decision",
+        "affected_shape_A_A"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/full_attention/roof/P4_HANDOFF.json",
+      "sha256": "c80a9ab0449e0041844e424411446797e4e0dfa79c8232138c1f6fc2d324b945",
+      "keys": [
+        "base",
+        "receipt",
+        "points",
+        "policy"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/sliding_oracle/P4_HANDOFF.json",
+      "sha256": "1ca02bbcdf04a0bb38ba845920246aa83fc1c161d7580f20033f6af8c76f6c39",
+      "keys": [
+        "status",
+        "job",
+        "base_sha256",
+        "nominees",
+        "source",
+        "sources",
+        "selected_candidate_sha256",
+        "patch",
+        "readable_CUDA_patch",
+        "selection",
+        "verification",
+        "caveats",
+        "merge_verdict",
+        "retained_verify",
+        "pending_jobs",
+        "selected_candidate_screens",
+        "generator",
+        "integration"
+      ]
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/window_rebuild/P4_HANDOFF.json",
+      "sha256": "242aea5ed1ff25290b1c11ac689ceca9cfb863f08963ce0d547720fa94140c06",
+      "keys": [
+        "status",
+        "base",
+        "base_sha256",
+        "job",
+        "seed_ids",
+        "A_A",
+        "nominees",
+        "preferred",
+        "scope",
+        "open",
+        "preferred_candidate_screens",
+        "integration_lane",
+        "decode16_decode32_handoff",
+        "decode16_decode32_status",
+        "followup"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/d1_chain/point_nominations.json",
+      "sha256": "8d20ebf45c79addd37b3712299f8b9d9dd37c4380b1dc13b67f1e18da38dfd50",
+      "keys": [
+        "policy",
+        "nominations",
+        "prior_verdict_change",
+        "rebase_validation"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/dense_all/P4_HANDOFF.json",
+      "sha256": "937968d2d59dacdfdf783ba7078e8810e9ff98f177f28d5c337d39f5b9537d0c",
+      "keys": [
+        "lane",
+        "status",
+        "patch",
+        "command",
+        "base",
+        "base_sha256",
+        "winner_sha256",
+        "dispatch",
+        "G0",
+        "prepare",
+        "selection",
+        "rejected",
+        "validation",
+        "limits",
+        "next",
+        "large_followups"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/moe_tail/point_nominations.json",
+      "sha256": "50d01ed7a2b6f34f06a0a17411e38ff9d78f75e2272506ad8556e8ca56f99835",
+      "keys": [
+        "job",
+        "policy",
+        "nominations",
+        "all_pairwise_gates_pass",
+        "base_sha256"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/residual_tail/point_nominations.json",
+      "sha256": "5211b4ad803b5e25ec1f18d414d1a9f56f04a5df83719290ab676166a91c9adb",
+      "keys": [
+        "receipt",
+        "nominations",
+        "selected",
+        "decision"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/residual_tail/rebuild/point_nominations.json",
+      "sha256": "00a0b73834f83808172d725effd4cc4d8d15674e088d8b148d6a3100547a946d",
+      "keys": [
+        "receipt",
+        "nominations"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/stream_continuity/P4_HANDOFF.json",
+      "sha256": "efdb1d500fa4c4008f9f25d8624466a5f997620d7492c04a23f157e33cd0115f",
+      "keys": [
+        "lane",
+        "status",
+        "base",
+        "base_expanded_sha256",
+        "preselected",
+        "promotion_gate",
+        "bound",
+        "promoted",
+        "arms",
+        "P11",
+        "job",
+        "host",
+        "mode",
+        "host_reason",
+        "receipt",
+        "TASK_checks",
+        "failures",
+        "CI_method",
+        "seeds",
+        "paired_R",
+        "point_nominations",
+        "not_nominated",
+        "next_lever_review",
+        "production_validation"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/stream_continuity/extend/P4_HANDOFF.json",
+      "sha256": "bdda444e4e02af018682d880ef14bfb9b66db63de08a339120a76fb03833e5ce",
+      "keys": [
+        "status",
+        "base",
+        "base_expanded_sha256",
+        "receipt",
+        "result",
+        "nominees",
+        "arm_sources",
+        "all_boundaries",
+        "editable",
+        "review_patches",
+        "controls",
+        "TASK_checks",
+        "failures",
+        "control_diagnostics",
+        "caution",
+        "recovery_metric",
+        "integration",
+        "build_manifest_sha256",
+        "no_promotion_without"
+      ]
+    },
+    {
+      "path": "problems/muse_bf16_proj/dev/stream_gap/P4_HANDOFF.json",
+      "sha256": "6769e514b97296fd479b4e396ba894df5e2a45fde2cddff65b7055c51e1b3164",
+      "keys": [
+        "lane",
+        "status",
+        "directory",
+        "report",
+        "decomposition",
+        "receipts",
+        "candidates",
+        "excluded",
+        "preserve",
+        "G0",
+        "unverified",
+        "stage_recipe",
+        "integration"
+      ]
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/nearby/P4_HANDOFF.json",
+      "sha256": "93c4be0ea7db4622b8fe7723fb4bbf9b07ae685b77927148615c751964226151",
+      "keys": [
+        "status",
+        "job",
+        "candidate_sha256",
+        "base_sha256",
+        "patch",
+        "patch_sha256",
+        "same65_dispatch_as_measured",
+        "native_validation_sender",
+        "decision",
+        "point_estimate_rule",
+        "native_validation_job",
+        "native_TASK_checks",
+        "native_shapes",
+        "native_seeds"
+      ]
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/nt1_timeline/point_nominations.json",
+      "sha256": "e0737a1cacb19a260fa02d0e50f77b66b9c6dabc045549e02e85cbabe36c84b4",
+      "keys": [
+        "direct_PAIR_receipt",
+        "gate",
+        "rows",
+        "patches",
+        "changed_verdicts",
+        "review_receipt",
+        "review_rows",
+        "review_patches",
+        "unmeasured_review_receipt",
+        "review_source_audit",
+        "composition_rows",
+        "composition_followup",
+        "instruction_rows",
+        "next_instruction_followup",
+        "structural_rows",
+        "structural_followup",
+        "dequant_rows",
+        "dequant_followup",
+        "occupancy_rows",
+        "occupancy_followup",
+        "overlap_rows",
+        "overlap_followup",
+        "intpipe_rows",
+        "intpipe_followup"
+      ]
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/P4_HANDOFF.json",
+      "sha256": "1cb933e1c8cd648f2d38d7d3feafbe2c85ebc23f7edccc1f9619b5fdac014f62",
+      "keys": [
+        "base",
+        "job",
+        "rows",
+        "source_audit",
+        "gate"
+      ]
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/pdl_release/P4_HANDOFF.json",
+      "sha256": "edc2e76f5837a9bad442095b885732b29a34bab4cc41c1515c6e2f21c2566e93",
+      "keys": [
+        "base_sha256",
+        "status",
+        "receipts",
+        "patches",
+        "excluded",
+        "confirmation",
+        "projection_selection_note",
+        "confirmation_sender",
+        "patch_validation",
+        "all_point_nominations",
+        "changed_verdicts"
+      ]
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/pdl_release/confirmation/P4_HANDOFF.json",
+      "sha256": "d9844be34ea4621266c73ee60e84314e8d714752c5a3fa831908594896280ceb",
+      "keys": [
+        "job",
+        "base_sha256",
+        "TASK_checks",
+        "correctness_passed",
+        "seeds",
+        "controls",
+        "A_A_G0",
+        "preferred",
+        "candidates",
+        "decision"
+      ]
+    },
+    {
+      "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/actreuse/P4_HANDOFF.json",
+      "sha256": "db06f89da09fe824634b8847f0fa3300bafc5321238bbc938fefa305b8a1e61d",
+      "keys": [
+        "receipt",
+        "base",
+        "base_expanded_sha256",
+        "base_shipped_sha256",
+        "nominations",
+        "default_point_choice",
+        "AA",
+        "resources",
+        "integration",
+        "precision",
+        "screen",
+        "promotion",
+        "mechanism_followup",
+        "mechanism_job",
+        "mechanism_verdict"
+      ]
+    },
+    {
+      "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/balance/P4_HANDOFF.json",
+      "sha256": "db31bfa999135fcc5c45dfad7225739ee25186efa7b4c69306e1a221ec9f1e0c",
+      "keys": [
+        "receipt",
+        "base",
+        "base_sha256",
+        "current_component_control",
+        "nominations",
+        "default_point_choice",
+        "AA",
+        "integration",
+        "screen",
+        "promotion",
+        "latest_activation_followup",
+        "latest_activation_job",
+        "latest_activation_verdict"
+      ]
+    },
+    {
+      "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/mechanism/P4_HANDOFF.json",
+      "sha256": "412bd2a0ab9398a4a3e10eac27479ef90d8ac588a6f4e833c8a3e068c6a47042",
+      "keys": [
+        "job",
+        "receipt",
+        "nominations",
+        "keep",
+        "reason",
+        "size_case",
+        "source_manifest",
+        "evidence"
+      ]
+    },
+    {
+      "path": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/P4_HANDOFF.json",
+      "sha256": "33b9d9e36a4aae8afababe16189aa08eb9d08d641857a24a6d701015672561fd",
+      "keys": [
+        "base",
+        "base_sha256",
+        "native_NF_equal_to_S14",
+        "receipt_job",
+        "AA_us",
+        "nominations",
+        "default_point_choice",
+        "promotion",
+        "earlier_verdict_changes",
+        "discovery_job",
+        "control",
+        "component_to_layer_projection",
+        "latest_followup_handoff",
+        "latest_followup_job",
+        "latest_followup_point_choices"
+      ]
+    }
+  ],
+  "included": [
+    "C3",
+    "GATE",
+    "M64",
+    "PRIVATE1",
+    "AFFINE32",
+    "H2",
+    "B1"
+  ],
+  "decisions": {
+    "C3": "Latest phases C3 repeats original fixed nominee; CI crosses 1, explicit no_C3",
+    "GATE": "P10 exact12 T1 sliding G0 winner",
+    "M64": "Latest phases v1F stage ratio .90979 CI [.89851,.92106]",
+    "PRIVATE1": "Exact current-S19 source edit at M1, explicit leave-out; alias bias retained as caveat",
+    "AFFINE32": "Exact current-S19 M32 nominee, preserve M16",
+    "H2": "P7 new S18 G0 winner, native heavy W2 pre-wait recipe ported to S19",
+    "B1": "P7 new S18 G0 winner; preserve S19 late b2 revert, stage b1 immutable vectors"
+  },
+  "exclusions": "Already selected/rejected in S19 and older points omitted; current weak EXP/B4/E and other CIs crossing 1 omitted. C4/T16 are alternatives to C3, not additive. U64 loses the M64 point. No free-work oracles."
+}

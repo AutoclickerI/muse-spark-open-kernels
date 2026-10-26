@@ -1,0 +1,717 @@
+{
+  "job": "0640cce4b12f42f9",
+  "source_sha256": "9e6f525f76d3baed9bfbef7ceb4051629519fc5bb41ed29fb8782834d0ef3a9b",
+  "incumbent_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "freeze_gate": false,
+  "measured": true,
+  "piece_interpretation": "Leave-out/A diagnostic R; >1 favors retaining the piece. No per-piece veto. A composition selected using these confirmations needs new disjoint confirmation seeds.",
+  "gate": false,
+  "lab_gate": false,
+  "official_TASK_receipt": null,
+  "prepare": {
+    "host_prepare_s": 157.650043,
+    "prepare_lines": [
+      "BEST_PREPARE elapsed=121.142s hard_limit=300s",
+      "BEST_PHASES seconds={'weights': 110.5995460160193, 'moe_nt': 0.00011419100337661803, 'projections': 0.06583788499119692, 'attention': 1.5047990018501878e-05, 'scale_recode': 0.33037881599739194, 's5_banks': 6.65981632200419, 'pdl_prefix': 3.485933860996738}"
+    ],
+    "build_s": {
+      "_measured_lt_build": 14.39,
+      "_s16_epi_NORM_epin_module": 27.84,
+      "rvc_nbase1_module": 28.06,
+      "rvc_nfidx0_module": 28.34,
+      "_s16_epi_PAIR_epit_module": 28.61,
+      "rvc_s20aff32_module": 28.81,
+      "rvc_nbase2_module": 28.83,
+      "_s19_sgq_build": 29.59,
+      "_s19_wr_build": 89.84,
+      "_s16_global_C128_cs_module": 92.98,
+      "gp_module": 95.0,
+      "_r2_build": 95.93
+    },
+    "delta_s": {
+      "join": 9e-06,
+      "RAW2": 4.2e-05,
+      "P10": 0.042734,
+      "AFFINE32": 1.8e-05,
+      "GATE": 9.049675,
+      "M64": 2.5e-05,
+      "warm": 17.77058
+    }
+  },
+  "attention_plan": {
+    "(16, 1, False)": "None",
+    "(32, 1, False)": "None",
+    "(16, 8, True)": "None",
+    "(32, 8, True)": "None"
+  },
+  "lab_end": [
+    "LAB_END lab_s=301.7 import_s=301.7",
+    "LAB_END lab_s=301.7 import_s=301.7"
+  ],
+  "score": {
+    "R": 1.0022713308442146,
+    "CI95": [
+      0.9964679049718018,
+      1.0081085558502358
+    ],
+    "n": 16,
+    "log_se": 0.0027244207716963864,
+    "AA_log_se": 0.0002476901909706283,
+    "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+    "measured": true,
+    "TASK_pass": false,
+    "promote": false,
+    "loads": {
+      "decode 1": {
+        "R": 1.0034494881055591,
+        "CI95": [
+          1.0016415515364883,
+          1.0052606879524293
+        ],
+        "n": 16,
+        "log_se": 0.0008460457914636531,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "decode 16": {
+        "R": 1.0001793485450516,
+        "CI95": [
+          0.9979601560864741,
+          1.0024034758851854
+        ],
+        "n": 16,
+        "log_se": 0.0010421110451417262,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "decode 32": {
+        "R": 0.9986185376326858,
+        "CI95": [
+          0.9971079013708569,
+          1.0001314625354054
+        ],
+        "n": 16,
+        "log_se": 0.0007102375609370433,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "verify 1": {
+        "R": 1.0017471902978021,
+        "CI95": [
+          0.9996457894110404,
+          1.0038530086349584
+        ],
+        "n": 16,
+        "log_se": 0.0009851930906509831,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "verify 16": {
+        "R": 1.0132214616646449,
+        "CI95": [
+          0.978987395086098,
+          1.0486526542944434
+        ],
+        "n": 16,
+        "log_se": 0.016125420038514467,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "verify 32": {
+        "R": 0.9964977249671849,
+        "CI95": [
+          0.9954101088137295,
+          0.9975865294839961
+        ],
+        "n": 16,
+        "log_se": 0.0005123315621843193,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      }
+    }
+  },
+  "pieces": {
+    "no_C3": {
+      "R": 1.000967907286277,
+      "CI95": [
+        1.0003388071165742,
+        1.00159740308896
+      ],
+      "n": 16,
+      "log_se": 0.00029495164515889056,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.003020871647347,
+          "CI95": [
+            1.0015760432949983,
+            1.0044677842438043
+          ],
+          "n": 16,
+          "log_se": 0.0006762915040279921,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 1.0007600935252936,
+          "CI95": [
+            0.9984050441378616,
+            1.0031206980305105
+          ],
+          "n": 16,
+          "log_se": 0.001105340820467472,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0019809031097218,
+          "CI95": [
+            1.0005969750188661,
+            1.0033667453148596
+          ],
+          "n": 16,
+          "log_se": 0.0006484385682173126,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0010753738956466,
+          "CI95": [
+            1.000226644203315,
+            1.0019248237668446
+          ],
+          "n": 16,
+          "log_se": 0.00039792520381816144,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9999072916229097,
+          "CI95": [
+            0.9986570024583004,
+            1.001159146112742
+          ],
+          "n": 16,
+          "log_se": 0.0005869985908345605,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9990679197409135,
+          "CI95": [
+            0.998192411298496,
+            0.9999441960864167
+          ],
+          "n": 16,
+          "log_se": 0.0004113110229052878,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    },
+    "no_GATE": {
+      "R": 1.0002886478135153,
+      "CI95": [
+        0.9996714789335469,
+        1.000906197716084
+      ],
+      "n": 16,
+      "log_se": 0.0002895525236078592,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.0027025683673296,
+          "CI95": [
+            1.0012858360491603,
+            1.004121305238434
+          ],
+          "n": 16,
+          "log_se": 0.0006633417433318888,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987492179695974,
+          "CI95": [
+            0.9968804462038228,
+            1.0006214929718191
+          ],
+          "n": 16,
+          "log_se": 0.000878660490812122,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0002347379338314,
+          "CI95": [
+            0.9991659517890501,
+            1.001304667335968
+          ],
+          "n": 16,
+          "log_se": 0.0005015747641903092,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0010753738956466,
+          "CI95": [
+            1.000226644203315,
+            1.0019248237668446
+          ],
+          "n": 16,
+          "log_se": 0.00039792520381816144,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9999072916229097,
+          "CI95": [
+            0.9986570024583004,
+            1.001159146112742
+          ],
+          "n": 16,
+          "log_se": 0.0005869985908345605,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9990679197409135,
+          "CI95": [
+            0.998192411298496,
+            0.9999441960864167
+          ],
+          "n": 16,
+          "log_se": 0.0004113110229052878,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    },
+    "no_M64": {
+      "R": 1.0011668339503879,
+      "CI95": [
+        1.0005267370191249,
+        1.0018073403900287
+      ],
+      "n": 16,
+      "log_se": 0.00030004944258167854,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.003020871647347,
+          "CI95": [
+            1.0015760432949983,
+            1.0044677842438043
+          ],
+          "n": 16,
+          "log_se": 0.0006762915040279921,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987492179695974,
+          "CI95": [
+            0.9968804462038228,
+            1.0006214929718191
+          ],
+          "n": 16,
+          "log_se": 0.000878660490812122,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0002347379338314,
+          "CI95": [
+            0.9991659517890501,
+            1.001304667335968
+          ],
+          "n": 16,
+          "log_se": 0.0005015747641903092,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.006040859345324,
+          "CI95": [
+            1.004063079696384,
+            1.008022534777725
+          ],
+          "n": 16,
+          "log_se": 0.0009232178397371329,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9999072916229097,
+          "CI95": [
+            0.9986570024583004,
+            1.001159146112742
+          ],
+          "n": 16,
+          "log_se": 0.0005869985908345605,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9990679197409135,
+          "CI95": [
+            0.998192411298496,
+            0.9999441960864167
+          ],
+          "n": 16,
+          "log_se": 0.0004113110229052878,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    },
+    "no_PRIVATE1": {
+      "R": 0.9999399395233665,
+      "CI95": [
+        0.999382219619165,
+        1.0004979706713397
+      ],
+      "n": 16,
+      "log_se": 0.00026174478321709964,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.000607096545913,
+          "CI95": [
+            0.9987181869588567,
+            1.0024995786917499
+          ],
+          "n": 16,
+          "log_se": 0.0008864872641504405,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987492179695974,
+          "CI95": [
+            0.9968804462038228,
+            1.0006214929718191
+          ],
+          "n": 16,
+          "log_se": 0.000878660490812122,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0002347379338314,
+          "CI95": [
+            0.9991659517890501,
+            1.001304667335968
+          ],
+          "n": 16,
+          "log_se": 0.0005015747641903092,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0010753738956466,
+          "CI95": [
+            1.000226644203315,
+            1.0019248237668446
+          ],
+          "n": 16,
+          "log_se": 0.00039792520381816144,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9999072916229097,
+          "CI95": [
+            0.9986570024583004,
+            1.001159146112742
+          ],
+          "n": 16,
+          "log_se": 0.0005869985908345605,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9990679197409135,
+          "CI95": [
+            0.998192411298496,
+            0.9999441960864167
+          ],
+          "n": 16,
+          "log_se": 0.0004113110229052878,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    },
+    "no_AFFINE32": {
+      "R": 1.0000638666608437,
+      "CI95": [
+        0.9993845933923585,
+        1.000743601625633
+      ],
+      "n": 16,
+      "log_se": 0.00031877113275580133,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.003020871647347,
+          "CI95": [
+            1.0015760432949983,
+            1.0044677842438043
+          ],
+          "n": 16,
+          "log_se": 0.0006762915040279921,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987492179695974,
+          "CI95": [
+            0.9968804462038228,
+            1.0006214929718191
+          ],
+          "n": 16,
+          "log_se": 0.000878660490812122,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.9985698897360125,
+          "CI95": [
+            0.9967091760689546,
+            1.0004340770897122
+          ],
+          "n": 16,
+          "log_se": 0.0008750254530546564,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0010753738956466,
+          "CI95": [
+            1.000226644203315,
+            1.0019248237668446
+          ],
+          "n": 16,
+          "log_se": 0.00039792520381816144,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9999072916229097,
+          "CI95": [
+            0.9986570024583004,
+            1.001159146112742
+          ],
+          "n": 16,
+          "log_se": 0.0005869985908345605,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9990679197409135,
+          "CI95": [
+            0.998192411298496,
+            0.9999441960864167
+          ],
+          "n": 16,
+          "log_se": 0.0004113110229052878,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    },
+    "no_H2": {
+      "R": 1.0001833802167879,
+      "CI95": [
+        0.9996554711263451,
+        1.0007115680912875
+      ],
+      "n": 16,
+      "log_se": 0.00024619302048806054,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 1.003020871647347,
+          "CI95": [
+            1.0015760432949983,
+            1.0044677842438043
+          ],
+          "n": 16,
+          "log_se": 0.0006762915040279921,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987492179695974,
+          "CI95": [
+            0.9968804462038228,
+            1.0006214929718191
+          ],
+          "n": 16,
+          "log_se": 0.000878660490812122,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0002347379338314,
+          "CI95": [
+            0.9991659517890501,
+            1.001304667335968
+          ],
+          "n": 16,
+          "log_se": 0.0005015747641903092,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0010753738956466,
+          "CI95": [
+            1.000226644203315,
+            1.0019248237668446
+          ],
+          "n": 16,
+          "log_se": 0.00039792520381816144,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9982400755587049,
+          "CI95": [
+            0.9966063281814819,
+            0.9998765011554185
+          ],
+          "n": 16,
+          "log_se": 0.0007684581076937857,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9997874184001756,
+          "CI95": [
+            0.9987526035042024,
+            1.0008233054754505
+          ],
+          "n": 16,
+          "log_se": 0.0004858413999057316,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    },
+    "no_B1": {
+      "R": 0.9970039970496315,
+      "CI95": [
+        0.9963590215518486,
+        0.9976493900609649
+      ],
+      "n": 16,
+      "log_se": 0.000303599808548319,
+      "AA_log_se": 0.0002476901909706283,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "measured": true,
+      "TASK_pass": false,
+      "promote": false,
+      "loads": {
+        "decode 1": {
+          "R": 0.9989263758535881,
+          "CI95": [
+            0.9974216991971475,
+            1.0004333224143653
+          ],
+          "n": 16,
+          "log_se": 0.0007072153183109438,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987015784431212,
+          "CI95": [
+            0.9964542562262347,
+            1.000953969088503
+          ],
+          "n": 16,
+          "log_se": 0.0010568987031211118,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.9970113069305325,
+          "CI95": [
+            0.9957971288887777,
+            0.9982269654227469
+          ],
+          "n": 16,
+          "log_se": 0.0005716912351613861,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 0.9963292982333135,
+          "CI95": [
+            0.9955716061602858,
+            0.9970875669572561
+          ],
+          "n": 16,
+          "log_se": 0.00035691902218200756,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9959679455386579,
+          "CI95": [
+            0.9946251621868081,
+            0.9973125417012011
+          ],
+          "n": 16,
+          "log_se": 0.0006329482109456694,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9950933720067489,
+          "CI95": [
+            0.9940298083804675,
+            0.9961580735944652
+          ],
+          "n": 16,
+          "log_se": 0.0005017027686283935,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      }
+    }
+  },
+  "checks": {
+    "complete": true,
+    "failures": [],
+    "task_checks": 960,
+    "expected_task_checks": 960,
+    "nearby_task_checks": 260,
+    "nearby_expected_checks": 260
+  }
+}

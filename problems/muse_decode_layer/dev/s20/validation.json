@@ -1,0 +1,517 @@
+{
+  "source_sha256": "9e6f525f76d3baed9bfbef7ceb4051629519fc5bb41ed29fb8782834d0ef3a9b",
+  "shipped_sha256": "f9bd44d4fd8556bf6348d68240211e97419a305bba0e988673fd28257ed67c49",
+  "contracts": {
+    "passed": true,
+    "checks": 1386
+  },
+  "normal": {
+    "sha256": "f78f6ac8267cbbad9bee3ab3c4bcd60fb5e41c1239542f9820c837e9ae2e807b",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "prepare_s": 25.348441991955042,
+    "tests": [
+      {
+        "case": "batch 1, ctx 10, layer sliding",
+        "first_call_s": 0.004622534033842385,
+        "ok": true,
+        "msg": "update relative L2 error 7.604e-03 (worst row 7.604e-03) [bound 0.085]; attention input relative L2 error 4.333e-03 (worst row 4.333e-03) [bound 0.042]"
+      },
+      {
+        "case": "batch 1, ctx 3000, layer full",
+        "first_call_s": 0.001953384024091065,
+        "ok": true,
+        "msg": "update relative L2 error 7.007e-03 (worst row 7.007e-03) [bound 0.150]; attention input relative L2 error 4.961e-03 (worst row 4.961e-03) [bound 0.108]"
+      },
+      {
+        "case": "batch 8, ctx 2047, layer sliding",
+        "first_call_s": 0.004178107948973775,
+        "ok": true,
+        "msg": "update relative L2 error 6.936e-03 (worst row 9.408e-03) [bound 0.150]; attention input relative L2 error 4.901e-03 (worst row 6.330e-03) [bound 0.098]"
+      },
+      {
+        "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+        "first_call_s": 0.1315697830868885,
+        "ok": true,
+        "msg": "update relative L2 error 7.467e-03 (worst row 9.545e-03) [bound 0.150]; attention input relative L2 error 5.643e-03 (worst row 6.789e-03) [bound 0.117]"
+      },
+      {
+        "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+        "first_call_s": 0.34243119799066335,
+        "ok": true,
+        "msg": "update relative L2 error 6.539e-02 (worst row 9.696e-02) [bound 0.150]; attention input relative L2 error 3.441e-02 (worst row 5.048e-02) [bound 0.086]"
+      },
+      {
+        "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+        "first_call_s": 2.1102568130008876,
+        "ok": true,
+        "msg": "update relative L2 error 3.406e-03 (worst row 3.721e-03) [bound 0.150]; attention input relative L2 error 3.065e-03 (worst row 3.450e-03) [bound 0.116]"
+      },
+      {
+        "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+        "first_call_s": 0.011359699070453644,
+        "ok": true,
+        "msg": "update relative L2 error 7.399e-03 (worst row 1.001e-02) [bound 0.150]; attention input relative L2 error 5.304e-03 (worst row 7.509e-03) [bound 0.116]"
+      },
+      {
+        "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+        "first_call_s": 1.694289001985453,
+        "ok": true,
+        "msg": "update relative L2 error 3.379e-03 (worst row 3.641e-03) [bound 0.150]; attention input relative L2 error 2.955e-03 (worst row 3.274e-03) [bound 0.128]"
+      },
+      {
+        "case": "batch 1, ctx 1048576, layer full, q_len 8",
+        "first_call_s": 1.596256740973331,
+        "ok": true,
+        "msg": "update relative L2 error 8.250e-02 (worst row 9.633e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.014e-02) [bound 0.136]"
+      },
+      {
+        "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+        "first_call_s": 1.573317716945894,
+        "ok": true,
+        "msg": "update relative L2 error 3.455e-03 (worst row 3.691e-03) [bound 0.150]; attention input relative L2 error 3.060e-03 (worst row 3.359e-03) [bound 0.109]"
+      },
+      {
+        "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+        "first_call_s": 0.0013979088980704546,
+        "ok": true,
+        "msg": "update relative L2 error 5.138e-03 (worst row 5.138e-03) [bound 0.118]; attention input relative L2 error 3.804e-03 (worst row 3.804e-03) [bound 0.075]"
+      },
+      {
+        "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+        "first_call_s": 0.8217612209264189,
+        "ok": true,
+        "msg": "update relative L2 error 3.452e-03 (worst row 3.623e-03) [bound 0.150]; attention input relative L2 error 3.070e-03 (worst row 3.339e-03) [bound 0.101]"
+      },
+      {
+        "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+        "first_call_s": 0.002664032974280417,
+        "ok": true,
+        "msg": "update relative L2 error 6.654e-03 (worst row 8.813e-03) [bound 0.150]; attention input relative L2 error 4.814e-03 (worst row 6.301e-03) [bound 0.097]"
+      }
+    ],
+    "shapes": 12,
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ]
+  },
+  "forced": {
+    "sha256": "f78f6ac8267cbbad9bee3ab3c4bcd60fb5e41c1239542f9820c837e9ae2e807b",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "cc": "12.0",
+    "prepare_s": 4.927598568960093,
+    "tests": [
+      {
+        "case": "batch 1, ctx 10, layer sliding",
+        "first_call_s": 0.004618259030394256,
+        "ok": true,
+        "msg": "update relative L2 error 7.604e-03 (worst row 7.604e-03) [bound 0.085]; attention input relative L2 error 4.333e-03 (worst row 4.333e-03) [bound 0.042]"
+      },
+      {
+        "case": "batch 1, ctx 3000, layer full",
+        "first_call_s": 0.0022909610997885466,
+        "ok": true,
+        "msg": "update relative L2 error 7.007e-03 (worst row 7.007e-03) [bound 0.150]; attention input relative L2 error 4.962e-03 (worst row 4.962e-03) [bound 0.108]"
+      },
+      {
+        "case": "batch 8, ctx 2047, layer sliding",
+        "first_call_s": 0.013991746003739536,
+        "ok": true,
+        "msg": "update relative L2 error 6.936e-03 (worst row 9.408e-03) [bound 0.150]; attention input relative L2 error 4.901e-03 (worst row 6.330e-03) [bound 0.098]"
+      },
+      {
+        "case": "batch 9, ctx 5000, layer sliding, spread mixed, page 1",
+        "first_call_s": 0.005559760960750282,
+        "ok": true,
+        "msg": "update relative L2 error 7.424e-03 (worst row 9.433e-03) [bound 0.150]; attention input relative L2 error 5.630e-03 (worst row 6.843e-03) [bound 0.117]"
+      },
+      {
+        "case": "batch 3, ctx 6000, layer full, q_len 8, dist outliers",
+        "first_call_s": 0.005754657904617488,
+        "ok": true,
+        "msg": "update relative L2 error 6.539e-02 (worst row 9.696e-02) [bound 0.150]; attention input relative L2 error 3.441e-02 (worst row 5.048e-02) [bound 0.086]"
+      },
+      {
+        "case": "batch 5, ctx 5000, layer sliding, q_len 8, spread mixed, page 1",
+        "first_call_s": 0.6150990900350735,
+        "ok": true,
+        "msg": "update relative L2 error 6.821e-02 (worst row 1.132e-01) [bound 0.150]; attention input relative L2 error 4.642e-02 (worst row 7.868e-02) [bound 0.116]"
+      },
+      {
+        "case": "batch 33, ctx 20000, layer full, spread mixed, page 1",
+        "first_call_s": 0.00475352699868381,
+        "ok": true,
+        "msg": "update relative L2 error 7.407e-03 (worst row 9.991e-03) [bound 0.150]; attention input relative L2 error 5.305e-03 (worst row 7.482e-03) [bound 0.116]"
+      },
+      {
+        "case": "batch 2, ctx 300000, layer sliding, q_len 8",
+        "first_call_s": 0.0060759070329368114,
+        "ok": true,
+        "msg": "update relative L2 error 7.541e-02 (worst row 1.186e-01) [bound 0.150]; attention input relative L2 error 5.113e-02 (worst row 6.990e-02) [bound 0.128]"
+      },
+      {
+        "case": "batch 1, ctx 1048576, layer full, q_len 8",
+        "first_call_s": 0.016490224981680512,
+        "ok": true,
+        "msg": "update relative L2 error 8.250e-02 (worst row 9.633e-02) [bound 0.150]; attention input relative L2 error 5.441e-02 (worst row 7.014e-02) [bound 0.136]"
+      },
+      {
+        "case": "batch 4, ctx 7000, layer sliding, q_len 8, page 1, kv_scale 0.015625",
+        "first_call_s": 0.3805002620210871,
+        "ok": true,
+        "msg": "update relative L2 error 6.472e-02 (worst row 9.082e-02) [bound 0.150]; attention input relative L2 error 4.352e-02 (worst row 6.504e-02) [bound 0.109]"
+      },
+      {
+        "case": "batch 1, ctx 80000, layer full, dist soft, page 1",
+        "first_call_s": 0.0016328670317307115,
+        "ok": true,
+        "msg": "update relative L2 error 5.138e-03 (worst row 5.138e-03) [bound 0.118]; attention input relative L2 error 3.804e-03 (worst row 3.804e-03) [bound 0.075]"
+      },
+      {
+        "case": "batch 4, ctx 6000, layer sliding, q_len 8, dist soft",
+        "first_call_s": 0.004159331088885665,
+        "ok": true,
+        "msg": "update relative L2 error 6.004e-02 (worst row 8.460e-02) [bound 0.150]; attention input relative L2 error 4.067e-02 (worst row 5.826e-02) [bound 0.101]"
+      },
+      {
+        "case": "batch 16, ctx 20000, layer full, spread mixed, dist soft, page 1",
+        "first_call_s": 0.0019177439389750361,
+        "ok": true,
+        "msg": "update relative L2 error 6.631e-03 (worst row 8.839e-03) [bound 0.150]; attention input relative L2 error 4.798e-03 (worst row 6.321e-03) [bound 0.097]"
+      }
+    ],
+    "shapes": 12,
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ]
+  },
+  "changed": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s20_final.py",
+    "sha256": "f78f6ac8267cbbad9bee3ab3c4bcd60fb5e41c1239542f9820c837e9ae2e807b",
+    "tier": "changed",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "GLUE_CL_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "ATTN_PORT_CUDA_SRC",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "P3B_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "RVC_NFIDX0_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "RVC_S20AFF32_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "changed_units": [
+      "ATTN_PORT_CUDA_SRC",
+      "DA_GPU_PACK_SOURCE",
+      "DA_LOCAL_MM",
+      "DA_LOCAL_REDUCE",
+      "DA_NORMALIZED",
+      "DA_REQUESTS",
+      "DA_ROLES",
+      "DA_SELECTED",
+      "DA_SMALL",
+      "DA_TIMES",
+      "DA_WIDE",
+      "DA_WIDE_STANDIN",
+      "GLUE_CL_CUDA",
+      "P3B_CUDA",
+      "RVC_NFIDX0_CUDA",
+      "RVC_S20AFF32_CPP",
+      "RVC_S20AFF32_CUDA",
+      "RVC_S20AFF32_FLAGS_BUILT",
+      "_RVC_S20AFF32_MODULE",
+      "_S20_META64",
+      "_best7_attention",
+      "_best7_boundary",
+      "_best7_project",
+      "_best7_run",
+      "_boundary_fast",
+      "_boundary_late",
+      "_da_gate_window_run",
+      "_da_layer_best7_project",
+      "_da_layer_gate_apply",
+      "_da_layer_project",
+      "_da_reduce",
+      "_ew_immutable_stage",
+      "_file",
+      "_gate_split_apply",
+      "_project_variant",
+      "_s19_prior_AFFINE32",
+      "_s19_prior_GATE",
+      "_s19_prior_M64",
+      "_s20_before_affine32",
+      "_s20_before_b1",
+      "_s20_before_m64",
+      "_s20_m64_attention",
+      "_source",
+      "da_build_small",
+      "da_materialize",
+      "da_prepare",
+      "da_project",
+      "da_small_source",
+      "da_vendor",
+      "da_wide_source",
+      "rvc_s20aff32_bind",
+      "rvc_s20aff32_experts",
+      "rvc_s20aff32_module",
+      "smallm_experts"
+    ]
+  },
+  "transport": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/s20/generated/wrapper.py",
+    "sha256": "860aeff28aec2534885d307d29a54751a5a22c42cee42458807e4f4dbe4f4594",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_lab-only",
+        "ok": true,
+        "packets": 1
+      }
+    ]
+  },
+  "lab_rehearsal": {
+    "mode": "forced",
+    "wrapper_sha256": "860aeff28aec2534885d307d29a54751a5a22c42cee42458807e4f4dbe4f4594",
+    "import_s": 123.8,
+    "blob_chars": 5190,
+    "complete": true,
+    "failures": [],
+    "task_checks": 960,
+    "expected_task_checks": 960,
+    "nearby_task_checks": 260,
+    "nearby_expected_checks": 260,
+    "agreement_diagnostics": {},
+    "host_prepare_s": 3.554324,
+    "build_s": {
+      "rvc_nfidx0_module": 0.1,
+      "_s16_epi_PAIR_epit_module": 0.17,
+      "rvc_nbase1_module": 0.11,
+      "_s16_epi_NORM_epin_module": 0.18,
+      "_s19_sgq_build": 0.19,
+      "_s19_wr_build": 0.19,
+      "_s16_global_C128_cs_module": 0.19,
+      "rvc_s20aff32_module": 0.11,
+      "_r2_build": 0.16,
+      "rvc_nbase2_module": 0.21,
+      "gp_module": 0.21,
+      "_measured_lt_build": 0.22
+    },
+    "delta_s": {
+      "join": 1.4e-05,
+      "RAW2": 7.2e-05,
+      "P10": 0.059524,
+      "AFFINE32": 0.000123,
+      "GATE": 0.090285,
+      "M64": 2.5e-05,
+      "warm": 0.535822
+    },
+    "attention_plan": {
+      "(16, 1, False)": "None",
+      "(32, 1, False)": "None",
+      "(16, 8, True)": "None",
+      "(32, 8, True)": "None"
+    },
+    "host_sha256": "9e6f525f76d3baed9bfbef7ceb4051629519fc5bb41ed29fb8782834d0ef3a9b"
+  },
+  "producer": {
+    "passed": true,
+    "optional_failure_isolated": true,
+    "official_pass_required": true,
+    "score": 1.02,
+    "wire_bytes": 1483
+  },
+  "native": {
+    "job": "0640cce4b12f42f9",
+    "source_sha256": "9e6f525f76d3baed9bfbef7ceb4051629519fc5bb41ed29fb8782834d0ef3a9b",
+    "R": 1.0022713308442146,
+    "CI95": [
+      0.9964679049718018,
+      1.0081085558502358
+    ],
+    "lab_gate": false,
+    "freeze_gate": false,
+    "prepare_s": 157.650043,
+    "task_checks": 960,
+    "nearby_task_checks": 260,
+    "failures": [],
+    "scored_run": null,
+    "queued": false
+  },
+  "screened_shipped_sha256": "f78f6ac8267cbbad9bee3ab3c4bcd60fb5e41c1239542f9820c837e9ae2e807b",
+  "shipment_normalization": {
+    "change": "strip blank-comment trailing whitespace",
+    "AST_identical": true,
+    "expanded_source_unchanged": true
+  },
+  "final_packaging": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/cand_r3_best7_s20_final.py",
+    "sha256": "f9bd44d4fd8556bf6348d68240211e97419a305bba0e988673fd28257ed67c49",
+    "tier": "static",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ]
+  }
+}

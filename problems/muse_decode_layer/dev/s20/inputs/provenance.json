@@ -1,0 +1,16 @@
+{
+  "source": "problems/muse_bf16_proj/dev/stream_continuity/extend",
+  "recipe_source_sha256": "fdccd1c16a4077ea53eb3442c13bd04000b0c74654451994542217da956fe2a4",
+  "receipt": "73d2d80dd74848b7",
+  "transforms": [
+    "ew_patch_glue",
+    "ew_patch_glue_triton",
+    "ew_patch_heavy"
+  ],
+  "C3": {
+    "source": "problems/muse_attention_decode/dev/full_attention/fixed/C3.cu",
+    "sha256": "519ea55f1acf936ac115e6e42b5d0c7abc6b913418865ebd2fe54d2d49932208",
+    "receipt": "d53966e4afa949fc",
+    "repeated": "deea291e294b4a53"
+  }
+}
