@@ -255,3 +255,29 @@ Untraced CACHE/WS4/WS8/WS8L2 all lose to c49 BASE. WS4/S15 point alternatives go
 [overlap README](structural/overlap/README.md) records all arm CI and leaves-open decisions. This closes
 these schedules; compute/decode issue and readiness remain open. The next instruction lever is the
 416 decode/scale body with eight math warps and two CTAs retained, screened by SASS/resource count first.
+
+
+## Exact S19 integer/address follow-through
+
+Check6f5afe0c273e4bbf confirms AFFINE M32/S19 .997026 and PRIVATE M1/S19 .997059 point nominees,
+all16 seeds/TASK/source/packet/resource gates pass. M1 A:A1.004719 and identical alias.997260 make
+its nominal benefit weak; both diagnostics accompany the P4 handoff. Other shapes lose. The exact
+per-pipe model and per-arm counts are in `structural/intpipe/sass_model.json` and `fill_model.json`.
+
+Correction to the457-site marker bins:273 INT (17LEA+112SHF+144LOP3),16PRMT,128HMUL2,32HMMA,8LDS;
+initial scaleLDS is outside. The earlier416decode/32MMA/9LDS label mixed scopes. INT demand per16
+requested weights/lane is17.0625. All new arms leave that body intact. Modeled cycles per unique
+weight INT/FMA/tensor are.5441/.1401/.1900 atM1/M8,.6534/.1682/.2281 M16,.8654/.2228/.3021 M32.
+Historical logical reload factors and isolated-op rates rank pressure; they do not prove saturation.
+PRIVATE moves164–166 static INT sites and14 shared sites at M8+ while adding226 uniform sites;
+its real16B call stack and uniform pressure are not a free issue reduction. Two CTAs remain.
+
+INDEX's full-image additions include2VOTEU,33LEA,53UIMAD and82UIADD3 sites despite its marked B-fill
+saving18 INT sites per segment. This is a concrete added-work tradeoff, not a unique dynamic cause.
+AFFINE keeps the original pass/row-valid control and16 .cg/.nc vector reads, changing address formation.
+
+The4,064 finite products are exact in FP16/BF16; a single affine magic-nibble decoder still fails
+E2M1's nonuniform spacing. The bounded positive-BF16 embedding search finds only zero-bias tiny-BF16;
+constant-index no-shift bit-selection also has no valid packed layout. These A/B implementations
+remain unproven, not measured losses. Dynamic-selector PRMT and multi-piece arithmetic remain open;
+only an exact lower-issue implementation earns the next structural decode run.

@@ -626,6 +626,41 @@ All4 arms pass232 native TASK/current-input/capture checks and8 normal/forced wh
 
 The evidence closes these exact dedicated-producer/cache/own-stream-L2 schedules as improvements over BASE. It does not close compute overlap generally. The next largest compute lever is reducing the416-instruction decode/scale body while retaining the eight-consumer register layout, rather than another pipeline-depth or L2 arm. Rank its cheapest SASS/resource proof first; a future structural batch should couple a genuine decode reduction with the proven producer as a separable contrast. The measured W2-ready/grid-barrier critical term remains open; no standalone sub1% run follows.
 
+### P3a S19 integer/address issue and exactness premises (2026-10-26)
+
+**`6f5afe0c273e4bbf`**, sender1006438, wrapper01a7a9c1aeed4525, completes16 fresh seeds at M1/8/16/32,128 paired ratios and64 A:A. Exact frozen S19 expanded62ea5bf4 is the BASE, including FAST+INDEX+SHARD2 M1, PAIR M8, PAIR+BLOCK M16/32 and pdl_M. Official host and all native TASK gates pass, no failures; max total/row .002456/.002491. Packet checksum, submitted source/cells, all12 runtime resource rows and seed completeness are verified. Candidate/control time; descriptive95% Student-t15 CI:
+
+| Recipe | /S19 BASE [95% CI], M1; M8; M16; M32 | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| AFFINE | 0.997260 [0.994542, 0.999978]; 1.000827 [0.996470, 1.005183]; 1.002168 [0.998112, 1.006224]; 0.997026 [0.994998, 0.999054] | Keeps row-valid/pass control; one 64-bit activation row base plus constant-offset vector loads, same16 .cg/.nc reads. M1 unchanged control alias, excluded; M32 point nominee. | Larger decoder cuts and other address/control schedules; no reduction of core decode instructions. | `6f5afe0c273e4bbf` |
+| PRIVATE | 0.997059 [0.994298, 0.999820]; 1.008689 [1.003961, 1.013417]; 1.011149 [1.005550, 1.016748]; 1.015676 [1.011441, 1.019912] | Transfers steady TMA cursor from shared Route to issuing-owner registers after original initial copies; all8 math warps and2 raw slots retained. M1 point nominee; M8+ loses despite fewer static INT/shared sites. | P4 whole-layer R for M1; other producer-state representations without the added uniform/call-stack tradeoff, arithmetic/dynamic-lookup decode. | `6f5afe0c273e4bbf` |
+
+A:A mean ratios at M1/8/16/32 are1.004719/1.003344/1.001305/.999876, SE .001485/.001874/.002525/.001268; mean absolute .174/.416/.508/.348us, max .672/.736/2.064/.976. M1 has positive A:A drift and its identical AFFINE alias also shows .997260 [ .994542,.999978 ]; PRIVATE M1 is therefore a weak point nominee, not established implementation benefit. The G0 per-shape point rule still hands it to P4 with this alias diagnostic; no A:A/CI veto or standalone confirmation run.
+
+Per-pipe sizing: exact old457-site marker is273 INT (17LEA+112SHF+144LOP3),16 PRMT,128 HMUL2,32 HMMA,8 LDS. The scale LDS sits outside that marker. This corrects the earlier416 decode/32 MMA/9 LDS label, which mixed scopes; neither the kernel nor old timings change. All new arms retain that core exactly. Normalizing per16 requested weights/lane gives17.0625 INT,1 PRMT,8 BF16 multiply,2 tensor instructions plus.5625 weight/scale LDS. PIPE16c18078's empirical same-op envelopes1.96/1.96/3.57/.658/.25 imply these modeled SM cycles per unique weight before **and after** both arms:
+
+| M | INT | PRMT | BF16 arithmetic | Tensor | Weight/scale LDS | Largest modeled issue demand |
+|---|---|---|---|---|---|---|
+|1 /8|.5441|.0319|.1401|.1900|.1406|INT|
+|16|.6534|.0383|.1682|.2281|.1689|INT|
+|32|.8654|.0507|.2228|.3021|.2237|INT|
+
+Factors1/1.20098/1.59052 are historical logical weight-request repeats, not measured HBM misses. Actual saturation, exclusive scheduler stalls and a complete whole-kernel cycles/weight model remain unmeasured; uniform throughput is not calibrated. Do not add the separate operational envelopes as independent physical ports. Address/control changes are separately sized below.
+
+Full-image INT/uniform/FMA/tensor site counts M1;M8;M16+ are BASE986/73/267/32;1799/66/292/32;1811/66/292/32. AFFINE986/73/267/32;1754/66/292/32;1769/66/292/32. PRIVATE989/71/267/32;1633/292/292/32;1647/292/292/32. M8+ PRIVATE replaces14 shared LDS/STS sites while adding226 uniform sites; these image counts include alternative/exception paths, not executed per-weight work. Marked finite B-fill BASE→AFFINE per-segment INT counts are31→11 (W13) and26→10 (W2); every form retains16 vector reads. With segment length L tiles, their INT contribution is .06178/L→.02192/L (W13) and.05182/L→.01993/L (W2) SM cycles per requested weight, before historical repeat factors. Core INT/FMA/tensor costs stay unchanged. PRIVATE's added uniform throughput is uncalibrated, so a predictive whole-kernel cycles/weight total is unavailable. PRIVATE all-M stack allocation8/16/16/16B is real, withzero spill stores/loads; BASE/AFFINE zero local. Every arm actually keeps2CTAs. Registers M1/M8/M16+ BASE117/126/126, AFFINE117/126/126, PRIVATE121/119/119; dynamic shared83904/84176/84496/85136B, unchanged.
+
+INDEX's earlier d7fb2d8b B-fill31→13/26→8 cut changes uniform control across the full kernel: adds2 VOTEU,33 LEA,53 UIMAD,82 UIADD3 sites while removing others. Loads/spills/residency do not grow. This identifies added work before reusing the idea, not a unique runtime cause of the loss. AFFINE preserves the prior control; it does not reuse INDEX's branch hoist at M8+.
+
+A:all4,064 finite signed E2M1 x E4M3 products/256 are exactly representable in FP16 and BF16. The usual single-affine magic-nibble form is not an exact E2M1 decoder (codes5/6/7 give2.5/3/3.5 instead of3/4/6). Exhaustive1,838,032 positive-BF16 magnitude-bit/base embeddings find only the incumbent zero-bias bits6/7/8 form. No proposed nonzero-bias HFMA2/HADD2 implementation is established; no A arm was sent or measured. Leaves open multi-piece arithmetic, other recodings and mixed conversion forms; this bounded result does not close FMA decode.
+
+B:the bounded direct constant-index LOP3/PRMT zero-shift selection family cannot carry64 independent input-code bits through24 available source positions; four same-mask disjoint rotations also have no solution. No new nibble-permutation arm was established or measured. Leaves open dynamic-selector PRMT tables and arithmetic/layout combinations; these searches are not a general decoder lower bound. S19 already issues weight copies with bulk TMA, so simply adding TMA is not a new C arm. `structural/intpipe/premises.json` retains exact scopes and counterexamples.
+
+P4 receives PRIVATE M1 (.997059, SE .001295,16 seeds) and AFFINE M32 (.997026, SE .000952,16 seeds) in `point_nominations.json` and `structural/intpipe/P4_HANDOFF.json`. Exact patches apply to the checksum-verified expanded S19: PRIVATE `private.patch` e0127e8da0a8e75ba9ceb0e6c362cb73f33a2200cfb5fc85b9698c7afa0f3ee3; AFFINE `affine.patch`4ebd938516334d5a79a69d968e86c76275f8f9b8594bb13d7699ded8676108cd. P4 confirms held-out six-load R; no robust or additive gain is claimed.
+
+Static-first checks, all changed native sm90a units and import transport smoke pass;324 native TASK/current-input/capture checks pass without stand-ins. Exact wrapped local16-seed packet passes128 pairs64AA,5794B/81.1s. A send preflight first rejected a missing top-level lab entry before quota. The final queue command continued after a stale fingerprint report while its wrapper rerun finished; expanded body was unchanged and final full admission now passes. The actual H200 packet is complete,25.5s including compile. No failed test is suppressed.
+
+The core per-weight decode lever remains uncut. Next by ceiling is a genuinely cheaper exact dynamic-selector/arithmetic decoder, proved on all4,064 products and counted against the unchanged S19 math body before another run. These small address nominees travel in P4's next composition; no standalone sub1% confirmation.
+
 ## MoE M=128
 
 Current N_full family: NT1 <=8-token experts, N16G4 at 9-16 on a third stream, heavy N32

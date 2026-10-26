@@ -1,0 +1,146 @@
+{
+  "BASE": {
+    "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "base": "problems/muse_decode_layer/dev/s19/generated/s19.py",
+    "candidate": "runs/screen/p3a_intpipe/base.py",
+    "candidate_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/base.patch",
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/base0_cell.py",
+        "cell_sha256": "c27973e1413ccc10480886e67ca4905cf746602482448c3f1966932a972f64a1",
+        "cuda_sha256": "244c4d089f5979e2e79f45a681ee14a58bd57cc02d7c20001af4f1c3c7cb8040",
+        "prefix": "ipc_base0",
+        "arm": "BASE",
+        "M": [
+          1
+        ],
+        "unchanged": true
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/base1_cell.py",
+        "cell_sha256": "8ce11dcecccb2dcbd427926b70694b2b9ca16d28078be4d216c4350c82db395d",
+        "cuda_sha256": "5b6ae2c3611b71e102238719c69cbed6cd6b1d3566bbcf3765788fc787619fb6",
+        "prefix": "ipc_base1",
+        "arm": "BASE",
+        "M": [
+          8
+        ],
+        "unchanged": true
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/base2_cell.py",
+        "cell_sha256": "bacc5ac9510eb2ca0ab95dcd76d78f030274b6fa02e23c81f17bcc47cdaa36dc",
+        "cuda_sha256": "2e382eda4a71ba46c2a89183414fb7285785e238a3e75c53c26f24aba0282fd2",
+        "prefix": "ipc_base2",
+        "arm": "BASE",
+        "M": [
+          16,
+          32
+        ],
+        "unchanged": true
+      }
+    ],
+    "expanded_candidate": "runs/screen/p3a_intpipe/base.py",
+    "expanded_candidate_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "shipped": "runs/screen/p3a_intpipe/base_packed.py",
+    "shipped_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8"
+  },
+  "AFFINE": {
+    "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "base": "problems/muse_decode_layer/dev/s19/generated/s19.py",
+    "candidate": "runs/screen/p3a_intpipe/affine.py",
+    "candidate_sha256": "08ecbda0e70653e59774c27d79a6cdf80863a0301b14e8265f4e5788e9a34b2f",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/affine.patch",
+    "patch_sha256": "4ebd938516334d5a79a69d968e86c76275f8f9b8594bb13d7699ded8676108cd",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/affine0_cell.py",
+        "cell_sha256": "0a1e46fdfcc1461cb9c926bc357d78d8029f92cc631aab407d99fcf44a061048",
+        "cuda_sha256": "244c4d089f5979e2e79f45a681ee14a58bd57cc02d7c20001af4f1c3c7cb8040",
+        "prefix": "ipc_affine0",
+        "arm": "AFFINE",
+        "M": [
+          1
+        ],
+        "unchanged": true
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/affine1_cell.py",
+        "cell_sha256": "b4905d9065d1797fbc51cb1398f0234f38ad1070b93d35f8440f5a6f0169b8b4",
+        "cuda_sha256": "30946ec649fc9d276d4ec4bd4d7c9263039fbb2c63a875f9cb0647988e9c74bf",
+        "prefix": "ipc_affine1",
+        "arm": "AFFINE",
+        "M": [
+          8
+        ],
+        "unchanged": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/affine2_cell.py",
+        "cell_sha256": "69f53463ffac651b8e96cf3d4534fe7817e93446b405efdd3f44cec0a69d09d4",
+        "cuda_sha256": "f4debd00f1b6e128484f1b44055fcc53d616260c908e941dec4a1db875a497b9",
+        "prefix": "ipc_affine2",
+        "arm": "AFFINE",
+        "M": [
+          16,
+          32
+        ],
+        "unchanged": false
+      }
+    ],
+    "expanded_candidate": "runs/screen/p3a_intpipe/affine.py",
+    "expanded_candidate_sha256": "08ecbda0e70653e59774c27d79a6cdf80863a0301b14e8265f4e5788e9a34b2f",
+    "shipped": "runs/screen/p3a_intpipe/affine_packed.py",
+    "shipped_sha256": "c7e7258fdb4174aa196f2c47091b2fb460e588d1c907bf76ecffe9b0b4e0b51d"
+  },
+  "PRIVATE": {
+    "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "base": "problems/muse_decode_layer/dev/s19/generated/s19.py",
+    "candidate": "runs/screen/p3a_intpipe/private.py",
+    "candidate_sha256": "5d9f5e7a0f73981689191771c1fcb5d24803de32e8a4686fd7a01ace6ab6f866",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/private.patch",
+    "patch_sha256": "e0127e8da0a8e75ba9ceb0e6c362cb73f33a2200cfb5fc85b9698c7afa0f3ee3",
+    "variants": [
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/private0_cell.py",
+        "cell_sha256": "050bb6a929996094ee291fb5cb876a81bbc0378e5c8125c0038eed67c0beb7d0",
+        "cuda_sha256": "947a339d94da3ad3106709f4f066692863bd0badee00360edb4ea0c57e42852a",
+        "prefix": "ipc_private0",
+        "arm": "PRIVATE",
+        "M": [
+          1
+        ],
+        "unchanged": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/private1_cell.py",
+        "cell_sha256": "fcb6a4f03731307d1c9f91cd5a1c273aa8ad241980a6e1d55a8afb69da5aef31",
+        "cuda_sha256": "46e0e2dda550a95e852cc9181e0911d8ec0110d5a4235f3c0f37bf7554524e93",
+        "prefix": "ipc_private1",
+        "arm": "PRIVATE",
+        "M": [
+          8
+        ],
+        "unchanged": false
+      },
+      {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/private2_cell.py",
+        "cell_sha256": "c9e66483f22cf5a95028eb070bf2b822d429ed9e17c774b4013be962d23bc00b",
+        "cuda_sha256": "2af7125c82ab18cce9565270e17b40c7222ad671744efdbfbf1e6196ab51244f",
+        "prefix": "ipc_private2",
+        "arm": "PRIVATE",
+        "M": [
+          16,
+          32
+        ],
+        "unchanged": false
+      }
+    ],
+    "expanded_candidate": "runs/screen/p3a_intpipe/private.py",
+    "expanded_candidate_sha256": "5d9f5e7a0f73981689191771c1fcb5d24803de32e8a4686fd7a01ace6ab6f866",
+    "shipped": "runs/screen/p3a_intpipe/private_packed.py",
+    "shipped_sha256": "fab2b0a378c0d6d55e0ea128fe07d78f98cb10575f6f4e6d777b1fb4ea0793ae"
+  }
+}

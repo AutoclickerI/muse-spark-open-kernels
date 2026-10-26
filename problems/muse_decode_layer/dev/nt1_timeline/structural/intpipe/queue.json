@@ -1,0 +1,22 @@
+{
+  "utc": "20261026T083530Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "6f5afe0c273e4bbf",
+  "sha256": "01a7a9c1aeed4525383a7f2a4f5f9edef2662077f731f04a29c2ec36c26e3409",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_intpipe.py",
+  "source": "runs/muse_moe_w4a16/20261026T083530Z_check_6f5afe0c273e4bbf.py",
+  "git": "fb02cfb+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_intpipe.py: P3a exactS19 62ea5bf4 integer/address:BASE,AFFINE,PRIVATE M1/8/16/32,16freshseeds128pairs64AA,readflushABBA,TASK beforeafter. AFFINE retains pass/valid branches with onebase/immediate offsets,M1controlalias. PRIVATE shared TMA cursor to issuing-owner regs,all8mathwarps. Exactsm90a SASS2CTA,126/119regs M8+,zero spills,PRIVATE16Bcallstack. Static+changed sm90a tiers/importsmoke pass;324nativeTASK/currentinput/capture;exactpackedlocal16seedpacket<8744B. A/B single-affine magic/direct constant-index no-shift families unproven afterbounded exactness/layout searches;not sent or called losses;multi-piece arithmetic/dynamic LUT open.4064finite products exactFP16/BF16. All pointwins with exactS19patch toP4,R confirms.",
+  "snapshot": "runs/sent/01a7a9c1aeed4525/lab_moe_p3a_intpipe.py",
+  "lane": "P3a",
+  "decision": "Do affine B-fill addresses or a register-owned TMA cursor cut integer issue against exact S19 without losing two-CTA residency?",
+  "priority": 3,
+  "priority_override": false,
+  "sender": 1006438,
+  "sender_log": "runs/detached/01a7a9c1aeed4525.log",
+  "payload": "prof/lab/moe_p3a_intpipe.py",
+  "payload_sha256": "6f6c9a621043d25ec1fd8a8f1f596211118b4232632adefc420be232e4437a3a",
+  "state": "complete16seeds/TASK/AA/packet/source/resources verified",
+  "receipt": "runs/muse_moe_w4a16/20261026T083530Z_check_6f5afe0c273e4bbf.json"
+}

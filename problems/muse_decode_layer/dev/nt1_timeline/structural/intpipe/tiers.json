@@ -1,0 +1,263 @@
+{
+  "affine_static": {
+    "sha256": "c7e7258fdb4174aa196f2c47091b2fb460e588d1c907bf76ecffe9b0b4e0b51d",
+    "tier": "static",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ],
+    "changed_units": []
+  },
+  "affine_changed": {
+    "sha256": "c7e7258fdb4174aa196f2c47091b2fb460e588d1c907bf76ecffe9b0b4e0b51d",
+    "tier": "changed",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "RVC_NBASE1_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "RVC_NBASE2_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "changed_units": [
+      "RVC_NBASE1_CUDA",
+      "RVC_NBASE2_CUDA",
+      "_source"
+    ]
+  },
+  "private_static": {
+    "sha256": "fab2b0a378c0d6d55e0ea128fe07d78f98cb10575f6f4e6d777b1fb4ea0793ae",
+    "tier": "static",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      }
+    ],
+    "changed_units": []
+  },
+  "private_changed": {
+    "sha256": "fab2b0a378c0d6d55e0ea128fe07d78f98cb10575f6f4e6d777b1fb4ea0793ae",
+    "tier": "changed",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "RVC_NFIDX0_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "RVC_NBASE1_CUDA",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "RVC_NBASE2_CUDA",
+        "ok": true,
+        "msg": ""
+      }
+    ],
+    "changed_units": [
+      "RVC_NBASE1_CUDA",
+      "RVC_NBASE2_CUDA",
+      "RVC_NFIDX0_CUDA",
+      "_source"
+    ]
+  },
+  "payload_static": {
+    "sha256": "6f6c9a621043d25ec1fd8a8f1f596211118b4232632adefc420be232e4437a3a",
+    "tier": "static",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "no literal prepare state contract"
+      }
+    ],
+    "changed_units": []
+  },
+  "transport": {
+    "sha256": "fab2b0a378c0d6d55e0ea128fe07d78f98cb10575f6f4e6d777b1fb4ea0793ae",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_import",
+        "ok": true,
+        "packets": 1
+      }
+    ],
+    "changed_units": []
+  }
+}

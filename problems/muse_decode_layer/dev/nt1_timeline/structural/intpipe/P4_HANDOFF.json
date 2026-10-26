@@ -1,0 +1,191 @@
+{
+  "base": "S19 62ea5bf4",
+  "job": "6f5afe0c273e4bbf",
+  "rows": [
+    {
+      "M": 1,
+      "arm": "PRIVATE",
+      "control": "S19",
+      "ratio": 0.9970589862029955,
+      "SE": 0.0012955797115165252,
+      "CI95": [
+        0.9942975234156477,
+        0.9998204489903433
+      ],
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "seed_ratios": [
+        0.9989853755780533,
+        1.0019674938311913,
+        0.9975139697978523,
+        1.0030654255252514,
+        1.002885728288572,
+        0.9985289043847154,
+        0.9921413828319532,
+        0.9987965039992874,
+        0.9975449828968264,
+        1.004085372793801,
+        0.9914869573153862,
+        0.9848741498387434,
+        0.9912016543886568,
+        0.9980405779573902,
+        0.9979645066746505,
+        0.9938607931455966
+      ],
+      "control_alias": false,
+      "point_nominee": true,
+      "AA_mean_ratio": 1.004719261481616,
+      "AA_SE": 0.0014850924650144787,
+      "AA_mean_abs_us": 0.17400000000000002,
+      "AA_max_abs_us": 0.672,
+      "job": "6f5afe0c273e4bbf",
+      "batch": "S19 integer/address issue",
+      "handoff": true,
+      "exact_patch": {
+        "base": "problems/muse_decode_layer/dev/s19/generated/s19.py",
+        "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+        "candidate": "runs/screen/p3a_intpipe/private.py",
+        "candidate_sha256": "5d9f5e7a0f73981689191771c1fcb5d24803de32e8a4686fd7a01ace6ab6f866",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/private.patch",
+        "patch_sha256": "e0127e8da0a8e75ba9ceb0e6c362cb73f33a2200cfb5fc85b9698c7afa0f3ee3",
+        "shipped": "runs/screen/p3a_intpipe/private_packed.py",
+        "shipped_sha256": "fab2b0a378c0d6d55e0ea128fe07d78f98cb10575f6f4e6d777b1fb4ea0793ae"
+      },
+      "alias_diagnostic": {
+        "ratio": 0.9972601379808317,
+        "SE": 0.0012752520054740933,
+        "CI95": [
+          0.9945420026732903,
+          0.9999782732883731
+        ],
+        "note": "Identical AFFINE M1 control alias;point gain can reflect paired timing bias,not implementation work"
+      },
+      "shapes": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "975353+7919*seed",
+        "routing": "979000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "AFFINE",
+      "control": "S19",
+      "ratio": 0.9970259823380823,
+      "SE": 0.0009516180556486461,
+      "CI95": [
+        0.9949976564658239,
+        0.9990543082103406
+      ],
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "seed_ratios": [
+        0.9984519428877177,
+        0.9976036952208659,
+        0.9981949953271985,
+        0.9926644958473552,
+        0.9943440995255011,
+        0.9961592470229478,
+        0.9902312534832132,
+        0.9937937212645702,
+        0.9953035538187114,
+        1.0049201273025483,
+        0.9998665543493928,
+        1.0024954378359188,
+        0.9950548940979884,
+        1.0014406732788645,
+        0.9966683625589208,
+        0.9952226635876024
+      ],
+      "control_alias": false,
+      "point_nominee": true,
+      "AA_mean_ratio": 0.9998760451823323,
+      "AA_SE": 0.0012677048436832662,
+      "AA_mean_abs_us": 0.348,
+      "AA_max_abs_us": 0.976,
+      "job": "6f5afe0c273e4bbf",
+      "batch": "S19 integer/address issue",
+      "handoff": true,
+      "exact_patch": {
+        "base": "problems/muse_decode_layer/dev/s19/generated/s19.py",
+        "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+        "candidate": "runs/screen/p3a_intpipe/affine.py",
+        "candidate_sha256": "08ecbda0e70653e59774c27d79a6cdf80863a0301b14e8265f4e5788e9a34b2f",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/affine.patch",
+        "patch_sha256": "4ebd938516334d5a79a69d968e86c76275f8f9b8594bb13d7699ded8676108cd",
+        "shipped": "runs/screen/p3a_intpipe/affine_packed.py",
+        "shipped_sha256": "c7e7258fdb4174aa196f2c47091b2fb460e588d1c907bf76ecffe9b0b4e0b51d"
+      },
+      "alias_diagnostic": null,
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "975353+7919*seed",
+        "routing": "979000+M+97*seed"
+      }
+    }
+  ],
+  "source_audit": {
+    "verified": true,
+    "wrapper_sha256": "01a7a9c1aeed4525383a7f2a4f5f9edef2662077f731f04a29c2ec36c26e3409",
+    "payload_sha256": "6f6c9a621043d25ec1fd8a8f1f596211118b4232632adefc420be232e4437a3a",
+    "expanded_sha256": "dfcb2854d92bc7fe57783f30c07cf2762bb9d1d6c77dc97effb6ca6637101861",
+    "packet_checksum": "f37fccb202d1f11d201db50fd696e0756a1a3bda95f03ae7c9606c6c39916a72",
+    "exact_cells": 9
+  },
+  "gate": "Every valid TASK-gated per-shape point estimate below1 nominates; SE and A:A are descriptive. P4 composes and confirms six-load R on held-out seeds."
+}

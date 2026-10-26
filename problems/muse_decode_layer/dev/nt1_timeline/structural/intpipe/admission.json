@@ -1,0 +1,51 @@
+{
+  "status": "H200 complete16seeds/TASK/AA/packet/source/resources pass;PRIVATE M1/AFFINE M32 point nominees to P4",
+  "base_S19": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "payload_sha256": "6f6c9a621043d25ec1fd8a8f1f596211118b4232632adefc420be232e4437a3a",
+  "native_TASK_current_input_capture_checks": 324,
+  "packed_lab": {
+    "payload_sha256": "6f6c9a621043d25ec1fd8a8f1f596211118b4232632adefc420be232e4437a3a",
+    "complete": true,
+    "seeds": {
+      "requested": 16,
+      "completed": 16,
+      "weights": "975353+7919*seed",
+      "routes": "979000+M+97*seed"
+    },
+    "paired": 128,
+    "AA": 64,
+    "checks": {
+      "gates": {
+        "BASE": [
+          0.0024286345578730106,
+          0.002551168901845813
+        ],
+        "AFFINE": [
+          0.0024286345578730106,
+          0.002551168901845813
+        ],
+        "PRIVATE": [
+          0.0024286345578730106,
+          0.002551168901845813
+        ]
+      },
+      "failures": {}
+    },
+    "packet_bytes": 5794,
+    "elapsed_seconds": 81.08537638594862,
+    "standins": false
+  },
+  "all_resident": 2,
+  "all_zero_spill": true,
+  "PRIVATE_stack_bytes": [
+    8,
+    16,
+    16
+  ],
+  "A_B": "bounded forms not implemented;unmeasured,not measured losses",
+  "submitted_wrapper_sha256": "01a7a9c1aeed4525383a7f2a4f5f9edef2662077f731f04a29c2ec36c26e3409",
+  "submitted_source_bytes": 980535,
+  "sequence_note": "The firstmissing-top-level-lab attempt was rejected before quota. The final send command continued after a stale wrapper fingerprint report while its rerun finished;exact expanded body was unchanged. Final wrapped16seed lab passes128pairs64AA,5794B,81.1s and current full admission passes.",
+  "receipt": "runs/muse_moe_w4a16/20261026T083530Z_check_6f5afe0c273e4bbf.json",
+  "screen_scope": "All changed native paths execute directly on sm120;no Hopper stand-in needed for changed kernels. Existing S19 glue is unchanged;static/changed/import-smoke tiers used."
+}

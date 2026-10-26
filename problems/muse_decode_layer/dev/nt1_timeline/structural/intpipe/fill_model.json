@@ -1,0 +1,94 @@
+{
+  "rows": [
+    {
+      "arm": "AFFINE",
+      "pass_": 1,
+      "INT": 10,
+      "LDG": 16,
+      "ops": {
+        "LDC": 3,
+        "SHF": 1,
+        "ULDC": 2,
+        "CS2R": 33,
+        "IMAD": 5,
+        "ISETP": 3,
+        "LOP3": 1,
+        "LDG": 16,
+        "S2R": 1
+      }
+    },
+    {
+      "arm": "AFFINE",
+      "pass_": 0,
+      "INT": 11,
+      "LDG": 16,
+      "ops": {
+        "LDC": 2,
+        "SHF": 2,
+        "ULDC": 2,
+        "BSSY": 1,
+        "IMAD": 3,
+        "ISETP": 3,
+        "BRA": 1,
+        "VIADD": 1,
+        "LEA": 1,
+        "LDS": 1,
+        "PRMT": 2,
+        "BSYNC": 1,
+        "CS2R": 32,
+        "LOP3": 1,
+        "LDG": 16,
+        "S2R": 1
+      }
+    },
+    {
+      "arm": "BASE",
+      "pass_": 1,
+      "INT": 26,
+      "LDG": 16,
+      "ops": {
+        "LDC": 3,
+        "SHF": 2,
+        "ULDC": 2,
+        "CS2R": 33,
+        "IMAD": 4,
+        "ISETP": 3,
+        "LOP3": 1,
+        "LEA": 16,
+        "LDG": 16
+      }
+    },
+    {
+      "arm": "BASE",
+      "pass_": 0,
+      "INT": 31,
+      "LDG": 16,
+      "ops": {
+        "LDC": 2,
+        "SHF": 4,
+        "S2R": 1,
+        "ULDC": 2,
+        "BSSY": 1,
+        "IMAD": 4,
+        "ISETP": 3,
+        "BRA": 1,
+        "VIADD": 1,
+        "LEA": 17,
+        "LDS": 1,
+        "PRMT": 2,
+        "BSYNC": 1,
+        "CS2R": 32,
+        "LOP3": 2,
+        "LDG": 16
+      }
+    }
+  ],
+  "normalization": "Per warp per expert/token-block segment;divide INT by256*L weights to normalize per requested weight,then by1.96 empirical issue rate for cycles. L is that segment tile count. Does not include decoder,copy schedule or epilogue.",
+  "source": "Exact extracted S19 BASE/AFFINE fill bodies;marked probe changes register/control context,so full-kernel totals remain separately recorded.",
+  "INT_fill_cycles_per_requested_weight_times_segment_L": {
+    "AFFINE_1": 0.01992984693877551,
+    "AFFINE_0": 0.021922831632653062,
+    "BASE_1": 0.05181760204081633,
+    "BASE_0": 0.061782525510204085
+  }
+}

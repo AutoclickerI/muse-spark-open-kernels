@@ -1,0 +1,57 @@
+{
+  "finite_E2M1_E4M3_products_exact_in_FP16_and_BF16": 4064,
+  "product_definition": "FP4*E4M3/256,127 finite magnitude codes x2 scale signs x16 FP4 codes",
+  "A": {
+    "single_affine_magic_linear_counterexample": {
+      "codes": [
+        5,
+        6,
+        7
+      ],
+      "actual": [
+        2.5,
+        3.0,
+        3.5
+      ],
+      "wanted": [
+        3.0,
+        4.0,
+        6.0
+      ]
+    },
+    "exhaustive_positive_BF16_three_bit_embeddings": 1838032,
+    "matching_embeddings": [
+      {
+        "magnitude_bit_positions": [
+          6,
+          7,
+          8
+        ],
+        "base_bits": 0,
+        "nonzero_bias": false
+      }
+    ],
+    "nonzero_bias_solutions": [],
+    "scope": "Uniform affine bias/scale on a bit-permuted three-bit magnitude with a copied sign. Does not exclude multi-piece arithmetic or every possible floating decoder.",
+    "decision": "No exact uniform-bias form found. The existing zero-bias tiny-BF16 multiply is the matching form;all4064-product exactness does not provide a cheaper extraction."
+  },
+  "B": {
+    "four_disjoint_rotations_per_packed_word": [],
+    "direct_no_shift_LOP3_PRMT_available_source_bit_positions_per_byte": [
+      0,
+      6,
+      7
+    ],
+    "available_bits": 24,
+    "independent_code_bits": 64,
+    "scope": "Direct constant-index zero-shift extraction to the existing tiny-BF16 register layout using constant-index byte permutations/bit selections and no widened weight storage;not a lower bound for every decoder.",
+    "decision": "Requested direct one-LOP3/PRMT no-shift form is not a proven implementation;bounded layout family fails. No H200 arm or measured loss."
+  },
+  "C": {
+    "weight_copy": "S19 already uses cp.async.bulk with mbarriers;adding TMA is not a new mechanism",
+    "arms": [
+      "AFFINE preserves B-fill pass/valid control;one64bit base plus immediate loads",
+      "PRIVATE moves steady TMA cursor shared fields to owner registers;count residency first"
+    ]
+  }
+}

@@ -109,6 +109,16 @@ if (ov/'results.json').exists():
   spec={k:vm[v['arm']][k] for k in ('base_sha256','candidate','candidate_sha256','patch','patch_sha256')};assert hashlib.sha256((R/spec['patch']).read_bytes()).hexdigest()==spec['patch_sha256']
   new.append(dict(v,job=vr['job'],batch='dedicated TMA issue andcompute overlap',handoff=True,exact_patch=spec,shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='775353+7919*seed',routing='779000+M+97*seed')))
  result['rows']+=new;result['overlap_rows']=new;result['overlap_followup']=dict(queue=json.loads((ov/'queue.json').read_text()),source_audit=vr['source_audit'],clocks='problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/clock_results.json',status='Measured;all valid point wins exported with exact patch/uncertainty. Only P4 held-out six-loadR promotes')
+ip=P/'structural/intpipe'
+if (ip/'results.json').exists():
+ ir=json.loads((ip/'results.json').read_text());assert ir['measured'] and not ir['invalid'] and ir['source_audit']['verified'];im=json.loads((ip/'manifest.json').read_text());new=[]
+ for v in ir['summary']:
+  if not v['point_nominee'] or v['control_alias']:continue
+  arm=v['arm'];spec={k:im[arm][k] for k in ('base','base_sha256','candidate','candidate_sha256','patch','patch_sha256','shipped','shipped_sha256')}
+  assert hashlib.sha256((R/spec['patch']).read_bytes()).hexdigest()==spec['patch_sha256']
+  new.append(dict(v,job=ir['job'],batch='S19 integer/address issue',handoff=True,exact_patch=spec,alias_diagnostic=next((dict(ratio=z['ratio'],SE=z['SE'],CI95=z['CI95'],note='Identical AFFINE M1 control alias;point gain can reflect paired timing bias,not implementation work') for z in ir['summary'] if z['control_alias'] and z['M']==v['M']),None),shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='975353+7919*seed',routing='979000+M+97*seed')))
+ result['rows']+=new;result['intpipe_rows']=new;result['intpipe_followup']=dict(queue=json.loads((ip/'queue.json').read_text()),source_audit=ir['source_audit'],base='S19 62ea5bf4',status='All valid non-alias point wins versus S19;only P4 held-out six-load R promotes;A/B bounded forms unproven,not measured losses')
+ (ip/'P4_HANDOFF.json').write_text(json.dumps(dict(base='S19 62ea5bf4',job=ir['job'],rows=new,source_audit=ir['source_audit'],gate=result['gate']),indent=2)+'\n')
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')

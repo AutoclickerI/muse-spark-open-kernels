@@ -144,3 +144,23 @@ WS4/S15 .991669/.989111/.991728, SE .003307/.003011/.002472, all16 seeds, remain
 P4 confirms held-out six-load R; there is no incremental BASE winner. Next: shrink the decode/scale
 instruction body at the cheapest SASS/resource fidelity while retaining eight-consumer registers;
 W2-ready/grid-barrier scheduling remains open. No repeat depth/L2 or standalone sub1% run.
+
+
+## S19 integer/address batch: measured
+
+[structural/intpipe/README.md](structural/intpipe/README.md) records6f5afe0c273e4bbf, sender1006438:
+16 seeds,128 paired ratios64 A:A, all TASK/source/packet/runtime resource gates pass. AFFINE/S19
+M8/16/32 =1.000827/1.002168/.997026; M1 is an unchanged control alias. PRIVATE/S19
+M1/8/16/32 =.997059/1.008689/1.011149/1.015676. P4 receives PRIVATE M1 and AFFINE M32 exact S19
+patches, SE/CI/seeds and the M1 alias/drift diagnostic; only held-out whole-layer R promotes.
+Both arms keep2CTAs; PRIVATE uses119 regs at M8+ but16B call stack and226 extra uniform sites.
+All324 native graph/current-input checks and static/changed/import-smoke tiers pass without stand-ins.
+
+The core is unchanged:17.0625 INT,1 PRMT,8 HMUL2,2 HMMA per16 weights/lane. Its modeled INT cycles
+per unique weight are.5441/.6534/.8654 at M8/16/32, the largest modeled issue class, not a hardware
+saturation measurement. The marker's exact457-site bins are273 INT,16 PRMT,128 HMUL2,32 HMMA,8 LDS;
+initial scale LDS is outside. Earlier416/32/9 labels mixed scopes; timings remain valid.
+All4,064 products are exact in FP16/BF16, but the bounded single-affine magic and constant-index
+zero-shift selection families establish no new decoder. Those forms are unmeasured; dynamic-selector
+PRMT and multi-piece arithmetic remain open. They need an exact implementation and cheaper SASS
+before quota. Small address nominees travel in P4's next composition; no standalone confirmation.
