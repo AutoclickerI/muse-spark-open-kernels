@@ -23,7 +23,14 @@ def main():
         if e.get('arm','').startswith('layer_'):
             changes.append(dict(e,old_nomination=e['arm'] in old_names,new_nomination=e.get('wins',False),six_load_CI95=None))
     s15=json.loads((H.parent/'s15/281b1383_report.json').read_text())
-    report=dict(incumbent=patches.BASE_SHA,old_selected=previous,new_selected=chosen['patches'],changes=changes,
+    all_nominations=[]
+    for e in chosen['evidence']:
+        if 'arm' not in e:continue
+        key=e['arm'],tuple(e.get('row',[]));before=index.get(key)
+        is_layer=e['arm'].startswith('layer_')
+        def selected_in(specs):return any(sp['name']==e['arm'] and (not e.get('row') or e['row'] in sp['rows']) for sp in specs)
+        all_nominations.append(dict(e,old_nomination=(e['arm'] in old_names if is_layer else before['wins'] if before else None),new_nomination=e.get('wins',False),old_selected=selected_in(layer_old['selected'] if is_layer else previous),selected=selected_in(chosen['patches'])))
+    report=dict(all_nominations=all_nominations,incumbent=patches.BASE_SHA,old_selected=previous,new_selected=chosen['patches'],changes=changes,
                 S15=s15['scores'],unmeasured=[e for e in chosen['evidence'] if e.get('unmeasured')],
                 notes=['Legacy S15 intervals are explicitly approximate; discarded seed pairs cannot be recovered.',
                        'Shape/stage confidence intervals are not whole-layer R intervals.',

@@ -39,7 +39,7 @@ def main():
                         if not line.startswith(('from checks import','from nvfp4 import')))
     checker='\n'.join(line for text in ((problem/'checks.py').read_text(),(problem/'nvfp4.py').read_text(),reference)
                       for line in text.splitlines() if not line.startswith('from __future__ import'))
-    selection_seeds=sorted(set([172903+7919*i for i in range(16)]+[173101+7919*i for i in range(8)]+[3102917+104729*i for i in range(16)]+[6107923+7919*i for i in range(8)]+[5353+7919*i for i in range(16)]+[9000+m+97*i for m in (1,8,16,32) for i in range(16)]))
+    selection_seeds=sorted(set([172903+7919*i for i in range(16)]+[173101+7919*i for i in range(8)]+[3102917+104729*i for i in range(16)]+[3121907+7919*i for i in range(16)]+[197731]+[6107923+7919*i for i in range(8)]+[5353+7919*i for i in range(16)]+[9000+m+97*i for m in (1,8,16,32) for i in range(16)]))
     confirmation_seeds=[104910273+104729*i for i in range(16)]
     assert not set(selection_seeds)&set(confirmation_seeds)
     body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS='+repr(tuple(confirmation_seeds))+'\n'

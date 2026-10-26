@@ -1,0 +1,224 @@
+{
+  "candidate": "problems/muse_decode_layer/dev/s16/generated/s16.py",
+  "expanded_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+  "shipped_source": "problems/muse_decode_layer/cand_r3_best7_s16_435df5f78a0d.py",
+  "shipped_sha256": "1d0c8893c1a833756a175d875c78d0815cf39455a27e9c268698691f78e6cf80",
+  "wrapper_sha256": "504e1fa66298bf9ec2b6f60194ab3914a928a2c41f2ac56196ad54adac391037",
+  "screens": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 2,
+      "paired_seeds": 16,
+      "paired_shapes": 12,
+      "task_checks": 2304
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 2,
+      "paired_seeds": 16,
+      "paired_shapes": 12,
+      "task_checks": 2304
+    }
+  },
+  "queued": true,
+  "status": "experimental S16; S15 frozen until held-out six-load R lower95pct bound>1 and TASK",
+  "expanded_audit": {
+    "expanded_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+    "shipped_sha256": "1d0c8893c1a833756a175d875c78d0815cf39455a27e9c268698691f78e6cf80",
+    "checks": [
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "GLUE_CL_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_CPP_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "LT_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_PORT_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_X_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_G_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "ATTN_P8_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "PG_RAW",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_NT2_CUDA_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "V9_NT2_CPP_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_pf_GROUPED_SRC",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "SP_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "P7_PREFETCH_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "DENSE_CHAIN_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "DENSE_CHAIN_CPP",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "SMALLM_VAR_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "NF_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "GF_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "VQ8_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "PARTIAL_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "cs_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_global_C128_cs_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_dsm_16_cc_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_dsm_8_cc_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_epi_NORM_EPIN_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      },
+      {
+        "name": "_s16_epi_PAIR_EPIT_CUDA",
+        "ok": true,
+        "msg": "exact source/flags compile cache"
+      }
+    ],
+    "passed": true
+  },
+  "elapsed_s": 550.3423232000205,
+  "scored": {
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "tools/okc_run.py",
+      "send",
+      "problems/muse_decode_layer/cand_r3_best7_s16_435df5f78a0d.py",
+      "--scored",
+      "--priority",
+      "-1.1",
+      "--note",
+      "P4 S16 scored: frozen S15 60254883 plus global_C128 d1S, DSM C16 v1S/C8 v16S, NORM M1 and PAIR M8/16/32. Shape selections use measured ratios, no per-load A:A gate. Exact packed normal+forced local screens pass. Held-out six-load R confirmation follows. One-time uncapped intake; server schedules execution."
+    ],
+    "stdout": "queued problems/muse_decode_layer/cand_r3_best7_s16_435df5f78a0d.py at priority -1.1; progress in runs/detached/1d0c8893c1a83375.log, the receipt in runs/ when the judge finishes\n",
+    "sender_log": "runs/detached/1d0c8893c1a83375.log",
+    "replaced_waiting_senders": [
+      789576
+    ],
+    "intake_cap": 0,
+    "job": "c6cc2874ab994ee9",
+    "accepted_source": "runs/muse_decode_layer/20261026T021523Z_submit_c6cc2874ab994ee9.py"
+  },
+  "confirmation": {
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "/home/jihoon/competitions/muse_kernel/tools/okc_run.py",
+      "send",
+      "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s16_435df5f78a0d.py",
+      "--check",
+      "--priority",
+      "-1.0",
+      "--note",
+      "P4 S16 held-out confirmation: exact screened composition vs frozen S15, each piece off, A:A;16 disjoint input seeds plus fresh weight/router seeds;46/16 weighted six-load R, Student-t95pct CI with A:A noise; unchanged official TASK every arm/seed. No per-load, exact-ID or host-equivalence veto. Import lab620s, private state discarded before real judge prepare."
+    ],
+    "stdout": "queued /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s16_435df5f78a0d.py at priority -1.0; progress in runs/detached/504e1fa66298bf9e.log, the receipt in runs/ when the judge finishes\n",
+    "sender_log": "runs/detached/504e1fa66298bf9e.log",
+    "job": "37c2879f62554dff",
+    "accepted_source": "runs/muse_decode_layer/20261026T021518Z_check_37c2879f62554dff.py"
+  },
+  "intake_note": "One-time OKC_INFLIGHT=0 for verified scored send; paired check was already accepted normally. No quota override or duplicate run."
+}

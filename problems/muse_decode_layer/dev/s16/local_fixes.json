@@ -23,5 +23,10 @@
     "base": "60254883",
     "conditional_experiment": "stopped locally before any send; removed untracked S15c source/outputs",
     "policy": "held-out paired six-load R lower CI>1; TASK checker only; no per-load veto"
+  },
+  "confirmation_archive": {
+    "failure": "nine-piece archive9460 chars exceeded8500 local cap; wrapper not sent",
+    "fix": "drop only redundant load mean/SE/normalized summaries; retain all16 seed samples per six loads, shapes, TASK checks, A:A and diagnostics",
+    "screen": "full wrapper normal+forced rerun required"
   }
 }

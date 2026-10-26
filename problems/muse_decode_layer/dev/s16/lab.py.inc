@@ -125,12 +125,9 @@ def lab(deadline,weights,state):
     for (b,q),label in AB_LOADS.items():
         if not all((b,q,w) in times for w in (2048,0)):continue
         pairs=list(zip(times[b,q,2048],times[b,q,0]));aa=[(46*s['A2']+16*f['A2'])/(46*s['A']+16*f['A']) for s,f in pairs]
-        load=dict(n=len(pairs),aa=[min(aa),max(aa)],r={},samples=[{name:(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for name in s} for s,f in pairs])
-        for name in pairs[0][0]:
-            if name=='A':continue
-            rr=[(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for s,f in pairs]
-            load['r'][name]=dict(mean=statistics.mean(rr),se=statistics.stdev(rr)/len(rr)**.5,normalized=statistics.mean(r/a for r,a in zip(rr,aa)))
-        loads[label]=load
+        # Every paired seed survives. Means/SE/normalized summaries duplicate
+        # these samples and can be recomputed by the receipt reader.
+        loads[label]=dict(n=len(pairs),aa=[min(aa),max(aa)],samples=[{name:(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for name in s} for s,f in pairs])
     result=dict(host_sha256=hashlib.sha256(S16_BUNDLE['host'].encode()).hexdigest(),shapes=shapes,loads=loads,
                 failures=failures,shared_jit=shared,seeds=len(AB_SEEDS),seed_ids=list(AB_SEEDS),task_checks=task_checks,agreement_diagnostics=agreements,
                 checker_sha256=hashlib.sha256(S16_CHECKER.encode()).hexdigest(),elapsed=time.monotonic()-started,left=deadline-time.monotonic())

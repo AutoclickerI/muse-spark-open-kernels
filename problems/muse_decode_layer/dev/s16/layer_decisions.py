@@ -44,7 +44,8 @@ def nominate(files):
                     for b,q in points:
                         cell=cells[f'{b}x{q}'];off=cell['no_'+group];full=cell[host]
                         ratio=off[0]/full[0]
-                        shape_evidence.append(dict(load=f'{b}x{q}',R=ratio,selected=ratio>1))
+                        shape_error=T95[7]*(off[1]/off[0]+full[1]/full[0])
+                        shape_evidence.append(dict(load=f'{b}x{q}',R=ratio,CI95_approx=[ratio*math.exp(-shape_error),ratio*math.exp(shape_error)],selected=ratio>1))
                         if ratio>1:
                             kept += [row for row in spec['rows'] if tuple(row[:2])==(b,q)]
                             logs.append(math.log(ratio));errors.append(off[1]/off[0]+full[1]/full[0])
@@ -61,7 +62,7 @@ def nominate(files):
                 # remain descriptive; only a fresh composition lab can promote.
                 error=T95[7]*se
                 evidence.append(dict(arm=arm,wins=wins,R=gain,all_row_R=all_row_R,CI95=None,
-                    CI95_approx=[gain*math.exp(-error),gain*math.exp(error)] if wins else None,
+                    CI95_approx=[gain*math.exp(-error),gain*math.exp(error)] if wins or name=='release' else None,
                     shape_selection=shape_evidence,stage_only=True,
                     reason='selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent',job=receipt['job']))
                 if wins:selected.append(copy.deepcopy(spec))

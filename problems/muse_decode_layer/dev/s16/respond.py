@@ -1,7 +1,16 @@
 """Select on frozen S15, screen and send scored, then queue held-out confirmation."""
-import argparse,hashlib,json,os,selectors,shutil,subprocess,sys,time
+import argparse,ctypes,hashlib,json,os,selectors,shutil,subprocess,sys,time
 from pathlib import Path
 H=Path(__file__).resolve().parent;R=H.parents[3]
+
+
+def process_exit_fd(pid):
+    # This host's Python omits os.pidfd_open. Linux x86_64 exposes syscall434
+    # (the number in /usr/include/x86_64-linux-gnu/asm/unistd_64.h).
+    libc=ctypes.CDLL(None,use_errno=True);libc.syscall.restype=ctypes.c_long
+    fd=libc.syscall(ctypes.c_long(434),ctypes.c_int(pid),ctypes.c_uint(0))
+    if fd<0:raise OSError(ctypes.get_errno(), 'pidfd_open',str(pid))
+    return fd
 
 
 def wait_gpu_capacity():
@@ -17,7 +26,7 @@ def wait_gpu_capacity():
             for line in procs.splitlines():
                 pid,gpu=map(str.strip,line.split(','))
                 if gpu!=uuid:continue
-                try:fd=os.pidfd_open(int(pid))
+                try:fd=process_exit_fd(int(pid))
                 except ProcessLookupError:continue
                 selector.register(fd,selectors.EVENT_READ);fds.append(fd)
             if not fds:continue
