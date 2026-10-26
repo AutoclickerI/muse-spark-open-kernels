@@ -1,0 +1,117 @@
+{
+  "job": "1bab0b2d0dc14931",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "correctness_passed": true,
+  "TASK_checks": 854,
+  "seeds": [
+    116107923,
+    116115842,
+    116123761,
+    116131680,
+    116139599,
+    116147518,
+    116155437,
+    116163356
+  ],
+  "points": [
+    {
+      "arm": "ready_elide",
+      "shape": "16x8f",
+      "ratio": 0.9971299880815212,
+      "SE": 0.0007596612268795625,
+      "seeds": 8,
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/rebuild/ready_elide.patch",
+      "patch_sha256": "7a7d9cc54d38843eb96eee0c33ee518c27473ebfcb0d3e9dcf646cbc3fda9ecb",
+      "source_sha256": "2e1df0f759f8c98bfb72908f4dbc118521d0e6fb1d7bb234b4437e2725812490"
+    },
+    {
+      "arm": "ready_elide",
+      "shape": "32x8f",
+      "ratio": 0.9986176081387621,
+      "SE": 0.0009288645083876402,
+      "seeds": 8,
+      "nominated": true,
+      "patch": "problems/muse_attention_decode/dev/full_attention/rebuild/ready_elide.patch",
+      "patch_sha256": "7a7d9cc54d38843eb96eee0c33ee518c27473ebfcb0d3e9dcf646cbc3fda9ecb",
+      "source_sha256": "2e1df0f759f8c98bfb72908f4dbc118521d0e6fb1d7bb234b4437e2725812490"
+    }
+  ],
+  "A_A": {
+    "1x1": {
+      "mean": 1.016596,
+      "se": 0.004167,
+      "min": 0.999611,
+      "max": 1.032003,
+      "unity_inside_seed_range": true
+    },
+    "16x1": {
+      "mean": 1.002677,
+      "se": 0.001006,
+      "min": 0.999271,
+      "max": 1.006776,
+      "unity_inside_seed_range": true
+    },
+    "32x1": {
+      "mean": 0.999597,
+      "se": 0.000913,
+      "min": 0.995566,
+      "max": 1.002455,
+      "unity_inside_seed_range": true
+    },
+    "1x8": {
+      "mean": 1.002639,
+      "se": 0.001042,
+      "min": 0.999797,
+      "max": 1.008451,
+      "unity_inside_seed_range": true
+    },
+    "16x8": {
+      "mean": 0.99962,
+      "se": 0.000959,
+      "min": 0.995856,
+      "max": 1.002789,
+      "unity_inside_seed_range": true
+    },
+    "32x8": {
+      "mean": 0.999304,
+      "se": 0.000394,
+      "min": 0.99802,
+      "max": 1.001395,
+      "unity_inside_seed_range": true
+    }
+  },
+  "A_A_G0": {
+    "R": 0.9966362656072586,
+    "log_SE": 0.0006960236271773384,
+    "lower95": 0.9949973164980982,
+    "upper95": 0.9982779143761444,
+    "seed_R": [
+      0.9965818835533249,
+      0.9942140459409189,
+      0.9983123259126935,
+      0.9959507087803158,
+      0.9944791162302943,
+      0.9998479930119869,
+      0.9956872158045429,
+      0.9980303570656501
+    ]
+  },
+  "score": {
+    "R": 0.9965069434635232,
+    "log_SE": 0.0009118311163547186,
+    "lower95": 0.9943606516869005,
+    "upper95": 0.99865786793391,
+    "seed_R": [
+      0.9993182186441559,
+      0.9924705975905649,
+      0.9952491368605585,
+      0.9989446887150917,
+      0.9955559867299989,
+      0.9973225145306781,
+      0.9940693590933155,
+      0.9991482397351189
+    ]
+  },
+  "decision": "ready_elide verify16/32 full are point nominations; no standalone arm clears six-load G0. P4 confirms the composed candidate. d1 capture drift is reported, not a per-load veto."
+}

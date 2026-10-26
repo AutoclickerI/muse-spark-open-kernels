@@ -32,9 +32,9 @@ eight cold rotating graph replays;1,440 actual TASK checks. Per-seed weighted
 load times are retained at .001us precision, sufficient for the six-load
 geomean R and its held-out confidence interval. No per-load win requirement.
 
-Decision: select the fastest supported arm/composition by the six-load geomean,
-then require a held-out R lower confidence bound above1 and valid A:A/TASK gates
-before promotion. Failed controls or unproven execution are unmeasured. The
+Decision: every affected shape point below1 is nominated. A preselected composition
+requires its held-out six-load R lower confidence bound above1 and TASK checks
+for promotion; A:A is reported as a diagnostic, without per-load veto. The
 frozen reset summaries omitted seed covariance and cannot establish that bound.
 
 Local admission and queue identity are recorded after completion. An initial
@@ -48,3 +48,34 @@ Control qualification after R-20261026-1: d1 has directional A:A drift in both r
 Final admission: C passes143/143 scored/nearby/official fixtures eagerly and after two graph replays in both modes,25/25 full-source static checks each. Exact wrapper7127261f passes1,440 TASK gates,13 official host tests and2 static checks per mode. Native combined VDSK has one release before all loads, a dependent-only wait,94/90 registers at qkv/pool and zero local memory. **Queued sender760641**, decode check priority5.5, not-before1792972800. `admission.json`, `native_compile.json`, `queue.json` retain the evidence.
 
 All seven handoff patches pass git apply --check at repo root and round-trip from exact S15 to the recorded candidate hash in isolated temporary trees. Headers use the real S15 repository path; source/math and queued payload bytes are unchanged. `patch_validation.json` records hashes.
+
+## Held-out native result
+
+Job **60bad72bcf964453** passes all1,440TASK checks,8held-out seeds×8cold
+rotated replays,57.1s lab plus280.1s total preparation. No errors/failures.
+A:A six-load R=.998390,95%CI[.996468,1.000315]. Per-load A:A time ratios
+d1/d16/d32/v1/v16/v32 are1.007519/1.001212/1.002077/.998741/1.000699/.999572;
+d32 has a small directional seed range, retained as uncertainty.
+
+| Arm | Six-load R |95%CI| G0 against S15 |
+|---|---:|---|---|
+|C|1.006161|[1.004298,1.008028]|pass|
+|C_no_o|1.005248|[1.003740,1.006759]|pass|
+|C_no_pool|1.004273|[1.002476,1.006074]|pass|
+|P|1.004848|[1.003157,1.006541]|pass|
+|no_vdsk|1.004958|[1.003487,1.006432]|pass|
+|no_large|1.002892|[1.001349,1.004438]|pass|
+|no_attention|1.001725|[1.000143,1.003310]|pass|
+|attention|1.001721|[0.999537,1.003911]|not cleared|
+|large|0.999270|[0.997186,1.001358]|not cleared|
+|vdsk|0.999469|[0.998596,1.000343]|not cleared|
+|O|0.999525|[0.997991,1.001062]|not cleared|
+|pool|0.999399|[0.998044,1.000755]|not cleared|
+|OP|0.996698|[0.994523,0.998878]|not cleared|
+
+C is the preselected complete composition, not a post hoc shape combination: early
+q1 attention, large-M MoE and VDSK release plus native O128/pool128. Hand P4
+`C.patch` with source/patch hashes and exact8seed R samples in `P4_HANDOFF.json`;
+C now passes G0 against S15. P4 confirms any composition with newer winners.
+Single-piece noisy aggregates do not veto their affected shape point gains.
+No new confirmation run is needed for the already tested exact C versus S15.

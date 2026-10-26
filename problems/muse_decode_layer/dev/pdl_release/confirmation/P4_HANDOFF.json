@@ -1,0 +1,437 @@
+{
+  "job": "60bad72bcf964453",
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "TASK_checks": 1440,
+  "correctness_passed": true,
+  "seeds": [
+    9837141,
+    9845060,
+    9852979,
+    9860898,
+    9868817,
+    9876736,
+    9884655,
+    9892574
+  ],
+  "controls": {
+    "1x1": {
+      "mean": 1.007519,
+      "se": 0.005588,
+      "min": 0.987649,
+      "max": 1.036329,
+      "unity_inside_seed_range": true
+    },
+    "16x1": {
+      "mean": 1.001212,
+      "se": 0.001174,
+      "min": 0.994861,
+      "max": 1.004833,
+      "unity_inside_seed_range": true
+    },
+    "32x1": {
+      "mean": 1.002077,
+      "se": 0.000572,
+      "min": 1.000577,
+      "max": 1.005223,
+      "unity_inside_seed_range": false
+    },
+    "1x8": {
+      "mean": 0.998741,
+      "se": 0.000964,
+      "min": 0.995014,
+      "max": 1.002118,
+      "unity_inside_seed_range": true
+    },
+    "16x8": {
+      "mean": 1.000699,
+      "se": 0.000656,
+      "min": 0.997842,
+      "max": 1.002914,
+      "unity_inside_seed_range": true
+    },
+    "32x8": {
+      "mean": 0.999572,
+      "se": 0.000449,
+      "min": 0.997958,
+      "max": 1.001752,
+      "unity_inside_seed_range": true
+    }
+  },
+  "A_A_G0": {
+    "R": 0.9983898391996495,
+    "log_SE": 0.0008148694939567934,
+    "lower95": 0.9964679338036594,
+    "upper95": 1.0003154514086998,
+    "seed_R": [
+      0.9996027048833613,
+      0.9997864099704622,
+      0.9967697813998375,
+      1.0002773412614818,
+      0.999647307305632,
+      0.9955491304691348,
+      1.0006630819436646,
+      0.9948415108736693
+    ]
+  },
+  "preferred": "C",
+  "candidates": {
+    "C": {
+      "groups": [
+        "attention",
+        "moe",
+        "projections"
+      ],
+      "library": [
+        "o",
+        "pool"
+      ],
+      "source_sha256": "2f93745e1025ee73ab02fea87e846cf9d5a48efd1a9a3444c0a30594a035ec99",
+      "patch_sha256": "71b83bcc2a21c9781c8435090f65393299f9d2a9996c41032e5119de79623da7",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/C.patch",
+      "score": {
+        "R": 1.0061612701623723,
+        "log_SE": 0.0007837404007261686,
+        "lower95": 1.0042983270051493,
+        "upper95": 1.0080276690230587,
+        "seed_R": [
+          1.0096088873448201,
+          1.0083879047315918,
+          1.0060126396870912,
+          1.0054161758259117,
+          1.007122219387469,
+          1.0055719657588433,
+          1.0023807379024754,
+          1.00480693482709
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "C_no_o": {
+      "groups": [
+        "attention",
+        "moe",
+        "projections"
+      ],
+      "library": [
+        "pool"
+      ],
+      "source_sha256": "3e52def5d626aceb646e90d69bda5895661351e11c1cdca6064e7787ac7d44b4",
+      "patch_sha256": "b39ccce9c2066cf4f6e233c8375df402fbe4c8985111eb159b540126c8f00016",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/C_no_o.patch",
+      "score": {
+        "R": 1.0052483864817068,
+        "log_SE": 0.0006351621049298045,
+        "lower95": 1.0037397173434985,
+        "upper95": 1.0067593232222918,
+        "seed_R": [
+          1.0043035894119876,
+          1.005409882662193,
+          1.0059803028795586,
+          1.0074647786041215,
+          1.0080253924464855,
+          1.0034489072731085,
+          1.0042423897184614,
+          1.003123206727268
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "C_no_pool": {
+      "groups": [
+        "attention",
+        "moe",
+        "projections"
+      ],
+      "library": [
+        "o"
+      ],
+      "source_sha256": "233e46b53ff7f6648159f2c15b2e73b76cc35659964219d39b5df7bce43e107a",
+      "patch_sha256": "8ccb1515d9d67657bd829bb944170d41c537e4fe1cef0b16484055bccb18574a",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/C_no_pool.patch",
+      "score": {
+        "R": 1.0042734777600362,
+        "log_SE": 0.0007575501866153013,
+        "lower95": 1.0024761113558434,
+        "upper95": 1.0060740667108359,
+        "seed_R": [
+          1.007295704561556,
+          1.0043597217390896,
+          1.0049588627932524,
+          1.0055745113230088,
+          1.0049461058479665,
+          1.0000033647120918,
+          1.004331061364127,
+          1.0027346185852801
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "O": {
+      "groups": [],
+      "library": [
+        "o"
+      ],
+      "source_sha256": "4f7f8fce25c95e2ad0798da11c04072505ef04d2bcb7ba4c226805fb726e4f10",
+      "patch_sha256": "6a555c922de91f80befc1b832254a9d8cf7b9cef12b6fb2a4c2c0086fb91860d",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/O.patch",
+      "score": {
+        "R": 0.9995250984677388,
+        "log_SE": 0.0006496763661398406,
+        "lower95": 0.9979907663933119,
+        "upper95": 1.0010617894566909,
+        "seed_R": [
+          0.9996075238554443,
+          1.0019000069625785,
+          1.0006605404456799,
+          1.000017883527541,
+          0.9997527369820591,
+          0.9957830246303313,
+          1.0002904450364858,
+          0.9982004323092992
+        ]
+      },
+      "G0_lower95_above1": false
+    },
+    "OP": {
+      "groups": [],
+      "library": [
+        "o",
+        "pool"
+      ],
+      "source_sha256": "0c0f2c4e4d59d7b283ab3b65544d7f2a9f9ce03a5af2914455502c4a7d522497",
+      "patch_sha256": "c51c807188a37dde5b64fb09b1328d0af6c9b74e5fb264ce7845ccf556e9c978",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/OP.patch",
+      "score": {
+        "R": 0.9966984131152593,
+        "log_SE": 0.0009238545423620897,
+        "lower95": 0.9945234333653646,
+        "upper95": 0.9988781494518303,
+        "seed_R": [
+          0.9983352088835916,
+          1.0000424337410694,
+          0.9974211908661724,
+          0.9975880557777679,
+          0.9947395988509418,
+          0.9957781775514468,
+          0.9980718292848146,
+          0.9916346135445375
+        ]
+      },
+      "G0_lower95_above1": false
+    },
+    "P": {
+      "groups": [
+        "attention",
+        "moe",
+        "projections"
+      ],
+      "library": [],
+      "source_sha256": "911383a1e3effc960ea3d645e9992a2362875453210886906a823d58d7e9c9b0",
+      "patch_sha256": "e55b30cab24ecfa5d7e47f6a0ccd880559cb3626b0c383b2ce510964625f84df",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/P.patch",
+      "score": {
+        "R": 1.0048476794631103,
+        "log_SE": 0.0007120556636083257,
+        "lower95": 1.0031571966907973,
+        "upper95": 1.0065410109734008,
+        "seed_R": [
+          1.0091380332948432,
+          1.0029058516999168,
+          1.0048166284715558,
+          1.0051030238383727,
+          1.0045174641750736,
+          1.0023321000681475,
+          1.005022242964399,
+          1.0049603657816581
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "attention": {
+      "groups": [
+        "attention"
+      ],
+      "library": [],
+      "source_sha256": "fb5db86faea57077af2305e7c01f4c4107640f1079c8b12944535783b81c4b20",
+      "patch_sha256": "1d3dfc41effc9898e0f15b50096d76f23dc7086e5cebc15248c1c61c6fb710aa",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/attention.patch",
+      "score": {
+        "R": 1.0017213202452881,
+        "log_SE": 0.0009233614375694345,
+        "lower95": 0.9995365450521839,
+        "upper95": 1.0039108708942452,
+        "seed_R": [
+          1.004729233352006,
+          1.0040101867728055,
+          0.9997129276781532,
+          1.001149841572221,
+          1.0052465076637218,
+          0.9981165203391328,
+          1.0008879338672838,
+          0.9999413280101833
+        ]
+      },
+      "G0_lower95_above1": false
+    },
+    "large": {
+      "groups": [
+        "moe"
+      ],
+      "library": [],
+      "source_sha256": "78652aabf55d269bee2441fbde4abfd086f98a8a7c7157b8accf7ba3a0eafc25",
+      "patch_sha256": "647eb277acbb645209b675e7ae78b586f53fc73f44a2b29a1ff8346fc6735dc8",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/large.patch",
+      "score": {
+        "R": 0.9992696141366906,
+        "log_SE": 0.0008828065028616985,
+        "lower95": 0.9971858088900531,
+        "upper95": 1.0013577738820254,
+        "seed_R": [
+          1.0024356687367149,
+          1.0000516036864049,
+          0.9970996659144202,
+          0.9993870724836329,
+          0.9980931665195039,
+          0.9977394644741157,
+          1.0031642898839443,
+          0.9962077949596133
+        ]
+      },
+      "G0_lower95_above1": false
+    },
+    "no_attention": {
+      "groups": [
+        "moe",
+        "projections"
+      ],
+      "library": [],
+      "source_sha256": "d78bb69c698acb1bf080d547d9fdb3c195e7ad23a9abbed440b615180bf54bbc",
+      "patch_sha256": "02a161f4d84fe2a228593eb42fb672ec7ad0ceb5ae36d2e0bb6be1a5550865b8",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/no_attention.patch",
+      "score": {
+        "R": 1.0017254154405424,
+        "log_SE": 0.0006686480061356947,
+        "lower95": 1.000142837530947,
+        "upper95": 1.0033104975452847,
+        "seed_R": [
+          1.0057458626596203,
+          1.002062502470724,
+          1.0003905025455009,
+          1.0014717453322393,
+          1.0018986629749131,
+          1.0019256782303068,
+          0.9991416043068897,
+          1.0011793125767388
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "no_large": {
+      "groups": [
+        "attention",
+        "projections"
+      ],
+      "library": [],
+      "source_sha256": "d417ebe3463cc087fcd8368d79b647e614f70fcc218c711243fd79b40fc0fc15",
+      "patch_sha256": "4b859c7a45a63500509ed39fc6706c7c2acd1a5a4fa646eb188b9ec3260ec630",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/no_large.patch",
+      "score": {
+        "R": 1.0028922390797084,
+        "log_SE": 0.0006514420513551129,
+        "lower95": 1.001348557417506,
+        "upper95": 1.004438300485764,
+        "seed_R": [
+          1.0043436106130306,
+          1.0054931161221117,
+          1.0020415126502582,
+          1.0004007081019195,
+          1.0048279835725462,
+          1.0029935494404782,
+          1.0020753692191016,
+          1.0009739805092537
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "no_vdsk": {
+      "groups": [
+        "attention",
+        "moe"
+      ],
+      "library": [],
+      "source_sha256": "8dfc4f30267087b0b69c1df256d1250bd362c4e39dd806ec60926169af50e47d",
+      "patch_sha256": "7625f16b1ec881e850dc129de0d25c4a83484837835e9a516352d56e6acecabb",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/no_vdsk.patch",
+      "score": {
+        "R": 1.0049582754559034,
+        "log_SE": 0.0006195820827067772,
+        "lower95": 1.003487010396109,
+        "upper95": 1.0064316976147472,
+        "seed_R": [
+          1.0075156681853674,
+          1.0061162970008477,
+          1.0026951019227885,
+          1.0065054208715707,
+          1.0057394160916562,
+          1.0032732144603185,
+          1.004504691901661,
+          1.003327195456164
+        ]
+      },
+      "G0_lower95_above1": true
+    },
+    "pool": {
+      "groups": [],
+      "library": [
+        "pool"
+      ],
+      "source_sha256": "50862539bcff054e0efe61b6301d626385b634748268907f3ccc0af02cf854db",
+      "patch_sha256": "72870f13547d6b81d8350d33e02b04b520ed7da970cd2283cc47077c86175ca2",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/pool.patch",
+      "score": {
+        "R": 0.9993986925057283,
+        "log_SE": 0.0005735080353837626,
+        "lower95": 0.9980442955262977,
+        "upper95": 1.0007549274708938,
+        "seed_R": [
+          1.0025255883593018,
+          1.000549188260324,
+          0.9992625376900441,
+          1.0001157515241013,
+          0.9974025586999526,
+          0.99846119617075,
+          0.9986491860216488,
+          0.9982327408961923
+        ]
+      },
+      "G0_lower95_above1": false
+    },
+    "vdsk": {
+      "groups": [
+        "projections"
+      ],
+      "library": [],
+      "source_sha256": "c6674aff5d20c1229dad1efc14b8fa692ef80163b43821ca8bc1c05dfde0a33c",
+      "patch_sha256": "d8ecd8c245759fe16c42c6ba7aa662b7e49b1ba8579d9b08dbb2593b97c39fcd",
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/vdsk.patch",
+      "score": {
+        "R": 0.999469417934761,
+        "log_SE": 0.0003696394102203587,
+        "lower95": 0.9985962050559748,
+        "upper95": 1.0003433943861784,
+        "seed_R": [
+          1.00122814417254,
+          0.9992969361048565,
+          0.9991280836028494,
+          0.9996944269569537,
+          0.9984369536236583,
+          0.9980285921374153,
+          1.000567482778825,
+          0.999378548240036
+        ]
+      },
+      "G0_lower95_above1": false
+    }
+  },
+  "decision": "C and its tested P/C leave-outs pass held-out eight-seed G0 against S15. P4 composes with current candidate; single shape gains remain nominations even where source-wide R fails."
+}

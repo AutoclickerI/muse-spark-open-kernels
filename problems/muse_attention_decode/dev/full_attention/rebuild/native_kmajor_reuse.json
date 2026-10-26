@@ -1,0 +1,38 @@
+[
+  {
+    "name": "kmajor_reuse",
+    "cuda_sha256": "8518773a8bfd2cf60c2e4401fdec050d8f9d534287f4a5f81afb01ccf25b897b",
+    "ok": true,
+    "registers": [
+      "235",
+      "114",
+      "120"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 4,
+    "setmaxnreg": [],
+    "m64n8k32": [
+      "/*67f0*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R24, R28, gdesc[UR20], RZ, !UPT, gsb0 ;  /* 0x000000141c187df3 */",
+      "/*6830*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R24, R32, gdesc[UR24], R24, gsb0 ;       /* 0x0000001820187df3 */",
+      "/*6920*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R28, R32, gdesc[UR20], RZ, !UPT, gsb0 ;  /* 0x00000014201c7df3 */",
+      "/*6960*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R28, R36, gdesc[UR28], R28, gsb0 ;       /* 0x0000001c241c7df3 */"
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "utc": "20261026T025857Z",
+  "problem": "muse_decode_layer",
+  "mode": "check",
+  "job": "1bab0b2d0dc14931",
+  "sha256": "16f996bc3d1a82cc66327e7b55f2077ed86f8a28ca2cead85325c88e55aa384f",
+  "file": "problems/muse_decode_layer/lab/lab_structural_attention.py",
+  "source": "runs/muse_decode_layer/20261026T025857Z_check_1bab0b2d0dc14931.py",
+  "git": "7d4de54+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/full_attention/rebuild/structural_attention.py: P5b native structural diagnostic explicitly authorized 11:58KST: unchanged S15/A:A and all5 arms share local v16full token103 routing margin .0315>.03. Preserve exact seed and every854 TASK gate; no relaxation. Native-ready split/elision, register control, two parity softmax states, q1 native K-major m64n8k32. 12shapes8seeds8cold rotated A:A, seed times retained for GOAL G0. sm90a all compile, small-integer K-major probes pass. Payload7b2a69b9 wrapper16f996bc. No prefill host.",
+  "snapshot": "runs/sent/16f996bc3d1a82cc/lab_structural_attention.py",
+  "sender": 1507783,
+  "authorization": "Orchestrator 2026-10-26 11:58KST: send diagnostic preserving failing seed and every TASK gate",
+  "payload_sha256": "7b2a69b9b16aeed84640bed6c8dccfc4dbf672b99c0d57ad70927170a113d946"
+}

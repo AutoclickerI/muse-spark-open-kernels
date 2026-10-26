@@ -1,0 +1,30 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "operand_ready": {
+    "confirmed": true,
+    "producer_line": 447,
+    "publication_line": 450,
+    "next_qk_wait_line": 628,
+    "proof": "Same full barrier is published after V transpose and awaited before QK(next). Four K-ready arrivals after cp_wait/proxy fence are sufficient for QK.",
+    "added_shared_bytes_ST4": 32,
+    "elision": "K-ready(rr+1) implies V-ready(rr): every producer warp publishes V(rr) before advancing to K(rr+1). Drop only the step PV(rr) wait; final PV retains V(rlast) wait."
+  },
+  "kmajor": {
+    "confirmed": true,
+    "qk_line": 143,
+    "mma_line": 151,
+    "old": "K bytes widened into half B fragments for mma.sync m16n8k16; query M16 has eight padded rows at q1.",
+    "new": "Native RS QK M64 cached keys xN8queries, twoK32 issues/head; Q rounded to allowed E4M3; existing FP16-P PV and new-token path retained.",
+    "gather_identical": true,
+    "split_identical": true
+  },
+  "parity": {
+    "confirmed": true,
+    "state_line": 736,
+    "softmax_line": 645,
+    "rescale_line": 654,
+    "old": "Single online m/l/O state per query; each next softmax rescales same O.",
+    "new": "Two statically indexed parity chains preserve QK(next)/PV(current) overlap; exact log-domain weighted merge at portion end, including new token. Control transfers registers with original single state.",
+    "register_budget": "2x128x232 +128x32 =63488 registers<=65536; same launch bounds168 initial registers/thread; native SASS must confirm USETMAXREG. Compiler spill cost is measured explicitly."
+  }
+}

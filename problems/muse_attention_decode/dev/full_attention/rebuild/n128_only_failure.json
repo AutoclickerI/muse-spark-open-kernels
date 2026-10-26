@@ -1,0 +1,16 @@
+{
+  "wrapper_sha256": "16f996bc3d1a82cc66327e7b55f2077ed86f8a28ca2cead85325c88e55aa384f",
+  "task_checks": 854,
+  "errors": {},
+  "failures": [
+    "16x8f:A:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)",
+    "16x8f:A2:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)",
+    "16x8f:ready:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)",
+    "16x8f:ready_elide:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)",
+    "16x8f:reg:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)",
+    "16x8f:parity:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)",
+    "16x8f:kmajor:TASK:routing: token 103 dropped expert 146, on this GPU, whose biased score is 3.15e-02 above its 9th best (> 0.03)"
+  ],
+  "complete": false,
+  "elapsed": 324.55
+}

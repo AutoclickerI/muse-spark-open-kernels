@@ -1,0 +1,22 @@
+{
+  "normal": {
+    "TASK": 854,
+    "host": 13,
+    "static": 2,
+    "elapsed": 173.85,
+    "wrapper": "16f996bc3d1a82cc66327e7b55f2077ed86f8a28ca2cead85325c88e55aa384f",
+    "local_only": "N128 V global scratch; warp index&3; VDSK same tiles/split with pipeline depth3"
+  },
+  "forced": {
+    "TASK": 854,
+    "host": 13,
+    "static": 2,
+    "elapsed": 124.29,
+    "wrapper": "16f996bc3d1a82cc66327e7b55f2077ed86f8a28ca2cead85325c88e55aa384f",
+    "local_only": "N128 V global scratch; warp index&3; VDSK same tiles/split with pipeline depth3"
+  },
+  "standin_sources": {
+    "local_n128.py": "e09e46a75c6f18a0af380d25e57c1554fcfd265d1682f92fe0e3a4f46b7e5c8d",
+    "rebuild_standins.py": "3a70c7d631eafc68341c2064be5f398ddbb7dee1d930b42ca1acdf0cbd8e6215"
+  }
+}

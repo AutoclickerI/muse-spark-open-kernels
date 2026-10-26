@@ -64,3 +64,8 @@ PDL/library follow-up: sender760641, wrapper7127261f, fifteen arms and1,440 TASK
 `rejudgment/P4_HANDOFF.json` nominates every affected shape cell with on/off point time below1, regardless of A:A overlap. Whole guarded S15n is handed to P4 now because scored dispatch is identical and nearby speed improves. O256 and small-M release cells are no longer withheld for noise. Each cell carries its ratio,8seeds, full/off load SE and the explicit absence of per-shape SE in the frozen receipt; no covariance is invented. S15e/S15L full-composition losses do not veto shape choices. P4 composes and confirms the held-out six-load R, with TASK correctness only.
 
 `fb14f30ffd48450f` returned LAB_ERROR at the native P*ones/rescale probe: seed68137 relative error .0004769067 against its exact-operand oracle. No timings or whole-layer TASK records were produced; both PVsum and the packed gather arm are **unmeasured**. The separate new structural payload does not include that failed denominator implementation.
+
+Held-out PDL/library job60bad72bcf964453 passes1,440TASK gates and C clears
+G0:R1.006161[1.004298,1.008028],8seeds. Exact C patch71b83bcc/source2f93745e
+are in `muse_decode_layer/dev/pdl_release/confirmation/P4_HANDOFF.json`; P4
+confirms its composition with newer winners.

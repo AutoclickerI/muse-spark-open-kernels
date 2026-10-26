@@ -1,0 +1,15 @@
+{
+  "source_sha256": "4b8641bc62a4919f8875c128c89d3a7ffe1fa14f0be531c4c80eb394cc0f9583",
+  "cuda_sha256": "8518773a8bfd2cf60c2e4401fdec050d8f9d534287f4a5f81afb01ccf25b897b",
+  "patch_sha256": "57130acd40ef4e362356a52c215377d2e8d8927358c65231c9db00741bd109c3",
+  "response_to": "1bab0b2d0dc14931",
+  "change": "Reuse dead cached K ring tile for score remap; -4096 static shared bytes, four extra live score values and one CTA barrier.",
+  "gather_unchanged": true,
+  "split_plan_unchanged": true,
+  "bytes": {
+    "dynamic_q1": 73984,
+    "old_extra_static": 6144,
+    "new_extra_static": 2048
+  },
+  "native_validation": "See native_kmajor_reuse.json for compiled register/spill/instruction proof; TASK admission is separate."
+}

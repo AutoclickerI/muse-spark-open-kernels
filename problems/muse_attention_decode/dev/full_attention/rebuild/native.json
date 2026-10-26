@@ -1,0 +1,260 @@
+[
+  {
+    "name": "ready",
+    "cuda_sha256": "c3453db7ef2e5b7cb302bd5bf27e48cf6a665efdfff693bb147a57d35f95f256",
+    "ok": true,
+    "registers": [
+      "168",
+      "168",
+      "168",
+      "64"
+    ],
+    "stack_spills": [
+      [
+        "40",
+        "8",
+        "8"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "40",
+        "8",
+        "8"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "40",
+        "8",
+        "8"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "8",
+        "16",
+        "8"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 156,
+    "setmaxnreg": [],
+    "m64n8k32": []
+  },
+  {
+    "name": "ready_elide",
+    "cuda_sha256": "fb10272750f6eb6f34f055701fb78bb6050a3f4ecef7c9ce50554bab19a2b850",
+    "ok": true,
+    "registers": [
+      "168",
+      "168",
+      "168",
+      "64"
+    ],
+    "stack_spills": [
+      [
+        "40",
+        "4",
+        "4"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "40",
+        "4",
+        "4"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "40",
+        "4",
+        "4"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "8",
+        "16",
+        "8"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 156,
+    "setmaxnreg": [],
+    "m64n8k32": []
+  },
+  {
+    "name": "reg",
+    "cuda_sha256": "44a46420105a558cc7be8c57e31636c03f0651b16c8fad86813126f59addb0a8",
+    "ok": true,
+    "registers": [
+      "168",
+      "168",
+      "168",
+      "64"
+    ],
+    "stack_spills": [
+      [
+        "56",
+        "24",
+        "24"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "56",
+        "20",
+        "20"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "56",
+        "24",
+        "24"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "8",
+        "16",
+        "8"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 156,
+    "setmaxnreg": [
+      "/*48b0*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xe8 ;                           /* 0x000000e8000079c8 */",
+      "/*1abe0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */",
+      "/*48b0*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xe8 ;                           /* 0x000000e8000079c8 */",
+      "/*1ad10*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */",
+      "/*48b0*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xe8 ;                           /* 0x000000e8000079c8 */",
+      "/*1ad90*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */"
+    ],
+    "m64n8k32": []
+  },
+  {
+    "name": "parity",
+    "cuda_sha256": "3adc1451347f8f5958b2188ce71a44861f3b4dc33482b47a1f27fcc78ff8ed61",
+    "ok": true,
+    "registers": [
+      "168",
+      "168",
+      "168",
+      "64"
+    ],
+    "stack_spills": [
+      [
+        "72",
+        "36",
+        "36"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "64",
+        "32",
+        "32"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "72",
+        "36",
+        "36"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "8",
+        "16",
+        "8"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 252,
+    "setmaxnreg": [
+      "/*4900*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xe8 ;                             /* 0x000000e8000079c8 */",
+      "/*219a0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                   /* 0x00000020000079c8 */",
+      "/*4900*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xe8 ;                             /* 0x000000e8000079c8 */",
+      "/*21c30*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                   /* 0x00000020000079c8 */",
+      "/*4900*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xe8 ;                             /* 0x000000e8000079c8 */",
+      "/*21cf0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                   /* 0x00000020000079c8 */"
+    ],
+    "m64n8k32": []
+  },
+  {
+    "name": "kmajor",
+    "cuda_sha256": "9d9302df9638353469a4bc6898034f705d697a3d9c5632853a4d150960b24bd1",
+    "ok": true,
+    "registers": [
+      "235",
+      "116",
+      "120"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 4,
+    "setmaxnreg": [],
+    "m64n8k32": [
+      "/*6850*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R24, R28, gdesc[UR20], RZ, !UPT, gsb0 ;  /* 0x000000141c187df3 */",
+      "/*6890*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R24, R32, gdesc[UR24], R24, gsb0 ;       /* 0x0000001820187df3 */",
+      "/*69b0*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R28, R32, gdesc[UR20], RZ, !UPT, gsb0 ;  /* 0x00000014201c7df3 */",
+      "/*69f0*/                   QGMMA.64x8x32.F32.E4M3.E4M3 R28, R36, gdesc[UR28], R28, gsb0 ;       /* 0x0000001c241c7df3 */"
+    ]
+  }
+]
