@@ -46,6 +46,8 @@ if review_path.exists():
    'BLOCK M16/M32 nominates; M1/M8 are unchanged control aliases, not a new kernel win.',
    'SHARD2/4/8 M1 directly beat PAIR by point estimate; at M8+ they lose to PAIR but all remain alternatives versus S15.',
    'CANCEL and PACK5 have no point win at any measured M; close only these exact implementations.']
+ if (D/'combo/queue.json').exists():
+  result['unmeasured_composition_followup']=dict(queue=json.loads((D/'combo/queue.json').read_text()),manifest=json.loads((D/'combo/manifest.json').read_text()),status='Unmeasured composition; no additive gain or P4 promotion claimed')
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')

@@ -33,4 +33,4 @@ The composition is unmeasured. `admission.json` verifies:
 P4 confirms the whole-layer composition by held-out six-load R; no additive gain is assumed.
 
 Sent on MoE as a check,priority1.2,import budget240s: sender1548101,wrapperda4bfcfab9f0b0db.
-`queue.json` records the judge job when accepted. No prefill host is used.
+Accepted judge job**`c49dbdffe92d491a`**;`queue.json` pins the exact submitted source. Receipt pending. No prefill host is used.

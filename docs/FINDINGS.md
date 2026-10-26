@@ -423,7 +423,7 @@ P4 composes and confirms held-out six-load R. Exact unmeasured composition: `rev
 Composition admission:270 native component/replay checks; normal/forced each pass13 TASK cases,
 12 dispatch shapes,28 static checks and eager/captured calls for every variant. Exact packed lab
 passes16 fresh seeds/64AA,4,371characters/79.9s locally; no local timing claim. Sent as MoE check,
-sender**1548101**,wrapper**`da4bfcfab9f0b0db`**,priority1.2/import budget240s; judge receipt pending.
+sender**1548101**,wrapper**`da4bfcfab9f0b0db`**,priority1.2/import budget240s; accepted judge check**`c49dbdffe92d491a`**,receipt pending.
 Exact patch `review/combo/combo.patch`,candidate6884c929; admission and queue records under `review/combo/`.
 
 ## MoE M=128
