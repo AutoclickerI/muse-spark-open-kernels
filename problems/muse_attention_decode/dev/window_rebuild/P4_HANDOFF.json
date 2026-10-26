@@ -86,13 +86,77 @@
   "decode16_decode32_status": "Exact D8/D4 patch already pushed in db59ef3; S18 README confirms both composed as leave-out arms",
   "followup": {
     "job": "47e1f9d82ee745e9",
-    "arms": [
-      "A",
-      "A2",
-      "RAW2",
-      "PIPE2"
+    "state": "done",
+    "sender_pid": 2882877,
+    "seed_ids": [
+      25100021,
+      25204750,
+      25309479,
+      25414208,
+      25518937,
+      25623666,
+      25728395,
+      25833124,
+      25937853,
+      26042582,
+      26147311,
+      26252040,
+      26356769,
+      26461498,
+      26566227,
+      26670956,
+      26775685,
+      26880414
     ],
-    "state": "running",
-    "nomination_rule": "Every per-shape changed point ratio below1 with SE/seeds; native TASK and controls must establish measurement"
+    "TASK_passed": 144,
+    "A_A": {
+      "mean": 0.9993815540111758,
+      "SE": 0.0009196151316944764,
+      "changed": false,
+      "nominate_to_P4": false
+    },
+    "PIPE2_over_RAW2": {
+      "mean": 1.0063577424387653,
+      "SE": 0.0006606555136966509
+    },
+    "nominees": [
+      {
+        "case": "v32S",
+        "arm": "RAW2",
+        "ratio": 0.9759376358896068,
+        "SE": 0.0023291272546147983,
+        "seeds": 18,
+        "candidate_sha256": "f47ece749ad0309ba77575cd050641cd87908f3e3ebfab9c490d91e599e62052",
+        "patch": "P4_raw32.patch",
+        "generator": "build_layer.py"
+      },
+      {
+        "case": "v32S",
+        "arm": "PIPE2",
+        "ratio": 0.9821283261284102,
+        "SE": 0.0020752491047773005,
+        "seeds": 18,
+        "candidate_sha256": "61224be8ac01b24924c5674a7bc3751144441d62b6064a4b9fd3117d9afbd4ce",
+        "patch": "P4_pipe32.patch",
+        "generator": "build_layer.py --pipeline"
+      }
+    ],
+    "decision": "PIPE2 schedule loses to RAW2; hand its below-S15 point estimate to P4 as an alternative. RAW2 remains preferred; no v16 nominee.",
+    "PIPE2_candidate_screens": {
+      "normal": {
+        "TASK": 13,
+        "graph_shapes": 12,
+        "static": 25,
+        "evidence": "pipe32_normal_screen.json",
+        "result_sha256": "5c6f256b296e3cbfcdbfced46dc46c39cbda15030563e8499b3a1332070502fb"
+      },
+      "forced": {
+        "TASK": 13,
+        "graph_shapes": 12,
+        "static": 25,
+        "evidence": "pipe32_forced_screen.json",
+        "result_sha256": "db32a70ce40a0bc2a1c97625740cb75ec589a8c0c13b31eebbdd5ff9234bfd13"
+      }
+    }
   }
 }

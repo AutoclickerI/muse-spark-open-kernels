@@ -11,7 +11,7 @@ def load(name,path):
     m=original(name,path)
     if name=='submission':
         print(local_host.install(m),flush=True)
-        m.wr_KERNELS={n:kernel.source(c,local=True,stream=n.startswith('STREAM')) for n,c in m.wr_TOPOLOGY.items() if n in m.wr_KERNELS}
+        m.wr_KERNELS={n:kernel.source(c,local=True,stream=n.startswith('STREAM'),pipeline='WINDOW_STEP' in m.wr_KERNELS[n]) for n,c in m.wr_TOPOLOGY.items() if n in m.wr_KERNELS}
         print('Screen only: both real WGs execute; global last-WG publication replaces native DSM. ResidentC2 uses C4 capacity; streaming slices are unchanged.',flush=True)
     return m
 local_eval.load_module=load

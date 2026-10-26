@@ -1,0 +1,24 @@
+{
+  "candidate": "out/s15_window_pipe32.py",
+  "sha256": "61224be8ac01b24924c5674a7bc3751144441d62b6064a4b9fd3117d9afbd4ce",
+  "native_job": "47e1f9d82ee745e9",
+  "source_name": "STREAM2",
+  "pipeline": true,
+  "shape": "v32S only",
+  "screens": {
+    "normal": {
+      "TASK": 13,
+      "graph_shapes": 12,
+      "static": 25,
+      "evidence": "pipe32_normal_screen.json",
+      "result_sha256": "5c6f256b296e3cbfcdbfced46dc46c39cbda15030563e8499b3a1332070502fb"
+    },
+    "forced": {
+      "TASK": 13,
+      "graph_shapes": 12,
+      "static": 25,
+      "evidence": "pipe32_forced_screen.json",
+      "result_sha256": "db32a70ce40a0bc2a1c97625740cb75ec589a8c0c13b31eebbdd5ff9234bfd13"
+    }
+  }
+}

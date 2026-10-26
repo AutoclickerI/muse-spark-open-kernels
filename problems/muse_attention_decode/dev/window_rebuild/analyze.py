@@ -50,6 +50,7 @@ def pair(path,output=None):
         splits={} if 'values' not in meta else {n:x['values'][:B] for n,x in meta['values'].items()}
         results.append(dict(case=r['case'],seed_ids=r['seeds'],A_A=arms['A2'],arms=arms,actual_dynamic_splits=splits,
                             resources=r['resources'],critical=r['critical'],clocks=r['extra']['clocks']))
+        if 'PIPE2' in times:results[-1]['PIPE2_over_RAW2']=stats([x/y for x,y in zip(times['PIPE2'],times['RAW2'])])
     result=dict(job=receipt['id'],receipt=str(path),s15_sha256=d['s15_sha256'],TASK_complete=True,results=results,
         promotion='P4 composes all per-shape point winners and confirms held-out six-load R; no per-load A:A gate')
     (output or H/'pair_result.json').write_text(json.dumps(result,indent=2)+'\n');return result

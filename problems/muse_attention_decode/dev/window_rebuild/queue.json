@@ -28,7 +28,7 @@
   "pipeline": {
     "job": "47e1f9d82ee745e9",
     "sender_pid": 2882877,
-    "state": "running",
+    "state": "done",
     "host": "muse_attention_decode",
     "mode": "check",
     "wrapper_sha256": "27e41a30735dacfa9544309fd25654c9be044fdf7949bc76dbc2ab5be3fe81e9",
@@ -37,7 +37,10 @@
     "rounds": 10,
     "arms": 4,
     "shapes": 2,
-    "note": "A/A2/RAW2/PIPE2, ordinary edges, same FP8 work; one scheduling change follows af563b6b clocks; no native result yet",
-    "read": "python3 tools/h200_lab.py read 47e1f9d82ee745e9"
+    "note": "Both controls agree; PIPE2 loses directly to RAW2 at both shapes, v32 RAW2/PIPE2 each remain point winners vsS15; RAW2 preferred. No P5 receipt pending.",
+    "read": "python3 tools/h200_lab.py read 47e1f9d82ee745e9",
+    "receipt": "runs/muse_attention_decode/20261026T052924Z_check_47e1f9d82ee745e9.json",
+    "TASK_passed": 144,
+    "elapsed_lab_s": 225.13055792311206
   }
 }

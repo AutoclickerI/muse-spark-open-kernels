@@ -202,13 +202,36 @@ ordinary and clocked variants. Evidence: [pipeline_admission.json](pipeline_admi
 
 Sent attention **check47e1f9d82ee745e9**, sender **2882877**, wrapper
 **27e41a30**, payload **326c8941**: A/A2/RAW2/PIPE2 at v16/v32,
-18 fresh seeds x10 cold rounds. Its native result is pending in
-[queue.json](queue.json). When it lands, verify all144 TASK gates and A:A,
-then hand P4 every changed point estimate below1 with SE and seeds. Compare
-PIPE2 directly with RAW2 on the same seeds to isolate the schedule. A failed
-implementation/control is unmeasured; a measured loss closes only PIPE2.
-The1.3x target remains open in every outcome. A smaller shared footprint or
-different producer is still needed to establish bulk prefetch overlap.
+18 fresh seeds x10 cold rounds. Receipt is complete: all **144 TASK gates**
+pass. Full per-cohort statistics, seeds and clocks are in
+[pipeline_result.json](pipeline_result.json); no P5 receipt remains pending.
+
+| Follow-up ratio (seed SE) | v16 | v32 |
+|---|---:|---:|
+| A2/A |0.999917 (0.000853)|0.999382 (0.000920)|
+| RAW2/S15 |1.008379 (0.003318)|**0.975938 (0.002329)**|
+| PIPE2/S15 |1.023038 (0.003421)|**0.982128 (0.002075)**|
+| PIPE2/RAW2 |**1.014540 (0.000893)**|**1.006358 (0.000661)**|
+
+This scheduling change loses directly to RAW2 at both loads. Close PIPE2
+as an improvement over RAW2; its v32 point estimate is still better than
+S15, so hand it to P4 as an alternative under the per-shape nomination rule.
+RAW2 remains preferred and repeats its v32 win on18 new seeds. There is no
+v16 point winner. The v32-only PIPE2 candidate61224be8 and
+[P4_pipe32.patch](P4_pipe32.patch) rebuild with `build_layer.py --pipeline`.
+Its runtime name stays STREAM2, with pipeline=True only in kernel generation.
+Its exact normal/forced file screens each pass13 TASK/12 graphs/25 static.
+[pipeline_candidate_admission.json](pipeline_candidate_admission.json) links both full screen records.
+
+V32 instrumented math/new-KV increases9.856→10.752us, partial publication
+2.432→4.176us and merge/gate3.424→3.872us. Registers increase172→255 in the
+uninstrumented source; live operands and synchronization grow. These
+observations explain where this schedule spends more time; they do not
+isolate register pressure as the sole cause. First-capture attention is
+29.472us S15,24.033us RAW2 and25.344us PIPE2. The1.3x target is still unmet.
+Page-coordinate issue versus transport versus SFU is not isolated by the
+window fit. A smaller shared footprint or different producer remains open
+for bulk prefetch overlap; a different math/merge structure is also needed.
 
 ```sh
 python3 problems/muse_attention_decode/dev/window_rebuild/build_diagnostic.py
@@ -224,6 +247,7 @@ python3 problems/muse_attention_decode/dev/window_rebuild/analyze.py --pair runs
 CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/window_rebuild/check_kernel.py --pipeline
 CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/window_rebuild/screen_pair.py --pipeline
 python3 tools/h200_lab.py read 47e1f9d82ee745e9
+python3 problems/muse_attention_decode/dev/window_rebuild/analyze.py --pair runs/muse_attention_decode/20261026T052924Z_check_47e1f9d82ee745e9.json --output problems/muse_attention_decode/dev/window_rebuild/pipeline_result.json
 ```
 
 After receipt: retain every measured per-shape point ratio below1 for P4,
