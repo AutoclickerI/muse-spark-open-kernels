@@ -4146,6 +4146,192 @@
         "weights": "675353+7919*seed",
         "routing": "679000+M+97*seed"
       }
+    },
+    {
+      "M": 8,
+      "arm": "WS4",
+      "control": "S15",
+      "ratio": 0.9916693750000001,
+      "SE": 0.003306929265289023,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0016482500000001,
+      "AA_SE": 0.0017144584142424323,
+      "AA_mean_abs_us": 0.324,
+      "AA_max_abs_us": 1.008,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.984620822120303,
+        0.9987179278796972
+      ],
+      "job": "20ef2355a317497f",
+      "batch": "dedicated TMA issue andcompute overlap",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_overlap/ws4.py",
+        "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+        "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "775353+7919*seed",
+        "routing": "779000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "WS4",
+      "control": "S15",
+      "ratio": 0.9891114375,
+      "SE": 0.0030107641914315164,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00149275,
+      "AA_SE": 0.0013887325621467464,
+      "AA_mean_abs_us": 0.375,
+      "AA_max_abs_us": 1.152,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.982694145532387,
+        0.995528729467613
+      ],
+      "job": "20ef2355a317497f",
+      "batch": "dedicated TMA issue andcompute overlap",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_overlap/ws4.py",
+        "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+        "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "775353+7919*seed",
+        "routing": "779000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "WS4",
+      "control": "S15",
+      "ratio": 0.9917276875,
+      "SE": 0.002471751536054862,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.9991809375,
+      "AA_SE": 0.0007749886959861104,
+      "AA_mean_abs_us": 0.198,
+      "AA_max_abs_us": 0.8,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9864592738117403,
+        0.9969961011882597
+      ],
+      "job": "20ef2355a317497f",
+      "batch": "dedicated TMA issue andcompute overlap",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_overlap/ws4.py",
+        "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+        "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "775353+7919*seed",
+        "routing": "779000+M+97*seed"
+      }
     }
   ],
   "patches": {
@@ -7822,5 +8008,229 @@
       "AA_rows": 48
     },
     "status": "Measured;every valid point winner exported. Per-shape CI andA:A describe uncertainty;P4 confirms held-out six-load R"
+  },
+  "overlap_rows": [
+    {
+      "M": 8,
+      "arm": "WS4",
+      "control": "S15",
+      "ratio": 0.9916693750000001,
+      "SE": 0.003306929265289023,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.0016482500000001,
+      "AA_SE": 0.0017144584142424323,
+      "AA_mean_abs_us": 0.324,
+      "AA_max_abs_us": 1.008,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.984620822120303,
+        0.9987179278796972
+      ],
+      "job": "20ef2355a317497f",
+      "batch": "dedicated TMA issue andcompute overlap",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_overlap/ws4.py",
+        "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+        "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c"
+      },
+      "shapes": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "775353+7919*seed",
+        "routing": "779000+M+97*seed"
+      }
+    },
+    {
+      "M": 16,
+      "arm": "WS4",
+      "control": "S15",
+      "ratio": 0.9891114375,
+      "SE": 0.0030107641914315164,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 1.00149275,
+      "AA_SE": 0.0013887325621467464,
+      "AA_mean_abs_us": 0.375,
+      "AA_max_abs_us": 1.152,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.982694145532387,
+        0.995528729467613
+      ],
+      "job": "20ef2355a317497f",
+      "batch": "dedicated TMA issue andcompute overlap",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_overlap/ws4.py",
+        "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+        "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c"
+      },
+      "shapes": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "775353+7919*seed",
+        "routing": "779000+M+97*seed"
+      }
+    },
+    {
+      "M": 32,
+      "arm": "WS4",
+      "control": "S15",
+      "ratio": 0.9917276875,
+      "SE": 0.002471751536054862,
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "AA_mean_ratio": 0.9991809375,
+      "AA_SE": 0.0007749886959861104,
+      "AA_mean_abs_us": 0.198,
+      "AA_max_abs_us": 0.8,
+      "point_nominee": true,
+      "invalid": [],
+      "CI95": [
+        0.9864592738117403,
+        0.9969961011882597
+      ],
+      "job": "20ef2355a317497f",
+      "batch": "dedicated TMA issue andcompute overlap",
+      "handoff": true,
+      "exact_patch": {
+        "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+        "candidate": "runs/screen/p3a_overlap/ws4.py",
+        "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+        "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c"
+      },
+      "shapes": [
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "seed_recipe": {
+        "weights": "775353+7919*seed",
+        "routing": "779000+M+97*seed"
+      }
+    }
+  ],
+  "overlap_followup": {
+    "queue": {
+      "utc": "20261026T072210Z",
+      "problem": "muse_moe_w4a16",
+      "mode": "check",
+      "job": "20ef2355a317497f",
+      "sha256": "3dbe0bf239cabd95a4a566a1fe5f35823d41b751cffb9c9e7830504d02457688",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_overlap.py",
+      "source": "runs/muse_moe_w4a16/20261026T072210Z_check_20ef2355a317497f.py",
+      "git": "242e2f2+dirty",
+      "note": "h200_lab prof/lab/moe_p3a_overlap.py: P3a compute-overlap: BASE/S15/CACHE/WS4/WS8/WS8L2 M8/16/32,16 seeds432 pairs48AA,TASK beforeafter/readflushABBA. Exact sm90a SASS honors setmaxnreg,untraced0spill/offline2CTA.232 native TASK/capture plus8 normal/forced wholelayer screens pass. Four-seed per-warp clocks separate from perf; probe observer/spill tax retained. Checksummed local packet6633B,wrapper982947B. Only own MoE stream lookahead.",
+      "snapshot": "runs/sent/3dbe0bf239cabd95/lab_moe_p3a_overlap.py",
+      "lane": "P3a",
+      "decision": "Does dedicated TMA issue overlap math at two resident CTAs? CACHE control, WS4, WS8, own-stream WS8L2; sixteen paired seeds, separate clock probes.",
+      "priority": 4,
+      "priority_override": false,
+      "sender": 3928502,
+      "sender_log": "runs/detached/3dbe0bf239cabd95.log",
+      "payload": "prof/lab/moe_p3a_overlap.py",
+      "payload_sha256": "fb39f8ff1e1dc2fb53c6bb390ac275155c297986a2a1ae1b227668a70c1e0223",
+      "state": "complete16seeds/allTASK/source-packet-resource audit;all arms lose BASE;WS4 S15 alternatives to P4",
+      "receipt": "runs/muse_moe_w4a16/20261026T072210Z_check_20ef2355a317497f.json"
+    },
+    "source_audit": {
+      "verified": true,
+      "job": "20ef2355a317497f",
+      "wrapper_sha256": "3dbe0bf239cabd95a4a566a1fe5f35823d41b751cffb9c9e7830504d02457688",
+      "payload_sha256": "fb39f8ff1e1dc2fb53c6bb390ac275155c297986a2a1ae1b227668a70c1e0223",
+      "exact_cells": 12,
+      "paired_rows": 432,
+      "AA_rows": 48,
+      "packet_checksum": "42205039fdba4d8ac52a03ac77f663a91c7803555520d1c4eee2b2ebc81611e9"
+    },
+    "clocks": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/clock_results.json",
+    "status": "Measured;all valid point wins exported with exact patch/uncertainty. Only P4 held-out six-loadR promotes"
   }
 }

@@ -1,0 +1,186 @@
+{
+  "CACHE": {
+    "normal": {
+      "candidate_sha256": "05958ffce44abc176e5bc857d837a3f5c5f694a8383d32af373f47ac8d66aae5",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_cache_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_cache1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_cache0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_overlap/cache/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "05958ffce44abc176e5bc857d837a3f5c5f694a8383d32af373f47ac8d66aae5",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_cache_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_cache1_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_cache0_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_overlap/cache/forced/local.json"
+    }
+  },
+  "WS4": {
+    "normal": {
+      "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_ws4_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_ws41_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_ws40_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 0,
+      "report": "runs/screen/p3a_overlap/ws4/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_ws4_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_ws41_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_ws40_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 0,
+      "report": "runs/screen/p3a_overlap/ws4/forced/local.json"
+    }
+  },
+  "WS8": {
+    "normal": {
+      "candidate_sha256": "bc905a3b370e1de306a0629b77a8c1a753d4ff9e4f468bc6c455f413636963d8",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_ws8_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_ws81_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_ws80_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_overlap/ws8/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "bc905a3b370e1de306a0629b77a8c1a753d4ff9e4f468bc6c455f413636963d8",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_ws8_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_ws81_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_ws80_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_overlap/ws8/forced/local.json"
+    }
+  },
+  "WS8L2": {
+    "normal": {
+      "candidate_sha256": "3a7609dc719a62ead52aff545edf9376338d374c913e98204be02d05ae3d3867",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_ws8l2_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_ws8l21_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_ws8l20_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_overlap/ws8l2/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "3a7609dc719a62ead52aff545edf9376338d374c913e98204be02d05ae3d3867",
+      "TASK_cases": 13,
+      "shapes": 12,
+      "static_checks": 31,
+      "calls": {
+        "rvc_ov_ws8l2_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "rvc_ov_ws8l21_experts": {
+          "eager": 17,
+          "captured": 6
+        },
+        "rvc_ov_ws8l20_experts": {
+          "eager": 9,
+          "captured": 3
+        }
+      },
+      "depth_standin_calls": 35,
+      "report": "runs/screen/p3a_overlap/ws8l2/forced/local.json"
+    }
+  }
+}

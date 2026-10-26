@@ -1,0 +1,41 @@
+{
+  "payload_sha256": "fb39f8ff1e1dc2fb53c6bb390ac275155c297986a2a1ae1b227668a70c1e0223",
+  "candidates": {
+    "CACHE": "05958ffce44abc176e5bc857d837a3f5c5f694a8383d32af373f47ac8d66aae5",
+    "WS4": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+    "WS8": "bc905a3b370e1de306a0629b77a8c1a753d4ff9e4f468bc6c455f413636963d8",
+    "WS8L2": "3a7609dc719a62ead52aff545edf9376338d374c913e98204be02d05ae3d3867"
+  },
+  "native_component_TASK_checks": 232,
+  "normal_forced_screens": 8,
+  "each_screen": {
+    "TASK": 13,
+    "shapes": 12,
+    "static": "all pass"
+  },
+  "dynamic_registers_honored_in_exact_SASS": true,
+  "offline_all_arms_resident": 2,
+  "uninstrumented_zero_spills": true,
+  "TRACE_spills": "4Bstores BASEclock,24Bstores WS8clock;observer tax measured,diagnostic only",
+  "standin": "local setmaxnreg nop,CACHE/WS8 raw2to1;producer roles/math native;standin absent from payload",
+  "packed_lab": {
+    "seeds": 16,
+    "M": [
+      8,
+      16,
+      32
+    ],
+    "AA": 48,
+    "pairs": 432,
+    "chars": 7896,
+    "seconds": 103.93769898603205,
+    "clock_seeds": 4,
+    "all_TASK_pass": true
+  },
+  "wrapper_sha256": "541bcb4a62e268297c9783eb7387bcab228101d9e3b1a005a7fca5ff41863b13",
+  "source_bytes": 982947,
+  "status": "complete16seeds/allTASK/source-packet-resource audit;all arms lose BASE;WS4 S15 alternatives to P4",
+  "receipt": "runs/muse_moe_w4a16/20261026T072210Z_check_20ef2355a317497f.json",
+  "submitted_wrapper_sha256": "3dbe0bf239cabd95a4a566a1fe5f35823d41b751cffb9c9e7830504d02457688",
+  "submitted_source_bytes": 982951
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "20261026T072210Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "20ef2355a317497f",
+  "sha256": "3dbe0bf239cabd95a4a566a1fe5f35823d41b751cffb9c9e7830504d02457688",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_overlap.py",
+  "source": "runs/muse_moe_w4a16/20261026T072210Z_check_20ef2355a317497f.py",
+  "git": "242e2f2+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_overlap.py: P3a compute-overlap: BASE/S15/CACHE/WS4/WS8/WS8L2 M8/16/32,16 seeds432 pairs48AA,TASK beforeafter/readflushABBA. Exact sm90a SASS honors setmaxnreg,untraced0spill/offline2CTA.232 native TASK/capture plus8 normal/forced wholelayer screens pass. Four-seed per-warp clocks separate from perf; probe observer/spill tax retained. Checksummed local packet6633B,wrapper982947B. Only own MoE stream lookahead.",
+  "snapshot": "runs/sent/3dbe0bf239cabd95/lab_moe_p3a_overlap.py",
+  "lane": "P3a",
+  "decision": "Does dedicated TMA issue overlap math at two resident CTAs? CACHE control, WS4, WS8, own-stream WS8L2; sixteen paired seeds, separate clock probes.",
+  "priority": 4,
+  "priority_override": false,
+  "sender": 3928502,
+  "sender_log": "runs/detached/3dbe0bf239cabd95.log",
+  "payload": "prof/lab/moe_p3a_overlap.py",
+  "payload_sha256": "fb39f8ff1e1dc2fb53c6bb390ac275155c297986a2a1ae1b227668a70c1e0223",
+  "state": "complete16seeds/allTASK/source-packet-resource audit;all arms lose BASE;WS4 S15 alternatives to P4",
+  "receipt": "runs/muse_moe_w4a16/20261026T072210Z_check_20ef2355a317497f.json"
+}

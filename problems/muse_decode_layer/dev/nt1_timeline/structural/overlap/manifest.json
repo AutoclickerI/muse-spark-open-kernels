@@ -1,0 +1,42 @@
+{
+  "CACHE": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_overlap/cache.py",
+    "candidate_sha256": "05958ffce44abc176e5bc857d837a3f5c5f694a8383d32af373f47ac8d66aae5",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/cache.patch",
+    "patch_sha256": "c00e37f8cf451e3073c6d02148dac0d6157c221cf5de0eed2a8f21d806576a8f",
+    "prefix": "rvc_ov_cache",
+    "depth": 2,
+    "kind": "CACHE"
+  },
+  "WS4": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_overlap/ws4.py",
+    "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws4.patch",
+    "patch_sha256": "4a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c",
+    "prefix": "rvc_ov_ws4",
+    "depth": 2,
+    "kind": "WS4"
+  },
+  "WS8": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_overlap/ws8.py",
+    "candidate_sha256": "bc905a3b370e1de306a0629b77a8c1a753d4ff9e4f468bc6c455f413636963d8",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws8.patch",
+    "patch_sha256": "f13060f6c24c4f637838d7eb422fbc3da95d7e210a27ef27e005c92ba56ba46c",
+    "prefix": "rvc_ov_ws8",
+    "depth": 2,
+    "kind": "WS8"
+  },
+  "WS8L2": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3a_overlap/ws8l2.py",
+    "candidate_sha256": "3a7609dc719a62ead52aff545edf9376338d374c913e98204be02d05ae3d3867",
+    "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/ws8l2.patch",
+    "patch_sha256": "b2a78da2cbee9a1f7cae019c2fa9c09131ecb40392e1a2206819ce7175f1dee6",
+    "prefix": "rvc_ov_ws8l2",
+    "depth": 2,
+    "kind": "WS8L2"
+  }
+}

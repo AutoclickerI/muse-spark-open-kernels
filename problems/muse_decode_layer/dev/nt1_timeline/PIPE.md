@@ -232,3 +232,26 @@ SINGLE3 1.0583/1.0663/1.0577,HALF3 1.0672/1.0785/1.0712,DOUBLE3 1.0266/1.0443/1.
 Matched2slot layouts lose less;BASE-normalized3/2contrasts all>1,notdirect3/2timingpairs. L1/shared carveout,
 barrier andproducer-issue costs are not isolated. Only DOUBLE2/S15 .98394/.98100/.98178 alternatives go P4.
 Next structural path:producer L2 lookahead while retaining2rawslots,withissue/order proof first.
+
+
+## Dedicated producer follow-through
+
+Check **20ef2355a317497f** measures the actual decoupled implementation, not the old warp7 PROD arm.
+Current BASE's math body matches the measured S14 fingerprint:416 decode/scale (128 HMUL2),32 HMMA,
+9 weight/scale LDS per warp/tile. BASE warp7's clock residence for math is22.816/25.536/34.144us and
+copy address/issue6.976/7.840/10.976us at M8/16/32. It issues20/23/31 copies after doing the same
+22/25/33 math tiles as each other consumer; warp0 issues the first2. WS8's dedicated warp8 issues all
+22/25/33 copies, zero math, while every consumer issues zero copies. Exact SASS honors setmaxnreg
+and has no consumer UBLKCP / producer HMMA or HMUL2. All timing arms actually keep2CTAs, zero local.
+
+The clocks cost BASE1.126/1.144/1.137 andWS8 1.340/1.307/1.263 of their respective untraced timings;
+probe local allocation is8B/24B. They measure phase residence, not hardware issue utilization,
+exclusive stalls, or additive critical-path cost. First8 issue endpoints on the seed0 critical CTA
+fall inside consumer-warp0 math in0/8 BASE and0/8,0/8,1/8 WS8 samples. These endpoints neither time
+entire issue intervals nor establish missing load overlap from the loads-only oracle. Full per-warp
+rows, timeline endpoints and observer SE are retained in `structural/overlap/clock_results.json`.
+
+Untraced CACHE/WS4/WS8/WS8L2 all lose to c49 BASE. WS4/S15 point alternatives go to P4 with exact patch;
+[overlap README](structural/overlap/README.md) records all arm CI and leaves-open decisions. This closes
+these schedules; compute/decode issue and readiness remain open. The next instruction lever is the
+416 decode/scale body with eight math warps and two CTAs retained, screened by SASS/resource count first.

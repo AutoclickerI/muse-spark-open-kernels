@@ -3,15 +3,20 @@ import argparse,json,math,re,statistics,sys
 from pathlib import Path
 from receipt import review_unpack
 D=Path(__file__).resolve().parent
+sys.path.insert(0,str(D.parents[4]/'tools'))
+from lab_packet import read_packets,result_lines
 p=argparse.ArgumentParser();p.add_argument('receipt',type=Path);a=p.parse_args();text=a.receipt.read_text();host=None
 if a.receipt.suffix=='.json':
- host=json.loads(text);text=host['result']['log_tail']
+ host=json.loads(text);tail=host['result']['log_tail'];packets=read_packets(tail);text='\n'.join(result_lines(tail))
 blobs=re.findall(r'^P3A_REVIEW_XZ85 (\S+)$',text,re.M)
 if len(blobs)!=1:
  out=dict(job=host['id'] if host else 'LOCAL_ONLY',measured=False,invalid=['Seed-level timing/correctness archive absent; '+('wrapper truncated middle lines' if 'LAB_TRUNCATED' in text else 'missing archive')],summary=[],all_arms='unmeasured; no winner or loss can be inferred from official host pass alone')
  a.receipt.with_suffix('.summary.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2));sys.exit(0)
 r=review_unpack(blobs[0]);invalid=[]
 if host is not None and not host['result'].get('passed'):invalid.append('official host failed')
+if host is not None:
+ for packet in packets:
+  if packet['packet'].get('complete') is False or packet['packet'].get('transport_errors'):invalid.append('lab packet incomplete or transport failed')
 if 'S15' in r['failures']:invalid.append('S15 control failed')
 if 'S15' not in r['gates'] or r['gates']['S15'][0]>.015 or r['gates']['S15'][1]>.075:invalid.append('S15 TASK gate failed or absent')
 summary=[]

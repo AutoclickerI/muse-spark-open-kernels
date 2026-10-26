@@ -1,0 +1,33 @@
+{
+  "receipts": [
+    "16c180784f414576",
+    "d650c04ead114119",
+    "29ad388de976432c"
+  ],
+  "current_BASE_math_byte_identical_to_measured_S14": true,
+  "math_sha256": "cb764f441d6c06e6e85fbaa25a0a10408ebfc1b8a520edef4d59d29ceece5d77",
+  "per_math_warp_tile": {
+    "weights_per_lane": 256,
+    "decode_scale_instructions": 416,
+    "of_which_HMUL2": 128,
+    "MMA": 32,
+    "shared_weight_scale_loads": 9,
+    "total": 457
+  },
+  "per_warp_segment_Bfill": {
+    "vector_global_loads": 16,
+    "instruction_envelope": 46
+  },
+  "PAIR_epi_per_CTA_tile": {
+    "W13": 148,
+    "W2": 129,
+    "main_writer_warps": [
+      0,
+      1
+    ]
+  },
+  "BASE_producer_warp": 7,
+  "BASE_producer_after_all_consumer_partial_store_barrier": true,
+  "interpretation": "Static instruction/model counts plus calibrated same-op rates;not measured issue-slot occupancy or additive wall-time attribution",
+  "primary_setmaxnreg": "https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#miscellaneous-instructions-setmaxnreg"
+}

@@ -1,0 +1,999 @@
+{
+  "arms": {
+    "CACHE": {
+      "candidate_sha256": "05958ffce44abc176e5bc857d837a3f5c5f694a8383d32af373f47ac8d66aae5",
+      "TASK_checks": 58,
+      "worst_total": 0.0023573124781250954,
+      "worst_row": 0.0024820503313094378
+    },
+    "WS4": {
+      "candidate_sha256": "8e6a1db83318a495df654423e6fb36dfd4122e3f18203cb8967bb2aa3e2f6c58",
+      "TASK_checks": 58,
+      "worst_total": 0.0023571664933115244,
+      "worst_row": 0.002482492011040449
+    },
+    "WS8": {
+      "candidate_sha256": "bc905a3b370e1de306a0629b77a8c1a753d4ff9e4f468bc6c455f413636963d8",
+      "TASK_checks": 58,
+      "worst_total": 0.0023573124781250954,
+      "worst_row": 0.0024820503313094378
+    },
+    "WS8L2": {
+      "candidate_sha256": "3a7609dc719a62ead52aff545edf9376338d374c913e98204be02d05ae3d3867",
+      "TASK_checks": 58,
+      "worst_total": 0.0023573124781250954,
+      "worst_row": 0.0024820503313094378
+    }
+  },
+  "depth_standin_calls": [
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 9,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 24,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache0_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws80_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l20_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 8,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 16,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_cache1_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws81_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    },
+    {
+      "module": "rvc_ov_ws8l21_module",
+      "requested_stages": 2,
+      "executed_stages": 1,
+      "M": 32,
+      "register_reassignment": "local nop"
+    }
+  ],
+  "deep_depth_math_executed": 2,
+  "actual_native_split_kernels": true,
+  "scope": "M1 unchanged; all changed M<=32 paths tested; H200 executes actual3/4 stage values"
+}

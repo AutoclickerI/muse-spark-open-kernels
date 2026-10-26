@@ -1,0 +1,182 @@
+{
+  "job": "20ef2355a317497f",
+  "all_uninstrumented_resource_rows_match_offline": true,
+  "runtime": [
+    {
+      "M": 8,
+      "arm": "cache",
+      "info": [
+        2,
+        85,
+        0,
+        115472,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 8,
+      "arm": "ws4",
+      "info": [
+        2,
+        128,
+        0,
+        79568,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 8,
+      "arm": "ws8",
+      "info": [
+        2,
+        80,
+        0,
+        115472,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 8,
+      "arm": "ws8l2",
+      "info": [
+        2,
+        80,
+        0,
+        115472,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 16,
+      "arm": "cache",
+      "info": [
+        2,
+        85,
+        0,
+        115536,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 16,
+      "arm": "ws4",
+      "info": [
+        2,
+        128,
+        0,
+        79888,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 16,
+      "arm": "ws8",
+      "info": [
+        2,
+        80,
+        0,
+        115536,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 16,
+      "arm": "ws8l2",
+      "info": [
+        2,
+        80,
+        0,
+        115536,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 32,
+      "arm": "cache",
+      "info": [
+        2,
+        85,
+        0,
+        115664,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 32,
+      "arm": "ws4",
+      "info": [
+        2,
+        128,
+        0,
+        80528,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 32,
+      "arm": "ws8",
+      "info": [
+        2,
+        80,
+        0,
+        115664,
+        0
+      ],
+      "offline_match": true
+    },
+    {
+      "M": 32,
+      "arm": "ws8l2",
+      "info": [
+        2,
+        80,
+        0,
+        115664,
+        0
+      ],
+      "offline_match": true
+    }
+  ],
+  "clock_role_counts_pass": true,
+  "clock_local_bytes": {
+    "BASE": 8,
+    "WS8": 24
+  },
+  "observer_tax": {
+    "8_BASE": [
+      1.126,
+      0.0082
+    ],
+    "8_WS8": [
+      1.34,
+      0.0049
+    ],
+    "16_BASE": [
+      1.144,
+      0.0039
+    ],
+    "16_WS8": [
+      1.307,
+      0.0102
+    ],
+    "32_BASE": [
+      1.137,
+      0.005
+    ],
+    "32_WS8": [
+      1.263,
+      0.0047
+    ]
+  },
+  "limits": "Clocks are instrumented residence,not issue utilization or exclusive wall-time attribution;event stamps are issue endpoints."
+}

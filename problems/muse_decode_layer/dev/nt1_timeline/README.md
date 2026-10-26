@@ -129,3 +129,18 @@ DOUBLE3 1.02659/1.04433/1.03526 atM8/16/32;matching2slot arms also lose versus B
 residency diagnosis:holding2CTAs is insufficient,andloads-only also removes math/synchronization.
 DOUBLE2/S15 .983936/.981001/.981782 remains a P4 alternative atall3M,exact patch4cfcbab3,seeds/SE/CI
 in `point_nominations.json`;no3slot nominee. Other producer/reduction schedules andL2 lookahead remain open.
+
+
+## Dedicated producer: measured
+
+[structural/overlap/README.md](structural/overlap/README.md) records check **20ef2355a317497f**, sender3928502:
+16 seeds,432 paired ratios48 A:A, all TASK/source/packet/resource gates pass. CACHE/WS4/WS8/WS8L2 all keep
+two actual CTAs, zero local bytes in timing kernels, and all lose to c49 BASE. WS4 is closest at
+1.009828/1.017186/1.018867 for M8/16/32. WS8 clocks prove all TMA moves to its producer; its 26–34%
+observer tax prevents unbiased normal-kernel phase attribution. Static457 math instructions/warp/tile
+include416 decode/scale,32 HMMA,9 LDS; BASE warp7 couples that math to next-copy issue.
+WS4/S15 .991669/.989111/.991728, SE .003307/.003011/.002472, all16 seeds, remains an alternative in
+`point_nominations.json` with exactpatch `structural/overlap/ws4.patch` SHA2564a4ad0258e2eac58d1b2543bda65c39be9ed4cce4a37f45122296c7ce29cd51c.
+P4 confirms held-out six-load R; there is no incremental BASE winner. Next: shrink the decode/scale
+instruction body at the cheapest SASS/resource fidelity while retaining eight-consumer registers;
+W2-ready/grid-barrier scheduling remains open. No repeat depth/L2 or standalone sub1% run.
