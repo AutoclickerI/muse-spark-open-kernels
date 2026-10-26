@@ -10,7 +10,7 @@ for r in gap['ranking']:
     if r['passed']:
         ratio=f"SGLang/ours {r['our_speedup']:.5f} [{r['speedup_ci'][0]:.5f},{r['speedup_ci'][1]:.5f}]; ours/leader {r['time_ratio_to_component_leader']:.5f}; A:A unavailable"
         scope=f"{r['tests']} tests/{r['shapes']} shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion."
-        if r['role']=='projection':scope+=' Includes board sum/cast/router-add tax; one-reducer/producer-only follow-up queued.'
+        if r['role']=='projection':scope+=' One-reducer board adapter independently measured and admitted; in-layer fused consumers unchanged.'
     else:ratio='unmeasured: component correctness/setup failed';scope=r.get('error') or 'Inspect the receipt before rebuilding this adapter.'
     rows.append((f"P12 S15 {r['role']} component",ratio,'Frozen S15 path behind the board ABI; official paired SGLang control',scope,r['job']))
 result=json.loads((A/'results.json').read_text())
@@ -32,7 +32,7 @@ for run in result['runs']:
         else:mechanism='Scalar point decoder in current balanced/bal2/GEMV loop'
         decision=r['classification']+'; closes only this reader/structure combination, not lossless coding'
         if r['followup_candidate']:decision='P4 whole-layer candidate; require paired layer gain and preserve fusions/concurrency'
-        if run['kind']=='pool' and r['t']==1:decision+='; this M1 batch times one-hot activations only'
+        if run['kind']=='pool' and r['t']==1:decision+='; random timing with separate one-hot probes'
         if r['role'] in ('pooler','router_hi','router_lo','router_sum') or r['role']=='gate' and r['t']>=128:decision+='; standalone diagnostic'
         rows.append((f"P10 {run['kind']} T{r['t']} {r['role']} {r['arm']}",f"{r['ratio']:.5f} [{r['ratio_min']:.5f},{r['ratio_max']:.5f}]; AA max {r['aa_max']:.5f}",mechanism,decision,run['job']))
 if (A/'followup_results.json').exists():
@@ -45,10 +45,23 @@ if (A/'followup_results.json').exists():
             if r['followup_candidate']:decision='P4 whole-layer candidate; preserve current fusions and concurrent gate'
             rows.append((f"P10 native reader T{r['t']} {r['role']}",ratio,'Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls',decision,follow['job']))
         if not follow.get('point_valid'):
-            rows.append(('P10 grouped Triton point reader','unmeasured: T256 fused-route equality gate failed','Grouped codewords/masks per1024W inside original dot loops','Native ten-cell section is independently gated and valid; grouped section needs membership/order/tie diagnosis and a fresh gated run',follow['job']))
+            rows.append(('P10 grouped Triton point reader','unmeasured: T256 fused-route equality gate failed','Grouped codewords/masks per1024W inside original dot loops','Native ten-cell section is independently gated and valid; grouped retry 83c65f7b5b84402f supplies the fresh measured comparison after tie diagnosis',follow['job']))
         else:
             for r in follow['point']:
                 rows.append((f"P10 grouped T{r['t']} {r['role']}",f"{r['ratio']:.4f} [{r['ratio_min']:.4f},{r['ratio_max']:.4f}]; AA {r['aa_max']:.4f}",'Grouped codeword and mask broadcast, original dot geometry','P4 candidate' if r['followup_candidate'] else 'Closes only this grouped-reader schedule',follow['job']))
+# Preserve one row per measured recipe, including the independent retry sections.
+point=json.loads((A/'point_retry_results.json').read_text())
+if point['status']=='measured':
+    for r in point['rows']:
+        rows.append((f"P10 grouped retry T{r['t']} {r['role']}",f"group {r['ratio']:.4f} [{r['ratio_min']:.4f},{r['ratio_max']:.4f}]; scalar {r['scalar_ratio']:.4f}; AA {r['aa_max']:.4f}",'Shared1024W codewords/masks in original dot geometry','Measured loss closes this grouped schedule. All TASK-derived FP64 route/norm gates pass; numerical near-tie membership allowed, not exact order. No P4 promotion.',point['job']))
+reduce=json.loads((H/'reduce_results.json').read_text())
+if reduce['status']=='measured':
+    for r in reduce['rows']:
+        rows.append((f"P12 output reducer T{r['t']} {r['role']}",f"B/A {r['ratio']:.4f} [{r['ratio_min']:.4f},{r['ratio_max']:.4f}]; P/A {r['producer_ratio']:.4f}; AA {r['aa_max']:.4f}",'One Triton output reducer vs torch sum/cast/add; identical S15 producer','FP64/probe gates pass. Promote component adapter only; production layer already fuses its consumers.',reduce['job']))
+rows.append(('P12 original projection adapter','SGLang/ours .98059 [.96588,.99530]; A:A unavailable','Separate torch sum/cast/router-add output conversion','Superseded by measured one-reducer adapter 08cc94050a4e4564; not a layer regression.','d6ad694a27954c80'))
+layer=json.loads((R/'problems/muse_bf16_proj/dev/sparse_plane/layer_results.json').read_text())
+for r in layer['rows']:
+    rows.append((f"P10 fused pool whole-layer {r['arm']}",f"layer speedup {r['speedup']:.7f} [{r['ci95'][0]:.7f},{r['ci95'][1]:.7f}]",'NF original12-bit WR1/WK8/S1/ST1 replaces only pool_router at selected T; gate concurrency and fused route/norm retained',('A:A independently captured; CI spans1' if r['arm']=='A2' else 'Lower95>1, 768/768 independent TASK checks. C1816 nominated to P4; rebase and official verification required. Outer unchanged S15 host prepare separately failed router autotune.'),layer['job']))
 block=tag+'\n\nRecipe ratios are candidate/control (lower is faster), except the explicitly labelled component speedups. '
 block+='Full shape/seed evidence and code pins: `problems/muse_bf16_proj/dev/sparse_all/results.json` and `problems/muse_decode_layer/dev/p12_components/leader_gap.json`.\n\n'
 block+='| Recipe | Ratio and control spread | Mechanism | What remains open / decision | Receipt job |\n|---|---|---|---|---|\n'

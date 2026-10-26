@@ -30,7 +30,18 @@ def dc_ol_source(src):
     # No compressed pointer is described to TMA; only activations still use TMA.
     old='CUtensorMap tw,tx;\n  int rc=r3_o32_o_direct_a_ol_map(&tw,(void*)w,8192,64,BK,PACK==2);if(rc)return rc;\n  rc=r3_o32_o_direct_a_ol_map(&tx'
     assert old in src
-    src=src.replace(old,'CUtensorMap tw{},tx;\n  int rc=r3_o32_o_direct_a_ol_map(&tx')
+    src=src.replace(old,'CUtensorMap tx;\n  int rc=r3_o32_o_direct_a_ol_map(&tx')
+    # A CUtensorMap kernel parameter is driver-validated even when its TMA
+    # use has been replaced. Remove the obsolete W descriptor from the ABI;
+    # a zero descriptor is not a valid launch argument on Hopper.
+    assert 'const __grid_constant__ CUtensorMap tw,' in src
+    src=src.replace('const __grid_constant__ CUtensorMap tw,','')
+    assert '>>>(tw,tx,' in src
+    src=src.replace('>>>(tw,tx,','>>>(tx,')
+    # Preserve which host API rejected the launch in any fresh receipt.
+    src=src.replace('Size,SMEM);if(rc)return rc;','Size,SMEM);if(rc)return 10000+rc;')
+    src=src.replace('m,T,BK);if(rc)return rc;','m,T,BK);if(rc)return 20000+rc;')
+    src=src.replace('return int(cudaGetLastError());','int launch_rc=int(cudaGetLastError());return launch_rc?30000+launch_rc:0;')
     return src
 
 

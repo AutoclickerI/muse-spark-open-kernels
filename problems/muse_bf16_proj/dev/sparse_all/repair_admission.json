@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "source_sha256": "e747a67405b0a5014affc7d05612a3452ac7c33cc1e84c471e0c36241331154b",
+  "payload_sha256": "0d3872d8441c18708bb47f4f83222c838a658cc2e61e40df9957d7386330050e",
+  "wrapper_sha256": "da24eaf2028de2013077086bd131886a3b0f6f9f30461abf2f61aa097d069c2e",
+  "wrapper_bytes": 498133,
+  "comparisons": 57,
+  "direct": 17,
+  "seeds": 8,
+  "proof": {
+    "normal": {
+      "tests": 9,
+      "shapes": 30,
+      "static": 25,
+      "inputs": 3
+    },
+    "forced": {
+      "tests": 9,
+      "shapes": 30,
+      "static": 25,
+      "inputs": 3
+    }
+  },
+  "change": "Remove obsolete zero weight CUtensorMap parameter from O32 kernel and launch; stage-coded launch errors; preserve earlier rows on explicit incomplete failure; original gate unchanged",
+  "diagnosis": "Zero tensor-map launch argument suspected; fresh H200 result required to establish cause",
+  "native_units": 10,
+  "spills": 0,
+  "proof_sha256": {
+    "hopper_glue_validation.json": "427a0dfbeae13b76ee66568e42005e9d328b3570abf7e07a4c4a864f6901000c",
+    "native_compile.json": "65a552016d0f7c67acf0e4e1f75c88691866278479ad6c175451386a13a4a4a2",
+    "repair_validation.json": "f78e9dc5e7be2eae898965205128d02dd4eb9ca4695f9ecd54a247eb260fe95b",
+    "screen/normal/result.json": "221ed76fe110019aea20d429d64d47ea453e00a5663b459d1aa8c4f6709894ad",
+    "screen/forced/result.json": "810d638e2f70611b5d229f111ff49a4684e236ac2b1ac89c7a9aa27b6e42cc77"
+  }
+}

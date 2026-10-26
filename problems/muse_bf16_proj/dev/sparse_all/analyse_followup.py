@@ -3,7 +3,10 @@ from pathlib import Path
 import re,json,datetime
 H=Path(__file__).resolve().parent;R=H.parents[3];sha=json.loads((H/'combined_manifest.json').read_text())['payload_sha256']
 wrapper=json.loads((H/'combined_admission.json').read_text())['wrapper_sha256']
-ledger=[json.loads(l) for l in (R/'runs/ledger.jsonl').read_text().rsplit('\n',1)[0].splitlines()];hits=[x for x in ledger if x['sha256']==wrapper]
+import sys
+sys.path.insert(0,str(R/'problems/muse_decode_layer/dev/p12_components'))
+from own_receipts import receipts
+ledger=receipts();hits=[x for x in ledger if x['sha256']==wrapper]
 out=dict(payload_sha256=sha,updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),status='pending',native=[],point=[],scans=[])
 if hits:
     row=hits[-1];file=R/Path(row['source']).with_suffix('.json');d=json.loads(file.read_text());r=d.get('result') or {};tail=r.get('log_tail','')

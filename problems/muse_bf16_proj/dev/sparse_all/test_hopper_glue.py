@@ -24,7 +24,14 @@ class Standin:
                 registry[args[3]].copy_(torch.mm(x,roles[role].T,out_dtype=torch.float32))
             calls.append(dict(role=role,t=t,entry=label,captured=torch.cuda.is_current_stream_capturing()));return 0
         return run
-def mock(*a,**kw):return Standin()
+def mock(*a,**kw):
+    source=kw.get('cuda_sources','')
+    if 'r3_o32_o_direct_a_ol_projection' in source:
+        assert 'const __grid_constant__ CUtensorMap tw,' not in source
+        assert 'CUtensorMap tw{}' not in source
+        assert '>>>(tx,' in source
+        assert 'map(&tw' not in source
+    return Standin()
 old_vendor=m._dc_base_nf_vendor;old_loader=m.load_inline;old_cap=torch.cuda.get_device_capability
 def vendor():
     ns=old_vendor();ns['load_inline']=mock;return ns

@@ -1,41 +1,29 @@
-# P12: current S15 paths on the component boards
+# P12 component diagnostics: frozen S15
 
-Purpose: get current H200 per-shape receipts against the component leaders. These boards do not determine our decode-layer score. Base is exact S15 `60254883`; `build.py` preserves its source and the NF MIT notice, then appends each board ABI. Candidates are <1 MB and generated, not separate forks of S15.
+Purpose: rank the remaining dense, attention and expert gaps against component-board leaders. Overall score still comes from the decode layer. Base is exact S15 `60254883`; component adapters preserve the reviewed NF MIT notice and are generated under1MB. No active decode candidate is changed here.
 
-- MoE: S15 NT1 flags at M1/8/16/32; its heavy/light/NT1 three-stream paths at M128/256; its native NT1 for required nearby sizes. EP8 keeps32 experts from the board's256-expert input, losslessly. Board BF16 output matches the layer expert ABI.
-- Attention: S15 last-CTA decode1 sliding, direct-partial decode1 full, attn_main at decode16/32, layer FA3 at verify1/sliding, and register-fold N128 VQ8 at full verify16/32. Required DP-head tests use S15's dynamic-head partial-input kernel. Scored TP8 policies are unchanged.
-- Projection: S15's full-QKV, O and unpool paths, including its selected NF rows; pooler uses the fused pool/router producer's coded/balanced recipe at standalone N4096, router uses that balanced kernel on its BF16 hi+lo bank. Board outputs require materializing/reducing/casting. The layer's qkv3/gate concurrency and pool/router fusion cannot be represented by separate board calls: these receipts do not directly measure those fusion savings.
+MoE preserves the NT1 and heavy/light stream paths, EP8 local32 experts, routing and output ABI. Attention preserves S15's selected decode, FA3 and VQ8 producers and dynamic-head correctness path. Projection preserves the S15 producers; the current board adapter reduces/casts in one Triton kernel, including router hi+lo. Separate boards cannot measure the layer's pool/router fusion or gate/attention overlap.
 
-`screen.py` runs tools/local_eval.py in the judge image on GPU0, normal and forced, three fresh inputs per scored shape. `static_cache.py` reuses the pinned S15 admission only for identical CUDA text AND compiler flags; Python checks always run, and a changed CUDA source compiles. Attention stand-ins retain the original launch/allocation glue. Projection forced mode traverses native Lt setup and VDSK's Python wrapper with a local-only MMA stand-in; MoE already runs the selected Python stream/route/finalizer paths with its compiled sm120 arithmetic branch. No stand-in is shipped.
+## Measured ranking
 
-`report.py` requires every test, graph shape and static check to pass on the exact queued SHA. `admission.json` retains counts, hashes and branch calls. Generated detailed results live in screen/; local timing is not H200 evidence. A transient GPU0 OOM from concurrent lane screens is rerun sequentially, never admitted.
+Public `okc leaderboard <problem> --json` snapshots contain aggregate value and speedup only. Leader per-shape times are unavailable; the documented job endpoint is owner-only (`upstream/llms.txt:78`). `shape_times.csv` preserves all48 of our shape timings and explicitly marks leader shape times unpublished. These aggregate gaps rank opportunities; they are not whole-layer effect estimates.
 
-Queue policy for this task: scored, priority4, not-before epoch1792972800 = 2026-10-26T00:00:00+00:00 (09:00 KST), behind existing reset labs. No candidate depends on the reset outcome: they measure frozen S15 paths. `compare.py` matches exact source SHA through the ledger, reads actual benchmark records, ranks aggregate time ratios to each component leader, and preserves our per-shape receipt rows. Board snapshots do not publish leader per-shape times; do not infer them. Rank actual layer value with stage fractions and the fusion/protocol differences above after receipts arrive.
+| Rank | Stage | SGLang/ours,95% CI | Time/leader | Tests/shapes | Job |
+|---:|---|---|---:|---|---|
+| 1 | attention | 1.64698 [1.62228,1.67169] | 1.79873 | 16/12 | `4e108beb9a0a4cdb` |
+| 2 | projection | 1.20236 [1.18432,1.22039] | 1.36125 | 9/30 | `08cc94050a4e4564` |
+| 3 | moe | 2.02924 [1.99880,2.05968] | 1.25835 | 5/6 | `97f5e7f3c3fc4159` |
 
-Final queued component snapshots: MoE **4127d934**, sender **939577**; attention **f38b9ae3**, sender **939623**; projections **01f80a78**, sender **939656**. They were queued with epoch1792972800 / priority4; current receipts are recorded below and in `leader_gap.json`. `queue.json` records exact full hashes; all normal and forced screens are pinned in `admission.json`.
+Component receipts use the official paired SGLang controls; independent A:A is **unavailable**, not zero. All correctness/static gates passed. Attention is the largest aggregate gap, followed by projection and MoE. The original projection adapter `d6ad694a27954c80` scored0.98059x [0.96588,0.99530]; its conversion chain overstated the layer's projection gap.
 
+Paired adapter lab **4e87b1d44d334104** completed30/30 shapes×8 seeds. One-reducer B/A is0.5607–1.0132, A:A per-cell max deviation1.1–6.23%; all FP64 and one-hot gates pass. The corrected adapter was admitted on the component board as **08cc94050a4e4564**,1.20236x [1.18432,1.22039]. Producers are identical. This promotes only the board adapter; the layer already has fused consumers. `reduce_results.json` has every shape and producer-only attribution.
 
-Reset audit: all three frozen S15 component receipts are complete; see the ranked table below. The current `okc leaderboard <problem> --json` snapshots are `leader_moe.json`, `leader_attention.json`, and `leader_projection.json`. They contain aggregate value/speedup only; their rows do not publish per-shape leader times. The documented job endpoint is owner-only (`upstream/llms.txt:78`). Consequently the comparison reports our actual per-shape times and aggregate gaps; it does not fabricate leader shape times. Component receipts have the official paired SGLang controls and confidence interval, with no independent A:A arm. They are diagnostics for stage priority, not paired whole-layer promotions.
+MoE us at T1/8/16/32/128/256:30.878/72.944/105.207/138.927/207.993/268.911. Attention d1/d16/d32/v1/v16/v32 us: sliding9.320/13.245/16.862/17.826/22.707/28.369; full19.439/104.390/195.318/29.597/139.703/235.585.
 
-`watch.py` waits on receipt-directory events, starts `tools/h200_lab.py read <job>` as each of the five P10/P12 jobs is accepted, and stops after all five receipts land. It never sends or promotes code. `leader_gap.json` records the current exact-SHA receipt state.
+## Verification and reproducibility
 
-## Receipt results
+`screen.py` runs tools/local_eval.py in the judge image on GPU0, normal and forced, three inputs per scored shape. MoE5tests/6shapes, attention16/12, projection9/30; pinned admissions include25static checks. Hopper-only execution uses explicit local arithmetic stand-ins while retaining real launch/allocation glue. Changed CUDA compiles sm90a; unchanged source+flags reuse the exact S15 compile proof. No stand-in is shipped and sm120 timing does not establish H200 gains.
 
-All three frozen S15 component adapters pass. Their official paired SGLang confidence intervals are reported; none captured an independent A:A. Leader per-shape timings are not public in the board JSON, so the requested per-shape leader gaps remain unavailable. Our complete per-shape benchmark records are preserved in `leader_gap.json`.
+`compare.py`, `analyse_reduce.py` and `findings.py` regenerate reports. `own_receipts.py` supplements ledger entries lost during shared-worktree updates only from a catalog with an exact source SHA and matching local receipt; it never edits the shared ledger. `receipt_catalog.json`, `admission.json`, `reduce_admission.json`, `leader_gap.json` and `shape_times.csv` pin the evidence. Generated candidates, wrappers and verbose logs remain ignored.
 
-| Gap rank | Stage | SGLang / ours | 95% interval | Aggregate time / leader | Tests / shapes | Receipt |
-|---:|---|---:|---|---:|---|---|
-| 1 | attention | 1.64698 | [1.62228,1.67169] | 1.76667 | 16 / 12 | `4e108beb9a0a4cdb` |
-| 2 | projection | 0.98059 | [0.96588,0.99530] | 1.65590 | 9 / 30 | `d6ad694a27954c80` |
-| 3 | moe | 2.02924 | [1.99880,2.05968] | 1.25835 | 5 / 6 | `97f5e7f3c3fc4159` |
-
-Attention is the largest aggregate component gap; the projection gap includes the board output-conversion chain and awaits its paired attribution. This ranking is diagnostic, not a measured layer-value ranking: board routing/input distributions and layer fusions differ. No component result promotes a layer change.
-
-MoE us at T1/8/16/32/128/256: **30.878 /72.944 /105.207 /138.927 /207.993 /268.911**.
-
-Attention us at d1/d16/d32/v1/v16/v32: sliding **9.320 /13.245 /16.862 /17.826 /22.707 /28.369**; full **19.439 /104.390 /195.318 /29.597 /139.703 /235.585**.
-
-
-Projection receipt `d6ad694a27954c80` passed9tests/30shapes and scored **0.98059x** [0.96588,0.99530], an aggregate **1.65590x** time gap to the component leader. It includes a measured board-adapter sum/cast/router-add chain, unlike fused in-layer consumers. This is a valid board result, not a direct inference of that layer stage's gap. `projection_reduce.py.inc` uses one Triton output reducer (including router hi+lo), preserving every S15 producer. Normal+forced9/30/25 and the exact30shape8seed paired lab pass locally. Follow-up sender **1147249**, MoE priority4.5, payload `917e4ec6`, wrapper `4502b8bb` (481537 bytes), on compact judged host `ac9dd461`. The oversized default-host waiter1130147 was cancelled before acceptance; it consumed no judge job. The follow-up separates A/A2 old adapter, reduced adapter B and producer-only P, each with FP64/probe checks. Promote the new component adapter only if it beats its A:A envelope; layer integration remains separate.
-
-Attention's scored-only waiter939623 was held to tomorrow after scored quota filled while checks remained. Replaced with exact-source check sender776198, completed **4e108beb9a0a4cdb** with16tests/12shapes passing. This is the same admitted f38b9ae3 code and completes the diagnostic without waiting for scored capacity.
+All three original reset component jobs are complete. Attention's scored-only waiter was replaced by an exact-source check when only check capacity remained. Original queue epoch1792972800/priority4 is historical; there are no pending component jobs. No new geometry sweeps are queued: attention's large gap has priority; the small pool winner is handed to P4 separately.

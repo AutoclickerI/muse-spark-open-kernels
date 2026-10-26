@@ -31,26 +31,28 @@ This keeps the full original8-high-byte window (16 exponents) and rare BF16 esca
 
 On the three-seed local fused N4608 distribution, the bank is54,033,232 instead of56,623,104 bytes: **11.4511 bits/weight,4.5746% fewer encoded bytes**. Common escape/table metadata is excluded from both figures and remains unchanged. Router-hi/lo statistics and the actual MMA-fragment order explain why this is not exactly the previous pure-Gaussian11.422 model. This is a measured size, not an H200 speedup.
 
-## Verification and queue
+## Verification
 
-- `screen.py`: **each of12 arms passes tools/local_eval.py's9 task tests,30 scored-shape graph checks with3 fresh inputs, and2 Python static checks** in the judge image on GPU0. Unchanged other projection roles use FP32 matmul only in this diagnostic component screen; they are not claimed optimizations.
-- `compile_native.py`: all12 final native units compile for sm90a; zero stack/spill bytes. Template-generated CUDA is compiled here because local_eval cannot see inside generated source strings.
-- `test.py` / `--vector`:120 actual warp-MMA projection/graph cases over3 seeds, zero/signed-zero/outlier neighbors and one-hot probes; maximum relative L2 <4.8e-6. Native DSM launches use an explicit local arithmetic stand-in; original S4 packing and Python plan glue execute in the batch screen.
-- `check_bits.py`:6 native reader round trips (scalar/vector ×3 seeds), enumerated inputs and random codewords, exact packed-byte equality and unchanged escape metadata.
-- `lab.py.inc`:12 arms ×4 token counts ×8 seeds ×12 cold ABBA rounds, A:A control, and the same fused route/norm consumer. The entire48-comparison payload passes locally. sm120 timings are not used for selection. GPU0 OOM under concurrent lane screens was rerun; no failed screen was admitted.
-- `admission.json`, `validation.json`, `vector_validation.json`, `bit_validation.json`, `native_compile.json`, `lab_validation.json` pin the evidence. Generated binaries, adapters, candidates, payloads and verbose logs are ignored.
+Each of12 arms passes tools/local_eval.py in the judge image on GPU0:9 TASK tests,30 graph shapes×3 inputs, and Python static checks. All12 native sm90a units compile without stack/spills.120 actual warp-MMA cases over3 seeds, vector/scalar packed bit round trips, random inputs, zero/outliers and separate one-hot probes pass. Hopper DSM uses an explicit arithmetic stand-in locally; native execution is established only by the H200 receipts below.
 
-Queue: one attention-host import lab, budget420 s, priority4.5, not-before epoch1792972800 (2026-10-26 09:00 KST), behind the reset batch and P12 priority4 component runs. Sender identity and exact SHA are in `queue.json`. The complete host file (about776 KB) passes the judge word preflight; payload output fits its9,000-character cap.
+## Receipts and decision
 
-**Decision rule:** this stage batch is independent and is queued now. After both its receipt and reset S15 leave-one-out receipt arrive, integrate an arm only at token counts where its projection+consumer ratio beats A:A noise and preserves task correctness; apply it onto whichever S15/S14 base the reset admits, then send one whole-layer paired lab. A size saving or sm120 rank alone never promotes it. If reset removes an NF projection row, retain that incumbent control in the layer comparison; the pool/router codec experiment still runs unchanged.
+| Job | Result vs control | A:A max | Decision |
+|---|---|---|---|
+| `b02c4f27e71c4340` | No rows; Triton control namespace lacked __name__ | unavailable | Unmeasured; fixed namespace and warmup synchronization |
+| `bd3f8fc778ca4832` |48/48 complete; best raw12 WR1/WK8/ST1 B/A T1=.91739,T8=.81018,T16=.84632 |3.807%,4.361%,4.509% | Raw12 stage winner; every sparse arm loses; retain bal2 atT32 (best NF1.20529,AA2.163%) |
+| `818bd6da9a4b4123` | C1816 layer speedup1.011826 [1.010367,1.013285]; B8161.003617 [1.001905,1.005330] | A2 layer .999453 [.997776,1.001130] | Nominate C1816 to P4;768/768 independent whole-layer TASK checks pass |
 
-Rebuild: `build.py`, `build_board.py`, `build_lab.py`; screen all named arms with `tools/img python screen.py <arm>`; aggregate with `report.py`. The implementation is in this directory; the only external source dependency is the committed authorized `public_nf/port.py`, `nf_selected.py`, and license. No public-source expansion tool is run.
+The48-cell stage repair uses random M1 inputs plus separate one-hot checks, raw-control FP64 checks, fused route/norm gates and8 seeds×12 alternating cold rounds. Scalar/vector sparse expansion loses despite4.57% fewer encoded bytes; that closes these readers, not denser coding in general. WR2/WK8 also wins atT8 but is dominated by the single WR1 geometry, so no extra runtime option is retained.
 
-Final handoff: P10 sender **1134936**, wrapper **1a03dfa6906c8242**, payload **3ec6e318**, source-screen candidate **266ad770**; no accepted H200 job yet. Existing reset sender3526702 /49ce378bb4bbb287 is unchanged. `manifest.json` pins the reproducible source and generated artifact hashes.
+The paired layer lab uses16 held-out seeds,8 cold rounds, all12 shapes and an independent official TASK checker for each A/A2/B816/C1816 output. Its six-load geomean CI lower bound exceeds1; individual cells are not required to win. **The outer unchanged S15 host prepare separately failed its router autotune exact-ID gate after the lab completed.** Therefore this is measured paired evidence and a P4 nomination, not an official admitted candidate. `layer_results.json` records both facts.
 
+## P4 handoff
 
-## Reset receipt and repair
+`layer_patch.py.inc` (candidate `36b25b4b`) replaces only fused pool_router atT1/8/16 with the original12-bit NF WR1/WK8/S1/ST1. It leaves bal2 atT32 and the existing gate/attention streams and fusions in place. It uses the same layer stream and FP32 route/norm input. `build_layer.py` applies it onto frozen S15; `p4_handoff.json` pins the patch, receipts and result.
 
-Job `b02c4f27e71c4340` produced no comparison rows: the balanced control failed Triton compilation with `NoneType.startswith` because the executed source namespace lacked `__name__`. This is **unmeasured**, not a sparse-format or geometry loss. The repaired payload supplies stable names for both source namespaces, synchronizes shared-buffer warmups, checks the raw control against FP64, validates fused route/norm outputs, and times random M1 inputs with separate one-hot probes. All48 local comparisons pass; original twelve native units and TASK admissions remain unchanged.
+Normal and forced candidate screens pass13 TASK tests/12shapes/25static checks. Both complete wrapper rehearsals pass768/768 TASK checks. Both native MT instantiations compile sm90a without spills. `layer_admission.json` pins exact sources and proofs; `admit_layer.py` verifies them. All build products are ignored.
 
-Repair sender **1127183**, prefill priority4.5, payload `4cab544f`, wrapper `f38ad830` (803592 bytes). This is a fresh import-phase lab on a host with quota; it leaves the original receipt intact. No candidate is promoted until the repaired control and eight-seed A:A decision rule pass.
+Decision already met for the frozen S15 pair: nominate C1816. P4 must rebase onto its current admitted base, preserve stream/fusion order, pass official TASK and require paired held-out six-load lower95%>1 there. The host failure cannot be treated as a passing official check or as a measured kernel loss. No additional pool geometry sweep is planned; the larger attention gap has priority.
+
+Rebuild scripts: build.py/build_board.py/build_lab.py for stage diagnostics; build_layer.py/build_layer_lab.py, screen_layer.py, screen_layer_lab.py and admit_layer.py for the layer handoff. Detailed per-arm results are in ../sparse_all/results.json; encoded sizes and all original compile/bit proofs remain in this directory. The port retains Nathen Fernandes's full MIT notice and source URL at86aff75.

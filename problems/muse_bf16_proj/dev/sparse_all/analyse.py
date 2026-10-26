@@ -2,12 +2,15 @@
 from pathlib import Path
 import json,re,datetime
 H=Path(__file__).resolve().parent;R=H.parents[3]
-ledger=[json.loads(l) for l in (R/'runs/ledger.jsonl').read_text().rsplit('\n',1)[0].splitlines()]
+import sys
+sys.path.insert(0,str(R/'problems/muse_decode_layer/dev/p12_components'))
+from own_receipts import receipts
+ledger=receipts()
 def analyse(sha,kind):
     matches=[x for x in ledger if x['sha256']==sha]
     if not matches:return dict(kind=kind,status='pending')
     entry=matches[-1];file=R/Path(entry['source']).with_suffix('.json');d=json.loads(file.read_text());r=d.get('result') or {};tail=r.get('log_tail','')
-    name='p10_sparse_pool_lab' if kind=='pool' else 'p10_all_roles_lab'
+    name='p10_sparse_pool_lab' if kind=='pool' else 'p10_all_roles_lab' if sha.startswith('d50be2e7') else 'p10_all_roles_retry'
     found=re.search(r'^LAB_BEGIN '+name+r'\s+.*?\n(.*?)(?:^LAB_END.*?$|\Z)',tail,re.M|re.S)
     body=found[1] if found else tail;rows=[]
     if kind=='pool':
@@ -31,12 +34,14 @@ def analyse(sha,kind):
         for x in rows:x['followup_candidate']=False;x['classification']='unmeasured: incomplete or failed gate'
     return dict(kind=kind,job=entry['job'],status='measured' if valid else 'unmeasured',complete=complete,expected_rows=expected,
         rows_found=len(rows),host_passed=bool(r.get('passed')),host_error=r.get('error'),receipt=str(file.relative_to(R)),rows=rows,
-        error_lines=[s for s in body.splitlines() if any(t in s for t in ('LAB_ERROR','INCOMPLETE','TRUNCATED','Error','assert '))],
+        error_lines=([s for s in body.splitlines() if any(t in s for t in ('LAB_ERROR','INCOMPLETE','TRUNCATED','Error','assert '))] if found else ['No LAB_BEGIN marker or comparison rows retained in receipt; no lab result can be inferred from host score.']),
         caveat='lab validity uses its own gates; the host board score is not the lab result')
 out=dict(updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),runs=[
     analyse('1a03dfa6906c8242f25c8d808aec8ef96ab6de960f905257195369842bf021dd','pool'),
     analyse('f38ad830883f88b5b0151940ad436d240121b965ae5a632585439c8780238a84','pool'),
-    analyse('d50be2e7d31519d68877a08613c11ab0bdac83caa74086708ca177382dae914b','all')])
+    analyse('d50be2e7d31519d68877a08613c11ab0bdac83caa74086708ca177382dae914b','all'),
+    analyse('b8081e96708d5a65dde8539d0e00a75c60e999c05bbeb305a97477f57ddff028','all')])
+if (H/'repair_admission.json').exists():out['runs'].append(analyse(json.loads((H/'repair_admission.json').read_text())['wrapper_sha256'],'all'))
 (H/'results.json').write_text(json.dumps(out,indent=2)+'\n')
 for r in out['runs']:
     print(r['kind'],r['status'],r.get('job'),r.get('rows_found'))

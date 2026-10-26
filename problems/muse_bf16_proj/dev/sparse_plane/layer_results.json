@@ -1,0 +1,92 @@
+{
+  "job": "818bd6da9a4b4123",
+  "receipt": "runs/muse_decode_layer/20261026T030531Z_check_818bd6da9a4b4123.json",
+  "status": "measured paired lab; outer host failed",
+  "checks": 768,
+  "shapes": 12,
+  "seeds": 16,
+  "outer_host_passed": false,
+  "outer_host_error": "unchanged S15 host prepare: glue router disagrees with FP32 oracle",
+  "rows": [
+    {
+      "arm": "A2",
+      "speedup": 0.9994531,
+      "ci95": [
+        0.997776,
+        1.0011301
+      ],
+      "seeds": [
+        0.996908,
+        1.003561,
+        0.999473,
+        0.995936,
+        0.994596,
+        1.006334,
+        1.002012,
+        0.997673,
+        1.001754,
+        0.99888,
+        1.001814,
+        0.998548,
+        0.99825,
+        0.998957,
+        0.995467,
+        1.001086
+      ]
+    },
+    {
+      "arm": "B816",
+      "speedup": 1.0036173,
+      "ci95": [
+        1.0019045,
+        1.0053301
+      ],
+      "seeds": [
+        1.000859,
+        1.000599,
+        1.004449,
+        1.000578,
+        0.999228,
+        1.007053,
+        1.007285,
+        1.001693,
+        1.007893,
+        1.005993,
+        1.005557,
+        1.005094,
+        1.003067,
+        1.001736,
+        0.998581,
+        1.008211
+      ]
+    },
+    {
+      "arm": "C1816",
+      "speedup": 1.011826,
+      "ci95": [
+        1.0103668,
+        1.0132851
+      ],
+      "seeds": [
+        1.010577,
+        1.013026,
+        1.013671,
+        1.009437,
+        1.008231,
+        1.01426,
+        1.013123,
+        1.007225,
+        1.016111,
+        1.010443,
+        1.016154,
+        1.012632,
+        1.010406,
+        1.013215,
+        1.008033,
+        1.012672
+      ]
+    }
+  ],
+  "P4_nomination": "C1816: original12-bit NF WR1/WK8/S1/ST1 at T1/8/16; retain bal2 at T32",
+  "decision": "Both B816 and C1816 lower95>1. C1816 is the stronger paired result. Rebase onto P4 current base, preserve fusions/streams, rerun official TASK and paired layer gate; no official candidate promotion from failed outer host."
+}
