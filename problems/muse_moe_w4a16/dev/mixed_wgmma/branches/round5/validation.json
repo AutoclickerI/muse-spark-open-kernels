@@ -1,0 +1,17 @@
+{
+  "local_start64_checks": 12,
+  "payload_sha256": "b610039eebfd98d75bc0ac564a27af1388d72c6dbec47bfc4b9e45379ab3c6b6",
+  "checks": 1036,
+  "input_cases": 128,
+  "bit_equal_to_S14": [
+    128,
+    128,
+    128
+  ],
+  "worst_L2_row": [
+    0.004212214145809412,
+    0.004781694617122412
+  ],
+  "device": "GPU0 sm120",
+  "coverage": "All4 arms forced at every size; hot/empty/real and N32/N64/N128/N192/N256 boundary routes; NaN ACT/Y/SS/OUT, two graph replays, exact shared-decode/raw-share output equality, separately captured local_start64. Native SS WGMMA loads swizzled A via matched mma.sync stand-in locally; both new arms retain S2."
+}

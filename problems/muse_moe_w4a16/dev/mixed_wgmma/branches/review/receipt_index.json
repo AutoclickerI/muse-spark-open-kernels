@@ -1,0 +1,43 @@
+{
+  "stage3": {
+    "utc": "20261026T001035Z",
+    "problem": "muse_attention_decode",
+    "mode": "check",
+    "job": "8792099636654bac",
+    "sha256": "f867a8b74a243d1e21a3ba073331bbcea1ac46f188832c0f644fd6d084b9b0f3",
+    "file": "problems/muse_attention_decode/lab/lab_cluster_schedule_payload.py",
+    "source": "runs/muse_attention_decode/20261026T001035Z_check_8792099636654bac.py",
+    "git": "f5bb903+dirty",
+    "status": "done",
+    "speedup": 1.5868609186025995,
+    "interval": [
+      1.5630580048235605,
+      1.6106638323816382
+    ],
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/cluster_schedule_payload.py: P3b S14 f1c77ce6 whole MoE paired 16 seeds: identical native direct-copy image cluster1 vs ordinary CTA launch vs serial classes; S3 small-class copy pipeline; all local TASK/bit gates pass, synthetic weights=None"
+  },
+  "round2": {
+    "utc": "20261026T010122Z",
+    "problem": "muse_moe_w4a16",
+    "mode": "submit",
+    "job": "dd539517bc8344dd",
+    "sha256": "de47736b9f588673007af6d5dd3fa8f0a1736064d049c95274d825f028e0838a",
+    "file": "problems/muse_moe_w4a16/lab/lab_payload+moe_nt1_pipe_rebuild.py",
+    "source": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.py",
+    "git": "04848aa+dirty",
+    "note": "h200_lab prof/lab/moe_nt1_pipe_rebuild.py: P3a response to 16c18078: shared MMA ILP2 improves 1.0/1.9/1.7% at M8/16/32 without saturated pipe; exact caa59593 packed FLIGHT ILP K16 LUT, 32 seeds with TASK and A:A; PAIR separately nominated to P4 || h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round2/payload.py: P3b round2 whole MoE S14 vs transposed register-A shared-B N64/N128 and intra-CTA two-WG activation reuse S2/S3. Four new variants, 24 seeds, phase attribution. All four local_eval screens and 995 poisoned/shifted graph checks pass. Independent follow-up behind unchanged f867a8b reset packet.",
+    "snapshot": "runs/sent/de47736b9f588673/lab_payload+moe_nt1_pipe_rebuild.py"
+  },
+  "round5": {
+    "utc": "20261026T010127Z",
+    "problem": "muse_attention_decode",
+    "mode": "submit",
+    "job": "7ea5e070b8f744ea",
+    "sha256": "f0c92b1867e9aa506af7a95cde9578bf414e6455ce11203a137f0d97ae502611",
+    "file": "problems/muse_attention_decode/lab/lab_tokpair_payload.py",
+    "source": "runs/muse_attention_decode/20261026T010127Z_submit_7ea5e070b8f744ea.py",
+    "git": "04848aa+dirty",
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round5/tokpair_payload.py: P3b response to87920996 valid topology loss: fixed two-N32 token groups share packed weights (RS) vs share one timed decode in BF16 smem (SS). Exact S14 and CTA2 direct controls, no activation pack/cluster/separate producer/global queue;24seeds x3/M, cold ABBA against both. b610039e payload; both official screens plus1036 graph checks bit-equalS14 and24seed None cold entry pass; four native kernels zero spills/C75,128regs max and smem allow2CTAs/SM. Isolates whether shared decode repays extra smem at low accumulator width; no promotion inferred from stage3.",
+    "snapshot": "runs/sent/f0c92b1867e9aa50/lab_tokpair_payload.py"
+  }
+}

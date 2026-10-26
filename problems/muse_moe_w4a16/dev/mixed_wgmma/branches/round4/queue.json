@@ -1,21 +1,25 @@
 {
   "status": "queued_not_judge_accepted",
-  "pid": 1837828,
-  "sender_sha256": "8c4c89c1d51b179d6ff248d2d7f28e917c6a1da4004164ca119deb93558e75d1",
+  "pid": 237268,
+  "sender_sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
   "host": "muse_attention_decode",
-  "priority": 13.0,
-  "not_before_epoch": 1792972860.0,
-  "not_before_KST": "2026-10-26 09:01",
-  "import_budget_s": 150,
-  "waiting_file": "runs/waiting/1837828.json",
-  "file": "problems/muse_attention_decode/lab/lab_ws_payload.py",
-  "snapshot": "runs/sent/8c4c89c1d51b179d/lab_ws_payload.py",
+  "priority": 2.0,
+  "import_budget_total_s": 150,
+  "first_payload_budget_s": 75,
+  "second_payload_budget": "all remaining time",
+  "payload_order": [
+    "round3",
+    "round4"
+  ],
+  "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
+  "snapshot": "runs/sent/4ca41bdc7a25cce7/lab_tail_payload+ws_payload.py",
+  "waiting_file": "runs/waiting/237268.json",
   "payload_sha256": "80c5d1c8fd50dc5a579e6d74d8c54bde9d4b99d552d65520dace7976334da119",
   "job_id": null,
-  "prior_senders_unchanged": [
-    "f867a8b74a243d1e",
-    "71a7126383e39952",
-    "77150f5f5046c333"
+  "replaced_unaccepted_senders": [
+    "77150f5f5046c333",
+    "a62f4dfba280b998",
+    "8c4c89c1d51b179d"
   ],
-  "queue_basis": "Every existing waiting sender had priority<=12; new priority13 goes behind them. Attention had7 existing waiting senders, daily quota exhausted until reset; existing snapshots/processes unchanged."
+  "reason": "Pack both unchanged payloads into one attention import run; stop only own unaccepted senders under dispatch lock. No duplicate judge jobs; avoids known prefill log displacement."
 }

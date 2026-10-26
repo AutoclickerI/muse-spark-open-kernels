@@ -21,7 +21,24 @@ for f in sass.split('Function : ')[1:]:
  dep=collections.Counter(re.findall(r'WARPGROUP.DEPBAR.LE gsb0, (0x[0-9a-f]+)',f));assert dep.get('0x1',0)>0
  assert 'USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd0' in f and 'USETMAXREG.DEALLOC.CTAPOOL 0x58' in f
  assert op['UTMALDG.2D'] and op['UBLKCP.S.G'],op  # tensor X TMA and linear raw-weight TMA
- kernels.append(dict(name=f.splitlines()[0].strip(),instructions=dict(op),group_wait=dict(dep)))
+ inst={int(pc,16):text.strip() for pc,text in re.findall(r'/\*([0-9a-f]+)\*/\s+([^\n]*?);',f)}
+ start=next(pc for pc,t in inst.items() if 'USETMAXREG.DEALLOC.CTAPOOL 0x58' in t);todo=[start+16];seen=set()
+ while todo:
+  pc=todo.pop()
+  if pc in seen or pc not in inst:continue
+  seen.add(pc);t=inst[pc]
+  assert 'USETMAXREG.TRY_ALLOC' not in t,'producer unexpectedly reaches consumer allocation'
+  regs=list(map(int,re.findall(r'\bR(\d+)\b',t)));assert not regs or max(regs)<88,(pc,t)
+  branch=re.search(r'\bBRA(?:\.[A-Z]+)* (0x[0-9a-f]+)',t)
+  if branch:
+   todo.append(int(branch[1],16))
+   if t.startswith('@'):todo.append(pc+16)
+  elif re.search(r'\b(EXIT|RET)\b',t):
+   if t.startswith('@'):todo.append(pc+16)
+  else:todo.append(pc+16)
+ all_regs=list(map(int,re.findall(r'\bR(\d+)\b',f)));assert max(all_regs)<208
+ producer_max=max([int(r) for pc in seen for r in re.findall(r'\bR(\d+)\b',inst[pc])],default=0)
+ kernels.append(dict(name=f.splitlines()[0].strip(),instructions=dict(op),group_wait=dict(dep),producer_CFG_instructions=len(seen),producer_max_physical_register=producer_max,overall_max_physical_register=max(all_regs)))
 assert len(rows)==len(kernels)==8
 assert (88+208+208)*128==168*384==64512
 out=dict(cuda_sha256=hashlib.sha256(cu.encode()).hexdigest(),CTA2_prefix_sha256=hashlib.sha256(ctrl.encode()).hexdigest(),control_prefix_equal=True,sass_sha256=hashlib.sha256(sass.encode()).hexdigest(),register_budget=dict(producer_decode=88,consumer0=208,consumer1=208,entry=168,total=64512),resources=rows,kernels=kernels,limitation='Native TMA and dynamic register redistribution are compiled and audited, not executed on local sm120.')

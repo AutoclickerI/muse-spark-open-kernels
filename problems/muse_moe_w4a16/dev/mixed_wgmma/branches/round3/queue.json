@@ -1,19 +1,25 @@
 {
   "status": "queued_not_judge_accepted",
-  "pid": 1290600,
-  "sender_sha256": "77150f5f5046c333b29095428f3b4db702c108ab0ca4d2fa4ff66113e12fd085",
-  "host": "muse_prefill_layer",
-  "priority": 11.0,
-  "not_before_epoch": 1792972860.0,
-  "not_before_KST": "2026-10-26 09:01",
-  "waiting_file": "runs/waiting/1290600.json",
-  "file": "problems/muse_prefill_layer/lab/lab_tail_payload.py",
-  "snapshot": "runs/sent/77150f5f5046c333/lab_tail_payload.py",
+  "pid": 237268,
+  "sender_sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
+  "host": "muse_attention_decode",
+  "priority": 2.0,
+  "import_budget_total_s": 150,
+  "first_payload_budget_s": 75,
+  "second_payload_budget": "all remaining time",
+  "payload_order": [
+    "round3",
+    "round4"
+  ],
+  "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
+  "snapshot": "runs/sent/4ca41bdc7a25cce7/lab_tail_payload+ws_payload.py",
+  "waiting_file": "runs/waiting/237268.json",
   "payload_sha256": "abc1631d5d23bdcb1cb8f056ca16c5df137788e1dc3f48046d57ed7994b531ee",
   "job_id": null,
-  "prior_senders_unchanged": [
-    "f867a8b74a243d1e",
-    "71a7126383e39952"
+  "replaced_unaccepted_senders": [
+    "77150f5f5046c333",
+    "a62f4dfba280b998",
+    "8c4c89c1d51b179d"
   ],
-  "queue_basis": "Before this send: prefill2 waiting, MoE4; all existing senders priority<=10. New prefill priority11 leaves reset and round2 intact. Prefill resets to20 checks at00:00UTC."
+  "reason": "Pack both unchanged payloads into one attention import run; stop only own unaccepted senders under dispatch lock. No duplicate judge jobs; avoids known prefill log displacement."
 }

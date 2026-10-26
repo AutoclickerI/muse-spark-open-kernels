@@ -113,7 +113,10 @@ and screened again; earlier queued round2/round3/reset snapshots were left uncha
 - [audit.py](audit.py): O3 sm90a compile plus cuobjdump, all8 specializations have zero stack,
   spills or LDL/STL, no C7512/C7513/C7519/C7520 warning, retained wait1, tensor-X `UTMALDG.2D`,
   packed-weight `UBLKCP.S.G`, and88→208 register redistribution. [resources.json](resources.json)
-  records instruction counts, registers and smem. Compile/resource admission is not runtime proof.
+  records instruction counts, registers and smem. An additional CFG audit follows all branches
+  reachable after producer deallocation: max physicalR49 (MAX256) orR41 (others), below88;
+  no producer path reaches consumer allocation, and every physical register is below208.
+  Compile/resource admission is not runtime proof.
 - [protocol_check.py](protocol_check.py):442 ownership/progress checks including400 varied
   completion schedules acrossS1/S2 and gated/PIPE, three successive32-stage tiles, static tile
   coverage at grids1/2/132/264 and expert counts through1024, and all256 HP entries.
@@ -136,14 +139,15 @@ to distinguish exposed staging/issue cost from unavailable epilogue overlap.
 
 ## Queued
 
-Attention import-time host **muse_attention_decode**, sender **8c4c89c1d51b179d**, PID **1837828**,
-priority13, not-before **1792972860** (2026-10-26 09:01KST), import budget **150s**. No judge job
-ID yet: this is a locally queued sender, held before any judge request. Every existing sender
-had priority<=12; attention had7 waiting senders and no current quota. [queue.json](queue.json)
-records the frozen wrapper SHA and paths. Progress: `runs/detached/8c4c89c1d51b179d.log`;
-snapshot: `runs/sent/8c4c89c1d51b179d/lab_ws_payload.py`.
+Attention import host **muse_attention_decode**, packed sender **4ca41bdc7a25cce7**, PID **237268**,
+priority2, total budget150s shared with the unchanged round3 payload first. This second payload
+receives all time remaining after round3. Original8c4c89c1 was stopped only while unsent under
+the dispatch lock; no duplicate judge job. Exact metadata: [queue.json](queue.json); progress
+`runs/detached/4ca41bdc7a25cce7.log`, snapshot
+`runs/sent/4ca41bdc7a25cce7/lab_tail_payload+ws_payload.py`. No judge job ID yet.
 
-The reset **f867a8b74a243d1e**, round2 **71a7126383e39952** and round3 **77150f5f5046c333** senders
-remain alive with unchanged snapshots. There is no dependency on their outcome and no duplicate
-round4 send. Next: collect reset and round4 receipts, check measured heavy overlap/resource
-behavior against this model, and integrate only an arm that wins whole-MoE and whole-layer pairs.
+`review/packed_entry.json` rehearses the actual shared150s wrapper deadline:22/24 seeds for
+round3/4, both pass,106.4s total locally. Native H200 compile time is not in that cached local
+estimate. Stage3 `8792099636654bac` loses all topology arms; round2 is at the judge as
+`dd539517bc8344dd`. No production promotion. Next: read the paired receipts and use the
+actual control spread and seed count before any whole-layer integration nomination.

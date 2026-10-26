@@ -102,11 +102,14 @@ not an exhaustive hardware race test.
 
 ## Queued
 
-Prefill host, sender **77150f5f5046c333**, PID **1290600**, priority11, not-before **1792972860**
-(2026-10-26 09:01KST), no H200 job ID yet. At dispatch, prefill had2 waiting senders and resets to20
-checks; MoE already had4 waiting. Every existing sender had priority<=10. Exact metadata: `queue.json`;
-progress `runs/detached/77150f5f5046c333.log`, frozen input
-`runs/sent/77150f5f5046c333/lab_tail_payload.py`. Existing f867a8b and71a71263 senders are unchanged.
+Packed attention import sender **4ca41bdc7a25cce7**, PID **237268**, priority2, total budget150s,
+with unchanged round4 after this payload. First gets75s; the second receives all remaining time.
+No H200 job ID yet. Original prefill77150f5f and intermediate attentiona62f4dfb were stopped
+only while unsent, under the dispatch lock. The identical prefill host lost all LAB_BEGIN
+in completed `a05f986396d744e7`; attention avoids that output loss. Packing round3/4 uses one
+judge slot, with no duplicate job. `review/packed_entry.json` rehearses the exact shared deadline:
+round3 passes22seeds, round4 passes24,106.4s total locally (native compile time unmeasured).
+Current metadata: `queue.json`; progress `runs/detached/4ca41bdc7a25cce7.log`.
 
 Decision: compare every arm's paired whole-MoE ratio to both S14 and CTA2 at each M. STATIC vs QUEUE
 isolates whether claiming repays its cost; S3 gets promoted only on measured gains. Require whole-layer

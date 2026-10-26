@@ -1,0 +1,116 @@
+{
+  "job": "8792099636654bac",
+  "AA_us": {
+    "signed_mean": 0.043,
+    "absolute_mean": 0.519,
+    "max_absolute": 3.12
+  },
+  "gates_valid": true,
+  "calibration": {
+    "128": {
+      "S14_us": 182.9,
+      "DIRECT_normal_ratio": 1.1965,
+      "DIRECT_previous_ratio": 1.197,
+      "DIRECT_ratio_vs_previous": 0.9995822890559731,
+      "deep_vs_serial_us_ratio": 0.9511255145835158,
+      "deep_vs_normal_us_ratio": 0.9961471424639942,
+      "phase_service_us": {
+        "S14_NF": [
+          43.52,
+          34.94,
+          81.17,
+          49.74
+        ],
+        "DIRECT_CLUSTER1": [
+          66.38,
+          39.9,
+          84.54,
+          54.91
+        ],
+        "DIRECT_NORMAL": [
+          66.93,
+          39.04,
+          80.16,
+          49.9
+        ],
+        "DIRECT_SERIAL": [
+          79.34,
+          46.61,
+          79.81,
+          49.12
+        ],
+        "DEEP_SERIAL": [
+          63.79,
+          44.62,
+          80.9,
+          48.8
+        ]
+      },
+      "mechanism": "Cluster1 active clusters equal perSM blocks times132SM. Ordinary launch is not a fix; serial width classes lose. Deeper ring helps the serial schedule but not enough to beat the ordinary or S14 controls.",
+      "model_rule": "Preserve original forecasts for audit. Recalibrate the direct transport anchor to these phase rates; do not assign a topology win or transfer the serial S3 gain to other ownerships. A causal residual split remains unidentified."
+    },
+    "256": {
+      "S14_us": 256.67,
+      "DIRECT_normal_ratio": 1.1381,
+      "DIRECT_previous_ratio": 1.1322,
+      "DIRECT_ratio_vs_previous": 1.0052110934463874,
+      "deep_vs_serial_us_ratio": 0.9446201102177252,
+      "deep_vs_normal_us_ratio": 1.0764584763212082,
+      "phase_service_us": {
+        "S14_NF": [
+          80.46,
+          47.86,
+          71.14,
+          44.14
+        ],
+        "DIRECT_CLUSTER1": [
+          110.56,
+          76.11,
+          70.67,
+          45.62
+        ],
+        "DIRECT_NORMAL": [
+          112.29,
+          70.64,
+          71.04,
+          44.7
+        ],
+        "DIRECT_SERIAL": [
+          115.9,
+          78.85,
+          70.99,
+          44.18
+        ],
+        "DEEP_SERIAL": [
+          104.72,
+          74.58,
+          70.88,
+          44.27
+        ]
+      },
+      "mechanism": "Cluster1 active clusters equal perSM blocks times132SM. Ordinary launch is not a fix; serial width classes lose. Deeper ring helps the serial schedule but not enough to beat the ordinary or S14 controls.",
+      "model_rule": "Preserve original forecasts for audit. Recalibrate the direct transport anchor to these phase rates; do not assign a topology win or transfer the serial S3 gain to other ownerships. A causal residual split remains unidentified."
+    }
+  },
+  "whole_layer_crosscheck": {
+    "job": "7eaa262a30ec483e",
+    "source": "problems/muse_decode_layer/dev/s15_timeline/H200.md",
+    "owner_MoE_critical_us": [
+      177.53,
+      236.12
+    ],
+    "owner_combined_unique_roof_us": [
+      122.9,
+      132.06
+    ],
+    "GPU_idle_us": [
+      5.45,
+      5.86
+    ],
+    "other_MoE_work_overlapping_small_branch_dependency_gaps_us": [
+      28.14,
+      105.56
+    ],
+    "limitation": "Representative median-seed S15 traces, not the synthetic fixed fixture. The late NT1 completion path includes work on other streams, not pure launch overhead. These are observed owners, not a causal heavy-vs-light allocation."
+  }
+}

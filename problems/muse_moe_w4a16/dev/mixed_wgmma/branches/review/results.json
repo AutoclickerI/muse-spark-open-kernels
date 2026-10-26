@@ -1,0 +1,362 @@
+{
+  "stage3": {
+    "sender": "f867a8b74a243d1e",
+    "legacy_sender": "f867a8b74a243d1e",
+    "payload_sha256_prefix": "c5840d07ddb95a2d",
+    "job": "8792099636654bac",
+    "receipt": "runs/muse_attention_decode/20261026T001035Z_check_8792099636654bac.json",
+    "state": "measured",
+    "host_status": "ok",
+    "decoded": {
+      "valid": true,
+      "reason": "complete paired lab, all gates pass",
+      "rows": [
+        {
+          "m": 128,
+          "arm": "S14_NF",
+          "n": 48,
+          "us": 182.9,
+          "pair": 1.0,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M128 S14_NF n=48 us=182.90 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS bit=48"
+        },
+        {
+          "m": 128,
+          "arm": "DIRECT_CLUSTER1",
+          "n": 48,
+          "us": 219.52,
+          "pair": 1.2039,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.065,
+            1.391
+          ],
+          "gate": true,
+          "line": "M128 DIRECT_CLUSTER1 n=48 us=219.52 pair=1.2039 lo/hi=1.065/1.391 L2/row=0.004134/0.004709 TASK=PASS bit=48"
+        },
+        {
+          "m": 128,
+          "arm": "DIRECT_NORMAL",
+          "n": 48,
+          "us": 218.02,
+          "pair": 1.1965,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.075,
+            1.372
+          ],
+          "gate": true,
+          "line": "M128 DIRECT_NORMAL n=48 us=218.02 pair=1.1965 lo/hi=1.075/1.372 L2/row=0.004134/0.004709 TASK=PASS bit=48"
+        },
+        {
+          "m": 128,
+          "arm": "DIRECT_SERIAL",
+          "n": 48,
+          "us": 228.34,
+          "pair": 1.2585,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.089,
+            1.537
+          ],
+          "gate": true,
+          "line": "M128 DIRECT_SERIAL n=48 us=228.34 pair=1.2585 lo/hi=1.089/1.537 L2/row=0.004134/0.004709 TASK=PASS bit=48"
+        },
+        {
+          "m": 128,
+          "arm": "DEEP_SERIAL",
+          "n": 48,
+          "us": 217.18,
+          "pair": 1.1976,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.04,
+            1.461
+          ],
+          "gate": true,
+          "line": "M128 DEEP_SERIAL n=48 us=217.18 pair=1.1976 lo/hi=1.040/1.461 L2/row=0.004134/0.004709 TASK=PASS bit=48"
+        },
+        {
+          "m": 256,
+          "arm": "S14_NF",
+          "n": 48,
+          "us": 256.67,
+          "pair": 1.0,
+          "L2": 0.00412,
+          "row": 0.004674,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M256 S14_NF n=48 us=256.67 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004120/0.004674 TASK=PASS bit=48"
+        },
+        {
+          "m": 256,
+          "arm": "DIRECT_CLUSTER1",
+          "n": 48,
+          "us": 292.59,
+          "pair": 1.1427,
+          "L2": 0.00412,
+          "row": 0.004674,
+          "spread": [
+            1.047,
+            1.273
+          ],
+          "gate": true,
+          "line": "M256 DIRECT_CLUSTER1 n=48 us=292.59 pair=1.1427 lo/hi=1.047/1.273 L2/row=0.004120/0.004674 TASK=PASS bit=48"
+        },
+        {
+          "m": 256,
+          "arm": "DIRECT_NORMAL",
+          "n": 48,
+          "us": 291.4,
+          "pair": 1.1381,
+          "L2": 0.00412,
+          "row": 0.004674,
+          "spread": [
+            1.037,
+            1.243
+          ],
+          "gate": true,
+          "line": "M256 DIRECT_NORMAL n=48 us=291.40 pair=1.1381 lo/hi=1.037/1.243 L2/row=0.004120/0.004674 TASK=PASS bit=48"
+        },
+        {
+          "m": 256,
+          "arm": "DIRECT_SERIAL",
+          "n": 48,
+          "us": 332.07,
+          "pair": 1.2992,
+          "L2": 0.00412,
+          "row": 0.004674,
+          "spread": [
+            1.062,
+            1.601
+          ],
+          "gate": true,
+          "line": "M256 DIRECT_SERIAL n=48 us=332.07 pair=1.2992 lo/hi=1.062/1.601 L2/row=0.004120/0.004674 TASK=PASS bit=48"
+        },
+        {
+          "m": 256,
+          "arm": "DEEP_SERIAL",
+          "n": 48,
+          "us": 313.68,
+          "pair": 1.2273,
+          "L2": 0.00412,
+          "row": 0.004674,
+          "spread": [
+            0.973,
+            1.486
+          ],
+          "gate": true,
+          "line": "M256 DEEP_SERIAL n=48 us=313.68 pair=1.2273 lo/hi=0.973/1.486 L2/row=0.004120/0.004674 TASK=PASS bit=48"
+        }
+      ],
+      "AA_us": {
+        "signed_mean": 0.043,
+        "absolute_mean": 0.519,
+        "max_absolute": 3.12
+      },
+      "seeds": 16,
+      "lab_seconds": 68.7,
+      "errors": [],
+      "lines": [
+        "META S14 nf f1c77ce6 vs identical DIRECT device image: cluster1 launch / ordinary launch / ordinary launch with serial classes. No gather in all direct arms. Cluster capacity reported separately from per-SM block capacity. Same native N32..256, packed weights and no-gather class streams; DEEP uses S3 for MAX64 and retains S2/S1 elsewhere; COPY removes TMA/multicast activation protocol and adds required generic-to-async publication fence. Light N16G4 retained: NT1<=8, N16 for9-16. Whole MoE reads/decodes each expert weight tile once up to256 tokens. New heavy count classes on four streams. Same precision/work.",
+        "GATE probes removed: all five arms compute the real output, FP32 TASK bounds .015/.075; cold read, AB/BA x8; same seeds/routes.",
+        "OC_COUNTS M128 n=[1, 2, 0, 17, 0, 8, 0, 0, 0, 0, 0, 20, 0, 0, 22, 51, 5, 1, 1, 0, 10, 1, 4, 0, 0, 2, 11, 4, 0, 0, 6, 0] heavy_groups=[3, 2, 0, 0, 0]",
+        "OC_PHASE M128 S14_NF H13/H2/L13/L2_us=43.52/34.94/81.17/49.74 ratios=1.000/1.000/1.000/1.000 gather_us=0.00",
+        "OC_PHASE M128 DIRECT_CLUSTER1 H13/H2/L13/L2_us=66.38/39.90/84.54/54.91 ratios=1.531/1.139/1.040/1.101 gather_us=0.00",
+        "OC_PHASE M128 DIRECT_NORMAL H13/H2/L13/L2_us=66.93/39.04/80.16/49.90 ratios=1.547/1.114/0.987/0.995 gather_us=0.00",
+        "OC_PHASE M128 DIRECT_SERIAL H13/H2/L13/L2_us=79.34/46.61/79.81/49.12 ratios=1.847/1.334/0.976/0.981 gather_us=0.00",
+        "OC_PHASE M128 DEEP_SERIAL H13/H2/L13/L2_us=63.79/44.62/80.90/48.80 ratios=1.476/1.256/0.997/0.976 gather_us=0.00",
+        "OC_COUNTS M256 n=[0, 1, 0, 40, 2, 18, 0, 0, 0, 0, 0, 27, 0, 0, 54, 95, 5, 5, 1, 0, 26, 0, 8, 0, 0, 2, 31, 13, 0, 1, 12, 1] heavy_groups=[4, 4, 3, 0, 0]",
+        "OC_PHASE M256 S14_NF H13/H2/L13/L2_us=80.46/47.86/71.14/44.14 ratios=1.000/1.000/1.000/1.000 gather_us=0.00",
+        "OC_PHASE M256 DIRECT_CLUSTER1 H13/H2/L13/L2_us=110.56/76.11/70.67/45.62 ratios=1.378/1.569/0.987/1.024 gather_us=0.00",
+        "OC_PHASE M256 DIRECT_NORMAL H13/H2/L13/L2_us=112.29/70.64/71.04/44.70 ratios=1.394/1.457/1.003/1.010 gather_us=0.00",
+        "OC_PHASE M256 DIRECT_SERIAL H13/H2/L13/L2_us=115.90/78.85/70.99/44.18 ratios=1.445/1.627/1.005/0.990 gather_us=0.00",
+        "OC_PHASE M256 DEEP_SERIAL H13/H2/L13/L2_us=104.72/74.58/70.88/44.27 ratios=1.302/1.533/1.000/1.001 gather_us=0.00",
+        "TOPOLOGY [(64, 0, [132, 3, 396]), (64, 1, [132, 3, 396]), (128, 0, [132, 2, 264]), (128, 1, [132, 2, 264]), (192, 0, [132, 2, 264]), (192, 1, [132, 2, 264]), (256, 0, [132, 2, 264]), (256, 1, [132, 2, 264])]",
+        "DEEP_RES [(64, 0, [135, 0, 0, 63488, 3]), (64, 1, [128, 0, 0, 63488, 3]), (128, 0, [185, 0, 0, 74752, 2]), (128, 1, [191, 0, 0, 74752, 2]), (192, 0, [222, 0, 0, 54272, 2]), (192, 1, [192, 0, 0, 54272, 2]), (256, 0, [254, 0, 0, 70656, 2]), (256, 1, [229, 0, 0, 70656, 2])]",
+        "COPY_RES [(64, 0, [150, 0, 0, 41984, 3]), (64, 1, [156, 0, 0, 41984, 3]), (128, 0, [184, 0, 0, 74752, 2]), (128, 1, [189, 0, 0, 74752, 2]), (192, 0, [222, 0, 0, 54272, 2]), (192, 1, [192, 0, 0, 54272, 2]), (256, 0, [254, 0, 0, 70656, 2]), (256, 1, [229, 0, 0, 70656, 2])]",
+        "OC_RES [(64, 0, [152, 0, 0, 41984, 3]), (64, 1, [156, 0, 0, 41984, 3]), (128, 0, [180, 0, 0, 74752, 2]), (128, 1, [189, 0, 0, 74752, 2]), (192, 0, [224, 0, 0, 54272, 2]), (192, 1, [192, 0, 0, 54272, 2]), (256, 0, [254, 0, 0, 70656, 2]), (256, 1, [229, 0, 0, 70656, 2])]",
+        "M128 S14_NF n=48 us=182.90 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS bit=48",
+        "M128 DIRECT_CLUSTER1 n=48 us=219.52 pair=1.2039 lo/hi=1.065/1.391 L2/row=0.004134/0.004709 TASK=PASS bit=48",
+        "M128 DIRECT_NORMAL n=48 us=218.02 pair=1.1965 lo/hi=1.075/1.372 L2/row=0.004134/0.004709 TASK=PASS bit=48",
+        "M128 DIRECT_SERIAL n=48 us=228.34 pair=1.2585 lo/hi=1.089/1.537 L2/row=0.004134/0.004709 TASK=PASS bit=48",
+        "M128 DEEP_SERIAL n=48 us=217.18 pair=1.1976 lo/hi=1.040/1.461 L2/row=0.004134/0.004709 TASK=PASS bit=48",
+        "M256 S14_NF n=48 us=256.67 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004120/0.004674 TASK=PASS bit=48",
+        "M256 DIRECT_CLUSTER1 n=48 us=292.59 pair=1.1427 lo/hi=1.047/1.273 L2/row=0.004120/0.004674 TASK=PASS bit=48",
+        "M256 DIRECT_NORMAL n=48 us=291.40 pair=1.1381 lo/hi=1.037/1.243 L2/row=0.004120/0.004674 TASK=PASS bit=48",
+        "M256 DIRECT_SERIAL n=48 us=332.07 pair=1.2992 lo/hi=1.062/1.601 L2/row=0.004120/0.004674 TASK=PASS bit=48",
+        "M256 DEEP_SERIAL n=48 us=313.68 pair=1.2273 lo/hi=0.973/1.486 L2/row=0.004120/0.004674 TASK=PASS bit=48",
+        "AA signed/abs/max=0.043/0.519/3.120",
+        "END seeds=16 used=68.7 left=106.4"
+      ],
+      "wrapper_end": " lab_s=73.6 import_s=73.6"
+    },
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14_NF",
+        "observed_us": 182.9,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        }
+      },
+      {
+        "m": 128,
+        "arm": "DIRECT_CLUSTER1",
+        "observed_us": 219.52,
+        "observed_ratio": 1.2039,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        }
+      },
+      {
+        "m": 128,
+        "arm": "DIRECT_NORMAL",
+        "observed_us": 218.02,
+        "observed_ratio": 1.1965,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        }
+      },
+      {
+        "m": 128,
+        "arm": "DIRECT_SERIAL",
+        "observed_us": 228.34,
+        "observed_ratio": 1.2585,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        }
+      },
+      {
+        "m": 128,
+        "arm": "DEEP_SERIAL",
+        "observed_us": 217.18,
+        "observed_ratio": 1.1976,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        }
+      },
+      {
+        "m": 256,
+        "arm": "S14_NF",
+        "observed_us": 256.67,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        }
+      },
+      {
+        "m": 256,
+        "arm": "DIRECT_CLUSTER1",
+        "observed_us": 292.59,
+        "observed_ratio": 1.1427,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        }
+      },
+      {
+        "m": 256,
+        "arm": "DIRECT_NORMAL",
+        "observed_us": 291.4,
+        "observed_ratio": 1.1381,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        }
+      },
+      {
+        "m": 256,
+        "arm": "DIRECT_SERIAL",
+        "observed_us": 332.07,
+        "observed_ratio": 1.2992,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        }
+      },
+      {
+        "m": 256,
+        "arm": "DEEP_SERIAL",
+        "observed_us": 313.68,
+        "observed_ratio": 1.2273,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        }
+      }
+    ]
+  },
+  "round2": {
+    "sender": "de47736b9f588673",
+    "legacy_sender": "71a7126383e39952",
+    "payload_sha256_prefix": "67eca44eb93d9531",
+    "job": "dd539517bc8344dd",
+    "receipt": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.json",
+    "state": "at_judge"
+  },
+  "round3": {
+    "state": "waiting",
+    "sender": "4ca41bdc7a25cce7",
+    "legacy_sender": "77150f5f5046c333",
+    "payload_sha256_prefix": "abc1631d5d23bdcb",
+    "queue": [
+      {
+        "pid": 237268,
+        "priority": 2.0,
+        "t": 1792976347.8843782,
+        "problem": "muse_attention_decode",
+        "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
+        "sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
+        "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/ws_payload.py: P3b pack unchanged round3 abc1631d and round4 80c5d1c8 in one attention import run: S14/CTA2 direct controls for static/queue/S3 and warp-specialized barrier/pipe. Both previous senders still unaccepted were stopped under dispatch lock; no duplicate judge jobs. Total150s: first gets75s and second remaining; each adaptive24seeds x3/M. All original official/forced screens and1235/1036 graph gates pass. One judge slot returns both residual/ownership tests and avoids prefill log displacement. R2 auto-batched de477 and R5 f0c92 remain unchanged.",
+        "not_before": 0
+      }
+    ]
+  },
+  "round4": {
+    "state": "waiting",
+    "sender": "4ca41bdc7a25cce7",
+    "legacy_sender": "8c4c89c1d51b179d",
+    "payload_sha256_prefix": "80c5d1c8fd50dc5a",
+    "queue": [
+      {
+        "pid": 237268,
+        "priority": 2.0,
+        "t": 1792976347.8843782,
+        "problem": "muse_attention_decode",
+        "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
+        "sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
+        "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/ws_payload.py: P3b pack unchanged round3 abc1631d and round4 80c5d1c8 in one attention import run: S14/CTA2 direct controls for static/queue/S3 and warp-specialized barrier/pipe. Both previous senders still unaccepted were stopped under dispatch lock; no duplicate judge jobs. Total150s: first gets75s and second remaining; each adaptive24seeds x3/M. All original official/forced screens and1235/1036 graph gates pass. One judge slot returns both residual/ownership tests and avoids prefill log displacement. R2 auto-batched de477 and R5 f0c92 remain unchanged.",
+        "not_before": 0
+      }
+    ]
+  },
+  "round5": {
+    "sender": "f0c92b1867e9aa50",
+    "legacy_sender": "f0c92b1867e9aa50",
+    "payload_sha256_prefix": "b610039eebfd98d7",
+    "job": "7ea5e070b8f744ea",
+    "receipt": "runs/muse_attention_decode/20261026T010127Z_submit_7ea5e070b8f744ea.json",
+    "state": "at_judge"
+  }
+}

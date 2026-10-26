@@ -1,0 +1,22 @@
+{
+  "payload_sha256": "b610039eebfd98d75bc0ac564a27af1388d72c6dbec47bfc4b9e45379ab3c6b6",
+  "elapsed_s": 71.02209520700853,
+  "deadline_s": 150,
+  "weights": null,
+  "lines": [
+    "META S14 / CTA2 vs RS_RAW_SHARE and SS_DECODE_SHARE: identical two-N32 token-group ownership, once-per-CTA packed raw copy; SS decodes once into swizzled BF16 A shared by both WGs. No activation pack, cluster, separate producer or global queue. TASK/cold-read direct ABBA pairs against BOTH controls.",
+    "M128 S14 n=72 us=363.05 pairS14=1.0000 pairCTA2=0.9962 lo/hi=1.000/1.000 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 CTA2 n=72 us=365.56 pairS14=1.0174 pairCTA2=1.0000 lo/hi=0.863/1.252 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 RS_RAW_SHARE n=72 us=366.89 pairS14=1.0294 pairCTA2=1.0163 lo/hi=0.877/1.225 L2/row=0.004132/0.004947 TASK=PASS",
+    "M128 SS_DECODE_SHARE n=72 us=430.85 pairS14=1.2010 pairCTA2=1.2033 lo/hi=1.036/1.532 L2/row=0.004132/0.004947 TASK=PASS",
+    "M256 S14 n=72 us=513.48 pairS14=1.0000 pairCTA2=1.0714 lo/hi=1.000/1.000 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 CTA2 n=72 us=480.55 pairS14=0.9467 pairCTA2=1.0000 lo/hi=0.810/1.084 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 RS_RAW_SHARE n=72 us=504.39 pairS14=0.9858 pairCTA2=1.0362 lo/hi=0.854/1.152 L2/row=0.004124/0.005018 TASK=PASS",
+    "M256 SS_DECODE_SHARE n=72 us=637.86 pairS14=1.2498 pairCTA2=1.3355 lo/hi=1.053/1.530 L2/row=0.004124/0.005018 TASK=PASS",
+    "TP_RES [(0, 0, [109, 0, 0, 43008, 2]), (0, 1, [128, 0, 0, 75776, 1]), (1, 0, [109, 0, 0, 43008, 2]), (1, 1, [128, 0, 0, 75776, 1])]",
+    "AA signed/abs/max=-0.129/7.770/62.480",
+    "END seeds=24 used=71.0 left=79.0"
+  ],
+  "device": "GPU0 sm120",
+  "limitation": "Local cold-read timing only; compiled stand-ins and JIT cache are local, so this is a deadline/correctness rehearsal rather than Hopper performance evidence."
+}

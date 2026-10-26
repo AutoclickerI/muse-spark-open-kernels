@@ -199,7 +199,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 862,
+      "producer_max_physical_register": 49,
+      "overall_max_physical_register": 205
     },
     {
       "name": "_ZN2ws6kernelILi256ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -302,7 +305,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 862,
+      "producer_max_physical_register": 49,
+      "overall_max_physical_register": 196
     },
     {
       "name": "_ZN2ws6kernelILi192ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -390,7 +396,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 859,
+      "producer_max_physical_register": 41,
+      "overall_max_physical_register": 205
     },
     {
       "name": "_ZN2ws6kernelILi192ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -493,7 +502,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 860,
+      "producer_max_physical_register": 41,
+      "overall_max_physical_register": 169
     },
     {
       "name": "_ZN2ws6kernelILi128ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -582,7 +594,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 860,
+      "producer_max_physical_register": 41,
+      "overall_max_physical_register": 165
     },
     {
       "name": "_ZN2ws6kernelILi128ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -686,7 +701,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 860,
+      "producer_max_physical_register": 41,
+      "overall_max_physical_register": 132
     },
     {
       "name": "_ZN2ws6kernelILi64ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -775,7 +793,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 860,
+      "producer_max_physical_register": 41,
+      "overall_max_physical_register": 131
     },
     {
       "name": "_ZN2ws6kernelILi64ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iS4_SB_i14CUtensorMap_stSC_",
@@ -879,7 +900,10 @@
       "group_wait": {
         "0x1": 8,
         "0x0": 2
-      }
+      },
+      "producer_CFG_instructions": 860,
+      "producer_max_physical_register": 41,
+      "overall_max_physical_register": 129
     }
   ],
   "limitation": "Native TMA and dynamic register redistribution are compiled and audited, not executed on local sm120."

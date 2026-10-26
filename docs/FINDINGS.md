@@ -313,6 +313,22 @@ NT1 ~87 KB CTAs wait; co-residency restrictions hurt bandwidth. Static issue roo
 assumed 128 lane-ops/cycle (`8483c0c6` audit), distinct from the hardware 64 integer throughput.
 Live family: `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/`.
 
+Reset heavy-branch experiments (ratio candidate/S14, M128 / M256; <1 wins):
+
+| Recipe | Paired ratio | Mechanism / evidence | Leaves open | Receipt |
+|---|---|---|---|---|
+| Decode-once DIRECT, cluster1 launch |1.2039 /1.1427|16 seeds x3; all outputs bit-equal; active cluster counts396/264 match3/2 CTAs perSM, so cluster1 does not impose one CTA/SM|Cheaper issue/transport at N32; another reuse ownership|`8792099636654bac`|
+| Same DIRECT image, ordinary CTA launch |1.1965 /1.1381|Nearly the same loss as cluster1; fixed heavy phase106.0/182.9us vs S14's78.5/128.3us; topology is not the main penalty|Weight/decode reuse with lower per-stage issue cost|`8792099636654bac`|
+| Same DIRECT image, serial width classes |1.2585 /1.2992|Serial classes worsen whole-MoE timing; isolated heavy125.95/194.75us|Parallel classes with cheaper kernels|`8792099636654bac`|
+| DIRECT serial, S3 for MAX64 |1.1976 /1.2273|Improves serial by~4.9/5.5%, still loses to S14; does not establish S3 on parallel CTA2|Queued CTA2S3 direct pair; another pipeline/ownership|`8792099636654bac`|
+
+`8792099636654bac` controls: S14 182.90/256.67us, A:A signed/absolute/max difference
++0.043/0.519/3.120us across both M, worst FP32 L2/row0.004134/0.004709. All arms48/48
+bit-equal at each M. Ordinary DIRECT's ratio1.1965/1.1381 agrees with the prior1.1970/1.1322
+calibration (`8ee003db`) within0.6%; isolated heavy-phase totals also remain within~2%. The measured
+loss closes these topology changes, not decode-once itself. Do not allocate the old residual
+into causal decode/epilogue/overlap components from isolated phases and a different mean input.
+
 ## Attention
 
 ### Shapes, floors and the incumbents

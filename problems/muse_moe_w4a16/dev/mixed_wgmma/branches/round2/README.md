@@ -82,17 +82,17 @@ fixed-fixture light service alone is~130us; light improvements or a different ov
 
 ## Dispatch and decision
 
-One independent follow-up is queued on the MoE host: sender **71a7126383e39952**, PID **1073793**,
-priority10, `--not-before 2026-10-26T00:01:00+00:00` = **1792972860** (09:01KST), no judge job ID yet.
-This matches the unchanged reset batch's existing09:01 eligibility, one minute after the requested reset
-epoch1792972800, so this second-round packet cannot jump ahead of reset sender **f867a8b74a243d1e**
-(priority1, PID3408321). No existing sender was changed. Exact dispatch metadata: `queue.json`;
-progress: `runs/detached/71a7126383e39952.log`; frozen snapshot: `runs/sent/71a7126383e39952/lab_payload.py`.
-The tool sends scored while quota remains, then checks. All four variants share one run.
+MoE host sender **de47736b9f588673**, PID **4124752**, priority1.2, job **dd539517bc8344dd**.
+The tool automatically absorbed original71a71263 into P3a's next batch; embedded payload67eca44e
+is byte-identical. The two payloads share the host's remaining prepare budget. Exact metadata:
+`queue.json`; progress `runs/detached/de47736b9f588673.log`, snapshot
+`runs/sent/de47736b9f588673/lab_payload+moe_nt1_pipe_rebuild.py`. No duplicate P3b run was spent.
 
 **Decision rule:** send every arm independently of the reset; if reset favors S3, prioritize CTA2S3's paired
 comparison, otherwise CTA2; select the fastest arm separately at each M only when paired whole-MoE ratios beat S14, then require the integration lane's whole-layer pair before promotion.
-Nothing is left unsent waiting for the reset. The reset result and this packet's H200 timing remain unverified.
+The reset `8792099636654bac` is valid and loses for all topology arms. S3 helps serial classes
+by4.9/5.5%, so CTA2S3's independent direct pair is the relevant next check, not an assumed S3
+promotion. This packet's own H200 timing remains unverified.
 
 Rebuild: `python3 .../round2/build.py`. Screen: `CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py
 .../round2/screen_<arm>.py --tests-only`; captured transitions: `CUDA_VISIBLE_DEVICES=0 tools/img python
