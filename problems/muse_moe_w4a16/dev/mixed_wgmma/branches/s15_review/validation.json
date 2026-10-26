@@ -1,0 +1,38 @@
+{
+  "payload_sha256": "c49411fcb22c244529f6c5368258c54fb1bc07ced606e1b5d1a1078bdadca778",
+  "full_bank_proof": {
+    "w13": {
+      "tiles": 16384,
+      "code_bytes": 536870912,
+      "scale_bytes": 67108864,
+      "raw_packets": 0,
+      "coded_bytes": 579469328,
+      "net_byte_saving": 0.040581570731269,
+      "exact": true
+    },
+    "w2": {
+      "tiles": 8192,
+      "code_bytes": 268435456,
+      "scale_bytes": 33554432,
+      "raw_packets": 0,
+      "coded_bytes": 289734672,
+      "net_byte_saving": 0.04058154424031579,
+      "exact": true
+    }
+  },
+  "checks": 684,
+  "input_cases": 57,
+  "bit_equal_to_S15": {
+    "CHUNK3": 57,
+    "CHUNK4": 57,
+    "PACK5": 57,
+    "READY_SERIAL": 57,
+    "READY": 57
+  },
+  "worst_L2_row": [
+    0.004184006247669458,
+    0.004770186264067888
+  ],
+  "raw_scale_graph_checks": 9,
+  "local_standin": "Native S4 executes S3; READY W2 grid is SM/2 on sm120, SM on Hopper, because the two kernels cannot co-reside on sm120. Shared producer stores, fence/publication/acquire and changed math all execute."
+}

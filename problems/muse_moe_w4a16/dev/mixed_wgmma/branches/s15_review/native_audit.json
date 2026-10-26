@@ -1,0 +1,506 @@
+{
+  "chunk4": {
+    "cuda_sha256": "051ccd1f2e429b1d5478a809ae1c30141638c168d092e946fe44390860f53883",
+    "sass_sha256": "d1679cb18d1f52ba3c002d57a5a460c23195b7cf6a981f7e631034f483c6bfd5",
+    "resources": [
+      {
+        "name": "'_ZN5chunk6kernelILi4ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i' for 'sm_90a'",
+        "registers": 128,
+        "stack_spills": [
+          8,
+          4,
+          4
+        ]
+      },
+      {
+        "name": "'_ZN5chunk6kernelILi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i' for 'sm_90a'",
+        "registers": 128,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "'_ZN5chunk6kernelILi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i' for 'sm_90a'",
+        "registers": 128,
+        "stack_spills": [
+          8,
+          12,
+          16
+        ]
+      },
+      {
+        "name": "'_ZN5chunk6kernelILi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i' for 'sm_90a'",
+        "registers": 128,
+        "stack_spills": [
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'",
+        "registers": 96,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'",
+        "registers": 95,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "K_loops": [
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "backedge": [
+          3824,
+          15840
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 188.0,
+        "static_integer_per_stage": 116.25,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "ISETP.NE.U32.AND": 2,
+          "IMAD.MOV.U32": 25,
+          "UMOV": 2,
+          "VIADD": 6,
+          "UIADD3.64": 31,
+          "@!PT": 28,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS.128": 12,
+          "LOP3.LUT": 176,
+          "SHF.R.W.U32": 128,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "LDGSTS.E.128": 20,
+          "LDGSTS.E.BYPASS.128": 16,
+          "IADD3": 16,
+          "IMAD.X": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GT.U32.AND": 3,
+          "BRA": 4,
+          "ISETP.NE.AND": 3,
+          "SEL": 3,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      },
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "backedge": [
+          3856,
+          15872
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 188.0,
+        "static_integer_per_stage": 116.25,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "ISETP.NE.U32.AND": 2,
+          "IMAD.MOV.U32": 25,
+          "UMOV": 2,
+          "UIADD3.64": 31,
+          "@!PT": 28,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS.128": 12,
+          "LOP3.LUT": 176,
+          "SHF.R.W.U32": 128,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "VIADD": 6,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "LDGSTS.E.128": 20,
+          "LDGSTS.E.BYPASS.128": 16,
+          "IADD3": 16,
+          "IMAD.X": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GT.U32.AND": 3,
+          "BRA": 4,
+          "ISETP.NE.AND": 3,
+          "SEL": 3,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      }
+    ]
+  },
+  "pack5": {
+    "cuda_sha256": "840068896f78e38e5ccd1c55c897163c77d5a5159576ca283e7012c650e30011",
+    "sass_sha256": "9662f3d1e5194137d6b18b244e16e43551debd9acc907557ab7b24bba513c4c8",
+    "resources": [
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'",
+        "registers": 103,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij' for 'sm_90a'",
+        "registers": 104,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "K_loops": [
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "backedge": [
+          5408,
+          25216
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 309.75,
+        "static_integer_per_stage": 213.5,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "IMAD": 49,
+          "BSSY": 12,
+          "@!PT": 52,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS": 16,
+          "LOP3.LUT": 328,
+          "LDS.128": 12,
+          "BRA": 24,
+          "ISETP.NE.AND": 8,
+          "SHF.R.U32.HI": 24,
+          "SHF.R.W.U32": 148,
+          "IMAD.SHL.U32": 84,
+          "BSYNC": 12,
+          "SHF.L.W.U32.HI": 16,
+          "UMOV": 2,
+          "UIADD3.64": 31,
+          "ISETP.GT.AND": 3,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "IADD3": 20,
+          "LDGSTS.E.128": 20,
+          "IMAD.X": 16,
+          "IMAD.MOV.U32": 33,
+          "SHF.R.S32.HI": 4,
+          "LDG.E.U8": 4,
+          "SHF.L.U32": 8,
+          "ISETP.GT.U32.AND": 7,
+          "VIADD": 7,
+          "SEL": 8,
+          "POPC": 4,
+          "IADD3.X": 4,
+          "STS": 4,
+          "ISETP.NE.U32.AND": 2,
+          "LDGSTS.E.BYPASS.128": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      },
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ij",
+        "backedge": [
+          5456,
+          25264
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 309.75,
+        "static_integer_per_stage": 213.5,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "IMAD": 49,
+          "BSSY": 12,
+          "@!PT": 52,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS": 16,
+          "LOP3.LUT": 328,
+          "LDS.128": 12,
+          "BRA": 24,
+          "ISETP.NE.AND": 8,
+          "SHF.R.U32.HI": 24,
+          "SHF.R.W.U32": 148,
+          "IMAD.SHL.U32": 84,
+          "BSYNC": 12,
+          "SHF.L.W.U32.HI": 16,
+          "UMOV": 2,
+          "UIADD3.64": 31,
+          "ISETP.GT.AND": 3,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "IADD3": 20,
+          "LDGSTS.E.128": 20,
+          "IMAD.X": 16,
+          "IMAD.MOV.U32": 33,
+          "SHF.R.S32.HI": 4,
+          "LDG.E.U8": 4,
+          "SHF.L.U32": 8,
+          "ISETP.GT.U32.AND": 7,
+          "VIADD": 7,
+          "SEL": 8,
+          "POPC": 4,
+          "IADD3.X": 4,
+          "STS": 4,
+          "ISETP.NE.U32.AND": 2,
+          "LDGSTS.E.BYPASS.128": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      }
+    ]
+  },
+  "ready": {
+    "cuda_sha256": "ddb5e76316d67275ea7fe2dab6a4185700018bcc53e7db33b428b9554385bfc4",
+    "sass_sha256": "bd23abe62e61cb0853b5fe8ff186d98d0c5d05528778b9baf10e645583f3f58d",
+    "resources": [
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii' for 'sm_90a'",
+        "registers": 96,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii' for 'sm_90a'",
+        "registers": 95,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii' for 'sm_90a'",
+        "registers": 96,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "'_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii' for 'sm_90a'",
+        "registers": 95,
+        "stack_spills": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "K_loops": [
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii",
+        "backedge": [
+          4144,
+          16160
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 188.0,
+        "static_integer_per_stage": 116.25,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "ISETP.NE.U32.AND": 2,
+          "IMAD.MOV.U32": 25,
+          "UMOV": 2,
+          "VIADD": 6,
+          "UIADD3.64": 31,
+          "@!PT": 28,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS.128": 12,
+          "LOP3.LUT": 176,
+          "SHF.R.W.U32": 128,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "LDGSTS.E.128": 20,
+          "LDGSTS.E.BYPASS.128": 16,
+          "IADD3": 16,
+          "IMAD.X": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GT.U32.AND": 3,
+          "BRA": 4,
+          "ISETP.NE.AND": 3,
+          "SEL": 3,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      },
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii",
+        "backedge": [
+          3856,
+          15872
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 188.0,
+        "static_integer_per_stage": 116.25,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "ISETP.NE.U32.AND": 2,
+          "IMAD.MOV.U32": 25,
+          "UMOV": 2,
+          "UIADD3.64": 31,
+          "@!PT": 28,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS.128": 12,
+          "LOP3.LUT": 176,
+          "SHF.R.W.U32": 128,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "VIADD": 6,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "LDGSTS.E.128": 20,
+          "LDGSTS.E.BYPASS.128": 16,
+          "IADD3": 16,
+          "IMAD.X": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GT.U32.AND": 3,
+          "BRA": 4,
+          "ISETP.NE.AND": 3,
+          "SEL": 3,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      },
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb0ELi6ELi0ELi0ELi0ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii",
+        "backedge": [
+          3824,
+          15840
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 188.0,
+        "static_integer_per_stage": 116.25,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "ISETP.NE.U32.AND": 2,
+          "IMAD.MOV.U32": 25,
+          "UMOV": 2,
+          "VIADD": 6,
+          "UIADD3.64": 31,
+          "@!PT": 28,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS.128": 12,
+          "LOP3.LUT": 176,
+          "SHF.R.W.U32": 128,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "LDGSTS.E.128": 20,
+          "LDGSTS.E.BYPASS.128": 16,
+          "IADD3": 16,
+          "IMAD.X": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GT.U32.AND": 3,
+          "BRA": 4,
+          "ISETP.NE.AND": 3,
+          "SEL": 3,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      },
+      {
+        "name": "_ZN4mwbr4gemmILi32ELb1ELi7ELi0ELi0ELi0ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_ijPii",
+        "backedge": [
+          3856,
+          15872
+        ],
+        "KT128_stages": 4.0,
+        "static_instructions_per_stage": 188.0,
+        "static_integer_per_stage": 116.25,
+        "HMUL2_per_stage": 32.0,
+        "instructions": {
+          "DEPBAR.LE": 4,
+          "BAR.SYNC.DEFER_BLOCKING": 4,
+          "ISETP.NE.U32.AND": 2,
+          "IMAD.MOV.U32": 25,
+          "UMOV": 2,
+          "UIADD3.64": 31,
+          "@!PT": 28,
+          "MEMBAR.ALL.CTA": 4,
+          "FENCE.VIEW.ASYNC.S": 4,
+          "LDS.128": 12,
+          "LOP3.LUT": 176,
+          "SHF.R.W.U32": 128,
+          "PRMT": 64,
+          "HMUL2.BF16_V2": 128,
+          "VIADD": 6,
+          "WARPGROUP.ARRIVE": 8,
+          "HGMMA.64x32x16.F32.BF16": 32,
+          "WARPGROUP.DEPBAR.LE": 8,
+          "LDGSTS.E.128": 20,
+          "LDGSTS.E.BYPASS.128": 16,
+          "IADD3": 16,
+          "IMAD.X": 16,
+          "LDGDEPBAR": 4,
+          "ISETP.GT.U32.AND": 3,
+          "BRA": 4,
+          "ISETP.NE.AND": 3,
+          "SEL": 3,
+          "ISETP.GE.U32.AND": 1
+        },
+        "limitation": "PACK5 totals include both raw and compressed forward branches, not measured executed path counts. No issue-port saturation or stall clocks are inferred."
+      }
+    ]
+  },
+  "readiness_contract": {
+    "producer_tiles_per_block": 128,
+    "stores_before_device_fence": true,
+    "all_writers_join_before_atomic": true,
+    "consumer_acquire": true,
+    "reset": "timed graph node before route fork; next replay waits for both streams",
+    "progress": "At most one W2 CTA per H200 SM globally; one producer+consumer resource sum fits each H200 SM. Blocking every SM would require at least2 W2 CTAs perSM, exceeding the grid. Local stand-in halves the grid when one pair cannot fit."
+  }
+}

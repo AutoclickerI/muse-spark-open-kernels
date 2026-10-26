@@ -1,0 +1,108 @@
+{
+  "CHUNK3": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3b_s15_review/chunk3.py",
+    "candidate_sha256": "50243473dba322f099445858a918ecb9b4bc9ed18bc6b7f74e9ad634da551907",
+    "cell": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/chunk3_cell.py",
+    "cell_sha256": "27c396449a39664011715cd8faba7bd9515abc6d0c823f2e77f1774134c0cf1c",
+    "cuda_sha256": "051ccd1f2e429b1d5478a809ae1c30141638c168d092e946fe44390860f53883",
+    "patch_sha256": "41959e3ba9061c10831834d6cf614f46ae65b0ec5db3fc6906688108ca78c26e",
+    "functions": [
+      "br_init",
+      "br_info",
+      "br_run",
+      "br_route",
+      "br_finish",
+      "pmz_init",
+      "pmz_smem",
+      "pmz_resident",
+      "pmz_run",
+      "ch_run",
+      "ch_info"
+    ]
+  },
+  "CHUNK4": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3b_s15_review/chunk4.py",
+    "candidate_sha256": "f63d7ea399b5b26b944f39838b167c89bf7e340390b92c15218eb410859e7814",
+    "cell": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/chunk4_cell.py",
+    "cell_sha256": "115590d4931317c6cd9ef95cbfacec4c46877cdca5cd4fa637d290e79ccd2af3",
+    "cuda_sha256": "051ccd1f2e429b1d5478a809ae1c30141638c168d092e946fe44390860f53883",
+    "patch_sha256": "8c899293ba7267d3ab8b8c3bab4719d40a7f8de2ecd007b3c63051f7466b5b71",
+    "functions": [
+      "br_init",
+      "br_info",
+      "br_run",
+      "br_route",
+      "br_finish",
+      "pmz_init",
+      "pmz_smem",
+      "pmz_resident",
+      "pmz_run",
+      "ch_run",
+      "ch_info"
+    ]
+  },
+  "PACK5": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3b_s15_review/pack5.py",
+    "candidate_sha256": "062f86b60a56e93c178b19a45ec00a232084442a5958cd9aac09f3e35d709123",
+    "cell": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/pack5_cell.py",
+    "cell_sha256": "81fe9f197bd1b4889b41b70bccf4945828bcde1280817e09f39f8ed8a682f6ba",
+    "cuda_sha256": "840068896f78e38e5ccd1c55c897163c77d5a5159576ca283e7012c650e30011",
+    "patch_sha256": "4a7d8d764809b683068b0e4331d7e38e2e8e52c2ebce41965c015b8e93467eef",
+    "functions": [
+      "br_init",
+      "br_info",
+      "br_run",
+      "br_route",
+      "br_finish",
+      "pmz_init",
+      "pmz_smem",
+      "pmz_resident",
+      "pmz_run"
+    ]
+  },
+  "READY_SERIAL": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3b_s15_review/ready_serial.py",
+    "candidate_sha256": "3edfb5e36a7d3f6fa61d151c185ab70f2b724df002144b913f8485a2bab4a7d6",
+    "cell": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/ready_serial_cell.py",
+    "cell_sha256": "994be467dbab312a325dcffea944d0d74a10f73c70c23f3e09e4bf0fdd82a5cb",
+    "cuda_sha256": "0a31e25150f5de7ed10cdc23f5b295e5198d247f513e71e139a6fdf564616994",
+    "patch_sha256": "eac9b37ec1154bc0a63b2e3e6cfe176818567f2a1580e442113e4d5a8938e763",
+    "functions": [
+      "br_init",
+      "br_info",
+      "br_run",
+      "br_route",
+      "br_finish",
+      "pmz_init",
+      "pmz_smem",
+      "pmz_resident",
+      "pmz_run"
+    ]
+  },
+  "READY": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "candidate": "runs/screen/p3b_s15_review/ready.py",
+    "candidate_sha256": "8a3efdd57edf80ccfcd22332697b3ecd9baaefefddda63b640fc76fd882d5d4c",
+    "cell": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/ready_cell.py",
+    "cell_sha256": "e67801ed7eaf17f33d44e7e0540f2c5b0005c4db1ce06bcd4111f85845e4489e",
+    "cuda_sha256": "ddb5e76316d67275ea7fe2dab6a4185700018bcc53e7db33b428b9554385bfc4",
+    "patch_sha256": "b086a794ae57903dd8e4e6cc5dd96ecabc1a38813e7ca918ca754efef7c94015",
+    "functions": [
+      "br_init",
+      "br_info",
+      "br_run",
+      "br_route",
+      "br_finish",
+      "pmz_init",
+      "pmz_smem",
+      "pmz_resident",
+      "pmz_run",
+      "ready_run",
+      "ready_info"
+    ]
+  }
+}

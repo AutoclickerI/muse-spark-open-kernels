@@ -1,0 +1,88 @@
+{
+  "S15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "NF_CUDA_sha256": "0a31e25150f5de7ed10cdc23f5b295e5198d247f513e71e139a6fdf564616994",
+  "items": {
+    "PACK5": {
+      "confirmed_code": "nf_wide/nf_perm and mwbr::gemm:16-output/full-K group holds32768 packed-code bytes and4096 scale bytes. sf uint32 words are rotated4bits. Timed path loads128 scale bytes per group/KT stage.",
+      "P3a_evidence": "problems/muse_decode_layer/dev/nt1_timeline/review/README.md; full100663296-byte official scale proof,4.05816percent net bytes; native PACK5 has no spills.",
+      "own_adaptation": "Inverse PERMW in prepare only for exact byte coding; timed unpack reconstructs rotation, no widened scales retained. Original NT1/N16 banks remain intact.",
+      "metadata_hashes": {
+        "pack5_cuda.py.inc": "508dd6aef6d84453967d39acefba884be79e4f34074de3d1e4dd50bc6c43fa96",
+        "pack5_python.py.inc": "8e0e77eae077eedf60b21247f750fb679e72f6a0c42bc24b9db62acae293a205"
+      },
+      "static": "188->309.75 total stage image including alternative raw/compressed branches,116.25->213.5 integer. No executed-path or stall attribution inferred.",
+      "heavy_bank_proof": {
+        "w13": {
+          "tiles": 16384,
+          "code_bytes": 536870912,
+          "scale_bytes": 67108864,
+          "raw_packets": 0,
+          "coded_bytes": 579469328,
+          "net_byte_saving": 0.040581570731269,
+          "exact": true
+        },
+        "w2": {
+          "tiles": 8192,
+          "code_bytes": 268435456,
+          "scale_bytes": 33554432,
+          "raw_packets": 0,
+          "coded_bytes": 289734672,
+          "net_byte_saving": 0.04058154424031579,
+          "exact": true
+        }
+      },
+      "P3a_fresh_receipt": {
+        "job": "b57d691d689046a8",
+        "measured": true
+      },
+      "P3a_ratio_prior": {
+        "1": {
+          "ratio": 1.28466175,
+          "SE": 0.007882171461331793,
+          "seeds": 16
+        },
+        "8": {
+          "ratio": 1.3923786875,
+          "SE": 0.008948005123451976,
+          "seeds": 16
+        },
+        "16": {
+          "ratio": 1.408189,
+          "SE": 0.005544735218355044,
+          "seeds": 16
+        },
+        "32": {
+          "ratio": 1.4524336875,
+          "SE": 0.004916045883735176,
+          "seeds": 16
+        }
+      },
+      "native_result": "Measured loss1.168932/1.260287;4CTA occupancy retained. Exact compression claim holds, throughput benefit does not.",
+      "timed_decoder_proof": {
+        "cuda_sha256": "840068896f78e38e5ccd1c55c897163c77d5a5159576ca283e7012c650e30011",
+        "probe_sha256": "0c56591378dc98902f137c142e3fe65a4c0d3963014adcbe7ee1d2a68494280b",
+        "groups": 7458,
+        "compressed_groups": 7200,
+        "raw_groups": 258,
+        "exact_scale_bytes": 954624,
+        "all_uint8_codes": true,
+        "all_delta_codes": true,
+        "every_packed_alignment": true,
+        "exact": true,
+        "device": "GPU0 sm120",
+        "limitation": "Exact same timed decode helper; portable GPU execution plus native static compilation, not native H200 raw-branch execution."
+      }
+    },
+    "READY": {
+      "confirmed_code": "nf_plan.body launches br_run W13 then W2 on same side stream, so every W2 task is behind all W13 CTAs. W2 X rows are only its own expert offset+row+0..31. No heavy done[e] spin loop exists.",
+      "implementation": "128 W13 output-tile publications per expert/token-block. Every writer device-fences; CTA joins; thread0 atomically publishes. W2 acquire checks only that block. Counter reset precedes timed route fork.",
+      "control": "READY_SERIAL uses exactly the same W2 grid. NativeSM-count grid; sm120 stand-in halfSM-count because one producer/consumer cannot fit. All joins retained before finalizer.",
+      "native_result": "Measured loss1.074708/1.074582; matching serial grid1.039774/1.155520. Own-block identity holds; capped pipeline not a production win."
+    },
+    "TWO_BASE": {
+      "status": "Dropped; not built",
+      "evidence": "P3a actual same-work decoder integer37->406, registers30->31; no demonstrated lower-issue replacement to port."
+    }
+  },
+  "receipt": "7e38226389a848eb"
+}

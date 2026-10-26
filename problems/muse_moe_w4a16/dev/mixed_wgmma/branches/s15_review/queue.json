@@ -1,0 +1,30 @@
+{
+  "sender": "97722cb0449771fd",
+  "pid": null,
+  "job": "7e38226389a848eb",
+  "host": "muse_moe_w4a16",
+  "check": true,
+  "import_budget": 150,
+  "source_sha256": "97722cb0449771fdd303834ef34b100606a2bed56b7ead5ec9e9cc3b8eaffa9f",
+  "snapshot": "runs/sent/97722cb0449771fd/lab_s15_review_payload.py",
+  "source_bytes": 203933,
+  "payload_sha256": "c49411fcb22c244529f6c5368258c54fb1bc07ced606e1b5d1a1078bdadca778",
+  "transport": "One150s import payload, binary seed means andAA; import mode disables auto-merge/receipt splitting.",
+  "local_entry_s": 106.41292007203447,
+  "receipt_characters": 5722,
+  "note_correction": "The send note says6849characters; actual exact local receipt is5722, as entry.json records.",
+  "metadata": {
+    "utc": "20261026T034501Z",
+    "problem": "muse_moe_w4a16",
+    "mode": "check",
+    "job": "7e38226389a848eb",
+    "sha256": "97722cb0449771fdd303834ef34b100606a2bed56b7ead5ec9e9cc3b8eaffa9f",
+    "file": "problems/muse_moe_w4a16/lab/lab_s15_review_payload.py",
+    "source": "runs/muse_moe_w4a16/20261026T034501Z_check_7e38226389a848eb.py",
+    "git": "6a1b74d+dirty",
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/s15_review/s15_review_payload.py: P3b S15 60254883 independent heavy PACK5, expert/token-block readiness and matched sequential W2-grid control, plus R6 CHUNK3/4 point rebases. R6 .9791/.9083 S4 and .9448 S3/M256 to P4 without A:A veto. All10 normal/forced whole-layer screens(13TASK,12shapes,26static) and684 captured cases plus9 raw-scale graphs pass; all changed outputs bit-equal57cases. Full805306368 code bytes/100663296 scales exact,4.05816pct net. Native counts188to309.75 PACK5 image,no spills; READY retains Kloop188. Exact c49411fc local cold150s entry24seeds passes106.4s, receipt6849chars bounded binary seed means/SE+AA. Separate arms,no composites,not prefill. Host prefix84eb2932 already H200 gated, wrapper size203933.",
+    "snapshot": "runs/sent/97722cb0449771fd/lab_s15_review_payload.py"
+  },
+  "status": "done",
+  "receipt": "runs/muse_moe_w4a16/20261026T034501Z_check_7e38226389a848eb.json"
+}
