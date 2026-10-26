@@ -1,0 +1,237 @@
+{
+  "job": "9f6849fcc12a448d",
+  "status": "measured losses on clean-routing rows; no winner",
+  "aa": {
+    "d16": {
+      "mean": 0.9981304946812284,
+      "ci95": 0.00147201357092377
+    },
+    "d32": {
+      "mean": 1.0006926941109564,
+      "ci95": 0.0008977704450494613
+    },
+    "v16": {
+      "mean": 1.0039230532428602,
+      "ci95": 0.0017948089575149668
+    },
+    "v32": {
+      "mean": 0.9999144482013397,
+      "ci95": 0.0007250695725536028
+    }
+  },
+  "loads": {
+    "d16": {
+      "M": {
+        "mean": 1.0723622289867905,
+        "ci95": 0.002334284182769357,
+        "verdict": "unmeasured changed routing",
+        "changed_routing_cases": [
+          "d16F"
+        ]
+      },
+      "E": {
+        "mean": 1.075902251851686,
+        "ci95": 0.0023478626440311488,
+        "verdict": "unmeasured changed routing",
+        "changed_routing_cases": [
+          "d16F"
+        ]
+      },
+      "S": {
+        "mean": 1.0789920191096167,
+        "ci95": 0.0021111426610465156,
+        "verdict": "unmeasured changed routing",
+        "changed_routing_cases": [
+          "d16F"
+        ]
+      },
+      "R": {
+        "mean": 1.0588373357021854,
+        "ci95": 0.0029673405589635033,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "C": {
+        "mean": 1.1356754857522275,
+        "ci95": 0.0034607769338652825,
+        "verdict": "unmeasured changed routing",
+        "changed_routing_cases": [
+          "d16F"
+        ]
+      },
+      "P": {
+        "mean": 1.0895112236819193,
+        "ci95": 0.0023272225051920344,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E1": {
+        "mean": 1.0330876774774091,
+        "ci95": 0.0017493064751272814,
+        "verdict": "unmeasured changed routing",
+        "changed_routing_cases": [
+          "d16F"
+        ]
+      },
+      "E2": {
+        "mean": 1.0404366501078985,
+        "ci95": 0.002002837715176743,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      }
+    },
+    "d32": {
+      "M": {
+        "mean": 1.0535168360890754,
+        "ci95": 0.0009734264286178969,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E": {
+        "mean": 1.0599477075326302,
+        "ci95": 0.0014711555627646244,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "S": {
+        "mean": 1.0591921048773534,
+        "ci95": 0.0012820630967192515,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "R": {
+        "mean": 1.0743219894288327,
+        "ci95": 0.0022719535046777273,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "C": {
+        "mean": 1.0859593356624824,
+        "ci95": 0.0019654721601950658,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "P": {
+        "mean": 1.074563359918343,
+        "ci95": 0.0014597629703489486,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E1": {
+        "mean": 1.027894094899192,
+        "ci95": 0.0011840893732081204,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E2": {
+        "mean": 1.0308193057289536,
+        "ci95": 0.0009302483738861031,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      }
+    },
+    "v16": {
+      "M": {
+        "mean": 1.013797326389837,
+        "ci95": 0.0012035044489806207,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E": {
+        "mean": 1.0179382798589387,
+        "ci95": 0.0013840749037346675,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "S": {
+        "mean": 1.020168299565001,
+        "ci95": 0.0020383448984003716,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "R": {
+        "mean": 1.0083768157268882,
+        "ci95": 0.001376724677617136,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "C": {
+        "mean": 1.0285712029969623,
+        "ci95": 0.00211929651642828,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "P": {
+        "mean": 1.0035161016993854,
+        "ci95": 0.001608028911194765,
+        "verdict": "unchanged duplicate control; no publication tested",
+        "changed_routing_cases": []
+      },
+      "E1": {
+        "mean": 1.0058778004592956,
+        "ci95": 0.0013651342548413894,
+        "verdict": "no qualified win",
+        "changed_routing_cases": []
+      },
+      "E2": {
+        "mean": 1.0128089819282236,
+        "ci95": 0.0014365696669368247,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      }
+    },
+    "v32": {
+      "M": {
+        "mean": 1.0046085197846595,
+        "ci95": 0.00046310961482894927,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E": {
+        "mean": 1.0084327773997321,
+        "ci95": 0.0005686587602380568,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "S": {
+        "mean": 1.008278401518386,
+        "ci95": 0.0007690206563944893,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "R": {
+        "mean": 1.0040874401758473,
+        "ci95": 0.0005224987776392978,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "C": {
+        "mean": 1.012569050618412,
+        "ci95": 0.0005381578401459864,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "P": {
+        "mean": 0.9993756538415989,
+        "ci95": 0.0006579911417517207,
+        "verdict": "unchanged duplicate control; no publication tested",
+        "changed_routing_cases": []
+      },
+      "E1": {
+        "mean": 1.0032245176170662,
+        "ci95": 0.0006018968803272716,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      },
+      "E2": {
+        "mean": 1.0047238653381407,
+        "ci95": 0.0005457609158010405,
+        "verdict": "loss beyond A:A envelope",
+        "changed_routing_cases": []
+      }
+    }
+  },
+  "decision": "Close tested full-row moment/exact, serial, route-CTA/chain and decode tile-publication recipes on clean rows beyond the A:A envelope. Do not promote E1 v16 or verify duplicate P.",
+  "mechanism": "Ready-input d16S b1 A/M/E 7.168/13.712/13.712us, route A/R 8.688/16.992us; P b2 completion tail d16S 2.753->15.488us and d32S 3.167->14.304us. The added row/tile machinery lengthens real work.",
+  "leaves_open": "Other CTA geometries and producer publication mechanisms, a faster current unpooler, and the changed-routing d16F rows; no general fusion/publication closure."
+}

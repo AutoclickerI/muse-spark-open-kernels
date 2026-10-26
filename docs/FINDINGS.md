@@ -570,14 +570,25 @@ Early attention release lets O config 6 load before waiting: d1 S/F -0.95 /-2.06
 last token rank 0 writes without spinning; all 711 field words match at t1..32 locally.
 Boundary critical-path attribution: `problems/muse_bf16_proj/dev/boundary_attribution/`.
 
-Reset batches below are **unmeasured**, not losses: import-time output was displaced by later prefill-host tuning. Host submission scores do not measure the embedded recipes. Exact payloads were requeued on the attention host, whose tuning precedes the lab.
+Reset batches below are **unmeasured**, not losses: the prefill receipts contain no LAB diagnostics; displacement was not established. Host submission scores do not measure the embedded recipes. Exact payloads were requeued on the attention host, whose tuning precedes the lab.
 
 | Recipe | Ratio vs control / A:A | Mechanism established | What remains open | Receipt |
 |---|---|---|---|---|
-| S14 metadata confirmation + d16/d32 boundary attribution (16 seeds) | Unavailable / unavailable | Diagnostic output lost after lab; host correctness passes | Every tested preload, geometry, serialization and MoE-release/unpool-hint arm; exact retry `ce5b991a8a984a03` (sender 4131535) | `4c86853a953b4eca` |
-| S14 decode-1 b1/route/b2 preload chain (11 arms, 32 seeds) | Unavailable / unavailable | Same output transport failure | W/W1/WR/W2, late-prew, hints, early residual and CL4; exact retry `5a95984a640d410e` (sender 4131717) | `841077efefb343a7` |
-| S14 d16/d32/v16/v32 boundary rebuild (10 arms, 24 seeds) | Unavailable / unavailable | Same output transport failure | Moment/exact single-CTA, serialization, route and tile-publication recipes; exact retry `9f6849fcc12a448d` (sender 4131824) | `a05f986396d744e7` |
+| S14 metadata confirmation + d16/d32 boundary attribution (16 seeds) | Unavailable / unavailable | No LAB diagnostic; host correctness passes | Every tested preload, geometry, serialization and MoE-release/unpool-hint arm; exact retry `ce5b991a8a984a03` (sender 4131535) | `4c86853a953b4eca` |
+| S14 decode-1 b1/route/b2 preload chain (11 arms, 32 seeds) | Unavailable / unavailable | No LAB diagnostic; wrapper mechanism unresolved | W/W1/WR/W2, late-prew, hints, early residual and CL4; exact retry `5a95984a640d410e` (sender 4131717) | `841077efefb343a7` |
+| S14 d16/d32/v16/v32 boundary rebuild (10 arms, 24 seeds) | Unavailable / unavailable | No LAB diagnostic; wrapper mechanism unresolved | Moment/exact single-CTA, serialization, route and tile-publication recipes; exact retry `9f6849fcc12a448d` (sender 4131824) | `a05f986396d744e7` |
 | S15 all-stream critical timeline (12 shapes, 3 seeds, 108 profiles) | Mapped/plain 0.97566–1.02431; profiled/mapped 0.99639–1.01627; all gates/fingerprints pass, accounting error 0 | Verify DAG gaps overlap heavy/light MoE work: representative v16/v32 busy overlap 28.14/105.56 us, GPU idle only 5.45/5.86 us. Decoder separates them; these are not CPU launch gaps | Glue above fitted stream roof 3.6/0.5/0.5/0.7/1.3/1.5% at d1/d16/d32/v1/v16/v32 (median-seed owner traces); no kernel promotion. Full table `dev/s15_timeline/H200.md`; model includes 2.36 us intercept, unlike byte-only PLAN | `7eaa262a30ec483e` |
+
+### Retry decisions and MoE shell hand-off
+
+Ratios are candidate/control latency; below one wins. A:A is an independent capture of the same S14 handles. Each row states the remaining scope rather than closing a kernel family.
+
+| Recipe | Ratio vs control; A:A | Mechanism / decision | Leaves open | Receipt job |
+|---|---|---|---|---|
+| Exact metadata confirmation + d16/d32 attribution retry | Unmeasured; no retained ratios/A:A | LAB_ERROR: combined archive exceeds 9 KB. No promotion or performance closure | Metadata-only preload confirmation and original attribution arms; needs compact diagnostics, not fewer controls/seeds | `ce5b991a8a984a03` |
+| d1 glue chain, 32 seeds | W S/F 0.98648/1.00369; D full 0.98549; A:A S/F **0.98549±0.00313 / 1.01603±0.00539** (95% mean CI) | Gates pass, but control drift is comparable to apparent gains; no qualified win or family closure. C4 observed 1.03119/1.02371, hints 1.00879/1.01158 | Same-capture balanced AB/BA confirmation of preload ownership; source of A:A bias is not isolated | `5a95984a640d410e` |
+| Full-row moment/exact, serial, route CTA and chain at d16/d32/v16/v32; 24 seeds | M **1.07236/1.05352/1.01380/1.00461**; E **1.07590/1.05995/1.01794/1.00843**; R **1.05884/1.07432/1.00838/1.00409**. A:A **0.99813/1.00069/1.00392/0.99991** | Tested clean-routing rows lose beyond A:A. d16S ready b1 A/M/E 7.168/13.712/13.712 us; route A/R 8.688/16.992 us. One d16F row changes membership for M/E/S/C/E1, so those rows remain unmeasured for promotion | Other CTA geometries/producer ownership; E1 v16 is inconclusive; changed-routing d16F rows require official margin review | `9f6849fcc12a448d` |
+| Decode per-tile unpool publication + exact b2 | d16/d32 **1.08951/1.07456**, same A:A as above | Close this producer/consumer recipe: sampled b2 completion tail 2.753→15.488 / 3.167→14.304 us. Verify P is an unchanged duplicate control, not a publication test | Other readiness protocols, faster current producers, and finish ownership; no general publication/fusion closure | `9f6849fcc12a448d` |
 
 ## Weight encoding
 

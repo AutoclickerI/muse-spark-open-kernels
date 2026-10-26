@@ -25,6 +25,10 @@ The receipt lacks the packed lab data; use the exact-byte retry below before app
 
 ## Reset receipt and retry
 
-Original job **`4c86853a953b4eca`** completed, but the lab is **unmeasured**: later prefill-host prepare tuning and profiler output displaced every lab marker from the 16,000-character receipt tail. Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
+Original job **`4c86853a953b4eca`** completed, but the lab is **unmeasured**: the prefill receipt contains no LAB marker (the earlier displacement diagnosis was not established). Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
 
 Exact-byte retry: attention-host import lab, 550-second budget, sender **4131535**, priority **1**; payload SHA256 `61e784c7`, wrapper `68a781ea`. Accepted follow-up job **`ce5b991a8a984a03`**. All existing local screens still cover the unchanged kernels. The attention host finishes its own tuning before this lab (no later prepare); its prior receipt has 1,956 characters after import tuning. `reset_result.json` records the receipt and dispatch proof. Apply the existing decision table only to the retry's recovered paired controls and gates.
+
+## Retry decision
+
+Retry `ce5b991a8a984a03` is unmeasured: `combined archive exceeds lab log cap`. No ratios or A:A survived. Metadata-only confirmation and original attribution recipes remain open; the next send targets the larger MoE shell instead of repeating the broad glue batch. Full retained verdict: `receipt_decision.json`.

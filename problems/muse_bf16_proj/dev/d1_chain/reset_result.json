@@ -2,7 +2,7 @@
   "job": "841077efefb343a7",
   "receipt": "runs/muse_prefill_layer/20261026T000013Z_submit_841077efefb343a7.json",
   "measurement": "unmeasured",
-  "reason": "Import-phase lab output displaced from 16000-character log tail by later prefill-host prepare tuning and profiler output.",
+  "reason": "Prefill receipt contains no LAB diagnostic; missing output is established, displacement is not. Wrapper cause is assigned to the tools lane.",
   "host_correctness_passed": true,
   "paired_ratio": null,
   "aa_spread": null,

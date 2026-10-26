@@ -1,7 +1,6 @@
 # P7 boundary rebuild: decode 16/32 and verify 16/32
 
-Current state: **the first reset receipt is unmeasured and the exact payload is queued on the attention host**;
-no rebuild is promoted. Exact base: S14 `f1c77ce6`.
+Current state: **retry9f6849fc completed; the tested clean-routing rebuild rows lose and no rebuild is promoted**. Exact base: S14 `f1c77ce6`.
 
 The existing reset batch measures decode 16/32 ready work, programmatic overlap, CL4 geometry, and the
 MoE-to-unpool launch edge. It does not measure verify 16/32 boundary attribution. `reconcile.py` reproduces from the frozen timeline at commit `ec55726`
@@ -99,7 +98,7 @@ identical verify P trace is omitted; verify A remains. Ready A/M/E/R medians and
 New owned sender **1298945**, prefill priority **1.2**, not-before **1792972800 / 2026-10-26 09:00 KST**.
 Wrapper SHA256 `2a76a8c1c1a265d2f7b6b417b4e9893552c6d35f75eaf873ca3614b2a28b97b4`;
 payload SHA256 `1c47422e13faffce4de8661af4eb11ffe07c826ba92ff93d046a881d936bd2bb`.
-Log: `runs/detached/2a76a8c1c1a265d2.log`; worker snapshot: `scheduled.json`. Original reset job: **a05f986396d744e7**; its packed result was displaced, as recorded below.
+Log: `runs/detached/2a76a8c1c1a265d2.log`; worker snapshot: `scheduled.json`. Original reset job: **a05f986396d744e7**; it contains no LAB diagnostic, as recorded below.
 Earlier owned senders **3517006** (priority1.0, reset attribution/confirmation) and **975835** (priority1.1,
 decode-1 chain) stay unchanged. No decode quota is used.
 
@@ -114,6 +113,10 @@ Rebuild the self-contained payload with `python3 problems/muse_bf16_proj/dev/bou
 
 ## Reset receipt and retry
 
-Original job **`a05f986396d744e7`** completed, but the lab is **unmeasured**: later prefill-host prepare tuning and profiler output displaced every lab marker from the 16,000-character receipt tail. Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
+Original job **`a05f986396d744e7`** completed, but the lab is **unmeasured**: the prefill receipt contains no LAB marker (the earlier displacement diagnosis was not established). Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
 
 Exact-byte retry: attention-host import lab, 550-second budget, sender **4131824**, priority **1**; payload SHA256 `1c47422e`, wrapper `748b31fb`. Accepted follow-up job **`9f6849fcc12a448d`**. All existing local screens still cover the unchanged kernels. The attention host finishes its own tuning before this lab (no later prepare); its prior receipt has 1,956 characters after import tuning. `reset_result.json` records the receipt and dispatch proof. Apply the existing decision table only to the retry's recovered paired controls and gates.
+
+## Retry decision
+
+Retry `9f6849fcc12a448d`: no winner. M/E/R ratios d16/d32/v16/v32 are 1.07236/1.05352/1.01380/1.00461, 1.07590/1.05995/1.01794/1.00843, and 1.05884/1.07432/1.00838/1.00409; A:A 0.99813/1.00069/1.00392/0.99991. Decode publication P loses 1.08951/1.07456 and stretches b2 completion tails to 15.488/14.304 us. Close these tested recipes on clean-routing rows beyond A:A; changed-routing d16F M/E/S/C/E1, E1 v16 and other producer/CTA/readiness mechanisms remain open. Verify P is an unchanged control. Full retained verdict: `receipt_decision.json`.

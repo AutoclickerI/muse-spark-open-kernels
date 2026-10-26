@@ -1,0 +1,57 @@
+{
+  "payload_sha256": "df8357b5b5594e25f4582a60db76660272b14f7cfa390e8e4bf89f3486f5bda1",
+  "body_sha256": "d863ca9e3dff2a7c12fdcce2e3e1e5e277fa5dccbdf9bd6e03f78a13fe6221da",
+  "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "native_sha256": "2205cfb9678bdf742e2eb1927eff5bcc4d4208c29a14df9c8f4f35ba74688c5d",
+  "pmz_sha256": "2e30702125535673fe24e1c000b06b612114080f04228ee72f37cb95fc30fb30",
+  "runtime_sha256": "0d5b0faf4c92b55691938bac09dfdad8ab3c5ccb312213b3012f073572ee7538",
+  "variants": {
+    "R": "1ee315594e5df3f369db74c33b66afead9b16bc057fa5f9395a106cba1ae67ab",
+    "F4": "b6ee56af980fc79209e67e180c319c284ea5318f5125bb9ed8e35ebfc58560bc",
+    "F8": "3bdc0ebb6d33e69c1f6cd627c857063942b1f4c64fff3ade278ed48aa19cd1bb",
+    "C": "6411ca117fe431212af21c20c9cec1774dcda260bdce26a9e80ed07173555f01",
+    "E": "df0c07a61dbdd592c794c30100e35b6f8b08d84c14f4c0ff4037e34dd10176cc",
+    "P": "b5dc056aefc874ece6da093653e52429aad85ae30906a80d880536de724e0b43",
+    "PF": "6688c97283e93d05c8bf6a88bad83c3e7809e8dad459fc340576fdc5caa7904e"
+  },
+  "arms": [
+    "A",
+    "A2",
+    "R",
+    "F4",
+    "F8",
+    "C",
+    "E",
+    "P",
+    "PF"
+  ],
+  "normal_and_forced_tests": 234,
+  "normal_and_forced_captured_shapes": 216,
+  "native_checks": 360,
+  "lab": {
+    "cases": 4,
+    "seeds": 32,
+    "arms": 9,
+    "paired_rounds": 8,
+    "archive_chars": 7295,
+    "all_gates_pass": true,
+    "aa_signatures_identical": true,
+    "heavy_light_resources_identical": true,
+    "ratio_resolution": 1e-05,
+    "reference_time_error_us_max": 0.00501,
+    "local_sm120_only": true
+  },
+  "native_ordering": "Only immutable route metadata loads before wait; SS/Y volatile CG loads after wait; sm90a no local-memory SASS",
+  "host": "muse_decode_layer S15 prepare phase",
+  "no_automatic_merge": "Use the exact h200_lab wrapper from the lane out directory to preserve the full output/time budget",
+  "queue": {
+    "pid": 1090184,
+    "priority": 2.0,
+    "t": 1792980609.7264814,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_bf16_proj/dev/moe_tail/out/p7_moe_tail_board.py",
+    "sha256": "696d82e66013ee55c46431c4f67351fa8a1741d15b2559b0206b7697f2d774e2",
+    "note": "h200_lab problems/muse_bf16_proj/dev/moe_tail/lab_moe_tail.py: P7 S15 MoE route/finish/tail:9 arms A/A2,R,F4,F8,C,E,P,PF;4 verify shapes x32 fresh busiest-shard seeds x8 balanced AB/BA;all expert/heavy/light kernels and grids shared;entry release only large-M small W2;volatile CG dependent SS/Y strictly after wait (sm90a SASS);normal+forced234 official tests/216 graphs,360 native checks,full packed lab pass;7.3KB all seeds. Expired reset gate prevents automatic merge and imposes no delay. Fixed snapshot outside shared lab directory preserves full 9KB payload budget; identical wrapper bytes.",
+    "not_before": 0
+  }
+}

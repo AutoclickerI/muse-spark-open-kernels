@@ -1,0 +1,56 @@
+{
+  "native": {
+    "source_sha256": "2205cfb9678bdf742e2eb1927eff5bcc4d4208c29a14df9c8f4f35ba74688c5d",
+    "kernels": [
+      {
+        "symbol": "_ZN2mt11warp_finishILi4ELb1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "waits": [
+          28
+        ],
+        "releases": [],
+        "before_wait": [
+          "/*00b0*/                   LDG.E.STRONG.SM R4, desc[UR4][R4.64] ;                          /* 0x0000000404047981 */",
+          "/*0150*/              @!P0 LDG.E.STRONG.SM R6, desc[UR4][R6.64] ;                          /* 0x0000000406068981 */",
+          "/*0160*/              @!P0 LDG.E.STRONG.SM R9, desc[UR4][R8.64] ;                          /* 0x0000000408098981 */",
+          "/*01b0*/                   LDG.E.STRONG.SM R4, desc[UR4][R4.64] ;                          /* 0x0000000404047981 */"
+        ]
+      },
+      {
+        "symbol": "_ZN2mt6finishILi4ELb1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii",
+        "waits": [
+          41
+        ],
+        "releases": [],
+        "before_wait": [
+          "/*0140*/                   LDG.E.STRONG.SM R4, desc[UR10][R4.64] ;                         /* 0x0000000a04047981 */",
+          "/*01c0*/              @!P0 LDG.E.STRONG.SM R15, desc[UR10][R14.64] ;                       /* 0x0000000a0e0f8981 */",
+          "/*01d0*/              @!P0 LDG.E.STRONG.SM R8, desc[UR10][R8.64] ;                         /* 0x0000000a08088981 */",
+          "/*0280*/                   LDG.E.STRONG.SM R12, desc[UR10][R12.64] ;                       /* 0x0000000a0c0c7981 */"
+        ]
+      }
+    ],
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/moe_tail/native/native.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN2mt11warp_finishILi8ELb0EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii:\n  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:592 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2mt11warp_finishILi4ELb0EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii:\n  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:592 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2mt11warp_finishILi4ELb1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii:\n  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:592 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2mt6finishILi4ELb1EEEvPKiS2_PKfS2_S4_S4_P13__nv_bfloat16ii:\n  REG:32 STACK:0 SHARED:1088 LOCAL:0 CONSTANT[0]:592 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN2mt5routeEPKiPiS2_S2_S2_S2_S2_S2_S2_iii:\n  REG:32 STACK:0 SHARED:1152 LOCAL:0 CONSTANT[0]:612 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  },
+  "pmz": {
+    "source_sha256": "2e30702125535673fe24e1c000b06b612114080f04228ee72f37cb95fc30fb30",
+    "kernels": [
+      {
+        "symbol": "_ZN3pmz5phaseILi1ELb0ELb1ELb0ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii",
+        "waits": [],
+        "releases": [
+          8
+        ],
+        "before_wait": []
+      },
+      {
+        "symbol": "_ZN3pmz5phaseILi1ELb0ELb1ELb0ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii",
+        "waits": [],
+        "releases": [
+          8
+        ],
+        "before_wait": []
+      }
+    ],
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/moe_tail/native/pmz.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN3pmz5phaseILi1ELb0ELb1ELb0ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii:\n  REG:109 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN3pmz5phaseILi1ELb0ELb1ELb0ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii:\n  REG:109 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN3pmz5phaseILi1ELb1ELb1ELb1ELi8EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii:\n  REG:112 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN3pmz5phaseILi1ELb1ELb1ELb1ELi16EEEvPK13__nv_bfloat16S3_PKhS5_PKfS7_PKiS9_S9_PS1_PfSB_ii:\n  REG:112 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:632 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+  }
+}
