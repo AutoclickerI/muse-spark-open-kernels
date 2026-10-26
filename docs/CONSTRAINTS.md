@@ -37,4 +37,4 @@ Each rule is `[hard]` (external or protective) or `[owner]`, with its source. `l
 | 2 | L2 persistence (access-policy windows, set-aside L2) across the per-replay flush | Defeats the cold-cache protocol | forbidden |
 | 2 | Prefetching a later stage's weights into L2 within one timed call | Nothing survives the flush | allowed |
 | 2, 8 | Lab runs on any host, in `prepare()` or at import time (`tools/h200_lab.py`) | Computes nothing the timed calls return | allowed (R-20261024-3, R-20261025-3) |
-| 8 | Another team's permissively licensed public code, shipped with its notice | llms.txt:151 (the right to license it) | allowed per repo (R-20261025-2) |
+| 8 | Another team's permissively licensed code, shipped with its notice | llms.txt:151 (the right to license it) | allowed per repo (R-20261025-2, R-20261026-1) |

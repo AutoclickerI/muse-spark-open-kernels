@@ -130,6 +130,18 @@ question-tool label is Jihoon's word; the question and option text are agent con
   principle as prepare-time labs: nothing the timed calls return is computed outside them."
 - Effect: `tools/h200_lab.py` may use muse_attention_decode as a host, running payloads at module import.
 
+## R-20261026-1 — 2026-10-26 20:08 KST — port operatorstack and lee101/openkernels with attribution
+> Both, with attribution (Recommended)
+
+- Source: question-tool answer in this session. The question: operatorstack/open-kernel-challenge-solutions (MIT,
+  team bigboateng, attention 1.8228x) and lee101/openkernels (Apache-2.0, attention v56 1.8429x off-board) beat our
+  attention-board 1.6696x; may we use them on R-20261025-2's terms? The chosen option read: "Same terms as
+  R-20261025-2 for both repos, all their kernels (attention first, then MoE/proj ideas). Ship winners with the MIT /
+  Apache-2.0 notices."
+- Effect: both repos' code may be reviewed, run in our H200 labs and shipped in our decode layer, keeping the MIT
+  notice, or the Apache-2.0 license and any NOTICE text, in the shipped source. Other teams' code is still asked case
+  by case.
+
 ## Dropped agent rules (do not reintroduce)
 
 | Rule an agent introduced | Dropped | Match |

@@ -76,8 +76,7 @@ Aggregate board wins cannot identify a winning shape. Source and evidence were r
 | [Tetraslam/muse-kernel-challenge @ dc95047d](https://github.com/Tetraslam/muse-kernel-challenge/tree/dc95047d) — no LICENSE found | proj #793 1.1564x | **Older, newly found.** README and empty package scaffold only. | **No accessible kernel/timings.** |
 | [danyloooah-web/okc-claims @ 288f6866](https://github.com/danyloooah-web/okc-claims/tree/288f6866) — no LICENSE found | attention #270 1.7432x | **Older, newly found.** README and a sealed Cacheon claim archive; readable entry source is not released. | Aggregate 1.044x ours, **same-shape mechanism unknown**. No code to port. |
 
-Port questions worth taking to Jihoon: **operatorstack attention first, Lee v56 second**; neither is authorized by
-R-20261025-2. In a sizing scenario, uniformly scale our attention time by 1.6696/1.8228 or 1.6696/1.8429 and
+Both are authorized under R-20261026-1 and being ported by P5b: **operatorstack attention first, Lee v56 second**. In a sizing scenario, uniformly scale our attention time by 1.6696/1.8228 or 1.6696/1.8429 and
 subtract that saving from S18's six 46-sliding/16-full load sums (`28b5c189`). P12 attention calls account for
 14.1/20.6/27.9/15.8/16.9/20.0% of those sums (d1/d16/d32/v1/v16/v32), giving **+1.64% / +1.84% six-load**,
 or 1.8484x -> about **1.879x / 1.882x**. These are scenarios, not bounds or measured ports: they assume uniform
