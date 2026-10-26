@@ -7,6 +7,7 @@ import sys
 R=H.parents[3];FULL=R/'problems/muse_attention_decode/dev/full_attention'
 sys.path[:0]=[str(R/'tools'),str(FULL)]
 import chain_standins
+sp=importlib.util.spec_from_file_location('s21_public_standins',FULL.parent/'public_ports/local_standins.py');public_standins=importlib.util.module_from_spec(sp);sp.loader.exec_module(public_standins)
 
 def install(m,forced=False):
     records=prior.install(m,forced)
@@ -45,5 +46,15 @@ def install(m,forced=False):
                 assert m.torch.equal(recovered.view(m.torch.int16),state[role].view(m.torch.int16)),role
             return bank
         m.np_prepare=np_prepare
+    if hasattr(m,'_public_module'):
+        original=m._public_module
+        def public_module(name):
+            port=original(name)
+            if name!='input' and not getattr(port,'_S21_LOCAL_INSTALLED',False):
+                if name=='operator':public_standins.operator(port,forced)
+                else:public_standins.lee(port)
+                port._S21_LOCAL_INSTALLED=True
+            return port
+        m._public_module=public_module
     return records
 if __name__=='__main__':prior.s19.old.install=install;prior.s19.old.main()

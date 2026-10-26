@@ -1,35 +1,62 @@
 {
   "planning_only": true,
-  "stage_points": "9dc1159a076b4e6b",
+  "stage_points": [
+    "9dc1159a076b4e6b",
+    "26d5054ffce94231"
+  ],
   "whole_baseline": "7f110a377fb843a7",
   "stage_deltas": {
-    "(16, 8, 2048)": {
-      "arm": "R4w4",
-      "control_us": 22.8625,
-      "ratio": 0.8900658863610281,
-      "saved_us": 2.5133686730709948
-    },
-    "(1, 8, 0)": {
-      "arm": "R64",
-      "control_us": 29.7745,
-      "ratio": 0.8880902871877048,
-      "saved_us": 3.332055744129684
-    },
-    "(16, 8, 0)": {
-      "arm": "Rw4",
-      "control_us": 133.599,
-      "ratio": 0.9921109598161157,
-      "saved_us": 1.0539678795267524
-    },
     "(32, 8, 0)": {
       "arm": "Rw4",
       "control_us": 223.6515,
       "ratio": 0.9977627520290063,
       "saved_us": 0.5003638645846913
+    },
+    "(16, 1, 2048)": {
+      "arm": "L",
+      "control_us": 13.947,
+      "ratio": 0.9542556250157661,
+      "saved_us": 0.6379967979051101
+    },
+    "(32, 1, 2048)": {
+      "arm": "L",
+      "control_us": 17.1435,
+      "ratio": 0.8608929926118315,
+      "saved_us": 2.3847809811590666
+    },
+    "(1, 8, 2048)": {
+      "arm": "O",
+      "control_us": 12.2315,
+      "ratio": 0.7808986568726756,
+      "saved_us": 2.679938078461869
+    },
+    "(1, 8, 0)": {
+      "arm": "L",
+      "control_us": 29.7985,
+      "ratio": 0.7577189838928423,
+      "saved_us": 7.219610858469139
+    },
+    "(16, 8, 2048)": {
+      "arm": "L",
+      "control_us": 24.205,
+      "ratio": 0.7635922341703738,
+      "saved_us": 5.722249971906102
+    },
+    "(16, 8, 0)": {
+      "arm": "L",
+      "control_us": 134.713,
+      "ratio": 0.9681150360622482,
+      "saved_us": 4.295319146946352
+    },
+    "(32, 8, 2048)": {
+      "arm": "L",
+      "control_us": 25.2515,
+      "ratio": 0.750479361854348,
+      "saved_us": 6.30077039413493
     }
   },
   "primary": {
-    "R": 1.0086880169255856,
+    "R": 1.019738236745448,
     "loads": {
       "1x1": {
         "old_load_us": 4117.382,
@@ -38,33 +65,33 @@
       },
       "16x1": {
         "old_load_us": 8711.346,
-        "stage_saved_us": 0,
-        "R": 1.0
+        "stage_saved_us": 29.347852703635066,
+        "R": 1.0033803108691948
       },
       "32x1": {
         "old_load_us": 11384.368,
-        "stage_saved_us": 0,
-        "R": 1.0
+        "stage_saved_us": 109.69992513331707,
+        "R": 1.0097297698171583
       },
       "1x8": {
         "old_load_us": 6673.676,
-        "stage_saved_us": 53.312891906074945,
-        "R": 1.0080528652334635
+        "stage_saved_us": 238.7909253447522,
+        "R": 1.0371088096484062
       },
       "16x8": {
         "old_load_us": 18378.21,
-        "stage_saved_us": 132.4784450336938,
-        "R": 1.0114184130497392
+        "stage_saved_us": 331.9486050588223,
+        "R": 1.022597891629161
       },
       "32x8": {
         "old_load_us": 22609.596,
-        "stage_saved_us": 8.00582183335506,
-        "R": 1.0003542149809037
+        "stage_saved_us": 297.84125996356187,
+        "R": 1.01334907377003
       }
     }
   },
   "official_S18_adjusted_sensitivity": {
-    "R": 1.0084118150444787,
+    "R": 1.0180113506043171,
     "loads": {
       "1x1": {
         "old_load_us": 5258.671936616802,
@@ -73,28 +100,28 @@
       },
       "16x1": {
         "old_load_us": 10918.73859460285,
-        "stage_saved_us": 0,
-        "R": 1.0
+        "stage_saved_us": 29.347852703635066,
+        "R": 1.0026950867499604
       },
       "32x1": {
         "old_load_us": 13719.350643362937,
-        "stage_saved_us": 0,
-        "R": 1.0
+        "stage_saved_us": 109.69992513331707,
+        "R": 1.0080604511757512
       },
       "1x8": {
         "old_load_us": 7870.955911157053,
-        "stage_saved_us": 53.312891906074945,
-        "R": 1.0068195608030184
+        "stage_saved_us": 238.7909253447522,
+        "R": 1.0312874427883372
       },
       "16x8": {
         "old_load_us": 19411.615523494427,
-        "stage_saved_us": 132.4784450336938,
-        "R": 1.0110276116998
+        "stage_saved_us": 331.9486050588223,
+        "R": 1.021597494306122
       },
       "32x8": {
         "old_load_us": 24893.46396415496,
-        "stage_saved_us": 8.00582183335506,
-        "R": 1.0003217068292483
+        "stage_saved_us": 297.84125996356187,
+        "R": 1.0121095230458552
       }
     }
   },
@@ -103,6 +130,6 @@
     "C3": 1.000967907286277,
     "NP_verify16": 1.0041276519451878
   },
-  "M64_credit": "R64 replaces M64; projection uses R64/S19 directly and does not multiply prior M64 gain",
+  "replacement_credit": "Ports replace the prior FA_CHAIN/VQ16 savings; M64/R64 receive no separate credit. C3 beats operator d16F; v32F Rw4 remains.",
   "limitations": "Different runs/weights/timing boundaries; assumes additive stage savings and independent dispatch effects. G0 requires the native composed held-out R lower bound, never this projection."
 }

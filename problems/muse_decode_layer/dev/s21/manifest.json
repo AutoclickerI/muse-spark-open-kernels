@@ -1,25 +1,24 @@
 {
-  "sha256": "81404eb2a725d60192f0bd1397284814dc0cf73ae0d3822824d8dc02235f7526",
+  "sha256": "109c0135b9a445b88b2efd1ebb73f15002a332ce553c8e50afb5557d6816398d",
   "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
   "enabled": [
     "C3",
     "GATE",
-    "FA_CHAIN",
-    "VQ16",
     "VQ32",
-    "NP"
+    "NP",
+    "PUBLIC"
   ],
   "series": "S21",
   "candidate": "problems/muse_decode_layer/dev/s21/generated/s21.py",
   "shipped_source": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
-  "shipped_sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
-  "host": "muse_prefill_layer",
+  "shipped_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "host": "muse_bf16_proj",
   "import_budget": 820.0,
   "payload": "problems/muse_decode_layer/dev/s21/generated/s21_pair.py",
-  "payload_sha256": "bb4e7ec97dc6248a04d8ab786d176a67417898ff8fc91f53f355e5920f311520",
+  "payload_sha256": "7a5b62175cd8c49de071b8feeecec52cae0ea02e66fa2709fb68f6f94f92087c",
   "wrapper": "problems/muse_decode_layer/dev/s21/generated/wrapper.py",
-  "wrapper_sha256": "627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1",
-  "sent_wrapper": "problems/muse_prefill_layer/lab/lab_s21_pair.py",
+  "wrapper_sha256": "702486c83f56497b393cd87217c62e8f7f2c77d2cc18153feeb4c9650cf84806",
+  "sent_wrapper": "problems/muse_bf16_proj/lab/lab_s21_pair.py",
   "checker_sha256": "63c76da556b07a1e80be88445cbe0ea84d17278731979bb40586c4e605ffe4d7",
   "baseline_arm": "INC",
   "nearby_expected_checks": 260,
@@ -33,42 +32,41 @@
       "rows": []
     },
     "no_C3": {
-      "sha256": "d8c064e919eda445b46d96b95a0a0b7c7d691b717ad08db77a6076064cc767e1",
+      "sha256": "9f974d73957d121a86b05e8a301386c4a76fe4898bf563221237f78fe53dc7cf",
       "rows": [
         "d16F",
         "d32F"
       ]
     },
     "no_GATE": {
-      "sha256": "eab3cbdd7477d4e4eeaf3bbb240c8e87f9c7991ab1ee10bf5582f31bbf864f4e",
+      "sha256": "68d42413ed90749cf8936709eea324db467ba2d6460300df036f47b35c746861",
       "rows": [
         "d1S"
       ]
     },
-    "no_FA_CHAIN": {
-      "sha256": "7f876958c2c72e7e6396dac3683bdc8dd33fbf7f242e1c0894f1921afec3b76e",
-      "rows": [
-        "v16S",
-        "v1F"
-      ]
-    },
-    "no_VQ16": {
-      "sha256": "c075c829f1c72a0dde6ab8c16b3ad304a6e6cd6dd63735ebdaa5ce1228acafbc",
-      "rows": [
-        "v16F"
-      ]
-    },
     "no_VQ32": {
-      "sha256": "0cc8034c005305a0ef5bb57049ff44af66ba26690e1e22d28725606d1357a617",
+      "sha256": "aec638d249233fbd0b83a12be12d34385b29288a8f313975a7b502088dfa63c9",
       "rows": [
         "v32F"
       ]
     },
     "no_NP": {
-      "sha256": "c2494c3e91cef5dad1e510ef71364106374119ce372b186e44a8f648d8c47293",
+      "sha256": "7058b15d7f25838b8cd48b5528b506d2425c370a837884490fe35aab414202d7",
       "rows": [
         "v16S",
         "v16F"
+      ]
+    },
+    "no_PUBLIC": {
+      "sha256": "7f01e2588335cedd76c9317192a8e139a14cb7a3c799adefd35c943fb554d85b",
+      "rows": [
+        "d16S",
+        "d32S",
+        "v1S",
+        "v1F",
+        "v16S",
+        "v16F",
+        "v32S"
       ]
     }
   },
@@ -434,6 +432,14 @@
     8510044,
     8520529,
     8625258,
+    8671259,
+    8679178,
+    8687097,
+    8695016,
+    8702935,
+    8710854,
+    8718773,
+    8726692,
     8729987,
     8834716,
     8939445,
@@ -890,7 +896,7 @@
   ],
   "weight_seed": 193400001,
   "router_seed": 193400005,
-  "expected_TASK_checks": 2880,
+  "expected_TASK_checks": 3136,
   "measurement_protocol": {
     "name": "palindromic-cohort-v1",
     "rounds": 16,

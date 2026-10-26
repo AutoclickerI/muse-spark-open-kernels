@@ -1,12 +1,14 @@
 """S21 vs S19: native R and leave-outs by tools/promotion.py; official TASK remains a separate gate."""
-import argparse,base64,hashlib,json,lzma,struct,sys
+import argparse,base64,hashlib,json,lzma,math,struct,sys
 from pathlib import Path
 H=Path(__file__).resolve().parent;R=H.parents[3];sys.path.insert(0,str(R/'tools'))
-from promotion import evaluate
+from promotion import evaluate,interval
 from lab_packet import result_lines, paired_evidence
 
 
-from evidence import s21_decode_samples as decode
+from evidence import s21_decode_samples,s21_unpack_evidence
+
+def decode(raw):return s21_decode_samples(s21_unpack_evidence(raw))
 
 
 def main():
@@ -30,10 +32,19 @@ def main():
             assert hashlib.sha256(official.with_suffix('.py').read_bytes()).hexdigest()==m['shipped_sha256']
             official_pass=json.loads(official.read_text())['result'].get('passed') is True
         result=evaluate(dict(id=receipt['id'],result=dict(passed=official_pass,gpu=receipt['result'].get('gpu'))),raw,m)
+        if result['score']['measured']:
+            aa=[];alternate=[]
+            for i in range(len(raw['seed_ids'])):
+                control=math.exp(sum(math.log(v['samples'][i]['A2']) for v in raw['loads'].values())/6)
+                primary=math.exp(sum(math.log(v['samples'][i]['INC']) for v in raw['loads'].values())/6)
+                aa.append(control);alternate.append(primary/control)
+            result['control_diagnostics']=dict(AA=interval(aa),INC_over_A2=interval(alternate),
+                scope='Diagnostic only; no primary subtraction, gate change or selective retiming')
         primary=[result['arm_status'][n] for n in ('A','A2','INC')]
         lab_gate=(result['score']['measured'] and result['score']['CI95'][0]>1 and all(
             not s['failures'] and s['nearby_task_checks']==s['nearby_expected_checks'] for s in primary))
-        result.update(gate=result['freeze_gate'],lab_gate=lab_gate,official_TASK_receipt=str(official) if official else None,
+        prepare_gate=0<raw.get('host_prepare_s',float('inf'))<=300
+        result.update(gate=result['freeze_gate'],lab_gate=lab_gate and prepare_gate,prepare_gate=prepare_gate,official_TASK_receipt=str(official) if official else None,
                       prepare={k:raw.get(k) for k in ('host_prepare_s','prepare_lines','build_s','delta_s')},
                       measurement_protocol=raw.get('measurement_protocol'),timing_diagnostics=raw.get('timing_diagnostics'),
                       original_pair_repeat=raw.get('original_pair_repeat'),

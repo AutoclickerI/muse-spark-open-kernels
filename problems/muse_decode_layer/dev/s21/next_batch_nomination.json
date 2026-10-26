@@ -1,0 +1,31 @@
+{
+  "status": "Next integration batch only; no separate sub-1pct confirmation",
+  "cell": "d16S",
+  "change": "Use S19 attention instead of Lee at d16S",
+  "evidence": "5864563117fd44b6",
+  "scored_build_unchanged": true,
+  "load_leaveout_over_S21": {
+    "R": 0.9586355366976032,
+    "CI95": [
+      0.9578381460645063,
+      0.9594335911503905
+    ],
+    "n": 64,
+    "log_se": 0.0004074541572387872,
+    "AA_log_se": 0.0,
+    "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+  },
+  "point_transfer_R": 1.0070655643914435,
+  "reason": "Only d16S changes in the public-port leave-out at decode16; d16F retains C3. Per-call .954256 did not transfer to the whole graph.",
+  "new_disjoint_G0_confirmation_required": true,
+  "additional_late_handoff": {
+    "path": "problems/muse_attention_decode/dev/public_hybrid/P4_HANDOFF.json",
+    "job": "cde88b9136de4093",
+    "patch_sha256": "9b043487f341268bc1fe1d576469096f67b465d6f94fb70a1847669b0f49065d",
+    "points": {
+      "v1S": 0.8394377912025409,
+      "d32S": 0.9858554768824009
+    },
+    "scope": "Arrived after S21 native G0 completed; combine with d16S restore in S22, with a leave-out for d32S whose CI crosses1"
+  }
+}

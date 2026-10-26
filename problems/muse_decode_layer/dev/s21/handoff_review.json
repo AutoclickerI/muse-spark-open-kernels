@@ -41,6 +41,14 @@
       "sha256": "d494d9cd5f22df29c3d4d3d814d73357e9194bc2c1e437e68ba24d575bede66e"
     },
     {
+      "path": "problems/muse_attention_decode/dev/public_hybrid/P4_HANDOFF.json",
+      "sha256": "11a97f3e7ef8f6c792b90d2cd6fb962f3acfb03c0b9afd062909de2166d26639"
+    },
+    {
+      "path": "problems/muse_attention_decode/dev/public_ports/P4_HANDOFF.json",
+      "sha256": "4564d9c5fb505c106e2bc1d9e5b5e3800550e5868e18f2bc5b8ae05cc991fe3e"
+    },
+    {
       "path": "problems/muse_attention_decode/dev/setup_tree/P4_HANDOFF.json",
       "sha256": "97e085f68ebfe58ce28d063f02a528ab668c4b5fd901de0ff2585f14cacc5e1b"
     },
@@ -69,6 +77,10 @@
       "sha256": "50d01ed7a2b6f34f06a0a17411e38ff9d78f75e2272506ad8556e8ca56f99835"
     },
     {
+      "path": "problems/muse_bf16_proj/dev/native_boundary/P4_HANDOFF.json",
+      "sha256": "07247a1c4726f96e6bdca2dc52b69159599a0ae8b92689ff31f5e844274e7ee4"
+    },
+    {
       "path": "problems/muse_bf16_proj/dev/residual_tail/point_nominations.json",
       "sha256": "5211b4ad803b5e25ec1f18d414d1a9f56f04a5df83719290ab676166a91c9adb"
     },
@@ -89,6 +101,10 @@
       "sha256": "6769e514b97296fd479b4e396ba894df5e2a45fde2cddff65b7055c51e1b3164"
     },
     {
+      "path": "problems/muse_decode_layer/dev/moe_public_ports/P4_HANDOFF.json",
+      "sha256": "3cb57459ebc21cf3d6e2e0d759c53fb0adcd49b31ad717bcc03db8d78c26b4d1"
+    },
+    {
       "path": "problems/muse_decode_layer/dev/nearby/P4_HANDOFF.json",
       "sha256": "93c4be0ea7db4622b8fe7723fb4bbf9b07ae685b77927148615c751964226151"
     },
@@ -103,6 +119,10 @@
     {
       "path": "problems/muse_decode_layer/dev/nt1_timeline/structural/intpipe/P4_HANDOFF.json",
       "sha256": "1cb933e1c8cd648f2d38d7d3feafbe2c85ebc23f7edccc1f9619b5fdac014f62"
+    },
+    {
+      "path": "problems/muse_decode_layer/dev/p13_boundary/P4_HANDOFF.json",
+      "sha256": "8449fc86fd6a62cd906b11c533c23203ff93c61b3016f02d417d9775381b97cb"
     },
     {
       "path": "problems/muse_decode_layer/dev/pdl_release/P4_HANDOFF.json",
@@ -132,14 +152,15 @@
   "included": [
     "C3",
     "GATE",
-    "FA_CHAIN",
-    "VQ16",
     "VQ32",
-    "NP"
+    "NP",
+    "PUBLIC"
   ],
   "waiting": [
-    "P3a small-M MoE ladder",
-    "P5 consumer-prologue finish fusion"
+    "P3a small-M MoE ladder"
   ],
-  "exclusions": "B1, PRIVATE1, AFFINE32 and H2 dropped after S20 leave-outs; no standalone confirmation of S20-noB1"
+  "exclusions": "B1, PRIVATE1, AFFINE32 and H2 dropped after S20 leave-outs; no standalone confirmation of S20-noB1",
+  "post_G0_next_batch": [
+    "problems/muse_attention_decode/dev/public_hybrid/P4_HANDOFF.json"
+  ]
 }

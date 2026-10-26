@@ -1,33 +1,41 @@
 {
-  "source_sha256": "81404eb2a725d60192f0bd1397284814dc0cf73ae0d3822824d8dc02235f7526",
-  "shipped_sha256": "d5c6dd24f69e30bf78e492b663e3274a0a422ddc7c03cde95a9e33bed6464578",
-  "payload_sha256": "bb4e7ec97dc6248a04d8ab786d176a67417898ff8fc91f53f355e5920f311520",
-  "wrapper_sha256": "627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1",
-  "waiting": {
-    "pid": 2627539,
-    "priority": 1,
-    "t": 1793014800.2136586,
-    "problem": "muse_prefill_layer",
-    "file": "problems/muse_prefill_layer/lab/lab_s21_pair.py",
-    "sha256": "627b0d37b01982b021e8ff2ede7ff375c186bd68e1be59f2c8f5e3294390cba1",
-    "note": "h200_lab problems/muse_decode_layer/dev/s21/generated/s21_pair.py: P4 S21 81404eb2 shipped d5c6dd24: S19+C3+exact12 gate+P5b FA3 chain/R64 (subsumes M64)+VQ16/VQ32+P10 native-layout T128. Six leave-outs; point projection1.008688 below early-release1.01, hold09:00. 1340 contracts, both13TASK/12graph screens, sm90a chain compile, exact packed2880TASK+260nearby+5old-fixture checks and11463-byte full-tail transport pass locally. Retain64 fixed seeds,16 symmetric all-round cohorts, telemetry and old fixture replay. S19 scored sender4046452 untouched.",
-    "not_before": 1793059200.0,
-    "lane": "P4",
-    "decision": "S21 expanded overnight batch vs S19: 64 held-out seeds x16 symmetric rounds, six leave-outs, unchanged G0 and verify16 telemetry/replay",
-    "priority_override": false,
-    "until": 1793059200.0
-  },
-  "supersedes_sender_pid": 1990194,
-  "release_time": "2026-10-27T09:00:00+09:00",
-  "planning_estimate_R": 1.0086880169255856,
-  "release_threshold_R": 1.01,
-  "estimate_note": "Different runs/weights/timing boundaries; assumes additive stage savings and independent dispatch effects. G0 requires the native composed held-out R lower bound, never this projection.",
-  "pending_nominees": [
-    "P3a small-M MoE ladder",
-    "P5 consumer-prologue finish fusion"
+  "source_sha256": "109c0135b9a445b88b2efd1ebb73f15002a332ce553c8e50afb5557d6816398d",
+  "shipped_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "payload_sha256": "7a5b62175cd8c49de071b8feeecec52cae0ea02e66fa2709fb68f6f94f92087c",
+  "wrapper_sha256": "702486c83f56497b393cd87217c62e8f7f2c77d2cc18153feeb4c9650cf84806",
+  "job": "5864563117fd44b6",
+  "sender_pid": 3156569,
+  "release": "immediate",
+  "planning_estimate_R": 1.019738236745448,
+  "cancelled_prefill_senders": [
+    2627539,
+    3144271
   ],
-  "nomination_cutoff": "2026-10-27T08:30:00+09:00",
-  "replace_unsent_snapshot_after_new_nomination": true,
+  "no_duplicate_reset_lab": true,
   "S19_sender_unchanged": true,
-  "official_S21_scored_run": null
+  "official_S21_scored_run": {
+    "pid": 3225144,
+    "priority": 1,
+    "t": 1793019237.213329,
+    "problem": "muse_decode_layer",
+    "file": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+    "sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+    "note": "P4 S21 expanded109c0135 shipped eacc087b. Native paired5864563117fd44b6:64heldout seeds x16symmetric rounds, R1.002638[1.001195,1.004084] over S19;3136TASK+260nearby pass, prepare145.86s. Lee d16S/d32S/v1F/v16S/v16F/v32S, operatorstack v1S; C3 d16F/d32F, exact12gate d1S, v32F Rw4 and NP T128 remain. Per-cell component projection was optimistic; decode16 regresses4.16pct, but composed sole G0 gate passes. No per-load veto or new freeze. Queue after unchanged S19 sender4046452 at09:01; S21 earliest09:02KST.",
+    "not_before": 1793059320.0,
+    "lane": "P4",
+    "decision": "S21 public109c0135 official TASK and decode score after S19; native G0 lower bound1.001195 and prepare145.86s pass",
+    "priority_override": false,
+    "until": 1793059320.0
+  },
+  "lab_complete": true,
+  "lab_R": 1.002638239580841,
+  "lab_CI95": [
+    1.001194797850949,
+    1.0040837623483414
+  ],
+  "lab_prepare_s": 145.862882,
+  "official_not_before": "2026-10-27T09:02:00+09:00",
+  "freeze": false,
+  "receipt": "runs/muse_bf16_proj/20261026T124446Z_check_5864563117fd44b6.json",
+  "lab_sender_completed": true
 }

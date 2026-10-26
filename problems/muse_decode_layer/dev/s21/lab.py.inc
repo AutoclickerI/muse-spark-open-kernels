@@ -231,7 +231,7 @@ def lab(deadline,weights,state):
         if isinstance(value,dict):return {k:compact(v) for k,v in value.items()}
         if isinstance(value,list):return [compact(v) for v in value]
         return value
-    blob=base64.b85encode(lzma.compress(json.dumps(compact(result),separators=(',',':')).encode())).decode()
+    blob=base64.b85encode(lzma.compress(json.dumps(s21_pack_evidence(compact(result)),separators=(',',':')).encode())).decode()
     assert len(blob)<11700,len(blob)
     return ['META S21 on exact S19;64 disjoint held-out seeds;all-round symmetric cohorts;public TASK all arms;restricted leave-outs take A2 off their rows',
             'S21_XZ85 '+blob,'END complete='+str(result['complete'])]

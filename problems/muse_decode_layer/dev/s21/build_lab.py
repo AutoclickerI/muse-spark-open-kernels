@@ -6,7 +6,7 @@ H=compose.H;R=compose.R;P=compose.P;sha=compose.sha
 sys.path[:0]=[str(R/'tools'),str(H.parent/'s16')]
 from pack import pack
 import h200_lab
-HOST='muse_prefill_layer';BUDGET=820.
+HOST='muse_bf16_proj';BUDGET=820.
 PROTOCOL=dict(name='palindromic-cohort-v1',rounds=16,seed_count=64,aggregation='arithmetic-mean-all-rounds',selective_retiming=False)
 ARMS={'INC':(None,None),**{'no_'+p:([x for x in compose.DEFAULT if x!=p],compose.ROWS[p]) for p in compose.DEFAULT}}
 
@@ -26,7 +26,7 @@ def seed_manifest():
     seeds=[193400003+104729*i for i in range(PROTOCOL['seed_count'])];assert not selected.intersection(seeds)
     out=dict(selection_seeds=sorted(selected),confirmation_seeds=seeds,weight_seed=193400001,router_seed=193400005)
     (H/'seed_manifest.json').write_text(json.dumps(out,indent=1)+'\n');(H/'handoff_review.json').write_text(json.dumps(dict(files=review,included=list(compose.DEFAULT),
-        waiting=['P3a small-M MoE ladder','P5 consumer-prologue finish fusion'],
+        waiting=['P3a small-M MoE ladder'],
         exclusions='B1, PRIVATE1, AFFINE32 and H2 dropped after S20 leave-outs; no standalone confirmation of S20-noB1'),indent=2)+'\n')
     return out
 

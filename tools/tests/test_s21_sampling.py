@@ -78,6 +78,23 @@ class SamplingProtocol(unittest.TestCase):
             for before,after in zip(cell['samples'],decoded['loads'][label]['samples']):
                 for n in names:self.assertAlmostEqual(after[n],round(before[n]*1e6)/1e6)
 
+    def test_receipt_columns_preserve_every_scalar_and_round(self):
+        ns={};exec((ROOT/'problems/muse_decode_layer/dev/s21/evidence.py').read_text(),ns)
+        raw=dict(complete=True,failures=[],integer=[0,-1,2**40],decimal=[0.,-1.000001,1234567.000001],
+                 other=[None,True,False,'text'],round_us={'A':[32.,1057.792067,.123456]},
+                 host_enqueue_us={'A':[1.234567,3.,100000.001]},nested={'round_us':{'INC':[.000001,650.272012]}})
+        self.assertEqual(ns['s21_unpack_evidence'](ns['s21_pack_evidence'](raw)),raw)
+
+    def test_receipt_columns_keep_post_measurement_device_fault(self):
+        ns={};exec((ROOT/'problems/muse_decode_layer/dev/s21/evidence.py').read_text(),ns)
+        from lab_packet import encode_packet,paired_evidence
+        original=dict(complete=True,failures=[dict(scope='arm',arms=['optional'],reason='TASK')],round_us={'A':[100.]})
+        packet=dict(kind='S21',paired=ns['s21_pack_evidence'](original),transport_errors=['sticky device fault'])
+        recovered=ns['s21_unpack_evidence'](paired_evidence(encode_packet('s21','fixture',packet),'S21'))
+        self.assertFalse(recovered['complete'])
+        self.assertEqual(recovered['failures'][0],original['failures'][0])
+        self.assertEqual(recovered['failures'][-1]['scope'],'device')
+
     def test_actual_gate_rejects_missing_primary_rounds_and_isolates_optional(self):
         spec=importlib.util.spec_from_file_location('s21_archive_fixture',ROOT/'tools/tests/test_promotion.py')
         fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
