@@ -27,7 +27,8 @@ for mi,m in enumerate((128,256)):
   if not i:continue
   spec=dict(M=m,arm=name,vs_S15=summary([v[i] for v in rows]))
   if i>=2:spec['vs_CH4']=summary([v[7+i-2] for v in rows])
-  spec['P4_point_nomination']=result['native_H200'] and i>=2 and spec['vs_CH4']['mean']<1
+  spec['P4_point_nomination']=result['native_H200'] and i>=2 and min(spec['vs_S15']['mean'],spec['vs_CH4']['mean'])<1
+  spec['P4_current_component_point_gain']=result['native_H200'] and i>=2 and spec['vs_CH4']['mean']<1
   result['arms'].append(spec)
  diffs=[v[13]-v[12] for v in rows];result['AA'][m]=dict(signed_mean_us=statistics.mean(diffs),absolute_mean_us=statistics.mean(abs(x) for x in diffs),maximum_absolute_seed_mean_us=max(abs(x) for x in diffs),ratio=summary([v[13]/v[12] for v in rows]))
  floors=[v[23]/4 for v in rows]

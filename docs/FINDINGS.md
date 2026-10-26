@@ -685,6 +685,49 @@ nor capped-readiness losses close their general families. Normal/forced whole-la
 all10pass (13TASK,12shapes,26static),684 captured checks are bit-equal toS15 across57 cases,
 9raw-scale graphs pass, and7458 timed-decoder packed/raw groups preserve all u8 scale codes.
 
+### P3b matched stream / count-routing verdict (2026-10-26)
+
+`b5c4d99ed0ed4dc6`:16 fresh independent weight/router seeds,3fixtures/seed/M,
+all7 arms pass TASK before/after timing (maxL2/row .004122/.004719). Direct cold
+pairs against both S15 and CHUNK4; A:A signed/absolute/max seed-mean us−.014/.329/.683
+atM128,+.016/.315/.843 atM256. Native CH4/balance both128regs,102400B shared,2CTAs/SM.
+Ratios below are new/CH4 time, descriptive95% Student-t15 CI; all S15 contrasts,
+SE and seed samples are retained in `branches/balance/results.json`.
+
+| Recipe | M128 /CH4 [95% CI] | M256 /CH4 [95% CI] | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|---|
+|B8|1.000386 [0.996014,1.004758]|1.001866 [1.000737,1.002995]|Masked NT1 counts, same ownership; CH4 math unchanged. No current-cell point win; /S15 .974856/.916912 alternatives to P4.|More general expert-dependent ownership; activation reuse and service reduction with preserved residency.|`b5c4d99ed0ed4dc6`|
+|B4|0.998493 [0.986834,1.010153]|1.013878 [1.008315,1.019440]|Move counts5–8 NT1→N16. M128 .15% point gain to P4 despite CI crossing1; /S15 .972042/.927495. No standalone small-arm run.|More general expert-dependent ownership; activation reuse and service reduction with preserved residency.|`b5c4d99ed0ed4dc6`|
+|B2|1.030728 [1.007399,1.054056]|1.035302 [1.022187,1.048418]|Move counts3–8 toN16. Loses /CH4; /S15 .950139 atM256 is an explicit slower alternative to P4.|More general expert-dependent ownership; activation reuse and service reduction with preserved residency.|`b5c4d99ed0ed4dc6`|
+|B0|1.216884 [1.185588,1.248180]|1.147339 [1.130234,1.164445]|All counts1–16 useN16; NT1 launches removed. Loses21.7/14.7%; eliminates NT1 tail without recovering the gap.|More general expert-dependent ownership; activation reuse and service reduction with preserved residency.|`b5c4d99ed0ed4dc6`|
+|ONE|1.247776 [1.226239,1.269313]|1.249694 [1.237685,1.261703]|One N32/N64 CHUNK4 path for all experts, no light math launches. Padding/consolidation loses24.8/25.0%.|More general expert-dependent ownership; activation reuse and service reduction with preserved residency.|`b5c4d99ed0ed4dc6`|
+
+Matched ordered oracle, conditional us M128/M256 (same first fixture per seed):
+
+| Measurement | S15 | CHUNK4 | Mechanism / leaves open | Receipt |
+|---|---|---|---|---|
+| Actual unique stream U |114.411/131.750|same|~4.16/4.22TB/s; per-seed4TB model118.997/138.904. Earlier182.9/256.7 means and120.3/127.4 floors were from different fixtures.|`b5c4d99ed0ed4dc6`|
+| W−U |3.574/12.659|.458/3.540|Extra scheduled weight requests, with stream cache reuse; not raw DRAM rereads.|`b5c4d99ed0ed4dc6`|
+| X−W |39.302/99.882|16.269/43.810|Valid activation requests plus changed reader work/issue and L2 reuse. Activation reuse across more output tiles is open.|`b5c4d99ed0ed4dc6`|
+| B−X |−1.408/−14.179|3.053/−3.427|Three-branch/two-phase launch of identical requests has no consistent large penalty; not a causal real-branch imbalance tax.|`b5c4d99ed0ed4dc6`|
+| R−B |21.641/14.474|39.026/48.490|Restores actual math, waits, real memory schedule, epilogue, route/finish; individual service components remain unseparated.|`b5c4d99ed0ed4dc6`|
+
+Full matched R15/R4=177.520/173.217us atM128,244.586/224.163 atM256. The ledger
+sums to58.523/105.682us above the per-seed4TB models for S15,54.220/85.259 forCH4;
+U−model=−4.586/−7.154us. Differences include interactions, not additive causal
+stall buckets. Logical X requests281.63/595.03MB(S15),168.87/325.68(CH4) are not
+HBM counters. External timestamps perturb totals5–8% (measured marked/unmarked
+control); NT1 finishes last in marked graphs, but exact unmarked branch/wait gaps
+remain unmeasured. Unmarked production ratios and oracle pairs are valid.
+
+CH4 repeats /S15 .975053[.958368,.991739]/.916849[.904303,.929395]. Targets132.6/
+158.5us remain open. `branches/balance/P4_HANDOFF.json` nominates every valid S15
+orCH4 point gain with both controls and seed CIs; root S15 patches B4`b84a2255`,
+B8`de11ef09`,B2`1f82d368`. Default B4/M128,CH4/M256; preserve S18's P7 W2/finish
+shell and confirm held-out six-load R. Next large recipe: share each X stage across
+four output tiles with two consumer WGs, checking register/shared admission first;
+conditional half-X ceiling~8/22us does not hide the remaining39/48us service/shell.
+
 ## Attention
 
 ### Shapes, floors and the incumbents

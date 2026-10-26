@@ -163,5 +163,11 @@
     "assumption": "Linear stage-time transfer using representative S15 owner/wall; no causal overlap inference and not a promotion metric.",
     "six_load_R_approx": 1.0087304454742552,
     "meaning": "About0.9percent possible six-load gain, dominated by M256. P4 must measure actual composed layer."
+  },
+  "latest_followup_handoff": "problems/muse_moe_w4a16/dev/mixed_wgmma/branches/balance/P4_HANDOFF.json",
+  "latest_followup_job": "b5c4d99ed0ed4dc6",
+  "latest_followup_point_choices": {
+    "128": "B4 (0.998493 vs CH4, uncertain; see both control CIs)",
+    "256": "CHUNK4"
   }
 }
