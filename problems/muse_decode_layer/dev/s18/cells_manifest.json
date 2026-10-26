@@ -1,0 +1,76 @@
+{
+  "sha256": "6477acc14ec3865d99aa6a54250d9eeb382f791b65df3f7bf3d4f380c181630c",
+  "provenance": {
+    "C": {
+      "patch": "problems/muse_decode_layer/dev/pdl_release/confirmation/C.patch",
+      "patch_sha256": "71b83bcc2a21c9781c8435090f65393299f9d2a9996c41032e5119de79623da7",
+      "source_sha256": "2f93745e1025ee73ab02fea87e846cf9d5a48efd1a9a3444c0a30594a035ec99"
+    },
+    "Vwait": {
+      "patch": "problems/muse_attention_decode/dev/full_attention/rebuild/ready_elide.patch",
+      "patch_sha256": "7a7d9cc54d38843eb96eee0c33ee518c27473ebfcb0d3e9dcf646cbc3fda9ecb",
+      "source_sha256": "2e1df0f759f8c98bfb72908f4dbc118521d0e6fb1d7bb234b4437e2725812490"
+    },
+    "pdl_M": {
+      "source_sha256": "5f4e6aa95071308ef24d4e36188a34c85482f65886c3e3eace2409f3dcb7d750"
+    },
+    "pdl_D": {
+      "source_sha256": "54515aa91735838c933f5f916d59a7d3f019174b1bd6d5ac9f9c0560fbcbdd8b"
+    },
+    "small_index": {
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index0_cell.py",
+      "cell_sha256": "75d6d0caac4605c7eb0d7e45532d8ec730b2dd218401472ccdfbb352a718751e",
+      "cuda_sha256": "3e32f9cd2bcc5e7edcf1c6473acf32e35dd041d3c8261d7dd57fec3236884047",
+      "prefix": "rvc_nindex0",
+      "features": [
+        "SHARD2",
+        "INDEX"
+      ],
+      "M": [
+        1
+      ]
+    },
+    "small_shard": {
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base0_cell.py",
+      "cell_sha256": "d82d404108f6a655ba98c40bc355de21510e78e4732829628b0db0cfb7b36a79",
+      "cuda_sha256": "e6d3c42b0b4479d2b3921615652ab827a2d2b67f650dff529c2af730d3ff3c2f",
+      "prefix": "rvc_nbase0",
+      "features": [
+        "SHARD2"
+      ],
+      "M": [
+        1
+      ]
+    },
+    "small_pair": {
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base1_cell.py",
+      "cell_sha256": "7eb2f6e773b243c17b7d20a81d3dc319dd9c2e493af2edd58975e703b977874c",
+      "cuda_sha256": "d49547042e6a28cef6cf7c3da2dc5d6fda3b85f41db07f9a750c7dc44f91fff4",
+      "prefix": "rvc_nbase1",
+      "features": [
+        "PAIR"
+      ],
+      "M": [
+        8
+      ]
+    },
+    "small_block": {
+      "cell": "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base2_cell.py",
+      "cell_sha256": "9fde4d89d30f313b6dbfcc7a5fbd95ce0d8f29192752cf89996a215670f23dae",
+      "cuda_sha256": "0c7fdaf4e4959a33b8993a8e55540fe60d508e04390fc9c06e67cc0f35c91569",
+      "prefix": "rvc_nbase2",
+      "features": [
+        "PAIR",
+        "BLOCK"
+      ],
+      "M": [
+        16,
+        32
+      ]
+    },
+    "P5": {
+      "source_sha256": "c2000b3c4d64c292ccac0a61295df60d8478b232ed7e9fdf0de118806fa924f4",
+      "receipt": "27a914f72bfb47c8"
+    }
+  }
+}

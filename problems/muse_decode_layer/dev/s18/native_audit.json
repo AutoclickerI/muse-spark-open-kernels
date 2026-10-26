@@ -1,0 +1,1375 @@
+{
+  "sha256": "892463b8ebec38fecd7a9fd661eb4a6bb57e002e92db6ce9fe0722d3c67785ef",
+  "shipped_sha256": "86c855c379f8dd1c3ef1bc1d2558504e7108721de514047ffa75810aa43596d5",
+  "checks": [
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": "",
+      "unit": "S18"
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": "",
+      "unit": "S18"
+    },
+    {
+      "name": "GLUE_CL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "V9_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "LT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "ATTN_PORT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "ATTN_X_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "ATTN_G_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "ATTN_P8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "V9_NT2_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "V9_NT2_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "_pf_GROUPED_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "SP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "P7_PREFETCH_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "DENSE_CHAIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "DENSE_CHAIN_CPP",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "SMALLM_VAR_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "NF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "GF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "VQ8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "PARTIAL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "_s16_global_C128_cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "_s16_epi_NORM_EPIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "_s16_epi_PAIR_EPIT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "MT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "MT_PMZ_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "P3B_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "RT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "RT_FAST_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "RVC_NINDEX0_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "RVC_NBASE1_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "RVC_NBASE2_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "GP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "S18"
+    },
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": "",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": "",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "GLUE_CL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "V9_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "LT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "ATTN_PORT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "ATTN_X_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "ATTN_G_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "ATTN_P8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "V9_NT2_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "V9_NT2_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "_pf_GROUPED_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "SP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "P7_PREFETCH_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "DENSE_CHAIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "DENSE_CHAIN_CPP",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "SMALLM_VAR_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "NF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "GF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "VQ8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "PARTIAL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "_s16_global_C128_cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "_s16_epi_NORM_EPIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "_s16_epi_PAIR_EPIT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "MT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "MT_PMZ_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "P3B_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "RT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "RT_FAST_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "_s18_vwait_off_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "RVC_NINDEX0_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "RVC_NBASE1_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "RVC_NBASE2_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "GP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_Vwait32"
+    },
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": "",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": "",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "GLUE_CL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "V9_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "LT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "ATTN_PORT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "ATTN_X_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "ATTN_G_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "ATTN_P8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "V9_NT2_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "V9_NT2_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "_pf_GROUPED_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "SP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "P7_PREFETCH_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "DENSE_CHAIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "DENSE_CHAIN_CPP",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "SMALLM_VAR_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "NF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "GF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "VQ8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "PARTIAL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "_s16_global_C128_cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "_s16_epi_NORM_EPIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "_s16_epi_PAIR_EPIT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "MT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "MT_PMZ_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "P3B_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "RT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "RT_FAST_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "RVC_NINDEX0_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "RVC_NBASE1_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "GP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_BLOCK"
+    },
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": "",
+      "unit": "no_D8"
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": "",
+      "unit": "no_D8"
+    },
+    {
+      "name": "GLUE_CL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "V9_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "LT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "ATTN_PORT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "ATTN_X_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "ATTN_G_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "ATTN_P8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "V9_NT2_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "V9_NT2_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "_pf_GROUPED_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "SP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "P7_PREFETCH_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "DENSE_CHAIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "DENSE_CHAIN_CPP",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "SMALLM_VAR_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "NF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "GF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "VQ8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "PARTIAL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "_s16_global_C128_cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "_s16_epi_NORM_EPIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "_s16_epi_PAIR_EPIT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "MT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "MT_PMZ_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "P3B_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "RT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "RT_FAST_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "RVC_NINDEX0_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "RVC_NBASE1_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "RVC_NBASE2_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "GP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D8"
+    },
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": "",
+      "unit": "no_D4"
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": "",
+      "unit": "no_D4"
+    },
+    {
+      "name": "GLUE_CL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "V9_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "LT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "ATTN_PORT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "ATTN_X_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "ATTN_G_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "ATTN_P8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "V9_NT2_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "V9_NT2_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "_pf_GROUPED_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "SP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "P7_PREFETCH_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "DENSE_CHAIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "DENSE_CHAIN_CPP",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "SMALLM_VAR_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "NF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "GF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "VQ8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "PARTIAL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "_s16_global_C128_cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "_s16_epi_NORM_EPIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "_s16_epi_PAIR_EPIT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "MT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "MT_PMZ_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "P3B_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "RT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "RT_FAST_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "RVC_NINDEX0_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "RVC_NBASE1_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "RVC_NBASE2_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "GP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_D4"
+    },
+    {
+      "name": "undefined_names",
+      "ok": true,
+      "msg": "",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "call_signatures",
+      "ok": true,
+      "msg": "",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "GLUE_CL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "V9_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "V9_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "LT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "ATTN_PORT_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "ATTN_X_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "ATTN_G_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "ATTN_P8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "PG_RAW",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "V9_NT2_CUDA_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "V9_NT2_CPP_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "_pf_GROUPED_SRC",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "SP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "P7_PREFETCH_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "DENSE_CHAIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "DENSE_CHAIN_CPP",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "SMALLM_VAR_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "NF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "GF_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "VQ8_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "PARTIAL_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "_s16_global_C128_cs_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "_s16_epi_NORM_EPIN_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "_s16_epi_PAIR_EPIT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "MT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "MT_PMZ_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "P3B_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "RT_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "RT_FAST_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "RVC_NINDEX0_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "RVC_NBASE1_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "RVC_NBASE2_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "GP_CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    },
+    {
+      "name": "CUDA",
+      "ok": true,
+      "msg": "exact source/flags compile cache",
+      "unit": "no_pool128"
+    }
+  ],
+  "passed": true
+}

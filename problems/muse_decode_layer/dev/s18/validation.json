@@ -1,0 +1,74 @@
+{
+  "expanded_sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "shipped_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+  "image": "judge image (tools/img), GPU0 sm_120",
+  "candidate_normal": {
+    "file": "problems/muse_decode_layer/cand_r3_best7_s18_95df42fe7b3a.py",
+    "TASK_passed": 13,
+    "TASK_failed": 0,
+    "graph_shapes_ok": 12,
+    "static_all_pass": true
+  },
+  "candidate_forced": {
+    "file": "cand_r3_best7_s18_d3a9719ec22f (timed code identical; prepare pool size 15 vs 15+builds)",
+    "TASK_passed": 13,
+    "TASK_failed": 0,
+    "graph_shapes_ok": 12,
+    "static_all_pass": true
+  },
+  "native_audit": {
+    "checks": 228,
+    "passed": true,
+    "units": [
+      "S18",
+      "no_BLOCK",
+      "no_D4",
+      "no_D8",
+      "no_Vwait32",
+      "no_pool128"
+    ]
+  },
+  "paired_wrapper": {
+    "normal": {
+      "wrapper_sha256": "a2514bca91f81922698433c93f226eb166bbb5d39607a043b83accd7d02cabe8",
+      "complete": true,
+      "task_checks": 1536,
+      "nearby_task_checks": 260,
+      "failures": [],
+      "seeds": 16,
+      "host_TASK": {
+        "TASK_passed": 13,
+        "TASK_failed": 0,
+        "graph_shapes_ok": 0,
+        "static_all_pass": true
+      },
+      "agreement_diagnostics": {
+        "d16S:no_D8": "ids2/16",
+        "d16S:INC": "ids2/16",
+        "d32S:no_D4": "ids12/32",
+        "d32S:INC": "ids12/32"
+      }
+    },
+    "forced": {
+      "wrapper_sha256": "a2514bca91f81922698433c93f226eb166bbb5d39607a043b83accd7d02cabe8",
+      "complete": true,
+      "task_checks": 1536,
+      "nearby_task_checks": 260,
+      "failures": [],
+      "seeds": 16,
+      "host_TASK": {
+        "TASK_passed": 13,
+        "TASK_failed": 0,
+        "graph_shapes_ok": 0,
+        "static_all_pass": true
+      },
+      "agreement_diagnostics": {
+        "d16S:no_D8": "ids2/16",
+        "d16S:INC": "ids2/16",
+        "d32S:no_D4": "ids12/32",
+        "d32S:INC": "ids12/32"
+      }
+    }
+  },
+  "note": "Local timings use stand-ins (DSM as one-CTA launch, VQ8 S14 ring, pool128 CHAIN torch.mm split) and do not rank pieces; only TASK and completeness are evidence."
+}

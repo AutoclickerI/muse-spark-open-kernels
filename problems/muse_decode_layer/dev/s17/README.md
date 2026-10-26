@@ -60,8 +60,9 @@ P7 P old/new shape intervals (not G0 R):
 - v32S: 1.003487 [1.002849,1.004125].
 - v32F: 1.003191 [1.002404,1.003979].
 
-**Scored7ec5f9ab1eee4a17 passed1.828637×; paired checkda0cd64bb08644f7 is accepted.**
-S16ee5fe249 stays frozen until held-out confirmation.
+**Scored 7ec5f9ab1eee4a17 passed 1.828637×; paired check da0cd64bb08644f7 promotes S17: R 1.003310
+[1.001006, 1.005620] over S16 ee5fe249, 16 held-out seeds, all TASK checks pass.** S17 is frozen (`frozen.json`,
+`cand_r3_best7_s17_final.py`); S18 builds on it in [../s18](../s18/README.md).
 
 `late_response.json` records current scored and paired jobs; `batches/<wrapper sha>/` pins manifests,
 responses and reports. The final pair uses fresh input seeds304910273+104729*i, fresh weights/router,
