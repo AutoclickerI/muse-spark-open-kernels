@@ -1,0 +1,109 @@
+{
+  "job": "9c16c850f7b941a5",
+  "source_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "incumbent_score_estimate": 1.8751087285463115,
+  "target": 2.6,
+  "ln_gap": 0.3268447987283009,
+  "formula": "ceiling percent of ln gap * subjective p / forecast hours per verdict",
+  "ranked_levers": [
+    {
+      "lane": "P5b",
+      "ceiling_scenario": "P5b_ideal_roof",
+      "ceiling_R": 1.0566118838853953,
+      "ceiling_gap_pct": 16.848196204416634,
+      "odds_prior": 0.8,
+      "verdict_cost_hours_estimate": 1,
+      "priority": 13.478556963533308,
+      "basis": "FA3/full plus actual v16S FA3, disjoint from P5; public ports allowed R-20261026-1; completed 26d5054f passes704nativeTASK with eight preferred cells, including L v1F .757719, v16S .763592, v16F .968115. P4 whole-layer G0 remains pending. 9dc1159a supplies ~.89 call-time nominees, not a whole-layer .89. True main-loop/epilogue work remains.",
+      "rank": 1
+    },
+    {
+      "lane": "P5",
+      "ceiling_scenario": "P5_ideal_roof",
+      "ceiling_R": 1.0437311667888012,
+      "ceiling_gap_pct": 13.095497738226747,
+      "odds_prior": 0.6,
+      "verdict_cost_hours_estimate": 1,
+      "priority": 7.857298642936048,
+      "basis": "ca022370 finish deletion R1.015900 [1.010938,1.020887] is 4.83% gap. Consumer family stays parked at its prescribed decision; native sliding/producer mechanisms remain open. 26d5054f now measures native sliding winners O v1S .780899 and L d16S/d32S/v32S .954256/.860893/.750479. This raises p to .60 and puts native sliding second; consumer-family state is untouched and P4 confirms the nominees.",
+      "rank": 2
+    },
+    {
+      "lane": "P3a",
+      "ceiling_scenario": "P3a_ideal_roof",
+      "ceiling_R": 1.1438188497144082,
+      "ceiling_gap_pct": 41.11203017159648,
+      "odds_prior": 0.25,
+      "verdict_cost_hours_estimate": 4,
+      "priority": 2.56950188572478,
+      "basis": "554c392d wait-only R1.016674 is 5.06% of the new gap, not the 41.11% family cap. New da1fb2ee matched ladder: decode-scale conditional contrast R1.007181 (~2.19% gap); MMA+activation R1.045642 (~13.66%); nonadditive ACT/sink contrasts and slow STREAM cannot be treated as exclusive hardware costs. Prior .25 reflects a remaining structural opportunity and repeated slower DSM/reuse builds.",
+      "rank": 3
+    },
+    {
+      "lane": "P10",
+      "ceiling_scenario": "P10_ideal_roof_plus_ideal_exact12",
+      "ceiling_R": 1.1290440050249135,
+      "ceiling_gap_pct": 37.13421840366275,
+      "odds_prior": 0.25,
+      "verdict_cost_hours_estimate": 4,
+      "priority": 2.320888650228922,
+      "basis": "7f110a37 no G0 winner. e70024b1 native scenarios small/large R1.032884/1.038411; e4030204 split-only R1.002444 (0.75% gap), whole consumer deletion R1.019571 (5.93%), producer deletion R1.086449 (25.37%). c87c2d8a 24 dispatch arms have no nominees. Broader coding/producer algorithm remains; ideal exact12 has no decode or metadata tax and is a scenario, not a demonstrated layout.",
+      "rank": 4
+    },
+    {
+      "lane": "unassigned glue/route",
+      "ceiling_scenario": "glue_route_ideal_roof",
+      "ceiling_R": 1.0470297200690841,
+      "ceiling_gap_pct": 14.060899116246175,
+      "odds_prior": 0.25,
+      "verdict_cost_hours_estimate": 2,
+      "priority": 1.7576123895307718,
+      "basis": "Boundary reductions, normalization and route selection remain outside attention/projection/MoE-core levers. P7 prefetch and P11 materialization do not cover that computation. Existing micro-nominees go to P4; cheapest next verdict is calibrated boundary deletion/compute attribution. External route + expert metadata grouped; separate MoE finalize remains covered by the MoE family.",
+      "rank": 5
+    },
+    {
+      "lane": "P3b",
+      "ceiling_scenario": "P3b_ideal_roof",
+      "ceiling_R": 1.0921180524663308,
+      "ceiling_gap_pct": 26.960495769434143,
+      "odds_prior": 0.05,
+      "verdict_cost_hours_estimate": 6,
+      "priority": 0.22467079807861787,
+      "basis": "3330edc2 activation/gather mechanisms supplied no supported >1% next build. The unique-work family bound remains; a new mechanism must justify a build.",
+      "rank": 6
+    },
+    {
+      "lane": "P7",
+      "ceiling_scenario": "P7_ramp_scenario",
+      "ceiling_R": 1.0854250005554995,
+      "ceiling_gap_pct": 25.079675795932197,
+      "odds_prior": 0.02,
+      "verdict_cost_hours_estimate": 6,
+      "priority": 0.08359891931977399,
+      "basis": "S19 update of the same 2.36us per weight/KV-boundary ramp + actual idle scenario. CUPTI has no HBM counter. 73d2d80d ALL/EDITABLE lose and raw H2 gain overlaps duplicate G control; a405c8b4 prefetches lose. This is not a physical ceiling on all continuity algorithms.",
+      "rank": 7
+    },
+    {
+      "lane": "P11",
+      "ceiling_scenario": "P11_materialization_plus_idle_scenario",
+      "ceiling_R": 1.0194930673081393,
+      "ceiling_gap_pct": 5.906629383200517,
+      "odds_prior": 0.05,
+      "verdict_cost_hours_estimate": 24,
+      "priority": 0.012305477881667746,
+      "basis": "Only the S19 one-store/read materialization + true idle scenario is sized. Cache hits can shrink HBM savings; retention might improve issue/reuse beyond this estimate, so a whole persistent kernel has no established universal ceiling. Old S15 +1.74% synchronization estimate is not transported as a new measurement.",
+      "rank": 8
+    }
+  ],
+  "ranked_work_order": [
+    "P4",
+    "P5b",
+    "P5",
+    "P3a",
+    "P10",
+    "P3b",
+    "P7",
+    "P11"
+  ],
+  "notes": "P4 remains the live integration/scored critical path; unassigned glue is a newly exposed decision, not a new lane or a state change. All ranks preserve lane-owned row text/state. Scenario ceilings overlap and are not additive."
+}

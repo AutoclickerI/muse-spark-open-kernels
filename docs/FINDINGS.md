@@ -263,6 +263,56 @@ coding lowers the dense byte floors. Small attention/glue floors exclude their f
 | MoE | 14.7 | 44.2 | 43.9-44.9 | 52.7-53.4 | 108.4-109.1 | 125.7-126.1 |
 | Boundaries, route | <= 0.02 | <= 0.02 | <= 0.02 | <= 0.02 | <= 0.02 | <= 0.02 |
 
+### S19 timeline and lever re-rank
+
+**Measured:** `9c16c850f7b941a5`, one prefill-host import lab, exact S19 `62ea5bf4` / shipment
+`8b415553`; all12 sliding/full shapes,3 prospective fresh seeds x3 cold CUPTI rounds. Both untouched
+and mapped arms pass72 public TASK checks; full kernel/resource/stream/DAG fingerprints match,
+monotone timestamps and exact critical accounting (max error0). Source/observer/checker/payload pins
+and packet checksum verified. The outer host's deliberate prepare stop is not an experiment failure.
+All108 profile rounds and288 plain/mapped event controls remain at integer-ns precision; no trimming.
+[Per-stage/load and all12 shape tables](../problems/muse_decode_layer/dev/s19_timeline/result/H200.md),
+[rounds](../problems/muse_decode_layer/dev/s19_timeline/result/rounds.csv.xz),
+[validation](../problems/muse_decode_layer/dev/s19_timeline/result/validation.json),
+[priors/ranking](../problems/muse_decode_layer/dev/s19_timeline/result/ranking.json),
+[reproduction](../problems/muse_decode_layer/dev/s19_timeline/README.md).
+
+Unlike the S15 fitted-stream model, requested roofs here are max(actual lossless-layout read+write
+bytes/4.8TB/s, tensor FLOPs/989TFLOP/s), with no intercept. S19's raw P10 pool bank is counted as raw;
+selected NF/CD weights retain their coded storage. Excess is positive critical time above1.3roof,
+averaged over every round. Busy DAG gaps go to actual overlapping work, never launch overhead;
+concurrent experts share one unique-work envelope. All small-M W13/W2/finish work is fused and stays
+one measured row; large-M W13/W2/finalize remain separate. Scalar reductions/softmax/selection are
+not modeled by byte/tensor roofs. Logical bytes are not HBM counters. The shape-specific observer
+mapped/plain range0.98797–1.00176 and profiled/mapped0.99839–1.01253 are timing controls, not a gain.
+
+**Modeled:** S19 score1.875109x = S18 board1.848375 x paired S19/S18 lab1.014463; scored S19 is pending.
+Close target2.6 means D=ln(2.6/1.875109)=.326845, replacing the older ln1.284 denominator. Stage-family
+ideal-roof shares are small-M MoE41.1%, large-M27.0%, dense25.7% (37.1% with ideal exact12), native
+sliding13.1%, full/FA3 including actual v16S16.8%. Their1.3roof target shares are21.4/14.3/11.1
+(20.9% ideal exact12)/12.7/10.4%. All-stage1.3roof scenario R1.36236 removes94.6%D; counterfactual
+ceilings overlap and are not additive. This fresh routing cohort is not a paired S19/S15 speedup test.
+
+**Uncovered:** b1/b2 normalization/reduction and route/metadata compute expose6.79–7.26us per weighted
+layer above1.3roof,13.0%D (14.1% ideal-roof ceiling). P7's prefetch and P11's materialization do not
+cover that math; PLAN now names an unassigned lever. Separate MoE finalize stays within P3b.
+S19 ramp+idle R1.08543 is25.1%D, a scenario, not a physical continuity bound; materialization alone
+R1.01470 is4.5%D, plus true idle R1.01949 is5.9%D. No fresh synchronization-only measurement supports
+carrying the old S15 persistent-kernel estimate forward; issue/reuse beyond byte retention is unmeasured.
+
+Today's mechanisms change odds independently of those family caps: ca022370's parked consumer deletion
+R1.01590 covers4.8%D, and554c392d's wait-only R1.01667 models5.1%D. New matched ladder da1fb2ee has
+conditional decode-scale/MMA+activation contrasts R1.00718/1.04564 (~2.2/13.7%D); sinks/transport and
+the slower STREAM control prevent calling them exclusive pipe costs or a family closure. P10's newer
+e4030204 split-only deletion R1.002444 covers0.75%D, versus producer deletion1.086449 (25.4%D) and
+whole-consumer deletion1.019571 (5.9%D); c87c2d8a's24 native dispatch arms yield no nominees. Its prior
+7f110a37 large_split builds still have no winner. P5b's9dc1159a ~.89 FA3-call nominees are not an11%
+whole-layer gain; R-20261026-1's public ports now have native receipt26d5054f:704TASK,8preferred cells; L v1F/v16S .757719/.763592 and O v1S .780899, L v32S .750479. These are component ratios; P4's held-out whole-layer G0 remains pending.
+
+Judgment priors and forecast hours make ceiling*p/cost explicit: P5b, P5, P3a, P10, unassigned glue/route,
+P3b, P7, P11. Completed26d5054f raises attention odds; it does not change the parked consumer-family decision. P4 stays first in execution for the live integration/scored path. Only existing row
+order/rank numbers and Levers changed; lane-owned work text, states and pending runs are preserved.
+
 ## MoE M=1-32
 
 Current nomination rule (97e98f3): every valid per-shape point estimate below1 is handed to P4,
