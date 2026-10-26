@@ -12,14 +12,21 @@ def sha(s):return hashlib.sha256(s.encode()).hexdigest()
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--selection',type=Path,default=H/'generated/selection.json')
     ap.add_argument('--baseline',type=Path,default=patches.BASE);ap.add_argument('--baseline-name',default='S15')
-    ap.add_argument('--seed',type=int,default=104910273);a=ap.parse_args()
+    ap.add_argument('--seed',type=int,default=104910273);ap.add_argument('--task-prepare',action='store_true');a=ap.parse_args()
     selection=json.loads(a.selection.read_text());selected=selection['patches'];source,meta=patches.compose(selected)
+    if a.task_prepare:
+        import prepare_constraints
+        meta['original_candidate_sha256']=meta['sha256'];source=prepare_constraints.apply(source);meta['sha256']=sha(source)
+        meta['prepare_routing_revision']=prepare_constraints.REVISION
     candidate=H/'generated/s16.py';candidate.write_text(source)
     hostlines=source.splitlines(True);arms={}
     for spec in selected:
         text,_=patches.compose([s for s in selected if s['name']!=spec['name']])
+        if a.task_prepare:text=prepare_constraints.apply(text)
         arms[spec['name']]=dict(source=text,rows=spec['rows'])
     baseline=a.baseline.read_text()
+    if a.task_prepare:
+        meta['original_baseline_sha256']=sha(baseline);baseline=prepare_constraints.apply(baseline)
     arms[a.baseline_name]=dict(source=baseline,rows=sorted({tuple(r) for s in selected for r in s['rows']}))
     for name,spec in arms.items():
         text=spec.pop('source');lines=text.splitlines(True)

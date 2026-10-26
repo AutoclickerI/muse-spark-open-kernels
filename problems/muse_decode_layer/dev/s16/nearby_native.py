@@ -1,13 +1,18 @@
 """Retarget the admitted 67-shape TASK lab to the exact S16 nearby merge."""
-import argparse,base64,difflib,hashlib,json,lzma,os,subprocess,sys
+import argparse,base64,difflib,hashlib,json,lzma,os,select,subprocess,sys
 from pathlib import Path
 import patches
-from respond import wait_gpu_capacity
+from respond import process_exit_fd,wait_gpu_capacity
 H=Path(__file__).resolve().parent;R=H.parents[3];O=H/'generated/nearby_native'
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--send',action='store_true');a=ap.parse_args();O.mkdir(parents=True,exist_ok=True)
+    ap=argparse.ArgumentParser();ap.add_argument('--send',action='store_true');ap.add_argument('--wait-pid',type=int);a=ap.parse_args();O.mkdir(parents=True,exist_ok=True)
+    if a.wait_pid:
+        try:fd=process_exit_fd(a.wait_pid)
+        except ProcessLookupError:pass
+        else:
+            print('Waiting on own running audit',a.wait_pid,flush=True);select.select([fd],[],[]);os.close(fd)
     receipt=json.loads(next((R/'runs/muse_attention_decode').glob('*_c03a3ae8ddfd490d.json')).read_text());assert receipt['result']['passed']
     import decide
     proof=decide.archive(receipt['result']['log_tail'],'NATIVE_TASK_XZ85');assert proof['complete'] and proof['task_checks']==268 and not proof['failures'] and not proof['errors']
@@ -20,9 +25,12 @@ def main():
     text=template+'\nVALIDATION_BASE='+repr(base)+'\nS15N_SHA='+repr(digest)+'\nS15N_EDITS='+repr(edits)+'\n'
     text+=(H.parent/'nearby/native_validation.py.inc').read_text().replace("'S15'","'S16'").replace("'S15n'","'S16n'")
     text=text.replace('native S15/guarded S15n correctness','native frozen S16/guarded S16 nearby correctness')
+    body=text;encoded=base64.b85encode(lzma.compress(body.encode(),preset=9)).decode()
+    text='import base64,lzma,linecache\n_body=lzma.decompress(base64.b85decode('+repr(encoded)+')).decode()\n_f="<s16-native-nearby>"\nlinecache.cache[_f]=(len(_body),None,_body.splitlines(True),_f)\nexec(compile(_body,_f,"exec"),globals())\n_native_lab=lab\ndef lab(deadline,weights,state):return _native_lab(deadline,weights,state)\n'
     payload=O/'s16_nearby_native.py';payload.write_text(text)
     sys.path.insert(0,str(R/'tools'));import h200_lab
     raw,_=h200_lab.build([(payload.stem,hashlib.sha256(text.encode()).hexdigest()[:16],text)],'muse_attention_decode',phase='import',import_budget=550)
+    assert len(raw.encode())<1_000_000,len(raw.encode())
     wrapper=O/'wrapper.py';wrapper.write_text(raw);sha=hashlib.sha256(raw.encode()).hexdigest()
     result=dict(base_sha256=meta['sha256'],candidate_sha256=digest,wrapper_sha256=sha,shapes=67,task_checks=268,screens={},sent=False)
     for mode in ('normal','forced'):

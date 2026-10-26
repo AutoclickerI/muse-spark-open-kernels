@@ -27,14 +27,18 @@ CI is descriptive. Owner97e98f3 froze exact60254883; no conditional S15c was sen
 |---|---|---|
 | First S16 2e26db54 / shipped92a135bf | Normal/forced13 TASK,12 graph shapes; scored7139485dbeef4e0d=1.796154x | Superseded; unpaired score does not rank it |
 | Frozen S16 435df5f7 / shipped1d0c8893 | Normal/forced13 TASK/12 graphs/30 expanded checks; paired wrapper504e1fa6 passes2304 TASK per mode | Scored c6cc2874ab994ee9, check37c2879f62554dff; promoted |
-| Follow-up e3a919c5 / shipped6b5df6a8 | Normal/forced13 TASK/12 graphs/26 expanded checks | Scored sender1426363 accepted as cff1d0f93ce14a2f; comparison wrapper3a3e7ae9 passes1536 TASK checks per mode and is queued |
+| Follow-up e3a919c5 / shipped6b5df6a8 | Normal/forced13 TASK/12 graphs/26 expanded checks | Scored cff1d0f93ce14a2f=1.811842x; comparison c096a2c5200447e9 is unmeasured (private prepare gate), repaired retry is screening |
 | Guarded nearby on frozen S16,6e43a367 | Normal/forced143 fixtures per mode; eager and2 graph replays; unchanged TASK | Ready and unsent; native validation remains pending |
 
 Follow-up e3a919c5 retains PAIR and attention release, adds OLD last-CTA at decode16
 sliding, direct-partials at decode32 sliding, and cooperative QT4/C16 at verify1 sliding.
 It removes the prior off-arm point losers, including DSM verify16 and library O whose
-removal has clear paired gains. This is selection, not a new promotion. Its baseline
-is exact frozen S16, not S15. Confirmation starts204910273 (16 seeds,104729 stride),
+removal has clear paired gains. This is selection, not a new promotion. Its timed baseline
+is frozen S16. Check c096a2c5200447e9 stopped before timing in the private exact-ID glue
+prepare gate; it is unmeasured, not a loss. The retry applies the same TASK-semantic
+preparation fix to candidate/control and keeps the same fresh seeds. Timed AST nodes
+are asserted unchanged; prepare_constraint_validation.json compares the new gate
+with144 public-oracle cases. Confirmation starts204910273 (16 seeds,104729 stride),
 with fresh weight204910271/router204910269. The prior confirmation seeds are now
 selection seeds and are excluded. prepare_followup.py records the selection; respond.py
 packs, screens and sends exact source bytes with per-batch immutable manifests.
@@ -53,8 +57,9 @@ nearby/scored speedup moves from0.9547/0.8651/0.8184/0.8119/0.7327/0.7263 to
 old/new geomean is1.171253, not an official score. Scored dispatch is unchanged;
 its identical-dispatch ratios span0.97794-1.03416, without an independent A:A arm.
 
-The finite-only timing packet does not prove native correctness. P5b queued guarded
-S15n9cc90d2e as sender1096763, wrapper2ba5fcff, priority4, not-before1792972800.
+P5b native job c03a3ae8ddfd490d proves guarded S15n9cc90d2e:268/268 TASK
+checks at67 shapes. The exact S16 merge is also being checked as wrappere09e2cb0
+after normal/forced268 checks per mode, because S16 adds projection-range interactions.
 The guard keeps all65 timed cases identical and bounds native N128 capacity at B64.
 prepare_nearby.py composes it onto frozen435df5f7. nearby_composition.json pins6e43a367
 and both143-fixture screens. Decision: native TASK/cache/replay pass -> the screened

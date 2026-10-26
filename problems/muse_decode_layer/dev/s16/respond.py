@@ -37,12 +37,12 @@ def wait_gpu_capacity():
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--receipts',nargs='*',type=Path);ap.add_argument('--screen-only',action='store_true')
-    ap.add_argument('--selection',type=Path);ap.add_argument('--baseline',type=Path);ap.add_argument('--baseline-name',default='S15');ap.add_argument('--seed',type=int,default=104910273);a=ap.parse_args()
+    ap.add_argument('--selection',type=Path);ap.add_argument('--baseline',type=Path);ap.add_argument('--baseline-name',default='S15');ap.add_argument('--seed',type=int,default=104910273);ap.add_argument('--task-prepare',action='store_true');a=ap.parse_args()
     started=time.monotonic()
     def host(script,*args):subprocess.run([sys.executable,str(H/script),*map(str,args)],cwd=R,check=True)
     if not a.selection:host('decide.py',*(['--receipts',*a.receipts] if a.receipts else []))
     selection=a.selection or H/'generated/selection.json';selected=json.loads(selection.read_text())
-    host('build_lab.py','--selection',selection,'--baseline-name',a.baseline_name,'--seed',a.seed,*(['--baseline',a.baseline] if a.baseline else []));manifest=json.loads((H/'generated/lab_manifest.json').read_text())
+    host('build_lab.py','--selection',selection,'--baseline-name',a.baseline_name,'--seed',a.seed,*(['--baseline',a.baseline] if a.baseline else []),*(['--task-prepare'] if a.task_prepare else []));manifest=json.loads((H/'generated/lab_manifest.json').read_text())
     candidate=R/manifest['candidate'];env={**os.environ,'CUDA_VISIBLE_DEVICES':'0'}
     from pack import pack
     shipped=R/'problems/muse_decode_layer'/('cand_r3_best7_s16_'+manifest['sha256'][:12]+'.py');shipped.write_text(pack(candidate.read_text()))

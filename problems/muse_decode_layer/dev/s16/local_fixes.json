@@ -33,5 +33,23 @@
     "cause": "New pruned host omits library O128/256; frozen S16 baseline still needs those original NF plans",
     "fix": "Build only missing per-arm NF plans untimed in that namespace, preserving the immutable host banks and exact baseline arithmetic",
     "verification": "Exact repaired wrapper3a3e7ae9 normal+forced passes1536 TASK checks per mode,13 host tests and2 static checks; queued only after both pass"
+  },
+  "TASK_prepare_routing": {
+    "failed_job": "c096a2c5200447e9",
+    "measured": false,
+    "cause": "synthetic glue tuner rejects exact integer expert-ID differences, stricter than published near-tie routing criteria",
+    "fix": "validate full TASK routing margins/local workload; compare routing weights and local slots against the experts actually selected. Preserve all other timed AST nodes and every public TASK check.",
+    "same_confirmation_seed": 204910273,
+    "same_weight_seed": 204910271,
+    "same_router_seed": 204910269,
+    "public_oracle_cases": 144
+  },
+  "native_nearby_transport": {
+    "rejected_sha": "e09e2cb03b1259af",
+    "status": 413,
+    "job": null,
+    "cause": "uncompressed exact-merge wrapper1910040 bytes",
+    "fix": "LZMA/base85 payload body, explicit lab entry, mandatory one-million-byte cap before local screens and send",
+    "tests": "same67shapes/268 TASK checks in both modes, serialized after own running full-layer audit"
   }
 }
