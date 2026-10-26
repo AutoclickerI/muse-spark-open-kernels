@@ -91,3 +91,15 @@ The NF-derived implementation retains the MIT notice naming Nathen Fernandes, [m
 Prefill sender **1557027**, priority12.0, not-before **1792972800** (2026-10-26 09:00 KST). Wrapper `d50be2e7`, payload `20c4a724`. No H200 job id or numbers exist until the sender runs. Read using `python3 tools/h200_lab.py read <job>`.
 
 Evidence: `sizes.json`, `native_sizes.json`, `load_bytes.json`, `manifest.json`, `reader_validation.json`, `codec_validation.json`, `path_validation.json`, `direct_validation.json`, `native_compile.json`, `direct_compile.json`, `hopper_glue_validation.json`, `lab_validation.json` and `admission.json`. Generated candidates, wrappers, native objects and logs are ignored; scripts regenerate them.
+
+## Prepared decoder follow-up
+
+The original two sparse-plane batches are still waiting for their judge slots as of the 09:25 reset audit. They remain unchanged. `analyse.py` accepts only complete gated receipts and applies the recorded A:A decision rule; failed or incomplete controls remain unmeasured.
+
+`build_decoder_lab.py` prepares one follow-up with ten native role/shape cells, eight seeds and cold A/A2/scalar/vector/hoisted-view comparisons. It keeps the exact same encoded banks and escape metadata. The vector reader uses a three-step 3-to-4-bit butterfly, PRMT nibble transpose and sign rotation. The view reader additionally loads invariant bank pointers once outside the K loop, issues dense loads before the extension-index chain, and retains NC/no-allocate vector loads. CP staging and all existing MMA/reduction/PDL paths remain intact.
+
+The reader-attribution controls compare raw12, scalar, vector, view and opaque sparse transport. They include the same nonlinear per-word hash so compiler XOR cancellation cannot remove the decoder. These scans are not pure copy roofs. A view scan constructs its context once per warp unit; the actual stage hoists it outside its K loop. Both original and sparse projections must pass FP64 random-input and one-hot checks, including the raw A control, before timing.
+
+Normal and forced local_eval screens for both candidates pass 9 tests /30 graph shapes /25 static checks with three fresh inputs. Both pass14 exact reader checks and the full current-path arithmetic suite. All18 changed native units compile sm90a without spills. The complete ten-cell follow-up rehearses locally; `decoder_admission.json` pins the source and proofs. Local timings do not promote a candidate.
+
+Decision: after a valid loss or win from either sparse batch, send this reader-attribution batch on a host with quota. A current cell that beats its A:A envelope goes to P4 for the documented whole-layer pair, retaining gate concurrency and fused pool/router. If a batch fails setup or control, fix that failure first and remeasure against the valid control; do not call the format or kernel structure a measured loss. `p10_decoder_followup.py` is ready and unsent until that event. Whole-layer integration remains P4's.

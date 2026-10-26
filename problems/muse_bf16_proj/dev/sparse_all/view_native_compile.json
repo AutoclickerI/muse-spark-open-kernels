@@ -1,0 +1,213 @@
+[
+  {
+    "name": "dc_compile_d9",
+    "sha256": "039a95ac984b776f6aaab472bf040ee4ba1e6987f07eb8391eb3aff5f17df56c",
+    "ok": true,
+    "registers": [
+      80
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "dc_compile_sm2",
+    "sha256": "3db28eee9d92e8da92a16a72781f23cf839a0e6c1666932a88cb3004f58c71fc",
+    "ok": true,
+    "registers": [
+      58,
+      32
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "dc_compile_v18",
+    "sha256": "e77689fabb63f3289d365eb470a71691b85427fbcbe1dac706ea87ae1cb751ed",
+    "ok": true,
+    "registers": [
+      48,
+      32
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "cps_sm_1da918391346",
+    "sha256": "1da918391346cd4826cc01bb48c09ea6beb79e64c9130ba731142164f9b2616c",
+    "ok": true,
+    "registers": [
+      112
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "m32x_qkv_52a9d53efadf",
+    "sha256": "52a9d53efadf9327af8717fa89010f52e56dd53e2916e5c362e14483f1461eb5",
+    "ok": true,
+    "registers": [
+      90,
+      96
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "dc_o16",
+    "sha256": "ebbd1c83a5b38d1c803b70e2527d9b46940b0e1c007aac984a64c5e0338fdf90",
+    "ok": true,
+    "registers": [
+      66,
+      74
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "dc_mw",
+    "sha256": "f3c4680cf995420c671298acda7d6348f574055431571b1e18ad5131a7bf3181",
+    "ok": true,
+    "registers": [
+      97
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "olayer_2e167e5d9322",
+    "sha256": "2e167e5d93226d50993a177f3ee94aea48801cdcb7eef14b34d8daf53e0911f4",
+    "ok": true,
+    "registers": [
+      48
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "dc_cd",
+    "sha256": "e6208b515b7bfda7f376757783379fad398708c5237435ab8259fc1e337917ab",
+    "ok": true,
+    "registers": [
+      57,
+      32
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "error": ""
+  },
+  {
+    "name": "dc_vdsk",
+    "ok": true,
+    "sha256": "ef88408d8590652bd247913411cc71616efadb1cb3bb207b5b429f6161f68180",
+    "shared": 139328,
+    "metadata": "KernelMetadata(allowed_dot_input_precisions=['tf32', 'tf32x3', 'ieee', 'bf16x3', 'bf16x6'], arch='sm90', backend_name='cuda', debug=False, default_dot_input_precision='tf32', deprecated_fp8_dot_operand_dtypes=['fp8e4b15'], enable_fp_fusion=True, enable_reflect_ftz=True, extern_libs=[['libdevice', '/opt/sglang/lib/python3.12/site-packages/triton/backends/nvidia/lib/libdevice.10.bc']], global_scratch_align=1, global_scratch_size=0, hash='881ae607270378af40c26157bbf3bec9455b3c7b7dc911b372588e59bb3fa93c', instrumentation_mode='', ir_override=None, launch_cooperative_grid=False, launch_pdl=False, max_num_imprecise_acc_default=1073741824, maxnreg=None, name='_dc_vdsk_gemm', num_ctas=1, num_stages=8, num_warps=4, profile_scratch_align=1, profile_scratch_size=0, ptx_options=None, ptx_version=None, sanitize_overflow=True, shared=139328, supported_fp8_dtypes=['fp8e4b15', 'fp8e4nv', 'fp8e5'], target=GPUTarget(backend='cuda', arch=90, warp_size=32), tensordesc_meta=[{'swizzle': 3, 'elem_size': 2, 'elem_type': 10, 'block_size': [128, 64], 'fp4_padded': False, 'is_im2col': False}], tmem_size=0, triton_version='3.8.0', warp_size=32)"
+  }
+]

@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "payload_sha256": "93d01c9ea2f98d732b882ac391f7f87c86ebd1d089991cd3c4b9a6a1f6402d94",
+  "checks": {
+    "vector_normal": {
+      "candidate_sha256": "fcffcff917b897b54c1551b4be84f772d1afcaf1586e16a10b2a2ae5f068831f",
+      "tests": 9,
+      "shapes": 30,
+      "inputs": 3,
+      "static": 25
+    },
+    "vector_forced": {
+      "candidate_sha256": "fcffcff917b897b54c1551b4be84f772d1afcaf1586e16a10b2a2ae5f068831f",
+      "tests": 9,
+      "shapes": 30,
+      "inputs": 3,
+      "static": 25
+    },
+    "vector_paths": {
+      "rows": 139,
+      "sha256": "b70ee45c5349773d36ae55a7a4712eab98609176dc491c542ceaa4e3664f11fa"
+    },
+    "vector_readers": {
+      "rows": 14,
+      "sha256": "5867a370a83d1856f4a7329ce794b98f3cde36cfacaa803238c03d4dadb8d927"
+    },
+    "vector_native": {
+      "units": 9,
+      "triton": 1,
+      "sha256": "5210898e887bdd82465560d05c8cada459e05eafa26db6dc650e50f6b38276a5"
+    },
+    "view_normal": {
+      "candidate_sha256": "5414879bfd0cb5c2550a8b6bdeeb0631725f47d73411fd80850f0e6a88db7f05",
+      "tests": 9,
+      "shapes": 30,
+      "inputs": 3,
+      "static": 25
+    },
+    "view_forced": {
+      "candidate_sha256": "5414879bfd0cb5c2550a8b6bdeeb0631725f47d73411fd80850f0e6a88db7f05",
+      "tests": 9,
+      "shapes": 30,
+      "inputs": 3,
+      "static": 25
+    },
+    "view_paths": {
+      "rows": 139,
+      "sha256": "ba56b3847872d5e0ce193e1175c0adbefe9f5038cc1786161162c1a14cfb5934"
+    },
+    "view_readers": {
+      "rows": 14,
+      "sha256": "06d50e00c499377ee2709f7dae19dae010b114620605f914e5014cb6c4b391d3"
+    },
+    "view_native": {
+      "units": 9,
+      "triton": 1,
+      "sha256": "c7a18d38b697cb42bca13c8e1346bfd568a94a6d860ba93c0c0bfaf4f5f7135c"
+    },
+    "rehearsal": {
+      "sha256": "f06fb25cef44d274633121bf457de9e1b151a50b743e3e71fc0e7e410f406c89",
+      "rows": 10,
+      "seeds": 8
+    }
+  },
+  "decision": "Send after a valid pool/all-role receipt. Compare same-bank scalar/vector/hoisted-view, not a whole-layer promotion. If a receipt fails setup/control, repair that implementation and preserve the valid control before using its timings.",
+  "wrapper_sha256": "e4b6497677880c3b4d38264f11a64e80e46edfb24636f441056ad02e656d8e9d",
+  "wrapper_bytes": 664239
+}

@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "payload_sha256": "93d01c9ea2f98d732b882ac391f7f87c86ebd1d089991cd3c4b9a6a1f6402d94",
+  "seconds": 3.250505765026901,
+  "lines": [
+    "META same-bank scalar/vector/hoisted-view; S15 A/A2;8seeds8cold orders; setup=1.4s",
+    "META scan includes nonlinear per-word hash, same in all arms (not a pure copy roof); opaque skips decode; view scan rebuilds context per unit, stage hoists it",
+    "REGS [(0, 18, 6, 0), (1, 34, 6, 0), (2, 28, 6, 0), (3, 28, 6, 0), (4, 24, 6, 0)]",
+    "R 1:o A=11.87 scalar=30.33 vector=20.09 view=18.03 rS=2.5526 rV=1.6900 rH=1.5175[1.5141,1.5216] aa=0.0054 e=1.4e-07 p=0.0e+00",
+    "SCAN 1:o raw=11.87 scalar=28.26 vector=26.22 view=24.16 opaque=18.02 aa=0.0000 rawTB=1.060 denseW=8388608",
+    "R 1:pool_router A=44.64 scalar=114.27 vector=108.13 view=52.85 rS=2.5599 rV=2.4222 rH=1.1839[1.1717,1.1849] aa=0.0011 e=7.3e-07 p=0.0e+00",
+    "SCAN 1:pool_router raw=37.47 scalar=102.00 vector=97.92 view=97.89 opaque=63.07 aa=0.0260 rawTB=1.511 denseW=37748736",
+    "R 1:qkv3 A=18.02 scalar=18.02 vector=18.04 view=18.02 rS=1.0004 rV=1.0009 rH=1.0000[0.9991,1.0036] aa=0.0044 e=1.1e-06 p=0.0e+00",
+    "SCAN 1:qkv3 raw=12.00 scalar=34.40 vector=30.27 view=30.30 opaque=20.16 aa=0.1573 rawTB=1.311 denseW=10485760",
+    "R 1:qkv_gate A=24.45 scalar=59.03 vector=56.94 view=30.93 rS=2.4141 rV=2.3291 rH=1.2599[1.2245,1.3388] aa=0.0388 e=6.3e-07 p=0.0e+00",
+    "SCAN 1:qkv_gate raw=20.06 scalar=54.93 vector=50.78 view=50.80 opaque=34.40 aa=0.0008 rawTB=1.411 denseW=18874368",
+    "R 8:o A=11.87 scalar=28.26 vector=26.20 view=20.03 rS=2.3801 rV=2.2082 rH=1.6873[1.6806,1.6950] aa=0.0013 e=1.3e-07 p=0.0e+00",
+    "SCAN 8:o raw=11.84 scalar=28.30 vector=26.24 view=24.16 opaque=18.05 aa=0.0054 rawTB=1.063 denseW=8388608",
+    "R 16:o A=13.92 scalar=26.25 vector=26.22 view=16.00 rS=1.8856 rV=1.8839 rH=1.1494[1.1483,1.1557] aa=0.0023 e=2.4e-07 p=0.0e+00",
+    "SCAN 16:o raw=11.86 scalar=28.26 vector=26.16 view=24.16 opaque=18.03 aa=0.0040 rawTB=1.061 denseW=8388608",
+    "R 16:unpooler A=36.45 scalar=42.65 vector=41.60 view=38.52 rS=1.1694 rV=1.1372 rH=1.0568[1.0264,1.0575] aa=0.0273 e=1.0e-06 p=0.0e+00",
+    "SCAN 16:unpooler raw=34.40 scalar=91.74 vector=87.65 view=87.68 opaque=56.93 aa=0.0009 rawTB=1.463 denseW=33554432",
+    "R 32:qkv3 A=20.06 scalar=20.06 vector=20.06 view=20.07 rS=1.0000 rV=1.0000 rH=1.0004[0.9984,1.0032] aa=0.0032 e=1.1e-06 p=0.0e+00",
+    "SCAN 32:qkv3 raw=11.89 scalar=34.40 vector=30.30 view=30.34 opaque=20.06 aa=0.0013 rawTB=1.323 denseW=10485760",
+    "R 32:qkv_gate A=30.30 scalar=30.31 vector=30.31 view=30.30 rS=1.0005 rV=1.0003 rH=1.0000[0.9995,1.0042] aa=0.0011 e=8.4e-07 p=0.0e+00",
+    "SCAN 32:qkv_gate raw=20.05 scalar=54.94 vector=50.78 view=50.78 opaque=34.40 aa=0.0016 rawTB=1.412 denseW=18874368",
+    "R 32:unpooler A=46.69 scalar=46.69 vector=46.69 view=46.69 rS=1.0000 rV=1.0000 rH=1.0000[1.0000,1.0003] aa=0.0003 e=4.4e-06 p=0.0e+00",
+    "SCAN 32:unpooler raw=34.46 scalar=91.81 vector=87.65 view=87.66 opaque=56.94 aa=0.0014 rawTB=1.460 denseW=33554432",
+    "END complete=10/10 elapsed=3.1s"
+  ]
+}

@@ -1,10 +1,10 @@
 """Compile every changed native transport and the real T128 Triton path for Hopper."""
 import importlib.util,hashlib,json,re,subprocess,sysconfig,concurrent.futures
 from pathlib import Path
-import torch,triton
+import torch,triton,sys
 from torch.utils import cpp_extension
-H=Path(__file__).resolve().parent;out=H/'native';out.mkdir(exist_ok=True)
-sp=importlib.util.spec_from_file_location('dc_native',H/'candidate.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
+H=Path(__file__).resolve().parent;vector='--vector' in sys.argv;view='--view' in sys.argv;out=H/('native_view' if view else 'native_vector' if vector else 'native');out.mkdir(exist_ok=True)
+sp=importlib.util.spec_from_file_location('dc_native',H/('view_candidate.py' if view else 'vector_candidate.py' if vector else 'candidate.py'));m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
 units=[]
 class Mock:
     def __getattr__(self,name):return lambda *a,**kw:None
@@ -48,4 +48,4 @@ try:
     (out/'dc_vdsk.ptx').write_text(k.asm['ptx'])
     rows.append(dict(name='dc_vdsk',ok=True,sha256=hashlib.sha256(k.asm['ptx'].encode()).hexdigest(),shared=k.metadata.shared,metadata=str(k.metadata)))
 finally:driver.active.get_current_target=old
-(H/'native_compile.json').write_text(json.dumps(rows,indent=2)+'\n');assert all(r['ok'] for r in rows)
+(H/('view_native_compile.json' if view else 'vector_native_compile.json' if vector else 'native_compile.json')).write_text(json.dumps(rows,indent=2)+'\n');assert all(r['ok'] for r in rows)

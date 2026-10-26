@@ -5,7 +5,11 @@ import torch
 from torch.utils.cpp_extension import load_inline
 H=Path(__file__).resolve().parent
 sp=importlib.util.spec_from_file_location('dc_readers',H/'candidate.py');m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
-src=(H/'native.cuh').read_text()+r'''
+native=(H/'native.cuh').read_text();vector='--vector' in __import__('sys').argv;view='--view' in __import__('sys').argv
+if vector or view:
+    import runpy
+    native=runpy.run_path(str(H/'fast_decoder.py'))['view_source' if view else 'vector_source'](native)
+src=native+r'''
 __global__ void check(const unsigned char* w,int4*out,int staged){
  const int lane=threadIdx.x,unit=blockIdx.x;int4 words[3];
  __shared__ int4 sm[96];
@@ -42,4 +46,4 @@ for n,k in ((8192,1024),(256,8192)):
     with torch.cuda.graph(graph):mod.launch_point(c['coded'].data_ptr(),out.data_ptr(),n,k,torch.cuda.current_stream().cuda_stream)
     graph.replay();torch.cuda.synchronize();assert torch.equal(raw.view(torch.int16),out.view(torch.int16)),(n,k)
     rows.append(dict(reader='CUDA point (O32 shared producer)',n=n,k=k,exact=True));print('PASS',rows[-1],flush=True)
-(H/'reader_validation.json').write_text(json.dumps(dict(source_sha256=hashlib.sha256(src.encode()).hexdigest(),passed=True,rows=rows),indent=2)+'\n')
+(H/(('view_' if view else 'vector_' if vector else '')+'reader_validation.json')).write_text(json.dumps(dict(source_sha256=hashlib.sha256(src.encode()).hexdigest(),passed=True,rows=rows),indent=2)+'\n')

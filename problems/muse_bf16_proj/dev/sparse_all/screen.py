@@ -5,7 +5,7 @@ H=Path(__file__).resolve().parent;R=H.parents[3];sys.path[:0]=[str(R/'tools')]
 import local_eval
 spec=importlib.util.spec_from_file_location('p12_static',R/'problems/muse_decode_layer/dev/p12_components/static_cache.py')
 cache=importlib.util.module_from_spec(spec);spec.loader.exec_module(cache);cache.install(local_eval)
-forced='--forced' in sys.argv;loader=local_eval.load_module;calls={}
+forced='--forced' in sys.argv;vector='--vector' in sys.argv;view='--view' in sys.argv;loader=local_eval.load_module;calls={}
 def load(label,path):
     m=loader(label,path)
     if label!='submission':return m
@@ -32,7 +32,7 @@ def load(label,path):
         setattr(m,name,count)
     return m
 local_eval.load_module=load
-out=H/'screen'/('forced' if forced else 'normal');out.mkdir(parents=True,exist_ok=True)
-sys.argv=['local_eval.py',str(H/'candidate.py'),'--no-baseline','--reps','2','--inputs','3','--json',str(out/'result.json')]
+out=H/'screen'/(('view_' if view else 'vector_' if vector else '')+('forced' if forced else 'normal'));out.mkdir(parents=True,exist_ok=True)
+sys.argv=['local_eval.py',str(H/('view_candidate.py' if view else 'vector_candidate.py' if vector else 'candidate.py')),'--no-baseline','--reps','2','--inputs','3','--json',str(out/'result.json')]
 try:local_eval.main()
 finally:(out/'calls.json').write_text(json.dumps(calls,indent=2)+'\n')
