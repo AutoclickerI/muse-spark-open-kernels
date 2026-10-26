@@ -17,6 +17,7 @@ BATCHES={
  'round3':('77150f5f5046c333','tail_payload','abc1631d5d23bdcb'),
  'round4':('8c4c89c1d51b179d','ws_payload','80c5d1c8fd50dc5a'),
  'round5':('f0c92b1867e9aa50','tokpair_payload','b610039eebfd98d7'),
+ 'round6':('50c82e7edb5e83aa','p3b_repair_payload','bd2192e2928ec700'),
 }
 NUMBER=r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?|nan|inf'
 
@@ -36,7 +37,7 @@ def decode(tail,payload):
  aa=re.search(r'AA signed/abs/max=('+NUMBER+r')/('+NUMBER+r')/('+NUMBER+r')',text,re.I)
  finish=re.search(r'END seeds=(\d+) used=('+NUMBER+r') left=('+NUMBER+r')',text,re.I)
  errors=[line for line in text.splitlines() if 'LAB_ERROR' in line or 'TASK=FAIL' in line]
- expected=8 if payload in ('ws_payload','tokpair_payload') else 10
+ expected=14 if payload=='p3b_repair_payload' else 8 if payload in ('ws_payload','tokpair_payload') else 10
  valid=len(rows)==expected and all(r['gate'] for r in rows) and aa is not None and finish is not None and not errors
  return dict(valid=valid,reason='complete paired lab, all gates pass' if valid else 'incomplete or failed lab/control; no performance closure',rows=rows,AA_us=dict(zip(('signed_mean','absolute_mean','max_absolute'),map(float,aa.groups()))) if aa else None,seeds=int(finish[1]) if finish else None,lab_seconds=float(finish[2]) if finish else None,errors=errors,lines=text.splitlines(),wrapper_end=end)
 
@@ -45,11 +46,16 @@ def predictions(batch,m):
  if batch=='stage3':
   # These are calibration observations, not topology-arm forecasts.
   return {},dict(prior_direct_vs_S14={128:1.1970,256:1.1322}[m])
+ if batch=='round6':return {},dict(meaning='Native repair and bounded64-token S3/S4 two-CTA resource diagnostic. Calibrated latency point unknown; no fit to unsafe CTA2 or failed N16.')
  if batch=='round5':return {},dict(meaning='Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5.')
  q=json.loads((B/batch/'model.json').read_text())[key]
  if batch=='round2':return {name:a['estimated_whole_same_overlap_us'] for name,a in q['arms'].items()},dict(S14_us=q['observed']['control'])
  if batch=='round3':return {name:a['point_us'] for name,a in q['arms'].items()},dict(S14_us=q['arms']['S14']['point_us'])
  return dict(CTA2=q['CTA2_point_us'],WS_PIPE=q['WS_PIPE_prediction_us'],WS_TILE_BARRIER=q['WS_TILE_BARRIER_prediction_us']),dict(S14_us={128:185.43,256:261.03}[m],optimistic_PIPE_us=q['optimistic_spatial_overlap_prediction_us'])
+
+def qualified(batch,arm):
+ unsafe=(batch=='round2' and arm in ('CTA2','CTA2S3')) or (batch=='round3' and arm!='S14') or (batch in ('round4','round5') and arm=='CTA2')
+ return not unsafe
 
 def main():
  def reading(path):
@@ -95,6 +101,11 @@ def main():
   if receipt is None:out[batch]=dict(base,state='at_judge',reason='Awaiting complete receipt write');continue
   result=receipt['result'];decoded=decode(result.get('log_tail',''),payload)
   base.update(state='measured' if decoded['valid'] else 'unmeasured',host_status=result.get('status'),decoded=decoded)
+  decoded['unproven_arms']=sorted({r['arm'] for r in decoded.get('rows',[]) if not qualified(batch,r['arm'])})
+  if batch=='round3':
+   base['state']='unmeasured'
+   base['implementation_qualification']='Missing native BF16 N16 dispatch and both-consumer shared-X retirement join. First fixture fails, no valid A:A or paired summaries.'
+  if batch in ('round4','round5'):base['control_qualification']='Primary S14 is valid; secondary CTA2 is unqualified due missing both-consumer shared-X retirement join.'
   comparisons=[]
   if decoded['valid']:
    for m in (128,256):
@@ -104,8 +115,10 @@ def main():
      pred=forecasts.get(r['arm']);ratio=r.get('pairS14',r.get('pair'))
      # Absolute drift and recipe-model error are separate. No inferred causal
      # split into decode/sync/epilogue or critical-path overlap is manufactured.
-     c=dict(m=m,arm=r['arm'],observed_us=r['us'],observed_ratio=ratio,predicted_us=pred,calibration=calibration)
-     if pred is not None and 'S14_us' in calibration:
+     proven=qualified(batch,r['arm'])
+     c=dict(m=m,arm=r['arm'],observed_us=r['us'],observed_ratio=ratio,predicted_us=pred,calibration=calibration,performance_status='measured' if proven else 'unmeasured',implementation_proven=proven)
+     if not proven:c['reason']='Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins.'
+     if proven and pred is not None and 'S14_us' in calibration:
       c.update(predicted_ratio=pred/calibration['S14_us'],control_normalized_prediction_us=pred*control['us']/calibration['S14_us'],observed_over_normalized_prediction=r['us']/(pred*control['us']/calibration['S14_us']))
      comparisons.append(c)
   base['comparisons']=comparisons;out[batch]=base
@@ -114,7 +127,7 @@ def main():
  for batch,q in out.items():
   print(batch,q['state'],q.get('job',q['sender']))
   if 'decoded' in q:print(' AA',q['decoded'].get('AA_us'),'seeds',q['decoded'].get('seeds'),'valid',q['decoded']['valid'])
-  for c in q.get('comparisons',[]):print(' ',c['m'],c['arm'],'us',c['observed_us'],'ratio',c['observed_ratio'],'prediction',c['predicted_us'],'normalized_error_factor',c.get('observed_over_normalized_prediction'))
+  for c in q.get('comparisons',[]):print(' ',c['m'],c['arm'],c['performance_status'],'us',c['observed_us'],'ratio',c['observed_ratio'],'prediction',c['predicted_us'],'normalized_error_factor',c.get('observed_over_normalized_prediction'))
  return out
 
 if __name__=='__main__':main()

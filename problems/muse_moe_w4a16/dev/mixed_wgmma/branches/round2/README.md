@@ -1,7 +1,7 @@
 # P3b second-round batch
 
 Base: S14 final `f1c77ce6`, exact nf CUDA `0a31e251`. Target remains whole MoE
-132.6 /158.5 us at M128 /256. No production patch or H200 win is claimed here.
+132.6 /158.5 us at M128 /256. No arm is promoted. TRANS is a measured loss; CTA2/S3 remain unmeasured pending the repaired source.
 
 `build.py` **b3a33d2e** generates payload **67eca44e** with five arms and24 weight/router seeds x3
 fixtures/M: S14, TRANS64, TRANS128, CTA2, CTA2S3. One payload also measures isolated heavy W13/W2
@@ -57,7 +57,7 @@ The ordering argument follows [NVIDIA PTX's WGMMA synchronization contracts](htt
 A buffers alternate between consecutive committed groups. Wait1 retires a buffer before its next write.
 Before replacing B slot k%2, every consumer WG has retired its previous reader; a CTA barrier joins those
 frontiers. All decode stores precede a second CTA barrier and generic-to-async proxy fence. Epilogues follow
-wait0. S3 copies retain the parent ring's all-WG retirement barrier and empty tail commits.
+wait0. CTA2/S3 do **not** have the required join of both X readers before WG0 copies into a reused slot. The earlier checker assumed that join instead of checking the source. Its numerical gates do not establish this protocol. Round6 inserts the missing joins and adds a negative witness; TRANS already has the all-WG decoded-B retirement barrier.
 
 ## Traffic and time model
 
@@ -92,7 +92,7 @@ is byte-identical. The two payloads share the host's remaining prepare budget. E
 comparison, otherwise CTA2; select the fastest arm separately at each M only when paired whole-MoE ratios beat S14, then require the integration lane's whole-layer pair before promotion.
 The reset `8792099636654bac` is valid and loses for all topology arms. S3 helps serial classes
 by4.9/5.5%, so CTA2S3's independent direct pair is the relevant next check, not an assumed S3
-promotion. This packet's own H200 timing remains unverified.
+promotion. The receipt is complete; qualifications and decisions follow below.
 
 Rebuild: `python3 .../round2/build.py`. Screen: `CUDA_VISIBLE_DEVICES=0 tools/img python tools/local_eval.py
 .../round2/screen_<arm>.py --tests-only`; captured transitions: `CUDA_VISIBLE_DEVICES=0 tools/img python
@@ -100,3 +100,29 @@ Rebuild: `python3 .../round2/build.py`. Screen: `CUDA_VISIBLE_DEVICES=0 tools/im
 
 Retained sources: `build.py`, `transpose.cu.inc`, `runtime.py.inc`, `check.py`, `audit.py`, `model.py`,
 `sync_check.py`; their JSON siblings are current evidence, not alternate implementations.
+
+## Landed result and recalibrated model
+
+Receipt **dd539517bc8344dd**, embedded67eca44e,22 seeds x3 =66 fixtures/M. Controls S14
+183.56/254.94us; A:A signed/absolute/max −.051/.428/2.448us. All numerical gates pass,
+worst L2/row .004134/.004756. No winner is promoted.
+
+| Arm | Original point us M128 / M256 | Observed us | Paired/S14 | Status |
+|---|---|---|---|---|
+|TRANS64|260.2/381.1|262.73/388.24|1.4350/1.5270|Measured loss|
+|TRANS128|201.0/281.7|318.80/451.32|1.7416/1.7781|Measured loss|
+|CTA2|177.8/248.7|245.71/329.55 raw|1.3423/1.2973 raw|Unmeasured: missing shared-X retirement join|
+|CTA2S3|177.8/248.7|221.03/295.05 raw|1.2066/1.1601 raw|Unmeasured: same protocol defect|
+
+After matching current control drift, observed/forecast is1.020/1.043 forTRANS64 and1.602/1.641
+forTRANS128. TRANS64's apparently good whole-MoE point contains cancellation: fixed isolated
+heavy+pack service182.69/303.23us exceeds152.73/249.68 modeled. TRANS128 is203.62/377.36 versus
+93.48/150.23. Pack is9.82/10.54us (TRANS64), not its .92/1.83us byte floor. These phase sums
+are not critical-path increments or the same inputs as the multi-seed mean.
+
+Native resources confirm CTA2/S3 **one CTA/SM** at every width, not the hypothesized two;
+MAX64 registers CTA2 W13/W2=150/139 andS3=133/137. TRANS128 capacity64 also admits one CTA,
+versus TRANS64's4/3 W13/W2. Both TRANS losses close these layouts, leaving cheaper ownership
+open. Do not calibrate CTA2 from unqualified raw timing. [Round6](../round6/README.md) repairs
+its join and tests bounded64-token chunks that actually admit two CTAs, alongside the repaired
+full-width S3 control. Original `model.json` stays intact as the predeclared prediction.

@@ -1,0 +1,39 @@
+{
+  "sender": "50c82e7edb5e83aa",
+  "pid": 1372784,
+  "host": "muse_moe_w4a16",
+  "import_budget_s": 150,
+  "priority": 1.0,
+  "job": "b433947196f94ef4",
+  "state": "at judge",
+  "wrapper_sha256": "50c82e7edb5e83aaa64e32a35087fbcffa2f1c9badfdd1473db188666700a420",
+  "wrapper_bytes": 275130,
+  "snapshot": "runs/sent/50c82e7edb5e83aa/lab_p3b_repair_payload.py",
+  "payload_sha256": "bd2192e2928ec700b8bff249342f4d1fdf251073683f1c711828ef3bb5ff0aa4",
+  "host_base_sha256": "84eb293228a3e3132a73cd5ee3f6ac1d252abe9b2384a70090e1540239a09e7e",
+  "host_base_provenance": "H200-gated dd539517bc8344dd host prefix before h200_lab wrapper",
+  "rejected_sender": "f8009c7cc24c5abe",
+  "rejected_reason": "HTTP422 wrapper over 1000000 bytes, no judge job accepted",
+  "queue": {
+    "pid": 1372784,
+    "priority": 1.0,
+    "t": 1792982485.1036155,
+    "problem": "muse_moe_w4a16",
+    "file": "problems/muse_moe_w4a16/lab/lab_p3b_repair_payload.py",
+    "sha256": "50c82e7edb5e83aaa64e32a35087fbcffa2f1c9badfdd1473db188666700a420",
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round6/p3b_repair_payload.py: P3b R6 response to dd539/b93 gates: shared-X all-consumer retirement join and native BF16 N16 repaired. S14 plus safe CTA2S3/static/queue/queueS3 plus CHUNK64 S3/S4 2CTA, all six official forced screens,1729 graph checks,1380 source protocol checks,24seed None entry pass. Exact bd2192e2 payload. Base is dd539 H200-passed MoE host prefix without prior lab wrapper (size checked); f800 rejected422 size before job, no duplicate.",
+    "not_before": 0
+  },
+  "accepted": {
+    "utc": "20261026T024455Z",
+    "problem": "muse_moe_w4a16",
+    "mode": "submit",
+    "job": "b433947196f94ef4",
+    "sha256": "50c82e7edb5e83aaa64e32a35087fbcffa2f1c9badfdd1473db188666700a420",
+    "file": "problems/muse_moe_w4a16/lab/lab_p3b_repair_payload.py",
+    "source": "runs/muse_moe_w4a16/20261026T024455Z_submit_b433947196f94ef4.py",
+    "git": "1566bf6+dirty",
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round6/p3b_repair_payload.py: P3b R6 response to dd539/b93 gates: shared-X all-consumer retirement join and native BF16 N16 repaired. S14 plus safe CTA2S3/static/queue/queueS3 plus CHUNK64 S3/S4 2CTA, all six official forced screens,1729 graph checks,1380 source protocol checks,24seed None entry pass. Exact bd2192e2 payload. Base is dd539 H200-passed MoE host prefix without prior lab wrapper (size checked); f800 rejected422 size before job, no duplicate.",
+    "snapshot": "runs/sent/50c82e7edb5e83aa/lab_p3b_repair_payload.py"
+  }
+}

@@ -202,7 +202,8 @@
         "AA signed/abs/max=0.043/0.519/3.120",
         "END seeds=16 used=68.7 left=106.4"
       ],
-      "wrapper_end": " lab_s=73.6 import_s=73.6"
+      "wrapper_end": " lab_s=73.6 import_s=73.6",
+      "unproven_arms": []
     },
     "comparisons": [
       {
@@ -213,7 +214,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.197
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 128,
@@ -223,7 +226,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.197
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 128,
@@ -233,7 +238,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.197
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 128,
@@ -243,7 +250,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.197
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 128,
@@ -253,7 +262,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.197
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 256,
@@ -263,7 +274,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.1322
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 256,
@@ -273,7 +286,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.1322
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 256,
@@ -283,7 +298,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.1322
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 256,
@@ -293,7 +310,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.1322
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       },
       {
         "m": 256,
@@ -303,7 +322,9 @@
         "predicted_us": null,
         "calibration": {
           "prior_direct_vs_S14": 1.1322
-        }
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
       }
     ]
   },
@@ -313,41 +334,667 @@
     "payload_sha256_prefix": "67eca44eb93d9531",
     "job": "dd539517bc8344dd",
     "receipt": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.json",
-    "state": "at_judge"
-  },
-  "round3": {
-    "state": "waiting",
-    "sender": "4ca41bdc7a25cce7",
-    "legacy_sender": "77150f5f5046c333",
-    "payload_sha256_prefix": "abc1631d5d23bdcb",
-    "queue": [
+    "state": "measured",
+    "host_status": "ok",
+    "decoded": {
+      "valid": true,
+      "reason": "complete paired lab, all gates pass",
+      "rows": [
+        {
+          "m": 128,
+          "arm": "S14",
+          "n": 66,
+          "us": 183.56,
+          "pair": 1.0,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M128 S14 n=66 us=183.56 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "TRANS64",
+          "n": 66,
+          "us": 262.73,
+          "pair": 1.435,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.19,
+            1.993
+          ],
+          "gate": true,
+          "line": "M128 TRANS64 n=66 us=262.73 pair=1.4350 lo/hi=1.190/1.993 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "TRANS128",
+          "n": 66,
+          "us": 318.8,
+          "pair": 1.7416,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.219,
+            2.55
+          ],
+          "gate": true,
+          "line": "M128 TRANS128 n=66 us=318.80 pair=1.7416 lo/hi=1.219/2.550 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "CTA2",
+          "n": 66,
+          "us": 245.71,
+          "pair": 1.3423,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.184,
+            1.585
+          ],
+          "gate": true,
+          "line": "M128 CTA2 n=66 us=245.71 pair=1.3423 lo/hi=1.184/1.585 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "CTA2S3",
+          "n": 66,
+          "us": 221.03,
+          "pair": 1.2066,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.087,
+            1.324
+          ],
+          "gate": true,
+          "line": "M128 CTA2S3 n=66 us=221.03 pair=1.2066 lo/hi=1.087/1.324 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "S14",
+          "n": 66,
+          "us": 254.94,
+          "pair": 1.0,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M256 S14 n=66 us=254.94 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "TRANS64",
+          "n": 66,
+          "us": 388.24,
+          "pair": 1.527,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.272,
+            1.851
+          ],
+          "gate": true,
+          "line": "M256 TRANS64 n=66 us=388.24 pair=1.5270 lo/hi=1.272/1.851 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "TRANS128",
+          "n": 66,
+          "us": 451.32,
+          "pair": 1.7781,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.401,
+            2.328
+          ],
+          "gate": true,
+          "line": "M256 TRANS128 n=66 us=451.32 pair=1.7781 lo/hi=1.401/2.328 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "CTA2",
+          "n": 66,
+          "us": 329.55,
+          "pair": 1.2973,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.159,
+            1.538
+          ],
+          "gate": true,
+          "line": "M256 CTA2 n=66 us=329.55 pair=1.2973 lo/hi=1.159/1.538 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "CTA2S3",
+          "n": 66,
+          "us": 295.05,
+          "pair": 1.1601,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.082,
+            1.285
+          ],
+          "gate": true,
+          "line": "M256 CTA2S3 n=66 us=295.05 pair=1.1601 lo/hi=1.082/1.285 L2/row=0.004123/0.004756 TASK=PASS"
+        }
+      ],
+      "AA_us": {
+        "signed_mean": -0.051,
+        "absolute_mean": 0.428,
+        "max_absolute": 2.448
+      },
+      "seeds": 22,
+      "lab_seconds": 60.8,
+      "errors": [],
+      "lines": [
+        "META S14 nf f1c77ce6 vs TRANS64/128 decoded-B shared within CTA, register A activation fragments, lossless timed pack and direct SwiGLU-to-W2 fragment stores; CTA2 native RS with two consumer WGs sharing one X slice. Packed weights decode only inside timed call. Light N16G4 retained. No clusters or global queues. Cold read AB/BA x8.",
+        "PHASE M128 S14 H13/H2/pack_us=43.42/34.64/0.00",
+        "PHASE M128 TRANS64 H13/H2/pack_us=108.93/63.94/9.82",
+        "PHASE M128 TRANS128 H13/H2/pack_us=130.05/63.87/9.70",
+        "PHASE M128 CTA2 H13/H2/pack_us=79.52/46.34/0.00",
+        "PHASE M128 CTA2S3 H13/H2/pack_us=57.81/34.59/0.00",
+        "PHASE M256 S14 H13/H2/pack_us=80.35/48.05/0.00",
+        "PHASE M256 TRANS64 H13/H2/pack_us=173.47/119.22/10.54",
+        "PHASE M256 TRANS128 H13/H2/pack_us=248.27/118.80/10.29",
+        "PHASE M256 CTA2 H13/H2/pack_us=139.97/88.83/0.00",
+        "PHASE M256 CTA2S3 H13/H2/pack_us=116.27/79.36/0.00",
+        "M128 S14 n=66 us=183.56 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 TRANS64 n=66 us=262.73 pair=1.4350 lo/hi=1.190/1.993 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 TRANS128 n=66 us=318.80 pair=1.7416 lo/hi=1.219/2.550 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 CTA2 n=66 us=245.71 pair=1.3423 lo/hi=1.184/1.585 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 CTA2S3 n=66 us=221.03 pair=1.2066 lo/hi=1.087/1.324 L2/row=0.004134/0.004709 TASK=PASS",
+        "M256 S14 n=66 us=254.94 pair=1.0000 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 TRANS64 n=66 us=388.24 pair=1.5270 lo/hi=1.272/1.851 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 TRANS128 n=66 us=451.32 pair=1.7781 lo/hi=1.401/2.328 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 CTA2 n=66 us=329.55 pair=1.2973 lo/hi=1.159/1.538 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 CTA2S3 n=66 us=295.05 pair=1.1601 lo/hi=1.082/1.285 L2/row=0.004123/0.004756 TASK=PASS",
+        "RES_TRANS [(64, 64, 0, [134, 0, 0, 16384, 3]), (64, 64, 1, [128, 0, 0, 16384, 4]), (64, 128, 0, [187, 0, 0, 16384, 2]), (64, 128, 1, [186, 0, 0, 16384, 2]), (64, 256, 0, [250, 0, 0, 16384, 2]), (64, 256, 1, [248, 0, 0, 16384, 2]), (128, 64, 0, [168, 0, 0, 32768, 1]), (128, 64, 1, [164, 0, 0, 32768, 1]), (128, 128, 0, [168, 0, 0, 32768, 1]), (128, 128, 1, [164, 0, 0, 32768, 1]), (128, 256, 0, [248, 0, 0, 32768, 1]), (128, 256, 1, [240, 0, 0, 32768, 1])]",
+        "RES_CTA2 [(3, 64, 0, [139, 0, 0, 51200, 1]), (3, 64, 1, [150, 0, 0, 51200, 1]), (3, 128, 0, [168, 0, 0, 83968, 1]), (3, 128, 1, [176, 0, 0, 83968, 1]), (3, 192, 0, [226, 0, 0, 58368, 1]), (3, 192, 1, [188, 0, 0, 58368, 1]), (3, 256, 0, [254, 0, 0, 74752, 1]), (3, 256, 1, [240, 0, 0, 74752, 1]), (4, 64, 0, [137, 0, 0, 76800, 1]), (4, 64, 1, [133, 0, 0, 76800, 1]), (4, 128, 0, [182, 0, 0, 83968, 1]), (4, 128, 1, [173, 0, 0, 83968, 1]), (4, 192, 0, [226, 0, 0, 58368, 1]), (4, 192, 1, [188, 0, 0, 58368, 1]), (4, 256, 0, [254, 0, 0, 74752, 1]), (4, 256, 1, [240, 0, 0, 74752, 1])]",
+        "AA signed/abs/max=-0.051/0.428/2.448",
+        "END seeds=22 used=60.8 left=11.1"
+      ],
+      "wrapper_end": " lab_s=66.2 prepare_s=196.6",
+      "unproven_arms": [
+        "CTA2",
+        "CTA2S3"
+      ]
+    },
+    "comparisons": [
       {
-        "pid": 237268,
-        "priority": 2.0,
-        "t": 1792976347.8843782,
-        "problem": "muse_attention_decode",
-        "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
-        "sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
-        "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/ws_payload.py: P3b pack unchanged round3 abc1631d and round4 80c5d1c8 in one attention import run: S14/CTA2 direct controls for static/queue/S3 and warp-specialized barrier/pipe. Both previous senders still unaccepted were stopped under dispatch lock; no duplicate judge jobs. Total150s: first gets75s and second remaining; each adaptive24seeds x3/M. All original official/forced screens and1235/1036 graph gates pass. One judge slot returns both residual/ownership tests and avoids prefill log displacement. R2 auto-batched de477 and R5 f0c92 remain unchanged.",
-        "not_before": 0
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 183.56,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "TRANS64",
+        "observed_us": 262.73,
+        "observed_ratio": 1.435,
+        "predicted_us": 260.2188903478392,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.4033268098357288,
+        "control_normalized_prediction_us": 257.59466921344637,
+        "observed_over_normalized_prediction": 1.019935702870848
+      },
+      {
+        "m": 128,
+        "arm": "TRANS128",
+        "observed_us": 318.8,
+        "observed_ratio": 1.7416,
+        "predicted_us": 200.9747524168047,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.0838308386820077,
+        "control_normalized_prediction_us": 198.94798874846936,
+        "observed_over_normalized_prediction": 1.6024288659839632
+      },
+      {
+        "m": 128,
+        "arm": "CTA2",
+        "observed_us": 245.71,
+        "observed_ratio": 1.3423,
+        "predicted_us": 177.84241379310345,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 128,
+        "arm": "CTA2S3",
+        "observed_us": 221.03,
+        "observed_ratio": 1.2066,
+        "predicted_us": 177.84241379310345,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 254.94,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "TRANS64",
+        "observed_us": 388.24,
+        "observed_ratio": 1.527,
+        "predicted_us": 381.10722233469147,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.4600131108864556,
+        "control_normalized_prediction_us": 372.215742489393,
+        "observed_over_normalized_prediction": 1.0430509935002645
+      },
+      {
+        "m": 256,
+        "arm": "TRANS128",
+        "observed_us": 451.32,
+        "observed_ratio": 1.7781,
+        "predicted_us": 281.6581846777877,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.079026106875791,
+        "control_normalized_prediction_us": 275.08691568691415,
+        "observed_over_normalized_prediction": 1.6406450989245258
+      },
+      {
+        "m": 256,
+        "arm": "CTA2",
+        "observed_us": 329.55,
+        "observed_ratio": 1.2973,
+        "predicted_us": 248.74878661087865,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "CTA2S3",
+        "observed_us": 295.05,
+        "observed_ratio": 1.1601,
+        "predicted_us": 248.74878661087865,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
       }
     ]
   },
+  "round3": {
+    "sender": "4ca41bdc7a25cce7",
+    "legacy_sender": "77150f5f5046c333",
+    "payload_sha256_prefix": "abc1631d5d23bdcb",
+    "job": "b93dbbadd1014984",
+    "receipt": "runs/muse_attention_decode/20261026T011902Z_submit_b93dbbadd1014984.json",
+    "state": "unmeasured",
+    "host_status": "ok",
+    "decoded": {
+      "valid": false,
+      "reason": "incomplete or failed lab/control; no performance closure",
+      "rows": [],
+      "AA_us": null,
+      "seeds": null,
+      "lab_seconds": null,
+      "errors": [
+        "LAB_ERROR AssertionError: (128, 0, 0, [(0.0041128238663077354, 0.004529749508947134), (0.0041128238663077354, 0.004529749508947134), (0.35984376072883606, 1.0), (0.35984376072883606, 1.0), (0.35984376072883606, 1.0)])",
+        "LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts)"
+      ],
+      "lines": [
+        "LAB_ERROR AssertionError: (128, 0, 0, [(0.0041128238663077354, 0.004529749508947134), (0.0041128238663077354, 0.004529749508947134), (0.35984376072883606, 1.0), (0.35984376072883606, 1.0), (0.35984376072883606, 1.0)])",
+        "                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/tmp/muse_attention_decode-hi_1sb1b/run/submission.py\", line 3171, in _lab_run_one",
+        "    return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"<h200_lab tail_payload>\", line 821, in lab",
+        "    assert all(e<=.015 and r<=.075 for e,r in errors),(m,seed,fi,errors)",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError: (128, 0, 0, [(0.0041128238663077354, 0.004529749508947134), (0.0041128238663077354, 0.004529749508947134), (0.35984376072883606, 1.0), (0.35984376072883606, 1.0), (0.35984376072883606, 1.0)])",
+        "LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts)"
+      ],
+      "wrapper_end": " lab_s=22.0 import_s=22.0",
+      "unproven_arms": []
+    },
+    "implementation_qualification": "Missing native BF16 N16 dispatch and both-consumer shared-X retirement join. First fixture fails, no valid A:A or paired summaries.",
+    "comparisons": []
+  },
   "round4": {
-    "state": "waiting",
     "sender": "4ca41bdc7a25cce7",
     "legacy_sender": "8c4c89c1d51b179d",
     "payload_sha256_prefix": "80c5d1c8fd50dc5a",
-    "queue": [
+    "job": "b93dbbadd1014984",
+    "receipt": "runs/muse_attention_decode/20261026T011902Z_submit_b93dbbadd1014984.json",
+    "state": "measured",
+    "host_status": "ok",
+    "decoded": {
+      "valid": true,
+      "reason": "complete paired lab, all gates pass",
+      "rows": [
+        {
+          "m": 128,
+          "arm": "S14",
+          "n": 72,
+          "us": 184.67,
+          "pairS14": 1.0,
+          "pairCTA2": 0.7357,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M128 S14 n=72 us=184.67 pairS14=1.0000 pairCTA2=0.7357 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "CTA2",
+          "n": 72,
+          "us": 252.34,
+          "pairS14": 1.3681,
+          "pairCTA2": 1.0,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.183,
+            1.604
+          ],
+          "gate": true,
+          "line": "M128 CTA2 n=72 us=252.34 pairS14=1.3681 pairCTA2=1.0000 lo/hi=1.183/1.604 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "WS_TILE_BARRIER",
+          "n": 72,
+          "us": 377.44,
+          "pairS14": 2.0471,
+          "pairCTA2": 1.4895,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.322,
+            2.924
+          ],
+          "gate": true,
+          "line": "M128 WS_TILE_BARRIER n=72 us=377.44 pairS14=2.0471 pairCTA2=1.4895 lo/hi=1.322/2.924 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "WS_PIPE",
+          "n": 72,
+          "us": 374.61,
+          "pairS14": 2.032,
+          "pairCTA2": 1.4799,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.338,
+            3.109
+          ],
+          "gate": true,
+          "line": "M128 WS_PIPE n=72 us=374.61 pairS14=2.0320 pairCTA2=1.4799 lo/hi=1.338/3.109 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "S14",
+          "n": 72,
+          "us": 256.38,
+          "pairS14": 1.0,
+          "pairCTA2": 0.7683,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M256 S14 n=72 us=256.38 pairS14=1.0000 pairCTA2=0.7683 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "CTA2",
+          "n": 72,
+          "us": 334.07,
+          "pairS14": 1.308,
+          "pairCTA2": 1.0,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.188,
+            1.549
+          ],
+          "gate": true,
+          "line": "M256 CTA2 n=72 us=334.07 pairS14=1.3080 pairCTA2=1.0000 lo/hi=1.188/1.549 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "WS_TILE_BARRIER",
+          "n": 72,
+          "us": 520.73,
+          "pairS14": 2.0381,
+          "pairCTA2": 1.5527,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.583,
+            2.699
+          ],
+          "gate": true,
+          "line": "M256 WS_TILE_BARRIER n=72 us=520.73 pairS14=2.0381 pairCTA2=1.5527 lo/hi=1.583/2.699 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "WS_PIPE",
+          "n": 72,
+          "us": 517.41,
+          "pairS14": 2.0248,
+          "pairCTA2": 1.544,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.589,
+            2.721
+          ],
+          "gate": true,
+          "line": "M256 WS_PIPE n=72 us=517.41 pairS14=2.0248 pairCTA2=1.5440 lo/hi=1.589/2.721 L2/row=0.004123/0.004756 TASK=PASS"
+        }
+      ],
+      "AA_us": {
+        "signed_mean": -0.039,
+        "absolute_mean": 0.421,
+        "max_absolute": 1.936
+      },
+      "seeds": 24,
+      "lab_seconds": 47.8,
+      "errors": [],
+      "lines": [
+        "META S14 / CTA2 vs WS_TILE_BARRIER and WS_PIPE: TMA packed-weight raw ring, three decode warps to BF16 A fragments, two RS-WGMMA WGs sharing X, release-before-epilogue and per-warp norm partials. Barrier arm blocks cross-tile stream until epilogues complete. Packed weights unchanged precision. Real output all arms. Cold read, direct ABBA x8 pairs against BOTH controls.",
+        "M128 S14 n=72 us=184.67 pairS14=1.0000 pairCTA2=0.7357 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 CTA2 n=72 us=252.34 pairS14=1.3681 pairCTA2=1.0000 lo/hi=1.183/1.604 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 WS_TILE_BARRIER n=72 us=377.44 pairS14=2.0471 pairCTA2=1.4895 lo/hi=1.322/2.924 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 WS_PIPE n=72 us=374.61 pairS14=2.0320 pairCTA2=1.4799 lo/hi=1.338/3.109 L2/row=0.004134/0.004709 TASK=PASS",
+        "M256 S14 n=72 us=256.38 pairS14=1.0000 pairCTA2=0.7683 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 CTA2 n=72 us=334.07 pairS14=1.3080 pairCTA2=1.0000 lo/hi=1.188/1.549 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 WS_TILE_BARRIER n=72 us=520.73 pairS14=2.0381 pairCTA2=1.5527 lo/hi=1.583/2.699 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 WS_PIPE n=72 us=517.41 pairS14=2.0248 pairCTA2=1.5440 lo/hi=1.589/2.721 L2/row=0.004123/0.004756 TASK=PASS",
+        "WS_RES [(64, 0, 0, [168, 0, 1024, 116736, 1]), (64, 0, 1, [168, 0, 1024, 116736, 1]), (64, 1, 0, [168, 0, 1024, 116736, 1]), (64, 1, 1, [168, 0, 1024, 116736, 1]), (128, 0, 0, [168, 0, 1024, 149504, 1]), (128, 0, 1, [168, 0, 1024, 149504, 1]), (128, 1, 0, [168, 0, 1024, 149504, 1]), (128, 1, 1, [168, 0, 1024, 149504, 1]), (192, 0, 0, [168, 0, 1024, 182272, 1]), (192, 0, 1, [168, 0, 1024, 182272, 1]), (192, 1, 0, [168, 0, 1024, 182272, 1]), (192, 1, 1, [168, 0, 1024, 182272, 1]), (256, 0, 0, [168, 0, 1024, 215040, 1]), (256, 0, 1, [168, 0, 1024, 215040, 1]), (256, 1, 0, [168, 0, 1024, 215040, 1]), (256, 1, 1, [168, 0, 1024, 215040, 1])]",
+        "AA signed/abs/max=-0.039/0.421/1.936",
+        "END seeds=24 used=47.8 left=80.2"
+      ],
+      "wrapper_end": " lab_s=47.8 import_s=69.8",
+      "unproven_arms": [
+        "CTA2"
+      ]
+    },
+    "control_qualification": "Primary S14 is valid; secondary CTA2 is unqualified due missing both-consumer shared-X retirement join.",
+    "comparisons": [
       {
-        "pid": 237268,
-        "priority": 2.0,
-        "t": 1792976347.8843782,
-        "problem": "muse_attention_decode",
-        "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
-        "sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
-        "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/ws_payload.py: P3b pack unchanged round3 abc1631d and round4 80c5d1c8 in one attention import run: S14/CTA2 direct controls for static/queue/S3 and warp-specialized barrier/pipe. Both previous senders still unaccepted were stopped under dispatch lock; no duplicate judge jobs. Total150s: first gets75s and second remaining; each adaptive24seeds x3/M. All original official/forced screens and1235/1036 graph gates pass. One judge slot returns both residual/ownership tests and avoids prefill log displacement. R2 auto-batched de477 and R5 f0c92 remain unchanged.",
-        "not_before": 0
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 184.67,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CTA2",
+        "observed_us": 252.34,
+        "observed_ratio": 1.3681,
+        "predicted_us": 177.84241379310345,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 128,
+        "arm": "WS_TILE_BARRIER",
+        "observed_us": 377.44,
+        "observed_ratio": 2.0471,
+        "predicted_us": 190.2651684292794,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.0260754377893513,
+        "control_normalized_prediction_us": 189.48535109655947,
+        "observed_over_normalized_prediction": 1.9919217913983287
+      },
+      {
+        "m": 128,
+        "arm": "WS_PIPE",
+        "observed_us": 374.61,
+        "observed_ratio": 2.032,
+        "predicted_us": 187.36155200000002,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.010416610041525,
+        "control_normalized_prediction_us": 186.59363537636844,
+        "observed_over_normalized_prediction": 2.007624746923406
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 256.38,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CTA2",
+        "observed_us": 334.07,
+        "observed_ratio": 1.308,
+        "predicted_us": 248.74878661087865,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "WS_TILE_BARRIER",
+        "observed_us": 520.73,
+        "observed_ratio": 2.0381,
+        "predicted_us": 198.6355807444109,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 0.7609683972892424,
+        "control_normalized_prediction_us": 195.09707769701592,
+        "observed_over_normalized_prediction": 2.6690814959755023
+      },
+      {
+        "m": 256,
+        "arm": "WS_PIPE",
+        "observed_us": 517.41,
+        "observed_ratio": 2.0248,
+        "predicted_us": 193.935216,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 0.7429614067348581,
+        "control_normalized_prediction_us": 190.4804454586829,
+        "observed_over_normalized_prediction": 2.7163418205688274
       }
     ]
   },
@@ -357,6 +1004,276 @@
     "payload_sha256_prefix": "b610039eebfd98d7",
     "job": "7ea5e070b8f744ea",
     "receipt": "runs/muse_attention_decode/20261026T010127Z_submit_7ea5e070b8f744ea.json",
+    "state": "measured",
+    "host_status": "ok",
+    "decoded": {
+      "valid": true,
+      "reason": "complete paired lab, all gates pass",
+      "rows": [
+        {
+          "m": 128,
+          "arm": "S14",
+          "n": 72,
+          "us": 184.3,
+          "pairS14": 1.0,
+          "pairCTA2": 0.7386,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M128 S14 n=72 us=184.30 pairS14=1.0000 pairCTA2=0.7386 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "CTA2",
+          "n": 72,
+          "us": 250.83,
+          "pairS14": 1.3615,
+          "pairCTA2": 1.0,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.172,
+            1.594
+          ],
+          "gate": true,
+          "line": "M128 CTA2 n=72 us=250.83 pairS14=1.3615 pairCTA2=1.0000 lo/hi=1.172/1.594 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "RS_RAW_SHARE",
+          "n": 72,
+          "us": 239.64,
+          "pairS14": 1.3017,
+          "pairCTA2": 0.9569,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.057,
+            1.6
+          ],
+          "gate": true,
+          "line": "M128 RS_RAW_SHARE n=72 us=239.64 pairS14=1.3017 pairCTA2=0.9569 lo/hi=1.057/1.600 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 128,
+          "arm": "SS_DECODE_SHARE",
+          "n": 72,
+          "us": 259.32,
+          "pairS14": 1.4114,
+          "pairCTA2": 1.035,
+          "L2": 0.004134,
+          "row": 0.004709,
+          "spread": [
+            1.094,
+            1.938
+          ],
+          "gate": true,
+          "line": "M128 SS_DECODE_SHARE n=72 us=259.32 pairS14=1.4114 pairCTA2=1.0350 lo/hi=1.094/1.938 L2/row=0.004134/0.004709 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "S14",
+          "n": 72,
+          "us": 255.61,
+          "pairS14": 1.0,
+          "pairCTA2": 0.7686,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "gate": true,
+          "line": "M256 S14 n=72 us=255.61 pairS14=1.0000 pairCTA2=0.7686 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "CTA2",
+          "n": 72,
+          "us": 332.68,
+          "pairS14": 1.3065,
+          "pairCTA2": 1.0,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.143,
+            1.563
+          ],
+          "gate": true,
+          "line": "M256 CTA2 n=72 us=332.68 pairS14=1.3065 pairCTA2=1.0000 lo/hi=1.143/1.563 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "RS_RAW_SHARE",
+          "n": 72,
+          "us": 343.9,
+          "pairS14": 1.3472,
+          "pairCTA2": 1.0323,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.196,
+            1.545
+          ],
+          "gate": true,
+          "line": "M256 RS_RAW_SHARE n=72 us=343.90 pairS14=1.3472 pairCTA2=1.0323 lo/hi=1.196/1.545 L2/row=0.004123/0.004756 TASK=PASS"
+        },
+        {
+          "m": 256,
+          "arm": "SS_DECODE_SHARE",
+          "n": 72,
+          "us": 381.22,
+          "pairS14": 1.4931,
+          "pairCTA2": 1.1448,
+          "L2": 0.004123,
+          "row": 0.004756,
+          "spread": [
+            1.279,
+            1.734
+          ],
+          "gate": true,
+          "line": "M256 SS_DECODE_SHARE n=72 us=381.22 pairS14=1.4931 pairCTA2=1.1448 lo/hi=1.279/1.734 L2/row=0.004123/0.004756 TASK=PASS"
+        }
+      ],
+      "AA_us": {
+        "signed_mean": -0.105,
+        "absolute_mean": 0.498,
+        "max_absolute": 3.408
+      },
+      "seeds": 24,
+      "lab_seconds": 46.4,
+      "errors": [],
+      "lines": [
+        "META S14 / CTA2 vs RS_RAW_SHARE and SS_DECODE_SHARE: identical two-N32 token-group ownership, once-per-CTA packed raw copy; SS decodes once into swizzled BF16 A shared by both WGs. No activation pack, cluster, separate producer or global queue. TASK/cold-read direct ABBA pairs against BOTH controls.",
+        "M128 S14 n=72 us=184.30 pairS14=1.0000 pairCTA2=0.7386 lo/hi=1.000/1.000 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 CTA2 n=72 us=250.83 pairS14=1.3615 pairCTA2=1.0000 lo/hi=1.172/1.594 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 RS_RAW_SHARE n=72 us=239.64 pairS14=1.3017 pairCTA2=0.9569 lo/hi=1.057/1.600 L2/row=0.004134/0.004709 TASK=PASS",
+        "M128 SS_DECODE_SHARE n=72 us=259.32 pairS14=1.4114 pairCTA2=1.0350 lo/hi=1.094/1.938 L2/row=0.004134/0.004709 TASK=PASS",
+        "M256 S14 n=72 us=255.61 pairS14=1.0000 pairCTA2=0.7686 lo/hi=1.000/1.000 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 CTA2 n=72 us=332.68 pairS14=1.3065 pairCTA2=1.0000 lo/hi=1.143/1.563 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 RS_RAW_SHARE n=72 us=343.90 pairS14=1.3472 pairCTA2=1.0323 lo/hi=1.196/1.545 L2/row=0.004123/0.004756 TASK=PASS",
+        "M256 SS_DECODE_SHARE n=72 us=381.22 pairS14=1.4931 pairCTA2=1.1448 lo/hi=1.279/1.734 L2/row=0.004123/0.004756 TASK=PASS",
+        "TP_RES [(0, 0, [123, 0, 0, 43008, 2]), (0, 1, [122, 0, 0, 75776, 2]), (1, 0, [122, 0, 0, 43008, 2]), (1, 1, [128, 0, 0, 75776, 2])]",
+        "AA signed/abs/max=-0.105/0.498/3.408",
+        "END seeds=24 used=46.4 left=98.8"
+      ],
+      "wrapper_end": " lab_s=51.2 import_s=51.2",
+      "unproven_arms": [
+        "CTA2"
+      ]
+    },
+    "control_qualification": "Primary S14 is valid; secondary CTA2 is unqualified due missing both-consumer shared-X retirement join.",
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 184.3,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CTA2",
+        "observed_us": 250.83,
+        "observed_ratio": 1.3615,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 128,
+        "arm": "RS_RAW_SHARE",
+        "observed_us": 239.64,
+        "observed_ratio": 1.3017,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SS_DECODE_SHARE",
+        "observed_us": 259.32,
+        "observed_ratio": 1.4114,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 255.61,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CTA2",
+        "observed_us": 332.68,
+        "observed_ratio": 1.3065,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "RS_RAW_SHARE",
+        "observed_us": 343.9,
+        "observed_ratio": 1.3472,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SS_DECODE_SHARE",
+        "observed_us": 381.22,
+        "observed_ratio": 1.4931,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      }
+    ]
+  },
+  "round6": {
+    "sender": "50c82e7edb5e83aa",
+    "legacy_sender": "50c82e7edb5e83aa",
+    "payload_sha256_prefix": "bd2192e2928ec700",
+    "job": "b433947196f94ef4",
+    "receipt": "runs/muse_moe_w4a16/20261026T024455Z_submit_b433947196f94ef4.json",
     "state": "at_judge"
   }
 }

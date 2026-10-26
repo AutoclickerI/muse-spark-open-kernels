@@ -25,8 +25,13 @@
     "file": "problems/muse_moe_w4a16/lab/lab_payload+moe_nt1_pipe_rebuild.py",
     "source": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.py",
     "git": "04848aa+dirty",
-    "note": "h200_lab prof/lab/moe_nt1_pipe_rebuild.py: P3a response to 16c18078: shared MMA ILP2 improves 1.0/1.9/1.7% at M8/16/32 without saturated pipe; exact caa59593 packed FLIGHT ILP K16 LUT, 32 seeds with TASK and A:A; PAIR separately nominated to P4 || h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round2/payload.py: P3b round2 whole MoE S14 vs transposed register-A shared-B N64/N128 and intra-CTA two-WG activation reuse S2/S3. Four new variants, 24 seeds, phase attribution. All four local_eval screens and 995 poisoned/shifted graph checks pass. Independent follow-up behind unchanged f867a8b reset packet.",
-    "snapshot": "runs/sent/de47736b9f588673/lab_payload+moe_nt1_pipe_rebuild.py"
+    "status": "done",
+    "speedup": 1.675695799011858,
+    "interval": [
+      1.65056036202668,
+      1.7008312359970357
+    ],
+    "note": "h200_lab prof/lab/moe_nt1_pipe_rebuild.py: P3a response to 16c18078: shared MMA ILP2 improves 1.0/1.9/1.7% at M8/16/32 without saturated pipe; exact caa59593 packed FLIGHT ILP K16 LUT, 32 seeds with TASK and A:A; PAIR separately nominated to P4 || h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round2/payload.py: P3b round2 whole MoE S14 vs transposed register-A shared-B N64/N128 and intra-CTA two-WG activation reuse S2/S3. Four new variants, 24 seeds, phase attribution. All four local_eval screens and 995 poisoned/shifted graph checks pass. Independent follow-up behind unchanged f867a8b reset packet."
   },
   "round5": {
     "utc": "20261026T010127Z",
@@ -37,7 +42,58 @@
     "file": "problems/muse_attention_decode/lab/lab_tokpair_payload.py",
     "source": "runs/muse_attention_decode/20261026T010127Z_submit_7ea5e070b8f744ea.py",
     "git": "04848aa+dirty",
-    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round5/tokpair_payload.py: P3b response to87920996 valid topology loss: fixed two-N32 token groups share packed weights (RS) vs share one timed decode in BF16 smem (SS). Exact S14 and CTA2 direct controls, no activation pack/cluster/separate producer/global queue;24seeds x3/M, cold ABBA against both. b610039e payload; both official screens plus1036 graph checks bit-equalS14 and24seed None cold entry pass; four native kernels zero spills/C75,128regs max and smem allow2CTAs/SM. Isolates whether shared decode repays extra smem at low accumulator width; no promotion inferred from stage3.",
-    "snapshot": "runs/sent/f0c92b1867e9aa50/lab_tokpair_payload.py"
+    "status": "done",
+    "speedup": 1.6688139456723645,
+    "interval": [
+      1.643781736487279,
+      1.6938461548574497
+    ],
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round5/tokpair_payload.py: P3b response to87920996 valid topology loss: fixed two-N32 token groups share packed weights (RS) vs share one timed decode in BF16 smem (SS). Exact S14 and CTA2 direct controls, no activation pack/cluster/separate producer/global queue;24seeds x3/M, cold ABBA against both. b610039e payload; both official screens plus1036 graph checks bit-equalS14 and24seed None cold entry pass; four native kernels zero spills/C75,128regs max and smem allow2CTAs/SM. Isolates whether shared decode repays extra smem at low accumulator width; no promotion inferred from stage3."
+  },
+  "round3": {
+    "utc": "20261026T011902Z",
+    "problem": "muse_attention_decode",
+    "mode": "submit",
+    "job": "b93dbbadd1014984",
+    "sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
+    "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
+    "source": "runs/muse_attention_decode/20261026T011902Z_submit_b93dbbadd1014984.py",
+    "git": "97e98f3+dirty",
+    "status": "done",
+    "speedup": 1.668076744478705,
+    "interval": [
+      1.6430555933115245,
+      1.6930978956458855
+    ],
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/ws_payload.py: P3b pack unchanged round3 abc1631d and round4 80c5d1c8 in one attention import run: S14/CTA2 direct controls for static/queue/S3 and warp-specialized barrier/pipe. Both previous senders still unaccepted were stopped under dispatch lock; no duplicate judge jobs. Total150s: first gets75s and second remaining; each adaptive24seeds x3/M. All original official/forced screens and1235/1036 graph gates pass. One judge slot returns both residual/ownership tests and avoids prefill log displacement. R2 auto-batched de477 and R5 f0c92 remain unchanged."
+  },
+  "round4": {
+    "utc": "20261026T011902Z",
+    "problem": "muse_attention_decode",
+    "mode": "submit",
+    "job": "b93dbbadd1014984",
+    "sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
+    "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
+    "source": "runs/muse_attention_decode/20261026T011902Z_submit_b93dbbadd1014984.py",
+    "git": "97e98f3+dirty",
+    "status": "done",
+    "speedup": 1.668076744478705,
+    "interval": [
+      1.6430555933115245,
+      1.6930978956458855
+    ],
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round3/tail_payload.py problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round4/ws_payload.py: P3b pack unchanged round3 abc1631d and round4 80c5d1c8 in one attention import run: S14/CTA2 direct controls for static/queue/S3 and warp-specialized barrier/pipe. Both previous senders still unaccepted were stopped under dispatch lock; no duplicate judge jobs. Total150s: first gets75s and second remaining; each adaptive24seeds x3/M. All original official/forced screens and1235/1036 graph gates pass. One judge slot returns both residual/ownership tests and avoids prefill log displacement. R2 auto-batched de477 and R5 f0c92 remain unchanged."
+  },
+  "round6": {
+    "utc": "20261026T024455Z",
+    "problem": "muse_moe_w4a16",
+    "mode": "submit",
+    "job": "b433947196f94ef4",
+    "sha256": "50c82e7edb5e83aaa64e32a35087fbcffa2f1c9badfdd1473db188666700a420",
+    "file": "problems/muse_moe_w4a16/lab/lab_p3b_repair_payload.py",
+    "source": "runs/muse_moe_w4a16/20261026T024455Z_submit_b433947196f94ef4.py",
+    "git": "1566bf6+dirty",
+    "note": "h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round6/p3b_repair_payload.py: P3b R6 response to dd539/b93 gates: shared-X all-consumer retirement join and native BF16 N16 repaired. S14 plus safe CTA2S3/static/queue/queueS3 plus CHUNK64 S3/S4 2CTA, all six official forced screens,1729 graph checks,1380 source protocol checks,24seed None entry pass. Exact bd2192e2 payload. Base is dd539 H200-passed MoE host prefix without prior lab wrapper (size checked); f800 rejected422 size before job, no duplicate.",
+    "snapshot": "runs/sent/50c82e7edb5e83aa/lab_p3b_repair_payload.py"
   }
 }

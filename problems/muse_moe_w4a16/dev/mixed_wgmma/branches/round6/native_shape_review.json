@@ -1,0 +1,60 @@
+{
+  "failed_payload_sha256": "abc1631d5d23bdcb1cb8f056ca16c5df137788e1dc3f48046d57ed7994b531ee",
+  "failed_cuda_sha256": "a5ef94e634701ed7f47f1e39ec78db58da0285d50fe36b0bfac8f90a92d2614f",
+  "original_sass_sha256": "81a096c07845c7145c2a083a0c9cf3d2286bf414121ac2c6957143a5da67464e",
+  "original_native_shapes": [
+    {
+      "name": "_ZN4tail6kernelILi1ELi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "shapes": [
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16",
+        "64x8x16.F16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi1ELi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "shapes": [
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16",
+        "64x8x16.F16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi1ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "shapes": [
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16",
+        "64x8x16.F16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi1ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "shapes": [
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16",
+        "64x8x16.F16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi0ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "shapes": [
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16",
+        "64x8x16.F16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi0ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "shapes": [
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16",
+        "64x8x16.F16"
+      ]
+    }
+  ],
+  "repaired_cuda_sha256": "8c476193d5cf28c1c3e13af5d1014c60eab756cf6d4612c8aa5e7bf3a6f63ce6",
+  "repaired_shapes_evidence": "resources.json: all six tail specializations include BF16 N16/32/64",
+  "source_cause": "cluster_build.mm generator begins native NT at32, local mma.sync accepts16; tail used mm<16>. Repair explicitly routes16 to mwbr::mma<16>.",
+  "receipt": "b93dbbadd1014984",
+  "qualification": "Failed native gate, unmeasured scheduling. SASS diagnosis explains missing N16 math; hardware repair still needs its own correctness receipt."
+}

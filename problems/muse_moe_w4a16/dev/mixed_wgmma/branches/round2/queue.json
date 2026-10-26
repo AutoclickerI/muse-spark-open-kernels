@@ -1,15 +1,14 @@
 {
-  "status": "at_judge",
+  "status": "done",
   "pid": 4124752,
   "sender_sha256": "de47736b9f588673007af6d5dd3fa8f0a1736064d049c95274d825f028e0838a",
   "host": "muse_moe_w4a16",
   "priority": 1.2,
-  "waiting_file": "runs/waiting/4124752.json",
   "file": "problems/muse_moe_w4a16/lab/lab_payload+moe_nt1_pipe_rebuild.py",
   "snapshot": "runs/sent/de47736b9f588673/lab_payload+moe_nt1_pipe_rebuild.py",
   "payload_sha256": "67eca44eb93d9531bc0dd243ef1f5a780bd55ea20b53ef17fbc942f34a49110c",
   "job_id": "dd539517bc8344dd",
   "original_sender": "71a7126383e39952",
   "reason": "h200_lab automatically absorbed unchanged67eca44e into a batched MoE wrapper with P3a caa59593; no duplicate run. Track embedded hash rather than original wrapper identity.",
-  "pending_file": "runs/pending/dd539517bc8344dd.json"
+  "receipt": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.json"
 }

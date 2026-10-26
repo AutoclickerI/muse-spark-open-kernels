@@ -46,8 +46,7 @@ The native resource audit gives RS W13/W2 registers122/123 and43,008B smem; SS12
 and75,776B smem, zero spills/stack. Both permit two CTAs perH200 SM by registers and smem.
 There are no C7512/C7513/C7519/C7520 warnings; wait1 and terminal wait0 are retained.
 The shared-A store mapping is a bijection over all64x64 BF16 cells; the local SS stand-in
-loads that actual matrix to matching mma.sync fragments. Native SS descriptor semantics and
-actual Hopper residency remain unverified until the receipt.
+loads that actual matrix to matching mma.sync fragments. The H200 receipt confirms both forms at two CTAs/SM and all native numerical gates pass.
 Contracts: [NVIDIA PTX ISA](https://docs.nvidia.com/cuda/parallel-thread-execution/).
 
 ## Screens
@@ -64,7 +63,7 @@ claim: local SS substitutes mma.sync and fits only one75KB CTA perSM rather than
 
 Sender **f0c92b1867e9aa50**, PID **127001**, job **7ea5e070b8f744ea**,
 `muse_attention_decode` import host, budget150s, priority1.5. Exact metadata: [queue.json](queue.json).
-This was sent on the stage3 loss; it is independent of the pending CTA2/queue/warp-specialized
+This was sent on the stage3 loss; it is independent of the CTA2/queue/warp-specialized
 outcomes because both S14 and CTA2 are direct controls. No earlier accepted run is duplicated.
 
 Use SS/RS direct S14 and CTA2 pairs plus A:A and TASK gates. An SS win over RS isolates the
@@ -72,3 +71,24 @@ net benefit of sharing decode after the added smem/SS cost. An RS win alone leav
 BF16 publication path open. Both losing closes these two fixed-N32 pair recipes only; retain
 the best existing S14 or an independently verified round2-4 winner. Promotion requires P4's
 whole-layer verification; a failed/incomplete control is unmeasured.
+
+## Landed result
+
+Receipt **7ea5e070b8f744ea**,24 seeds x3=72 fixtures/M. S14 controls184.30/255.61us; A:A
+signed/absolute/max **−.105/.498/3.408us**, worst L2/row .004134/.004756; all TASK gates pass.
+RS239.64/343.90us, paired/S14 **1.3017/1.3472**. SS259.32/381.22us, **1.4114/1.4931**.
+Both measured losses; neither goes to P4. The confirmed two-CTA occupancy is insufficient.
+The SS-vs-RS raw mean penalty~8.2/10.9% is a net path difference, not isolated smem service.
+The official payload pairs each arm against S14 and CTA2, not a direct SS/RS ABBA.
+
+CTA2's missing shared-X retirement join makes that secondary comparison unqualified; the
+primary S14 pairs are valid. R5 X slots are private per WG; SS shared-A overwrite is joined
+at stage entry after the required WGMMA retirement distance. There is no inherited CTA2 X race.
+`check.py` was fixed to create/warm/capture each plan immediately. Previously bulk planning
+left OP_ARM atSS when the RS checker graph was captured. Re-running all1036 checks passes,
+bit-equal128/128; the public adapter and sent lab already captured immediately and payload
+**b610039e is unchanged**. This local checker defect does not erase the actual native RS pair.
+
+This closes these fixed-N32 token-pair recipes. New [round6](../round6/README.md) assigns the
+WGs adjacent output tiles instead, preserving S14 token padding while sharing X and admitting
+two CTAs through bounded64-token chunks. It does not repeat SS decoded-A publication.

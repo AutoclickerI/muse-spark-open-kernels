@@ -1,0 +1,17 @@
+{
+  "payload_sha256": "bd2192e2928ec700b8bff249342f4d1fdf251073683f1c711828ef3bb5ff0aa4",
+  "cuda_sha256": "8c476193d5cf28c1c3e13af5d1014c60eab756cf6d4612c8aa5e7bf3a6f63ce6",
+  "base": "S14 f1c77ce6",
+  "repair": "Join both WGs before shared X reuse; route NT16 to the existing native BF16 WGMMA helper.",
+  "arms": [
+    "S14",
+    "SAFE_CTA2S3",
+    "SAFE_STATIC",
+    "SAFE_QUEUE",
+    "SAFE_QUEUE_S3",
+    "CHUNK64_S3_2CTA",
+    "CHUNK64_S4_2CTA"
+  ],
+  "host_base_sha256": "84eb293228a3e3132a73cd5ee3f6ac1d252abe9b2384a70090e1540239a09e7e",
+  "host_base_provenance": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.py"
+}

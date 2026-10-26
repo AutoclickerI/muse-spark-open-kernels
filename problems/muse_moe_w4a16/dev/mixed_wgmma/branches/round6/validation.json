@@ -1,0 +1,20 @@
+{
+  "local_start64_checks": 21,
+  "payload_sha256": "bd2192e2928ec700b8bff249342f4d1fdf251073683f1c711828ef3bb5ff0aa4",
+  "checks": 1729,
+  "input_cases": 122,
+  "bit_equal_to_control": [
+    122,
+    122,
+    122,
+    121,
+    122,
+    122
+  ],
+  "worst_L2_row": [
+    0.004212214145809412,
+    0.004781694617122412
+  ],
+  "device": "GPU0 sm120",
+  "coverage": "All arms forced on all sizes, class/hot/empty/real routes, NaN ACT/Y/SS/OUT and -1 work list/counters, two graph replays, exact list membership and queue-drain counts. WGMMA uses matching mma.sync locally; native S4 uses S3 on sm120 to fit smem. Shared-X joins are source-audited; every tail native specialization must contain BF16 N16/32/64 WGMMA."
+}

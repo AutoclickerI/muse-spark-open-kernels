@@ -1,0 +1,527 @@
+{
+  "cuda_sha256": "8c476193d5cf28c1c3e13af5d1014c60eab756cf6d4612c8aa5e7bf3a6f63ce6",
+  "resources": [
+    {
+      "stages": 4,
+      "first": 0,
+      "registers": 128,
+      "stack_spill": [
+        8,
+        4,
+        4
+      ],
+      "dynamic_smem": 102400,
+      "two_CTA_resource_admission": true
+    },
+    {
+      "stages": 4,
+      "first": 1,
+      "registers": 128,
+      "stack_spill": [
+        0,
+        0,
+        0
+      ],
+      "dynamic_smem": 102400,
+      "two_CTA_resource_admission": true
+    },
+    {
+      "stages": 3,
+      "first": 0,
+      "registers": 128,
+      "stack_spill": [
+        8,
+        12,
+        16
+      ],
+      "dynamic_smem": 76800,
+      "two_CTA_resource_admission": true
+    },
+    {
+      "stages": 3,
+      "first": 1,
+      "registers": 128,
+      "stack_spill": [
+        8,
+        8,
+        8
+      ],
+      "dynamic_smem": 76800,
+      "two_CTA_resource_admission": true
+    }
+  ],
+  "kernels": [
+    {
+      "name": "_ZN5chunk6kernelILi4ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+      "K_loops": [
+        [
+          4720,
+          17760
+        ],
+        [
+          26624,
+          39296
+        ]
+      ],
+      "outer_only_spills": [
+        [
+          944,
+          "STL [R1], R8"
+        ],
+        [
+          1328,
+          "LDL R9, [R1]"
+        ]
+      ],
+      "instructions": {
+        "LDC": 2,
+        "S2R": 4,
+        "VIADD": 40,
+        "ISETP.GT.AND": 44,
+        "EXIT": 2,
+        "S2UR": 1,
+        "UMOV": 27,
+        "ULDC.64": 8,
+        "ULEA": 1,
+        "UIADD3": 17,
+        "SHF.R.S32.HI": 6,
+        "IMAD.SHL.U32": 21,
+        "SHF.R.U32.HI": 7,
+        "LEA.HI": 4,
+        "LOP3.LUT": 384,
+        "IMAD": 40,
+        "IADD3": 72,
+        "LEA": 27,
+        "LDC.64": 11,
+        "STL": 1,
+        "IMAD.WIDE": 12,
+        "LDG.E": 6,
+        "ISETP.GE.AND": 29,
+        "BRA": 41,
+        "IMAD.IADD": 7,
+        "LDL": 1,
+        "IMAD.MOV.U32": 51,
+        "LEA.HI.X": 7,
+        "ISETP.NE.AND": 6,
+        "BSSY": 21,
+        "ISETP.GT.U32.AND": 4,
+        "IMAD.X": 70,
+        "LDGSTS.E.BYPASS.128": 84,
+        "BSYNC": 21,
+        "ISETP.GE.U32.AND": 8,
+        "IMAD.U32": 56,
+        "SEL": 6,
+        "LDGSTS.E.128": 70,
+        "LDGDEPBAR": 20,
+        "CS2R": 24,
+        "DEPBAR.LE": 8,
+        "BAR.SYNC.DEFER_BLOCKING": 20,
+        "ULOP3.LUT": 2,
+        "USHF.R.U32.HI": 2,
+        "UIADD3.64": 47,
+        "MEMBAR.ALL.CTA": 8,
+        "FENCE.VIEW.ASYNC.S": 8,
+        "LDS.128": 24,
+        "SHF.R.W.U32": 256,
+        "PRMT": 128,
+        "HMUL2.BF16_V2": 256,
+        "WARPGROUP.ARRIVE": 16,
+        "HGMMA.64": 64,
+        "WARPGROUP.DEPBAR.LE": 18,
+        "WARPSYNC.ALL": 1,
+        "P2R": 1,
+        "LDG.E.U16": 48,
+        "FADD": 128,
+        "FMUL": 122,
+        "STG.E": 50,
+        "FFMA": 24,
+        "SHFL.BFLY": 72,
+        "ISETP.GT.U32.OR": 2,
+        "STS.64": 12,
+        "LDS": 8,
+        "UIADD3.X": 15,
+        "NOP": 9
+      }
+    },
+    {
+      "name": "_ZN5chunk6kernelILi4ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+      "K_loops": [
+        [
+          5120,
+          18432
+        ],
+        [
+          30256,
+          42896
+        ]
+      ],
+      "outer_only_spills": [],
+      "instructions": {
+        "LDC": 2,
+        "S2R": 2,
+        "ISETP.GT.AND": 45,
+        "EXIT": 2,
+        "S2UR": 1,
+        "UMOV": 22,
+        "ULDC.64": 9,
+        "ULEA": 1,
+        "UIADD3": 18,
+        "LOP3.LUT": 399,
+        "IMAD.SHL.U32": 19,
+        "SHF.R.S32.HI": 20,
+        "SHF.R.U32.HI": 12,
+        "LEA.HI": 13,
+        "VIADD": 50,
+        "IMAD": 17,
+        "IADD3": 49,
+        "LEA": 52,
+        "LDC.64": 38,
+        "IMAD.WIDE": 51,
+        "LDG.E": 14,
+        "ISETP.GE.AND": 37,
+        "BRA": 91,
+        "IMAD.IADD": 30,
+        "ULDC": 1,
+        "ISETP.GT.U32.AND": 3,
+        "ISETP.NE.AND": 9,
+        "CS2R": 26,
+        "ISETP.GE.U32.AND": 9,
+        "BSSY": 57,
+        "IMAD.WIDE.U32": 7,
+        "SEL": 8,
+        "LEA.HI.X": 46,
+        "LDGSTS.E.BYPASS.128": 84,
+        "BSYNC": 57,
+        "LDGSTS.E.128": 70,
+        "IMAD.U32": 56,
+        "IMAD.X": 45,
+        "IMAD.MOV.U32": 89,
+        "LDGDEPBAR": 20,
+        "DEPBAR.LE": 8,
+        "BAR.SYNC.DEFER_BLOCKING": 18,
+        "ULOP3.LUT": 2,
+        "USHF.R.U32.HI": 2,
+        "UIADD3.64": 47,
+        "MEMBAR.ALL.CTA": 8,
+        "FENCE.VIEW.ASYNC.S": 8,
+        "LDS.128": 24,
+        "SHF.R.W.U32": 256,
+        "PRMT": 128,
+        "HMUL2.BF16_V2": 256,
+        "WARPGROUP.ARRIVE": 16,
+        "HGMMA.64": 64,
+        "WARPGROUP.DEPBAR.LE": 18,
+        "WARPSYNC.ALL": 1,
+        "P2R": 1,
+        "FMUL": 148,
+        "F2F.BF16.F32": 48,
+        "FSETP.GEU.AND": 24,
+        "MUFU.EX2": 24,
+        "FADD": 24,
+        "MUFU.RCP": 25,
+        "FCHK": 24,
+        "FFMA": 129,
+        "MOV": 24,
+        "CALL.REL.NOINC": 24,
+        "F2FP.BF16.F32.PACK_AB": 24,
+        "STG.E.U16": 24,
+        "UIADD3.X": 15,
+        "ISETP.GT.U32.OR": 1,
+        "FSETP.GTU.FTZ.AND": 2,
+        "PLOP3.LUT": 4,
+        "FSETP.NEU.FTZ.AND": 4,
+        "FADD.FTZ": 2,
+        "FFMA.RZ": 1,
+        "FFMA.RP": 1,
+        "FFMA.RM": 1,
+        "IMAD.MOV": 1,
+        "SHF.L.U32": 1,
+        "MUFU.RSQ": 1,
+        "RET.REL.NODEC": 1,
+        "NOP": 13
+      }
+    },
+    {
+      "name": "_ZN5chunk6kernelILi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+      "K_loops": [
+        [
+          4176,
+          14656
+        ],
+        [
+          23152,
+          32832
+        ]
+      ],
+      "outer_only_spills": [
+        [
+          144,
+          "STL [R1], R7"
+        ],
+        [
+          688,
+          "LDL R2, [R1]"
+        ],
+        [
+          784,
+          "STL [R1+0x4], R8"
+        ],
+        [
+          1136,
+          "LDL R2, [R1+0x4]"
+        ],
+        [
+          1152,
+          "LDL R13, [R1]"
+        ],
+        [
+          36544,
+          "LDL.LU R2, [R1]"
+        ],
+        [
+          36592,
+          "STL [R1], R2"
+        ]
+      ],
+      "instructions": {
+        "LDC": 2,
+        "S2R": 2,
+        "VIADD": 50,
+        "ISETP.GT.AND": 32,
+        "EXIT": 2,
+        "S2UR": 1,
+        "UMOV": 23,
+        "ULDC.64": 8,
+        "STL": 3,
+        "ULEA": 1,
+        "UIADD3": 13,
+        "SHF.R.S32.HI": 6,
+        "IMAD.SHL.U32": 30,
+        "SHF.R.U32.HI": 6,
+        "LEA.HI": 4,
+        "LOP3.LUT": 311,
+        "IADD3": 55,
+        "IMAD": 51,
+        "LEA": 32,
+        "LDL": 3,
+        "LDC.64": 11,
+        "IMAD.WIDE": 10,
+        "LDG.E": 6,
+        "ISETP.GE.AND": 29,
+        "BRA": 41,
+        "IMAD.IADD": 6,
+        "LEA.HI.X": 5,
+        "ISETP.GT.U32.AND": 6,
+        "BSSY": 19,
+        "ISETP.NE.AND": 6,
+        "IMAD.X": 52,
+        "LDGSTS.E.BYPASS.128": 60,
+        "BSYNC": 19,
+        "ISETP.GE.U32.AND": 8,
+        "IMAD.U32": 56,
+        "SEL": 6,
+        "LDGSTS.E.128": 50,
+        "IMAD.MOV.U32": 37,
+        "LDGDEPBAR": 16,
+        "CS2R": 24,
+        "DEPBAR.LE": 6,
+        "BAR.SYNC.DEFER_BLOCKING": 16,
+        "ULOP3.LUT": 2,
+        "USHF.R.U32.HI": 2,
+        "UIADD3.64": 35,
+        "MEMBAR.ALL.CTA": 6,
+        "FENCE.VIEW.ASYNC.S": 6,
+        "LDS.128": 18,
+        "SHF.R.W.U32": 192,
+        "PRMT": 96,
+        "HMUL2.BF16_V2": 192,
+        "WARPGROUP.ARRIVE": 12,
+        "HGMMA.64": 48,
+        "WARPGROUP.DEPBAR.LE": 14,
+        "P2R": 1,
+        "LDG.E.U16": 48,
+        "FADD": 128,
+        "FMUL": 122,
+        "STG.E": 50,
+        "FFMA": 24,
+        "SHFL.BFLY": 72,
+        "ISETP.GT.U32.OR": 2,
+        "STS.64": 12,
+        "LDS": 8,
+        "UIADD3.X": 11,
+        "LDL.LU": 1,
+        "NOP": 12
+      }
+    },
+    {
+      "name": "_ZN5chunk6kernelILi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_i",
+      "K_loops": [
+        [
+          4576,
+          15344
+        ],
+        [
+          26912,
+          36560
+        ]
+      ],
+      "outer_only_spills": [
+        [
+          144,
+          "STL [R1], R6"
+        ],
+        [
+          720,
+          "LDL R12, [R1]"
+        ],
+        [
+          41632,
+          "LDL.LU R6, [R1]"
+        ],
+        [
+          41680,
+          "STL [R1], R6"
+        ]
+      ],
+      "instructions": {
+        "LDC": 2,
+        "S2R": 2,
+        "VIADD": 65,
+        "ISETP.GT.AND": 33,
+        "EXIT": 2,
+        "S2UR": 1,
+        "UMOV": 18,
+        "ULDC.64": 9,
+        "STL": 2,
+        "ULEA": 1,
+        "UIADD3": 14,
+        "SHF.R.S32.HI": 20,
+        "IMAD.SHL.U32": 27,
+        "LOP3.LUT": 325,
+        "LEA.HI": 9,
+        "SHF.R.U32.HI": 18,
+        "IMAD": 36,
+        "IADD3": 41,
+        "LEA": 47,
+        "LDL": 1,
+        "LDC.64": 37,
+        "IMAD.WIDE": 51,
+        "LDG.E": 14,
+        "ISETP.GE.AND": 37,
+        "BRA": 91,
+        "IMAD.IADD": 30,
+        "ULDC": 1,
+        "ISETP.GT.U32.AND": 5,
+        "ISETP.NE.AND": 9,
+        "BSSY": 55,
+        "CS2R": 25,
+        "IMAD.MOV.U32": 75,
+        "IMAD.WIDE.U32": 6,
+        "LEA.HI.X": 34,
+        "LDGSTS.E.BYPASS.128": 60,
+        "BSYNC": 55,
+        "ISETP.GE.U32.AND": 9,
+        "IMAD.U32": 56,
+        "SEL": 8,
+        "LDGSTS.E.128": 50,
+        "IMAD.X": 32,
+        "LDGDEPBAR": 16,
+        "DEPBAR.LE": 6,
+        "BAR.SYNC.DEFER_BLOCKING": 14,
+        "ULOP3.LUT": 2,
+        "USHF.R.U32.HI": 2,
+        "UIADD3.64": 35,
+        "MEMBAR.ALL.CTA": 6,
+        "FENCE.VIEW.ASYNC.S": 6,
+        "LDS.128": 18,
+        "SHF.R.W.U32": 192,
+        "PRMT": 96,
+        "HMUL2.BF16_V2": 192,
+        "WARPGROUP.ARRIVE": 12,
+        "HGMMA.64": 48,
+        "WARPGROUP.DEPBAR.LE": 14,
+        "P2R": 1,
+        "FMUL": 148,
+        "F2F.BF16.F32": 48,
+        "FSETP.GEU.AND": 24,
+        "MUFU.EX2": 24,
+        "FADD": 24,
+        "MUFU.RCP": 25,
+        "FCHK": 24,
+        "FFMA": 129,
+        "MOV": 24,
+        "CALL.REL.NOINC": 24,
+        "F2FP.BF16.F32.PACK_AB": 24,
+        "STG.E.U16": 24,
+        "UIADD3.X": 11,
+        "LDL.LU": 1,
+        "ISETP.GT.U32.OR": 1,
+        "FSETP.GTU.FTZ.AND": 2,
+        "PLOP3.LUT": 4,
+        "FSETP.NEU.FTZ.AND": 4,
+        "FADD.FTZ": 2,
+        "FFMA.RZ": 1,
+        "FFMA.RP": 1,
+        "FFMA.RM": 1,
+        "IMAD.MOV": 1,
+        "SHF.L.U32": 1,
+        "MUFU.RSQ": 1,
+        "RET.REL.NODEC": 1,
+        "NOP": 15
+      }
+    }
+  ],
+  "tail_native_shapes": [
+    {
+      "name": "_ZN4tail6kernelILi1ELi3ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "BF16_shapes": [
+        "64x16x16.F32.BF16",
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi1ELi3ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "BF16_shapes": [
+        "64x16x16.F32.BF16",
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi1ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "BF16_shapes": [
+        "64x16x16.F32.BF16",
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi1ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "BF16_shapes": [
+        "64x16x16.F32.BF16",
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi0ELi2ELb0EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "BF16_shapes": [
+        "64x16x16.F32.BF16",
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16"
+      ]
+    },
+    {
+      "name": "_ZN4tail6kernelILi0ELi2ELb1EEEvPKiPKhPKfPK13__nv_bfloat16S2_S2_S2_S2_S2_S9_PS7_PfSB_iPij",
+      "BF16_shapes": [
+        "64x16x16.F32.BF16",
+        "64x32x16.F32.BF16",
+        "64x64x16.F32.BF16"
+      ]
+    }
+  ],
+  "sass_sha256": "21d4b9df84fec2b325f75252fa8b55f55a705216bdada599c0490a9934a3c61d",
+  "admission": "Up to8B local stack for outer expert/row metadata, no LDL/STL within either NT32/64 K loop; allowing the tiny outer spill buys2CTA register admission. Every tail specialization contains native BF16 N16/32/64, unlike the failed original.",
+  "limitation": "S4 uses S3 only on sm120 because102400B exceeds its101376B opt-in limit. Native S4 and2CTA runtime admission need H200."
+}

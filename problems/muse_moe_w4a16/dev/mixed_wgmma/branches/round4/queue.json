@@ -1,5 +1,5 @@
 {
-  "status": "queued_not_judge_accepted",
+  "status": "done",
   "pid": 237268,
   "sender_sha256": "4ca41bdc7a25cce70cf46abf098e7130cdffba76924bfaedcd2dcac04f76d5a6",
   "host": "muse_attention_decode",
@@ -13,13 +13,13 @@
   ],
   "file": "problems/muse_attention_decode/lab/lab_tail_payload+ws_payload.py",
   "snapshot": "runs/sent/4ca41bdc7a25cce7/lab_tail_payload+ws_payload.py",
-  "waiting_file": "runs/waiting/237268.json",
   "payload_sha256": "80c5d1c8fd50dc5a579e6d74d8c54bde9d4b99d552d65520dace7976334da119",
-  "job_id": null,
+  "job_id": "b93dbbadd1014984",
   "replaced_unaccepted_senders": [
     "77150f5f5046c333",
     "a62f4dfba280b998",
     "8c4c89c1d51b179d"
   ],
-  "reason": "Pack both unchanged payloads into one attention import run; stop only own unaccepted senders under dispatch lock. No duplicate judge jobs; avoids known prefill log displacement."
+  "reason": "Pack both unchanged payloads into one attention import run; stop only own unaccepted senders under dispatch lock. No duplicate judge jobs; avoids known prefill log displacement.",
+  "receipt": "runs/muse_attention_decode/20261026T011902Z_submit_b93dbbadd1014984.json"
 }

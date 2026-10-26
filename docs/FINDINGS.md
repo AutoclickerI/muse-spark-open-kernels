@@ -429,7 +429,7 @@ Reset heavy-branch experiments (ratio candidate/S14, M128 / M256; <1 wins):
 | Decode-once DIRECT, cluster1 launch |1.2039 /1.1427|16 seeds x3; all outputs bit-equal; active cluster counts396/264 match3/2 CTAs perSM, so cluster1 does not impose one CTA/SM|Cheaper issue/transport at N32; another reuse ownership|`8792099636654bac`|
 | Same DIRECT image, ordinary CTA launch |1.1965 /1.1381|Nearly the same loss as cluster1; fixed heavy phase106.0/182.9us vs S14's78.5/128.3us; topology is not the main penalty|Weight/decode reuse with lower per-stage issue cost|`8792099636654bac`|
 | Same DIRECT image, serial width classes |1.2585 /1.2992|Serial classes worsen whole-MoE timing; isolated heavy125.95/194.75us|Parallel classes with cheaper kernels|`8792099636654bac`|
-| DIRECT serial, S3 for MAX64 |1.1976 /1.2273|Improves serial by~4.9/5.5%, still loses to S14; does not establish S3 on parallel CTA2|Queued CTA2S3 direct pair; another pipeline/ownership|`8792099636654bac`|
+| DIRECT serial, S3 for MAX64 |1.1976 /1.2273|Improves serial by~4.9/5.5%, still loses to S14; does not establish S3 on parallel CTA2|Repaired CTA2S3 direct pair; another pipeline/ownership|`8792099636654bac`|
 
 `8792099636654bac` controls: S14 182.90/256.67us, A:A signed/absolute/max difference
 +0.043/0.519/3.120us across both M, worst FP32 L2/row0.004134/0.004709. All arms48/48
@@ -437,6 +437,45 @@ bit-equal at each M. Ordinary DIRECT's ratio1.1965/1.1381 agrees with the prior1
 calibration (`8ee003db`) within0.6%; isolated heavy-phase totals also remain within~2%. The measured
 loss closes these topology changes, not decode-once itself. Do not allocate the old residual
 into causal decode/epilogue/overlap components from isolated phases and a different mean input.
+
+P3b round2-5 receipt decisions (same candidate/S14 convention, M128 / M256):
+
+| Recipe | Paired ratio | Mechanism / evidence | Leaves open | Receipt |
+|---|---|---|---|---|
+| TRANS64, tokens register-A / decoded weights shared-B |1.4350 /1.5270|Measured loss; fixed heavy+pack182.69/303.23us vs152.73/249.68 predicted; pack alone9.82/10.54us|Cheaper publication/layout without timed fragment packing|`dd539517bc8344dd`|
+| TRANS128, two token WGs sharing decoded-B |1.7416 /1.7781|Measured loss; one CTA/SM; fixed heavy+pack203.62/377.36us vs93.48/150.23 modeled|Another bounded-width ownership without the issue/occupancy cost|`dd539517bc8344dd`|
+| CTA2 / CTA2S3, adjacent-output WGs sharing X |**Unmeasured** (raw1.3423/1.2973 and1.2066/1.1601)|Numerical gates pass, but missing all-consumer X retirement join; per-WG wait does not retire the other WG; all full-width classes one CTA/SM|R6 repairs join and tests real two-CTA bounded64-token chunks; raw time cannot close this recipe|`dd539517bc8344dd`|
+| Compact expert-major STATIC / QUEUE / QUEUE_S3 tail |**Unmeasured**, no valid pairs or A:A|First native M128 fixture L2.359844/row1.0; generated dispatcher omitted BF16 N16, portable stand-in supported it. Shared-X join also unproven|R6 supplies native N16 and retirement join; scheduling itself remains open|`b93dbbadd1014984`|
+| WS_TILE_BARRIER, TMA raw ring /3 decode warps /2 RS consumers |2.0471 /2.0381|Measured loss; one CTA/SM confirmed; generic decoded-fragment staging and gated epilogue|Other specialization/publication/ownership forms; no isolated phase proves one culprit|`b93dbbadd1014984`|
+| WS_PIPE, same ring with cross-tile stream-before-epilogue |2.0320 /2.0248|Measured loss; raw mean saves2.83/3.32us versus barrier but does not repay the~190/260us loss|A cheaper pipeline without this staging and register footprint; specialization generally remains open|`b93dbbadd1014984`|
+| Fixed two-N32 token groups, RS raw-share |1.3017 /1.3472|Measured loss despite confirmed2CTAs/SM,122/123regs; padded decode/MMA work grows1.6/1.455 vs S14|Bounded64-token adjacent-output WGs preserving S14 token padding|`7ea5e070b8f744ea`|
+| Same token groups, SS decode-once |1.4114 /1.4931|Measured loss despite2CTAs/SM; decoded-A writes402.65/805.31MB plus two shared reads, source cost not isolated|Cheaper decode sharing without this publication/padding form|`7ea5e070b8f744ea`|
+
+Round2 controls183.56/254.94us,22 seeds x3/M, A:A signed/absolute/max−.051/.428/2.448us.
+Round4 controls184.67/256.38us,24 seeds x3/M, A:A−.039/.421/1.936us. Round5 controls184.30/
+255.61us,24 seeds x3/M, A:A−.105/.498/3.408us. All qualified new-arm TASK gates pass, worst
+L2/row.004134/.004756. Round4/5 primary S14 pairs remain valid; their secondary CTA2 references
+are unqualified. Round3 fails before summary and reports no A:A; its failure does not invalidate
+the separately completed round4 payload in that packed run. No arm is nominated to P4.
+
+Model audit: preserve original predictions, normalize forecast to the current S14 control before
+scoring. TRANS64 whole-MoE260.2/381.1us vs262.7/388.2 gives error factor1.020/1.043, but fixed
+heavy service is~20% underpredicted, so whole-point agreement contains cancellation. TRANS128
+201.0/281.7us vs318.8/451.3 gives1.602/1.641. Warp PIPE187.4/193.9us vs374.6/517.4 gives2.008/
+2.716: fully hiding its stage residual under a4TB/s stream is falsified for this implementation.
+Withdraw the unmeasured25/50% queue recovery and do not fit unsafe CTA2 raw timing. Resource
+occupancy is verified input, not a throughput forecast; isolated services and different route
+means cannot identify causal decode, epilogue, launch, tail or interbranch overlap components.
+
+Applied follow-up **R6 bd2192e2 / CUDA8c476193**, sender **50c82e7edb5e83aa**, job **b433947196f94ef4**, MoE import150s:
+safe full-width CTA2S3/static/queue/queueS3 plus bounded64-token S3/S4 two-CTA targets. Six forced
+official screens,1729 captured checks and1380 source-bound protocol checks pass; native SASS
+now requires BF16 N16/32/64. The old checker incorrectly assumed the missing retirement join;
+negative witnesses now reject it. R5 checker now captures immediately per plan to preserve its
+RS/SS mode;1036 checks pass again, and the actual sent b610039e payload already did this.
+No native R6 gain is claimed. Its first oversized wrapper was rejected before a job; retry
+uses the H200-gated round2 host prefix, unchanged payload,275130-byte wrapper. Evidence and
+current model: `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/review/` and `round6/`.
 
 ## Attention
 

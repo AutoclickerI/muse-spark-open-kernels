@@ -14,8 +14,9 @@ for m in (33,127,128,255,256,257):
   if n:ids[:n,0]=5;ids[:min(n,33),1]=7;ids[:min(n,9),2]=8
   cases.append(dict(base,topk_ids=ids))
  cases+=s['dc_fixtures'](w,m);refs=s['dc_oracles'](cases,w)
- static={k:v.clone() if torch.is_tensor(v) else v for k,v in base.items()};plans=[s['op_plan'](static,bank,a) for a in range(4)];graphs=[]
- for p in plans:
+ static={k:v.clone() if torch.is_tensor(v) else v for k,v in base.items()};plans=[];graphs=[]
+ for arm in range(4):
+  p=s['op_plan'](static,bank,arm);plans.append(p)
   for fn in p['steps']:fn()
   g=torch.cuda.CUDAGraph()
   with torch.cuda.graph(g):

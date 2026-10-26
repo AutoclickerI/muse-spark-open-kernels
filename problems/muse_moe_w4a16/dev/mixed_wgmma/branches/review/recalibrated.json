@@ -1,0 +1,578 @@
+{
+  "stage3": {
+    "job": "8792099636654bac",
+    "gates_valid": true,
+    "AA_us": {
+      "signed_mean": 0.043,
+      "absolute_mean": 0.519,
+      "max_absolute": 3.12
+    },
+    "seeds": 16,
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14_NF",
+        "observed_us": 182.9,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "DIRECT_CLUSTER1",
+        "observed_us": 219.52,
+        "observed_ratio": 1.2039,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "DIRECT_NORMAL",
+        "observed_us": 218.02,
+        "observed_ratio": 1.1965,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "DIRECT_SERIAL",
+        "observed_us": 228.34,
+        "observed_ratio": 1.2585,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "DEEP_SERIAL",
+        "observed_us": 217.18,
+        "observed_ratio": 1.1976,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.197
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "S14_NF",
+        "observed_us": 256.67,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "DIRECT_CLUSTER1",
+        "observed_us": 292.59,
+        "observed_ratio": 1.1427,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "DIRECT_NORMAL",
+        "observed_us": 291.4,
+        "observed_ratio": 1.1381,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "DIRECT_SERIAL",
+        "observed_us": 332.07,
+        "observed_ratio": 1.2992,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "DEEP_SERIAL",
+        "observed_us": 313.68,
+        "observed_ratio": 1.2273,
+        "predicted_us": null,
+        "calibration": {
+          "prior_direct_vs_S14": 1.1322
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      }
+    ]
+  },
+  "round2": {
+    "job": "dd539517bc8344dd",
+    "gates_valid": true,
+    "AA_us": {
+      "signed_mean": -0.051,
+      "absolute_mean": 0.428,
+      "max_absolute": 2.448
+    },
+    "seeds": 22,
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 183.56,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "TRANS64",
+        "observed_us": 262.73,
+        "observed_ratio": 1.435,
+        "predicted_us": 260.2188903478392,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.4033268098357288,
+        "control_normalized_prediction_us": 257.59466921344637,
+        "observed_over_normalized_prediction": 1.019935702870848
+      },
+      {
+        "m": 128,
+        "arm": "TRANS128",
+        "observed_us": 318.8,
+        "observed_ratio": 1.7416,
+        "predicted_us": 200.9747524168047,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.0838308386820077,
+        "control_normalized_prediction_us": 198.94798874846936,
+        "observed_over_normalized_prediction": 1.6024288659839632
+      },
+      {
+        "m": 128,
+        "arm": "CTA2",
+        "observed_us": 245.71,
+        "observed_ratio": 1.3423,
+        "predicted_us": 177.84241379310345,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 128,
+        "arm": "CTA2S3",
+        "observed_us": 221.03,
+        "observed_ratio": 1.2066,
+        "predicted_us": 177.84241379310345,
+        "calibration": {
+          "S14_us": 185.43
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 254.94,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "TRANS64",
+        "observed_us": 388.24,
+        "observed_ratio": 1.527,
+        "predicted_us": 381.10722233469147,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.4600131108864556,
+        "control_normalized_prediction_us": 372.215742489393,
+        "observed_over_normalized_prediction": 1.0430509935002645
+      },
+      {
+        "m": 256,
+        "arm": "TRANS128",
+        "observed_us": 451.32,
+        "observed_ratio": 1.7781,
+        "predicted_us": 281.6581846777877,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.079026106875791,
+        "control_normalized_prediction_us": 275.08691568691415,
+        "observed_over_normalized_prediction": 1.6406450989245258
+      },
+      {
+        "m": 256,
+        "arm": "CTA2",
+        "observed_us": 329.55,
+        "observed_ratio": 1.2973,
+        "predicted_us": 248.74878661087865,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "CTA2S3",
+        "observed_us": 295.05,
+        "observed_ratio": 1.1601,
+        "predicted_us": 248.74878661087865,
+        "calibration": {
+          "S14_us": 261.03
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      }
+    ],
+    "rule": "TRANS64 observed/control-normalized forecast1.020/1.043, TRANS1281.602/1.641. Large tile assumption fails: one CTA/SM versus TRANS64 3/4 at capacity64. CTA2 raw1CTA timing is unqualified due missing both-consumer X retirement join, not a performance closure.",
+    "component_check": {
+      "TRANS64": {
+        "predicted_heavy_us": [
+          152.73,
+          249.68
+        ],
+        "observed_heavy_including_pack_us": [
+          182.69,
+          303.23
+        ],
+        "observed_pack_us": [
+          9.82,
+          10.54
+        ]
+      },
+      "TRANS128": {
+        "predicted_heavy_us": [
+          93.48,
+          150.23
+        ],
+        "observed_heavy_including_pack_us": [
+          203.62,
+          377.36
+        ]
+      },
+      "qualification": "Fixed-fixture isolated service sums are not critical-path increments; whole-MoE mean is over different inputs. TRANS64 whole-model agreement contains cancellation."
+    }
+  },
+  "round3": {
+    "job": "b93dbbadd1014984",
+    "gates_valid": false,
+    "AA_us": null,
+    "seeds": null,
+    "comparisons": [],
+    "rule": "No empirical schedule calibration: first native fixture failsL2 .35984/row1.0 because N16 dispatch is absent; shared-X retirement is also unproven. Withdraw assumed25/50pct scheduling-recovery fractions until repaired H200 pairs."
+  },
+  "round4": {
+    "job": "b93dbbadd1014984",
+    "gates_valid": true,
+    "AA_us": {
+      "signed_mean": -0.039,
+      "absolute_mean": 0.421,
+      "max_absolute": 1.936
+    },
+    "seeds": 24,
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 184.67,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CTA2",
+        "observed_us": 252.34,
+        "observed_ratio": 1.3681,
+        "predicted_us": 177.84241379310345,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 128,
+        "arm": "WS_TILE_BARRIER",
+        "observed_us": 377.44,
+        "observed_ratio": 2.0471,
+        "predicted_us": 190.2651684292794,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.0260754377893513,
+        "control_normalized_prediction_us": 189.48535109655947,
+        "observed_over_normalized_prediction": 1.9919217913983287
+      },
+      {
+        "m": 128,
+        "arm": "WS_PIPE",
+        "observed_us": 374.61,
+        "observed_ratio": 2.032,
+        "predicted_us": 187.36155200000002,
+        "calibration": {
+          "S14_us": 185.43,
+          "optimistic_PIPE_us": 155.05
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 1.010416610041525,
+        "control_normalized_prediction_us": 186.59363537636844,
+        "observed_over_normalized_prediction": 2.007624746923406
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 256.38,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CTA2",
+        "observed_us": 334.07,
+        "observed_ratio": 1.308,
+        "predicted_us": 248.74878661087865,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "WS_TILE_BARRIER",
+        "observed_us": 520.73,
+        "observed_ratio": 2.0381,
+        "predicted_us": 198.6355807444109,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 0.7609683972892424,
+        "control_normalized_prediction_us": 195.09707769701592,
+        "observed_over_normalized_prediction": 2.6690814959755023
+      },
+      {
+        "m": 256,
+        "arm": "WS_PIPE",
+        "observed_us": 517.41,
+        "observed_ratio": 2.0248,
+        "predicted_us": 193.935216,
+        "calibration": {
+          "S14_us": 261.03,
+          "optimistic_PIPE_us": 193.935216
+        },
+        "performance_status": "measured",
+        "implementation_proven": true,
+        "predicted_ratio": 0.7429614067348581,
+        "control_normalized_prediction_us": 190.4804454586829,
+        "observed_over_normalized_prediction": 2.7163418205688274
+      }
+    ],
+    "rule": "PIPE observed/control-normalized forecast2.008/2.716. Register and smem occupancy prediction1CTA is correct; hiding decode/issue under4TB/s is falsified. PIPE saves2.83/3.32us of raw means over gated arm, much smaller than overall loss. No causal attribution among staging/issue/pipeline fill from this whole-MoE ablation."
+  },
+  "round5": {
+    "job": "7ea5e070b8f744ea",
+    "gates_valid": true,
+    "AA_us": {
+      "signed_mean": -0.105,
+      "absolute_mean": 0.498,
+      "max_absolute": 3.408
+    },
+    "seeds": 24,
+    "comparisons": [
+      {
+        "m": 128,
+        "arm": "S14",
+        "observed_us": 184.3,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "CTA2",
+        "observed_us": 250.83,
+        "observed_ratio": 1.3615,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 128,
+        "arm": "RS_RAW_SHARE",
+        "observed_us": 239.64,
+        "observed_ratio": 1.3017,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 128,
+        "arm": "SS_DECODE_SHARE",
+        "observed_us": 259.32,
+        "observed_ratio": 1.4114,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "S14",
+        "observed_us": 255.61,
+        "observed_ratio": 1.0,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "CTA2",
+        "observed_us": 332.68,
+        "observed_ratio": 1.3065,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "unmeasured",
+        "implementation_proven": false,
+        "reason": "Shared X is reused after per-WG wait1/wait0 without joining both consumer WGs. TASK gates passed but the async retirement protocol is unproven; round6 repairs the missing joins."
+      },
+      {
+        "m": 256,
+        "arm": "RS_RAW_SHARE",
+        "observed_us": 343.9,
+        "observed_ratio": 1.3472,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      },
+      {
+        "m": 256,
+        "arm": "SS_DECODE_SHARE",
+        "observed_us": 381.22,
+        "observed_ratio": 1.4931,
+        "predicted_us": null,
+        "calibration": {
+          "meaning": "Decode-sharing diagnostic; no numeric latency forecast before native measurement. See exact traffic model in round5."
+        },
+        "performance_status": "measured",
+        "implementation_proven": true
+      }
+    ],
+    "rule": "Both kernel forms have valid primary S14 controls and2CTA native admission. RS1.3017/1.3472 andSS1.4114/1.4931 lose. Token padding and extra decoded-A smem must be included; two CTA occupancy alone is insufficient. Secondary CTA2 reference is unqualified; use S14 pairs."
+  },
+  "current_model": {
+    "targets_us": [
+      132.6,
+      158.5
+    ],
+    "rule": "Preserve original forecasts. Calibrate only valid primary S14 pairs; do not fit unsafe CTA2 or failed N16. No causal residual partition is identified.",
+    "resource_lessons": [
+      "CTA2/S3 full-width kernels are one CTA/SM, not two.",
+      "R5 confirms two CTA/SM but still loses: occupancy is necessary resource information, not a speed prediction.",
+      "R4 confirms one CTA/SM and disproves hiding its decode/stage work under a 4TB/s weight stream."
+    ],
+    "withdrawn_assumptions": [
+      "25/50 percent queue scheduling recovery",
+      "Fully hidden warp-specialized heavy stage/decode/epilogue plus a 4us tail",
+      "Converting scheduled byte reduction linearly to whole-MoE speedup"
+    ],
+    "next": "R6 repairs shared-X retirement and native N16, and tests bounded64-token chunks at two CTA/SM without decoded-A smem publication."
+  }
+}

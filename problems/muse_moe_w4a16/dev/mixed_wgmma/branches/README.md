@@ -35,43 +35,28 @@ Files (one entry per retained direct file):
 Handoff: [cluster_schedule_build.py](cluster_schedule_build.py), SHA256 `dfe424def196ebfa2c088499ab2d14c698a770df827e366d3567fa2119a46cae`, applies onto S14 f1c77ce6 control; generator creates experimental payloads.
 Base source: [S14 final](../../../../muse_decode_layer/cand_r3_best7_s14_final.py), SHA256 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
 
-Reset stage3 **8792099636654bac** measured: DIRECT cluster1 / ordinary / serial / deep-serial
-ratios1.2039/1.1427,1.1965/1.1381,1.2585/1.2992,1.1976/1.2273 at M128/256. All16seed
-gates/bit checks pass; A:A absolute mean/max0.519/3.120us. Ordinary launch does not rescue
-decode-once; cluster capacity equals3/2 CTAs perSM. S3 improves serial only and awaits CTA2S3's
-direct comparison. No arm promoted. Current receipt/model comparison: [review/results.json](review/results.json).
+Current receipts and decisions are in [review/README.md](review/README.md), with exact raw
+pairs in [review/results.json](review/results.json) and the forecast audit in
+[review/recalibrated.json](review/recalibrated.json). Targets132.6/158.5us remain unmet.
+No new production patch or P4 nomination.
 
-Second-round batch is built, screened and queued: [round2/README.md](round2/README.md), payload **67eca44e**.
-It compares S14 with transposed register-A/shared-B N64/N128 and intra-CTA two-consumer X reuse S2/S3
-in one24-seed payload. All four local_eval screens pass;995 captured/shifted checks pass.
-Original sender **71a7126383e39952** was absorbed by h200_lab into **de47736b9f588673**, now job
-**dd539517bc8344dd**, MoE host, with P3a's follow-up; embedded67eca44e is byte-identical.
+| Batch | Receipt | Result M128 / M256, candidate/S14 |
+|---|---|---|
+|Stage3 topology|8792099636654bac|Cluster1 1.2039/1.1427; ordinary1.1965/1.1381; serial1.2585/1.2992; deep1.1976/1.2273: all measured losses.|
+|[Round2](round2/README.md)|dd539517bc8344dd|TRANS64 1.4350/1.5270; TRANS1281.7416/1.7781 measured losses. CTA2/S3 unmeasured: missing shared-X retirement join.|
+|[Round3](round3/README.md)|b93dbbadd1014984|Unmeasured: missing native BF16 N16, first fixture L2.35984/row1.0; shared-X join also unproven.|
+|[Round4](round4/README.md)|same b93dbbadd1014984|Barrier2.0471/2.0381; PIPE2.0320/2.0248: measured losses.|
+|[Round5](round5/README.md)|7ea5e070b8f744ea|RS1.3017/1.3472; SS1.4114/1.4931: measured losses despite confirmed2CTAs/SM.|
 
-Decision: all new arms send independently; reset S3 win prioritizes CTA2S3, otherwise CTA2. Promote only
-by paired whole-MoE gains at each affected M followed by whole-layer integration. No new production patch.
-The 132.6/158.5us target remains unverified; the traffic/time model and its overlap assumptions are in round2.
+Model: DIRECT calibration survives within.6%; byte-proportional TRANS128 and fully hidden
+warp-stage residual do not. Original model files preserve predictions. No causal decode,
+launch, tail or overlap partition follows from the isolated phases or different input means.
 
-
-Next structural batch: [round3/README.md](round3/README.md), payload **abc1631d**, compact expert-major
-N16+CTA2 tail (static / device queue / S3), paired directly against both S14 and CTA2. Point predictions
-are169.9/222.7us static and161.9/196.6us queue; explicit recovery assumptions and component ledger are
-beside every arm. Three local_eval screens and1,235 graph/metadata checks pass.
-Round3/4 current packed sender **4ca41bdc7a25cce7**, attention import host, PID237268, priority2,
-total150s. Only unsent originals were stopped before acceptance; same prefill host lost all lab
-lines in a05f9863. Shared-deadline local rehearsal passes22/24seeds in106.4s; no duplicate job.
-Round2's full-overlap model is corrected to146.0/144.5us by enforcing the
-combined weight-stream floor; its conservative CTA2 prediction remains177.8/248.7us.
-
-Heavy residual batch: [round4/README.md](round4/README.md), payload **80c5d1c8**, CUDA **a43783e7**.
-TMA raw ring, three decode warps and two register-A WGMMA consumers sharing X; per-warp W2 norms
-and stream-before-epilogue. S14/CTA2 controls plus an epilogue-gated ablation,24seed entry rehearsal,
-two official screens,1,036 graph checks and442 protocol checks pass. Resource audit prevents
-carrying M128's old same-SM overlap: point187.4/193.9us, optimistic spatial-overlap155.1/193.9us;
-targets132.6/158.5 remain unmet. Unchanged80c5d1c8 payload follows round3 in the packed sender above;
-no judge job ID yet. Exact current metadata is in round4/queue.json.
-
-Stage3-loss follow-up: [round5/README.md](round5/README.md), payload **b610039e**, CUDA **be1f4121**,
-two fixed-N32 token consumers share raw weights (RS) versus one shared BF16 decode (SS).
-S14/CTA2 direct controls; two official screens,1,036 bit-equal graph checks and24seed cold-read
-entry pass; native zero spills and two-CTA register/smem admission. Sender **f0c92b1867e9aa50**,
-now job **7ea5e070b8f744ea**, attention import host, budget150s; native timing pending.
+[Round6](round6/README.md) is the applied follow-up: payload **bd2192e2**, CUDA **8c476193**.
+It repairs all-consumer shared-X retirement and native N16, and packs safe CTA2S3/static/queue/
+queueS3 with CHUNK64 S3/S4 at two-CTA resource admission. Six official forced screens,1729
+captured checks and1380 source-coupled protocol checks pass. Sender **50c82e7edb5e83aa**, job **b433947196f94ef4**, is on the MoE host. Current metadata
+is in round6/queue.json. Its first oversized wrapper was rejected before a job; retry uses the
+H200-passed round2 host prefix and a275130-byte wrapper, same experimental payload.
+Next: read R6, require all native gates and adequate A:A before interpreting any pairs; validated
+point improvements by shape go to P4 with uncertainty for whole-layer six-load verification.
