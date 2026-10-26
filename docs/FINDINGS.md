@@ -1707,6 +1707,37 @@ bit-exact; full native attention TASK remains pending. All-F review
 patch6a605fa2/sourcea4c63f0b is ready and unmeasured; no new fix is nominated.
 P4 confirms correct whole-load improving points on disjoint held-out G0 seeds.
 
+### P5b overnight S22 outcome portfolio
+
+Six fixed candidate patches target each possible largest term of the pending
+production-graph diagnostic, on P4 S22 expanded4b8c803d/shipmentd1ccdc35.
+These are builds, not measured improvements. [Sources, screens and decision](../problems/muse_attention_decode/dev/public_vector/night/README.md).
+
+| Recipe | Ratio versus control | Mechanism | Leaves open | Receipt / queue |
+|---|---|---|---|---|
+| CHAIN92367a26 | unmeasured vs S22 | PDL entry release and independent history/CTA prologue before consumer wait at six remaining public cells | Lost overlap versus library boundary; prune only if diagnostic D loses at every changed cell | diagnostic sender3831549; paired dependency691620 |
+| DIRECT9eedddf9 | unmeasured vs S22 | 16-byte ordered partial loads, once-per-CTA query/own-KV readers and PDL; actual native d1S/F readers | Residual scalar work versus prologue/barriers; prune only if all eight inherited F/V cells are resolved losses | same one dependent paired check |
+| STAGE5d3d6f89 | unmeasured vs S22 | First1280 Q/K/V columns reduced once into20KB of dead V shared storage; free before PV; v1F,v16S/F,v32S | Native spills/barriers and lifetime;18 exact prologue cases pass106crossings/2idle peers | same |
+| LANE1d0c044f1 | unmeasured vs S22 | One request lane/384 threads,80initial regs, producer32/consumers112; same logical split count; target two CTAs/SM | Actual Hopper occupancy/transport versus launch/merge waves, logged by stage_resources | same |
+| SOFTMAXf2116fdc | unmeasured vs S22 | Staged path plus50% FMA polynomial/50% MUFU; no second K pass, existing tensor-core sums; static EX2 151→135,FFMA437→485 | Dynamic issue balance and allowed TASK error, not static instruction-count timing | same |
+| OCHAINb92d9094 | unmeasured vs S22 | Existing notice-preserved NF BF16 O128/O256 joins PDL instead of an ordinary library successor | Full-graph native math versus boundary cost; O kernel spills0,registers90/154 | same |
+
+Each exact candidate passes normal/forced judge-image local_eval:156TASK+144
+production graphs total. Final batch normal/forced context4096 each116TASK+260
+nearby pass; exact64freshseed/16symmetric-round rehearsal3712TASK+260nearby
+passes and its9576-byte evidence survives a4000-character suffix. Pruned portfolio
+forced96TASK+260nearby passes. Three exact sm90a compile units pass; verify
+still spills. Local stand-ins establish no native TASK or timing claim.
+
+Diagnostic3831549 remains rank2/not-before1793059200 (10-27 09:00KST).
+Sealed worker691620 waits on its real completion event and sends one whole-graph
+check via h200_lab --lane P5b. New staged/occupancy/exponent/O recipes stay open
+when an inherited recipe loses. Unmeasured controls stop for inspection. Paired
+cohort uses ec754e5:64disjoint seeds,16 forward/reverse cold rounds, every-round
+means, unchanged TASK each active arm/seed, A:A, per-seed six-load ratios,
+worst4 full primary traces and per-block NVML. Correct improving points go to
+P4 as exact licensed patches; selected composition requires fresh G0 confirmation.
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

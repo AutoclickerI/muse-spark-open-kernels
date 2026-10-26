@@ -1,0 +1,14 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s22_final.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s22_final.py
+@@ -8097,3 +8097,11 @@
+     _s19_warm(state,weights['qkv_gate'].device)
+     state.setdefault('s19_prepare_s',{})['warm']=_t.monotonic()-_t0
+     return state
++
++NF_PORT_SELECTED |= {(128,'o'),(256,'o')}
++_night_o_delta=_s16_prepare_delta
++def _s16_prepare_delta(weights,state):
++    state=_night_o_delta(weights,state)
++    if not {(128,'o'),(256,'o')} <= state['nf_port']['plans'].keys():
++        state['nf_port']=nf_prepare(weights,NF_PORT_SELECTED)
++    return state

@@ -1,0 +1,84 @@
+{
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base_shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
+  "arms": {
+    "INC": {
+      "sha256": "9eedddf9c246eb8d7f8185e1a4d3c8ddddeeae65d5d54123e8deb47bfd9775a0",
+      "rows": [],
+      "mode": "F",
+      "shipped_sha256": "c2438884e58086d50afa14c050a109c6769974ed62bda584c5ed5b045b7eb736",
+      "patch_sha256": "3b251be4d49c5841b3e52e992e1bfcae97dec669cef9ed92a095630426021b16"
+    },
+    "CHAIN": {
+      "sha256": "92367a264729135169346857dd752e31a3ccaea86652b9bf925ea5b285094c42",
+      "rows": [
+        "d32S",
+        "v1S",
+        "v1F",
+        "v16S",
+        "v16F",
+        "v32S"
+      ],
+      "mode": "D",
+      "shipped_sha256": "148bf4754a4400fee519d25bc47db4fd96d08649a61f047a5984c1f100ee43ee",
+      "patch_sha256": "c01ec11a125bc718b0723aa8ba3678f536770c01428a6083be9281b63b3012fa"
+    },
+    "STAGE": {
+      "sha256": "5d3d6f8933d93872966788cedce14eca18ccd46d2589a14d8ebd2b8d07247f0d",
+      "rows": [
+        "v1F",
+        "v16S",
+        "v16F",
+        "v32S"
+      ],
+      "mode": "STAGE",
+      "shipped_sha256": "6a0c24c34439f55285adc2af1d30999f45788886111bdfcd6fc7facb87f1b596",
+      "patch_sha256": "524a4e88e7e72518f2ef9b8579cce9ef855a5f909a449af8b60ce6e37902f5c6"
+    },
+    "LANE1": {
+      "sha256": "d0c044f1e56a0918a31c68036e2491847f064d2a86172a9610378a7a75f4f0d0",
+      "rows": [
+        "v1F",
+        "v16S",
+        "v16F",
+        "v32S"
+      ],
+      "mode": "LANE1",
+      "shipped_sha256": "35a7c7b7b5953e5115c7bb8fb0ae23baf1e0311a6f7fbcdc5931684bedf9315d",
+      "patch_sha256": "3ef0eb72d4b38f3631dfe0fc8490346c204a30d5fc59f12320d0b854846a7c5f"
+    },
+    "SOFTMAX": {
+      "sha256": "f2116fdccec65b0f47f67c527e552637cba5f2df0fc7530dff72eb4774bd354f",
+      "rows": [
+        "v1F",
+        "v16S",
+        "v16F",
+        "v32S"
+      ],
+      "mode": "SOFTMAX",
+      "shipped_sha256": "31071e34167685cae2362ffdba80b793454a63a79d6e6cffb168bee64f8f458e",
+      "patch_sha256": "f60ff38ffc2c541e3dc9acbd69cfba5516a3f274a681b8492790040b9ef4375a"
+    },
+    "OCHAIN": {
+      "sha256": "b92d90941da387497c186b50601e5620a2c7bdb959667235c1de37a7dbc41a6b",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mode": "OCHAIN",
+      "shipped_sha256": "bebd1871bc94d8a206f0597164fc53129e36746275d819b5f553d909f417634a",
+      "patch_sha256": "a31b46431784e673a913be9353b52762844cf545eda6b97ad6bed052b7b61d74"
+    }
+  },
+  "modules": {
+    "lee_D": "a751403899b27733bd0ad1997ceabbc15c48ebab9333084d1b460d960da66f1c",
+    "op_D": "9832e6e545f5cec7171203ad15377a4523b30267601796878794da89e37de86d",
+    "lee_F": "112b1a5bb77ca439db6d71cfbc9c974355f9edc2695553b771eb75385eed6661",
+    "op_F": "3c8eaa0ea9e0bbc9ac316ef4efd5e7a870f6687e364dbc728ebab1870e22d121",
+    "lee_stage": "9ceca77f8295ef9684ae49f16ae41c3462e06ec04c57ab3f65cfae0b813eb4fa",
+    "pack": "ad3763d9dae79c31ac65076aa10565c1ed25185089b583d1fa21ec659fb64cba"
+  },
+  "stage_cuda_sha256": "7a29e778da2d748c66886e5fd17a3ffe4c55ed33d8ea0a5563b4170f0f6098af"
+}

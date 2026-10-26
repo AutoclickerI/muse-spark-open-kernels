@@ -1,0 +1,60 @@
+{
+  "stage_cuda_sha256": "7a29e778da2d748c66886e5fd17a3ffe4c55ed33d8ea0a5563b4170f0f6098af",
+  "functions": {
+    "_Z5attnpILi2ELi324EEv1A2WF": {
+      "MUFU_EX2": 151,
+      "FFMA": 437,
+      "LDG128": 49,
+      "LDS128": 37,
+      "PREEXIT": 1,
+      "ACQBULK": 1,
+      "WGMMA": 8
+    },
+    "_Z5attnpILi2ELi68EEv1A2WF": {
+      "MUFU_EX2": 151,
+      "FFMA": 437,
+      "LDG128": 45,
+      "LDS128": 37,
+      "PREEXIT": 1,
+      "ACQBULK": 1,
+      "WGMMA": 8
+    },
+    "_Z5attnpILi2ELi2372EEv1A2WF": {
+      "MUFU_EX2": 135,
+      "FFMA": 485,
+      "LDG128": 49,
+      "LDS128": 37,
+      "PREEXIT": 1,
+      "ACQBULK": 1,
+      "WGMMA": 8
+    },
+    "_Z5attnpILi2ELi2116EEv1A2WF": {
+      "MUFU_EX2": 135,
+      "FFMA": 485,
+      "LDG128": 45,
+      "LDS128": 37,
+      "PREEXIT": 1,
+      "ACQBULK": 1,
+      "WGMMA": 8
+    },
+    "_Z5attnpILi1ELi324EEv1A2WF": {
+      "MUFU_EX2": 151,
+      "FFMA": 437,
+      "LDG128": 45,
+      "LDS128": 37,
+      "PREEXIT": 1,
+      "ACQBULK": 1,
+      "WGMMA": 8
+    },
+    "_Z5attnpILi1ELi68EEv1A2WF": {
+      "MUFU_EX2": 151,
+      "FFMA": 437,
+      "LDG128": 45,
+      "LDS128": 37,
+      "PREEXIT": 1,
+      "ACQBULK": 1,
+      "WGMMA": 8
+    }
+  },
+  "scope": "static instruction counts, not dynamic timings; mixed exponent arm trades MUFU for FFMA"
+}

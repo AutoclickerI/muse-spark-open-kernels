@@ -133,3 +133,11 @@ Rebuild: `public_hybrid/build.py` (if its ignored reviewed-source export is
 absent), `build.py`, `build_lab.py`, `build_candidate.py`. All generated
 binaries/logs/expanded sources stay in ignored `out/`. Only the reviewed
 kernel bodies and full license notices are embedded; no donor scripts run.
+
+## Overnight S22 follow-through
+
+The outcome-specific builds are now in [night/README.md](night/README.md):
+six screened production candidates on P4 S22 expanded4b8c803d, sealed worker
+691620 behind diagnostic sender3831549. It sends one ec754e5 paired check after
+reading/pruning the diagnostic. The original diagnostic and its S21+9b control
+stay unchanged. The ready patches remain unmeasured until the native receipt.

@@ -1,0 +1,237 @@
+{
+  "passed": true,
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "parent": {
+    "pid": 3831549,
+    "priority": 2,
+    "t": 1793023807.331389,
+    "problem": "muse_attention_decode",
+    "file": "problems/muse_attention_decode/lab/lab_in_graph.py",
+    "sha256": "5191ed5db2ed9eb8188b8d0ac2293100176e487458d8ef49c34904e95dd5ac27",
+    "note": "h200_lab problems/muse_attention_decode/dev/public_vector/out/in_graph.py: Replaces own unsent3705999/3620849. S21+9b043487 production graphs;7 S19 restores,D PDL,V shared vector,F combined,d1native. Guard balanced cross-request/idle lanes;15 native prologue tests99crossings/1idle-peer bitexact. 8freshseeds8symmetriccold432TASK,allrounds+CUPTI neighbours.",
+    "not_before": 1793059200.0,
+    "lane": "P5b",
+    "decision": "in-graph attention transfer and vectorized direct partials",
+    "priority_override": false,
+    "until": 1793059200.0,
+    "supersedes_unsent_senders": [
+      3620849,
+      3705999
+    ]
+  },
+  "priority_lane": "P5b",
+  "priority_at_admission": 2,
+  "candidate_hashes": {
+    "INC": "9eedddf9c246eb8d7f8185e1a4d3c8ddddeeae65d5d54123e8deb47bfd9775a0",
+    "CHAIN": "92367a264729135169346857dd752e31a3ccaea86652b9bf925ea5b285094c42",
+    "STAGE": "5d3d6f8933d93872966788cedce14eca18ccd46d2589a14d8ebd2b8d07247f0d",
+    "LANE1": "d0c044f1e56a0918a31c68036e2491847f064d2a86172a9610378a7a75f4f0d0",
+    "SOFTMAX": "f2116fdccec65b0f47f67c527e552637cba5f2df0fc7530dff72eb4774bd354f",
+    "OCHAIN": "b92d90941da387497c186b50601e5620a2c7bdb959667235c1de37a7dbc41a6b"
+  },
+  "sealed_files": {
+    "problems/muse_attention_decode/dev/public_hybrid/codec.py.inc": "f3604be6b406f3badaa7f71dcbb4907487009a90040a334081652624c3d0d83a",
+    "problems/muse_attention_decode/dev/public_vector/analyze.py": "6f118c02d1b9235ff375710c741f82c1b6e508808cfa3b98b7bfe114074adfdb",
+    "problems/muse_attention_decode/dev/public_vector/lab_manifest.json": "8bbbb2d134e8631dcd8f78ccdf6956a365bc1949c4eb8fbbc362df7ede38348a",
+    "problems/muse_attention_decode/dev/public_vector/night/CHAIN.patch": "c01ec11a125bc718b0723aa8ba3678f536770c01428a6083be9281b63b3012fa",
+    "problems/muse_attention_decode/dev/public_vector/night/INC.patch": "3b251be4d49c5841b3e52e992e1bfcae97dec669cef9ed92a095630426021b16",
+    "problems/muse_attention_decode/dev/public_vector/night/LANE1.patch": "3ef0eb72d4b38f3631dfe0fc8490346c204a30d5fc59f12320d0b854846a7c5f",
+    "problems/muse_attention_decode/dev/public_vector/night/OCHAIN.patch": "a31b46431784e673a913be9353b52762844cf545eda6b97ad6bed052b7b61d74",
+    "problems/muse_attention_decode/dev/public_vector/night/SOFTMAX.patch": "f60ff38ffc2c541e3dc9acbd69cfba5516a3f274a681b8492790040b9ef4375a",
+    "problems/muse_attention_decode/dev/public_vector/night/STAGE.patch": "524a4e88e7e72518f2ef9b8579cce9ef855a5f909a449af8b60ce6e37902f5c6",
+    "problems/muse_attention_decode/dev/public_vector/night/admit.py": "b3a215d04324587f6b7b495c09fd3b60f1ccbfcd4b0773158c5ff43e018b2c64",
+    "problems/muse_attention_decode/dev/public_vector/night/build.py": "a4dfb5629f15774ab489d85ef69393de56997fedccf6377fd3b5fe48e54d6705",
+    "problems/muse_attention_decode/dev/public_vector/night/build_lab.py": "2a983a27b6059598833e8a606f74ee14ed739ab58a473acd662504ac2d82cf7e",
+    "problems/muse_attention_decode/dev/public_vector/night/check_stage.py": "8addf9c10722915be3a9b7b2c0478361acb493b68ee9aeeccbfae7b240a49b99",
+    "problems/muse_attention_decode/dev/public_vector/night/dispatch.py": "16aeb18c00767cb1032fe7e6c9d82c9f0c1691615c2def37439ca63a1651a455",
+    "problems/muse_attention_decode/dev/public_vector/night/manifest.json": "62b26f9e03d54436ed2af59248b2c9b8d1cb85d279022005e268961b08a69bba",
+    "problems/muse_attention_decode/dev/public_vector/night/native_compile.py": "81aee8a5f18ca2afbbc0dd8f8aa9a35f07edcc9252a914078c34d1af76d60932",
+    "problems/muse_attention_decode/dev/public_vector/night/out/bundle.json": "5c4270da3e8ffee9837e01552ec7ce665c5a05a4d1e63ac7acc25530d5b976a5",
+    "problems/muse_attention_decode/dev/public_vector/night/read.py": "9a8605b8eb0517e6abe80cba6efece55db3e49b45c5204a655ca3e39d0d96eed",
+    "problems/muse_attention_decode/dev/public_vector/night/runtime.py.inc": "43da0dc5e7d524e5ccbb83313a0f2ca8b2827936ecbe92d874c8d67385179e57",
+    "problems/muse_attention_decode/dev/public_vector/night/screen.py": "e90de40a4aa776366d3f56857b1c21d860dff3a2f4924eff0762be438e353533",
+    "problems/muse_attention_decode/dev/public_vector/night/screen_candidate.py": "554ec85f47b17b63f2bac88ee036ef8c25f8986db3e0cb7d64fe8dcc076c2abe",
+    "problems/muse_attention_decode/dev/public_vector/night/stage_host.cu.inc": "e5376f385cb96bd80cd548a5601dea4b5a33c050778b355af1219199678884ef",
+    "problems/muse_attention_decode/dev/public_vector/night/stage_runtime.py.inc": "2ec4b5f027e37d68767f54008e25388e36372aeb29cf53de376679a1fbd5654b",
+    "problems/muse_decode_layer/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "problems/muse_decode_layer/dev/nearby/cases.py": "fd212c612e16f10e64c67877e5b7d49cf7c7d6a2d99263407f8b1335235aeeb2",
+    "problems/muse_decode_layer/dev/s19/build_lab.py": "830072f7ca7ed60591d633466867e9fbdb8ad8587450e601f2d39bbdafe6f405",
+    "problems/muse_decode_layer/dev/s19/graph_helpers.py.inc": "e79e9d07f03522fc346208ad090a108d89f7c54fd932b3db7ca73eee36b259f9",
+    "problems/muse_decode_layer/dev/s21/evidence.py": "8b0b2ad6ab296602f7c88f2f146badbd3b2f626615f5142a42291c8f1829a821",
+    "problems/muse_decode_layer/dev/s21/lab.py.inc": "8735e7c2e5971d3ae3ea6263855ae85765ebce05c38bcf6f9593995bfcc0dd91",
+    "problems/muse_decode_layer/dev/s21/timing.py.inc": "caad0435cb5a0433d4c9650b2b4515b296fd62e7401a81c595969a5d2d8b4741",
+    "problems/muse_decode_layer/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "problems/muse_decode_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "tools/h200_lab.py": "690aa280fa0db65fed19f03e7fd4ffeb59183e7fb5a2761237e7f1c81c298bbe",
+    "tools/lab_packet.py": "73885cd8aa910aebcd860578a29daef9343585d6cdc7dcbcc5927c3d527d8f7d",
+    "tools/promotion.py": "25c754f184c1aec1c51c1c5fa2202d25cbdda29755cedc0c6d5eba854c10c29a"
+  },
+  "screens": {
+    "exact_candidates": [
+      {
+        "arm": "INC",
+        "mode": "normal",
+        "sha256": "c2438884e58086d50afa14c050a109c6769974ed62bda584c5ed5b045b7eb736",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "INC",
+        "mode": "forced",
+        "sha256": "c2438884e58086d50afa14c050a109c6769974ed62bda584c5ed5b045b7eb736",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "CHAIN",
+        "mode": "normal",
+        "sha256": "148bf4754a4400fee519d25bc47db4fd96d08649a61f047a5984c1f100ee43ee",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "CHAIN",
+        "mode": "forced",
+        "sha256": "148bf4754a4400fee519d25bc47db4fd96d08649a61f047a5984c1f100ee43ee",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "STAGE",
+        "mode": "normal",
+        "sha256": "6a0c24c34439f55285adc2af1d30999f45788886111bdfcd6fc7facb87f1b596",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "STAGE",
+        "mode": "forced",
+        "sha256": "6a0c24c34439f55285adc2af1d30999f45788886111bdfcd6fc7facb87f1b596",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "LANE1",
+        "mode": "normal",
+        "sha256": "35a7c7b7b5953e5115c7bb8fb0ae23baf1e0311a6f7fbcdc5931684bedf9315d",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "LANE1",
+        "mode": "forced",
+        "sha256": "35a7c7b7b5953e5115c7bb8fb0ae23baf1e0311a6f7fbcdc5931684bedf9315d",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "SOFTMAX",
+        "mode": "normal",
+        "sha256": "31071e34167685cae2362ffdba80b793454a63a79d6e6cffb168bee64f8f458e",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "SOFTMAX",
+        "mode": "forced",
+        "sha256": "31071e34167685cae2362ffdba80b793454a63a79d6e6cffb168bee64f8f458e",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "OCHAIN",
+        "mode": "normal",
+        "sha256": "bebd1871bc94d8a206f0597164fc53129e36746275d819b5f553d909f417634a",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      },
+      {
+        "arm": "OCHAIN",
+        "mode": "forced",
+        "sha256": "bebd1871bc94d8a206f0597164fc53129e36746275d819b5f553d909f417634a",
+        "TASK": 13,
+        "production_graphs": 12,
+        "passed": true
+      }
+    ],
+    "batch": [
+      {
+        "mode": "normal",
+        "payload_sha256": "3262bcf872ead0a9de6d98d6d852aed09be3f16ad93445bd0d795c56f20fedd9",
+        "TASK": 116,
+        "nearby_TASK": 260,
+        "expected_TASK": 116,
+        "complete": true,
+        "failures": [],
+        "native_claim": false,
+        "seed_count": 2,
+        "rounds": 2,
+        "fixture_ctx": 4096,
+        "wire_bytes": 4122,
+        "tail_with_4000_suffix_pass": true
+      },
+      {
+        "mode": "forced",
+        "payload_sha256": "3262bcf872ead0a9de6d98d6d852aed09be3f16ad93445bd0d795c56f20fedd9",
+        "TASK": 116,
+        "nearby_TASK": 260,
+        "expected_TASK": 116,
+        "complete": true,
+        "failures": [],
+        "native_claim": false,
+        "seed_count": 2,
+        "rounds": 2,
+        "fixture_ctx": 4096,
+        "wire_bytes": 4147,
+        "tail_with_4000_suffix_pass": true
+      },
+      {
+        "mode": "normal_protocol",
+        "payload_sha256": "3262bcf872ead0a9de6d98d6d852aed09be3f16ad93445bd0d795c56f20fedd9",
+        "TASK": 3712,
+        "nearby_TASK": 260,
+        "expected_TASK": 3712,
+        "complete": true,
+        "failures": [],
+        "native_claim": false,
+        "seed_count": 64,
+        "rounds": 16,
+        "fixture_ctx": 257,
+        "wire_bytes": 9576,
+        "tail_with_4000_suffix_pass": true
+      }
+    ],
+    "pruned_portfolio": {
+      "mode": "forced",
+      "payload_sha256": "142c0bb64e0a87c40a3df51b8f30a39ad65bc014aac624c080fab88582a8e91b",
+      "TASK": 96,
+      "nearby_TASK": 260,
+      "expected_TASK": 96,
+      "complete": true,
+      "failures": [],
+      "native_claim": false,
+      "seed_count": 2,
+      "rounds": 2,
+      "fixture_ctx": 4096,
+      "wire_bytes": 3951,
+      "tail_with_4000_suffix_pass": true
+    },
+    "stage_cases": 18,
+    "cross_request_CTAs": 106,
+    "single_active_lane_CTAs": 2,
+    "sm90a_units": 3
+  },
+  "decision": "Wait for diagnostic completion, prune only universally resolved inherited recipe losses, send one whole-graph paired check via h200_lab --lane P5b.",
+  "native_status": "Unmeasured; local Hopper stand-ins do not establish native TASK or performance. Verify kernels still spill; native stage_resources records occupancy."
+}

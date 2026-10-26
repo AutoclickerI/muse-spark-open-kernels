@@ -1,0 +1,168 @@
+{
+  "source_sha256": "fec6a3c67fd320e6a8e1e7fece4dfa7a2deb0fb2fddadc01773b1e345dffb231",
+  "stage_cuda_sha256": "7a29e778da2d748c66886e5fd17a3ffe4c55ed33d8ea0a5563b4170f0f6098af",
+  "cases": [
+    {
+      "batch": 1,
+      "seed": 0,
+      "BF16": false,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 1,
+      "seed": 0,
+      "BF16": true,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 1,
+      "seed": 1,
+      "BF16": false,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 1,
+      "seed": 1,
+      "BF16": true,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 1,
+      "seed": 4,
+      "BF16": false,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 1,
+      "seed": 4,
+      "BF16": true,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 16,
+      "seed": 0,
+      "BF16": false,
+      "cross_request_CTAs": 7,
+      "single_active_lane_CTAs": 1,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 16,
+      "seed": 0,
+      "BF16": true,
+      "cross_request_CTAs": 7,
+      "single_active_lane_CTAs": 1,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 16,
+      "seed": 1,
+      "BF16": false,
+      "cross_request_CTAs": 6,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 16,
+      "seed": 1,
+      "BF16": true,
+      "cross_request_CTAs": 6,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 16,
+      "seed": 4,
+      "BF16": false,
+      "cross_request_CTAs": 6,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 16,
+      "seed": 4,
+      "BF16": true,
+      "cross_request_CTAs": 6,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 32,
+      "seed": 0,
+      "BF16": false,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 32,
+      "seed": 0,
+      "BF16": true,
+      "cross_request_CTAs": 0,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 32,
+      "seed": 1,
+      "BF16": false,
+      "cross_request_CTAs": 16,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 32,
+      "seed": 1,
+      "BF16": true,
+      "cross_request_CTAs": 16,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 32,
+      "seed": 4,
+      "BF16": false,
+      "cross_request_CTAs": 18,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    },
+    {
+      "batch": 32,
+      "seed": 4,
+      "BF16": true,
+      "cross_request_CTAs": 18,
+      "single_active_lane_CTAs": 0,
+      "bit_exact": true,
+      "gate_after_overwrite_exact": true
+    }
+  ]
+}

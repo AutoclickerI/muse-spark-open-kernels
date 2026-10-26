@@ -1,0 +1,83 @@
+[
+  {
+    "name": "stage",
+    "source_sha256": "7a29e778da2d748c66886e5fd17a3ffe4c55ed33d8ea0a5563b4170f0f6098af",
+    "passed": true,
+    "registers": [
+      "96",
+      "96",
+      "96",
+      "96",
+      "80",
+      "80"
+    ],
+    "stack_spills": [
+      [
+        "24",
+        "36",
+        "48"
+      ],
+      [
+        "24",
+        "28",
+        "60"
+      ],
+      [
+        "24",
+        "36",
+        "48"
+      ],
+      [
+        "24",
+        "28",
+        "60"
+      ],
+      [
+        "16",
+        "24",
+        "32"
+      ],
+      [
+        "32",
+        "24",
+        "48"
+      ]
+    ],
+    "entry_release": 6,
+    "dependency_wait": 6
+  },
+  {
+    "name": "olayer_e038df407c21",
+    "source_sha256": "e038df407c2194f7b7ae39a1f9771bdd718ce0ae5e54ccd824d7def59b27b380",
+    "passed": true,
+    "registers": [
+      "90"
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "entry_release": 1,
+    "dependency_wait": 1
+  },
+  {
+    "name": "rl_3bf39eb5eb48",
+    "source_sha256": "3bf39eb5eb48b4287ff267d726d60c8dc1fede7ecd949a07b8e06d9c8e2c3ea3",
+    "passed": true,
+    "registers": [
+      "154"
+    ],
+    "stack_spills": [
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "entry_release": 1,
+    "dependency_wait": 1
+  }
+]
