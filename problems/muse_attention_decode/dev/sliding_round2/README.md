@@ -171,14 +171,44 @@ functional examples, not measured selections.
 
 The global lab **ae6cd27877cc4ee2** has no captured-path TASK gates and is
 unmeasured. Its exact-kernel repaired4-shape/8-arm packet is **da61a8f2**,
-sender **112961**, priority5; see `../cluster_sliding/README.md`.
+sender **112961**, priority5, accepted check **bb7239afc1b3487a**;
+its native result is pending. See `../cluster_sliding/README.md`.
 History **402819c28279466d** is closed by its decision rule: bestE4/OLD4
 0.997414 (SE0.001244) does not exceed A:A1.009555 (SE0.006105;
 range0.98824-1.09546) or3SE. All16 fresh-seed gates pass, and clocks prove
 the prewait work. No history confirmation is sent. Its prepared generator
 now retains exact OLD4 CUDA3815beab atQT4 instead of the round2 shader;
 the corrected packet passes local whole-layer admission.
-Round2 and resident-history reset decisions still await receipts.
+Round2 **27a914f72bfb47c8** completed: best d16 D8 0.995283 and
+d32 D4 0.989821 do not clear controls (A:A1.007797/1.002142,
+SE0.001748/0.000707). No d16/d32 confirmation or promotion is selected.
+Verify1's best **D16** is0.924229 (A:A1.009469, SE0.002417).
+Its CUDA and S14 base hashes exactly match the35-seed repeat, so that
+independent confirmation already covers it; no redundant run is sent.
+Other v1 qualifiers remain unpromoted. Full matrix: `round2_result.json`.
+
+The35-seed repeat **6a0b3f0987e94ba5** passes its controls:
+COOP/duplicate0.951214/0.954611, pooled **0.952913** (SE0.005071),
+A2/A3 0.999262/0.999499 (SE0.004232/0.003422).
+Duplicate/COOP1.003740 (SE0.004151) is consistent with1.
+All7 arms x35 TASK/cache gates pass. First-capture attention completion
+falls17.632→12.064us; QKV/O displacement is-0.032/+0.352us.
+The prior control discrepancy is resolved in this cohort; the change in
+capture protocol is not isolated from the changed seed cohort.
+
+**P4 handoff:** `handoff.json`, verify1 sliding only, **DSM QT4/C16**.
+`layer_patch.py --selection '{"1,8":["dsm",4,16]}' --out
+problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_verify1_dsm.py`
+rebuilds candidate **403bb778**, only one selected CUDA family, onto exact
+S14. Normal and forced integration admission each pass13 TASK tests,
+12 graph shapes and24 static checks; native multi-CTA DSM uses genuine
+C1 locally, with H200 geometry covered by the qualifying receipts.
+`screen_layer.py` creates its output directory and injects that explicit
+local DSM stand-in. P4 must compose onto its current base and measure the
+six-load score; no overall score gain is claimed here.
+
+Resident history **857f78fa889f4646** has no qualifier at v16/v32;
+see `../verify_resident/README.md`. No resident confirmation is sent.
 
 Final local admission: **100 fresh-input/partial/counter cells**, **24 sm90a
 specializations**, **80 exact index-coverage cases**. Exact board wrapper:

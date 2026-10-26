@@ -9,7 +9,8 @@
   "files": {
     "lab_body.inc": "b2d7ab60333b927b553a9f2d7c8bfcccc7b2cfa28d70771ff554fdea618389ad",
     "followups.py": "13550e52726d4f454fa85547e6ea4fafbf5f70335a4a969a9d67bdb74cf115ec",
-    "report.py": "f9955a6a228bff4c7477e6d85900cb7c91ec29419a552bbf7f2785bc93e069b2"
+    "report.py": "f9955a6a228bff4c7477e6d85900cb7c91ec29419a552bbf7f2785bc93e069b2",
+    "screen_layer.py": "81e06166acab80e017f1f494f5416c1429e90d0daa0a2da8f73616f5272997dc"
   },
   "dsm_selection": {
     "1": 16,
@@ -142,8 +143,97 @@
         "DOUBLE": 2
       }
     },
-    "local_only": true
+    "local_only": true,
+    "status": "qualified; promoted to P4 with handoff.json"
   },
   "original_round2_job": "27a914f72bfb47c8",
-  "original_resident_job": "857f78fa889f4646"
+  "original_resident_job": "857f78fa889f4646",
+  "promotion": {
+    "status": "promote verify1 sliding cooperative DSM to P4 for integration and paired six-load validation",
+    "selection": {
+      "1,8": [
+        "dsm",
+        4,
+        16
+      ]
+    },
+    "base_file": "problems/muse_decode_layer/cand_r3_best7_s14_final.py",
+    "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+    "generator": "problems/muse_attention_decode/dev/sliding_round2/layer_patch.py",
+    "rebuild_command": "python3 problems/muse_attention_decode/dev/sliding_round2/layer_patch.py --selection '{\"1,8\":[\"dsm\",4,16]}' --out problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_verify1_dsm.py",
+    "candidate_sha256": "403bb778b295b87adabf668f338fe423fc70e91c72007f9a6ca331c4ff5f1baf",
+    "kernel_sha256": "0f250847cd8dbc3cbc8583425f4fef9e441e538c340b90d91448dccc125ab4a9",
+    "native_receipts": [
+      "b05713ecf6574ad9",
+      "6c26b14fdd28458b",
+      "6a0b3f0987e94ba5",
+      "27a914f72bfb47c8"
+    ],
+    "qualifying_receipt": "6a0b3f0987e94ba5",
+    "pooled_candidate_control": 0.9529128267552293,
+    "pooled_SE": 0.005071349479282373,
+    "A2": [
+      0.9992622580323188,
+      0.004231532285994626
+    ],
+    "A3": [
+      0.9994992018738413,
+      0.0034216998677443545
+    ],
+    "identical_recipe_control": [
+      {
+        "names": [
+          "DOUBLE",
+          "COOP"
+        ],
+        "ratio": 1.0037402966718727,
+        "se": 0.004150993962218459,
+        "failed": false
+      }
+    ],
+    "TASK_counts": {
+      "A": 35,
+      "A2": 35,
+      "A3": 35,
+      "RESET": 35,
+      "COOP": 35,
+      "HALF": 35,
+      "DOUBLE": 35
+    },
+    "local_screens": {
+      "normal": {
+        "tests": 13,
+        "shapes": 12,
+        "static_checks": 24,
+        "passed": true
+      },
+      "forced": {
+        "tests": 13,
+        "shapes": 12,
+        "static_checks": 24,
+        "passed": true
+      }
+    },
+    "local_DSM": "explicit genuine C1 launch, native math shim; H200 multisSM geometry is covered by qualifying receipts",
+    "unverified": [
+      "P4 current-base composition and paired six-load score",
+      "nearby native shapes outside recorded native admissions"
+    ],
+    "do_not_promote": [
+      "decode16/32 round2 recipes: no qualifying gain",
+      "verify16 cooperative QT1 DSM: losses",
+      "verify16/32 tested resident recipes: losses",
+      "decode1 compact early history: neutral vs OLD4"
+    ]
+  },
+  "original_round2_status": "complete; v1 best D16 already covered by35-seed qualified repeat; no new send",
+  "original_resident_status": "complete; no qualifying arm, no confirmation",
+  "global_repair_job": "bb7239afc1b3487a",
+  "completed_original_jobs": [
+    "ae6cd27877cc4ee2",
+    "b05713ecf6574ad9",
+    "402819c28279466d",
+    "27a914f72bfb47c8",
+    "857f78fa889f4646"
+  ]
 }

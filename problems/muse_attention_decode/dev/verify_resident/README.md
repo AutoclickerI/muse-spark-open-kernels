@@ -65,7 +65,9 @@ assert checks that lifetime-based allocation.
 P is the QK/PV pipeline; S is the serial compute control with identical early
 resident history and bounded preparation. Every variant reads the same
 unique KV bytes; the split count changes residency and math/dependency depth,
-not attention work. Add1024B static shared per CTA. H200's228KiB/SM and64K
+not attention work. Native CUPTI reports0B static shared per attention CTA;
+use the dynamic column above as its total native shared allocation.
+H200's228KiB/SM and64K
 register budget permit up to three C4 resident attention CTAs without a
 producer; the runtime occupancy in the H200 payload remains authoritative.
 C4 is the verify32 target: all64 KV-head groups can occupy the GPU with two
@@ -149,11 +151,34 @@ the exact compressed whole-layer payload passed2 shapes x10 arms x2 fresh
 seeds with the complete public checker at20% margin and immediate cache
 validation. All6 sm90a shaders compiled with history loads and V transpose
 before the dependency wait, no C75 warnings, stack or spills. The32-fresh-replay
-per-arm graph-port probe passed. Native cluster placement, producer interference
-and H200 speedup remain unverified.
+per-arm graph-port probe passed. The native receipt below measures scheduling,
+producer resources and whole-layer performance.
 
 Lab source SHA **74864386**, component SHA **5e7cb4d1**. Full source hashes,
 screen counts, prewait SASS evidence and initial sender identity are in
-`admission.json`. Accepted job: **857f78fa889f4646**. Next: collect the one native payload and
-rank whole-layer ratios beyond A:A noise, checking QKV displacement before
-handing integration a patch onto the currently qualified base.
+`admission.json`. Native receipt: **857f78fa889f4646**.
+
+## Native decision
+
+All10 arms x24 fresh-seed TASK/cache gates pass at both loads. No arm
+qualifies. Best verify16 **C8S/A1.012806** (SE0.003340), verify32
+**C4S/A1.020146** (SE0.002518); A:A0.999296/0.998184,
+SE0.000342/0.000252, ranges0.99586-1.00187/0.99557-0.99991.
+The pipeline variants lose1.026-1.089 atv16 and1.043-1.098 atv32.
+Drop these tested resident/serial/edge recipes; **no confirmation sent and
+no P4 promotion**. Full arm ratios and gates are in `reset_result.json`.
+
+The launch-completion edge works natively: verify32 C4P begins2.847us,
+before QKV ends20.063us; RAW4 begins20.128us. Its attention completion
+increment nevertheless rises28.224→31.584us. Native Lt uses**221508B**
+shared per QKV CTA, leaving11964B of233472B: even the smallest tested
+attention CTA needs27648B, so no tested arm can co-reside with that producer.
+Early consumer blocks can use spare SMs; kernel start does not prove every
+CTA overlaps its gather. Verify16 C16 can fit beside its196672B producer
+and starts4.513us before QKV ends13.792us, but loses1.05542 overall.
+The native resource/start observations supersede the pre-run residency model.
+
+This closes the tested schedules on S14, not resident attention generally.
+Lower-footprint QKV producers, different gather/transpose or output schedules
+remain open; none is measured by this receipt. The critical-path increments
+are diagnostic traces, not per-CTA preload-completion clocks.

@@ -529,7 +529,8 @@
       "standin": "unrelated N128 verify prepare uses frozen N64; decode CUDA math is unchanged"
     },
     "wrapper_sha256": "da61a8f26d14c598daa9df6cabc4165225d898eb4511be61d71cdd9a25ada749",
-    "sender": 112961
+    "sender": 112961,
+    "job": "bb7239afc1b3487a"
   },
   "followups": {
     "problems/muse_attention_decode/lab/lab_followup_dsm.py": {
@@ -553,5 +554,21 @@
       "not_before": 0
     }
   },
-  "dsm_confirmation_job": "6c26b14fdd28458b"
+  "dsm_confirmation_job": "6c26b14fdd28458b",
+  "dsm_confirmation_status": {
+    "verify1": "unmeasured:failed duplicate control in6c26, resolved by6a35fresh-capture repeat",
+    "verify16": "RESETneutral; cooperativeQT1variantslose"
+  },
+  "dsm_promotion": {
+    "selection": {
+      "1,8": [
+        "dsm",
+        4,
+        16
+      ]
+    },
+    "qualifying_job": "6a0b3f0987e94ba5",
+    "pooled_ratio": 0.9529128267552293,
+    "handoff": "../sliding_round2/handoff.json"
+  }
 }

@@ -93,7 +93,16 @@ uses35 disjoint seeds x14 cold rounds, A/A2/A3, RESET/COOP/C8 and the
 identical C16 duplicate. It recaptures fresh graph pools with rotated
 capture ownership each seed; fixed allocation bias is a hypothesis tested
 by this repeat. Seven-arm/two-seed local TASK/cache admission passes.
-Native whole-layer qualification is pending. Existing handoff evidence remains
+That repeat completed with matching controls: COOP/duplicate0.951214/0.954611,
+pooledC16/A **0.952913**, SE0.005071; A2/A3 0.999262/0.999499.
+Duplicate/COOP1.003740, SE0.004151 passes; all7 arms x35 TASK/cache gates
+pass. **Promote verify1 sliding cooperative QT4/C16 to P4.**
+`../sliding_round2/handoff.json` rebuilds exact-S14 candidate **403bb778**;
+normal/forced integration screens each pass13 TASK/12 graphs/24 static checks,
+with the explicit local C1 DSM stand-in. P4 current-base composition and the
+six-load score remain unmeasured. Round2 **27a914f72bfb47c8** independently
+selects this same shader; no redundant confirmation is sent.
+Existing handoff evidence remains
 `7e93cc81af17489a`, `9d9a01e1f6db4d79`.
 
 `repair_global_lab.py` reconstructs ae6cd278's exact host and payload from
@@ -104,3 +113,4 @@ The unrelated native N128 verify prepare uses the existing frozen N64
 stand-in locally; decode shaders execute their actual sm120 math shims.
 The repaired packet embeds S11 independently and uses attention import
 hosting, so later decode prepare output cannot displace its archive.
+It is accepted as check **bb7239afc1b3487a**; its native result is pending.
