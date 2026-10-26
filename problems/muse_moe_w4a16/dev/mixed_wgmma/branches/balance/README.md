@@ -78,4 +78,20 @@ exact packed payload and output-size budget. `read.py` reconstructs seed CIs and
 the conditional oracle ledger from receipts. Generated CUDA, candidates, logs
 and unselected patches are ignored; only nominated patches will be retained.
 
-Dispatch/result status is recorded here after all screens finish.
+All ten exact-candidate screens pass: each13 TASK cases,12 captured shapes,
+26 static checks, with eager/captured NF execution confirmed. Component checks:
+966 replays over69 current-input cases, worst total/row .004227/.004770. The
+unique reader XOR matches28,311,552 bytes of one real packed expert. Exact
+packed16-seed rehearsal completes in122.3s and7971characters; all gates pass.
+Native stream reader:22registers,644B shared, zero spills.
+
+MoE check **`b5c4d99ed0ed4dc6`**, sender **`98d98597b814dd0a`**, accepted14:51 KST;
+import budget240s, no not-before gate. Payload `bbd85de2`, wrapper `98d98597`.
+`queue.json` pins dispatch. Results and P4 nominations will be recorded when it lands.
+
+S18 integration evidence: its current `p3b_plan` already calls CHUNK4 and keeps
+`pm=mt_pmz_module()` for NT1 W2, then `tail.mt_finish(...,10,...)`. Preserve both
+when composing the routing/producer edits. The masked LOW vector belongs only
+in NT1's `pn[6]`; real C stays with heavy/N16 and the finalizer. N16's task prefix
+must change with the ownership cutoff. Root-applicable S15 patches deliberately
+use the plain S15 shell; P4's composed whole-layer R must confirm interaction.

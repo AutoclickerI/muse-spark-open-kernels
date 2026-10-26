@@ -94,5 +94,29 @@
       },
       "report": "runs/screen/p3b_balance/b0/forced/local.json"
     }
+  },
+  "ONE": {
+    "normal": {
+      "candidate_sha256": "84a15b33a9dd25411f84010c2688a964b8fec9d9aec7f99f9763022eeec60e04",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "eager": 16,
+        "captured": 6
+      },
+      "report": "runs/screen/p3b_balance/one/normal/local.json"
+    },
+    "forced": {
+      "candidate_sha256": "84a15b33a9dd25411f84010c2688a964b8fec9d9aec7f99f9763022eeec60e04",
+      "tests": 13,
+      "shapes": 12,
+      "static": 26,
+      "calls": {
+        "eager": 16,
+        "captured": 6
+      },
+      "report": "runs/screen/p3b_balance/one/forced/local.json"
+    }
   }
 }
