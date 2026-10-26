@@ -1,0 +1,37 @@
+{
+  "manifest": {
+    "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "native_sha256": "b1cdef56b5ed12d487749c241ec4206751b0e6aab2538541adb955170785dfdf",
+    "runtime_sha256": "1b91d5d7d861113d45062812bcd3f1dbc9c5720499375c9c0e5c876283f209dd",
+    "candidate_sha256": "d4acd40634dc6a1f5c840f8f5bca843d72885a4e49b40413150d0b144d783eff",
+    "arms": [
+      "A",
+      "A2",
+      "N",
+      "T"
+    ],
+    "original_N_native_sha256": "f01802705bfd243f85586306e5eb89ea5d63e2a2211ff0b860c9a1b314e0d9f7"
+  },
+  "mode_replays": 384,
+  "worst_relative_l2": 2.9640912543982267e-05,
+  "all_outputs_finite": true,
+  "tail_identity_exact": true,
+  "denominator": 8192,
+  "resources": {
+    "N_b1": [
+      74,
+      0,
+      384
+    ],
+    "N_b2": [
+      74,
+      0,
+      384
+    ],
+    "T_b2": [
+      76,
+      0,
+      384
+    ]
+  }
+}

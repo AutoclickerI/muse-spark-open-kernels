@@ -23,7 +23,7 @@ def summary(x):
    s,f=[next(c for c in x['cases'] if c['case']==prefix+w) for w in ('S','F')]
    loads.append([(46*a[arm]['a_us']+16*b[arm]['a_us'])/(46*a[arm]['b_us']+16*b[arm]['b_us']) for a,b in zip(s['samples'],f['samples'])])
   rr=[math.exp((math.log(a)+math.log(b))/6) for a,b in zip(*loads)];scores[arm]=dict(**stats(rr),interpretation='Other four loads use identical S15 code; selection-data diagnostic, not held-out promotion')
- return dict(shapes=shapes,nominations=nominations,score_diagnostics=scores,failures={c['case']:c['failures'] for c in x['cases']},task_checks=sum(c['task_checks'] for c in x['cases']),profiles={c['case']:c['profiles'] for c in x['cases']},seeds=x['seeds'],base_sha256=x['base_sha256'],runtime_sha256=x['runtime_sha256'],elapsed_s=x['elapsed_s'])
+ return dict(shapes=shapes,nominations=nominations,score_diagnostics=scores,failures={c['case']:c['failures'] for c in x['cases']},task_checks=sum(c['task_checks'] for c in x['cases']),profiles={c['case']:c['profiles'] for c in x['cases']},critical_profiles={c['case']:c['criticals'] for c in x['cases'] if 'criticals' in c},seeds=x['seeds'],base_sha256=x['base_sha256'],runtime_sha256=x['runtime_sha256'],elapsed_s=x['elapsed_s'])
 if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('receipt',type=pathlib.Path);p.add_argument('--out',type=pathlib.Path,required=True);a=p.parse_args();t=a.receipt.read_text()
  if a.receipt.suffix=='.json':t=json.loads(t)['result']['log_tail']

@@ -1,0 +1,34 @@
+{
+  "source_sha256": "b1cdef56b5ed12d487749c241ec4206751b0e6aab2538541adb955170785dfdf",
+  "kernels": [
+    {
+      "symbol": "_ZN6rtf_cl13boundary_tailILi8ELi256ELi1ELb1ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        49,
+        561
+      ],
+      "ordered_loads_after_wait": 22,
+      "stack_or_local_sass": false
+    }
+  ],
+  "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/residual_tail/rebuild/native/residual.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN6rtf_cl13boundary_tailILi8ELi256ELi1ELb1ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:98 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+  "tail_SASS_order": {
+    "immutable_weights_before_wait": [
+      "/*22f0*/                   LDG.E.128.STRONG.GPU R4, desc[UR12][R4.64] ;                 /* 0x0000000c04047981 */",
+      "/*2300*/                   LDG.E.128.STRONG.GPU R8, desc[UR12][R8.64] ;                 /* 0x0000000c08087981 */"
+    ],
+    "wait": "/*2310*/                   ACQBULK ;                                                    /* 0x000000000000782e */",
+    "dependent_stream_and_stats_after_wait": [
+      "/*2320*/                   LDG.E.128.STRONG.GPU R12, desc[UR12][R12.64] ;               /* 0x0000000c0c0c7981 */",
+      "/*23d0*/                   LDG.E.STRONG.GPU R17, desc[UR12][R16.64] ;                   /* 0x0000000c10117981 */"
+    ],
+    "proof": "Explicit PTX and tail-branch SASS; prefix path has its own ACQBULK"
+  },
+  "resource_choice": {
+    "selected_pre_wait_regs": 98,
+    "rejected_after_wait_regs": 114,
+    "rejected_source_sha256": "1543a9fccb81893747deabec3ae43d4896fc21ad6941a9b20d5faeb5d2a69310",
+    "rejected_resource_usage": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/residual_tail/rebuild/native/after_wait_probe.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN6rtf_cl13boundary_tailILi8ELi256ELi1ELb1ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:114 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "local_SASS_absent": true
+  }
+}
