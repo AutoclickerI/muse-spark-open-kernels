@@ -6,5 +6,8 @@
   "file": "problems/muse_bf16_proj/dev/moe_tail/out/p7_moe_tail_board.py",
   "sha256": "696d82e66013ee55c46431c4f67351fa8a1741d15b2559b0206b7697f2d774e2",
   "note": "h200_lab problems/muse_bf16_proj/dev/moe_tail/lab_moe_tail.py: P7 S15 MoE route/finish/tail:9 arms A/A2,R,F4,F8,C,E,P,PF;4 verify shapes x32 fresh busiest-shard seeds x8 balanced AB/BA;all expert/heavy/light kernels and grids shared;entry release only large-M small W2;volatile CG dependent SS/Y strictly after wait (sm90a SASS);normal+forced234 official tests/216 graphs,360 native checks,full packed lab pass;7.3KB all seeds. Expired reset gate prevents automatic merge and imposes no delay. Fixed snapshot outside shared lab directory preserves full 9KB payload budget; identical wrapper bytes.",
-  "not_before": 0
+  "not_before": 0,
+  "job": "1a7bbd9e33c04466",
+  "status": "done",
+  "receipt": "runs/muse_decode_layer/20261026T021532Z_check_1a7bbd9e33c04466.json"
 }

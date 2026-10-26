@@ -1,6 +1,6 @@
 {
   "job": "5a95984a640d410e",
-  "status": "unmeasured for promotion: A:A drift exceeds apparent preload gains",
+  "status": "Point nominations to P4 under R-20261026-1; no per-load A:A veto",
   "all_paired_gates_pass": true,
   "cases": {
     "d1S": {
@@ -142,6 +142,6 @@
       "ci95": 0.002717487904277524
     }
   },
-  "decision": "No promotion and no family closure; H/C observed slower but the small preload gains are not qualified.",
+  "decision": "Ten changed arm/shape pieces with mean latency ratio<1 nominated to P4, with SE and seeds in point_nominations.json. P4 confirms held-out six-load score and TASK.",
   "leaves_open": "Balanced same-capture AB/BA reconfirmation of D full and W/W1 sliding; other preload ownership and route/boundary geometry."
 }

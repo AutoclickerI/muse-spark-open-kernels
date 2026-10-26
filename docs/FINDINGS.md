@@ -658,9 +658,26 @@ Ratios are candidate/control latency; below one wins. A:A is an independent capt
 | Recipe | Ratio vs control; A:A | Mechanism / decision | Leaves open | Receipt job |
 |---|---|---|---|---|
 | Exact metadata confirmation + d16/d32 attribution retry | Unmeasured; no retained ratios/A:A | LAB_ERROR: combined archive exceeds 9 KB. No promotion or performance closure | Metadata-only preload confirmation and original attribution arms; needs compact diagnostics, not fewer controls/seeds | `ce5b991a8a984a03` |
-| d1 glue chain, 32 seeds | W S/F 0.98648/1.00369; D full 0.98549; A:A S/F **0.98549±0.00313 / 1.01603±0.00539** (95% mean CI) | Gates pass, but control drift is comparable to apparent gains; no qualified win or family closure. C4 observed 1.03119/1.02371, hints 1.00879/1.01158 | Same-capture balanced AB/BA confirmation of preload ownership; source of A:A bias is not isolated | `5a95984a640d410e` |
+| d1 glue chain, 32 seeds | W S/F 0.98648/1.00369; D full 0.98549; A:A S/F **0.98549±0.00313 / 1.01603±0.00539** (95% mean CI) | Gates pass; earlier A:A veto is superseded by R-20261026-1. Ten changed d1 shape pieces go to P4 by point estimate; C4/hints still have no sub-1 point. C4 observed 1.03119/1.02371, hints 1.00879/1.01158 | Same-capture balanced AB/BA confirmation of preload ownership; source of A:A bias is not isolated | `5a95984a640d410e` |
 | Full-row moment/exact, serial, route CTA and chain at d16/d32/v16/v32; 24 seeds | M **1.07236/1.05352/1.01380/1.00461**; E **1.07590/1.05995/1.01794/1.00843**; R **1.05884/1.07432/1.00838/1.00409**. A:A **0.99813/1.00069/1.00392/0.99991** | Tested clean-routing rows lose beyond A:A. d16S ready b1 A/M/E 7.168/13.712/13.712 us; route A/R 8.688/16.992 us. One d16F row changes membership for M/E/S/C/E1, so those rows remain unmeasured for promotion | Other CTA geometries/producer ownership; E1 v16 is inconclusive; changed-routing d16F rows require official margin review | `9f6849fcc12a448d` |
 | Decode per-tile unpool publication + exact b2 | d16/d32 **1.08951/1.07456**, same A:A as above | Close this producer/consumer recipe: sampled b2 completion tail 2.753→15.488 / 3.167→14.304 us. Verify P is an unchanged duplicate control, not a publication test | Other readiness protocols, faster current producers, and finish ownership; no general publication/fusion closure | `9f6849fcc12a448d` |
+
+### R-20261026-1 point nominations to P4
+
+The former per-load A:A veto is superseded. Ratios are candidate/control latency, SE is across32 paired seeds; these are selection points, not held-out promotion. Full seed IDs and exact S15 patch hashes are in `problems/muse_bf16_proj/dev/d1_chain/point_nominations.json`. P4 composes them and confirms the paired six-load R lower95% bound>1 using TASK correctness only. A:A remains diagnostic (d1S .98549, d1F1.01603); its mean is not subtracted. D d1S and rebuild-P verify are unchanged duplicate controls, so they contain no piece to integrate.
+
+| Recipe / shape | Ratio (SE); seeds | Mechanism / changed verdict | Leaves open | Receipt |
+|---|---|---|---|---|
+| W all immutable glue preloads, d1S | .986479 (.001738);32 | Nominate to P4; formerly withheld for A:A | Held-out composed six-load effect on S15 | `5a95984a640d410e` |
+| L final prew late, d1S/F | .991532 (.001940) / .995726 (.001788);32 | Nominate both shapes; role ownership differs from W | Held-out six-load confirmation and W/L choice | `5a95984a640d410e` |
+| S early original b1 residual, d1S/F | .995325 (.001614) / .999815 (.002240);32 | Nominate both point estimates, including the small full point | Held-out composition; mean point alone does not establish a gain | `5a95984a640d410e` |
+| W1 b1-only preload, d1S | .987399 (.001864);32 | Nominate role-only row alongside W | Whether W1 composes better than W with attention changes | `5a95984a640d410e` |
+| WR route-only preload, d1S/F | .998331 (.001476) / .998975 (.001591);32 | Nominate both small point wins | Held-out six-load effect and interaction with router producer | `5a95984a640d410e` |
+| W2 b2-only preload, d1S | .997874 (.001613);32 | Nominate role-only row | Interaction with new residual-tail reuse | `5a95984a640d410e` |
+| D prior full-only preload, d1F | .985488 (.002062);32 | Nominate to P4; d1S is duplicate control | Held-out S15 composition; no historical score transfer assumed | `5a95984a640d410e` |
+
+| S15 MoE P original-ownership dependent finish, v16S/F + v32S/F | .993326(SE.000755) / .996274(.000711) / .996526(.000268) / .996821(.000364);32 seeds. A:A .999591/1.001177/.999730/1.000158 | Nominate all four points to P4. Typed dependencies from all three W2 branches; inline PTX keeps SS/Y after wait. Sampled P starts near heavy/light completion; small W2 end was not retained by a label-filter bug, so exact three-branch tail is unknown | Held-out composed six-load score/TASK confirmation, new P3b producer interaction, and small-W2 frontier | `1a7bbd9e33c04466` |
+| S15 MoE F4 v16S; F8 v16S/F; E v16S | .999530(SE.000831); .998367(.000591)/.999197(.000551); .999100(.000674);32 seeds | Nominate every sub-1 point, no A:A veto. Warp-private finish removes CTA hand-off; E changes only small W2 entry release | Point gains are selection observations; held-out six-load/TASK confirmation and composition with P | `1a7bbd9e33c04466` |
 
 ## Weight encoding
 

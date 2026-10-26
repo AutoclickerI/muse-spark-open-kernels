@@ -1,0 +1,28 @@
+{
+  "source_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "total_T_guard": "t<=SLICED_MAX_TOKENS=8; no chunking",
+  "sliced_unpool_selection": "name=unpooler_slice if t<=SLICED_MAX_TOKENS else unpooler",
+  "zero_tail": "br[g] = j < NB ? sum_splits(...) : make_float4(0.f,0.f,0.f,0.f)",
+  "residual": "s[g].x = a[g].x*s[g].x + b[g].x*(br[g].x*inv_br)",
+  "moment": "v[1] += x*x with x=alpha2*stream1",
+  "denominator": "HID=8192 for both inverses",
+  "evidence": {
+    "_best7_run": {
+      "line": 5288,
+      "sha256": "13fe874697fad028d5c26b435cda6b05c93cce83b778fdc64066609d9c7350a0"
+    },
+    "_best7_boundary": {
+      "line": 7026,
+      "sha256": "bcde936ecc7b23984faf5c8efef52fdc99d880d69e432536d84b6d1fb1985bba"
+    },
+    "_glue_cl_boundary": {
+      "line": 144,
+      "sha256": "85a68414592ef3179607ebacf5e36c4d32b879891636221c8bcb9305f7e2348a"
+    }
+  },
+  "confirmed": [
+    "tail residual identity",
+    "tail squared sum reusable from b1"
+  ],
+  "dropped": []
+}

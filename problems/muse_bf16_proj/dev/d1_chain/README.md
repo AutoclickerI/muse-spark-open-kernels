@@ -116,3 +116,9 @@ Exact-byte retry: attention-host import lab, 550-second budget, sender **4131717
 ## Retry decision
 
 Retry `5a95984a640d410e`: all gates pass, but A:A S/F 0.98549±0.00313 / 1.01603±0.00539 (95% mean CI). W S/F 0.98648/1.00369 and prior D full 0.98549 do not qualify beyond control drift. No arm is promoted or family closed. A balanced same-capture remeasurement remains open; the new MoE payload uses that protocol. Full retained verdict: `receipt_decision.json`.
+
+## Current nomination rule (R-20261026-1)
+
+Prior per-load A:A and unchanged-row neutrality vetoes are superseded. Every changed arm/shape with candidate/control point estimate below1 is handed to P4 with SE and seeds. Only held-out paired six-load R lower95% bound>1 and TASK checker decide promotion. A:A remains diagnostic; no mean-drift subtraction. `../d1_chain/point_nominations.json` includes all current points and identifies unchanged duplicate controls. `../d1_chain/handoff.py` rebases the ten changed d1 pieces onto S15.
+
+Current P4 nominations: ten changed pieces from `5a95984a`,32 seeds each. d1S W .986479±SE.001738, L .991532±.001940, S .995325±.001614, W1 .987399±.001864, WR .998331±.001476, W2 .997874±.001613. d1F D .985488±.002062, L .995726±.001788, S .999815±.002240, WR .998975±.001591. D d1S and verify P in9f6849fc are unchanged duplicate controls. All nonduplicate patch paths/hashes and seed IDs are in point_nominations.json; handoff.py applies each onto exact S15. Prior no-nomination verdict is superseded; no held-out confirmation or composed score promotion is claimed yet.

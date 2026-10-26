@@ -1,0 +1,54 @@
+{
+  "source_sha256": "f01802705bfd243f85586306e5eb89ea5d63e2a2211ff0b860c9a1b314e0d9f7",
+  "kernels": [
+    {
+      "symbol": "_ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb0ELi3EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        16
+      ],
+      "ordered_loads_after_wait": 18,
+      "stack_or_local_sass": false
+    },
+    {
+      "symbol": "_ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb1ELi3EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        16
+      ],
+      "ordered_loads_after_wait": 19,
+      "stack_or_local_sass": false
+    },
+    {
+      "symbol": "_ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb0ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        16
+      ],
+      "ordered_loads_after_wait": 18,
+      "stack_or_local_sass": false
+    },
+    {
+      "symbol": "_ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb1ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        16
+      ],
+      "ordered_loads_after_wait": 18,
+      "stack_or_local_sass": false
+    },
+    {
+      "symbol": "_ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb0ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        16
+      ],
+      "ordered_loads_after_wait": 18,
+      "stack_or_local_sass": false
+    },
+    {
+      "symbol": "_ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb1ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_",
+      "waits": [
+        16
+      ],
+      "ordered_loads_after_wait": 18,
+      "stack_or_local_sass": false
+    }
+  ],
+  "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /home/jihoon/competitions/muse_kernel/problems/muse_bf16_proj/dev/residual_tail/native/residual.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb0ELi3EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:111 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb1ELi3EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:111 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb0ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:96 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb1ELi2EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:96 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb0ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:78 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n Function _ZN7glue_cl13boundary_tailILi8ELi256ELi1ELb1ELi1EEEvPKviixxiPKfPfP13__nv_bfloat16S4_S4_S4_S4_S4_S5_S5_:\n  REG:76 STACK:0 SHARED:1408 LOCAL:0 CONSTANT[0]:648 TEXTURE:0 SURFACE:0 SAMPLER:0\n"
+}

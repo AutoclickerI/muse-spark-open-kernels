@@ -1,0 +1,10 @@
+{
+  "pid": 1294249,
+  "priority": 2.0,
+  "t": 1792981972.688599,
+  "problem": "muse_decode_layer",
+  "file": "problems/muse_bf16_proj/dev/residual_tail/out/p7_residual_tail_board.py",
+  "sha256": "3de4daa1469726c190f595a86bd81339f96faf3734302c6c4944b1dfafe91a66",
+  "note": "P7 S15 residual-tail reuse T<=8 only:V=b1 writes7168 final residual elements,N=b1 tail normstats,C=both;A/A2;4 shapes x32 fresh seeds x8 balanced ABBA;640 exact copied public TASK checks,normal+forced130 official tests/120 graphs,512 native poisoned mode replays,sm90a ordered loads/no local SASS;denominator8192/all outputs. P4 all sub1 point nominations;held-out6loadLCB gate only. Payload2fe023f2;single immutable wrapper snapshot.",
+  "not_before": 0
+}
