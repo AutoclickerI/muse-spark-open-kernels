@@ -8,11 +8,10 @@
 #   tools/img                  # a shell in the image
 set -eu
 repo=$(cd "$(dirname "$0")/.." && pwd)
-# The image unpacked once (apptainer build --sandbox from the .sif): this host has no squashfuse,
-# so running the .sif itself unpacks all of it into /tmp on every call (~75 s, ~40 GB).
+# The image unpacked once (apptainer build --sandbox <dir> docker://lmsysorg/sglang@<digest>): this
+# host has no squashfuse, so a .sif would unpack all of it into /tmp on every call (~75 s, ~40 GB).
 images=/data2/jihoon/muse_kernel/images
 sif=${MUSE_SIF:-$images/sglang-dev-muse-spark-open-8cfc5a72.sandbox}
-[ -e "$sif" ] || sif=$images/sglang-dev-muse-spark-open-8cfc5a72.sif
 # A home of its own, so the host's ~/.local packages stay out and JIT caches (Triton, torch
 # extensions) persist between runs.
 home=${MUSE_IMG_HOME:-/data2/jihoon/muse_kernel/img-home}
