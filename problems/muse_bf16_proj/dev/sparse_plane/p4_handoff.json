@@ -1,0 +1,27 @@
+{
+  "stage_job": "bd3f8fc778ca4832",
+  "base": "S15 60254883",
+  "patch": "problems/muse_bf16_proj/dev/sparse_plane/layer_patch.py.inc",
+  "candidate_sha256": "36b25b4bfe92e1dd3b8a5f3b6cc7146e5f9019b06bd4ac45b3ba6a93f6143a9a",
+  "best": "raw12 WR1/WK8/S1/ST1",
+  "ratios": {
+    "1": 0.91739,
+    "8": 0.81018,
+    "16": 0.84632
+  },
+  "aa_max": {
+    "1": 0.03807,
+    "8": 0.04361,
+    "16": 0.04509
+  },
+  "keep_T32": "S15 bal2; every measured NF arm loses",
+  "layer_check": "818bd6da9a4b4123",
+  "arms": [
+    "A",
+    "A2",
+    "B816",
+    "C1816"
+  ],
+  "gate": "TASK plus heldout six-load geomean lower95%>1; choose optional M1 by the layer result",
+  "integration": "Fused pool_router on existing layer stream. Gate/attention streams and all other producers unchanged. Rebase onto any newer admitted P4 base before final promotion."
+}

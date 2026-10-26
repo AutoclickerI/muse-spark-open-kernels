@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "candidate_sha256": "36b25b4bfe92e1dd3b8a5f3b6cc7146e5f9019b06bd4ac45b3ba6a93f6143a9a",
+  "payload_sha256": "d955b3b768f0bf3dc3318692873a9900e5972e929d61bc911c928f93bf0f9d9e",
+  "wrapper_sha256": "1a16c9877e17e289d21c9835d535868efb23bdf27486cc79dae0ca564bcd2512",
+  "wrapper_bytes": 334534,
+  "checks": {
+    "normal": {
+      "candidate_tests": 13,
+      "shapes": 12,
+      "static": 25,
+      "wrapper_tests": 13,
+      "paired_shapes": 12,
+      "paired_seeds": 16,
+      "task_checks": 768,
+      "wrapper_proof_sha256": "a0ad61bfc4a3a82d51437a387abcec894ffc7748ff3a5fadcd876220479f078d",
+      "paired_proof_sha256": "a96b681b444705e3a5f7d5760c40bf8e33a923c40e6e343877dbd4309874e4f4"
+    },
+    "forced": {
+      "candidate_tests": 13,
+      "shapes": 12,
+      "static": 25,
+      "wrapper_tests": 13,
+      "paired_shapes": 12,
+      "paired_seeds": 16,
+      "task_checks": 768,
+      "wrapper_proof_sha256": "9b75820101bba593600dbf35b483ebb091c6b7d2284cce10d498574fb39debbd",
+      "paired_proof_sha256": "9ea0b91782f39ba9218c2c1762d94ef161b6384e8cf2a1c03148d17093a31d9e"
+    }
+  },
+  "native": "3a9e555ad91fbef7a1d84cb308d37d402006bece81dcd35d56bf89bea553d812",
+  "gate": "TASK and heldout six-load geomean lower95%>1; B816 vs C1816 decides optional M1"
+}
