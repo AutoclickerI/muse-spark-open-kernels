@@ -1,0 +1,17 @@
+{
+  "pid": 479906,
+  "priority": 1.2,
+  "t": 1792977783.1940775,
+  "problem": "muse_moe_w4a16",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_nt1_ilp_vs_pair.py",
+  "sha256": "af7b4526022c8d75cfd96cd9b902c3f0e14dc168373f775a4c16f09ccfbd63ad",
+  "note": "h200_lab prof/lab/moe_nt1_ilp_vs_pair.py: P3a dd539517 response: ILP/S14 M16/M32 0.99041/0.99046 beyond95+A:A; exact ILP vs admitted PAIR plus S14 back,32 fresh seeds M8/16/32,TASK before/after,ABBA readflush,A:A mean+max,CUPTI. All32 seeds locally gated GPU0; exact patch b55c2970 handed to P4 for M16/M32; no additive or whole-layer gain assumed.",
+  "not_before": 0,
+  "payload": "prof/lab/moe_nt1_ilp_vs_pair.py",
+  "payload_sha256": "d1e40f35147230fa3f97b4cf778893db029451e23189c786b267678a3842ebd9",
+  "sender_log": "runs/detached/af7b4526022c8d75.log",
+  "judge_job": null,
+  "state": "waiting for judge slot; sender alive",
+  "trigger_receipt": "dd539517bc8344dd",
+  "decision": "ILP nominates M16/M32 only against S14. Direct PAIR comparison must be measured; no additive or whole-layer gain assumed."
+}

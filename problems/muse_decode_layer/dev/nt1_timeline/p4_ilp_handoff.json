@@ -1,0 +1,68 @@
+{
+  "arm": "ILP",
+  "job": "dd539517bc8344dd",
+  "receipt": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.json",
+  "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+  "candidate_sha256": "f71a020685ab1f33e91e2cf1694e951fa1fea716ddf5d3c480258fd68177468d",
+  "cell_path": "problems/muse_decode_layer/dev/nt1_timeline/pilp_cell.py",
+  "cell_sha256": "809bef8e6721f2ac7dd873349edca127cc9547c4f008e2adca1d707fa32efc1c",
+  "patch": "problems/muse_decode_layer/dev/nt1_timeline/pipe_s14_ilp.patch",
+  "patch_sha256": "b55c2970a7737c3708b0e5f251ab24b31ef1888bdae55f812c8e155d9eac230d",
+  "flag_map": {
+    "1": 95,
+    "8": 69,
+    "16": 69,
+    "32": 69
+  },
+  "measured_winner_M": [
+    16,
+    32
+  ],
+  "nominate_rows": [
+    [
+      16,
+      1,
+      true
+    ],
+    [
+      16,
+      1,
+      false
+    ],
+    [
+      32,
+      1,
+      true
+    ],
+    [
+      32,
+      1,
+      false
+    ]
+  ],
+  "M8": "not admitted; upper95+AA=1.000762",
+  "M1": "retain incumbent95",
+  "component_and_local_screens": {
+    "checks": 528,
+    "worst_task_l2": 0.0024374923668801785,
+    "max_rel_vs_inc": 0.00042559579014778137,
+    "forced_glue": 6,
+    "cell_sha256": "809bef8e6721f2ac7dd873349edca127cc9547c4f008e2adca1d707fa32efc1c"
+  },
+  "normal_forced_screens": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 25
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 25
+    }
+  },
+  "whole_layer_verified": false,
+  "comparison_to_PAIR_verified": false,
+  "policy": "P4 must restrict the nomination to M16/M32. The exact screened S14 source includes the general small-M driver; do not apply it globally as a measured winner.",
+  "next": "fresh-seed ILP/PAIR direct comparison with S14 back; combined ILP+PAIR is unmeasured"
+}

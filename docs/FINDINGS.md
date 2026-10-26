@@ -291,8 +291,42 @@ their subclocks cannot be added as isolated costs. SHF/PRMT cap8 dependent-probe
 Response sent immediately after classification: unchanged `prof/lab/moe_nt1_pipe_rebuild.py` `caa59593`,
 all four FLIGHT/ILP/K16/LUT arms,32 seeds/M, through `h200_lab.py` on MoE. Sender **4124752**, merged
 wrapper **`de47736b9f588673`** with waiting P3b round2 payload; `dev/nt1_timeline/followup_queue.json`
-tracks dispatch. The small ILP contrast motivates this full paired test; no individual pipe is proven
-to be the full-kernel bottleneck. Follow-up performance and PAIR's whole-layer effect remain unverified.
+tracks dispatch. The small ILP contrast motivated this full paired test; no individual pipe is proven
+to be the full-kernel bottleneck. Its measured outcome follows; PAIR's whole-layer effect remains unverified.
+
+### P3a four-arm rebuild receipt (2026-10-26)
+
+`dd539517bc8344dd`, wrapper `de47736b9f588673`, payload `caa59593`: official host passes all5
+correctness tests, with no flags. All32 seeds complete at M8/16/32, every arm's native TASK gates pass
+before/after (total .00238, worst row .00246), and the full merged output is retained. S14 A:A mean
+absolute drift is **.487/.316/.314 us**, about .667/.398/.282% of the ILP paired controls.
+Ratios below are candidate/S14 time; lower wins. Exact hash/control audit: `read_rebuild.py` and
+`dev/nt1_timeline/rebuild_results.json`.
+
+| Recipe | Ratio versus S14 at M8 / 16 / 32 | Mechanism / decision | Leaves open | Receipt job |
+|---|---|---|---|---|
+| FLIGHT, bulk L2 prefetch beyond2 raw slots | 1.07662 / 1.05285 / 1.03119; 0/32 wins each M | +5.617/+4.229/+3.502 us. Extra prefetch does not rescue the pipeline; close this exact schedule | Other lookahead distances, issuing agents and schedules that avoid competing with useful TMA work; no hardware counter identifies the regression | `dd539517bc8344dd` |
+| ILP, alternate2 MMA accumulator chains | **.99055 / .99041 / .99046**;26/30/30 wins of32 | -.680/-.765/-1.040 us. Upper95%+A:A =1.000762/.996981/.996081: nominate **M16/M32 only** to P4; close M8 as a claimed margin-safe gain | M8's small gain needs a stronger control; other chain/register schedules, combination with PAIR and the six-load whole-layer gain are unmeasured | `dd539517bc8344dd` |
+| K16/r64,16 warps/CTA and shared B cache | 1.20394 / 1.21153 / 1.23270;0/32 wins each M | +14.984/+16.942/+26.007 us despite measured2 CTAs/SM,64regs,16-byte local stack. Close exact partition/cache recipe | Other K partitions and occupancy layouts without this B-cache/epilogue cost; higher occupancy generally is not closed | `dd539517bc8344dd` |
+| LUT, fixed1KiB FP4-pair lookup, scale math unchanged | 1.59959 / 1.62315 / 1.67379;0/32 wins each M | +44.005/+49.545/+75.436 us,2 CTAs/SM,128regs. Close this exact code-pair table/layout; no measured saturated-port attribution | Other lossless code layouts and decoder instruction reductions without this table/packing/shared-service cost | `dd539517bc8344dd` |
+
+ILP's consumer nodes are67.083/72.868/104.667 us versus S14's67.652/73.791/105.861, consistent
+with a small kernel gain. Neither the static128-register ILP footprint nor the diagnostic microprobe
+identifies a unique physical bottleneck. The failed recipes do not close flight, occupancy or lookup
+methods in general. All4 arms are implemented and gated, so their losses are measured; the M8 ILP
+margin failure is inconclusive for promotion rather than proof of no gain.
+
+P4 handoff: `dev/nt1_timeline/pipe_s14_ilp.patch`, SHA256 `b55c2970a7737c3708b0e5f251ab24b31ef1888bdae55f812c8e155d9eac230d`,
+onto exact S14 `f1c77ce6`; screened candidate `f71a0206`, cell `809bef8e`. The patch preserves M1;
+P4 must restrict the **measured nomination to M16/M32**, retaining PAIR at M8 as the stronger existing
+stage result. `p4_ilp_handoff.json` pins full hashes, flags,4 affected sliding/full shapes and local
+normal/forced admission. No whole-layer gain or additive PAIR+ILP gain is claimed.
+
+Next sent: `prof/lab/moe_nt1_ilp_vs_pair.py` `d1e40f35`, sender**479906**, wrapper**`af7b4526022c8d75`**,
+on MoE at priority1.2. Direct ILP/PAIR comparison plus S14 back,32 fresh seeds/M,readflush ABBAx6,
+before/after TASK gates,A:A mean/max,CUPTI nodes. The exact payload passes all32 local seeds on GPU0,
+with unchanged admitted native cells; `ilp_vs_pair_validation.json` pins its1,725-character output.
+Its receipt and every whole-layer/composed gain remain unmeasured; `ilp_vs_pair_queue.json` tracks dispatch.
 
 ## MoE M=128
 

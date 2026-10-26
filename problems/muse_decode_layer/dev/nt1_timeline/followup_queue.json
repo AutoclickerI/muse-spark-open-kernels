@@ -11,8 +11,8 @@
   "payload_sha256": "caa595931a40c2d5eb3d9daf263d03284bb292fdce89bfdf1caf1264ab8bff92",
   "sender": 4124752,
   "sender_log": "runs/detached/de47736b9f588673.log",
-  "judge_job": null,
-  "state": "waiting for judge slot; sender alive",
+  "judge_job": "dd539517bc8344dd",
+  "state": "done; official passed; 32 seeds all arms; ILP nominated only at M16/32",
   "trigger_receipt": "16c180784f414576",
   "classified_arm": "ILP; small dependency contrast, full-kernel effect unmeasured",
   "merged_payload": "P3b round2 payload",
@@ -22,5 +22,15 @@
     "fits": true,
     "payload_count": 2,
     "payload_sha256_matches_local_screen": true
+  },
+  "receipt": "runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.json",
+  "nominated_M_by_arm": {
+    "FLIGHT": [],
+    "ILP": [
+      16,
+      32
+    ],
+    "K16": [],
+    "LUT": []
   }
 }

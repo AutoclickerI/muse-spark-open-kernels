@@ -2,6 +2,8 @@
 
 Exact control: S14 `f1c77ce6`, flags `{1:95,8:69,16:69,32:69}`.
 **PAIR is nominated to P4 at M8/16/32; no new whole-layer kernel is frozen.**
+**The four-arm follow-up is measured: ILP also nominates M16/M32 versus S14.** It has not yet beaten
+PAIR directly. FLIGHT, K16 and LUT lose; M8 ILP does not clear the stated uncertainty margin.
 The three reset runs are complete and audited. `read_reset.py` reproduces the receipt/hash,
 correctness, seed-count and A:A checks and writes `h200_results.json` and `h200_pipe.txt`.
 Ratios below are candidate time / control time; smaller wins. A:A is mean absolute drift,
@@ -38,16 +40,40 @@ P4 independently repaired that handling. `read_reset.py` verifies the current re
 chooses exactly `epi_PAIR` at the six shapes above; this lane did not edit P4's source.
 `h200_results.json` records its source hash and exact selection.
 
-## Follow-up sent
+## Four-arm follow-up: measured
 
 `prof/lab/moe_nt1_pipe_rebuild.py`, exact **`caa59593`**, was sent through `h200_lab.py` on
 `muse_moe_w4a16` at priority1.2. Sender **4124752**, merged wrapper **`de47736b9f588673`**,
-log `runs/detached/de47736b9f588673.log`; live metadata is in `followup_queue.json`.
+judge **`dd539517bc8344dd`**, receipt
+`runs/muse_moe_w4a16/20261026T010122Z_submit_dd539517bc8344dd.json`; metadata is in `followup_queue.json`.
 It shares the run with P3b's already-waiting round2 payload. All four FLIGHT / ILP / K16 / LUT arms
 remain packed together with exact S14, 32 seeds per M, ABBA read flush, A:A, before/after TASK gates,
 consumer nodes and unique-byte rates. The payload bytes match the existing local screen.
 The screened local output is3,014 characters, within the merged per-payload cap of4,500; the merge
-therefore preserves its complete controls and summaries. A local timing result remains local evidence; the follow-up receipt will determine kernel performance.
+preserved its complete controls and summaries. All32 H200 seeds complete and the official host passes,
+without flags. Every arm passes native TASK gates at .00238/.00246 total/worst row. S14 A:A mean
+absolute drift is **.487/.316/.314 us** at M8/16/32. `read_rebuild.py <receipt>` reproduces the
+hash/gate/completeness audit and `rebuild_results.json`.
+
+| Recipe | Ratio/S14 at M8 / 16 / 32 | Decision | Leaves open |
+|---|---|---|---|
+| FLIGHT | 1.07662 / 1.05285 / 1.03119;0/32 wins each | Close this bulk-L2-prefetch schedule | Other lookahead distances/issuing agents without competing with useful transfers |
+| ILP | .99055 / **.99041 / .99046**;26/30/30 wins of32 | M16/M32 nominate to P4; M8 does not clear margin | M8's small gain, other chain/register schedules, PAIR combination and whole-layer gain |
+| K16/r64 | 1.20394 / 1.21153 / 1.23270;0/32 wins each | Close this16-warp/shared-B-cache partition | Other K partitions/occupancy layouts without its cache and epilogue costs |
+| LUT | 1.59959 / 1.62315 / 1.67379;0/32 wins each | Close this1KiB FP4-pair-table layout | Other lossless encodings and decoder reductions without its shared-service cost |
+
+For ILP, `ratio + 1.96*SE + A:A/control_us` is **1.000762/.996981/.996081**.
+Consumer nodes are67.083/72.868/104.667 us versus S14's67.652/73.791/105.861, consistent with
+the small gain. ILP's128regs retain2 CTAs/SM; K16 also achieves2 CTAs with64regs/16-byte local stack.
+These are valid measured recipe comparisons, not a proof of which physical port causes each loss.
+M8 ILP is inconclusive for nomination, rather than proof of zero gain.
+
+Exact P4 handoff: **`pipe_s14_ilp.patch`**, full SHA256
+`b55c2970a7737c3708b0e5f251ab24b31ef1888bdae55f812c8e155d9eac230d`, onto S14 `f1c77ce6`.
+Candidate `f71a0206`, cell `809bef8e`; `p4_ilp_handoff.json` pins full hashes and existing normal/forced
+13-case/12-shape/25-static admission. Restrict the measured nomination to **M16/M32 sliding and full**;
+the screened source has a general small-M driver, so applying it to every M would overstate the evidence.
+Retain original M1 flags95. PAIR remains the stronger already-measured stage result at M8.
 
 The trigger is the small shared-math ILP contrast at identical 2-CTA/16-active-warp residency.
 Work-normalized ratios are .98973 / .98177 / .98275. No saturated operational pipe is established.
@@ -57,10 +83,19 @@ the diagnostic does not nominate them as fixes. More copy depth and 32 active wa
 matched work. Cold/hot math differs, but depth and Little's-law contrasts do not isolate insufficient
 flight. Integer/PRMT saturation is not demonstrated. See [PIPE.md](PIPE.md) for the measurements.
 
-After the follow-up receipt: require all32 seeds, every arm's native gate and valid S14/A:A controls.
-Nominate only a margin-safe paired winner to P4; a failed/unproven arm is unmeasured. Compare any new
-winner with PAIR in the whole layer rather than assuming the gains add. The combined payload currently
-compares rebuilds with S14, not PAIR. A loss closes only that exact tested recipe.
+## Next comparison sent
+
+`prof/lab/moe_nt1_ilp_vs_pair.py` **`d1e40f35`**, sender **479906**, wrapper **`af7b4526022c8d75`**,
+on MoE at priority1.2, compares exact ILP directly with admitted PAIR plus S14 back.32 fresh
+weight/router seeds at M8/16/32, ABBA read flush, before/after TASK gates, A:A mean/max and consumer nodes.
+`ilp_vs_pair_queue.json` tracks its judge job; log `runs/detached/af7b4526022c8d75.log`.
+The exact payload passed all32 seeds locally on GPU0; `ilp_vs_pair_validation.json` pins its SHA,
+gates and1,725-character output. Native cells are byte-identical to their existing admitted screens.
+`build_pair_comparison.py ILP -o <payload>` reproduces it. No new kernel or widened weight format is added.
+
+Select from that receipt only with complete seeds, valid native gates and A:A controls. A stage winner
+still needs P4's held-out six-load whole-layer pair. ILP+PAIR composition is unmeasured; their gains
+must not be added by assumption. A loss closes only the exact tested recipe.
 
 ## Implementation evidence and reproduction
 

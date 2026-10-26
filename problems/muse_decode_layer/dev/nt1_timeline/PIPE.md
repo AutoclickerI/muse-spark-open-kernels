@@ -22,6 +22,15 @@ The ILP contrast triggered the already-prepared four-arm paired lab, sender41247
 packed batch but are not identified fixes; no rebuilt kernel is promoted. PAIR's separate epilogue
 receipts nominate it to P4; TREE adds no gain. Whole-kernel and whole-layer controls still decide.
 
+That full-kernel follow-up is now measured: **`dd539517bc8344dd`**,32 seeds/M,all native/official gates pass.
+FLIGHT/S14 is1.07662/1.05285/1.03119; K16 is1.20394/1.21153/1.23270; LUT is1.59959/1.62315/1.67379.
+Close those exact recipes, leaving other issuing schedules, K/occupancy layouts and lossless decoder
+methods open. ILP/S14 is .99055/.99041/.99046; A:A .487/.316/.314us. Its upper95%+A:A is
+1.000762/.996981/.996081, so **M16/M32 only** nominate to P4. This confirms a small dependency lever
+in the full kernel; it does not establish one dominant hardware pipe. M8's gain is inconclusive.
+`pipe_s14_ilp.patch` is the exact admitted patch. Fresh-seed direct ILP/PAIR comparison is queued as
+sender479906, wrapper`af7b4526022c8d75`; whole-layer and combined ILP+PAIR gains remain unmeasured.
+
 The earlier58.7 us math/activation clock is ONCE, not S14. Counts28.56/34.30/45.43 per unique group
 are S14's repeated-block model. They must not be compared as the same schedule. The new lab measures
 matched S14 math/B-fill clocks and ONCE-style gathered-activation contrasts.
@@ -141,7 +150,7 @@ in one run,32 seeds/M, ABBA read flush, A:A and consumer node rates. It passed e
 all32 seeds; K16's local stand-in recorded192 ABI calls. The small independent-chain contrast is the
 classified ILP lead; full-kernel measurement must establish whether that lead survives. Other arms are
 packed comparisons, not claimed solutions. `pipe_rebuild_validation.json` pins the unchanged payload;
-`followup_queue.json` is the current send record. No measured rebuilt-kernel result exists yet.
+`followup_queue.json` records completed job`dd539517bc8344dd`; the measured outcome is above.
 
 The K16 shared cache makes the two-stage kernel110,736 dynamic bytes atM32: it fits two228KiB H200
 CTAs, but exceeds local sm120's per-block capacity. The explicit test-only `k16_standin.py` runs native
