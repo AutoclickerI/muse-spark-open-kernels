@@ -43,7 +43,7 @@ capacity while concurrent local screens held the memory. No kernel/checker was
 changed: rerun the identical screens with fewer owned concurrent allocations.
 See local_resource_failure.json and candidate_resource_failure.json.
 
-Control qualification: d1 is **unmeasured** in both reset audit recipes because every A:A seed ratio exceeds1. Its point estimates do not establish a d1 gain or loss. The fresh confirmation retests d1; no whole-composition promotion is claimed from the frozen reset summaries.
+Control qualification after R-20261026-1: d1 has directional A:A drift in both reset audits. Retain its point estimates with that uncertainty; this is not a per-load nomination veto. P4 confirms the paired held-out six-load R. The frozen summaries cannot supply its confidence bound.
 
 Final admission: C passes143/143 scored/nearby/official fixtures eagerly and after two graph replays in both modes,25/25 full-source static checks each. Exact wrapper7127261f passes1,440 TASK gates,13 official host tests and2 static checks per mode. Native combined VDSK has one release before all loads, a dependent-only wait,94/90 registers at qkv/pool and zero local memory. **Queued sender760641**, decode check priority5.5, not-before1792972800. `admission.json`, `native_compile.json`, `queue.json` retain the evidence.
 

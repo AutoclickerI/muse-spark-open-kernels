@@ -1,5 +1,5 @@
 {
-  "status": "Nominate whole guarded S15n to P4 now; unchanged scored dispatch, native TASK receipt pending",
+  "status": "Whole guarded S15n nominated:268/268 native TASK checks pass at67shapes; P4 composes and confirms final six-load R.",
   "job": "a793c99eb9d447df",
   "candidate_sha256": "9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8",
   "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
@@ -7,6 +7,10 @@
   "patch_sha256": "792eacc392e557f2bfc2fdd1350e27ae0db5bf80a63f37e653c99cbf6d830efb",
   "same65_dispatch_as_measured": true,
   "native_validation_sender": 1096763,
-  "decision": "Require native TASK/cache/graph correctness before integrating range dispatch; scored dispatch unchanged.",
-  "point_estimate_rule": "No per-load/A:A veto for nomination; P4 composes and applies held-out six-load R gate."
+  "decision": "Integrate whole guarded range lookup with scored dispatch unchanged; native TASK/cache/replay pass. P4 confirms final composition under held-out R.",
+  "point_estimate_rule": "No per-load/A:A veto for nomination; P4 composes and applies held-out six-load R gate.",
+  "native_validation_job": "c03a3ae8ddfd490d",
+  "native_TASK_checks": 268,
+  "native_shapes": 67,
+  "native_seeds": 2
 }

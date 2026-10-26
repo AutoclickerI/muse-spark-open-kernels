@@ -2,7 +2,7 @@
 
 All patches apply onto exact S15 `60254883`. No per-load or A:A clearance is required for nomination; P4 composes the shape choices and applies the held-out six-load R lower-confidence gate. TASK.md is the only correctness criterion.
 
-Whole guarded S15n9cc90d2e is nominated now, patch792eacc3 in `muse_decode_layer/dev/nearby/native_validation/s15n_guarded.patch`. Its scored dispatch is identical; nearby/scored speedups improve. Native correctness sender1096763 remains a pending proof, not a performance veto.
+Whole guarded S15n9cc90d2e is nominated now, patch792eacc3 in `muse_decode_layer/dev/nearby/native_validation/s15n_guarded.patch`. Its scored dispatch is identical; nearby/scored speedups improve. Native correctness passed as jobc03a3ae8ddfd490d:268/268 TASK checks,67shapes, including B64/B65.
 
 Changes from the earlier handoff: O256 is included; small-M release cells at d16S/d32S/d32F are included despite tiny gains; pure VDSK qkv remains nominated at v16 despite its misleading source-wide aggregate. No unpool128/v1full/v32slide cell has a point improvement, so those exact verdicts remain losses. Both reset softmax batches have no changed arm below1 at either target shape.
 
@@ -29,3 +29,5 @@ Changes from the earlier handoff: O256 is included; small-M release cells at d16
 | o | 32x8f | 0.998190 | 0.002977/0.002994 |8|
 
 Per-shape SE and paired piece SE were not retained by the frozen receipts. The displayed SE belongs to the full/off load mean, not the cell ratio. `P4_HANDOFF.json` preserves that distinction, receipt IDs, exact patch hashes and candidate hashes. Do not infer a promotion confidence bound from these summaries.
+
+The former automatic d1 veto from directional A:A drift is removed from nomination. The drift and original seed ranges remain reported; the missing joint seed covariance still prevents an exact promotion CI. This changes selection policy, not the observed timing evidence.

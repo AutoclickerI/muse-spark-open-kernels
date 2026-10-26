@@ -164,4 +164,4 @@ The frozen payload omitted joint per-seed timings; its inverse geomean of mean r
 
 The combined follow-up lives in [../pdl_release/confirmation/README.md](../pdl_release/confirmation/README.md): fifteen arms, eight held-out seeds, all12 shapes/six loads,1,440 actual TASK gates and per-seed weighted load times. It isolates each nominated producer/library edit and their interactions; the score gate is the six-load geomean R lower confidence bound above1. Exact patches target frozen S15 60254883. `reset_result.json` preserves the original receipt and all arm statistics.
 
-Control qualification: d1 is **unmeasured** in both reset audit recipes because every A:A seed ratio exceeds1. Its point estimates do not establish a d1 gain or loss. The fresh confirmation retests d1; no whole-composition promotion is claimed from the frozen reset summaries.
+Control qualification after R-20261026-1: d1 has directional A:A drift in both reset audits. Retain its point estimates with that uncertainty; this is not a per-load nomination veto. P4 confirms the paired held-out six-load R. The frozen summaries cannot supply its confidence bound.

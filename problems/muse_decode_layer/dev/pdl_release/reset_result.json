@@ -563,7 +563,7 @@
       "unity_inside_seed_range": true
     }
   },
-  "unmeasured_loads_due_to_control_drift": [
+  "control_drift_loads": [
     "1x1"
   ],
   "paired_six_load_score": {},
@@ -576,5 +576,6 @@
     "16x8",
     "32x8"
   ],
-  "measured": false
+  "nomination_policy": "Control drift is reported, not a per-load nomination veto. P4 confirms held-out six-load R; a genuinely failed implementation/duplicate control remains unmeasured.",
+  "measured": true
 }

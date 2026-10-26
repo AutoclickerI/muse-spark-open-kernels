@@ -116,7 +116,7 @@ Lt choices, lossless codes and counters; identical Triton functions and compiled
 are shared. This avoids a second tuner and isolates dispatch. Both kernels still derive
 all outputs from each live input. The public input generator and baseline are inlined;
 no reference imports are shipped. Schema/finite checks are diagnostics; the independent
-TASK gates above establish local correctness. Native H200 performance remains pending.
+TASK gates above establish local correctness; native timing and TASK validation are recorded below.
 
 Both exact wrapper screens pass65 shapes×2 seeds×8 replays,13 official host tests and
 2 wrapper static checks per mode. Local payload elapsed80.05s normal /60.60s forced;
@@ -126,7 +126,7 @@ Reproduce: run `build_s15n.py`, then `screen.py --candidate problems/muse_decode
 and the same with `--forced` in `CUDA_VISIBLE_DEVICES=0 tools/img python ...`.
 Run `build.py`, `h200_lab.py build ...` and `screen_lab.py` / `--forced` for the exact lab.
 After its native receipt lands, `read.py <receipt.json>` prints paired S15n/S15 and
-SGLang-relative times. P4's performance criterion remains open until that receipt.
+SGLang-relative times. The native timing and correctness receipts are recorded below; P4 confirms the composed candidate under G0.
 
 ## Current reset identity
 
@@ -134,7 +134,7 @@ The unsent original lacked a top-level AST `kernel_fn`. P4 repaired only the ent
 
 Repaired wrapper e5a7d14f restored as sender **587925**, priority4.9, same reset gate and full prepare budget; accepted as **a793c99eb9d447df**. h200_lab automatically absorbed89627 into an unsent combined wrapper; only that new owned sender579268 was retired. `reset_restored_queue.json` records the restored exact wrapper.
 
-`speedup_report.py <receipt> --out reset_result.json` reports every load’s nearby/scored SGLang-relative speedup; groups use the nearest scored B with ties toward smaller B, retaining all53 nearby cases. The native TASK follow-up is ready in `native_validation/`: guarded S15n9cc90d2e vs S15,67shapes,268checks per mode. Send if the timing/control result supports retaining a range path; no promotion before native TASK validation. The B<=64 guard fixes NSMAX capacity beyond the65 timed cases. `native_validation/s15n_guarded.patch` applies onto exact S15 60254883.
+`speedup_report.py <receipt> --out reset_result.json` reports every load’s nearby/scored SGLang-relative speedup; groups use the nearest scored B with ties toward smaller B, retaining all53 nearby cases. The native TASK follow-up is ready in `native_validation/`: guarded S15n9cc90d2e vs S15,67shapes,268checks per mode. Native TASK validation passed as c03a3ae8ddfd490d; P4 receives the whole guarded patch. The B<=64 guard fixes NSMAX capacity beyond the65 timed cases. `native_validation/s15n_guarded.patch` applies onto exact S15 60254883.
 
 ## Native timing receipt and decision
 
@@ -151,6 +151,8 @@ Job **a793c99eb9d447df**, complete65shapes,2seeds×8coldreplays, SGLang availabl
 
 All53 nearby cases are included in the diagnostic aggregation, grouped by nearest scored batch at the same q_len;46/16 layer weighting is retained. This is not the official score. Identical-dispatch scored S15n/S15 seed ranges by load are .97794–1.03416/.99554–1.00231/.99239–.99919/.99428–1.00065/.99491–1.00196/1.00054–1.00283. There is no independently captured A:A arm; d32 and v32 controls have small directional drift. Large nearby gains exceed that drift; scored dispatch is identical, so no scored speed claim is made.
 
-Decision: range dispatch repairs substantial nearby cliffs, especially verify24/31/33 and decode2/24/48. Guarded S15n9cc90d2e keeps every timed case identical to the measured ebceda91, with the B<=64 native N128 capacity guard. Send native TASK validation now, then nominate the exact guarded patch to P4 only on native TASK/cache/replay pass. The timing recipe is measured; correctness remains unproven until that receipt. No arbitrary quantitative reviewer cutoff is assumed.
+Decision: range dispatch repairs substantial nearby cliffs, especially verify24/31/33 and decode2/24/48. Guarded S15n9cc90d2e keeps every timed case identical to the measured ebceda91, with the B<=64 native N128 capacity guard. Native TASK/cache/replay validation passed; the whole guarded patch is nominated to P4. No arbitrary quantitative reviewer cutoff is assumed.
 
-Native validation queued on attention as **sender1096763**, wrapper2ba5fcff, priority4, not-before1792972800; `native_validation/queue.json`. Exact patch and pending gate are indexed in `P4_HANDOFF.json`.
+Native validation queued on attention as **sender1096763**, wrapper2ba5fcff, priority4, not-before1792972800; `native_validation/queue.json`. Exact patch and passed native gate are indexed in `P4_HANDOFF.json`.
+
+Native correctness landed: **c03a3ae8ddfd490d**,67shapes×2seeds×2arms,268/268 public TASK checks pass after captured replays, including B64/B65 capacity. No errors/failures;267.69s private validation. `native_validation/result.json` preserves all records. Whole guarded S15n9cc90d2e is now handed to P4 with native correctness proof; scored dispatch remains identical, nearby timing is a793c99e.
