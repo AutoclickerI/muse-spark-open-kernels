@@ -1108,6 +1108,55 @@ Recipe ratios are candidate/control (lower is faster), except the explicitly lab
 | P10 fused pool whole-layer C1816 | layer speedup 1.0118260 [1.0103668,1.0132851] | NF original12-bit WR1/WK8/S1/ST1 replaces only pool_router at selected T; gate concurrency and fused route/norm retained | Lower95>1, 768/768 independent TASK checks. C1816 nominated to P4; rebase and official verification required. Outer unchanged S15 host prepare separately failed router autotune. | 818bd6da9a4b4123 |
 <!-- P10/P12 measurements end -->
 
+### P10 leader-gap decomposition and coded QKV dispatch
+
+Evidence/code: `problems/muse_bf16_proj/dev/stream_gap/README.md`, `decomposition.csv`,
+`followup_results.json`, `qkv_results.json`; P4 delivery: `P4_HANDOFF.json` and `patch_qkv.py`.
+The component leader's 1.36125 time advantage (`08cc9405`) is an aggregate; its per-shape times and code
+are private. It is not a measured layer advantage. The decomposition identifies our costs, not that team's
+exact algorithm.
+
+`2015fc90abf94e14`: 30 shapes,8 activation seeds,A:A. Complete one-pass weight representations are
+1.50–1.57 B/W at already-coded small QKV/O/unpool sites,2 B/W at raw BF16 sites,4 B/original FP32 router
+weight (two BF16 banks). Physical DRAM bytes remain unmeasured; bank sizes exclude repeated CTA requests,
+cache transactions and activation/output traffic. The report lists each shape's bank bytes, producer useful
+TB/s versus4.58/4.8, and captured launch counts. Its checksum-verified stream fits4.614 TB/s marginally
+with2.876us intercept (32–128MiB); max end-to-end4.203 TB/s. NOP graphs fit.519us/additional launch,
+first launch.944us. The stream intercept is not all launch cost.
+
+The same receipt isolates generic FP32+cast versus direct BF16:1.22–1.79us output-boundary cost. Most
+small component shapes have2 nodes; large router3; direct outputs/router use1. These wins mostly do not
+transfer to the layer's FP32 fused consumers. Generic coded QKV loses1.039–1.154 and unpool1.060–1.249;
+pool/router component wins need the actual fused N4608 neighbour. M1 timing here is one-hot only;
+optimistic same-receipt component point-selection1.10711 has no joint-sample CI and is not promotion.
+
+`646822ab3d164be8`:16 random activation/residual seeds,8 cold rounds,A:A,all joint samples retained.
+O1 last-CTA residual/two-norm fusion loses:WR4/2/1 ratios1.60265[1.58809,1.61735] /
+1.97132[1.95408,1.98872] /2.94660[2.92724,2.96608], versus the same NF O1+cluster boundary.
+All20 large-M full-token/split-K arms lose with their actual route/norm or residual/norm neighbours:
+M1281.102–1.701,M2561.521–3.734. Builds use73.8–98.3KB shared,90–190regs,zero spills; the exact
+resource causing the loss is not isolated. These close the tested schedules, not coding/reuse generally.
+
+`2b45988c88fb42a5`: exact12 QKV,24 arms across4 shapes,16 fresh random activation seeds,8 cold rounds,
+independent A:A and separate published TASK one-hot checks; all pass. S4/WK4,one pipeline stage wins;
+S1/S2 lose despite identical precision. Ratios are candidate/control time;95% intervals use paired log
+ratios and t15. These are stage selection, not G0 confirmation.
+
+| Shape | Ratio [95% CI] | A:A [95% CI] | P4 |
+|---|---|---|---|
+| M8 full QKV | .905404 [.897972,.912897] | 1.000580 [.991067,1.010184] | selected |
+| M16 full QKV | .931355 [.922068,.940737] | 1.005548 [.997452,1.013709] | selected |
+| M16 QKV3 | .917619 [.910580,.924713] | .996334 [.987218,1.005535] | selected |
+| M8 QKV3 | .896534 [.888875,.904259] | .984575 [.975835,.993394] | diagnostic; current M8 uses full QKV |
+
+The selected banks total1.51660 B/W including escape metadata (24.17% below raw BF16). The P4 patch
+builds only3 selected instances/two banks; preserves QKV3/gate concurrency,FP32 partial ABI,PDL and all
+neighbours. It applies to shipped S18e04635ec asf9e4661d. Exact selected Hopper builds pass with zero
+spills. Current-base local layer TASK validation is recorded in the handoff; Hopper-only DSM uses a local
+CTA-reduction stand-in,not local timing evidence. P4 must confirm held-out six-load R lower95%>1;
+no new layer ratio is established here. Server size/AST admission rejections created no jobs; the accepted
+856393-byte wrapper uses the unchanged measured host in compressed form with explicit entry points.
+
 ## Glue and routing
 
 Current t<=32: DSM cluster of 8 CTAs/token x 256 threads with PDL; row slices reduce norms,

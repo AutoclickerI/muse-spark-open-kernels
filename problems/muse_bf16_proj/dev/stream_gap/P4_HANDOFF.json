@@ -1,0 +1,246 @@
+{
+  "lane": "P10",
+  "status": "Ready for P4: stage winners H200-measured, current S18 integration passes normal+forced local TASK/graphs; G0 unmeasured",
+  "directory": "problems/muse_bf16_proj/dev/stream_gap",
+  "report": "README.md",
+  "decomposition": "decomposition.json",
+  "receipts": {
+    "component_gap": "08cc94050a4e4564",
+    "bytes_stream_launch_cast": "2015fc90abf94e14",
+    "O1_fusion_and_large_M_reuse": "646822ab3d164be8",
+    "QKV_dispatch": "2b45988c88fb42a5"
+  },
+  "candidates": [
+    {
+      "t": 8,
+      "role": "qkv_gate",
+      "arm": 4,
+      "cfg": [
+        4,
+        4,
+        1
+      ],
+      "ratio": [
+        0.9054036973534036,
+        0.8979716942358967,
+        0.9128972109513558
+      ],
+      "mean_us": 11.834000091766939,
+      "weight_bytes": 28624896,
+      "active_in_current_layer": true,
+      "selected_for_patch": true
+    },
+    {
+      "t": 8,
+      "role": "qkv_gate",
+      "arm": 5,
+      "cfg": [
+        4,
+        4,
+        2
+      ],
+      "ratio": [
+        0.941739568169769,
+        0.932114596250644,
+        0.9514639271007664
+      ],
+      "mean_us": 12.309000157983974,
+      "weight_bytes": 28624896,
+      "active_in_current_layer": true,
+      "selected_for_patch": false
+    },
+    {
+      "t": 8,
+      "role": "qkv3",
+      "arm": 4,
+      "cfg": [
+        4,
+        4,
+        1
+      ],
+      "ratio": [
+        0.8965337709217684,
+        0.8888748637982976,
+        0.9042586703020968
+      ],
+      "mean_us": 10.06200016126968,
+      "weight_bytes": 15902720,
+      "active_in_current_layer": false,
+      "selected_for_patch": false
+    },
+    {
+      "t": 8,
+      "role": "qkv3",
+      "arm": 5,
+      "cfg": [
+        4,
+        4,
+        2
+      ],
+      "ratio": [
+        0.8982685390476457,
+        0.8935506157588855,
+        0.9030113728448493
+      ],
+      "mean_us": 10.08100010221824,
+      "weight_bytes": 15902720,
+      "active_in_current_layer": false,
+      "selected_for_patch": false
+    },
+    {
+      "t": 16,
+      "role": "qkv_gate",
+      "arm": 4,
+      "cfg": [
+        4,
+        4,
+        1
+      ],
+      "ratio": [
+        0.931355397411314,
+        0.9220677842967268,
+        0.9407365608687669
+      ],
+      "mean_us": 12.39400019403547,
+      "weight_bytes": 28624896,
+      "active_in_current_layer": true,
+      "selected_for_patch": true
+    },
+    {
+      "t": 16,
+      "role": "qkv_gate",
+      "arm": 5,
+      "cfg": [
+        4,
+        4,
+        2
+      ],
+      "ratio": [
+        0.9783164935130746,
+        0.9685632305118438,
+        0.9881679701736459
+      ],
+      "mean_us": 13.01900000544265,
+      "weight_bytes": 28624896,
+      "active_in_current_layer": true,
+      "selected_for_patch": false
+    },
+    {
+      "t": 16,
+      "role": "qkv3",
+      "arm": 4,
+      "cfg": [
+        4,
+        4,
+        1
+      ],
+      "ratio": [
+        0.9176194394333355,
+        0.9105801195794166,
+        0.9247131773696837
+      ],
+      "mean_us": 10.420000151498243,
+      "weight_bytes": 15902720,
+      "active_in_current_layer": true,
+      "selected_for_patch": true
+    },
+    {
+      "t": 16,
+      "role": "qkv3",
+      "arm": 5,
+      "cfg": [
+        4,
+        4,
+        2
+      ],
+      "ratio": [
+        0.9291326111722236,
+        0.9199511834080266,
+        0.9384056727288538
+      ],
+      "mean_us": 10.551000130362809,
+      "weight_bytes": 15902720,
+      "active_in_current_layer": true,
+      "selected_for_patch": false
+    }
+  ],
+  "excluded": [
+    "Generic direct-BF16 component output wins: the layer consumes FP32 partials; no unmeasured cast saving is transferable",
+    "Standalone exact hi/lo router wins: the layer fuses pool+router hi+lo as N4608",
+    "All O1 last-CTA fusion and 20 large-M full-token/split-K recipes lose with their actual neighbours",
+    "Small-M pool dispatch already handed off and present in S17/S18; not a new nomination"
+  ],
+  "preserve": [
+    "QKV3/gate split and gate/attention concurrency",
+    "FP32 partial projection ABI and PDL dependencies",
+    "fused N4608 pool/router and its original FP32 hi/lo router precision",
+    "BF16 activation and original lossless exponent tables/escapes"
+  ],
+  "G0": {
+    "status": "unmeasured",
+    "R": null,
+    "CI95": null,
+    "required": "P4 current-base TASK-correct paired held-out six-load R=exp(mean(log((46*t_old_sliding+16*t_old_full)/(46*t_new_sliding+16*t_new_full)))); lower95>1; no per-load veto"
+  },
+  "unverified": [
+    "Leader private implementation and per-shape times",
+    "Physical DRAM bytes: decomposition contains one-pass bank bytes and useful throughput, not hardware counters",
+    "Whole-layer ratio for any new QKV point selected by this batch",
+    "Additional untimed H200 prepare cost on current P4 base; patch compiles only three selected instances"
+  ],
+  "stage_recipe": {
+    "payload_sha256": "c85c80e918289d8e38ad44e9f88de2ef2c63fc56b28f46444e576619263812f2",
+    "receipt": "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.json",
+    "source_sha256": "14e7b8c5809176de30c4fdb49563e0337a2edb787f2bc988474c45030ae57a12",
+    "weight_seed": 781273,
+    "activation_seeds": [
+      90389,
+      21191,
+      47309,
+      65827,
+      10253,
+      85703,
+      32783,
+      71429,
+      54367,
+      16693,
+      98627,
+      40237,
+      63487,
+      28279,
+      77617,
+      11939
+    ],
+    "rounds": 8,
+    "arms": 24,
+    "checker": "published projection reference/checks functions copied verbatim for diagnostics; random inputs and one-hot probes checked separately"
+  },
+  "integration": {
+    "patch": "patch_qkv.py",
+    "command": "python3 problems/muse_bf16_proj/dev/stream_gap/patch_qkv.py problems/muse_decode_layer/cand_r3_best7_s18_95df42fe7b3a.py problems/muse_bf16_proj/dev/stream_gap/layer_qkv_candidate.py",
+    "base_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+    "candidate_sha256": "f9e4661df7ba3c83673c926912b3a30a3878f8e5c1b6a3e43a36c43685b4bfeb",
+    "selected": [
+      [
+        8,
+        "qkv_gate",
+        4
+      ],
+      [
+        16,
+        "qkv_gate",
+        4
+      ],
+      [
+        16,
+        "qkv3",
+        4
+      ]
+    ],
+    "prepare": "only three selected template instances and two exact coded banks; originals retained for nearby shapes",
+    "runtime": "same FP32 (partial,1) output; original consumers and gate stream unchanged",
+    "native_validation": "layer_qkv_native.json",
+    "local_validation": "layer_qkv_admission.json",
+    "patch_sha256": "4d48e3d517269c04ecbfac81285120e79ba16e8351f0e156af3785dc9431e32d"
+  }
+}

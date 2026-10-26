@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "base_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+  "candidate_sha256": "f9e4661df7ba3c83673c926912b3a30a3878f8e5c1b6a3e43a36c43685b4bfeb",
+  "patch_sha256": "4d48e3d517269c04ecbfac81285120e79ba16e8351f0e156af3785dc9431e32d",
+  "checks": {
+    "normal": {
+      "tests": 13,
+      "shapes": 12,
+      "changed_calls": {
+        "(16, 2304, 4)": 6,
+        "(8, 2304, 4)": 9,
+        "(16, 1280, 4)": 4
+      },
+      "prepare_s": 32.08457722503226
+    },
+    "forced": {
+      "tests": 13,
+      "shapes": 12,
+      "changed_calls": {
+        "(16, 2304, 4)": 6,
+        "(8, 2304, 4)": 9,
+        "(16, 1280, 4)": 4
+      },
+      "prepare_s": 79.48659416998271
+    }
+  },
+  "native_units": 3,
+  "spills": 0,
+  "standins": "P4 S18 local screen for existing Hopper branches; new DSM replaced by same decoder/MMA with CTA-local K reduction",
+  "unverified": [
+    "native whole-layer timing and held-out G0 R",
+    "additional H200 prepare time on P4 base"
+  ]
+}

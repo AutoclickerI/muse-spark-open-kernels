@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "source_sha256": "36c59b4b5396fb0d4fc3cd3c01015a4ff37880c40c2660dc219b3b48d868fa42",
+  "o1_full_layer_sha256": "db63a5c4638e9e4a9c6a4884131615dc0d9f71f77fe85f1e7cb9aa7af9b5cc05",
+  "payload_sha256": "30a1d305bafb1b5e1be71886c607b04491f89221f65be9a9dca03f3dae87709c",
+  "checks": {
+    "o1_normal": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 25,
+      "inputs": 3,
+      "arms": {
+        "4": 11,
+        "2": 11,
+        "1": 11
+      }
+    },
+    "reuse_normal": {
+      "tests": 9,
+      "shapes": 30,
+      "static": 25,
+      "inputs": 3,
+      "arms": {
+        "(128, 'qkv_gate', 0)": 4,
+        "(128, 'qkv_gate', 1)": 4,
+        "(128, 'o', 0)": 4,
+        "(128, 'o', 1)": 4,
+        "(128, 'pooler', 0)": 4,
+        "(128, 'pooler', 1)": 4,
+        "(128, 'unpooler', 0)": 4,
+        "(128, 'unpooler', 1)": 4,
+        "(256, 'qkv_gate', 0)": 4,
+        "(256, 'qkv_gate', 1)": 4,
+        "(256, 'qkv_gate', 2)": 4,
+        "(256, 'o', 0)": 4,
+        "(256, 'o', 1)": 4,
+        "(256, 'o', 2)": 4,
+        "(256, 'pooler', 0)": 4,
+        "(256, 'pooler', 1)": 4,
+        "(256, 'pooler', 2)": 4,
+        "(256, 'unpooler', 0)": 4,
+        "(256, 'unpooler', 1)": 4,
+        "(256, 'unpooler', 2)": 4
+      }
+    },
+    "o1_forced": {
+      "tests": 13,
+      "shapes": 12,
+      "static": 25,
+      "inputs": 3,
+      "arms": {
+        "4": 11,
+        "2": 11,
+        "1": 11
+      }
+    },
+    "reuse_forced": {
+      "tests": 9,
+      "shapes": 30,
+      "static": 25,
+      "inputs": 3,
+      "arms": {
+        "(128, 'qkv_gate', 0)": 4,
+        "(128, 'qkv_gate', 1)": 4,
+        "(128, 'o', 0)": 4,
+        "(128, 'o', 1)": 4,
+        "(128, 'pooler', 0)": 4,
+        "(128, 'pooler', 1)": 4,
+        "(128, 'unpooler', 0)": 4,
+        "(128, 'unpooler', 1)": 4,
+        "(256, 'qkv_gate', 0)": 4,
+        "(256, 'qkv_gate', 1)": 4,
+        "(256, 'qkv_gate', 2)": 4,
+        "(256, 'o', 0)": 4,
+        "(256, 'o', 1)": 4,
+        "(256, 'o', 2)": 4,
+        "(256, 'pooler', 0)": 4,
+        "(256, 'pooler', 1)": 4,
+        "(256, 'pooler', 2)": 4,
+        "(256, 'unpooler', 0)": 4,
+        "(256, 'unpooler', 1)": 4,
+        "(256, 'unpooler', 2)": 4
+      }
+    }
+  },
+  "native_units": 21,
+  "spills": 0,
+  "stage_arms": 23,
+  "seeds": 16,
+  "log_chars": 7866
+}

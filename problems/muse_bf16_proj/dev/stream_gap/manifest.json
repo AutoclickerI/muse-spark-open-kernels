@@ -1,0 +1,22 @@
+{
+  "source_sha256": "ec0ed158d30430cc3e4bf49ef852cd318306c1d137011e26d2bc71e996069eec",
+  "bytes": 934622,
+  "base_sha256": "2d5caebc4df2175c1aa22bfb7fde60ac42893145820d64d24f5b63cdf070a781",
+  "router_sha256": "d37a682b91c70e748abe6121bf8281bca7a1ecc263c4bbb0e4072e3ab0f614a6",
+  "upstream": "NathenFernandes/muse-bf16-proj@86aff75",
+  "expanded_source_sha256": "5365dc731590f16e56cfd834f92d5a142eaa085e6ffe9240854151b1fdaa6a11",
+  "router_definitions": [
+    "rt2_ROUTER_CONFIGS",
+    "rt2_ROUTER_CPP",
+    "rt2_ROUTER_CUDA",
+    "rt2_ROUTER_SCALAR",
+    "rt2_ROUTER_SMALL",
+    "rt2_build_router",
+    "rt2_mma",
+    "rt2_pack_router",
+    "rt2_pack_small_router",
+    "rt2_prepare_candidates",
+    "rt2_run_candidate",
+    "rt2_run_small_candidate"
+  ]
+}

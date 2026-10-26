@@ -1,0 +1,352 @@
+{
+  "candidate_sha256": "36c59b4b5396fb0d4fc3cd3c01015a4ff37880c40c2660dc219b3b48d868fa42",
+  "rows": [
+    {
+      "name": "o1_fused",
+      "source_sha256": "50cee83bab3163222e212b2447accc0630ee2bf58d45b0ba38bf06c29e3c900c",
+      "passed": true,
+      "registers": [
+        64,
+        59,
+        57
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "name": "reuse_128_2304_8192_64_3",
+      "passed": true,
+      "shared": 73752,
+      "registers": [
+        106
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "1c51ba31162a238f3262bc9b2cd300df12940f339fc8e000761e7465114d6d88"
+    },
+    {
+      "name": "reuse_128_2304_8192_128_3",
+      "passed": true,
+      "shared": 98328,
+      "registers": [
+        94
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "8c22059f475904abb3a439f1b17f5a4ed091eac01c73c6bb7ba286e93985735f"
+    },
+    {
+      "name": "reuse_128_8192_1024_64_3",
+      "passed": true,
+      "shared": 73752,
+      "registers": [
+        96
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "a1b0294d5f5e98680034e3620cdcccdc7d27d50ab3b42ab2639ef196215b21bb"
+    },
+    {
+      "name": "reuse_128_8192_1024_128_3",
+      "passed": true,
+      "shared": 98328,
+      "registers": [
+        90
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "cf1c80bc1f7d0b6724937443247da6f9e7ca7e925e92de93415399a6530530f8"
+    },
+    {
+      "name": "reuse_128_4608_8192_64_3",
+      "passed": true,
+      "shared": 73752,
+      "registers": [
+        106
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "6feeb287d82c4baee5d61f212b4dd6c23d0ad3872a8217a05d3c7cecb15e9d01"
+    },
+    {
+      "name": "reuse_128_4608_8192_128_3",
+      "passed": true,
+      "shared": 98328,
+      "registers": [
+        94
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "2948cd294229d818dc91fb4310bec83c5c84c9da82d4ca1076ccb7e7fbf29e7c"
+    },
+    {
+      "name": "reuse_128_8192_4096_64_3",
+      "passed": true,
+      "shared": 73752,
+      "registers": [
+        96
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "841290114d14b464eb27ab3ed206a7446dc6ad0b5259887a9e94d906cdc976c1"
+    },
+    {
+      "name": "reuse_128_8192_4096_128_3",
+      "passed": true,
+      "shared": 98328,
+      "registers": [
+        90
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "7fb3178f91e3df0e0103b2ce21ae06aa7cd289268b0eaf0411f34d06e83c32b1"
+    },
+    {
+      "name": "reuse_256_2304_8192_64_2",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        110
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "4bfccc761b6eb3824f90885f45913af7570011371ea6696567041b98bce197b4"
+    },
+    {
+      "name": "reuse_256_2304_8192_64_4",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        110
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "a39225b3337a50749d7009bc4aec285bb0ae4965d5c670a2e195113a16c1b0b3"
+    },
+    {
+      "name": "reuse_256_2304_8192_128_4",
+      "passed": true,
+      "shared": 98320,
+      "registers": [
+        190
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "4bbe44146308ed2d7325adb652650777f0ead46da3211e8c63ab1cc5049af293"
+    },
+    {
+      "name": "reuse_256_8192_1024_64_2",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        90
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "2a61002248dcba5205e6056f243506ab4281a4a7c45f83291aba536fd5c6c22e"
+    },
+    {
+      "name": "reuse_256_8192_1024_64_4",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        90
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "4de513288cb60dac0a2190de905ade81c1c95f7d0c6a90e0ffcc6c10f98837b5"
+    },
+    {
+      "name": "reuse_256_8192_1024_128_4",
+      "passed": true,
+      "shared": 98320,
+      "registers": [
+        160
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "cb013dd9ae6800103a5aa0eb3242ff12da8ecb290f7ec533d65b2ac900238884"
+    },
+    {
+      "name": "reuse_256_4608_8192_64_2",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        110
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "d560284555ae5ec63e9760a75c02b535ed46869f9abe032ae9e9dc96d2256875"
+    },
+    {
+      "name": "reuse_256_4608_8192_64_4",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        110
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "8cf1fd37430c0bd78a059055cd0f3f99b320786ae718e45d5c62afbdef4e0cd9"
+    },
+    {
+      "name": "reuse_256_4608_8192_128_4",
+      "passed": true,
+      "shared": 98320,
+      "registers": [
+        190
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "766bbcab1cc1ab7b3cd6ee91994d15a547aeeba03a2edb7615f66cdd738fd1c3"
+    },
+    {
+      "name": "reuse_256_8192_4096_64_2",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        90
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "9d875270bbe897aad5cd59e9e119b4c059c78b2f0676cbb3b8882ec8ac7e885a"
+    },
+    {
+      "name": "reuse_256_8192_4096_64_4",
+      "passed": true,
+      "shared": 81936,
+      "registers": [
+        90
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "f1ab8ded24dc8427a67153f507868d413f20253b7896517cc198fa501cb43067"
+    },
+    {
+      "name": "reuse_256_8192_4096_128_4",
+      "passed": true,
+      "shared": 98320,
+      "registers": [
+        160
+      ],
+      "stack_spills": [
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "ptx_sha256": "6c6d853e3201140ca82cdb018a0ab1879e43bdd29f2c3099345797ac44b7cc2a"
+    }
+  ]
+}

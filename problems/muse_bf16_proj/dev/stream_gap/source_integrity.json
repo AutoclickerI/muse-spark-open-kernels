@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "canonical_receipts": [
+    {
+      "job": "2015fc90abf94e14",
+      "receipt": "runs/muse_moe_w4a16/20261026T035611Z_check_2015fc90abf94e14.json",
+      "source": "runs/muse_moe_w4a16/20261026T035611Z_check_2015fc90abf94e14.py",
+      "source_sha256": "9632ca18f88002be1096e849057522c133dcd97ecac4601c56adeb4f06c6abe6",
+      "server_content_hash": "18171c05e4ba04a902e1880c70b9e9a32a3cfa02bf26652b395d9722dbdacc3d",
+      "passed": true
+    },
+    {
+      "job": "646822ab3d164be8",
+      "receipt": "runs/muse_moe_w4a16/20261026T042046Z_check_646822ab3d164be8.json",
+      "source": "runs/muse_moe_w4a16/20261026T042046Z_check_646822ab3d164be8.py",
+      "source_sha256": "827a0ac2870a17b2e3732475c123d9b641474f0930c41c833e9c5d821500d9fd",
+      "server_content_hash": "efc51ab1755916891091fa8f0ffe709c9ba8a0be32bc9106a9f5fdc86d844a38",
+      "passed": true
+    },
+    {
+      "job": "2b45988c88fb42a5",
+      "receipt": "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.json",
+      "source": "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.py",
+      "source_sha256": "c2f3ce71d95fe0c923721cabddd2d062f552e98f38f37cb7fb0fe6cc936f7000",
+      "server_content_hash": "affb7bc9f5653ce82803aad8bc76e31dd53341b8f9e94a17bf9d0dd4fe9c7944",
+      "passed": true
+    }
+  ],
+  "source_policy": "Canonical judged source retained byte-for-byte; builds reproduce source hashes",
+  "whitespace_check": "8 trailing-space warnings on original blank MIT-license comment lines only; retained for exact judged-source/vendor pins",
+  "warnings": [
+    "problems/muse_bf16_proj/dev/stream_gap/router_port.py:3: trailing whitespace.",
+    "+# ",
+    "problems/muse_bf16_proj/dev/stream_gap/router_port.py:5: trailing whitespace.",
+    "+# ",
+    "problems/muse_bf16_proj/dev/stream_gap/router_port.py:12: trailing whitespace.",
+    "+# ",
+    "problems/muse_bf16_proj/dev/stream_gap/router_port.py:15: trailing whitespace.",
+    "+# ",
+    "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.py:4: trailing whitespace.",
+    "+# ",
+    "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.py:6: trailing whitespace.",
+    "+# ",
+    "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.py:13: trailing whitespace.",
+    "+# ",
+    "runs/muse_bf16_proj/20261026T053943Z_submit_2b45988c88fb42a5.py:16: trailing whitespace.",
+    "+# "
+  ]
+}
