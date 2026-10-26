@@ -102,9 +102,12 @@ FA3 375 + GEMM 93; verify-32 sliding 798, Marlin 604.
 
 ### Our kernels on the H200
 
-Incumbent: S16 **1d0c8893** (`problems/muse_decode_layer/cand_r3_best7_s16_final.py`, expanded435df5f7),
-scored1.824219x (`c6cc2874`); held-out six-load R1.008291 over S15,95% CI[1.005790,1.010799],
-16 seeds/2304 TASK checks (`37c2879f`). Prior S15 **60254883** scored1.800345x (`9c5fc18d`); paired S15/S14 1.0549 / 1.0510 / 1.0276 / 0.9895 / 1.0100 / 1.0227 at d1 / d16 / d32 /
+Incumbent: S16 **4ca750a5** (`problems/muse_decode_layer/cand_r3_best7_s16_final.py`, expandedee5fe249),
+scored1.818167x (`93c6e742`); held-out R1.002048 over preparation-corrected prior S16,
+95% CI[1.000129,1.003971],16 seeds/1536 TASK (`a8c66a6d`). A:A R1.003917 exceeds
+the apparent gain: passes the declared max-SE gate, but evidence is marginal. Prior nine-piece
+S16 **1d0c8893** scored1.824219x (`c6cc2874`) and won over S15 at R1.008291,
+95% CI[1.005790,1.010799],16 seeds/2304 TASK (`37c2879f`). Prior S15 **60254883** scored1.800345x (`9c5fc18d`); paired S15/S14 1.0549 / 1.0510 / 1.0276 / 0.9895 / 1.0100 / 1.0227 at d1 / d16 / d32 /
 v1 / v16 / v32, geomean 1.026 (`281b1383`). S14 final f1c77ce6 scored 1.742759x (`9b94c126`).
 S14 trial hosts scored 1.7174 / 1.7530 / 1.7324x (`0441f9fc`,
 `740c63af`, `2bbb626c`); only the last host is exact f1c77ce6.
@@ -137,6 +140,11 @@ Reset integration decisions (2026-10-26; stage nominations require a whole-layer
 | Pruned follow-up fresh-weight confirmation | Unmeasured: no S16_XZ85 archive, no paired R/A:A. Official host TASK passes at1.808460x | Synthetic _tune_glue preparation rejects exact expert-ID differences against its oracle, before actual TASK/timing | Neither win nor loss. Same-seed retry uses published routing margins/work checks in preparation on both arms; timed AST unchanged,144 public-oracle cases agree | `c096a2c5200447e9` |
 | Guarded S15n native correctness |268/268 public TASK checks at67 shapes,2 seeds,2 graph replays; no timing/A:A measured | Guarded range dispatch9cc90d2e includes B64/B65 capacity handling | Combine with positive nearby timing a793c99e. Exact S16 merge6e43a367 has local143-fixture proof; its native combined projection-range audit is queued separately | `c03a3ae8ddfd490d` |
 | TASK-semantic preparation retry scored |1.818167x SGLang; unpaired, no A:A | Same five-piece timed AST as e3a919c5; synthetic preparation validates published routing criteria and selected-expert weight/local slots | Actual host TASK passes. Same-weight/router/input-seed paired retry a8c66a6d pending; no performance promotion from this score | `93c6e7425c484608` |
+| First S17 composition9c0bb03e scored |1.837887x SGLang; unpaired | Guarded S15n, P5 qt4/C16 v1S, pure large-M and VDSK release, P7 P shell; remove v16 DSM/pool128 | Paired05b8a69b is unmeasured from inherited exact-ID preparation veto; no R/CI inferred from score | `5f35323aa8bc47ef` |
+| First S17 paired confirmation | Unmeasured: official host passes1.806762x; no seed timing archive | S15 _tune_glue exact-ID comparison aborts synthetic fresh-weight preparation | Neither timing win nor loss. Late revision applies TASK routing margins on every arm, all other AST unchanged | `05b8a69b98d748ad` |
+| Expanded S17fea71760 scored |1.828637x SGLang; unpaired | First S17 + CHUNK4 M128/256 retaining P7 P W2/finish, fused pool/router T1/8/16, latest v1F T tail; preparation uses TASK routing semantics | [Exact composition and per-piece evidence](../problems/muse_decode_layer/dev/s17/README.md); paired da0cd64b accepted: CURRENT=ee5fe249 versus A/A2, original S16, first S17 and three leave-outs;1536+390 local TASK checks pass | `7ec5f9ab1eee4a17` |
+| TASK-semantic preparation retry paired | R1.002048,95% CI[1.000129,1.003971]; A:A1.003917,CI[1.002555,1.005282];1536 TASK pass at16 unchanged fresh seeds/weights/router | New five-piece composition over prior S16; preparation uses public routing semantics on both arms, all timed AST nodes unchanged by that fix | Promote shipped4ca750a5 under declared max-SE gate. A:A mean exceeds apparent gain: marginal evidence, not a robust effect estimate. No extra small-gain sweep; larger-lever integration next | `a8c66a6d5dfc4fc2` |
+| Prior S16 guarded-nearby native merge |268/268 TASK checks,67 shapes x2 seeds x2 arms; no timing or A:A measured | Exact6e43a367 merges prior nine-piece435df5f7 with guarded range dispatch | Correct native merge, but base is superseded. Current frozenee5fe249 is rebased as1468be3e and gets80-shape native validation | `e94388270a9e4c8e` |
 
 Original S15 admission wrapper49ce378b was rejected422 before a job existed: its packed source had no
 explicit top-level `kernel_fn`. Entry-only repair2a4d0dde passed normal/forced full-wrapper screens and ran
