@@ -102,7 +102,7 @@ for m in (8,16,32):
                        status='First4seed CUPTI means;optimistic zero-finish counterfactual,not a timed valid arm'))
 gap=read('problems/muse_decode_layer/dev/p12_components/leader_gap.json')
 leader=next(v for v in gap['ranking'] if v['role']=='moe')
-out=dict(status='parked by size/odds;no new performance arm or H200 run',inputs_sha256=inputs,
+out=dict(status='Dependency/DSM forms not admitted by this sizing; lane active under matched S19 ladder',inputs_sha256=inputs,
          decomposition=table,
          historical_phase_M32=dict(receipt='c768a8e361f54977',W13_us=36.05,W2_ready_us=11.58,W2_rest_us=17.57,grid_us=4.98,combine_us=1.17,scope='Old instrumented critical CTA;not S19 or additive whole-stage savings'),
          score_model=dict(loads=latencies,loads_changed=3,total_loads=6,full_credit_no_overlap_assumption=True,
@@ -129,4 +129,4 @@ out=dict(status='parked by size/odds;no new performance arm or H200 run',inputs_
 (D/'sizing.json').write_text(json.dumps(out,indent=2)+'\n')
 print('S19_MODELED_LOAD_US',ts,'FREE_WAIT_R',out['score_model']['free_wait_removal_R'],'COMMON_ADDED_COST_BUDGET',budget)
 for v in options:print(v['kind'],v['added_output_path_proxy_us'],v['modeled_R_before_sync_underfill_finish'],v['sensitivity_R_if_proxy_halves_and_sync_is_half_us'])
-print('PARK',len(table),'terms;no new H200 run or nominee')
+print('DEPENDENCY_FORMS',len(table),'historical terms; lane status and new run are in ../ladder')

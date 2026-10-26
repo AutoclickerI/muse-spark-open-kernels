@@ -1,0 +1,21 @@
+{
+  "utc": "20261026T114045Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "da1fb2eeb0d3443d",
+  "sha256": "5b7e2c2f2bee6b8a7b5bf86aca1be7b4dc2244968421eefd81ad88024714f489",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_ladder0+moe_p3a_ladder1.py",
+  "source": "runs/muse_moe_w4a16/20261026T114045Z_check_da1fb2eeb0d3443d.py",
+  "git": "8239e9c+dirty",
+  "lane": "P3a",
+  "decision": "assign the small-M MoE residual",
+  "priority": 3,
+  "priority_override": false,
+  "status": "done",
+  "speedup": null,
+  "interval": null,
+  "note": "h200_lab prof/lab/moe_p3a_ladder0.py prof/lab/moe_p3a_ladder1.py: Repairc431 transportonly:sameexactS19 cells8fixedfreshseeds4all-round symmetric cohorts;no kernel/timing changes,no removedsamples. Required identities/seeds/paired/checks/complete nowtop-level;losslessLZMA archive. Split primarytimings+allseedCTAwork/endpoints from fixedextra seed0 perSM histogram diagnostic in SAMEcheck. Exactlocal schema/sourceproof+nativeTASK pass6867B/2285B;decl8600/2800+markers<12000. All1792primaryns times+everyNVMLsample retained;hostenqueueprimaryworst4;minimalHISTobserver. c431 no performanceverdict becausepacket rejected/oversized. SameL0/L0S/L1/L2/L3/BASE/BSINK/MATH/STREAM/META/ACT/AA/HIST/ROUTER,264H200CTAs depth2 all2CTA zero spills. Largestterm selects next build;G0 viaP4.",
+  "sender_log": "runs/detached/5b7e2c2f2bee6b8a.log",
+  "state": "complete;source/control/resources/all-rounds/telemetry/histograms verified",
+  "receipt": "runs/muse_moe_w4a16/20261026T114045Z_check_da1fb2eeb0d3443d.json"
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "20261026T112701Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "c43111f584854b05",
+  "sha256": "de6bb84cb921e2be17f9ba373fc9507cfb7c7c92c2f3218d9e5896a43205f92a",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_ladder0.py",
+  "source": "runs/muse_moe_w4a16/20261026T112701Z_check_c43111f584854b05.py",
+  "git": "cf0ce7c+dirty",
+  "lane": "P3a",
+  "decision": "assign the small-M MoE residual",
+  "priority": 3,
+  "priority_override": false,
+  "status": "done",
+  "speedup": null,
+  "interval": null,
+  "note": "h200_lab prof/lab/moe_p3a_ladder0.py: ExactS19 62ea5bf4 matchedladder M1/8/16/32,8freshseeds x4symmetric palindromic rounds,all-round arithmetic means,no selective retiming,allper-roundns andNVMLtelemetry kept. L0 rawdepth2issueorder,L0S commonvolatileSTS control,L1decode128scaledvalues sunk,L2 adds32MMA+activation,L3 epilogue NOWAIT,BASE exactoriginal,S19+sinks, MATH onchip no rawglobalcopies,STREAM uniqueexpertbytes,META/ACT/ROUTER rows,AA. MinimalBASEobserver perCTA tile/expert jointworkhistograms,lastCTA finish/perSMseed0,observerratio in samecohort. All264H200CTAs sharedmatched2CTA,48sm90aresource rows zero spills. Exactpackedlocal32case256nativeTASKgates passes8004B;localstandin clampsgrid to residency;prequota fixedcapturestream/clamp. Static+transportpass;sourcepins;oracle outputsignored,nonomination. Largestmatchedterm sizes next build.",
+  "sender_log": "runs/detached/de6bb84cb921e2be.log",
+  "payload": "prof/lab/moe_p3a_ladder0.py",
+  "state": "receipt ready;auditing"
+}

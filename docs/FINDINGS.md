@@ -767,11 +767,76 @@ Clock observer ratios1.126/1.144/1.137 preclude treating individual subclocks as
 
 A tile-streamed DSM gather fits in principle but32 output chunks need>=64 buffer-reuse cluster barriers plus norm synchronization;the2.127us total incremental budget would allow<=33ns/barrier if every other new cost were free. Barrier/network cost is unmeasured. CTA occupancy is not cluster occupancy;NVIDIA requires cudaOccupancyMaxActiveClusters and DSM lifetime synchronization. Coarse owner grids average126/117/193CTAs(C16) or63/58.5/96.5(C8) across132SMs,so2CTA resource capacity does not ensure useful residency. A rank can process multiple smaller slices,but retains their copy/reduction issue costs.
 
-Planning load times v1/d16/d32 are126.97/176.09/221.25us from official S18 weighted times28b5c189 transported by paired S19/S18 load ratios6ac9317e. Full wall-time credit for5.19/4.54/6.83us gives wait-only R1.016674;>1% permits about2.127us common added cost across these three of six loads. This is not a universal DSM/NT1 ceiling. The count-scaled global output-path proxy is not measured DSM throughput or a lower bound;its original4seed contrast is noisy,especially M8. The favorable C8 sensitivity above1% is retained explicitly,but lacks calibration and margin for synchronization,coarse scheduling and finish. No supported>1% next build is identified under the current estimate.
+Planning load times v1/d16/d32 are126.97/176.09/221.25us from official S18 weighted times28b5c189 transported by paired S19/S18 load ratios6ac9317e. Full wall-time credit for5.19/4.54/6.83us gives wait-only R1.016674;>1% permits about2.127us common added cost across these three of six loads. This is not a universal DSM/NT1 ceiling. The count-scaled global output-path proxy is not measured DSM throughput or a lower bound;its original4seed contrast is noisy,especially M8. The favorable C8 sensitivity above1% is retained explicitly,but lacks calibration and margin for synchronization,coarse scheduling and finish. No supported>1% dependency/DSM build is identified under this historical estimate;the matched residual below is separate.
 
-Park P3a's next structural build on those odds;keep the54% theoretical small-M lever separate from the admitted next-step size. Reopen on actual2CTA cluster occupancy plus a matched coarse/DSM/finish cost fitting the~2.13us common budget,or an additional measured compute/load-issue saving that increases it;an exact lower-issue decoder/layout or public/per-shape leader evidence can also reopen. No new quota/P4 nominee. Last best measured A128D/S19 remains1.297920[1.252023,1.343818]/1.252912[1.191335,1.314489]/1.232193[1.183630,1.280757],16seeds,554c392d;only those recipes close. P4's prior nominations and GOAL G0 are unchanged.
+Do not admit these dependency/DSM builds on those cost estimates;the orchestrator rejected extending this decision to the small-M lever. Reopen on actual2CTA cluster occupancy plus a matched coarse/DSM/finish cost fitting the~2.13us common budget,or an additional measured compute/load-issue saving that increases it;an exact lower-issue decoder/layout or public/per-shape leader evidence can also reopen. No new quota/P4 nominee. Last best measured A128D/S19 remains1.297920[1.252023,1.343818]/1.252912[1.191335,1.314489]/1.232193[1.183630,1.280757],16seeds,554c392d;only those recipes close. P4's prior nominations and GOAL G0 are unchanged.
 
-P12's03:18UTC snapshot97f5e7f3 compares S15 aggregate MoE6627.36us to leader5266.72us:1.25835x,about20.53% less component time demonstrated elsewhere. Leader per-shape times/implementation are unavailable. This could be heavy-M or other routing/tiling work;it neither measures S19's small-M gap nor identifies the recoverable mechanism. It keeps broader MoE opportunity open while this lane is parked.
+P12's03:18UTC snapshot97f5e7f3 compares S15 aggregate MoE6627.36us to leader5266.72us:1.25835x,about20.53% less component time demonstrated elsewhere. Leader per-shape times/implementation are unavailable. This could be heavy-M or other routing/tiling work;it neither measures S19's small-M gap nor identifies the recoverable mechanism. It keeps broader MoE opportunity open;the matched ladder below supersedes lane-wide parking.
+
+### Matched S19 residual assignment: active, 5ee35b941ccb4171
+
+The lane-wide parking conclusion is superseded. This single cohort uses unchanged expanded S19
+62ea5bf4,264CTAs×256threads,depth2,identical route seeds/tiles/shared budgets. Eight seeds×four
+symmetric ec754e5 rounds retain all2,048 times,96NVML snapshots and all work/finish histograms.
+All60 runtime resource rows match sm90a counts,two-CTA capacity andzero spills. BASE/AA/BSINK/HIST/EARLY
+TASK controls pass. The host's declared lab-only prepare stop is not a native correctness failure.
+[Full means/95%CIs,contrasts and audit](../problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/REPORT.md).
+Ratios below are paired geometric time ratios versus exact S19 BASE,ordered M1/M8/M16/M32.
+Diagnostic cuts have ignored outputs and cannot nominate. Wide absolute time CIs include route variation.
+
+| Recipe | Ratio vs BASE (M1/8/16/32) | Mechanism / result | Leaves open | Receipt |
+|---|---|---|---|---|
+| L0 | 0.65999 / 0.76139 / 0.74272 / 0.67879 | Raw copies plus every raw shared read,checksum;no math/activation/finish | Load-side issue/repeats versus unique STREAM;not exclusive memory latency | 5ee35b941ccb4171 |
+| L0S | 0.71661 / 0.79986 / 0.75161 / 0.73165 | Common volatile live sinks on raw path;calibrates sink tax | Sink scheduling differs from ordinary BASE | 5ee35b941ccb4171 |
+| L1 | 0.72773 / 0.80823 / 0.78954 / 0.79309 | All exact decode/scale products live;no MMA | Cheaper decode forms;not proof of integer saturation | 5ee35b941ccb4171 |
+| L2 | 0.83675 / 0.93812 / 0.96197 / 0.99604 | Adds activation operands plus all32HMMA sites | Separate operand transport from mandatory math/scheduling | 5ee35b941ccb4171 |
+| L3 | 0.95876 / 1.00362 / 1.03559 / 1.06097 | Adds original epilogue,publication and NOWAIT finalizer | Correct readiness redesign must pay its reduction cost | 5ee35b941ccb4171 |
+| BASE | 1.00000 / 1.00000 / 1.00000 / 1.00000 | Unchanged original S19 control | All matched residual mechanisms | 5ee35b941ccb4171 |
+| BSINK | 1.06129 / 1.08100 / 1.10422 / 1.13864 | Original BASE plus common sinks;tax2.14/5.52/7.42/13.42us | Sink-free schedule costs are conditional | 5ee35b941ccb4171 |
+| MATH | 0.93294 / 0.89564 / 0.89346 / 0.87692 | On-chip raw operands/register activations;small globals,initialization and output remain | Not a universal compute floor;operand layout/scheduling | 5ee35b941ccb4171 |
+| STREAM | 0.64529 / 0.76547 / 0.66631 / 0.51760 | Two-slot TMA of exact touched experts unique bytes;simple tile loop | S19 raw issue/repeats versus ideal transport;no correctness claim | 5ee35b941ccb4171 |
+| META | 0.16807 / 0.10933 / 0.10564 / 0.07891 | Route/metadata lists live with same grid/reservation | Timed route fusion and work mapping | 5ee35b941ccb4171 |
+| ACT | 0.28525 / 0.21864 / 0.23515 / 0.21234 | Real activation transport,operand sinks once per segment | ACT−LOOP includes sink overhead;pack-free oracle needed | 5ee35b941ccb4171 |
+| LOOP | 0.19333 / 0.14362 / 0.13917 / 0.10853 | Metadata plus tile schedule/partial-store barriers,no math | Activation reference must subtract this schedule cost | 5ee35b941ccb4171 |
+| EARLY | 1.00304 / 1.01450 / 1.01998 / 1.02053 | Release slot/issue next copy after volatile g7 raw reads,warp sync,before last decode/MMA;M1 alias | Closes this placement only;operand layout,MMA scheduling and M32 load-side gap remain | 5ee35b941ccb4171 |
+| AA | 1.00157 / 0.99940 / 1.00145 / 1.00119 | Independent workspace,same exact BASE;noise control | A:A is uncertainty,not a per-shape veto | 5ee35b941ccb4171 |
+| HIST | 1.02018 / 1.00600 / 1.00874 / 1.01164 | Minimal observer of CTA tiles/experts/SM/entry/W2/end | Measured observer tax;tails overlap other terms | 5ee35b941ccb4171 |
+| ROUTER | 0.18999 / 0.09897 / 0.09529 / 0.07015 | Separate actual router/input producer,not included in NT1 BASE | Timed packing/fusion must include producer cost | 5ee35b941ccb4171 |
+
+Calibrated adjacent contrasts (us,95%CI),M8/M16/M32: decode L1−L0S
+.539[.169,.909]/2.543[1.486,3.600]/6.022[4.821,7.223];largest MMA+activation L2−L1
+8.785[7.464,10.106]/12.096[11.021,13.171]/19.705[16.719,22.691];epilogue NOWAIT
+4.392[3.925,4.859]/5.207[4.766,5.648]/6.292[5.339,7.245];sink-bearing dependency
+5.124[4.770,5.478]/4.838[3.743,5.933]/7.489[5.598,9.380]. M1's largest added term is
+4.087[3.738,4.436]us epilogue. L0−STREAM M32 is15.695[11.719,19.671]us;M8 crosses zero.
+Every seed telescopes exactly with both raw and normal sink calibration,not by mixing historical nodes.
+These are conditional schedule contrasts,not independent hardware-pipe latencies.
+
+Largest-term full-wall-credit six-load ceilings M1/8/16/32 areR1.00826/1.01202/1.01193/1.01567;
+M8–32 MMA+activation togetherR1.04014,M32 raw-load side aloneR1.01234. BASE−STREAM
+11.991/15.654/22.958/47.102us modelsR1.11685;one thirdR1.03532. Layer-time inputs are transported
+S18→S19 planning data,not measured held-out G0. Work histograms retain8,448CTAs;W2 p50→last
+1.184/4.062/5.732/7.964us,final-exit p50→last1.176/1.128/1.140/1.342us. These observer tails overlap
+ladder terms. Seed0 additionally retains per-SM counts/last finish and joint finish bins at2.048us.
+
+EARLY/S19 M8/16/32 is1.014503[1.008061,1.020986]/1.019984[1.011677,1.028359]/
+1.020532[1.008815,1.032386],paired logSE.002633/.002800/.004884,A:A logSE.002694/.003458/.002561,
+eight seeds0–7 with four arithmetic rounds each. M1 is unchanged alias1.003039,excluded. EARLY uses
+128regs,zero stack/spills and84176/84496/85136 shared bytes,two CTAs. 135native TASK checks and
+normal+forced13TASK/12shape integration screens pass;changed leaf remains native. Exact patch
+ba90ff8e,candidate789a0223 in ladder/early/manifest.json. No new point winner or whole-layer confirmation;
+P4_HANDOFF.json and point_nominations.json retain the result and all83previous nominees unchanged.
+
+Next ranked bound: pack-free/coalesced BF16 activation operand layout,then timed producer packing
+only if exposed benefit pays. ACT−LOOP reference5.021/6.810/10.043us includes operand sinks;modeled
+combined R1.02126 leaves<3.57us common added cost for>1%R at full credit. A bank reserves at most8MiB,
+16MiB for both phases,no assumed byte saving;keep two CTAs and BF16,all activation work timed.
+This mechanism remains unimplemented/unmeasured. M32 load-side scheduling is another>1% opening.
+The dependency/DSM forms previously sized stay unadmitted;the lever stays active.
+
+Transport history:c43111f584854b05 is unmeasured(schema/output oversize);da1fb2eeb0d3443d has valid
+controls but scalar STREAM/per-tile ACT sink measure costlier implementations,not pure-byte/activation
+oracles. initial_* keeps that evidence. All rows above use only corrected5ee35b941ccb4171.
 
 ## MoE M=128
 

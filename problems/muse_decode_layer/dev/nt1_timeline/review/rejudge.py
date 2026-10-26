@@ -132,9 +132,22 @@ if (dep/'results.json').exists():
  (dep/'P4_HANDOFF.json').write_text(json.dumps(dict(base='S19 62ea5bf4',job=er['job'],rows=new,source_audit=er['source_audit'],gate=result['gate'],oracle=er['oracle'],material=er['material'],cost_evidence=str((dep/'results.json').relative_to(R))),indent=2)+'\n')
  if (dep/'sizing.json').exists():
   sz=json.loads((dep/'sizing.json').read_text());assert sz['inputs_sha256'][str((dep/'results.json').relative_to(R))]==hashlib.sha256((dep/'results.json').read_bytes()).hexdigest()
-  info=dict(status=sz['status'],report=str((dep/'SIZING.md').relative_to(R)),model=str((dep/'sizing.json').relative_to(R)),free_wait_model_R=sz['score_model']['free_wait_removal_R'],common_added_cost_budget_us_for_R1p01=sz['score_model']['common_added_cost_us_for_R1p01'],new_H200_jobs=sz['new_H200_jobs'],note='Size/odds parking,not a DSM infeasibility proof;G0 promotion unchanged;favorable C8 sensitivity still open')
+  info=dict(status=sz['status'],report=str((dep/'SIZING.md').relative_to(R)),model=str((dep/'sizing.json').relative_to(R)),free_wait_model_R=sz['score_model']['free_wait_removal_R'],common_added_cost_budget_us_for_R1p01=sz['score_model']['common_added_cost_us_for_R1p01'],new_H200_jobs=sz['new_H200_jobs'],note='Only dependency/DSM forms scoped;lane active via matched S19 ladder;G0 unchanged;favorable C8 sensitivity unverified')
   result['dependency_followup'].update(status=sz['status'],sizing=info)
   hand=json.loads((dep/'P4_HANDOFF.json').read_text());hand['sizing']=info;(dep/'P4_HANDOFF.json').write_text(json.dumps(hand,indent=2)+'\n')
+lad=P/'structural/ladder'
+if (lad/'results.json').exists():
+ lr=json.loads((lad/'results.json').read_text());assert lr['measured'] and not lr['invalid'] and lr['source_audit']['verified'];lm=json.loads((lad/'early/manifest.json').read_text());new=[]
+ spec=lm['EARLY']
+ for field in ('candidate','shipped','patch'):
+  assert hashlib.sha256((R/spec[field]).read_bytes()).hexdigest()==spec[field+'_sha256']
+ for v in lr['candidate']:
+  if not v['point_nominee'] or v['control_alias']:continue
+  new.append(dict(v,job=lr['job'],batch='S19 matched residual / EARLY slot release',handoff=True,exact_patch=spec,shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='1375353+7919*seed',routing='1379000+M+97*seed')))
+ result['rows']+=new;result['ladder_rows']=new
+ info=dict(base='S19 62ea5bf4',job=lr['job'],status='active;EARLY slot-release placement loses at M8/16/32;activation/MMA scheduling and M32 load-side gap remain material',source_audit=lr['source_audit'],report=str((lad/'REPORT.md').relative_to(R)),ceilings=json.loads((lad/'ceiling.json').read_text()),tested=lr['candidate'],next='Pack-free BF16 operand-layout oracle,then correct timed packing only if exposed benefit supports cost;keep two CTAs',whole_layer_R='Not measured for EARLY;no stage point winner')
+ result['ladder_followup']=info
+ (lad/'P4_HANDOFF.json').write_text(json.dumps(dict(**info,rows=new,gate=result['gate'],exact_tested_patch=spec,validation=str((lad/'early/validation.json').relative_to(R))),indent=2)+'\n')
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')

@@ -1,0 +1,20 @@
+{
+  "utc": "20261026T122729Z",
+  "problem": "muse_prefill_layer",
+  "mode": "check",
+  "job": "5ee35b941ccb4171",
+  "sha256": "3d867fbfa88b681128c76c760b1f80e8a96ef8fb9ef85ac809f7639ac6814281",
+  "file": "problems/muse_prefill_layer/lab/lab_moe_p3a_ladder0+moe_p3a_ladder1.py",
+  "source": "runs/muse_prefill_layer/20261026T122729Z_check_5ee35b941ccb4171.py",
+  "git": "74a8575+dirty",
+  "lane": "P3a",
+  "decision": "assign the small-M MoE residual and test early weight-slot release during the last MMA group",
+  "priority": 4,
+  "priority_override": false,
+  "status": "done",
+  "speedup": null,
+  "interval": null,
+  "note": "h200_lab prof/lab/moe_p3a_ladder0.py prof/lab/moe_p3a_ladder1.py: ExactS19 62ea5bf4 matched8seeds4symmetricall-round cohorts,all2048ns samples+NVML kept. Complete correctedladder L0 raw/L0S sinks/L1decode/L2MMA+act/L3epiNOWAIT/BASE/BSINK/MATH/STREAM/META/ACT/LOOP/AA/HIST/ROUTER plusEARLY. STREAM nowpure2slotTMA ofexactuniquebytes,not scalaraddress-per-vector;ACT operand sinkoncepersegment;LOOP control removes tileloopcost. LargestinitialL2-L1 M8/16/32 8.1/11.8/19.1us (ceilingR1.0383);early slotreleaseafterg7volatile rawreads+warpsync,copy beforeg7decode/MMA;same8mathwarps2slots264H200CTAs,128regs0stack/spills2CTA. ExactEARLY S19patch ba90ff8e;135native nearby/start/capturechecks,normal+forced13TASK12shapes each pass;actualchangedleafeager/capture. Matchedlocalallgates andschema,packets7480/2143B,decl8600/2800. Fixedextra seed0 perSMhist phase;allseedwork/endpoints andHISTtax in primary. Previousda1 controls valid butSTREAM/ACT not pure target;no old/newcohort mixing. Candidateintervals usepromotion.py;P4heldoutR confirmsallpointwins.",
+  "state": "complete;source/control/resources/all-rounds/telemetry/histograms verified",
+  "receipt": "runs/muse_prefill_layer/20261026T122729Z_check_5ee35b941ccb4171.json"
+}

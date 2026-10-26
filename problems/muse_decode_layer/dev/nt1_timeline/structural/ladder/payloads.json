@@ -1,0 +1,66 @@
+{
+  "payloads": [
+    {
+      "part": 0,
+      "path": "prof/lab/moe_p3a_ladder0.py",
+      "sha256": "7f3895b69a0b6297d521cc1d4fcf1834fa3ad48f1f98e5c943da187663649cae",
+      "expanded_sha256": "e816df45f03cac13bb7516b79f87f841bde3e779acf1ad6a10c60233033e953f"
+    },
+    {
+      "part": 1,
+      "path": "prof/lab/moe_p3a_ladder1.py",
+      "sha256": "50fec279bc1f48781b72db110796b9559eb6748e685a85252575e26b43ad0399",
+      "expanded_sha256": "e816df45f03cac13bb7516b79f87f841bde3e779acf1ad6a10c60233033e953f"
+    }
+  ],
+  "identities": {
+    "base_S19": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "cells": {
+      "0": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/lad0_cell.py",
+        "cell_sha256": "86b2a56f8b0e56c5bb9439082438017d7841dca3602b9c073b4c203e9d290fad",
+        "cuda_sha256": "ab59e26e3d6ff712d4d617830bda632a0c4235a692ac8909aeb83bfcd0a7d4b5",
+        "original_cuda_sha256": "244c4d089f5979e2e79f45a681ee14a58bd57cc02d7c20001af4f1c3c7cb8040",
+        "prefix": "lad0",
+        "original_S19_prefix": "rvc_nfidx0"
+      },
+      "1": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/lad1_cell.py",
+        "cell_sha256": "6112b70807387ceb73e53cbae3cbe3505481e66fe52c4ebe1308334f4ebcff4f",
+        "cuda_sha256": "7775b86c0b2ec725d4fa7a761fcf651fdcc52d34074d64db42002464255ed968",
+        "original_cuda_sha256": "5b6ae2c3611b71e102238719c69cbed6cd6b1d3566bbcf3765788fc787619fb6",
+        "prefix": "lad1",
+        "original_S19_prefix": "rvc_nbase1"
+      },
+      "2": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/lad2_cell.py",
+        "cell_sha256": "769c0748d1d4bdfb033b62e30910a75ffb2563513144613170087daab2c150cc",
+        "cuda_sha256": "bcced7cf97757e63c206e1715f6130fc788f7aff66ee0e635252dd03b5919cee",
+        "original_cuda_sha256": "2e382eda4a71ba46c2a89183414fb7285785e238a3e75c53c26f24aba0282fd2",
+        "prefix": "lad2",
+        "original_S19_prefix": "rvc_nbase2"
+      },
+      "ear1": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/early/ear1_cell.py",
+        "cell_sha256": "108bafbcf2c8a8e0b0629d31f124ca457c74da6d9b17174d5752033eb694bb38",
+        "cuda_sha256": "bf759f15e13aa9d24b517898e52a93e155570beb6968514e630f4fbfab545414",
+        "prefix": "ear1",
+        "arm": "EARLY",
+        "M": [
+          8
+        ]
+      },
+      "ear2": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/early/ear2_cell.py",
+        "cell_sha256": "7687bd7f632a3c89d14bfdaa795406ecef87a9a17cc491434b2f6e9486cc3b05",
+        "cuda_sha256": "d3208e86226130bd1a180328b7d470a8ef537e731f7625c7727add4b6a4a8e24",
+        "prefix": "ear2",
+        "arm": "EARLY",
+        "M": [
+          16,
+          32
+        ]
+      }
+    }
+  }
+}

@@ -1,12 +1,22 @@
-# Remaining NT1 budget and parking decision
+# NT1 dependency forms and current matched budget
 
-Current decision: park P3a's next structural build. No new H200 check or performance arm is sent.
+Current decision: the orchestrator has reactivated P3a. This document sizes only the dependency/DSM
+forms below;its lane-wide parking conclusion is superseded. The exact matched S19 ladder is complete:
+receipt **5ee35b941ccb4171**, [full table and audit](../ladder/REPORT.md).
+M8/16/32 MMA+activation is8.79[7.46,10.11]/12.10[11.02,13.17]/19.71[16.72,22.69]us;
+M32 raw-load schedule/repeats over unique STREAM is15.70[11.72,19.67]us. These are matched
+conditional contrasts with explicit sink calibration,not exclusive physical-pipe times.
+Their full-wall-credit six-load ceilings areR1.04014 together andR1.01234 for the M32 load-side gap.
+The EARLY last-group slot-release build loses1.45/2.00/2.05% (all95%CIs above1);only that placement closes.
+Next is a pack-free BF16 operand-layout oracle: ACT−LOOP reference5.02/6.81/10.04us gives modeled
+R1.02126 before packing/sink calibration. Full reference credit leaves<3.57us common packing cost
+for>1%R. Keep two CTAs and all activation work timed. The residual lever remains active.
 This is an odds/size decision, not a proof that DSM cannot win. The 1% six-load target is this task's
 work-sizing threshold; GOAL G0 still promotes any held-out R whose lower confidence bound exceeds 1.
 Existing P4 nominees remain valid alternatives. `sizing.py` reproduces the numbers in `sizing.json`;
 `count_sizing.py` reproduces the coarse math/resource counts in `sizing_counts.json`.
 
-## Decomposition: scopes must stay separate
+## Historical decomposition: scopes must stay separate
 
 Times are us. **M** means a measured observation in its named scope; **P** means a planning model;
 **U** means unmeasured. These rows overlap and are not an additive phase split.
@@ -111,12 +121,12 @@ S19 absolute measurements. Giving every saved MoE us full wall-time credit,
 No new arm or timing ratio/CI exists. Last valid best A128D/S19 remains1.297920[1.252023,1.343818],
 1.252912[1.191335,1.314489],1.232193[1.183630,1.280757],16seeds,`554c392d10f54b71`.
 
-## Parking and reopening
+## Dependency-form sizing decision
 
-Park these next builds on the current cost estimate and accumulated failures. This does not close
-DSM,coarser slicing,compute/load overlap,or the M32 load-issue gap. No supported>1% next build is
-identified;an optimistic uncalibrated sensitivity is insufficient to keep this row ahead of active
-lanes with larger measured mechanisms. No fresh quota is spent to fill missing phase cells alone.
+Do not admit the DSM/coarse/fused-finish builds above on their current cost estimate. This does not close
+DSM,coarser slicing,compute/load overlap,or the M32 load-issue gap. The matched ladder now supplies
+the material residual terms that this cross-cohort table could not assign. An optimistic uncalibrated
+DSM sensitivity is still insufficient to admit that particular build.
 
 Reopen on actual2-CTA cluster occupancy and a matched coarse/DSM/finish cost within the approximately
 2.13us common budget,or a newly measured additional compute/load-issue saving that increases it.
@@ -127,5 +137,5 @@ MoE-host/import-route packet with all controls/seeds and `--lane P3a --decision 
 The P12 snapshot's S15 MoE component is1.25835x the leader's time:about20.53% less aggregate component
 time is demonstrated elsewhere. Leader per-shape times and implementation are unavailable. That gap
 could live at M128/256 or in other routing/tiling work;it does not establish S19's small-M gap or prove
-that a further pipeline/dependency recipe can recover it. It preserves the broader MoE opportunity,
-while leaving this lane parked until a mechanism is sized. No new P4 nominee;previous handoffs remain.
+that a further pipeline/dependency recipe can recover it. The matched ladder, rather than this aggregate
+leader ratio, now supports keeping P3a active. EARLY adds no new P4 nominee;previous handoffs remain.

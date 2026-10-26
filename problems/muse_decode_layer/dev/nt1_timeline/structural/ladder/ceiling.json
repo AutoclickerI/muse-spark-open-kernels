@@ -1,0 +1,32 @@
+{
+  "stream_excess_us": {
+    "1": 11.991,
+    "8": 15.654000000000003,
+    "16": 22.958,
+    "32": 47.102
+  },
+  "stream_ceiling_R": 1.116852389777261,
+  "one_third_stream_excess_R": 1.0353221087806204,
+  "MMA_activation_M8_32_ceiling_R": 1.0401427846196925,
+  "activation_reference_M8_32_ceiling_R": 1.0212637110193927,
+  "activation_reference_common_cost_budget_for1pct_us": 3.57306156660423,
+  "largest": [
+    {
+      "M": 1,
+      "term": "epilogue_NOWAIT"
+    },
+    {
+      "M": 8,
+      "term": "MMA_activation"
+    },
+    {
+      "M": 16,
+      "term": "MMA_activation"
+    },
+    {
+      "M": 32,
+      "term": "MMA_activation"
+    }
+  ],
+  "assumption": "Planning only; full stage delta credited to layer; 46/16 S18->S19 transported load times; not held-out G0"
+}

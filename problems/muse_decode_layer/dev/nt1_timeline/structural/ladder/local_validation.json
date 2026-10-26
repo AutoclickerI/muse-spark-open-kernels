@@ -1,0 +1,61 @@
+[
+  {
+    "part": 0,
+    "wire_bytes": 7480,
+    "payload_sha256": "7f3895b69a0b6297d521cc1d4fcf1834fa3ad48f1f98e5c943da187663649cae",
+    "checks": {
+      "gates": {
+        "BASE": [
+          0.0024213241413235664,
+          0.002486136741936207
+        ],
+        "BSINK": [
+          0.0024213241413235664,
+          0.002486136741936207
+        ],
+        "EARLY": [
+          0.0024213241413235664,
+          0.002486136741936207
+        ],
+        "AA": [
+          0.0024213241413235664,
+          0.002486136741936207
+        ],
+        "HIST": [
+          0.0024213241413235664,
+          0.002486136741936207
+        ]
+      },
+      "failures": [],
+      "diagnostics": "L0-L3/MATH/STREAM/META/ACT outputs ignored;never nominees"
+    },
+    "rows": 32,
+    "native_math": true,
+    "schema_keys_verified": true
+  },
+  {
+    "part": 1,
+    "wire_bytes": 2143,
+    "payload_sha256": "50fec279bc1f48781b72db110796b9559eb6748e685a85252575e26b43ad0399",
+    "checks": {
+      "gates": {
+        "BASE": [
+          0.0023780581541359425,
+          0.0024602701887488365
+        ],
+        "AA": [
+          0.0023780581541359425,
+          0.0024602701887488365
+        ],
+        "HIST": [
+          0.0023780581541359425,
+          0.0024602701887488365
+        ]
+      },
+      "failures": []
+    },
+    "rows": 4,
+    "native_math": true,
+    "schema_keys_verified": true
+  }
+]

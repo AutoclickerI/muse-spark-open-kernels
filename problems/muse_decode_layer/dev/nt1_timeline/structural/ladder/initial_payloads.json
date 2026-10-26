@@ -1,0 +1,45 @@
+{
+  "payloads": [
+    {
+      "part": 0,
+      "path": "prof/lab/moe_p3a_ladder0.py",
+      "sha256": "936bf92c48bd812d1207cc0ae1d3d445528ffd9d9d9e48de26f022610c415c03",
+      "expanded_sha256": "c8804ef4bd0f8888802eb4264f89c4ebb75ee5e8ad0acfe1d42212a7410240e0"
+    },
+    {
+      "part": 1,
+      "path": "prof/lab/moe_p3a_ladder1.py",
+      "sha256": "16140863c86453145875797e239026ab8d70b7397332cb2ed608efeebec8482c",
+      "expanded_sha256": "c8804ef4bd0f8888802eb4264f89c4ebb75ee5e8ad0acfe1d42212a7410240e0"
+    }
+  ],
+  "identities": {
+    "base_S19": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "cells": {
+      "0": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/lad0_cell.py",
+        "cell_sha256": "bf4aa915b02b6a15d7d90837cc351838d0c522916811281de2a94cc6aea9ceea",
+        "cuda_sha256": "c3faef392f41b97ba3446175bea67cb9f0419630185c75d23565bbf6223431ff",
+        "original_cuda_sha256": "244c4d089f5979e2e79f45a681ee14a58bd57cc02d7c20001af4f1c3c7cb8040",
+        "prefix": "lad0",
+        "original_S19_prefix": "rvc_nfidx0"
+      },
+      "1": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/lad1_cell.py",
+        "cell_sha256": "3ee566ffe08b728dc5a8207d6c5b13fb65c9d1bd7d948b029a9b0ce0c74545bc",
+        "cuda_sha256": "486027ac08eb239e01775448f3147da703da6a49fe56844ccda0e9fc0e5251d8",
+        "original_cuda_sha256": "5b6ae2c3611b71e102238719c69cbed6cd6b1d3566bbcf3765788fc787619fb6",
+        "prefix": "lad1",
+        "original_S19_prefix": "rvc_nbase1"
+      },
+      "2": {
+        "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/lad2_cell.py",
+        "cell_sha256": "50f97499c2d919ed10bcbd4395c42510b87fb2844b24b2225837a200e76fa0ec",
+        "cuda_sha256": "b0747a29ec62ff2ed9e367b8227e46b16e8e5975e4db98604e84828b5e964658",
+        "original_cuda_sha256": "2e382eda4a71ba46c2a89183414fb7285785e238a3e75c53c26f24aba0282fd2",
+        "prefix": "lad2",
+        "original_S19_prefix": "rvc_nbase2"
+      }
+    }
+  }
+}

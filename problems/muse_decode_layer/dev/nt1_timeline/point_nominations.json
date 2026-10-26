@@ -8786,15 +8786,210 @@
       }
     ],
     "costs": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/results.json",
-    "status": "parked by size/odds;no new performance arm or H200 run",
+    "status": "Dependency/DSM forms not admitted by this sizing; lane active under matched S19 ladder",
     "sizing": {
-      "status": "parked by size/odds;no new performance arm or H200 run",
+      "status": "Dependency/DSM forms not admitted by this sizing; lane active under matched S19 ladder",
       "report": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/SIZING.md",
       "model": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/sizing.json",
       "free_wait_model_R": 1.016673934348379,
       "common_added_cost_budget_us_for_R1p01": 2.127415403428495,
       "new_H200_jobs": [],
-      "note": "Size/odds parking,not a DSM infeasibility proof;G0 promotion unchanged;favorable C8 sensitivity still open"
+      "note": "Only dependency/DSM forms scoped;lane active via matched S19 ladder;G0 unchanged;favorable C8 sensitivity unverified"
     }
+  },
+  "ladder_rows": [],
+  "ladder_followup": {
+    "base": "S19 62ea5bf4",
+    "job": "5ee35b941ccb4171",
+    "status": "active;EARLY slot-release placement loses at M8/16/32;activation/MMA scheduling and M32 load-side gap remain material",
+    "source_audit": {
+      "verified": true,
+      "wrapper_sha256": "3d867fbfa88b681128c76c760b1f80e8a96ef8fb9ef85ac809f7639ac6814281",
+      "payload_sha256": "7f3895b69a0b6297d521cc1d4fcf1834fa3ad48f1f98e5c943da187663649cae",
+      "expanded_sha256": "e816df45f03cac13bb7516b79f87f841bde3e779acf1ad6a10c60233033e953f",
+      "packet_checksum": "5d4ff12794ed3834d9a3d7028c590ca4cc4f687ccccbf0cf36ba8b53bf266efe",
+      "histogram_packet_checksum": "1eb3b924d87d5349bf70c6d0da70b34f5dc591896b4266d3b3bd1334570e01bf"
+    },
+    "report": "problems/muse_decode_layer/dev/nt1_timeline/structural/ladder/REPORT.md",
+    "ceilings": {
+      "stream_excess_us": {
+        "1": 11.991,
+        "8": 15.654000000000003,
+        "16": 22.958,
+        "32": 47.102
+      },
+      "stream_ceiling_R": 1.116852389777261,
+      "one_third_stream_excess_R": 1.0353221087806204,
+      "MMA_activation_M8_32_ceiling_R": 1.0401427846196925,
+      "activation_reference_M8_32_ceiling_R": 1.0212637110193927,
+      "activation_reference_common_cost_budget_for1pct_us": 3.57306156660423,
+      "largest": [
+        {
+          "M": 1,
+          "term": "epilogue_NOWAIT"
+        },
+        {
+          "M": 8,
+          "term": "MMA_activation"
+        },
+        {
+          "M": 16,
+          "term": "MMA_activation"
+        },
+        {
+          "M": 32,
+          "term": "MMA_activation"
+        }
+      ],
+      "assumption": "Planning only; full stage delta credited to layer; 46/16 S18->S19 transported load times; not held-out G0"
+    },
+    "tested": [
+      {
+        "M": 1,
+        "arm": "EARLY",
+        "ratio": 1.0030390558247224,
+        "CI95": [
+          0.9962429886944909,
+          1.0098814836610899
+        ],
+        "log_SE": 0.002304977294552708,
+        "AA_log_SE": 0.0028751306050679593,
+        "seeds": 8,
+        "seed_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "seed_ratios": [
+          1.0015154795410264,
+          1.016895459345301,
+          1.0021169621593013,
+          1.0003588731383455,
+          1.0050304474450622,
+          0.9963853244171335,
+          1.0057220708446866,
+          0.9964373801041382
+        ],
+        "control_alias": true,
+        "measured": true,
+        "point_nominee": false,
+        "promotion": "Stage point nomination only;P4 confirms held-out whole-layer G0 R"
+      },
+      {
+        "M": 8,
+        "arm": "EARLY",
+        "ratio": 1.0145030393024088,
+        "CI95": [
+          1.0080608259895611,
+          1.0209864228614345
+        ],
+        "log_SE": 0.0026331026314582937,
+        "AA_log_SE": 0.0026940561065042588,
+        "seeds": 8,
+        "seed_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "seed_ratios": [
+          1.0144280827011751,
+          1.0091933570581257,
+          1.0020995800839831,
+          1.0137807070101859,
+          1.0271580989330746,
+          1.0193630823668174,
+          1.0191397000789266,
+          1.0110586648685098
+        ],
+        "control_alias": false,
+        "measured": true,
+        "point_nominee": false,
+        "promotion": "Stage point nomination only;P4 confirms held-out whole-layer G0 R"
+      },
+      {
+        "M": 16,
+        "arm": "EARLY",
+        "ratio": 1.0199837464987864,
+        "CI95": [
+          1.0116770439018423,
+          1.028358653972425
+        ],
+        "log_SE": 0.002800276853216852,
+        "AA_log_SE": 0.003458216615818379,
+        "seeds": 8,
+        "seed_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "seed_ratios": [
+          1.0088621444201313,
+          1.008894536213469,
+          1.0233810587153553,
+          1.0314262691377922,
+          1.0204474601136988,
+          1.0192850423330198,
+          1.0196756756756757,
+          1.0281216199975964
+        ],
+        "control_alias": false,
+        "measured": true,
+        "point_nominee": false,
+        "promotion": "Stage point nomination only;P4 confirms held-out whole-layer G0 R"
+      },
+      {
+        "M": 32,
+        "arm": "EARLY",
+        "ratio": 1.020532245642405,
+        "CI95": [
+          1.0088147725638155,
+          1.0323858182102976
+        ],
+        "log_SE": 0.004883765285329477,
+        "AA_log_SE": 0.0025614118448029307,
+        "seeds": 8,
+        "seed_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "seed_ratios": [
+          1.007558915073366,
+          1.0465934065934066,
+          1.0350219556602762,
+          1.014800375424157,
+          1.0043524794862646,
+          1.0140365222131371,
+          1.0191993781577924,
+          1.0233785822021115
+        ],
+        "control_alias": false,
+        "measured": true,
+        "point_nominee": false,
+        "promotion": "Stage point nomination only;P4 confirms held-out whole-layer G0 R"
+      }
+    ],
+    "next": "Pack-free BF16 operand-layout oracle,then correct timed packing only if exposed benefit supports cost;keep two CTAs",
+    "whole_layer_R": "Not measured for EARLY;no stage point winner"
   }
 }

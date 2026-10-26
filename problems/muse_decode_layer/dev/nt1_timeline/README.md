@@ -1,6 +1,11 @@
 # P3a small-M MoE
 
-Current state: **parked by size/odds**; no new performance arm or H200 run.
+Current state: **active**. Matched S19 receipt **5ee35b941ccb4171** assigns the remaining lever;
+the prior lane-wide parking conclusion is superseded. [Full ladder, CIs and audit](structural/ladder/REPORT.md).
+MMA+activation adds8.79/12.10/19.71us at M8/16/32 (modeled combined six-load ceilingR1.04014);
+M32 L0−STREAM adds15.70us (R1.01234 alone). EARLY slot release loses1.45/2.00/2.05%,all95%CIs above1;
+no new P4 winner. Next ranked bound: pack-free/coalesced BF16 activation-operand layout,with timed
+packing budget<3.57us at full ACT−LOOP reference credit. No precision/prepare changes;keep two CTAs.
 Sizing uses frozen S19 expanded `62ea5bf4`; earlier evidence below uses S14/S15 as labeled.
 S19 keeps PAIR M8 and PAIR+BLOCK M16/32. No new whole-layer kernel is frozen here.
 
@@ -186,7 +191,7 @@ carry the empty list,evidence and exact source identities. Previous nominees rem
 size coarser/DSM or owner-output accumulation plus fused norm/combine with fewer TMA transactions
 and enough useful CTAs. Those structural options remain unimplemented,not measured losses.
 
-## Remaining decomposition and parking
+## Dependency sizing and matched residual assignment
 
 [structural/dependency/SIZING.md](structural/dependency/SIZING.md) records the remaining measured/model
 budget and reopening conditions. Normal S19's per-phase fill/drain and exclusive exposed compute are
@@ -200,6 +205,11 @@ common added cost. C16/C8 output-path proxies give+.21%/+.93% before new synchro
 C8's favorable half-proxy with.5us added cost gives+1.14%;with1us it gives+.98%. This is a sensitivity,
 not an admitted build. Finish fusion alone cannot rescue the measured slower main.
 
-Park until calibrated DSM/coarse/finish costs fit that budget,another measured mechanism expands it,
-or leader per-shape/public code locates a recoverable small-M path. Aggregate leader MoE advantage
-1.25835x(~20.53% time reduction) is not a small-M S19 result. No new quota/P4 nominee;G0 unchanged.
+These costs do not admit the DSM/coarse/fused-finish forms;they do not park the residual lever.
+The matched [ladder report](structural/ladder/REPORT.md) supersedes the cross-cohort residual above.
+Its eight seeds×four symmetric rounds retain2,048 raw times,96NVML snapshots,source/resource proofs,
+per-CTA work/endpoints and fixed seed0 per-SM finish histograms. Sink and observer taxes are explicit.
+BASE−STREAM11.99/15.65/22.96/47.10us modelsR1.11685,one thirdR1.03532;this is sizing,not G0 confirmation.
+EARLY keeps128regs/no spills/two CTAs,passes135native gates and normal+forced13TASK/12shape screens,
+but loses. Only that release placement closes. point_nominations.json and ladder/P4_HANDOFF.json
+retain the empty new-winner list,exact tested patch and active next-bound evidence. Earlier nominees remain.
