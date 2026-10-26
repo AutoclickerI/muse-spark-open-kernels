@@ -152,15 +152,11 @@
       "message": "relative L2 error 7.260e-02 (worst row 1.004e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
     }
   ],
-  "normal_exp_relative_envelope": [
-    -0.029382526874542236,
-    0.03028881549835205
-  ],
+  "normal_exp_relative_envelope": null,
   "source_sha256": {
     "vGA": "bdb668509fecb913e682fe5d2653ed4b97b53da575a3644dd81e46706620d7a4"
   },
   "standins": [
-    "decode C1 DSM every key",
-    "verify two real WGs/global last-WG combine"
+    "native global publication/merge logic with local MMA shim"
   ]
 }

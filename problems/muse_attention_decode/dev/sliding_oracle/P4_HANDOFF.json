@@ -112,12 +112,58 @@
     "(16, 1)": "dEA",
     "(32, 1)": "dEA"
   },
-  "verification": "All-shapes exact candidate babd11fe normal/forced13TASK12graphs25static,24fresh/partial unit TASK; native whole-layer320TASK plus8producer attention TASK. Selected derivative removes unselected dispatch rows/source only; retained CUDA/runtime bytes are identical.",
+  "verification": "Exact selected decode-only25325c56 normal/forced13TASK12graphs29static each,24fresh/partial unit TASK; native full experiment320layerTASK+8producer attentionTASK; retained kernel bytes identical to measured EXP arm.",
   "caveats": [
     "EXP loses both verify loads; preserve current FA3v16/RAW2v32.",
     "d16 EXP/INC.996181 lies inside1.15pct duplicate-control drift and EXP/RAW1.005055; do not infer a shader win.",
     "d32 EXP/INC.998138 has a wideCI; native probability cycles increase at all4 loads; fewerSFU sites did not reduce work time.",
     "Port the separate shape hook and native kernel; do not replace the shared R2dsm kernel for untested v1/d1 shapes.",
     "Preserve S19 full-attention, other stages, PDL policies, and all existing selections outside the nominated shapes."
-  ]
+  ],
+  "merge_verdict": {
+    "job": "3a9a31747042429a",
+    "status": "Measured loss at both verify loads; no nomination",
+    "layer_TASK": 160,
+    "producer_attention_TASK": 4,
+    "ratios": {
+      "v16S": {
+        "mean": 1.0873116307340287,
+        "SE": 0.0027260686106349474,
+        "CI95": [
+          1.081501153032726,
+          1.0931221084353313
+        ],
+        "n": 16
+      },
+      "v32S": {
+        "mean": 1.0518402383828718,
+        "SE": 0.0010078851883793356,
+        "CI95": [
+          1.0496919819561241,
+          1.0539884948096194
+        ],
+        "n": 16
+      }
+    }
+  },
+  "retained_verify": "FA3v16, RAW2v32",
+  "pending_jobs": [],
+  "selected_candidate_screens": {
+    "normal": {
+      "TASK": 13,
+      "graphs": 12,
+      "static": 29,
+      "evidence": "selected_normal_screen.json",
+      "sha256": "1f18a14555fffd23673355cdf5049fb48dd8ad927c160868b9b4bcf4463be605"
+    },
+    "forced": {
+      "TASK": 13,
+      "graphs": 12,
+      "static": 29,
+      "evidence": "selected_forced_screen.json",
+      "sha256": "2935147517f832df93352c9d46bd464bd6e1f976904523bea9d7ebf0fa4e45df"
+    }
+  },
+  "generator": "python3 problems/muse_attention_decode/dev/sliding_oracle/layer.py; writes out/s15_sliding_exp.py with only d16/d32 selected",
+  "integration": "Port the separate stage hook/kernel or readable probability hunks onto S19; preserve its existing policies and unselected shapes. Patch is a source delta against frozen S15, which must stay unchanged."
 }

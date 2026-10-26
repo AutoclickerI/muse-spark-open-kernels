@@ -152,7 +152,9 @@ Hand both decode point estimates to P4, with the full CI/SE/seeds and1.15%
 d16 duplicate-control offset. D16 EXP/RAW is1.005055 with identical RAW/INC
 0.991353; no shader win is established there. The selected decode-only
 artifact25325c56 removes unselected source/dispatch rows, preserving the
-screened CUDA/runtime bytes. [P4_HANDOFF.json](P4_HANDOFF.json) and the
+measured CUDA/runtime bytes. Its exact normal and forced screens each pass
+13TASK/12graphs/29static checks; the source-array-aware static tool now checks
+the nested kernel dictionary too. [P4_HANDOFF.json](P4_HANDOFF.json) and the
 exact/readable patches are the inbox; P4 confirms held-out six-load G0.
 
 Real-producer median waits are64/64/240/256ns (d16/d32/v16/v32). Baseline
@@ -183,8 +185,32 @@ from its local use. Normal/forced screens each pass13TASK/12graphs/25static, and
 Sent attention check **3a9a31747042429a**, sender4068097, wrapper2e901f9d,
 payloada8cb756c:16 new seeds x10 cold,160layer+4producer TASK gates expected.
 It compares GLOBAL to INC/INC2, native RAW2, and exact S15 at v16/v32.
-Native result is pending; this is an independent merge experiment, not a
-retest of the losing exponent recipe.
+Receipt is complete in245.40s private time, all160 layer+4 producer TASK
+gates pass. [merge_result.json](merge_result.json) retains all seed statistics.
+
+| Load | GLOBAL/INC [95% t15 CI] | GLOBAL/RAW [95%CI] | A:A |
+|---|---:|---:|---:|
+| v16 |1.087312 [1.081501,1.093122]|1.077219 [1.073683,1.080754]|0.999772|
+| v32 |1.051840 [1.049692,1.053988]|1.051936 [1.049579,1.054294]|0.999299|
+
+This closes the one-last-WG global-reduction recipe, not global reduction
+or last-CTA forms generally. Baseline distributes64 query rows over four
+WGs (four rows/warp); the last WG alone performs16 rows/warp. Instrumented
+publication-to-finish is21.072/16.672us in the last WG versus4.544/3.392us
+per parallel baseline WG. These have different work per role; the counts
+explain why the last-WG tail is costly. Global partial traffic and fences
+also grow. Main probability cycles remain similar8358/8282 versus8492/8368,
+so this regression is in reduction rather than the probability algorithm.
+First-capture attention increments v16/v32 are25.601/24.065us INC versus
+44.064/38.656us GLOBAL. Removing cluster placement does not increase CTA
+occupancy (one/SM in both);132 single-CTA slots versus66 two-CTA clusters
+are different units, not doubled residency.
+
+No GLOBAL or verify EXP nominee is sent to P4. Retain FA3v16/RAW2v32;
+hand only the two uncertain decode EXP points with their control caveats.
+The1.3x KV targets remain unmet. Next structures must preserve merge
+parallelism and reduce max/reduction/packing or the7us setup/issue term.
+There is no P5 job pending and no standalone small-increment repeat queued.
 
 Decision on each valid follow-up: establish every TASK count, source identity and
 INC2/INC controls. Rank new/INC, and new/RAW at v16 separately. Every
@@ -204,4 +230,7 @@ python3 problems/muse_attention_decode/dev/sliding_oracle/layer.py
 CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_oracle/screen_structural.py
 CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_oracle/screen_followup.py
 python3 tools/h200_lab.py read 7bd3eced41e24402
+python3 tools/h200_lab.py read 3a9a31747042429a
+python3 problems/muse_attention_decode/dev/sliding_oracle/analyze_followup.py runs/muse_attention_decode/20261026T065219Z_check_7bd3eced41e24402.json
+python3 problems/muse_attention_decode/dev/sliding_oracle/analyze_followup.py --global-merge runs/muse_attention_decode/20261026T073628Z_check_3a9a31747042429a.json
 ```

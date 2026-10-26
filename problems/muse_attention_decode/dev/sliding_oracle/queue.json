@@ -33,7 +33,7 @@
   "merge": {
     "job": "3a9a31747042429a",
     "sender_pid": 4068097,
-    "state": "running",
+    "state": "done",
     "host": "muse_attention_decode",
     "mode": "check",
     "wrapper_sha256": "2e901f9d2ba729ace5ed3c2b55fde9ba15728dae221ed9f95f711676b08c7af4",
@@ -41,6 +41,9 @@
     "seeds": 16,
     "rounds": 10,
     "loads": 2,
-    "source": "runs/muse_attention_decode/20261026T073628Z_check_3a9a31747042429a.py"
+    "source": "runs/muse_attention_decode/20261026T073628Z_check_3a9a31747042429a.py",
+    "receipt": "runs/muse_attention_decode/20261026T073628Z_check_3a9a31747042429a.json",
+    "TASK": 164,
+    "elapsed_lab_s": 245.3959107050032
   }
 }

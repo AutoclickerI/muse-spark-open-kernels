@@ -33,7 +33,9 @@ for case in cases:
     assert all(int(torch.count_nonzero(v))==0 for v in rt.COUNTERS.values())
     rows.append(dict(case=case,splits=splits,TASK=ok,message=msg));print('PASS',case['batch'],case['q_len'],case['dist'],splits,msg[:80],flush=True)
 # A numerical characterization, not a stricter correctness gate.
-x=torch.linspace(-120,8,500001,device='cuda');approx=torch.round(torch.addcmul(torch.full_like(x,1064992256.),x,torch.full_like(x,8388608.))).to(torch.int32).view(torch.float32)
-relative=(approx/torch.exp2(x)-1);envelope=[float(relative.min()),float(relative.max())]
-result=dict(TASK_passed=len(rows),rows=rows,normal_exp_relative_envelope=envelope,source_sha256={n:hashlib.sha256(s.encode()).hexdigest() for n,s in rt.SOURCES.items()},standins=['decode C1 DSM every key','verify two real WGs/global last-WG combine'])
+envelope=None
+if not global_merge:
+    x=torch.linspace(-120,8,500001,device='cuda');approx=torch.round(torch.addcmul(torch.full_like(x,1064992256.),x,torch.full_like(x,8388608.))).to(torch.int32).view(torch.float32)
+    relative=(approx/torch.exp2(x)-1);envelope=[float(relative.min()),float(relative.max())]
+result=dict(TASK_passed=len(rows),rows=rows,normal_exp_relative_envelope=envelope,source_sha256={n:hashlib.sha256(s.encode()).hexdigest() for n,s in rt.SOURCES.items()},standins=['native global publication/merge logic with local MMA shim'] if global_merge else ['decode C1 DSM every key','verify two real WGs/global last-WG combine'])
 (H/('merge_admission.json' if global_merge else 'structural_admission.json')).write_text(json.dumps(result,indent=2)+'\n');print('PASS',len(rows),'TASK; exp envelope',envelope)

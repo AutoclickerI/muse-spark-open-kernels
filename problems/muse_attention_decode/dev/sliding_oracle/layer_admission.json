@@ -1,23 +1,27 @@
 {
-  "candidate_sha256": "babd11fe211a1d6f18c176eaf43da5ff42389bddda67970a6019a60fcef820be",
+  "candidate_sha256": "25325c56b3786afbadb5d9b795f936dd691d9833e3f2e7c0c38fff1e6d11ec24",
   "screens": {
     "normal": {
       "TASK": 13,
       "graphs": 12,
-      "static": 25,
-      "result_sha256": "efbd0bc5420c64c7b5f8623b8ce900437073649987d6b17caafc6f86c785a15f",
-      "evidence": "exp_normal_screen.json"
+      "static": 29,
+      "evidence": "selected_normal_screen.json",
+      "sha256": "1f18a14555fffd23673355cdf5049fb48dd8ad927c160868b9b4bcf4463be605"
     },
     "forced": {
       "TASK": 13,
       "graphs": 12,
-      "static": 25,
-      "result_sha256": "841f826913af51f29396e5a966adb898e6434099afd9be7fff31f027f36802c3",
-      "evidence": "exp_forced_screen.json"
+      "static": 29,
+      "evidence": "selected_forced_screen.json",
+      "sha256": "2935147517f832df93352c9d46bd464bd6e1f976904523bea9d7ebf0fa4e45df"
     }
   },
   "component_TASK": 24,
   "packed_layer_TASK": 40,
   "packed_producer_attention_TASK": 8,
-  "payload_sha256": "f23abf6cf50ae6f6e7a4aa28c2516dfcf148c98183367e5a49d8e1ba1895f375"
+  "payload_sha256": "f23abf6cf50ae6f6e7a4aa28c2516dfcf148c98183367e5a49d8e1ba1895f375",
+  "selection": {
+    "16,1": "dEA",
+    "32,1": "dEA"
+  }
 }
