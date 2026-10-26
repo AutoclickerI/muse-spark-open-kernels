@@ -1,0 +1,3965 @@
+{
+  "receipt": "7eaa262a30ec483e",
+  "s15_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "basis": {
+    "timestamp": "One retained median-seed trace per shape; all streams; 46/16 weighted; completion-chain increments conserve wall.",
+    "gpu_idle": "Exact union with no recorded kernel/memcpy/memset. Not an HBM counter.",
+    "no_major": "No major weight/KV-stage kernel resident; glue/vector traffic can remain. Not an HBM utilization measurement.",
+    "ramp": "Model ceiling: at most one 2.36us fitted ramp per exposed weight/KV stage; glue ramps excluded, clipped to its completion-critical time; first qkv ramp retained, concurrent MoE branches combined. Add only actual GPU idle, not busy DAG gaps.",
+    "early": "Scenario only: ramp begins at kernel start, then intersect with completion-critical intervals. Actual load issue and PDL wait placement are unobserved by CUPTI activity.",
+    "deficit": "Unique-read service-equivalent headroom at4.58TB/s; padding/cache/activation reuse and read multiplicity make this an optimistic model, not measured HBM idle.",
+    "gap": "Per-load contribution: ln(W/(W-bound))/(6 ln(leader/ours)); sums across the six equally weighted log loads.",
+    "retained_operands": "One store+read per modeled interstage output, excluding b2 returns and one route-ID return store; add final MoE output. HBM service-equivalent scenario, not measured miss traffic. Projection partials included; internal MoE repeated activation reads excluded. Not a strict physical bound on retained-operand latency.",
+    "hardware_HBM_idle": "Not identifiable from activity timestamps/unique-byte models; no per-kernel DRAM throughput or instruction timestamps are present."
+  },
+  "stream_TBps": 4.58,
+  "intercept_us": 2.36,
+  "current_score": 1.8378866426354703,
+  "leader_score": 2.3601,
+  "retained_HBM_equivalent_R": 1.0160168958109812,
+  "model_ceiling_R": 1.0855676249199977,
+  "model_ceiling_gap_share_pct": 32.82969351137677,
+  "shapes": [
+    {
+      "case": "d1S",
+      "weight": 46,
+      "trace_seed": 7101293,
+      "wall_us": 90.465,
+      "gpu_idle_us": 0.0,
+      "no_major_kernel_resident_us": 2.753,
+      "retained_edge_bytes": {
+        "qkv_gate": 0,
+        "qkv3": 10240,
+        "gate": 4096,
+        "attention_sliding": 4096,
+        "attention_full": 0,
+        "o": 65536,
+        "b1": 98304,
+        "pool_router": 405504,
+        "route": 16544,
+        "unpooler": 0,
+        "unpooler_slice": 65536,
+        "MoE output": 16384
+      },
+      "retained_operand_bytes": 686240,
+      "retained_operand_HBM_equivalent_us": 0.14983406113537118,
+      "no_major_intervals": [
+        [
+          87.712,
+          90.465,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 7.008,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 15919104,
+          "full_rate_equivalent_us": 3.4757868995633188,
+          "unique_model_TBps": 2.271561643835616,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 3.5322131004366812,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 7.008
+        },
+        "qkv -> attention": {
+          "critical_us": 7.648,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 537612,
+          "full_rate_equivalent_us": 0.1173825327510917,
+          "unique_model_TBps": 0.07029445606694561,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 7.530617467248908,
+          "first_kernel_us": 1.856,
+          "last_kernel_us": 14.656
+        },
+        "attention -> gate": {
+          "critical_us": 1.408,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 16795648,
+          "full_rate_equivalent_us": 3.6671720524017464,
+          "unique_model_TBps": 11.928727272727274,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 1.408,
+          "service_deficit_us": 0,
+          "first_kernel_us": 6.4,
+          "last_kernel_us": 16.064
+        },
+        "attention/gate -> O": {
+          "critical_us": 4.96,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 13142016,
+          "full_rate_equivalent_us": 2.869435807860262,
+          "unique_model_TBps": 2.6496,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.090564192139738,
+          "first_kernel_us": 7.328,
+          "last_kernel_us": 21.024
+        },
+        "O -> b1": {
+          "critical_us": 4.128,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 163840,
+          "full_rate_equivalent_us": 0.03577292576419214,
+          "unique_model_TBps": 0.03968992248062015,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.092227074235808,
+          "first_kernel_us": 20.224,
+          "last_kernel_us": 25.152
+        },
+        "b1 -> pool/router": {
+          "critical_us": 15.552,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 56816412,
+          "full_rate_equivalent_us": 12.405330131004368,
+          "unique_model_TBps": 3.653318672839506,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.146669868995632,
+          "first_kernel_us": 20.896,
+          "last_kernel_us": 40.704
+        },
+        "pool/router -> route": {
+          "critical_us": 3.648,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 220164,
+          "full_rate_equivalent_us": 0.0480707423580786,
+          "unique_model_TBps": 0.060351973684210525,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 3.5999292576419215,
+          "first_kernel_us": 22.112,
+          "last_kernel_us": 44.352
+        },
+        "route -> MoE": {
+          "critical_us": 39.456,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 85008472,
+          "full_rate_equivalent_us": 18.560801746724888,
+          "unique_model_TBps": 2.1545131792376315,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 20.895198253275115,
+          "first_kernel_us": 24.704,
+          "last_kernel_us": 83.808
+        },
+        "MoE -> unpooler": {
+          "critical_us": 3.904,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 8396800,
+          "full_rate_equivalent_us": 1.8333624454148472,
+          "unique_model_TBps": 2.150819672131148,
+          "kernel_start_ramp_exposed_us": 2.1999999999999886,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.0706375545851525,
+          "first_kernel_us": 83.648,
+          "last_kernel_us": 87.712
+        },
+        "unpooler -> b2": {
+          "critical_us": 2.753,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 196608,
+          "full_rate_equivalent_us": 0.042927510917030565,
+          "unique_model_TBps": 0.07141590991645479,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.7100724890829695,
+          "first_kernel_us": 84.545,
+          "last_kernel_us": 90.465
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv3",
+          "critical_start_us": 0.0,
+          "end_us": 7.008,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 7.008,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 7.008000000000001,
+          "end_us": 14.656,
+          "kernel_start_us": 1.856,
+          "kernel_end_us": 14.656,
+          "pre_frontier_overlap_us": 5.152000000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "gate",
+          "critical_start_us": 14.656,
+          "end_us": 16.064,
+          "kernel_start_us": 6.4,
+          "kernel_end_us": 16.064,
+          "pre_frontier_overlap_us": 8.256,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 16.064,
+          "end_us": 21.024,
+          "kernel_start_us": 7.328,
+          "kernel_end_us": 21.024,
+          "pre_frontier_overlap_us": 8.736,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 21.024,
+          "end_us": 25.152,
+          "kernel_start_us": 20.224,
+          "kernel_end_us": 25.152,
+          "pre_frontier_overlap_us": 0.8000000000000007,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 25.152,
+          "end_us": 40.704,
+          "kernel_start_us": 20.896,
+          "kernel_end_us": 40.704,
+          "pre_frontier_overlap_us": 4.256,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 40.70399999999999,
+          "end_us": 44.352,
+          "kernel_start_us": 22.112,
+          "kernel_end_us": 44.352,
+          "pre_frontier_overlap_us": 18.591999999999995,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 44.352000000000004,
+          "end_us": 83.808,
+          "kernel_start_us": 24.704,
+          "kernel_end_us": 83.808,
+          "pre_frontier_overlap_us": 19.648000000000003,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler_slice",
+          "critical_start_us": 83.808,
+          "end_us": 87.712,
+          "kernel_start_us": 83.648,
+          "kernel_end_us": 87.712,
+          "pre_frontier_overlap_us": 0.1600000000000108,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 87.712,
+          "end_us": 90.465,
+          "kernel_start_us": 84.545,
+          "kernel_end_us": 90.465,
+          "pre_frontier_overlap_us": 3.1670000000000016,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 2.1999999999999886,
+      "deferred_ramp_ceiling_us": 13.207999999999998,
+      "ramp_plus_idle_ceiling_us": 13.207999999999998
+    },
+    {
+      "case": "d1F",
+      "weight": 16,
+      "trace_seed": 7206022,
+      "wall_us": 97.633,
+      "gpu_idle_us": 0.0,
+      "no_major_kernel_resident_us": 2.657,
+      "retained_edge_bytes": {
+        "qkv_gate": 0,
+        "qkv3": 10240,
+        "gate": 4096,
+        "attention_sliding": 0,
+        "attention_full": 4096,
+        "o": 65536,
+        "b1": 98304,
+        "pool_router": 405504,
+        "route": 16544,
+        "unpooler": 0,
+        "unpooler_slice": 65536,
+        "MoE output": 16384
+      },
+      "retained_operand_bytes": 686240,
+      "retained_operand_HBM_equivalent_us": 0.14983406113537118,
+      "no_major_intervals": [
+        [
+          94.976,
+          97.633,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 6.816,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 15919104,
+          "full_rate_equivalent_us": 3.4757868995633188,
+          "unique_model_TBps": 2.3355492957746478,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 3.340213100436681,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 6.816
+        },
+        "qkv -> attention": {
+          "critical_us": 19.36,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 20805392,
+          "full_rate_equivalent_us": 4.5426620087336245,
+          "unique_model_TBps": 1.0746586776859504,
+          "kernel_start_ramp_exposed_us": 1.8160000000000007,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 14.817337991266374,
+          "first_kernel_us": 6.272,
+          "last_kernel_us": 26.176
+        },
+        "attention -> gate": {
+          "critical_us": 2.944,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 16795648,
+          "full_rate_equivalent_us": 3.6671720524017464,
+          "unique_model_TBps": 5.70504347826087,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 0,
+          "first_kernel_us": 7.392,
+          "last_kernel_us": 29.12
+        },
+        "attention/gate -> O": {
+          "critical_us": 4.672,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 13142016,
+          "full_rate_equivalent_us": 2.869435807860262,
+          "unique_model_TBps": 2.812931506849315,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 1.8025641921397377,
+          "first_kernel_us": 20.512,
+          "last_kernel_us": 33.792
+        },
+        "O -> b1": {
+          "critical_us": 4.16,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 163840,
+          "full_rate_equivalent_us": 0.03577292576419214,
+          "unique_model_TBps": 0.039384615384615386,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.124227074235808,
+          "first_kernel_us": 32.832,
+          "last_kernel_us": 37.952
+        },
+        "b1 -> pool/router": {
+          "critical_us": 14.944,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 56816412,
+          "full_rate_equivalent_us": 12.405330131004368,
+          "unique_model_TBps": 3.801954764453961,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.5386698689956333,
+          "first_kernel_us": 33.472,
+          "last_kernel_us": 52.896
+        },
+        "pool/router -> route": {
+          "critical_us": 3.616,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 220164,
+          "full_rate_equivalent_us": 0.0480707423580786,
+          "unique_model_TBps": 0.06088606194690265,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 3.5679292576419215,
+          "first_kernel_us": 34.624,
+          "last_kernel_us": 56.512
+        },
+        "route -> MoE": {
+          "critical_us": 34.656,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 85008472,
+          "full_rate_equivalent_us": 18.560801746724888,
+          "unique_model_TBps": 2.4529222068328718,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 16.09519825327511,
+          "first_kernel_us": 37.44,
+          "last_kernel_us": 91.168
+        },
+        "MoE -> unpooler": {
+          "critical_us": 3.808,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 8396800,
+          "full_rate_equivalent_us": 1.8333624454148472,
+          "unique_model_TBps": 2.2050420168067224,
+          "kernel_start_ramp_exposed_us": 2.1999999999999886,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 1.9746375545851527,
+          "first_kernel_us": 91.008,
+          "last_kernel_us": 94.976
+        },
+        "unpooler -> b2": {
+          "critical_us": 2.657,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 196608,
+          "full_rate_equivalent_us": 0.042927510917030565,
+          "unique_model_TBps": 0.07399623635679338,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.6140724890829694,
+          "first_kernel_us": 91.84,
+          "last_kernel_us": 97.633
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv3",
+          "critical_start_us": 0.0,
+          "end_us": 6.816,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 6.816,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 6.815999999999999,
+          "end_us": 26.176,
+          "kernel_start_us": 6.272,
+          "kernel_end_us": 26.176,
+          "pre_frontier_overlap_us": 0.5439999999999987,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "gate",
+          "critical_start_us": 26.176000000000002,
+          "end_us": 29.12,
+          "kernel_start_us": 7.392,
+          "kernel_end_us": 29.12,
+          "pre_frontier_overlap_us": 18.784000000000002,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 29.12,
+          "end_us": 33.792,
+          "kernel_start_us": 20.512,
+          "kernel_end_us": 33.792,
+          "pre_frontier_overlap_us": 8.608,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 33.792,
+          "end_us": 37.952,
+          "kernel_start_us": 32.832,
+          "kernel_end_us": 37.952,
+          "pre_frontier_overlap_us": 0.9600000000000009,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 37.952,
+          "end_us": 52.896,
+          "kernel_start_us": 33.472,
+          "kernel_end_us": 52.896,
+          "pre_frontier_overlap_us": 4.479999999999997,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 52.896,
+          "end_us": 56.512,
+          "kernel_start_us": 34.624,
+          "kernel_end_us": 56.512,
+          "pre_frontier_overlap_us": 18.272,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 56.51200000000001,
+          "end_us": 91.168,
+          "kernel_start_us": 37.44,
+          "kernel_end_us": 91.168,
+          "pre_frontier_overlap_us": 19.07200000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler_slice",
+          "critical_start_us": 91.168,
+          "end_us": 94.976,
+          "kernel_start_us": 91.008,
+          "kernel_end_us": 94.976,
+          "pre_frontier_overlap_us": 0.1600000000000108,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 94.976,
+          "end_us": 97.633,
+          "kernel_start_us": 91.84,
+          "kernel_end_us": 97.633,
+          "pre_frontier_overlap_us": 3.1359999999999957,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 4.015999999999989,
+      "deferred_ramp_ceiling_us": 14.16,
+      "ramp_plus_idle_ceiling_us": 14.16
+    },
+    {
+      "case": "d16S",
+      "weight": 46,
+      "trace_seed": 7101293,
+      "wall_us": 154.24,
+      "gpu_idle_us": 0.128,
+      "no_major_kernel_resident_us": 2.7510000000000003,
+      "retained_edge_bytes": {
+        "qkv_gate": 0,
+        "qkv3": 1638400,
+        "gate": 65536,
+        "attention_sliding": 65536,
+        "attention_full": 0,
+        "o": 1048576,
+        "b1": 1572864,
+        "pool_router": 3538944,
+        "route": 264704,
+        "unpooler": 1048576,
+        "unpooler_slice": 0,
+        "MoE output": 262144
+      },
+      "retained_operand_bytes": 9505280,
+      "retained_operand_HBM_equivalent_us": 2.0753886462882094,
+      "no_major_intervals": [
+        [
+          8.608,
+          8.672,
+          []
+        ],
+        [
+          137.088,
+          137.152,
+          []
+        ],
+        [
+          151.617,
+          154.24,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 7.36,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 21233664,
+          "full_rate_equivalent_us": 4.636171179039301,
+          "unique_model_TBps": 2.8850086956521737,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.7238288209606996,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 7.36
+        },
+        "qkv -> attention": {
+          "critical_us": 14.399999999999999,
+          "actual_gpu_idle_us": 0.064,
+          "model_read_bytes": 9338952,
+          "full_rate_equivalent_us": 2.0390724890829697,
+          "unique_model_TBps": 0.6485383333333333,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 12.36092751091703,
+          "first_kernel_us": 4.736,
+          "last_kernel_us": 21.824
+        },
+        "attention -> gate": {
+          "critical_us": 2.24,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 17072128,
+          "full_rate_equivalent_us": 3.727538864628821,
+          "unique_model_TBps": 7.621485714285714,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.24,
+          "service_deficit_us": 0,
+          "first_kernel_us": 9.472,
+          "last_kernel_us": 24.064
+        },
+        "attention/gate -> O": {
+          "critical_us": 6.304,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 12894208,
+          "full_rate_equivalent_us": 2.8153292576419213,
+          "unique_model_TBps": 2.045401015228426,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.488670742358079,
+          "first_kernel_us": 10.368,
+          "last_kernel_us": 30.368
+        },
+        "O -> b1": {
+          "critical_us": 2.4,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1146880,
+          "full_rate_equivalent_us": 0.250410480349345,
+          "unique_model_TBps": 0.47786666666666666,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.1495895196506547,
+          "first_kernel_us": 21.664,
+          "last_kernel_us": 32.768
+        },
+        "b1 -> pool/router": {
+          "critical_us": 21.248,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 75759616,
+          "full_rate_equivalent_us": 16.541400873362445,
+          "unique_model_TBps": 3.5654939759036144,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.706599126637556,
+          "first_kernel_us": 22.592,
+          "last_kernel_us": 54.016
+        },
+        "pool/router -> route": {
+          "critical_us": 3.296,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1786884,
+          "full_rate_equivalent_us": 0.3901493449781659,
+          "unique_model_TBps": 0.54213713592233,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.905850655021834,
+          "first_kernel_us": 45.6,
+          "last_kernel_us": 57.312
+        },
+        "route -> MoE": {
+          "critical_us": 79.776,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 198829112,
+          "full_rate_equivalent_us": 43.41246986899563,
+          "unique_model_TBps": 2.4923424588848775,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 36.36353013100437,
+          "first_kernel_us": 47.84,
+          "last_kernel_us": 137.088
+        },
+        "MoE -> unpooler": {
+          "critical_us": 14.465,
+          "actual_gpu_idle_us": 0.064,
+          "model_read_bytes": 50741248,
+          "full_rate_equivalent_us": 11.078875109170305,
+          "unique_model_TBps": 3.5078636709298303,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.386124890829695,
+          "first_kernel_us": 137.152,
+          "last_kernel_us": 151.617
+        },
+        "unpooler -> b2": {
+          "critical_us": 2.623,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1179648,
+          "full_rate_equivalent_us": 0.25756506550218344,
+          "unique_model_TBps": 0.44973236751810897,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.365434934497817,
+          "first_kernel_us": 137.857,
+          "last_kernel_us": 154.24
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv3",
+          "critical_start_us": 0.0,
+          "end_us": 7.36,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 7.36,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 7.36,
+          "end_us": 8.608,
+          "kernel_start_us": 4.736,
+          "kernel_end_us": 8.608,
+          "pre_frontier_overlap_us": 2.6240000000000006,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 8.672000000000002,
+          "end_us": 21.824,
+          "kernel_start_us": 8.672,
+          "kernel_end_us": 21.824,
+          "pre_frontier_overlap_us": 1.7763568394002505e-15,
+          "gap_us": 0.064
+        },
+        {
+          "stage": "gate",
+          "critical_start_us": 21.823999999999998,
+          "end_us": 24.064,
+          "kernel_start_us": 9.472,
+          "kernel_end_us": 24.064,
+          "pre_frontier_overlap_us": 12.351999999999999,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 24.064,
+          "end_us": 30.368,
+          "kernel_start_us": 10.368,
+          "kernel_end_us": 30.368,
+          "pre_frontier_overlap_us": 13.696,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 30.368000000000002,
+          "end_us": 32.768,
+          "kernel_start_us": 21.664,
+          "kernel_end_us": 32.768,
+          "pre_frontier_overlap_us": 8.704,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 32.768,
+          "end_us": 54.016,
+          "kernel_start_us": 22.592,
+          "kernel_end_us": 54.016,
+          "pre_frontier_overlap_us": 10.176000000000002,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 54.016,
+          "end_us": 57.312,
+          "kernel_start_us": 45.6,
+          "kernel_end_us": 57.312,
+          "pre_frontier_overlap_us": 8.415999999999997,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 57.312,
+          "end_us": 137.088,
+          "kernel_start_us": 47.84,
+          "kernel_end_us": 137.088,
+          "pre_frontier_overlap_us": 9.471999999999994,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 137.152,
+          "end_us": 151.617,
+          "kernel_start_us": 137.152,
+          "kernel_end_us": 151.617,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.064
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 151.61700000000002,
+          "end_us": 154.24,
+          "kernel_start_us": 137.857,
+          "kernel_end_us": 154.24,
+          "pre_frontier_overlap_us": 13.76000000000002,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 2.36,
+      "deferred_ramp_ceiling_us": 14.04,
+      "ramp_plus_idle_ceiling_us": 14.168
+    },
+    {
+      "case": "d16F",
+      "weight": 16,
+      "trace_seed": 7206022,
+      "wall_us": 254.048,
+      "gpu_idle_us": 0.129,
+      "no_major_kernel_resident_us": 2.945,
+      "retained_edge_bytes": {
+        "qkv_gate": 2064384,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 0,
+        "attention_full": 65536,
+        "o": 1048576,
+        "b1": 1572864,
+        "pool_router": 3538944,
+        "route": 264704,
+        "unpooler": 1048576,
+        "unpooler_slice": 0,
+        "MoE output": 262144
+      },
+      "retained_operand_bytes": 9865728,
+      "retained_operand_HBM_equivalent_us": 2.1540890829694326,
+      "no_major_intervals": [
+        [
+          12.031,
+          12.16,
+          []
+        ],
+        [
+          251.232,
+          254.048,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 10.847,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 38010880,
+          "full_rate_equivalent_us": 8.299318777292576,
+          "unique_model_TBps": 3.5042758366368583,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.547681222707423,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 10.847
+        },
+        "qkv -> attention": {
+          "critical_us": 104.64,
+          "actual_gpu_idle_us": 0.129,
+          "model_read_bytes": 327502304,
+          "full_rate_equivalent_us": 71.50705327510917,
+          "unique_model_TBps": 3.1298003058103974,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 33.13294672489083,
+          "first_kernel_us": 4.32,
+          "last_kernel_us": 115.616
+        },
+        "attention/gate -> O": {
+          "critical_us": 5.984,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 12894208,
+          "full_rate_equivalent_us": 2.8153292576419213,
+          "unique_model_TBps": 2.154780748663102,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.1686707423580787,
+          "first_kernel_us": 13.023,
+          "last_kernel_us": 121.6
+        },
+        "O -> b1": {
+          "critical_us": 3.36,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1146880,
+          "full_rate_equivalent_us": 0.250410480349345,
+          "unique_model_TBps": 0.3413333333333334,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 3.1095895196506547,
+          "first_kernel_us": 106.592,
+          "last_kernel_us": 124.96
+        },
+        "b1 -> pool/router": {
+          "critical_us": 20.832,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 75759616,
+          "full_rate_equivalent_us": 16.541400873362445,
+          "unique_model_TBps": 3.6366943164362517,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.290599126637556,
+          "first_kernel_us": 120.352,
+          "last_kernel_us": 145.792
+        },
+        "pool/router -> route": {
+          "critical_us": 3.456,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1786884,
+          "full_rate_equivalent_us": 0.3901493449781659,
+          "unique_model_TBps": 0.5170381944444444,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 3.0658506550218343,
+          "first_kernel_us": 137.216,
+          "last_kernel_us": 149.248
+        },
+        "route -> MoE": {
+          "critical_us": 87.2,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 255353928,
+          "full_rate_equivalent_us": 55.7541327510917,
+          "unique_model_TBps": 2.928370733944954,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 31.4458672489083,
+          "first_kernel_us": 140.416,
+          "last_kernel_us": 236.448
+        },
+        "MoE -> unpooler": {
+          "critical_us": 14.784,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 50741248,
+          "full_rate_equivalent_us": 11.078875109170305,
+          "unique_model_TBps": 3.43217316017316,
+          "kernel_start_ramp_exposed_us": 2.1040000000000134,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.705124890829696,
+          "first_kernel_us": 236.192,
+          "last_kernel_us": 251.232
+        },
+        "unpooler -> b2": {
+          "critical_us": 2.816,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1179648,
+          "full_rate_equivalent_us": 0.25756506550218344,
+          "unique_model_TBps": 0.41890909090909095,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.5584349344978166,
+          "first_kernel_us": 237.152,
+          "last_kernel_us": 254.048
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 10.847,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 10.847,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 10.847000000000001,
+          "end_us": 12.031,
+          "kernel_start_us": 4.32,
+          "kernel_end_us": 12.031,
+          "pre_frontier_overlap_us": 6.527000000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 12.159999999999997,
+          "end_us": 115.616,
+          "kernel_start_us": 12.16,
+          "kernel_end_us": 115.616,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.129
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 115.616,
+          "end_us": 121.6,
+          "kernel_start_us": 13.023,
+          "kernel_end_us": 121.6,
+          "pre_frontier_overlap_us": 102.593,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 121.6,
+          "end_us": 124.96,
+          "kernel_start_us": 106.592,
+          "kernel_end_us": 124.96,
+          "pre_frontier_overlap_us": 15.007999999999996,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 124.96000000000001,
+          "end_us": 145.792,
+          "kernel_start_us": 120.352,
+          "kernel_end_us": 145.792,
+          "pre_frontier_overlap_us": 4.608000000000004,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 145.792,
+          "end_us": 149.248,
+          "kernel_start_us": 137.216,
+          "kernel_end_us": 149.248,
+          "pre_frontier_overlap_us": 8.575999999999993,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 149.248,
+          "end_us": 236.448,
+          "kernel_start_us": 140.416,
+          "kernel_end_us": 236.448,
+          "pre_frontier_overlap_us": 8.831999999999994,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 236.448,
+          "end_us": 251.232,
+          "kernel_start_us": 236.192,
+          "kernel_end_us": 251.232,
+          "pre_frontier_overlap_us": 0.2560000000000002,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 251.232,
+          "end_us": 254.048,
+          "kernel_start_us": 237.152,
+          "kernel_end_us": 254.048,
+          "pre_frontier_overlap_us": 14.080000000000013,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 2.1040000000000134,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 11.928999999999998
+    },
+    {
+      "case": "d32S",
+      "weight": 46,
+      "trace_seed": 7206022,
+      "wall_us": 182.816,
+      "gpu_idle_us": 0.575,
+      "no_major_kernel_resident_us": 3.838,
+      "retained_edge_bytes": {
+        "qkv_gate": 589824,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 131072,
+        "attention_full": 0,
+        "o": 1048576,
+        "b1": 3145728,
+        "pool_router": 7077888,
+        "route": 529408,
+        "unpooler": 2097152,
+        "unpooler_slice": 0,
+        "MoE output": 524288
+      },
+      "retained_operand_bytes": 15143936,
+      "retained_operand_HBM_equivalent_us": 3.3065362445414848,
+      "no_major_intervals": [
+        [
+          14.048,
+          14.176,
+          []
+        ],
+        [
+          30.464,
+          30.624,
+          []
+        ],
+        [
+          163.489,
+          163.776,
+          []
+        ],
+        [
+          179.553,
+          182.816,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 12.992,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 29149184,
+          "full_rate_equivalent_us": 6.364450655021834,
+          "unique_model_TBps": 2.2436256157635466,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 6.627549344978167,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 12.992
+        },
+        "qkv -> attention": {
+          "critical_us": 17.344,
+          "actual_gpu_idle_us": 0.128,
+          "model_read_bytes": 17334408,
+          "full_rate_equivalent_us": 3.784805240174672,
+          "unique_model_TBps": 0.9994469557195571,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 13.55919475982533,
+          "first_kernel_us": 2.848,
+          "last_kernel_us": 30.464
+        },
+        "attention/gate -> O": {
+          "critical_us": 6.144,
+          "actual_gpu_idle_us": 0.16,
+          "model_read_bytes": 16842752,
+          "full_rate_equivalent_us": 3.677456768558952,
+          "unique_model_TBps": 2.7413333333333334,
+          "kernel_start_ramp_exposed_us": 2.3599999999999994,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.4665432314410483,
+          "first_kernel_us": 30.624,
+          "last_kernel_us": 36.768
+        },
+        "O -> b1": {
+          "critical_us": 2.944,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1671168,
+          "full_rate_equivalent_us": 0.3648838427947598,
+          "unique_model_TBps": 0.5676521739130435,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.57911615720524,
+          "first_kernel_us": 31.552,
+          "last_kernel_us": 39.712
+        },
+        "b1 -> pool/router": {
+          "critical_us": 21.28,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 76021760,
+          "full_rate_equivalent_us": 16.598637554585153,
+          "unique_model_TBps": 3.5724511278195488,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.681362445414848,
+          "first_kernel_us": 36.0,
+          "last_kernel_us": 60.992
+        },
+        "pool/router -> route": {
+          "critical_us": 3.552,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 3556356,
+          "full_rate_equivalent_us": 0.7764969432314411,
+          "unique_model_TBps": 1.0012263513513513,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.775503056768559,
+          "first_kernel_us": 39.328,
+          "last_kernel_us": 64.544
+        },
+        "route -> MoE": {
+          "critical_us": 98.945,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 227526720,
+          "full_rate_equivalent_us": 49.67832314410481,
+          "unique_model_TBps": 2.299527212087524,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 49.266676855895184,
+          "first_kernel_us": 59.136,
+          "last_kernel_us": 163.489
+        },
+        "MoE -> unpooler": {
+          "critical_us": 15.777,
+          "actual_gpu_idle_us": 0.287,
+          "model_read_bytes": 51134464,
+          "full_rate_equivalent_us": 11.164730131004367,
+          "unique_model_TBps": 3.241076503771313,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.612269868995632,
+          "first_kernel_us": 163.776,
+          "last_kernel_us": 179.553
+        },
+        "unpooler -> b2": {
+          "critical_us": 3.263,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 2228224,
+          "full_rate_equivalent_us": 0.4865117903930131,
+          "unique_model_TBps": 0.6828758810910205,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.776488209606987,
+          "first_kernel_us": 164.385,
+          "last_kernel_us": 182.816
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 12.992,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 12.992,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 12.992,
+          "end_us": 14.048,
+          "kernel_start_us": 2.848,
+          "kernel_end_us": 14.048,
+          "pre_frontier_overlap_us": 10.144000000000002,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 14.175999999999998,
+          "end_us": 30.464,
+          "kernel_start_us": 14.176,
+          "kernel_end_us": 30.464,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.128
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 30.624000000000002,
+          "end_us": 36.768,
+          "kernel_start_us": 30.624,
+          "kernel_end_us": 36.768,
+          "pre_frontier_overlap_us": 3.552713678800501e-15,
+          "gap_us": 0.16
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 36.768,
+          "end_us": 39.712,
+          "kernel_start_us": 31.552,
+          "kernel_end_us": 39.712,
+          "pre_frontier_overlap_us": 5.216000000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 39.711999999999996,
+          "end_us": 60.992,
+          "kernel_start_us": 36.0,
+          "kernel_end_us": 60.992,
+          "pre_frontier_overlap_us": 3.711999999999996,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 60.992,
+          "end_us": 64.544,
+          "kernel_start_us": 39.328,
+          "kernel_end_us": 64.544,
+          "pre_frontier_overlap_us": 21.663999999999994,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 64.54400000000001,
+          "end_us": 163.489,
+          "kernel_start_us": 59.136,
+          "kernel_end_us": 163.489,
+          "pre_frontier_overlap_us": 5.408000000000008,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 163.776,
+          "end_us": 179.553,
+          "kernel_start_us": 163.776,
+          "kernel_end_us": 179.553,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.287
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 179.553,
+          "end_us": 182.816,
+          "kernel_start_us": 164.385,
+          "kernel_end_us": 182.816,
+          "pre_frontier_overlap_us": 15.168000000000006,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 4.719999999999999,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 12.374999999999998
+    },
+    {
+      "case": "d32F",
+      "weight": 16,
+      "trace_seed": 7206022,
+      "wall_us": 353.505,
+      "gpu_idle_us": 0.224,
+      "no_major_kernel_resident_us": 3.488,
+      "retained_edge_bytes": {
+        "qkv_gate": 0,
+        "qkv3": 327680,
+        "gate": 131072,
+        "attention_sliding": 0,
+        "attention_full": 131072,
+        "o": 1048576,
+        "b1": 3145728,
+        "pool_router": 7077888,
+        "route": 529408,
+        "unpooler": 2097152,
+        "unpooler_slice": 0,
+        "MoE output": 524288
+      },
+      "retained_operand_bytes": 15012864,
+      "retained_operand_HBM_equivalent_us": 3.2779179039301307,
+      "no_major_intervals": [
+        [
+          10.176,
+          10.336,
+          []
+        ],
+        [
+          334.273,
+          334.337,
+          []
+        ],
+        [
+          350.241,
+          353.505,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 9.312,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 16427008,
+          "full_rate_equivalent_us": 3.5866829694323146,
+          "unique_model_TBps": 1.7640687285223369,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 5.725317030567685,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 9.312
+        },
+        "qkv -> attention": {
+          "critical_us": 194.528,
+          "actual_gpu_idle_us": 0.16,
+          "model_read_bytes": 658294956,
+          "full_rate_equivalent_us": 143.73252314410482,
+          "unique_model_TBps": 3.384062736469814,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 50.795476855895174,
+          "first_kernel_us": 2.272,
+          "last_kernel_us": 204.0
+        },
+        "attention -> gate": {
+          "critical_us": 3.265,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 17367040,
+          "full_rate_equivalent_us": 3.7919301310043667,
+          "unique_model_TBps": 5.3191546707503825,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 0,
+          "first_kernel_us": 172.416,
+          "last_kernel_us": 207.265
+        },
+        "attention/gate -> O": {
+          "critical_us": 5.792,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 16842752,
+          "full_rate_equivalent_us": 3.677456768558952,
+          "unique_model_TBps": 2.9079337016574587,
+          "kernel_start_ramp_exposed_us": 2.1350000000000193,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.114543231441048,
+          "first_kernel_us": 207.04,
+          "last_kernel_us": 213.057
+        },
+        "O -> b1": {
+          "critical_us": 3.2,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 1671168,
+          "full_rate_equivalent_us": 0.3648838427947598,
+          "unique_model_TBps": 0.52224,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.83511615720524,
+          "first_kernel_us": 207.68,
+          "last_kernel_us": 216.257
+        },
+        "b1 -> pool/router": {
+          "critical_us": 21.44,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 76021760,
+          "full_rate_equivalent_us": 16.598637554585153,
+          "unique_model_TBps": 3.545791044776119,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.841362445414848,
+          "first_kernel_us": 212.705,
+          "last_kernel_us": 237.697
+        },
+        "pool/router -> route": {
+          "critical_us": 3.711,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 3556356,
+          "full_rate_equivalent_us": 0.7764969432314411,
+          "unique_model_TBps": 0.9583282134195635,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.9345030567685586,
+          "first_kernel_us": 215.648,
+          "last_kernel_us": 241.408
+        },
+        "route -> MoE": {
+          "critical_us": 92.865,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 170936368,
+          "full_rate_equivalent_us": 37.32235109170306,
+          "unique_model_TBps": 1.840697442524094,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 55.54264890829693,
+          "first_kernel_us": 235.681,
+          "last_kernel_us": 334.273
+        },
+        "MoE -> unpooler": {
+          "critical_us": 15.904,
+          "actual_gpu_idle_us": 0.064,
+          "model_read_bytes": 51134464,
+          "full_rate_equivalent_us": 11.164730131004367,
+          "unique_model_TBps": 3.215195171026157,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.739269868995633,
+          "first_kernel_us": 334.337,
+          "last_kernel_us": 350.241
+        },
+        "unpooler -> b2": {
+          "critical_us": 3.264,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 2228224,
+          "full_rate_equivalent_us": 0.4865117903930131,
+          "unique_model_TBps": 0.6826666666666668,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.777488209606987,
+          "first_kernel_us": 334.977,
+          "last_kernel_us": 353.505
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv3",
+          "critical_start_us": 0.0,
+          "end_us": 9.312,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 9.312,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 9.312,
+          "end_us": 10.176,
+          "kernel_start_us": 2.272,
+          "kernel_end_us": 10.176,
+          "pre_frontier_overlap_us": 7.039999999999999,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 10.336000000000013,
+          "end_us": 204.0,
+          "kernel_start_us": 10.336,
+          "kernel_end_us": 204.0,
+          "pre_frontier_overlap_us": 1.2434497875801753e-14,
+          "gap_us": 0.16
+        },
+        {
+          "stage": "gate",
+          "critical_start_us": 204.0,
+          "end_us": 207.265,
+          "kernel_start_us": 172.416,
+          "kernel_end_us": 207.265,
+          "pre_frontier_overlap_us": 31.584000000000003,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 207.265,
+          "end_us": 213.057,
+          "kernel_start_us": 207.04,
+          "kernel_end_us": 213.057,
+          "pre_frontier_overlap_us": 0.22499999999999432,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 213.05700000000002,
+          "end_us": 216.257,
+          "kernel_start_us": 207.68,
+          "kernel_end_us": 216.257,
+          "pre_frontier_overlap_us": 5.3770000000000095,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 216.257,
+          "end_us": 237.697,
+          "kernel_start_us": 212.705,
+          "kernel_end_us": 237.697,
+          "pre_frontier_overlap_us": 3.5519999999999925,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 237.69699999999997,
+          "end_us": 241.408,
+          "kernel_start_us": 215.648,
+          "kernel_end_us": 241.408,
+          "pre_frontier_overlap_us": 22.048999999999978,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 241.40800000000002,
+          "end_us": 334.273,
+          "kernel_start_us": 235.681,
+          "kernel_end_us": 334.273,
+          "pre_frontier_overlap_us": 5.727000000000004,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 334.337,
+          "end_us": 350.241,
+          "kernel_start_us": 334.337,
+          "kernel_end_us": 350.241,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.064
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 350.241,
+          "end_us": 353.505,
+          "kernel_start_us": 334.977,
+          "kernel_end_us": 353.505,
+          "pre_frontier_overlap_us": 15.26400000000001,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 4.495000000000019,
+      "deferred_ramp_ceiling_us": 14.16,
+      "ramp_plus_idle_ceiling_us": 14.384
+    },
+    {
+      "case": "v1S",
+      "weight": 46,
+      "trace_seed": 7310751,
+      "wall_us": 123.616,
+      "gpu_idle_us": 0.383,
+      "no_major_kernel_resident_us": 3.231,
+      "retained_edge_bytes": {
+        "qkv_gate": 1032192,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 32768,
+        "attention_full": 0,
+        "o": 524288,
+        "b1": 786432,
+        "pool_router": 1769472,
+        "route": 132352,
+        "unpooler": 0,
+        "unpooler_slice": 524288,
+        "MoE output": 131072
+      },
+      "retained_operand_bytes": 4932864,
+      "retained_operand_HBM_equivalent_us": 1.0770445414847163,
+      "no_major_intervals": [
+        [
+          13.312,
+          13.44,
+          []
+        ],
+        [
+          116.641,
+          116.896,
+          []
+        ],
+        [
+          120.768,
+          123.616,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 10.656,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 37879808,
+          "full_rate_equivalent_us": 8.270700436681222,
+          "unique_model_TBps": 3.554786786786787,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.385299563318778,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 10.656
+        },
+        "qkv -> attention": {
+          "critical_us": 16.928,
+          "actual_gpu_idle_us": 0.128,
+          "model_read_bytes": 1050408,
+          "full_rate_equivalent_us": 0.2293467248908297,
+          "unique_model_TBps": 0.06205151228733459,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 16.69865327510917,
+          "first_kernel_us": 6.816,
+          "last_kernel_us": 27.712
+        },
+        "attention/gate -> O": {
+          "critical_us": 4.512,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 13156352,
+          "full_rate_equivalent_us": 2.872565938864629,
+          "unique_model_TBps": 2.915858156028369,
+          "kernel_start_ramp_exposed_us": 1.7200000000000024,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 1.6394340611353706,
+          "first_kernel_us": 27.072,
+          "last_kernel_us": 32.224
+        },
+        "O -> b1": {
+          "critical_us": 2.337,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 622592,
+          "full_rate_equivalent_us": 0.13593711790393012,
+          "unique_model_TBps": 0.26640650406504063,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.2010628820960703,
+          "first_kernel_us": 31.2,
+          "last_kernel_us": 34.561
+        },
+        "b1 -> pool/router": {
+          "critical_us": 20.895,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 75628544,
+          "full_rate_equivalent_us": 16.512782532751093,
+          "unique_model_TBps": 3.6194565206987317,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.382217467248907,
+          "first_kernel_us": 32.096,
+          "last_kernel_us": 55.456
+        },
+        "pool/router -> route": {
+          "critical_us": 3.072,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 902148,
+          "full_rate_equivalent_us": 0.19697554585152838,
+          "unique_model_TBps": 0.29366796875,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.8750244541484715,
+          "first_kernel_us": 46.848,
+          "last_kernel_us": 58.528
+        },
+        "route -> MoE": {
+          "critical_us": 58.113,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 170164784,
+          "full_rate_equivalent_us": 37.15388296943231,
+          "unique_model_TBps": 2.9281707019083507,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 20.95911703056769,
+          "first_kernel_us": 48.992,
+          "last_kernel_us": 116.641
+        },
+        "MoE -> unpooler": {
+          "critical_us": 3.872,
+          "actual_gpu_idle_us": 0.255,
+          "model_read_bytes": 8454144,
+          "full_rate_equivalent_us": 1.8458829694323142,
+          "unique_model_TBps": 2.183404958677686,
+          "kernel_start_ramp_exposed_us": 2.3599999999999994,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.0261170305676854,
+          "first_kernel_us": 116.896,
+          "last_kernel_us": 120.768
+        },
+        "unpooler -> b2": {
+          "critical_us": 2.848,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 655360,
+          "full_rate_equivalent_us": 0.14309170305676855,
+          "unique_model_TBps": 0.2301123595505618,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.7049082969432314,
+          "first_kernel_us": 117.633,
+          "last_kernel_us": 123.616
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 10.656,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 10.656,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 10.655999999999999,
+          "end_us": 13.312,
+          "kernel_start_us": 6.816,
+          "kernel_end_us": 13.312,
+          "pre_frontier_overlap_us": 3.839999999999999,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 13.44,
+          "end_us": 15.52,
+          "kernel_start_us": 13.44,
+          "kernel_end_us": 15.52,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.128
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 15.52,
+          "end_us": 24.128,
+          "kernel_start_us": 14.112,
+          "kernel_end_us": 24.128,
+          "pre_frontier_overlap_us": 1.4079999999999995,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 24.128,
+          "end_us": 26.464,
+          "kernel_start_us": 23.136,
+          "kernel_end_us": 26.464,
+          "pre_frontier_overlap_us": 0.9920000000000009,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 26.464,
+          "end_us": 27.712,
+          "kernel_start_us": 26.336,
+          "kernel_end_us": 27.712,
+          "pre_frontier_overlap_us": 0.1280000000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 27.711999999999996,
+          "end_us": 32.224,
+          "kernel_start_us": 27.072,
+          "kernel_end_us": 32.224,
+          "pre_frontier_overlap_us": 0.639999999999997,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 32.224,
+          "end_us": 34.561,
+          "kernel_start_us": 31.2,
+          "kernel_end_us": 34.561,
+          "pre_frontier_overlap_us": 1.0239999999999974,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 34.56100000000001,
+          "end_us": 55.456,
+          "kernel_start_us": 32.096,
+          "kernel_end_us": 55.456,
+          "pre_frontier_overlap_us": 2.4650000000000105,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 55.455999999999996,
+          "end_us": 58.528,
+          "kernel_start_us": 46.848,
+          "kernel_end_us": 58.528,
+          "pre_frontier_overlap_us": 8.607999999999997,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 58.528000000000006,
+          "end_us": 116.641,
+          "kernel_start_us": 48.992,
+          "kernel_end_us": 116.641,
+          "pre_frontier_overlap_us": 9.536000000000008,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler_slice",
+          "critical_start_us": 116.896,
+          "end_us": 120.768,
+          "kernel_start_us": 116.896,
+          "kernel_end_us": 120.768,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.255
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 120.768,
+          "end_us": 123.616,
+          "kernel_start_us": 117.633,
+          "kernel_end_us": 123.616,
+          "pre_frontier_overlap_us": 3.135000000000005,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 4.080000000000002,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 12.183
+    },
+    {
+      "case": "v1F",
+      "weight": 16,
+      "trace_seed": 7310751,
+      "wall_us": 139.201,
+      "gpu_idle_us": 0.257,
+      "no_major_kernel_resident_us": 3.105,
+      "retained_edge_bytes": {
+        "qkv_gate": 1032192,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 0,
+        "attention_full": 32768,
+        "o": 524288,
+        "b1": 786432,
+        "pool_router": 1769472,
+        "route": 132352,
+        "unpooler": 0,
+        "unpooler_slice": 524288,
+        "MoE output": 131072
+      },
+      "retained_operand_bytes": 4932864,
+      "retained_operand_HBM_equivalent_us": 1.0770445414847163,
+      "no_major_intervals": [
+        [
+          13.28,
+          13.345,
+          []
+        ],
+        [
+          132.289,
+          132.481,
+          []
+        ],
+        [
+          136.353,
+          139.201,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 10.88,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 37879808,
+          "full_rate_equivalent_us": 8.270700436681222,
+          "unique_model_TBps": 3.4815999999999994,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.6092995633187783,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 10.88
+        },
+        "qkv -> attention": {
+          "critical_us": 29.855999999999998,
+          "actual_gpu_idle_us": 0.065,
+          "model_read_bytes": 21318188,
+          "full_rate_equivalent_us": 4.654626200873363,
+          "unique_model_TBps": 0.7140336280814576,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 25.201373799126635,
+          "first_kernel_us": 7.297,
+          "last_kernel_us": 40.801
+        },
+        "attention/gate -> O": {
+          "critical_us": 4.768,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 13156352,
+          "full_rate_equivalent_us": 2.872565938864629,
+          "unique_model_TBps": 2.7593020134228188,
+          "kernel_start_ramp_exposed_us": 1.7199999999999989,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 1.8954340611353708,
+          "first_kernel_us": 40.161,
+          "last_kernel_us": 45.569
+        },
+        "O -> b1": {
+          "critical_us": 2.304,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 622592,
+          "full_rate_equivalent_us": 0.13593711790393012,
+          "unique_model_TBps": 0.27022222222222225,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.16806288209607,
+          "first_kernel_us": 44.225,
+          "last_kernel_us": 47.873
+        },
+        "b1 -> pool/router": {
+          "critical_us": 22.336,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 75628544,
+          "full_rate_equivalent_us": 16.512782532751093,
+          "unique_model_TBps": 3.385948424068768,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 5.823217467248906,
+          "first_kernel_us": 44.993,
+          "last_kernel_us": 70.209
+        },
+        "pool/router -> route": {
+          "critical_us": 3.072,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 902148,
+          "full_rate_equivalent_us": 0.19697554585152838,
+          "unique_model_TBps": 0.29366796875,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.8750244541484715,
+          "first_kernel_us": 60.705,
+          "last_kernel_us": 73.281
+        },
+        "route -> MoE": {
+          "critical_us": 59.008,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 170148400,
+          "full_rate_equivalent_us": 37.15030567685589,
+          "unique_model_TBps": 2.8834802060737528,
+          "kernel_start_ramp_exposed_us": 0,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 21.85769432314411,
+          "first_kernel_us": 62.625,
+          "last_kernel_us": 132.289
+        },
+        "MoE -> unpooler": {
+          "critical_us": 3.872,
+          "actual_gpu_idle_us": 0.192,
+          "model_read_bytes": 8454144,
+          "full_rate_equivalent_us": 1.8458829694323142,
+          "unique_model_TBps": 2.183404958677686,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 2.0261170305676854,
+          "first_kernel_us": 132.481,
+          "last_kernel_us": 136.353
+        },
+        "unpooler -> b2": {
+          "critical_us": 2.848,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 655360,
+          "full_rate_equivalent_us": 0.14309170305676855,
+          "unique_model_TBps": 0.2301123595505618,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.7049082969432314,
+          "first_kernel_us": 133.185,
+          "last_kernel_us": 139.201
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 10.88,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 10.88,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 10.879999999999999,
+          "end_us": 13.28,
+          "kernel_start_us": 7.297,
+          "kernel_end_us": 13.28,
+          "pre_frontier_overlap_us": 3.5829999999999993,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 13.345,
+          "end_us": 16.64,
+          "kernel_start_us": 13.345,
+          "kernel_end_us": 16.64,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.065
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 16.64,
+          "end_us": 33.793,
+          "kernel_start_us": 14.017,
+          "kernel_end_us": 33.793,
+          "pre_frontier_overlap_us": 2.623000000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 33.793,
+          "end_us": 39.745,
+          "kernel_start_us": 32.769,
+          "kernel_end_us": 39.745,
+          "pre_frontier_overlap_us": 1.024000000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 39.745000000000005,
+          "end_us": 40.801,
+          "kernel_start_us": 39.521,
+          "kernel_end_us": 40.801,
+          "pre_frontier_overlap_us": 0.22400000000000375,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 40.801,
+          "end_us": 45.569,
+          "kernel_start_us": 40.161,
+          "kernel_end_us": 45.569,
+          "pre_frontier_overlap_us": 0.6400000000000006,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 45.568999999999996,
+          "end_us": 47.873,
+          "kernel_start_us": 44.225,
+          "kernel_end_us": 47.873,
+          "pre_frontier_overlap_us": 1.343999999999994,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 47.873000000000005,
+          "end_us": 70.209,
+          "kernel_start_us": 44.993,
+          "kernel_end_us": 70.209,
+          "pre_frontier_overlap_us": 2.8800000000000026,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 70.209,
+          "end_us": 73.281,
+          "kernel_start_us": 60.705,
+          "kernel_end_us": 73.281,
+          "pre_frontier_overlap_us": 9.504000000000005,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 73.28099999999998,
+          "end_us": 132.289,
+          "kernel_start_us": 62.625,
+          "kernel_end_us": 132.289,
+          "pre_frontier_overlap_us": 10.655999999999977,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "unpooler_slice",
+          "critical_start_us": 132.481,
+          "end_us": 136.353,
+          "kernel_start_us": 132.481,
+          "kernel_end_us": 136.353,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.192
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 136.35299999999998,
+          "end_us": 139.201,
+          "kernel_start_us": 133.185,
+          "kernel_end_us": 139.201,
+          "pre_frontier_overlap_us": 3.167999999999978,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 4.079999999999998,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 12.056999999999999
+    },
+    {
+      "case": "v16S",
+      "weight": 46,
+      "trace_seed": 7206022,
+      "wall_us": 284.449,
+      "gpu_idle_us": 5.983000000000001,
+      "no_major_kernel_resident_us": 20.576,
+      "retained_edge_bytes": {
+        "qkv_gate": 7077888,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 524288,
+        "attention_full": 0,
+        "o": 4194304,
+        "b1": 12582912,
+        "pool_router": 4718592,
+        "route": 2117632,
+        "unpooler": 4194304,
+        "unpooler_slice": 0,
+        "MoE output": 2097152
+      },
+      "retained_operand_bytes": 37507072,
+      "retained_operand_HBM_equivalent_us": 8.189317030567686,
+      "no_major_intervals": [
+        [
+          13.504,
+          14.336,
+          []
+        ],
+        [
+          18.048,
+          18.432,
+          []
+        ],
+        [
+          36.16,
+          36.992,
+          []
+        ],
+        [
+          38.4,
+          38.912,
+          []
+        ],
+        [
+          46.368,
+          47.104,
+          []
+        ],
+        [
+          47.104,
+          52.608,
+          [
+            "b1"
+          ]
+        ],
+        [
+          52.608,
+          52.96,
+          []
+        ],
+        [
+          78.848,
+          79.456,
+          []
+        ],
+        [
+          79.456,
+          82.401,
+          [
+            "route"
+          ]
+        ],
+        [
+          82.401,
+          82.816,
+          []
+        ],
+        [
+          84.704,
+          85.152,
+          []
+        ],
+        [
+          253.473,
+          253.889,
+          []
+        ],
+        [
+          257.857,
+          258.273,
+          []
+        ],
+        [
+          278.273,
+          278.305,
+          []
+        ],
+        [
+          278.305,
+          284.449,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 13.504,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 39845888,
+          "full_rate_equivalent_us": 8.699975545851528,
+          "unique_model_TBps": 2.9506729857819907,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.804024454148472,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 13.504
+        },
+        "qkv -> attention": {
+          "critical_us": 22.848000000000003,
+          "actual_gpu_idle_us": 2.048,
+          "model_read_bytes": 12087816,
+          "full_rate_equivalent_us": 2.639261135371179,
+          "unique_model_TBps": 0.5290535714285713,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 20.208738864628824,
+          "first_kernel_us": 14.336,
+          "last_kernel_us": 38.4
+        },
+        "attention/gate -> O": {
+          "critical_us": 7.456,
+          "actual_gpu_idle_us": 0.512,
+          "model_read_bytes": 17039360,
+          "full_rate_equivalent_us": 3.7203842794759825,
+          "unique_model_TBps": 2.285321888412017,
+          "kernel_start_ramp_exposed_us": 2.3599999999999994,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.735615720524018,
+          "first_kernel_us": 38.912,
+          "last_kernel_us": 46.368
+        },
+        "O -> b1": {
+          "critical_us": 5.504,
+          "actual_gpu_idle_us": 0.736,
+          "model_read_bytes": 6389760,
+          "full_rate_equivalent_us": 1.3951441048034934,
+          "unique_model_TBps": 1.1609302325581397,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.108855895196506,
+          "first_kernel_us": 47.104,
+          "last_kernel_us": 52.608
+        },
+        "b1 -> pool/router": {
+          "critical_us": 25.888,
+          "actual_gpu_idle_us": 0.352,
+          "model_read_bytes": 77594624,
+          "full_rate_equivalent_us": 16.942057641921398,
+          "unique_model_TBps": 2.997320148331273,
+          "kernel_start_ramp_exposed_us": 2.3599999999999994,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 8.945942358078604,
+          "first_kernel_us": 52.96,
+          "last_kernel_us": 78.848
+        },
+        "pool/router -> route": {
+          "critical_us": 2.945,
+          "actual_gpu_idle_us": 0.608,
+          "model_read_bytes": 2376708,
+          "full_rate_equivalent_us": 0.5189318777292576,
+          "unique_model_TBps": 0.8070315789473684,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.4260681222707423,
+          "first_kernel_us": 79.456,
+          "last_kernel_us": 82.401
+        },
+        "route -> MoE": {
+          "critical_us": 174.177,
+          "actual_gpu_idle_us": 1.279,
+          "model_read_bytes": 544725400,
+          "full_rate_equivalent_us": 118.9356768558952,
+          "unique_model_TBps": 3.12742440161445,
+          "kernel_start_ramp_exposed_us": 1.887999999999991,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 55.2413231441048,
+          "first_kernel_us": 82.816,
+          "last_kernel_us": 257.857
+        },
+        "MoE -> unpooler": {
+          "critical_us": 20.0,
+          "actual_gpu_idle_us": 0.416,
+          "model_read_bytes": 68157440,
+          "full_rate_equivalent_us": 14.88153711790393,
+          "unique_model_TBps": 3.407872,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 5.11846288209607,
+          "first_kernel_us": 258.273,
+          "last_kernel_us": 278.273
+        },
+        "unpooler -> b2": {
+          "critical_us": 6.144,
+          "actual_gpu_idle_us": 0.032,
+          "model_read_bytes": 6422528,
+          "full_rate_equivalent_us": 1.402298689956332,
+          "unique_model_TBps": 1.0453333333333332,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.741701310043668,
+          "first_kernel_us": 278.305,
+          "last_kernel_us": 284.449
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 13.504,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 13.504,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 14.335999999999999,
+          "end_us": 18.048,
+          "kernel_start_us": 14.336,
+          "kernel_end_us": 18.048,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.832
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 18.432000000000002,
+          "end_us": 20.864,
+          "kernel_start_us": 18.432,
+          "kernel_end_us": 20.864,
+          "pre_frontier_overlap_us": 3.552713678800501e-15,
+          "gap_us": 0.384
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 20.864,
+          "end_us": 33.408,
+          "kernel_start_us": 19.424,
+          "kernel_end_us": 33.408,
+          "pre_frontier_overlap_us": 1.4400000000000013,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 33.407999999999994,
+          "end_us": 36.16,
+          "kernel_start_us": 32.64,
+          "kernel_end_us": 36.16,
+          "pre_frontier_overlap_us": 0.7679999999999936,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 36.992,
+          "end_us": 38.4,
+          "kernel_start_us": 36.992,
+          "kernel_end_us": 38.4,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.832
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 38.912,
+          "end_us": 46.368,
+          "kernel_start_us": 38.912,
+          "kernel_end_us": 46.368,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.512
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 47.104,
+          "end_us": 52.608,
+          "kernel_start_us": 47.104,
+          "kernel_end_us": 52.608,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.736
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 52.959999999999994,
+          "end_us": 78.848,
+          "kernel_start_us": 52.96,
+          "kernel_end_us": 78.848,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.352
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 79.456,
+          "end_us": 82.401,
+          "kernel_start_us": 79.456,
+          "kernel_end_us": 82.401,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.608
+        },
+        {
+          "stage": "moe_meta",
+          "critical_start_us": 82.81599999999999,
+          "end_us": 84.704,
+          "kernel_start_us": 82.816,
+          "kernel_end_us": 84.704,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.415
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 111.74400000000001,
+          "end_us": 213.121,
+          "kernel_start_us": 111.744,
+          "kernel_end_us": 213.121,
+          "pre_frontier_overlap_us": 1.4210854715202004e-14,
+          "gap_us": 27.04
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 213.56900000000002,
+          "end_us": 253.473,
+          "kernel_start_us": 213.569,
+          "kernel_end_us": 253.473,
+          "pre_frontier_overlap_us": 2.842170943040401e-14,
+          "gap_us": 0.448
+        },
+        {
+          "stage": "moe_combine",
+          "critical_start_us": 253.88900000000004,
+          "end_us": 257.857,
+          "kernel_start_us": 253.889,
+          "kernel_end_us": 257.857,
+          "pre_frontier_overlap_us": 2.842170943040401e-14,
+          "gap_us": 0.416
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 258.273,
+          "end_us": 278.273,
+          "kernel_start_us": 258.273,
+          "kernel_end_us": 278.273,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.416
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 278.305,
+          "end_us": 284.449,
+          "kernel_start_us": 278.305,
+          "kernel_end_us": 284.449,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.032
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 11.327999999999989,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 17.783
+    },
+    {
+      "case": "v16F",
+      "weight": 16,
+      "trace_seed": 7310751,
+      "wall_us": 408.322,
+      "gpu_idle_us": 3.9349999999999996,
+      "no_major_kernel_resident_us": 18.336000000000002,
+      "retained_edge_bytes": {
+        "qkv_gate": 7077888,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 0,
+        "attention_full": 524288,
+        "o": 4194304,
+        "b1": 12582912,
+        "pool_router": 4718592,
+        "route": 2117632,
+        "unpooler": 4194304,
+        "unpooler_slice": 0,
+        "MoE output": 2097152
+      },
+      "retained_operand_bytes": 37507072,
+      "retained_operand_HBM_equivalent_us": 8.189317030567686,
+      "no_major_intervals": [
+        [
+          13.152,
+          13.408,
+          []
+        ],
+        [
+          150.177,
+          150.432,
+          []
+        ],
+        [
+          157.665,
+          158.305,
+          []
+        ],
+        [
+          158.305,
+          163.809,
+          [
+            "b1"
+          ]
+        ],
+        [
+          163.809,
+          164.192,
+          []
+        ],
+        [
+          190.241,
+          190.881,
+          []
+        ],
+        [
+          190.881,
+          193.825,
+          [
+            "route"
+          ]
+        ],
+        [
+          193.825,
+          194.241,
+          []
+        ],
+        [
+          196.193,
+          196.641,
+          []
+        ],
+        [
+          377.857,
+          378.273,
+          []
+        ],
+        [
+          382.273,
+          382.722,
+          []
+        ],
+        [
+          402.337,
+          402.369,
+          []
+        ],
+        [
+          402.369,
+          408.322,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 13.152,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 39845888,
+          "full_rate_equivalent_us": 8.699975545851528,
+          "unique_model_TBps": 3.0296447688564476,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.4520244541484715,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 13.152
+        },
+        "qkv -> attention": {
+          "critical_us": 136.769,
+          "actual_gpu_idle_us": 0.256,
+          "model_read_bytes": 333470696,
+          "full_rate_equivalent_us": 72.81019563318776,
+          "unique_model_TBps": 2.4382038034934816,
+          "kernel_start_ramp_exposed_us": 2.3599999999999834,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 63.958804366812245,
+          "first_kernel_us": 13.408,
+          "last_kernel_us": 150.177
+        },
+        "attention/gate -> O": {
+          "critical_us": 7.233,
+          "actual_gpu_idle_us": 0.255,
+          "model_read_bytes": 17039360,
+          "full_rate_equivalent_us": 3.7203842794759825,
+          "unique_model_TBps": 2.3557804507120146,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 3.512615720524017,
+          "first_kernel_us": 150.432,
+          "last_kernel_us": 157.665
+        },
+        "O -> b1": {
+          "critical_us": 5.504,
+          "actual_gpu_idle_us": 0.64,
+          "model_read_bytes": 6389760,
+          "full_rate_equivalent_us": 1.3951441048034934,
+          "unique_model_TBps": 1.1609302325581397,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.108855895196506,
+          "first_kernel_us": 158.305,
+          "last_kernel_us": 163.809
+        },
+        "b1 -> pool/router": {
+          "critical_us": 26.049,
+          "actual_gpu_idle_us": 0.383,
+          "model_read_bytes": 77594624,
+          "full_rate_equivalent_us": 16.942057641921398,
+          "unique_model_TBps": 2.9787947330031863,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 9.106942358078602,
+          "first_kernel_us": 164.192,
+          "last_kernel_us": 190.241
+        },
+        "pool/router -> route": {
+          "critical_us": 2.944,
+          "actual_gpu_idle_us": 0.64,
+          "model_read_bytes": 2376708,
+          "full_rate_equivalent_us": 0.5189318777292576,
+          "unique_model_TBps": 0.8073057065217392,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.4250681222707424,
+          "first_kernel_us": 190.881,
+          "last_kernel_us": 193.825
+        },
+        "route -> MoE": {
+          "critical_us": 187.16799999999998,
+          "actual_gpu_idle_us": 1.28,
+          "model_read_bytes": 573276320,
+          "full_rate_equivalent_us": 125.16950218340611,
+          "unique_model_TBps": 3.0628970764233205,
+          "kernel_start_ramp_exposed_us": 1.9519999999999982,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 61.99849781659387,
+          "first_kernel_us": 194.241,
+          "last_kernel_us": 382.273
+        },
+        "MoE -> unpooler": {
+          "critical_us": 19.615,
+          "actual_gpu_idle_us": 0.449,
+          "model_read_bytes": 68157440,
+          "full_rate_equivalent_us": 14.88153711790393,
+          "unique_model_TBps": 3.474761152179455,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 4.7334628820960685,
+          "first_kernel_us": 382.722,
+          "last_kernel_us": 402.337
+        },
+        "unpooler -> b2": {
+          "critical_us": 5.953,
+          "actual_gpu_idle_us": 0.032,
+          "model_read_bytes": 6422528,
+          "full_rate_equivalent_us": 1.402298689956332,
+          "unique_model_TBps": 1.078872501259869,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 4.550701310043668,
+          "first_kernel_us": 402.369,
+          "last_kernel_us": 408.322
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 13.152,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 13.152,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 13.408000000000015,
+          "end_us": 143.872,
+          "kernel_start_us": 13.408,
+          "kernel_end_us": 143.872,
+          "pre_frontier_overlap_us": 1.5987211554602254e-14,
+          "gap_us": 0.256
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 143.87199999999999,
+          "end_us": 150.177,
+          "kernel_start_us": 124.672,
+          "kernel_end_us": 150.177,
+          "pre_frontier_overlap_us": 19.19999999999999,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 150.432,
+          "end_us": 157.665,
+          "kernel_start_us": 150.432,
+          "kernel_end_us": 157.665,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.255
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 158.305,
+          "end_us": 163.809,
+          "kernel_start_us": 158.305,
+          "kernel_end_us": 163.809,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.64
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 164.192,
+          "end_us": 190.241,
+          "kernel_start_us": 164.192,
+          "kernel_end_us": 190.241,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.383
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 190.881,
+          "end_us": 193.825,
+          "kernel_start_us": 190.881,
+          "kernel_end_us": 193.825,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.64
+        },
+        {
+          "stage": "moe_meta",
+          "critical_start_us": 194.241,
+          "end_us": 196.193,
+          "kernel_start_us": 194.241,
+          "kernel_end_us": 196.193,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.416
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 227.71300000000002,
+          "end_us": 320.769,
+          "kernel_start_us": 227.713,
+          "kernel_end_us": 320.769,
+          "pre_frontier_overlap_us": 2.842170943040401e-14,
+          "gap_us": 31.52
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 320.99300000000005,
+          "end_us": 377.857,
+          "kernel_start_us": 320.993,
+          "kernel_end_us": 377.857,
+          "pre_frontier_overlap_us": 5.684341886080802e-14,
+          "gap_us": 0.224
+        },
+        {
+          "stage": "moe_combine",
+          "critical_start_us": 378.273,
+          "end_us": 382.273,
+          "kernel_start_us": 378.273,
+          "kernel_end_us": 382.273,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.416
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 382.722,
+          "end_us": 402.337,
+          "kernel_start_us": 382.722,
+          "kernel_end_us": 402.337,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.449
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 402.369,
+          "end_us": 408.322,
+          "kernel_start_us": 402.369,
+          "kernel_end_us": 408.322,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.032
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 11.391999999999982,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 15.735
+    },
+    {
+      "case": "v32S",
+      "weight": 46,
+      "trace_seed": 7310751,
+      "wall_us": 376.161,
+      "gpu_idle_us": 6.56,
+      "no_major_kernel_resident_us": 27.168000000000003,
+      "retained_edge_bytes": {
+        "qkv_gate": 2359296,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 1048576,
+        "attention_full": 0,
+        "o": 8388608,
+        "b1": 25165824,
+        "pool_router": 9437184,
+        "route": 4235264,
+        "unpooler": 8388608,
+        "unpooler_slice": 0,
+        "MoE output": 4194304
+      },
+      "retained_operand_bytes": 63217664,
+      "retained_operand_HBM_equivalent_us": 13.802983406113539,
+      "no_major_intervals": [
+        [
+          19.52,
+          20.384,
+          []
+        ],
+        [
+          23.296,
+          23.712,
+          []
+        ],
+        [
+          46.848,
+          47.424,
+          []
+        ],
+        [
+          48.96,
+          50.016,
+          []
+        ],
+        [
+          59.136,
+          59.52,
+          []
+        ],
+        [
+          59.52,
+          67.68,
+          [
+            "b1"
+          ]
+        ],
+        [
+          67.68,
+          68.32,
+          []
+        ],
+        [
+          100.8,
+          101.408,
+          []
+        ],
+        [
+          101.408,
+          105.024,
+          [
+            "route"
+          ]
+        ],
+        [
+          105.024,
+          105.664,
+          []
+        ],
+        [
+          107.744,
+          108.448,
+          []
+        ],
+        [
+          335.777,
+          336.033,
+          []
+        ],
+        [
+          340.897,
+          341.313,
+          []
+        ],
+        [
+          367.329,
+          376.161,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 19.52,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 41943040,
+          "full_rate_equivalent_us": 9.157868995633187,
+          "unique_model_TBps": 2.1487213114754096,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 10.362131004366812,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 19.52
+        },
+        "qkv -> attention": {
+          "critical_us": 27.584000000000003,
+          "actual_gpu_idle_us": 1.8559999999999999,
+          "model_read_bytes": 18277384,
+          "full_rate_equivalent_us": 3.99069519650655,
+          "unique_model_TBps": 0.6626081786542922,
+          "kernel_start_ramp_exposed_us": 2.3599999999999994,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 23.593304803493453,
+          "first_kernel_us": 20.384,
+          "last_kernel_us": 48.96
+        },
+        "attention/gate -> O": {
+          "critical_us": 9.12,
+          "actual_gpu_idle_us": 1.056,
+          "model_read_bytes": 17301504,
+          "full_rate_equivalent_us": 3.7776209606986897,
+          "unique_model_TBps": 1.8970947368421054,
+          "kernel_start_ramp_exposed_us": 2.3599999999999923,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 5.34237903930131,
+          "first_kernel_us": 50.016,
+          "last_kernel_us": 59.136
+        },
+        "O -> b1": {
+          "critical_us": 8.16,
+          "actual_gpu_idle_us": 0.384,
+          "model_read_bytes": 12681216,
+          "full_rate_equivalent_us": 2.7688244541484717,
+          "unique_model_TBps": 1.5540705882352939,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 5.391175545851528,
+          "first_kernel_us": 59.52,
+          "last_kernel_us": 67.68
+        },
+        "b1 -> pool/router": {
+          "critical_us": 32.48,
+          "actual_gpu_idle_us": 0.64,
+          "model_read_bytes": 79691776,
+          "full_rate_equivalent_us": 17.399951091703056,
+          "unique_model_TBps": 2.4535645320197044,
+          "kernel_start_ramp_exposed_us": 2.3599999999999994,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 15.080048908296941,
+          "first_kernel_us": 68.32,
+          "last_kernel_us": 100.8
+        },
+        "pool/router -> route": {
+          "critical_us": 3.616,
+          "actual_gpu_idle_us": 0.608,
+          "model_read_bytes": 4736004,
+          "full_rate_equivalent_us": 1.0340620087336243,
+          "unique_model_TBps": 1.3097356194690266,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.5819379912663756,
+          "first_kernel_us": 101.408,
+          "last_kernel_us": 105.024
+        },
+        "route -> MoE": {
+          "critical_us": 234.273,
+          "actual_gpu_idle_us": 1.5999999999999999,
+          "model_read_bytes": 579398048,
+          "full_rate_equivalent_us": 126.50612401746724,
+          "unique_model_TBps": 2.473174663746996,
+          "kernel_start_ramp_exposed_us": 2.0799999999999983,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 107.76687598253275,
+          "first_kernel_us": 105.664,
+          "last_kernel_us": 340.897
+        },
+        "MoE -> unpooler": {
+          "critical_us": 26.016,
+          "actual_gpu_idle_us": 0.416,
+          "model_read_bytes": 69206016,
+          "full_rate_equivalent_us": 15.110483842794759,
+          "unique_model_TBps": 2.6601328413284135,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 10.90551615720524,
+          "first_kernel_us": 341.313,
+          "last_kernel_us": 367.329
+        },
+        "unpooler -> b2": {
+          "critical_us": 8.832,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 12713984,
+          "full_rate_equivalent_us": 2.77597903930131,
+          "unique_model_TBps": 1.4395362318840579,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 6.056020960698691,
+          "first_kernel_us": 367.329,
+          "last_kernel_us": 376.161
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 19.52,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 19.52,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 20.384,
+          "end_us": 23.296,
+          "kernel_start_us": 20.384,
+          "kernel_end_us": 23.296,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.864
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 23.712000000000003,
+          "end_us": 25.888,
+          "kernel_start_us": 23.712,
+          "kernel_end_us": 25.888,
+          "pre_frontier_overlap_us": 3.552713678800501e-15,
+          "gap_us": 0.416
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 25.887999999999998,
+          "end_us": 43.744,
+          "kernel_start_us": 24.608,
+          "kernel_end_us": 43.744,
+          "pre_frontier_overlap_us": 1.2799999999999976,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 43.744,
+          "end_us": 46.848,
+          "kernel_start_us": 43.232,
+          "kernel_end_us": 46.848,
+          "pre_frontier_overlap_us": 0.5120000000000005,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_sliding",
+          "critical_start_us": 47.424,
+          "end_us": 48.96,
+          "kernel_start_us": 47.424,
+          "kernel_end_us": 48.96,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.576
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 50.016000000000005,
+          "end_us": 59.136,
+          "kernel_start_us": 50.016,
+          "kernel_end_us": 59.136,
+          "pre_frontier_overlap_us": 7.105427357601002e-15,
+          "gap_us": 1.056
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 59.52000000000001,
+          "end_us": 67.68,
+          "kernel_start_us": 59.52,
+          "kernel_end_us": 67.68,
+          "pre_frontier_overlap_us": 7.105427357601002e-15,
+          "gap_us": 0.384
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 68.32,
+          "end_us": 100.8,
+          "kernel_start_us": 68.32,
+          "kernel_end_us": 100.8,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.64
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 101.408,
+          "end_us": 105.024,
+          "kernel_start_us": 101.408,
+          "kernel_end_us": 105.024,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.608
+        },
+        {
+          "stage": "moe_meta",
+          "critical_start_us": 105.664,
+          "end_us": 107.744,
+          "kernel_start_us": 105.664,
+          "kernel_end_us": 107.744,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.64
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 197.79299999999998,
+          "end_us": 274.145,
+          "kernel_start_us": 197.793,
+          "kernel_end_us": 274.145,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 90.049
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 291.745,
+          "end_us": 335.777,
+          "kernel_start_us": 291.745,
+          "kernel_end_us": 335.777,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 17.6
+        },
+        {
+          "stage": "moe_combine",
+          "critical_start_us": 336.033,
+          "end_us": 340.897,
+          "kernel_start_us": 336.033,
+          "kernel_end_us": 340.897,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.256
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 341.313,
+          "end_us": 367.329,
+          "kernel_start_us": 341.313,
+          "kernel_end_us": 367.329,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.416
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 367.329,
+          "end_us": 376.161,
+          "kernel_start_us": 367.329,
+          "kernel_end_us": 376.161,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 11.519999999999989,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 18.36
+    },
+    {
+      "case": "v32F",
+      "weight": 16,
+      "trace_seed": 7310751,
+      "wall_us": 583.17,
+      "gpu_idle_us": 3.842,
+      "no_major_kernel_resident_us": 23.97,
+      "retained_edge_bytes": {
+        "qkv_gate": 2359296,
+        "qkv3": 0,
+        "gate": 0,
+        "attention_sliding": 0,
+        "attention_full": 1048576,
+        "o": 8388608,
+        "b1": 25165824,
+        "pool_router": 9437184,
+        "route": 4235264,
+        "unpooler": 8388608,
+        "unpooler_slice": 0,
+        "MoE output": 4194304
+      },
+      "retained_operand_bytes": 63217664,
+      "retained_operand_HBM_equivalent_us": 13.802983406113539,
+      "no_major_intervals": [
+        [
+          19.488,
+          19.777,
+          []
+        ],
+        [
+          251.745,
+          252.033,
+          []
+        ],
+        [
+          261.089,
+          261.697,
+          []
+        ],
+        [
+          261.697,
+          269.602,
+          [
+            "b1"
+          ]
+        ],
+        [
+          269.602,
+          270.017,
+          []
+        ],
+        [
+          302.369,
+          302.914,
+          []
+        ],
+        [
+          302.914,
+          306.497,
+          [
+            "route"
+          ]
+        ],
+        [
+          306.497,
+          306.882,
+          []
+        ],
+        [
+          308.929,
+          309.377,
+          []
+        ],
+        [
+          543.65,
+          543.938,
+          []
+        ],
+        [
+          549.058,
+          549.634,
+          []
+        ],
+        [
+          574.53,
+          583.17,
+          [
+            "b2"
+          ]
+        ]
+      ],
+      "rows": {
+        "front": {
+          "critical_us": 19.488,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 41943040,
+          "full_rate_equivalent_us": 9.157868995633187,
+          "unique_model_TBps": 2.152249589490969,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 10.330131004366812,
+          "first_kernel_us": 0.0,
+          "last_kernel_us": 19.488
+        },
+        "qkv -> attention": {
+          "critical_us": 231.968,
+          "actual_gpu_idle_us": 0.289,
+          "model_read_bytes": 673191644,
+          "full_rate_equivalent_us": 146.9850751091703,
+          "unique_model_TBps": 2.902088408746034,
+          "kernel_start_ramp_exposed_us": 2.359999999999985,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 84.98292489082968,
+          "first_kernel_us": 19.777,
+          "last_kernel_us": 251.745
+        },
+        "attention/gate -> O": {
+          "critical_us": 9.056,
+          "actual_gpu_idle_us": 0.288,
+          "model_read_bytes": 17301504,
+          "full_rate_equivalent_us": 3.7776209606986897,
+          "unique_model_TBps": 1.9105017667844524,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 5.27837903930131,
+          "first_kernel_us": 252.033,
+          "last_kernel_us": 261.089
+        },
+        "O -> b1": {
+          "critical_us": 7.905,
+          "actual_gpu_idle_us": 0.608,
+          "model_read_bytes": 12681216,
+          "full_rate_equivalent_us": 2.7688244541484717,
+          "unique_model_TBps": 1.6042018975332066,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 5.136175545851529,
+          "first_kernel_us": 261.697,
+          "last_kernel_us": 269.602
+        },
+        "b1 -> pool/router": {
+          "critical_us": 32.352,
+          "actual_gpu_idle_us": 0.415,
+          "model_read_bytes": 79691776,
+          "full_rate_equivalent_us": 17.399951091703056,
+          "unique_model_TBps": 2.4632720079129578,
+          "kernel_start_ramp_exposed_us": 2.359999999999957,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 14.952048908296941,
+          "first_kernel_us": 270.017,
+          "last_kernel_us": 302.369
+        },
+        "pool/router -> route": {
+          "critical_us": 3.583,
+          "actual_gpu_idle_us": 0.545,
+          "model_read_bytes": 4736004,
+          "full_rate_equivalent_us": 1.0340620087336243,
+          "unique_model_TBps": 1.3217984928830588,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 2.548937991266376,
+          "first_kernel_us": 302.914,
+          "last_kernel_us": 306.497
+        },
+        "route -> MoE": {
+          "critical_us": 241.44,
+          "actual_gpu_idle_us": 1.121,
+          "model_read_bytes": 636103600,
+          "full_rate_equivalent_us": 138.88724890829695,
+          "unique_model_TBps": 2.6346239231278994,
+          "kernel_start_ramp_exposed_us": 2.0469999999999686,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 102.55275109170304,
+          "first_kernel_us": 306.882,
+          "last_kernel_us": 549.058
+        },
+        "MoE -> unpooler": {
+          "critical_us": 24.896,
+          "actual_gpu_idle_us": 0.576,
+          "model_read_bytes": 69206016,
+          "full_rate_equivalent_us": 15.110483842794759,
+          "unique_model_TBps": 2.7798046272493573,
+          "kernel_start_ramp_exposed_us": 2.36,
+          "deferred_ramp_ceiling_us": 2.36,
+          "service_deficit_us": 9.785516157205242,
+          "first_kernel_us": 549.634,
+          "last_kernel_us": 574.53
+        },
+        "unpooler -> b2": {
+          "critical_us": 8.64,
+          "actual_gpu_idle_us": 0.0,
+          "model_read_bytes": 12713984,
+          "full_rate_equivalent_us": 2.77597903930131,
+          "unique_model_TBps": 1.471525925925926,
+          "kernel_start_ramp_exposed_us": 0.0,
+          "deferred_ramp_ceiling_us": 0.0,
+          "service_deficit_us": 5.86402096069869,
+          "first_kernel_us": 574.53,
+          "last_kernel_us": 583.17
+        }
+      },
+      "critical_intervals": [
+        {
+          "stage": "qkv_gate",
+          "critical_start_us": 0.0,
+          "end_us": 19.488,
+          "kernel_start_us": 0.0,
+          "kernel_end_us": 19.488,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 19.777000000000015,
+          "end_us": 246.977,
+          "kernel_start_us": 19.777,
+          "kernel_end_us": 246.977,
+          "pre_frontier_overlap_us": 1.4210854715202004e-14,
+          "gap_us": 0.289
+        },
+        {
+          "stage": "attention_full",
+          "critical_start_us": 246.977,
+          "end_us": 251.745,
+          "kernel_start_us": 226.945,
+          "kernel_end_us": 251.745,
+          "pre_frontier_overlap_us": 20.03200000000001,
+          "gap_us": 0.0
+        },
+        {
+          "stage": "o",
+          "critical_start_us": 252.033,
+          "end_us": 261.089,
+          "kernel_start_us": 252.033,
+          "kernel_end_us": 261.089,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.288
+        },
+        {
+          "stage": "b1",
+          "critical_start_us": 261.697,
+          "end_us": 269.602,
+          "kernel_start_us": 261.697,
+          "kernel_end_us": 269.602,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.608
+        },
+        {
+          "stage": "pool_router",
+          "critical_start_us": 270.01700000000005,
+          "end_us": 302.369,
+          "kernel_start_us": 270.017,
+          "kernel_end_us": 302.369,
+          "pre_frontier_overlap_us": 5.684341886080802e-14,
+          "gap_us": 0.415
+        },
+        {
+          "stage": "route",
+          "critical_start_us": 302.914,
+          "end_us": 306.497,
+          "kernel_start_us": 302.914,
+          "kernel_end_us": 306.497,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.545
+        },
+        {
+          "stage": "moe_meta",
+          "critical_start_us": 306.88199999999995,
+          "end_us": 308.929,
+          "kernel_start_us": 306.882,
+          "kernel_end_us": 308.929,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.385
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 392.354,
+          "end_us": 482.818,
+          "kernel_start_us": 392.354,
+          "kernel_end_us": 482.818,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 83.425
+        },
+        {
+          "stage": "moe_small",
+          "critical_start_us": 501.40999999999997,
+          "end_us": 543.65,
+          "kernel_start_us": 501.41,
+          "kernel_end_us": 543.65,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 18.592
+        },
+        {
+          "stage": "moe_combine",
+          "critical_start_us": 543.938,
+          "end_us": 549.058,
+          "kernel_start_us": 543.938,
+          "kernel_end_us": 549.058,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.288
+        },
+        {
+          "stage": "unpooler",
+          "critical_start_us": 549.634,
+          "end_us": 574.53,
+          "kernel_start_us": 549.634,
+          "kernel_end_us": 574.53,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.576
+        },
+        {
+          "stage": "b2",
+          "critical_start_us": 574.53,
+          "end_us": 583.17,
+          "kernel_start_us": 574.53,
+          "kernel_end_us": 583.17,
+          "pre_frontier_overlap_us": 0,
+          "gap_us": 0.0
+        }
+      ],
+      "kernel_start_ramp_exposed_us": 11.48699999999991,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 15.642
+    }
+  ],
+  "loads": {
+    "d1": {
+      "wall_us": 92.31480645161291,
+      "gpu_idle_us": 0.0,
+      "no_major_kernel_resident_us": 2.728225806451613,
+      "kernel_start_ramp_exposed_us": 2.6686451612903115,
+      "deferred_ramp_ceiling_us": 13.453677419354838,
+      "ramp_plus_idle_ceiling_us": 13.453677419354838,
+      "retained_operand_bytes": 686240.0,
+      "retained_operand_HBM_equivalent_us": 0.14983406113537118,
+      "gpu_idle_us_wall_pct": 0.0,
+      "no_major_kernel_resident_us_wall_pct": 2.955350188468002,
+      "kernel_start_ramp_exposed_us_wall_pct": 2.890809463689977,
+      "deferred_ramp_ceiling_us_wall_pct": 14.573694011270689,
+      "ramp_plus_idle_ceiling_us_wall_pct": 14.573694011270689,
+      "retained_operand_bytes_wall_pct": 743369.3752688469,
+      "retained_operand_HBM_equivalent_us_wall_pct": 0.16230772385782682,
+      "load_total_wall_us": 5723.518,
+      "load_total_continuity_ceiling_us": 834.1279999999999,
+      "gap_share_pct": 10.497393227073449,
+      "boundary_gpu_idle_us": {
+        "front": 0.0,
+        "qkv -> attention": 0.0,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 0.0,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 0.0,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 0.0,
+        "MoE -> unpooler": 0.0,
+        "unpooler -> b2": 0.0
+      },
+      "boundary_reads_MB": {
+        "front": 15.919104,
+        "qkv -> attention": 5.7680068387096775,
+        "attention -> gate": 16.795648,
+        "attention/gate -> O": 13.142016,
+        "O -> b1": 0.16384,
+        "b1 -> pool/router": 56.816412,
+        "pool/router -> route": 0.220164,
+        "route -> MoE": 85.008472,
+        "MoE -> unpooler": 8.3968,
+        "unpooler -> b2": 0.196608
+      },
+      "boundary_critical_us": {
+        "front": 6.958451612903225,
+        "qkv -> attention": 10.670451612903225,
+        "attention -> gate": 1.8043870967741935,
+        "attention/gate -> O": 4.885677419354838,
+        "O -> b1": 4.136258064516129,
+        "b1 -> pool/router": 15.395096774193549,
+        "pool/router -> route": 3.6397419354838707,
+        "route -> MoE": 38.217290322580645,
+        "MoE -> unpooler": 3.879225806451613,
+        "unpooler -> b2": 2.728225806451613
+      },
+      "boundary_us": {
+        "qkv -> attention": 2.36,
+        "attention -> gate": 1.6536774193548385,
+        "attention/gate -> O": 2.36,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 2.36,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 2.36,
+        "MoE -> unpooler": 2.36,
+        "unpooler -> b2": 0.0
+      },
+      "service_deficit_us": {
+        "front": 3.482664713339907,
+        "qkv -> attention": 9.411061473446965,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 2.0162416114945767,
+        "O -> b1": 4.100485138751937,
+        "b1 -> pool/router": 2.989766643189181,
+        "pool/router -> route": 3.5916711931257925,
+        "route -> MoE": 19.656488575855757,
+        "MoE -> unpooler": 2.045863361036765,
+        "unpooler -> b2": 2.685298295534582
+      }
+    },
+    "d16": {
+      "wall_us": 179.99690322580648,
+      "gpu_idle_us": 0.12825806451612903,
+      "no_major_kernel_resident_us": 2.8010645161290326,
+      "kernel_start_ramp_exposed_us": 2.293935483870971,
+      "deferred_ramp_ceiling_us": 13.461935483870965,
+      "ramp_plus_idle_ceiling_us": 13.590193548387095,
+      "retained_operand_bytes": 9598298.838709677,
+      "retained_operand_HBM_equivalent_us": 2.0956984363994926,
+      "gpu_idle_us_wall_pct": 0.07125570619136098,
+      "no_major_kernel_resident_us_wall_pct": 1.5561737262863302,
+      "kernel_start_ramp_exposed_us_wall_pct": 1.2744305278370396,
+      "deferred_ramp_ceiling_us_wall_pct": 7.47898171724818,
+      "ramp_plus_idle_ceiling_us_wall_pct": 7.55023742343954,
+      "retained_operand_bytes_wall_pct": 5332479.985318743,
+      "retained_operand_HBM_equivalent_us_wall_pct": 1.1642969400259262,
+      "load_total_wall_us": 11159.808,
+      "load_total_continuity_ceiling_us": 842.5919999999999,
+      "gap_share_pct": 5.231818950447883,
+      "boundary_gpu_idle_us": {
+        "front": 0.0,
+        "qkv -> attention": 0.0807741935483871,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 0.0,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 0.0,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 0.0,
+        "MoE -> unpooler": 0.04748387096774193,
+        "unpooler -> b2": 0.0
+      },
+      "boundary_reads_MB": {
+        "front": 25.56326812903226,
+        "qkv -> attention": 91.44562348387097,
+        "attention -> gate": 12.666417548387097,
+        "attention/gate -> O": 12.894208,
+        "O -> b1": 1.14688,
+        "b1 -> pool/router": 75.759616,
+        "pool/router -> route": 1.786884,
+        "route -> MoE": 213.41616129032258,
+        "MoE -> unpooler": 50.741248,
+        "unpooler -> b2": 1.179648
+      },
+      "boundary_critical_us": {
+        "front": 8.259870967741936,
+        "qkv -> attention": 37.68774193548387,
+        "attention -> gate": 1.661935483870968,
+        "attention/gate -> O": 6.2214193548387104,
+        "O -> b1": 2.6477419354838707,
+        "b1 -> pool/router": 21.140645161290323,
+        "pool/router -> route": 3.3372903225806447,
+        "route -> MoE": 81.69187096774193,
+        "MoE -> unpooler": 14.547322580645162,
+        "unpooler -> b2": 2.672806451612903
+      },
+      "boundary_us": {
+        "qkv -> attention": 2.36,
+        "attention -> gate": 1.661935483870968,
+        "attention/gate -> O": 2.36,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 2.36,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 2.36,
+        "MoE -> unpooler": 2.36,
+        "unpooler -> b2": 0.0
+      },
+      "service_deficit_us": {
+        "front": 2.6783713762501766,
+        "qkv -> attention": 17.72144859839414,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 3.406090097196789,
+        "O -> b1": 2.3973314551345255,
+        "b1 -> pool/router": 4.599244287927879,
+        "pool/router -> route": 2.9471409776024795,
+        "route -> MoE": 35.09445583885054,
+        "MoE -> unpooler": 3.4684474714748568,
+        "unpooler -> b2": 2.4152413861107203
+      }
+    },
+    "d32": {
+      "wall_us": 226.86477419354839,
+      "gpu_idle_us": 0.4844193548387097,
+      "no_major_kernel_resident_us": 3.747677419354839,
+      "kernel_start_ramp_exposed_us": 4.6619354838709715,
+      "deferred_ramp_ceiling_us": 12.409032258064515,
+      "ramp_plus_idle_ceiling_us": 12.893451612903224,
+      "retained_operand_bytes": 15110110.967741935,
+      "retained_operand_HBM_equivalent_us": 3.2991508663192,
+      "gpu_idle_us_wall_pct": 0.21352779714731301,
+      "no_major_kernel_resident_us_wall_pct": 1.6519432920676917,
+      "kernel_start_ramp_exposed_us_wall_pct": 2.054940217335666,
+      "deferred_ramp_ceiling_us_wall_pct": 5.469792435681451,
+      "ramp_plus_idle_ceiling_us_wall_pct": 5.683320232828764,
+      "retained_operand_bytes_wall_pct": 6660404.208390162,
+      "retained_operand_HBM_equivalent_us_wall_pct": 1.454236726722743,
+      "load_total_wall_us": 14065.616,
+      "load_total_continuity_ceiling_us": 799.3939999999999,
+      "gap_share_pct": 3.899441771607724,
+      "boundary_gpu_idle_us": {
+        "front": 0.0,
+        "qkv -> attention": 0.13625806451612904,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 0.11870967741935484,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 0.0,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 0.0,
+        "MoE -> unpooler": 0.2294516129032258,
+        "unpooler -> b2": 0.0
+      },
+      "boundary_reads_MB": {
+        "front": 25.866041806451612,
+        "qkv -> attention": 182.74358167741937,
+        "attention -> gate": 4.481816774193549,
+        "attention/gate -> O": 16.842752,
+        "O -> b1": 1.671168,
+        "b1 -> pool/router": 76.02176,
+        "pool/router -> route": 3.556356,
+        "route -> MoE": 212.9227581935484,
+        "MoE -> unpooler": 51.134464,
+        "unpooler -> b2": 2.228224
+      },
+      "boundary_critical_us": {
+        "front": 12.04232258064516,
+        "qkv -> attention": 63.06890322580645,
+        "attention -> gate": 0.8425806451612904,
+        "attention/gate -> O": 6.053161290322581,
+        "O -> b1": 3.0100645161290327,
+        "b1 -> pool/router": 21.321290322580648,
+        "pool/router -> route": 3.593032258064516,
+        "route -> MoE": 97.37596774193547,
+        "MoE -> unpooler": 15.809774193548385,
+        "unpooler -> b2": 3.2632580645161284
+      },
+      "boundary_us": {
+        "qkv -> attention": 2.36,
+        "attention -> gate": 0.6090322580645161,
+        "attention/gate -> O": 2.36,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 2.36,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 2.36,
+        "MoE -> unpooler": 2.36,
+        "unpooler -> b2": 0.0
+      },
+      "service_deficit_us": {
+        "front": 6.394715199323849,
+        "qkv -> attention": 23.16855788139174,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 2.3757045217636286,
+        "O -> b1": 2.6451806733342718,
+        "b1 -> pool/router": 4.722652767995493,
+        "pool/router -> route": 2.8165353148330747,
+        "route -> MoE": 50.88628254683757,
+        "MoE -> unpooler": 4.645044062544019,
+        "unpooler -> b2": 2.776746274123116
+      }
+    },
+    "v1": {
+      "wall_us": 127.63793548387096,
+      "gpu_idle_us": 0.350483870967742,
+      "no_major_kernel_resident_us": 3.1984838709677423,
+      "kernel_start_ramp_exposed_us": 4.080000000000001,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 12.15048387096774,
+      "retained_operand_bytes": 4932864.0,
+      "retained_operand_HBM_equivalent_us": 1.0770445414847163,
+      "gpu_idle_us_wall_pct": 0.27459224378635544,
+      "no_major_kernel_resident_us_wall_pct": 2.50590379642416,
+      "kernel_start_ramp_exposed_us_wall_pct": 3.1965418310260687,
+      "deferred_ramp_ceiling_us_wall_pct": 9.244900393653824,
+      "ramp_plus_idle_ceiling_us_wall_pct": 9.519492637440177,
+      "retained_operand_bytes_wall_pct": 3864731.892833964,
+      "retained_operand_HBM_equivalent_us_wall_pct": 0.8438279241995555,
+      "load_total_wall_us": 7913.552,
+      "load_total_continuity_ceiling_us": 753.3299999999999,
+      "gap_share_pct": 6.666712612193403,
+      "boundary_gpu_idle_us": {
+        "front": 0.0,
+        "qkv -> attention": 0.11174193548387097,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 0.0,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 0.0,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 0.0,
+        "MoE -> unpooler": 0.23874193548387096,
+        "unpooler -> b2": 0.0
+      },
+      "boundary_reads_MB": {
+        "front": 37.879808,
+        "qkv -> attention": 6.280802838709677,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 13.156352,
+        "O -> b1": 0.622592,
+        "b1 -> pool/router": 75.628544,
+        "pool/router -> route": 0.902148,
+        "route -> MoE": 170.16055587096776,
+        "MoE -> unpooler": 8.454144,
+        "unpooler -> b2": 0.65536
+      },
+      "boundary_critical_us": {
+        "front": 10.713806451612905,
+        "qkv -> attention": 20.26425806451613,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 4.578064516129031,
+        "O -> b1": 2.3284838709677422,
+        "b1 -> pool/router": 21.266870967741934,
+        "pool/router -> route": 3.072,
+        "route -> MoE": 58.34396774193549,
+        "MoE -> unpooler": 3.872,
+        "unpooler -> b2": 2.8479999999999994
+      },
+      "boundary_us": {
+        "qkv -> attention": 2.36,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 2.36,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 2.36,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 2.36,
+        "MoE -> unpooler": 2.36,
+        "unpooler -> b2": 0.0
+      },
+      "service_deficit_us": {
+        "front": 2.4431060149316814,
+        "qkv -> attention": 18.892903732920125,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 1.7054985772644027,
+        "O -> b1": 2.192546753063812,
+        "b1 -> pool/router": 4.754088434990842,
+        "pool/router -> route": 2.8750244541484715,
+        "route -> MoE": 21.191007944780957,
+        "MoE -> unpooler": 2.0261170305676854,
+        "unpooler -> b2": 2.7049082969432314
+      }
+    },
+    "v16": {
+      "wall_us": 316.4162258064516,
+      "gpu_idle_us": 5.454483870967743,
+      "no_major_kernel_resident_us": 19.997935483870968,
+      "kernel_start_ramp_exposed_us": 11.344516129032245,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 17.254483870967743,
+      "retained_operand_bytes": 37507072.0,
+      "retained_operand_HBM_equivalent_us": 8.189317030567686,
+      "gpu_idle_us_wall_pct": 1.723831910663201,
+      "no_major_kernel_resident_us_wall_pct": 6.320135901027872,
+      "kernel_start_ramp_exposed_us_wall_pct": 3.5853142803022884,
+      "deferred_ramp_ceiling_us_wall_pct": 3.7292651380077873,
+      "ramp_plus_idle_ceiling_us_wall_pct": 5.453097048670988,
+      "retained_operand_bytes_wall_pct": 11853713.223588815,
+      "retained_operand_HBM_equivalent_us_wall_pct": 2.5881469920499596,
+      "load_total_wall_us": 19617.806,
+      "load_total_continuity_ceiling_us": 1069.778,
+      "gap_share_pct": 3.736966392604235,
+      "boundary_gpu_idle_us": {
+        "front": 0.0,
+        "qkv -> attention": 1.5855483870967741,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 0.4456774193548387,
+        "O -> b1": 0.7112258064516129,
+        "b1 -> pool/router": 0.36,
+        "pool/router -> route": 0.616258064516129,
+        "route -> MoE": 1.279258064516129,
+        "MoE -> unpooler": 0.42451612903225805,
+        "unpooler -> b2": 0.032
+      },
+      "boundary_reads_MB": {
+        "front": 39.845888,
+        "qkv -> attention": 95.02533341935484,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 17.03936,
+        "O -> b1": 6.38976,
+        "b1 -> pool/router": 77.594624,
+        "pool/router -> route": 2.376708,
+        "route -> MoE": 552.0933793548387,
+        "MoE -> unpooler": 68.15744,
+        "unpooler -> b2": 6.422528
+      },
+      "boundary_critical_us": {
+        "front": 13.41316129032258,
+        "qkv -> attention": 52.246967741935485,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 7.398451612903226,
+        "O -> b1": 5.503999999999999,
+        "b1 -> pool/router": 25.929548387096776,
+        "pool/router -> route": 2.9447419354838713,
+        "route -> MoE": 177.52951612903226,
+        "MoE -> unpooler": 19.90064516129032,
+        "unpooler -> b2": 6.094709677419355
+      },
+      "boundary_us": {
+        "qkv -> attention": 2.36,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 2.36,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 2.36,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 2.36,
+        "MoE -> unpooler": 2.36,
+        "unpooler -> b2": 0.0
+      },
+      "service_deficit_us": {
+        "front": 4.713185744471052,
+        "qkv -> attention": 31.499078349063254,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 3.678067333427244,
+        "O -> b1": 4.108855895196506,
+        "b1 -> pool/router": 8.987490745175377,
+        "pool/router -> route": 2.4258100577546133,
+        "route -> MoE": 56.98511015636004,
+        "MoE -> unpooler": 5.019108043386392,
+        "unpooler -> b2": 4.692410987463023
+      }
+    },
+    "v32": {
+      "wall_us": 429.5826774193548,
+      "gpu_idle_us": 5.85858064516129,
+      "no_major_kernel_resident_us": 26.342709677419357,
+      "kernel_start_ramp_exposed_us": 11.51148387096771,
+      "deferred_ramp_ceiling_us": 11.799999999999999,
+      "ramp_plus_idle_ceiling_us": 17.658580645161287,
+      "retained_operand_bytes": 63217664.0,
+      "retained_operand_HBM_equivalent_us": 13.802983406113539,
+      "gpu_idle_us_wall_pct": 1.3637841917545932,
+      "no_major_kernel_resident_us_wall_pct": 6.132162925113444,
+      "kernel_start_ramp_exposed_us_wall_pct": 2.679689958664302,
+      "deferred_ramp_ceiling_us_wall_pct": 2.7468519147202355,
+      "ramp_plus_idle_ceiling_us_wall_pct": 4.1106361064748285,
+      "retained_operand_bytes_wall_pct": 14716064.525639025,
+      "retained_operand_HBM_equivalent_us_wall_pct": 3.2131145252486957,
+      "load_total_wall_us": 26634.125999999997,
+      "load_total_continuity_ceiling_us": 1094.8319999999999,
+      "gap_share_pct": 2.7973605574501037,
+      "boundary_gpu_idle_us": {
+        "front": 0.0,
+        "qkv -> attention": 1.4516129032258063,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 0.8578064516129031,
+        "O -> b1": 0.4418064516129033,
+        "b1 -> pool/router": 0.5819354838709677,
+        "pool/router -> route": 0.591741935483871,
+        "route -> MoE": 1.4763870967741937,
+        "MoE -> unpooler": 0.4572903225806451,
+        "unpooler -> b2": 0.0
+      },
+      "boundary_reads_MB": {
+        "front": 41.94304,
+        "qkv -> attention": 187.28751561290323,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 17.301504,
+        "O -> b1": 12.681216,
+        "b1 -> pool/router": 79.691776,
+        "pool/router -> route": 4.736004,
+        "route -> MoE": 594.0317388387097,
+        "MoE -> unpooler": 69.206016,
+        "unpooler -> b2": 12.713984
+      },
+      "boundary_critical_us": {
+        "front": 19.511741935483872,
+        "qkv -> attention": 80.32825806451612,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 9.103483870967741,
+        "O -> b1": 8.094193548387098,
+        "b1 -> pool/router": 32.44696774193548,
+        "pool/router -> route": 3.607483870967742,
+        "route -> MoE": 236.12254838709674,
+        "MoE -> unpooler": 25.726967741935482,
+        "unpooler -> b2": 8.782451612903227
+      },
+      "boundary_us": {
+        "qkv -> attention": 2.36,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 2.36,
+        "O -> b1": 0.0,
+        "b1 -> pool/router": 2.36,
+        "pool/router -> route": 0.0,
+        "route -> MoE": 2.36,
+        "MoE -> unpooler": 2.36,
+        "unpooler -> b2": 0.0
+      },
+      "service_deficit_us": {
+        "front": 10.353872939850685,
+        "qkv -> attention": 39.435787406677,
+        "attention -> gate": 0.0,
+        "attention/gate -> O": 5.325862910269052,
+        "O -> b1": 5.325369094238625,
+        "b1 -> pool/router": 15.047016650232425,
+        "pool/router -> route": 2.5734218622341176,
+        "route -> MoE": 106.42129536554445,
+        "MoE -> unpooler": 10.616483899140725,
+        "unpooler -> b2": 6.006472573601917
+      }
+    }
+  },
+  "receipt_sha256": "e2d80f73292148de43dcc63d7198f6d7ab42be9719a453af2130d61d83120156"
+}

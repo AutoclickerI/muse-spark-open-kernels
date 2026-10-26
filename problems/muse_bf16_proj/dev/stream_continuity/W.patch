@@ -1,0 +1,47 @@
+--- a/submission.py
++++ b/submission.py
+@@ -8309,3 +8309,44 @@
+     if torch.unique(actual).numel()<torch.unique(ref).numel()*.85-2:raise ValueError('prepare routing: insufficient distinct local experts')
+     if not torch.equal(ranked,best.indices.sort(-1).values):
+         print('PREP_ROUTE_TASK_NEAR_TIE',len(ids),'max_score_gap',float(gap.max()),flush=True)
++
++
++_sc_old_port=_port_cuda
++_SC_PORT_AUDIT=[]
++def _port_cuda(src,**kwargs):
++    src=_sc_old_port(src,**kwargs)
++    if not any(n in src for n in ('smallm2_gemv(', 'v18s_gemv(')):return src
++    src=src.replace(': "l"(p));', ': "l"(p):"memory");')
++    wait='  asm volatile("griddepcontrol.wait;" ::: "memory");\n'
++    assert src.count(wait)==1;src=src.replace(wait,'',1)
++    start=src.index('    auto load = [&](int slot, int s) {')
++    end=src.index('    if constexpr',src.index('    for (int s = 0; s < ST; ++s) load(s, s);',start))
++    old=src[start:end];split=old.index('      if constexpr (!NOX')
++    prefix=old[:split].replace('auto load =','auto loadw =',1)
++    suffix=old[split:old.index('\n    };',split)]
++    new=prefix+'    };\n    auto loadx = [&](int slot,int s) {\n'+suffix+'\n    };\n'
++    new+='    auto load = [&](int slot,int s){loadw(slot,s);loadx(slot,s);};\n'
++    order='smallm2_order_point' if 'smallm2_gemv(' in src else 'v18s_order_point'
++    new+='#pragma unroll\n    for(int s=0;s<ST;++s)loadw(s,s);\n'+order+'(m,outp);\n'+wait
++    new+='#pragma unroll\n    for(int s=0;s<ST;++s)loadx(s,s);\n'
++    src=src[:start]+new+src[end:]
++    _SC_PORT_AUDIT.append(hashlib.sha256(src.encode()).hexdigest())
++    return src
++
++# Base preparation uses the original launchers at every role. Build O-only
++# launchers afterward, then retain the incumbent's exact packed allocations.
++_SC_W_PREWAIT_PORT=_port_cuda
++_port_cuda=_sc_old_port
++_sc_w_base_prepare=prepare
++def prepare(weights):
++    global _port_cuda
++    state=_sc_w_base_prepare(weights)
++    _port_cuda=_SC_W_PREWAIT_PORT
++    try:prepared=nf_prepare(weights,{(1,'o'),(8,'o')})
++    finally:_port_cuda=_sc_old_port
++    for key,new in prepared['plans'].items():
++        old=state['nf_port']['plans'][key]
++        assert old['cfg']==new['cfg'] and old['idx']==new['idx']
++        assert old['wp'].shape==new['wp'].shape and old['esc'].shape==new['esc'].shape
++        state['nf_port']['plans'][key]=dict(old,fn=new['fn'])
++    return state

@@ -1,0 +1,10 @@
+{
+  "arm": "W",
+  "expanded_sha256": "66aa9ab89b68d101bf313ce0978eb1204020adb10af2adb0a8b1a13a9d621020",
+  "packed_sha256": "dbe9b381100cdecbda58f871285d3b408b56bcae30de43ff5c41bf8f39c31202",
+  "integration_sha256": "a6174174604ad6de3f82a4be416462b19735dd4c39a663b7a12fb9950dcb0fc2",
+  "patch_sha256": "723952abe6554d7d7a5ff6ccdc79e422f278ea630f7c5cd22d57ff09be593b23",
+  "base_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+  "measured_recipe": "prepare onlyO1/O8 native functions, replace fn in original NF plans; original wp/esc and all other role functions retained",
+  "reproduce": "python3 problems/muse_bf16_proj/dev/stream_continuity/build_winner.py"
+}

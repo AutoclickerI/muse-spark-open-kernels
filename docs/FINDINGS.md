@@ -1393,3 +1393,71 @@ not close a family; incorrect/untimed implementations are suspect or unmeasured.
 | Task permutation drops work/deadlocks | `(u*17+3)%total` repeats when total divisible 17; grid 2 over-resides global barrier | Prove bijection and resident barrier grid | `runs/screen/moe_v19_static_audit.json` |
 | MoE fails raw-bit A:A | Unordered FP32 norm atomics | Gate by tolerance; slight nondeterminism is expected | `4233660b`, `701d2867` |
 | Local ncu ERR_NVGPUCTRPERM | RmProfilingAdminOnly=1, no sudo | nsys, judge profiles, SASS, phase clocks | local |
+
+### S17 cross-stage continuity (P7; S15 bound)
+
+S15 receipt `7eaa262a30ec483e` contains CUPTI activity, not DRAM counters. Therefore HBM-idle
+time is unidentifiable. [P7 BOUND.md](../problems/muse_bf16_proj/dev/stream_continuity/BOUND.md)
+records every critical interval and each boundary's logical bytes/time plus exact GPU-idle gaps.
+Times below are `(46 sliding +16 full)/62` us/layer at each load. The scenario ceiling retains the
+initial qkv ramp, permits one fitted2.36us ramp per weight/KV boundary, excludes glue intercepts,
+combines concurrent MoE branches and adds only actual GPU idle. Busy DAG gaps remain charged to
+their running owner. It is not a physical HBM-utilization bound or demonstrated saving.
+
+| Load | GPU idle us | Continuity ceiling us | Retained materialization HBM-equivalent us |
+|---|---:|---:|---:|
+| d1 | 0.00 | 13.45 | 0.15 |
+| d16 | 0.13 | 13.59 | 2.10 |
+| d32 | 0.48 | 12.89 | 3.30 |
+| v1 | 0.35 | 12.15 | 1.08 |
+| v16 | 5.45 | 17.25 | 8.19 |
+| v32 | 5.86 | 17.66 | 13.80 |
+
+Joint continuity model R1.08557 closes32.8% of the initial GOAL snapshot gap (1.83789→2.3601).
+The retained-operand scenario removes one store/read per interstage output at4.58TB/s, excluding
+returned b2 outputs and one required route-ID store: joint HBM-equivalent R1.01602. Existing L2 hits
+reduce HBM savings; on-chip retention may also save L2 issue or repeated activation/page reads.
+Those are unmeasured, not closed by this small byte-service estimate. The171/403MB MoE activation
+reread estimates belong to internal multiplicity, not an additive interstage cold-HBM saving.
+
+The interrupted S15+C arms were rebuilt on frozen S17 `fea71760`. Prefetch follows the consumer's
+actual NF/coded/LT/raw banks, including `p10_pool_raw`; the old original-BF16-bank warming was removed.
+S17 NORM/PAIR/CHUNK4 arithmetic and dispatch remain intact. ptxas initially sank intended O loads
+past the dependency wait; the existing NF order-point branch now keeps all6 initial128-bit weight
+vectors before ACQBULK at O1/O8. Nine changed sm90a sources compile without spills. Normal and
+forced local batches each pass1728 TASK checks plus13 host tests/12 graph shapes. The forced
+screen covers the same Python ABI before the final order-point-only native change; final normal
+and sm90a/SASS audits cover that change.
+
+Whole-decode receipt `a405c8b463054e6c` used a **prefill-host check** because decode had spent20/20
+checks, preserving the H200, synthetic decode fixtures, public TASK checker and paired six-load
+measurement. The outer prefill score is irrelevant.16 frozen held-out seeds×8 rotated cold rounds,
+12 shapes,1728 TASK checks all pass; A:A fingerprints agree. R is incumbent/candidate six-load
+geomean; two-sided Student t95 on log R across16 paired seeds (df15), no A:A correction/per-load veto.
+
+| Arm | Mechanism | R | 95% CI | Verdict |
+|---|---|---:|---|---|
+| A2 | identical control | 0.999820 | [0.998789, 1.000852] | diagnostic |
+| E | release after final TMA issue | 0.994282 | [0.988018, 1.000585] | fails G0; CI spans1 |
+| P | E + late4MiB unpool-bank prefetch | 0.989306 | [0.987589, 0.991027] | loss |
+| W | O1/O8 NF weight loads before wait | 1.003215 | [1.001964, 1.004468] | G0 pass |
+| F | 4MiB ordinary reads in PDL intermediaries | 0.382012 | [0.380140, 0.383893] | loss |
+| B | 4MiB L2 hints in PDL intermediaries | 0.914259 | [0.909898, 0.918640] | loss |
+| L | 16MiB bulk L2 hints | 0.615109 | [0.613363, 0.616860] | loss |
+| X | frozen P+W+B composition | 0.914508 | [0.912607, 0.916412] | loss |
+
+**Handed P4:** W whole-arm clears G0, including its losing d1F/v1 pieces. Its per-load R is
+1.020060/1.000193/1.000130/.998878/.999620/1.000577. Only O1/O8 launch functions are swapped;
+S17's packed allocations and every other role function are retained. Appending the generic
+W transform directly would also alter pool/router preparation, so the production patch builds
+only O launchers after unmodified base preparation. A d1S-only W alternative (R1.033081 shape
+point) and E d1S/d32S/d32F points are selection nominees, requiring P4's composed held-out G0.
+Unchanged-shape point fluctuations are duplicate controls, not pieces to integrate.
+The standalone O-only production candidate passes13 TASK/12 graph shapes in each normal/forced screen.
+Exact patches/hashes/seeds/CIs: [P4_HANDOFF.json](../problems/muse_bf16_proj/dev/stream_continuity/P4_HANDOFF.json).
+
+The tested W recipe recovers0.32% of layer time vs the8.56% modeled ceiling; the ceiling was not
+achieved. P/F/B/L/X close only these prefetch schedules; E's whole-arm interval is inconclusive.
+HBM/issue contention and the extra prefetch launches are plausible costs, not isolated causes.
+No family-wide continuity or retained-operand conclusion follows. Larger open MoE/attention/
+coding levers take priority over another standalone sub1% follow-up; S18 composition remains P4.

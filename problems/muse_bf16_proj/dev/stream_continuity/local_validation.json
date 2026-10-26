@@ -1,0 +1,66 @@
+{
+  "normal": {
+    "TASK_checks": 1728,
+    "cases": 12,
+    "seeds": 16,
+    "reps": 8,
+    "base_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+    "host_tests": 13,
+    "host_graph_shapes": 12,
+    "elapsed_s": 156.97,
+    "wrapper_sha256": "7108f2865f0c6ed4648318ec0cd5d63d62716635c4e9895797ac296e5ebd392c"
+  },
+  "forced": {
+    "TASK_checks": 1728,
+    "cases": 12,
+    "seeds": 16,
+    "reps": 8,
+    "base_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+    "host_tests": 13,
+    "host_graph_shapes": 12,
+    "elapsed_s": 130.09,
+    "wrapper_sha256": "576771b1f53b266937a094a24dbd84076f4be28472e96dd4072054584e963019"
+  },
+  "forced_scope": "All Hopper Python dispatch/allocation/ABI paths; before the final W order-point-only native scheduling change. Final normal screen and final sm90a/SASS audit cover that change.",
+  "final_payload": {
+    "payload_sha256": "d72afbe6d6b0ec6ca640fefd568482aab6d93148774c5ad898562a9b2c16095b",
+    "body_sha256": "0fbb9b4a1f6733851b0123124318c6009e8c41441c8ad597d115d7943c8fa91c",
+    "arm_sha256": {
+      "A": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+      "A2": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+      "E": "03dcb746cbb950e91f57a3d99f867dad0e3fc4f09cdcf152bdf04f01d66dc255",
+      "P": "0d58cf82fdb0da30fff21f907a67ed10614a0cfd86438ed882fcd1a11fe9e5e1",
+      "W": "3caba3fbee7ff1516fcbbd45e408519050dd01c9beb65cde8b6e822e5ed1f89f",
+      "F": "5a7fa4ac8974f032e301a17a27e4ca5ddf215ace0b5262e09d8814c57876fe08",
+      "B": "207ea553829ce382a0875f1f912e7db343e5c2b1802ffac8663dc84929b05d86",
+      "L": "db53dac642ecdda7faec293e802661a1b4031eef5791cdb9e18e54a0b5c12de1",
+      "X": "ee95a97b47289bde64c6f97f1942eb19e44f4f56169fd3753741a55425cb7850"
+    },
+    "seeds": [
+      21450123,
+      21580486,
+      21710849,
+      21841212,
+      21971575,
+      22101938,
+      22232301,
+      22362664,
+      22493027,
+      22623390,
+      22753753,
+      22884116,
+      23014479,
+      23144842,
+      23275205,
+      23405568
+    ],
+    "TASK_checks": 1728,
+    "preselected": "X",
+    "host": "muse_prefill_layer",
+    "measured_problem": "muse_decode_layer",
+    "host_reason": "decode daily20checks exhausted; same whole-decode lab as a prefill-host check",
+    "phase": "import",
+    "budget_s": 500
+  },
+  "transport": "Final archive code round-trip on full normal and forced results: every paired time reconstructed within0.5ns;7335/7285 chars, below9000 cap. Whole-layer paired R uses only H200 receipt."
+}

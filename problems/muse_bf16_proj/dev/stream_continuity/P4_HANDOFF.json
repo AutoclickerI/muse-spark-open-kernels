@@ -1,0 +1,387 @@
+{
+  "lane": "P7",
+  "status": "W clears G0 on S17; P4 composition must confirm on current S18",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s17_final.py",
+  "base_expanded_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+  "preselected": "X",
+  "promotion_gate": "Held-out paired six-load R, lower95 >1, TASK checker only",
+  "bound": {
+    "receipt": "7eaa262a30ec483e",
+    "model_R": 1.0855676249199977,
+    "per_load": {
+      "d1": {
+        "wall_us": 92.31480645161291,
+        "gpu_idle_us": 0.0,
+        "ramp_plus_idle_ceiling_us": 13.453677419354838,
+        "retained_operand_HBM_equivalent_us": 0.14983406113537118
+      },
+      "d16": {
+        "wall_us": 179.99690322580648,
+        "gpu_idle_us": 0.12825806451612903,
+        "ramp_plus_idle_ceiling_us": 13.590193548387095,
+        "retained_operand_HBM_equivalent_us": 2.0956984363994926
+      },
+      "d32": {
+        "wall_us": 226.86477419354839,
+        "gpu_idle_us": 0.4844193548387097,
+        "ramp_plus_idle_ceiling_us": 12.893451612903224,
+        "retained_operand_HBM_equivalent_us": 3.2991508663192
+      },
+      "v1": {
+        "wall_us": 127.63793548387096,
+        "gpu_idle_us": 0.350483870967742,
+        "ramp_plus_idle_ceiling_us": 12.15048387096774,
+        "retained_operand_HBM_equivalent_us": 1.0770445414847163
+      },
+      "v16": {
+        "wall_us": 316.4162258064516,
+        "gpu_idle_us": 5.454483870967743,
+        "ramp_plus_idle_ceiling_us": 17.254483870967743,
+        "retained_operand_HBM_equivalent_us": 8.189317030567686
+      },
+      "v32": {
+        "wall_us": 429.5826774193548,
+        "gpu_idle_us": 5.85858064516129,
+        "ramp_plus_idle_ceiling_us": 17.658580645161287,
+        "retained_operand_HBM_equivalent_us": 13.802983406113539
+      }
+    },
+    "basis": "CUPTI activity + unique-byte model at4.58TB/s; one2.36us ramp per weight/KV boundary. HBM idle unidentifiable; glue ramps excluded. Retention HBM-equivalent is a scenario, not measured miss savings.",
+    "detail": "problems/muse_bf16_proj/dev/stream_continuity/BOUND.md",
+    "snapshot_gap_share_pct": 32.82969351137677,
+    "gap_snapshot_scores": [
+      1.8378866426354703,
+      2.3601
+    ]
+  },
+  "promoted": [
+    {
+      "arm": "W",
+      "R": 1.0032148434401866,
+      "CI95": [
+        1.0019635661543154,
+        1.0044676833525834
+      ],
+      "affected_shapes": [
+        "d1S",
+        "d1F",
+        "v1S",
+        "v1F"
+      ],
+      "per_load": {
+        "d1": {
+          "R": 1.0200598546983701,
+          "CI95": [
+            1.0134193283089983,
+            1.0267438937675344
+          ],
+          "log_SE": 0.0030642151735684065,
+          "n": 16
+        },
+        "d16": {
+          "R": 1.0001933537412173,
+          "CI95": [
+            0.9985806922625213,
+            1.0018086195933655
+          ],
+          "log_SE": 0.0007570673971190706,
+          "n": 16
+        },
+        "d32": {
+          "R": 1.0001297006356906,
+          "CI95": [
+            0.998189212814159,
+            1.0020739607810834
+          ],
+          "log_SE": 0.000911173746592297,
+          "n": 16
+        },
+        "v1": {
+          "R": 0.9988775392812715,
+          "CI95": [
+            0.9958192756269336,
+            1.001945195178568
+          ],
+          "log_SE": 0.001438643899501231,
+          "n": 16
+        },
+        "v16": {
+          "R": 0.9996196632921822,
+          "CI95": [
+            0.9981642978699281,
+            1.0010771506982787
+          ],
+          "log_SE": 0.0006835629982056083,
+          "n": 16
+        },
+        "v32": {
+          "R": 1.0005774542173191,
+          "CI95": [
+            0.9996006856756848,
+            1.0015551772168658
+          ],
+          "log_SE": 0.0004582241359333833,
+          "n": 16
+        }
+      },
+      "per_shape": {
+        "d1S": {
+          "R": 1.0330810182555752,
+          "CI95": [
+            1.023899958319239,
+            1.0423444025057955
+          ],
+          "log_SE": 0.0041881320875334395,
+          "n": 16
+        },
+        "d1F": {
+          "R": 0.9879646681266967,
+          "CI95": [
+            0.9809018443166034,
+            0.9950783466481572
+          ],
+          "log_SE": 0.003366037127422652,
+          "n": 16
+        },
+        "v1S": {
+          "R": 0.9998409622425452,
+          "CI95": [
+            0.9957658899957577,
+            1.003932711314662
+          ],
+          "log_SE": 0.0019160898433834021,
+          "n": 16
+        },
+        "v1F": {
+          "R": 0.99658446642924,
+          "CI95": [
+            0.9942863071441037,
+            0.9988879376009646
+          ],
+          "log_SE": 0.0010831589361171348,
+          "n": 16
+        }
+      },
+      "source": {
+        "arm": "W",
+        "expanded_sha256": "66aa9ab89b68d101bf313ce0978eb1204020adb10af2adb0a8b1a13a9d621020",
+        "packed_sha256": "dbe9b381100cdecbda58f871285d3b408b56bcae30de43ff5c41bf8f39c31202",
+        "integration_sha256": "a6174174604ad6de3f82a4be416462b19735dd4c39a663b7a12fb9950dcb0fc2",
+        "patch_sha256": "723952abe6554d7d7a5ff6ccdc79e422f278ea630f7c5cd22d57ff09be593b23",
+        "base_sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+        "measured_recipe": "prepare onlyO1/O8 native functions, replace fn in original NF plans; original wp/esc and all other role functions retained",
+        "reproduce": "python3 problems/muse_bf16_proj/dev/stream_continuity/build_winner.py"
+      },
+      "patch": "problems/muse_bf16_proj/dev/stream_continuity/W.patch",
+      "integration": "problems/muse_bf16_proj/dev/stream_continuity/W_integration.py.inc",
+      "candidate": "problems/muse_bf16_proj/dev/stream_continuity/W_candidate.py",
+      "scope": "Only O1/O8 NF function-pointer swaps; original packed banks and every other role function retained. Do not append W_CODE alone: that would change pool/router production prepare too.",
+      "standalone_validation": {
+        "normal": {
+          "sha256": "dbe9b381100cdecbda58f871285d3b408b56bcae30de43ff5c41bf8f39c31202",
+          "tests": 13,
+          "graph_shapes": 12,
+          "static_checks": 2,
+          "prepare_s": 13.586319901049137,
+          "all_pass": true,
+          "screened_sha256": "e4002b4fde04127df43755af313b1c5e7dcd5183d256cefa21d881ed449e71f4",
+          "final_header_cleanup": "Removed trailing whitespace from comment-only MIT header; parsed AST identical to the screened candidate."
+        },
+        "forced": {
+          "sha256": "dbe9b381100cdecbda58f871285d3b408b56bcae30de43ff5c41bf8f39c31202",
+          "tests": 13,
+          "graph_shapes": 12,
+          "static_checks": 2,
+          "prepare_s": 55.72817491495516,
+          "all_pass": true,
+          "screened_sha256": "e4002b4fde04127df43755af313b1c5e7dcd5183d256cefa21d881ed449e71f4",
+          "final_header_cleanup": "Removed trailing whitespace from comment-only MIT header; parsed AST identical to the screened candidate."
+        }
+      }
+    }
+  ],
+  "arms": {
+    "A": {
+      "sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+      "changed_vs_A": false
+    },
+    "A2": {
+      "sha256": "fea717603233f240b3e5d2c99b5ffdd0edb19d4264161489da44cc192b7f55dc",
+      "changed_vs_A": false
+    },
+    "E": {
+      "sha256": "03dcb746cbb950e91f57a3d99f867dad0e3fc4f09cdcf152bdf04f01d66dc255",
+      "changed_vs_A": true
+    },
+    "P": {
+      "sha256": "0d58cf82fdb0da30fff21f907a67ed10614a0cfd86438ed882fcd1a11fe9e5e1",
+      "changed_vs_A": true
+    },
+    "W": {
+      "sha256": "8c1df4b441119f06d1be85e7de761b946c14212ea7bfbf2b7f1065d263b94620",
+      "changed_vs_A": true
+    },
+    "F": {
+      "sha256": "5a7fa4ac8974f032e301a17a27e4ca5ddf215ace0b5262e09d8814c57876fe08",
+      "changed_vs_A": true
+    },
+    "B": {
+      "sha256": "207ea553829ce382a0875f1f912e7db343e5c2b1802ffac8663dc84929b05d86",
+      "changed_vs_A": true
+    },
+    "L": {
+      "sha256": "db53dac642ecdda7faec293e802661a1b4031eef5791cdb9e18e54a0b5c12de1",
+      "changed_vs_A": true
+    },
+    "X": {
+      "sha256": "f955f1a2afbbb29136d71fc7f92719cdc6ff26a588d46f79338c0ccae498a37d",
+      "changed_vs_A": true
+    }
+  },
+  "P11": "All unique interstage materialization has joint HBM-equivalent R1.0160; v16/v32 repeats and L2 issue remain unbounded. Keep the oracle scoped to these instead of treating the whole stage deficit as continuity.",
+  "job": "a405c8b463054e6c",
+  "host": "muse_prefill_layer",
+  "mode": "check",
+  "host_reason": "decode20/20 checks exhausted; identical whole-decode lab using available prefill-host check quota",
+  "receipt": "runs/muse_prefill_layer/20261026T054214Z_check_a405c8b463054e6c.json",
+  "TASK_checks": 1728,
+  "failures": {},
+  "CI_method": "Two-sided Student t interval on log six-load R across16 paired held-out seeds; df15; no AA correction or per-load veto",
+  "seeds": [
+    21450123,
+    21580486,
+    21710849,
+    21841212,
+    21971575,
+    22101938,
+    22232301,
+    22362664,
+    22493027,
+    22623390,
+    22753753,
+    22884116,
+    23014479,
+    23144842,
+    23275205,
+    23405568
+  ],
+  "paired_R": {
+    "A2": {
+      "R": 0.9998198826342826,
+      "CI95": [
+        0.9987886351288278,
+        1.0008521949009692
+      ],
+      "passes_G0": false
+    },
+    "E": {
+      "R": 0.9942817783527313,
+      "CI95": [
+        0.9880177941135431,
+        1.00058547594403
+      ],
+      "passes_G0": false
+    },
+    "P": {
+      "R": 0.9893064912707283,
+      "CI95": [
+        0.9875886049850437,
+        0.9910273657776982
+      ],
+      "passes_G0": false
+    },
+    "W": {
+      "R": 1.0032148434401866,
+      "CI95": [
+        1.0019635661543154,
+        1.0044676833525834
+      ],
+      "passes_G0": true
+    },
+    "F": {
+      "R": 0.3820120440788709,
+      "CI95": [
+        0.38013991148247883,
+        0.3838933966502054
+      ],
+      "passes_G0": false
+    },
+    "B": {
+      "R": 0.9142586423257416,
+      "CI95": [
+        0.9098980274530473,
+        0.91864015510292
+      ],
+      "passes_G0": false
+    },
+    "L": {
+      "R": 0.6151088463046841,
+      "CI95": [
+        0.613362900453364,
+        0.6168597620146531
+      ],
+      "passes_G0": false
+    },
+    "X": {
+      "R": 0.9145077253430763,
+      "CI95": [
+        0.9126074560675846,
+        0.916411951438442
+      ],
+      "passes_G0": false
+    }
+  },
+  "point_nominations": [
+    {
+      "arm": "W",
+      "case": "d1S",
+      "R": 1.0330810182555752,
+      "CI95": [
+        1.023899958319239,
+        1.0423444025057955
+      ],
+      "log_SE": 0.0041881320875334395,
+      "n": 16,
+      "promotion": "Selection-only dispatch alternative. Whole W already clears G0; S18/shape-filtered composition still needs held-out R."
+    },
+    {
+      "arm": "E",
+      "case": "d1S",
+      "R": 1.0032966639517689,
+      "CI95": [
+        0.9951457593713887,
+        1.0115143298531444
+      ],
+      "log_SE": 0.003827115029440056,
+      "n": 16,
+      "promotion": "Selection-only point; E whole-arm fails G0. S18 small-M bodies differ, so apply last-TMA release to the current producer, then confirm the composition."
+    },
+    {
+      "arm": "E",
+      "case": "d32S",
+      "R": 1.0010444772349083,
+      "CI95": [
+        0.9977403162425678,
+        1.004359580433037
+      ],
+      "log_SE": 0.0015511382150164737,
+      "n": 16,
+      "promotion": "Selection-only point; E whole-arm fails G0. S18 small-M bodies differ, so apply last-TMA release to the current producer, then confirm the composition."
+    },
+    {
+      "arm": "E",
+      "case": "d32F",
+      "R": 1.0022423054962877,
+      "CI95": [
+        1.0003030657144727,
+        1.0041853047896552
+      ],
+      "log_SE": 0.0009086658822225845,
+      "n": 16,
+      "promotion": "Selection-only point; E whole-arm fails G0. S18 small-M bodies differ, so apply last-TMA release to the current producer, then confirm the composition."
+    }
+  ],
+  "not_nominated": "Numerical wins at unchanged shapes are duplicate-control noise, not pieces to integrate. P/F/B/L/X have no changed-shape point winner.",
+  "next_lever_review": "The tested continuity recipes recover0.32% layer time vs an8.56% model ceiling. These prefetch recipes close; they do not close the continuity lever. P11 L2 issue/internal activation-read oracle remains unmeasured; prioritize the larger open MoE/attention/coding levers before another standalone sub1% run.",
+  "production_validation": "problems/muse_bf16_proj/dev/stream_continuity/winner_validation.json"
+}

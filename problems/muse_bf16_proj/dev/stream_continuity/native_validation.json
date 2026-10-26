@@ -1,0 +1,74 @@
+{
+  "target": "sm_90a",
+  "sources": [
+    {
+      "name": "E_SMALLM_VAR_CUDA",
+      "sha256": "170dea0722556945de88bdbb5e229cffc90224fe7e158acbb42d0b5300fffc91",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "E__s16_epi_NORM_EPIN_CUDA",
+      "sha256": "7cdaf56d966c8059896e03806ad6a1f8ddd62eb645b9da178d3976811e36f381",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "E__s16_epi_PAIR_EPIT_CUDA",
+      "sha256": "4b59f722cbc029d8a7830d37b3e2cbc428764f51d7f8555ff06f1efb07a2f710",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "P_SMALLM_VAR_CUDA",
+      "sha256": "d8478deeb5d27b5aaf09bbde590f91f827e3399d99a2b9f294cd2046f762d5fa",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "P__s16_epi_NORM_EPIN_CUDA",
+      "sha256": "a938da51aec9bb368aa1fd4c7542276efe3aea50c8597612b08ae258b3dc320a",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "P__s16_epi_PAIR_EPIT_CUDA",
+      "sha256": "5104ad7f43bc6175d05ccee845abfdc1f88f594136cf3a3c2c6e286dc4f2d150",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "prefetch",
+      "sha256": "d3c47719d8fd76aa3b3d41e25adc5250a38ced07d710b3f297dc1925639e532e",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "W_NF_O1",
+      "sha256": "3bf6a36a0fdd5cdcb0465ffa91521f9323415f166dd6e2f27983b9810a6a4b78",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "W_NF_O8",
+      "sha256": "b304997dd3723287619d18345e55f54caf0fa5e0008f30be03e19362d8f552c8",
+      "ok": true,
+      "errors": []
+    }
+  ],
+  "prewait_SASS": {
+    "W_NF_O1": {
+      "initial_weight_vectors_before_ACQBULK": 6,
+      "expected": 6,
+      "spills": 0,
+      "method": "Existing NF order-point branch before wait stops ptxas sinking. No activation read precedes the dependency wait."
+    },
+    "W_NF_O8": {
+      "initial_weight_vectors_before_ACQBULK": 6,
+      "expected": 6,
+      "spills": 0,
+      "method": "Existing NF order-point branch before wait stops ptxas sinking. No activation read precedes the dependency wait."
+    }
+  },
+  "no_spills_all_sources": true
+}
