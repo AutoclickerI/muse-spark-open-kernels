@@ -1,115 +1,105 @@
-# S16 integration after the reset
+# S16 integration
 
-The frozen incumbent is exact S15 **60254883**, `cand_r3_best7_s15_final.py`, by the
-owner decision in commit97e98f3. S15 scored1.800345x (`9c5fc18d`); its repaired paired
-lab is281b1383. The legacy six-load ratio of load means is1.025676 over S14, with
-A:A0.996805. That packet discarded seed covariance and used an inappropriate host-
-equivalence gate, so it does not provide a new seed-level CI. See incumbent_review.json.
-The unsent conditional-pruning experiment was stopped and removed after the owner decision.
+Frozen incumbent: [cand_r3_best7_s16_final.py](../../cand_r3_best7_s16_final.py), shipped
+**1d0c8893**, expanded **435df5f7**. Scored **1.824219x**, job **c6cc2874ab994ee9**.
+Held-out check **37c2879f62554dff**: six-load S16/S15 speedup R **1.008291**,95% CI
+**[1.005790,1.010799]**,16 seeds,2304 unchanged public TASK checks. A:A R1.002418,
+seed range0.999632-1.007002. S15 60254883 is retired. frozen.json and s16_report.json
+pin the source, receipt and every seed-level sample.
 
-Promotion follows GOAL/PLAN: for each fresh seed, R is the geometric mean of the six
-46-sliding/16-full old/new load ratios. Freeze a composition only when its held-out
-95% lower confidence bound exceeds1 and the unchanged public TASK checker passes every
-arm/seed. A:A informs the confidence interval. Individual loads, pieces, exact route IDs
-and host equivalence cannot veto a valid composition. Source selection and confirmation
-seeds are disjoint. `score_gate.py` implements the statistics; `report.py` applies them.
+## Promotion
 
-## Current batch
+For each fresh seed, R is the geomean of six old/new load ratios, each load46 sliding
+plus16 full. Promote only when held-out R's lower95% bound exceeds1 and public TASK
+passes every arm/seed. A:A informs the confidence interval; a losing load or off arm
+cannot veto a winning composition. Off arms select the next experiment. Selection and
+confirmation inputs, weights and router weights are distinct. score_gate.py implements
+this rule, with synthetic checks in check_score.py.
 
-Expanded S16 **2e26db5430ee** / shipped **92a135bf** combines global_C128 at decode1
-sliding, DSM C16/C8 at verify1/16 sliding, NORM at M1, and PAIR at M8/16/32. Exact
-packed normal/forced screens pass13 TASK cases and12 graph shapes per mode. Its scored
-job **7139485dbeef4e0d** passed at**1.796154x**. This unpaired run is not promotion.
-The first confirmation wrapper passed all 1536 internal TASK checks in each local mode, but was superseded before sending by the nine-piece composition. Its original screen attempt ran its import lab before Hopper stand-ins were installed and failed the local regmax setup.
-A later composed-source screen encountered shared-GPU OOM; failed local screens were not sent.
-Current expanded composition **435df5f78a0d** / shipped **1d0c8893** adds attention/MoE release,
-O128/256 and pool128. Packed normal/forced screens and the expanded30-check audit pass.
-Scored job **c6cc2874ab994ee9** and paired check **37c2879f62554dff** (wrapper **504e1fa6**)
-are accepted. H200 confirmation is pending; S15 remains incumbent. The first candidate's
-held-out wrapper was superseded before a remote send.
-The nine-piece wrapper reached a9460-character archive locally and stopped at its8500 cap.
-The repaired archive removes only redundant per-load mean/SE summaries; every paired seed,
-shape result, TASK check and A:A observation remains. Normal/forced both pass2304 internal TASK checks,13 host tests and2 static checks.
-Archives8210/8235 characters retain every sample; local_fixes.json records the repair.
+Exact S15 scored1.800345x (9c5fc18d), S14 scored1.742759x (9b94c126).
+S15 paired R of load means1.025676 over S14 (281b1383), A:A0.996805; that legacy
+packet discarded seed covariance and used private-equivalence gates. Its approximate
+CI is descriptive. Owner97e98f3 froze exact60254883; no conditional S15c was sent.
 
-The responder is complete. P4 reran it once after repairing the archive; no duplicate scored send
-was created because the exact source/send identity was reused. `response.json`, `batches/*/response.json`, and respond*.log hold its
-current source/send identities. Each batch has separate candidate/wrapper filenames and
-an archived selection/manifest so subsequent receipts cannot overwrite its provenance.
-`respond.py` sends exact screened bytes through okc_run.py; no waiting payload absorption.
-Scored candidates and check-only confirmation labs are separate sends.
+## Sent and prepared
 
-## Repaired layer audits
+| Source | Screen / send | State |
+|---|---|---|
+| First S16 2e26db54 / shipped92a135bf | Normal/forced13 TASK,12 graph shapes; scored7139485dbeef4e0d=1.796154x | Superseded; unpaired score does not rank it |
+| Frozen S16 435df5f7 / shipped1d0c8893 | Normal/forced13 TASK/12 graphs/30 expanded checks; paired wrapper504e1fa6 passes2304 TASK per mode | Scored c6cc2874ab994ee9, check37c2879f62554dff; promoted |
+| Follow-up e3a919c5 / shipped6b5df6a8 | Normal/forced13 TASK/12 graphs/26 expanded checks | Scored sender1426363 accepted as cff1d0f93ce14a2f; comparison wrapper3a3e7ae9 passes1536 TASK checks per mode and is queued |
+| Guarded nearby on frozen S16,6e43a367 | Normal/forced143 fixtures per mode; eager and2 graph replays; unchanged TASK | Ready and unsent; native validation remains pending |
 
-The four packed wrappers originally lacked an explicit top-level kernel_fn. The S15
-wrapper was rejected422 before a job existed. All repairs append only that entry point;
-original payload arithmetic, inputs and timing loops remain exact. Every repaired wrapper
-passed its complete normal/forced local_eval and internal lab gates before sending.
+Follow-up e3a919c5 retains PAIR and attention release, adds OLD last-CTA at decode16
+sliding, direct-partials at decode32 sliding, and cooperative QT4/C16 at verify1 sliding.
+It removes the prior off-arm point losers, including DSM verify16 and library O whose
+removal has clear paired gains. This is selection, not a new promotion. Its baseline
+is exact frozen S16, not S15. Confirmation starts204910273 (16 seeds,104729 stride),
+with fresh weight204910271/router204910269. The prior confirmation seeds are now
+selection seeds and are excluded. prepare_followup.py records the selection; respond.py
+packs, screens and sends exact source bytes with per-batch immutable manifests.
 
-| Audit | Repaired SHA | Sender / job | Result |
-|---|---|---|---|
-| S15 leave-one-out |2a4d0dde|4146047 /281b1383359c4fe2|Owner-frozen exact S15; legacy equivalence diagnostic only |
-| S15e release |02c19fbd|41235 /f88fda4aac144374|R of load means1.004957; attention/MoE groups selected for held-out composition; projection omitted |
-| S15L library boundaries |2567c5a9|64202 /f22020d25d234be6|Full R0.998959; O128/256 and pool128 selected by affected-shape evidence; unpool128/v1full/v32slide omitted |
-| S15n nearby ranges |e5a7d14f|89627, restored587925 /a793c99eb9d447df|Timing criterion passes; native TASK proof pending sender1096763 |
+A pruned host lacks the O128/256 NF plans needed by its richer frozen-S16 control.
+The wrapper builds only those missing per-arm plans untimed. Its earlier local runner
+was stopped before a check send; the scored kernel is unchanged. No failed local
+wrapper is sent. local_fixes.json records entry-point, shared-memory, metadata-race,
+archive-size and baseline-plan repairs.
 
-Layer receipts discarded paired covariance, so aggregate ratios and approximate intervals
-are selection evidence only. Library L passed768 independent TASK checks. Its unpool
-all-row aggregate was contaminated by drift on untouched decode1; the actual verify16
-off/full ratio0.996584 loses. See layer_receipt_review.json. The user explicitly allows
-S15n when nearby times clearly approach scored-shape speedup and scored dispatch is unchanged;
-its lack of a standalone scored gain does not answer that separate review criterion.
+## Nearby decision
 
-## Original reset results
+Timing a793c99eb9d447df covers65 shapes,2 seeds x8 cold replays. Across six groups,
+nearby/scored speedup moves from0.9547/0.8651/0.8184/0.8119/0.7327/0.7263 to
+1.0292/1.0142/0.8884/0.8682/1.0050/0.9360. All gaps shrink; diagnostic nearby
+old/new geomean is1.171253, not an official score. Scored dispatch is unchanged;
+its identical-dispatch ratios span0.97794-1.03416, without an independent A:A arm.
 
-| Job | Recipe / decision |
+The finite-only timing packet does not prove native correctness. P5b queued guarded
+S15n9cc90d2e as sender1096763, wrapper2ba5fcff, priority4, not-before1792972800.
+The guard keeps all65 timed cases identical and bounds native N128 capacity at B64.
+prepare_nearby.py composes it onto frozen435df5f7. nearby_composition.json pins6e43a367
+and both143-fixture screens. Decision: native TASK/cache/replay pass -> the screened
+nearby composition is eligible; failure is unmeasured for correctness. If the newer
+follow-up supersedes435df5f7, rebase and screen onto that winner before using it.
+
+## Receipts and controls
+
+| Job | Measured recipe / decision |
 |---|---|
-|ae6cd27877cc4ee2|Global attention: best C128/OLD at d1S0.995906, A:A radius0.056417. Captured paths lack TASK gates: standalone winner unmeasured; gated repeat bb7239af and the composed TASK pair remain pending. |
-|b05713ecf6574ad9|DSM B1 C160.719269, B16 C80.849109; A:A radii0.059278/0.033439. B32 retains incumbent. |
-|d650c04ead114119|PAIR/S14 M8/16/320.97493/0.97262/0.97932; A:A0.415/0.235/0.225us. NORM M1 is a small uncertain nominee; ONCE variants lose. |
-|8792099636654bac|Heavy direct-copy ordinary launch1.1965/1.1381 at M128/256; max A:A3.120us. No heavy nominee. |
-|457f3c73b3214534|N64 verify-softmax alternatives lose or are neutral; no nominee. |
-|402819c28279466d|Early E4/OLD0.997414 (SE0.001244), A:A range0.988238-1.095457; larger/smaller partitions lose. No separate promotion. |
-|4c86853a953b4eca|Unmeasured: no LAB marker survives; cause not established. P7 reran the exact payload after attention-host tuning. |
+|281b1383359c4fe2|Entry-only repair2a4d0dde of rejected original49ce378b; S15 summary R1.025676/A:A0.996805, no reconstructable seed CI. |
+|ae6cd27877cc4ee2|Global original finite-only; captured-path TASK proof absent, standalone result unmeasured. |
+|bb7239afc1b3487a|Gated repeat: C128/OLD d1S0.987744; OLD/A d16S0.9759, PP/A d32S0.9862. All4x8x16 TASK/cache gates pass. A:A means1.00348/1.00055/0.99918/1.00060. |
+|b05713ecf6574ad9|DSM B1 C160.719269/B16 C80.849109 of stage control; A:A radii0.059278/0.033439. B32 loses. |
+|6a0b3f0987e94ba5|Cooperative verify1 pooledC16/A0.952913,35 seeds; A2/A3 0.999262/0.999499. Identical duplicate/COOP1.003740(SE0.004151) passes; all7x35 TASK/cache gates pass. |
+|d650c04ead114119|PAIR/S14 M8/16/32=0.97493/0.97262/0.97932; A:A absolute0.415/0.235/0.225us. ONCE variants lose. |
+|1b135b70835f4634|ILP/PAIR1.01094/1.02063/1.01190; A:A absolute0.488/0.377/0.364us. Retain PAIR, close exact ILP replacement. |
+|8792099636654bac|Heavy direct ordinary1.1965/1.1381 at M128/256; max A:A3.120us. No heavy nominee. |
+|457f3c73b3214534|N64 verify-softmax alternatives lose or are neutral; A:A radii0.00438/0.00392. |
+|402819c28279466d|Early E4/OLD0.997414,SE0.001244; A:A0.988238-1.095457. No independent promotion; other partitions lose. |
+|4c86853a953b4eca|No LAB marker survives; cause not established. Unmeasured, no recipe closure. |
+|ce5b991a8a984a03|Boundary retry exceeds archive cap, no ratios/A:A. Unmeasured, no recipe closure. |
+|f88fda4aac144374|S15e R of load means1.004957/A:A0.999668; attention/MoE off R1.001668/1.001811, projection0.999729. Selection only, covariance absent. |
+|f22020d25d234be6|Full S15L R0.998959/A:A0.998656;768 TASK checks. O off/full v16/v32=1.004843/1.001366,pool1281.001877; affected unpool/attention rows lose. Later S16 off arms supersede this selection. |
+|a793c99eb9d447df|Nearby timing criterion passes; native TASK pending, as above. |
 
-reset_inventory.json preserves the original8 sender snapshots. followup_inventory.json
-records the later batches; neither is a live queue listing. Landed stage rows are recorded
-under Whole layer and integration in docs/FINDINGS.md. Losses close only their tested recipes.
+Gated-global comparisons use OLD only at decode1; decode16/32 use canonical A.
+The earlier selector incorrectly treated OLD as S15 at every shape. OLD's cs_CUDA
+3815beab and driver match S15; PP's CUDA684f6967/CPP90786039 and disassembled
+driver instructions match S15. global_gated_review.json preserves this proof.
 
-## Build and screen evidence
+## Build evidence
 
-- patches.py and cells.json retain40 reset implementations; layer_cells.json adds9 asserted
-  S15n/e/L pieces captured against exact60254883. No compiled diagnostic math is shipped.
-- admission.json records every individual source SHA and its normal/forced13-test/12-shape
-  screens. The9 layer pieces passed both modes. All49 current source hashes match successful native-compile and normal/forced records.
-  prepare_audit.json now covers all49 exact sources; the composed source retains96 tensor paths
-  (10 packed expert paths,6 FP32 global scales,18 exact BF16 layouts/codes and62 original/scratch paths). Native compilation uses exact CUDA/flag
-  cache keys; Python/runtime checks always execute.
-- Layer composition preserves both VDSK role entries, actual-M dispatch before NF range
-  mapping, explicit VQ8 rows before nearest-range lookup, conditional PAIR entry release,
-  and both projection entry-release and CHAIN input-wait requirements. Source edits assert
-  their old contexts. audit_layer_dispatch.py checks route ownership without timing claims.
-- screen_nearby.py is ready to check a composed candidate on143 fixtures per mode
-  (13 official +65 cases x2 seeds), eager and captured, with unchanged TASK criteria.
-- Prepare audits recursively inventory retained tensors: packed expert codes/scales stay
-  E2M1/E4M3; dense recodes remain exact BF16; new counters/plans/streams are metadata.
+The registry contains52 prepared implementations:49 original reset/layer pieces plus
+OLD/PP/cooperative attention. Every individual variant passed13 TASK/12 graph shapes
+in normal and forced modes. Native records and retained-tensor inventories are pinned
+to each exact source. Cooperative kernel0f250847 has native TASK proof6a0b3f09; local
+multi-CTA glue uses its genuine C1 math launch. Other Hopper-only launches use explicit
+pointer/ABI stand-ins. None is shipped.
 
-The direct ILP-vs-PAIR confirmation1b135b70835f4634 measures ILP/PAIR M8/16/32
-1.01094/1.02063/1.01190, with A:A absolute0.488/0.377/0.364us. Retain PAIR;
-the ILP replacement closes, while combining its instruction schedule with PAIR remains open.
-The boundary retryce5b991a is still unmeasured: its combined archive exceeds the log cap.
+Layer merges preserve actual-M VDSK dispatch, exact VQ8 rows before nearest ranges,
+producer release plus CHAIN waits, and PAIR conditional entry release. NVFP4 weights
+remain E2M1/E4M3 codes; dense recodes remain exact BF16. No widened expert weights
+are retained. prepare_audit.json records source hashes and inventory classes.
 
-Next: finish the active responder confirmation screen, collect S15n and the scored/check
-receipts, apply the held-out R gate, and integrate later shape-selected lane winners in a
-new independently confirmed composition. No S16 final is claimed yet.
-
-## Nearby follow-up prepared
-
-Timing receipt a793c99e meets the owner criterion: all six nearby/scored speedup gaps shrink
-(the diagnostic nearby old/new geomean is1.171, not an official score). Scored dispatch is identical.
-This finite-only timing packet does not establish native correctness. P5b queued guarded9cc90d2e
-(unchanged65 timed cases, B<=64 native-capacity guard) as sender1096763, wrapper2ba5fcff.
-prepare_nearby.py composes that exact guard with the queued S16 and screens143 independent
-TASK fixtures per mode. nearby_composition.json pins the output and screen identities.
-Decision: native nearby TASK pass plus S16 R pass → use the screened composition; if S16 loses,
-keep S15 and use P5b's guarded-S15n handoff after its native proof. Failed/missing controls remain unmeasured.
+Next: read all pending
+receipts through h200_lab.py, apply the six-load gate, and add guarded nearby only
+after native correctness. Measured rows are also in docs/FINDINGS.md, integration section.

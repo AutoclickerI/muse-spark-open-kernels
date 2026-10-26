@@ -145,6 +145,9 @@ def registry():
         add('heavy_'+kind,'heavy',[(b,8,w) for b in (16,32) for w in (True,False)],arm=arm)
     for kind in ('R','P','RP','C','S'):add('boundary_'+kind,'boundary',[(b,1,w) for b in (16,32) for w in (True,False)] if kind in ('P','C','S') else [(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8)) for w in (True,False)],kind=kind)
     for kind in ('B','M','D'):add('pdl_'+kind,'pdl',[(1,1,False)] if kind=='D' else [(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8),(16,8),(32,8)) for w in (True,False)],kind=kind)
+    add('global_OLD','direct_attention',[(16,1,True),(32,1,True)],kind='OLD')
+    add('global_PP','direct_attention',[(32,1,True)],kind='PP')
+    add('layer_coop_v1','layer',[(1,8,True)],kind='coop_v1')
     add('layer_nearby','layer',[],kind='nearby')
     for kind,points in [('attention',[(b,1,w) for b in (16,32) for w in (True,False)]),
                         ('moe',[(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8),(16,8),(32,8)) for w in (True,False)]),
@@ -172,7 +175,18 @@ def patch(source,spec):
         anchor='        glue_cl_future.result()\n';assert source.count(anchor)==1
         source=source.replace(anchor,anchor+'        for future in s16_futures:future.result()\n',1)
         tail+='\n_s16_native_builds=[]\n'
-    if family in ('global','dsm','early'):
+    if family=='direct_attention':
+        call="cs_attention(dict(data,config=cfg),qkv,nk=128,cs=None)" if spec['kind']=='OLD' else 'attention_partial_port(qkv,data,False)'
+        tail+=f'''
+{prefix}base_attention=_best7_attention
+def _best7_attention(qkv,data,state,plan):
+    cfg=data['config']
+    if (cfg['batch'],cfg['q_len'],bool(cfg['window'])) in {rows!r}:
+        cfg=dict(cfg,num_q_heads=HQ,num_kv_heads=HKV,head_dim=HD)
+        return {call}.view(-1,Q_SIZE)
+    return {prefix}base_attention(qkv,data,state,plan)
+'''
+    elif family in ('global','dsm','early'):
         if family=='global':
             cell=driver_cell(cells['global']['code'],prefix)
             fn=prefix+'cs_attention';module=prefix+'cs_module'

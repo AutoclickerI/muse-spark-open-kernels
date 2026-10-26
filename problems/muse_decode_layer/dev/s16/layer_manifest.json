@@ -1,6 +1,6 @@
 {
   "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
-  "cells_sha256": "6743d88260c9b5a40f5888260bc1ca63ac8546a3468d4ef2a1ad89dd347e1487",
+  "cells_sha256": "5a1d82a1285ed6fe77f5419ad261f5e68912b1648f68f86dfae4c13132074275",
   "source_sha256": {
     "nearby": "ebceda91ed055adc0ece9161a350934dc92b93cd78277bc6b25e54ce66d890a6",
     "release_attention": "fb5db86faea57077af2305e7c01f4c4107640f1079c8b12944535783b81c4b20",
@@ -10,6 +10,85 @@
     "library_pool128": "e4b1f390d6c9dedec4dcaf7fcb35fdea3bb2b3d38e4f5f6cd46fbf18f3524416",
     "library_unpool128": "5e2ddcd421e4508b8039fc71ee9a686070a9c318139d17afd37619af120401ce",
     "library_v1full": "ce1119a5c29bc0d333570784b024113c33eae9c058192ea4e24e18666ad7cfdf",
-    "library_v32slide": "a0fed22d1f4fa60de53bd57b779dd12ed06e9690e261d6ed7288c7af0e668c9f"
+    "library_v32slide": "a0fed22d1f4fa60de53bd57b779dd12ed06e9690e261d6ed7288c7af0e668c9f",
+    "coop_v1": "403bb778b295b87adabf668f338fe423fc70e91c72007f9a6ca331c4ff5f1baf"
+  },
+  "coop_handoff": {
+    "status": "promote verify1 sliding cooperative DSM to P4 for integration and paired six-load validation",
+    "selection": {
+      "1,8": [
+        "dsm",
+        4,
+        16
+      ]
+    },
+    "base_file": "problems/muse_decode_layer/cand_r3_best7_s14_final.py",
+    "base_sha256": "f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac",
+    "generator": "problems/muse_attention_decode/dev/sliding_round2/layer_patch.py",
+    "rebuild_command": "python3 problems/muse_attention_decode/dev/sliding_round2/layer_patch.py --selection '{\"1,8\":[\"dsm\",4,16]}' --out problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_verify1_dsm.py",
+    "candidate_sha256": "403bb778b295b87adabf668f338fe423fc70e91c72007f9a6ca331c4ff5f1baf",
+    "kernel_sha256": "0f250847cd8dbc3cbc8583425f4fef9e441e538c340b90d91448dccc125ab4a9",
+    "native_receipts": [
+      "b05713ecf6574ad9",
+      "6c26b14fdd28458b",
+      "6a0b3f0987e94ba5",
+      "27a914f72bfb47c8"
+    ],
+    "qualifying_receipt": "6a0b3f0987e94ba5",
+    "pooled_candidate_control": 0.9529128267552293,
+    "pooled_SE": 0.005071349479282373,
+    "A2": [
+      0.9992622580323188,
+      0.004231532285994626
+    ],
+    "A3": [
+      0.9994992018738413,
+      0.0034216998677443545
+    ],
+    "identical_recipe_control": [
+      {
+        "names": [
+          "DOUBLE",
+          "COOP"
+        ],
+        "ratio": 1.0037402966718727,
+        "se": 0.004150993962218459,
+        "failed": false
+      }
+    ],
+    "TASK_counts": {
+      "A": 35,
+      "A2": 35,
+      "A3": 35,
+      "RESET": 35,
+      "COOP": 35,
+      "HALF": 35,
+      "DOUBLE": 35
+    },
+    "local_screens": {
+      "normal": {
+        "tests": 13,
+        "shapes": 12,
+        "static_checks": 24,
+        "passed": true
+      },
+      "forced": {
+        "tests": 13,
+        "shapes": 12,
+        "static_checks": 24,
+        "passed": true
+      }
+    },
+    "local_DSM": "explicit genuine C1 launch, native math shim; H200 multisSM geometry is covered by qualifying receipts",
+    "unverified": [
+      "P4 current-base composition and paired six-load score",
+      "nearby native shapes outside recorded native admissions"
+    ],
+    "do_not_promote": [
+      "decode16/32 round2 recipes: no qualifying gain",
+      "verify16 cooperative QT1 DSM: losses",
+      "verify16/32 tested resident recipes: losses",
+      "decode1 compact early history: neutral vs OLD4"
+    ]
   }
 }

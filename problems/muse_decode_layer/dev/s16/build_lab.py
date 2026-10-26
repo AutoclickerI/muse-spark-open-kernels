@@ -10,14 +10,17 @@ def sha(s):return hashlib.sha256(s.encode()).hexdigest()
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--selection',type=Path,default=H/'generated/selection.json');a=ap.parse_args()
-    selected=json.loads(a.selection.read_text())['patches'];source,meta=patches.compose(selected)
+    ap=argparse.ArgumentParser();ap.add_argument('--selection',type=Path,default=H/'generated/selection.json')
+    ap.add_argument('--baseline',type=Path,default=patches.BASE);ap.add_argument('--baseline-name',default='S15')
+    ap.add_argument('--seed',type=int,default=104910273);a=ap.parse_args()
+    selection=json.loads(a.selection.read_text());selected=selection['patches'];source,meta=patches.compose(selected)
     candidate=H/'generated/s16.py';candidate.write_text(source)
     hostlines=source.splitlines(True);arms={}
     for spec in selected:
         text,_=patches.compose([s for s in selected if s['name']!=spec['name']])
         arms[spec['name']]=dict(source=text,rows=spec['rows'])
-    arms['S15']=dict(source=patches.BASE.read_text(),rows=sorted({tuple(r) for s in selected for r in s['rows']}))
+    baseline=a.baseline.read_text()
+    arms[a.baseline_name]=dict(source=baseline,rows=sorted({tuple(r) for s in selected for r in s['rows']}))
     for name,spec in arms.items():
         text=spec.pop('source');lines=text.splitlines(True)
         edits=[(a,b,''.join(lines[c:d])) for op,a,b,c,d in difflib.SequenceMatcher(None,hostlines,lines,autojunk=False).get_opcodes() if op!='equal']
@@ -40,11 +43,12 @@ def main():
     checker='\n'.join(line for text in ((problem/'checks.py').read_text(),(problem/'nvfp4.py').read_text(),reference)
                       for line in text.splitlines() if not line.startswith('from __future__ import'))
     selection_seeds=sorted(set([172903+7919*i for i in range(16)]+[173101+7919*i for i in range(8)]+[3102917+104729*i for i in range(16)]+[3121907+7919*i for i in range(16)]+[197731]+[6107923+7919*i for i in range(8)]+[5353+7919*i for i in range(16)]+[9000+m+97*i for m in (1,8,16,32) for i in range(16)]))
-    confirmation_seeds=[104910273+104729*i for i in range(16)]
+    selection_seeds=sorted(set(selection_seeds+selection.get('selection_seed_ids',[])))
+    confirmation_seeds=[a.seed+104729*i for i in range(16)]
     assert not set(selection_seeds)&set(confirmation_seeds)
     body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS='+repr(tuple(confirmation_seeds))+'\n'
     body+='import base64,lzma,json\nS16_BUNDLE=json.loads(lzma.decompress(base64.b85decode('+repr(bundle)+')))\n'
-    body+='S16_CHECKER='+repr(checker)+'\n'
+    body+='S16_CHECKER='+repr(checker)+'\nS16_WEIGHT_SEED='+repr(a.seed-2)+'\nS16_ROUTER_SEED='+repr(a.seed-4)+'\n'
     body+=(H/'lab.py.inc').read_text()
     packed=base64.b85encode(lzma.compress(body.encode(),preset=9)).decode()
     payload='import base64,lzma,linecache,hashlib\n_body=lzma.decompress(base64.b85decode('+repr(packed)+')).decode()\n'
@@ -77,7 +81,7 @@ def prepare(weights):return _candidate_prepare(weights)
     assert len(wrapped.encode())<1_000_000,len(wrapped.encode())
     target=R/'problems/muse_decode_layer/lab'/('lab_s16_'+meta['sha256'][:12]+'.py');target.write_text(wrapped)
     meta.update(candidate=str(candidate.relative_to(R)),wrapper=str(target.relative_to(R)),wrapper_sha256=sha(wrapped),
-                payload=str(pp.relative_to(R)),payload_sha256=sha(payload),host_file=str(host.relative_to(R)),arms=arms,checker_sha256=sha(checker),selection_seeds=selection_seeds,confirmation_seeds=confirmation_seeds,confirmation_weight_seed=104910271,confirmation_router_seed=104910269)
+                payload=str(pp.relative_to(R)),payload_sha256=sha(payload),host_file=str(host.relative_to(R)),arms=arms,checker_sha256=sha(checker),selection_seeds=selection_seeds,confirmation_seeds=confirmation_seeds,confirmation_weight_seed=a.seed-2,confirmation_router_seed=a.seed-4,baseline_arm=a.baseline_name,baseline_sha256=sha(baseline))
     (H/'generated/lab_manifest.json').write_text(json.dumps(meta,indent=2)+'\n')
     print('S16 candidate',meta['sha256'],'wrapper',meta['wrapper_sha256'],'bytes',len(wrapped))
 

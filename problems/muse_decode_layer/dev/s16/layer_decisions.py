@@ -70,4 +70,21 @@ def nominate(files):
         except (AssertionError,KeyError,ValueError,StopIteration,lzma.LZMAError,EOFError) as exc:
             del selected[first:];del evidence[first_evidence:]
             evidence.append(dict(batch=name,wins=False,unmeasured=True,reason=type(exc).__name__+':'+str(exc)))
+    try:
+        hand=json.loads((H/'layer_manifest.json').read_text())['coop_handoff']
+        entry=dict(file='P5 cooperative verify1',sha256='51847d1be2ab42aa46a8fe32a58fbd9dbc1b4b306c8c19f41585599a348edb10')
+        receipt=decide.read_receipt(entry,files)
+        cells=decide.archive(receipt['log'],'R2_XZ85');assert len(cells)==1
+        cell=cells[0];assert cell['case']=='v1S' and cell['seeds']==35
+        assert all(n==35 for n in cell['task_passed'].values())
+        assert cell['arms']['COOP']==cell['arms']['DOUBLE']==['dsm',4,16]
+        assert not any(v['failed'] for v in hand['identical_recipe_control'])
+        times=dict(zip(cell['names'],cell['times']))
+        ratios=[b/a for a,b in zip(times['A'],times['COOP'])]
+        aa=[b/a for a,b in zip(times['A'],times['A2'])]
+        proof=decide.paired(ratios,aa,35)
+        evidence.append(dict(arm='layer_coop_v1',job=receipt['job'],**proof))
+        if proof['wins']:selected.append(copy.deepcopy(patches.registry()['layer_coop_v1']))
+    except (AssertionError,KeyError,ValueError,StopIteration,lzma.LZMAError,EOFError) as exc:
+        evidence.append(dict(batch='coop_v1',wins=False,unmeasured=True,reason=type(exc).__name__+':'+str(exc)))
     return selected,evidence,receipts

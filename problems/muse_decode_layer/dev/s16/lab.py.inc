@@ -60,7 +60,7 @@ def lab(deadline,weights,state):
         # Import-phase experiment has its own held-out weights and state. The
         # judge subsequently prepares its real weights from scratch. No lab
         # output/state feeds the official timed candidate.
-        weights=checker['generate_weights'](104910271,device='cuda',router_seed=104910269)
+        weights=checker['generate_weights'](S16_WEIGHT_SEED,device='cuda',router_seed=S16_ROUTER_SEED)
         state=base['_candidate_prepare'](weights)
     device=weights['qkv_gate'].device
     original=base['_S16_LAB_BASE_STATE'];sources={'A':S16_BUNDLE['host']}
@@ -76,6 +76,12 @@ def lab(deadline,weights,state):
             st['partial_port_rows']=v['_PP_ROWS']
             st['cluster_rows']=v.get('_CLUSTER_ROWS',())
             if '_s16_prepare_delta' in v:st=v['_s16_prepare_delta'](weights,st)
+            if 'nf_port' in st:
+                missing=set(v['NF_PORT_SELECTED'])-set(st['nf_port']['plans'])
+                if missing:
+                    extra=v['nf_prepare'](weights,missing)
+                    st['nf_port']=dict(st['nf_port'],plans=dict(st['nf_port']['plans']))
+                    st['nf_port']['plans'].update(extra['plans'])
             states[name]=st
         except Exception as exc:failures.append(name+':prepare:'+type(exc).__name__+':'+str(exc)[:100])
     generator=_ap_generate_input

@@ -1,0 +1,134 @@
+{
+  "patches": [
+    {
+      "name": "global_OLD",
+      "family": "direct_attention",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ]
+      ],
+      "kind": "OLD"
+    },
+    {
+      "name": "global_PP",
+      "family": "direct_attention",
+      "rows": [
+        [
+          32,
+          1,
+          true
+        ]
+      ],
+      "kind": "PP"
+    },
+    {
+      "name": "epi_PAIR",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "PAIR"
+    },
+    {
+      "name": "layer_coop_v1",
+      "family": "layer",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ]
+      ],
+      "kind": "coop_v1"
+    },
+    {
+      "name": "layer_release_attention",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "release_attention"
+    }
+  ],
+  "selection_seed_ids": [
+    104910273,
+    105015002,
+    105119731,
+    105224460,
+    105329189,
+    105433918,
+    105538647,
+    105643376,
+    105748105,
+    105852834,
+    105957563,
+    106062292,
+    106167021,
+    106271750,
+    106376479,
+    106481208
+  ],
+  "baseline_arm": "S16",
+  "baseline_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+  "selection_job": "37c2879f62554dff",
+  "removed_by_off_arm": [
+    "dsm_8",
+    "epi_NORM",
+    "global_C128",
+    "layer_library_o",
+    "layer_library_pool128",
+    "layer_release_moe"
+  ],
+  "decision": "Point-estimate pruning selects a new composition; only a fresh held-out six-load pair can promote it over S16."
+}

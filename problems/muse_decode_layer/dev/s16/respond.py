@@ -36,20 +36,21 @@ def wait_gpu_capacity():
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--receipts',nargs='*',type=Path);ap.add_argument('--screen-only',action='store_true');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--receipts',nargs='*',type=Path);ap.add_argument('--screen-only',action='store_true')
+    ap.add_argument('--selection',type=Path);ap.add_argument('--baseline',type=Path);ap.add_argument('--baseline-name',default='S15');ap.add_argument('--seed',type=int,default=104910273);a=ap.parse_args()
     started=time.monotonic()
     def host(script,*args):subprocess.run([sys.executable,str(H/script),*map(str,args)],cwd=R,check=True)
-    host('decide.py',*(['--receipts',*a.receipts] if a.receipts else []))
-    selected=json.loads((H/'generated/selection.json').read_text())
-    host('build_lab.py');manifest=json.loads((H/'generated/lab_manifest.json').read_text())
+    if not a.selection:host('decide.py',*(['--receipts',*a.receipts] if a.receipts else []))
+    selection=a.selection or H/'generated/selection.json';selected=json.loads(selection.read_text())
+    host('build_lab.py','--selection',selection,'--baseline-name',a.baseline_name,'--seed',a.seed,*(['--baseline',a.baseline] if a.baseline else []));manifest=json.loads((H/'generated/lab_manifest.json').read_text())
     candidate=R/manifest['candidate'];env={**os.environ,'CUDA_VISIBLE_DEVICES':'0'}
     from pack import pack
     shipped=R/'problems/muse_decode_layer'/('cand_r3_best7_s16_'+manifest['sha256'][:12]+'.py');shipped.write_text(pack(candidate.read_text()))
     batch=H/'batches'/manifest['wrapper_sha256'][:16];batch.mkdir(parents=True,exist_ok=True)
-    for name in ('selection.json','lab_manifest.json'):shutil.copyfile(H/'generated'/name,batch/name)
+    shutil.copyfile(selection,batch/'selection.json');shutil.copyfile(H/'generated/lab_manifest.json',batch/'lab_manifest.json')
     result=dict(candidate=manifest['candidate'],expanded_sha256=manifest['sha256'],shipped_source=str(shipped.relative_to(R)),
                 shipped_sha256=hashlib.sha256(shipped.read_bytes()).hexdigest(),wrapper_sha256=manifest['wrapper_sha256'],
-                screens={},queued=False,status='experimental S16; S15 frozen until held-out six-load R lower95pct bound>1 and TASK')
+                screens={},queued=False,status='experimental integration; '+a.baseline_name+' frozen until held-out six-load R lower95pct bound>1 and TASK')
     def save():
         result['elapsed_s']=time.monotonic()-started
         for file in (batch/'response.json',H/'response.json'):file.write_text(json.dumps(result,indent=2)+'\n')
@@ -80,7 +81,7 @@ def main():
     result['expanded_audit']=audit
     save()
     if not a.screen_only:
-        result['scored']=previous['scored'] if previous else send(shipped,'--scored',-1.1,'P4 S16 scored: frozen S15 60254883 plus global_C128 d1S, DSM C16 v1S/C8 v16S, NORM M1 and PAIR M8/16/32. Shape selections use measured ratios, no per-load A:A gate. Exact packed normal+forced local screens pass. Held-out six-load R confirmation follows.')
+        result['scored']=previous['scored'] if previous else send(shipped,'--scored',-1.1,'P4 integration scored vs '+a.baseline_name+': '+', '.join(s['name'] for s in selected['patches'])+'. Exact normal+forced screens; held-out six-load confirmation follows.')
         save()
     for mode in ('normal','forced'):
         log=H/'generated'/('lab_'+mode+'.log')
@@ -92,7 +93,7 @@ def main():
         print('PASS confirmation wrapper',mode,flush=True);save()
     if not a.screen_only:
         wrapper=R/manifest['wrapper'];assert hashlib.sha256(wrapper.read_bytes()).hexdigest()==manifest['wrapper_sha256']
-        result['confirmation']=send(wrapper,'--check',-1.0,'P4 S16 held-out confirmation: exact screened composition vs frozen S15, each piece off, A:A;16 disjoint input seeds plus fresh weight/router seeds;46/16 weighted six-load R, Student-t95pct CI with A:A noise; unchanged official TASK every arm/seed. No per-load, exact-ID or host-equivalence veto. Import lab620s, private state discarded before real judge prepare.')
+        result['confirmation']=send(wrapper,'--check',-1.0,'P4 held-out confirmation vs '+a.baseline_name+': exact screened composition, each piece off, A:A;16 disjoint input seeds starting '+str(a.seed)+' plus fresh weights/router;46/16 weighted six-load R and Student-t95pct CI; unchanged official TASK every arm/seed. Import lab620s; private state discarded before real judge prepare.')
         result['queued']=True;save()
     print(json.dumps(result,indent=2))
 if __name__=='__main__':main()

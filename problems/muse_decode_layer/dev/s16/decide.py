@@ -73,19 +73,23 @@ def nominate(receipts):
         spec=copy.deepcopy(registry[name]);spec['rows']=[list(row)]
         family=spec['family']
         # Attention families compete at a shape; epi/heavy policies compete at a token count.
-        key=('attention',tuple(row)) if family in ('global','dsm','early','soft') else ('policy',name) if family in ('pdl','boundary') else ('small' if family in ('epi','reuse') else family,row[0]*row[1])
+        key=('attention',tuple(row)) if family in ('global','direct_attention','dsm','early','soft') else ('policy',name) if family in ('pdl','boundary') else ('small' if family in ('epi','reuse') else family,row[0]*row[1])
         if key in choices and choices[key][0]['name']==name:
             if list(row) not in choices[key][0]['rows']:choices[key][0]['rows'].append(list(row))
         elif key not in choices or proof['ratio']<choices[key][1]:choices[key]=(spec,proof['ratio'])
     def parse_global():
-        global_rows=archive(receipts['global']['log'],'CS_XZ85')
+        global_rows=archive(receipts['global']['log'],'CG_XZ85')
         assert len(global_rows)==4
         for cell in global_rows:
             assert cell['seeds']==16
+            assert cell['task_passed'] and all(n==16 for n in cell['task_passed'].values())
             label=cell['case'];row=(int(re.search(r'\d+',label)[0]),1,label.endswith('S'))
-            reference='OLD'  # last-CTA sliding / direct-partials full = S15 attention
+            # Only d1 uses last-CTA/direct-partials in S15. At d16/d32
+            # OLD is a candidate; A is the incumbent attention path.
+            reference='OLD' if row[0]==1 else 'A'
             times=cell['times'];aa=[b/a for a,b in zip(times['A'],times['A2'])]
-            for kind in ('C64','C128','W4','W8'):
+            for kind in ('C64','C128','W4','W8','OLD','PP'):
+                if kind==reference or row==(1,1,False) and kind=='PP':continue
                 rr=[x/y for x,y in zip(times[kind],times[reference])]
                 candidate('global_'+kind,row,paired(rr,aa,16))
 
@@ -209,6 +213,8 @@ def main():
     unavailable={}
     for entry in inventory:
         name=keys[entry['sha256'][:8]]
+        if name=='global':
+            entry=dict(entry,sha256='da61a8f26d14c598daa9df6cabc4165225d898eb4511be61d71cdd9a25ada749')
         if name=='s15':
             q=json.loads((H.parent/'s15/queue.json').read_text())
             entry=dict(entry,sha256=q['wrapper_sha256'])
@@ -223,6 +229,11 @@ def main():
     selected,evidence=nominate(receipts)
     import layer_decisions
     layer_selected,layer_evidence,layer_receipts=layer_decisions.nominate(files)
+    if any(s['name']=='layer_coop_v1' for s in layer_selected):
+        for spec in selected:
+            if spec['family'] in ('global','direct_attention','dsm','early','soft'):
+                spec['rows']=[r for r in spec['rows'] if tuple(r)!=(1,8,True)]
+        selected=[s for s in selected if s['rows']]
     selected+=layer_selected;evidence+=layer_evidence
     receipts.update({'layer_'+k:v for k,v in layer_receipts.items()})
     assert selected,'no measured selection improvement'

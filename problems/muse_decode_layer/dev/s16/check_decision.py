@@ -16,7 +16,7 @@ def main():
  global_rows=[]
  for label in ('d1S','d16S','d32S','d1F'):
   t={k:samples(16,.9 if k=='C64' else 1) for k in ('A','A2','C64','C128','W4','W8','OLD','PP')}
-  global_rows.append(dict(case=label,seeds=16,times=t,gate={}))
+  global_rows.append(dict(case=label,seeds=16,times=t,gate={},task_passed={k:16 for k in t}))
  early=dict(seeds=16,times=dict(A=samples(16),A2=samples(16)),ratios={'OLD4':{k:[.8 if k=='E4' else 1.]*16 for k in ('E4','E2','E1','L4')}})
  dsm=[dict(B=b,seeds=8,gates=[{}]*8,ratios={'A2':[1.]*8,**{'C'+str(c):[.8 if c==4 else 1.]*8 for c in (1,2,4,8,16)}}) for b in (1,16,32)]
  soft='\n'.join('R B'+str(b)+' L8 '+' '.join(k+'=100/r'+('.70000[.69000,.71000]' if k=='mix25' else '1.00000[.99990,1.00010]') for k in ('A2','mix25','mix50','gap','mixgap','tc25','ping','ping25')) for b in (16,32))
@@ -46,7 +46,7 @@ def main():
  raw=struct.pack('<I',len(head))+head+struct.pack('<'+'I'*len(binary),*binary)
  bd='BD_BATCH_XZ85 '+base64.b85encode(lzma.compress(raw)).decode()
  receipts={name:dict(log=log) for name,log in {
-  'global':blob('CS_XZ85',global_rows),'early':blob('EH_XZ85',early),'dsm':blob('DS_XZ85',dsm),'soft':soft,
+  'global':blob('CG_XZ85',global_rows),'early':blob('EH_XZ85',early),'dsm':blob('DS_XZ85',dsm),'soft':soft,
   'epi':'\n'.join(epi),'heavy':'\n'.join(heavy),'boundary':bd}.items()}
  selected,evidence=decide.nominate(receipts)
  names={s['name'] for s in selected}

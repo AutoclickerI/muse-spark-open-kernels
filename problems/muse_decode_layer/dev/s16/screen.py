@@ -24,6 +24,12 @@ def install(module,forced=False):
         sys.path.insert(0,str(H.parent/'s15'))
         load(H.parent/'library_chain/library_standins.py','s16_library_standins').install(m)
     else:load(H.parent/'s15/local_standins.py','s16_s15_standins').install(m)
+    if hasattr(m,'r2_attention'):
+        original_r2=m.r2_attention
+        def r2_attention(data,qkv=None,kind='last',qt=1,ns=8):
+            return original_r2(data,qkv,kind,qt,1 if kind in ('dsm','dsm_old') else ns)
+        m.r2_attention=r2_attention
+        print('S16_COOP_STANDIN native C1 launch; original QT/math/ABI',flush=True)
     counts={};stubs={}
     # Every new attention driver runs its Python allocation/launch path. Only
     # unavailable native global/DSM kernels use a pointer-level launch stand-in.

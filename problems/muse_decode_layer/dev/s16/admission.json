@@ -1174,5 +1174,77 @@
       },
       "local_report": "screen/layer_library_v32slide/forced/local.json"
     }
+  },
+  "global_OLD": {
+    "normal": {
+      "sha256": "3739bbbc16a4fad2f15a45b0250eaf1f8ffa0cf6d5530fc5fceb34e5eaee4659",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/global_OLD/normal/local.json"
+    },
+    "forced": {
+      "sha256": "3739bbbc16a4fad2f15a45b0250eaf1f8ffa0cf6d5530fc5fceb34e5eaee4659",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/global_OLD/forced/local.json"
+    }
+  },
+  "global_PP": {
+    "normal": {
+      "sha256": "93382ee9c7e97c7590a7ddada0027a8c6e95d17b9999e23e74751e3223e84534",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/global_PP/normal/local.json"
+    },
+    "forced": {
+      "sha256": "93382ee9c7e97c7590a7ddada0027a8c6e95d17b9999e23e74751e3223e84534",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/global_PP/forced/local.json"
+    }
+  },
+  "layer_coop_v1": {
+    "normal": {
+      "sha256": "71da50a7bf5896f9ae1e0397bfce5beec5a1977719c00c6df79a408d488ecd9e",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_coop_v1/normal/local.json"
+    },
+    "forced": {
+      "sha256": "71da50a7bf5896f9ae1e0397bfce5beec5a1977719c00c6df79a408d488ecd9e",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_coop_v1/forced/local.json"
+    }
   }
 }

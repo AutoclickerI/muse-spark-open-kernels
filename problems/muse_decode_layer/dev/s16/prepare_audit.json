@@ -2607,6 +2607,189 @@
       }
     }
   },
+  "global_OLD": {
+    "normal": {
+      "sha256": "3739bbbc16a4fad2f15a45b0250eaf1f8ffa0cf6d5530fc5fceb34e5eaee4659",
+      "inventory_sha256": "40c58199b8cf252f55e5cdcb682d3cd08cb9f4f647a112c9efe3deb98d69af13",
+      "tensor_paths": 92,
+      "classes": {
+        "original precision dense/norm values, indices or runtime scratch": 58,
+        "packed E2M1/E4M3 codes; no widened expert values": 10,
+        "lossless BF16 code/layout, original-bit escape metadata, or launch scratch": 18,
+        "original FP32 expert global scale": 6
+      },
+      "calls": {
+        "smallm_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "nf_call": {
+          "eager": 16,
+          "captured": 6
+        },
+        "_best7_boundary": {
+          "eager": 98,
+          "captured": 24
+        },
+        "_best7_route": {
+          "eager": 49,
+          "captured": 12
+        }
+      }
+    },
+    "forced": {
+      "sha256": "3739bbbc16a4fad2f15a45b0250eaf1f8ffa0cf6d5530fc5fceb34e5eaee4659",
+      "inventory_sha256": "d5666ca212303e359809da09a6750383135b2bec77fff8b6b22808d4475ff13c",
+      "tensor_paths": 132,
+      "classes": {
+        "original precision dense/norm values, indices or runtime scratch": 64,
+        "packed E2M1/E4M3 codes; no widened expert values": 16,
+        "lossless BF16 code/layout, original-bit escape metadata, or launch scratch": 18,
+        "original FP32 expert global scale": 8,
+        "CPU launch configuration; no GPU weight values": 26
+      },
+      "calls": {
+        "smallm_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "nf_call": {
+          "eager": 16,
+          "captured": 6
+        },
+        "_best7_boundary": {
+          "eager": 98,
+          "captured": 24
+        },
+        "_best7_route": {
+          "eager": 49,
+          "captured": 12
+        }
+      }
+    }
+  },
+  "global_PP": {
+    "normal": {
+      "sha256": "93382ee9c7e97c7590a7ddada0027a8c6e95d17b9999e23e74751e3223e84534",
+      "inventory_sha256": "40c58199b8cf252f55e5cdcb682d3cd08cb9f4f647a112c9efe3deb98d69af13",
+      "tensor_paths": 92,
+      "classes": {
+        "original precision dense/norm values, indices or runtime scratch": 58,
+        "packed E2M1/E4M3 codes; no widened expert values": 10,
+        "lossless BF16 code/layout, original-bit escape metadata, or launch scratch": 18,
+        "original FP32 expert global scale": 6
+      },
+      "calls": {
+        "smallm_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "nf_call": {
+          "eager": 16,
+          "captured": 6
+        },
+        "_best7_boundary": {
+          "eager": 98,
+          "captured": 24
+        },
+        "_best7_route": {
+          "eager": 49,
+          "captured": 12
+        }
+      }
+    },
+    "forced": {
+      "sha256": "93382ee9c7e97c7590a7ddada0027a8c6e95d17b9999e23e74751e3223e84534",
+      "inventory_sha256": "d5666ca212303e359809da09a6750383135b2bec77fff8b6b22808d4475ff13c",
+      "tensor_paths": 132,
+      "classes": {
+        "original precision dense/norm values, indices or runtime scratch": 64,
+        "packed E2M1/E4M3 codes; no widened expert values": 16,
+        "lossless BF16 code/layout, original-bit escape metadata, or launch scratch": 18,
+        "original FP32 expert global scale": 8,
+        "CPU launch configuration; no GPU weight values": 26
+      },
+      "calls": {
+        "smallm_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "nf_call": {
+          "eager": 16,
+          "captured": 6
+        },
+        "_best7_boundary": {
+          "eager": 98,
+          "captured": 24
+        },
+        "_best7_route": {
+          "eager": 49,
+          "captured": 12
+        }
+      }
+    }
+  },
+  "layer_coop_v1": {
+    "normal": {
+      "sha256": "71da50a7bf5896f9ae1e0397bfce5beec5a1977719c00c6df79a408d488ecd9e",
+      "inventory_sha256": "40c58199b8cf252f55e5cdcb682d3cd08cb9f4f647a112c9efe3deb98d69af13",
+      "tensor_paths": 92,
+      "classes": {
+        "original precision dense/norm values, indices or runtime scratch": 58,
+        "packed E2M1/E4M3 codes; no widened expert values": 10,
+        "lossless BF16 code/layout, original-bit escape metadata, or launch scratch": 18,
+        "original FP32 expert global scale": 6
+      },
+      "calls": {
+        "smallm_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "nf_call": {
+          "eager": 16,
+          "captured": 6
+        },
+        "_best7_boundary": {
+          "eager": 98,
+          "captured": 24
+        },
+        "_best7_route": {
+          "eager": 49,
+          "captured": 12
+        }
+      }
+    },
+    "forced": {
+      "sha256": "71da50a7bf5896f9ae1e0397bfce5beec5a1977719c00c6df79a408d488ecd9e",
+      "inventory_sha256": "d5666ca212303e359809da09a6750383135b2bec77fff8b6b22808d4475ff13c",
+      "tensor_paths": 132,
+      "classes": {
+        "original precision dense/norm values, indices or runtime scratch": 64,
+        "packed E2M1/E4M3 codes; no widened expert values": 16,
+        "lossless BF16 code/layout, original-bit escape metadata, or launch scratch": 18,
+        "original FP32 expert global scale": 8,
+        "CPU launch configuration; no GPU weight values": 26
+      },
+      "calls": {
+        "smallm_experts": {
+          "eager": 37,
+          "captured": 12
+        },
+        "nf_call": {
+          "eager": 16,
+          "captured": 6
+        },
+        "_best7_boundary": {
+          "eager": 98,
+          "captured": 24
+        },
+        "_best7_route": {
+          "eager": 49,
+          "captured": 12
+        }
+      }
+    }
+  },
   "layer_nearby": {
     "normal": {
       "sha256": "2ff0a81f09204eef3e86431109e22e1b78163cd33ff55ba243cf826ec41a4731",

@@ -9,11 +9,12 @@ def evaluate(receipt,raw,manifest):
     assert raw['host_sha256']==manifest['sha256']
     assert raw['checker_sha256']==manifest['checker_sha256']
     assert raw['seed_ids']==manifest['confirmation_seeds']
-    score=promotion(raw,'S15','A',official_pass=receipt['result'].get('passed'),selection_seeds=manifest['selection_seeds'])
+    baseline=manifest.get('baseline_arm','S15')
+    score=promotion(raw,baseline,'A',official_pass=receipt['result'].get('passed'),selection_seeds=manifest['selection_seeds'])
     # Off arms and A:A diagnose interactions and noise. They cannot veto the
     # score of the composition, including a piece or load that loses alone.
     pieces={arm:promotion(raw,arm,'A',official_pass=receipt['result'].get('passed'),selection_seeds=manifest['selection_seeds'])
-            for arm in manifest['arms'] if arm!='S15'}
+            for arm in manifest['arms'] if arm!=baseline}
     return dict(job=receipt['id'],source_sha256=manifest['sha256'],freeze_gate=score['promote'],score=score,pieces=pieces,raw=raw)
 
 
@@ -34,5 +35,5 @@ def main():
         assert hashlib.sha256(packed).hexdigest()==response['shipped_sha256']
         final=R/'problems/muse_decode_layer/cand_r3_best7_s16_final.py';final.write_bytes(packed)
         print(final,result['score'])
-    else:print('S15 remains incumbent; S16 confirmation:',result['score'])
+    else:print(manifest.get('baseline_arm','S15'),'remains incumbent; integration confirmation:',result['score'])
 if __name__=='__main__':main()
