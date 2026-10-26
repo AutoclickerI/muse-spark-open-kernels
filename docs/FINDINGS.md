@@ -2131,6 +2131,43 @@ canonical source/receipt pins and all negative evidence are retained in `native_
 
 ### P13: boundary compute / route deletion on S19 (2026-10-26)
 
+Current P13 continuation on P4 production **S22 4b8c803d/d1ccdc35**:
+distributed b1 publishes FP32 residual, BF16 unnormalized weighted activation
+and per-CTA sum-of-squares; unchanged pool/router GEMM consumes that activation,
+route consumer restores the row RMS scalar before norm/sigmoid/top8. No changed
+weight bits or widened NVFP4; rows use independent clusters. C4/128 versusC8/256
+at largeM are two prespecified arms; smallM C8/256. Coupled v1F RT b1/b2 stays
+production S22; b2 not claimed deleted. BF16 rounding moves explicitly from
+BF16(s1*r*g) to BF16(s1*g) followed by post-GEMM FP32 scaling; unchanged TASK
+checks decide tolerance. This is the cheapest a+b scale/statistics mechanism.
+
+Then ROUTE: tile-interleaved independent M1 row grids, one arrival counter
+and epilogue CTA per row, no row serialization/spin. ArmsT1/8/16 andT1-only;
+other shapes/large-M metadata unchanged. Its selected-load zero-added-cost S19
+deletion scenario isR1.013545, part of the1.020342 route lever; not an S22 gain.
+Old serial-row recipe closure does not cover this mechanism or the route lever.
+
+Both exact production-graph labs pass**480primary+54TASK/nearby checks locally**,
+all8fresh seeds and10symmetric rounds retained; exact busiest-shard/both-soft
+fixtures, own same-source A:A for each candidate. Two changed CUDA units pass
+sm90a compile; scaled-route Triton Hopper parts4/8×splits1/3/4 pass. Explicit
+S22 attention stand-ins/C1 boundary math only locally; native C4/C8 execution
+and whole-load times remain unmeasured. Full checksum/tail/roundtrip pass.
+Evidence [distributed/](../problems/muse_decode_layer/dev/p13_boundary/distributed/README.md).
+
+**All H200 host quotas exhausted**; no new native R/CI claimed. BOUND queued
+through normal h200_lab/okc_run on prefill for10-27 reset(dispatcher09:01KST),
+wrappera97c099b6b294ba5/payload9f7d2ec6b3335894, sender3893443. Bounded reader3893300
+waits on that exact sender's pidfd, validates its immutable receipt, then sends
+screened route69343e6f7fd894da and reports it. No cadence, advice posting, shared
+doc writes or automatic commits. Status: distributed/out/sequence_status.json.
+Own initial unsubmitted waiter was replaced after fixing the host Python's
+missing pidfd binding via the tested Linux syscall. The subsequent unsubmitted
+S21 queue was replaced with S22 at publication; no native quota spent. Actual
+per-load/six-load R and independent candidate prepare await native evidence.
+Only a passing whole-layer tools/promotion.py comparison can nominate; P4
+reconfirms the exact patch on its newest composed S2x with fresh seeds.
+
 Exact S19 `62ea5bf4`; corrected **611341aaf8454a24**, projection-host import,
 8fresh160001021+104729*i seeds ×10complete symmetric cold rounds, all12S/F.
 Both layer types use `dist=soft`; exact public ref_front biased top8 chooses

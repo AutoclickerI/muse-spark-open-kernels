@@ -1,0 +1,37 @@
+{
+  "payload_sha256": "9f7d2ec6b3335894572b9e5be83e760e28aaaf7ea3b25d0b40d9e497eeb535a4",
+  "wrapper_sha256": "9d39543490099764877c2ea1789a4437f635e349635bb02133f7a117e5ff0e80",
+  "checks": {
+    "A": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "A2": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "B": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "B2": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "INC": {
+      "fail_count": 0,
+      "pass_count": 96
+    }
+  },
+  "nearby": {
+    "A": 18,
+    "A2": 0,
+    "B": 18,
+    "B2": 0,
+    "INC": 18
+  },
+  "wire_bytes": 10900,
+  "lossless_roundtrip": true,
+  "tail2000": true,
+  "scope": "Exact S22 lab, full held-out fixture cohort; local Hopper attention/cluster stand-ins, native times unmeasured"
+}

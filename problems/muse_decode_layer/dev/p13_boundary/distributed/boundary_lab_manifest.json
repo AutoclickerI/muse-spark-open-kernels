@@ -1,0 +1,194 @@
+{
+  "kind": "boundary",
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base_series": "S22",
+  "base_shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
+  "identities": {
+    "INC": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+    "A": "8ec06f1832a3d9bca32b1b281c97643738b4276537794368657cea30e2a689d4",
+    "A2": "8ec06f1832a3d9bca32b1b281c97643738b4276537794368657cea30e2a689d4",
+    "B": "edba1f07a53fa73cb12d3426019983c4770becbee7e4734020edbb3eaf7d4a34",
+    "B2": "edba1f07a53fa73cb12d3426019983c4770becbee7e4734020edbb3eaf7d4a34"
+  },
+  "arms": {
+    "A": {
+      "sha256": "8ec06f1832a3d9bca32b1b281c97643738b4276537794368657cea30e2a689d4",
+      "suffix_sha256": "460a78f6baf1017bbe1bd1eb146d8262e33bfd990c57dac58b8120b1e1ecb116"
+    },
+    "B": {
+      "sha256": "edba1f07a53fa73cb12d3426019983c4770becbee7e4734020edbb3eaf7d4a34",
+      "suffix_sha256": "a2bb75d71e21dff883837a2948e98f2506b041e8fe1bdf3230804c2682b19f45"
+    }
+  },
+  "confirmation_seeds": [
+    180003021,
+    180107750,
+    180212479,
+    180317208,
+    180421937,
+    180526666,
+    180631395,
+    180736124
+  ],
+  "selection_seeds": [
+    160001021,
+    160105750,
+    160210479,
+    160315208,
+    160419937,
+    160524666,
+    160629395,
+    160734124,
+    170001021,
+    170105750,
+    170210479,
+    170315208,
+    170419937,
+    170524666,
+    170629395,
+    170734124
+  ],
+  "weight_seed": 180003003,
+  "router_seed": 180003009,
+  "measurement_protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "checker_sha256": "0846febc50d94b71dbc68c02e2b02f9f667ab2ba9928181fcff230a48e188eb8",
+  "nearby_cases": [
+    {
+      "batch": 1,
+      "ctx": 10,
+      "layer": "sliding"
+    },
+    {
+      "batch": 1,
+      "ctx": 3000,
+      "layer": "full"
+    },
+    {
+      "batch": 8,
+      "ctx": 2047,
+      "layer": "sliding"
+    },
+    {
+      "batch": 9,
+      "ctx": 5000,
+      "layer": "sliding",
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 3,
+      "ctx": 6000,
+      "layer": "full",
+      "q_len": 8,
+      "dist": "outliers"
+    },
+    {
+      "batch": 5,
+      "ctx": 5000,
+      "layer": "sliding",
+      "q_len": 8,
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 33,
+      "ctx": 20000,
+      "layer": "full",
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "ctx": 300000,
+      "layer": "sliding",
+      "q_len": 8
+    },
+    {
+      "batch": 1,
+      "ctx": 1048576,
+      "layer": "full",
+      "q_len": 8
+    },
+    {
+      "batch": 4,
+      "ctx": 7000,
+      "layer": "sliding",
+      "q_len": 8,
+      "page": 1,
+      "kv_scale": 0.015625
+    },
+    {
+      "batch": 1,
+      "ctx": 80000,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 4,
+      "ctx": 6000,
+      "layer": "sliding",
+      "q_len": 8,
+      "dist": "soft"
+    },
+    {
+      "batch": 16,
+      "ctx": 20000,
+      "layer": "full",
+      "spread": "mixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "q_len": 1,
+      "ctx": 173,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 7,
+      "q_len": 1,
+      "ctx": 231,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "q_len": 8,
+      "ctx": 307,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 16,
+      "q_len": 8,
+      "ctx": 509,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 32,
+      "q_len": 8,
+      "ctx": 523,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    }
+  ],
+  "expected_checks": 480,
+  "nearby_checks": 54,
+  "payload_sha256": "9f7d2ec6b3335894572b9e5be83e760e28aaaf7ea3b25d0b40d9e497eeb535a4",
+  "body_sha256": "f8b9ca240ed8e351ed76d2309e190ed4f789299178c7fe5b2d7cfb4222322bf1",
+  "fixture": "Both soft, exact public reference busiest shard each seed; all local_start, rounds, telemetry retained; no off-timed candidate work."
+}

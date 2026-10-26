@@ -1,0 +1,156 @@
+{
+  "base_series": "S22",
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "native_R": null,
+  "native_CI95": null,
+  "quota": "All five hosts 0 scored +0 check on 2026-10-26; native unmeasured until reset",
+  "checks": {
+    "boundary": {
+      "payload_sha256": "9f7d2ec6b3335894572b9e5be83e760e28aaaf7ea3b25d0b40d9e497eeb535a4",
+      "candidate_sha256": "8ec06f1832a3d9bca32b1b281c97643738b4276537794368657cea30e2a689d4",
+      "CUDA_compile": [
+        {
+          "name": "P13B_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ],
+      "wrapper_screen": {
+        "payload_sha256": "9f7d2ec6b3335894572b9e5be83e760e28aaaf7ea3b25d0b40d9e497eeb535a4",
+        "wrapper_sha256": "9d39543490099764877c2ea1789a4437f635e349635bb02133f7a117e5ff0e80",
+        "checks": {
+          "A": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "A2": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "B": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "B2": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "INC": {
+            "fail_count": 0,
+            "pass_count": 96
+          }
+        },
+        "nearby": {
+          "A": 18,
+          "A2": 0,
+          "B": 18,
+          "B2": 0,
+          "INC": 18
+        },
+        "wire_bytes": 10900,
+        "lossless_roundtrip": true,
+        "tail2000": true,
+        "scope": "Exact S22 lab, full held-out fixture cohort; local Hopper attention/cluster stand-ins, native times unmeasured"
+      }
+    },
+    "route": {
+      "payload_sha256": "69343e6f7fd894da5e6b035213d03f7a7c80abef3da7265953f72f71909e903d",
+      "candidate_sha256": "0ba45ca6ad0fdbead8381024804e0009def74041c8b6a521280d93fd2ef44207",
+      "CUDA_compile": [
+        {
+          "name": "P13R_CUDA",
+          "ok": true,
+          "msg": ""
+        }
+      ],
+      "wrapper_screen": {
+        "payload_sha256": "69343e6f7fd894da5e6b035213d03f7a7c80abef3da7265953f72f71909e903d",
+        "wrapper_sha256": "e35f4ba01a782be15cbced538bc4c2df422e4f8b2a00b7b1cff6f15c079ad57c",
+        "checks": {
+          "A": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "A2": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "B": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "B2": {
+            "fail_count": 0,
+            "pass_count": 96
+          },
+          "INC": {
+            "fail_count": 0,
+            "pass_count": 96
+          }
+        },
+        "nearby": {
+          "A": 18,
+          "A2": 0,
+          "B": 18,
+          "B2": 0,
+          "INC": 18
+        },
+        "wire_bytes": 10424,
+        "lossless_roundtrip": true,
+        "tail2000": true,
+        "scope": "Exact S22 lab, full held-out fixture cohort; local Hopper attention/cluster stand-ins, native times unmeasured"
+      }
+    }
+  },
+  "boundary_triton_native_compile": [
+    {
+      "parts": 4,
+      "splits": 1,
+      "shared": 1024,
+      "cubin_bytes": 71560,
+      "compiled": true,
+      "executed": false
+    },
+    {
+      "parts": 4,
+      "splits": 3,
+      "shared": 1024,
+      "cubin_bytes": 84616,
+      "compiled": true,
+      "executed": false
+    },
+    {
+      "parts": 4,
+      "splits": 4,
+      "shared": 1024,
+      "cubin_bytes": 90760,
+      "compiled": true,
+      "executed": false
+    },
+    {
+      "parts": 8,
+      "splits": 1,
+      "shared": 1024,
+      "cubin_bytes": 72072,
+      "compiled": true,
+      "executed": false
+    },
+    {
+      "parts": 8,
+      "splits": 3,
+      "shared": 1024,
+      "cubin_bytes": 84872,
+      "compiled": true,
+      "executed": false
+    },
+    {
+      "parts": 8,
+      "splits": 4,
+      "shared": 1024,
+      "cubin_bytes": 91272,
+      "compiled": true,
+      "executed": false
+    }
+  ],
+  "report_validation": "Synthetic only: stand-ins cannot qualify, optional failures isolated, identity mismatch rejected, independent official TASK remains required."
+}

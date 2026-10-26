@@ -1,4 +1,15 @@
-# P13: S19 boundary and route deletion
+# P13: boundary compute and parallel route
+
+Current work is on P4's production S22 `4b8c803d`: distributed b1 statistics
+with its RMS scale moved through the unchanged pool/router GEMM, then a
+parallel per-row route producer. Both complete local batch rehearsals pass
+534 checks and their changed Hopper sources compile. Native whole-load
+measurements await the quota reset; the bounded reader enforces BOUND first,
+then route. Exact sources, pending queue and remaining verification:
+[distributed/README.md](distributed/README.md). These mechanisms remain open;
+the measured serial-row route recipe below is the one that is closed.
+
+## S19 sizing evidence and previous recipe
 
 Base: frozen expanded S19 `62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a`,
 shipment `8b415553`. This lane owns boundary **computation** and standalone

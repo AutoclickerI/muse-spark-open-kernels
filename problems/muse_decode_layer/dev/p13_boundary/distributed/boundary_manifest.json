@@ -1,0 +1,19 @@
+{
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base_shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
+  "base_series": "S22",
+  "arms": {
+    "A": {
+      "sha256": "8ec06f1832a3d9bca32b1b281c97643738b4276537794368657cea30e2a689d4",
+      "suffix_sha256": "460a78f6baf1017bbe1bd1eb146d8262e33bfd990c57dac58b8120b1e1ecb116"
+    },
+    "B": {
+      "sha256": "edba1f07a53fa73cb12d3426019983c4770becbee7e4734020edbb3eaf7d4a34",
+      "suffix_sha256": "a2bb75d71e21dff883837a2948e98f2506b041e8fe1bdf3230804c2682b19f45"
+    }
+  },
+  "cuda_sha256": "687838ab9213ff4ef4fbabbed49433edc76110b94b4ee8b348caf7909bcbf3a9",
+  "mechanism": "Distributed b1 residual + unnormalized weighted BF16 activation; per-CTA FP32 row moments, RMS scalar deferred through unchanged pool/router GEMM into route. No changed weight bytes.",
+  "changed_rounding": "BF16(st*g) before GEMM, FP32 scalar after GEMM, instead of BF16(st*rms*g); TASK decides tolerance.",
+  "restrictions": "FP32 residual and all weights unchanged; v1F coupled RT path unchanged; rows independent CTAs/clusters, no serial row loop."
+}

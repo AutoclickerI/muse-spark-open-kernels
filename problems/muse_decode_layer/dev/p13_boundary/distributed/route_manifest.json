@@ -1,0 +1,19 @@
+{
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base_shipped_sha256": "d1ccdc358ef5fb0f038a1d0e741465f512f498e90d39a16e56f3f0b0e47615f3",
+  "base_series": "S22",
+  "arms": {
+    "A": {
+      "sha256": "0ba45ca6ad0fdbead8381024804e0009def74041c8b6a521280d93fd2ef44207",
+      "suffix_sha256": "ff99a95e2fbcffcd12c432c98bde5396e747a387239822bd19da494ca879ae4c"
+    },
+    "B": {
+      "sha256": "0f32675732f53e1bd436a9e48402728aaea8a738e417f79fe001e92c18437f33",
+      "suffix_sha256": "48ecd52811c04fdf9ae5b95ede9420b2466a2389cfb10483db6dcf345eab1c5e"
+    }
+  },
+  "cuda_sha256": "666b077a0444a5e983339716487823700a3b4341243a32c6746d4df655b5b02a",
+  "mechanism": "Per-row independent M1 pool/router grid, tile-major interleaving for weight reuse, per-row last arrival computes exactly one norm/top8 row; no cross-row serialization.",
+  "changed_rounding": "Unchanged BF16 input and weights; independent M1 GEMM accumulation order.",
+  "restrictions": "FP32 residual and all weight bits unchanged; each route epilogue owns one row; M1/B subset is a prespecified arm."
+}
