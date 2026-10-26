@@ -1,8 +1,7 @@
 # P7 decode-1 glue second round
 
 Build a full decode-1 chain attribution on **S14 `f1c77ce6`** while the 09:00 KST reset batch waits.
-No H200 result or new promotion is claimed here. The existing boundary/confirmation sender **3517006**
-(`d29911c50f955455`) is unchanged. This lab is independent of its outcome.
+The first reset receipt is unmeasured; no promotion is claimed here. The boundary/confirmation reset job is **4c86853a953b4eca**. This lab is independent of its outcome.
 
 `patch.py` builds five exact-S14 candidates, restricted to decode-1 sliding/full. Every branch/partial from a
 predecessor remains after the dependency wait. Inline PTX pins immutable loads where nvcc otherwise sinks them.
@@ -86,7 +85,7 @@ prefill lab (550-second budget); decode quota is left to integration and P10b.
 
 Queued sender **975835**, prefill wrapper SHA256
 `d490ac854840bcd39b4b5716092b7118d12ab73077c5aece6266d819eb34ac6a`, priority **1.1**.
-`not_before=1792972800` (**2026-10-26 09:00 KST**). No judge job ID exists before dispatch.
+`not_before=1792972800` (**2026-10-26 09:00 KST**). Original reset job: **841077efefb343a7**; its packed result was displaced, as recorded below.
 `scheduled.json` records the worker; log: `runs/detached/d490ac854840bcd3.log`.
 Payload SHA256 **`a84f0d56828e38b8b83d93cf6ef6974b5865fe84b3cd7b746816379beccf9e55`**.
 The prototype patch builder is `patch.py`, SHA256 **`b6d4954e193fc576d32a6fb6dba9c9771ef982be6cede60aefd7a7240723a4f7`**,
@@ -107,3 +106,9 @@ python3 problems/muse_bf16_proj/dev/d1_chain/build_lab.py
 CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_bf16_proj/dev/d1_chain/check_lab.py
 python3 problems/muse_bf16_proj/dev/d1_chain/check_archive.py
 ```
+
+## Reset receipt and retry
+
+Original job **`841077efefb343a7`** completed, but the lab is **unmeasured**: later prefill-host prepare tuning and profiler output displaced every lab marker from the 16,000-character receipt tail. Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
+
+Exact-byte retry: attention-host import lab, 550-second budget, sender **4131717**, priority **1**; payload SHA256 `a84f0d56`, wrapper `4de4a050`. All existing local screens still cover the unchanged kernels. The attention host finishes its own tuning before this lab (no later prepare); its prior receipt has 1,956 characters after import tuning. `reset_result.json` records the receipt and dispatch proof. Apply the existing decision table only to the retry's recovered paired controls and gates.

@@ -231,6 +231,52 @@ Reuse rebuild phase clocks at M32: math/activation 58.7 us, epilogues 28.5, expo
 waits 3.6; extra-block activation gathers replace first-block register reuse (`b5659458`).
 Evidence: `problems/muse_decode_layer/dev/nt1_timeline/`.
 
+### P3a reset receipts and decisions (2026-10-26)
+
+Ratios are candidate time / control time, at M8 / 16 / 32 unless specified; below one wins.
+All three official hosts pass, all requested seeds complete, and no lab is truncated. Correct arms
+pass before/after native TASK gates (worst total/row <.00247 versus .015/.075 limits).
+First/second/pipe S14 A:A mean absolute drift is .415/.235/.225, .442/.363/.322 and
+.443/.250/.336 us respectively. First-run M1 A:A is .243 us; every M1 epilogue arm is neutral.
+These A:A summaries are not maximum per-seed envelopes. Exact rows, hashes and reproducible admission
+checks: `dev/nt1_timeline/h200_results.json`, `read_reset.py`; complete pipe matrix: `h200_pipe.txt`.
+
+| Recipe | Ratio versus control | Mechanism / decision | What remains open | Receipt job |
+|---|---|---|---|---|
+| EPBASE / S14, 16 seeds | .99656 / .99979 / 1.00208 | Diagnostic hooks disabled; neutral control within uncertainty | Small phase differences are not speedups | `d650c04ead114119` |
+| VEC / S14 | 1.01332 / 1.01457 / 1.01898 | Single vector writer loses despite fewer modeled bank requests; close this recipe | Other writer ownership and producer overlap | `d650c04ead114119` |
+| PROD / S14 | .98056 / .97831 / .98517 | Move TMA issue to warp7; wins but PAIR is better | Whole-layer effect; no independent producer-only gain beyond PAIR established | `d650c04ead114119` |
+| NORM / S14 | .98142 / .98340 / .99000 | Aggregate norm atomics per run; wins versus S14, adds no advantage over PAIR | Different norm ownership, not this tested combination | `d650c04ead114119` |
+| PAIR / S14 | **.97493 / .97262 / .97932** | Two float2 planes/two writers plus warp7 producer/per-run norms; 16/16 wins each M; nominate to P4 | Many-seed six-load whole-layer pair; M1 unchanged (.99890, neutral) | `d650c04ead114119` |
+| ONCE / S14 | 1.30467 / 1.29879 / 1.33132 | Decode-once schedule remains a loss | Other reuse schedules; the 58.7 us old math clock is ONCE, not S14 | `d650c04ead114119` |
+| ONCE_VEC / S14 | 1.23515 / 1.24645 / 1.31428 | Vector epilogue improves ONCE, still loses to S14; close this combination | Reuse without extra activation-gather cost | `d650c04ead114119` |
+| ONCE_PAIR / S14 | 1.24614 / 1.25036 / 1.29410 | Pair epilogue does not rescue this reuse schedule | Alternative reuse mechanisms | `d650c04ead114119` |
+| PAIR / S14, 32-seed confirmation | **.97830 / .97462 / .97778** | 31/31/32 wins; confirms first run beyond A:A and upper95% summary bound | P4 integration and whole-layer interaction | `29ad388de976432c` |
+| TREE / PAIR (and / S14) | .99904 / .99811 / 1.00007 (.97888 / .97404 / .97746) | Balanced FADD depth8→3 gives no incremental gain; keep admitted PAIR | Other dependency cuts, not this tree | `29ad388de976432c` |
+| FOUR / PAIR (and / S14) | 1.02215 / 1.02842 / 1.03432 (1.00178 / 1.00521 / 1.01047) | Four half-active writers spend more instructions; close exact recipe | Other bank/ownership layouts | `29ad388de976432c` |
+| LOCAL / PAIR (and / S14) | 1.01213 / 1.00951 / 1.00939 (.99212 / .98615 / .98488) | Removing global norm atomics costs export/final gather; worse than PAIR | Different reduction with less export/tail cost | `29ad388de976432c` |
+| FOUR_LOCAL / PAIR (and / S14) | 1.03406 / 1.04155 / 1.04617 (1.01140 / 1.01404 / 1.02290) | Combined four-writer/local-norm ownership loses; close combination | Neither general atomics removal nor all ownership rebuilds are closed | `29ad388de976432c` |
+| PDIA / S14, deliberately wrong math | .90404 / .89884 / .82615 | Removing decoder/MMA while retaining loads exposes headroom; **not a correctness-gated candidate** | No promotable gain; retained sync/epi still costs time | `16c180784f414576` |
+| Hot-L2 / cold-HBM math probe | .87071 / .94083 / .96436 | Cold math is slower; not sufficient to identify inadequate flight | Cache working set and interaction with full-kernel scheduling | `16c180784f414576` |
+| COPY depth4 / depth2, requested cap2 | .98255 / 1.07284 / 1.14805 | Deeper copy has no consistent gain and changes actual residency (depth4 fits1 CTA/SM) | Full-kernel lookahead; no FLIGHT nomination from this contrast | `16c180784f414576` |
+| Shared MMA ILP2 / W8, same2 CTAs/16 warps | .98991 / .98145 / .98272 node time; work-normalized .98973 / .98177 / .98275 | Small dependency contrast supports sending prepared packed rebuild lab; no saturated pipe established | Microprobes lack independent A:A; full-kernel gain unmeasured | `16c180784f414576` |
+| Shared W16 / W8, same2 CTAs, work-normalized | 1.01795 / 1.02019 / 1.01646 | 32 active warps do not improve normalized work over16; no K16 nomination | Full K16 kernel differs from microprobe and remains unmeasured | `16c180784f414576` |
+| TMA36KiB hot / cold completion, grid1/132/264 | .47337 / .51825 / .52800; cold .676 / 1.096 / 2.000 us | At264 CTAs, 72KiB lookahead / 60,606 required unique-stream bytes =1.217 coverage | All-miss repeated-load traffic and average outstanding bytes unmeasured | `16c180784f414576` |
+
+PAIR clears `mean ratio + 1.96*SE + A:A/control_us < 1` in both runs at every affected M.
+P4 nomination: admitted `epi_PAIR` at `(1,8,*)/(16,1,*)/(32,1,*)`, original M1 flags95 retained.
+The current P4 selector was verified on the real receipt after P4 independently fixed its missing
+ONCE/M1 handling; no whole-layer win or freeze is claimed here. TREE ties PAIR; the other second-round
+additions are closed only as tested. Phase probes have 4–8% observer tax and overlapping intervals;
+their subclocks cannot be added as isolated costs. SHF/PRMT cap8 dependent-probe clocks are anomalous
+(1.336/1.447 GHz versus ~1.96 elsewhere), so their >2 issue rates are not used as pipeline limits.
+
+Response sent immediately after classification: unchanged `prof/lab/moe_nt1_pipe_rebuild.py` `caa59593`,
+all four FLIGHT/ILP/K16/LUT arms,32 seeds/M, through `h200_lab.py` on MoE. Sender **4124752**, merged
+wrapper **`de47736b9f588673`** with waiting P3b round2 payload; `dev/nt1_timeline/followup_queue.json`
+tracks dispatch. The small ILP contrast motivates this full paired test; no individual pipe is proven
+to be the full-kernel bottleneck. Follow-up performance and PAIR's whole-layer effect remain unverified.
+
 ## MoE M=128
 
 Current N_full family: NT1 <=8-token experts, N16G4 at 9-16 on a third stream, heavy N32
@@ -297,6 +343,17 @@ Live designs: `problems/muse_attention_decode/dev/cluster_sliding/`,
 `problems/muse_attention_decode/dev/early_history/`, `problems/muse_attention_decode/dev/full128/`,
 `problems/muse_attention_decode/dev/full_attention/`.
 
+### P5 sliding and decode-1 receipt decisions
+
+Ratios are candidate/control time. Stage-only wins require a paired whole-layer
+confirmation; a missing correctness/control gate is unmeasured, not a loss.
+
+| Recipe | Ratio vs control / A:A | Mechanism established | What it closes or leaves open | Receipt |
+|---|---|---|---|---|
+| Decode-1 full, one-head N128 persistent gather (stages 3/4; compact eight-row partials) | H3/H4/GC 1.4240/1.3879/1.5046; A:A 0.99029 (SE 0.00174), eight seeds; fresh BF16/partial errors 0.0047-0.0059 | Per tile: producer issue 1714, softmax 907, publication 695 cycles in the instrumented H3 shader | Closes these stage schedules, not one-head full attention; no P4 promotion | `58d6a59603564014` |
+| Sliding LAST/MASK/FAST, six shapes, eight seeds | LAST d1/16/32 0.9307/1.0523/1.0718, v1/16/32 0.9030/0.8618/0.7997; A:A 0.9856/0.9890/0.9884/0.9968/0.9923/0.9894. FAST verify 1.0503/1.4051/1.2840; all eight stage/strided-partial gates per shape pass | Padded masks are bitwise equal; FAST changes RoPE math and does not improve verify. LAST removes a launch but still serializes final reduction | Closes these FAST verify and LAST d16/d32 stage recipes; query partition, DSM and resident-history rebuilds remain open. Whole-layer v1 decision is in round2, not a P4 promotion | `2f8b702dc76b42fd` |
+| Global shared-merge last-CTA, frozen S11, sixteen seeds | **Unmeasured whole-layer recipe**. Raw C128 d1S/d16S/d32S/d1F 0.98987/0.99595/1.00529/1.07796; A:A 1.00514/0.98012/1.00524/1.01041 (SE 0.00475/0.00359/0.00210/0.00298) | Only the isolated full-QKV first fixture has an attention/store gate; captured arms check finiteness, not TASK. Sliding output drift 0.15-0.58 and routing changes require full validation | Closes no correctness-proven recipe and promotes nothing. Round2 tests the sliding shapes with full TASK gates; retain raw global timing only as diagnostic evidence | `ae6cd27877cc4ee2` |
+
 ### Our kernels (losses in "Closed recipes")
 
 vq8 uses one persistent 384-thread CTA/SM, stream-K over request/head-pair/tile;
@@ -361,6 +418,14 @@ Early attention release lets O config 6 load before waiting: d1 S/F -0.95 /-2.06
 `MoERouteMeta` v1 is 2,944 B int32; cluster producer's arrival counter resets in-call,
 last token rank 0 writes without spinning; all 711 field words match at t1..32 locally.
 Boundary critical-path attribution: `problems/muse_bf16_proj/dev/boundary_attribution/`.
+
+Reset batches below are **unmeasured**, not losses: import-time output was displaced by later prefill-host tuning. Host submission scores do not measure the embedded recipes. Exact payloads were requeued on the attention host, whose tuning precedes the lab.
+
+| Recipe | Ratio vs control / A:A | Mechanism established | What remains open | Receipt |
+|---|---|---|---|---|
+| S14 metadata confirmation + d16/d32 boundary attribution (16 seeds) | Unavailable / unavailable | Diagnostic output lost after lab; host correctness passes | Every tested preload, geometry, serialization and MoE-release/unpool-hint arm; exact retry sender 4131535 | `4c86853a953b4eca` |
+| S14 decode-1 b1/route/b2 preload chain (11 arms, 32 seeds) | Unavailable / unavailable | Same output transport failure | W/W1/WR/W2, late-prew, hints, early residual and CL4; exact retry sender 4131717 | `841077efefb343a7` |
+| S14 d16/d32/v16/v32 boundary rebuild (10 arms, 24 seeds) | Unavailable / unavailable | Same output transport failure | Moment/exact single-CTA, serialization, route and tile-publication recipes; exact retry sender 4131824 | `a05f986396d744e7` |
 
 ## Weight encoding
 

@@ -1,9 +1,9 @@
 # P7 S15 completion-critical timeline
 
-**Queued on `muse_decode_layer`, priority 2, reset 2026-10-26 09:00 KST (epoch1792972800).**
+**Accepted check `7eaa262a30ec483e` on `muse_decode_layer`; awaiting its diagnostic receipt.**
 Frozen source: `cand_r3_best7_s15.py`, SHA256
 `602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb`.
-No H200 receipt exists yet; local numbers below validate instrumentation/accounting, not performance.
+No completed H200 receipt exists yet; local numbers below validate instrumentation/accounting, not performance.
 
 ## What is timestamped
 
@@ -107,7 +107,7 @@ these round trips, then runs the actual decoder/table generator. Local receipts 
 Final payload SHA256 **`500830f737d858dd0589dcfa4b3b9678f168c9d535a478019e66742e7ec46bd2`**.
 Wrapper SHA256 **`d8b2e3c7129a22fe42a20af337e3ff86bb040c7d2c75e36c0ed58239dcfb61fe`**.
 Owned sender **1539344**, host **muse_decode_layer**, priority **2**, not-before **1792972800**.
-Log: `runs/detached/d8b2e3c7129a22fe.log`; no accepted judge ID yet. The earlier owned kernel-only timeline
+Log: `runs/detached/d8b2e3c7129a22fe.log`; accepted check **7eaa262a30ec483e**. The earlier owned kernel-only timeline
 sender1492297 was verified and replaced by the same-file sender mechanism before dispatch; its record is
 `replaced_schedule.json`. Other P7 and integration senders are unchanged.
 

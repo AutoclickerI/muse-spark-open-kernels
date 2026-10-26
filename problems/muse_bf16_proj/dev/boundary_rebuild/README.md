@@ -1,7 +1,7 @@
 # P7 boundary rebuild: decode 16/32 and verify 16/32
 
-Current state: **one independent attribution/rebuild payload queued behind both earlier P7 batches**;
-no H200 result yet and no rebuild promoted. Exact base: S14 `f1c77ce6`.
+Current state: **the first reset receipt is unmeasured and the exact payload is queued on the attention host**;
+no rebuild is promoted. Exact base: S14 `f1c77ce6`.
 
 The existing reset batch measures decode 16/32 ready work, programmatic overlap, CL4 geometry, and the
 MoE-to-unpool launch edge. It does not measure verify 16/32 boundary attribution. `reconcile.py` reproduces from the frozen timeline at commit `ec55726`
@@ -99,7 +99,7 @@ identical verify P trace is omitted; verify A remains. Ready A/M/E/R medians and
 New owned sender **1298945**, prefill priority **1.2**, not-before **1792972800 / 2026-10-26 09:00 KST**.
 Wrapper SHA256 `2a76a8c1c1a265d2f7b6b417b4e9893552c6d35f75eaf873ca3614b2a28b97b4`;
 payload SHA256 `1c47422e13faffce4de8661af4eb11ffe07c826ba92ff93d046a881d936bd2bb`.
-Log: `runs/detached/2a76a8c1c1a265d2.log`; worker snapshot: `scheduled.json`. No judge job ID yet.
+Log: `runs/detached/2a76a8c1c1a265d2.log`; worker snapshot: `scheduled.json`. Original reset job: **a05f986396d744e7**; its packed result was displaced, as recorded below.
 Earlier owned senders **3517006** (priority1.0, reset attribution/confirmation) and **975835** (priority1.1,
 decode-1 chain) stay unchanged. No decode quota is used.
 
@@ -111,3 +111,9 @@ producer and re-pair it, not displace a faster projection recipe on the strength
 No winning integration patch exists before the H200 receipt.
 
 Rebuild the self-contained payload with `python3 problems/muse_bf16_proj/dev/boundary_rebuild/build_lab.py`.
+
+## Reset receipt and retry
+
+Original job **`a05f986396d744e7`** completed, but the lab is **unmeasured**: later prefill-host prepare tuning and profiler output displaced every lab marker from the 16,000-character receipt tail. Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
+
+Exact-byte retry: attention-host import lab, 550-second budget, sender **4131824**, priority **1**; payload SHA256 `1c47422e`, wrapper `748b31fb`. All existing local screens still cover the unchanged kernels. The attention host finishes its own tuning before this lab (no later prepare); its prior receipt has 1,956 characters after import tuning. `reset_result.json` records the receipt and dispatch proof. Apply the existing decision table only to the retry's recovered paired controls and gates.

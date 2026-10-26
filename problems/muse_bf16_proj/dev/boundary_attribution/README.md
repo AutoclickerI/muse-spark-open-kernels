@@ -20,8 +20,11 @@ Files (one entry per retained direct file):
 Handoff: [patch.py](patch.py), SHA256 `d74c009cc52eb96c349ea8a95b0b5f649b5c173cec05514f74af7deed76250ec`, applies onto S14 f1c77ce6.
 Base source: [S14 final](../../../muse_decode_layer/cand_r3_best7_s14_final.py), SHA256 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
 
-Pending H200 senders (not judge-accepted at handoff):
+Original dispatch: sender 3517006, prefill wrapper `d29911c50f955455`, job `4c86853a953b4eca`.
+The receipt lacks the packed lab data; use the exact-byte retry below before applying attribution rules.
 
-- PID 3517006, wrapper `d29911c50f955455`, [lab_lab_boundary_batch.py](../../../muse_prefill_layer/lab/lab_lab_boundary_batch.py); [sender log](../../../../runs/detached/d29911c50f955455.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3517006.json`.
+## Reset receipt and retry
 
-Next: Collect d29911c50f955455; pass its receipt text to report.py, attribute producer waits and ready-input work, then screen and pair any winning S14 patch.
+Original job **`4c86853a953b4eca`** completed, but the lab is **unmeasured**: later prefill-host prepare tuning and profiler output displaced every lab marker from the 16,000-character receipt tail. Host correctness passed; paired ratios, A:A and lab gates are unavailable. No arm is promoted or closed.
+
+Exact-byte retry: attention-host import lab, 550-second budget, sender **4131535**, priority **1**; payload SHA256 `61e784c7`, wrapper `68a781ea`. All existing local screens still cover the unchanged kernels. The attention host finishes its own tuning before this lab (no later prepare); its prior receipt has 1,956 characters after import tuning. `reset_result.json` records the receipt and dispatch proof. Apply the existing decision table only to the retry's recovered paired controls and gates.

@@ -1,0 +1,25 @@
+{
+  "job": "841077efefb343a7",
+  "receipt": "runs/muse_prefill_layer/20261026T000013Z_submit_841077efefb343a7.json",
+  "measurement": "unmeasured",
+  "reason": "Import-phase lab output displaced from 16000-character log tail by later prefill-host prepare tuning and profiler output.",
+  "host_correctness_passed": true,
+  "paired_ratio": null,
+  "aa_spread": null,
+  "payload_sha256": "a84f0d56828e38b8b83d93cf6ef6974b5865fe84b3cd7b746816379beccf9e55",
+  "retry": {
+    "pid": 4131717,
+    "priority": 1.0,
+    "t": 1792974313.7498794,
+    "problem": "muse_attention_decode",
+    "file": "problems/muse_attention_decode/lab/lab_lab_d1_chain.py",
+    "sha256": "4de4a0502d687e04e8b54a917260e47e1dc17a7b4295cd2ef12ad4504ddb2bc3",
+    "note": "h200_lab problems/muse_bf16_proj/dev/d1_chain/lab_d1_chain.py: P7 recovery d1_chain: exact reset measurement payload and screened kernels unchanged; original prefill lab output was displaced by later host prepare logs, A:A and gates UNMEASURED. Attention host completes its own tuning before import lab, preserving packed diagnostic output; fresh paired controls retained.",
+    "not_before": 0
+  },
+  "transport_audit": {
+    "identical_payload": true,
+    "attention_host_tuning_precedes_lab": true,
+    "prior_attention_post_import_chars": 1956
+  }
+}
