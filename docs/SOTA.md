@@ -6,30 +6,30 @@ times (API, 2026-10-23): proj 4,830.8; attention 3,766.3; MoE 13,448.5; decode l
 step; prefill 387,403.9 us per prefill load (`upstream/api/problems/*.json`, `sglang_us`). Its per-shape times
 and where they go are in [FINDINGS](FINDINGS.md).
 
-## Leaderboard (snapshot `runs/boards/20261025T150149Z`, 2026-10-26 00:01 KST)
+## Leaderboard (snapshot `runs/boards/20261026T082441Z`, 2026-10-26 17:24 KST)
 
-**Overall board (openkernelchallenge.dev/leaderboard): rank 180.** The API gives overall ranks only. Our fit of them
-(`python3 tools/board_model.py <snapshot>`; derivation in FINDINGS "Boards") is max(decode, 0.351 + 0.312 MoE + 0.268
-proj + 0.105 attention), prefill ignored: Kendall tau 0.964 over all teams, 0.995 over the top 300, the top 50 exact.
-**The overall board is the decode-layer board.** Rank 50 needs decode 1.896x (+0.289); serving-queue priority goes
-to the top 50 at the kernel close (llms.txt:120).
-
-| Overall rank | Team | Decode layer (= score) | MoE | Proj | Attention |
-|---|---|---|---|---|---|
-| 1 | colinlikescode | 2.285 | 2.523 | 1.610 | 2.844 |
-| **180** | **AutoclickerI (us)** | **1.607** | 1.694 | 1.187 | 1.603 |
+**Overall board (openkernelchallenge.dev/leaderboard): rank 100 of the teams that solved all four.** The API gives
+overall ranks only. Our fit (`python3 tools/board_model.py <snapshot>`; derivation in FINDINGS "Boards") is
+max(decode, 0.351 + 0.312 MoE + 0.268 proj + 0.105 attention), prefill ignored: Kendall tau 0.965 over all teams,
+0.998 over the top 300, the top 50 exact; it predicts our rank 100 exactly. **The overall board is the decode-layer
+board.** Rank 50 needs decode 1.956x (+0.108); serving-queue priority goes to the top 50 at the kernel close
+(llms.txt:120).
 
 | Problem | Our best run on the board | Our rank / entries | Leader | 10th | 50th |
 |---|---|---|---|---|---|
-| muse_decode_layer | 1.6073x S9 `b7c59570` (S14 final scores at the 09:00 KST reset; host runs 1.717-1.753x) | 180 / 650 | 2.285x (colinlikescode) | 2.134x | 1.896x |
-| muse_moe_w4a16 | 1.694x (an old kernel, lab host run `14f942d5`) | 281 / 749 | 2.523x (colinlikescode) | 2.369x | 2.140x |
-| muse_attention_decode | 1.603x | 280 / 703 | 2.910x (pjmullin3) | 2.530x | 2.209x |
-| muse_bf16_proj | 1.187x (an old kernel, lab host run `b15a3bde`) | 553 / 954 | 1.610x (colinlikescode) | 1.534x | 1.472x |
-| muse_prefill_layer | 1.454x | 135 / 392 | 1.926x (cu788) | 1.781x | 1.626x |
+| muse_decode_layer | 1.8484x S18 `28b5c189` | 100 / 719 | 2.3797x (colinlikescode) | 2.1761x | 1.9561x |
+| muse_moe_w4a16 | 2.0319x (`1da2153a`) | 120 / 817 | 2.5751x (colinlikescode) | 2.3938x | 2.1959x |
+| muse_attention_decode | 1.6696x (`b05713ec`, a lab host run) | 304 / 779 | 3.0316x (pjmullin3) | 2.5874x | 2.3539x |
+| muse_bf16_proj | 1.2024x (`08cc9405`, P12's component run) | 553 / 1040 | 1.6367x (colinlikescode) | 1.5474x | 1.5156x |
+| muse_prefill_layer | 1.4538x | 161 / 451 | 1.9671x (colinlikescode) | 1.8455x | 1.6577x |
 
-The decode leader has held 2.285x since 10-25 09:27 KST; 10th and 50th keep rising (2.066 -> 2.134 and 1.826 ->
-1.896 in 13 hours). Our component entries are old kernels, so the leader-vs-us component ratios overstate our
-per-stage gaps (PLAN P12 measures them). Boards come from `okc leaderboard [<problem>] --json`.
+Our decode entries: S16 1.8242x (`c6cc2874`) -> S17 1.8379x (`5f35323a`) -> S18 1.8484x (`28b5c189`). S19 is
+lab-confirmed at R 1.014463 [1.013044, 1.015885] over S18 (`6ac9317e`); its scored run waits for the 10-27 09:00 KST
+reset (~1.875x if the scored run tracks the lab; an estimate). The board moves faster than our steps: the leader went
+2.2849 (10-25 11:27) -> 2.3601 (10-26 11:30) -> 2.3797x (17:24); 10th 2.0663 -> 2.1761 and 50th 1.8258 -> 1.9561 over
+the same 30 hours, so our rank fell from 90 to 100 at a constant score. Component entries are lab hosts and P12 runs,
+not tuned for those boards; per-stage gaps to the leaders are PLAN's P12 numbers. Boards come from
+`okc leaderboard [<problem>] --json`.
 
 ## Public competitor code (GitHub and web search 2026-10-26 02:20 KST)
 

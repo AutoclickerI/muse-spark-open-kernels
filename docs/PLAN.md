@@ -1,9 +1,8 @@
 # Plan
 
-## Status (2026-10-26 14:30 KST, day 5 of 14; the kernel track closes 2026-11-05 16:59 KST)
-- Board (`runs/boards/20261026T033522Z`, 12:35): first S17 `5f35323a` 1.8379x, 90th of 707; leader 2.3601x, 10th
-  2.1665x, 50th 1.9518x. Our best scored run is now S18 `28b5c189` 1.8484x (rank not re-fetched). Gap and target:
-  GOAL "Target".
+## Status (2026-10-26 17:30 KST, day 5 of 14; the kernel track closes 2026-11-05 16:59 KST)
+- Board (SOTA "Leaderboard", 17:24): S18 `28b5c189` 1.8484x, 100th of 719; leader 2.3797x, 10th 2.1761x, 50th
+  1.9561x. Gap and target: GOAL "Target".
 - Confirmed incumbent: S18 `95df42fe` (`cand_r3_best7_s18_final.py`, `dev/s18/frozen.json`), scored `28b5c189`
   1.8484x, R 1.004321 [1.002314, 1.006332] over S17 `fea71760` (`5d0282bb`, import-time lab on a lab-only prefill
   host). S18 = S17 + P3a small-M cells (SHARD2+INDEX M1, PAIR M8, PAIR+BLOCK M16 / 32), PDL metadata before wait +
