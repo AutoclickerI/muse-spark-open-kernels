@@ -4,6 +4,8 @@ Base: frozen **S17 fea71760** (`cand_r3_best7_s17_final.py`; [../s17/frozen.json
 `7ec5f9ab` 1.828637x, paired `da0cd64b` R 1.003310 [1.001006, 1.005620] over S16 ee5fe249. The board's best
 entry is the first S17, `5f35323a` 1.837887x (unpaired).
 
+**Frozen** (`frozen.json`, `../../cand_r3_best7_s18_final.py`): R 1.004321 [1.002314, 1.006332] over S17, `5d0282bb`.
+
 Candidate **S18 95df42fe** (expanded sha; `cand_r3_best7_s18_95df42fe7b3a.py`, shipped sha `e04635ec`),
 composed by `compose.py` from pinned cells (`capture.py` -> `cells.json`):
 
@@ -62,7 +64,8 @@ replaces the half-build's pdl_B: B is M plus `_gb`/`_gi` L2 hints and measured l
   `404910273 + 104729*i`, fresh weights/router seeds `404910271/404910269`, 1536 public TASK checks plus 260
   nearby TASK checks. Decode checks for 10-26 are spent: sender 2880917 waits for the reset (10-27 09:01 KST) at
   priority -1 (`runs/detached/a2514bca91f81922.log`); the sender writes the receipt (`tools/okc_run.py collect` if
-  it dies). This is the confirmation and the only freeze.
+  it dies). Withdrawn unsent on 10-26: the coordinator took the prefill-host read below as the gate (GOAL G0 has
+  no decode-host requirement) and gave the 10-27 decode slot to S19.
 - First read off the decode host (`remote_lab.py`, prefill check `5d0282bb6ac74764`, wrapper `f57d9a9d`): the same
   payload, arms and seeds, sent by `tools/h200_lab.py` on muse_prefill_layer at import (700 s budget). The payload
   executes S18 itself (the decode wrapper's host hook appended) and draws inputs from S18's copy of TASK's

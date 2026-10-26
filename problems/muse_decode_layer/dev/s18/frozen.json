@@ -1,0 +1,21 @@
+{
+  "name": "S18",
+  "expanded_sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "shipped_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+  "file": "problems/muse_decode_layer/cand_r3_best7_s18_final.py",
+  "scored_job": "28b5c189e7b5469c",
+  "scored_speedup": 1.8483751095297363,
+  "confirmation_job": "5d0282bb6ac74764",
+  "confirmation_host": "muse_prefill_layer import-time lab (lab-only host; same payload, arms and seeds as decode wrapper a2514bca)",
+  "R": 1.0043209174451682,
+  "CI95": [
+    1.0023137361257828,
+    1.0063321182413938
+  ],
+  "seeds": 16,
+  "TASK_checks": 1536,
+  "nearby_TASK_checks": 260,
+  "official_TASK_run": "28b5c189e7b5469c",
+  "previous": "S17 fea71760",
+  "decode_check": "a2514bca withdrawn unsent (coordinator: the prefill-host read is the gate; the 10-27 decode slot goes to S19)"
+}
