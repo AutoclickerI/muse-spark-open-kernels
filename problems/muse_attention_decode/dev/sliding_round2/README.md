@@ -1,226 +1,97 @@
-# P5 sliding round 2
+# P5 sliding and decode-1 handoff
 
-This batch targets decode16/32 and verify1 sliding critical-path increments in
-the whole S14 layer. It is not promoted. Base is exact S14 final f1c77ce6;
-S15's full-verify/projection integration is a separate paired decision.
+P4 receives **every measured per-shape point estimate below 1**. A:A,
+across-seed SE and seed ranges describe uncertainty; they do not reject a
+shape. P4 composes the pieces and promotes only when the held-out lower
+confidence bound on per-seed six-load `R=exp(mean(log(T_old/T_new)))` exceeds
+1, with `T=46*t_sliding+16*t_full`. Correctness is TASK.md's checker only.
+Missing replay correctness and an established failed experimental control
+remain unmeasured. Stage-only and older-base results retain that scope.
 
-`kernels.py` extends the measured last-CTA reduction to eight query tokens,
-with token-aware output/gate indexing and one warp per real Q/K/V row in
-verify preparation. Query subgroups1/2/4/8 distribute the last-owner tail.
-At verify1, QT8 cuts the per-warp preparation vector from20 float2 values
-(QT1) to6, and the last-owner epilogue from16 rows/warp to2. Native ptxas
-registers fall from254 to139 for those last-CTA specializations. These are
-compiler/index facts, not latency results. The increased KV duplication is
-measured against QT1/2/4 and the unchanged layer control.
-The same prep is tested with compact early-history gathering and DSM output
-reduction. Every path reads all window keys, appends every new KV row,
-normalizes every query and captures as one attention launch.
-S14's projection and gate-split choices remain identical in all arms: full-QKV
-rows fuse the gate here; split-gate rows retain the existing gate GEMV/apply.
-The lab reports both attention and gate increments and judges whole-layer
-latency, so work shifted into the gate cannot count as a win.
+[point_handoff.json](point_handoff.json) is the complete P4 inbox: 42
+point-winning arm cells, including duplicate/control cells, plus the E4/OLD4
+incremental nomination. Every entry has ratio, SE, seed count, exact receipt
+source and its SHA; each run contains its actual seed IDs. Recipes in the
+round2/repeat archives include `[family, QT, splits]`. Exact historical global
+and history shaders live in their immutable receipt sources.
+[handoff.json](handoff.json) retains rebuildable integration selections.
 
-`runtime.py` defines the complete three-shape experiment matrix. `build_packet.py`
-packs all arms, exact S14, unchanged-JIT A/A2 controls, and the full public
-checker into one attention-board import-time run. Sixteen fresh seeds x12
-rotated cold-READ rounds per shape; each arm/seed must pass the public
-whole-layer TASK checker with20% margin. CUPTI records QKV, attention, gate and
-O critical increments. It retains replay samples, error drift and resources
-in a compressed archive. The exact reset DSM shader is retained as an
-experimental control at verify1, so a prep change cannot claim an unrelated win.
-
-The payload is independent of reset outcomes: it directly compares last-CTA,
-early-history and DSM for all three new shapes. It is queued behind the three
-existing P5 reset senders. No first-round queue entry is replaced or absorbed.
-
-## Reset-dependent follow-ups (ready, unsent)
-
-Decision rules: **history E/OLD beats A:A noise with no QKV/gate displacement → send selected-QT history confirmation; otherwise drop it. DSM C/A beats A:A noise and all gates pass → send only qualifying batches in the DSM whole-layer confirmation; otherwise drop it.**
-
-- **History decision:** if 0cec6706's best E1/E2/E4 beats OLD4 in whole-layer
-  ratios beyond A:A noise and does not shift the gain into QKV/gate, render
-  `followups.py history --selection '{"qt":<winning QT>}'` and send its
-  twenty-four-held-out-seed whole-layer confirmation; otherwise drop this
-  recipe and use the last-CTA/DSM outcomes from round2.
-- **DSM decision:** for each B where f1c270e6's native DSM arm beats its A/A2
-  control beyond noise and passes all gates, render `followups.py dsm
-  --selection '{"<B>":<winning C>,...}'`; send the selected shapes' paired
-  S14 whole-layer RESET/COOP/half/double-gang confirmation, twenty-four fresh
-  seeds. If no batch qualifies, do not send this packet.
-
-Both follow-up generators ship only used kernel families. They are payloads,
-not queued senders. Their shape selections and minimum measured benefit are
-explicit: no result-dependent choice is silently inserted into the live batch.
-They use seeds disjoint from both the reset and round2 matrix. Exact reset
-history/DSM CUDA bytes remain controls. The follow-up generator's original
-mixed-cluster tests use actual C1 launches onsm120 as the explicit local
-multi-CTA DSM stand-in; native residency is checked in the H200 lab.
-
-`layer_patch.py --selection '<shape-to-arm JSON>' --out <file>` emits an
-integration candidate onto exact S14 and ships only selected CUDA families.
-Default proposal covers decode16/32 and verify1 last-CTA, and must earn native
-paired evidence before integration. Patch choices can be composed onto S15
-by integration after its reset leave-one-out result; this lane does not assume
-that result in advance.
-
-## Local admission
-
-- `check_variants.py`: every matrix arm at its actual target shape, BF16 and
-  strided FP32 partial inputs, changing graph inputs, eight repeated replays,
-  counter reset; verify also short history, pages1/64, nonunit KV scales.
-- `sass_check.py`: all three kernel families x8 specializations at sm90a O3;
-  early-history gather and transpose precede ACQBULK in every specialization.
-- `screen.py` / `screen.py --forced`: exact board packet through local_eval,
-  with forced new dispatch on nearby sliding TASK cases. Native WGMMA uses
-  its actual sm120 MMA math shim locally.
-- `check_lab.py`: exact compressed payload with forced Hopper whole-layer
-  glue, every arm at all three shapes, two fresh seeds x2 cold rounds. DSM
-  native clusters explicitly use genuine C1 math and resource stand-ins onsm120;
-  native multi-CTA placement/latency remains unverified until the H200 result.
-
-Outputs live under ignored `out/`; final source hashes, admission counts and
-queue identities are in `admission.json`. The local GPU cannot establish an
-H200 win. Keep no follow-up send if its decision rule fails.
-
-## Build and send commands
+Rebuild all estimates directly from receipts:
 
 ```sh
-python3 problems/muse_attention_decode/dev/sliding_round2/build_packet.py
-python3 problems/muse_attention_decode/dev/sliding_round2/layer_patch.py
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/check_variants.py
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/sass_check.py
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/screen.py
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/screen.py --forced
-CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/check_lab.py
+python3 problems/muse_attention_decode/dev/sliding_round2/rejudge.py
+python3 problems/muse_attention_decode/dev/sliding_round2/report.py runs/muse_attention_decode/20261026T023034Z_check_58f0b30ba8b8472f.json
 ```
 
-A selected follow-up payload is sent via `tools/h200_lab.py send <payload>
---host muse_attention_decode --import-budget 650 --phase import --note <result>`.
-The main round2 candidate is a single fully embedded board wrapper; send that
-through `tools/okc_run.py send`. Neither path requires editing a source file
-when a reset result selects a cluster or query partition. The wrapper queue
-release is09:01KST, matching the existing P5 reset batch, with lower priority,
-so the second-round packet could not jump the history reset packet's time gate.
-After all first-round P5 receipts completed, its priority became2 to put
-remaining structural measurements ahead of component-board diagnostics.
+Ratios use the paired seed times retained in the archives (1ns quantization
+where applicable). Consequently their last few digits can differ from the
+unquantized `PAIR` log summaries. No local timing is native ranking evidence.
 
-## Queue and final artifacts
+## Receipt verdicts under the current gate
 
-Second-round packet **295a2792**, accepted as **27a914f72bfb47c8**;
-sender **1029989**, current priority2 (initially4), not-before
-**1792972860 (2026-10-26 09:01 KST)**. The one-minute offset from reset
-1792972800 matches the earlier P5 batch's time gate and keeps this packet behind
-it. Sender log:
-`runs/detached/295a2792bb092012.log`.
+| Receipt | Current disposition |
+|---|---|
+| `ae6cd27877cc4ee2` | Unmeasured whole-layer replay: no TASK gates. No nomination. Repair below. |
+| `b05713ecf6574ad9` | Nominate v1 C4/C8/C16 and v16 C4/C8 as stage-only evidence; no v32 point winner. Selected native whole-layer follow-up is complete below. |
+| `402819c28279466d` | Reopen compact history: E4/OLD4 0.997414, SE0.001244, n16. Also hand all OLD4/E4/E2/L4 point winners vs A to P4. The old A:A/3SE rejection is withdrawn. |
+| `6c26b14fdd28458b` | v1 remains unmeasured: identical C16 DOUBLE/COOP 1.03901, SE0.00300, failed the experiment's control. v16 QT1 cooperative recipes all lose. |
+| `6a0b3f0987e94ba5` | Nominate RESET/COOP/HALF/DOUBLE at v1; C16 pooled0.952913, SE0.005071, n35. Duplicate control agrees; full TASK/cache gates pass. |
+| `27a914f72bfb47c8` | Reopen d16 D8 0.995283, SE0.007209; d32 D4 0.989822, SE0.007613, and L4 0.993761, SE0.007368; n16. Hand all seven v1 point-winning arms to P4 too, including E8 and D8 previously excluded by 3SE. |
+| `857f78fa889f4646` | No resident-history point winner at either verify load. Close only the tested schedules. |
+| `bb7239afc1b3487a` | All replay TASK/cache gates pass. Hand all14 point-winning arm cells to P4 with S11 scope, including old controls. Full-decode1 global recipes still lose. |
+| `58f0b30ba8b8472f` | Complete: n35, all seven arms/shape pass TASK/cache gates. Nominate d16 GLOBAL0.981291/ALIAS0.978600/LAST0.978764/PP0.992226 and d32 LAST0.999170. No d1 point winner in this cohort. |
 
-The first three reset packets completed as **ae6cd27877cc4ee2** (global),
-**b05713ecf6574ad9** (DSM) and **402819c28279466d** (history).
-Their decisions and currently queued responses are below. Historical
-admission hashes in `admission.json` describe the original packets; current
-confirmation hashes and selected-shape gates are in `response_admission.json`.
+These are point nominations, not automatic native confirmations or overall
+score promotions. Historical receipts that passed the former 20% TASK margin
+also pass TASK; their immutable sources/results are retained. New lab templates
+use exact public TASK tolerances and keep output/route drift as diagnostics.
+The reporter no longer applies A:A or per-load 3SE acceptance cuts.
 
-Default integration proposal `out/s14_round2.py`: **d2711401**. Its builder
-ships only the selected last-CTA family and requires exact S14 **f1c77ce6**.
-Kernel sources: last-CTA **9118a17c**, early-history **c7a41b46**, cooperative
-DSM **0f250847**. The exact old DSM control is **e43cb513**, and the held-out
-history confirmation uses exact reset shader **0e07854b**.
+## Integration artifacts and screens
 
-No native speedup is claimed. Promotion waits on many-seed paired H200
-whole-layer results and the integration lane's six-load score.
+Exact S14 base: `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
+`runtime.py` is the full original matrix. `kernels.py` generates last-CTA,
+early-history and cooperative DSM; exact old DSM is retained separately.
+`layer_patch.py` ships only selected CUDA families and emits an exact-S14
+candidate; P4 ports the selected changes onto its current composition.
 
-After collection, `report.py <runs/...receipt.json>` decodes the compact
-archive and prints every arm's paired ratio vs A and A2, across-seed standard
-error, and QKV/attention/gate/O displacement. Its confirmation ranking requires
-the gain to exceed the observed A:A drift and three standard errors. It makes
-no promotion or submission automatically. The decoder was exercised on the
-real local archive; those local timings do not establish native rankings.
+```sh
+python3 problems/muse_attention_decode/dev/sliding_round2/layer_patch.py --selection '{"16,1":["dsm",1,8],"32,1":["dsm",1,4]}' --out problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_decode_points.py
+CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/screen_layer.py --candidate problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_decode_points.py --out problems/muse_attention_decode/dev/sliding_round2/out/decode_point_normal
+CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_attention_decode/dev/sliding_round2/screen_layer.py --candidate problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_decode_points.py --out problems/muse_attention_decode/dev/sliding_round2/out/decode_point_forced --forced
+```
 
-## Receipt responses
+Decode candidate SHA `c2000b3c4d64c292ccac0a61295df60d8478b232ed7e9fdf0de118806fa924f4`.
+Normal and forced screens each pass13 TASK tests,12 graph shapes and24
+static checks; exact hashes/evidence are in `point_admission.json`.
+The existing verify1 DSM QT4/C16 candidate is `403bb778`, rebuilt with
+`--selection '{"1,8":["dsm",4,16]}'`; its normal/forced screens each passed
+13 TASK tests, 12 graph shapes and 24 static checks. On sm120, DSM uses an
+explicit genuine C1 math stand-in. Native cluster geometry is measured in
+the H200 receipts, not inferred locally.
 
-The frozen reset admission above remains in `admission.json`; current
-response sources and queue identities are in `response_admission.json`.
-DSM receipt **b05713ecf6574ad9** selects **B1:C16 and B16:C8** only:
-stage ratios0.71927/0.84911 vsA,0.74918/0.86657 vsA2. B32's bestC4
-loses1.07381, so it is excluded. The24-held-out-seed whole-layer packet
-is **768d8105**, sender **114722**, priority1, attention import hosting.
-It packs RESET/COOP/HALF/DOUBLE; selected-shape local admission passes
-all gates, two fresh seeds x2 cold rounds, with native DSM explicitly C1
-locally. It completed as **6c26b14fdd28458b**: v16 cooperative variants
-lose1.063-1.153, RESET is neutral; v1 nominal COOP0.94983 is **unmeasured**
-because identical C16 DOUBLE/COOP1.03901 (SE0.00300) fails its control.
-No new P4 promotion is made. Machine audit: `dsm_confirmation.json`.
+`build_packet.py` builds the original matrix and shared public checker;
+`followups.py` rebuilds that header from tracked inputs before rendering
+selected/history/DSM/global packets. The builder supplies h200_lab's current
+`print_line` wrapper field; the rebuilt exact-TASK global payload compiles
+(SHA48ef4de6) and is unsent. Historical sent payloadb70ff21c stays immutable.
+`check_variants.py`, `sass_check.py`, `screen.py`, `check_lab.py` and
+`screen_layer.py` retain local admission tools. Generated artifacts go in
+ignored `out/`. Frozen packet hashes/screens are in `admission.json` and
+`response_admission.json`; they describe historical packets, not new sends.
 
-The v1-only repeat is **6a0b3f0987e94ba5**, wrapper **51847d1b**,
-35 disjoint seeds x14 rounds, with A/A2/A3 and the C16 duplicate retained.
-Future generated packets now recapture graph pools and rotate capture
-ownership per seed; CUPTI increments still describe the first capture only.
-Seven arms x2 fresh seeds pass the actual local recapture/TASK/cache smoke.
-The reporter detects identical-recipe aliases and prevents promotion when
-their displacement exceeds baseline drift plus three standard errors.
+## Latest collection and next work
 
-Follow-ups now validate each arm's new cache immediately after that arm
-replays. The original round2 packet is immutable and retains its original
-gate order. Follow-ups also export an explicit `lab` for h200_lab admission
-and cap their retained output at8800 characters (generic wrapper limit9000).
-These fix admission/measurement gaps without changing CUDA math.
-`followups.py selected --selection '{"16,1":["last",1,8]}'` prepares
-one selected native winner per round2 shape with24 held-out seeds; send
-only shapes that pass the receipt's A/A2 and correctness decision.
-The three-shape local selected-mode smoke passed; its default arms are
-functional examples, not measured selections.
+Global confirmation wrapper `b899a8fb`, sender `1249027`, completed as
+`58f0b30ba8b8472f` on attention check hosting. Full result:
+[global_confirmation.json](../cluster_sliding/global_confirmation.json).
+The old follow-up is collected; no P5 receipt remains pending.
 
-The global lab **ae6cd27877cc4ee2** has no captured-path TASK gates and is
-unmeasured. Its exact-kernel repaired4-shape/8-arm packet is **da61a8f2**,
-sender **112961**, priority5, completed check **bb7239afc1b3487a**.
-Replay gates pass; full-decode1 global recipes lose, and sliding signals
-against S11 require a current-base pair. `followups.py global_confirm
---selection '{}'` builds wrapper **b899a8fb**: exact-S14 decode1/16/32,
-GLOBAL/identical ALIAS/exact LAST/PP, A/A2/A3,35 fresh seeds x14 rounds,
-fresh graph pools. The actual3-shape/7-arm/two-seed local matrix passes;
-native confirmation is queued. See `../cluster_sliding/README.md`.
-History **402819c28279466d** is closed by its decision rule: bestE4/OLD4
-0.997414 (SE0.001244) does not exceed A:A1.009555 (SE0.006105;
-range0.98824-1.09546) or3SE. All16 fresh-seed gates pass, and clocks prove
-the prewait work. No history confirmation is sent. Its prepared generator
-now retains exact OLD4 CUDA3815beab atQT4 instead of the round2 shader;
-the corrected packet passes local whole-layer admission.
-Round2 **27a914f72bfb47c8** completed: best d16 D8 0.995283 and
-d32 D4 0.989821 do not clear controls (A:A1.007797/1.002142,
-SE0.001748/0.000707). No d16/d32 confirmation or promotion is selected.
-Verify1's best **D16** is0.924229 (A:A1.009469, SE0.002417).
-Its CUDA and S14 base hashes exactly match the35-seed repeat, so that
-independent confirmation already covers it; no redundant run is sent.
-Other v1 qualifiers remain unpromoted. Full matrix: `round2_result.json`.
-
-The35-seed repeat **6a0b3f0987e94ba5** passes its controls:
-COOP/duplicate0.951214/0.954611, pooled **0.952913** (SE0.005071),
-A2/A3 0.999262/0.999499 (SE0.004232/0.003422).
-Duplicate/COOP1.003740 (SE0.004151) is consistent with1.
-All7 arms x35 TASK/cache gates pass. First-capture attention completion
-falls17.632→12.064us; QKV/O displacement is-0.032/+0.352us.
-The prior control discrepancy is resolved in this cohort; the change in
-capture protocol is not isolated from the changed seed cohort.
-
-**P4 handoff:** `handoff.json`, verify1 sliding only, **DSM QT4/C16**.
-`layer_patch.py --selection '{"1,8":["dsm",4,16]}' --out
-problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_verify1_dsm.py`
-rebuilds candidate **403bb778**, only one selected CUDA family, onto exact
-S14. Normal and forced integration admission each pass13 TASK tests,
-12 graph shapes and24 static checks; native multi-CTA DSM uses genuine
-C1 locally, with H200 geometry covered by the qualifying receipts.
-`screen_layer.py` creates its output directory and injects that explicit
-local DSM stand-in. P4 must compose onto its current base and measure the
-six-load score; no overall score gain is claimed here.
-
-Resident history **857f78fa889f4646** has no qualifier at v16/v32;
-see `../verify_resident/README.md`. No resident confirmation is sent.
-
-Final local admission: **100 fresh-input/partial/counter cells**, **24 sm90a
-specializations**, **80 exact index-coverage cases**. Exact board wrapper:
-normal/forced each **16 TASK /12 graph shapes /7 static checks**. Default
-whole-layer integration proposal: normal/forced each **13 TASK /12 graph
-shapes /24 static checks**. Main payload and both conditional confirmations
-pass their complete selected-arm matrices with forced layer glue, two fresh
-seeds and two cold rounds, full public TASK checks with20% margin, and one
-attention launch per changed arm. DSM multi-CTA placement is explicitly a
-C1 stand-in locally. No local timing is used to select a native winner.
+The shared-`full[slot]` review item is audited against exact S15 `60254883` in
+[operand_ready/README.md](../operand_ready/README.md). No active sliding
+path contains that ring. Verify32 sliding is FA3, not VQ8; the confirmed full
+VQ8 K/V split belongs to P5b. No inactive barrier arm or payload is built.
+P4 owns the next composed six-load confirmation. Remote runs, if needed, go
+only through `h200_lab.py`/`okc_run.py`; decode labs are checks, with packed
+arms/A:A controls on an available host. Prefill hosting remains excluded
+until its lab fix lands.

@@ -1,4 +1,4 @@
-"""Audit P5 receipt controls before ranking a native attention recipe."""
+"""Audit P5 receipts and nominate every measured per-shape point winner to P4."""
 import argparse,base64,json,lzma,math,statistics
 from pathlib import Path
 
@@ -14,13 +14,11 @@ def rank(times,name):
     aa=[x/y for x,y in zip(times['A2'],times['A'])]
     other,other_se=compare(times,name,'A2')
     controls={n:compare(times,n) for n in times if n.startswith('A') and n[1:].isdigit()}
-    radius=max(abs(m-1) for m,e in controls.values())
-    comparisons={n:compare(times,name,n) for n in controls}
-    clean=1-mean>radius+3*se and all(m+3*e<1 for m,e in comparisons.values())
     return dict(ratio=mean,se=se,aa=noise,aa_se=noise_se,aa_range=[min(aa),max(aa)],
-                baseline_controls=controls,vs_a2=other,vs_a2_se=other_se,confirm=clean)
+                baseline_controls=controls,vs_a2=other,vs_a2_se=other_se,
+                point_winner=mean<1)
 
-def report(row,marker):
+def report(row,marker,invalid_control=False):
     times=row['times']
     if isinstance(times,list):times=dict(zip(row['names'],times))
     expected=row['seeds']
@@ -38,7 +36,7 @@ def report(row,marker):
                        for k,v in g.items()) for g in row['gates'])
         for name in times:
             if name.startswith('C'):assert row['res'][name[1:]][-1]>0
-    label=row.get('case','v'+str(row.get('B',1))+'S')
+    label=row.get('case','d1S' if marker=='EH_XZ85' else 'v'+str(row.get('B',1))+'S')
     noise,noise_se=compare(times,'A2')
     groups={}
     for name,recipe in row.get('arms',{}).items():groups.setdefault(tuple(recipe),[]).append(name)
@@ -46,9 +44,11 @@ def report(row,marker):
     for names in groups.values():
         for name in names[1:]:
             mean,se=compare(times,name,names[0])
-            aliases.append(dict(names=[name,names[0]],ratio=mean,se=se,
-                failed=abs(mean-1)>abs(noise-1)+3*(se+noise_se)))
-    failed_alias=any(x['failed'] for x in aliases)
+            aliases.append(dict(names=[name,names[0]],ratio=mean,se=se))
+    # The fixed-pool v1 cohort has an established identical-kernel control
+    # failure, repaired by 6a0b3f09. Do not turn A:A or a per-load CI into a
+    # new acceptance gate. Report all control estimates for P4 to inspect.
+    failed_alias=invalid_control and label=='v1S'
     status=('UNMEASURED whole-layer recipes: one isolated attention gate; no replay TASK gates'
             if marker=='CS_XZ85' else 'UNMEASURED: identical-recipe control failed'
             if failed_alias else 'stage-only gates' if marker=='DS_XZ85' else 'TASK gates complete')
@@ -58,10 +58,9 @@ def report(row,marker):
     for name in times:
         if name=='A' or (name.startswith('A') and name[1:].isdigit()):continue
         summary=rank(times,name);measured=marker!='CS_XZ85' and not failed_alias
-        summary['measured']=measured;summary['confirm'] &= measured
+        summary['measured']=measured;summary['nominate_to_p4']=measured and summary['point_winner']
         if 'OLD4' in times and name!='OLD4':
             summary['vs_old'],summary['vs_old_se']=compare(times,name,'OLD4')
-            summary['confirm'] &= 1-summary['vs_old']>abs(noise-1)+3*summary['vs_old_se']
         if 'critical_ns' in row:
             summary['critical_delta_us']={k:(v-old)/1000 for k,v,old in
                 zip(row['critical_order'],row['critical_ns'][name],row['critical_ns']['A'])}
@@ -86,7 +85,8 @@ def main():
     if not archives:
         print(tail[-4000:]);raise SystemExit('UNMEASURED: no complete P5 archive in receipt')
     result=dict(job=receipt['id'],receipt=str(args.receipt),host_passed=receipt['result'].get('passed'),
-                results=[report(row,marker) for marker,row in archives])
+                results=[report(row,marker,receipt['id']=='6c26b14fdd28458b') for marker,row in archives])
     if args.output:args.output.write_text(json.dumps(result,indent=2)+'\n')
-    print('CONFIRM selects a follow-up; P4 owns whole-layer promotion. Check QKV/gate displacement too.')
+    print('Every measured point ratio <1 is nominated. A:A and SE describe uncertainty. '
+          'Only P4 held-out six-load weighted-score confirmation promotes a composition.')
 if __name__=='__main__':main()

@@ -68,8 +68,8 @@ SE0.00174 (`58d6a59603564014`), so that schedule is closed.
 Native DSM **b05713ecf6574ad9** completed. Verify1 C16 is0.71927 vsA
 and0.74918 vsA2; verify16 C8 is0.84911 vsA and0.86657 vsA2.
 A:A means are0.96012/0.97988 (SE0.00336/0.00328; ranges
-0.94072-0.97302/0.96656-0.99095). These gains exceed both control drift
-and three seed standard errors. All8 gates per shape pass: maximum stage
+0.94072-0.97302/0.96656-0.99095). All five point-winning stage cells (v1 C4/C8/C16, v16 C4/C8) now go
+to P4 with stage-only scope; A:A/SE describe uncertainty. All8 gates per shape pass: maximum stage
 errors0.02213/0.02121/0.02066 at B1/16/32, partial error0.
 Verify32's best C4 loses1.07381 vsA (1.08299 vsA2); A:A0.99157,
 SE0.00309, range0.97661-1.00294. That closes only this DSM recipe atB32.
@@ -120,11 +120,34 @@ SE0.002014. Close only these full recipes. Sliding's best S11-relative
 signals are d1 GLOBAL1280.974683, d16 LAST0.975854 and d32 PP0.986235;
 A:A1.003476/1.000554/0.999184 (SE0.001814/0.002448/0.001713).
 Default/fixed-split identical controls and the full OLD/PP alias pass.
-No sliding arm is promoted against this older S11 baseline.
+All14 point-winning arm cells are handed to P4 with older-S11 scope,
+including smaller signals and existing controls. This is nomination, not
+a six-load promotion; the current-base confirmation is below.
 
 The current-S14 confirmation is wrapper **b899a8fb**. It packs GLOBAL128,
 an identical ALIAS, exact LAST and existing PP at decode1/16/32 sliding,
 with A/A2/A3,35 disjoint seeds x14 cold rounds and fresh graph pools.
 All3 shapes x7 arms x2-seed local TASK/cache recapture gates pass.
 Only native shader bytes already proven in bb7239af are used; PP is a
-multi-launch control. Its native current-base performance remains unmeasured.
+multi-launch control. Wrapperb899a8fb, sender1249027, completed as
+**58f0b30ba8b8472f**. All3 shapes x7 arms x35 seeds pass public TASK/cache
+gates. [global_confirmation.json](global_confirmation.json) retains every
+ratio, SE and control; actual seed IDs are in
+[point_handoff.json](../sliding_round2/point_handoff.json).
+
+- d1 GLOBAL/ALIAS/LAST/PP:1.006456/1.006122/1.012486/1.001040;
+  A2/A3 1.001140/0.999445 (SE0.002019/0.002705). No point nominee.
+- d16 GLOBAL/ALIAS/LAST/PP:**0.981291/0.978600/0.978764/0.992226**,
+  SE0.004735/0.004761/0.005667/0.002863;
+  A2/A3 0.998170/1.001622 (SE0.002669/0.002884). Hand all four to P4.
+- d32 GLOBAL/ALIAS/LAST/PP:1.000403/1.000920/**0.999170**/1.000245;
+  LAST SE0.004589; A2/A3 0.999711/0.999883 (SE0.000457/0.000460).
+  Hand LAST to P4 despite its small point gain.
+
+ALIAS/GLOBAL is0.999689/0.997382/1.000510 (SE0.001057/0.002762/0.000587)
+at d1/16/32, consistent with identical recipes. No pending P5 global run
+remains. Native point winners, including every earlier measured per-shape
+signal, go to P4 for composition. P4 alone applies the held-out six-load lower
+confidence bound gate; A:A and per-load significance are not rejection gates.
+TASK.md's checker is the correctness gate. Historical20% margin checks that
+passed also pass TASK; their immutable receipts are not rewritten.

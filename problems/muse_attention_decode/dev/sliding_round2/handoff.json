@@ -1,5 +1,5 @@
 {
-  "status": "promote verify1 sliding cooperative DSM to P4 for integration and paired six-load validation",
+  "status": "Every measured per-shape point winner handed to P4 in point_handoff.json; P4 composes and confirms six-load score",
   "selection": {
     "1,8": [
       "dsm",
@@ -19,7 +19,6 @@
     "6a0b3f0987e94ba5",
     "27a914f72bfb47c8"
   ],
-  "qualifying_receipt": "6a0b3f0987e94ba5",
   "pooled_candidate_control": 0.9529128267552293,
   "pooled_SE": 0.005071349479282373,
   "A2": [
@@ -69,10 +68,43 @@
     "P4 current-base composition and paired six-load score",
     "nearby native shapes outside recorded native admissions"
   ],
-  "do_not_promote": [
-    "decode16/32 round2 recipes: no qualifying gain",
-    "verify16 cooperative QT1 DSM: losses",
-    "verify16/32 tested resident recipes: losses",
-    "decode1 compact early history: neutral vs OLD4"
-  ]
+  "point_estimates": "problems/muse_attention_decode/dev/sliding_round2/point_handoff.json",
+  "promotion_gate": "Held-out lower confidence bound on per-seed six-load R > 1, T=46*t_sliding+16*t_full; TASK.md checker only",
+  "selection_scope": "Existing reproducible verify1 selection retained below; point_handoff.json lists all shapes and recipes, without per-load significance gates",
+  "decode_point_selection": {
+    "16,1": [
+      "dsm",
+      1,
+      8
+    ],
+    "32,1": [
+      "dsm",
+      1,
+      4
+    ]
+  },
+  "decode_point_rebuild_command": "python3 problems/muse_attention_decode/dev/sliding_round2/layer_patch.py --selection '{\"16,1\":[\"dsm\",1,8],\"32,1\":[\"dsm\",1,4]}' --out problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_decode_points.py",
+  "decode_point_candidate_sha256": "c2000b3c4d64c292ccac0a61295df60d8478b232ed7e9fdf0de118806fa924f4",
+  "decode_point_evidence": "27a914f72bfb47c8: d16 D8 0.995282 SE0.007209 n16; d32 D4 0.989822 SE0.007613 n16. Ratios use retained 1ns samples.",
+  "native_repeat_receipt": "6a0b3f0987e94ba5",
+  "decode_point_screens": {
+    "normal": {
+      "TASK_passed": 13,
+      "graph_shapes_passed": 12,
+      "static_checks_passed": 24,
+      "result": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_normal/normal_local.json",
+      "result_sha256": "3ed2f1233815a29bca51dac5e2e840ea2f285335d2eb79ed6a8b5f438f528892",
+      "audit": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_normal/audit.json",
+      "audit_sha256": "893178737b9b60bdaaf20cbc360248ce8fb6581960991da6944ca51b527e43e3"
+    },
+    "forced": {
+      "TASK_passed": 13,
+      "graph_shapes_passed": 12,
+      "static_checks_passed": 24,
+      "result": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_forced/forced_local.json",
+      "result_sha256": "6bcf61e93c3d2305784982ce766fd087650a1958fe24480f3949629564421088",
+      "audit": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_forced/forced_audit.json",
+      "audit_sha256": "67ccf29ac6785636474cad4751f07add6ccef569b8c140e839d42f64e45c179e"
+    }
+  }
 }

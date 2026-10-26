@@ -1,0 +1,123 @@
+{
+  "s15": "problems/muse_decode_layer/cand_r3_best7_s15.py",
+  "sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "source_evidence": {
+    "_best7_attention": 7006,
+    "_attn_port_variant": 5043,
+    "_attention_fa3_public": 6709,
+    "_vq8_prepare": 7775
+  },
+  "vq8_rows": [
+    [
+      16,
+      8,
+      false,
+      4,
+      8
+    ],
+    [
+      32,
+      8,
+      false,
+      4,
+      8
+    ]
+  ],
+  "kernels": {
+    "cs_CUDA": {
+      "sha256": "3815beabedbbb5773536dd33b765fe223821624ed4eadf829b122973028ee85a",
+      "source_assignment_line": 7895,
+      "full_barrier_uses": []
+    },
+    "CUDA_SRC": {
+      "sha256": "b63e42f618b5c6e2d291013ad27e8807d8fbc976a0ae879c656dd067b61ab393",
+      "source_assignment_line": 1621,
+      "full_barrier_uses": []
+    },
+    "VQ8_CUDA": {
+      "sha256": "9a23ca9a98ddeaff252bad309d0f1c774b0aa0f72144c6fe4f74a39dddf45507",
+      "source_assignment_line": 7724,
+      "full_barrier_uses": [
+        {
+          "line": 450,
+          "code": "if (lane == 0) mb_arrive(&full[slot]);"
+        },
+        {
+          "line": 628,
+          "code": "mb_wait(&full[(rr + 1) % ST], ((rr + 1) / ST) & 1);"
+        },
+        {
+          "line": 744,
+          "code": "mb_wait(&full[r % ST], (r / ST) & 1);"
+        }
+      ]
+    }
+  },
+  "decisions": [
+    {
+      "item": "decode1 sliding, last-CTA",
+      "verdict": "drop shared-full split claim",
+      "evidence": "cs_CUDA sliding_main uses cp_wait<1>, __syncthreads, trans64 then QK in the same warpgroup; no full ring",
+      "leaves_open": "Reordering the serial transpose/QK schedule is a different scheduling experiment"
+    },
+    {
+      "item": "decode16/32 sliding, attn_main",
+      "verdict": "drop shared-full split claim",
+      "evidence": "CUDA_SRC loop uses cp_wait<STAGES-2>, __syncthreads then compute_tile; no full ring",
+      "leaves_open": "A new producer/consumer pipeline, rather than splitting an existing barrier"
+    },
+    {
+      "item": "verify1/16/32 sliding, including claimed verify32 VQ8",
+      "verdict": "drop VQ8 sliding claim",
+      "evidence": "_VQ8_ROWS contains only (16,8,False)/(32,8,False); all sliding verify rows select layer -> FA3",
+      "leaves_open": "FA3 preparation/main-kernel restructuring; this audit does not establish its internal barriers"
+    },
+    {
+      "item": "VQ8 full verify16/32",
+      "verdict": "confirmed, owned by P5b full-attention lane",
+      "evidence": "producer transposes V before arriving full[slot]; consumer waits full[(rr+1)%ST] before next QK",
+      "leaves_open": "P5b separate K/V-ready arms; not a sliding dispatch"
+    }
+  ],
+  "sliding_arms_built": [],
+  "sliding_arms_screened": [],
+  "sliding_payloads_sent": [],
+  "reason": "No reviewed shared-full split exists on any active S15 sliding path; no no-effect arm is built",
+  "native_dispatch": {
+    "receipt": "7eaa262a30ec483e",
+    "kernels": {
+      "d1S": [
+        "sliding_main<1, @1"
+      ],
+      "d16S": [
+        "_attn_sumcast_ke@11",
+        "attn_main<1, 4>@9"
+      ],
+      "d32S": [
+        "_attn_sumcast_ke@11",
+        "attn_main<1, 4>@9"
+      ],
+      "v1S": [
+        "_qk_prep_kernel@19",
+        "flash::prepare_v@20",
+        "cutlass::device_@21",
+        "cutlass::device_@22",
+        "_norm_gate_kerne@23"
+      ],
+      "v16S": [
+        "_qk_prep_kernel@19",
+        "flash::prepare_v@20",
+        "cutlass::device_@21",
+        "cutlass::device_@22",
+        "_norm_gate_kerne@23"
+      ],
+      "v32S": [
+        "_qk_prep_kernel@19",
+        "flash::prepare_v@45",
+        "cutlass::device_@21",
+        "cutlass::device_@22",
+        "_norm_gate_kerne@23"
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "candidate": "problems/muse_attention_decode/dev/sliding_round2/out/s14_p5_decode_points.py",
+  "sha256": "c2000b3c4d64c292ccac0a61295df60d8478b232ed7e9fdf0de118806fa924f4",
+  "selection": {
+    "16,1": [
+      "dsm",
+      1,
+      8
+    ],
+    "32,1": [
+      "dsm",
+      1,
+      4
+    ]
+  },
+  "native_receipt": "27a914f72bfb47c8",
+  "gpu": "GPU0 sm120",
+  "DSM_standin": "genuine C1 math; native multi-CTA geometry remains in H200 receipt",
+  "screens": {
+    "normal": {
+      "TASK_passed": 13,
+      "graph_shapes_passed": 12,
+      "static_checks_passed": 24,
+      "result": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_normal/normal_local.json",
+      "result_sha256": "3ed2f1233815a29bca51dac5e2e840ea2f285335d2eb79ed6a8b5f438f528892",
+      "audit": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_normal/audit.json",
+      "audit_sha256": "893178737b9b60bdaaf20cbc360248ce8fb6581960991da6944ca51b527e43e3"
+    },
+    "forced": {
+      "TASK_passed": 13,
+      "graph_shapes_passed": 12,
+      "static_checks_passed": 24,
+      "result": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_forced/forced_local.json",
+      "result_sha256": "6bcf61e93c3d2305784982ce766fd087650a1958fe24480f3949629564421088",
+      "audit": "problems/muse_attention_decode/dev/sliding_round2/out/decode_point_forced/forced_audit.json",
+      "audit_sha256": "67ccf29ac6785636474cad4751f07add6ccef569b8c140e839d42f64e45c179e"
+    }
+  }
+}

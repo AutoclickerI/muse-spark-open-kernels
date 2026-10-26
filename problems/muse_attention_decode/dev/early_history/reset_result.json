@@ -4,9 +4,10 @@
   "host_passed": true,
   "results": [
     {
-      "case": "v1S",
+      "case": "d1S",
       "seeds": 16,
       "controls": "TASK gates complete",
+      "identical_recipe_controls": [],
       "arms": {
         "OLD4": {
           "ratio": 0.9781860780015604,
@@ -17,10 +18,17 @@
             0.9882381533660004,
             1.0954567647751023
           ],
+          "baseline_controls": {
+            "A2": [
+              1.009554709584033,
+              0.00610465982794006
+            ]
+          },
           "vs_a2": 0.9692095656365602,
           "vs_a2_se": 0.0141546339719832,
-          "confirm": false,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0,
@@ -38,10 +46,17 @@
             0.9882381533660004,
             1.0954567647751023
           ],
+          "baseline_controls": {
+            "A2": [
+              1.009554709584033,
+              0.00610465982794006
+            ]
+          },
           "vs_a2": 0.9668050274736292,
           "vs_a2_se": 0.014547537637575525,
-          "confirm": false,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "vs_old": 0.9974140816535696,
           "vs_old_se": 0.001243881448961434,
           "critical_delta_us": {
@@ -61,10 +76,17 @@
             0.9882381533660004,
             1.0954567647751023
           ],
+          "baseline_controls": {
+            "A2": [
+              1.009554709584033,
+              0.00610465982794006
+            ]
+          },
           "vs_a2": 0.9850036070331414,
           "vs_a2_se": 0.0149291921555539,
-          "confirm": false,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "vs_old": 1.016159249391718,
           "vs_old_se": 0.001545078724758488,
           "critical_delta_us": {
@@ -84,10 +106,17 @@
             0.9882381533660004,
             1.0954567647751023
           ],
+          "baseline_controls": {
+            "A2": [
+              1.009554709584033,
+              0.00610465982794006
+            ]
+          },
           "vs_a2": 1.0080400624261776,
           "vs_a2_se": 0.014390307281085939,
-          "confirm": false,
+          "point_winner": false,
           "measured": true,
+          "nominate_to_p4": false,
           "vs_old": 1.0401930698682886,
           "vs_old_se": 0.0024754184158146,
           "critical_delta_us": {
@@ -107,10 +136,17 @@
             0.9882381533660004,
             1.0954567647751023
           ],
+          "baseline_controls": {
+            "A2": [
+              1.009554709584033,
+              0.00610465982794006
+            ]
+          },
           "vs_a2": 0.988823880606779,
           "vs_a2_se": 0.014412935727200277,
-          "confirm": false,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "vs_old": 1.0202466628407716,
           "vs_old_se": 0.0013047817741899507,
           "critical_delta_us": {
@@ -124,9 +160,9 @@
       }
     }
   ],
-  "decision": "drop only compact last-CTA early history at decode1 sliding; E4/OLD4 gain fails A:A and3SE rule",
+  "decision": "Nominate every measured per-shape point winner to P4. Held-out six-load lower CI >1 alone promotes a composition.",
   "confirmation_sent": false,
-  "promotion": "none",
+  "promotion": "P4 nomination, not automatic score promotion",
   "TASK_counts": {
     "A": 16,
     "A2": 16,
@@ -135,5 +171,24 @@
     "E2": 16,
     "E1": 16,
     "L4": 16
-  }
+  },
+  "seed_ids": [
+    3102917,
+    3207646,
+    3312375,
+    3417104,
+    3521833,
+    3626562,
+    3731291,
+    3836020,
+    3940749,
+    4045478,
+    4150207,
+    4254936,
+    4359665,
+    4464394,
+    4569123,
+    4673852
+  ],
+  "point_handoff": "problems/muse_attention_decode/dev/sliding_round2/point_handoff.json"
 }

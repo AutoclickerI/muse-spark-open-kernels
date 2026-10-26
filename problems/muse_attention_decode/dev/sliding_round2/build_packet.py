@@ -65,7 +65,7 @@ def kernel_fn(data: Inputs) -> torch.Tensor:
 '''
     (HERE/'out/component.py').write_text(host)
     tag=hashlib.sha256(packet.encode()).hexdigest()[:16]
-    out=host+'\n'+h200_lab.WRAPPER.format(names='sliding_round2 '+tag,base='attention portfolio + P5 second-round one-launch rows; paired lab exactS14',payloads=[('sliding_round2',tag,packet)],budget=650,limit=15000)
+    out=host+'\n'+h200_lab.WRAPPER.format(names='sliding_round2 '+tag,base='attention portfolio + P5 second-round one-launch rows; paired lab exactS14',payloads=[('sliding_round2',tag,packet)],budget=650,limit=15000,print_line='print(line, flush=True)')
     out+='\nif torch.cuda.is_available() and torch.cuda.get_device_capability()[0]==9:\n'+'\n'.join('    '+l for l in h200_lab.IMPORT_WRAPPER.format(budget=650).splitlines())+'\n'
     compile(out,'sliding_round2_board','exec');assert len(out.encode())<1_000_000
     p=HERE/'out/sliding_round2_board.py';p.write_text(out)

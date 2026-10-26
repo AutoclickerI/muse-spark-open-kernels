@@ -161,7 +161,7 @@ screen counts, prewait SASS evidence and initial sender identity are in
 ## Native decision
 
 All10 arms x24 fresh-seed TASK/cache gates pass at both loads. No arm
-qualifies. Best verify16 **C8S/A1.012806** (SE0.003340), verify32
+has a point estimate below1, so the new handoff rule leaves this verdict unchanged. Best verify16 **C8S/A1.012806** (SE0.003340), verify32
 **C4S/A1.020146** (SE0.002518); A:A0.999296/0.998184,
 SE0.000342/0.000252, ranges0.99586-1.00187/0.99557-0.99991.
 The pipeline variants lose1.026-1.089 atv16 and1.043-1.098 atv32.
@@ -182,3 +182,11 @@ This closes the tested schedules on S14, not resident attention generally.
 Lower-footprint QKV producers, different gather/transpose or output schedules
 remain open; none is measured by this receipt. The critical-path increments
 are diagnostic traces, not per-CTA preload-completion clocks.
+
+Current handoff rule: every measured per-shape point ratio below1 goes to P4,
+with SE, seed IDs and A:A, for composition and held-out six-load confirmation.
+This packet supplies none. Complete rejudgment, including all resident arm
+estimates, is in [point_handoff.json](../sliding_round2/point_handoff.json).
+The newer shared-full barrier review is audited in
+[operand_ready/README.md](../operand_ready/README.md): S15 verify sliding is
+FA3, not VQ8. It does not change these measured resident-kernel losses.

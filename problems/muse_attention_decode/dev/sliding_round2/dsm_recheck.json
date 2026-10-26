@@ -14,8 +14,7 @@
             "COOP"
           ],
           "ratio": 1.0037402966718727,
-          "se": 0.004150993962218459,
-          "failed": false
+          "se": 0.004150993962218459
         }
       ],
       "arms": {
@@ -40,8 +39,9 @@
           },
           "vs_a2": 0.9643482671775004,
           "vs_a2_se": 0.004424189505154617,
-          "confirm": true,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": -0.032,
@@ -71,8 +71,9 @@
           },
           "vs_a2": 0.9519678575589736,
           "vs_a2_se": 0.0037488158705389694,
-          "confirm": true,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": -0.032,
@@ -102,8 +103,9 @@
           },
           "vs_a2": 0.9676702448006538,
           "vs_a2_se": 0.003679549371326324,
-          "confirm": true,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.352,
@@ -133,8 +135,9 @@
           },
           "vs_a2": 0.9554525318497932,
           "vs_a2_se": 0.005032291518989058,
-          "confirm": true,
+          "point_winner": true,
           "measured": true,
+          "nominate_to_p4": true,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.288,
@@ -146,7 +149,46 @@
       }
     }
   ],
-  "qualified_recipe": {
+  "seed_ids": [
+    12100117,
+    12204846,
+    12309575,
+    12414304,
+    12519033,
+    12623762,
+    12728491,
+    12833220,
+    12937949,
+    13042678,
+    13147407,
+    13252136,
+    13356865,
+    13461594,
+    13566323,
+    13671052,
+    13775781,
+    13880510,
+    13985239,
+    14089968,
+    14194697,
+    14299426,
+    14404155,
+    14508884,
+    14613613,
+    14718342,
+    14823071,
+    14927800,
+    15032529,
+    15137258,
+    15241987,
+    15346716,
+    15451445,
+    15556174,
+    15660903
+  ],
+  "decision": "Nominate every measured per-shape point winner to P4. Held-out six-load lower CI >1 alone promotes a composition.",
+  "point_handoff": "problems/muse_attention_decode/dev/sliding_round2/point_handoff.json",
+  "preferred_recipe": {
     "shape": "verify1 sliding",
     "selection": {
       "1,8": [

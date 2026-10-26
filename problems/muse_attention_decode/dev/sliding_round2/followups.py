@@ -7,7 +7,11 @@ H=Path(__file__).resolve().parent
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','dsm_recheck','global_confirm','history','selected'))
     ap.add_argument('--selection',required=True,type=json.loads,help='DSM {batch:cluster}; history {"qt":1|2|4}; selected {"batch,q_len":[kind,qt,splits]}')
-    a=ap.parse_args();body=(H/'out/body.py').read_text()
+    a=ap.parse_args()
+    # Rebuild the checker/header from tracked inputs. An old generated body
+    # must not silently retain a retired tolerance margin.
+    build_packet.main()
+    body=(H/'out/body.py').read_text()
     cut=body.index('SEEDS=tuple(');body=body[:cut]+(H/'lab_body.inc').read_text()
     body=body.replace('SEEDS=tuple(4194319+104729*i for i in range(16))','SEEDS=tuple(7101149+104729*i for i in range(24))')
     if a.mode in ('dsm','dsm_recheck'):

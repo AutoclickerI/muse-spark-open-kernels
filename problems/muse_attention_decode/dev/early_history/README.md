@@ -1,48 +1,42 @@
-# early history
+# P5 compact early history
 
-Early sliding-history gather/transpose experiment on exact S14; the compact
-recipe did not beat its control beyond noise on the H200.
+**Current verdict: nominate, not closed.** Under the current point-estimate
+handoff, exact-S14 E4/OLD4 is0.997414, across-seed SE0.001244, n16. P4
+receives it for composition/held-out six-load confirmation. A:A is uncertainty
+evidence, not a per-shape significance gate. No new history payload is sent;
+P4 owns composition. The former A:A/3SE rejection is withdrawn.
 
-Files (one entry per retained direct file):
+Receipt `402819c28279466d`, wrapper `0cec6706`, records all seven arms passing
+all16 public whole-layer TASK gates (historically with20% margin) and replay
+checks. E2/E1/L4 vsOLD4 are1.016159/1.040193/1.020247. Against A, point
+winners are OLD4/E4/E2/L4 at0.978186/0.975761/0.994125/0.997971,
+SE0.014096/0.014496/0.014870/0.014298. A2/A1.009555,
+SE0.006105, range0.98824-1.09546. Full samples, seed IDs and all estimates
+are in [point_handoff.json](../sliding_round2/point_handoff.json).
+[reset_result.json](reset_result.json) is regenerated under the point-handoff
+rule; immutable receipt sources preserve the original experiment.
 
-- [.gitignore](.gitignore): Generated-output exclusions.
-- [README.md](README.md): Current working set and resume instructions.
-- [build_lab.py](build_lab.py): One immutable attention candidate with one batched exact-S14 whole-layer history lab.
-- [check.py](check.py): Fresh data, strided producer partials and repeated captured counter reset.
-- [check_lab.py](check_lab.py): Execute the exact batched payload locally with forced Hopper glue and two fresh seeds.
-- [history_build.py](history_build.py): One-tile sliding history, retained before PDL wait; compact shared-memory lifetime.
-- [lab_body.inc](lab_body.inc): Device source or payload template used by retained code.
-- [patch.py](patch.py): Experimental compact early-history last-CTA on exact S14 final.
-- [sass_audit.py](sass_audit.py): Rebuild sm90a artifacts and retain bounded instruction-order/resource evidence.
-- [screen.py](screen.py): Normal and forced-Hopper whole-layer glue through local_eval, actual compact tile math on sm120.
-- [out/p5_early_history_board.py](out/p5_early_history_board.py): Muse verify stream portfolio: one paged KV pass per split and KV head.
-- [out/s14_early_history.py](out/s14_early_history.py): Runtime or source-generation dependency.
+Preload implementation is proven: QT4 transpose median/max4.064/4.608us
+precedes dependency-wait completion5.152us. Shared memory falls53504→28928B.
+E4 attention increment12.160 vsOLD4 11.200us, QKV/gate7.296/1.536 vs
+8.064/2.464us; the total's cause is not isolated. An early source load alone
+would not have established the measured preload ordering.
 
-Handoff: [patch.py](patch.py), SHA256 `7ce4f7a6cb29bd00d87ece330c6b72b15d954a721b56a73af0b484381ba03ba8`, applies onto S14 f1c77ce6.
-Base source: [S14 final](../../../muse_decode_layer/cand_r3_best7_s14_final.py), SHA256 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
+`history_build.py` generates compact early shader0e07854b; `build_lab.py`
+embeds exact S14 f1c77ce6, exact OLD4 shader3815beab and early/late arms.
+`patch.py` is the integration generator; its former SHA7ce4f7a6 identifies the
+historical generator. `lab_body.inc` contains capture/checker code. New labs
+use the exact public TASK checker and retain route/output drift diagnostically;
+old source receipts remain immutable. Extra tolerance margins and route
+identity do not decide correctness or handoff.
 
-## Native decision
+`check.py` checks fresh/strided/partial/counter behavior, `sass_audit.py`
+checks native instruction order/resources, `screen.py` provides normal/forced
+layer screens, and `check_lab.py` runs the exact payload with forced glue.
+Outputs go under ignored `out/`. Original local admission and hashes remain
+in `admission.json` where present; no local timing establishes an H200 gain.
 
-Wrapper `0cec6706` completed as **402819c28279466d**. All seven arms
-passed all16 public whole-layer TASK gates with20% margin and the replay
-drift checks. Best E4/OLD4 is **0.997414**, seed SE0.001244; E2/E1/L4
-are1.016159/1.040193/1.020247. A:A is1.009555, SE0.006105,
-seed range0.98824-1.09546; the original-control comparison is noisy.
-The0.26% incremental E4 gain is below both the A:A displacement and three
-standard errors. The prewritten decision therefore drops this recipe:
-**no history confirmation sent and no new P4 promotion**.
-
-The implementation is measured, not an unproven preload: QT4 history is
-transposed by median4.064us (max4.608), before the dependency wait completes
-at5.152us. Shared memory drops53504→28928B at138 registers.
-Nevertheless, E4's attention completion increment is12.160us vs OLD4's
-11.200us; QKV/gate increments are7.296/1.536 vs8.064/2.464us.
-The whole-layer pair, rather than shifted stage boundaries, decides.
-QT2/QT1's epilogue tails are3.136/5.248us; compact early history alone
-does not solve those tails. These phase clocks are instrumented diagnostics.
-
-This closes only the compact single-tile, last-CTA early-history recipe at
-decode1 sliding. Resident-history verify and round2's cooperative/query-row
-rebuilds remain independent tests. Machine audit: `reset_result.json`.
-The held-out history generator now preserves exact OLD4 CUDA3815beab at
-QT4 as its control; it remains unsent because this decision failed.
+The prepared `../sliding_round2/followups.py history --selection '{"qt":4}'`
+uses exact reset early/OLD4 shader bytes. It is an available experiment tool,
+not a queued sender or a second promotion gate. Current P4 handoff/decision
+rules are in [sliding_round2/README.md](../sliding_round2/README.md).

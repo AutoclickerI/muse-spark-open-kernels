@@ -8,66 +8,133 @@
         "case": "d1S",
         "seeds": 16,
         "controls": "UNMEASURED whole-layer recipes: one isolated attention gate; no replay TASK gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C64": {
             "ratio": 0.990350775672513,
             "se": 0.008582827772359945,
             "aa": 1.005141974548327,
             "aa_se": 0.00474878692740221,
+            "aa_range": [
+              0.9772660690220893,
+              1.056417282379997
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005141974548327,
+                0.00474878692740221
+              ]
+            },
             "vs_a2": 0.9853970918798732,
             "vs_a2_se": 0.008131514754892826,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "C128": {
             "ratio": 0.9898689668553291,
             "se": 0.009003008283232954,
             "aa": 1.005141974548327,
             "aa_se": 0.00474878692740221,
+            "aa_range": [
+              0.9772660690220893,
+              1.056417282379997
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005141974548327,
+                0.00474878692740221
+              ]
+            },
             "vs_a2": 0.9848991110608003,
             "vs_a2_se": 0.008419447833777476,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W4": {
             "ratio": 1.0385383032474413,
             "se": 0.0067758760695897,
             "aa": 1.005141974548327,
             "aa_se": 0.00474878692740221,
+            "aa_range": [
+              0.9772660690220893,
+              1.056417282379997
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005141974548327,
+                0.00474878692740221
+              ]
+            },
             "vs_a2": 1.0332875327662026,
             "vs_a2_se": 0.005480762901977365,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W8": {
             "ratio": 0.9940515398120328,
             "se": 0.015497370226707618,
             "aa": 1.005141974548327,
             "aa_se": 0.00474878692740221,
+            "aa_range": [
+              0.9772660690220893,
+              1.056417282379997
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005141974548327,
+                0.00474878692740221
+              ]
+            },
             "vs_a2": 0.9890320762406601,
             "vs_a2_se": 0.015033628650008783,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "OLD": {
             "ratio": 0.9940269848757031,
             "se": 0.009475185673956533,
             "aa": 1.005141974548327,
             "aa_se": 0.00474878692740221,
+            "aa_range": [
+              0.9772660690220893,
+              1.056417282379997
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005141974548327,
+                0.00474878692740221
+              ]
+            },
             "vs_a2": 0.9890022718757543,
             "vs_a2_se": 0.008655579302374023,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "PP": {
             "ratio": 0.9731640248242253,
             "se": 0.003993440168868264,
             "aa": 1.005141974548327,
             "aa_se": 0.00474878692740221,
+            "aa_range": [
+              0.9772660690220893,
+              1.056417282379997
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005141974548327,
+                0.00474878692740221
+              ]
+            },
             "vs_a2": 0.9683318952773786,
             "vs_a2_se": 0.0037368653881655637,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           }
         }
       },
@@ -75,66 +142,133 @@
         "case": "d16S",
         "seeds": 16,
         "controls": "UNMEASURED whole-layer recipes: one isolated attention gate; no replay TASK gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C64": {
             "ratio": 0.9905599743515252,
             "se": 0.009790961123604235,
             "aa": 0.9801161736834767,
             "aa_se": 0.0035877298995337713,
+            "aa_range": [
+              0.9524735035986516,
+              1.0066846522781774
+            ],
+            "baseline_controls": {
+              "A2": [
+                0.9801161736834767,
+                0.0035877298995337713
+              ]
+            },
             "vs_a2": 1.010710843205053,
             "vs_a2_se": 0.009684903721906826,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "C128": {
             "ratio": 0.9959513707995348,
             "se": 0.010133753335798327,
             "aa": 0.9801161736834767,
             "aa_se": 0.0035877298995337713,
+            "aa_range": [
+              0.9524735035986516,
+              1.0066846522781774
+            ],
+            "baseline_controls": {
+              "A2": [
+                0.9801161736834767,
+                0.0035877298995337713
+              ]
+            },
             "vs_a2": 1.0161728116069024,
             "vs_a2_se": 0.009787572706370134,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W4": {
             "ratio": 1.0010293505906862,
             "se": 0.010020190966072167,
             "aa": 0.9801161736834767,
             "aa_se": 0.0035877298995337713,
+            "aa_range": [
+              0.9524735035986516,
+              1.0066846522781774
+            ],
+            "baseline_controls": {
+              "A2": [
+                0.9801161736834767,
+                0.0035877298995337713
+              ]
+            },
             "vs_a2": 1.0213485268075166,
             "vs_a2_se": 0.009618094183605236,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W8": {
             "ratio": 0.977572839734627,
             "se": 0.009402980615144814,
             "aa": 0.9801161736834767,
             "aa_se": 0.0035877298995337713,
+            "aa_range": [
+              0.9524735035986516,
+              1.0066846522781774
+            ],
+            "baseline_controls": {
+              "A2": [
+                0.9801161736834767,
+                0.0035877298995337713
+              ]
+            },
             "vs_a2": 0.9974404192173655,
             "vs_a2_se": 0.009159267717084522,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "OLD": {
             "ratio": 0.9685319962342086,
             "se": 0.009360506549430101,
             "aa": 0.9801161736834767,
             "aa_se": 0.0035877298995337713,
+            "aa_range": [
+              0.9524735035986516,
+              1.0066846522781774
+            ],
+            "baseline_controls": {
+              "A2": [
+                0.9801161736834767,
+                0.0035877298995337713
+              ]
+            },
             "vs_a2": 0.988202316292706,
             "vs_a2_se": 0.009013567088243198,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "PP": {
             "ratio": 0.9759729245506665,
             "se": 0.0026028909616718754,
             "aa": 0.9801161736834767,
             "aa_se": 0.0035877298995337713,
+            "aa_range": [
+              0.9524735035986516,
+              1.0066846522781774
+            ],
+            "baseline_controls": {
+              "A2": [
+                0.9801161736834767,
+                0.0035877298995337713
+              ]
+            },
             "vs_a2": 0.9958701840034876,
             "vs_a2_se": 0.002585622448152679,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           }
         }
       },
@@ -142,66 +276,133 @@
         "case": "d32S",
         "seeds": 16,
         "controls": "UNMEASURED whole-layer recipes: one isolated attention gate; no replay TASK gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C64": {
             "ratio": 1.0070301810170834,
             "se": 0.010533721646134545,
             "aa": 1.005237428067049,
             "aa_se": 0.0020957639072462066,
+            "aa_range": [
+              0.9901124294538506,
+              1.018670707278237
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005237428067049,
+                0.0020957639072462066
+              ]
+            },
             "vs_a2": 1.0017382235520846,
             "vs_a2_se": 0.009928451105931616,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "C128": {
             "ratio": 1.0052903745018449,
             "se": 0.009168713866604615,
             "aa": 1.005237428067049,
             "aa_se": 0.0020957639072462066,
+            "aa_range": [
+              0.9901124294538506,
+              1.018670707278237
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005237428067049,
+                0.0020957639072462066
+              ]
+            },
             "vs_a2": 1.00000729144249,
             "vs_a2_se": 0.008503159655614028,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W4": {
             "ratio": 0.9945288031939666,
             "se": 0.010006675016455078,
             "aa": 1.005237428067049,
             "aa_se": 0.0020957639072462066,
+            "aa_range": [
+              0.9901124294538506,
+              1.018670707278237
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005237428067049,
+                0.0020957639072462066
+              ]
+            },
             "vs_a2": 0.989309198509033,
             "vs_a2_se": 0.009440442151419872,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W8": {
             "ratio": 1.0558740060152654,
             "se": 0.010249808945349768,
             "aa": 1.005237428067049,
             "aa_se": 0.0020957639072462066,
+            "aa_range": [
+              0.9901124294538506,
+              1.018670707278237
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005237428067049,
+                0.0020957639072462066
+              ]
+            },
             "vs_a2": 1.0503330603795118,
             "vs_a2_se": 0.009640620701147401,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "OLD": {
             "ratio": 0.993467217543782,
             "se": 0.0100115331855904,
             "aa": 1.005237428067049,
             "aa_se": 0.0020957639072462066,
+            "aa_range": [
+              0.9901124294538506,
+              1.018670707278237
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005237428067049,
+                0.0020957639072462066
+              ]
+            },
             "vs_a2": 0.9882398647841509,
             "vs_a2_se": 0.009349225656162814,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "PP": {
             "ratio": 1.014564852637713,
             "se": 0.0018679709698333504,
             "aa": 1.005237428067049,
             "aa_se": 0.0020957639072462066,
+            "aa_range": [
+              0.9901124294538506,
+              1.018670707278237
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.005237428067049,
+                0.0020957639072462066
+              ]
+            },
             "vs_a2": 1.0093381731600288,
             "vs_a2_se": 0.002650191361582141,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           }
         }
       },
@@ -209,69 +410,154 @@
         "case": "d1F",
         "seeds": 16,
         "controls": "UNMEASURED whole-layer recipes: one isolated attention gate; no replay TASK gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C64": {
             "ratio": 1.149654663820991,
             "se": 0.005818892375146391,
             "aa": 1.0104061922091565,
             "aa_se": 0.00297864368752912,
+            "aa_range": [
+              0.9926638206159075,
+              1.035313686185866
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.0104061922091565,
+                0.00297864368752912
+              ]
+            },
             "vs_a2": 1.1380424791247057,
             "vs_a2_se": 0.007519026414413382,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "C128": {
             "ratio": 1.077958890013764,
             "se": 0.004302299529264374,
             "aa": 1.0104061922091565,
             "aa_se": 0.00297864368752912,
+            "aa_range": [
+              0.9926638206159075,
+              1.035313686185866
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.0104061922091565,
+                0.00297864368752912
+              ]
+            },
             "vs_a2": 1.0669862031298067,
             "vs_a2_se": 0.005154429172954483,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W4": {
             "ratio": 1.2608204858221517,
             "se": 0.00500228407430725,
             "aa": 1.0104061922091565,
             "aa_se": 0.00297864368752912,
+            "aa_range": [
+              0.9926638206159075,
+              1.035313686185866
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.0104061922091565,
+                0.00297864368752912
+              ]
+            },
             "vs_a2": 1.2479986324167245,
             "vs_a2_se": 0.006199067149496903,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "W8": {
             "ratio": 1.1035628169485667,
             "se": 0.005123518106734465,
             "aa": 1.0104061922091565,
             "aa_se": 0.00297864368752912,
+            "aa_range": [
+              0.9926638206159075,
+              1.035313686185866
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.0104061922091565,
+                0.00297864368752912
+              ]
+            },
             "vs_a2": 1.0923805899803352,
             "vs_a2_se": 0.0064868152581342734,
-            "confirm": false,
-            "measured": false
+            "point_winner": false,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "OLD": {
             "ratio": 0.9614598448341654,
             "se": 0.0023642672626104956,
             "aa": 1.0104061922091565,
             "aa_se": 0.00297864368752912,
+            "aa_range": [
+              0.9926638206159075,
+              1.035313686185866
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.0104061922091565,
+                0.00297864368752912
+              ]
+            },
             "vs_a2": 0.9516302966252339,
             "vs_a2_se": 0.0025969968127773067,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           },
           "PP": {
             "ratio": 0.9626314670543612,
             "se": 0.0020311648041112166,
             "aa": 1.0104061922091565,
             "aa_se": 0.00297864368752912,
+            "aa_range": [
+              0.9926638206159075,
+              1.035313686185866
+            ],
+            "baseline_controls": {
+              "A2": [
+                1.0104061922091565,
+                0.00297864368752912
+              ]
+            },
             "vs_a2": 0.9528283227457482,
             "vs_a2_se": 0.0032070073984754198,
-            "confirm": false,
-            "measured": false
+            "point_winner": true,
+            "measured": false,
+            "nominate_to_p4": false
           }
         }
       }
+    ],
+    "seed_ids": [
+      172903,
+      180822,
+      188741,
+      196660,
+      204579,
+      212498,
+      220417,
+      228336,
+      236255,
+      244174,
+      252093,
+      260012,
+      267931,
+      275850,
+      283769,
+      291688
     ]
   },
   "dsm": {
@@ -283,6 +569,7 @@
         "case": "v1S",
         "seeds": 8,
         "controls": "stage-only gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C1": {
             "ratio": 2.2221043474897204,
@@ -293,10 +580,17 @@
               0.9407216687065066,
               0.9730195350078873
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9601193209376881,
+                0.003357463265629223
+              ]
+            },
             "vs_a2": 2.3144204855038852,
             "vs_a2_se": 0.008569183785548714,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C2": {
             "ratio": 1.376249127598472,
@@ -307,10 +601,17 @@
               0.9407216687065066,
               0.9730195350078873
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9601193209376881,
+                0.003357463265629223
+              ]
+            },
             "vs_a2": 1.433410889274919,
             "vs_a2_se": 0.005253548753909244,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C4": {
             "ratio": 0.9474846468507342,
@@ -321,10 +622,17 @@
               0.9407216687065066,
               0.9730195350078873
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9601193209376881,
+                0.003357463265629223
+              ]
+            },
             "vs_a2": 0.986862500878677,
             "vs_a2_se": 0.0026245480465360597,
-            "confirm": true,
-            "measured": true
+            "point_winner": true,
+            "measured": true,
+            "nominate_to_p4": true
           },
           "C8": {
             "ratio": 0.7731110860335653,
@@ -335,10 +643,17 @@
               0.9407216687065066,
               0.9730195350078873
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9601193209376881,
+                0.003357463265629223
+              ]
+            },
             "vs_a2": 0.8052595156395045,
             "vs_a2_se": 0.0027378132125649465,
-            "confirm": true,
-            "measured": true
+            "point_winner": true,
+            "measured": true,
+            "nominate_to_p4": true
           },
           "C16": {
             "ratio": 0.719269003044535,
@@ -349,10 +664,17 @@
               0.9407216687065066,
               0.9730195350078873
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9601193209376881,
+                0.003357463265629223
+              ]
+            },
             "vs_a2": 0.749176710782772,
             "vs_a2_se": 0.002843297021343142,
-            "confirm": true,
-            "measured": true
+            "point_winner": true,
+            "measured": true,
+            "nominate_to_p4": true
           }
         }
       },
@@ -360,6 +682,7 @@
         "case": "v16S",
         "seeds": 8,
         "controls": "stage-only gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C1": {
             "ratio": 2.1211741591263404,
@@ -370,10 +693,17 @@
               0.9665613462540037,
               0.9909454069652542
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9798772736368793,
+                0.0032824620750896835
+              ]
+            },
             "vs_a2": 2.164864831907593,
             "vs_a2_se": 0.007594293704272016,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C2": {
             "ratio": 1.3031708196773424,
@@ -384,10 +714,17 @@
               0.9665613462540037,
               0.9909454069652542
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9798772736368793,
+                0.0032824620750896835
+              ]
+            },
             "vs_a2": 1.3299879028278867,
             "vs_a2_se": 0.0032671599295933085,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C4": {
             "ratio": 0.9664879898037445,
@@ -398,10 +735,17 @@
               0.9665613462540037,
               0.9909454069652542
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9798772736368793,
+                0.0032824620750896835
+              ]
+            },
             "vs_a2": 0.9863223467648071,
             "vs_a2_se": 0.0013746125546705305,
-            "confirm": true,
-            "measured": true
+            "point_winner": true,
+            "measured": true,
+            "nominate_to_p4": true
           },
           "C8": {
             "ratio": 0.8491091812925716,
@@ -412,10 +756,17 @@
               0.9665613462540037,
               0.9909454069652542
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9798772736368793,
+                0.0032824620750896835
+              ]
+            },
             "vs_a2": 0.8665704293392948,
             "vs_a2_se": 0.003088894103946103,
-            "confirm": true,
-            "measured": true
+            "point_winner": true,
+            "measured": true,
+            "nominate_to_p4": true
           },
           "C16": {
             "ratio": 1.0361261928022243,
@@ -426,10 +777,17 @@
               0.9665613462540037,
               0.9909454069652542
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9798772736368793,
+                0.0032824620750896835
+              ]
+            },
             "vs_a2": 1.057498368515712,
             "vs_a2_se": 0.004943401859274555,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           }
         }
       },
@@ -437,6 +795,7 @@
         "case": "v32S",
         "seeds": 8,
         "controls": "stage-only gates",
+        "identical_recipe_controls": [],
         "arms": {
           "C1": {
             "ratio": 1.9513678781445951,
@@ -447,10 +806,17 @@
               0.9766060657886271,
               1.00293936928844
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9915699513860382,
+                0.003094218036168002
+              ]
+            },
             "vs_a2": 1.9680447086371173,
             "vs_a2_se": 0.0059395664642143756,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C2": {
             "ratio": 1.2202539493859117,
@@ -461,10 +827,17 @@
               0.9766060657886271,
               1.00293936928844
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9915699513860382,
+                0.003094218036168002
+              ]
+            },
             "vs_a2": 1.2307012469554022,
             "vs_a2_se": 0.003721679180575637,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C4": {
             "ratio": 1.0738120089096304,
@@ -475,10 +848,17 @@
               0.9766060657886271,
               1.00293936928844
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9915699513860382,
+                0.003094218036168002
+              ]
+            },
             "vs_a2": 1.0829881990727712,
             "vs_a2_se": 0.003559222980029741,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C8": {
             "ratio": 1.2654374813022877,
@@ -489,10 +869,17 @@
               0.9766060657886271,
               1.00293936928844
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9915699513860382,
+                0.003094218036168002
+              ]
+            },
             "vs_a2": 1.2762012914064036,
             "vs_a2_se": 0.004976553459172442,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           },
           "C16": {
             "ratio": 1.6583446728698463,
@@ -503,16 +890,33 @@
               0.9766060657886271,
               1.00293936928844
             ],
+            "baseline_controls": {
+              "A2": [
+                0.9915699513860382,
+                0.003094218036168002
+              ]
+            },
             "vs_a2": 1.6725107210893362,
             "vs_a2_se": 0.00405703631671966,
-            "confirm": false,
-            "measured": true
+            "point_winner": false,
+            "measured": true,
+            "nominate_to_p4": false
           }
         }
       }
+    ],
+    "seed_ids": [
+      173101,
+      181020,
+      188939,
+      196858,
+      204777,
+      212696,
+      220615,
+      228534
     ]
   },
-  "promotion": "verify1 sliding cooperative DSM QT4/C16 qualified by6a0b3f09 and handed to P4",
+  "promotion": "All measured per-shape point winners nominated to P4 in ../sliding_round2/point_handoff.json; P4 composes/confirms the held-out six-load score",
   "global_repair": {
     "source": "repair_global_lab.py",
     "payload_sha256": "1bf605cf0a7e25af7d998d0023301d2cf8ae7d20fb6bc50721aacc8947f3d164",
@@ -558,7 +962,7 @@
   "dsm_confirmation_job": "6c26b14fdd28458b",
   "dsm_confirmation_status": {
     "verify1": "unmeasured:failed duplicate control in6c26, resolved by6a35fresh-capture repeat",
-    "verify16": "RESETneutral; cooperativeQT1variantslose"
+    "verify16": "RESET1.004117, cooperativeQT1variants1.063-1.153: no point winner"
   },
   "dsm_promotion": {
     "selection": {
@@ -570,7 +974,8 @@
     },
     "qualifying_job": "6a0b3f0987e94ba5",
     "pooled_ratio": 0.9529128267552293,
-    "handoff": "../sliding_round2/handoff.json"
+    "handoff": "../sliding_round2/handoff.json",
+    "status": "preferred candidate nomination; every point winner is in point_handoff.json"
   },
   "stage_confirmation_selection": {
     "1": 16,
@@ -578,7 +983,7 @@
   },
   "global_confirmation": {
     "queue": {
-      "state": "pending",
+      "state": "done",
       "utc": "20261026T023034Z",
       "problem": "muse_attention_decode",
       "mode": "check",
@@ -624,6 +1029,9 @@
       }
     },
     "local_only": true,
-    "interpretation": "native current-S14 performance unmeasured; no new P4 promotion"
+    "interpretation": "Point nomination only. No per-load A:A significance gate. P4 composes and confirms current-base six-load score.",
+    "status": "35-seed TASK/cache counts complete; all duplicate controls agree; nominate d16 GLOBAL/ALIAS/LAST/PP and d32 LAST",
+    "receipt": "runs/muse_attention_decode/20261026T023034Z_check_58f0b30ba8b8472f.json",
+    "result": "global_confirmation.json"
   }
 }

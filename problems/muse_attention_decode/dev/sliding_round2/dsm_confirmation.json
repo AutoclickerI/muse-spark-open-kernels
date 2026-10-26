@@ -14,8 +14,7 @@
             "COOP"
           ],
           "ratio": 1.039009569945014,
-          "se": 0.00300285578580215,
-          "failed": true
+          "se": 0.00300285578580215
         }
       ],
       "arms": {
@@ -36,8 +35,9 @@
           },
           "vs_a2": 0.9539560828051633,
           "vs_a2_se": 0.003156554028596875,
-          "confirm": false,
+          "point_winner": true,
           "measured": false,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.992,
@@ -63,8 +63,9 @@
           },
           "vs_a2": 0.9408306167126543,
           "vs_a2_se": 0.00280956452592333,
-          "confirm": false,
+          "point_winner": true,
           "measured": false,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.288,
@@ -90,8 +91,9 @@
           },
           "vs_a2": 0.94921922328642,
           "vs_a2_se": 0.0030101516521320645,
-          "confirm": false,
+          "point_winner": true,
           "measured": false,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.224,
@@ -117,8 +119,9 @@
           },
           "vs_a2": 0.9775417126806326,
           "vs_a2_se": 0.004209617843324003,
-          "confirm": false,
+          "point_winner": true,
           "measured": false,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.608,
@@ -152,8 +155,9 @@
           },
           "vs_a2": 1.0044599066152264,
           "vs_a2_se": 0.003863252622579984,
-          "confirm": false,
+          "point_winner": false,
           "measured": true,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": -0.384,
@@ -179,8 +183,9 @@
           },
           "vs_a2": 1.1175392379060713,
           "vs_a2_se": 0.0043061604178065175,
-          "confirm": false,
+          "point_winner": false,
           "measured": true,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.832,
@@ -206,8 +211,9 @@
           },
           "vs_a2": 1.0637584588194913,
           "vs_a2_se": 0.003971825983219813,
-          "confirm": false,
+          "point_winner": false,
           "measured": true,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": 0.384,
@@ -233,8 +239,9 @@
           },
           "vs_a2": 1.1537179026077184,
           "vs_a2_se": 0.004238791023270994,
-          "confirm": false,
+          "point_winner": false,
           "measured": true,
+          "nominate_to_p4": false,
           "critical_delta_us": {
             "qkv3": 0.0,
             "qkv_gate": -0.608,
@@ -245,5 +252,33 @@
         }
       }
     }
-  ]
+  ],
+  "seed_ids": [
+    7101149,
+    7205878,
+    7310607,
+    7415336,
+    7520065,
+    7624794,
+    7729523,
+    7834252,
+    7938981,
+    8043710,
+    8148439,
+    8253168,
+    8357897,
+    8462626,
+    8567355,
+    8672084,
+    8776813,
+    8881542,
+    8986271,
+    9091000,
+    9195729,
+    9300458,
+    9405187,
+    9509916
+  ],
+  "decision": "Nominate every measured per-shape point winner to P4. Held-out six-load lower CI >1 alone promotes a composition.",
+  "point_handoff": "problems/muse_attention_decode/dev/sliding_round2/point_handoff.json"
 }
