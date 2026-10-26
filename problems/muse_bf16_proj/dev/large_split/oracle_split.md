@@ -1,6 +1,6 @@
-# Large-shape oracle split (microseconds,95% CI)
+# Archived raw-schedule interventions; S19 physical split unmeasured
 
-H200 `9ab81a3f3b054b92`;8pairedseeds/8cold rounds. The three interacting interventions are allocated by the three-axis Shapley average. They sum to RAW minus the fully stripped twin for each seed. This is an operational oracle allocation, not a unique physical decomposition.
+Physical activation/tensor/epilogue split is unmeasured: the contaminated residual does not locate S19 time or show the terms are small. H200 `9ab81a3f3b054b92`;8pairedseeds/8cold rounds. The three interacting interventions are allocated by the three-axis Shapley average. They sum to RAW minus the fully stripped twin for each seed. This is an operational oracle allocation, not a unique physical decomposition.
 
 | T | Projection | activation TMA/barrier | tensor issue/sync | epilogue | residual |
 |---|---|---|---|---|---|
@@ -32,7 +32,7 @@ The raw schedule requests2–4activation bytes from L2/shared transport per weig
 | 256 | pool_router | 1.0085 [1.0032, 1.0138] |
 | 256 | unpooler | 1.0109 [1.0003, 1.0216] |
 
-The prefetch kernel is excluded from this oracle interval. No production speedup is inferred from that exclusion. Current S19 activation-cache warming is neutral or small; the largest synthetic savings do not establish a large activation-cache bottleneck in the optimized kernels. Opaque Lt kernels have no exact source math-free twin.
+The prefetch kernel is excluded from this oracle interval. No production speedup is inferred from that exclusion. These cache-only observations do not size complete activation transport or issue/wait. The full physical split remains unmeasured. Opaque Lt kernels have no exact source math-free twin.
 
 # Every oracle arm
 

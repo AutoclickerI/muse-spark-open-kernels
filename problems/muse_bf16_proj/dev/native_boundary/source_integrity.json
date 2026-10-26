@@ -1,0 +1,92 @@
+[
+  {
+    "job": "f304369a12c54447",
+    "receipt": "runs/muse_bf16_proj/20261026T111143Z_check_f304369a12c54447.json",
+    "receipt_sha256": "5d23f32ebef7614506c0621e323abe885c9aff063ff54c2425cc750d0ebe7257",
+    "canonical_source": "runs/muse_bf16_proj/20261026T111143Z_check_f304369a12c54447.py",
+    "source_sha256": "ef93e13931ee3abb26b8a7637d557d5ed6a5dc1267399b28a23a59f6aebcf384",
+    "measured": false,
+    "send_metadata": {
+      "problem": "muse_bf16_proj",
+      "mode": "check",
+      "file": "problems/muse_bf16_proj/lab/lab_sizing_payload.py",
+      "lane": "P10",
+      "decision": "size S19 small coded-byte stream gap versus native large issue and split-consumer ceiling under unchanged PDL graphs",
+      "priority": 2,
+      "status": "done",
+      "note": "h200_lab problems/muse_bf16_proj/dev/native_boundary/generated/sizing_payload.py: P10 native_boundary sizing;8freshseeds16palindromic rounds;CUPTI adds no GPU work;all round times retained"
+    }
+  },
+  {
+    "job": "e70024b150b942fa",
+    "receipt": "runs/muse_bf16_proj/20261026T111711Z_check_e70024b150b942fa.json",
+    "receipt_sha256": "769c72f0bbd72523408113f23013adc065405cc5a32833d23ee1fc13bf3bddf8",
+    "canonical_source": "runs/muse_bf16_proj/20261026T111711Z_check_e70024b150b942fa.py",
+    "source_sha256": "e2d5e90f6ab91df70393455f0bd3b2103d5fa7e54be4e369afd4435ca1e091ce",
+    "measured": true,
+    "send_metadata": {
+      "problem": "muse_bf16_proj",
+      "mode": "check",
+      "file": "problems/muse_bf16_proj/lab/lab_sizing_payload.py",
+      "lane": "P10",
+      "decision": "size S19 coded-byte stream excess vs large native issue and split consumer; preserve full scoped timings after first packet overrun",
+      "priority": 2,
+      "status": "done",
+      "note": "h200_lab problems/muse_bf16_proj/dev/native_boundary/generated/sizing_payload.py: same kernels/seeds/rounds as f304369a;omit unrelated stage breakdown from wire,keep every projection and consumer observation"
+    }
+  },
+  {
+    "job": "e4030204ff2c4e2f",
+    "receipt": "runs/muse_bf16_proj/20261026T112310Z_check_e4030204ff2c4e2f.json",
+    "receipt_sha256": "ffb02804ea9a7dc072d124f0de25c764a5885fb960ab2c1fa064937ee6cbe0f1",
+    "canonical_source": "runs/muse_bf16_proj/20261026T112310Z_check_e4030204ff2c4e2f.py",
+    "source_sha256": "b1bee64f8969abb46a28191ddaebb401b48df3812774f2c102d494577ba24f7f",
+    "measured": true,
+    "send_metadata": {
+      "problem": "muse_bf16_proj",
+      "mode": "check",
+      "file": "problems/muse_bf16_proj/lab/lab_oracle_payload.py",
+      "lane": "P10",
+      "decision": "rank larger S19 large native producer issue and split-consumer ceiling R1.0384 vs small R1.0329 using one-boundary deletion oracle",
+      "priority": 2,
+      "status": "done",
+      "note": "h200_lab problems/muse_bf16_proj/dev/native_boundary/generated/oracle_payload.py: fresh22000319 seeds;16palindromic rounds kept;no added timed device nodes;ready original vs S1 partials and consumer deletion bounds"
+    }
+  },
+  {
+    "job": "24b58b2dcd264ead",
+    "receipt": "runs/muse_bf16_proj/20261026T113432Z_check_24b58b2dcd264ead.json",
+    "receipt_sha256": "9b2e9cf5005a22e38a32c1f07ab11a087079833176ee99b23934f8e5ffcef467",
+    "canonical_source": "runs/muse_bf16_proj/20261026T113432Z_check_24b58b2dcd264ead.py",
+    "source_sha256": "83b50b6685127f916cb202b0c59fb5e1dbb05224eca671259376b5d8631590b0",
+    "measured": false,
+    "send_metadata": {
+      "problem": "muse_bf16_proj",
+      "mode": "check",
+      "file": "problems/muse_bf16_proj/lab/lab_tune_payload.py",
+      "lane": "P10",
+      "decision": "build native producer schedule against larger one-boundary oracle;24 dispatch-only arms across eight large sites with exact S19 WGMMA body",
+      "priority": 2,
+      "status": "done",
+      "note": "h200_lab problems/muse_bf16_proj/dev/native_boundary/generated/tune_payload.py: no new weight bank;8fresh23000319 seeds16palindromic rounds;all whole-layer times and strict projection/router checks;lossless exact event-clock factoring"
+    }
+  },
+  {
+    "job": "c87c2d8aa64b4805",
+    "receipt": "runs/muse_bf16_proj/20261026T114609Z_check_c87c2d8aa64b4805.json",
+    "receipt_sha256": "7e911dc67e807abe2756766765d13d6c08aafa6198992f684d808077114acd59",
+    "canonical_source": "runs/muse_bf16_proj/20261026T114609Z_check_c87c2d8aa64b4805.py",
+    "source_sha256": "d3b8728fa8aef5e95d5333fde6a0b5a9c6e54f9294b49310763a2091cc74ff95",
+    "measured": true,
+    "send_metadata": {
+      "problem": "muse_bf16_proj",
+      "mode": "check",
+      "file": "problems/muse_bf16_proj/lab/lab_tune_payload.py",
+      "lane": "P10",
+      "decision": "native producer schedule24arms unchanged after packet-only loss;14k lab reservation with2k tail guard, all paired rounds",
+      "priority": 2,
+      "status": "done",
+      "note": "h200_lab problems/muse_bf16_proj/dev/native_boundary/generated/tune_payload.py: same native kernels/seeds as24b58b2d;no sample dropped;process-local output reservation only;existing h200_lab sender"
+    }
+  }
+]

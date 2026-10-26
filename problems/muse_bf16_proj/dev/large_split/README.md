@@ -1,4 +1,6 @@
-# P10: large projection transport, scheduling and epilogue split
+# P10: large projection rebuilds; physical split unmeasured
+
+**Correction:** the 9ab81a3f stripped-twin residual contains observer/launch/sync/checksum/boundary costs. S19’s physical activation/tensor/epilogue split is **unmeasured**. The archived raw-schedule interventions do not show these terms are small. Native one-boundary sizing continues in `../native_boundary/`.
 
 No new G0 winner. Against frozen S19 `8b415553` (expanded `62ea5bf4`), the held-out six-load ratios are shared-weight WGMMA **0.971503 [0.970251,0.972755]**, K-major weight tiles **0.977755 [0.976731,0.978780]**, and the native-schedule layout-only patch **0.999817 [0.999058,1.000576]**. Larger R is faster. All three portfolios were judged despite their stage losses. No load or stage veto was applied.
 

@@ -1,0 +1,88 @@
+{
+ "board": "muse_bf16_proj",
+ "call_id": "sfo3b:kc-24b58b2dcd264ead",
+ "cluster": "sfo3b",
+ "content_hash": "95f55e466c6558fa782733947c61245d3eac2d30a378d3b758563d9f945e89bb",
+ "created_at": 1793014474.155876,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1793014678.3332648,
+ "id": "24b58b2dcd264ead",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/83b50b6685127f91/profiles/lab_tune_payload.24b58b2dcd264ead.log"
+ },
+ "payload_ref": "muse_bf16_proj/95f55e466c6558fa782733947c61245d3eac2d30a378d3b758563d9f945e89bb.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "986ed3ebb096eab83d16797609f4c0e7895248d6bce33252d25dd306cbe5d018",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_bf16_proj/baseline.py": "39f52ea5b65505958aa9dee9c8129dd394cbba4e670046f862b5a88ce91a0574",
+    "problems/muse_bf16_proj/reference.py": "e62491abc9ddcad33f5faba8b0ee74cf6370b7be5dd2dc05031742f3ebf7147d",
+    "problems/muse_bf16_proj/task.yml": "18e9da6357144b0a1348434a18bd2d1938b1948d9f2130876f6b6706588470c9"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "LAB_BEGIN tune_payload 08a902c20f652e7c\nLAB_PACKET tune_payload 08a902c20f652e7c 616fc7c823a96e1133e4d5bc71d67ec084b8520a96cf624e7af817fb0268b1fa c-pI0O3u$M$Vn|pRkBJ;%qdRQQOe28OD$HiidOP*bczpfboO=)iT4k44GQ**a#hGnO-(6QFf_C@Fi=RUEJ-c4R!B)r&PgmvO#zCUo0wQD6c^-VmM9b?R_5d<rYObM0su_qASw\nLAB_END lab_s=170.8 import_s=170.8\nLAB_BEGIN tune_payload 08a902c20f652e7c\nLAB_PACKET tune_payload 08a902c20f652e7c 616fc7c823a96e1133e4d5bc71d67ec084b8520a96cf624e7af817fb0268b1fa c-pI0O3u$M$Vn|pRkBJ;%qdRQQOe28OD$HiidOP*bczpfboO=)iT4k44GQ**a#hGnO-(6QFf_C@Fi=RUEJ-c4R!B)r&PgmvO#zCUo0wQD6c^-VmM9b?R_5d<rYObM0su_qASw\nLAB_END lab_s=170.8 import_s=170.8\nTraceback (most recent call last):\n  File \"/tmp/muse_bf16_proj-mob6hgc5/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-mob6hgc5/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-mob6hgc5/run/submission.py\", line 117, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-mob6hgc5/run/submission.py\", line 3, in prepare\n    def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host: evidence completed at import\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 122.91,
+    "power.limit": 700,
+    "temperature.gpu": 32
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 132.02,
+    "power.limit": 700,
+    "temperature.gpu": 27
+   },
+   "node": "n-oeisv6y44av4eaf3f4hjxhypoq"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 16,
+    "baseline_prepare_pad": 10792448,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: evidence completed at import",
+    "event": "setup",
+    "first": "submission",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1793014484.710692,
+ "status": "done",
+ "team": "AutoclickerI"
+}

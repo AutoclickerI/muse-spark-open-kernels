@@ -1735,35 +1735,17 @@ freshweights/router,576TASK: G0 R1.004405[1.003003,1.005808], A:A.999944[.998391
 Prepare170.454s,added9.192s (9.156compile,GPUbank3.525ms). Gate stream and fused sigmoid/output
 are retained. This patch remains with P4 for its composition and official decode gate.
 
-**Large-shape oracle, `9ab81a3f3b054b92`:** eight sites,eight paired seeds,eight cold alternating
-rounds; activation TMA/shared-X, occupancy-matched math-free twins, epilogue and all factorial
-combinations. All loads survive in SASS, zero spills; math-free checksum and CTA handoff prevent
-load elimination and mbarrier parity lapping. Every valid GEMM passes projection and original FP32
-router TASK; synthetic twins are bounds, not candidates. Full per-arm/per-shape ratio CIs, actual
-neighbour controls and microsecond CIs: `large_split/oracle_split.md`; all samples: `joint_results.json`.
-Three-axis Shapley allocations in us (activation / tensor issue+sync / epilogue / residual):
+**Physical split status: unmeasured.** The `9ab81a3f` observer/launch/sync/checksum/boundary
+costs prevent locating S19 physical projection time. Its raw-schedule ablations are archived diagnostics,
+not evidence that activation, tensor scheduling or epilogue terms are small. `dev/native_boundary/`
+sizes small-M producer excess and native large issue/split-consumer ceilings on S19 itself before building.
 
-| T | Projection | Activation | Tensor | Epilogue | Residual |
-|---|---|---|---|---|---|
-|128|QKV|1.361|1.021|1.750|18.206|
-|128|O|0.499|0.440|1.408|11.866|
-|128|pool/router|2.717|1.480|1.669|29.004|
-|128|unpool|2.172|1.030|1.383|27.462|
-|256|QKV|4.321|2.315|1.779|24.538|
-|256|O|1.446|0.926|3.378|12.058|
-|256|pool/router|5.687|2.705|8.500|45.800|
-|256|unpool|5.093|2.452|2.886|27.874|
-
-These are operational allocations in the explicit raw schedule, **not S19's physical split**. The
-residual includes weight issue/transport, prologue, initial X, checksums, synchronization and the event
-boundary. Inner-event S19 durations exceed the second phase's outer-event/empty-graph-subtracted
-controls by3.16–3.79us; those phases have different seeds, so this is not an isolated calibration to
-subtract. Within-oracle intervention differences share a boundary. Direct S19 L2-hot-X effects are
-mostly small: O time ratios.979413[.975277,.983567] atT128,.966788[.957033,.976643] atT256,
-with prefetch cost excluded; every A:A/other-role CI is retained. This does not establish activation
-multicast as the next production win. Opaque Lt kernels have no exact source math-free twin. Raw
-T256 QKV/pool token tiling requests weights twice and activation transport2–4B per weight byte;
-cache may merge requests, so neither is a physical HBM counter.
+`9ab81a3f3b054b92` retains eight-site raw-register synthetic interventions and original TASK checks.
+Its stripped-twin residual includes observer, launch, synchronization, checksum and boundary costs;
+S19's physical split is **unmeasured**. Neither that residual nor cache-only warming identifies the
+size of the native activation, tensor or epilogue term. Archived arm samples/CIs remain in
+`large_split/{oracle_split.md,joint_results.json}`; their physical interpretation is superseded by
+this limitation and the S19-native one-boundary work below.
 
 **Built shared/shared WGMMA and K-major banks:** `9ab81a3f` tests24 SS schedules/site, same weights
 shared across token warpgroups, direct FP32 partial writes, K64/K128, split count and early weight
@@ -1790,9 +1772,66 @@ prepare and newer compositions are unmeasured. Normal/forced local official scre
 Failed receipts are preserved: `017b445a` timed out without rows; code hazards were diagnosed but exact
 blocked instruction unobserved. `03ad7fd4` completes native checks but its result packet overruns35B;
 neither supplies performance evidence. Final packet retains every timing sample and checks actual wrapper
-size. No new private-leader residual is identified. The next discriminating term is native producer
-issue/wait and split-consumer interaction under one calibrated timing boundary, preserving S19 geometry;
-these raw-schedule bounds do not justify assuming pure HBM saturation or rebuilding around multicast.
+size. No new private-leader residual is identified. The raw-schedule physical split remains unmeasured;
+it is not evidence the activation, tensor or epilogue terms are small.
+
+**S19 native one-boundary sizing and build, `dev/native_boundary/`:** `e70024b150b942fa`
+measures frozen S19 with its real kernels/PDL, CUPTI metadata-only graph labels,8freshseeds and
+16symmetric A:A timing rounds. Every primary round is retained; profiling is separate and adds no
+GPU observer kernel/event node. Actual selected coded-bank bytes are recorded per site. Target stream
+=2.876us+bytes/4.61419582TB/s. Residency includes overlapping PDL waits: O16F103.818us residence
+has6.076us observed completion contribution; gate32F148.398us has2.657us. Subtracting stream time
+from residence would invent independent savings. Exposed-contribution scenarios, not physical bounds:
+
+| Term | Removed us per weighted layer, d1/d16/d32/v1/v16/v32 | Six-load R scenario [sampling95%CI] |
+|---|---|---|
+| Small-M producer above actual coded-byte target |2.910 /13.278 /8.393 /2.927 /0 /0|1.032884 [1.030488,1.035286]|
+| Large native producer surplus +complete consumer removal |0 /0 /0 /0 /26.517 /52.635|1.038411 [1.037944,1.038878]|
+
+The large scenario deliberately grants full b1/route/b2 removal; split-only savings are unknown at this
+ranking step. Producer-only modeled surplus is12.187/32.504us at v16/v32; complete consumers add
+14.330/20.131us. Scalar throughput, activation/output traffic and added prefetch overlap are unpriced;
+the old stream-fit intercept is a target model, not a proven lower bound on each smaller bank. Full
+site bytes/residence/exposed CIs are in `native_boundary/SIZING.md`. Model sampling CIs do not establish
+a counterfactual gain. This ranks the larger upper scenario for the first one-boundary oracle.
+
+`e4030204ff2c4e2f` tests that term on8disjoint inputseeds and freshweights/router,16palindromic
+rounds,320publishedlayerTASK. No inserted timed device nodes: P_READY returns same-seed real-S19
+producer partials; SINGLE_READY deletes the same producers and pre-sums toS1 before timing; C_READY
+returns native consumer results; BOTH_READY deletes both. Remaining native kernels/PDL are unchanged.
+Full producer deletion saves59.198[58.227,60.169]us at v16 and81.685[80.823,82.548]us at v32;
+complete-consumer deletion saves15.073[14.512,15.633]/22.632[21.893,23.372]us. Split-only saves
+**3.174960[2.435293,3.914626]us** at v16 and**−.051371[−.660838,.558096]us** at v32 (alreadyS1).
+Six-load R: P_READY1.086449[1.084538,1.088362], SINGLE1.089104[1.087265,1.090945],
+C_READY1.019571[1.018237,1.020907], BOTH1.117580[1.115265,1.119899], split-only
+**1.002444[1.001132,1.003757]**. CIs use central `promotion.interval`, max(primary,A:A)SE;
+no A:A mean correction. These are deletion/dependency bounds, not candidates or exclusive wait cycles.
+Every arm/shape CI and retained timing round is in `native_boundary/{ORACLE.md,oracle_results.json}`.
+
+Built against the native producer term: `c87c2d8aa64b4805` compares24 tile/stage/split dispatches at
+all8large sites,8newinputseeds/freshweights/router,16symmetric rounds. Device body is S19's unchanged
+`_vdsk_gemm`; only dispatch parameters change, and normal neighbours/PDL remain. No weight bank added.
+All448layer +480strict original projection/router TASK checks pass. Best per-site changed-load layer
+time ratios (candidate/S19; larger primary/A:A SE) are:
+
+| T | QKV | O | Pool/router | Unpooler |
+|---|---|---|---|---|
+|128|1.021124[1.019707,1.022543]|1.001106[.999258,1.002958]|1.014280[1.012170,1.016393]|1.002547[1.000578,1.004519]|
+|256|1.016783[1.015638,1.017930]|1.034543[1.033110,1.035978]|1.042884[1.041437,1.044333]|1.065163[1.063502,1.066826]|
+
+All24 point estimates lose; closest O128 is inconclusive, not a proven regression. No positive full-layer
+point is selected, no new held-out G0 or P4 winner claimed. This closes only these24 plans. All arm CIs
+and exact dispatches: `native_boundary/{TUNING.md,tune_results.json,native_patch.py}`. P4 receives negative
+results in `native_boundary/P4_HANDOFF.json`; earlier unpromoted native-layout arm and exact12 gate
+remain unchanged. Selected-portfolio prepare is unmeasured because no new portfolio is selected.
+Next by size: small-M, chiefly coded pool/router at d16; keep S19 whole-graph boundaries and price
+weight issue before activation readiness rather than counting overlapping residence as removable time.
+
+Transport failures `f304369a` (222bytes over) and `24b58b2d` (156bytes over) are unmeasured, not
+kernel losses. Successful repeats keep all scoped observations/arms/seeds/rounds. `send.py` calls the
+normal h200_lab sender with a process-local14k reservation:13744packet+256markers+2000suffix fits
+16k, tested with the actual wrapper and injected suffix. No shared tool/rule/timing change. The five
+canonical source/receipt pins and all negative evidence are retained in `native_boundary/`.
 
 ## Glue and routing
 

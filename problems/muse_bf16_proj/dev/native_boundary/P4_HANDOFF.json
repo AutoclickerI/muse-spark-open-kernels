@@ -1,0 +1,206 @@
+{
+  "lane": "P10",
+  "status": "No new G0 nominee: all24 native dispatch point estimates lose in the whole layer; closest is inconclusive, not a proven loss",
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "candidates": [],
+  "sizing": {
+    "job": "e70024b150b942fa",
+    "small": [
+      1.0328840968672988,
+      1.030487703605194,
+      1.0352860629282314
+    ],
+    "large_upper": [
+      1.0384109802762322,
+      1.0379440599290057,
+      1.0388781106681222
+    ],
+    "report": "SIZING.md"
+  },
+  "oracle": {
+    "job": "e4030204ff2c4e2f",
+    "split_only_R": [
+      1.0024438005355962,
+      1.001132122830765,
+      1.003757196793216
+    ],
+    "producer_ready_R": [
+      1.08644877130175,
+      1.0845384547192871,
+      1.0883624527344213
+    ],
+    "consumer_ready_R": [
+      1.0195714353202836,
+      1.0182373464471939,
+      1.0209072721091492
+    ],
+    "report": "ORACLE.md",
+    "limits": "Synthetic deletion bounds only; physical exclusive native issue/wait split remains unmeasured"
+  },
+  "build": {
+    "job": "c87c2d8aa64b4805",
+    "report": "TUNING.md",
+    "arms": 24,
+    "layer_TASK": 448,
+    "projection_router_TASK": 480,
+    "new_weight_bank": false,
+    "best_per_site": [
+      {
+        "t": 128,
+        "role": "qkv_gate",
+        "config": [
+          128,
+          128,
+          64,
+          3,
+          8,
+          1
+        ],
+        "split": 6,
+        "time_ratio": [
+          1.0211243445653884,
+          1.0197073204350737,
+          1.0225433378464048
+        ],
+        "saved_us": -6.361532258064523
+      },
+      {
+        "t": 128,
+        "role": "o",
+        "config": [
+          128,
+          64,
+          64,
+          8,
+          4,
+          1
+        ],
+        "split": 1,
+        "time_ratio": [
+          1.0011064823449738,
+          0.9992579465489949,
+          1.0029584377630842
+        ],
+        "saved_us": -0.33776612903225656
+      },
+      {
+        "t": 128,
+        "role": "pool_router",
+        "config": [
+          128,
+          128,
+          64,
+          3,
+          8,
+          1
+        ],
+        "split": 6,
+        "time_ratio": [
+          1.0142795976179602,
+          1.0121704166895151,
+          1.0163931736997465
+        ],
+        "saved_us": -4.2957983870967675
+      },
+      {
+        "t": 128,
+        "role": "unpooler",
+        "config": [
+          128,
+          64,
+          64,
+          8,
+          4,
+          1
+        ],
+        "split": 1,
+        "time_ratio": [
+          1.0025466836448087,
+          1.000577756881341,
+          1.0045194848423953
+        ],
+        "saved_us": -0.7501048387096695
+      },
+      {
+        "t": 256,
+        "role": "qkv_gate",
+        "config": [
+          128,
+          128,
+          64,
+          3,
+          8,
+          1
+        ],
+        "split": 6,
+        "time_ratio": [
+          1.0167831930412212,
+          1.0156379833720082,
+          1.0179296940221105
+        ],
+        "saved_us": -6.663370967741919
+      },
+      {
+        "t": 256,
+        "role": "o",
+        "config": [
+          64,
+          128,
+          64,
+          3,
+          4,
+          1
+        ],
+        "split": 3,
+        "time_ratio": [
+          1.0345429478162183,
+          1.0331096114535574,
+          1.03597827278987
+        ],
+        "saved_us": -13.716306451612912
+      },
+      {
+        "t": 256,
+        "role": "pool_router",
+        "config": [
+          128,
+          128,
+          64,
+          3,
+          8,
+          1
+        ],
+        "split": 6,
+        "time_ratio": [
+          1.042884317895738,
+          1.041437374938424,
+          1.0443332711937334
+        ],
+        "saved_us": -17.031435483870954
+      },
+      {
+        "t": 256,
+        "role": "unpooler",
+        "config": [
+          64,
+          128,
+          64,
+          3,
+          4,
+          1
+        ],
+        "split": 3,
+        "time_ratio": [
+          1.0651628791569119,
+          1.0635022037141941,
+          1.0668261477704915
+        ],
+        "saved_us": -25.875338709677415
+      }
+    ],
+    "G0": "No new confirmation spent: no positive full-layer point selected. No six-load candidate promotion inferred."
+  },
+  "P4_prior_points": "Accepted large_split/np_patch.py remains optional and unpromoted for the next P4 batch; prior exact12 gate unchanged",
+  "next": "Small-M native pool/router issue/transport: modeled critical surplus dominates d16; preserve S19 whole-graph/PDL and symmetric per-round protocol",
+  "receipt_transport": "send.py uses h200_lab normally with a process-local14k reservation, preserving2k suffix plus256markers within the16k tail; no global tool/rule change"
+}
