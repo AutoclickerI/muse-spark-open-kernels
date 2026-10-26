@@ -45,7 +45,7 @@ def report(row,marker):
         if name in ('A','A2'):continue
         summary=rank(times,name);measured=marker!='CS_XZ85'
         summary['measured']=measured;summary['confirm'] &= measured
-        if marker=='EH_XZ85':
+        if 'OLD4' in times and name!='OLD4':
             summary['vs_old'],summary['vs_old_se']=compare(times,name,'OLD4')
             summary['confirm'] &= 1-summary['vs_old']>abs(noise-1)+3*summary['vs_old_se']
         if 'critical_ns' in row:

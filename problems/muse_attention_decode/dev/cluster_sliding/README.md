@@ -1,6 +1,7 @@
 # cluster sliding
 
-Last-CTA decode-1 sliding handoff plus pending DSM scheduling experiments.
+Last-CTA decode-1 sliding handoff, native DSM stage decisions and a queued
+whole-layer confirmation.
 
 Files (one entry per retained direct file):
 
@@ -79,8 +80,8 @@ No new P4 promotion yet. Existing handoff evidence remains
 
 `repair_global_lab.py` reconstructs ae6cd278's exact host and payload from
 its immutable source receipt, adding captured TASK20pct-margin/cache gates
-for every arm/seed and a hard failure on incomplete sampling. Kernels and
-plans are unchanged. Its4-shape x8-arm x2-fresh-seed local admission passes.
+for every arm/seed and a hard failure on incomplete sampling. Kernel code and the plan-selection procedure are unchanged; the repaired
+lab uses a fresh synthetic weight bank (5353, router197731). Its4-shape x8-arm x2-fresh-seed local admission passes.
 The unrelated native N128 verify prepare uses the existing frozen N64
 stand-in locally; decode shaders execute their actual sm120 math shims.
 The repaired packet embeds S11 independently and uses attention import

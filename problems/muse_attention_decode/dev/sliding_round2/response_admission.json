@@ -8,8 +8,8 @@
   ],
   "files": {
     "lab_body.inc": "86cc0f03f949ec6bc2339744f0ee3fd3fd71ce716e75b31d22e01ddd9eee5834",
-    "followups.py": "a71d5381993f38dc9d8d8cb5ea891e9791f512d9a1ceba8fab5a6b5ab32d1be1",
-    "report.py": "fc8b4b8ae647326af4fdf980e5f870f82d2e8444ea3d5185631858ad39d618d0"
+    "followups.py": "803c6644514654899c97ba7750e7640c943598255627895b8784d48891f980a9",
+    "report.py": "0d65db1b44f06bb84e0e7831f11acb53e124c739168823265f4cd2739fe444ba"
   },
   "dsm_selection": {
     "1": 16,
@@ -63,5 +63,46 @@
       "note": "h200_lab problems/muse_attention_decode/dev/cluster_sliding/out/gated_global_lab.py: P5 global response to ae6cd278: original captured recipes were unmeasured because only finite outputs were checked. Preserve exact S11 and C64/C128/W4/W8/OLD/PP kernels;16 seeds8rotating cold rounds, public full TASK20pct margin on every captured arm/seed, immediate cache checks, complete CG archive. Independent embedded S11 on attention host avoids later decode prepare log displacement. Actual local4shapes x8arms x2seeds gates pass; local N64 stand-in only for unrelated verify prepare.",
       "not_before": 0
     }
-  }
+  },
+  "history_control": {
+    "CUDA_sha256": "3815beabedbbb5773536dd33b765fe223821624ed4eadf829b122973028ee85a",
+    "qt": 4,
+    "payload_sha256": "4e43f91927fe7d372fe15082723e99bb9e027222ed99fc9f384ba341c19272a9",
+    "task_passed": {
+      "d1S": {
+        "A": 2,
+        "A2": 2,
+        "EARLY": 2,
+        "OLD4": 2
+      }
+    },
+    "decision": "unsent:402819c28279466d E4/OLD4 fails A:A and3SE decision"
+  },
+  "selected_template_local": {
+    "payload_sha256": "4af212aebb8ba9ba217bac2eb81334833f368c438905d8c182f698369be82d81",
+    "cases": [
+      "d16S",
+      "d32S",
+      "v1S"
+    ],
+    "task_passed": {
+      "d16S": {
+        "A": 2,
+        "A2": 2,
+        "SELECTED": 2
+      },
+      "d32S": {
+        "A": 2,
+        "A2": 2,
+        "SELECTED": 2
+      },
+      "v1S": {
+        "A": 2,
+        "A2": 2,
+        "SELECTED": 2
+      }
+    },
+    "selection_status": "functional smoke only; not a native selection or a queued sender"
+  },
+  "dsm_confirmation_job": "6c26b14fdd28458b"
 }

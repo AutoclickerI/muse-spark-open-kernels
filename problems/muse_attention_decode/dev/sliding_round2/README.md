@@ -110,12 +110,11 @@ Second-round packet **295a2792**, live sender **1029989**, priority4, not-before
 it. No judge job ID exists before acceptance. Sender log:
 `runs/detached/295a2792bb092012.log`.
 
-Existing senders remain **2411468 /3038721 /3549805** for
-**0ccc2548 /f1c270e6 /0cec6706**, respectively. They are unchanged.
-No conditional confirmation is queued. Their currently screened proposed
-packets are **aea32de1** (DSM selection1:16/16:4/32:2) and **1aa623eb**
-(history QT4). Rendering the reset's actual selection changes metadata only;
-the same generic kernels/ABIs and selected-shape full-reference gates apply.
+The first three reset packets completed as **ae6cd27877cc4ee2** (global),
+**b05713ecf6574ad9** (DSM) and **402819c28279466d** (history).
+Their decisions and currently queued responses are below. Historical
+admission hashes in `admission.json` describe the original packets; current
+confirmation hashes and selected-shape gates are in `response_admission.json`.
 
 Default integration proposal `out/s14_round2.py`: **d2711401**. Its builder
 ships only the selected last-CTA family and requires exact S14 **f1c77ce6**.
@@ -159,7 +158,13 @@ functional examples, not measured selections.
 The global lab **ae6cd27877cc4ee2** has no captured-path TASK gates and is
 unmeasured. Its exact-kernel repaired4-shape/8-arm packet is **da61a8f2**,
 sender **112961**, priority5; see `../cluster_sliding/README.md`.
-History, round2 and resident-history reset decisions still await receipts.
+History **402819c28279466d** is closed by its decision rule: bestE4/OLD4
+0.997414 (SE0.001244) does not exceed A:A1.009555 (SE0.006105;
+range0.98824-1.09546) or3SE. All16 fresh-seed gates pass, and clocks prove
+the prewait work. No history confirmation is sent. Its prepared generator
+now retains exact OLD4 CUDA3815beab atQT4 instead of the round2 shader;
+the corrected packet passes local whole-layer admission.
+Round2 and resident-history reset decisions still await receipts.
 
 Final local admission: **100 fresh-input/partial/counter cells**, **24 sm90a
 specializations**, **80 exact index-coverage cases**. Exact board wrapper:

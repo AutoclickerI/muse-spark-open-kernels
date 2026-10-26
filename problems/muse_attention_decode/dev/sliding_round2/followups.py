@@ -28,7 +28,10 @@ def main():
         oldcuda=history_build.source()
         assert hashlib.sha256(oldcuda.encode()).hexdigest()=='0e07854b0a329f411d21ae9c18583646dccaff456a7fbdfe446608e14de58d58'
         body+='\nKERNELS["early"]='+repr(oldcuda)+'\n'
-        arms={(1,1):{'EARLY':('early',qt,16),'LAST':('last',qt,16)}};cases=tuple(arms)
+        lastcuda=history_build.build_last.source()
+        assert hashlib.sha256(lastcuda.encode()).hexdigest()=='3815beabedbbb5773536dd33b765fe223821624ed4eadf829b122973028ee85a'
+        body+='\nKERNELS["last"]='+repr(lastcuda)+'\n'
+        arms={(1,1):{'EARLY':('early',qt,16),'OLD4':('last',4,16)}};cases=tuple(arms)
     else:
         # Confirm only winners actually selected by the native receipt.
         # This uses the same exact-S14 capture/checker and held-out seeds.

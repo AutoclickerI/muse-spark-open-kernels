@@ -1,6 +1,7 @@
 # early history
 
-Early sliding-history gather/transpose experiment on exact S14; H200 performance pending.
+Early sliding-history gather/transpose experiment on exact S14; the compact
+recipe did not beat its control beyond noise on the H200.
 
 Files (one entry per retained direct file):
 
@@ -20,8 +21,28 @@ Files (one entry per retained direct file):
 Handoff: [patch.py](patch.py), SHA256 `7ce4f7a6cb29bd00d87ece330c6b72b15d954a721b56a73af0b484381ba03ba8`, applies onto S14 f1c77ce6.
 Base source: [S14 final](../../../muse_decode_layer/cand_r3_best7_s14_final.py), SHA256 `f1c77ce692055c89474eab38bd2b45ec1ea34c94cf5a93d1992dbbcf448a3cac`.
 
-Pending H200 senders (not judge-accepted at handoff):
+## Native decision
 
-- PID 3549805, wrapper `0cec67066689787d`, [p5_early_history_board.py](out/p5_early_history_board.py); [sender log](../../../../runs/detached/0cec67066689787d.log). Reset 2026-10-26 09:00/09:01 KST; dispatch metadata: `runs/waiting/3549805.json`.
+Wrapper `0cec6706` completed as **402819c28279466d**. All seven arms
+passed all16 public whole-layer TASK gates with20% margin and the replay
+drift checks. Best E4/OLD4 is **0.997414**, seed SE0.001244; E2/E1/L4
+are1.016159/1.040193/1.020247. A:A is1.009555, SE0.006105,
+seed range0.98824-1.09546; the original-control comparison is noisy.
+The0.26% incremental E4 gain is below both the A:A displacement and three
+standard errors. The prewritten decision therefore drops this recipe:
+**no history confirmation sent and no new P4 promotion**.
 
-Next: Read 0cec67066689787d paired native result and its QKV/attention/gate timeline; hand off only a measured winner.
+The implementation is measured, not an unproven preload: QT4 history is
+transposed by median4.064us (max4.608), before the dependency wait completes
+at5.152us. Shared memory drops53504→28928B at138 registers.
+Nevertheless, E4's attention completion increment is12.160us vs OLD4's
+11.200us; QKV/gate increments are7.296/1.536 vs8.064/2.464us.
+The whole-layer pair, rather than shifted stage boundaries, decides.
+QT2/QT1's epilogue tails are3.136/5.248us; compact early history alone
+does not solve those tails. These phase clocks are instrumented diagnostics.
+
+This closes only the compact single-tile, last-CTA early-history recipe at
+decode1 sliding. Resident-history verify and round2's cooperative/query-row
+rebuilds remain independent tests. Machine audit: `reset_result.json`.
+The held-out history generator now preserves exact OLD4 CUDA3815beab at
+QT4 as its control; it remains unsent because this decision failed.
