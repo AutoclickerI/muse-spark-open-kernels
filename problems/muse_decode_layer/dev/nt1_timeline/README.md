@@ -8,8 +8,15 @@ no new P4 winner. [Operand oracle batch](structural/operand/REPORT.md) is queued
 sender3637718,wrappere1710fb3ff91fcb6:shared/register fragments,N-padding,accumulator recurrence,
 register lifetime and epilogue controls,all two-CTA/zero spills. H200 us/CIs pending because every host
 has zero quota. 448native control gates+162changed-capture/nearby LAZY leaf checks pass;no new P4 nominee.
-After its receipt,select the largest buildable term and judge the correct build in frozen S21's production
-graphs on all six loads. Per-call gains alone do not establish transfer. Timed packing remains part of the build.
+[Five correct outcome builds on frozen S22 4b8c803d](structural/builds22/REPORT.md) are ready:
+CACHE1 real shared fragment bank,LAZY shorter fragment lifetime,LAZY2 independent accumulator chains,
+N1SIMT correct singleton matvec,EPI4 four-warp finish. All1350leaf gates and all normal/forced13TASK+12graph
+screens pass;15sm90a units retain two CTAs/zero spills. CACHE1 uses an explicit local bank-storage stand-in;
+its real shared-memory path awaits H200. One whole-production-graph batch is queued behind the diagnostic:
+sender984504,wrapperab36c11e7cb7ea6c,64fresh seeds×16symmetric rounds,all12shapes and S22 A:A.
+The finite receipt worker prunes only refuted arms while still local,then exports exact patches and every
+whole-layer shape point winner through point_nominations.json. Native ratios/CIs remain pending.
+Per-call gains alone do not establish transfer. Timed packing remains part of the build.
 Sizing uses frozen S19 expanded `62ea5bf4`; earlier evidence below uses S14/S15 as labeled.
 S19 keeps PAIR M8 and PAIR+BLOCK M16/32. No new whole-layer kernel is frozen here.
 

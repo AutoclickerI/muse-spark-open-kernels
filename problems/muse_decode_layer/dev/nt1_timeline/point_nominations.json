@@ -9020,5 +9020,234 @@
     },
     "report": "problems/muse_decode_layer/dev/nt1_timeline/structural/operand/REPORT.md",
     "previous_point_nominees_unchanged": 83
+  },
+  "s22_production_rows": [],
+  "s22_production_followup": {
+    "base": "S22 4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+    "job": null,
+    "rows": [],
+    "state": "queued behind diagnostic;no judge job assigned",
+    "sender_pid": 984504,
+    "wrapper_sha256": "ab36c11e7cb7ea6cb1f7fdddde9e822b0a53550b66db80ca161a8f38b5c07a25",
+    "candidate_sources": {
+      "CACHE1": {
+        "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
+        "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+        "candidate": "runs/screen/p3a_builds22/cache1.py",
+        "candidate_sha256": "b1d7811c05d3d1b69afa901b691e142abcf9fa64e57bd8211031391fdfd341d4",
+        "shipped": "runs/screen/p3a_builds22/cache1_packed.py",
+        "shipped_sha256": "fa5ef5b6a5bcd20165d1cd691d451c4458ab65da6374931ac11e25883613f80f",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache1.patch",
+        "patch_sha256": "24cdec8690046fe3b96775259157b1ef949ae8fb53588aeb834075ded0d1024d",
+        "variants": [
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache10_cell.py",
+            "cell_sha256": "7d43117ec47c2875d0860e3ac4e129d5ebe5db2a270024ae561a2087e422dd5d",
+            "cuda_sha256": "1a04022a074d180fa46c4e575e0a60d368a688196fb7c73e7bc4fe5610017979",
+            "prefix": "b22_cache10",
+            "arm": "CACHE1",
+            "M": [
+              1
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache11_cell.py",
+            "cell_sha256": "3ca3cb5c62906723c2c102502fd09f796de3494e3d412616405645050f99a18c",
+            "cuda_sha256": "b165bf1f37c3c773e62ddaf31f7eb3cf5b19d0bd59d5e91389ad8d916028a06b",
+            "prefix": "b22_cache11",
+            "arm": "CACHE1",
+            "M": [
+              8
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/cache12_cell.py",
+            "cell_sha256": "e47ca146f15c7759fffeec226eea21833d061be153f041f34a7b6889433f65c8",
+            "cuda_sha256": "a45c55fa7506e5cb0a5d8804ac20019784ee7b5c765bdc60452d1c6d53037303",
+            "prefix": "b22_cache12",
+            "arm": "CACHE1",
+            "M": [
+              16,
+              32
+            ]
+          }
+        ]
+      },
+      "LAZY": {
+        "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
+        "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+        "candidate": "runs/screen/p3a_builds22/lazy.py",
+        "candidate_sha256": "6ea3bf992bcec85b2cfd11fffeabae063135c1641a4e4e4a08b0f771b88bb071",
+        "shipped": "runs/screen/p3a_builds22/lazy_packed.py",
+        "shipped_sha256": "77528e07e79ae3dd479bb02a710e0c01f73af087ca43decac80d9d028ef103b8",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy.patch",
+        "patch_sha256": "ef23f6d18ac1c10b954c6302917317e2bf4aaa3edde46ebd08615b76f4453e31",
+        "variants": [
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy0_cell.py",
+            "cell_sha256": "29d8632cec81211a3b39e46d9a25299e97e72d19e117f0d4160d204624d8238b",
+            "cuda_sha256": "1a720c4c530acf87a5a7d9f9539a92d38d7b1598ebef138c154db7cb6d61ef14",
+            "prefix": "b22_lazy0",
+            "arm": "LAZY",
+            "M": [
+              1
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy1_cell.py",
+            "cell_sha256": "bbd4227cdbe205c6d847257de01484bc2d09a3b55e1bf559ea2f64de4ada3b32",
+            "cuda_sha256": "5b22c0ef95eaebc62c9fb33578a6d0eab5e3221d02fedc61001fa55b29e9d1c3",
+            "prefix": "b22_lazy1",
+            "arm": "LAZY",
+            "M": [
+              8
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy2_cell.py",
+            "cell_sha256": "dee59535d21dce4e17852b654f3656745d4c15223bdf5d372f38c7b35c26381b",
+            "cuda_sha256": "5d44bf9b01b9b5a8d9d39775bb73bd1ece6b0d1c180dda2afea79be8b963dcf7",
+            "prefix": "b22_lazy2",
+            "arm": "LAZY",
+            "M": [
+              16,
+              32
+            ]
+          }
+        ]
+      },
+      "LAZY2": {
+        "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
+        "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+        "candidate": "runs/screen/p3a_builds22/lazy2.py",
+        "candidate_sha256": "d09bb5f5bcb7065b8e98369d00fe2f730de3792a277a8f9a53449f3c26dc633d",
+        "shipped": "runs/screen/p3a_builds22/lazy2_packed.py",
+        "shipped_sha256": "b636aa656c6d1388e4e8e5bcb0d6fc4b39151dbadd81d828533430107ab2ef0c",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy2.patch",
+        "patch_sha256": "a38f43c73aae2decde4be1c2acee0a4998c65f313cf634fe65ba765ad1d20793",
+        "variants": [
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy20_cell.py",
+            "cell_sha256": "7f0129a04b6210362af6d621dd4fc0032f81e4b97b7fe804e70dd05912ae0529",
+            "cuda_sha256": "50cb8ab18a357fa49061d82041844cf2ea57f74b2b348d6b2eb4e40b641c07a2",
+            "prefix": "b22_lazy20",
+            "arm": "LAZY2",
+            "M": [
+              1
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy21_cell.py",
+            "cell_sha256": "597f1ca2199e8e640ce570c69a51ab94eb39a627b79b65b6fd699c7aa50c7c42",
+            "cuda_sha256": "943d85cb2faf5eb53ea606b004cd70332b03d01726fb38edfa47368f384bc2db",
+            "prefix": "b22_lazy21",
+            "arm": "LAZY2",
+            "M": [
+              8
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/lazy22_cell.py",
+            "cell_sha256": "03c34a87b0613e15e82a2891bf1a0374275183f0e9c7add38b9735ca74b9fe00",
+            "cuda_sha256": "7cc40d8f7f29410e9fa44dd64ad32d4d863498c84afbef9d99d589305e94c609",
+            "prefix": "b22_lazy22",
+            "arm": "LAZY2",
+            "M": [
+              16,
+              32
+            ]
+          }
+        ]
+      },
+      "N1SIMT": {
+        "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
+        "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+        "candidate": "runs/screen/p3a_builds22/n1simt.py",
+        "candidate_sha256": "e2fddafee203edb39650d069c4d8a351ce51d366c24b37f900e30029f8b3366e",
+        "shipped": "runs/screen/p3a_builds22/n1simt_packed.py",
+        "shipped_sha256": "20534cc1c4df7fb39ffb8005b1b843f807f3a13ba9f79510e2e4be17445496fc",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt.patch",
+        "patch_sha256": "a1617500cac35fddbcfacedda5ea3eeaa7dedfdfe6dfd9970cf95d7fad497f39",
+        "variants": [
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt0_cell.py",
+            "cell_sha256": "2ffc8117024cda983a93a7a361a8e00c447cca7d4f87cbf4adc8080dd3bd2e6c",
+            "cuda_sha256": "7919a1075ce81ed6c62e80904c0c8367d1f248f7d373a993a37d2f2e12b84218",
+            "prefix": "b22_n1simt0",
+            "arm": "N1SIMT",
+            "M": [
+              1
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt1_cell.py",
+            "cell_sha256": "b9d713e8bddc0b4b1a76cb00091380dea34dbdb07e5126c520dc53d98acc2ba6",
+            "cuda_sha256": "eb4eb959b26fe72cfae2f687f862c993a1a0a9bc476582043fdf752dac3ebfdc",
+            "prefix": "b22_n1simt1",
+            "arm": "N1SIMT",
+            "M": [
+              8
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/n1simt2_cell.py",
+            "cell_sha256": "9a22cb7baf8738f025f4e38437e0ce0efc04d2a012d04485d70d129532ae1b09",
+            "cuda_sha256": "080f8a225bf47289324096f62f5c662913854a6fc3a02ceb685a16320b052c4c",
+            "prefix": "b22_n1simt2",
+            "arm": "N1SIMT",
+            "M": [
+              16,
+              32
+            ]
+          }
+        ]
+      },
+      "EPI4": {
+        "base": "problems/muse_decode_layer/dev/s22/generated/s22.py",
+        "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+        "candidate": "runs/screen/p3a_builds22/epi4.py",
+        "candidate_sha256": "573a95f81abaec215f780bd772e4eeded206de547aecc83860017a4fdacc8b4d",
+        "shipped": "runs/screen/p3a_builds22/epi4_packed.py",
+        "shipped_sha256": "1f39b5f33b51565d057c35a06d2194034e1f93b7008a1e04c2b3479f3a3fd9ed",
+        "patch": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi4.patch",
+        "patch_sha256": "0e25ad2575fd3bbecf2db50ac9e527765b9bd96ef3f17dffcfafe5a09ca4b809",
+        "variants": [
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi40_cell.py",
+            "cell_sha256": "9ffcc0e7dbe12b30cbfce3fcc0bb4ea524cba93a283a336ad1b557f62e09987a",
+            "cuda_sha256": "4e594c720d4abbf822cddd6760792b2e835b82f7c4c4758eb6fa7d222f2f4f61",
+            "prefix": "b22_epi40",
+            "arm": "EPI4",
+            "M": [
+              1
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi41_cell.py",
+            "cell_sha256": "bf9c5c34d51440861a7676317376d15a8c50b5a1a15db08538347576a37bd2e0",
+            "cuda_sha256": "f05f40a71ea4d83aa22a30ddc78038b510302fd09bf3272ce739588e8c2de215",
+            "prefix": "b22_epi41",
+            "arm": "EPI4",
+            "M": [
+              8
+            ]
+          },
+          {
+            "cell": "problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/epi42_cell.py",
+            "cell_sha256": "34a9f6d9c638f9ee0421dad8804f5649b65f23448f26698f35d5acd2e161fb99",
+            "cuda_sha256": "b7da4f5f3fdd99c9b0beef50e1878f3d67927d1da17811b5d345ae05233e9239",
+            "prefix": "b22_epi42",
+            "arm": "EPI4",
+            "M": [
+              16,
+              32
+            ]
+          }
+        ]
+      }
+    },
+    "whole_production_graph_measured": false,
+    "gate": "Pending native receipt;no local performance nomination",
+    "diagnostic_sender": 3637718
   }
 }

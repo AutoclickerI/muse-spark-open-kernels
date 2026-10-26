@@ -869,8 +869,9 @@ Pure occupancy upside from lowering registers at fixed two CTAs isR1.00000;laten
 All56 exact sm90a arm/shape counts give2CTA/zero stack/spills;all HMMA-bearing arms retain32sites,
 L1 none. ACC_FREE's first compiler output collapsed to one HMMA;matched live-result sinks fixed this
 before send. Real full Bf cache65536B plus two raw slots needs150672B atM32 and fails2CTA;one slot
-fits113808B,but repeated shared loads/publication and the known one-slot penalty must be paid. Await
-the FRAG_JIT bound before admitting that build. Original read/publish/acquire ordering stays in all arms.
+fits113808B before final bank alignment,but repeated shared loads/publication and the known one-slot penalty
+must be paid. The correct CACHE1 build below now pays these costs;the FRAG_JIT bound will rank it.
+Original read/publish/acquire ordering stays in all arms.
 
 Exact payloadf4a1f883:448native control TASK checks plus162LAZY native nearby/local_start/skew/changed
 captured-input checks pass (leaf worst total/row.002392/.002451). Local packet8985B fits11700B;all1920
@@ -881,10 +882,49 @@ A prior outer-payload AST admission error spent no judge quota;literal lab wrapp
 exact native screens rerun. See [REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/operand/REPORT.md).
 
 Decision remains active. New oracle timings,CIs and the largest buildable term are pending the receipt.
-Production base pinned to S21 expanded109c0135/shipmenteacc087b. After ranking,include all timed
-packing/producer cost and pair the correct build in its complete12-shape production graphs with fresh
-seeds under promotion.evaluate;TASK only and held-out six-loadR lower bound>1 judge it. No per-call
-transfer or new G0 claim;all83previous nominations remain unchanged. No production build is declared measured.
+Production base advanced to S22 expanded4b8c803d/shipmentd1ccdc35 for the correct portfolio below.
+All timed packing/producer cost stays inside complete12-shape production graphs with fresh seeds under
+promotion.evaluate;TASK only and held-out six-loadR lower bound>1 judge it. No per-call transfer or new
+G0 claim;all83previous nominations remain unchanged. No production build is declared measured.
+
+### P3a S22 outcome builds: one whole-graph cohort queued (2026-10-27)
+
+User-directed overnight prebuild replaces the sequential build-after-diagnostic plan. Frozen S22
+expanded4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27;only its three small-M
+CUDA literals change. Exact patches/source hashes are in builds22/manifest.json;patches apply to the
+expanded source. No mixed_wgmma or losing public-port implementation is repeated.
+
+| Recipe | Ratio vs S22 | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| CACHE1 | Unmeasured | Real64KiB two-plane BF16 bank loaded once per segment;one raw TMA slot keeps2CTA | Full native shared-bank correctness and fill/LDS/one-slot cost;other fragment layouts | sender984504,wrapperab36c11e7cb7ea6c;pending09:00KST |
+| LAZY | Unmeasured | Original BF16 fragment loads per K-group/tile shorten64-register cache lifetime | Activation scheduling tradeoff and two-chain composition;not the synthetic register oracle | same pending cohort |
+| LAZY2 | Unmeasured | LAZY plus independent FP32 accumulators over alternating K-groups,final sum | Different schedules and recurrence-vs-register cost;old cached-Bf ILP does not measure this | same pending cohort |
+| N1SIMT | Unmeasured | Correct FP32 SIMT matvec for actual singleton token blocks;HMMA otherwise,all K/experts retained | Useful-N padding at wider token blocks and SIMT instruction overhead | same pending cohort |
+| EPI4 | Unmeasured | Four epilogue warps/scalar W2 channel ownership;remove duplicate norm flush | Other reduction/finish schedules and native register/latency tradeoff | same pending cohort |
+
+Every arm passes270leaf TASK gates (1350total),M1/8/9/16/24/32,real/all/empty/singleton/dense routes,
+local_start0/96/224,three changed inputs under reused graphs. All five normal+forced screens pass
+13TASK/12captured shapes each (130TASK+120graphs),including actual small-M eager/captured launches.
+Fifteen exact sm90a units/20shape budgets:zero spills/stack,two CTAs. Registers M1/M8+:CACHE1 94/60,
+LAZY94/96,LAZY2 96/100,N1SIMT106/88,EPI4 115/126. CACHE1 shared112688/112960/113280/113920B;
+other layouts83904/84176/84496/85136B. Local sm120 cannot hold CACHE1's113KB bank:only its activation
+bank storage/LDS uses an explicit preallocated-global stand-in;H200 uses real shared storage. Full native
+Hopper correctness/performance remains pending. EPI4's initial local M1 failure exposed uninitialized
+SLOT n/off metadata;keeping actual segment ne/off fixed it,then all final checks reran. No failed build
+or local time is labeled a measured H200 loss.
+
+Single paired MoE check sender984504,rank4,after older diagnostic3637718;64fresh seeds×16symmetric
+rotated forward/reverse rounds,arithmetic means of all rounds,cold flushes,all12production graphs per arm,
+S22 A:A,5376TASK+780nearby. Primary six-load samples/round counts and bounded worst4 full GPU/enqueue
+traces/NVML survive checksummed lossless packing. Exact local packed rehearsal passes168TASK+24nearby
+with an explicitly local2seed×2round plan;synthetic64×16 transport11645B fits11744B,and is not timing
+evidence. Whole-load T=46sliding+16full through promotion.py judges transfer;no per-call speedup claim.
+
+Finite event-driven follow.py reads/audits the diagnostic,prunes only universally refuted outcomes while
+this owned waiter is still local,and reads the one eventual paired receipt. Accepted jobs remain intact;
+failed controls/implementations close nothing. Every valid whole-layer shape point winner gets its exact
+S22 patch/SE/seed IDs in P4_HANDOFF and point_nominations;P4 fresh held-out G0 confirmation remains.
+See [REPORT](../problems/muse_decode_layer/dev/nt1_timeline/structural/builds22/REPORT.md).
 
 ## MoE M=128
 

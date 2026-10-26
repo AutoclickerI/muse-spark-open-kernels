@@ -1,0 +1,20 @@
+{
+  "sender_pid": 984504,
+  "host": "muse_moe_w4a16",
+  "mode": "check",
+  "wrapper_sha256": "ab36c11e7cb7ea6cb1f7fdddde9e822b0a53550b66db80ca161a8f38b5c07a25",
+  "payload_sha256": "019fc56d95d9cd00e3b48929946de62ff89a547db3f0867163a7c58f770c8e0d",
+  "active": [
+    "CACHE1",
+    "LAZY",
+    "LAZY2",
+    "N1SIMT",
+    "EPI4"
+  ],
+  "expected_source": "problems/muse_moe_w4a16/lab/lab_moe_p3a_s22.py",
+  "waiting": "runs/waiting/984504.json",
+  "not_before": "2026-10-27T09:00:00+09:00",
+  "state": "queued behind diagnostic;no judge job assigned",
+  "job": null,
+  "decision": "S22 whole-graph test of every plausible P3a operand-diagnostic outcome"
+}

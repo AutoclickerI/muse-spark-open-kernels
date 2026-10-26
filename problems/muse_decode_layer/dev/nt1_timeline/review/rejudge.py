@@ -152,6 +152,13 @@ operand=P/'structural/operand'
 if (operand/'P4_HANDOFF.json').exists():
  hand=json.loads((operand/'P4_HANDOFF.json').read_text());assert hand['rows']==[]
  result['operand_followup']=hand
+builds=P/'structural/builds22'
+if (builds/'P4_HANDOFF.json').exists():
+ hand=json.loads((builds/'P4_HANDOFF.json').read_text())
+ for row in hand['rows']:
+  spec=row['exact_patch']
+  assert hashlib.sha256((R/spec['patch']).read_bytes()).hexdigest()==spec['patch_sha256']
+ result['rows']+=hand['rows'];result['s22_production_rows']=hand['rows'];result['s22_production_followup']=hand
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')
