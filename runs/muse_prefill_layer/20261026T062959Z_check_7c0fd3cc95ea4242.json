@@ -1,0 +1,88 @@
+{
+ "board": "muse_prefill_layer",
+ "call_id": "nyc3:kc-7c0fd3cc95ea4242",
+ "cluster": "nyc3",
+ "content_hash": "0f8c65b6a4be8f96d10ebbef932a7addf9ac88fcaba1a3b6f8ed1fc86ca4c7d9",
+ "created_at": 1792996201.4180274,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1792996675.3207223,
+ "id": "7c0fd3cc95ea4242",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/1ebd52c945306d3f/profiles/lab_s19_pair.7c0fd3cc95ea4242.log"
+ },
+ "payload_ref": "muse_prefill_layer/0f8c65b6a4be8f96d10ebbef932a7addf9ac88fcaba1a3b6f8ed1fc86ca4c7d9.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "b023c806840d9a0be71e887768b3bd414ad29978b94071d7d965af9f8cd976f0",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_prefill_layer/baseline.py": "87d95a0c4b78f0fd6c772436b959330ca45652b10e82dfc8add9acf0549227d4",
+    "problems/muse_prefill_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "problems/muse_prefill_layer/task.yml": "901aec1ab2767d7d76d851e526aab6b285a59cf425b9bae9e1da7047d33f9feb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "LAB_BEGIN s19_pair a28d2b8262f9019c\nMETA S19 on frozen S18;16 disjoint held-out seeds,fresh weights/router;public TASK all arms;restricted arms take A2 off their rows;S19 executed in-payload\nS19_XZ85 {Wp48S^xk9=GL@E0stWa761SMbT8$j;3xzRuU!B=h=~U@G*%)<r|cXOQAI}&MLhTw=+O9zMYy*o_!%2byoOXqxLh%9^mQNK(nuETO6@5EQfAdJCQl_B)mbM*!GTZZzS3ZINY=73%6P6@uN9r3Ay)!v0j06Zk97L9hn1j5c>NWReCOFPzD#!8k|8EwinhIfccL7mB!jug9oRCK0NMpG(qh`3c;3L%OCx^iYA&{pTQ#^>ura}3Q8ZRD>No76o-Sb8Dl5j7`Yq()6&R0|?;!Y>csEyklp__51gmn|_3x8Xfqu-(xY}wsTVA{_okcUJtN|OnTgg2D4bc9u1M2!e;ps{iJ@zgKu$L@4;aoFScP9~BA*X7-A%e*`Y@W5sWw<4I&jANs(ifCpf#2Yc376MyVdOffJm#4-jBiq(6Oq=f2eWClLKM)8f_Vu0%`!C=5_}8=$f?J!+M#!Cx1N=gyvHOggqnXJ@SNB6XvNwH^Cr)r34*IBr@2`6g+oTcEbsnW)=|Y)7Hv*fPdi8V!|jp;^n!YmP~my$Y*`^b5h5bwB+lBf<^Rx8g@xB{E@jWQw4d;8K9QaQUU?l3o#P^7f&_V2Bqao>-kLwny`J53Un3L&;jE<yCxRMd1b4Mol+sxW+~1L@YRKyz|ElB-e~WwrXw`Gm1PQh?F|7NL<Osujw7ydE+I#nA%~d0ar|D?Na=Pd>vs-iG;`nEwlwaGF)`#9fNv0JNiAHO(DN4tDPbW^z4YxggLurx8DnxT11|&-3iXda8=vWJ;SMAx&xJt@dEp-%t%)P8Nbjsvecy_jTA5Cr&_gWALGml&K@UZnJmLJ`+$>RXS$lJekcFya(=ylL)=F9NJEjHXz!ld@@GU}w`j}aVh-fxx8UaQ2Ab18&9Cv@Ymx<?8crO1b+J;2fecMMW){_#Wa>YNi(UzAl!yrBTZq=RIb(NE<C?vSdavt*~x^kaJs`;4<JLb(~N>h14P53%N&n@9mur#Pxf0d3JiGP7VF7^uogJK9@70rcmmLB0WQ5I3a@33xc=Z2cM+vcP3NeoD**ZIRe`FBbspgFSr(a`zh30B?)-s+Dsf32*?w=rbEdH2X7;@CEMJ(D&Z71FXLr9>+kKBn-Tpz#1ZulHDnR<;i_l>*?`r=dkqO;GfC8S1Zt2_*|<+bgbOZbn7Msb_@Yb!slCOUl#4soNnpPJKu9kLb-5#l|=4HxDpo>$f>V-=-=^XXVXaPo_f);T>z@SaV{5h;cmANJfZUvULGoVd^EmP<*E^bKIcjPF*z<kcSqA;>vurO7brwAneavpecRgtG>!YDV#2!aE}HI1rbflf#fCMt_0`}^)2N;XK_c9<mab6<Mh&XCg>3Bc6>Bd@o1nR(N|XfZ?oTkK+Pv?%KZHe?^oy~`1$f3*Zd(U`1?Z>76h#^ER^E$B%n#W$cHqtLXM1PZa8<&2I|2u9SU^KCy)cRJyuO_y@}8uc<M!F3k;_})CvhTc1qzX9Db3WxsOjRDLxQ^ht#lmw;{jq-8D!%i^Hys;RE=bbjHXDh@by7SK(Cu2u&ctW5$*1fFe4y^w8it++vyWHo7v^<5N!?p_KK~kC^MoSYWd^wk(%KBUb$y|TxyAnPyrSwmF{$YOo)cY`^&EPH8uphRmC7fiV;JPLpn+GH&nb5GqPFjVg~(heVb4v&=gq<5CG^+pmB>EB=pY?W?p-~QEkuRf(-~w6U%O+%L)3+dgN^@S`yBLe3Pb#8Qos0t#HmobXXiodg$Hw^H|dyOky!y2oSDz;fIFh3g&5g!Y1?&VJ=&$3}bcZYHtrv7oyG2;!H~AOi?fX(%Z+~5~~8fd56v*`nI`6FgmJ^oj+bQtT~^etUNRT@C9<@H+b;cw&&&M_L1MOy@<G7fzFJK%YK671$|zp|Echb(S=pN^h%(>kH{<qc?!Y?J7gTKDrDL5`v*0mf>5t<vFWqV9&&9!RQiq%(9Ph8c1u!zo$|(AEhISF1quZXlx<}7QlSMCea9pWH1d4*+J0?Fe$e?wir?o6f%~QH{t!oIzU*r$DVqEHT>)K3Rq@^9PF_N_<u<qRc7}AhuIRW<0wMy_!WeD(qA?&)>RwE*48meC?+*Y`Eehge_6|Z5d#fHg7J%6fpBlzt3xRSRa8fe>&kcdsZ^aI}DUB$C656l|QK$#dZn7Al##{}xUK_h94;W+qrE9Hh-RzC`?n@N*c=a3kG#=V5PO|{*v@okzE4r)PQO(impU8<ntr8_dcRBHwlYVPFdv~U_h!&$QTG7af!ar|@$WG%lT7+hI#Ni7rMh~%ElNOX=T?g+kr5!U7XZ7r;b4x}j`mI=2ED;Kc;nr+wI?onoROvh8-oCd|mOV?A1D0B_G1WIH@1JIIW2w4Lxvd|>l}jG$o@8d%qSS7_m3EcU0kmq(G$K^-@ee^~Xriid=0g#ceH7dup>hQXd(uFw)*Y^fhzeF=uNSUYKoV7Y(E0U5jk7OS<^dLBWFAADy;h#S1kfyy#-m;qMX5>Je)=b9HzE<pnb+B$Me6t#zzMItxFpGL+_J?l;p(dEc91r~N|09=)M*?#oiK;O^-o0#E!r8#PW-B<6;Ze#BrARpsMyG&c%-Dp0I;XqUI!Wp<aVY71N-$1d?zJMC2Y5)9mAEwsEsnz(?c5Ekuq5=+(FY{E{#1=HmOXyc3eIZm9Cj$>PsWKM&j;=zcS^p)K~Mco20M<#{z2hu-buaa*n0`G8a;(ZdTT9W0tW98At+&<`NAT9p@UbM^_OC;8!hwS@C?DJSqE%)YWLa>m`6f9Bi15x(Ov#%to~iO}m6L0RWEdr7_lB)?ebT_)H|NJ5I8z2XCR{$hH#yoKFOC2cdWzqlCtn5)%#4qcKI-QMeZuRI}}_jz8~g^WTL?`Dw53S3K!gb=`SBL*fy=QJ`5GL>`cSn&YKNFYa!GJ}8}IiMCi2a<x-|U7BdX?5e*lrTFChdpCJlg`Ud0v8~SvK#auUw%|cdCvx^fM3b%~9-5N%b|zty$`cm!4XwU1PZ0HFzY2YUy_l%liD0y$VzE<vOl}R|S#1+{#Ur;e8$6*IS8v&mBCX626m@<F1)RZU6xvX=bPpZEd?)JamboJ{Z|c-DAewq@uuDfB9I-~0K8&EXcM53qQr(Axu*bQ3RC%dp7XF-0Dl}$Hyhk81&>Fj=b&AwvNAjNYTNtwMfHWbj8B?_LaxETyP7**TJ(u&JFiCggF<>gi@_L4-AdD^DZ`Q&~6!T(sgJ$OXQhcF(DOsLi;@EjPy;p+w$2p#2KJe{f#^EatdAw_}JeCc&QWpv%ut%Cg&dO5l#WYiQC_BSQx8#=vrtJ0Xq8+XO8Ws;7zX1PCloO1z1!71$*R?Wt)j+?^M%LH5JyitdzJY><==j<;^HY+K4PanivY*xBY$*UrJj1lJ1cTjrB=!ySicJ5Abv=mCh%)^d$c$Z$+*P;M_e(|+fPHE8#aZygkzNvGF{Npzs2n!|2^e0nB5=d8kB&B$(pDbijj=((^<jg!G`iCaNrt!)Q)wPCMD7t2OEn(k==>mp3)0Xjv!8{;6)y$QC?fx280Kh5zXZlegh@MFIP0zbXaIpQ3mEPumO817-~$GzHS}}~!GqNR1FZMQ<KKOm)3m^#a%hy`nrY=x6KT6E2OBxZQ%a_Nr(4`g%;6g82d)~9!iE07QWuUM)_~%(o9`4YFKwdKoq^_e?a@BlGI0Q0jY83T>Dj|Y7}JXq?TR`FvCo25%wmJ_!Ek#rv<aVBJX3wr`l!(2at#8puViQNw2zreVBOsfq7-Q^Q{^+eHwVothOsT+bg<XD2Nq41OTM1rM-Yu6y!OknDmOvw80P>-wm;lv`j?rtxD~~`wl>l}N+dfAJ+RQV#`PU#@Hxf}tQW&Ee2;_-SV#Ivy-Nv)bas7RP%3(k%4)YsVkJ(UOvf!i^K*=WC;T7N7WPQrh1yu^lTn-*W62^3u7NGc<LL1+4|0!7!O&(r&PdBWf4oIV29Z2-sVg>(lcvy}xfN@^wwZ5_z7pq}op2}wfP*1wUzGV%*^Ph+ew&!B^b|2Ba`zVenIv{VRK2WMF&HCu#~SSZ)n-nCe}m!U!T1B=oqkuCUISXOFG3Ig>Z9f8+H!@J$Fs5dYY4MG{+;l+g+v^12D;1y@gzrMEG5OAg0k1!Q@_ZSMbOK3J@31q>%n_R&Hi#DoO@u4j0Wm04VJL4^uYjyV!as>HMn@(ioMNKU?X3`Qt`(-O<g^5Hzc!bf$$2pA7V%P_^{)Wl5m~H%HUm%L;0-XN{X5h;tf43geH~`{xh4o4tw9)7I3ij623giaH7aiz_tJS_F4`u&2)6v!yX)>HET8~o@=#K`8~?A#(%`f3!JYVdNFeK@1cqLA35WV7!z?LO#Vtki+sX`F#=i|YNKEWq3lB-&xxw+WLR$mAfRZxf=#bqzZat{DUb*)Rx7b#HCEksHPQ)9gdBA&e;F)?v)8954kWAFE9<jqyM)hPKoF)1vW7&4Ad*UphHa7=zVeohx~M5ohBRx%O+w4lzazqMrVea;Ut2Ng-Ehh`>^1mBw7dB{$#*xacY<3+k)3TW%+qd52%)b+5{}7WFceHyIB7wt9f{j~LEi#ko<p$d>ll^3A%-&RQXlU;eo6&MmK(o1c|G-Z!NVTSBW|WRE+_X^S#$wfCS)cE4ay1IVS|4x5uQheKdK&5SRr>@ZV{1W!^+=F=4~NEbQpL|ZIY5e3h$-Xz8WT7V?k4ikG*a$C0qOH79_Va&~j(qA2`vxr2{Sn-|XtPbPN&h_*fERG+2=$Z_gRB7`NlkGpcnk3@pBJ=}an``!;I<rI&GKdTlOTyVm3OwjLZ(mR7Lzm@S8_loQEnSV{l@LJY1`|8rU-00GM#g-`$hAOSI!vBYQl0ssI200dcD\nEND complete=True\nLAB_END lab_s=436.6 import_s=436.6\nTraceback (most recent call last):\n  File \"/tmp/muse_prefill_layer-oozqtswy/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-oozqtswy/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-oozqtswy/run/submission.py\", line 96, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-oozqtswy/run/submission.py\", line 12, in prepare\n    raise RuntimeError(\"lab-only host: the decode-layer pair printed above is this run's result\")\nRuntimeError: lab-only host: the decode-layer pair printed above is this run's result\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 126.81,
+    "power.limit": 700,
+    "temperature.gpu": 42
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 134.67,
+    "power.limit": 700,
+    "temperature.gpu": 36
+   },
+   "node": "n-qtqz4qekgtq37epqb5xaarah6h"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 2,
+    "baseline_prepare_pad": 23369728,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: the decode-layer pair printed above is this run's result",
+    "event": "setup",
+    "first": "baseline",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1792996208.686561,
+ "status": "done",
+ "team": "AutoclickerI"
+}

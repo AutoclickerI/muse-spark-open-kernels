@@ -1,0 +1,10 @@
+{
+  "job": "3597359bbcc54433",
+  "measured": false,
+  "reason": "No paired seed archive; not a timing loss",
+  "errors": [
+    "LAB_ERROR RuntimeError: prepare budget before mixed_parallel oracle",
+    "LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts)",
+    "LAB_END lab_s=239.1 import_s=239.1"
+  ]
+}

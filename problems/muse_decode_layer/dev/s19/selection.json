@@ -1,0 +1,49 @@
+{
+  "base_sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "base18": [
+    "BLOCK",
+    "D4",
+    "D8",
+    "INDEX1",
+    "Vwait16",
+    "Vwait32",
+    "pdl_D",
+    "pdl_M",
+    "pool128"
+  ],
+  "sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "enabled": [
+    "D",
+    "FAST",
+    "LATE",
+    "P10",
+    "R8",
+    "RAW2"
+  ],
+  "window": "RAW2",
+  "split2": false,
+  "p10": [
+    [
+      [
+        8,
+        2304
+      ],
+      4
+    ]
+  ],
+  "baked": "28b5c189",
+  "pins": {
+    "problems/muse_attention_decode/dev/window_rebuild/P4_raw32.patch": "20a297893f37aea98aa4a195fadfdce784636464d0ec7db0d13a24189dfc13a1",
+    "problems/muse_attention_decode/dev/window_rebuild/P4_pipe32.patch": "d5a8d0472426a7bb531154e2a7ffc812e2c311946e3e6ad47d0f7f3a97f1fa38",
+    "problems/muse_attention_decode/dev/full_attention/page_ring/R8_S18.cu": "5de7a696264fff0afdadd2fef92690a359de437c78262ca3d7183670f9ae30a0",
+    "problems/muse_attention_decode/dev/full_attention/page_ring/D_S18.cu": "36b40412cb5a4d79b1d0afb5f9437dc7d40e66249b1380294c7ee7f4a6ac4d04",
+    "problems/muse_attention_decode/dev/full_attention/page_ring/S18_ATTN_PORT_CUDA_SRC.cu": "aeeb4aa8c00bfff0632ca6e40a7f16a7130b831b1d9f9e7bb4c6e26a4cf7d259",
+    "problems/muse_attention_decode/dev/full_attention/page_ring/S18_VQ8_CUDA.cu": "3a642563d31089467fe36c0053445de4b11e7223e44d5addf4112b5a4584f478",
+    "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/base0_cell.py": "d82d404108f6a655ba98c40bc355de21510e78e4732829628b0db0cfb7b36a79",
+    "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/index0_cell.py": "75d6d0caac4605c7eb0d7e45532d8ec730b2dd218401472ccdfbb352a718751e",
+    "problems/muse_decode_layer/dev/nt1_timeline/review/next_issue/fast0_cell.py": "fe2150f341eb2f66a3a83dae91d32df8270d6360a19dc75856244d60c1c16d5f",
+    "problems/muse_decode_layer/dev/nt1_timeline/structural/split1_cell.py": "a23fd280248cd02908de493acf266d2a40d757a2a6d55b4ea70835250aedfdc8",
+    "problems/muse_bf16_proj/dev/stream_gap/patch_qkv.py": "4d48e3d517269c04ecbfac81285120e79ba16e8351f0e156af3785dc9431e32d",
+    "problems/muse_bf16_proj/dev/stream_gap/qkv_dispatch.py.inc": "77e145d33fc08388c05488a03831ab759412d6eea003ab3dea76b0182f287f29"
+  }
+}

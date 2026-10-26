@@ -1,0 +1,62 @@
+{
+  "expanded_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "shipped_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "image": "judge image (tools/img), GPU0 sm_120",
+  "candidate_normal": {
+    "sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "TASK_passed": 13,
+    "TASK_failed": 0,
+    "graph_shapes": 12,
+    "static_all_pass": true,
+    "local_prepare_s": 4.2
+  },
+  "candidate_forced": {
+    "sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "TASK_passed": 13,
+    "TASK_failed": 0,
+    "graph_shapes": 12,
+    "static_all_pass": true,
+    "local_prepare_s": 9.7
+  },
+  "contracts": {
+    "checks": 658,
+    "passed": true
+  },
+  "native_audit": {
+    "checks": 156,
+    "passed": true,
+    "units": [
+      "P10_d16",
+      "S19",
+      "late_pdl",
+      "no_FAST"
+    ]
+  },
+  "paired_wrapper": {
+    "normal": {
+      "wrapper_sha256": "22f25954e6ee84abf382135259297b75c4f937ca4fb64af34a15149bb14da3ed",
+      "complete": true,
+      "task_checks": 672,
+      "expected_task_checks": 672,
+      "nearby_task_checks": 260,
+      "failures": [],
+      "agreement_diagnostics": {
+        "v32S:INC": "ids74/256"
+      },
+      "blob_chars": 3360
+    },
+    "forced": {
+      "wrapper_sha256": "22f25954e6ee84abf382135259297b75c4f937ca4fb64af34a15149bb14da3ed",
+      "complete": true,
+      "task_checks": 672,
+      "expected_task_checks": 672,
+      "nearby_task_checks": 260,
+      "failures": [],
+      "agreement_diagnostics": {
+        "v32S:INC": "ids22/256"
+      },
+      "blob_chars": 3400
+    }
+  },
+  "note": "forced lab screen first hit a local OOM at nearby ctx64k-32x8-f while two other processes held 33 GiB of GPU0; the rerun passed 672 + 260"
+}

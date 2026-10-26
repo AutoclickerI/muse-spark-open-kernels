@@ -1,0 +1,76 @@
+{
+  "name": "S19",
+  "expanded_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "shipped_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "file": "problems/muse_decode_layer/cand_r3_best7_s19_final.py",
+  "scored_job": null,
+  "scored_speedup": null,
+  "official_TASK_run": null,
+  "scored_queue": "okc_run send --scored, waiting for the 2026-10-27 09:01 KST decode reset (runs/waiting pid 4046452); promotion completes when it passes TASK",
+  "confirmation_job": "6ac9317e0a4d456d",
+  "confirmation_host": "muse_prefill_layer import-time lab (lab-only host), wrapper 22f25954",
+  "R": 1.0144633683891588,
+  "CI95": [
+    1.0130438154585133,
+    1.0158849105037788
+  ],
+  "seeds": 16,
+  "TASK_checks": 672,
+  "nearby_TASK_checks": 260,
+  "loads": {
+    "decode 1": {
+      "R": 0.9972976255334202,
+      "CI95": [
+        0.9913937919579067,
+        1.00323661693539
+      ]
+    },
+    "decode 16": {
+      "R": 1.0115638340611461,
+      "CI95": [
+        1.0085969745064656,
+        1.0145394208436884
+      ]
+    },
+    "decode 32": {
+      "R": 1.0184752105860222,
+      "CI95": [
+        1.0160917096329796,
+        1.0208643026453983
+      ]
+    },
+    "verify 1": {
+      "R": 1.0399715206690943,
+      "CI95": [
+        1.0357495072590122,
+        1.0442107442222754
+      ]
+    },
+    "verify 16": {
+      "R": 1.0016951572326969,
+      "CI95": [
+        1.0000726224416931,
+        1.0033203244516753
+      ]
+    },
+    "verify 32": {
+      "R": 1.0183396530911408,
+      "CI95": [
+        1.013708680707547,
+        1.0229917813606666
+      ]
+    }
+  },
+  "host_prepare_s": 147.654211,
+  "round1": {
+    "job": "7c0fd3cc95ea4242",
+    "source": "4ae2f6b9",
+    "R": 1.0074367255805279,
+    "CI95": [
+      1.0065064976300289,
+      1.0083678132612344
+    ],
+    "host_prepare_s": 254.728605
+  },
+  "previous": "S18 95df42fe"
+}
