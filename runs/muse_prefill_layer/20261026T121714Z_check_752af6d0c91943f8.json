@@ -1,0 +1,88 @@
+{
+ "board": "muse_prefill_layer",
+ "call_id": "sfo3b:kc-752af6d0c91943f8",
+ "cluster": "sfo3b",
+ "content_hash": "9e2b0b8d2d5e1802f6c49535def88faee4534303b516f6af27ca18605c63a1a8",
+ "created_at": 1793017036.5343852,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1793017243.1059225,
+ "id": "752af6d0c91943f8",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/a56ae3affc8cd336/profiles/lab_p13_oracle.752af6d0c91943f8.log"
+ },
+ "payload_ref": "muse_prefill_layer/9e2b0b8d2d5e1802f6c49535def88faee4534303b516f6af27ca18605c63a1a8.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "b023c806840d9a0be71e887768b3bd414ad29978b94071d7d965af9f8cd976f0",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_prefill_layer/baseline.py": "87d95a0c4b78f0fd6c772436b959330ca45652b10e82dfc8add9acf0549227d4",
+    "problems/muse_prefill_layer/reference.py": "23e177b87aee70c0d4990515989b95bff2972270cdac8ab967445b21fa2f5163",
+    "problems/muse_prefill_layer/task.yml": "901aec1ab2767d7d76d851e526aab6b285a59cf425b9bae9e1da7047d33f9feb"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "CODED pool_router (4608, 8192) escapes=3524 bytes=56623104\nCODED qkv_gate (2304, 8192) escapes=1263 bytes=28311552\nBEST_PREPARE elapsed=121.387s hard_limit=300s\nBEST_PHASES seconds={'weights': 110.80887727599475, 'moe_nt': 8.045599679462612e-05, 'projections': 0.06736128599732183, 'attention': 9.548995876684785e-06, 'scale_recode': 0.3254667069995776, 's5_banks': 6.668623647012282, 'pdl_prefix': 3.5165198750037234}\nBEST6_BASE_SHAPE b=1 q=1 window=2048 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'cublas', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=1 q=1 window=0 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'cublas', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=1 q=8 window=2048 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'custom', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=1 q=8 window=0 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'custom', 'pool_router': 'custom', 'unpooler_slice': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=16 q=1 window=2048 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'custom', 'pool_router': 'custom', 'unpooler': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=16 q=1 window=0 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'custom', 'pool_router': 'custom', 'unpooler': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=16 q=8 window=2048 attn=('layer', None) proj={'qkv_gate': ('vdsk', (128, 64, 64, 8, 4, 1), 3), 'o': ('lt', 0), 'pool_router': 'cublas', 'unpooler': ('short_lt', 1, 0)} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=16 q=8 window=0 attn=('layer', None) proj={'qkv_gate': ('vdsk', (128, 64, 64, 8, 4, 1), 3), 'o': ('lt', 0), 'pool_router': 'cublas', 'unpooler': ('short_lt', 1, 0)} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=32 q=1 window=2048 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'custom', 'pool_router': 'custom', 'unpooler': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=32 q=1 window=0 attn=('layer', None) proj={'qkv_gate': 'custom', 'o': 'custom', 'pool_router': 'custom', 'unpooler': 'custom'} prefix=('regular', True) pdl=(True, True) moe=v9nt1\nBEST6_BASE_SHAPE b=32 q=8 window=2048 attn=('layer', None) proj={'qkv_gate': ('lt', 0), 'o': 'custom', 'pool_router': 'custom', 'unpooler': ('short_lt', 0, 0)} prefix=('regular', True) pdl=(True, True) moe=v9nt2\nBEST6_BASE_SHAPE b=32 q=8 window=0 attn=('layer', None) proj={'qkv_gate': ('lt', 0), 'o': 'custom', 'pool_router': 'custom', 'unpooler': ('short_lt', 0, 0)} prefix=('regular', True) pdl=(True, True) moe=v9nt2\nBEST5_NT M=32 {'selected': 1, 'reason': 'H200 28b5c189'}\nBEST5_NT M=128 {'selected': 1, 'reason': 'H200 28b5c189'}\nBEST5_NT M=256 {'selected': 2, 'reason': 'H200 28b5c189'}\nBEST6_BUILD {\"available\":[],\"rejected\":{}}\nBEST7_PLAN {\"key\":[1,1,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":[\"stream\",6,1],\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[1,1,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":[\"stream\",6,1],\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,1,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,1,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,1,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,1,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"attn_main\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[1,8,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"layer\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[1,8,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[\"cl\",8,256,1],\"route\":[\"cl\",8,256,0],\"b2\":[\"cl\",8,256,1]},\"attention\":[\"layer\",null],\"moe\":\"nt1_lop3\",\"projection\":{\"qkv_gate\":\"custom\",\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler_slice\":\"custom\"},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,8,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[8,1]},\"attention\":[\"layer\",null],\"moe\":\"hh_m128\",\"projection\":{\"qkv_gate\":[\"vdsk\",[128,64,64,8,4,1],3],\"o\":[\"lt\",0],\"pool_router\":\"cublas\",\"unpooler\":[\"short_lt\",1,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[16,8,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[8,1]},\"attention\":[\"layer\",null],\"moe\":\"hh_m128\",\"projection\":{\"qkv_gate\":[\"vdsk\",[128,64,64,8,4,1],3],\"o\":[\"lt\",0],\"pool_router\":\"cublas\",\"unpooler\":[\"short_lt\",1,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,8,2048],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[16,1]},\"attention\":[\"layer\",null],\"moe\":\"mixed_parallel_m256\",\"projection\":{\"qkv_gate\":[\"lt\",0],\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":[\"short_lt\",0,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nBEST7_PLAN {\"key\":[32,8,0],\"glue\":\"best6\",\"geometry\":{\"b1\":[16,1],\"route\":[4,1],\"b2\":[16,1]},\"attention\":[\"layer\",null],\"moe\":\"mixed_parallel_m256\",\"projection\":{\"qkv_gate\":[\"lt\",0],\"o\":\"custom\",\"pool_router\":\"custom\",\"unpooler\":[\"short_lt\",0,0]},\"l2_prefetch\":0,\"dense_chain\":false}\nLAB_BEGIN p13_oracle 4bc652c0036c0251\nLAB_PACKET p13_oracle 4bc652c0036c0251 0d3b073b79e1ced59fc1e464e2954202f29e6e9922b891b4c8aa83752dc4be01 c-pI0O3u$M$Vn|pRkBJ;%qdRQQOe28OD$HiidOP*bczpfboO=)iT4k44GQ**a#hGnO-(6QFf=r`v{Xo{EJ-c4R!B)r&PgmvO#z9Tm{=<m7vyA?C=?`C=Hw@)D8<$S08e@#Is\nLAB_END lab_s=163.2 import_s=163.2\nLAB_BEGIN p13_oracle 4bc652c0036c0251\nLAB_PACKET p13_oracle 4bc652c0036c0251 0d3b073b79e1ced59fc1e464e2954202f29e6e9922b891b4c8aa83752dc4be01 c-pI0O3u$M$Vn|pRkBJ;%qdRQQOe28OD$HiidOP*bczpfboO=)iT4k44GQ**a#hGnO-(6QFf=r`v{Xo{EJ-c4R!B)r&PgmvO#z9Tm{=<m7vyA?C=?`C=Hw@)D8<$S08e@#Is\nLAB_END lab_s=163.2 import_s=163.2\nTraceback (most recent call last):\n  File \"/tmp/muse_prefill_layer-gfaa7870/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-gfaa7870/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-gfaa7870/run/submission.py\", line 117, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_prefill_layer-gfaa7870/run/submission.py\", line 3, in prepare\n    def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host: evidence completed at import\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 129.41,
+    "power.limit": 700,
+    "temperature.gpu": 39
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 136.12,
+    "power.limit": 700,
+    "temperature.gpu": 33
+   },
+   "node": "n-wsbc7j2d6xnjjdziaz2kmgurhe"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 2,
+    "baseline_prepare_pad": 27268608,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: evidence completed at import",
+    "event": "setup",
+    "first": "baseline",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1793017052.1717331,
+ "status": "done",
+ "team": "AutoclickerI"
+}

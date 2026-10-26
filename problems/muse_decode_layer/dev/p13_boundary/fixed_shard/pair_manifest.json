@@ -1,0 +1,193 @@
+{
+  "sha256": "6c8167d5d8174e919fdedde2cc964b61f49f65a31f99669a5847ec9d33a5d73d",
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "baseline_arm": "INC",
+  "checker_sha256": "710cbbd483b49d6eda45a40a0843c4609bba340333675c5bf5bd93232cca4ad6",
+  "arms": {
+    "INC": {
+      "sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+      "rows": []
+    },
+    "SMALL": {
+      "sha256": "065b28a3019a07ab0a89f83ae656a2c83ecbc42c9fa7d09222ef8693e1a5e4b9",
+      "rows": []
+    },
+    "LARGE": {
+      "sha256": "71028846ba7afd499ea054a7f0c57eb96838c4ad1c72742eaab4a61e8232697f",
+      "rows": []
+    }
+  },
+  "identities": {
+    "INC": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "A": "6c8167d5d8174e919fdedde2cc964b61f49f65a31f99669a5847ec9d33a5d73d",
+    "SMALL": "065b28a3019a07ab0a89f83ae656a2c83ecbc42c9fa7d09222ef8693e1a5e4b9",
+    "LARGE": "71028846ba7afd499ea054a7f0c57eb96838c4ad1c72742eaab4a61e8232697f",
+    "A2": "6c8167d5d8174e919fdedde2cc964b61f49f65a31f99669a5847ec9d33a5d73d"
+  },
+  "confirmation_seeds": [
+    150001021,
+    150105750,
+    150210479,
+    150315208,
+    150419937,
+    150524666,
+    150629395,
+    150734124
+  ],
+  "selection_seeds": [
+    140001021,
+    140105750,
+    140210479,
+    140315208,
+    140419937,
+    140524666,
+    140629395,
+    140734124
+  ],
+  "nearby_arms": [
+    "A",
+    "INC",
+    "SMALL",
+    "LARGE"
+  ],
+  "nearby_expected_checks": 72,
+  "expected_TASK_checks": 480,
+  "measurement_protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "payload_sha256": "8894125dcb0aaea275316d7911ac0308db51df8c01905657b8179e00839f1455",
+  "body_sha256": "70da8c6c888f88687614b0db4a6605493a6de5bbddb077d121f8953cd10a5dd1",
+  "nearby_cases": [
+    {
+      "batch": 1,
+      "ctx": 10,
+      "layer": "sliding"
+    },
+    {
+      "batch": 1,
+      "ctx": 3000,
+      "layer": "full"
+    },
+    {
+      "batch": 8,
+      "ctx": 2047,
+      "layer": "sliding"
+    },
+    {
+      "batch": 9,
+      "ctx": 5000,
+      "layer": "sliding",
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 3,
+      "ctx": 6000,
+      "layer": "full",
+      "q_len": 8,
+      "dist": "outliers"
+    },
+    {
+      "batch": 5,
+      "ctx": 5000,
+      "layer": "sliding",
+      "q_len": 8,
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 33,
+      "ctx": 20000,
+      "layer": "full",
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "ctx": 300000,
+      "layer": "sliding",
+      "q_len": 8
+    },
+    {
+      "batch": 1,
+      "ctx": 1048576,
+      "layer": "full",
+      "q_len": 8
+    },
+    {
+      "batch": 4,
+      "ctx": 7000,
+      "layer": "sliding",
+      "q_len": 8,
+      "page": 1,
+      "kv_scale": 0.015625
+    },
+    {
+      "batch": 1,
+      "ctx": 80000,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 4,
+      "ctx": 6000,
+      "layer": "sliding",
+      "q_len": 8,
+      "dist": "soft"
+    },
+    {
+      "batch": 16,
+      "ctx": 20000,
+      "layer": "full",
+      "spread": "mixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "q_len": 1,
+      "ctx": 173,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 7,
+      "q_len": 1,
+      "ctx": 231,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "q_len": 8,
+      "ctx": 307,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 16,
+      "q_len": 8,
+      "ctx": 509,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 32,
+      "q_len": 8,
+      "ctx": 523,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    }
+  ],
+  "oracle": "14f5558bcec443ea"
+}

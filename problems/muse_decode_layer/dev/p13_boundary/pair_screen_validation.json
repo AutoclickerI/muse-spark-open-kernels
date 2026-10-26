@@ -1,0 +1,38 @@
+{
+  "payload_sha256": "87fd4087ace753128facc19cbb2d1ca5bd25c787a6ad86ef06bc31a6875862ab",
+  "wrapper_sha256": "39bc2931e9a8e751ff3fc3cb3202e063ba35d9ffe6049aeb407dafecdcb531c1",
+  "checks": {
+    "A": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "A2": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "INC": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "LARGE": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "SMALL": {
+      "fail_count": 0,
+      "pass_count": 96
+    }
+  },
+  "wire_bytes": 9441,
+  "roundtrip_exact": true,
+  "tail_with_2000_suffix_pass": true,
+  "protocol": {
+    "aggregation": "arithmetic-mean-all-rounds",
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "selective_retiming": false
+  },
+  "scope": "S19 forced Hopper glue/attention stand-ins on sm120; native timings unmeasured",
+  "local_fixture": "Oracle-screen weights130001003/router130001009, busiest-shard soft inputs160001021+104729*i; native confirmation fixed disjoint170001021 cohort and150001003/150001009 weights untouched. An earlier native-fixture local rehearsal failed INC v1F routing margin; unchanged S19 stand-in is not exact native attention."
+}

@@ -1931,6 +1931,67 @@ canonical source/receipt pins and all negative evidence are retained in `native_
 
 ## Glue and routing
 
+### P13: boundary compute / route deletion on S19 (2026-10-26)
+
+Exact S19 `62ea5bf4`; corrected **611341aaf8454a24**, projection-host import,
+8fresh160001021+104729*i seeds ×10complete symmetric cold rounds, all12S/F.
+Both layer types use `dist=soft`; exact public ref_front biased top8 chooses
+the busiest shard separately per fixture; all96 local_start values retained.
+480TASK pass; all rounds and576NVML snapshots losslessly archived, no trimming.
+R uses46S+16F per load and unchanged promotion.py paired-seed Student-t interval.
+
+| Oracle | d1 | d16 | d32 | v1 | v16 | v32 | Six-load R [95% CI] |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| AA | 1.01201 | 1.00028 | 0.99803 | 0.99971 | 1.00080 | 0.99943 | 1.001700 [1.000617,1.002783] |
+| ROUTE | 1.04313 | 1.01497 | 1.01042 | 1.02392 | 1.01793 | 1.01203 | 1.020342 [1.018712,1.021974] |
+| BOUND | 1.00443 | 1.03659 | 1.03761 | 1.01989 | 1.03573 | 1.04513 | 1.029805 [1.028333,1.031279] |
+| BOTH | 1.04794 | 1.04997 | 1.04277 | 1.05493 | 1.05379 | 1.05823 | 1.051259 [1.049754,1.052766] |
+
+ROUTE removes pooled norm/top8 plus standalone large-M expert metadata;
+BOUND removes b1+b2; BOTH removes both, while retaining every producer/expert
+compute. These are deliberately excluded-work oracles, never valid candidates.
+A:A's0.17% shift is retained (CI excludes1); using AA as reference still gives
+BOTH1.049475[1.048121,1.050832]. No centering/subtraction or gate change.
+BOTH LB1.049754 clears the predeclared~1.01 build gate; no attainable5.13% promise.
+
+Built own route fusion first (ROUTE LB1.018712): identical coded raw pool/router
+producer +last-CTA norm/top8 atT1/8/16; row route +last-CTA exact S19 expert
+metadata atT128/256; no spinning, all writers fence, cyclic arrivals reset
+within the call. B1/b2 andT32 remain S19. The large-M neighboring library
+GEMMs have no matched public epilogue; BOUND remains an open implementation.
+Reviewed operatorstack6d9b7765 MIT and lee101601c6541 Apache-2.0 in separate
+empty directories; no donor scripts executed/code copied. `donor_review.json`.
+
+Corrected native pair **fec0b6726aa0413d**, MoE-host import (own unsubmitted
+projection-quota waiter3276205 cancelled before exact payload migration):
+8fixed fresh170001021+104729*i seeds, same10-round all-sample protocol;
+480primary+72public/nearby TASK pass, prepare estimate131.65s, private153.35s.
+Combined R**.957134[.955297,.958973]**, A:A1.000650[.999705,1.001595]: **fails G0**.
+SMALL .963569[.961729,.965413], LARGE .992416[.991479,.993353] both lose;
+only combined has its own same-source A:A, so separate arms are diagnostics.
+No winner/official submission. P4 negative exact patches in
+[dev/p13_boundary/P4_HANDOFF.json](../problems/muse_decode_layer/dev/p13_boundary/P4_HANDOFF.json).
+
+Mechanism checked vs inferred: SMALL adds27.65us d16 /10.78us v1 in the whole
+layer; source serializes16/8 row epilogues in one last CTA instead of8CTAs/token.
+sm90a compiler proves0stack/spills after removing dynamic top8 indexing;
+metadata64regs, poolMT1/MT2=80/94regs (MT2 was80 before). This schedule and
+occupancy cost fits the losses; it is not a measured per-instruction partition.
+LARGE adds9.72/3.84us v16/v32; publication fences/arrival and serial metadata
+remain, individual costs unpartitioned. Close these two route recipes only,
+not the measured BOUND opportunity or all possible route fusions.
+
+Evidence scope correction: **752af6d0c91943f8** is unmeasured (packet11799B >11744B);
+process-local14k reservation fixes transport, no shared-tool change.
+**14f5558bcec443ea** and **434fdf8f627d41ff** are valid fixed-shard/coherent
+diagnostics only: the initial helper defaulted local_start0/full coherent.
+Their score interpretation is withdrawn; `fixed_shard/SCOPE.json` and all
+immutable receipts retained. Corrected repeats use new seeds and both-soft,
+busiest-shard fixtures; no sample was selected away. Local admission uses
+explicit S19 Hopper stand-ins, current480+72checks and2sm90a units compile;
+native fixtures/gates untouched. Official candidate TASK and independent
+prepare are unmeasured because no patch qualifies. No RULINGS entry.
+
 Current t<=32: DSM cluster of 8 CTAs/token x 256 threads with PDL; row slices reduce norms,
 route uses integer-order max keys/top8, not sort. Paired chain gains b1 -1.01 /-0.53 /-1.14 /-0.53,
 b2 -1.42 /-1.04 /-1.71 /-0.61, route -0.26 /-0.38 /-0.37 /-1.41 us at t1/8/16/32

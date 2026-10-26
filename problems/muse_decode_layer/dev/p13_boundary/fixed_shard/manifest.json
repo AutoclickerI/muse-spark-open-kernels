@@ -1,0 +1,33 @@
+{
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "payload_sha256": "1053b948387d50d3b3ad828285e5174f1abc9cc17fd0f343acef71ab2e8fef07",
+  "body_sha256": "535091d16098dc109cf82ad9a82447aa01af4694063c1264e516502a6e7bd928",
+  "checker_sha256": "710cbbd483b49d6eda45a40a0843c4609bba340333675c5bf5bd93232cca4ad6",
+  "weight_seed": 130001003,
+  "router_seed": 130001009,
+  "seeds": [
+    140001021,
+    140105750,
+    140210479,
+    140315208,
+    140419937,
+    140524666,
+    140629395,
+    140734124
+  ],
+  "arms": [
+    "BASE",
+    "AA",
+    "ROUTE",
+    "BOUND",
+    "BOTH"
+  ],
+  "measurement_protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "scope": "Excluded-work oracle only. Ready route/norm and external expert metadata, b1/b2, or both, precomputed per fresh fixture; never a candidate."
+}

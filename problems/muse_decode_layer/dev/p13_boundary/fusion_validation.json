@@ -1,0 +1,35 @@
+{
+  "candidate_sha256": "616867299e7a41aac56427446efe52fb4b5dcd2b5d49c4cca26240863453c4b9",
+  "shipped_sha256": "e8f6944028a446b1ec915c635b33a87d31e2aa8a0c98bba187b85267eceed5c3",
+  "kernel_sha256": {
+    "P13_POOL_CUDA": "85f58665cba00c8a49725ce1af9e68dfebb822df0f142e6d4d8f3c82568dae5c",
+    "P13_POOL_CPP": "e4e167b7ecfc64180404747c8a35d8d76990bc39911f6c7dcd8458d72aee5d37",
+    "P13_META_CUDA": "8f821c6369b2663c2004ae324481d9b199dccce9e84402fe4a0fb633221200b5",
+    "P13_META_CPP": "3815514d6f5cc44dea7e443bd43fb4cd565cdc80afbf11e86dbc7e53dc2a021e"
+  },
+  "native_compile": [
+    {
+      "name": "P13_POOL_CUDA",
+      "ok": true,
+      "msg": ""
+    },
+    {
+      "name": "P13_META_CUDA",
+      "ok": true,
+      "msg": ""
+    }
+  ],
+  "all_preflight_pass": true,
+  "exact_current_screen": "pair_screen_validation.json",
+  "sm90a_resources": {
+    "pool_registers": {
+      "MT1_T1_T8": 80,
+      "MT2_T16": 94
+    },
+    "metadata_registers": 64,
+    "stack_bytes": 0,
+    "spill_loads": 0,
+    "spill_stores": 0
+  },
+  "scope": "Compile-time resource counts, not a native timing partition; current exact wrapper480TASK+72public/nearby passes with explicit S19 Hopper stand-ins."
+}

@@ -1,0 +1,7 @@
+{
+  "status": "Superseded score interpretation; valid fixed-shard/coherent diagnostic only",
+  "oracle": "14f5558bcec443ea",
+  "fusion": "434fdf8f627d41ff",
+  "reason": "Generator defaulted local_start=0 and full dist=coherent; requested timeline/scored intent uses busiest shard and soft both S/F. No G0 nomination from this fixture.",
+  "correction": "Exact public ref_front biased top8 chooses busiest shard on every new fixture; all scored shapes dist=soft; fresh disjoint input seeds."
+}

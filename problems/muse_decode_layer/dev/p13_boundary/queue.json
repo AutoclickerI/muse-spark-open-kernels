@@ -1,0 +1,19 @@
+{
+  "utc": "20261026T125338Z",
+  "problem": "muse_bf16_proj",
+  "mode": "check",
+  "job": "611341aaf8454a24",
+  "sha256": "e843fdb812cca73390757daefb7fed40db2ac14d7c3d59ef4d747946841bbdd8",
+  "file": "problems/muse_bf16_proj/lab/lab_p13_oracle.py",
+  "source": "runs/muse_bf16_proj/20261026T125338Z_check_611341aaf8454a24.py",
+  "git": "bf77c04+dirty",
+  "note": "h200_lab problems/muse_decode_layer/dev/p13_boundary/out/p13_oracle.py: Correct P13 fixture: exact public ref_front biased top8 selects busiest expert shard separately each fresh input, both S/F distsoft as TASK/timeline9c16c850. Supersedes fixed-shard/coherent diagnostic14f5558b score interpretation (retained separately). ExactS19 BASE/AA/ROUTE/BOUND/BOTH;8 disjoint160001021+104729*i seeds x10 complete symmetric cold rounds/all12S/F; all samples/telemetry/local_start retained. Local wrapper480TASK+codec/tail pass.14k reservation.",
+  "snapshot": "runs/sent/e843fdb812cca733/lab_p13_oracle.py",
+  "lane": "P13",
+  "decision": "boundary/route deletion oracle",
+  "priority": 5,
+  "priority_override": false,
+  "payload_sha256": "6fcd94f9a3a504d29c133e402a773056dde3b2e1e24e506ac59abd5f75ba4623",
+  "screen": "screen_validation.json",
+  "supersedes_score_interpretation": "14f5558bcec443ea"
+}

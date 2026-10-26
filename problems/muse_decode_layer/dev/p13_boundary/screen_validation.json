@@ -1,0 +1,37 @@
+{
+  "payload_sha256": "6fcd94f9a3a504d29c133e402a773056dde3b2e1e24e506ac59abd5f75ba4623",
+  "wrapper_sha256": "96fd9ba452535d0d0d8486e68408f498a05d668bbe17ae19254c4babd247b37a",
+  "checks": {
+    "AA": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "BASE": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "BOTH": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "BOUND": {
+      "fail_count": 0,
+      "pass_count": 96
+    },
+    "ROUTE": {
+      "fail_count": 0,
+      "pass_count": 96
+    }
+  },
+  "wire_bytes": 9662,
+  "roundtrip_exact": true,
+  "tail_with_2000_suffix_pass": true,
+  "protocol": {
+    "aggregation": "arithmetic-mean-all-rounds",
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "selective_retiming": false
+  },
+  "scope": "S19 forced Hopper glue/attention stand-ins on sm120; native timings unmeasured"
+}

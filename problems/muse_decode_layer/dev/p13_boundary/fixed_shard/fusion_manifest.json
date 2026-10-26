@@ -1,0 +1,36 @@
+{
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "sha256": "6c8167d5d8174e919fdedde2cc964b61f49f65a31f99669a5847ec9d33a5d73d",
+  "source": "problems/muse_decode_layer/dev/p13_boundary/out/candidate.py",
+  "shipped_sha256": "08eb9e797102bc3d20f1d58ae4ccef8828511cf24f7aa0bf969cc8711d88b2bb",
+  "shipped_source": "problems/muse_decode_layer/dev/p13_boundary/out/candidate_packed.py",
+  "oracle_job": "14f5558bcec443ea",
+  "oracle_best": "BOTH",
+  "oracle_six_R": {
+    "R": 1.0588699845590357,
+    "CI95": [
+      1.0572425351002037,
+      1.0604999392062735
+    ],
+    "n": 8,
+    "log_se": 0.0006504907865225456,
+    "AA_log_se": 0.0003222048700640803,
+    "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+  },
+  "kernel_sha256": {
+    "P13_POOL_CUDA": "7b15e593e9207312555ef2300d6062ee4d80392acaebdbfdc0b423d5722c36a0",
+    "P13_POOL_CPP": "e4e167b7ecfc64180404747c8a35d8d76990bc39911f6c7dcd8458d72aee5d37",
+    "P13_META_CUDA": "89d1cf887c6ceb572868a590edba15c80b161dd3562136061004929326c18caf",
+    "P13_META_CPP": "3815514d6f5cc44dea7e443bd43fb4cd565cdc80afbf11e86dbc7e53dc2a021e"
+  },
+  "small_rows": [
+    1,
+    8,
+    16
+  ],
+  "large_rows": [
+    128,
+    256
+  ],
+  "scope": "Own route fusion: identical S19 raw pool producer with last-CTA norm/top8 epilogue at T1/8/16; row route plus last-CTA exact expert metadata at T128/256. T32 and b1/b2 unchanged."
+}

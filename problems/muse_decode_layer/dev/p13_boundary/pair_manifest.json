@@ -1,0 +1,193 @@
+{
+  "sha256": "616867299e7a41aac56427446efe52fb4b5dcd2b5d49c4cca26240863453c4b9",
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "baseline_arm": "INC",
+  "checker_sha256": "710cbbd483b49d6eda45a40a0843c4609bba340333675c5bf5bd93232cca4ad6",
+  "arms": {
+    "INC": {
+      "sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+      "rows": []
+    },
+    "SMALL": {
+      "sha256": "7406eca8941dcc1de1980815e809732635317e3422f23e8a2904a434066b745a",
+      "rows": []
+    },
+    "LARGE": {
+      "sha256": "0cba5d4f79444be4414102acc4cb2e12d7e8c1e90725b672919bfa6e4e7c147e",
+      "rows": []
+    }
+  },
+  "identities": {
+    "INC": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+    "A": "616867299e7a41aac56427446efe52fb4b5dcd2b5d49c4cca26240863453c4b9",
+    "SMALL": "7406eca8941dcc1de1980815e809732635317e3422f23e8a2904a434066b745a",
+    "LARGE": "0cba5d4f79444be4414102acc4cb2e12d7e8c1e90725b672919bfa6e4e7c147e",
+    "A2": "616867299e7a41aac56427446efe52fb4b5dcd2b5d49c4cca26240863453c4b9"
+  },
+  "confirmation_seeds": [
+    170001021,
+    170105750,
+    170210479,
+    170315208,
+    170419937,
+    170524666,
+    170629395,
+    170734124
+  ],
+  "selection_seeds": [
+    160001021,
+    160105750,
+    160210479,
+    160315208,
+    160419937,
+    160524666,
+    160629395,
+    160734124
+  ],
+  "nearby_arms": [
+    "A",
+    "INC",
+    "SMALL",
+    "LARGE"
+  ],
+  "nearby_expected_checks": 72,
+  "expected_TASK_checks": 480,
+  "measurement_protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "payload_sha256": "87fd4087ace753128facc19cbb2d1ca5bd25c787a6ad86ef06bc31a6875862ab",
+  "body_sha256": "bc98051eef2405b52089223c43c3ce9ae208c4a8b10607ca92d1a43e0af0faa5",
+  "nearby_cases": [
+    {
+      "batch": 1,
+      "ctx": 10,
+      "layer": "sliding"
+    },
+    {
+      "batch": 1,
+      "ctx": 3000,
+      "layer": "full"
+    },
+    {
+      "batch": 8,
+      "ctx": 2047,
+      "layer": "sliding"
+    },
+    {
+      "batch": 9,
+      "ctx": 5000,
+      "layer": "sliding",
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 3,
+      "ctx": 6000,
+      "layer": "full",
+      "q_len": 8,
+      "dist": "outliers"
+    },
+    {
+      "batch": 5,
+      "ctx": 5000,
+      "layer": "sliding",
+      "q_len": 8,
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 33,
+      "ctx": 20000,
+      "layer": "full",
+      "spread": "mixed",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "ctx": 300000,
+      "layer": "sliding",
+      "q_len": 8
+    },
+    {
+      "batch": 1,
+      "ctx": 1048576,
+      "layer": "full",
+      "q_len": 8
+    },
+    {
+      "batch": 4,
+      "ctx": 7000,
+      "layer": "sliding",
+      "q_len": 8,
+      "page": 1,
+      "kv_scale": 0.015625
+    },
+    {
+      "batch": 1,
+      "ctx": 80000,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 4,
+      "ctx": 6000,
+      "layer": "sliding",
+      "q_len": 8,
+      "dist": "soft"
+    },
+    {
+      "batch": 16,
+      "ctx": 20000,
+      "layer": "full",
+      "spread": "mixed",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "q_len": 1,
+      "ctx": 173,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 7,
+      "q_len": 1,
+      "ctx": 231,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 2,
+      "q_len": 8,
+      "ctx": 307,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 16,
+      "q_len": 8,
+      "ctx": 509,
+      "layer": "full",
+      "dist": "soft",
+      "page": 1
+    },
+    {
+      "batch": 32,
+      "q_len": 8,
+      "ctx": 523,
+      "layer": "sliding",
+      "dist": "soft",
+      "page": 1
+    }
+  ],
+  "oracle": "611341aaf8454a24"
+}

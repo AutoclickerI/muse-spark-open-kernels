@@ -1,0 +1,25 @@
+{
+  "authority": "R-20261026-1",
+  "download_root": "/data2/jihoon/muse_kernel/review/p13_boundary",
+  "own_empty_directories": true,
+  "executed_donor_scripts": false,
+  "copied_code": false,
+  "sources": {
+    "operatorstack": {
+      "repo": "https://github.com/operatorstack/open-kernel-challenge-solutions",
+      "commit": "6d9b77656b6c295e421be9e1424b0f8f99299b0a",
+      "path": "muse_decode_layer/submission.py",
+      "sha256": "f58b46f33fde7e7a744dc1c9480d4f9f90162a794554113abe61f89af6767546",
+      "license": "MIT",
+      "findings": "Standalone FusedPostNormResidualPreNorm and FusedMuseSparkRouting, separate pre-expert RMSNorm; no O/pool/unpool epilogue deleting S19 boundary calls."
+    },
+    "lee101": {
+      "repo": "https://github.com/lee101/openkernels",
+      "commit": "601c65413496cf63f942b4f15ca087839ef2f5cc",
+      "path": "muse_decode_layer/submission_v23.py",
+      "sha256": "5c6f323fb8852c3487b9b8e7dc602c6f2660e0d71bd2da4f9503b90add826ec4",
+      "license": "Apache-2.0",
+      "findings": "GLUE_CUDA standalone resid/rmsg/route (lines9879-9984); row CTA residual/norm, warp/token top8. No matched producer fusion deleting S19 calls."
+    }
+  }
+}

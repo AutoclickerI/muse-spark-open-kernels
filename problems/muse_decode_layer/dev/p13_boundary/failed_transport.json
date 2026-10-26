@@ -1,0 +1,37 @@
+{
+  "base_sha256": "62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a",
+  "payload_sha256": "4bc652c0036c0251177841b704f8925f2f4a29accc24726197d496ff4b9ccbdd",
+  "body_sha256": "7444dbf4d8820e648b7aed6900dfcefc2cd0db7af08f0c27ff5482b90a654923",
+  "checker_sha256": "710cbbd483b49d6eda45a40a0843c4609bba340333675c5bf5bd93232cca4ad6",
+  "weight_seed": 130001003,
+  "router_seed": 130001009,
+  "seeds": [
+    130001021,
+    130105750,
+    130210479,
+    130315208,
+    130419937,
+    130524666,
+    130629395,
+    130734124
+  ],
+  "arms": [
+    "BASE",
+    "AA",
+    "ROUTE",
+    "BOUND",
+    "BOTH"
+  ],
+  "measurement_protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 10,
+    "seed_count": 8,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "scope": "Excluded-work oracle only. Ready route/norm and external expert metadata, b1/b2, or both, precomputed per fresh fixture; never a candidate.",
+  "job": "752af6d0c91943f8",
+  "receipt": "runs/muse_prefill_layer/20261026T121714Z_check_752af6d0c91943f8.json",
+  "status": "unmeasured",
+  "reason": "LAB_PACKET_OVERSIZE needs11799 bytes, declared11744; no ratios recoverable"
+}

@@ -1,0 +1,20 @@
+{
+  "utc": "20261026T130205Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "fec0b6726aa0413d",
+  "sha256": "b0d0bb0932dca7662f19f8f4cd1713dd9ccfd499afdce6ee0165acaac7474feb",
+  "file": "problems/muse_moe_w4a16/lab/lab_p13_pair.py",
+  "source": "runs/muse_moe_w4a16/20261026T130205Z_check_fec0b6726aa0413d.py",
+  "git": "68ac383+dirty",
+  "note": "h200_lab problems/muse_decode_layer/dev/p13_boundary/out/p13_pair.py: Migrate unchanged correctedP13 payload87fd4087 from exhaustedprojectionquota (own unsubmitted938ab084 wait cancelled) to remainingMoE quota. Exact busiest-shard/bothsoft reference fixture, oracle611341aa BOTH1.051259[1.049754,1.052766]. Candidate route producer/meta fusion after64B stack fix; INC/A/A2/SMALL/LARGE,8 fixed fresh170001021+104729*i seeds x10 symmetric all-round cold; local_start,telemetry retained. Current two sm90a compiles+exact wrapper480TASK+72TASK/nearby+tail/codec pass; no native fixture or gate change.",
+  "snapshot": "runs/sent/b0d0bb0932dca766/lab_p13_pair.py",
+  "lane": "P13",
+  "decision": "boundary/route fusion paired G0 vs S19",
+  "priority": 5,
+  "priority_override": false,
+  "payload_sha256": "87fd4087ace753128facc19cbb2d1ca5bd25c787a6ad86ef06bc31a6875862ab",
+  "screen": "pair_screen_validation.json",
+  "supersedes_score_interpretation": "434fdf8f627d41ff",
+  "migration": "Own unsubmitted projection quota waiter3276205 cancelled; identical payload moved to MoE host"
+}
