@@ -1,11 +1,11 @@
 """Render reset-dependent admission packets in seconds; no unselected fallback kernels."""
-import argparse,ast,hashlib,json,re
+import argparse,ast,base64,hashlib,json,lzma,re
 from pathlib import Path
 import build_packet,kernels
 H=Path(__file__).resolve().parent
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','dsm_recheck','history','selected'))
+    ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','dsm_recheck','global_confirm','history','selected'))
     ap.add_argument('--selection',required=True,type=json.loads,help='DSM {batch:cluster}; history {"qt":1|2|4}; selected {"batch,q_len":[kind,qt,splits]}')
     a=ap.parse_args();body=(H/'out/body.py').read_text()
     cut=body.index('SEEDS=tuple(');body=body[:cut]+(H/'lab_body.inc').read_text()
@@ -25,6 +25,34 @@ def main():
                               'SEEDS=tuple(12100117+104729*i for i in range(35))')
             body=body.replace('ROUNDS=12','ROUNDS=14')
             body=body.replace("variants={'A':host,'A2':host,", "variants={'A':host,'A2':host,'A3':host,")
+    elif a.mode=='global_confirm':
+        assert not a.selection,'global confirmation has a receipt-selected fixed matrix'
+        # Use the exact native-gated global shader, not a rebuilt variant.
+        packet=(H.parents[3]/'runs/muse_attention_decode/20261026T015049Z_check_bb7239afc1b3487a.py').read_text()
+        payload=next(ast.literal_eval(n.value)[0][2] for n in ast.parse(packet).body
+            if isinstance(n,ast.Assign) and any(getattr(t,'id','')=='_LAB_PAYLOADS' for t in n.targets))
+        blob=next(n.args[0].value for n in ast.walk(ast.parse(payload)) if isinstance(n,ast.Call)
+            and isinstance(n.func,ast.Attribute) and n.func.attr=='b85decode' and isinstance(n.args[0],ast.Constant))
+        native=lzma.decompress(base64.b85decode(blob)).decode()
+        cuda=next(ast.literal_eval(n.value) for n in ast.parse(native).body
+            if isinstance(n,ast.Assign) and getattr(n.targets[0],'id','')=='cs_CUDA')
+        body+='\nKERNELS["global"]='+repr(cuda)+'\n'
+        body+='\nKERNELS["last"]='+repr(kernels.build_last.source())+'\n'
+        arms={}
+        for b,qt,ns in ((1,4,16),(16,1,8),(32,1,4)):
+            arms[(b,1)]={'GLOBAL':('global',qt,ns),'ALIAS':('global',qt,ns),
+                         'LAST':('last',qt,ns),'PP':('partial',qt,ns)}
+        cases=tuple(arms)
+        body=body.replace('SEEDS=tuple(7101149+104729*i for i in range(24))',
+                          'SEEDS=tuple(15100087+104729*i for i in range(35))')
+        body=body.replace('ROUNDS=12','ROUNDS=14')
+        body=body.replace("variants={'A':host,'A2':host,", "variants={'A':host,'A2':host,'A3':host,")
+        body=body.replace("        return apply_arm(dict(data,config=cfg),qkv,arm).view(-1,host.Q_SIZE)",
+                          "        if arm[0]=='partial':return host._layer_partial_port(qkv,data)\n        return apply_arm(dict(data,config=cfg),qkv,arm).view(-1,host.Q_SIZE)")
+        body=body.replace("for n,(k,qt,ns) in arms.items()}","for n,(k,qt,ns) in arms.items() if k!='partial'}")
+        body=body.replace("got=apply_arm(dict(data,config=cfg),qkv,a).view(-1,host.Q_SIZE)",
+                          "got=host._layer_partial_port(qkv,data) if a[0]=='partial' else apply_arm(dict(data,config=cfg),qkv,a).view(-1,host.Q_SIZE)")
+        body=body.replace("if n in arms:assert len(profiles[n]['nodes'])==1", "if n in arms and arms[n][0]!='partial':assert len(profiles[n]['nodes'])==1")
     elif a.mode=='history':
         qt=int(a.selection['qt']);assert qt in (1,2,4)
         # Reuse the exact reset early-history shader for a held-out confirmation,
@@ -61,8 +89,12 @@ def main():
     body=''.join(lines)
     body=body.replace("END shapes=%d/3 seeds=%d",'END shapes=%d/'+str(len(cases))+' seeds=%d')
     body=body.replace('META 16 fresh seeds x12 rotating cold READ rounds;',
-        'META '+('35 fresh seeds x14' if a.mode=='dsm_recheck' else '24 fresh seeds x12')+
+        'META '+('35 fresh seeds x14' if a.mode in ('dsm_recheck','global_confirm') else '24 fresh seeds x12')+
         ' rotating cold READ rounds; fresh graph pools/capture ownership per seed;')
+    if a.mode=='global_confirm':
+        body=body.replace('last-CTA decode16/32+verify1, early-history and DSM in one paired batch.',
+                          'native-gated global128/identical alias/last/partial-port at decode1/16/32 sliding.')
+        body=body.replace('one attention node.', 'global/last one launch; PP is the existing partial-port control.')
     # h200_lab's generic wrapper retains 9000 characters, less than the
     # original round2 board's 15000. Keep the complete archive within it.
     body=body.replace('>13500:', '>7000:').replace("<14500,'round2 receipt would truncate'", "<8800,'follow-up receipt would truncate'")

@@ -113,4 +113,18 @@ The unrelated native N128 verify prepare uses the existing frozen N64
 stand-in locally; decode shaders execute their actual sm120 math shims.
 The repaired packet embeds S11 independently and uses attention import
 hosting, so later decode prepare output cannot displace its archive.
-It is accepted as check **bb7239afc1b3487a**; its native result is pending.
+It completed as check **bb7239afc1b3487a**. All8 arms x16 fresh-seed
+TASK/cache gates pass at all4 shapes; `global_repair.json` audits them.
+The full-decode1 global recipes lose1.07712-1.25743; A:A1.000601,
+SE0.002014. Close only these full recipes. Sliding's best S11-relative
+signals are d1 GLOBAL1280.974683, d16 LAST0.975854 and d32 PP0.986235;
+A:A1.003476/1.000554/0.999184 (SE0.001814/0.002448/0.001713).
+Default/fixed-split identical controls and the full OLD/PP alias pass.
+No sliding arm is promoted against this older S11 baseline.
+
+The current-S14 confirmation is wrapper **b899a8fb**. It packs GLOBAL128,
+an identical ALIAS, exact LAST and existing PP at decode1/16/32 sliding,
+with A/A2/A3,35 disjoint seeds x14 cold rounds and fresh graph pools.
+All3 shapes x7 arms x2-seed local TASK/cache recapture gates pass.
+Only native shader bytes already proven in bb7239af are used; PP is a
+multi-launch control. Its native current-base performance remains unmeasured.

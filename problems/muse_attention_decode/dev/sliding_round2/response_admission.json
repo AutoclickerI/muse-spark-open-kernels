@@ -8,7 +8,7 @@
   ],
   "files": {
     "lab_body.inc": "b2d7ab60333b927b553a9f2d7c8bfcccc7b2cfa28d70771ff554fdea618389ad",
-    "followups.py": "13550e52726d4f454fa85547e6ea4fafbf5f70335a4a969a9d67bdb74cf115ec",
+    "followups.py": "475f4d742a863faed4a8edfc23c85103faeedbaeadef51bccbfa54c5c15c2813",
     "report.py": "f9955a6a228bff4c7477e6d85900cb7c91ec29419a552bbf7f2785bc93e069b2",
     "screen_layer.py": "81e06166acab80e017f1f494f5416c1429e90d0daa0a2da8f73616f5272997dc"
   },
@@ -235,5 +235,56 @@
     "402819c28279466d",
     "27a914f72bfb47c8",
     "857f78fa889f4646"
-  ]
+  ],
+  "global_repair_status": "done; all replay gates pass, full decode1 global recipes lose, sliding S11-relative signals need current S14 confirmation",
+  "global_confirmation": {
+    "queue": {
+      "state": "pending",
+      "utc": "20261026T023034Z",
+      "problem": "muse_attention_decode",
+      "mode": "check",
+      "job": "58f0b30ba8b8472f",
+      "sha256": "b899a8fb6b429424eac263c4bb17263037e349c1f8c1c8125996238ebbb270a1",
+      "file": "problems/muse_attention_decode/lab/lab_followup_global_confirm.py",
+      "source": "runs/muse_attention_decode/20261026T023034Z_check_58f0b30ba8b8472f.py",
+      "git": "2379657+dirty",
+      "note": "h200_lab problems/muse_attention_decode/dev/sliding_round2/out/followup_global_confirm.py: P5 response bb7239af: replay TASK-gated S11 global full-decode recipes lose; sliding global/last/partial-port signals need current S14 controls. Pack d1/d16/d32 sliding GLOBAL128/identical ALIAS/exact LAST/PP with A/A2/A3;35 disjoint seeds14cold rounds, fresh graph pools and rotated capture ownership, immediate full TASK20pct margin/cache gates. Exact native shader bytes retained; all3 shapes7arms2seed local admission passes. No promotion from old S11 baseline.",
+      "snapshot": "runs/sent/b899a8fb6b429424/lab_followup_global_confirm.py"
+    },
+    "payload_sha256": "b70ff21c9f800467aa30637418270c7598e4ae949221ce11a61e2dd3bc1d8e61",
+    "seeds": 35,
+    "rounds": 14,
+    "capture_protocol": "fresh pools and rotated capture ownership per seed",
+    "local_TASK_counts": {
+      "d1S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "GLOBAL": 2,
+        "ALIAS": 2,
+        "LAST": 2,
+        "PP": 2
+      },
+      "d16S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "GLOBAL": 2,
+        "ALIAS": 2,
+        "LAST": 2,
+        "PP": 2
+      },
+      "d32S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "GLOBAL": 2,
+        "ALIAS": 2,
+        "LAST": 2,
+        "PP": 2
+      }
+    },
+    "local_only": true,
+    "interpretation": "native current-S14 performance unmeasured; no new P4 promotion"
+  }
 }

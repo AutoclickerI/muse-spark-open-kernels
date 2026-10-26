@@ -512,11 +512,7 @@
       }
     ]
   },
-  "dsm_selection": {
-    "1": 16,
-    "16": 8
-  },
-  "promotion": "none; DSM stage winners require whole-layer confirmation",
+  "promotion": "verify1 sliding cooperative DSM QT4/C16 qualified by6a0b3f09 and handed to P4",
   "global_repair": {
     "source": "repair_global_lab.py",
     "payload_sha256": "1bf605cf0a7e25af7d998d0023301d2cf8ae7d20fb6bc50721aacc8947f3d164",
@@ -530,7 +526,8 @@
     },
     "wrapper_sha256": "da61a8f26d14c598daa9df6cabc4165225d898eb4511be61d71cdd9a25ada749",
     "sender": 112961,
-    "job": "bb7239afc1b3487a"
+    "job": "bb7239afc1b3487a",
+    "status": "done; see global_repair.json"
   },
   "followups": {
     "problems/muse_attention_decode/lab/lab_followup_dsm.py": {
@@ -541,7 +538,9 @@
       "file": "problems/muse_attention_decode/lab/lab_followup_dsm.py",
       "sha256": "768d81052c11dcb121ebd11a8c441db08e8f162ab7a61fdea6f4ceb24cce1c28",
       "note": "h200_lab problems/muse_attention_decode/dev/sliding_round2/out/followup_dsm.py: P5 DSM response to b05713ec: qualifying verify1 C16 0.71927 and verify16 C8 0.84911 versus A, A:A0.96012/0.97988; verify32 excluded as measured loss. Pack exact RESET/COOP/half/double clusters,24 held-out seeds,full S14 TASK20pct margin and immediate per-arm cache checks; unchanged kernels, strengthened admission and9000-char archive budget. Actual selected-shape local matrix passes.",
-      "not_before": 0
+      "not_before": 0,
+      "status": "done",
+      "job": "6c26b14fdd28458b"
     },
     "problems/muse_attention_decode/lab/lab_gated_global_lab.py": {
       "pid": 112961,
@@ -551,7 +550,9 @@
       "file": "problems/muse_attention_decode/lab/lab_gated_global_lab.py",
       "sha256": "da61a8f26d14c598daa9df6cabc4165225d898eb4511be61d71cdd9a25ada749",
       "note": "h200_lab problems/muse_attention_decode/dev/cluster_sliding/out/gated_global_lab.py: P5 global response to ae6cd278: original captured recipes were unmeasured because only finite outputs were checked. Preserve exact S11 and C64/C128/W4/W8/OLD/PP kernels;16 seeds8rotating cold rounds, public full TASK20pct margin on every captured arm/seed, immediate cache checks, complete CG archive. Independent embedded S11 on attention host avoids later decode prepare log displacement. Actual local4shapes x8arms x2seeds gates pass; local N64 stand-in only for unrelated verify prepare.",
-      "not_before": 0
+      "not_before": 0,
+      "status": "done",
+      "job": "bb7239afc1b3487a"
     }
   },
   "dsm_confirmation_job": "6c26b14fdd28458b",
@@ -570,5 +571,59 @@
     "qualifying_job": "6a0b3f0987e94ba5",
     "pooled_ratio": 0.9529128267552293,
     "handoff": "../sliding_round2/handoff.json"
+  },
+  "stage_confirmation_selection": {
+    "1": 16,
+    "16": 8
+  },
+  "global_confirmation": {
+    "queue": {
+      "state": "pending",
+      "utc": "20261026T023034Z",
+      "problem": "muse_attention_decode",
+      "mode": "check",
+      "job": "58f0b30ba8b8472f",
+      "sha256": "b899a8fb6b429424eac263c4bb17263037e349c1f8c1c8125996238ebbb270a1",
+      "file": "problems/muse_attention_decode/lab/lab_followup_global_confirm.py",
+      "source": "runs/muse_attention_decode/20261026T023034Z_check_58f0b30ba8b8472f.py",
+      "git": "2379657+dirty",
+      "note": "h200_lab problems/muse_attention_decode/dev/sliding_round2/out/followup_global_confirm.py: P5 response bb7239af: replay TASK-gated S11 global full-decode recipes lose; sliding global/last/partial-port signals need current S14 controls. Pack d1/d16/d32 sliding GLOBAL128/identical ALIAS/exact LAST/PP with A/A2/A3;35 disjoint seeds14cold rounds, fresh graph pools and rotated capture ownership, immediate full TASK20pct margin/cache gates. Exact native shader bytes retained; all3 shapes7arms2seed local admission passes. No promotion from old S11 baseline.",
+      "snapshot": "runs/sent/b899a8fb6b429424/lab_followup_global_confirm.py"
+    },
+    "payload_sha256": "b70ff21c9f800467aa30637418270c7598e4ae949221ce11a61e2dd3bc1d8e61",
+    "seeds": 35,
+    "rounds": 14,
+    "capture_protocol": "fresh pools and rotated capture ownership per seed",
+    "local_TASK_counts": {
+      "d1S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "GLOBAL": 2,
+        "ALIAS": 2,
+        "LAST": 2,
+        "PP": 2
+      },
+      "d16S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "GLOBAL": 2,
+        "ALIAS": 2,
+        "LAST": 2,
+        "PP": 2
+      },
+      "d32S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "GLOBAL": 2,
+        "ALIAS": 2,
+        "LAST": 2,
+        "PP": 2
+      }
+    },
+    "local_only": true,
+    "interpretation": "native current-S14 performance unmeasured; no new P4 promotion"
   }
 }

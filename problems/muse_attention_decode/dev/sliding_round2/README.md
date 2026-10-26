@@ -171,8 +171,13 @@ functional examples, not measured selections.
 
 The global lab **ae6cd27877cc4ee2** has no captured-path TASK gates and is
 unmeasured. Its exact-kernel repaired4-shape/8-arm packet is **da61a8f2**,
-sender **112961**, priority5, accepted check **bb7239afc1b3487a**;
-its native result is pending. See `../cluster_sliding/README.md`.
+sender **112961**, priority5, completed check **bb7239afc1b3487a**.
+Replay gates pass; full-decode1 global recipes lose, and sliding signals
+against S11 require a current-base pair. `followups.py global_confirm
+--selection '{}'` builds wrapper **b899a8fb**: exact-S14 decode1/16/32,
+GLOBAL/identical ALIAS/exact LAST/PP, A/A2/A3,35 fresh seeds x14 rounds,
+fresh graph pools. The actual3-shape/7-arm/two-seed local matrix passes;
+native confirmation is queued. See `../cluster_sliding/README.md`.
 History **402819c28279466d** is closed by its decision rule: bestE4/OLD4
 0.997414 (SE0.001244) does not exceed A:A1.009555 (SE0.006105;
 range0.98824-1.09546) or3SE. All16 fresh-seed gates pass, and clocks prove
