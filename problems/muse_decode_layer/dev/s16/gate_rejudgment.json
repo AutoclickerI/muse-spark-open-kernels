@@ -1,0 +1,753 @@
+{
+  "incumbent": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "old_selected": [
+    {
+      "name": "dsm_16",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 16,
+        "16": 16,
+        "32": 16
+      }
+    },
+    {
+      "name": "dsm_8",
+      "family": "dsm",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 8,
+        "16": 8,
+        "32": 8
+      }
+    },
+    {
+      "name": "epi_PAIR",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "PAIR"
+    }
+  ],
+  "new_selected": [
+    {
+      "name": "global_C128",
+      "family": "global",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "nk": 128,
+      "split": null
+    },
+    {
+      "name": "dsm_16",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 16,
+        "16": 16,
+        "32": 16
+      }
+    },
+    {
+      "name": "dsm_8",
+      "family": "dsm",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 8,
+        "16": 8,
+        "32": 8
+      }
+    },
+    {
+      "name": "epi_NORM",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "kind": "NORM"
+    },
+    {
+      "name": "epi_PAIR",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "PAIR"
+    },
+    {
+      "name": "layer_release_attention",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "release_attention"
+    },
+    {
+      "name": "layer_release_moe",
+      "family": "layer",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "release_moe"
+    },
+    {
+      "name": "layer_library_o",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "library_o"
+    },
+    {
+      "name": "layer_library_pool128",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ]
+      ],
+      "kind": "library_pool128"
+    }
+  ],
+  "changes": [
+    {
+      "arm": "global_C64",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0035966907135276,
+      "CI95_shape_or_stage": [
+        0.9936236385739506,
+        1.0136698428961366
+      ],
+      "CI95_stage_approx": null,
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "global_C128",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.004141838284081,
+      "CI95_shape_or_stage": [
+        0.9941633688437146,
+        1.0142204621412092
+      ],
+      "CI95_stage_approx": null,
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "global_W8",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.001302457142442,
+      "CI95_shape_or_stage": [
+        0.9670076473227706,
+        1.0368135282645177
+      ],
+      "CI95_stage_approx": null,
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "early_E4",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0026043193478245,
+      "CI95_shape_or_stage": [
+        0.9901715063430387,
+        1.0151932415096825
+      ],
+      "CI95_stage_approx": null,
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "dsm_4",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0554741581764073,
+      "CI95_shape_or_stage": [
+        1.0465234070801013,
+        1.0645014636475565
+      ],
+      "CI95_stage_approx": null,
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "dsm_4",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0347358175296508,
+      "CI95_shape_or_stage": [
+        1.0246755114389676,
+        1.0448948961170983
+      ],
+      "CI95_stage_approx": null,
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0016125962800109,
+      "CI95_shape_or_stage": null,
+      "CI95_stage_approx": [
+        0.997078465374,
+        1.0061881527271463
+      ],
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0016125962800109,
+      "CI95_shape_or_stage": null,
+      "CI95_stage_approx": [
+        0.997078465374,
+        1.0061881527271463
+      ],
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0011012113324658,
+      "CI95_shape_or_stage": null,
+      "CI95_stage_approx": [
+        0.9961696480098303,
+        1.0060818452410296
+      ],
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "old_nomination": false,
+      "new_nomination": true,
+      "R_shape_or_stage": 1.0011012113324658,
+      "CI95_shape_or_stage": null,
+      "CI95_stage_approx": [
+        0.9961696480098303,
+        1.0060818452410296
+      ],
+      "six_load_CI95": null,
+      "reason": "selection only; composed candidate requires held-out six-load confirmation"
+    },
+    {
+      "arm": "layer_release_attention",
+      "wins": true,
+      "R": 1.0016675062900413,
+      "all_row_R": 1.0016675062900413,
+      "CI95": null,
+      "CI95_approx": [
+        0.9957795025507215,
+        1.0075903255562377
+      ],
+      "shape_selection": [],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f88fda4aac144374",
+      "old_nomination": true,
+      "new_nomination": true,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_release_moe",
+      "wins": true,
+      "R": 1.0018114705841836,
+      "all_row_R": 1.0018114705841836,
+      "CI95": null,
+      "CI95_approx": [
+        0.9953924312506948,
+        1.0082719047130029
+      ],
+      "shape_selection": [],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f88fda4aac144374",
+      "old_nomination": false,
+      "new_nomination": true,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_release_projections",
+      "wins": false,
+      "R": 0.9997292018934929,
+      "all_row_R": 0.9997292018934929,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f88fda4aac144374",
+      "old_nomination": true,
+      "new_nomination": false,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_library_o",
+      "wins": true,
+      "R": 1.0010333154331685,
+      "all_row_R": 1.0008326893254447,
+      "CI95": null,
+      "CI95_approx": [
+        0.9981479993233698,
+        1.0039269720386244
+      ],
+      "shape_selection": [
+        {
+          "load": "16x8",
+          "R": 1.0048433237573329,
+          "selected": true
+        },
+        {
+          "load": "32x8",
+          "R": 1.0013659910996677,
+          "selected": true
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6",
+      "old_nomination": false,
+      "new_nomination": true,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_library_pool128",
+      "wins": true,
+      "R": 1.0003125850511183,
+      "all_row_R": 1.0010547273183028,
+      "CI95": null,
+      "CI95_approx": [
+        0.9997496389476157,
+        1.0008758481422977
+      ],
+      "shape_selection": [
+        {
+          "load": "16x8",
+          "R": 1.0018769765589164,
+          "selected": true
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6",
+      "old_nomination": false,
+      "new_nomination": true,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_library_unpool128",
+      "wins": false,
+      "R": 1.0,
+      "all_row_R": 1.001542427710906,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [
+        {
+          "load": "16x8",
+          "R": 0.9965840233686598,
+          "selected": false
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6",
+      "old_nomination": false,
+      "new_nomination": false,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_library_v1full",
+      "wins": false,
+      "R": 1.0,
+      "all_row_R": 0.9974288279660323,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [
+        {
+          "load": "1x8",
+          "R": 0.9920912260486924,
+          "selected": false
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6",
+      "old_nomination": false,
+      "new_nomination": false,
+      "six_load_CI95": null
+    },
+    {
+      "arm": "layer_library_v32slide",
+      "wins": false,
+      "R": 1.0,
+      "all_row_R": 0.9988045324707031,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [
+        {
+          "load": "32x8",
+          "R": 0.9936197371287921,
+          "selected": false
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6",
+      "old_nomination": false,
+      "new_nomination": false,
+      "six_load_CI95": null
+    }
+  ],
+  "S15": {
+    "proj": {
+      "R": 1.0196543081973384,
+      "CI95_approx": [
+        1.01683366427317,
+        1.0224827764416746
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    },
+    "last": {
+      "R": 1.0055133131739828,
+      "CI95_approx": [
+        1.0017888572111533,
+        1.0092516159390794
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    },
+    "regmax": {
+      "R": 1.0048903179074666,
+      "CI95_approx": [
+        1.0023215057085213,
+        1.0074657136188638
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    },
+    "qkv": {
+      "R": 1.0076034748693756,
+      "CI95_approx": [
+        1.0049951751234276,
+        1.010218544028484
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    },
+    "o": {
+      "R": 1.0039111032301606,
+      "CI95_approx": [
+        1.0007548509307098,
+        1.0070773099440904
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    },
+    "unpooler": {
+      "R": 1.0109029999914725,
+      "CI95_approx": [
+        1.008361492176294,
+        1.0134509135074088
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    },
+    "S14": {
+      "R": 1.0256764476197946,
+      "CI95_approx": [
+        1.0215697467345144,
+        1.0297996574044572
+      ],
+      "CI95": null,
+      "promote": false,
+      "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+    }
+  },
+  "unmeasured": [
+    {
+      "batch": "boundary",
+      "wins": false,
+      "reason": "StopIteration:",
+      "unmeasured": true
+    },
+    {
+      "batch": "nearby",
+      "wins": false,
+      "unmeasured": true,
+      "reason": "AssertionError:('problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py', 'receipt absent or ambiguous', 0)"
+    }
+  ],
+  "notes": [
+    "Legacy S15 intervals are explicitly approximate; discarded seed pairs cannot be recovered.",
+    "Shape/stage confidence intervals are not whole-layer R intervals.",
+    "No component receipt promotes S16; its held-out composition is checked by score_gate.py."
+  ]
+}

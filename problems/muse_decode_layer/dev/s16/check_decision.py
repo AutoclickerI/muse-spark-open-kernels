@@ -65,7 +65,7 @@ def main():
  assert {tuple(r) for r in policy['rows']}==set(patches.registry()['boundary_R']['rows'])
  source,meta=patches.compose(selected);compile(source,'<synthetic-selection>','exec')
  report=dict(passed=True,synthetic_only=True,performance_claim=False,selected=selected,
-             checks=['wins beyond A:A','neutral rejected','incomplete seeds rejected','all seven receipt schemas decoded','both unchanged layer variants retained for token policies','source-wide policy retains every affected row','selected source composition parses'])
+             checks=['selection by measured shape ratio; confirmation deferred','neutral rejected','incomplete seeds rejected','all seven receipt schemas decoded','both unchanged layer variants retained for token policies','source-wide policy retains every affected row','selected source composition parses'])
  (H/'decision_validation.json').write_text(json.dumps(report,indent=2)+'\n')
  print('PASS synthetic receipt schemas, policy scope and compound emission; not H200 evidence')
 if __name__=='__main__':main()

@@ -39,7 +39,10 @@ def main():
                         if not line.startswith(('from checks import','from nvfp4 import')))
     checker='\n'.join(line for text in ((problem/'checks.py').read_text(),(problem/'nvfp4.py').read_text(),reference)
                       for line in text.splitlines() if not line.startswith('from __future__ import'))
-    body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS=tuple(4910273+104729*i for i in range(16))\n'
+    selection_seeds=sorted(set([172903+7919*i for i in range(16)]+[173101+7919*i for i in range(8)]+[3102917+104729*i for i in range(16)]+[6107923+7919*i for i in range(8)]+[5353+7919*i for i in range(16)]+[9000+m+97*i for m in (1,8,16,32) for i in range(16)]))
+    confirmation_seeds=[104910273+104729*i for i in range(16)]
+    assert not set(selection_seeds)&set(confirmation_seeds)
+    body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS='+repr(tuple(confirmation_seeds))+'\n'
     body+='import base64,lzma,json\nS16_BUNDLE=json.loads(lzma.decompress(base64.b85decode('+repr(bundle)+')))\n'
     body+='S16_CHECKER='+repr(checker)+'\n'
     body+=(H/'lab.py.inc').read_text()
@@ -67,13 +70,14 @@ def _s16_origin_prepare(weights):
 _candidate_prepare=globals()['prepare']
 def prepare(weights):return _candidate_prepare(weights)
 '''
+    outer+='\n_s16_entry_kernel=globals()["kernel_fn"]\ndef kernel_fn(data,state):\n    return _s16_entry_kernel(data,state)\n'
     host=H/'generated/s16_host.py';host.write_text(outer)
     sys.path.insert(0,str(R/'tools'));import h200_lab
-    wrapped,_=h200_lab.build([(pp.stem,sha(payload)[:16],payload)],'muse_decode_layer',base_file=host)
+    wrapped,_=h200_lab.build([(pp.stem,sha(payload)[:16],payload)],'muse_decode_layer',base_file=host,phase='import',import_budget=620)
     assert len(wrapped.encode())<1_000_000,len(wrapped.encode())
-    target=R/'problems/muse_decode_layer/lab/lab_s16_payload.py';target.write_text(wrapped)
+    target=R/'problems/muse_decode_layer/lab'/('lab_s16_'+meta['sha256'][:12]+'.py');target.write_text(wrapped)
     meta.update(candidate=str(candidate.relative_to(R)),wrapper=str(target.relative_to(R)),wrapper_sha256=sha(wrapped),
-                payload=str(pp.relative_to(R)),payload_sha256=sha(payload),host_file=str(host.relative_to(R)),arms=arms,checker_sha256=sha(checker))
+                payload=str(pp.relative_to(R)),payload_sha256=sha(payload),host_file=str(host.relative_to(R)),arms=arms,checker_sha256=sha(checker),selection_seeds=selection_seeds,confirmation_seeds=confirmation_seeds,confirmation_weight_seed=104910271,confirmation_router_seed=104910269)
     (H/'generated/lab_manifest.json').write_text(json.dumps(meta,indent=2)+'\n')
     print('S16 candidate',meta['sha256'],'wrapper',meta['wrapper_sha256'],'bytes',len(wrapped))
 

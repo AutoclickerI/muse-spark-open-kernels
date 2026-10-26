@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "synthetic_only": true,
+  "checks": [
+    "six-load win with losing load and losing piece",
+    "noise CI crossing one rejected",
+    "official TASK required on every arm/seed",
+    "selection/confirmation disjoint",
+    "geomean policy ranking differs from arithmetic mean",
+    "46/16 load weights"
+  ],
+  "R": 1.026395644808427,
+  "CI95": [
+    1.0252665092352147,
+    1.0275260239091817
+  ]
+}

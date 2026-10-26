@@ -1,7 +1,7 @@
 """Read exact reset receipts and emit S16 plus its auditable selection manifest.
 
-Stage wins nominate a second whole-layer experiment; they never freeze S16.
-The existing S15 report is the mandatory admission gate for the integration base.
+Measured shape ratios and six-load policy R nominate an experiment; only its
+held-out confirmation can promote it. Exact S15 60254883 is the frozen base.
 """
 import argparse
 import base64
@@ -18,6 +18,7 @@ import subprocess
 import sys
 from pathlib import Path
 import patches
+from score_gate import interval, scores
 
 H=Path(__file__).resolve().parent;R=H.parents[3]
 
@@ -30,10 +31,12 @@ def archive(log,tag):
 
 def paired(values,control,min_n=3):
     assert len(values)>=min_n and len(values)==len(control)
-    assert all(math.isfinite(v) and v>0 for v in values+control)
-    mean=statistics.mean(values);se=statistics.stdev(values)/math.sqrt(len(values))
-    noise=max(abs(x-1) for x in control)
-    return dict(ratio=mean,se=se,n=len(values),AA_radius=noise,wins=mean+1.96*se<1-noise)
+    summary=interval([1/v for v in values],[1/v for v in control])
+    # Selection uses measured ratios. Only the independent composition lab can
+    # promote; neither significance nor A:A is a per-shape selection gate.
+    return dict(ratio=math.exp(statistics.mean(map(math.log,values))),
+                **summary,wins=summary['R']>1,stage_only=True,
+                status='selection evidence; held-out six-load confirmation required')
 
 
 def read_receipt(entry,files):
@@ -78,7 +81,7 @@ def nominate(receipts):
         global_rows=archive(receipts['global']['log'],'CS_XZ85')
         assert len(global_rows)==4
         for cell in global_rows:
-            assert cell['seeds']==16 and not any(not v[0] for v in cell['gate'].values()) if cell.get('gate') else cell['seeds']==16
+            assert cell['seeds']==16
             label=cell['case'];row=(int(re.search(r'\d+',label)[0]),1,label.endswith('S'))
             reference='OLD'  # last-CTA sliding / direct-partials full = S15 attention
             times=cell['times'];aa=[b/a for a,b in zip(times['A'],times['A2'])]
@@ -113,7 +116,7 @@ def nominate(receipts):
             for kind in ('mix25','mix50','gap','mixgap','tc25','ping','ping25'):
                 if kind in numbers:
                     mean,lo,hi=numbers[kind]
-                    candidate('soft_'+kind,(int(match[1]),8,False),dict(ratio=mean,range=[lo,hi],AA_radius=noise,n=3,wins=hi<1-noise))
+                    candidate('soft_'+kind,(int(match[1]),8,False),dict(ratio=mean,range=[lo,hi],AA_radius=noise,n=3,R=1/mean,CI95=None,selection_range=[1/hi,1/lo],wins=mean<1,stage_only=True))
 
     def parse_epi():
         epi=receipts['epi']['log']
@@ -121,10 +124,11 @@ def nominate(receipts):
         for m in (1,8,16,32):
             noise_match=re.search(rf'^AA M{m} abs=([\d.]+) us',epi,re.M);assert noise_match
             aa_us=float(noise_match[1])
-            for kind in ('VEC','PROD','NORM','PAIR','ONCE','ONCE_VEC','ONCE_PAIR'):
+            kinds=('VEC','PROD','NORM','PAIR')+(('ONCE','ONCE_VEC','ONCE_PAIR') if m!=1 else ())
+            for kind in kinds:
                 match=re.search(rf'^PAIR M{m} {kind} us=([\d.]+) r=([\d.]+) se=([\d.]+)',epi,re.M);assert match
                 us,mean,se=map(float,match.groups());radius=aa_us/max(us/mean,1e-12)
-                proof=dict(ratio=mean,se=se,n=16,AA_radius=radius,wins=mean+1.96*se<1-radius)
+                proof=dict(ratio=mean,se=se,n=16,R=1/mean,CI95=None,CI95_approx=[1/(mean+2.1315*se),1/(mean-2.1315*se)],AA_radius=radius,wins=mean<1,stage_only=True)
                 b,q=(1,8) if m==8 else (m,1)
                 for w in (True,False):candidate(('reuse_' if kind.startswith('ONCE') else 'epi_')+kind,(b,q,w),proof)
 
@@ -138,7 +142,7 @@ def nominate(receipts):
             for kind in ('DIRECT_CLUSTER1','DIRECT_NORMAL','DIRECT_SERIAL','DEEP_SERIAL'):
                 match=re.search(rf'^M{m} {kind} n=48 us=[\d.]+ pair=([\d.]+) lo/hi=([\d.]+)/([\d.]+).*TASK=PASS',heavy,re.M);assert match
                 mean,lo,hi=map(float,match.groups())
-                for w in (True,False):candidate('heavy_'+kind,(m//8,8,w),dict(ratio=mean,range=[lo,hi],AA_radius=radius,n=48,wins=mean<1-radius and hi<1))
+                for w in (True,False):candidate('heavy_'+kind,(m//8,8,w),dict(ratio=mean,range=[lo,hi],AA_radius=radius,n=48,R=1/mean,CI95=None,selection_range=[1/hi,1/lo],wins=mean<1,stage_only=True))
 
     def parse_boundary():
         boundary=decode_boundary(receipts['boundary']['log'])
@@ -147,17 +151,26 @@ def nominate(receipts):
             for kind in arms:
                 spec=registry[family+'_'+kind];rows=[];proofs=[]
                 for cell in cells:
-                    assert not cell['gates'] and len(cell['samples'])==16
+                    assert len(cell['samples'])==16
                     label=cell['case'];row=(int(re.search(r'\d+',label)[0]),1 if label.startswith('d') else 8,label.endswith('S'))
                     if list(row) not in [list(x) for x in spec['rows']]:continue
                     samples=cell['samples'];aa=[s['A2']/s['A'] for s in samples]
                     proof=paired([s[kind]/s['A'] for s in samples],aa,16)
                     rows.append(row);proofs.append(proof)
-                # These source-wide transformations have not been selectively
-                # specialized; reject a policy with any affected regression/noise.
-                if rows and all(p['wins'] for p in proofs):
-                    for row,proof in zip(rows,proofs):candidate(family+'_'+kind,row,proof)
-                else:evidence.append(dict(arm=family+'_'+kind,wins=False,reason='not every measured affected row clears A:A',rows=[list(r) for r in rows]))
+                # Rank source-wide alternatives by the six-load geomean,
+                # retaining regressions. Unsampled effects remain unconfirmed.
+                if rows:
+                    measured={r:cell for r,cell in zip(rows,[c for c in cells if (int(re.search(r'\d+',c['case'])[0]),1 if c['case'].startswith('d') else 8,c['case'].endswith('S')) in rows])}
+                    seed_times={}
+                    for control in boundary['confirmation']['cells']:
+                        label=control['case'];row=(int(re.search(r'\d+',label)[0]),1 if label.startswith('d') else 8,label.endswith('S'))
+                        sampled=measured.get(row)
+                        seed_times[label]=[dict(A=v['A'],A2=v['A2'],B=(sampled['samples'][i][kind] if sampled else v['A'])) for i,v in enumerate(control['samples'])]
+                    rr,_=scores(seed_times,'A','B');aa,_=scores(seed_times,'A','A2')
+                    summary=interval(rr,aa)
+                    evidence.append(dict(arm=family+'_'+kind,**summary,ratio=1/summary['R'],wins=summary['R']>1,
+                                         stage_only=True,rows=[list(r) for r in rows],unsampled_effects='unmeasured; confirmation covers all twelve shapes'))
+                    if summary['R']>1:choices[('policy',family+'_'+kind)]=(copy.deepcopy(spec),1/summary['R'])
 
     for name,parse in ((name,fn) for name,fn in [('global',parse_global),('early',parse_early),('dsm',parse_dsm),('soft',parse_soft),('epi',parse_epi),('heavy',parse_heavy),('boundary',parse_boundary)]):
         if name not in receipts:
@@ -165,7 +178,7 @@ def nominate(receipts):
             continue
         previous=copy.deepcopy(choices)
         try:parse()
-        except (AssertionError,KeyError,ValueError) as exc:
+        except (AssertionError,KeyError,ValueError,StopIteration,lzma.LZMAError,EOFError) as exc:
             # Do not lose independent valid batches because this host returned
             # incomplete gates or a different archive schema. Preserve the cause.
             choices.clear();choices.update(previous)
@@ -178,7 +191,7 @@ def nominate(receipts):
     # are alternative policies, not independent effects. Choose the measured best.
     policies=[v for v in grouped.values() if v['family'] in ('pdl','boundary')]
     if policies:
-        keep=min(policies,key=lambda s:statistics.mean(e['ratio'] for e in evidence if e['arm']==s['name'] and e.get('wins') and 'ratio' in e))
+        keep=max(policies,key=lambda s:next(e['R'] for e in evidence if e.get('arm')==s['name'] and 'R' in e))
         # These edits are source-wide. R/RP also change unmeasured M1/M8 in
         # the component batch; S16 must test those as affected loads, never
         # mislabel them as untouched just because only M16/M32 were sampled.
@@ -196,26 +209,25 @@ def main():
     unavailable={}
     for entry in inventory:
         name=keys[entry['sha256'][:8]]
+        if name=='s15':
+            q=json.loads((H.parent/'s15/queue.json').read_text())
+            entry=dict(entry,sha256=q['wrapper_sha256'])
         try:receipts[name]=read_receipt(entry,files)
         except AssertionError as exc:
             if name=='s15':raise
             unavailable[name]=str(exc)
-    # Run exactly the existing S15 freeze gate. No source is emitted on failure.
-    subprocess.run([sys.executable,str(H.parent/'s15/report.py'),receipts['s15']['job']],cwd=R,check=True,capture_output=True)
-    report=json.loads((H.parent/'s15'/(receipts['s15']['job'][:8]+'_report.json')).read_text())
-    assert report['freeze_gate'],'S15 promotion gate failed; S16 base is not admitted'
-    frozen=R/'problems/muse_decode_layer/cand_r3_best7_s15_final.py'
-    source=patches.BASE.read_text();assert hashlib.sha256(source.encode()).hexdigest()==report['source_sha256']
-    frozen.write_text(source)
+    # Exact S15 is the incumbent by owner decision. Never re-gate it or
+    # substitute a pruned S15c when the evidence or a report is incomplete.
+    assert hashlib.sha256(patches.BASE.read_bytes()).hexdigest()==patches.BASE_SHA
+    (R/'problems/muse_decode_layer/cand_r3_best7_s15_final.py').write_bytes(patches.BASE.read_bytes())
     selected,evidence=nominate(receipts)
-    assert selected,'no executable reset arm cleared its measured A:A envelope'
-    admission=json.loads((H/'admission.json').read_text())
-    for spec in selected:
-        digest=patches.compose([spec['name']])[1]['sha256']
-        assert all(admission[spec['name']][m]['passed'] and admission[spec['name']][m]['sha256']==digest
-                   for m in ('normal','forced')),spec['name']
+    import layer_decisions
+    layer_selected,layer_evidence,layer_receipts=layer_decisions.nominate(files)
+    selected+=layer_selected;evidence+=layer_evidence
+    receipts.update({'layer_'+k:v for k,v in layer_receipts.items()})
+    assert selected,'no measured selection improvement'
     source,meta=patches.compose(selected)
-    out=H/'generated/s16.py';out.write_text(source)
+    out=H/'generated/s16.py';out.parent.mkdir(parents=True,exist_ok=True);out.write_text(source)
     result=dict(meta,source=str(out.relative_to(R)),status='experimental; combined local screen and whole-layer A/B required',
                 reset_receipts={k:{name:v for name,v in row.items() if name!='log'} for k,row in receipts.items()},unavailable_receipts=unavailable,evidence=evidence)
     a.out.parent.mkdir(parents=True,exist_ok=True);a.out.write_text(json.dumps(result,indent=2)+'\n')

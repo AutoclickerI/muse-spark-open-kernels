@@ -1,0 +1,296 @@
+{
+  "selected": [
+    {
+      "name": "layer_release_attention",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "release_attention"
+    },
+    {
+      "name": "layer_release_projections",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ]
+      ],
+      "kind": "release_projections"
+    }
+  ],
+  "evidence": [
+    {
+      "batch": "nearby",
+      "wins": false,
+      "unmeasured": true,
+      "reason": "AssertionError:('problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py', 'receipt absent or ambiguous', 0)"
+    },
+    {
+      "arm": "layer_release_attention",
+      "wins": true,
+      "loads": [
+        {
+          "load": "16x1",
+          "full_over_S15": 0.988901,
+          "off_over_full": 1.0075103574574198,
+          "AA_radius": 0.005407000000000051,
+          "wins": true
+        },
+        {
+          "load": "32x1",
+          "full_over_S15": 0.991881,
+          "off_over_full": 1.006668138617435,
+          "AA_radius": 0.003717999999999999,
+          "wins": true
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f88fda4aac144374"
+    },
+    {
+      "arm": "layer_release_moe",
+      "wins": false,
+      "loads": [
+        {
+          "load": "1x1",
+          "full_over_S15": 1.018308,
+          "off_over_full": 0.9927526838638212,
+          "AA_radius": 0.01642600000000005,
+          "wins": false
+        },
+        {
+          "load": "16x1",
+          "full_over_S15": 0.988901,
+          "off_over_full": 1.0000808978856326,
+          "AA_radius": 0.005407000000000051,
+          "wins": false
+        },
+        {
+          "load": "32x1",
+          "full_over_S15": 0.991881,
+          "off_over_full": 1.0013459275860712,
+          "AA_radius": 0.003717999999999999,
+          "wins": false
+        },
+        {
+          "load": "1x8",
+          "full_over_S15": 1.001564,
+          "off_over_full": 0.998235759272498,
+          "AA_radius": 0.006955999999999962,
+          "wins": false
+        },
+        {
+          "load": "16x8",
+          "full_over_S15": 0.977655,
+          "off_over_full": 1.0117454521277955,
+          "AA_radius": 0.005148999999999959,
+          "wins": true
+        },
+        {
+          "load": "32x8",
+          "full_over_S15": 0.992563,
+          "off_over_full": 1.0068187107518616,
+          "AA_radius": 0.0021649999999999725,
+          "wins": true
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f88fda4aac144374"
+    },
+    {
+      "arm": "layer_release_projections",
+      "wins": true,
+      "loads": [
+        {
+          "load": "16x8",
+          "full_over_S15": 0.977655,
+          "off_over_full": 1.0120441259953665,
+          "AA_radius": 0.005148999999999959,
+          "wins": true
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f88fda4aac144374"
+    },
+    {
+      "arm": "layer_library_o",
+      "wins": false,
+      "loads": [
+        {
+          "load": "16x8",
+          "full_over_S15": 0.994152,
+          "off_over_full": 1.0048433237573329,
+          "AA_radius": 0.0020540000000000003,
+          "wins": true
+        },
+        {
+          "load": "32x8",
+          "full_over_S15": 1.005131,
+          "off_over_full": 1.0013659910996677,
+          "AA_radius": 0.0022649999999999615,
+          "wins": false
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_pool128",
+      "wins": false,
+      "loads": [
+        {
+          "load": "16x8",
+          "full_over_S15": 0.994152,
+          "off_over_full": 1.0018769765589164,
+          "AA_radius": 0.0020540000000000003,
+          "wins": false
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_unpool128",
+      "wins": false,
+      "loads": [
+        {
+          "load": "16x8",
+          "full_over_S15": 0.994152,
+          "off_over_full": 0.9965840233686598,
+          "AA_radius": 0.0020540000000000003,
+          "wins": false
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_v1full",
+      "wins": false,
+      "loads": [
+        {
+          "load": "1x8",
+          "full_over_S15": 1.00673,
+          "off_over_full": 0.9920912260486924,
+          "AA_radius": 0.006434000000000051,
+          "wins": false
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_v32slide",
+      "wins": false,
+      "loads": [
+        {
+          "load": "32x8",
+          "full_over_S15": 1.005131,
+          "off_over_full": 0.9936197371287921,
+          "AA_radius": 0.0022649999999999615,
+          "wins": false
+        }
+      ],
+      "controls": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "job": "f22020d25d234be6"
+    }
+  ],
+  "receipts": {
+    "release": {
+      "path": "runs/muse_decode_layer/20261026T011907Z_check_f88fda4aac144374.json",
+      "job": "f88fda4aac144374",
+      "sha256": "02c19fbd6475cac5453f93d4246ab02715faa748322844034fda97ebe7cc7908"
+    },
+    "library": {
+      "path": "runs/muse_decode_layer/20261026T011912Z_check_f22020d25d234be6.json",
+      "job": "f22020d25d234be6",
+      "sha256": "2567c5a90528c832e27e93efdae5fccf6b5d7dedd3e2a307ad803b75aa9758f3"
+    }
+  }
+}

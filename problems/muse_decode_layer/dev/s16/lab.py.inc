@@ -44,7 +44,7 @@ def s16_namespace(name,source,base):
     for key,code in target.items():
         if host.get(key)!=code or key not in base or callable(base[key]):continue
         if any(word in key.upper() for word in ('MOD','EXT','OPTS')) and not native_identical:continue
-        if key in ('_GEMV_CHOICES','_s16_native_builds'):continue
+        if key in ('_GEMV_CHOICES','_s16_native_builds','NF_PORT_SELECTED','_VQ8_ROWS'):continue
         v[key]=base[key]
     assert all(v[key]==base[key] for key in ('GB_ROWS','GATE_SPLIT_ROWS','GATE_SPLIT_QKV3'))
     v['_GEMV_CHOICES']=dict(base['_GEMV_CHOICES'])
@@ -52,10 +52,17 @@ def s16_namespace(name,source,base):
 
 
 def lab(deadline,weights,state):
-    started=time.monotonic();base=kernel_fn.__globals__;device=weights['qkv_gate'].device
+    started=time.monotonic();base=kernel_fn.__globals__
     # Independent unchanged public TASK criteria, never used by a candidate or
     # timed graph. Host-equivalence is diagnostic for arithmetic replacements.
     checker={};exec(compile(S16_CHECKER,'<s16-independent-TASK>','exec'),checker)
+    if weights is None:
+        # Import-phase experiment has its own held-out weights and state. The
+        # judge subsequently prepares its real weights from scratch. No lab
+        # output/state feeds the official timed candidate.
+        weights=checker['generate_weights'](104910271,device='cuda',router_seed=104910269)
+        state=base['_candidate_prepare'](weights)
+    device=weights['qkv_gate'].device
     original=base['_S16_LAB_BASE_STATE'];sources={'A':S16_BUNDLE['host']}
     ns={'A':base};states={'A':state};shared={};failures=[];agreements={};task_checks=0
     for name,spec in S16_BUNDLE['arms'].items():
@@ -65,6 +72,9 @@ def lab(deadline,weights,state):
             v['_vq8_module']();v['nf_module']();v['cd_module']()
             v['smallm_module']();v['_glue_cl_ext']();v['partial_port_ext'](False)
             st=s16_copy_state(original)
+            st['vq8_rows']=dict(v['_VQ8_ROWS'])
+            st['partial_port_rows']=v['_PP_ROWS']
+            st['cluster_rows']=v.get('_CLUSTER_ROWS',())
             if '_s16_prepare_delta' in v:st=v['_s16_prepare_delta'](weights,st)
             states[name]=st
         except Exception as exc:failures.append(name+':prepare:'+type(exc).__name__+':'+str(exc)[:100])
@@ -115,14 +125,14 @@ def lab(deadline,weights,state):
     for (b,q),label in AB_LOADS.items():
         if not all((b,q,w) in times for w in (2048,0)):continue
         pairs=list(zip(times[b,q,2048],times[b,q,0]));aa=[(46*s['A2']+16*f['A2'])/(46*s['A']+16*f['A']) for s,f in pairs]
-        load=dict(n=len(pairs),aa=[min(aa),max(aa)],r={})
+        load=dict(n=len(pairs),aa=[min(aa),max(aa)],r={},samples=[{name:(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for name in s} for s,f in pairs])
         for name in pairs[0][0]:
             if name=='A':continue
             rr=[(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for s,f in pairs]
             load['r'][name]=dict(mean=statistics.mean(rr),se=statistics.stdev(rr)/len(rr)**.5,normalized=statistics.mean(r/a for r,a in zip(rr,aa)))
         loads[label]=load
     result=dict(host_sha256=hashlib.sha256(S16_BUNDLE['host'].encode()).hexdigest(),shapes=shapes,loads=loads,
-                failures=failures,shared_jit=shared,seeds=16,task_checks=task_checks,agreement_diagnostics=agreements,
+                failures=failures,shared_jit=shared,seeds=len(AB_SEEDS),seed_ids=list(AB_SEEDS),task_checks=task_checks,agreement_diagnostics=agreements,
                 checker_sha256=hashlib.sha256(S16_CHECKER.encode()).hexdigest(),elapsed=time.monotonic()-started,left=deadline-time.monotonic())
     result['complete']=not failures and len(shapes)==12 and len(loads)==6 and task_checks==12*16*(len(S16_BUNDLE['arms'])+2) and all(s['n']==16 and len(s['r'])==len(S16_BUNDLE['arms'])+1 for s in shapes.values())
     def compact(value):
@@ -132,5 +142,5 @@ def lab(deadline,weights,state):
         return value
     blob=base64.b85encode(lzma.compress(json.dumps(compact(result),separators=(',',':')).encode())).decode()
     assert len(blob)<8500,len(blob)
-    return ['META S16 paired 16 fresh seeds; every selected piece off,S15 back,A:A; cold read; no promotion by host score',
+    return ['META S16 held-out paired seeds; six-load 46/16 geomean; every arm/seed public TASK; A:A noise',
             'S16_XZ85 '+blob,'END complete='+str(result['complete'])]

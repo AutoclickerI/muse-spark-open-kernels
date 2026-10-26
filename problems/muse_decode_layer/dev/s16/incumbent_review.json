@@ -1,0 +1,36 @@
+{
+  "incumbent": "problems/muse_decode_layer/cand_r3_best7_s15_final.py",
+  "sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "owner_freeze_commit": "97e98f3",
+  "scored_job": "9c5fc18d302c4d40",
+  "scored_speedup": 1.8003450668920435,
+  "paired_job": "281b1383359c4fe2",
+  "paired_descriptive": {
+    "R": 1.0256764476197946,
+    "CI95_approx": [
+      1.0215697467345144,
+      1.0297996574044572
+    ],
+    "CI95": null,
+    "promote": false,
+    "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+  },
+  "AA_descriptive": {
+    "R": 0.9968046395984244,
+    "CI95_approx": [
+      0.9946100554775703,
+      0.9990040660184658
+    ],
+    "CI95": null,
+    "promote": false,
+    "reason": "paired seed samples and per-arm TASK checks absent; descriptive summary only"
+  },
+  "legacy_equivalence_failures": [
+    "d1S:{'last': 'L2=0.0385', 'S14': 'L2=0.0385'}",
+    "d32S:{'qkv': 'ids2/32'}",
+    "d32F:{'proj': 'ids2/32', 'o': 'ids2/32', 'S14': 'ids2/32'}",
+    "v16F:{'regmax': 'ids4/128', 'S14': 'ids4/128'}",
+    "v32F:{'regmax': 'ids7/256', 'S14': 'ids7/256'}"
+  ],
+  "note": "Owner-frozen exact S15; old private equivalence failures are not TASK failures. No seed-level CI is reconstructed from discarded covariances."
+}

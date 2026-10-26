@@ -958,5 +958,221 @@
       },
       "local_report": "screen/pdl_D/forced/local.json"
     }
+  },
+  "layer_nearby": {
+    "normal": {
+      "sha256": "2ff0a81f09204eef3e86431109e22e1b78163cd33ff55ba243cf826ec41a4731",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_nearby/normal/local.json"
+    },
+    "forced": {
+      "sha256": "2ff0a81f09204eef3e86431109e22e1b78163cd33ff55ba243cf826ec41a4731",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_nearby/forced/local.json"
+    }
+  },
+  "layer_release_attention": {
+    "normal": {
+      "sha256": "3482187bc06bf28f927fbb68e3a7798294df31b55a490513524682b9f522a8b0",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_release_attention/normal/local.json"
+    },
+    "forced": {
+      "sha256": "3482187bc06bf28f927fbb68e3a7798294df31b55a490513524682b9f522a8b0",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_release_attention/forced/local.json"
+    }
+  },
+  "layer_release_moe": {
+    "normal": {
+      "sha256": "9f612b4e44b213bc2ef01ab732c4632ea829afd97bcb626da693e7768ae70817",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_release_moe/normal/local.json"
+    },
+    "forced": {
+      "sha256": "9f612b4e44b213bc2ef01ab732c4632ea829afd97bcb626da693e7768ae70817",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_release_moe/forced/local.json"
+    }
+  },
+  "layer_release_projections": {
+    "normal": {
+      "sha256": "fb4b67572ef3f29faeab2d9871d108bfdf691beb93a7f851fa4069272785e49e",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_release_projections/normal/local.json"
+    },
+    "forced": {
+      "sha256": "fb4b67572ef3f29faeab2d9871d108bfdf691beb93a7f851fa4069272785e49e",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_release_projections/forced/local.json"
+    }
+  },
+  "layer_library_o": {
+    "normal": {
+      "sha256": "b65267f95461e4e8dcc8f88bd1aa97d90b3de4f752da616ef84e688af3ca6426",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_o/normal/local.json"
+    },
+    "forced": {
+      "sha256": "b65267f95461e4e8dcc8f88bd1aa97d90b3de4f752da616ef84e688af3ca6426",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_o/forced/local.json"
+    }
+  },
+  "layer_library_pool128": {
+    "normal": {
+      "sha256": "41248a12eebf06c1f767a4e8aa3b9fdaa258b4926dd1d5a1c7e18391c3dc292a",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_pool128/normal/local.json"
+    },
+    "forced": {
+      "sha256": "41248a12eebf06c1f767a4e8aa3b9fdaa258b4926dd1d5a1c7e18391c3dc292a",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_pool128/forced/local.json"
+    }
+  },
+  "layer_library_unpool128": {
+    "normal": {
+      "sha256": "bb295cac985cb4c11d5f3cdabf350256e1234d6d55202028fd307396a568fb48",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_unpool128/normal/local.json"
+    },
+    "forced": {
+      "sha256": "bb295cac985cb4c11d5f3cdabf350256e1234d6d55202028fd307396a568fb48",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_unpool128/forced/local.json"
+    }
+  },
+  "layer_library_v1full": {
+    "normal": {
+      "sha256": "ffc0802e6777f1786050408722667fa5f75b95228f421b380e02430d4116f10c",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_v1full/normal/local.json"
+    },
+    "forced": {
+      "sha256": "ffc0802e6777f1786050408722667fa5f75b95228f421b380e02430d4116f10c",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_v1full/forced/local.json"
+    }
+  },
+  "layer_library_v32slide": {
+    "normal": {
+      "sha256": "a249649be6e6b992e68b88102af625771b1c006de7c4540835ed74c2362786cc",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_v32slide/normal/local.json"
+    },
+    "forced": {
+      "sha256": "a249649be6e6b992e68b88102af625771b1c006de7c4540835ed74c2362786cc",
+      "passed": true,
+      "exit_code": 0,
+      "counts": {
+        "tests": 13,
+        "shapes": 12,
+        "static": 25
+      },
+      "local_report": "screen/layer_library_v32slide/forced/local.json"
+    }
   }
 }

@@ -1,0 +1,2880 @@
+{
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+  "patches": [
+    {
+      "name": "global_C128",
+      "family": "global",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ]
+      ],
+      "nk": 128,
+      "split": null
+    },
+    {
+      "name": "dsm_16",
+      "family": "dsm",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 16,
+        "16": 16,
+        "32": 16
+      }
+    },
+    {
+      "name": "dsm_8",
+      "family": "dsm",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ]
+      ],
+      "clusters": {
+        "1": 8,
+        "16": 8,
+        "32": 8
+      }
+    },
+    {
+      "name": "epi_NORM",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ]
+      ],
+      "kind": "NORM"
+    },
+    {
+      "name": "epi_PAIR",
+      "family": "epi",
+      "rows": [
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "PAIR"
+    },
+    {
+      "name": "layer_release_attention",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ]
+      ],
+      "kind": "release_attention"
+    },
+    {
+      "name": "layer_release_moe",
+      "family": "layer",
+      "rows": [
+        [
+          1,
+          1,
+          true
+        ],
+        [
+          1,
+          1,
+          false
+        ],
+        [
+          16,
+          1,
+          true
+        ],
+        [
+          16,
+          1,
+          false
+        ],
+        [
+          32,
+          1,
+          true
+        ],
+        [
+          32,
+          1,
+          false
+        ],
+        [
+          1,
+          8,
+          true
+        ],
+        [
+          1,
+          8,
+          false
+        ],
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "release_moe"
+    },
+    {
+      "name": "layer_library_o",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ],
+        [
+          32,
+          8,
+          true
+        ],
+        [
+          32,
+          8,
+          false
+        ]
+      ],
+      "kind": "library_o"
+    },
+    {
+      "name": "layer_library_pool128",
+      "family": "layer",
+      "rows": [
+        [
+          16,
+          8,
+          true
+        ],
+        [
+          16,
+          8,
+          false
+        ]
+      ],
+      "kind": "library_pool128"
+    }
+  ],
+  "source": "problems/muse_decode_layer/dev/s16/generated/s16.py",
+  "status": "experimental; combined local screen and whole-layer A/B required",
+  "reset_receipts": {
+    "global": {
+      "path": "runs/muse_decode_layer/20261026T001019Z_check_ae6cd27877cc4ee2.json",
+      "job": "ae6cd27877cc4ee2",
+      "sha256": "0ccc25484dbe581002136aada0f66ca065d37a18ad8564c887102ca997e48d53"
+    },
+    "dsm": {
+      "path": "runs/muse_attention_decode/20261026T001038Z_submit_b05713ecf6574ad9.json",
+      "job": "b05713ecf6574ad9",
+      "sha256": "f1c270e6e12b7cb2abba0d00db7c54ce7aba10022427e605e3ff4730305264de"
+    },
+    "soft": {
+      "path": "runs/muse_bf16_proj/20261026T001042Z_submit_457f3c73b3214534.json",
+      "job": "457f3c73b3214534",
+      "sha256": "030864131ce8d08f238ea779fd7df676ca553ef0e7defff848844c23c0d929b3"
+    },
+    "epi": {
+      "path": "runs/muse_moe_w4a16/20261026T000006Z_submit_d650c04ead114119.json",
+      "job": "d650c04ead114119",
+      "sha256": "917e79f37f28b5c1215cfd346d829baa768d0f5afea3dbb2f66073556639d028"
+    },
+    "heavy": {
+      "path": "runs/muse_attention_decode/20261026T001035Z_check_8792099636654bac.json",
+      "job": "8792099636654bac",
+      "sha256": "f867a8b74a243d1e21a3ba073331bbcea1ac46f188832c0f644fd6d084b9b0f3"
+    },
+    "boundary": {
+      "path": "runs/muse_prefill_layer/20261026T000010Z_submit_4c86853a953b4eca.json",
+      "job": "4c86853a953b4eca",
+      "sha256": "d29911c50f95545574f06aa4e7aecb2e4a21456916999e5948bb78f695dfec53"
+    },
+    "s15": {
+      "path": "runs/muse_decode_layer/20261026T004259Z_check_281b1383359c4fe2.json",
+      "job": "281b1383359c4fe2",
+      "sha256": "2a4d0dde028c7ec8637f65494f57e3f104c7aba27751213c52877fdb504b28ef"
+    },
+    "early": {
+      "path": "runs/muse_attention_decode/20261026T001056Z_submit_402819c28279466d.json",
+      "job": "402819c28279466d",
+      "sha256": "0cec67066689787d498240bfcef317bdf67827e26f3e23b38bb47f088bb59d98"
+    },
+    "layer_release": {
+      "path": "runs/muse_decode_layer/20261026T011907Z_check_f88fda4aac144374.json",
+      "job": "f88fda4aac144374",
+      "sha256": "02c19fbd6475cac5453f93d4246ab02715faa748322844034fda97ebe7cc7908"
+    },
+    "layer_library": {
+      "path": "runs/muse_decode_layer/20261026T011912Z_check_f22020d25d234be6.json",
+      "job": "f22020d25d234be6",
+      "sha256": "2567c5a90528c832e27e93efdae5fccf6b5d7dedd3e2a307ad803b75aa9758f3"
+    }
+  },
+  "unavailable_receipts": {},
+  "evidence": [
+    {
+      "arm": "global_C64",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 0.996416199109853,
+      "R": 1.0035966907135276,
+      "CI95": [
+        0.9936236385739506,
+        1.0136698428961366
+      ],
+      "n": 16,
+      "log_se": 0.002877739289600202,
+      "AA_log_se": 0.004685439990401962,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C128",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 0.9958752457808562,
+      "R": 1.004141838284081,
+      "CI95": [
+        0.9941633688437146,
+        1.0142204621412092
+      ],
+      "n": 16,
+      "log_se": 0.002033625519314469,
+      "AA_log_se": 0.004685439990401962,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W4",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 1.0451350375810504,
+      "R": 0.9568141570628855,
+      "CI95": [
+        0.9473059974958296,
+        0.9664177505220436
+      ],
+      "n": 16,
+      "log_se": 0.004475845612920307,
+      "AA_log_se": 0.004685439990401962,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W8",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 0.9986992370455585,
+      "R": 1.001302457142442,
+      "CI95": [
+        0.9670076473227706,
+        1.0368135282645177
+      ],
+      "n": 16,
+      "log_se": 0.016350215784409757,
+      "AA_log_se": 0.004685439990401962,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C64",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.0227165647177416,
+      "R": 0.9777880152708671,
+      "CI95": [
+        0.970188860406678,
+        0.9854466916952458
+      ],
+      "n": 16,
+      "log_se": 0.0027382670405591944,
+      "AA_log_se": 0.00366039842501006,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C128",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.0282224415998935,
+      "R": 0.9725522022686258,
+      "CI95": [
+        0.9649937389993658,
+        0.980169868374841
+      ],
+      "n": 16,
+      "log_se": 0.0035313166030767253,
+      "AA_log_se": 0.00366039842501006,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W4",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.0335038157636327,
+      "R": 0.9675823008559697,
+      "CI95": [
+        0.9600624625748511,
+        0.9751610394378278
+      ],
+      "n": 16,
+      "log_se": 0.0027338479329048738,
+      "AA_log_se": 0.00366039842501006,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W8",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.0093336228854517,
+      "R": 0.9907526880371139,
+      "CI95": [
+        0.9830527745682216,
+        0.9985129122736093
+      ],
+      "n": 16,
+      "log_se": 0.0031965113811981286,
+      "AA_log_se": 0.00366039842501006,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C64",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.0135853484053747,
+      "R": 0.9865967395575046,
+      "CI95": [
+        0.9822236853777756,
+        0.9909892634396482
+      ],
+      "n": 16,
+      "log_se": 0.002069508444658924,
+      "AA_log_se": 0.0020841267351577658,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C128",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.0120400850890205,
+      "R": 0.9881031539497158,
+      "CI95": [
+        0.9817274598239569,
+        0.9945202541451312
+      ],
+      "n": 16,
+      "log_se": 0.0030369998198898317,
+      "AA_log_se": 0.0020841267351577658,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W4",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.0010638981809068,
+      "R": 0.9989372324955079,
+      "CI95": [
+        0.9929056325409709,
+        1.0050054725866493
+      ],
+      "n": 16,
+      "log_se": 0.0028413415427548058,
+      "AA_log_se": 0.0020841267351577658,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W8",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.0628677163610496,
+      "R": 0.940850855291484,
+      "CI95": [
+        0.9350674188535641,
+        0.9466700625587121
+      ],
+      "n": 16,
+      "log_se": 0.0028927978596490866,
+      "AA_log_se": 0.0020841267351577658,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C64",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 1.195561256998017,
+      "R": 0.8364272379576271,
+      "CI95": [
+        0.8265484124768535,
+        0.8464241341907079
+      ],
+      "n": 16,
+      "log_se": 0.00557402856972286,
+      "AA_log_se": 0.002935757318837687,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_C128",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 1.1210847891864615,
+      "R": 0.8919931923486991,
+      "CI95": [
+        0.8846837509640448,
+        0.8993630258602546
+      ],
+      "n": 16,
+      "log_se": 0.003860315764837002,
+      "AA_log_se": 0.002935757318837687,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W4",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 1.3112634898385125,
+      "R": 0.7626232315239359,
+      "CI95": [
+        0.7557296319607669,
+        0.7695797129868313
+      ],
+      "n": 16,
+      "log_se": 0.004260111660026876,
+      "AA_log_se": 0.002935757318837687,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "global_W8",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 1.147664227955543,
+      "R": 0.871334991229453,
+      "CI95": [
+        0.8628481856935643,
+        0.8799052713201919
+      ],
+      "n": 16,
+      "log_se": 0.004591952721083087,
+      "AA_log_se": 0.002935757318837687,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "early_E4",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 0.9974024455135815,
+      "R": 1.0026043193478245,
+      "CI95": [
+        0.9901715063430387,
+        1.0151932415096825
+      ],
+      "n": 16,
+      "log_se": 0.001247253604569127,
+      "AA_log_se": 0.005854114995019733,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "early_E2",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 1.0161416109853771,
+      "R": 0.9841148017059117,
+      "CI95": [
+        0.971911268299223,
+        0.9964715653841958
+      ],
+      "n": 16,
+      "log_se": 0.0015217265075887474,
+      "AA_log_se": 0.005854114995019733,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "early_E1",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 1.0401487285960798,
+      "R": 0.9614009732528639,
+      "CI95": [
+        0.9494791030869273,
+        0.973472537064286
+      ],
+      "n": 16,
+      "log_se": 0.0023862474637261,
+      "AA_log_se": 0.005854114995019733,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "early_L4",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 1.0202341537773336,
+      "R": 0.9801671472157462,
+      "CI95": [
+        0.9680125667699979,
+        0.992474343268857
+      ],
+      "n": 16,
+      "log_se": 0.0012784394165785845,
+      "AA_log_se": 0.005854114995019733,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_1",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 2.221916403944743,
+      "R": 0.4500619367248116,
+      "CI95": [
+        0.4448633879404993,
+        0.4553212342922233
+      ],
+      "n": 8,
+      "log_se": 0.004913291388607708,
+      "AA_log_se": 0.003512105684214853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_2",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 1.3761209940810015,
+      "R": 0.7266802877808125,
+      "CI95": [
+        0.71787813231319,
+        0.7355903695626501
+      ],
+      "n": 8,
+      "log_se": 0.005153848052135695,
+      "AA_log_se": 0.003512105684214853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_4",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 0.9474414813980357,
+      "R": 1.0554741581764073,
+      "CI95": [
+        1.0465234070801013,
+        1.0645014636475565
+      ],
+      "n": 8,
+      "log_se": 0.0036016558075777504,
+      "AA_log_se": 0.003512105684214853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_8",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 0.7730804891919671,
+      "R": 1.2935263714198917,
+      "CI95": [
+        1.282828473529783,
+        1.3043134823432534
+      ],
+      "n": 8,
+      "log_se": 0.00336422096446562,
+      "AA_log_se": 0.003512105684214853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_16",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 0.7192316505636231,
+      "R": 1.3903726278124076,
+      "CI95": [
+        1.377768697636887,
+        1.4030918596754625
+      ],
+      "n": 8,
+      "log_se": 0.0038511731163408183,
+      "AA_log_se": 0.003512105684214853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_1",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 2.121126358298124,
+      "R": 0.47144763256930405,
+      "CI95": [
+        0.46772215082114355,
+        0.47520278837551705
+      ],
+      "n": 8,
+      "log_se": 0.0025376355799923644,
+      "AA_log_se": 0.003355157540460194,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_2",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 1.3031460855513832,
+      "R": 0.7673736744387204,
+      "CI95": [
+        0.7613097207339151,
+        0.773485928504775
+      ],
+      "n": 8,
+      "log_se": 0.0023301854542356636,
+      "AA_log_se": 0.003355157540460194,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_4",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 0.9664302550069449,
+      "R": 1.0347358175296508,
+      "CI95": [
+        1.0246755114389676,
+        1.0448948961170983
+      ],
+      "n": 8,
+      "log_se": 0.004131843486384881,
+      "AA_log_se": 0.003355157540460194,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_8",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 0.8490614261025741,
+      "R": 1.1777710884715085,
+      "CI95": [
+        1.1666635635507976,
+        1.1889843654819556
+      ],
+      "n": 8,
+      "log_se": 0.004007326463626701,
+      "AA_log_se": 0.003355157540460194,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": true,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_16",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 1.0360980443878063,
+      "R": 0.9651596250148939,
+      "CI95": [
+        0.957532723703589,
+        0.9728472758151431
+      ],
+      "n": 8,
+      "log_se": 0.0027885140131195013,
+      "AA_log_se": 0.003355157540460194,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_1",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.9513250963589162,
+      "R": 0.5124722691600464,
+      "CI95": [
+        0.5087009212845394,
+        0.5162715766169165
+      ],
+      "n": 8,
+      "log_se": 0.002505073121978925,
+      "AA_log_se": 0.0031237155158767853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_2",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.220245790488347,
+      "R": 0.8195070270226429,
+      "CI95": [
+        0.8134761717523848,
+        0.8255825931480603
+      ],
+      "n": 8,
+      "log_se": 0.0013827833022984131,
+      "AA_log_se": 0.0031237155158767853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_4",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.0737811123730985,
+      "R": 0.9312884986307505,
+      "CI95": [
+        0.9244350294536732,
+        0.9381927772625375
+      ],
+      "n": 8,
+      "log_se": 0.002869422028007085,
+      "AA_log_se": 0.0031237155158767853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_8",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.2653327347532255,
+      "R": 0.7903059586892197,
+      "CI95": [
+        0.7812696405073443,
+        0.7994467927028266
+      ],
+      "n": 8,
+      "log_se": 0.0048633254587957,
+      "AA_log_se": 0.0031237155158767853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "dsm_16",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.658320478582854,
+      "R": 0.6030197497497993,
+      "CI95": [
+        0.5985820515776911,
+        0.6074903476137957
+      ],
+      "n": 8,
+      "log_se": 0.0020423835369506125,
+      "AA_log_se": 0.0031237155158767853,
+      "method": "95% Student-t on paired seed log R; max(paired, A:A) SE",
+      "wins": false,
+      "stage_only": true,
+      "status": "selection evidence; held-out six-load confirmation required"
+    },
+    {
+      "arm": "soft_mix25",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.05012,
+      "range": [
+        1.04556,
+        1.05521
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.9522721212813774,
+      "CI95": null,
+      "selection_range": [
+        0.9476786611195875,
+        0.9564252649297983
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_mix50",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.08436,
+      "range": [
+        1.08043,
+        1.08774
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.9222029584270907,
+      "CI95": null,
+      "selection_range": [
+        0.9193373416441429,
+        0.9255574169543608
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_gap",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.00004,
+      "range": [
+        0.99738,
+        1.00306
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.9999600015999359,
+      "CI95": null,
+      "selection_range": [
+        0.9969493350347934,
+        1.0026268824319717
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_mixgap",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.052,
+      "range": [
+        1.05036,
+        1.05335
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.9505703422053231,
+      "CI95": null,
+      "selection_range": [
+        0.9493520672141263,
+        0.9520545336836894
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_tc25",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.03473,
+      "range": [
+        1.03358,
+        1.03593
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.9664356885371064,
+      "CI95": null,
+      "selection_range": [
+        0.965316189317811,
+        0.9675109812496372
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_ping",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.15929,
+      "range": [
+        1.15839,
+        1.1605
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.8625969343304954,
+      "CI95": null,
+      "selection_range": [
+        0.8616975441619991,
+        0.8632671207451722
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_ping25",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.22654,
+      "range": [
+        1.22111,
+        1.2298
+      ],
+      "AA_radius": 0.0043800000000000505,
+      "n": 3,
+      "R": 0.8153015800544622,
+      "CI95": null,
+      "selection_range": [
+        0.813140348024069,
+        0.818927041789847
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_mix25",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.0461,
+      "range": [
+        1.04549,
+        1.04723
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.9559315553006404,
+      "CI95": null,
+      "selection_range": [
+        0.954900069707705,
+        0.9564893016671608
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_mix50",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.07352,
+      "range": [
+        1.06972,
+        1.0776
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.9315150160220582,
+      "CI95": null,
+      "selection_range": [
+        0.9279881217520417,
+        0.934824066110758
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_gap",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.00126,
+      "range": [
+        0.9984,
+        1.00494
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.9987415856021412,
+      "CI95": null,
+      "selection_range": [
+        0.9950842836388243,
+        1.001602564102564
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_mixgap",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.04865,
+      "range": [
+        1.04682,
+        1.05051
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.9536070185476564,
+      "CI95": null,
+      "selection_range": [
+        0.9519185919220188,
+        0.9552740681301465
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_tc25",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.03452,
+      "range": [
+        1.03192,
+        1.03666
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.9666318679194215,
+      "CI95": null,
+      "selection_range": [
+        0.9646364285300871,
+        0.9690673695635321
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_ping",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.17091,
+      "range": [
+        1.16857,
+        1.17545
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.8540366040088478,
+      "CI95": null,
+      "selection_range": [
+        0.8507380152282104,
+        0.855746767416586
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "soft_ping25",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.21961,
+      "range": [
+        1.2163,
+        1.22129
+      ],
+      "AA_radius": 0.003920000000000035,
+      "n": 3,
+      "R": 0.8199342412738497,
+      "CI95": null,
+      "selection_range": [
+        0.8188063441115542,
+        0.8221655841486476
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 1.00238,
+      "se": 0.00207,
+      "n": 16,
+      "R": 0.9976256509507372,
+      "CI95": null,
+      "CI95_approx": [
+        0.9932536178108371,
+        1.0020363432669688
+      ],
+      "AA_radius": 0.006655327741195115,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 1.00238,
+      "se": 0.00207,
+      "n": 16,
+      "R": 0.9976256509507372,
+      "CI95": null,
+      "CI95_approx": [
+        0.9932536178108371,
+        1.0020363432669688
+      ],
+      "AA_radius": 0.006655327741195115,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 1.00007,
+      "se": 0.00194,
+      "n": 16,
+      "R": 0.999930004899657,
+      "CI95": null,
+      "CI95_approx": [
+        0.995812498902739,
+        1.004081702569934
+      ],
+      "AA_radius": 0.006655629775696327,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 1.00007,
+      "se": 0.00194,
+      "n": 16,
+      "R": 0.999930004899657,
+      "CI95": null,
+      "CI95_approx": [
+        0.995812498902739,
+        1.004081702569934
+      ],
+      "AA_radius": 0.006655629775696327,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 0.99839,
+      "se": 0.00213,
+      "n": 16,
+      "R": 1.0016125962800109,
+      "CI95": null,
+      "CI95_approx": [
+        0.997078465374,
+        1.0061881527271463
+      ],
+      "AA_radius": 0.00667350965505859,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 0.99839,
+      "se": 0.00213,
+      "n": 16,
+      "R": 1.0016125962800109,
+      "CI95": null,
+      "CI95_approx": [
+        0.997078465374,
+        1.0061881527271463
+      ],
+      "AA_radius": 0.00667350965505859,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        1,
+        1,
+        true
+      ],
+      "ratio": 0.9989,
+      "se": 0.00232,
+      "n": 16,
+      "R": 1.0011012113324658,
+      "CI95": null,
+      "CI95_approx": [
+        0.9961696480098303,
+        1.0060818452410296
+      ],
+      "AA_radius": 0.006630048346125482,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        1,
+        1,
+        false
+      ],
+      "ratio": 0.9989,
+      "se": 0.00232,
+      "n": 16,
+      "R": 1.0011012113324658,
+      "CI95": null,
+      "CI95_approx": [
+        0.9961696480098303,
+        1.0060818452410296
+      ],
+      "AA_radius": 0.006630048346125482,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 1.01332,
+      "se": 0.00272,
+      "n": 16,
+      "R": 0.9868550901985552,
+      "CI95": null,
+      "CI95_approx": [
+        0.9812409495241021,
+        0.9925338428234523
+      ],
+      "AA_radius": 0.005842449081663842,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 1.01332,
+      "se": 0.00272,
+      "n": 16,
+      "R": 0.9868550901985552,
+      "CI95": null,
+      "CI95_approx": [
+        0.9812409495241021,
+        0.9925338428234523
+      ],
+      "AA_radius": 0.005842449081663842,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 0.98056,
+      "se": 0.00308,
+      "n": 16,
+      "R": 1.0198254058905116,
+      "CI95": null,
+      "CI95_approx": [
+        1.013042907168942,
+        1.0266993367871362
+      ],
+      "AA_radius": 0.005821969783678608,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 0.98056,
+      "se": 0.00308,
+      "n": 16,
+      "R": 1.0198254058905116,
+      "CI95": null,
+      "CI95_approx": [
+        1.013042907168942,
+        1.0266993367871362
+      ],
+      "AA_radius": 0.005821969783678608,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 0.98142,
+      "se": 0.00344,
+      "n": 16,
+      "R": 1.0189317519512544,
+      "CI95": null,
+      "CI95_approx": [
+        1.011375588524512,
+        1.026601672104165
+      ],
+      "AA_radius": 0.005836762682717111,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 0.98142,
+      "se": 0.00344,
+      "n": 16,
+      "R": 1.0189317519512544,
+      "CI95": null,
+      "CI95_approx": [
+        1.011375588524512,
+        1.026601672104165
+      ],
+      "AA_radius": 0.005836762682717111,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 0.97493,
+      "se": 0.00235,
+      "n": 16,
+      "R": 1.0257146666940191,
+      "CI95": null,
+      "CI95_approx": [
+        1.020471656386988,
+        1.0310118306287788
+      ],
+      "AA_radius": 0.005825380107697181,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 0.97493,
+      "se": 0.00235,
+      "n": 16,
+      "R": 1.0257146666940191,
+      "CI95": null,
+      "CI95_approx": [
+        1.020471656386988,
+        1.0310118306287788
+      ],
+      "AA_radius": 0.005825380107697181,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 1.30467,
+      "se": 0.00225,
+      "n": 16,
+      "R": 0.7664773467620164,
+      "CI95": null,
+      "CI95_approx": [
+        0.7636701490980053,
+        0.7693052586918752
+      ],
+      "AA_radius": 0.005852878129459074,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 1.30467,
+      "se": 0.00225,
+      "n": 16,
+      "R": 0.7664773467620164,
+      "CI95": null,
+      "CI95_approx": [
+        0.7636701490980053,
+        0.7693052586918752
+      ],
+      "AA_radius": 0.005852878129459074,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_VEC",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 1.23515,
+      "se": 0.00247,
+      "n": 16,
+      "R": 0.8096182649880581,
+      "CI95": null,
+      "CI95_approx": [
+        0.8061819287943762,
+        0.8130840212285018
+      ],
+      "AA_radius": 0.0058429816362123395,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_VEC",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 1.23515,
+      "se": 0.00247,
+      "n": 16,
+      "R": 0.8096182649880581,
+      "CI95": null,
+      "CI95_approx": [
+        0.8061819287943762,
+        0.8130840212285018
+      ],
+      "AA_radius": 0.0058429816362123395,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_PAIR",
+      "row": [
+        1,
+        8,
+        true
+      ],
+      "ratio": 1.24614,
+      "se": 0.00262,
+      "n": 16,
+      "R": 0.8024780522252716,
+      "CI95": null,
+      "CI95_approx": [
+        0.7988978213920598,
+        0.8060905168553244
+      ],
+      "AA_radius": 0.005848569942209605,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_PAIR",
+      "row": [
+        1,
+        8,
+        false
+      ],
+      "ratio": 1.24614,
+      "se": 0.00262,
+      "n": 16,
+      "R": 0.8024780522252716,
+      "CI95": null,
+      "CI95_approx": [
+        0.7988978213920598,
+        0.8060905168553244
+      ],
+      "AA_radius": 0.005848569942209605,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.01457,
+      "se": 0.0018,
+      "n": 16,
+      "R": 0.9856392363267197,
+      "CI95": null,
+      "CI95_approx": [
+        0.9819259830085565,
+        0.9893806803436672
+      ],
+      "AA_radius": 0.002884986629236596,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 1.01457,
+      "se": 0.0018,
+      "n": 16,
+      "R": 0.9856392363267197,
+      "CI95": null,
+      "CI95_approx": [
+        0.9819259830085565,
+        0.9893806803436672
+      ],
+      "AA_radius": 0.002884986629236596,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 0.97831,
+      "se": 0.00254,
+      "n": 16,
+      "R": 1.02217088652881,
+      "CI95": null,
+      "CI95_approx": [
+        1.016545280825259,
+        1.0278591034176223
+      ],
+      "AA_radius": 0.002886522405112559,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 0.97831,
+      "se": 0.00254,
+      "n": 16,
+      "R": 1.02217088652881,
+      "CI95": null,
+      "CI95_approx": [
+        1.016545280825259,
+        1.0278591034176223
+      ],
+      "AA_radius": 0.002886522405112559,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 0.9834,
+      "se": 0.00313,
+      "n": 16,
+      "R": 1.016880211511084,
+      "CI95": null,
+      "CI95_approx": [
+        1.0100279667148717,
+        1.0238260655478735
+      ],
+      "AA_radius": 0.0028918824221340705,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 0.9834,
+      "se": 0.00313,
+      "n": 16,
+      "R": 1.016880211511084,
+      "CI95": null,
+      "CI95_approx": [
+        1.0100279667148717,
+        1.0238260655478735
+      ],
+      "AA_radius": 0.0028918824221340705,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 0.97262,
+      "se": 0.00357,
+      "n": 16,
+      "R": 1.0281507680286237,
+      "CI95": null,
+      "CI95_approx": [
+        1.0201693031148509,
+        1.036258106381625
+      ],
+      "AA_radius": 0.002884582959980817,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 0.97262,
+      "se": 0.00357,
+      "n": 16,
+      "R": 1.0281507680286237,
+      "CI95": null,
+      "CI95_approx": [
+        1.0201693031148509,
+        1.036258106381625
+      ],
+      "AA_radius": 0.002884582959980817,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.29879,
+      "se": 0.00675,
+      "n": 16,
+      "R": 0.7699474125917201,
+      "CI95": null,
+      "CI95_approx": [
+        0.7615116043421774,
+        0.7785722134000258
+      ],
+      "AA_radius": 0.0028800450101909864,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 1.29879,
+      "se": 0.00675,
+      "n": 16,
+      "R": 0.7699474125917201,
+      "CI95": null,
+      "CI95_approx": [
+        0.7615116043421774,
+        0.7785722134000258
+      ],
+      "AA_radius": 0.0028800450101909864,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_VEC",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.24645,
+      "se": 0.00847,
+      "n": 16,
+      "R": 0.8022784708572345,
+      "CI95": null,
+      "CI95_approx": [
+        0.7908240339379603,
+        0.8140696007284522
+      ],
+      "AA_radius": 0.002871300789099642,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_VEC",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 1.24645,
+      "se": 0.00847,
+      "n": 16,
+      "R": 0.8022784708572345,
+      "CI95": null,
+      "CI95_approx": [
+        0.7908240339379603,
+        0.8140696007284522
+      ],
+      "AA_radius": 0.002871300789099642,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_PAIR",
+      "row": [
+        16,
+        1,
+        true
+      ],
+      "ratio": 1.25036,
+      "se": 0.00752,
+      "n": 16,
+      "R": 0.7997696663360953,
+      "CI95": null,
+      "CI95_approx": [
+        0.7896468579225049,
+        0.8101553819691429
+      ],
+      "AA_radius": 0.002881550636945798,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_PAIR",
+      "row": [
+        16,
+        1,
+        false
+      ],
+      "ratio": 1.25036,
+      "se": 0.00752,
+      "n": 16,
+      "R": 0.7997696663360953,
+      "CI95": null,
+      "CI95_approx": [
+        0.7896468579225049,
+        0.8101553819691429
+      ],
+      "AA_radius": 0.002881550636945798,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.01898,
+      "se": 0.00194,
+      "n": 16,
+      "R": 0.9813735303931382,
+      "CI95": null,
+      "CI95_approx": [
+        0.977407126750381,
+        0.9853722572323343
+      ],
+      "AA_radius": 0.0020344336483428724,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_VEC",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 1.01898,
+      "se": 0.00194,
+      "n": 16,
+      "R": 0.9813735303931382,
+      "CI95": null,
+      "CI95_approx": [
+        0.977407126750381,
+        0.9853722572323343
+      ],
+      "AA_radius": 0.0020344336483428724,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 0.98517,
+      "se": 0.00236,
+      "n": 16,
+      "R": 1.015053239542414,
+      "CI95": null,
+      "CI95_approx": [
+        1.0098966437438306,
+        1.0202627654103906
+      ],
+      "AA_radius": 0.0020351948767387412,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PROD",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 0.98517,
+      "se": 0.00236,
+      "n": 16,
+      "R": 1.015053239542414,
+      "CI95": null,
+      "CI95_approx": [
+        1.0098966437438306,
+        1.0202627654103906
+      ],
+      "AA_radius": 0.0020351948767387412,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 0.99,
+      "se": 0.0032,
+      "n": 16,
+      "R": 1.0101010101010102,
+      "CI95": null,
+      "CI95_approx": [
+        1.003189339548292,
+        1.0171085800025061
+      ],
+      "AA_radius": 0.002032279254785322,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_NORM",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 0.99,
+      "se": 0.0032,
+      "n": 16,
+      "R": 1.0101010101010102,
+      "CI95": null,
+      "CI95_approx": [
+        1.003189339548292,
+        1.0171085800025061
+      ],
+      "AA_radius": 0.002032279254785322,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 0.97932,
+      "se": 0.0028,
+      "n": 16,
+      "R": 1.0211166932157008,
+      "CI95": null,
+      "CI95_approx": [
+        1.0149314687824336,
+        1.0273777682437122
+      ],
+      "AA_radius": 0.002034805012512813,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "epi_PAIR",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 0.97932,
+      "se": 0.0028,
+      "n": 16,
+      "R": 1.0211166932157008,
+      "CI95": null,
+      "CI95_approx": [
+        1.0149314687824336,
+        1.0273777682437122
+      ],
+      "AA_radius": 0.002034805012512813,
+      "wins": true,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.33132,
+      "se": 0.00781,
+      "n": 16,
+      "R": 0.7511342126611182,
+      "CI95": null,
+      "CI95_approx": [
+        0.7418579155662797,
+        0.7606454315329222
+      ],
+      "AA_radius": 0.002034800152161509,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 1.33132,
+      "se": 0.00781,
+      "n": 16,
+      "R": 0.7511342126611182,
+      "CI95": null,
+      "CI95_approx": [
+        0.7418579155662797,
+        0.7606454315329222
+      ],
+      "AA_radius": 0.002034800152161509,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_VEC",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.31428,
+      "se": 0.00958,
+      "n": 16,
+      "R": 0.7608728733603191,
+      "CI95": null,
+      "CI95_approx": [
+        0.7492321662721199,
+        0.7728810089479294
+      ],
+      "AA_radius": 0.002037222279632117,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_VEC",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 1.31428,
+      "se": 0.00958,
+      "n": 16,
+      "R": 0.7608728733603191,
+      "CI95": null,
+      "CI95_approx": [
+        0.7492321662721199,
+        0.7728810089479294
+      ],
+      "AA_radius": 0.002037222279632117,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_PAIR",
+      "row": [
+        32,
+        1,
+        true
+      ],
+      "ratio": 1.2941,
+      "se": 0.00814,
+      "n": 16,
+      "R": 0.7727378100610462,
+      "CI95": null,
+      "CI95_approx": [
+        0.7625145353380156,
+        0.783238943511233
+      ],
+      "AA_radius": 0.0020349048494293764,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "reuse_ONCE_PAIR",
+      "row": [
+        32,
+        1,
+        false
+      ],
+      "ratio": 1.2941,
+      "se": 0.00814,
+      "n": 16,
+      "R": 0.7727378100610462,
+      "CI95": null,
+      "CI95_approx": [
+        0.7625145353380156,
+        0.783238943511233
+      ],
+      "AA_radius": 0.0020349048494293764,
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_CLUSTER1",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 1.2039,
+      "range": [
+        1.065,
+        1.391
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.8306337735692333,
+      "CI95": null,
+      "selection_range": [
+        0.7189072609633357,
+        0.9389671361502347
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_CLUSTER1",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.2039,
+      "range": [
+        1.065,
+        1.391
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.8306337735692333,
+      "CI95": null,
+      "selection_range": [
+        0.7189072609633357,
+        0.9389671361502347
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_NORMAL",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 1.1965,
+      "range": [
+        1.075,
+        1.372
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.8357709987463435,
+      "CI95": null,
+      "selection_range": [
+        0.7288629737609329,
+        0.9302325581395349
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_NORMAL",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.1965,
+      "range": [
+        1.075,
+        1.372
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.8357709987463435,
+      "CI95": null,
+      "selection_range": [
+        0.7288629737609329,
+        0.9302325581395349
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_SERIAL",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 1.2585,
+      "range": [
+        1.089,
+        1.537
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.7945967421533572,
+      "CI95": null,
+      "selection_range": [
+        0.6506180871828238,
+        0.9182736455463728
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_SERIAL",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.2585,
+      "range": [
+        1.089,
+        1.537
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.7945967421533572,
+      "CI95": null,
+      "selection_range": [
+        0.6506180871828238,
+        0.9182736455463728
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DEEP_SERIAL",
+      "row": [
+        16,
+        8,
+        true
+      ],
+      "ratio": 1.1976,
+      "range": [
+        1.04,
+        1.461
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.8350033400133601,
+      "CI95": null,
+      "selection_range": [
+        0.6844626967830253,
+        0.9615384615384615
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DEEP_SERIAL",
+      "row": [
+        16,
+        8,
+        false
+      ],
+      "ratio": 1.1976,
+      "range": [
+        1.04,
+        1.461
+      ],
+      "AA_radius": 0.017058501913613997,
+      "n": 48,
+      "R": 0.8350033400133601,
+      "CI95": null,
+      "selection_range": [
+        0.6844626967830253,
+        0.9615384615384615
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_CLUSTER1",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.1427,
+      "range": [
+        1.047,
+        1.273
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.8751203290452437,
+      "CI95": null,
+      "selection_range": [
+        0.7855459544383347,
+        0.9551098376313276
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_CLUSTER1",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.1427,
+      "range": [
+        1.047,
+        1.273
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.8751203290452437,
+      "CI95": null,
+      "selection_range": [
+        0.7855459544383347,
+        0.9551098376313276
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_NORMAL",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.1381,
+      "range": [
+        1.037,
+        1.243
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.8786574114752659,
+      "CI95": null,
+      "selection_range": [
+        0.8045052292839903,
+        0.9643201542912248
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_NORMAL",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.1381,
+      "range": [
+        1.037,
+        1.243
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.8786574114752659,
+      "CI95": null,
+      "selection_range": [
+        0.8045052292839903,
+        0.9643201542912248
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_SERIAL",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.2992,
+      "range": [
+        1.062,
+        1.601
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.769704433497537,
+      "CI95": null,
+      "selection_range": [
+        0.6246096189881324,
+        0.9416195856873822
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DIRECT_SERIAL",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.2992,
+      "range": [
+        1.062,
+        1.601
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.769704433497537,
+      "CI95": null,
+      "selection_range": [
+        0.6246096189881324,
+        0.9416195856873822
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DEEP_SERIAL",
+      "row": [
+        32,
+        8,
+        true
+      ],
+      "ratio": 1.2273,
+      "range": [
+        0.973,
+        1.486
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.8147967082212988,
+      "CI95": null,
+      "selection_range": [
+        0.6729475100942126,
+        1.027749229188078
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "arm": "heavy_DEEP_SERIAL",
+      "row": [
+        32,
+        8,
+        false
+      ],
+      "ratio": 1.2273,
+      "range": [
+        0.973,
+        1.486
+      ],
+      "AA_radius": 0.012155686289788444,
+      "n": 48,
+      "R": 0.8147967082212988,
+      "CI95": null,
+      "selection_range": [
+        0.6729475100942126,
+        1.027749229188078
+      ],
+      "wins": false,
+      "stage_only": true
+    },
+    {
+      "batch": "boundary",
+      "wins": false,
+      "reason": "StopIteration:",
+      "unmeasured": true
+    },
+    {
+      "batch": "nearby",
+      "wins": false,
+      "unmeasured": true,
+      "reason": "AssertionError:('problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py', 'receipt absent or ambiguous', 0)"
+    },
+    {
+      "arm": "layer_release_attention",
+      "wins": true,
+      "R": 1.0016675062900413,
+      "all_row_R": 1.0016675062900413,
+      "CI95": null,
+      "CI95_approx": [
+        0.9957795025507215,
+        1.0075903255562377
+      ],
+      "shape_selection": [],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f88fda4aac144374"
+    },
+    {
+      "arm": "layer_release_moe",
+      "wins": true,
+      "R": 1.0018114705841836,
+      "all_row_R": 1.0018114705841836,
+      "CI95": null,
+      "CI95_approx": [
+        0.9953924312506948,
+        1.0082719047130029
+      ],
+      "shape_selection": [],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f88fda4aac144374"
+    },
+    {
+      "arm": "layer_release_projections",
+      "wins": false,
+      "R": 0.9997292018934929,
+      "all_row_R": 0.9997292018934929,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f88fda4aac144374"
+    },
+    {
+      "arm": "layer_library_o",
+      "wins": true,
+      "R": 1.0010333154331685,
+      "all_row_R": 1.0008326893254447,
+      "CI95": null,
+      "CI95_approx": [
+        0.9981479993233698,
+        1.0039269720386244
+      ],
+      "shape_selection": [
+        {
+          "load": "16x8",
+          "R": 1.0048433237573329,
+          "selected": true
+        },
+        {
+          "load": "32x8",
+          "R": 1.0013659910996677,
+          "selected": true
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_pool128",
+      "wins": true,
+      "R": 1.0003125850511183,
+      "all_row_R": 1.0010547273183028,
+      "CI95": null,
+      "CI95_approx": [
+        0.9997496389476157,
+        1.0008758481422977
+      ],
+      "shape_selection": [
+        {
+          "load": "16x8",
+          "R": 1.0018769765589164,
+          "selected": true
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_unpool128",
+      "wins": false,
+      "R": 1.0,
+      "all_row_R": 1.001542427710906,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [
+        {
+          "load": "16x8",
+          "R": 0.9965840233686598,
+          "selected": false
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_v1full",
+      "wins": false,
+      "R": 1.0,
+      "all_row_R": 0.9974288279660323,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [
+        {
+          "load": "1x8",
+          "R": 0.9920912260486924,
+          "selected": false
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6"
+    },
+    {
+      "arm": "layer_library_v32slide",
+      "wins": false,
+      "R": 1.0,
+      "all_row_R": 0.9988045324707031,
+      "CI95": null,
+      "CI95_approx": null,
+      "shape_selection": [
+        {
+          "load": "32x8",
+          "R": 0.9936197371287921,
+          "selected": false
+        }
+      ],
+      "stage_only": true,
+      "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+      "job": "f22020d25d234be6"
+    }
+  ]
+}

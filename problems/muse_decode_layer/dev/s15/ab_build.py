@@ -35,13 +35,16 @@ def main():
         for a,b,replacement in reversed(edits):restored[a:b]=[replacement]
         assert ''.join(restored)==text
         packed[name]=dict(arm,edits=edits,sha256=hashlib.sha256(text.encode()).hexdigest())
-    helpers=(H.parent/'s10/ablate_lab.py.inc').read_text();nodes=[]
+    helpers=(H/'ab_helpers.py.inc').read_text();nodes=[]
     wanted={'ab_label','ab_namespace','ab_copy','ab_graph','ab_tensors','ab_gate','ab_time','ab_summary','AB_CASES','AB_LOADS'}
     for n in ast.parse(helpers).body:
         name=n.name if isinstance(n,ast.FunctionDef) else n.targets[0].id if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) else None
         if name in wanted:nodes.append(ast.get_source_segment(helpers,n))
     bundle=base64.b85encode(lzma.compress(json.dumps(dict(host=source,variants=packed),separators=(',',':')).encode(),preset=9)).decode()
-    body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS=tuple(3121907+7919*i for i in range(16))\n'
+    problem=R/'problems/muse_decode_layer'
+    reference='\n'.join(line for line in (problem/'reference.py').read_text().splitlines() if not line.startswith(('from checks import','from nvfp4 import')))
+    checker='\n'.join(line for text in ((problem/'checks.py').read_text(),(problem/'nvfp4.py').read_text(),reference) for line in text.splitlines() if not line.startswith('from __future__ import'))
+    body='import torch,types,time,statistics,math\n'+'\n\n'.join(nodes)+'\nAB_SEEDS=tuple(104920273+104729*i for i in range(16))\nS15_CHECKER='+repr(checker)+'\n'
     body+='import base64,lzma,json\n_S15_BUNDLE=json.loads(lzma.decompress(base64.b85decode('+repr(bundle)+')))\n'
     body+=(H/'ab_lab.py.inc').read_text()
     encoded=base64.b85encode(lzma.compress(body.encode(),preset=9)).decode()
@@ -61,9 +64,10 @@ def main():
     outer+='assert hashlib.sha256(_s15_source.encode()).hexdigest()=='+repr(meta['sha256'])+'\n'
     outer+='_s15_path="<s15-expanded-'+meta['sha256'][:12]+'>"\nlinecache.cache[_s15_path]=(len(_s15_source),None,_s15_source.splitlines(True),_s15_path)\n'
     outer+='exec(compile(_s15_source,_s15_path,"exec"),globals())\n_s15_prepare=globals()["prepare"]\ndef prepare(weights):\n    return _s15_prepare(weights)\n'
+    outer+='\n_s15_entry_kernel=globals()["kernel_fn"]\ndef kernel_fn(data,state):\n    return _s15_entry_kernel(data,state)\n'
     host=H/'s15ab_host.py';host.write_text(outer)
     meta.update(payload=str(payload.relative_to(R)),payload_sha256=build.sha(payload),
-                host_file=str(host.relative_to(R)),host_file_sha256=build.sha(host),arms=packed,body_sha256=digest)
+                host_file=str(host.relative_to(R)),host_file_sha256=build.sha(host),arms=packed,body_sha256=digest,selection_seeds=[3121907+7919*i for i in range(16)])
     (H/'ab_manifest.json').write_text(json.dumps(meta,indent=2)+'\n')
     print('host',len(outer),'payload',len(bootstrap),'expanded',len(source))
 

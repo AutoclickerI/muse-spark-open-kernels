@@ -15,5 +15,6 @@ def pack(source):
     out+='assert hashlib.sha256(_source.encode()).hexdigest()=='+repr(sha)+'\n'
     out+='_file="<s16-'+sha[:12]+'>"\nlinecache.cache[_file]=(len(_source),None,_source.splitlines(True),_file)\n'
     out+='exec(compile(_source,_file,"exec"),globals())\n'
+    out+='_s16_entry_prepare=globals()["prepare"]\n_s16_entry_kernel=globals()["kernel_fn"]\ndef prepare(weights):\n    return _s16_entry_prepare(weights)\ndef kernel_fn(data,state):\n    return _s16_entry_kernel(data,state)\n'
     assert len(out.encode())<1_000_000
     return out

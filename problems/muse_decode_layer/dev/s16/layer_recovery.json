@@ -1,0 +1,64 @@
+{
+  "nearby": {
+    "original_sha256": "5d0893419ae8828070b8705bff53d3b905b709ee13e171dfb4505e8835c5e5db",
+    "sha256": "e5a7d14f2749b3a4ccbfa6b26cea9310451a8485b5e9c5c14136e6e95f7acb78",
+    "file": "problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py",
+    "repair": "explicit kernel_fn definition only; exact original payload and freeze criteria",
+    "screened": true,
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "/home/jihoon/competitions/muse_kernel/tools/okc_run.py",
+      "send",
+      "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py",
+      "--check",
+      "--priority",
+      "4.9",
+      "--note",
+      "P4 repaired S15 nearby layer audit: explicit top-level kernel entry only; original 5d089341 payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection."
+    ],
+    "send_stdout": "queued /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s15_nearby_repaired.py at priority 4.9; progress in runs/detached/e5a7d14f2749b3a4.log, the receipt in runs/ when the judge finishes\n",
+    "priority": 4.9,
+    "job": "a793c99eb9d447df",
+    "accepted_note": "Exact repaired bytes restored by P5b after retiring its unsent merged wrapper"
+  },
+  "release": {
+    "original_sha256": "f067eb263e1a67ac5277cec91b032fa33de4891ec3a12fdba9a24b23ae3797bc",
+    "sha256": "02c19fbd6475cac5453f93d4246ab02715faa748322844034fda97ebe7cc7908",
+    "file": "problems/muse_decode_layer/lab/lab_s15_release_repaired.py",
+    "repair": "explicit kernel_fn definition only; exact original payload and freeze criteria",
+    "screened": true,
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "/home/jihoon/competitions/muse_kernel/tools/okc_run.py",
+      "send",
+      "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s15_release_repaired.py",
+      "--check",
+      "--priority",
+      "2.9",
+      "--note",
+      "P4 repaired S15 release layer audit: explicit top-level kernel entry only; original f067eb26 payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection."
+    ],
+    "send_stdout": "queued /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s15_release_repaired.py at priority 2.9; progress in runs/detached/02c19fbd6475cac5.log, the receipt in runs/ when the judge finishes\n",
+    "priority": 2.9
+  },
+  "library": {
+    "original_sha256": "54aa3bedc460bbc8880892042a76993872a384a308fb90b5e007fd97b7fe8b2c",
+    "sha256": "2567c5a90528c832e27e93efdae5fccf6b5d7dedd3e2a307ad803b75aa9758f3",
+    "file": "problems/muse_decode_layer/lab/lab_s15_library_repaired.py",
+    "repair": "explicit kernel_fn definition only; exact original payload and freeze criteria",
+    "screened": true,
+    "command": [
+      "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
+      "/home/jihoon/competitions/muse_kernel/tools/okc_run.py",
+      "send",
+      "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s15_library_repaired.py",
+      "--check",
+      "--priority",
+      "3.9",
+      "--note",
+      "P4 repaired S15 library layer audit: explicit top-level kernel entry only; original 54aa3bed payload and gates unchanged; exact normal+forced fullwrapper pass; no result inferred from static rejection."
+    ],
+    "send_stdout": "queued /home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/lab/lab_s15_library_repaired.py at priority 3.9; progress in runs/detached/2567c5a90528c832.log, the receipt in runs/ when the judge finishes\n",
+    "priority": 3.9
+  }
+}

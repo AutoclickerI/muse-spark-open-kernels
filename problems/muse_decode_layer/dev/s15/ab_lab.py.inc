@@ -88,6 +88,8 @@ def lab(deadline,weights,state):
         if name not in compiled:errors.setdefault(name,'native compile incomplete')
     result=dict(host_sha256=hashlib.sha256(S15_HOST_SOURCE.encode()).hexdigest(),seeds=16,
                 rounds=dict(small=32,other=8),shared_jit=reused,shapes={},loads={},failures=[],errors=errors)
+    checker={};exec(compile(S15_CHECKER,'<s15-independent-TASK>','exec'),checker)
+    result.update(seed_ids=list(AB_SEEDS),task_checks=0,agreement_diagnostics={})
     seed_times={}
     for b,q,w in AB_CASES:
         key=(b,q,w);label=ab_label(key);tokens=b*q
@@ -107,8 +109,24 @@ def lab(deadline,weights,state):
             if seed!=AB_SEEDS[0]:ab_copy(data,make(seed))
             for graph,_ in graphs.values():graph.replay()
             torch.cuda.synchronize()
-            for name,(_,output) in graphs.items():
-                if name!='A' and (reason:=ab_gate(output,graphs['A'][1])):gates.setdefault(name,reason)
+            front_fn,back_fn=checker['ref_front'],checker['ref_back'];front_cache={};back_cache={}
+            def front(d,w,query_dtype=torch.bfloat16):
+                assert d is data and w is weights
+                if query_dtype not in front_cache:front_cache[query_dtype]=front_fn(d,w,query_dtype)
+                return front_cache[query_dtype]
+            def back(f,w,ids):
+                key=id(f),tuple(ids.reshape(-1).tolist())
+                if key not in back_cache:back_cache[key]=back_fn(f,w,ids)
+                return back_cache[key]
+            checker['ref_front'],checker['ref_back']=front,back
+            try:
+                for name,(_,output) in graphs.items():
+                    if name!='A' and (reason:=ab_gate(output,graphs['A'][1])):result['agreement_diagnostics'].setdefault(label+':'+name,reason)
+                    ok,message=checker['check_implementation'](data,checker['collect'](data,output),weights)
+                    result['task_checks']+=1
+                    if not ok:gates.setdefault(name,'TASK:'+message)
+            finally:checker['ref_front'],checker['ref_back']=front_fn,back_fn
+            front_cache=back_cache=None
             times=ab_time(graphs,32 if tokens<=8 else 8)
             per.append({name:statistics.mean(values) for name,values in times.items()})
         if gates:result['failures'].append(label+':'+str(gates))
@@ -127,7 +145,7 @@ def lab(deadline,weights,state):
         paired=list(zip(*(seed_times[key] for key in keys)))
         if len(paired)!=16:continue
         aa=[(46*s['A2']+16*f['A2'])/(46*s['A']+16*f['A']) for s,f in paired]
-        load={'aa':[round(min(aa),6),round(max(aa),6)],'r':{}}
+        load={'aa':[round(min(aa),6),round(max(aa),6)],'r':{},'samples':[{name:(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for name in s} for s,f in paired]}
         for name in paired[0][0]:
             if name=='A':continue
             rr=[(46*s[name]+16*f[name])/(46*s['A']+16*f['A']) for s,f in paired]
@@ -138,7 +156,13 @@ def lab(deadline,weights,state):
     result.update(elapsed=round(time.monotonic()-started,2),left=round(deadline-time.monotonic(),2))
     result['complete']=not result['failures'] and not errors and len(result['shapes'])==12 and len(result['loads'])==6 and all(
         s['n']==16 and len(s['r'])==len(S15_VARIANTS)+1 for s in result['shapes'].values())
-    encoded=json.dumps(result,separators=(',',':'))
+    import base64,lzma
+    def compact(value):
+        if isinstance(value,float):return round(value,8)
+        if isinstance(value,dict):return {k:compact(v) for k,v in value.items()}
+        if isinstance(value,list):return [compact(v) for v in value]
+        return value
+    encoded=base64.b85encode(lzma.compress(json.dumps(compact(result),separators=(',',':')).encode())).decode()
     assert len(encoded)<8500,len(encoded)
     return ['META S15 16 fresh paired seeds; r=off/host; cold read before every replay; all controls measured',
-            'RESULT '+encoded]
+            'RESULT_XZ85 '+encoded]

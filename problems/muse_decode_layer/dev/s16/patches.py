@@ -48,6 +48,7 @@ def bindings(source):
 def merge(old,new,target):
     """Asserted text merge for independent edits inside the same Python/CUDA node."""
     if target==old:return new
+    if target==new:return target
     a,b=old.splitlines(True),new.splitlines(True)
     for op,lo,hi,c,d in reversed(list(difflib.SequenceMatcher(None,a,b,autojunk=False).get_opcodes())):
         if op=='equal':continue
@@ -58,6 +59,18 @@ def merge(old,new,target):
             after=''.join(a[left:lo]+b[c:d]+a[hi:right])
             if before and target.count(before)==1:
                 target=target.replace(before,after,1);matched=True;break
+        if not matched and lo==hi:
+            # Independent insertions can share an original boundary. Preserve
+            # both, anchored to one unique unchanged side of that boundary.
+            for anchor,after in ((''.join(a[hi:hi+2]),True),(''.join(a[max(0,lo-2):lo]),False),
+                                 (''.join(a[hi:hi+1]),True),(''.join(a[max(0,lo-1):lo]),False)):
+                if anchor and target.count(anchor)==1:
+                    insert=''.join(b[c:d]);target=target.replace(anchor,insert+anchor if after else anchor+insert,1);matched=True;break
+        if not matched and op=='replace' and hi-lo==d-c:
+            pairs=[(x,y) for x,y in zip(a[lo:hi],b[c:d]) if x!=y]
+            if all(target.count(x)==1 for x,y in pairs):
+                for x,y in pairs:target=target.replace(x,y,1)
+                matched=True
         assert matched,('overlapping patch',old[:60],''.join(a[lo:hi])[:140])
     return target
 
@@ -66,7 +79,16 @@ def apply_delta(source,changes):
     edits=[];added=[];nodes=bindings(source)
     for change in changes:
         old,new=change['old'],change['new']
-        if old is None:added.append(new);continue
+        if old is None:
+            incoming=ast.parse(new).body[0]
+            if isinstance(incoming,ast.Assign) and len(incoming.targets)==1 and isinstance(incoming.targets[0],ast.Name):
+                key=incoming.targets[0].id;existing=nodes.get(key,[])
+                if existing:
+                    assert key=='LIBRARY_NATIVE_ROWS' and len(existing)==1,(key,'duplicate new binding')
+                    node=existing[0];before=ast.literal_eval(node.value);after=ast.literal_eval(incoming.value)
+                    assert all(k not in before or before[k]==v for k,v in after.items())
+                    edits.append((node.lineno-1,node.end_lineno,key+' = '+repr({**before,**after})+'\n'));continue
+            added.append(new);continue
         name=change['name']
         if change['kind']=='Assign':
             parsed=ast.parse(old).body[0]
@@ -77,6 +99,20 @@ def apply_delta(source,changes):
         node=exact[0] if len(exact)==1 else candidates[min(change['ordinal'],len(candidates)-1)] if candidates else None
         assert node is not None,(name,'missing target')
         current=segment(source,node)
+        if key=='_vdsk_gemm' and 'CHAIN: tl.constexpr' in new:
+            first=ast.parse(current).body[0].body[0]
+            if ast.unparse(first)=='tl.extra.cuda.gdc_launch_dependents()':
+                def entry_release(text):
+                    lines=text.splitlines(True);start=ast.parse(text).body[0].body[0].lineno-1
+                    lines.insert(start,'    tl.extra.cuda.gdc_launch_dependents()\n');return ''.join(lines)
+                old=entry_release(old);new=entry_release(new)
+        if key=='_vdsk_project' and 'launch_pdl=True' in current and 'CHAIN=chain, launch_pdl=chain' in new:
+            # E releases qkv at entry; L adds dependent pool/unpool calls.
+            # Keep E's PDL enable for qkv and L's CHAIN argument/input wait.
+            anchor='num_warps=NWARPS, num_stages=NS)'
+            assert old.count(anchor)==1
+            old=old.replace(anchor,'num_warps=NWARPS, num_stages=NS, launch_pdl=True)')
+            new=new.replace('CHAIN=chain, launch_pdl=chain','CHAIN=chain, launch_pdl=True')
         if isinstance(node,ast.Assign) and isinstance(node.value,ast.Constant) and isinstance(node.value.value,str):
             before=ast.literal_eval(ast.parse(old).body[0].value)
             after=ast.literal_eval(ast.parse(new).body[0].value)
@@ -109,6 +145,14 @@ def registry():
         add('heavy_'+kind,'heavy',[(b,8,w) for b in (16,32) for w in (True,False)],arm=arm)
     for kind in ('R','P','RP','C','S'):add('boundary_'+kind,'boundary',[(b,1,w) for b in (16,32) for w in (True,False)] if kind in ('P','C','S') else [(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8)) for w in (True,False)],kind=kind)
     for kind in ('B','M','D'):add('pdl_'+kind,'pdl',[(1,1,False)] if kind=='D' else [(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8),(16,8),(32,8)) for w in (True,False)],kind=kind)
+    add('layer_nearby','layer',[],kind='nearby')
+    for kind,points in [('attention',[(b,1,w) for b in (16,32) for w in (True,False)]),
+                        ('moe',[(b,q,w) for b,q in ((1,1),(16,1),(32,1),(1,8),(16,8),(32,8)) for w in (True,False)]),
+                        ('projections',[(16,8,w) for w in (True,False)])]:
+        add('layer_release_'+kind,'layer',points,kind='release_'+kind)
+    for kind in ('o','pool128','unpool128','v1full','v32slide'):
+        points=([(b,8,w) for b in (16,32) for w in (True,False)] if kind=='o' else [(16,8,w) for w in (True,False)] if kind in ('pool128','unpool128') else [(1,8,False)] if kind=='v1full' else [(32,8,True)])
+        add('layer_library_'+kind,'layer',points,kind='library_'+kind)
     return arms
 
 
@@ -219,6 +263,39 @@ def nf_call(data,state):
         warm.append(prefix+'module()')
         setup += [f"state[{(prefix+'bank')!r}]={prefix}m128_hh_issue_nt_prepare(dict(weights,post_norm_w=weights['post_expert_norm']))",
                   f"state[{(prefix+'streams')!r}]=([torch.cuda.Stream() for _ in range(5)],torch.cuda.Event(),[torch.cuda.Event() for _ in range(5)])"]
+    elif family=='layer':
+        target=H/'layer_cells.json';manifest=json.loads((H/'layer_manifest.json').read_text())
+        assert hashlib.sha256(target.read_bytes()).hexdigest()==manifest['cells_sha256']
+        changes=json.loads(target.read_text())[spec['kind']]
+        if spec['kind']=='library_o':
+            tokens=sorted({b*q for b,q,w in rows})
+            changes=[dict(d,new='NF_PORT_SELECTED |= '+('{'+', '.join(repr((t,'o')) for t in tokens)+'}')+'\n') for d in changes]
+
+        if spec['kind']=='release_moe':
+            # PAIR replaces the original small-M module. Rebase the exact
+            # conditional entry trigger onto the module that actually runs.
+            anchor='  constexpr bool PDL = F & F_PDL, LAST = F & F_LAST, TRACE = F & F_TRACE;'
+            release='\n  if constexpr(PDL) asm volatile("griddepcontrol.launch_dependents;" ::: "memory");'
+            for key,nodes in bindings(source).items():
+                if not key.startswith('_s16_epi_') or not key.endswith('CUDA'):continue
+                node=nodes[-1];value=ast.literal_eval(node.value);assert value.count(anchor)==1
+                changes.append(dict(kind='Assign',name=key,ordinal=0,old=segment(source,node),new=key+' = '+repr(value.replace(anchor,anchor+release))+'\n'))
+        if spec['kind'] in ('library_pool128','library_unpool128') and '_s15n_nf_key' in bindings(source):
+            node=bindings(source)['_best7_project'][-1];current=segment(source,node)
+            marker='    key=_s15n_nf_key(x.shape[0],name)\n';assert current.count(marker)==1
+            if 's16_native_key' not in current:
+                updated=current.replace(marker,"    s16_native_key=(x.shape[0],name)\n    if s16_native_key in LIBRARY_NATIVE_ROWS:\n        return _vdsk_project(x,state[name],LIBRARY_NATIVE_ROWS[s16_native_key],chain=True)\n"+marker)
+            else:updated=current
+            changes=[dict(d,old=current,new=updated) if d['kind']=='FunctionDef' and d['name']=='_best7_project' else d for d in changes]
+        if spec['kind'] in ('library_v1full','library_v32slide') and '_s15n_nf_key' in bindings(source):
+            marker="    vq8=state.get('vq8_rows',{}).get((_s15n_nearest(cfg['batch'],(16,32)),8,False)) if cfg['batch']>1 and cfg['q_len']==8 and not cfg['window'] else None\n"
+            found=[n for n in bindings(source)['_best7_attention'] if marker in segment(source,n)]
+            if found:
+                assert len(found)==1;current=segment(source,found[0])
+                updated=current.replace(marker,"    vq8=state.get('vq8_rows',{}).get((cfg['batch'],cfg['q_len'],bool(cfg['window']))) or (state.get('vq8_rows',{}).get((_s15n_nearest(cfg['batch'],(16,32)),8,False)) if cfg['batch']>1 and cfg['q_len']==8 and not cfg['window'] else None)\n")
+                changes.append(dict(kind='FunctionDef',name='_best7_attention',ordinal=0,old=current,new=updated))
+        source=apply_delta(source,changes)
+        if spec['kind'] in ('library_v1full','library_v32slide'):setup.append("state['vq8_rows']=dict(_VQ8_ROWS)")
     elif family in ('boundary','pdl'):
         delta=cells[family][spec['kind']]
         if family=='boundary' and spec['kind'] in ('C','S'):
@@ -302,7 +379,9 @@ def compose(names,base=None):
     manifest=json.loads((H/'manifest.json').read_text())
     assert hashlib.sha256((H/'cells.json').read_bytes()).hexdigest()==manifest['cells_sha256']
     choices=registry();selected=[]
-    for item in names:
-        spec=choices[item] if isinstance(item,str) else item
+    specs=[choices[item] if isinstance(item,str) else item for item in names]
+    order={name:i for i,name in enumerate(choices)}
+    specs=[s for s in specs if s['family']!='layer']+sorted((s for s in specs if s['family']=='layer'),key=lambda s:order[s['name']])
+    for spec in specs:
         source=patch(source,spec);selected.append(spec)
     return source,dict(base_sha256=BASE_SHA,sha256=hashlib.sha256(source.encode()).hexdigest(),patches=selected)

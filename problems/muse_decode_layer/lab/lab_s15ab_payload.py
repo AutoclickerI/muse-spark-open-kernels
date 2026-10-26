@@ -104,3 +104,7 @@ def prepare(weights):
     state = _lab_base_prepare(weights)
     _lab_run(weights, state, _start, _start + 285, "prepare")
     return state
+
+_s15_entry_kernel=globals()["kernel_fn"]
+def kernel_fn(data,state):
+    return _s15_entry_kernel(data,state)

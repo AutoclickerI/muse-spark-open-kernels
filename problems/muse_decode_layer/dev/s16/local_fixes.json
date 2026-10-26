@@ -11,5 +11,17 @@
     "evidence": "screen.log empty; admission exit nonzero with zero checks at 03:22 KST; root disk was full per orchestrator",
     "retry": "rerun exact source after recovery; do not count incomplete run",
     "remote_sent": false
+  },
+  "reset_metadata_race": {
+    "arm": "layer_release_projections forced",
+    "error": "JSONDecodeError before candidate import; upstream/api/problems/muse_decode_layer.json was read during another sync write",
+    "source_unchanged": true,
+    "action": "Retry full exact-source screen after the official snapshot parses; no failed candidate sent"
+  },
+  "owner_gate_update": {
+    "commit": "97e98f3",
+    "base": "60254883",
+    "conditional_experiment": "stopped locally before any send; removed untracked S15c source/outputs",
+    "policy": "held-out paired six-load R lower CI>1; TASK checker only; no per-load veto"
   }
 }

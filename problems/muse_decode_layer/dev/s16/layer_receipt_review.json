@@ -1,0 +1,343 @@
+{
+  "release": {
+    "job": "f88fda4aac144374",
+    "complete": true,
+    "errors": {},
+    "failures": [],
+    "R_of_load_means": 1.0049574496443225,
+    "AA_R_of_load_means": 0.9996680002347621,
+    "exact_CI": null,
+    "reason": "Per-seed load covariance absent; selection only, no promotion from this aggregate.",
+    "TASK_checks": null,
+    "loads": {
+      "1x1": {
+        "variant_over_S15": [
+          1.018308,
+          0.004748,
+          0.994233,
+          1.039807
+        ],
+        "AA": [
+          1.009834,
+          0.00208,
+          1.000283,
+          1.016426
+        ]
+      },
+      "16x1": {
+        "variant_over_S15": [
+          0.988901,
+          0.000723,
+          0.98554,
+          0.991749
+        ],
+        "AA": [
+          0.997998,
+          0.000863,
+          0.994593,
+          1.00174
+        ]
+      },
+      "32x1": {
+        "variant_over_S15": [
+          0.991881,
+          0.000757,
+          0.989218,
+          0.995569
+        ],
+        "AA": [
+          0.998476,
+          0.000595,
+          0.996282,
+          1.000505
+        ]
+      },
+      "1x8": {
+        "variant_over_S15": [
+          1.001564,
+          0.00059,
+          0.999523,
+          1.003623
+        ],
+        "AA": [
+          0.997318,
+          0.000893,
+          0.993044,
+          1.000308
+        ]
+      },
+      "16x8": {
+        "variant_over_S15": [
+          0.977655,
+          0.001127,
+          0.970923,
+          0.981436
+        ],
+        "AA": [
+          0.998725,
+          0.000849,
+          0.994851,
+          1.002511
+        ]
+      },
+      "32x8": {
+        "variant_over_S15": [
+          0.992563,
+          0.000394,
+          0.991585,
+          0.994325
+        ],
+        "AA": [
+          0.999697,
+          0.00043,
+          0.997835,
+          1.002037
+        ]
+      }
+    },
+    "pieces": [
+      {
+        "arm": "layer_release_attention",
+        "wins": true,
+        "R": 1.0016675062900413,
+        "all_row_R": 1.0016675062900413,
+        "CI95": null,
+        "CI95_approx": [
+          0.9957795025507215,
+          1.0075903255562377
+        ],
+        "shape_selection": [],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f88fda4aac144374"
+      },
+      {
+        "arm": "layer_release_moe",
+        "wins": true,
+        "R": 1.0018114705841836,
+        "all_row_R": 1.0018114705841836,
+        "CI95": null,
+        "CI95_approx": [
+          0.9953924312506948,
+          1.0082719047130029
+        ],
+        "shape_selection": [],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f88fda4aac144374"
+      },
+      {
+        "arm": "layer_release_projections",
+        "wins": false,
+        "R": 0.9997292018934929,
+        "all_row_R": 0.9997292018934929,
+        "CI95": null,
+        "CI95_approx": null,
+        "shape_selection": [],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f88fda4aac144374"
+      }
+    ]
+  },
+  "library": {
+    "job": "f22020d25d234be6",
+    "complete": true,
+    "errors": {},
+    "failures": [],
+    "R_of_load_means": 0.9989590504622883,
+    "AA_R_of_load_means": 0.9986558230179674,
+    "exact_CI": null,
+    "reason": "Per-seed load covariance absent; selection only, no promotion from this aggregate.",
+    "TASK_checks": 768,
+    "loads": {
+      "1x1": {
+        "variant_over_S15": [
+          0.999802,
+          0.001949,
+          0.993973,
+          1.006471
+        ],
+        "AA": [
+          1.013075,
+          0.002347,
+          1.004542,
+          1.022814
+        ]
+      },
+      "16x1": {
+        "variant_over_S15": [
+          0.999176,
+          0.000781,
+          0.996736,
+          1.00369
+        ],
+        "AA": [
+          0.998606,
+          0.001826,
+          0.99204,
+          1.008489
+        ]
+      },
+      "32x1": {
+        "variant_over_S15": [
+          1.001312,
+          0.000456,
+          0.999842,
+          1.003248
+        ],
+        "AA": [
+          0.999222,
+          0.000737,
+          0.996336,
+          1.002392
+        ]
+      },
+      "1x8": {
+        "variant_over_S15": [
+          1.00673,
+          0.001003,
+          1.000876,
+          1.009735
+        ],
+        "AA": [
+          0.998548,
+          0.001192,
+          0.993566,
+          1.003576
+        ]
+      },
+      "16x8": {
+        "variant_over_S15": [
+          0.994152,
+          0.000907,
+          0.990786,
+          0.99786
+        ],
+        "AA": [
+          0.999198,
+          0.000289,
+          0.997946,
+          1.000551
+        ]
+      },
+      "32x8": {
+        "variant_over_S15": [
+          1.005131,
+          0.002977,
+          0.991708,
+          1.017962
+        ],
+        "AA": [
+          0.999509,
+          0.000457,
+          0.997735,
+          1.00191
+        ]
+      }
+    },
+    "pieces": [
+      {
+        "arm": "layer_library_o",
+        "wins": true,
+        "R": 1.0010333154331685,
+        "all_row_R": 1.0008326893254447,
+        "CI95": null,
+        "CI95_approx": [
+          0.9981479993233698,
+          1.0039269720386244
+        ],
+        "shape_selection": [
+          {
+            "load": "16x8",
+            "R": 1.0048433237573329,
+            "selected": true
+          },
+          {
+            "load": "32x8",
+            "R": 1.0013659910996677,
+            "selected": true
+          }
+        ],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f22020d25d234be6"
+      },
+      {
+        "arm": "layer_library_pool128",
+        "wins": true,
+        "R": 1.0003125850511183,
+        "all_row_R": 1.0010547273183028,
+        "CI95": null,
+        "CI95_approx": [
+          0.9997496389476157,
+          1.0008758481422977
+        ],
+        "shape_selection": [
+          {
+            "load": "16x8",
+            "R": 1.0018769765589164,
+            "selected": true
+          }
+        ],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f22020d25d234be6"
+      },
+      {
+        "arm": "layer_library_unpool128",
+        "wins": false,
+        "R": 1.0,
+        "all_row_R": 1.001542427710906,
+        "CI95": null,
+        "CI95_approx": null,
+        "shape_selection": [
+          {
+            "load": "16x8",
+            "R": 0.9965840233686598,
+            "selected": false
+          }
+        ],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f22020d25d234be6"
+      },
+      {
+        "arm": "layer_library_v1full",
+        "wins": false,
+        "R": 1.0,
+        "all_row_R": 0.9974288279660323,
+        "CI95": null,
+        "CI95_approx": null,
+        "shape_selection": [
+          {
+            "load": "1x8",
+            "R": 0.9920912260486924,
+            "selected": false
+          }
+        ],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f22020d25d234be6"
+      },
+      {
+        "arm": "layer_library_v32slide",
+        "wins": false,
+        "R": 1.0,
+        "all_row_R": 0.9988045324707031,
+        "CI95": null,
+        "CI95_approx": null,
+        "shape_selection": [
+          {
+            "load": "32x8",
+            "R": 0.9936197371287921,
+            "selected": false
+          }
+        ],
+        "stage_only": true,
+        "reason": "selection only; shape pieces chosen at dispatch granularity, policies by six-load R; paired samples absent",
+        "job": "f22020d25d234be6"
+      }
+    ]
+  }
+}

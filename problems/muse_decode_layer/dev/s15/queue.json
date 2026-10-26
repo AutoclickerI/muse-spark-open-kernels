@@ -2,14 +2,25 @@
   "candidate": "problems/muse_decode_layer/cand_r3_best7_s15.py",
   "candidate_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
   "wrapper": "problems/muse_decode_layer/lab/lab_s15ab_payload.py",
-  "wrapper_sha256": "49ce378bb4bbb287731b16a0ab6ac99f5b165c65697d7d98b69438f5c0aa1260",
+  "wrapper_sha256": "2a4d0dde028c7ec8637f65494f57e3f104c7aba27751213c52877fdb504b28ef",
   "payload_sha256": "ac3422a4e09c95bfa4c6db79981278f37427b30f4922a73d1116cebb9e4af57b",
   "not_before": "2026-10-26T00:00:00+00:00",
   "mode": "check",
   "priority": -1,
-  "job": null,
-  "status": "scheduled; no H200 performance result or final promotion",
+  "job": "281b1383359c4fe2",
+  "status": "accepted repaired exact admission check; freeze pending receipt",
   "command": [
+    "python3",
+    "tools/okc_run.py",
+    "send",
+    "problems/muse_decode_layer/lab/lab_s15ab_payload.py",
+    "--check",
+    "--priority",
+    "-1"
+  ],
+  "rejected_previous_wrapper_sha256": "49ce378bb4bbb287731b16a0ab6ac99f5b165c65697d7d98b69438f5c0aa1260",
+  "rejection": "422 no kernel_fn function defined; no job created",
+  "original_command": [
     "/home/jihoon/anaconda3/envs/comp_kv/bin/python3",
     "/home/jihoon/competitions/muse_kernel/tools/h200_lab.py",
     "send",
@@ -25,5 +36,7 @@
     "-1",
     "--note",
     "P4 combined S15 60254883 on exact S14 f1c77ce6: nine attributed NF rows + last-CTA B1 sliding + N128 regmax full verify stage4; every piece/role off, S14 back,A:A,16 fresh seeds,all12 shapes,32 small/8 other cold rounds; normal+forced combined and each piece pass; MIT retained. P10b selected-row admission coordinated via README."
-  ]
+  ],
+  "sender_pid": 4146047,
+  "repaired_host_sha256": "c745e3b8a24be4995d7c3246fe5842d2e0d81fd9bd73c2c93ea0a3f39e4b36d0"
 }

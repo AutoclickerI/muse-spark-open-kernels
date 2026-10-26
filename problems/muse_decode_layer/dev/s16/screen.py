@@ -20,7 +20,10 @@ def install(module,forced=False):
     import types
     m=module
     if forced:load(H.parent/'best7/force.py','s16_best7_force').install(m,False,False)
-    load(H.parent/'s15/local_standins.py','s16_s15_standins').install(m)
+    if hasattr(m,'LIBRARY_NATIVE_ROWS'):
+        sys.path.insert(0,str(H.parent/'s15'))
+        load(H.parent/'library_chain/library_standins.py','s16_library_standins').install(m)
+    else:load(H.parent/'s15/local_standins.py','s16_s15_standins').install(m)
     counts={};stubs={}
     # Every new attention driver runs its Python allocation/launch path. Only
     # unavailable native global/DSM kernels use a pointer-level launch stand-in.
