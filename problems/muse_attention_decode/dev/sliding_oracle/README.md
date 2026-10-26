@@ -111,8 +111,10 @@ is[-2.9383%,+3.0289%]. The production function handles masked/FTZ-range
 inputs separately. This characterization is not a correctness gate.
 The24 component TASK checks pass on fresh data and strided FP32 partials,
 including short/page64/scale1/64/edge fixtures. Candidatebabd11fe passes
-normal and forced13TASK/12graphs/25static each; evidence is
-[layer_admission.json](layer_admission.json) and the linked full records.
+normal and forced13TASK/12graphs/25static each; historical evidence is
+[exp_normal_screen.json](exp_normal_screen.json) and
+[exp_forced_screen.json](exp_forced_screen.json). The current
+[layer_admission.json](layer_admission.json) pins the decode-only handoff.
 
 Native static SFU exp sites decrease91→23 at decode and78→10 at verify;
 FMA/integer conversion issue grows. QGMMA9 and LDGSTS24 sites are unchanged.

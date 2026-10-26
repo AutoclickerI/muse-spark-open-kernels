@@ -37,7 +37,7 @@ def _so_prepare(device):
 
 def main():
     (H/'out').mkdir(exist_ok=True);base=(R/'problems/muse_decode_layer/cand_r3_best7_s15.py').read_text();global_merge='--global-merge' in sys.argv;rows={(16,8):'vGA',(32,8):'vGA'} if global_merge else SELECTED;s=patch(base,rows)
-    p=H/('out/s15_sliding_merge.py' if global_merge else 'out/s15_sliding_exp.py');p.write_text(s);meta=dict(base_sha256=hashlib.sha256(base.encode()).hexdigest(),candidate_sha256=hashlib.sha256(s.encode()).hexdigest(),selection={str(k):v for k,v in rows.items()},status='screen artifact; no promotion before native pair')
+    p=H/('out/s15_sliding_merge.py' if global_merge else 'out/s15_sliding_exp.py');p.write_text(s);meta=dict(base_sha256=hashlib.sha256(base.encode()).hexdigest(),candidate_sha256=hashlib.sha256(s.encode()).hexdigest(),selection={str(k):v for k,v in rows.items()},status='Measured verify loss; no nomination' if global_merge else 'Measured decode point nominations; exact normal/forced screened; verify variants excluded')
     (H/('merge_candidate_manifest.json' if global_merge else 'candidate_manifest.json')).write_text(json.dumps(meta,indent=2)+'\n');print(p,meta['candidate_sha256']);return s
 
 if __name__=='__main__':main()
