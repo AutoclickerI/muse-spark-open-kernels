@@ -58,8 +58,9 @@ old/new geomean is1.171253, not an official score. Scored dispatch is unchanged;
 its identical-dispatch ratios span0.97794-1.03416, without an independent A:A arm.
 
 P5b native job c03a3ae8ddfd490d proves guarded S15n9cc90d2e:268/268 TASK
-checks at67 shapes. The exact S16 merge is also being checked as wrappere09e2cb0
-after normal/forced268 checks per mode, because S16 adds projection-range interactions.
+checks at67 shapes. The exact S16 merge also needs its native combined projection-range audit. Its first
+uncompressed wrapper was rejected413 before a job. The703314-byte replacement
+89f5138e passed268 checks per mode and is queued; nearby_native_queue.json pins the sender/job.
 The guard keeps all65 timed cases identical and bounds native N128 capacity at B64.
 prepare_nearby.py composes it onto frozen435df5f7. nearby_composition.json pins6e43a367
 and both143-fixture screens. Decision: native TASK/cache/replay pass -> the screened
@@ -104,6 +105,10 @@ Layer merges preserve actual-M VDSK dispatch, exact VQ8 rows before nearest rang
 producer release plus CHAIN waits, and PAIR conditional entry release. NVFP4 weights
 remain E2M1/E4M3 codes; dense recodes remain exact BF16. No widened expert weights
 are retained. prepare_audit.json records source hashes and inventory classes.
+
+Preparation-only retry: expandedee5fe249/shipped4ca750a5 scored1.818167x at93c6e7425c484608.
+Paired a8c66a6d5dfc4fc2 uses exactly the failed c096 seeds/weights/router with published
+TASK preparation semantics on both arms; normal/forced each pass1536 checks.
 
 Next: read all pending
 receipts through h200_lab.py, apply the six-load gate, and add guarded nearby only
