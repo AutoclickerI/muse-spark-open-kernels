@@ -281,3 +281,24 @@ E2M1's nonuniform spacing. The bounded positive-BF16 embedding search finds only
 constant-index no-shift bit-selection also has no valid packed layout. These A/B implementations
 remain unproven, not measured losses. Dynamic-selector PRMT and multi-piece arithmetic remain open;
 only an exact lower-issue implementation earns the next structural decode run.
+
+## W13→W2 dependency versus reduction: measured
+
+Receipt554c392d10f54b71 uses exact S19 and16 seeds. Matched removal of ready/grid spins saves
+5.19/4.54/6.83us(6.79/6.06/6.33%) at M8/16/32,not the old critical-CTA16.6us sum.
+All5 correct producer-owned64/128-channel slice schedules lose despite2-CTA capacity andzero spills.
+Best8-slot atomic A128D/S19=1.297920/1.252912/1.232193. Same weight bytes and aggregate HMMA,
+but S128 has4x W2 TMA calls and2x total;S64 has8x and3.33x.
+
+S128 global atomics execute2.073/4.227/8.135M FP32 reductions. First4seed CUPTI main-minus-NORED
+is7.97/7.32/8.52us shallow,9.70/8.29/10.39us deep;finish adds9.3-10.5us. Separate partials
+reduce the main contrast but finish grows22.3-26.2us,writing+reading16.58/33.82/65.08MB logically.
+NORED's107vs108regs still keep2CTAs;its checksum/output-path contrast is not exclusive atomic latency.
+Separate node profiles omit launch gaps;unprofiled full-stage pairs decide. Deep NORED main
+84.72/74.62/105.78us versus BASE79.02/75.96/108.06us andNOWAIT72.94/72.38/100.91us
+means simply deleting atomics is not shown sufficient. Shared/reg budgets and per-seed CIs are in
+structural/dependency/results.json.
+
+Next size a cluster-local/owner-output reduction with coarser slices and fused finish,including
+useful-unit and two-CTA budgets. These recipes remain unimplemented/unmeasured. The original
+M32 load-issue bound remains separate;integer-pipe saturation is still unproven. No new P4 point winner.

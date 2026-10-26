@@ -8620,5 +8620,172 @@
     },
     "base": "S19 62ea5bf4",
     "status": "All valid non-alias point wins versus S19;only P4 held-out six-load R promotes;A/B bounded forms unproven,not measured losses"
+  },
+  "dependency_rows": [],
+  "dependency_followup": {
+    "queue": {
+      "utc": "20261026T100758Z",
+      "problem": "muse_moe_w4a16",
+      "mode": "check",
+      "job": "554c392d10f54b71",
+      "sha256": "458755c365021f20371a20ca4c57921682d500dbe3e13263963b4fd7561f08c2",
+      "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_dependency.py",
+      "source": "runs/muse_moe_w4a16/20261026T100758Z_check_554c392d10f54b71.py",
+      "git": "06652d6+dirty",
+      "note": "h200_lab prof/lab/moe_p3a_dependency.py: P3a frozenS19 62ea5bf4 W13-W2 dependency:M8/16/32,16freshseeds,48NOWAIToraclepairs48AA first;onlyifmeanNOWAIT/BASE<.95atM16or32 measure240correctpairs. NOWAIT removes ready/grid spins only,matched math/store/publish,outputignored. CorrectA64/A128 atomic,P128 partial,A128D/P128D eightW2slots reuse72KiB;CTA owns token/slice,immediateW2,allworktimed,losslessrawrepack. All2CTA108-110regszero spills,675nativeTASK/capture checks;A128normal/P128forced/P128Dforced fullS19 screens;static/changed/transport and exactpacked16seedlocalpass7081B. CUPTI separate first4seeds,NORED outputignored diag quantifies net reductionpath;allpointwinners exactS19patch toP4,Rconfirms.",
+      "snapshot": "runs/sent/458755c365021f20/lab_moe_p3a_dependency.py",
+      "lane": "P3a",
+      "decision": "Does matched S19 wait removal save over5percent,and can producer-owned W13/W2 slices retain it after atomic or partial-buffer reduction?",
+      "priority": 3,
+      "priority_override": false,
+      "sender_log": "runs/detached/458755c365021f20.log",
+      "payload": "prof/lab/moe_p3a_dependency.py",
+      "payload_sha256": "917f36768c49cecfbe7260398f484aebb884a12d1dbfb6fe57d9e566de841ad4",
+      "state": "Complete16seeds/TASK/AA/packet/source/resources verified",
+      "sender": 1908836,
+      "receipt": "runs/muse_moe_w4a16/20261026T100758Z_check_554c392d10f54b71.json"
+    },
+    "source_audit": {
+      "verified": true,
+      "wrapper_sha256": "458755c365021f20371a20ca4c57921682d500dbe3e13263963b4fd7561f08c2",
+      "payload_sha256": "917f36768c49cecfbe7260398f484aebb884a12d1dbfb6fe57d9e566de841ad4",
+      "expanded_sha256": "e47f2d2bec1fdfdb5ce1a607d28c30a682aff12e330bb220e63820f8e12a7510",
+      "packet_checksum": "d34b6ea9ab104cd37105c4918cb164768629edcbf34fa780b952b3d9fdfadf9c",
+      "exact_cells": 6
+    },
+    "base": "S19 62ea5bf4",
+    "oracle": [
+      {
+        "mean": 0.9320678125,
+        "SE": 0.0037738726398519216,
+        "CI95": [
+          0.9240239933767889,
+          0.9401116316232112
+        ],
+        "n": 16,
+        "M": 8,
+        "ratio": 0.9320678125,
+        "seeds": 16,
+        "seed_ratios": [
+          0.928772,
+          0.914516,
+          0.927333,
+          0.940043,
+          0.933123,
+          0.904695,
+          0.94142,
+          0.923164,
+          0.944289,
+          0.935946,
+          0.958152,
+          0.927643,
+          0.956571,
+          0.909094,
+          0.941043,
+          0.927281
+        ],
+        "baseline_us": 75.422,
+        "oracle_us": 70.23,
+        "saved_us": {
+          "mean": 5.192,
+          "SE": 0.40508237845323924,
+          "CI95": [
+            4.328587348531753,
+            6.055412651468247
+          ],
+          "n": 16
+        },
+        "point_nominee": false,
+        "eligibility": "Timing only; deliberately incorrect output"
+      },
+      {
+        "mean": 0.9393600625,
+        "SE": 0.003999084210237748,
+        "CI95": [
+          0.9308362162774353,
+          0.9478839087225648
+        ],
+        "n": 16,
+        "M": 16,
+        "ratio": 0.9393600625,
+        "seeds": 16,
+        "seed_ratios": [
+          0.933943,
+          0.961289,
+          0.958633,
+          0.94663,
+          0.95854,
+          0.92752,
+          0.955545,
+          0.932602,
+          0.93806,
+          0.931003,
+          0.91662,
+          0.931597,
+          0.910173,
+          0.928614,
+          0.961035,
+          0.937957
+        ],
+        "baseline_us": 72.229,
+        "oracle_us": 67.69,
+        "saved_us": {
+          "mean": 4.539,
+          "SE": 0.4134968762477737,
+          "CI95": [
+            3.6576522710314827,
+            5.420347728968516
+          ],
+          "n": 16
+        },
+        "point_nominee": false,
+        "eligibility": "Timing only; deliberately incorrect output"
+      },
+      {
+        "mean": 0.9366561875,
+        "SE": 0.004707027359189262,
+        "CI95": [
+          0.9266233961743208,
+          0.9466889788256793
+        ],
+        "n": 16,
+        "M": 32,
+        "ratio": 0.9366561875,
+        "seeds": 16,
+        "seed_ratios": [
+          0.91851,
+          0.972743,
+          0.929666,
+          0.927526,
+          0.93551,
+          0.915072,
+          0.940563,
+          0.951208,
+          0.933208,
+          0.924297,
+          0.966934,
+          0.935421,
+          0.90491,
+          0.959691,
+          0.946483,
+          0.924757
+        ],
+        "baseline_us": 105.042,
+        "oracle_us": 98.213,
+        "saved_us": {
+          "mean": 6.829,
+          "SE": 0.6860984866134988,
+          "CI95": [
+            5.366615692498718,
+            8.29138430750128
+          ],
+          "n": 16
+        },
+        "point_nominee": false,
+        "eligibility": "Timing only; deliberately incorrect output"
+      }
+    ],
+    "costs": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/results.json",
+    "status": "No correct point winner versus S19;oracle and NORED ineligible;only the exact measured recipes close"
   }
 }

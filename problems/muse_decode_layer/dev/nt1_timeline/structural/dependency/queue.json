@@ -1,0 +1,22 @@
+{
+  "utc": "20261026T100758Z",
+  "problem": "muse_moe_w4a16",
+  "mode": "check",
+  "job": "554c392d10f54b71",
+  "sha256": "458755c365021f20371a20ca4c57921682d500dbe3e13263963b4fd7561f08c2",
+  "file": "problems/muse_moe_w4a16/lab/lab_moe_p3a_dependency.py",
+  "source": "runs/muse_moe_w4a16/20261026T100758Z_check_554c392d10f54b71.py",
+  "git": "06652d6+dirty",
+  "note": "h200_lab prof/lab/moe_p3a_dependency.py: P3a frozenS19 62ea5bf4 W13-W2 dependency:M8/16/32,16freshseeds,48NOWAIToraclepairs48AA first;onlyifmeanNOWAIT/BASE<.95atM16or32 measure240correctpairs. NOWAIT removes ready/grid spins only,matched math/store/publish,outputignored. CorrectA64/A128 atomic,P128 partial,A128D/P128D eightW2slots reuse72KiB;CTA owns token/slice,immediateW2,allworktimed,losslessrawrepack. All2CTA108-110regszero spills,675nativeTASK/capture checks;A128normal/P128forced/P128Dforced fullS19 screens;static/changed/transport and exactpacked16seedlocalpass7081B. CUPTI separate first4seeds,NORED outputignored diag quantifies net reductionpath;allpointwinners exactS19patch toP4,Rconfirms.",
+  "snapshot": "runs/sent/458755c365021f20/lab_moe_p3a_dependency.py",
+  "lane": "P3a",
+  "decision": "Does matched S19 wait removal save over5percent,and can producer-owned W13/W2 slices retain it after atomic or partial-buffer reduction?",
+  "priority": 3,
+  "priority_override": false,
+  "sender_log": "runs/detached/458755c365021f20.log",
+  "payload": "prof/lab/moe_p3a_dependency.py",
+  "payload_sha256": "917f36768c49cecfbe7260398f484aebb884a12d1dbfb6fe57d9e566de841ad4",
+  "state": "Complete16seeds/TASK/AA/packet/source/resources verified",
+  "sender": 1908836,
+  "receipt": "runs/muse_moe_w4a16/20261026T100758Z_check_554c392d10f54b71.json"
+}

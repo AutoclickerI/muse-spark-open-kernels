@@ -1,7 +1,7 @@
 # P3a small-M MoE
 
-Current experiments use exact S15 `60254883`. Today's earlier measurements use S14 `f1c77ce6`, whose
-small-M CUDA/math matches S15. Flags95 at M1 and69 at M8/16/32. No new whole-layer kernel is frozen here.
+Current experiments use frozen S19 expanded `62ea5bf4`; earlier evidence below uses S14/S15 as labeled.
+S19 keeps PAIR M8 and PAIR+BLOCK M16/32. No new whole-layer kernel is frozen here.
 
 **Nomination:** hand P4 every valid per-shape point estimate below1, with ratio,SE,seeds and uncertainty.
 A:A describes noise; it does not veto a shape. **Promotion:** P4 composes, then requires the held-out
@@ -164,3 +164,23 @@ All4,064 products are exact in FP16/BF16, but the bounded single-affine magic an
 zero-shift selection families establish no new decoder. Those forms are unmeasured; dynamic-selector
 PRMT and multi-piece arithmetic remain open. They need an exact implementation and cheaper SASS
 before quota. Small address nominees travel in P4's next composition; no standalone confirmation.
+
+## S19 W13→W2 dependency: measured
+
+[structural/dependency/README.md](structural/dependency/README.md) records554c392d10f54b71,
+sender1908836,wrapper458755c365021f20. Sixteen seeds yield48 oracle pairs48A:A240correct pairs;
+all TASK/source/packet/runtime resource gates pass. Matched NOWAIT/S19 at M8/16/32 is
+.932068/.939360/.936656(95%CI .924024-.940112/.930836-.947884/.926623-.946689),
+saving5.19/4.54/6.83us. The old16.6us critical-CTA wait sum is not whole-stage removable time.
+
+All five producer-owned64/128-channel W13→W2 slice layouts lose. Best A128D is
+1.297920/1.252912/1.232193;all exact per-M CIs and seeds are in results.json. Every main retains
+2-CTA capacity andzero spills(108-110regs,85.6-86.8KB). Capacity does not guarantee useful residency:
+S128 units average252/234/386 against264 max grid CTAs. Atomic main output paths cost8-10us net
+plus9-10us finish;separate partial buffers cost22-26us finish and16.6/33.8/65.1MB logical traffic.
+Even NORED does not reach NOWAIT. This closes the tested global-reduction schedules only.
+
+No new correct point winner goes to P4;point_nominations.json and dependency/P4_HANDOFF.json
+carry the empty list,evidence and exact source identities. Previous nominees remain. Before quota,
+size coarser/DSM or owner-output accumulation plus fused norm/combine with fewer TMA transactions
+and enough useful CTAs. Those structural options remain unimplemented,not measured losses.

@@ -1,0 +1,89 @@
+{
+  "status": "All local gates pass;ready for one MoE check",
+  "payload_sha256": "917f36768c49cecfbe7260398f484aebb884a12d1dbfb6fe57d9e566de841ad4",
+  "native_TASK_checks": 675,
+  "native_standins": false,
+  "full_S19_screens": {
+    "A128": {
+      "mode": "normal",
+      "TASK": 13,
+      "shapes": 12,
+      "leaf_calls": {
+        "eager": 30,
+        "captured": 6
+      }
+    },
+    "P128": {
+      "mode": "forced",
+      "TASK": 13,
+      "shapes": 12,
+      "leaf_calls": {
+        "eager": 30,
+        "captured": 6
+      }
+    },
+    "P128D": {
+      "mode": "forced",
+      "TASK": 13,
+      "shapes": 12,
+      "leaf_calls": {
+        "eager": 30,
+        "captured": 6
+      }
+    }
+  },
+  "all_offline_resident": 2,
+  "all_zero_spills": true,
+  "packed_local": {
+    "payload_sha256": "917f36768c49cecfbe7260398f484aebb884a12d1dbfb6fe57d9e566de841ad4",
+    "expanded_sha256": "e47f2d2bec1fdfdb5ce1a607d28c30a682aff12e330bb220e63820f8e12a7510",
+    "complete": true,
+    "seeds": {
+      "requested": 16,
+      "oracle_complete": 16,
+      "build_complete": 16,
+      "weights": "1175353+7919*seed",
+      "routing": "1179000+M+97*seed"
+    },
+    "paired": 240,
+    "oracle": 48,
+    "AA": 48,
+    "profiles": 108,
+    "checks": {
+      "gates": {
+        "BASE": [
+          0.0023698091972619295,
+          0.00251032505184412
+        ],
+        "A64": [
+          0.0023697561118751764,
+          0.002509814454242587
+        ],
+        "A128": [
+          0.002369759138673544,
+          0.002509814454242587
+        ],
+        "P128": [
+          0.002369818976148963,
+          0.0025098142214119434
+        ],
+        "A128D": [
+          0.0023697668220847845,
+          0.0025098139885812998
+        ],
+        "P128D": [
+          0.002369818976148963,
+          0.0025098142214119434
+        ]
+      },
+      "failures": [],
+      "oracle": "NOWAIT/NORED/NOREDD deliberately ungated;outputs ignored;no nominations"
+    },
+    "packet_bytes": 7081,
+    "elapsed_seconds": 22.362080155988224,
+    "native_math_no_standins": true,
+    "material_policy": "Local coverage forces branch;original policy result=False;H200 uses original policy"
+  },
+  "oracle": "NOWAIT/NORED/NOREDD are deliberately incorrect and ineligible",
+  "decision": "All16 oracle pairs first;builds only if M16 or M32 mean NOWAIT/BASE<.95;all valid point wins to P4"
+}

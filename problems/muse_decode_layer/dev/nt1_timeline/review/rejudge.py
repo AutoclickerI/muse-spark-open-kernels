@@ -119,6 +119,17 @@ if (ip/'results.json').exists():
   new.append(dict(v,job=ir['job'],batch='S19 integer/address issue',handoff=True,exact_patch=spec,alias_diagnostic=next((dict(ratio=z['ratio'],SE=z['SE'],CI95=z['CI95'],note='Identical AFFINE M1 control alias;point gain can reflect paired timing bias,not implementation work') for z in ir['summary'] if z['control_alias'] and z['M']==v['M']),None),shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='975353+7919*seed',routing='979000+M+97*seed')))
  result['rows']+=new;result['intpipe_rows']=new;result['intpipe_followup']=dict(queue=json.loads((ip/'queue.json').read_text()),source_audit=ir['source_audit'],base='S19 62ea5bf4',status='All valid non-alias point wins versus S19;only P4 held-out six-load R promotes;A/B bounded forms unproven,not measured losses')
  (ip/'P4_HANDOFF.json').write_text(json.dumps(dict(base='S19 62ea5bf4',job=ir['job'],rows=new,source_audit=ir['source_audit'],gate=result['gate']),indent=2)+'\n')
+dep=P/'structural/dependency'
+if (dep/'results.json').exists():
+ er=json.loads((dep/'results.json').read_text());assert er['measured'] and not er['invalid'] and er['source_audit']['verified'];em=json.loads((dep/'manifest.json').read_text());new=[]
+ for v in er['summary']:
+  if not v['point_nominee']:continue
+  spec=em[v['arm']]
+  for field in ('candidate','shipped','patch'):
+   assert hashlib.sha256((R/spec[field]).read_bytes()).hexdigest()==spec[field+'_sha256']
+  new.append(dict(v,job=er['job'],batch='S19 producer-owned W13-W2 slices',handoff=True,exact_patch=spec,shapes=[[1,8,w] for w in (True,False)] if v['M']==8 else [[v['M'],1,w] for w in (True,False)],seed_recipe=dict(weights='1175353+7919*seed',routing='1179000+M+97*seed')))
+ result['rows']+=new;result['dependency_rows']=new;result['dependency_followup']=dict(queue=json.loads((dep/'queue.json').read_text()),source_audit=er['source_audit'],base='S19 62ea5bf4',oracle=er['oracle'],costs=str((dep/'results.json').relative_to(R)),status='All valid point wins versus S19 exported;oracle and NORED ineligible;only P4 held-out six-load R promotes' if new else 'No correct point winner versus S19;oracle and NORED ineligible;only the exact measured recipes close')
+ (dep/'P4_HANDOFF.json').write_text(json.dumps(dict(base='S19 62ea5bf4',job=er['job'],rows=new,source_audit=er['source_audit'],gate=result['gate'],oracle=er['oracle'],material=er['material'],cost_evidence=str((dep/'results.json').relative_to(R))),indent=2)+'\n')
 (P/'point_nominations.json').write_text(json.dumps(result,indent=2)+'\n')
 h=json.loads((P/'p4_ilp_handoff.json').read_text());h.update(measured_winner_M=[8,16,32],nominate_rows=[[b,q,w] for b,q in ((1,8),(16,1),(32,1)) for w in (True,False)],M8='point-estimate nominee: ratio .99055 SE .00181 n32; no A:A veto',policy='Per-shape point winners nominate; P4 composes and confirms held-out six-load R.');h.update(comparison_to_PAIR_verified=True,direct_PAIR_receipt=direct['job'],direct_comparison=direct['rows'],direct_ranking='PAIR is faster at M8/M16/M32; ILP is retained as an alternative versus S14')
 (P/'p4_ilp_handoff.json').write_text(json.dumps(h,indent=2)+'\n')
