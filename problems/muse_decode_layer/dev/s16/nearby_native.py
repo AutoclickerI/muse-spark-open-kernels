@@ -16,7 +16,7 @@ def main():
     receipt=json.loads(next((R/'runs/muse_attention_decode').glob('*_c03a3ae8ddfd490d.json')).read_text());assert receipt['result']['passed']
     import decide
     proof=decide.archive(receipt['result']['log_tail'],'NATIVE_TASK_XZ85');assert proof['complete'] and proof['task_checks']==268 and not proof['failures'] and not proof['errors']
-    frozen=json.loads((H/'frozen.json').read_text());folder=next(p.parent for p in (H/'batches').glob('*/lab_manifest.json') if json.loads(p.read_text())['sha256']==frozen['expanded_sha256'])
+    frozen=json.loads((H/'prior_scored_frozen.json').read_text());folder=next(p.parent for p in (H/'batches').glob('*/lab_manifest.json') if json.loads(p.read_text())['sha256']==frozen['expanded_sha256'])
     manifest=json.loads((folder/'lab_manifest.json').read_text());specs=json.loads((folder/'selection.json').read_text())['patches'];base,meta=patches.compose(specs)
     if manifest.get('prepare_routing_revision'):
         import prepare_constraints

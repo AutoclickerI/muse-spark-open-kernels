@@ -8,7 +8,7 @@ H=Path(__file__).resolve().parent;R=H.parents[3]
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--screen',action='store_true');a=ap.parse_args()
-    frozen=json.loads((H/'frozen.json').read_text())
+    frozen=json.loads((H/'prior_scored_frozen.json').read_text())
     folder=next(p.parent for p in (H/'batches').glob('*/lab_manifest.json') if json.loads(p.read_text())['sha256']==frozen['expanded_sha256'])
     manifest=json.loads((folder/'lab_manifest.json').read_text());selection=folder/'selection.json'
     specs=json.loads(selection.read_text())['patches']

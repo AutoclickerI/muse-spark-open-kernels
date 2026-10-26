@@ -4,7 +4,7 @@ Frozen incumbent: [cand_r3_best7_s16_final.py](../../cand_r3_best7_s16_final.py)
 **d2b83953**, expanded **1468be3e**: guarded nearby dispatch on prior scored S16.
 Native check **e26bc28cfe8449f5** passes all320 TASK checks at80 shapes,2 seeds and
 captured replays, plus the packed host's official tests. The check host scored1.813381x;
-this exact final has no scored submission yet. Scored-shape dispatch is unchanged.
+the exact final is queued scored (sender/job in frozen.json). Scored-shape dispatch is unchanged.
 
 Nearby timing **a793c99e** meets the owner criterion: all six nearby/scored speedup
 gaps shrink substantially. Standalone guarded S15n native proofc03a3ae8 passes268,
@@ -124,6 +124,6 @@ Preparation-only retry: expandedee5fe249/shipped4ca750a5 scored1.818167x at93c6e
 Paired a8c66a6d5dfc4fc2 used exactly the failed c096 seeds/weights/router with published
 TASK preparation semantics on both arms; all1536 native TASK checks pass, so ee5fe249 is frozen.
 
-Next: orchestrator may score the frozen nearby file or use it as the base of the larger
-lever composition. No additional small-gain experiment is pending in this lane.
+Next: collect the exact final scored receipt and use the frozen source as the base of the
+larger-lever composition. No additional small-gain experiment is pending in this lane.
 Measured rows are also in docs/FINDINGS.md, integration section.
