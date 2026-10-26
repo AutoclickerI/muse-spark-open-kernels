@@ -1,0 +1,22 @@
+{
+  "reviewed_sha256": "f51c1ef84c6965ffdc3320878c50041ca01dcf74939e8fa5b99575bf4d9536e9",
+  "adapted_sha256": "b82cc1c4cc684a2959061401dfb7b9a13dd8bb76ba10f2619e6462a20ad58afb",
+  "changes": [
+    "Implicit pointer-typed stores preserve FP32 fused pool/router; BF16 stores unchanged",
+    "Separate PDL twin releases/waits at entry; raw donor kernels retained separately",
+    "No donor prepare/dispatch/fallback/driver copied"
+  ],
+  "kernels": [
+    "_cbf_cluster_gemm",
+    "_cbf_gemv32",
+    "_cbf_gemv_rows",
+    "_cbf_lm_partials",
+    "_cbf_lm_partials_tiled",
+    "_cbf_skinny_gemm",
+    "_cbf_skinny_gemm_tma",
+    "_cbf_skinny_gemm_tma_tiled"
+  ],
+  "shipping_reviewed_sha256": "7e1c7366d4244bbbcebdd273b69166977118d9416ddcb3cced6bf5b8d8b36ce9",
+  "shipping_adapted_sha256": "d73974eccbf6d880ea60644eee36c56d7316c5c808aa960bd6869cb56af914c9",
+  "shipping_changes": "License blank-comment trailing whitespace removed; historical measured extraction/adaptation hashes above are preserved. Kernel Python AST is unchanged."
+}

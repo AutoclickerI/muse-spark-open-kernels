@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "records": [
+    {
+      "mode": "forced",
+      "sha256": "7f066b9c3ceb8fb2b01fe971951c2e1707f612230b3646e269f4187dbba395c4",
+      "TASK": 13,
+      "graphs": 12,
+      "static": 6,
+      "prepare_s": 2.6202998860972
+    },
+    {
+      "mode": "normal",
+      "sha256": "7f066b9c3ceb8fb2b01fe971951c2e1707f612230b3646e269f4187dbba395c4",
+      "TASK": 13,
+      "graphs": 12,
+      "static": 6,
+      "prepare_s": 2.4734591270098463
+    }
+  ],
+  "limits": "Official local TASK and exact selected P4 patch glue; declared Hopper stand-ins, not native H200 timing. Native S21 pool/portfolio still queued."
+}

@@ -1,0 +1,217 @@
+{
+  "payload_sha256": "5f896935ee8f4c77ba2daf61e2d73adc2e81a288f9d2022f104c7e3b800b7801",
+  "source_sha256": "8f29406bce2cbdd49a6efb25e49811f87a5a587d11a4b8110b9641ad4362faff",
+  "base_path": "problems/muse_decode_layer/cand_r3_best7_s21_final.py",
+  "base_sha256": "eacc087bd59b3cd58ee6b7690913868d86a8deb2ad1ff50040329ece62f7c8a4",
+  "selection_job": "c74d2a26699743d0",
+  "points": {
+    "PORT0": [
+      [
+        1,
+        "qkv3",
+        "O"
+      ]
+    ],
+    "PORT1": [
+      [
+        1,
+        "gate",
+        "P"
+      ]
+    ],
+    "PORT2": [
+      [
+        1,
+        "unpooler_slice",
+        "P"
+      ]
+    ],
+    "PORT3": [
+      [
+        8,
+        "unpooler_slice",
+        "N"
+      ]
+    ],
+    "PORT4": [
+      [
+        16,
+        "qkv_gate",
+        "N"
+      ]
+    ],
+    "PORT5": [
+      [
+        16,
+        "qkv3",
+        "N"
+      ]
+    ],
+    "PORT6": [
+      [
+        16,
+        "gate",
+        "P"
+      ]
+    ],
+    "PORT7": [
+      [
+        32,
+        "gate",
+        "N"
+      ]
+    ],
+    "PORT8": [
+      [
+        32,
+        "o",
+        "P"
+      ]
+    ],
+    "PORT9": [
+      [
+        32,
+        "pool_router",
+        "P"
+      ]
+    ],
+    "PORT10": [
+      [
+        128,
+        "unpooler",
+        "N"
+      ]
+    ],
+    "PORT11": [
+      [
+        256,
+        "qkv_gate",
+        "N"
+      ]
+    ],
+    "PORT12": [
+      [
+        256,
+        "o",
+        "P"
+      ]
+    ],
+    "PORT13": [
+      [
+        256,
+        "pool_router",
+        "O"
+      ]
+    ],
+    "PORT14": [
+      [
+        256,
+        "unpooler",
+        "N"
+      ]
+    ],
+    "PORTS": [
+      [
+        1,
+        "qkv3",
+        "O"
+      ],
+      [
+        1,
+        "gate",
+        "P"
+      ],
+      [
+        1,
+        "unpooler_slice",
+        "P"
+      ],
+      [
+        8,
+        "unpooler_slice",
+        "N"
+      ],
+      [
+        16,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        16,
+        "qkv3",
+        "N"
+      ],
+      [
+        16,
+        "gate",
+        "P"
+      ],
+      [
+        32,
+        "gate",
+        "N"
+      ],
+      [
+        32,
+        "o",
+        "P"
+      ],
+      [
+        32,
+        "pool_router",
+        "P"
+      ],
+      [
+        128,
+        "unpooler",
+        "N"
+      ],
+      [
+        256,
+        "qkv_gate",
+        "N"
+      ],
+      [
+        256,
+        "o",
+        "P"
+      ],
+      [
+        256,
+        "pool_router",
+        "O"
+      ],
+      [
+        256,
+        "unpooler",
+        "N"
+      ]
+    ]
+  },
+  "pool": [
+    "CW8_WAIT",
+    "CW8_EARLY",
+    "CW8_S2",
+    "CW8_S2_WAIT",
+    "CW4_EARLY",
+    "CW4_S2",
+    "TW256_S2",
+    "TW256_S2_E",
+    "TW128_S3",
+    "TW128_S3_E"
+  ],
+  "seeds": [
+    32000319,
+    32105048,
+    32209777,
+    32314506,
+    32419235,
+    32523964,
+    32628693,
+    32733422
+  ],
+  "rounds": 8,
+  "weight_seed": 32000311,
+  "router_seed": 32000313,
+  "protocol": "palindromic-cohort-v1;arithmetic mean all rounds;all per-round times retained"
+}

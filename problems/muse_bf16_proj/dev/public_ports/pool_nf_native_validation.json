@@ -1,0 +1,140 @@
+{
+  "passed": true,
+  "source_sha256": "58f65b9c37ef2f09990a4b5ae89caf16efce95f3c9e67594bc641fda2d6ab523",
+  "cubin_sha256": "b41fadf0f0ae9856790fc1720318932a7a2f0f26bba95dedec5304bf6c74cfec",
+  "units": [
+    {
+      "tokens": 16,
+      "stages": 1,
+      "warps": 8,
+      "OPT": 6,
+      "early": false,
+      "PTX_global_load_before_wait": false,
+      "zero_spill": true,
+      "registers": 76,
+      "function": "_Z9v18s_gemvILi1ELi2ELi1ELi1ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 32,
+      "stages": 1,
+      "warps": 8,
+      "OPT": 6,
+      "early": false,
+      "PTX_global_load_before_wait": false,
+      "zero_spill": true,
+      "registers": 104,
+      "function": "_Z9v18s_gemvILi1ELi4ELi1ELi1ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 16,
+      "stages": 1,
+      "warps": 8,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 76,
+      "function": "_Z9v18s_gemvILi1ELi2ELi1ELi1ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 32,
+      "stages": 1,
+      "warps": 8,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 104,
+      "function": "_Z9v18s_gemvILi1ELi4ELi1ELi1ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 16,
+      "stages": 2,
+      "warps": 8,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 106,
+      "function": "_Z9v18s_gemvILi1ELi2ELi1ELi2ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 32,
+      "stages": 2,
+      "warps": 8,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 128,
+      "function": "_Z9v18s_gemvILi1ELi4ELi1ELi2ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 16,
+      "stages": 2,
+      "warps": 8,
+      "OPT": 6,
+      "early": false,
+      "PTX_global_load_before_wait": false,
+      "zero_spill": true,
+      "registers": 106,
+      "function": "_Z9v18s_gemvILi1ELi2ELi1ELi2ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 32,
+      "stages": 2,
+      "warps": 8,
+      "OPT": 6,
+      "early": false,
+      "PTX_global_load_before_wait": false,
+      "zero_spill": true,
+      "registers": 128,
+      "function": "_Z9v18s_gemvILi1ELi4ELi1ELi2ELi0ELi0ELi256ELi0ELi4608ELi8192ELi1ELi8ELi16ELi1ELi6EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 16,
+      "stages": 1,
+      "warps": 4,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 72,
+      "function": "_Z9v18s_gemvILi1ELi2ELi1ELi1ELi0ELi0ELi128ELi0ELi4608ELi8192ELi1ELi4ELi32ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 32,
+      "stages": 1,
+      "warps": 4,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 96,
+      "function": "_Z9v18s_gemvILi1ELi4ELi1ELi1ELi0ELi0ELi128ELi0ELi4608ELi8192ELi1ELi4ELi32ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 16,
+      "stages": 2,
+      "warps": 4,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 96,
+      "function": "_Z9v18s_gemvILi1ELi2ELi1ELi2ELi0ELi0ELi128ELi0ELi4608ELi8192ELi1ELi4ELi32ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    },
+    {
+      "tokens": 32,
+      "stages": 2,
+      "warps": 4,
+      "OPT": 70,
+      "early": true,
+      "PTX_global_load_before_wait": true,
+      "zero_spill": true,
+      "registers": 128,
+      "function": "_Z9v18s_gemvILi1ELi4ELi1ELi2ELi0ELi0ELi128ELi0ELi4608ELi8192ELi1ELi4ELi32ELi1ELi70EEvPK4int4PK13__nv_bfloat16PvPKjiiiiiijjjj"
+    }
+  ],
+  "limits": "NVCC sm90a compile plus PTX issue-order proof: first global load precedes dependency wait only in OPT64 variants. All12 kernels zero spills. Offline SASS has no visible GDC mnemonic; no runtime issue/wait effect inferred. Native H200 effect remains queued/unmeasured."
+}

@@ -1985,8 +1985,58 @@ point is selected, no new held-out G0 or P4 winner claimed. This closes only the
 and exact dispatches: `native_boundary/{TUNING.md,tune_results.json,native_patch.py}`. P4 receives negative
 results in `native_boundary/P4_HANDOFF.json`; earlier unpromoted native-layout arm and exact12 gate
 remain unchanged. Selected-portfolio prepare is unmeasured because no new portfolio is selected.
-Next by size: small-M, chiefly coded pool/router at d16; keep S19 whole-graph boundaries and price
-weight issue before activation readiness rather than counting overlapping residence as removable time.
+**Public projection port ranking, `dev/public_ports/`:** native `c74d2a26699743d0` covers all36
+T/site cells against S19's actual selected coded dispatch,8fresh seeds,4symmetric rounds per arm;
+all individual rounds retained.3604projection +612strict FP32 router +192layer TASK checks pass.
+Operatorstack MIT6d9b7765 was cloned into a separate external empty directory and fully reviewed;
+only reviewed pure kernels were copied, no donor install/build/test/driver executed. Raw swap-AB/TMA,
+PDL twins, an exact coded adaptation and unshipped NF v18 dispatches are compared. Norm/route/gate
+neighbours are paid. Every arm CI is in [PORTS.md](../problems/muse_bf16_proj/dev/public_ports/PORTS.md)
+and retained samples in `results.json`. Inactive gate/QKV rows are diagnostic; four unpublished NF
+large gate/QKV3 shapes are unmeasured, rather than losses.
+
+Candidate/S19 time ratios [95% CI], with larger primary/A:A SE:
+
+| T/site | Port | Ratio |
+|---|---|---|
+|1 QKV3|raw GEMV|.954440 [.935424,.973843]|
+|1 gate/apply|PDL GEMV +paid apply|.812020 [.795931,.828433]|
+|1 unpooler slice +norm|PDL GEMV|.934922 [.917315,.952867]|
+|16 QKV/gate|unshipped NF|.956081 [.938212,.974289]|
+|32 gate/apply|unshipped NF|.978240 [.961561,.995208]|
+|32 pool/router +route|PDL tiled TMA|.950465 [.944382,.956588]|
+|256 QKV/gate|unshipped NF|.960223 [.943770,.976963]|
+|256 O +norm|library path in donor|.977389 [.965936,.988978]|
+|256 unpooler +norm|unshipped NF|.989862 [.984002,.995758]|
+
+These nine points rank first; six other positive means with CIs spanning1 also enter the next batch.
+No stage CI is a new promotion gate. QKV3T16's .678863 [.223709,2.060059] includes an unexplained
+1.975712ms A round; every sample is retained, with no confirmed gain inferred. S21 already has the
+exact12 sliding T1 gate, so the S19 gate stage result cannot establish an S21 improvement.
+Pool/routerT16 raw1.047549 [1.027654,1.067829], PDL1.0438 [1.0237,1.0642] lose; T32 raw.9689
+[.9555,.9824] wins. The new exact payload +sparse escapes preserves every BF16 pattern and all native
+TASK checks, but this Triton swap-AB adaptation loses badly (poolT16/T32 ~15.94x/17.24x). Its
+representative sm90 cross-compile uses255regs and1016B stack; this is supporting resource evidence,
+not an exclusive physical decomposition or a closure of lossless coding.
+
+Preparation on this H200 lab: baseline137.812s, all added banks/NF variants57.585s. GPU exact-code
+packs O/pool/QKV/unpool take .002482/.010882/.005759/.009381s; raw tile permutations total<.0004s.
+Most added cost is compiling all unshipped NF families. Selected S21 prepare, including warmup, is
+still unmeasured. Exact MIT-noticed patches and all15 point specs are in `public_ports/P4_HANDOFF.json`.
+
+Built the next small-M test with S19's existing exact12 NF reader: WK4/8, ST1/2, first weights before
+PDL activation wait; and donor tiled TMA BK128/256 ST2/3 to admit more CTAs, with matched early-issue
+controls. Local full S21 rehearsal passes848layer+640strict projection/router TASK; all8changed
+sm90 TMA schedules compile at61–98KB shared and PTX verifies weights-before-wait only in early arms.
+Twelve NF sm90a kernels also compile with72–128regs/zero spills and intended PTX load/wait order.
+Exact P4 patch normal/forced screens pass13TASK/12graphs/6static each.
+The native follow-up is **unmeasured**: all five hosts exhausted0scored+0checks after the port run.
+Sender3347492 (`9654f02c`) automatically waits the real10-27 09:01KST reset. It freezes S21eacc087b
+and batches all15port points individually/portfolio plus10pool variants on8disjoint fresh seeds and
+8symmetric rounds. No second duplicate queued. `queue.json`, `whole_manifest.json`, and
+`whole_validation.json` preserve the exact ready work. Read its receipt with `whole_read.py`, then
+P4 must apply the surviving portfolio on S21/S22 and pass its own held-out six-load G0. No new G0
+winner, native pool-prefetch result, selected prepare, or private leader residual is claimed.
 
 Transport failures `f304369a` (222bytes over) and `24b58b2d` (156bytes over) are unmeasured, not
 kernel losses. Successful repeats keep all scoped observations/arms/seeds/rounds. `send.py` calls the

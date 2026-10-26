@@ -1,0 +1,43 @@
+{
+  "status": "waiting on real quota reset",
+  "sender": {
+    "pid": 3347492,
+    "priority": 5,
+    "t": 1793020258.8867154,
+    "problem": "muse_bf16_proj",
+    "file": "problems/muse_bf16_proj/lab/lab_public_whole.py",
+    "sha256": "9654f02caefc30147fdd214deb0c270cf533e92541b7e6bcef6b81636650bcc8",
+    "note": "h200_lab problems/muse_bf16_proj/dev/public_ports/out/public_whole.py: Fresh S21 snapshot;8newseeds8symmetric retained rounds,all848layer+640strictprojection/router TASK;15individual port points plus portfolio;coded pool first-weights-before-PDL-wait WK4/8 ST1/2 and donor tiled-TMA occupancy/early issue atT16/32",
+    "not_before": 0,
+    "lane": "P10",
+    "decision": "rank public port nominees and coded pool prefetch in S21 whole graph",
+    "priority_override": false,
+    "until": 1793059260.0
+  },
+  "quota_at_queue": {
+    "muse_bf16_proj": [
+      0,
+      0
+    ],
+    "muse_attention_decode": [
+      0,
+      0
+    ],
+    "muse_moe_w4a16": [
+      0,
+      0
+    ],
+    "muse_decode_layer": [
+      0,
+      0
+    ],
+    "muse_prefill_layer": [
+      0,
+      0
+    ]
+  },
+  "payload_sha256": "5f896935ee8f4c77ba2daf61e2d73adc2e81a288f9d2022f104c7e3b800b7801",
+  "wrapper": "problems/muse_bf16_proj/lab/lab_public_whole.py",
+  "local_validation": "whole_validation.json",
+  "reset": "2026-10-27T09:01:00+09:00"
+}

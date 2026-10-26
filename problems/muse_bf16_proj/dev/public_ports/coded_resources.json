@@ -1,0 +1,25 @@
+{
+  "source": "local sm90 cross-compile; no native timing attribution",
+  "unit": {
+    "kernel": "_pp_coded",
+    "constants": {
+      "K": 8192,
+      "BM": 16,
+      "BN": 64,
+      "BK": 256,
+      "S": 1,
+      "PDL": true
+    },
+    "shared": 40968,
+    "wgmma": 16,
+    "cubin_sha256": "011e793f524abbd55c2121c03bfe40def80966f6501305eabd15d5ccba5b8aa9"
+  },
+  "ptx_global_load_instruction_sites": 241,
+  "cuobjdump_resource_usage": {
+    "REG": 255,
+    "STACK": 1016,
+    "SHARED": 1024,
+    "LOCAL": 0
+  },
+  "method": "cuobjdump --dump-resource-usage native_2f18ad5b3778.cubin; dynamic shared allocation is in unit.shared, static shared is cuobjdump SHARED"
+}

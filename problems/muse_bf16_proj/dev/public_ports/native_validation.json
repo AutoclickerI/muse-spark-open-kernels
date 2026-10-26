@@ -1,0 +1,683 @@
+{
+  "passed": true,
+  "all_launch_shared_admitted": true,
+  "units": [
+    {
+      "kernel": "_cbf_gemv_rows",
+      "constants": {
+        "K": 8192,
+        "N": 2304,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "05bac04154296766338207a4ab79ab04695703e92ec2f7a3d87de91c469e6769"
+    },
+    {
+      "kernel": "_cbf_gemv_rows_ppdl",
+      "constants": {
+        "K": 8192,
+        "N": 2304,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "883b08a540a0110749e3ff910a63a73d14cfadbc24b9b63b2758351a29d8c5db"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 16,
+        "BN": 64,
+        "BK": 256,
+        "S": 3,
+        "PDL": true
+      },
+      "shared": 40968,
+      "wgmma": 16,
+      "cubin_sha256": "6900d553f30419efff4ca1473b0913d7c6f71329238b326b3f698e565cbdadc7"
+    },
+    {
+      "kernel": "_cbf_gemv_rows",
+      "constants": {
+        "K": 8192,
+        "N": 1280,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "0e5cf2bcd5eb06f0a7e780d6e84f7664932c9e3f6c7584ce7334e74df96ba364"
+    },
+    {
+      "kernel": "_cbf_gemv_rows_ppdl",
+      "constants": {
+        "K": 8192,
+        "N": 1280,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "06b01ce3d7804a029e13e5002ad14485d7924e18638282e996840771a5ba25da"
+    },
+    {
+      "kernel": "_cbf_gemv_rows",
+      "constants": {
+        "K": 8192,
+        "N": 1024,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "7d17ac64937327daab7a6ea5595fd22737d088085f3c8a7dd2a87368e6f8bd93"
+    },
+    {
+      "kernel": "_cbf_gemv_rows_ppdl",
+      "constants": {
+        "K": 8192,
+        "N": 1024,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "89b5ee1e6d0dcd19945dfdd587f186d4704eecbdde570a1d1bebbe22cacc12a3"
+    },
+    {
+      "kernel": "_cbf_gemv_rows",
+      "constants": {
+        "K": 1024,
+        "N": 8192,
+        "SX": 1,
+        "SW": 1024,
+        "ROWS": 2,
+        "TILE_K": 1024
+      },
+      "shared": 32,
+      "wgmma": 0,
+      "cubin_sha256": "83cb01d53bc9ab52a850fe06735b079d4c6f8247e7b513e71a504e1d6c315f54"
+    },
+    {
+      "kernel": "_cbf_gemv_rows_ppdl",
+      "constants": {
+        "K": 1024,
+        "N": 8192,
+        "SX": 1,
+        "SW": 1024,
+        "ROWS": 2,
+        "TILE_K": 1024
+      },
+      "shared": 32,
+      "wgmma": 0,
+      "cubin_sha256": "e92b71f119418743c13ec530d77d85815d483a011d83aa3d57382c8b50bcc71d"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 1024,
+        "BM": 16,
+        "BN": 64,
+        "BK": 256,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 40968,
+      "wgmma": 16,
+      "cubin_sha256": "3ca148289cf694e72ad86208aab90b818277005f6f354cf08045843734efafb7"
+    },
+    {
+      "kernel": "_cbf_gemv_rows",
+      "constants": {
+        "K": 8192,
+        "N": 4608,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "13ddb13496e589724bcccc5b4f19fd3f3ca9af08b487040992dff7e0ec11af55"
+    },
+    {
+      "kernel": "_cbf_gemv_rows_ppdl",
+      "constants": {
+        "K": 8192,
+        "N": 4608,
+        "SX": 1,
+        "SW": 8192,
+        "ROWS": 1,
+        "TILE_K": 4096
+      },
+      "shared": 64,
+      "wgmma": 0,
+      "cubin_sha256": "42ca0a4c6fd71e54e824f222b7976e628bf15a4b469fa1074b796f31046b050b"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 16,
+        "BN": 64,
+        "BK": 256,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 40968,
+      "wgmma": 16,
+      "cubin_sha256": "011e793f524abbd55c2121c03bfe40def80966f6501305eabd15d5ccba5b8aa9"
+    },
+    {
+      "kernel": "_cbf_gemv_rows",
+      "constants": {
+        "K": 4096,
+        "N": 1024,
+        "SX": 1,
+        "SW": 4096,
+        "ROWS": 1,
+        "TILE_K": 2048
+      },
+      "shared": 16,
+      "wgmma": 0,
+      "cubin_sha256": "56940171e7d9a9ea36020ff4592762bfd62aa2ebe2728844d38d82d743a42d0b"
+    },
+    {
+      "kernel": "_cbf_gemv_rows_ppdl",
+      "constants": {
+        "K": 4096,
+        "N": 1024,
+        "SX": 1,
+        "SW": 4096,
+        "ROWS": 1,
+        "TILE_K": 2048
+      },
+      "shared": 16,
+      "wgmma": 0,
+      "cubin_sha256": "2e478e0e7c337308dfa6c26c9320c99e225c42e595e09bf5d637815ffdfc655b"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 4096,
+        "BM": 16,
+        "BN": 64,
+        "BK": 256,
+        "S": 4,
+        "PDL": true
+      },
+      "shared": 40968,
+      "wgmma": 16,
+      "cubin_sha256": "31e4a9d6ccb4032a14e8f3fc99c0cdef4c6b97b5bab5de2977dceac6425a678c"
+    },
+    {
+      "kernel": "_cbf_cluster_gemm",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 3,
+        "SLOT_KB": 8
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "78d78a7bd2cdedc6cb7f791437db93b298a0ed1283025464b9e9f9abb5a0afc1"
+    },
+    {
+      "kernel": "_cbf_cluster_gemm_ppdl",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 3,
+        "SLOT_KB": 8
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "ea5eceba153b2e1d5616e009fa119dc38527a4e567d19729e0abbe16c1721ece"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "7cba5372b9e58d671cbe4cb58a9d7c752d11eab47d57874773d474e09de4ae78"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_ppdl",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "f8fd7864eae6ae2631708076d1b1b0ebea4d24d7763d3432c0da4710345ba356"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": true
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "467543f7932db64b094499f70bc48108e7c663e4206d0026b86e387866baba51"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled_ppdl",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": true
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "fef5b02e75274969f9e289b6fe1402c96e7ec47b5e9316f22a80c356aa14bbcd"
+    },
+    {
+      "kernel": "_cbf_cluster_gemm",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 4,
+        "SLOT_KB": 16
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "d60d963cd64e09d0439298735a45e205497e7be6d36f4b7948d20e46b0a3e734"
+    },
+    {
+      "kernel": "_cbf_cluster_gemm_ppdl",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 4,
+        "SLOT_KB": 16
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "78e0f8ddfc01db1994865c14740e5f9b3f775ea8642d17d14a63d09730d3c47c"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "0772f96823bcc8ffe8b0b8b93207b408cf62c2f8a6f4561156a4630c83d72ba2"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled_ppdl",
+      "constants": {
+        "BLOCK_M": 16,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 163904,
+      "wgmma": 16,
+      "cubin_sha256": "b51002b5079a8d17f29838f46ff907a2e8e38e0bf61fed59715082c2d9ad93a6"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 4096,
+        "BM": 16,
+        "BN": 64,
+        "BK": 256,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 40968,
+      "wgmma": 16,
+      "cubin_sha256": "53762e6ec7650b2d09a0fd7bf4e816cda7ce6fcda5006aabfa12c8ff5358bf6b"
+    },
+    {
+      "kernel": "_cbf_cluster_gemm",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 3,
+        "SLOT_KB": 16
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "25ed9fa551f4ccaacfb020ffa54261a91fb486e201f91b95002f273370f078ef"
+    },
+    {
+      "kernel": "_cbf_cluster_gemm_ppdl",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 3,
+        "SLOT_KB": 16
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "e8890013d8be044df30c855623a916d510296ed2e7ec9ed9ded32958cfd2b036"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 32,
+        "BN": 64,
+        "BK": 256,
+        "S": 3,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 16,
+      "cubin_sha256": "fd3082f8db6c59ccc8f99078bcdada389c2b8eeee2b4b106c4e8017d89638ab0"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "246760a9b53bfbee0f43b69293226f41f33c82d8c5415103688eb904a5d77a87"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_ppdl",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "6ccdc020a7b3d132fd333f79258fbb0b7fe768c99e4898d266ee232c4ea554c9"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 1024,
+        "BM": 32,
+        "BN": 64,
+        "BK": 256,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 16,
+      "cubin_sha256": "4caadd10c23af1fe1683fa681b997ecdda373a7cd89617fc1a82aca8d3a7335c"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": true
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "7e4be4e7e7142d44a8294423746aea09f7984a20be5146defe5ec674ec06fd80"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled_ppdl",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": true
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "06b6dc186799b69d0797989fe4a21eba72df1d5c14d95e4d0003e5e4cbfe4e10"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 32,
+        "BN": 64,
+        "BK": 256,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 16,
+      "cubin_sha256": "c88923c3b0bae4bc3af232371bf82c1649272ec437d8f5b2e2a9a3ffb6719247"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "e83b90fb5e82324059ba1986df11c95a8f0d0b75cf074d374f1e2e5c399101b8"
+    },
+    {
+      "kernel": "_cbf_skinny_gemm_tma_tiled_ppdl",
+      "constants": {
+        "BLOCK_M": 32,
+        "BLOCK_N": 64,
+        "BLOCK_K": 256,
+        "SPLIT_K": 1,
+        "HILO": false,
+        "OUT_F32": false
+      },
+      "shared": 196672,
+      "wgmma": 16,
+      "cubin_sha256": "fb5f7d9808499d9a3e98d7583b4ed7466ee522454bcb31550a9a1a064fe45fe9"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 4096,
+        "BM": 32,
+        "BN": 64,
+        "BK": 256,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 16,
+      "cubin_sha256": "58762a0923696a5640f6aac144d539cb72db101edb7aa04b50dccb7fe44fdba1"
+    },
+    {
+      "kernel": "_cbf_lm_partials_tiled",
+      "constants": {
+        "BLOCK_M": 128,
+        "BLOCK_N": 64,
+        "BLOCK_K": 128,
+        "SPLIT_K": 3
+      },
+      "shared": 196640,
+      "wgmma": 16,
+      "cubin_sha256": "8caf38a9a287ca3e722e0dacf6b173a2d3fbb31b1775d52e92bdc5dc3f13cbbb"
+    },
+    {
+      "kernel": "_cbf_lm_partials_tiled_ppdl",
+      "constants": {
+        "BLOCK_M": 128,
+        "BLOCK_N": 64,
+        "BLOCK_K": 128,
+        "SPLIT_K": 3
+      },
+      "shared": 196640,
+      "wgmma": 16,
+      "cubin_sha256": "2a409b4734c1de23a567fa6936c98f1bd772a38afd84504a7ad8347bd7ece7ad"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 128,
+        "BN": 64,
+        "BK": 128,
+        "S": 3,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 8,
+      "cubin_sha256": "26c6a50c880d1d065d21514f595ba0ca24bccf9d638b4fac349be4cebd9ccac3"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 1024,
+        "BM": 128,
+        "BN": 64,
+        "BK": 128,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 8,
+      "cubin_sha256": "6a6d5db449f0f453f45696e8aecab1b2439b47629b13abd9f5d12582f836f499"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 128,
+        "BN": 64,
+        "BK": 128,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 8,
+      "cubin_sha256": "1923860dc592b66bdbf0177f1be7329e6bd718b0473707a436bcc6d1d0d8b0b2"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 4096,
+        "BM": 128,
+        "BN": 64,
+        "BK": 128,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 49160,
+      "wgmma": 8,
+      "cubin_sha256": "8f8a3a1cec290d19d695f76800bc3686160e34c2acfd5a9edffc355138cc6092"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 256,
+        "BN": 64,
+        "BK": 128,
+        "S": 3,
+        "PDL": true
+      },
+      "shared": 81928,
+      "wgmma": 8,
+      "cubin_sha256": "b4bfd29cf1b416489941d5b1d195fb4bbf3e537a5a76d56c3e132dfb3c3e1df8"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 1024,
+        "BM": 256,
+        "BN": 64,
+        "BK": 128,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 81928,
+      "wgmma": 8,
+      "cubin_sha256": "ba488af603a572cad1c991a83877a6da724bb679f36194cf4f18e4bb0028196d"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 8192,
+        "BM": 256,
+        "BN": 64,
+        "BK": 128,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 81928,
+      "wgmma": 8,
+      "cubin_sha256": "efa81237d79d531b64dea97ebb4d574b1aa84ecbb7317d68a067a2c2e2a2fd98"
+    },
+    {
+      "kernel": "_pp_coded",
+      "constants": {
+        "K": 4096,
+        "BM": 256,
+        "BN": 64,
+        "BK": 128,
+        "S": 1,
+        "PDL": true
+      },
+      "shared": 81928,
+      "wgmma": 8,
+      "cubin_sha256": "1428d39ee7653fe5a2a52fd32f202e43213f440deffe36cde8b366a5c382ef0a"
+    }
+  ],
+  "limits": "Actual sm90 compile only; no H200 math executed locally"
+}

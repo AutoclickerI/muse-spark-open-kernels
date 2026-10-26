@@ -1,0 +1,29 @@
+{
+  "payload_sha256": "659cb110777072516d5b9c451162b77ff4285e4fe3ada52dbbef22270bd2f1f1",
+  "source_sha256": "ea7fa2446f470d75b661031ff9627535218078c25ae2698bf215552d25299cb8",
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "weight_seed": 31000311,
+  "router_seed": 31000313,
+  "seeds": [
+    31000319,
+    31105048,
+    31209777,
+    31314506,
+    31419235,
+    31523964,
+    31628693,
+    31733422
+  ],
+  "rounds": 4,
+  "all_arm_rounds_retained": true,
+  "symmetric": "palindromic-cohort-v1, rotated forward/reverse, arithmetic mean all rounds",
+  "arms": [
+    "A",
+    "AA",
+    "O raw donor",
+    "P PDL donor",
+    "C exact coded swapAB",
+    "N unshipped NF v18"
+  ],
+  "cells": 36
+}

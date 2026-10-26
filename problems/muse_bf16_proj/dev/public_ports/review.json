@@ -1,0 +1,69 @@
+{
+  "repo": "https://github.com/operatorstack/open-kernel-challenge-solutions",
+  "pin": "6d9b77656b6c295e421be9e1424b0f8f99299b0a",
+  "external_clone": "/data2/jihoon/tmp/p10_operator.UVMtuP",
+  "checkout_executed": false,
+  "donor_scripts_tests_executed": false,
+  "source_sha256": "0808a0f1fe5404808382f5160f482e636d1c57eb68b9e66db3cc7d35c0d99229",
+  "license_sha256": "4de9e3dcd495baef1de6232757c6061079a30f7e5a5e42bb70f7d05df294fc1a",
+  "reviewed_entire_source_lines": 1242,
+  "retained": [
+    {
+      "name": "_cbf_skinny_gemm",
+      "start": 89,
+      "end": 143
+    },
+    {
+      "name": "_cbf_skinny_gemm_tma",
+      "start": 174,
+      "end": 220
+    },
+    {
+      "name": "_cbf_gemv_rows",
+      "start": 252,
+      "end": 265
+    },
+    {
+      "name": "_cbf_gemv32",
+      "start": 286,
+      "end": 322
+    },
+    {
+      "name": "_cbf_lm_partials",
+      "start": 340,
+      "end": 366
+    },
+    {
+      "name": "_cbf_v4copy",
+      "start": 507,
+      "end": 514
+    },
+    {
+      "name": "constants",
+      "start": 517,
+      "end": 517
+    },
+    {
+      "name": "constants",
+      "start": 518,
+      "end": 518
+    },
+    {
+      "name": "_cbf_cluster_gemm",
+      "start": 522,
+      "end": 575
+    },
+    {
+      "name": "_cbf_skinny_gemm_tma_tiled",
+      "start": 678,
+      "end": 724
+    },
+    {
+      "name": "_cbf_lm_partials_tiled",
+      "start": 752,
+      "end": 776
+    }
+  ],
+  "omitted": "All donor import fallbacks, dispatch, prepare, fixed descriptors, driver/tests. Reviewed pure kernels only.",
+  "NF": "Use the already-reviewed MIT86aff75 vendor behind S19, including unshipped default v18 site dispatches; no donor test/build script executed"
+}

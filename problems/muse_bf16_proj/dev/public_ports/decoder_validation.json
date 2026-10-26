@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "all_bits",
+      "weights": 65536,
+      "bytes": 170054
+    },
+    {
+      "case": "all_bits_slice",
+      "weights": 57344,
+      "bytes": 157502
+    },
+    {
+      "case": "gaussian",
+      "weights": 2097152,
+      "bytes": 3211986
+    },
+    {
+      "case": "gaussian_slice",
+      "weights": 1835008,
+      "bytes": 2810570
+    }
+  ],
+  "actual_device_decoder": true,
+  "encode_source_sha256": "3fce96396e60fc865b0e78b29868351a4cbf76b18b11586ab84686211ed0633a"
+}
