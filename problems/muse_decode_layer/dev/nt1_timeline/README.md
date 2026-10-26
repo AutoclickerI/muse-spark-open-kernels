@@ -1,6 +1,7 @@
 # P3a small-M MoE
 
-Current experiments use frozen S19 expanded `62ea5bf4`; earlier evidence below uses S14/S15 as labeled.
+Current state: **parked by size/odds**; no new performance arm or H200 run.
+Sizing uses frozen S19 expanded `62ea5bf4`; earlier evidence below uses S14/S15 as labeled.
 S19 keeps PAIR M8 and PAIR+BLOCK M16/32. No new whole-layer kernel is frozen here.
 
 **Nomination:** hand P4 every valid per-shape point estimate below1, with ratio,SE,seeds and uncertainty.
@@ -184,3 +185,21 @@ No new correct point winner goes to P4;point_nominations.json and dependency/P4_
 carry the empty list,evidence and exact source identities. Previous nominees remain. Before quota,
 size coarser/DSM or owner-output accumulation plus fused norm/combine with fewer TMA transactions
 and enough useful CTAs. Those structural options remain unimplemented,not measured losses.
+
+## Remaining decomposition and parking
+
+[structural/dependency/SIZING.md](structural/dependency/SIZING.md) records the remaining measured/model
+budget and reopening conditions. Normal S19's per-phase fill/drain and exclusive exposed compute are
+unmeasured;historical traces are labeled by scope. The360810b1 actual loads-only means are
+47.586/53.740/69.284us,not ratios multiplied by mean control times.
+
+Coarse S256/S512 math compiles108regs/no spills;owner-sharded DSM fits modeled2-CTA shared budgets
+97168/109456B. Cluster occupancy/runtime and DSM/underfill costs are unmeasured. Full local output
+partials need>=204800B and fail2CTA. Wait-only six-load upside models1.67%;>1% leaves~2.13us
+common added cost. C16/C8 output-path proxies give+.21%/+.93% before new synchronization/finish.
+C8's favorable half-proxy with.5us added cost gives+1.14%;with1us it gives+.98%. This is a sensitivity,
+not an admitted build. Finish fusion alone cannot rescue the measured slower main.
+
+Park until calibrated DSM/coarse/finish costs fit that budget,another measured mechanism expands it,
+or leader per-shape/public code locates a recoverable small-M path. Aggregate leader MoE advantage
+1.25835x(~20.53% time reduction) is not a small-M S19 result. No new quota/P4 nominee;G0 unchanged.

@@ -1,0 +1,541 @@
+{
+  "status": "parked by size/odds;no new performance arm or H200 run",
+  "inputs_sha256": {
+    "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/results.json": "93d0567a26f18d922ab2bfd77667d55a9a5dd84afd620d2198b343b8ed6be5f9",
+    "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/sizing_counts.json": "cff24b5c900f49e8ed1e89fd8c2fce364d16db2a4d0cf8f5decf647b1a4f10ed",
+    "runs/muse_moe_w4a16/20261025T075730Z_check_360810b110a44d36.json": "f1cff6b9c4ad18a76abbf3a5a398f7c8007aab06668f76260b5c235dbf9285c3",
+    "runs/muse_prefill_layer/20261025T021729Z_submit_c768a8e361f54977.json": "098ea951c2ac075a44bb836a49c0e48f67d40bfe606abaeb8993a6334bb437a8",
+    "problems/muse_decode_layer/dev/nt1_timeline/structural/overlap/clock_results.json": "3e0d6cd4d8941c3cda245d11d593e520978374e504f125cbe8d9f3240d60c2eb",
+    "runs/muse_decode_layer/20261026T050310Z_submit_28b5c189e7b5469c.json": "f2210acc58a1aa1b53d141e4fbcf864d9706f22f8ad1a238cd44ce63b230b908",
+    "problems/muse_decode_layer/dev/s19/batches/22f25954e6ee84ab/report.json": "2011aa473e68ba14b6342dcc31b1149cfc79aebfc25df14ece8a2c327e941ac3",
+    "problems/muse_decode_layer/dev/p12_components/leader_gap.json": "5c6fc070c82be9b544f634cec171454127bec28acd69a19371c1e83d45d0de17"
+  },
+  "decomposition": [
+    {
+      "M": 8,
+      "S19_routed_stage_us": 75.422,
+      "S19_dependency_removed_us": {
+        "mean": 5.192,
+        "SE": 0.40508237845323924,
+        "CI95": [
+          4.328587348531753,
+          6.055412651468247
+        ],
+        "n": 16
+      },
+      "S19_dependency_ratio": {
+        "ratio": 0.9320678125,
+        "SE": 0.0037738726398519216,
+        "CI95": [
+          0.9240239933767889,
+          0.9401116316232112
+        ],
+        "n": 16
+      },
+      "pure_stream_historical_measured_us": 49.44,
+      "loads_only_historical_measured_us": 47.586,
+      "historical_correct_node_us": 64.886,
+      "historical_math_activation_wait_epilogue_contrast_us": 17.299999999999997,
+      "historical_load_issue_schedule_contrast_us": -1.8539999999999992,
+      "S19_unassigned_after_stream_and_wait_model_us": 20.79,
+      "W13_start_issue_to_math_sample_us": 2.208,
+      "W2_first_tile_us": null,
+      "last_tile_math_model_each_phase_us": 1.024,
+      "last_tile_math_sample_range_us": [
+        0.928,
+        1.152
+      ],
+      "accumulated_epilogue_warp0_residence_us": 6.432,
+      "epilogue_per_average_tile_model_us": 0.2923636363636364,
+      "clock_observer_ratio": 1.126,
+      "phase_split_status": "No per-phase last-tile/epilogue observations retained;steady W13 samples proxy last-tile math only;not an additive normal-kernel split",
+      "exclusive_compute_not_hidden_us": null
+    },
+    {
+      "M": 16,
+      "S19_routed_stage_us": 72.229,
+      "S19_dependency_removed_us": {
+        "mean": 4.539,
+        "SE": 0.4134968762477737,
+        "CI95": [
+          3.6576522710314827,
+          5.420347728968516
+        ],
+        "n": 16
+      },
+      "S19_dependency_ratio": {
+        "ratio": 0.9393600625,
+        "SE": 0.003999084210237748,
+        "CI95": [
+          0.9308362162774353,
+          0.9478839087225648
+        ],
+        "n": 16
+      },
+      "pure_stream_historical_measured_us": 50.838,
+      "loads_only_historical_measured_us": 53.74,
+      "historical_correct_node_us": 75.932,
+      "historical_math_activation_wait_epilogue_contrast_us": 22.192,
+      "historical_load_issue_schedule_contrast_us": 2.902000000000001,
+      "S19_unassigned_after_stream_and_wait_model_us": 16.851999999999997,
+      "W13_start_issue_to_math_sample_us": 2.208,
+      "W2_first_tile_us": null,
+      "last_tile_math_model_each_phase_us": 1.024,
+      "last_tile_math_sample_range_us": [
+        0.96,
+        1.088
+      ],
+      "accumulated_epilogue_warp0_residence_us": 7.296,
+      "epilogue_per_average_tile_model_us": 0.29184,
+      "clock_observer_ratio": 1.144,
+      "phase_split_status": "No per-phase last-tile/epilogue observations retained;steady W13 samples proxy last-tile math only;not an additive normal-kernel split",
+      "exclusive_compute_not_hidden_us": null
+    },
+    {
+      "M": 32,
+      "S19_routed_stage_us": 105.042,
+      "S19_dependency_removed_us": {
+        "mean": 6.829,
+        "SE": 0.6860984866134988,
+        "CI95": [
+          5.366615692498718,
+          8.29138430750128
+        ],
+        "n": 16
+      },
+      "S19_dependency_ratio": {
+        "ratio": 0.9366561875,
+        "SE": 0.004707027359189262,
+        "CI95": [
+          0.9266233961743208,
+          0.9466889788256793
+        ],
+        "n": 16
+      },
+      "pure_stream_historical_measured_us": 53.224,
+      "loads_only_historical_measured_us": 69.284,
+      "historical_correct_node_us": 104.695,
+      "historical_math_activation_wait_epilogue_contrast_us": 35.41099999999999,
+      "historical_load_issue_schedule_contrast_us": 16.06000000000001,
+      "S19_unassigned_after_stream_and_wait_model_us": 44.989000000000004,
+      "W13_start_issue_to_math_sample_us": 4.0,
+      "W2_first_tile_us": null,
+      "last_tile_math_model_each_phase_us": 0.992,
+      "last_tile_math_sample_range_us": [
+        0.928,
+        1.088
+      ],
+      "accumulated_epilogue_warp0_residence_us": 9.76,
+      "epilogue_per_average_tile_model_us": 0.2957575757575758,
+      "clock_observer_ratio": 1.137,
+      "phase_split_status": "No per-phase last-tile/epilogue observations retained;steady W13 samples proxy last-tile math only;not an additive normal-kernel split",
+      "exclusive_compute_not_hidden_us": null
+    }
+  ],
+  "historical_phase_M32": {
+    "receipt": "c768a8e361f54977",
+    "W13_us": 36.05,
+    "W2_ready_us": 11.58,
+    "W2_rest_us": 17.57,
+    "grid_us": 4.98,
+    "combine_us": 1.17,
+    "scope": "Old instrumented critical CTA;not S19 or additive whole-stage savings"
+  },
+  "score_model": {
+    "loads": {
+      "verify 1": {
+        "S18_measured_weighted_us": 132.04663604747688,
+        "S18_over_S19_paired_mean": 1.0399999375,
+        "S19_modeled_weighted_us": 126.96792690670415
+      },
+      "decode 16": {
+        "S18_measured_weighted_us": 178.13076754943629,
+        "S18_over_S19_paired_mean": 1.01157825,
+        "S19_modeled_weighted_us": 176.0919311476263
+      },
+      "decode 32": {
+        "S18_measured_weighted_us": 225.33520657779147,
+        "S18_over_S19_paired_mean": 1.0184844375,
+        "S19_modeled_weighted_us": 221.24560600150699
+      }
+    },
+    "loads_changed": 3,
+    "total_loads": 6,
+    "full_credit_no_overlap_assumption": true,
+    "free_wait_removal_R": 1.016673934348379,
+    "common_added_cost_us_for_R1p01": 2.127415403428495,
+    "status": "Model from cross-run latencies;not G0 confirmation,not a universal DSM ceiling"
+  },
+  "options": [
+    {
+      "kind": "owner_sharded_DSM_C16_S256",
+      "budget": {
+        "slice": 256,
+        "cluster_blocks": 16,
+        "math_count_only": {
+          "registers": 108,
+          "stack": 0,
+          "spill_stores": 0,
+          "spill_loads": 0,
+          "shared_bytes": 88720,
+          "CTAs_per_SM": 2,
+          "allocated_shared_bytes": 89856,
+          "allocated_registers": 28672
+        },
+        "owner_sharded_DSM_model": {
+          "shared_bytes": 97168,
+          "extra_register_headroom_to128": 20,
+          "CTAs_per_SM": 2,
+          "allocated_shared_bytes": 98304,
+          "allocated_registers": 28672
+        },
+        "complete_local_partial_minimum": {
+          "shared_bytes": 204800,
+          "CTAs_per_SM": 1,
+          "allocated_shared_bytes": 205824,
+          "allocated_registers": 28672
+        },
+        "cluster_occupancy": "Unmeasured;CTA calculator is not cudaOccupancyMaxActiveClusters",
+        "implementation": "Coarse NORED math instantiated only;no DSM correctness/performance implementation"
+      },
+      "work": [
+        {
+          "M": 8,
+          "clusters": 7.875,
+          "useful_CTAs": 126.0,
+          "useful_CTAs_per_SM_upper": 0.9545454545454546,
+          "FP32_DSM_reductions": 1036288.0,
+          "same_copy_W13_tiles_per_CTA": 32,
+          "W2_full_tile_equivalents_per_CTA": 16,
+          "total_TMA_copy_ratio_vs_S19": 1.3333333333333333
+        },
+        {
+          "M": 16,
+          "clusters": 7.3125,
+          "useful_CTAs": 117.0,
+          "useful_CTAs_per_SM_upper": 0.8863636363636364,
+          "FP32_DSM_reductions": 2113536.0,
+          "same_copy_W13_tiles_per_CTA": 32,
+          "W2_full_tile_equivalents_per_CTA": 16,
+          "total_TMA_copy_ratio_vs_S19": 1.3333333333333333
+        },
+        {
+          "M": 32,
+          "clusters": 12.0625,
+          "useful_CTAs": 193.0,
+          "useful_CTAs_per_SM_upper": 1.4621212121212122,
+          "FP32_DSM_reductions": 4067328.0,
+          "same_copy_W13_tiles_per_CTA": 32,
+          "W2_full_tile_equivalents_per_CTA": 16,
+          "total_TMA_copy_ratio_vs_S19": 1.3333333333333333
+        }
+      ],
+      "added_output_path_proxy_us": [
+        4.848,
+        4.14425,
+        5.19625
+      ],
+      "modeled_R_before_sync_underfill_finish": 1.0020628645946692,
+      "sensitivity_R_if_proxy_halves_and_sync_is_1us": 1.0062022348977704,
+      "sensitivity_R_if_proxy_halves_and_sync_is_half_us": 1.0077403916383179,
+      "actual_DSM_cost_CI": null,
+      "cluster_occupancy_measured": false,
+      "verdict": "Not admitted:count-scaled point proxy<1% before extra costs;faster DSM/changed math scheduling can reopen;not an infeasibility proof"
+    },
+    {
+      "kind": "owner_sharded_DSM_C8_S512",
+      "budget": {
+        "slice": 512,
+        "cluster_blocks": 8,
+        "math_count_only": {
+          "registers": 108,
+          "stack": 0,
+          "spill_stores": 0,
+          "spill_loads": 0,
+          "shared_bytes": 92816,
+          "CTAs_per_SM": 2,
+          "allocated_shared_bytes": 93952,
+          "allocated_registers": 28672
+        },
+        "owner_sharded_DSM_model": {
+          "shared_bytes": 109456,
+          "extra_register_headroom_to128": 20,
+          "CTAs_per_SM": 2,
+          "allocated_shared_bytes": 110592,
+          "allocated_registers": 28672
+        },
+        "complete_local_partial_minimum": {
+          "shared_bytes": 204800,
+          "CTAs_per_SM": 1,
+          "allocated_shared_bytes": 205824,
+          "allocated_registers": 28672
+        },
+        "cluster_occupancy": "Unmeasured;CTA calculator is not cudaOccupancyMaxActiveClusters",
+        "implementation": "Coarse NORED math instantiated only;no DSM correctness/performance implementation"
+      },
+      "work": [
+        {
+          "M": 8,
+          "clusters": 7.875,
+          "useful_CTAs": 63.0,
+          "useful_CTAs_per_SM_upper": 0.4772727272727273,
+          "FP32_DSM_reductions": 518144.0,
+          "same_copy_W13_tiles_per_CTA": 64,
+          "W2_full_tile_equivalents_per_CTA": 32,
+          "total_TMA_copy_ratio_vs_S19": 1.0
+        },
+        {
+          "M": 16,
+          "clusters": 7.3125,
+          "useful_CTAs": 58.5,
+          "useful_CTAs_per_SM_upper": 0.4431818181818182,
+          "FP32_DSM_reductions": 1056768.0,
+          "same_copy_W13_tiles_per_CTA": 64,
+          "W2_full_tile_equivalents_per_CTA": 32,
+          "total_TMA_copy_ratio_vs_S19": 1.0
+        },
+        {
+          "M": 32,
+          "clusters": 12.0625,
+          "useful_CTAs": 96.5,
+          "useful_CTAs_per_SM_upper": 0.7310606060606061,
+          "FP32_DSM_reductions": 2033664.0,
+          "same_copy_W13_tiles_per_CTA": 64,
+          "W2_full_tile_equivalents_per_CTA": 32,
+          "total_TMA_copy_ratio_vs_S19": 1.0
+        }
+      ],
+      "added_output_path_proxy_us": [
+        2.424,
+        2.072125,
+        2.598125
+      ],
+      "modeled_R_before_sync_underfill_finish": 1.0092858799934235,
+      "sensitivity_R_if_proxy_halves_and_sync_is_1us": 1.0098403208848943,
+      "sensitivity_R_if_proxy_halves_and_sync_is_half_us": 1.0113958577222433,
+      "actual_DSM_cost_CI": null,
+      "cluster_occupancy_measured": false,
+      "verdict": "Not admitted:count-scaled point proxy<1% before extra costs;faster DSM/changed math scheduling can reopen;not an infeasibility proof"
+    }
+  ],
+  "tile_gather_DSM": {
+    "complete_partial_bytes_per_CTA": 131072,
+    "raw_live_bytes": 73728,
+    "minimum_shared_bytes": 204800,
+    "CTAs_per_SM": 1,
+    "streamed_alternative": {
+      "output_chunks": 32,
+      "minimum_buffer_reuse_cluster_barriers": 64,
+      "total_common_budget_us": 2.127415403428495,
+      "ns_per_barrier_if_all_other_new_work_free": 33.24086567857024,
+      "measured_barrier_latency": null
+    },
+    "verdict": "Full gather fails2CTA;streaming gather has no calibrated cost under the budget;unimplemented/unmeasured"
+  },
+  "fused_finish": [
+    {
+      "M": 8,
+      "atomic_main_us": 94.4165,
+      "BASE_main_us": 79.016,
+      "finish_zero_norm_combine_us": 9.304,
+      "excess_main_even_if_all_finish_free_us": 15.400499999999994,
+      "status": "First4seed CUPTI means;optimistic zero-finish counterfactual,not a timed valid arm"
+    },
+    {
+      "M": 16,
+      "atomic_main_us": 82.9125,
+      "BASE_main_us": 75.96000000000001,
+      "finish_zero_norm_combine_us": 9.76825,
+      "excess_main_even_if_all_finish_free_us": 6.952499999999986,
+      "status": "First4seed CUPTI means;optimistic zero-finish counterfactual,not a timed valid arm"
+    },
+    {
+      "M": 32,
+      "atomic_main_us": 116.1685,
+      "BASE_main_us": 108.064,
+      "finish_zero_norm_combine_us": 10.48,
+      "excess_main_even_if_all_finish_free_us": 8.104500000000002,
+      "status": "First4seed CUPTI means;optimistic zero-finish counterfactual,not a timed valid arm"
+    }
+  ],
+  "leader": {
+    "snapshot": "2026-10-26T03:18:18.568110+00:00",
+    "our_base": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+    "ratio": 1.2583465660836126,
+    "implied_component_time_reduction": 0.20530637031709942,
+    "leader_job": "b03e628f4b54440e",
+    "our_receipt": "runs/muse_moe_w4a16/20261026T011916Z_submit_97f5e7f3c3fc4159.json",
+    "per_shape_available": false,
+    "interpretation": "Aggregate S15 component gap,not a per-M S19 result,not a stream ceiling;could be heavy-shape or other algorithm work"
+  },
+  "reopening": [
+    "Coarse-cluster actual occupancy2CTA/no spills with enough useful expert clusters",
+    "Matched DSM+coarse scheduling+finish cost below the per-load1% budget(about2.13us common cost),or a measured additional compute/load-issue saving",
+    "New exact dequant/layout/stream schedule with source/resource proof and a credible>1%six-load model",
+    "Leader per-shape/public implementation evidence locating a recoverable small-M mechanism;aggregate1.26alone is insufficient"
+  ],
+  "new_arm_ratios_CI": null,
+  "new_H200_jobs": [],
+  "P4_new_nominees": [],
+  "last_measured_best": [
+    {
+      "M": 8,
+      "arm": "A128D",
+      "control": "S19",
+      "ratio": 1.2979203125,
+      "SE": 0.021533393351513115,
+      "CI95": [
+        1.2520229710265673,
+        1.3438176539734328
+      ],
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "seed_ratios": [
+        1.315843,
+        1.378558,
+        1.278659,
+        1.328938,
+        1.266474,
+        1.365061,
+        1.242614,
+        1.110537,
+        1.274585,
+        1.377575,
+        1.351953,
+        1.263725,
+        1.271866,
+        1.481472,
+        1.180798,
+        1.278067
+      ],
+      "point_nominee": false,
+      "AA_mean_ratio": 1.000454875,
+      "AA_SE": 0.0015437520091080104,
+      "AA_mean_abs_us": 0.381,
+      "AA_max_abs_us": 0.848
+    },
+    {
+      "M": 16,
+      "arm": "A128D",
+      "control": "S19",
+      "ratio": 1.25291175,
+      "SE": 0.02888976658618354,
+      "CI95": [
+        1.191334670138564,
+        1.314488829861436
+      ],
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "seed_ratios": [
+        1.079246,
+        1.185296,
+        1.282198,
+        1.37471,
+        1.160054,
+        1.319821,
+        1.242606,
+        1.337862,
+        1.249086,
+        1.354494,
+        1.077397,
+        1.227695,
+        1.294851,
+        1.437994,
+        1.366987,
+        1.056291
+      ],
+      "point_nominee": false,
+      "AA_mean_ratio": 0.9985583125,
+      "AA_SE": 0.0015521611968444485,
+      "AA_mean_abs_us": 0.41400000000000003,
+      "AA_max_abs_us": 1.12
+    },
+    {
+      "M": 32,
+      "arm": "A128D",
+      "control": "S19",
+      "ratio": 1.2321933125,
+      "SE": 0.022784128210722836,
+      "CI95": [
+        1.1836300927792895,
+        1.2807565322207104
+      ],
+      "seeds": 16,
+      "seed_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "seed_ratios": [
+        1.27716,
+        1.365577,
+        1.162217,
+        1.118388,
+        1.226158,
+        1.183398,
+        1.245748,
+        1.333071,
+        1.194539,
+        1.268207,
+        1.366867,
+        1.264669,
+        1.09108,
+        1.242599,
+        1.068831,
+        1.306584
+      ],
+      "point_nominee": false,
+      "AA_mean_ratio": 1.0008805,
+      "AA_SE": 0.0010927118749545397,
+      "AA_mean_abs_us": 0.328,
+      "AA_max_abs_us": 0.896
+    }
+  ]
+}

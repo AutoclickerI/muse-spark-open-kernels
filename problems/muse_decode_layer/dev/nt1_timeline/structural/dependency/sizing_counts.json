@@ -1,0 +1,76 @@
+{
+  "source_sha256": "9268cd6ea9652c9170c100f01f8bf072552f326d3da86635aa9b8a8ee75165a0",
+  "count_command": [
+    "nvcc",
+    "-O3",
+    "-std=c++20",
+    "-gencode=arch=compute_90a,code=sm_90a",
+    "-c",
+    "/home/jihoon/competitions/muse_kernel/runs/screen/p3a_parking/coarse_count.cu",
+    "-o",
+    "/home/jihoon/competitions/muse_kernel/runs/screen/p3a_parking/coarse_count.o",
+    "-Xptxas=-v"
+  ],
+  "ptxas_log_sha256": "3d84af4f5210feb758fb91139d433dabc390cd85a9473e22ddf4164e9016f0f6",
+  "calculator": "CUDA13 cuda_occupancy.h,sm90 132SM/65536regs/233472B shared/1024B reserved per CTA,256threads",
+  "rows": [
+    {
+      "slice": 256,
+      "cluster_blocks": 16,
+      "math_count_only": {
+        "registers": 108,
+        "stack": 0,
+        "spill_stores": 0,
+        "spill_loads": 0,
+        "shared_bytes": 88720,
+        "CTAs_per_SM": 2,
+        "allocated_shared_bytes": 89856,
+        "allocated_registers": 28672
+      },
+      "owner_sharded_DSM_model": {
+        "shared_bytes": 97168,
+        "extra_register_headroom_to128": 20,
+        "CTAs_per_SM": 2,
+        "allocated_shared_bytes": 98304,
+        "allocated_registers": 28672
+      },
+      "complete_local_partial_minimum": {
+        "shared_bytes": 204800,
+        "CTAs_per_SM": 1,
+        "allocated_shared_bytes": 205824,
+        "allocated_registers": 28672
+      },
+      "cluster_occupancy": "Unmeasured;CTA calculator is not cudaOccupancyMaxActiveClusters",
+      "implementation": "Coarse NORED math instantiated only;no DSM correctness/performance implementation"
+    },
+    {
+      "slice": 512,
+      "cluster_blocks": 8,
+      "math_count_only": {
+        "registers": 108,
+        "stack": 0,
+        "spill_stores": 0,
+        "spill_loads": 0,
+        "shared_bytes": 92816,
+        "CTAs_per_SM": 2,
+        "allocated_shared_bytes": 93952,
+        "allocated_registers": 28672
+      },
+      "owner_sharded_DSM_model": {
+        "shared_bytes": 109456,
+        "extra_register_headroom_to128": 20,
+        "CTAs_per_SM": 2,
+        "allocated_shared_bytes": 110592,
+        "allocated_registers": 28672
+      },
+      "complete_local_partial_minimum": {
+        "shared_bytes": 204800,
+        "CTAs_per_SM": 1,
+        "allocated_shared_bytes": 205824,
+        "allocated_registers": 28672
+      },
+      "cluster_occupancy": "Unmeasured;CTA calculator is not cudaOccupancyMaxActiveClusters",
+      "implementation": "Coarse NORED math instantiated only;no DSM correctness/performance implementation"
+    }
+  ]
+}

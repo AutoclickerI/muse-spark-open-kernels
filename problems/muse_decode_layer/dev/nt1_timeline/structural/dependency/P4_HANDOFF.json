@@ -143,5 +143,14 @@
     }
   ],
   "material": true,
-  "cost_evidence": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/results.json"
+  "cost_evidence": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/results.json",
+  "sizing": {
+    "status": "parked by size/odds;no new performance arm or H200 run",
+    "report": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/SIZING.md",
+    "model": "problems/muse_decode_layer/dev/nt1_timeline/structural/dependency/sizing.json",
+    "free_wait_model_R": 1.016673934348379,
+    "common_added_cost_budget_us_for_R1p01": 2.127415403428495,
+    "new_H200_jobs": [],
+    "note": "Size/odds parking,not a DSM infeasibility proof;G0 promotion unchanged;favorable C8 sensitivity still open"
+  }
 }

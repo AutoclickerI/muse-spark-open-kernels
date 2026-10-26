@@ -125,3 +125,27 @@ Closed:these exact64/128-channel global-atomic/global-partial schedules,includin
 W2raw capacity. Leaves open:coarser slices,cluster DSM or owner-output accumulation and fused
 norm/combine with fewer transactions and enough useful CTAs. Size these locally before any next run;
 no gain is promised and no standalone sub1% check follows. M32's load-issue bound remains open.
+
+## Remaining budget: parked by size
+
+[SIZING.md](SIZING.md) and checksum-pinned `sizing.json` separate S19's measured routed-stage
+75.42/72.23/105.04us and dependency savings5.19/4.54/6.83us from the older49.44/50.84/53.22us
+stream oracle. The correct loads-only means in360810b1 are47.586/53.740/69.284;paired-ratio means
+times control means are not mean candidate times. First/last-tile and W13/W2 epilogue splits are
+not isolated for normal S19;clock samples/model proxies are explicitly labeled,never added as costs.
+
+Count-only S256/S512 math fits108regs,zero stack/spills. Owner-sharded DSM models need97168/109456B
+shared/CTA and fit2-CTA capacity,though cluster occupancy and extra registers are unverified.
+Full128KiB local output partial plus live72KiB weight slots needs>=204800B and falls to1CTA.
+C16/C8 must hold the complete4096K partition;useful grids average126/117/193 or63/58.5/96.5CTAs.
+
+The wait-only opportunity transfers to modeled six-load R1.016674 if every saved us is exposed.
+Exceeding1% leaves about2.127us common added cost;favorable count-scaled DSM proxies give
+C16R1.002063/C8R1.009286 before synchronization/underfill/finish. C8 half-proxy+.5us yields1.011396,
+but half-proxy+1us gives1.009840:an unmeasured favorable case,not an impossibility proof.
+Even zero-cost finish leaves the current atomic main15.40/6.95/8.10us above BASE in the profile subset.
+
+Park this next build until a calibrated coarse/DSM/fused-finish cost fits the budget or another
+measured compute/load-issue saving expands it. No new arm or H200 job;no new P4 nominee. The leader's
+1.25835x aggregate S15-component advantage(~20.53% less time) keeps broader MoE opportunity open,
+but per-M/implementation data are unavailable. GOAL G0 and prior P4 nominations are unchanged.

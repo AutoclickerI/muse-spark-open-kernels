@@ -302,3 +302,18 @@ structural/dependency/results.json.
 Next size a cluster-local/owner-output reduction with coarser slices and fused finish,including
 useful-unit and two-CTA budgets. These recipes remain unimplemented/unmeasured. The original
 M32 load-issue bound remains separate;integer-pipe saturation is still unproven. No new P4 point winner.
+
+## Remaining decomposition and work sizing
+
+Current disposition is parked;see structural/dependency/SIZING.md and sizing.json. The historical
+loads-only means are47.586/53.740/69.284us(360810b1),not mean control time times mean paired ratio.
+Its correct-minus-loads-only17.30/22.19/35.41us contrast includes activation,readiness and finalizer;
+it is not isolated exposed compute. S19's matched dependency removal saves5.19/4.54/6.83us.
+Normal S19 per-phase first/last-tile and epilogue latencies remain unmeasured;20ef2355's taxed
+critical-CTA first-W13 samples2.208/2.208/4.000us and steady-math last-tile proxies~1us are labeled
+by scope. Do not add them to the old critical-CTA wait sum or claim INT-pipe saturation.
+
+S256/S512 count probes use108regs/no spills;modeled owner DSM shared97168/109456B fits2CTAs.
+Actual cluster occupancy and additional code/resources need proof. The2.13us common added-cost
+budget for a1%six-load opportunity has no calibrated DSM/coarse/finish implementation yet. C8's
+favorable sensitivity above1% is retained explicitly,not called impossible. No new H200 run.

@@ -688,6 +688,41 @@ Local admission:675 native TASK/current-input/capture checks with no stand-ins,i
 
 Next by ceiling:dependency removal alone offers about6%,not the critical-CTA22% sum. This closes only the five64/128-channel global reduction layouts. Before another H200 run,size a cluster-local/owner-output reduction with coarser slices and fused norm/combine against the2-CTA and useful-unit budgets;it must avoid millions of global reductions,the extra TMA issue,and10-26us finish work. Coarser slices/DSM are unimplemented/unmeasured,not promised gains. Keep the separate M32 load-issue/data-movement ceiling open;cheap decoder searches remain exhausted and modeled INT saturation remains unproven. No standalone sub1% follow-up is sent.
 
+### P3a remaining decomposition and sized parking case (2026-10-26)
+
+No new performance arm or H200 run. Exact evidence/model/counts are in `dev/nt1_timeline/structural/dependency/{SIZING.md,sizing.json,sizing_counts.json}`. This is an odds/size parking decision,not a DSM impossibility proof or a new G0 gate. The requested1% is this task's work-sizing threshold. Times us;rows overlap and must not be added:
+
+| Term | M8 | M16 | M32 | Measured / modeled scope |
+|---|---:|---:|---:|---|
+| S19 correct routed stage |75.422|72.229|105.042|Measured16seed event means,554c392d;router included identically |
+| Pure stream |49.440|50.838|53.224|Measured historical D4,360810b1,not a matched S19 floor |
+| Same-depth loads-only |47.586|53.740|69.284|Measured historical C;suppresses activation/MMA/readiness/finalizer |
+| Historical correct minus loads-only |17.300|22.192|35.411|Measured contrast,not exclusive exposed compute |
+| S19 dependency removal |5.192|4.539|6.829|Measured matched oracle;95% CI[4.329,6.055]/[3.658,5.420]/[5.367,8.291] |
+| W13 first issue→math |2.208|2.208|4.000|Measured instrumented c49 criticalCTA seed0,20ef2355;includes setup/scheduling |
+| W2 first tile |unmeasured|unmeasured|unmeasured|No retained W2 events;normal S19 first-phase split also unmeasured |
+| Last-tile math,each phase |~1.024|~1.024|~.992|Model from steady W13 tiles2–8;actual W13/W2 last endpoints unmeasured |
+| Warp0 accumulated epilogue |6.432|7.296|9.760|Measured taxed4seed CTA means;W13/W2 split unmeasured;per-tile .292/.292/.296us is a model |
+| S19 residual after historical stream+matched wait |20.790|16.852|44.989|Cross-cohort arithmetic model;unassigned route/fill/drain/issue/activation/compute/epilogue |
+| Exclusive compute not hidden under loads |unmeasured|unmeasured|unmeasured|No receipt separates all of those terms |
+
+Clock observer ratios1.126/1.144/1.137 preclude treating individual subclocks as normal S19 phase costs. Earlier c768a8e3 M32 criticalCTA36.05W13+11.58ready+17.57W2+4.98grid+1.17combine is historical and nonadditive across CTAs. Its first issue/land and end-drain do not measure per-phase S19 fill/drain. Correction:paired-ratio mean times control mean is not mean candidate time;the measured360810b1 C means are47.586/53.740/69.284,not48.35/54.90/69.98. The old A-C differences cannot all be labeled exposed compute.
+
+| Sized form | Ratio / cost versus control | Mechanism / decision | Leaves open | Receipt / evidence |
+|---|---|---|---|---|
+| Full local output partial then DSM gather | Timing unmeasured;>=204800B shared gives1CTA |128KiB partial+live72KiB weight slots fails2CTA;not built | Streaming/owner-sharded partials;this does not close DSM | count_sizing.py,CUDA13 calculator;554c392d resource basis |
+| C16/S256 owner-sharded DSM | Timing unmeasured;108regs/no spills coarse probe,97168B modeled shared gives2CTA;output-path proxy4.85/4.14/5.20us | Complete4096K per expert/token-block cluster,16 ranks(opt-in),1.036/2.114/4.067M DSM reductions;modeled R1.002063 before sync/underfill/finish;not admitted | Faster DSM or additional measured compute/issue savings;actual cluster occupancy/additional registers unverified | sizing_counts.json,sizing.json;554c392d contrast scaled by count |
+| C8/S512 owner-sharded DSM | Timing unmeasured;108regs/no spills coarse probe,109456B modeled shared gives2CTA;proxy2.42/2.07/2.60us |8 ranks hold completeK;.518/1.057/2.034M reductions,useful grids63/58.5/96.5CTAs;modeled R1.009286 before other costs;not admitted | Favorable half-proxy+.5us sensitivity R1.011396 remains open;half-proxy+1us R1.009840;neither is a measurement or impossibility proof | sizing_counts.json,sizing.json;554c392d count-scaled proxy |
+| Fused finish only on A128D | Timing unmeasured;even all finish free leaves main15.40/6.95/8.10us above BASE in same profile subset | Cannot rescue unchanged slower main;S19 already has inline norm/combine,not three separate finish launches | New DSM dataflow plus completion publication/fusion;not a general fusion rejection |554c392d first4seed profiles |
+
+A tile-streamed DSM gather fits in principle but32 output chunks need>=64 buffer-reuse cluster barriers plus norm synchronization;the2.127us total incremental budget would allow<=33ns/barrier if every other new cost were free. Barrier/network cost is unmeasured. CTA occupancy is not cluster occupancy;NVIDIA requires cudaOccupancyMaxActiveClusters and DSM lifetime synchronization. Coarse owner grids average126/117/193CTAs(C16) or63/58.5/96.5(C8) across132SMs,so2CTA resource capacity does not ensure useful residency. A rank can process multiple smaller slices,but retains their copy/reduction issue costs.
+
+Planning load times v1/d16/d32 are126.97/176.09/221.25us from official S18 weighted times28b5c189 transported by paired S19/S18 load ratios6ac9317e. Full wall-time credit for5.19/4.54/6.83us gives wait-only R1.016674;>1% permits about2.127us common added cost across these three of six loads. This is not a universal DSM/NT1 ceiling. The count-scaled global output-path proxy is not measured DSM throughput or a lower bound;its original4seed contrast is noisy,especially M8. The favorable C8 sensitivity above1% is retained explicitly,but lacks calibration and margin for synchronization,coarse scheduling and finish. No supported>1% next build is identified under the current estimate.
+
+Park P3a's next structural build on those odds;keep the54% theoretical small-M lever separate from the admitted next-step size. Reopen on actual2CTA cluster occupancy plus a matched coarse/DSM/finish cost fitting the~2.13us common budget,or an additional measured compute/load-issue saving that increases it;an exact lower-issue decoder/layout or public/per-shape leader evidence can also reopen. No new quota/P4 nominee. Last best measured A128D/S19 remains1.297920[1.252023,1.343818]/1.252912[1.191335,1.314489]/1.232193[1.183630,1.280757],16seeds,554c392d;only those recipes close. P4's prior nominations and GOAL G0 are unchanged.
+
+P12's03:18UTC snapshot97f5e7f3 compares S15 aggregate MoE6627.36us to leader5266.72us:1.25835x,about20.53% less component time demonstrated elsewhere. Leader per-shape times/implementation are unavailable. This could be heavy-M or other routing/tiling work;it neither measures S19's small-M gap nor identifies the recoverable mechanism. It keeps broader MoE opportunity open while this lane is parked.
+
 ## MoE M=128
 
 Current N_full family: NT1 <=8-token experts, N16G4 at 9-16 on a third stream, heavy N32
