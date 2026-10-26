@@ -1,0 +1,524 @@
+{
+  "base": "S19 shipped8b415553, expanded62ea5bf4",
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "job": "9dc1159a076b4e6b",
+  "receipt": "runs/muse_bf16_proj/20261026T103954Z_check_9dc1159a076b4e6b.json",
+  "TASK": {
+    "official": 112,
+    "scored": 456,
+    "stress": 228,
+    "partial": 132
+  },
+  "seeds": [
+    5671243,
+    5679162,
+    5687081,
+    5695000,
+    5702919,
+    5710838,
+    5718757,
+    5726676
+  ],
+  "controls": {
+    "1x8s": {
+      "r": 0.9821089470615711,
+      "se": 0.005096975823251341,
+      "lo": 0.9700565144231503,
+      "hi": 0.994161379699992
+    },
+    "16x8s": {
+      "r": 1.0003724691567157,
+      "se": 0.003782734017776403,
+      "lo": 0.9914277245631989,
+      "hi": 1.0093172137502324
+    },
+    "1x8f": {
+      "r": 0.997719207753152,
+      "se": 0.0015249170150922412,
+      "lo": 0.9941133519985024,
+      "hi": 1.0013250635078017
+    },
+    "16x8f": {
+      "r": 0.997584122939236,
+      "se": 0.001021559796189412,
+      "lo": 0.99516851787132,
+      "hi": 0.9999997280071521
+    },
+    "32x8f": {
+      "r": 0.9988134684306816,
+      "se": 0.0009636665039698754,
+      "lo": 0.996534759245518,
+      "hi": 1.0010921776158452
+    }
+  },
+  "points": [
+    {
+      "shape": "16x8s",
+      "arm": "M4",
+      "r": 0.9533948994657477,
+      "se": 0.005463250497948117,
+      "lo": 0.9404763648490118,
+      "hi": 0.9663134340824837,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "16x8s",
+      "arm": "R4",
+      "r": 0.9083215340645113,
+      "se": 0.004511028964657159,
+      "lo": 0.8976546455777196,
+      "hi": 0.9189884225513031,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "16x8s",
+      "arm": "R4w4",
+      "r": 0.8900658863610281,
+      "se": 0.00491449799281938,
+      "lo": 0.8784449452257166,
+      "hi": 0.9016868274963397,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "1x8f",
+      "arm": "M64",
+      "r": 0.9043595944424696,
+      "se": 0.0045844271704603605,
+      "lo": 0.8935191467782557,
+      "hi": 0.9152000421066835,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "1x8f",
+      "arm": "R64",
+      "r": 0.8880902871877048,
+      "se": 0.0055010341329905146,
+      "lo": 0.8750824084712566,
+      "hi": 0.9010981659041529,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "1x8f",
+      "arm": "R64w4",
+      "r": 0.8901199980219409,
+      "se": 0.004640780368218392,
+      "lo": 0.879146296219687,
+      "hi": 0.9010936998241947,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "16x8f",
+      "arm": "R",
+      "r": 0.9923082290727214,
+      "se": 0.0031306349781530718,
+      "lo": 0.9849054536823518,
+      "hi": 0.999711004463091,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "16x8f",
+      "arm": "Rw4",
+      "r": 0.9921109598161157,
+      "se": 0.0023269741002121262,
+      "lo": 0.9866085404273053,
+      "hi": 0.9976133792049262,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    },
+    {
+      "shape": "32x8f",
+      "arm": "Rw4",
+      "r": 0.9977627520290063,
+      "se": 0.0013216395307775182,
+      "lo": 0.9946375711434495,
+      "hi": 1.000887932914563,
+      "changed": true,
+      "control_alias": false,
+      "nominated": true,
+      "seeds": [
+        5671243,
+        5679162,
+        5687081,
+        5695000,
+        5702919,
+        5710838,
+        5718757,
+        5726676
+      ]
+    }
+  ],
+  "preferred": {
+    "16x8s": "R4w4",
+    "1x8f": "R64",
+    "16x8f": "Rw4",
+    "32x8f": "Rw4"
+  },
+  "pairs": {
+    "1x8s:R1/M1": {
+      "r": 0.9807683434563894,
+      "se": 0.005166034612346631,
+      "lo": 0.9685526127305292,
+      "hi": 0.9929840741822497
+    },
+    "1x8s:R2/M2": {
+      "r": 0.9383179880581106,
+      "se": 0.005098018883118359,
+      "lo": 0.9262630889750331,
+      "hi": 0.9503728871411882
+    },
+    "1x8s:R4/M4": {
+      "r": 0.9121390626581912,
+      "se": 0.006069050240576244,
+      "lo": 0.8977880392787873,
+      "hi": 0.9264900860375952
+    },
+    "1x8s:R8/M8": {
+      "r": 0.9409625820453179,
+      "se": 0.006576971637275901,
+      "lo": 0.9254105154136761,
+      "hi": 0.9565146486769597
+    },
+    "1x8s:R16/M16": {
+      "r": 0.9721475473082603,
+      "se": 0.009127065778244904,
+      "lo": 0.9505654662285502,
+      "hi": 0.9937296283879703
+    },
+    "1x8s:R4w4/M4": {
+      "r": 0.9142247587824364,
+      "se": 0.005950568696818556,
+      "lo": 0.9001538997346977,
+      "hi": 0.928295617830175
+    },
+    "1x8s:D4/M4": {
+      "r": 0.9976841431143831,
+      "se": 0.004588926988179007,
+      "lo": 0.9868330550720666,
+      "hi": 1.0085352311566995
+    },
+    "16x8s:R1/M1": {
+      "r": 1.0201800672099475,
+      "se": 0.004951120901397966,
+      "lo": 1.0084725266568688,
+      "hi": 1.0318876077630261
+    },
+    "16x8s:R2/M2": {
+      "r": 0.9749752669986415,
+      "se": 0.005299795073944346,
+      "lo": 0.9624432430414623,
+      "hi": 0.9875072909558206
+    },
+    "16x8s:R4/M4": {
+      "r": 0.9527985388670958,
+      "se": 0.003576645214640619,
+      "lo": 0.9443411168553334,
+      "hi": 0.9612559608788581
+    },
+    "16x8s:R8/M8": {
+      "r": 0.9479525150969936,
+      "se": 0.0046496362360062835,
+      "lo": 0.9369578724950048,
+      "hi": 0.9589471576989824
+    },
+    "16x8s:R4w4/M4": {
+      "r": 0.9337389988093459,
+      "se": 0.006442155201411828,
+      "lo": 0.9185057223913816,
+      "hi": 0.9489722752273101
+    },
+    "16x8s:D4/M4": {
+      "r": 0.9962988449657355,
+      "se": 0.006658969583020178,
+      "lo": 0.9805528840030546,
+      "hi": 1.0120448059284164
+    },
+    "1x8f:R32/M32": {
+      "r": 0.9579883335512847,
+      "se": 0.0051823530801852575,
+      "lo": 0.9457340157806341,
+      "hi": 0.9702426513219352
+    },
+    "1x8f:R64/M64": {
+      "r": 0.9820565833592991,
+      "se": 0.005047566891758221,
+      "lo": 0.9701209842785029,
+      "hi": 0.9939921824400954
+    },
+    "1x8f:R128/M128": {
+      "r": 0.9822282549098031,
+      "se": 0.0031667337312737444,
+      "lo": 0.9747401195323735,
+      "hi": 0.9897163902872328
+    },
+    "1x8f:R64w4/M64": {
+      "r": 0.9842817891040689,
+      "se": 0.0030264495863454657,
+      "lo": 0.9771253730177676,
+      "hi": 0.9914382051903703
+    },
+    "1x8f:D64/M64": {
+      "r": 0.9986981268983667,
+      "se": 0.0046039308162834245,
+      "lo": 0.9878115604402566,
+      "hi": 1.0095846933564767
+    },
+    "16x8f:F4/G4": {
+      "r": 1.0048462449288753,
+      "se": 0.0011365513204445359,
+      "lo": 1.002158728114046,
+      "hi": 1.0075337617437046
+    },
+    "16x8f:F8/G8": {
+      "r": 1.0335845337211778,
+      "se": 0.00171936205675074,
+      "lo": 1.0295188885055357,
+      "hi": 1.0376501789368198
+    },
+    "32x8f:F4/G4": {
+      "r": 1.0242643855076232,
+      "se": 0.001823657476370171,
+      "lo": 1.0199521208134807,
+      "hi": 1.0285766502017657
+    },
+    "32x8f:F8/G8": {
+      "r": 1.0293162628192922,
+      "se": 0.0015792752737673072,
+      "lo": 1.0255818702079373,
+      "hi": 1.0330506554306471
+    }
+  },
+  "launches": {
+    "1x8s": {
+      "A": 1,
+      "A2": 1,
+      "S": 1,
+      "M1": 4,
+      "M2": 4,
+      "M4": 4,
+      "M8": 4,
+      "M16": 4,
+      "R1": 3,
+      "R2": 3,
+      "R4": 3,
+      "R8": 3,
+      "R16": 3,
+      "R4w4": 3,
+      "D4": 4
+    },
+    "16x8s": {
+      "A": 5,
+      "A2": 5,
+      "S": 4,
+      "M1": 4,
+      "M2": 4,
+      "M4": 4,
+      "M8": 4,
+      "R1": 3,
+      "R2": 3,
+      "R4": 3,
+      "R8": 3,
+      "R4w4": 3,
+      "D4": 4
+    },
+    "1x8f": {
+      "A": 5,
+      "A2": 5,
+      "S": 4,
+      "M32": 4,
+      "M64": 4,
+      "M128": 4,
+      "R32": 3,
+      "R64": 3,
+      "R128": 3,
+      "R64w4": 3,
+      "D64": 4
+    },
+    "16x8f": {
+      "A": 2,
+      "A2": 2,
+      "S": 2,
+      "R": 2,
+      "Rw4": 2,
+      "G4": 2,
+      "F4": 1,
+      "G8": 2,
+      "F8": 1
+    },
+    "32x8f": {
+      "A": 2,
+      "A2": 2,
+      "S": 2,
+      "R": 2,
+      "Rw4": 2,
+      "G4": 2,
+      "F4": 1,
+      "G8": 2,
+      "F8": 1
+    }
+  },
+  "all_points": "problems/muse_attention_decode/dev/full_attention/chain/POINTS.md",
+  "policy": "Per-shape points nominate only; P4 confirms held-out six-load G0. D and S graph aliases are controls, not new shader wins. Identity-S points are not changed pieces.",
+  "correction": "S19 v1 sliding is native sliding_main<8,4,128>, one launch, not FA3. Explicit FA3 replacements all lose; preserve P5 native path.",
+  "limits": "A:A1x8s .982109 CI[.970057,.994161] drift disclosed; actual FA3 call controls cover1. No per-load veto. End-to-end prepare cost remains P4 check.",
+  "composition": "candidate.patch is combined nomination. fa.patch, vq.patch and schedule_selected.patch each apply independently onto S19; do not concatenate prepare wrappers. v1F R64 replaces prior M64 selection; remove an earlier direct _p5_phase_call M64 interceptor when composing.",
+  "scope": "No P5 query setup, native sliding or RAW2/merge edits. Only FA3 launch structure and selected full VQ8 separate merge.",
+  "candidate": {
+    "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "source_sha256": "dbeeb84752cfc7ca85b4286c4a22b885d4d15edd5469d1e7b0ce6cafff849508",
+    "patch_sha256": "5f18b0a59e7b3214f288b153de7b27800f6954e38c6c069069ae06246cb15e6f",
+    "selection": {
+      "16x8s": "R4w4",
+      "1x8f": "R64",
+      "16x8f": "Rw4",
+      "32x8f": "Rw4"
+    },
+    "scope": "Only selected FA3 launch structure or full VQ8 merge. No P5 native/query/RAW2 changes.",
+    "patch": "problems/muse_attention_decode/dev/full_attention/chain/candidate.patch"
+  },
+  "fa": {
+    "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "source_sha256": "4af48563942185009b7ca211e82658c99dc71f86ff313607ffee4ef316c6c476",
+    "patch_sha256": "ef9e9be46fd284e4aa6bb511eb0cf05106e9de03456851d3124aff2663f1582f",
+    "selection": {
+      "16x8s": "R4w4",
+      "1x8f": "R64"
+    },
+    "scope": "Only selected FA3 launch structure or full VQ8 merge. No P5 native/query/RAW2 changes.",
+    "patch": "problems/muse_attention_decode/dev/full_attention/chain/fa.patch"
+  },
+  "vq": {
+    "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "source_sha256": "218ad6478ad125a45329429d7e56c4b09ba341f9f6662498b384efe9419af155",
+    "patch_sha256": "41e683b813536477a8d8490a402e96809e65d9ba29b662b486261cb7f74ca4b5",
+    "selection": {
+      "16x8f": "Rw4",
+      "32x8f": "Rw4"
+    },
+    "scope": "Only selected FA3 launch structure or full VQ8 merge. No P5 native/query/RAW2 changes.",
+    "patch": "problems/muse_attention_decode/dev/full_attention/chain/vq.patch"
+  },
+  "schedule_selected": {
+    "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+    "source_sha256": "d8449379566be71c8757a02ae82562583c24d3cfd694481fa9d1d652562d4f44",
+    "patch_sha256": "ce4a76093566d8f2428a815873f91fba31a6f8da13bb5cdc9e6df5b4dc74b6ac",
+    "selection": {
+      "16x8s": "M4",
+      "1x8f": "M64"
+    },
+    "scope": "Only selected FA3 launch structure or full VQ8 merge. No P5 native/query/RAW2 changes.",
+    "patch": "problems/muse_attention_decode/dev/full_attention/chain/schedule_selected.patch"
+  },
+  "candidate_admission": {
+    "normal": {
+      "candidate_sha256": "dbeeb84752cfc7ca85b4286c4a22b885d4d15edd5469d1e7b0ce6cafff849508",
+      "adapter_sha256": "56fc9fd2167a0d7a95710eddef336d51b30d24d87061565e599fc3d89a55069a",
+      "fixtures": 28,
+      "eager_TASK": 28,
+      "poisoned_replay_TASK": 28,
+      "static": 43
+    },
+    "forced": {
+      "candidate_sha256": "dbeeb84752cfc7ca85b4286c4a22b885d4d15edd5469d1e7b0ce6cafff849508",
+      "adapter_sha256": "56fc9fd2167a0d7a95710eddef336d51b30d24d87061565e599fc3d89a55069a",
+      "fixtures": 28,
+      "eager_TASK": 28,
+      "poisoned_replay_TASK": 28,
+      "static": 43
+    }
+  }
+}

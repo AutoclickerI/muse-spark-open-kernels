@@ -1,0 +1,19 @@
+{
+  "utc": "20261026T102506Z",
+  "problem": "muse_bf16_proj",
+  "mode": "check",
+  "job": "9c577135f9d64269",
+  "sha256": "c8314c8223fb87938f043a564f66e6d818cea4c258fc54e73a9ee31239d99f04",
+  "file": "problems/muse_bf16_proj/lab/lab_chain_attention.py",
+  "source": "runs/muse_bf16_proj/20261026T102506Z_check_9c577135f9d64269.py",
+  "git": "b696f37+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/full_attention/chain/chain_attention.py: P5b b2b1dbec:928 TASK both local modes plus actual-library ABI/metadata probe; fixes b8ddced short-window layout only, no timed data cached;8freshseeds8cold all FA3 call schedules and native parallel merge arms",
+  "snapshot": "runs/sent/c8314c8223fb8793/lab_chain_attention.py",
+  "lane": "P5b",
+  "decision": "S19 metadata removal for all three FA3 calls and parallel fused row/DSM merge; native-short-window shape normalization repaired, same all-key controls and seeds",
+  "priority": 4,
+  "priority_override": false,
+  "wrapper_sha256": "c8314c8223fb87938f043a564f66e6d818cea4c258fc54e73a9ee31239d99f04",
+  "transport": "lab-only",
+  "attention_screen_wrapper_sha256": "e1030a686fa9b092768de67eac24515910ae578e05899ab0325f1a28110f3456"
+}

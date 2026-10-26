@@ -1,0 +1,28 @@
+{
+  "initial_fixture": "Row padding16 was invalid for unchanged S19 qk_prep: base=P+t*W; only ps_stride is accepted.",
+  "failure": "New key cache relativeL2~1.33-1.41, unchanged A/A2 included.",
+  "corrected_fixture": "Packed rows, 64float padding between split planes, split counts3 and4; all132 partial TASK eager+poisonedgraph pass normal and forced.",
+  "scope": "No candidate or checker changed",
+  "native_attempt1": {
+    "job": "b8ddced394bd46ae",
+    "result": "unmeasured",
+    "cause": "stress0 sliding window2048>=cache capacity137: FA3 normalizes local to causal/full and expects4 schedule vectors; received3.",
+    "fix": "Select layout by window < page_table.shape[1]*page_size, exactly the public API shape normalization; direct setter normalizes the same and checks numel. All local FA3 glue now calls actual fa_probe.",
+    "scored_effect": "None: scored sliding capacities80000 stay local."
+  },
+  "native_attempt2": {
+    "job": "9c577135f9d64269",
+    "result": "unmeasured; correctness gate stopped all timing",
+    "cause": [
+      "Fixed-control slot formula subtracts cta_of(0)>0 when T<CS and writes negative slots",
+      "G8/B32 needs256 partial CTAs, workspace allocated132",
+      "FA3 empty split can leave undefined OA; zero weight must not multiply NaN"
+    ],
+    "fix": [
+      "slot=s*CS+rank",
+      "workspace=max(SMs,8*segments)+segments",
+      "Ignore undefined empty/zero-weight partial output in row reduce"
+    ],
+    "local_followup": "G control now executes all4/8 independent CTA ranks on sm120, rather than one-rank surrogate; F DSM still one-rank local and native-gated."
+  }
+}

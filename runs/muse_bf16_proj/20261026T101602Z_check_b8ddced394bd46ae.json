@@ -1,0 +1,88 @@
+{
+ "board": "muse_bf16_proj",
+ "call_id": "nyc3:kc-b8ddced394bd46ae",
+ "cluster": "nyc3",
+ "content_hash": "347060e1491b7a7cdc9b8619f0397d921879e5f4d7583c948325a90b12210f94",
+ "created_at": 1793009765.2000167,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1793009921.4071238,
+ "id": "b8ddced394bd46ae",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/f4bc873e1c789678/profiles/lab_chain_attention.b8ddced394bd46ae.log"
+ },
+ "payload_ref": "muse_bf16_proj/347060e1491b7a7cdc9b8619f0397d921879e5f4d7583c948325a90b12210f94.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "986ed3ebb096eab83d16797609f4c0e7895248d6bce33252d25dd306cbe5d018",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_bf16_proj/baseline.py": "39f52ea5b65505958aa9dee9c8129dd394cbba4e670046f862b5a88ce91a0574",
+    "problems/muse_bf16_proj/reference.py": "e62491abc9ddcad33f5faba8b0ee74cf6370b7be5dd2dc05031742f3ebf7147d",
+    "problems/muse_bf16_proj/task.yml": "18e9da6357144b0a1348434a18bd2d1938b1948d9f2130876f6b6706588470c9"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "PHASES_GATE official 0\nPHASES_GATE official 1\nPHASES_GATE official 2\nPHASES_GATE official 3\nPHASES_GATE official 4\nPHASES_GATE official 5\nPHASES_GATE official 6\nPHASES_GATE official 7\nPHASES_GATE official 8\nPHASES_GATE official 9\nPHASES_GATE official 10\nPHASES_GATE official 11\nPHASES_GATE official 12\nPHASES_GATE official 13\nPHASES_GATE official 14\nPHASES_GATE official 15\nPHASES_GATE stress 0\nLAB_BEGIN chain_attention ac12f658b484ce46\nLAB_ERROR RuntimeError: scheduler_metadata must have shape (metadata_size)\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/sglang/lib/python3.12/site-packages/sgl_kernel/flash_attn.py\", line 230, in flash_attn_with_kvcache\n    out, softmax_lse, *rest = torch.ops.sgl_kernel.fwd.default(\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/sglang/lib/python3.12/site-packages/torch/_ops.py\", line 916, in __call__\n    return self._op(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: scheduler_metadata must have shape (metadata_size)\nLAB_PACKET chain_attention ac12f658b484ce46 3bbf6c914d0a71d30d64285ee76c6b266178327c1f8b1eded3e22cfc81d168f2 c-rlgPfNrw5XHaBkkjr`Q+F2x7d$AeCqd}d)iAcxCNxb-GTn6*zq@T&{~h!qdh(qHCPUtD^715d-?WyP#HvIaDG}B<iehymuFfyiI?Jvz$U4WSp>+s8tRUu^iq29{4KWtT2u&9mG;Rr^#+G36+ELLw(o`e@M&14E?=)`x(pZ9xNPWv`tSq`JwdOu;_pH5J%K0LVhUuuqyvB;+a7NV>9NDzA7_~xXC)@o-Brqfc7R%!VjDz>C+8NfW-sac`<M7nJ;{>8FxxoiD#0qAC`iz_b`;cqt+bG|!lI5<D1(n!Yp1g(SEBy}m=qpu&u@AJT^OKQQsT{3U>R>Jqcfmm<TgrZ9GQ&{Co^e+1hHCnm;X9*0{#v)sFGcQ3w*\nLAB_END lab_s=115.9 import_s=115.9\nLAB_BEGIN chain_attention ac12f658b484ce46\nLAB_ERROR RuntimeError: scheduler_metadata must have shape (metadata_size)\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/sglang/lib/python3.12/site-packages/sgl_kernel/flash_attn.py\", line 230, in flash_attn_with_kvcache\n    out, softmax_lse, *rest = torch.ops.sgl_kernel.fwd.default(\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/sglang/lib/python3.12/site-packages/torch/_ops.py\", line 916, in __call__\n    return self._op(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: scheduler_metadata must have shape (metadata_size)\nLAB_PACKET chain_attention ac12f658b484ce46 3bbf6c914d0a71d30d64285ee76c6b266178327c1f8b1eded3e22cfc81d168f2 c-rlgPfNrw5XHaBkkjr`Q+F2x7d$AeCqd}d)iAcxCNxb-GTn6*zq@T&{~h!qdh(qHCPUtD^715d-?WyP#HvIaDG}B<iehymuFfyiI?Jvz$U4WSp>+s8tRUu^iq29{4KWtT2u&9mG;Rr^#+G36+ELLw(o`e@M&14E?=)`x(pZ9xNPWv`tSq`JwdOu;_pH5J%K0LVhUuuqyvB;+a7NV>9NDzA7_~xXC)@o-Brqfc7R%!VjDz>C+8NfW-sac`<M7nJ;{>8FxxoiD#0qAC`iz_b`;cqt+bG|!lI5<D1(n!Yp1g(SEBy}m=qpu&u@AJT^OKQQsT{3U>R>Jqcfmm<TgrZ9GQ&{Co^e+1hHCnm;X9*0{#v)sFGcQ3w*\nLAB_END lab_s=115.9 import_s=115.9\nTraceback (most recent call last):\n  File \"/tmp/muse_bf16_proj-aj9u3ecj/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-aj9u3ecj/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-aj9u3ecj/run/submission.py\", line 117, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-aj9u3ecj/run/submission.py\", line 3, in prepare\n    def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host: evidence completed at import\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 124.77,
+    "power.limit": 700,
+    "temperature.gpu": 39
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.159.03",
+    "name": "NVIDIA H200",
+    "power.draw": 135.53,
+    "power.limit": 700,
+    "temperature.gpu": 38
+   },
+   "node": "n-qtqz4qekgtq37epqb5xaarah6h"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 16,
+    "baseline_prepare_pad": 28132352,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: evidence completed at import",
+    "event": "setup",
+    "first": "baseline",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1793009780.4072716,
+ "status": "done",
+ "team": "AutoclickerI"
+}

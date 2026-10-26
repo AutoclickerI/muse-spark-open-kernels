@@ -1,0 +1,1416 @@
+{
+  "1x8s:A": [
+    {
+      "name": "void (anonymous namespace)::sliding_main<8, 4, 128>((anonymous namespace)::VP)",
+      "duration_us": 12.928,
+      "critical_increment_us": 12.928,
+      "grid": [
+        16,
+        8,
+        1
+      ],
+      "block": 128,
+      "regs": 162
+    }
+  ],
+  "1x8s:A2": [
+    {
+      "name": "void (anonymous namespace)::sliding_main<8, 4, 128>((anonymous namespace)::VP)",
+      "duration_us": 12.416,
+      "critical_increment_us": 12.416,
+      "grid": [
+        16,
+        8,
+        1
+      ],
+      "block": 128,
+      "regs": 162
+    }
+  ],
+  "1x8s:S": [
+    {
+      "name": "void (anonymous namespace)::sliding_main<8, 4, 128>((anonymous namespace)::VP)",
+      "duration_us": 12.512,
+      "critical_increment_us": 12.512,
+      "grid": [
+        16,
+        8,
+        1
+      ],
+      "block": 128,
+      "regs": 162
+    }
+  ],
+  "1x8s:M4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 2.656,
+      "critical_increment_us": 2.656,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.312000000000001,
+      "critical_increment_us": 13.888,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 3.2959999999999994,
+      "critical_increment_us": 2.4639999999999986,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.3440000000000012,
+      "critical_increment_us": 1.5680000000000014,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "1x8s:R1": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.04,
+      "critical_increment_us": 3.04,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, false, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, false, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, false, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, false, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, false, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, false, true, true, true, false, true> > >::Params)",
+      "duration_us": 26.016000000000002,
+      "critical_increment_us": 26.624000000000002,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 1>(RP)",
+      "duration_us": 1.9840000000000018,
+      "critical_increment_us": 2.399000000000001,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 43
+    }
+  ],
+  "1x8s:R4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 2.88,
+      "critical_increment_us": 2.88,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.920000000000002,
+      "critical_increment_us": 14.560000000000002,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 1>(RP)",
+      "duration_us": 2.783999999999999,
+      "critical_increment_us": 2.1439999999999984,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 43
+    }
+  ],
+  "1x8s:R4w4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 2.816,
+      "critical_increment_us": 2.816,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.376000000000001,
+      "critical_increment_us": 14.048000000000002,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 4>(RP)",
+      "duration_us": 3.2319999999999993,
+      "critical_increment_us": 2.0799999999999983,
+      "grid": [
+        32,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 43
+    }
+  ],
+  "1x8s:D4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 2.977,
+      "critical_increment_us": 2.977,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.408000000000001,
+      "critical_increment_us": 13.983,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 3.1679999999999993,
+      "critical_increment_us": 2.0479999999999983,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.3440000000000012,
+      "critical_increment_us": 1.5680000000000014,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "16x8s:A": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.552,
+      "critical_increment_us": 3.552,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>(int, int, int, int const*, int const*, int const*, int const*, int const*, int const*, int, int, int, int, int, cutlass::FastDivmod, cutlass::FastDivmod, int*, int*, int*, int*, int*, bool, bool, bool, int)",
+      "duration_us": 2.5279999999999996,
+      "critical_increment_us": 3.1039999999999996,
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 17
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 14.271999999999998,
+      "critical_increment_us": 12.832,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 4.032,
+      "critical_increment_us": 2.815999999999999,
+      "grid": [
+        8,
+        1,
+        16
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.6630000000000003,
+      "critical_increment_us": 1.8550000000000004,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "16x8s:A2": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.328,
+      "critical_increment_us": 3.328,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, false>(int, int, int, int const*, int const*, int const*, int const*, int const*, int const*, int, int, int, int, int, cutlass::FastDivmod, cutlass::FastDivmod, int*, int*, int*, int*, int*, bool, bool, bool, int)",
+      "duration_us": 2.6879999999999997,
+      "critical_increment_us": 3.2319999999999998,
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 17
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.663999999999998,
+      "critical_increment_us": 12.0,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 3.4559999999999995,
+      "critical_increment_us": 2.6560000000000024,
+      "grid": [
+        8,
+        1,
+        16
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.727999999999998,
+      "critical_increment_us": 1.9199999999999982,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "16x8s:S": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.104,
+      "critical_increment_us": 3.104,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 14.111999999999998,
+      "critical_increment_us": 14.975999999999999,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 3.5839999999999996,
+      "critical_increment_us": 2.7520000000000024,
+      "grid": [
+        8,
+        1,
+        16
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.663999999999998,
+      "critical_increment_us": 1.855999999999998,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "16x8s:M4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.264,
+      "critical_increment_us": 3.264,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.951,
+      "critical_increment_us": 14.559000000000001,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 3.4879999999999995,
+      "critical_increment_us": 2.719999999999999,
+      "grid": [
+        8,
+        1,
+        16
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.791999999999998,
+      "critical_increment_us": 2.1769999999999996,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "16x8s:R1": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.295,
+      "critical_increment_us": 3.295,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, false, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, false, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, false, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, false, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, false, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, false, true, true, true, false, true> > >::Params)",
+      "duration_us": 24.96,
+      "critical_increment_us": 25.567999999999998,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 1>(RP)",
+      "duration_us": 3.200000000000003,
+      "critical_increment_us": 3.7760000000000034,
+      "grid": [
+        2048,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 43
+    }
+  ],
+  "16x8s:R4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.072,
+      "critical_increment_us": 3.072,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 14.815000000000001,
+      "critical_increment_us": 15.423000000000002,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 1>(RP)",
+      "duration_us": 4.254999999999999,
+      "critical_increment_us": 3.2639999999999993,
+      "grid": [
+        2048,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 43
+    }
+  ],
+  "16x8s:R4w4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.263,
+      "critical_increment_us": 3.263,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 13.663,
+      "critical_increment_us": 14.208,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 4>(RP)",
+      "duration_us": 4.032,
+      "critical_increment_us": 3.2319999999999993,
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 43
+    }
+  ],
+  "16x8s:D4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 3.423,
+      "critical_increment_us": 3.423,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 37
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, false, true, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, false, true> > >::Params)",
+      "duration_us": 14.271,
+      "critical_increment_us": 14.848,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 4, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 3.936,
+      "critical_increment_us": 3.1679999999999993,
+      "grid": [
+        8,
+        1,
+        16
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.631999999999998,
+      "critical_increment_us": 1.9519999999999982,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "1x8f:A": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.888,
+      "critical_increment_us": 1.888,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>(int, int, int, int const*, int const*, int const*, int const*, int const*, int const*, int, int, int, int, int, cutlass::FastDivmod, cutlass::FastDivmod, int*, int*, int*, int*, int*, bool, bool, bool, int)",
+      "duration_us": 3.2319999999999998,
+      "critical_increment_us": 3.872,
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 27
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 20.0,
+      "critical_increment_us": 17.759999999999998,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 7.231999999999999,
+      "critical_increment_us": 5.6640000000000015,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.5359999999999978,
+      "critical_increment_us": 1.695999999999998,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "1x8f:A2": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.44,
+      "critical_increment_us": 1.44,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void flash::prepare_varlen_num_blocks_kernel<1, true>(int, int, int, int const*, int const*, int const*, int const*, int const*, int const*, int, int, int, int, int, cutlass::FastDivmod, cutlass::FastDivmod, int*, int*, int*, int*, int*, bool, bool, bool, int)",
+      "duration_us": 3.2640000000000002,
+      "critical_increment_us": 3.8720000000000003,
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 27
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 19.871000000000002,
+      "critical_increment_us": 17.567,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 7.199999999999999,
+      "critical_increment_us": 6.079999999999998,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.4399999999999977,
+      "critical_increment_us": 1.536999999999999,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "1x8f:S": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.312,
+      "critical_increment_us": 1.312,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 17.503999999999998,
+      "critical_increment_us": 18.048,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 7.776000000000003,
+      "critical_increment_us": 6.592000000000002,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.4400000000000013,
+      "critical_increment_us": 1.631999999999998,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "1x8f:M64": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.664,
+      "critical_increment_us": 1.664,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 17.152,
+      "critical_increment_us": 17.695999999999998,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 7.4559999999999995,
+      "critical_increment_us": 6.655999999999999,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.4720000000000013,
+      "critical_increment_us": 1.6960000000000015,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "1x8f:R64": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.312,
+      "critical_increment_us": 1.312,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 17.024,
+      "critical_increment_us": 17.631999999999998,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 1>(RP)",
+      "duration_us": 9.279999999999998,
+      "critical_increment_us": 8.096,
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 43
+    }
+  ],
+  "1x8f:R64w4": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.28,
+      "critical_increment_us": 1.28,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 16.863999999999997,
+      "critical_increment_us": 17.471999999999998,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void row_reduce<true, 4>(RP)",
+      "duration_us": 9.119999999999997,
+      "critical_increment_us": 7.968,
+      "grid": [
+        32,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 43
+    }
+  ],
+  "1x8f:D64": [
+    {
+      "name": "_qk_prep_kernel",
+      "duration_us": 1.472,
+      "critical_increment_us": 1.472,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > > >(flash::enable_sm90_or_later<flash::FlashAttnFwdSm90<flash::CollectiveMainloopFwdSm90<2, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cute::tuple<cute::C<64>, cute::C<128>, cute::C<64> >, 64, cutlass::float_e4m3_t, float, cutlass::arch::Sm90, true, false, false, true, true, false, false, false, true, true, true, true, false, cutlass::bfloat16_t, false, 1>, flash::CollectiveEpilogueFwd<cute::tuple<cute::C<64>, cute::C<64>, cute::C<128> >, cute::tuple<cute::C<1>, cute::C<1>, cute::C<1> >, cutlass::bfloat16_t, cutlass::arch::Sm90, 128, true, true, true, true>, flash::VarlenDynamicPersistentTileScheduler<64, 128, 128, 128, true, true, true, true, true, true> > >::Params)",
+      "duration_us": 17.375999999999998,
+      "critical_increment_us": 18.112,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 255
+    },
+    {
+      "name": "void cutlass::device_kernel<flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90> >(flash::FlashAttnFwdCombine<cute::tuple<cute::C<16>, cute::C<64> >, 6, 256, 1, false, true, cutlass::bfloat16_t, float, cutlass::arch::Sm90>::Params)",
+      "duration_us": 7.68,
+      "critical_increment_us": 6.687999999999999,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 256,
+      "regs": 48
+    },
+    {
+      "name": "_norm_gate_kernel",
+      "duration_us": 1.407,
+      "critical_increment_us": 1.5350000000000001,
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 29
+    }
+  ],
+  "16x8f:A": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 129.183,
+      "critical_increment_us": 129.183,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 27.167999999999992,
+      "critical_increment_us": 6.463999999999999,
+      "grid": [
+        16,
+        16,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "16x8f:A2": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 127.935,
+      "critical_increment_us": 127.935,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 26.527,
+      "critical_increment_us": 6.304000000000002,
+      "grid": [
+        16,
+        16,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "16x8f:S": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 129.438,
+      "critical_increment_us": 129.438,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 27.582999999999984,
+      "critical_increment_us": 6.560000000000002,
+      "grid": [
+        16,
+        16,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "16x8f:R": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 129.599,
+      "critical_increment_us": 129.599,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "void row_reduce<false, 1>(RP)",
+      "duration_us": 26.879999999999995,
+      "critical_increment_us": 5.568000000000012,
+      "grid": [
+        2048,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 56
+    }
+  ],
+  "16x8f:Rw4": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 129.47,
+      "critical_increment_us": 129.47,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "void row_reduce<false, 4>(RP)",
+      "duration_us": 27.104,
+      "critical_increment_us": 5.632000000000005,
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 56
+    }
+  ],
+  "16x8f:G4": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 207.742,
+      "critical_increment_us": 207.742,
+      "grid": [
+        4,
+        16,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 210.654,
+      "critical_increment_us": 4.128000000000014,
+      "grid": [
+        16,
+        16,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "16x8f:F4": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 213.47,
+      "critical_increment_us": 213.47,
+      "grid": [
+        4,
+        16,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    }
+  ],
+  "16x8f:G8": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 202.43,
+      "critical_increment_us": 202.43,
+      "grid": [
+        8,
+        16,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 105.44000000000001,
+      "critical_increment_us": 4.929000000000002,
+      "grid": [
+        16,
+        16,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "16x8f:F8": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 215.038,
+      "critical_increment_us": 215.038,
+      "grid": [
+        8,
+        16,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    }
+  ],
+  "32x8f:A": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 221.054,
+      "critical_increment_us": 221.054,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 24.640000000000015,
+      "critical_increment_us": 5.312000000000012,
+      "grid": [
+        16,
+        32,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "32x8f:A2": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 220.639,
+      "critical_increment_us": 220.639,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 24.960000000000008,
+      "critical_increment_us": 5.407999999999987,
+      "grid": [
+        16,
+        32,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "32x8f:S": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 220.734,
+      "critical_increment_us": 220.734,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 23.423000000000002,
+      "critical_increment_us": 5.087999999999994,
+      "grid": [
+        16,
+        32,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "32x8f:R": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 222.686,
+      "critical_increment_us": 222.686,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "void row_reduce<false, 1>(RP)",
+      "duration_us": 26.432000000000016,
+      "critical_increment_us": 6.207999999999998,
+      "grid": [
+        4096,
+        1,
+        1
+      ],
+      "block": 32,
+      "regs": 56
+    }
+  ],
+  "32x8f:Rw4": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 220.318,
+      "critical_increment_us": 220.318,
+      "grid": [
+        132,
+        1,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "void row_reduce<false, 4>(RP)",
+      "duration_us": 22.848000000000013,
+      "critical_increment_us": 4.99199999999999,
+      "grid": [
+        1024,
+        1,
+        1
+      ],
+      "block": 128,
+      "regs": 56
+    }
+  ],
+  "32x8f:G4": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 384.348,
+      "critical_increment_us": 384.348,
+      "grid": [
+        4,
+        32,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 195.23,
+      "critical_increment_us": 4.639999999999986,
+      "grid": [
+        16,
+        32,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "32x8f:F4": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 399.421,
+      "critical_increment_us": 399.421,
+      "grid": [
+        4,
+        32,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    }
+  ],
+  "32x8f:G8": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 303.549,
+      "critical_increment_us": 303.549,
+      "grid": [
+        8,
+        32,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    },
+    {
+      "name": "(anonymous namespace)::vq8_combine((anonymous namespace)::VP)",
+      "duration_us": 103.90299999999999,
+      "critical_increment_us": 6.560000000000002,
+      "grid": [
+        16,
+        32,
+        1
+      ],
+      "block": 256,
+      "regs": 64
+    }
+  ],
+  "32x8f:F8": [
+    {
+      "name": "void (anonymous namespace)::vq8_main<4>((anonymous namespace)::VP)",
+      "duration_us": 316.765,
+      "critical_increment_us": 316.765,
+      "grid": [
+        8,
+        32,
+        1
+      ],
+      "block": 384,
+      "regs": 168
+    }
+  ]
+}

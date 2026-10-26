@@ -1,0 +1,20 @@
+{
+  "fixed": [
+    {
+      "cluster": 4,
+      "sequence_counts": 1027,
+      "all_tiles_once": true,
+      "one_virtual_owner": true,
+      "slots_in_bounds": true
+    },
+    {
+      "cluster": 8,
+      "sequence_counts": 1027,
+      "all_tiles_once": true,
+      "one_virtual_owner": true,
+      "slots_in_bounds": true
+    }
+  ],
+  "old_counterexample": "seq129,T3,CS4:old cta_of(0)=1,rank0 writes slot-1; new slot=s*CS+rank.",
+  "workspace": "max(SM_count,8*segments)+segments partial blocks plus scheduler256 floats"
+}

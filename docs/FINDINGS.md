@@ -1336,6 +1336,66 @@ phases/P4_HANDOFF.json with hashes and component admission. P4 confirms
 held-out six-load G0 and nearby performance; no stage-only promotion or
 standalone small-point follow-up.
 
+### P5b S19 all-FA3 schedules and parallel merge
+
+Native9dc1159a076b4e6b:928TASK,8newseeds5671243+7919*i,8cold rounds;154.73s.
+Every arm CI/SE, raw seed samples, CUPTI and launch counts in dev/full_attention/chain/
+POINTS.md and result.json. Ratios new/S19 time. A:A v1S/v16S/v1F/v16F/v32F
+.982109/1.000372/.997719/.997584/.998813,SE.005097/.003783/.001525/.001022/.000964.
+v1S directional-1.79% drift retained; v16F upper CI rounds1.000000. No per-load veto.
+Actual FA3 call controls cover1. S19 v1S is native sliding_main<8,4,128>,one launch,
+not FA3; R2_SELECTION[(1,8)]=('dsm',4,16). Preserve P5 native/query/RAW2 paths.
+Only v16S/v1F actually go FA3 five->four via shape schedules or five->three via
+parallel combine+norm. Full native D two->two for row merge; DSM F two->one loses.
+No FA3 main/epilogue fusion claim: main+parallel merged norm remain separate kernels.
+D/M equal-split ABI controls v16S.996299[.980553,1.012045],v1F.998698[.987812,1.009585].
+S/M aliases and identity-S points are controls, not new shader nominations.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| First prepared-schedule native attempt | Unmeasured, pre-timing TASK path stopped | At short cache capacity FA3 normalizes local to full/causal and needs4 metadata vectors, not3. Fixed from shapes; actual setter/layout probed locally | No recipe closed; all gates retained | `b8ddced394bd46ae` |
+| Second parallel-merge native attempt | Unmeasured, correctness stopped timing | Empty-tile G control subtracted cta_of(0)>0, writing negative slots; G8/B32 also exceeded132CTA workspace and corrupted later arms. Fixed slot=s*CS+rank, max(SMs,8*segments)+segments storage and undefined empty FA3 partial masking | No loss/promotion claim. CPU2054partition cases and all-rank G local proof now pass; final928nativeTASK passes | `9c577135f9d64269` |
+| M1 | v1S 2.677961; v16S 1.388207 | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| M2 | v1S 2.070571; v16S 1.134263 | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| M4 | v1S 1.696964; v16S 0.953395[0.940476,0.966313] | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| M8 | v1S 1.475529; v16S 1.083403 | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| M16 | v1S 1.398761 | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| R1 | v1S 2.626274; v16S 1.416199 | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R2 | v1S 1.942622; v16S 1.105790 | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R4 | v1S 1.547741; v16S 0.908322[0.897655,0.918988] | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R8 | v1S 1.388184; v16S 1.027033 | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R16 | v1S 1.359413 | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R4w4 | v1S 1.551220; v16S 0.890066[0.878445,0.901687] | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| M32 | v1F 1.149490 | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| M64 | v1F 0.904360[0.893519,0.915200] | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| M128 | v1F 1.116154 | Literal-shape fixed split schedule, fresh key bounds, no metadata launch; required combine/reset retained | Nominate correct points<1; v1S diagnostics all lose to native. Other counts only close themselves | `9dc1159a076b4e6b` |
+| R32 | v1F 1.100985 | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R64 | v1F 0.888090[0.875082,0.901098] | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R128 | v1F 1.096249 | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R64w4 | v1F 0.890120[0.879146,0.901094] | Installed native FA3 main + one/four-warp row combine/norm, three launches; all keys | Nominate points<1; best v16 R4w4 and v1 R64. True fused FA3 main/epilogue remains open | `9dc1159a076b4e6b` |
+| R | v16F 0.992308[0.984905,0.999711]; v32F 1.005864 | Original D main, parallel row max/exp reused across64dims, norm/gate fused; one/four-warps per CTA, two launches | Both v16 points and v32 Rw4 point to P4; main issue remains, no stage-only G0 claim | `9dc1159a076b4e6b` |
+| Rw4 | v16F 0.992111[0.986609,0.997613]; v32F 0.997763[0.994638,1.000888] | Original D main, parallel row max/exp reused across64dims, norm/gate fused; one/four-warps per CTA, two launches | Both v16 points and v32 Rw4 point to P4; main issue remains, no stage-only G0 claim | `9dc1159a076b4e6b` |
+| G4 | v16F 1.573412; v32F 1.721246 | Fixed4/8CTA clusters per segment, original combine, same native D math | Close fixed per-segment geometry: imbalance/underfill/waves versus globally balanced S19; not DSM generally | `9dc1159a076b4e6b` |
+| F4 | v16F 1.581045; v32F 1.763011 | Same G partition, all384threads in every CTA reduce through DSM; dead-stage shared reuse, one launch | F/G v16 1.004846/1.033585,v32 1.024264/1.029316: all CIs>1. Close these fixed-cluster fused forms only | `9dc1159a076b4e6b` |
+| G8 | v16F 1.540363; v32F 1.371561 | Fixed4/8CTA clusters per segment, original combine, same native D math | Close fixed per-segment geometry: imbalance/underfill/waves versus globally balanced S19; not DSM generally | `9dc1159a076b4e6b` |
+| F8 | v16F 1.592101; v32F 1.411737 | Same G partition, all384threads in every CTA reduce through DSM; dead-stage shared reuse, one launch | F/G v16 1.004846/1.033585,v32 1.024264/1.029316: all CIs>1. Close these fixed-cluster fused forms only | `9dc1159a076b4e6b` |
+
+Preferred P4 combined S19 patch5f18b0a5/source dbeeb847: v16S R4w4
+.890066[.878445,.901687],SE.004914; v1F R64.888090[.875082,.901098],SE.005501;
+v16F Rw4.992111[.986609,.997613],SE.002327;v32F.997763[.994638,1.000888],SE.001322.
+R4w4/M4.933739[.918506,.948972]; R64/M64.982057[.970121,.993992].
+Standalone FA3-only ef9e9be4, native-row-only41e683b8, metadata-only ce4a7609;
+all apply independently onto S19 8b415553, not concatenated prepare wrappers.
+No P5 code changes except its authorized README record. Full G0/prepare cost stays P4.
+Native F main168regs/24Bspill versus G168/32B; FA reducer43 and VQ56regs/no spills.
+Single-profile critical increments v1F M64 1.66+17.70+6.66+1.70 -> R64
+1.31+17.63+8.10us; v16F A129.18+6.46 -> Rw4 129.47+5.63, v32 A221.05+5.31 ->
+Rw4 220.32+4.99us. Main issue remains largest. Dependent27us duration includes
+PDL wait, not27us exposed merge. G4/G8 main alone v16 207.74/202.43 andv32
+384.35/303.55 versus A129.18/221.05us separates geometry loss from extra DSM cost.
+Normal+forced exact payload each928TASK+16host/6static, actual transport7checks;
+selected candidate admission and exact patches in dev/full_attention/chain/P4_HANDOFF.json.
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

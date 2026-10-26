@@ -236,3 +236,21 @@ python3 tools/h200_lab.py read 3a9a31747042429a
 python3 problems/muse_attention_decode/dev/sliding_oracle/analyze_followup.py runs/muse_attention_decode/20261026T065219Z_check_7bd3eced41e24402.json
 python3 problems/muse_attention_decode/dev/sliding_oracle/analyze_followup.py --global-merge runs/muse_attention_decode/20261026T073628Z_check_3a9a31747042429a.json
 ```
+
+## P5b independent FA3 launch work on S19
+
+P5b native check9dc1159a076b4e6b on proj (attention quota0):928TASK,
+8seeds5671243+7919*i,8cold rounds. Actual S19 verify1 sliding is one native
+sliding_main<8,4,128> via R2_SELECTION, not FA3; all explicit FA3 replacements
+lose1.36–2.68x. Preserve that P5 path. Verify16 sliding is FA3: shape-only M4
+metadata removes five->four launches, ratio.953395 [.940476,.966313]; exported
+FA3 main + four-warp parallel combine/norm R4w4 gives three launches,
+**.890066 [.878445,.901687],SE.004914** versus S19, R/M.933739 [.918506,.948972].
+A:A v16S1.000372 [.991428,1.009317]. v1S identity-control drift.982109 disclosed.
+No P5 native source, query setup, RAW2 selection or merge changes. Independent
+S19 FA3-only patch `../full_attention/chain/fa.patch` ef9e9be4/source4af48563
+includes this and full-v1 R64; metadata-only ce4a7609 also supplied. These
+alternatives apply onto S19 8b415553, not atop each other's prepare wrappers.
+All points/seeds/CI and combined patch in `../full_attention/chain/P4_HANDOFF.json`;
+P4 confirms held-out whole-layer G0. Normal+forced exact payload each928TASK;
+first two native attempts failed pre-timing gates and are unmeasured, not losses.

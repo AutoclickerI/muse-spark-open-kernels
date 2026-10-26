@@ -1,0 +1,88 @@
+{
+ "board": "muse_bf16_proj",
+ "call_id": "sfo3b:kc-9c577135f9d64269",
+ "cluster": "sfo3b",
+ "content_hash": "dbf8030509620d3a1259c8f139f9f13bf7c009ed08601f8877b2bc9f51aa3709",
+ "created_at": 1793010308.3530345,
+ "dedicated": false,
+ "duplicate_of": null,
+ "finished_at": 1793010489.1818004,
+ "id": "9c577135f9d64269",
+ "mode": "check",
+ "output": {
+  "log": "/home/jihoon/competitions/muse_kernel/runs/sent/c8314c8223fb8793/profiles/lab_chain_attention.9c577135f9d64269.log"
+ },
+ "payload_ref": "muse_bf16_proj/dbf8030509620d3a1259c8f139f9f13bf7c009ed08601f8877b2bc9f51aa3709.py",
+ "result": {
+  "checks": {
+   "flagged": [],
+   "ok": true,
+   "rejected": []
+  },
+  "error": null,
+  "evaluator": {
+   "code_sha256": "986ed3ebb096eab83d16797609f4c0e7895248d6bce33252d25dd306cbe5d018",
+   "files": {
+    "challenge/checks.py": "9a046c3c38db28b325dcd1557baecdf6bc9ef941d2175f9a900ba4c230bb8055",
+    "challenge/nvfp4.py": "cfdf37c7bc14b10f7353aba7d4632f4767401b92b4b073941a8030d9a961aaaf",
+    "configs/muse-spark-open.yaml": "98f07230e4e64fe91b7c76d9a3ce04948053c043d494d5f1fae56cfe2de033af",
+    "harness/eval.py": "0051a1bfac67a9f1fad06086b306653c6643b2bb253e15a794aa672312f070a9",
+    "harness/runner.py": "c905e5c80264c6d27620b6fc7d55b162dccdb8ed7282f8a513a4d2e6f2f226f2",
+    "harness/static_checks.py": "c5588b69e9e86229459a525c61b30096f6f13ff2add6cadf98f272c4ac8ca0c2",
+    "harness/worker.py": "950437610f57ddffbc1176b65d9c2ae909c47bf67b1e3fe0716a81946986f568",
+    "problems/muse_bf16_proj/baseline.py": "39f52ea5b65505958aa9dee9c8129dd394cbba4e670046f862b5a88ce91a0574",
+    "problems/muse_bf16_proj/reference.py": "e62491abc9ddcad33f5faba8b0ee74cf6370b7be5dd2dc05031742f3ebf7147d",
+    "problems/muse_bf16_proj/task.yml": "18e9da6357144b0a1348434a18bd2d1938b1948d9f2130876f6b6706588470c9"
+   },
+   "image": "localhost:30500/kc/judge@sha256:9a7f287b80d772c6f636bbcb57422c619fe326e2aabc53803b85007bca93f68e"
+  },
+  "flags": [],
+  "gpu": "H200",
+  "log_tail": "PHASES_GATE official 0\nPHASES_GATE official 1\nPHASES_GATE official 2\nPHASES_GATE official 3\nPHASES_GATE official 4\nPHASES_GATE official 5\nPHASES_GATE official 6\nPHASES_GATE official 7\nPHASES_GATE official 8\nPHASES_GATE official 9\nPHASES_GATE official 10\nPHASES_GATE official 11\nPHASES_GATE official 12\nPHASES_GATE official 13\nPHASES_GATE official 14\nPHASES_GATE official 15\nPHASES_GATE stress 0\nPHASES_GATE stress 1\nPHASES_GATE stress 2\nPHASES_GATE stress 3\nPHASES_GATE stress 4\nPHASES_GATE stress 5\nPHASES_GATE stress 6\nPHASES_GATE stress 7\nPHASES_GATE stress 8\nPHASES_GATE stress 9\nLAB_BEGIN chain_attention b2b1dbec6f4574ac\nLAB_ERROR AssertionError: ('TASK', {'official': 112, 'scored': 0, 'stress': 228, 'partial': 132}, ['stress8G4:eager:new key cache entries: output contains NaN or Inf', 'stress8G4:graph:new key cache entries: output contains NaN or Inf', 'stress8F4:eager:new key cache entries: output contains NaN or Inf', 'stress8F4:graph:new key cache entries: output contains NaN or Inf', 'stress8G8:eager:new key cache entries: output contains NaN or Inf', 'stress8G8:graph:new key cache entries: output contains NaN or Inf', 'stress8F8:eager:new key cache entries: output contains NaN or Inf', 'stress8F8:graph:new key cache entries: output contains NaN or Inf', 'stress9G4:eager:new key cache entries: output contains NaN or Inf', 'stress9G4:graph:new key cache entries: output contains NaN or Inf', 'stress9F4:eager:new key cache entries: output contains NaN or Inf', 'stress9F4:graph:new key cache entries: output contains NaN or Inf', 'stress9G8:eager:new key cache entries: output contains NaN or Inf', 'stress9G8:graph:new key cache entries: output contains NaN or Inf', 'stress9F8:eager:new key cache entries: output contains NaN or Inf', 'stress9F8:graph:new key cache entries: output contains NaN or Inf', \"partial2R128:eager:output contains NaN or Inf [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]\", 'partial3G8:eager:new key cache entries: output contains NaN or Inf', 'partial3G8:graph:new key cache entries: output contains NaN or Inf', 'partial3F8:eager:new key cache entries: output contains NaN or Inf', 'partial3F8:graph:new key cache entries: output contains NaN or Inf', 'partial5G8:eager:new key cache entries: output contains NaN or Inf', 'partial5G8:graph:new key cache entries: output contains NaN or Inf', 'partial5F8:eager:new key cache entries: output contains NaN or Inf', 'partial5F8:graph:new key cache entries: output contains NaN or Inf'])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-hhq7m2aa/run/submission.py\", line 40, in _lab_run_one\n    return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)\n                                                                                            ^^^^^^^^^^^^^^^^^^^^^\n  File \"<h200_lab chain_attention>\", line 153, in lab\n    assert not fail,('TASK',counts,fail)\n           ^^^^^^^^\nLAB_PACKET chain_attention b2b1dbec6f4574ac 792051be356491b5482e3a53fe29463b14df30319870eeaa7cb91a95eaada6af c-rk&?{CvE5dBw9`I1(IHc1<3BA8U9WkQUB3g5aCx#^`bBz9&yD$}(8ol9xQ_$4IjkMXyQFX!iXPv>{%<g#umH0UG+t2BB}#RY07Svr^VSK0Yu@ooWgtx*{+#ko>aB`|P5&Of|yJ-BmaQSh9z%1s~$LJwS>ONAQ>{Vp&HwWc5pXB0M!s(jC#g!djS4+*o2X@YEvDiOGYFL(<%%S!|lMsd^$$ksHifm{m1xX^ILu0SeyEeiMHl&;8Dv8Ft!NNNK~Y6Ho|%mybj8=Tlcl3G9#+t5jDLnpBfoy0bD65G&8Y(pop4V}a%>EzlujF@l{ghw=g{{xn5*@_MLqagBWNR1-+3WiQoSfE0YqpNAtkEXEWriAqU49=%-CvekZhX$T>yFs+Nc79B^$!QIFRON(@9IK>Ou%tGyL{@l-tnd<9;UzkOm(|em9QbK{`j53QlJW{k`eRc!<GR(Dt&8AU)+qV;X<6PpuS3Shsug41u4}F}z2l?iwv%l4)Weh>YAztF*gB)EObR?eQ)pTxpb&!%vQ3xl!4CPhG};4gn86|N0xA@PjIP&UZbq7K1*6|^P>A7(h+;LF3#Er}_7Wz5WHJ6&@OL`wu79%kq6~e%BLVV~nw2qQsE@?e*#lESG}%){Ne8rSZ;U`l0|n!icQi&hjTIuP`}WJl9v$7gs@_%guBvxcy{qb7Rqv{7xvJIuH<skEI{\nLAB_END lab_s=144.0 import_s=144.0\nLAB_BEGIN chain_attention b2b1dbec6f4574ac\nLAB_ERROR AssertionError: ('TASK', {'official': 112, 'scored': 0, 'stress': 228, 'partial': 132}, ['stress8G4:eager:new key cache entries: output contains NaN or Inf', 'stress8G4:graph:new key cache entries: output contains NaN or Inf', 'stress8F4:eager:new key cache entries: output contains NaN or Inf', 'stress8F4:graph:new key cache entries: output contains NaN or Inf', 'stress8G8:eager:new key cache entries: output contains NaN or Inf', 'stress8G8:graph:new key cache entries: output contains NaN or Inf', 'stress8F8:eager:new key cache entries: output contains NaN or Inf', 'stress8F8:graph:new key cache entries: output contains NaN or Inf', 'stress9G4:eager:new key cache entries: output contains NaN or Inf', 'stress9G4:graph:new key cache entries: output contains NaN or Inf', 'stress9F4:eager:new key cache entries: output contains NaN or Inf', 'stress9F4:graph:new key cache entries: output contains NaN or Inf', 'stress9G8:eager:new key cache entries: output contains NaN or Inf', 'stress9G8:graph:new key cache entries: output contains NaN or Inf', 'stress9F8:eager:new key cache entries: output contains NaN or Inf', 'stress9F8:graph:new key cache entries: output contains NaN or Inf', \"partial2R128:eager:output contains NaN or Inf [bound 0.150: 2.5 x the reference's 0.054 with FP8 E4M3 queries + 0.015]\", 'partial3G8:eager:new key cache entries: output contains NaN or Inf', 'partial3G8:graph:new key cache entries: output contains NaN or Inf', 'partial3F8:eager:new key cache entries: output contains NaN or Inf', 'partial3F8:graph:new key cache entries: output contains NaN or Inf', 'partial5G8:eager:new key cache entries: output contains NaN or Inf', 'partial5G8:graph:new key cache entries: output contains NaN or Inf', 'partial5F8:eager:new key cache entries: output contains NaN or Inf', 'partial5F8:graph:new key cache entries: output contains NaN or Inf'])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-hhq7m2aa/run/submission.py\", line 40, in _lab_run_one\n    return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)\n                                                                                            ^^^^^^^^^^^^^^^^^^^^^\n  File \"<h200_lab chain_attention>\", line 153, in lab\n    assert not fail,('TASK',counts,fail)\n           ^^^^^^^^\nLAB_PACKET chain_attention b2b1dbec6f4574ac 792051be356491b5482e3a53fe29463b14df30319870eeaa7cb91a95eaada6af c-rk&?{CvE5dBw9`I1(IHc1<3BA8U9WkQUB3g5aCx#^`bBz9&yD$}(8ol9xQ_$4IjkMXyQFX!iXPv>{%<g#umH0UG+t2BB}#RY07Svr^VSK0Yu@ooWgtx*{+#ko>aB`|P5&Of|yJ-BmaQSh9z%1s~$LJwS>ONAQ>{Vp&HwWc5pXB0M!s(jC#g!djS4+*o2X@YEvDiOGYFL(<%%S!|lMsd^$$ksHifm{m1xX^ILu0SeyEeiMHl&;8Dv8Ft!NNNK~Y6Ho|%mybj8=Tlcl3G9#+t5jDLnpBfoy0bD65G&8Y(pop4V}a%>EzlujF@l{ghw=g{{xn5*@_MLqagBWNR1-+3WiQoSfE0YqpNAtkEXEWriAqU49=%-CvekZhX$T>yFs+Nc79B^$!QIFRON(@9IK>Ou%tGyL{@l-tnd<9;UzkOm(|em9QbK{`j53QlJW{k`eRc!<GR(Dt&8AU)+qV;X<6PpuS3Shsug41u4}F}z2l?iwv%l4)Weh>YAztF*gB)EObR?eQ)pTxpb&!%vQ3xl!4CPhG};4gn86|N0xA@PjIP&UZbq7K1*6|^P>A7(h+;LF3#Er}_7Wz5WHJ6&@OL`wu79%kq6~e%BLVV~nw2qQsE@?e*#lESG}%){Ne8rSZ;U`l0|n!icQi&hjTIuP`}WJl9v$7gs@_%guBvxcy{qb7Rqv{7xvJIuH<skEI{\nLAB_END lab_s=144.0 import_s=144.0\nTraceback (most recent call last):\n  File \"/tmp/muse_bf16_proj-hhq7m2aa/run/worker.py\", line 423, in child_main\n    send(_setup_op(msg, module, state, sync, perf))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-hhq7m2aa/run/worker.py\", line 322, in _setup_op\n    state[\"prep\"] = prepare(weights)\n                    ^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-hhq7m2aa/run/submission.py\", line 117, in prepare\n    return _lab_base_prepare(weights)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/muse_bf16_proj-hhq7m2aa/run/submission.py\", line 3, in prepare\n    def prepare(weights):raise RuntimeError('lab-only host: evidence completed at import')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: lab-only host: evidence completed at import\n",
+  "machine": {
+   "gpu_after": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 124.75,
+    "power.limit": 700,
+    "temperature.gpu": 35
+   },
+   "gpu_before": {
+    "clocks.max.sm": 1980,
+    "clocks.mem": 3201,
+    "clocks.sm": 1980,
+    "driver_version": "580.178.04",
+    "name": "NVIDIA H200",
+    "power.draw": 132.1,
+    "power.limit": 700,
+    "temperature.gpu": 31
+   },
+   "node": "n-oeisv6y44av4eaf3f4hjxhypoq"
+  },
+  "passed": false,
+  "records": [
+   {
+    "baseline_copies": 16,
+    "baseline_prepare_pad": 28112896,
+    "copies": null,
+    "error": "RuntimeError: lab-only host: evidence completed at import",
+    "event": "setup",
+    "first": "submission",
+    "prepare_pad": null,
+    "prepare_s": null,
+    "status": "fail"
+   }
+  ],
+  "returncode": 112,
+  "score_us": null,
+  "speedup": null,
+  "speedup_ci": null,
+  "status": "ok"
+ },
+ "started_at": 1793010317.7902465,
+ "status": "done",
+ "team": "AutoclickerI"
+}

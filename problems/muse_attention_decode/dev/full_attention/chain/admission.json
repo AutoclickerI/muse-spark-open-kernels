@@ -1,0 +1,94 @@
+{
+  "normal": {
+    "wrapper_sha256": "a2c355cc419c3fb227d9231d8a6147237d2e2b05a0c6eed9686e5d1818ebc322",
+    "counts": {
+      "official": 112,
+      "scored": 456,
+      "stress": 228,
+      "partial": 132
+    },
+    "TASK": 928,
+    "host_TASK": 16,
+    "static": 6,
+    "all_pass": true,
+    "standins": "All4/8 independent G control ranks; one-rank DSM F; actual FA3 setter/layout with math main stand-in"
+  },
+  "forced": {
+    "wrapper_sha256": "a2c355cc419c3fb227d9231d8a6147237d2e2b05a0c6eed9686e5d1818ebc322",
+    "counts": {
+      "official": 112,
+      "scored": 456,
+      "stress": 228,
+      "partial": 132
+    },
+    "TASK": 928,
+    "host_TASK": 16,
+    "static": 6,
+    "all_pass": true,
+    "standins": "All4/8 independent G control ranks; one-rank DSM F; actual FA3 setter/layout with math main stand-in"
+  },
+  "payload_sha256": "10f72cfb4e655ff8da7150ee54b032faa556e891948c05405d35a60bdb6ec2f6",
+  "native": {
+    "N": "c74cc44958eeaeecd456169aae1ad6dfaf742559ec5211596f244e0547b1f450",
+    "G": "df27bfaa4c3fa9ec66bd54fc956d6076a43b50d576bd2e1654807d1cb4c71ead",
+    "F": "8b88f76b542c13addb34cdf66c555c850f0a7acacd5b112139b5cd96bb3d96fa",
+    "bridge": "fd53d0aebbde78534ec4a666d5dff977f097e75743c1b523fb6af08360fa6888",
+    "reduce": "cc5e13af6a2328b0c3237740cf2a71092482ba2e78f2870a4e02273ce32a16bd"
+  },
+  "ABI": {
+    "bridge_sha256": "fd53d0aebbde78534ec4a666d5dff977f097e75743c1b523fb6af08360fa6888",
+    "result": [
+      728,
+      120,
+      188,
+      64,
+      1,
+      0,
+      1
+    ],
+    "main_launched": false,
+    "canary_pass": true
+  },
+  "transport": {
+    "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/full_attention/chain/transport.py",
+    "sha256": "bdc4fda8f8a625df6870c4058f6f50d5c3b8c27d6c7c5c1709c509f8d10a9230",
+    "tier": "wrapper",
+    "static": [
+      {
+        "name": "packaging",
+        "ok": true,
+        "msg": "single-file problem header and size"
+      },
+      {
+        "name": "local_imports",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "judge_packaging",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "undefined_names",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "call_signatures",
+        "ok": true,
+        "msg": ""
+      },
+      {
+        "name": "state_keys",
+        "ok": true,
+        "msg": "dynamic state contract: requires changed-unit/H200 checks"
+      },
+      {
+        "name": "wrapper_lab-only",
+        "ok": true,
+        "packets": 1
+      }
+    ]
+  }
+}

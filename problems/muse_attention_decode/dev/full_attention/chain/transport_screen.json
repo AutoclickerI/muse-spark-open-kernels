@@ -1,0 +1,42 @@
+{
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/full_attention/chain/transport.py",
+ "sha256": "bdc4fda8f8a625df6870c4058f6f50d5c3b8c27d6c7c5c1709c509f8d10a9230",
+ "tier": "wrapper",
+ "static": [
+  {
+   "name": "packaging",
+   "ok": true,
+   "msg": "single-file problem header and size"
+  },
+  {
+   "name": "local_imports",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "judge_packaging",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "state_keys",
+   "ok": true,
+   "msg": "dynamic state contract: requires changed-unit/H200 checks"
+  },
+  {
+   "name": "wrapper_lab-only",
+   "ok": true,
+   "packets": 1
+  }
+ ]
+}

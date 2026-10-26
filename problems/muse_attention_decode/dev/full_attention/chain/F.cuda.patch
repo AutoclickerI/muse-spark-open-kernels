@@ -1,0 +1,164 @@
+--- a/S19_VQ8_CUDA
++++ b/F
+@@ -836,18 +836,48 @@
+       wg_wait<0>();
+       protect(O);
+     }
+-    const int slot = S.partB[s] + (cta - cta_of(S.segP[s], G, T));
++    // Both query WGs have drained before Q/K stage storage is reused.
++    asm volatile("bar.sync 5,256;":::"memory");
++    const int slot = s * p.min_tiles + blockIdx.x;
+ #pragma unroll
+     for (int rh = 0; rh < 2; rh++) {
+       float lt = O[8][2*rh]*.25f;
+       lt += __shfl_xor_sync(0xffffffffu, lt, 1);
+       lt += __shfl_xor_sync(0xffffffffu, lt, 2);
+-      float* dst = p.part + ((int64_t)slot * 128 + hh * 64 + w * 16 + g + 8 * rh) * PR;
++      extern __shared__ __align__(1024) uint8_t scratch[];
++      float* dst=(float*)(scratch+CLKPAD)+(hh*64+w*16+g+8*rh)*PR;
+ #pragma unroll
+       for (int n = 0; n < 8; n++) *(float2*)(dst + 8 * n + 2 * t) = make_float2(O[n][2 * rh], O[n][2 * rh + 1]);
+       if (t == 0) *(float2*)(dst + 64) = make_float2(m[rh], lt);
+     }
+   }
++}
++
++// Every CTA in the split cluster remains alive for parallel output reduction.
++// One exp per split/row, broadcast over dimensions; rows spread over all12 warps
++// of all cluster CTAs. No single last warpgroup owns the whole output.
++DI float2 dsm2(const float* x,int rank,int cs){
++ if(cs==1)return *(const float2*)x;
++ uint32_t a;asm volatile("mapa.shared::cluster.u32 %0,%1,%2;":"=r"(a):"r"(su(x)),"r"(rank));
++ float2 v;asm volatile("ld.shared::cluster.v2.f32 {%0,%1},[%2];":"=f"(v.x),"=f"(v.y):"r"(a):"memory");return v;
++}
++DI void cluster_sync(int cs){if(cs==1){__syncthreads();return;}asm volatile("barrier.cluster.arrive.aligned;":::"memory");asm volatile("barrier.cluster.wait.aligned;":::"memory");}
++DI void cluster_reduce(const VP& p,uint8_t* sm){
++ const int cs=p.min_tiles,rank=blockIdx.x,tid=threadIdx.x,lane=tid&31,w=tid>>5,s=blockIdx.y;
++ const int b=s/p.HP,hp=s%p.HP;const float vsc=*p.vs;
++ cluster_sync(cs);
++ for(int row=rank*12+w;row<128;row+=12*cs){
++  float2 ml=lane<cs?dsm2((const float*)(sm+CLKPAD)+row*PR+64,lane,cs):make_float2(-INFINITY,0.f);
++  float mx=ml.x;for(int d=16;d;d>>=1)mx=fmaxf(mx,__shfl_xor_sync(0xffffffff,mx,d));
++  const float weight=ml.x==-INFINITY?0.f:ex2(ml.x-mx);float den=wsum(weight*ml.y),x=0.f,y=0.f;
++  for(int c=0;c<cs;c++){float z=__shfl_sync(0xffffffff,weight,c);float2 o=dsm2((const float*)(sm+CLKPAD)+row*PR+2*lane,c,cs);x=fmaf(z,o.x,x);y=fmaf(z,o.y,y);}
++  float sc=vsc/den;x*=sc;y*=sc;float norm=rsqrtf(wsum(x*x+y*y)/64.f+1e-5f);
++  const int hh=row>>6,qr=row&63,tok=qr>>3,head=(2*hp+hh)*8+(qr&7);
++  int tk[1]={b*p.L+tok},cl[1]={(p.HQ+2*p.HK+head)*64+2*lane};bool vd[1]={true};float2 g[1];input_pairs<1>(p,tk,cl,vd,g);
++  *(__nv_bfloat162*)(p.out+((int64_t)(b*p.L+tok)*p.HQ+head)*64+2*lane)=__floats2bfloat162_rn(x*norm/(1.f+__expf(-g[0].x)),y*norm/(1.f+__expf(-g[0].y)));
++ }
++ // Keep every DSM allocation alive until every remote reader has finished.
++ cluster_sync(cs);
+ }
+ 
+ template <int ST>
+@@ -874,28 +904,12 @@
+   if (tid == 0) row[0] = gtime();
+   if (tid < 64) clk_area()[tid] = 0;
+ #endif
+-  if (warp == 0) {
+-    schedule_warp(p, S);
+-    // This CTA's portions (segments overlapping its tile range), compacted by ballot.
+-    const int lane = tid & 31, G = S.G, T = S.T, i = blockIdx.x;
+-    const int t0 = (int)((long long)i * T / G), t1 = (int)((long long)(i + 1) * T / G);
+-    int npo = 0, nreal = 0;
+-    for (int base = 0; base < p.NS; base += 32) {
+-      const int s = base + lane;
+-      const int a = s < p.NS ? S.segP[s] : INT_MAX, e = s < p.NS ? S.segP[s + 1] : INT_MAX;
+-      const bool hit = i < G && e > t0 && a < t1;
+-      const unsigned m = __ballot_sync(0xffffffffu, hit);
+-      if (hit) {
+-        const int ka = max(t0, a) - a, kb = min(t1, e) - a, nc = e - a - 1, at = npo + __popc(m & ((1u << lane) - 1));
+-        S.po_s[at] = s; S.po_ka[at] = ka; S.po_kb[at] = kb;
+-        nreal += max(0, min(kb, nc) - ka);
+-      }
+-      npo += __popc(m);
+-    }
+-    nreal = wsum_i(nreal);
+-    if (lane == 0) { S.npo = npo; S.nreal = nreal; }
+-    if (i == 0)  // the combine reads the partial-slot prefix after its griddepcontrol.wait (this grid done)
+-      for (int s = lane; s <= p.NS; s += 32) sched_area(p)[s] = S.partB[s];
++  if(tid==0){
++    const int s=blockIdx.y,seq=p.seq[s/p.HP],cs=p.min_tiles;
++    const int nc=(seq+127)>>7,T=nc+1,ka=blockIdx.x*T/cs,kb=(blockIdx.x+1)*T/cs;
++    S.segSeq[s]=seq;S.segP[s]=0;S.segP[s+1]=T;S.partB[s]=s*cs;
++    S.G=cs;S.T=T;S.npo=1;S.nreal=max(0,min(kb,nc)-ka);S.po_s[0]=s;S.po_ka[0]=ka;S.po_kb[0]=kb;
++    if(blockIdx.x==0){sched_area(p)[s]=s*cs;if(s==p.NS-1)sched_area(p)[s+1]=p.NS*cs;}
+   }
+   if(tid<32)*(uint4*)(sm+CLKPAD+24576+16*tid)=make_uint4(0x38383838,0x38383838,0x38383838,0x38383838);
+   proxy_fence();
+@@ -911,26 +925,10 @@
+   if (tid == 0) { row[1] = gtime(); row[10] = S.nreal; row[12] = S.npo; }
+   const long long c0 = clock64();
+ #endif
+-  if (warp >= 8) {
+-    producer<ST>(p, S, Ks, VR, VT, kfull, full, empty, pages);
+-#if VQ8_CLK
+-    if (tid == 256) {
+-      const unsigned long long* a = clk_area();
+-      row[6] = gtime(); row[7] = a[8]; row[8] = a[32]; row[9] = clock64() - c0; row[23] = a[52]; row[24] = a[53];
+-    }
+-#endif
+-    return;
+-  }
+-  consumer<ST>(p, S, Qs, Kn, VTn, Ks, VT, kfull, full, empty);
+-#if VQ8_CLK
+-  if (tid == 0) {
+-    const unsigned long long* a = clk_area();
+-    row[2] = a[12]; row[3] = gtime(); row[4] = a[0]; row[5] = clock64() - c0; row[14] = a[40]; row[15] = a[41];
+-    row[16] = a[42]; row[17] = a[43]; row[18] = a[44] & ~(1ull << 63);
+-    row[19] = a[48]; row[20] = a[49]; row[21] = a[50]; row[22] = a[51];
+-  }
+-  if (tid == 128) { row[11] = clk_area()[4]; row[13] = gtime(); }
+-#endif
++  if(warp>=8)producer<ST>(p,S,Ks,VR,VT,kfull,full,empty,pages);
++  else consumer<ST>(p,S,Qs,Kn,VTn,Ks,VT,kfull,full,empty);
++  __syncthreads();cluster_reduce(p,sm);
++
+ }
+ 
+ // wpr warps per output row (8 / wpr rows per CTA): merge the row's partials, RMSNorm, sigmoid gate.
+@@ -1023,30 +1021,25 @@
+ template <int ST>
+ void launch(const VP& p, cudaStream_t stream, bool pdl) {
+   constexpr int smem = smem_bytes<ST>();
++  cudaFuncSetAttribute(vq8_main<ST>,cudaFuncAttributeNonPortableClusterSizeAllowed,1);
+   cudaFuncSetAttribute(vq8_main<ST>, cudaFuncAttributeMaxDynamicSharedMemorySize, smem);
+-  cudaLaunchAttribute attr[1];
++  cudaLaunchAttribute attr[2];
++  attr[1].id=cudaLaunchAttributeClusterDimension;attr[1].val.clusterDim={static_cast<unsigned>(p.min_tiles),1,1};
+   attr[0].id = cudaLaunchAttributeProgrammaticStreamSerialization;
+   attr[0].val.programmaticStreamSerializationAllowed = 1;
+   {
+     // With pdl, the producer starts gathering the cache while the preceding kernel (the QKV
+     // projection) finishes; consumers read qkv only after griddepcontrol.wait.
+     cudaLaunchConfig_t cfg = {};
+-    cfg.gridDim = dim3(p.grid);
++    cfg.gridDim = dim3(p.min_tiles,p.NS);
+     cfg.blockDim = dim3(384);
+     cfg.dynamicSmemBytes = smem;
+     cfg.stream = stream;
+     cfg.attrs = attr;
+-    cfg.numAttrs = pdl ? 1 : 0;
++    cfg.numAttrs=2;
+     cudaLaunchKernelEx(&cfg, vq8_main<ST>, p);
+   }
+-  cudaLaunchConfig_t cfg = {};
+-  cfg.gridDim = dim3(2 * p.L * p.wpr, p.NS);
+-  cfg.blockDim = dim3(256);
+-  cfg.dynamicSmemBytes = 0;
+-  cfg.stream = stream;
+-  cfg.attrs = attr;
+-  cfg.numAttrs = 1;
+-  cudaLaunchKernelEx(&cfg, vq8_combine, p);
++
+ }
+ 
+ template <int ST>
+@@ -1054,6 +1047,7 @@
+   cudaFuncAttributes a;
+   cudaFuncGetAttributes(&a, vq8_main<ST>);
+   constexpr int smem = smem_bytes<ST>();
++  cudaFuncSetAttribute(vq8_main<ST>,cudaFuncAttributeNonPortableClusterSizeAllowed,1);
+   cudaFuncSetAttribute(vq8_main<ST>, cudaFuncAttributeMaxDynamicSharedMemorySize, smem);
+   int active = 0;
+   cudaOccupancyMaxActiveBlocksPerMultiprocessor(&active, vq8_main<ST>, 384, smem);

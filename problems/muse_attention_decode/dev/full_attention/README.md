@@ -1,5 +1,15 @@
 # P5b full attention and S15 audits
 
+## Current S19 FA3/parallel merge handoff
+
+Native9dc1159a076b4e6b:928TASK,8freshseeds. v16S .890066 [.878445,.901687],
+v1F .888090 [.875082,.901098]; v16F/v32F row-merge points .992111/.997763.
+Actual two FA3 calls5->3 launches; v1 sliding already native1launch, preserved.
+[Exact S19 patches, every arm CI/SE and P4 handoff](chain/README.md).
+Combined patch5f18b0a5/source dbeeb847; P4 confirms held-out whole-layer G0.
+Fixed4/8CTA DSM forms lose. No further batch queued.
+
+
 Full decode16/32 and verify16/32 remain active. Exact S15 base is `60254883`.
 P5 owns sliding attention. This lane owns full attention at all six loads under the12:55KST roof-gap brief; it does not edit P5 files.
 
