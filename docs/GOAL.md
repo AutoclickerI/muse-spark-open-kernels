@@ -9,8 +9,8 @@ overall score is max(decode layer, a weighted component sum), and the layer wins
 
 ## Target
 Decode layer 1.8379x, 90th of 707 (`runs/boards/20261026T033522Z`, 10-26 12:35 KST); 1st is
-2.3601x, up 3.3% in a day, so we size for ~2.6x at the close (estimate). Gap 1.28x now, ~1.41x at 2.6x:
-60-85% of our time above the stage roofs. PLAN "Levers" sizes every lever against it.
+2.3601x, up 3.3% in a day, so we size for ~2.6x at the close (estimate). Gap 1.28x now, ~1.41x at 2.6x
+(22-29% less time per layer): removing 60-85% of our time above the stage roofs (PLAN "Levers").
 
 ## Subgoals (ranked)
 

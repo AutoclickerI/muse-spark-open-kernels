@@ -564,9 +564,45 @@ official screens,1729 captured checks and1380 source-bound protocol checks pass;
 now requires BF16 N16/32/64. The old checker incorrectly assumed the missing retirement join;
 negative witnesses now reject it. R5 checker now captures immediately per plan to preserve its
 RS/SS mode;1036 checks pass again, and the actual sent b610039e payload already did this.
-No native R6 gain is claimed. Its first oversized wrapper was rejected before a job; retry
+R6 native pairs are recorded below. Its first oversized wrapper was rejected before a job; retry
 uses the H200-gated round2 host prefix, unchanged payload,275130-byte wrapper. Evidence and
 current model: `problems/muse_moe_w4a16/dev/mixed_wgmma/branches/review/` and `round6/`.
+
+P3b R6 retirement/N16 repair and bounded-token receipt (ratio/S14, M128 / M256):
+
+| Recipe | Ratio | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Safe full-width CTA2S3 |1.2196 /1.1629|Both consumers join X retirement; valid TASK, oneCTA/SM retained|Bounded token width with lower accumulator pressure|`b433947196f94ef4`|
+| Safe compact STATIC |1.5266 /1.4609|Native BF16 N16 present and retired shared-X ring; valid loss|Other expert-major ownership; original missing math stays unmeasured|`b433947196f94ef4`|
+| Safe compact QUEUE |1.5463 /1.4749|One ticket per expert/channel tile, correct N16 and ring; valid loss|Queue granularity and lighter dependency protocols; static loses too, so atomics alone are not isolated|`b433947196f94ef4`|
+| Safe compact QUEUE_S3 |1.2587 /1.2428|Deeper ring helps this image, still a valid loss|A cheaper bounded-width schedule|`b433947196f94ef4`|
+| CHUNK64 S3, adjacent-output WGs share X |1.0165 /**.9448**|128regs,76800B ring, native2CTAs/SM; nominateM256 point gain|Whole-layer overlap and held-out six-load score; no M128 point gain|`b433947196f94ef4`|
+| CHUNK64 S4, same bounded ownership |**.9791 /.9083**|181.55/233.26us vs185.92/257.34;102400B ring, native2CTAs/SM; nominatebothM point gains|P4 composition/confirmation; this net result does not isolate bytes versus occupancy or wait effects|`b433947196f94ef4`|
+
+R6 all24seeds x3/M pass TASK, worst L2/row .004134/.004756, A:A signed/absolute/max−.159/
+.429/1.712us. Original summary omitted SE; means/extrema cannot recover it. All three eligible
+arm/shape point pieces are handed toP4 with that limitation and a labelled SE bound; no
+per-load significance or A:A veto. Earlier qualified round2-5 primary S14 means are all>1,
+so no older verdict changes. Exact root-applicable S15 patches and normal/forced whole-layer
+screens: `branches/s15_review/P4_HANDOFF.json`; fresh S15 follow-up retains seed means/SE.
+
+Attribution correction:182/256us is whole MoE, not heavy. Stage3 fixed isolated S14 heavy
+W13/W2=43.52/34.94 and80.46/47.86us, light81.17/49.74 and71.14/44.14. Neither isolated sums
+nor different-input means are an additive critical path. S15's NT1 completion chain overlaps
+other MoE work; actual individual wait/decode/epilogue clocks are not retained. Native O3
+S15 KT128 loop counts188 total instructions,116.25 integer/address and32HMUL2 per thread;
+static counts do not identify stall time. Full evidence and each rebuild's measured cost:
+`branches/s15_review/ATTRIBUTION.md`. Withdraw free-hidden-residual and arbitrary queue credits.
+
+New S15 premises confirmed: heavy W2 follows the entire W13 grid on one stream but reads its
+own expert/32-token ACT block; there is no heavy `done[e]` counter. READY adds128 tile
+publications/block with all-writer fence/join and consumer acquire; matched sequential grid
+control isolates capacity. PACK5 preserves the exact wide/interleaved code bank, reverses
+PERMW only for byte coding and reconstructs it in timed decode. Its full805306368 code bytes
+and100663296 scale bytes prove exact,4.05816% net saving. Native PACK5 stage image188→309.75
+instructions includes alternative raw/compressed paths; zero spills,103/104regs. P3a's fresh
+PACK5 losses are an adverse prior, not proof of this different heavy path. The two-base37→406
+recipe is dropped. New arms remain unmeasured until their own receipt.
 
 ## Attention
 
@@ -807,6 +843,76 @@ Recipe ratios are candidate/control (lower is faster), except the explicitly lab
 | P10 pool T32 pool_router w1k4s4vec | 2.20588 [2.18129,2.23067]; AA max 0.02163 | NF weights-on-M warp MMA, fused N4608 route/norm; parallel sparse expansion; S4 DSM | loss; closes only this reader/structure combination, not lossless coding | bd3f8fc778ca4832 |
 | P10 all sparse batch | unmeasured: failed or incomplete control/gate | No recipe loss or promotion inferred | No LAB_BEGIN marker or comparison rows retained in receipt; no lab result can be inferred from host score. | 936dd5d5b1614711 |
 | P10 all sparse batch | unmeasured: failed or incomplete control/gate | No recipe loss or promotion inferred | LAB_ERROR RuntimeError: sparse O32 WGMMA 1;     if rc:raise RuntimeError('sparse O32 WGMMA '+str(rc)); RuntimeError: sparse O32 WGMMA 1; LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts) | 81592e51063b4c26 |
+| P10 all-role partial batch | 69 complete cells measured; failed O32 and later cells unmeasured | Per-cell rows are emitted only after all eight seed/control gates complete | O32 host attribute and map calls succeeded; kernel launch returned30001. Removing the zero map did not fix it. No extra launch repair is justified by the established coding losses. | 50a4af4e637f4058 |
+| P10 all T1 gate B | 26.60810 [26.21930,27.08120]; AA max 0.03370 | Scalar point decoder in gate GEMV; original last-split wait | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T1 o B | 2.90920 [2.83110,2.98880]; AA max 0.07580 | Sparse words reconstructed before existing NF decoder/MMA | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T1 pool_router B | 2.86810 [2.81340,2.92630]; AA max 0.02680 | Sparse words reconstructed in current CD ring | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T1 pooler B | 9.06080 [8.86930,9.25620]; AA max 0.03510 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T1 qkv_gate B | 2.50100 [2.48280,2.55260]; AA max 0.02050 | Sparse words reconstructed in current CD ring | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T1 router_hi B | 20.64220 [20.42860,21.29940]; AA max 0.03500 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T1 router_lo B | 20.43550 [19.71580,20.91490]; AA max 0.02620 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T1 router_sum B | 20.72980 [20.48910,21.00000]; AA max 0.02760 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T1 unpooler B | 9.27210 [9.16230,9.56670]; AA max 0.05990 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T8 gate B | 24.90680 [23.61240,25.44240]; AA max 0.05180 | Scalar point decoder in gate GEMV; original last-split wait | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T8 o B | 3.19180 [3.06180,3.27540]; AA max 0.04210 | Sparse words reconstructed before existing NF decoder/MMA | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T8 pool_router B | 13.07550 [12.75410,13.34080]; AA max 0.04670 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T8 pooler B | 8.75220 [8.61960,8.93150]; AA max 0.02430 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T8 qkv_gate B | 10.63530 [10.24080,10.77040]; AA max 0.03530 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T8 router_hi B | 19.94750 [19.22410,20.40950]; AA max 0.03780 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T8 router_lo B | 20.44040 [19.75140,20.78130]; AA max 0.08550 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T8 router_sum B | 19.48840 [18.88210,19.68890]; AA max 0.02880 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T8 unpooler B | 9.16220 [8.96610,9.56920]; AA max 0.05110 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T16 gate B | 25.54850 [24.65170,26.21180]; AA max 0.04490 | Scalar point decoder in gate GEMV; original last-split wait | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T16 o B | 2.76520 [2.68160,2.92520]; AA max 0.03420 | Sparse words reconstructed before existing NF decoder/MMA | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T16 pool_router B | 13.63170 [13.28120,13.86780]; AA max 0.02090 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T16 pooler B | 8.84130 [8.54170,9.12400]; AA max 0.03760 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T16 qkv3 B | 10.32000 [9.71410,10.44220]; AA max 0.05050 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T16 qkv_gate B | 10.88400 [10.61950,10.97210]; AA max 0.03540 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T16 router_hi B | 19.81080 [18.70830,20.00740]; AA max 0.07410 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T16 router_lo B | 19.75850 [19.41130,20.11250]; AA max 0.06900 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T16 router_sum B | 19.78000 [19.38260,20.14220]; AA max 0.02990 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T16 unpooler B | 2.50500 [2.46070,2.58460]; AA max 0.07040 | Sparse words reconstructed before existing NF decoder/MMA | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T32 gate B | 18.23010 [17.79030,18.65070]; AA max 0.05070 | Scalar point decoder in gate GEMV; original last-split wait | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T32 pool_router B | 10.79200 [10.38930,10.91290]; AA max 0.03240 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T32 pooler B | 10.28820 [10.13470,10.50640]; AA max 0.03450 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T32 router_hi B | 14.41820 [13.96370,14.66310]; AA max 0.03400 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T32 router_lo B | 14.47040 [14.31590,14.68740]; AA max 0.04320 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T32 router_sum B | 14.22070 [13.99040,14.64010]; AA max 0.02700 | Scalar point decoder in current balanced/bal2/GEMV loop | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 gate B | 2.50920 [2.48920,2.52220]; AA max 0.02490 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 gate C | 20.75450 [20.61150,20.94190]; AA max 0.02490 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 o B | 5.44870 [4.98970,5.59690]; AA max 0.08910 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T128 o C | 21.51480 [19.74290,21.95730]; AA max 0.08910 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T128 pool_router B | 6.38800 [6.29950,6.48250]; AA max 0.01890 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T128 pool_router C | 17.45140 [17.23170,17.69570]; AA max 0.01890 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T128 pooler B | 5.83370 [5.65500,5.86870]; AA max 0.03610 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 pooler C | 17.74020 [17.20730,17.87800]; AA max 0.03610 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 router_hi B | 2.21570 [2.16630,2.26430]; AA max 0.04670 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 router_hi C | 55.06590 [53.22720,55.49680]; AA max 0.04670 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 router_lo B | 2.21980 [2.16100,2.23720]; AA max 0.04940 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 router_lo C | 54.83800 [53.66010,56.25470]; AA max 0.04940 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 router_sum B | 2.02930 [1.99240,2.08070]; AA max 0.03770 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 router_sum C | 51.33830 [50.30280,52.41680]; AA max 0.03770 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T128 unpooler B | 28.36130 [28.16790,28.63990]; AA max 0.02000 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T128 unpooler C | 18.11960 [17.92010,18.23920]; AA max 0.02000 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 gate B | 2.25200 [2.22270,2.26750]; AA max 0.01100 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 gate C | 16.16900 [15.86250,16.31500]; AA max 0.01100 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 o B | 4.60120 [4.46580,4.64250]; AA max 0.05480 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 o C | 17.87460 [17.45210,18.16810]; AA max 0.05480 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 pool_router B | 5.32650 [5.23620,5.43640]; AA max 0.02990 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 pool_router C | 24.61250 [24.12070,25.02450]; AA max 0.02990 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 pooler B | 5.40540 [5.18140,5.46340]; AA max 0.05050 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 pooler C | 15.79810 [15.22980,16.02790]; AA max 0.05050 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 qkv_gate B | 4.76050 [4.67200,4.79770]; AA max 0.03140 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 qkv_gate C | 22.29950 [21.91720,22.52690]; AA max 0.03140 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 router_hi B | 2.04560 [2.01540,2.09770]; AA max 0.02970 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 router_hi C | 43.44510 [43.04100,44.08900]; AA max 0.02970 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 router_lo B | 2.03390 [1.99670,2.04400]; AA max 0.03160 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 router_lo C | 44.43720 [43.79530,44.69100]; AA max 0.03160 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 router_sum B | 1.89750 [1.88430,1.92160]; AA max 0.01700 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 router_sum C | 42.06180 [41.60490,42.48270]; AA max 0.01700 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding; standalone diagnostic | 50a4af4e637f4058 |
+| P10 all T256 unpooler B | 6.31950 [6.02600,6.38870]; AA max 0.03170 | Timed restore plus current library; full scratch traffic included | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T256 unpooler C | 27.88580 [26.48250,28.22160]; AA max 0.03170 | Direct VDSK, timed sparse decode inside GEMM | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
+| P10 all T1 qkv3 B | 3.00870 [2.83580,3.08430]; AA max 0.05760 | Sparse words reconstructed before existing NF decoder/MMA | loss; closes only this reader/structure combination, not lossless coding | 50a4af4e637f4058 |
 | P10 native reader T1 o | scalar 2.8559; vector 1.9388; hoisted 1.7258 [1.6875,1.7769]; AA 0.0509 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
 | P10 native reader T1 pool_router | scalar 2.9181; vector 2.9461; hoisted 1.5186 [1.4856,1.5405]; AA 0.0180 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
 | P10 native reader T1 qkv3 | scalar 2.8628; vector 2.6410; hoisted 2.0212 [1.9836,2.0774]; AA 0.0307 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
@@ -964,6 +1070,16 @@ standalone wins at t1 do not establish whole-layer gains (`a645a795`, S14 reject
 
 ## Closed recipes
 
+Score-gate audit: [63 rows / 90 primary receipts](../problems/muse_decode_layer/dev/gate_audit/README.md),
+with [per-recipe verdicts and retained seed statistics](../problems/muse_decode_layer/dev/gate_audit/rejudgment.json).
+`0f74021a` B (weight hints + metadata), M (metadata), and D (prior d1-full glue) now pass the six-load
+**timing** gate: R 1.002694 [1.002068, 1.003320], 1.003169 [1.002493, 1.003846], and
+1.002841 [1.002001, 1.003683], respectively. These are nominations for current-base TASK validation and
+disjoint confirmation; the old lab's host-equivalence checks do not certify every arm against TASK.
+The all-register-preload policies still lose: R 0.885121 [0.883630, 0.886615] / 0.887139
+[0.885708, 0.888572]. Page-flight and heavy wide/adaptive shape points remain nominations where exact
+six-load seed covariance was not retained. A host-only error/ID rejection leaves a recipe unmeasured.
+
 Ratios are candidate/control time unless explicitly called speedup. Deltas/absolute pairs remain
 as measured where no ratio was recorded; no ratios have been re-derived. "Not isolated" does
 not close a family; incorrect/untimed implementations are suspect or unmeasured.
@@ -1006,13 +1122,13 @@ not close a family; incorrect/untimed implementations are suspect or unmeasured.
 | Proj skinny `mma.sync` split-K with cluster DSMEM reduce, m <= 64 | 0.991x; qkv / o 0.55-0.83x at m=1/8/32 | Split-K and cluster-reduce fixed costs | In-kernel last-CTA reduce | `03113fd3` |
 | Proj cuBLAS split-K pool/router replacing custom GEMV at small M (union) | +6.6 / 7.8 us at decode 1 S/F, +8.9 / 12.6 at decode 16, +11.2 / 17.0 at verify 1 | One extra cuBLAS kernel (22 us) + a split-K reduction (1.7 us) in the graph | cuBLAS at M >= 128, where it already runs | `215cafaf` |
 | Persistent O→boundary→pool/router, grid barriers/L2 hints | M1/8/16/32/128/256 57.7/62.7/65.3/71.2/198.9/365.6 vs 38.3/39.2/39.4/39.8/43.6/56.3 us; +21 us M1 layer | Fixed NT4 padding,132-CTA serial task trips, 3 grid barriers, 4/8x bank rereads at M128/256; no retained operand ring (static) | Tile readiness with competitive inner loops/retained operands | `87dc944b` |
-| Persistent qkv chain (`commit 9d8785c`) | Rejects at (32, 1) nondeterministically; 0.86% hidden error and changed expert IDs at (8, 8) | Implementation suspect (launch-order race) | A deterministic persistent qkv producer | local |
+| Persistent qkv chain (`commit 9d8785c`) | Host-only rejection at (32, 1) nondeterministically; 0.86% hidden difference and changed expert IDs at (8, 8) | Does not establish a TASK failure; no paired six-load receipt | Reopen with TASK and deterministic replay; timing unmeasured | local; score-gate audit |
 | Glue fused into streaming GEMVs (norms, residual, routing) | 2.3-21x cuBLAS (`5535d2f1`); every fused stage, prefix and chain 1.04-11.4x (`479aab30`) | Folding glue into skinny GEMVs costs their parallelism | Glue fused into consumers | `5535d2f1`, `479aab30` |
 | Cluster glue at t = 128 / 256 | Every cluster shape 1.02-1.28x of S6's Triton glue | Not isolated | t <= 32, where it wins ("Glue and routing") | `1365a290` |
 | Glue small-M fusion, prologue and last-CTA epilogue cells | 1.51-17.63x slower | Implementation bug: the pool grid recomputes each 8192-column norm 576 times per token; last-CTA tails serialize on 1/1/2/4 CTAs at M=1/8/16/32 | Repaired cells (next row) | `80b70f7f` |
 | Glue cooperative resident grid: one RMS/row, 8 tails/row, route-once v1 | Pool 1.40-5.67x, tail 1.16-5.91x, all 1.65-9.53x, epi 1.58-9.93x, route-once 1.02-5.53x; 12 cold cases, gates pass | Grid-wide barrier/row suspected, not isolated | Fusion without grid-wide sync | `9eeb39ba` |
 | Side-stream L2 prefetch beside the layer | Layer 0.3-16.6% slower (decode 1 sliding 123.1 -> 143.5 us); branch ~34 us | A separate launch can't run beside full-grid kernels (it overlapped attention only, never MoE) | In-kernel prefetch | `d5a90258` |
-| In-kernel PDL own-weight prefetch | d1S 115.78→115.58 us, 0.9986; roles 0.9910-1.0094 | 7/8 cases unmeasured: own 0.003 gate rejected 0.0031-0.0033 | Other cases; no family closure | `7426e17c` |
+| In-kernel PDL own-weight prefetch | d1S 115.78→115.58 us, 0.9986; roles 0.9910-1.0094 | 7/8 cases unmeasured: host-only 0.003 gate rejected 0.0031-0.0033; this is not TASK failure | Reopen immutable-weight hints under TASK; six-load R/CI unavailable | `7426e17c` |
 | M1 global per-unit DYN counter (1119 vs 95) | -1.78 +-0.48 vs-5.68 +-0.11 us; W2 wait critical 5.92→2.42, W13 end 14.5→18.5 | L2 atomic ahead of each 1-2 tile copies | Coarse assignment without per-unit atomic | `eb9e0382` |
 | Decode-once registers: NT2 203 registers/1 CTA, or W16 123 registers at M16/32 | NT2+11.8/+7.9 us, W16+19.0/+17.2 vs INC; flags 69 -4.7/-4.5 | NT2 unit 1.84x cost, 16-token register activations prevent 2 CTAs | Reuse preserving residency | `c768a8e3`,`daf0c1aa` |
 | RND/ROT two expert rounds; WPUB independent writers | RND+0.0/+6.7/+6.5 us M8/16/32; ROT+3.1/+4.2/+7.9; WPUB+1.0/+1.1/+0.4 | M32 ready 11.2→2.1 but barrier 4.3→12.7, W13 37.4→41.1 | Finer true dependencies without moved wait | `17512d86`,`3af06b40`,`4dd00540` |
@@ -1031,7 +1147,7 @@ not close a family; incorrect/untimed implementations are suspect or unmeasured.
 | Fused full-QKV+gated N128; single-head verify; d1 full specialization; FAST/VQ8 verify | Fused 1.003/1.005/0.968 vs split-gate 0.990/0.990/0.968; single-head 1.24/1.31; d1 full 1.39; FAST 1.11-1.61 | Not isolated | Split-gate/two-head designs | `c773699a`,`6d47827c`,`58d6a596`,`2f8b702d` |
 | Own Triton TMA verify GEMMs+boundary stats | Whole-layer old-boundary 1.019/1.010, stats 1.042/1.026, O-only 1.009/1.008 at v16/32 | Stats four sums 1.14-1.21, branch-only 1.03-1.06; lost pinned-Lt parity | Different GEMM/epilogue ownership | `d3666d18`,`d4cbf3ca`,`ca685be1` |
 | Last-CTA producer glue b1/route/b2; then distributed statistics version | First 1.05-1.11/1.10-1.15/1.03-1.06, all 1.12-1.21; second d1 1.158, metadata 1.177 | Late row-owner tail serializes; d1 b1 4.16→7.52, b2 7.07→13.92 us | Proven pre-wait immutable loads; full-only preloads admitted | `f21c60b0`,`15abb9c1`,`9845398b` |
-| Force all intended PDL preloads before wait | Speedup ratio 0.885; register tiles 0.887 vs hints 1.0027/metadata 1.0032 | Registers 48→150, LDGSTS 40→8 | Metadata-only confirmation pending | `8db42132`,`0f74021a` |
+| Force all intended PDL preloads before wait | Register policies R 0.885121/0.887139, upper95 <0.889; B/M/D now have lower95 >1 (audit above) | Registers 48→150, LDGSTS 40→8 closes the register recipe only | Nominate hints+metadata, metadata and d1-full glue; TASK then current-base disjoint G0 confirmation | `8db42132`,`0f74021a` |
 | Coded GEMV beyond qkv/pool at t1; all-thread cp.async; direct BF16 whole-layer | Cleanup t16/32 qkv+0.58/+1.57, pool+1.31/+3.19 us; cp.async corrected 0.9969 vs A:A; direct qkv3 off 0.981, bal2 t16 off 0.982, O 0.997 | Activation staging/waves; standalone wins disappear in layer | NF structure and denser exact codes; S15 pending | `3239a2ea`,`4de869d4`,`0441f9fc`,`740c63af` |
 
 ## Failures
