@@ -102,17 +102,12 @@ FA3 375 + GEMM 93; verify-32 sliding 798, Marlin 604.
 
 ### Our kernels on the H200
 
-Incumbent: S16 **d2b83953** (`problems/muse_decode_layer/cand_r3_best7_s16_final.py`, expanded1468be3e),
-guarded nearby on scored S16 4ca750a5; exact native checke26bc28c passes320 TASK/80 shapes,
-scored dispatch unchanged. Previous scored S16 **4ca750a5**, expandedee5fe249,
-scored1.818167x (`93c6e742`); held-out R1.002048 over preparation-corrected prior S16,
-95% CI[1.000129,1.003971],16 seeds/1536 TASK (`a8c66a6d`). A:A R1.003917 exceeds
-the apparent gain: passes the declared max-SE gate, but evidence is marginal. Prior nine-piece
-S16 **1d0c8893** scored1.824219x (`c6cc2874`) and won over S15 at R1.008291,
-95% CI[1.005790,1.010799],16 seeds/2304 TASK (`37c2879f`). Prior S15 **60254883** scored1.800345x (`9c5fc18d`); paired S15/S14 1.0549 / 1.0510 / 1.0276 / 0.9895 / 1.0100 / 1.0227 at d1 / d16 / d32 /
-v1 / v16 / v32, geomean 1.026 (`281b1383`). S14 final f1c77ce6 scored 1.742759x (`9b94c126`).
-S14 trial hosts scored 1.7174 / 1.7530 / 1.7324x (`0441f9fc`,
-`740c63af`, `2bbb626c`); only the last host is exact f1c77ce6.
+The incumbent is the newest `problems/muse_decode_layer/dev/<sN>/frozen.json` (PLAN Status). Paired whole-layer
+steps, held-out six-load R [95% CI]: S18/S17 1.004321 [1.002314, 1.006332] (`5d0282bb`, prefill host, import time);
+S17/S16 1.003310 [1.001006, 1.005620] (`da0cd64b`); S16/S15 1.008291 [1.005790, 1.010799] (`37c2879f`); S15/S14
+1.0549 / 1.0510 / 1.0276 / 0.9895 / 1.0100 / 1.0227 at d1 / d16 / d32 / v1 / v16 / v32, geomean 1.026 (`281b1383`).
+Scored: S18 1.848375x (`28b5c189`), S17 1.837887x (`5f35323a`), S16 1.824219x (`c6cc2874`), S15 1.800345x
+(`9c5fc18d`), S14 1.742759x (`9b94c126`).
 
 Reset integration decisions (2026-10-26; stage nominations require a whole-layer held-out pair):
 

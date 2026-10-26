@@ -17,7 +17,7 @@ Each kernel problem takes 10 scored runs and 20 checks a day (live: `okc problem
 
 ```
 problems/<name>/   okc init's files (TASK.md, reference.py, baseline.py = SGLang, checks.py) and ours:
-                   muse_decode_layer/cand_r3_best7_s15_final.py (incumbent), dev/s16/ (integration),
+                   muse_decode_layer/dev/<sN>/frozen.json names the incumbent (PLAN Status); dev/<sN>/ integration,
                    dev/<lane>/ (each lane's live work; its README has the handoff and next step)
 upstream/          llms.txt, terms.pdf, the public API's JSON
 tools/             okc_run.py (every remote run, receipts), h200_lab.py (H200 labs inside a host run),

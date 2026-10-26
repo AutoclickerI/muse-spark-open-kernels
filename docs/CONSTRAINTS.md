@@ -11,7 +11,7 @@ Each rule is `[hard]` (external or protective) or `[owner]`, with its source. `l
 5. **Weights keep their precision.** [hard] Lossless repacking only (NVFP4 stays NVFP4, BF16 stays BF16). The FP32 router may run as BF16 hi + lo with FP32 accumulation. [external: llms.txt:107]
 6. **Activations and KV.** [hard] Activations stay BF16 wherever SGLang's kernel keeps them BF16; the KV cache stays FP8; queries may round to FP8 E4M3, nothing coarser. [external: llms.txt:108]
 7. **Every key.** [hard] Whole window (sliding) and whole context (full); no top-k, sparse or block-skipping attention, no skipping values by weight. [external: llms.txt:109-110]
-8. **Kernel submission.** [hard] One Python file with `kernel_fn` and `prepare` (untimed, up to 300 s), run in the image without network; anything in the image, `load_inline`/nvcc and JITs allowed; 15 minutes per run with compilation. Rejected: reading harness frames or secrets, editing loaded modules, importing the reference, starting processes, network. [external: llms.txt:88-98; TASK.md:78, 97]
+8. **Kernel submission.** [hard] One Python file with `kernel_fn` and `prepare` (untimed, up to 300 s), run in the image without network; anything in the image, `load_inline`/nvcc and JITs allowed; 15 minutes per run. Rejected: reading harness frames or secrets, editing loaded modules, importing the reference, starting processes, network. [external: llms.txt:88-98; TASK.md:78, 97]
 9. **Quotas** are enforced by the server (`okc problems`). [hard] [external: llms.txt:84, 102]
 10. **Credentials and shared machines.** [hard] Never print or commit the okc token (`~/.config/okc/config.json`); don't touch the shared Docker daemon or others' processes. [hard: protects the account and shared machines]
 
@@ -26,15 +26,15 @@ Each rule is `[hard]` (external or protective) or `[owner]`, with its source. `l
 | Rule | Case | Reading | Status |
 |---|---|---|---|
 | 2-8 | Anything else on the kernel boards (own cubin or SASS included) | Allowed when the judge accepts it and no rule explicitly bans it | allowed (R-20261023-6) |
-| 2, 5, 6 | Any reordering (fusion with intermediates kept on chip in BF16 or finer; accumulation and split-K order; scheduling) and approximate math at the allowed formats (`ex2.approx`, fast reciprocal) | Rules fix formats and work, not order | allowed (R-20261023-4) |
+| 2, 5, 6 | Any reordering (fusion with on-chip intermediates in BF16 or finer, accumulation order, scheduling) and approximate math at the allowed formats (`ex2.approx`) | Rules fix formats and work, not order | allowed (R-20261023-4) |
 | 6 | FP8 softmax probabilities in the PV MMA; FP8 K/V expanded exactly to BF16 on chip | FA3 does the first; dequantizing in kernels is fine | allowed |
 | 2, 8 | Autotuning in `prepare()` on synthetic inputs of the fixed shapes | Untimed, derives nothing from `data` | allowed (R-20261023-7) |
 | 4 | Value-dependent work inside kernels (device counters, route-driven schedules) | Rule 4 bans host-side sync and control flow | allowed |
-| 5 | Lossless re-encoding, compression, duplicate layouts and padding of the weights in `prepare()` (recoded scale bank, coded BF16 exponents), decoded in timed kernels | llms.txt:107; audit what each tensor holds at what precision, not its bytes | allowed |
+| 5 | Lossless re-encoding, compression, duplicate layouts and padding of the weights in `prepare()` (recoded scales, coded BF16 exponents), decoded in timed kernels | llms.txt:107; what each tensor holds at what precision, not its bytes | allowed |
 | 5 | NVFP4 weights or scales held in a wider format made in `prepare()` (BF16/FP16/FP8 values or their bit patterns) | Moves timed dequant into prepare | forbidden |
 | 2, 6 | Correctness | TASK.md:76-87 is the check (routing by expert membership, near ties free, any order; 3-15% relative L2), nothing stricter; promotion: GOAL G0 | allowed |
 | 2 | The unpooler's T <= 8 shortcut (TASK.md:22) | Set by the call's total T; internal chunking doesn't extend it | forbidden above T = 8 |
 | 2 | L2 persistence (access-policy windows, set-aside L2) across the per-replay flush | Defeats the cold-cache protocol | forbidden |
 | 2 | Prefetching a later stage's weights into L2 within one timed call | Nothing survives the flush | allowed |
-| 2, 8 | Lab runs: timing other kernels inside `prepare()`, or at import time on attention (`tools/h200_lab.py`) | Computes nothing the timed calls return | allowed (R-20261024-3, R-20261025-3) |
+| 2, 8 | Lab runs on any host, in `prepare()` or at import time (`tools/h200_lab.py`) | Computes nothing the timed calls return | allowed (R-20261024-3, R-20261025-3) |
 | 8 | Another team's permissively licensed public code, shipped with its notice | llms.txt:151 (the right to license it) | allowed per repo (R-20261025-2) |
