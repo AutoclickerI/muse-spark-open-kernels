@@ -1,0 +1,16 @@
+{
+  "utc": "20261026T033055Z",
+  "problem": "muse_decode_layer",
+  "mode": "check",
+  "job": "31730357bae64c9c",
+  "sha256": "28483f426fae596baf12989309b5114a6a9395efe335c5fa32c7abb0627ba2f5",
+  "file": "problems/muse_decode_layer/lab/lab_reuse_attention.py",
+  "source": "runs/muse_decode_layer/20261026T033055Z_check_31730357bae64c9c.py",
+  "git": "c5d70b1+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/full_attention/reuse/reuse_attention.py: P5b response1bab0b2d: native K-major q1 correctness passed but d16/d32 full lost1.1936/1.2434. Reclaim dead K ring as score scratch: static6144->2048B,114regs0spills,4native QGMMA64x8x32; test suspected3->2CTA occupancy drop with actual API occupancy. Same gather/split/FP16-P PV/allkeys. A/A2/oldKM/reuse12shapes8newseeds8cold,488TASK gates plus3exact layout probes; exact wrapper28483f42 normal+forced488/488 +13host2static pass after faithful N128/VDSK local stand-ins. Payload88cfa6d7. Shape points to P4; held-out G0 decides composition.",
+  "snapshot": "runs/sent/28483f426fae596b/lab_reuse_attention.py",
+  "sender": [
+    1815414
+  ],
+  "payload_sha256": "88cfa6d76750f692676169a9b351cf6d568c49b85b9a82b121693d210191057f"
+}

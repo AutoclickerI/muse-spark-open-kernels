@@ -69,3 +69,9 @@ Held-out PDL/library job60bad72bcf964453 passes1,440TASK gates and C clears
 G0:R1.006161[1.004298,1.008028],8seeds. Exact C patch71b83bcc/source2f93745e
 are in `muse_decode_layer/dev/pdl_release/confirmation/P4_HANDOFF.json`; P4
 confirms its composition with newer winners.
+
+Response to the admitted K-major loss: `reuse/` reclaims its dead K tile for
+score remapping, reducing static shared6144→2048B with114regs/zero spills.
+Normal/forced488TASK+13host+2static pass; decode check31730357bae64c9c now
+measures actual occupancy and pairs S15/A:A/old K-major/reuse. No gain inferred
+before that receipt.
