@@ -1,0 +1,172 @@
+BUILD seconds=7.3 left=116.5
+PIPE LOP3 ILP1 cap1 G/res/regs/local/shared=[132, 1, 22, 0, 117760] activeSM=132 node_us=5.856 clock_GHz=1.9490 op_warp_per_SM_cycle=1.71700 CTAcycles=9391.5
+PIPE LOP3 ILP1 cap2 G/res/regs/local/shared=[264, 2, 22, 0, 78848] activeSM=132 node_us=10.176 clock_GHz=1.9584 op_warp_per_SM_cycle=1.80922 CTAcycles=13705.0
+PIPE LOP3 ILP1 cap4 G/res/regs/local/shared=[528, 4, 22, 0, 47718] activeSM=132 node_us=18.880 clock_GHz=1.9616 op_warp_per_SM_cycle=1.85775 CTAcycles=22219.5
+PIPE LOP3 ILP1 cap8 G/res/regs/local/shared=[1056, 8, 22, 0, 26965] activeSM=132 node_us=36.352 clock_GHz=1.9658 op_warp_per_SM_cycle=1.88051 CTAcycles=26553.5
+PIPE LOP3 ILP4 cap1 G/res/regs/local/shared=[132, 1, 30, 0, 117760] activeSM=132 node_us=18.048 clock_GHz=1.9672 op_warp_per_SM_cycle=1.94233 CTAcycles=33549.0
+PIPE LOP3 ILP4 cap2 G/res/regs/local/shared=[264, 2, 30, 0, 78848] activeSM=132 node_us=34.816 clock_GHz=1.9645 op_warp_per_SM_cycle=1.96140 CTAcycles=50050.5
+PIPE LOP3 ILP4 cap4 G/res/regs/local/shared=[528, 4, 30, 0, 47718] activeSM=132 node_us=68.384 clock_GHz=1.9666 op_warp_per_SM_cycle=1.96955 CTAcycles=83159.5
+PIPE LOP3 ILP4 cap8 G/res/regs/local/shared=[1056, 8, 30, 0, 26965] activeSM=132 node_us=135.264 clock_GHz=1.9786 op_warp_per_SM_cycle=1.97249 CTAcycles=149374.5
+PIPE SHF ILP1 cap1 G/res/regs/local/shared=[132, 1, 26, 0, 117760] activeSM=132 node_us=5.696 clock_GHz=1.9498 op_warp_per_SM_cycle=1.76235 CTAcycles=9128.0
+PIPE SHF ILP1 cap2 G/res/regs/local/shared=[264, 2, 26, 0, 78848] activeSM=132 node_us=9.952 clock_GHz=1.9637 op_warp_per_SM_cycle=1.84915 CTAcycles=13449.5
+PIPE SHF ILP1 cap4 G/res/regs/local/shared=[528, 4, 26, 0, 47718] activeSM=132 node_us=18.689 clock_GHz=1.9471 op_warp_per_SM_cycle=1.89175 CTAcycles=16922.5
+PIPE SHF ILP1 cap8 G/res/regs/local/shared=[1056, 8, 26, 0, 26965] activeSM=132 node_us=36.096 clock_GHz=1.3363 op_warp_per_SM_cycle=2.77651 CTAcycles=17017.0
+PIPE SHF ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=18.016 clock_GHz=1.9607 op_warp_per_SM_cycle=1.95235 CTAcycles=33336.5
+PIPE SHF ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=34.752 clock_GHz=1.9685 op_warp_per_SM_cycle=1.96675 CTAcycles=50121.0
+PIPE SHF ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=68.191 clock_GHz=1.9757 op_warp_per_SM_cycle=1.97161 CTAcycles=83320.0
+PIPE SHF ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=135.232 clock_GHz=1.9755 op_warp_per_SM_cycle=1.97230 CTAcycles=135016.0
+PIPE PRMT ILP1 cap1 G/res/regs/local/shared=[132, 1, 26, 0, 117760] activeSM=132 node_us=5.952 clock_GHz=1.9597 op_warp_per_SM_cycle=1.67476 CTAcycles=9634.5
+PIPE PRMT ILP1 cap2 G/res/regs/local/shared=[264, 2, 26, 0, 78848] activeSM=132 node_us=10.272 clock_GHz=1.9682 op_warp_per_SM_cycle=1.78787 CTAcycles=13965.0
+PIPE PRMT ILP1 cap4 G/res/regs/local/shared=[528, 4, 26, 0, 47718] activeSM=132 node_us=19.168 clock_GHz=1.9620 op_warp_per_SM_cycle=1.84426 CTAcycles=18235.0
+PIPE PRMT ILP1 cap8 G/res/regs/local/shared=[1056, 8, 26, 0, 26965] activeSM=132 node_us=36.800 clock_GHz=1.4466 op_warp_per_SM_cycle=2.52139 CTAcycles=17785.5
+PIPE PRMT ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=17.984 clock_GHz=1.9622 op_warp_per_SM_cycle=1.95459 CTAcycles=33363.0
+PIPE PRMT ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=34.656 clock_GHz=1.9743 op_warp_per_SM_cycle=1.96463 CTAcycles=50337.5
+PIPE PRMT ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=68.640 clock_GHz=1.9666 op_warp_per_SM_cycle=1.96677 CTAcycles=83563.5
+PIPE PRMT ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=135.839 clock_GHz=1.9759 op_warp_per_SM_cycle=1.96634 CTAcycles=134961.5
+PIPE HMUL2 ILP1 cap1 G/res/regs/local/shared=[132, 1, 26, 0, 117760] activeSM=132 node_us=9.536 clock_GHz=1.9689 op_warp_per_SM_cycle=0.97030 CTAcycles=16636.0
+PIPE HMUL2 ILP1 cap2 G/res/regs/local/shared=[264, 2, 26, 0, 78848] activeSM=132 node_us=10.528 clock_GHz=1.9537 op_warp_per_SM_cycle=1.63792 CTAcycles=17122.0
+PIPE HMUL2 ILP1 cap4 G/res/regs/local/shared=[528, 4, 26, 0, 47718] activeSM=132 node_us=13.600 clock_GHz=1.9372 op_warp_per_SM_cycle=2.66967 CTAcycles=19923.0
+PIPE HMUL2 ILP1 cap8 G/res/regs/local/shared=[1056, 8, 26, 0, 26965] activeSM=132 node_us=24.160 clock_GHz=1.9347 op_warp_per_SM_cycle=2.90415 CTAcycles=24195.5
+PIPE HMUL2 ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=13.952 clock_GHz=1.9603 op_warp_per_SM_cycle=2.59883 CTAcycles=25057.0
+PIPE HMUL2 ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=23.200 clock_GHz=1.9558 op_warp_per_SM_cycle=2.99177 CTAcycles=31674.5
+PIPE HMUL2 ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=40.576 clock_GHz=1.9512 op_warp_per_SM_cycle=3.42169 CTAcycles=49915.5
+PIPE HMUL2 ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=75.680 clock_GHz=1.9541 op_warp_per_SM_cycle=3.57399 CTAcycles=82055.0
+PIPE FFMA ILP1 cap1 G/res/regs/local/shared=[132, 1, 26, 0, 117760] activeSM=132 node_us=5.760 clock_GHz=1.9589 op_warp_per_SM_cycle=1.74247 CTAcycles=9152.0
+PIPE FFMA ILP1 cap2 G/res/regs/local/shared=[264, 2, 26, 0, 78848] activeSM=132 node_us=6.368 clock_GHz=1.9308 op_warp_per_SM_cycle=3.11974 CTAcycles=9829.0
+PIPE FFMA ILP1 cap4 G/res/regs/local/shared=[528, 4, 26, 0, 47718] activeSM=132 node_us=11.552 clock_GHz=1.9418 op_warp_per_SM_cycle=3.15777 CTAcycles=10474.0
+PIPE FFMA ILP1 cap8 G/res/regs/local/shared=[1056, 8, 26, 0, 26965] activeSM=132 node_us=21.792 clock_GHz=1.9470 op_warp_per_SM_cycle=3.21675 CTAcycles=11896.5
+PIPE FFMA ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=10.016 clock_GHz=1.9384 op_warp_per_SM_cycle=3.72024 CTAcycles=17478.0
+PIPE FFMA ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=18.880 clock_GHz=1.9390 op_warp_per_SM_cycle=3.74547 CTAcycles=25940.5
+PIPE FFMA ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=36.288 clock_GHz=1.9563 op_warp_per_SM_cycle=3.77593 CTAcycles=33291.5
+PIPE FFMA ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=71.776 clock_GHz=1.9621 op_warp_per_SM_cycle=3.77163 CTAcycles=47782.5
+PIPE HMMA ILP1 cap1 G/res/regs/local/shared=[132, 1, 24, 0, 117760] activeSM=132 node_us=29.408 clock_GHz=1.7760 op_warp_per_SM_cycle=0.32284 CTAcycles=50450.0
+PIPE HMMA ILP1 cap2 G/res/regs/local/shared=[264, 2, 24, 0, 78848] activeSM=132 node_us=30.144 clock_GHz=1.7787 op_warp_per_SM_cycle=0.62849 CTAcycles=51382.0
+PIPE HMMA ILP1 cap4 G/res/regs/local/shared=[528, 4, 24, 0, 47718] activeSM=132 node_us=59.904 clock_GHz=1.7810 op_warp_per_SM_cycle=0.62294 CTAcycles=76648.0
+PIPE HMMA ILP1 cap8 G/res/regs/local/shared=[1056, 8, 24, 0, 26965] activeSM=132 node_us=118.016 clock_GHz=1.7941 op_warp_per_SM_cycle=0.62362 CTAcycles=128042.0
+PIPE HMMA ILP4 cap1 G/res/regs/local/shared=[132, 1, 39, 0, 117760] activeSM=132 node_us=56.799 clock_GHz=1.7880 op_warp_per_SM_cycle=0.65452 CTAcycles=99783.0
+PIPE HMMA ILP4 cap2 G/res/regs/local/shared=[264, 2, 39, 0, 78848] activeSM=132 node_us=111.808 clock_GHz=1.7948 op_warp_per_SM_cycle=0.65749 CTAcycles=149606.0
+PIPE HMMA ILP4 cap4 G/res/regs/local/shared=[528, 4, 39, 0, 47718] activeSM=132 node_us=221.119 clock_GHz=1.8072 op_warp_per_SM_cycle=0.65849 CTAcycles=249229.5
+PIPE HMMA ILP4 cap8 G/res/regs/local/shared=[792, 6, 39, 0, 26965] activeSM=132 node_us=330.815 clock_GHz=1.8100 op_warp_per_SM_cycle=0.65822 CTAcycles=348843.0
+PIPE LDS128 ILP1 cap1 G/res/regs/local/shared=[132, 1, 168, 0, 117760] activeSM=132 node_us=34.272 clock_GHz=1.9720 op_warp_per_SM_cycle=0.24798 CTAcycles=65875.5
+PIPE LDS128 ILP1 cap2 G/res/regs/local/shared=[132, 1, 168, 0, 78848] activeSM=132 node_us=34.336 clock_GHz=1.9727 op_warp_per_SM_cycle=0.24812 CTAcycles=65874.0
+PIPE LDS128 ILP1 cap4 G/res/regs/local/shared=[132, 1, 168, 0, 47718] activeSM=132 node_us=34.368 clock_GHz=1.9721 op_warp_per_SM_cycle=0.24797 CTAcycles=65880.0
+PIPE LDS128 ILP1 cap8 G/res/regs/local/shared=[132, 1, 168, 0, 26965] activeSM=132 node_us=34.304 clock_GHz=1.9726 op_warp_per_SM_cycle=0.24790 CTAcycles=65869.0
+PIPE LDS128 ILP4 cap1 G/res/regs/local/shared=[132, 1, 198, 0, 117760] activeSM=132 node_us=133.727 clock_GHz=1.9781 op_warp_per_SM_cycle=0.24888 CTAcycles=262217.5
+PIPE LDS128 ILP4 cap2 G/res/regs/local/shared=[132, 1, 198, 0, 78848] activeSM=132 node_us=133.695 clock_GHz=1.9798 op_warp_per_SM_cycle=0.24926 CTAcycles=262127.5
+PIPE LDS128 ILP4 cap4 G/res/regs/local/shared=[132, 1, 198, 0, 47718] activeSM=132 node_us=133.952 clock_GHz=1.9777 op_warp_per_SM_cycle=0.24893 CTAcycles=262147.0
+PIPE LDS128 ILP4 cap8 G/res/regs/local/shared=[132, 1, 198, 0, 26965] activeSM=132 node_us=133.920 clock_GHz=1.9777 op_warp_per_SM_cycle=0.24898 CTAcycles=262187.0
+PIPE LDS32 ILP1 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=9.440 clock_GHz=1.9693 op_warp_per_SM_cycle=0.97373 CTAcycles=16527.0
+PIPE LDS32 ILP1 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=17.760 clock_GHz=1.9716 op_warp_per_SM_cycle=0.98553 CTAcycles=24723.0
+PIPE LDS32 ILP1 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=34.432 clock_GHz=1.9734 op_warp_per_SM_cycle=0.99028 CTAcycles=32545.0
+PIPE LDS32 ILP1 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=67.775 clock_GHz=1.9789 op_warp_per_SM_cycle=0.99225 CTAcycles=31910.0
+PIPE LDS32 ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=34.303 clock_GHz=1.9760 op_warp_per_SM_cycle=0.99182 CTAcycles=65695.0
+PIPE LDS32 ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=67.360 clock_GHz=1.9794 op_warp_per_SM_cycle=0.99677 CTAcycles=97994.0
+PIPE LDS32 ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=133.696 clock_GHz=1.9781 op_warp_per_SM_cycle=0.99789 CTAcycles=131091.0
+PIPE LDS32 ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=266.816 clock_GHz=1.9792 op_warp_per_SM_cycle=0.99570 CTAcycles=166674.5
+PIPE LDS32_GATHER4 ILP1 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=34.240 clock_GHz=1.9800 op_warp_per_SM_cycle=0.24864 CTAcycles=65781.5
+PIPE LDS32_GATHER4 ILP1 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=67.360 clock_GHz=1.9775 op_warp_per_SM_cycle=0.24895 CTAcycles=98906.5
+PIPE LDS32_GATHER4 ILP1 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=133.823 clock_GHz=1.9784 op_warp_per_SM_cycle=0.24920 CTAcycles=132340.5
+PIPE LDS32_GATHER4 ILP1 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=266.272 clock_GHz=1.9799 op_warp_per_SM_cycle=0.24955 CTAcycles=140356.0
+PIPE LDS32_GATHER4 ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=133.791 clock_GHz=1.9800 op_warp_per_SM_cycle=0.24942 CTAcycles=262353.5
+PIPE LDS32_GATHER4 ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=266.143 clock_GHz=1.9792 op_warp_per_SM_cycle=0.24931 CTAcycles=394991.5
+PIPE LDS32_GATHER4 ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=530.975 clock_GHz=1.9800 op_warp_per_SM_cycle=0.24980 CTAcycles=632474.0
+PIPE LDS32_GATHER4 ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=1060.765 clock_GHz=1.9800 op_warp_per_SM_cycle=0.24985 CTAcycles=1014064.5
+PIPE SHFL ILP1 cap1 G/res/regs/local/shared=[132, 1, 22, 0, 117760] activeSM=132 node_us=25.984 clock_GHz=1.9790 op_warp_per_SM_cycle=0.33126 CTAcycles=49307.0
+PIPE SHFL ILP1 cap2 G/res/regs/local/shared=[264, 2, 22, 0, 78848] activeSM=132 node_us=26.112 clock_GHz=1.9762 op_warp_per_SM_cycle=0.66177 CTAcycles=49311.0
+PIPE SHFL ILP1 cap4 G/res/regs/local/shared=[528, 4, 22, 0, 47718] activeSM=132 node_us=34.656 clock_GHz=1.9699 op_warp_per_SM_cycle=0.99109 CTAcycles=65636.0
+PIPE SHFL ILP1 cap8 G/res/regs/local/shared=[1056, 8, 22, 0, 26965] activeSM=132 node_us=84.383 clock_GHz=1.9734 op_warp_per_SM_cycle=0.79649 CTAcycles=114795.5
+PIPE SHFL ILP4 cap1 G/res/regs/local/shared=[132, 1, 30, 0, 117760] activeSM=132 node_us=34.336 clock_GHz=1.9674 op_warp_per_SM_cycle=0.99423 CTAcycles=65724.0
+PIPE SHFL ILP4 cap2 G/res/regs/local/shared=[264, 2, 30, 0, 78848] activeSM=132 node_us=68.256 clock_GHz=1.9770 op_warp_per_SM_cycle=0.98424 CTAcycles=127395.0
+PIPE SHFL ILP4 cap4 G/res/regs/local/shared=[528, 4, 30, 0, 47718] activeSM=132 node_us=134.560 clock_GHz=1.9759 op_warp_per_SM_cycle=0.99303 CTAcycles=151615.5
+PIPE SHFL ILP4 cap8 G/res/regs/local/shared=[1056, 8, 30, 0, 26965] activeSM=132 node_us=266.847 clock_GHz=1.9798 op_warp_per_SM_cycle=0.99633 CTAcycles=215122.5
+PIPE MUFU ILP1 cap1 G/res/regs/local/shared=[132, 1, 26, 0, 117760] activeSM=132 node_us=32.479 clock_GHz=1.9718 op_warp_per_SM_cycle=0.26281 CTAcycles=62152.0
+PIPE MUFU ILP1 cap2 G/res/regs/local/shared=[264, 2, 26, 0, 78848] activeSM=132 node_us=35.072 clock_GHz=1.9780 op_warp_per_SM_cycle=0.48565 CTAcycles=66533.5
+PIPE MUFU ILP1 cap4 G/res/regs/local/shared=[528, 4, 26, 0, 47718] activeSM=132 node_us=69.888 clock_GHz=1.9763 op_warp_per_SM_cycle=0.48086 CTAcycles=99232.0
+PIPE MUFU ILP1 cap8 G/res/regs/local/shared=[1056, 8, 26, 0, 26965] activeSM=132 node_us=138.400 clock_GHz=1.9781 op_warp_per_SM_cycle=0.48190 CTAcycles=165647.5
+PIPE MUFU ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=68.288 clock_GHz=1.9737 op_warp_per_SM_cycle=0.49062 CTAcycles=132776.0
+PIPE MUFU ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=134.783 clock_GHz=1.9782 op_warp_per_SM_cycle=0.49476 CTAcycles=202486.0
+PIPE MUFU ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=268.031 clock_GHz=1.9773 op_warp_per_SM_cycle=0.49606 CTAcycles=337573.0
+PIPE MUFU ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=533.630 clock_GHz=1.9794 op_warp_per_SM_cycle=0.49719 CTAcycles=601588.5
+PIPE LDS_ADDR_CHAIN ILP1 cap1 G/res/regs/local/shared=[132, 1, 26, 0, 117760] activeSM=132 node_us=25.088 clock_GHz=1.9808 op_warp_per_SM_cycle=0.34511 CTAcycles=47354.0
+PIPE LDS_ADDR_CHAIN ILP1 cap2 G/res/regs/local/shared=[264, 2, 26, 0, 78848] activeSM=132 node_us=25.215 clock_GHz=1.9793 op_warp_per_SM_cycle=0.68980 CTAcycles=47328.5
+PIPE LDS_ADDR_CHAIN ILP1 cap4 G/res/regs/local/shared=[528, 4, 26, 0, 47718] activeSM=132 node_us=34.688 clock_GHz=1.9783 op_warp_per_SM_cycle=0.98782 CTAcycles=65586.0
+PIPE LDS_ADDR_CHAIN ILP1 cap8 G/res/regs/local/shared=[1056, 8, 26, 0, 26965] activeSM=132 node_us=80.096 clock_GHz=1.9792 op_warp_per_SM_cycle=0.85944 CTAcycles=122051.0
+PIPE LDS_ADDR_CHAIN ILP4 cap1 G/res/regs/local/shared=[132, 1, 32, 0, 117760] activeSM=132 node_us=34.368 clock_GHz=1.9751 op_warp_per_SM_cycle=0.99608 CTAcycles=65680.5
+PIPE LDS_ADDR_CHAIN ILP4 cap2 G/res/regs/local/shared=[264, 2, 32, 0, 78848] activeSM=132 node_us=68.191 clock_GHz=1.9774 op_warp_per_SM_cycle=0.98590 CTAcycles=130236.5
+PIPE LDS_ADDR_CHAIN ILP4 cap4 G/res/regs/local/shared=[528, 4, 32, 0, 47718] activeSM=132 node_us=134.240 clock_GHz=1.9801 op_warp_per_SM_cycle=0.99497 CTAcycles=140754.0
+PIPE LDS_ADDR_CHAIN ILP4 cap8 G/res/regs/local/shared=[1056, 8, 32, 0, 26965] activeSM=132 node_us=266.431 clock_GHz=1.9797 op_warp_per_SM_cycle=0.99785 CTAcycles=207367.0
+ROUTE M8 unique_bytes=169869312 repeated_block_factor=1.00000 counts=[0, 0, 0, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0]
+ROUTE M16 unique_bytes=198180864 repeated_block_factor=1.14286 counts=[0, 0, 0, 3, 0, 2, 0, 0, 0, 0, 0, 3, 0, 0, 3, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0]
+ROUTE M32 unique_bytes=254803968 repeated_block_factor=1.22222 counts=[0, 0, 0, 5, 0, 3, 0, 0, 0, 0, 0, 4, 0, 0, 6, 18, 0, 0, 0, 0, 4, 0, 1, 0, 0, 0, 5, 1, 0, 0, 0, 0]
+WORK M8 COPY_S1 cap1 n=4 node_us=47.872 packed_TBs=3.841 clock_GHz=1.9729 CTAcycles=86297.8 exposed_wait_cycles_per_tile=1945.86 G/res/regs/local/shared/bytes/warps=[132, 1, 26, 0, 117760, 36864, 8]
+WORK M8 COPY_S1 cap2 n=4 node_us=43.152 packed_TBs=4.262 clock_GHz=1.9737 CTAcycles=78169.9 exposed_wait_cycles_per_tile=3669.90 G/res/regs/local/shared/bytes/warps=[264, 2, 26, 0, 78848, 36864, 8]
+WORK M8 COPY_S1 cap4 n=4 node_us=48.632 packed_TBs=3.791 clock_GHz=1.9742 CTAcycles=76240.8 exposed_wait_cycles_per_tile=7806.41 G/res/regs/local/shared/bytes/warps=[528, 4, 26, 0, 47718, 36864, 8]
+WORK M8 COPY_S2 cap1 n=4 node_us=42.432 packed_TBs=4.333 clock_GHz=1.9698 CTAcycles=79261.0 exposed_wait_cycles_per_tile=1662.80 G/res/regs/local/shared/bytes/warps=[132, 1, 27, 0, 117760, 36864, 8]
+WORK M8 COPY_S2 cap2 n=4 node_us=49.464 packed_TBs=3.720 clock_GHz=1.9739 CTAcycles=77230.9 exposed_wait_cycles_per_tile=3601.29 G/res/regs/local/shared/bytes/warps=[264, 2, 27, 0, 78848, 36864, 8]
+WORK M8 COPY_S2 cap4 n=4 node_us=49.600 packed_TBs=3.707 clock_GHz=1.9703 CTAcycles=78493.4 exposed_wait_cycles_per_tile=5520.19 G/res/regs/local/shared/bytes/warps=[396, 3, 27, 0, 73760, 36864, 8]
+WORK M8 COPY_S4 cap2 n=4 node_us=48.600 packed_TBs=3.795 clock_GHz=1.9722 CTAcycles=76307.5 exposed_wait_cycles_per_tile=1517.52 G/res/regs/local/shared/bytes/warps=[132, 1, 27, 0, 147520, 36864, 8]
+WORK M8 MATH_HBM cap2 n=4 node_us=47.144 packed_TBs=3.896 clock_GHz=1.7760 CTAcycles=72072.0 exposed_wait_cycles_per_tile=876.42 G/res/regs/local/shared/bytes/warps=[264, 2, 109, 0, 78848, 36864, 8]
+WORK M8 MATH_L2 cap2 n=4 node_us=41.048 packed_TBs=4.476 clock_GHz=1.7648 CTAcycles=57072.5 exposed_wait_cycles_per_tile=175.46 G/res/regs/local/shared/bytes/warps=[264, 2, 117, 0, 78848, 36864, 8]
+WORK M8 MATH_SMEM_W16 cap1 n=4 node_us=39.464 packed_TBs=4.676 clock_GHz=1.7714 CTAcycles=63870.9 exposed_wait_cycles_per_tile=43.15 G/res/regs/local/shared/bytes/warps=[132, 1, 56, 0, 117760, 36864, 16]
+WORK M8 MATH_SMEM_W16 cap2 n=4 node_us=37.968 packed_TBs=4.734 clock_GHz=1.7471 CTAcycles=45621.8 exposed_wait_cycles_per_tile=85.07 G/res/regs/local/shared/bytes/warps=[264, 2, 56, 0, 78848, 36864, 16]
+WORK M8 MATH_SMEM_W16 cap4 n=4 node_us=38.072 packed_TBs=4.720 clock_GHz=1.7471 CTAcycles=45598.9 exposed_wait_cycles_per_tile=85.74 G/res/regs/local/shared/bytes/warps=[264, 2, 56, 0, 53264, 36864, 16]
+WORK M8 MATH_SMEM_W4 cap1 n=4 node_us=50.680 packed_TBs=3.632 clock_GHz=1.7827 CTAcycles=86071.1 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 107, 0, 117760, 18432, 4]
+WORK M8 MATH_SMEM_W4 cap2 n=4 node_us=40.656 packed_TBs=4.538 clock_GHz=1.7648 CTAcycles=61795.6 exposed_wait_cycles_per_tile=2.73 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 78848, 18432, 4]
+WORK M8 MATH_SMEM_W4 cap4 n=4 node_us=38.280 packed_TBs=4.693 clock_GHz=1.7554 CTAcycles=47747.0 exposed_wait_cycles_per_tile=2.71 G/res/regs/local/shared/bytes/warps=[528, 4, 107, 0, 47718, 18432, 4]
+WORK M8 MATH_SMEM_W8 cap1 n=4 node_us=39.848 packed_TBs=4.632 clock_GHz=1.7700 CTAcycles=66303.5 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 107, 0, 117760, 36864, 8]
+WORK M8 MATH_SMEM_W8 cap2 n=4 node_us=37.280 packed_TBs=4.819 clock_GHz=1.7668 CTAcycles=50073.0 exposed_wait_cycles_per_tile=2.36 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 78848, 36864, 8]
+WORK M8 MATH_SMEM_W8 cap4 n=4 node_us=37.416 packed_TBs=4.801 clock_GHz=1.7607 CTAcycles=50068.6 exposed_wait_cycles_per_tile=2.36 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 47718, 36864, 8]
+WORK M8 MMA_ILP2 cap2 n=4 node_us=36.904 packed_TBs=4.869 clock_GHz=1.7516 CTAcycles=47640.9 exposed_wait_cycles_per_tile=2.44 G/res/regs/local/shared/bytes/warps=[264, 2, 117, 0, 78848, 36864, 8]
+WORK M8 WEIGHT_LDS cap2 n=4 node_us=49.256 packed_TBs=3.748 clock_GHz=1.9695 CTAcycles=77492.1 exposed_wait_cycles_per_tile=3406.73 G/res/regs/local/shared/bytes/warps=[264, 2, 54, 0, 78848, 36864, 8]
+WORK M16 B_ONLY_NB2 cap1 n=4 node_us=75.192 packed_TBs=2.644 clock_GHz=1.7966 CTAcycles=126283.2 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 168, 0, 117760, 36864, 8]
+WORK M16 COPY_S1 cap1 n=4 node_us=50.968 packed_TBs=3.887 clock_GHz=1.9784 CTAcycles=93404.8 exposed_wait_cycles_per_tile=1967.45 G/res/regs/local/shared/bytes/warps=[132, 1, 26, 0, 117760, 36864, 8]
+WORK M16 COPY_S1 cap2 n=4 node_us=45.288 packed_TBs=4.414 clock_GHz=1.9750 CTAcycles=75404.9 exposed_wait_cycles_per_tile=3314.75 G/res/regs/local/shared/bytes/warps=[264, 2, 26, 0, 78848, 36864, 8]
+WORK M16 COPY_S1 cap4 n=4 node_us=47.472 packed_TBs=4.186 clock_GHz=1.9774 CTAcycles=73039.5 exposed_wait_cycles_per_tile=6949.63 G/res/regs/local/shared/bytes/warps=[528, 4, 26, 0, 47718, 36864, 8]
+WORK M16 COPY_S2 cap1 n=4 node_us=45.784 packed_TBs=4.322 clock_GHz=1.9754 CTAcycles=84907.6 exposed_wait_cycles_per_tile=1649.61 G/res/regs/local/shared/bytes/warps=[132, 1, 27, 0, 117760, 36864, 8]
+WORK M16 COPY_S2 cap2 n=4 node_us=48.536 packed_TBs=4.105 clock_GHz=1.9776 CTAcycles=76674.4 exposed_wait_cycles_per_tile=3319.68 G/res/regs/local/shared/bytes/warps=[264, 2, 27, 0, 78848, 36864, 8]
+WORK M16 COPY_S2 cap4 n=4 node_us=51.784 packed_TBs=3.836 clock_GHz=1.9792 CTAcycles=82336.9 exposed_wait_cycles_per_tile=5474.19 G/res/regs/local/shared/bytes/warps=[396, 3, 27, 0, 73760, 36864, 8]
+WORK M16 COPY_S4 cap2 n=4 node_us=52.072 packed_TBs=3.808 clock_GHz=1.9766 CTAcycles=83068.0 exposed_wait_cycles_per_tile=1549.08 G/res/regs/local/shared/bytes/warps=[132, 1, 27, 0, 147520, 36864, 8]
+WORK M16 GATHER_NB2 cap1 n=4 node_us=72.600 packed_TBs=2.745 clock_GHz=1.7873 CTAcycles=122397.0 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 148, 0, 117760, 36864, 8]
+WORK M16 MATH_HBM cap2 n=4 node_us=46.776 packed_TBs=4.228 clock_GHz=1.7858 CTAcycles=68085.1 exposed_wait_cycles_per_tile=396.12 G/res/regs/local/shared/bytes/warps=[264, 2, 109, 0, 78848, 36864, 8]
+WORK M16 MATH_L2 cap2 n=4 node_us=44.008 packed_TBs=4.483 clock_GHz=1.7755 CTAcycles=61141.2 exposed_wait_cycles_per_tile=169.15 G/res/regs/local/shared/bytes/warps=[264, 2, 117, 0, 78848, 36864, 8]
+WORK M16 MATH_SMEM_W16 cap1 n=4 node_us=41.944 packed_TBs=4.741 clock_GHz=1.7748 CTAcycles=68862.4 exposed_wait_cycles_per_tile=43.22 G/res/regs/local/shared/bytes/warps=[132, 1, 56, 0, 117760, 36864, 16]
+WORK M16 MATH_SMEM_W16 cap2 n=4 node_us=40.912 packed_TBs=4.804 clock_GHz=1.7569 CTAcycles=50022.1 exposed_wait_cycles_per_tile=87.01 G/res/regs/local/shared/bytes/warps=[264, 2, 56, 0, 78848, 36864, 16]
+WORK M16 MATH_SMEM_W16 cap4 n=4 node_us=40.944 packed_TBs=4.800 clock_GHz=1.7555 CTAcycles=49974.8 exposed_wait_cycles_per_tile=86.35 G/res/regs/local/shared/bytes/warps=[264, 2, 56, 0, 53264, 36864, 16]
+WORK M16 MATH_SMEM_W4 cap1 n=4 node_us=53.744 packed_TBs=3.670 clock_GHz=1.7946 CTAcycles=92201.2 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 107, 0, 117760, 18432, 4]
+WORK M16 MATH_SMEM_W4 cap2 n=4 node_us=42.696 packed_TBs=4.660 clock_GHz=1.7823 CTAcycles=66476.4 exposed_wait_cycles_per_tile=2.73 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 78848, 18432, 4]
+WORK M16 MATH_SMEM_W4 cap4 n=4 node_us=41.160 packed_TBs=4.774 clock_GHz=1.7694 CTAcycles=52048.4 exposed_wait_cycles_per_tile=2.72 G/res/regs/local/shared/bytes/warps=[528, 4, 107, 0, 47718, 18432, 4]
+WORK M16 MATH_SMEM_W8 cap1 n=4 node_us=42.488 packed_TBs=4.680 clock_GHz=1.7814 CTAcycles=71434.6 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 107, 0, 117760, 36864, 8]
+WORK M16 MATH_SMEM_W8 cap2 n=4 node_us=40.104 packed_TBs=4.901 clock_GHz=1.7741 CTAcycles=54713.2 exposed_wait_cycles_per_tile=2.35 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 78848, 36864, 8]
+WORK M16 MATH_SMEM_W8 cap4 n=4 node_us=40.256 packed_TBs=4.881 clock_GHz=1.7690 CTAcycles=54664.9 exposed_wait_cycles_per_tile=2.36 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 47718, 36864, 8]
+WORK M16 MMA_ILP2 cap2 n=4 node_us=39.360 packed_TBs=4.992 clock_GHz=1.7757 CTAcycles=52022.1 exposed_wait_cycles_per_tile=2.45 G/res/regs/local/shared/bytes/warps=[264, 2, 117, 0, 78848, 36864, 8]
+WORK M16 WEIGHT_LDS cap2 n=4 node_us=48.504 packed_TBs=4.101 clock_GHz=1.9768 CTAcycles=75568.6 exposed_wait_cycles_per_tile=3004.75 G/res/regs/local/shared/bytes/warps=[264, 2, 54, 0, 78848, 36864, 8]
+WORK M32 B_ONLY_NB2 cap1 n=4 node_us=109.776 packed_TBs=2.770 clock_GHz=1.7879 CTAcycles=188417.6 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 168, 0, 117760, 36864, 8]
+WORK M32 B_ONLY_NB4 cap1 n=4 node_us=256.144 packed_TBs=1.188 clock_GHz=1.7996 CTAcycles=436997.9 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 218, 0, 117760, 36864, 8]
+WORK M32 COPY_S1 cap1 n=4 node_us=71.104 packed_TBs=4.274 clock_GHz=1.9751 CTAcycles=128732.0 exposed_wait_cycles_per_tile=1732.35 G/res/regs/local/shared/bytes/warps=[132, 1, 26, 0, 117760, 36864, 8]
+WORK M32 COPY_S1 cap2 n=4 node_us=55.328 packed_TBs=5.573 clock_GHz=1.9766 CTAcycles=97576.0 exposed_wait_cycles_per_tile=2737.69 G/res/regs/local/shared/bytes/warps=[264, 2, 26, 0, 78848, 36864, 8]
+WORK M32 COPY_S1 cap4 n=4 node_us=61.856 packed_TBs=4.935 clock_GHz=1.9753 CTAcycles=96223.0 exposed_wait_cycles_per_tile=5964.27 G/res/regs/local/shared/bytes/warps=[528, 4, 26, 0, 47718, 36864, 8]
+WORK M32 COPY_S2 cap1 n=4 node_us=66.592 packed_TBs=4.567 clock_GHz=1.9761 CTAcycles=115434.5 exposed_wait_cycles_per_tile=1448.17 G/res/regs/local/shared/bytes/warps=[132, 1, 27, 0, 117760, 36864, 8]
+WORK M32 COPY_S2 cap2 n=4 node_us=62.520 packed_TBs=4.899 clock_GHz=1.9753 CTAcycles=100027.8 exposed_wait_cycles_per_tile=2754.49 G/res/regs/local/shared/bytes/warps=[264, 2, 27, 0, 78848, 36864, 8]
+WORK M32 COPY_S2 cap4 n=4 node_us=72.520 packed_TBs=4.198 clock_GHz=1.9745 CTAcycles=110648.1 exposed_wait_cycles_per_tile=4898.87 G/res/regs/local/shared/bytes/warps=[396, 3, 27, 0, 73760, 36864, 8]
+WORK M32 COPY_S4 cap2 n=4 node_us=71.776 packed_TBs=4.232 clock_GHz=1.9749 CTAcycles=120069.2 exposed_wait_cycles_per_tile=1338.88 G/res/regs/local/shared/bytes/warps=[132, 1, 27, 0, 147520, 36864, 8]
+WORK M32 GATHER_NB2 cap1 n=4 node_us=110.032 packed_TBs=2.765 clock_GHz=1.7748 CTAcycles=186251.1 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 148, 0, 117760, 36864, 8]
+WORK M32 GATHER_NB4 cap1 n=4 node_us=217.129 packed_TBs=1.399 clock_GHz=1.7739 CTAcycles=376024.6 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 228, 0, 117760, 36864, 8]
+WORK M32 MATH_HBM cap2 n=4 node_us=65.824 packed_TBs=4.618 clock_GHz=1.7651 CTAcycles=96716.0 exposed_wait_cycles_per_tile=236.27 G/res/regs/local/shared/bytes/warps=[264, 2, 109, 0, 78848, 36864, 8]
+WORK M32 MATH_L2 cap2 n=4 node_us=63.480 packed_TBs=4.787 clock_GHz=1.7806 CTAcycles=91855.1 exposed_wait_cycles_per_tile=151.10 G/res/regs/local/shared/bytes/warps=[264, 2, 117, 0, 78848, 36864, 8]
+WORK M32 MATH_SMEM_W16 cap1 n=4 node_us=61.784 packed_TBs=4.918 clock_GHz=1.7834 CTAcycles=104668.0 exposed_wait_cycles_per_tile=43.47 G/res/regs/local/shared/bytes/warps=[132, 1, 56, 0, 117760, 36864, 16]
+WORK M32 MATH_SMEM_W16 cap2 n=4 node_us=60.248 packed_TBs=5.044 clock_GHz=1.7742 CTAcycles=77365.2 exposed_wait_cycles_per_tile=93.73 G/res/regs/local/shared/bytes/warps=[264, 2, 56, 0, 78848, 36864, 16]
+WORK M32 MATH_SMEM_W16 cap4 n=4 node_us=60.256 packed_TBs=5.043 clock_GHz=1.7730 CTAcycles=77183.6 exposed_wait_cycles_per_tile=93.88 G/res/regs/local/shared/bytes/warps=[264, 2, 56, 0, 53264, 36864, 16]
+WORK M32 MATH_SMEM_W4 cap1 n=4 node_us=80.873 packed_TBs=3.766 clock_GHz=1.7977 CTAcycles=141158.4 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 107, 0, 117760, 18432, 4]
+WORK M32 MATH_SMEM_W4 cap2 n=4 node_us=62.520 packed_TBs=4.860 clock_GHz=1.7900 CTAcycles=100311.5 exposed_wait_cycles_per_tile=2.73 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 78848, 18432, 4]
+WORK M32 MATH_SMEM_W4 cap4 n=4 node_us=60.496 packed_TBs=5.022 clock_GHz=1.7817 CTAcycles=78876.2 exposed_wait_cycles_per_tile=2.71 G/res/regs/local/shared/bytes/warps=[528, 4, 107, 0, 47718, 18432, 4]
+WORK M32 MATH_SMEM_W8 cap1 n=4 node_us=62.752 packed_TBs=4.843 clock_GHz=1.7882 CTAcycles=107987.0 exposed_wait_cycles_per_tile=2.00 G/res/regs/local/shared/bytes/warps=[132, 1, 107, 0, 117760, 36864, 8]
+WORK M32 MATH_SMEM_W8 cap2 n=4 node_us=59.264 packed_TBs=5.127 clock_GHz=1.7855 CTAcycles=83342.5 exposed_wait_cycles_per_tile=2.36 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 78848, 36864, 8]
+WORK M32 MATH_SMEM_W8 cap4 n=4 node_us=59.376 packed_TBs=5.118 clock_GHz=1.7835 CTAcycles=83266.0 exposed_wait_cycles_per_tile=2.36 G/res/regs/local/shared/bytes/warps=[264, 2, 107, 0, 47718, 36864, 8]
+WORK M32 MMA_ILP2 cap2 n=4 node_us=58.240 packed_TBs=5.217 clock_GHz=1.7786 CTAcycles=79139.2 exposed_wait_cycles_per_tile=2.45 G/res/regs/local/shared/bytes/warps=[264, 2, 117, 0, 78848, 36864, 8]
+WORK M32 WEIGHT_LDS cap2 n=4 node_us=61.856 packed_TBs=4.956 clock_GHz=1.9728 CTAcycles=99248.1 exposed_wait_cycles_per_tile=2429.59 G/res/regs/local/shared/bytes/warps=[264, 2, 54, 0, 78848, 36864, 8]
+LATENCY hot0 grid1 n=4 TMA36KiB_us=0.6760 clock_GHz=1.9727 required_bytes_per_SM_at4TBs=20484.8 stage_capacity2CTA2slots=147456 steady_lookahead_one_live_slot_perCTA=73728 steady_coverage=3.599
+LATENCY hot0 grid132 n=4 TMA36KiB_us=1.0960 clock_GHz=1.9741 required_bytes_per_SM_at4TBs=33212.1 stage_capacity2CTA2slots=147456 steady_lookahead_one_live_slot_perCTA=73728 steady_coverage=2.220
+LATENCY hot0 grid264 n=4 TMA36KiB_us=2.0000 clock_GHz=1.9780 required_bytes_per_SM_at4TBs=60606.1 stage_capacity2CTA2slots=147456 steady_lookahead_one_live_slot_perCTA=73728 steady_coverage=1.217
+LATENCY hot1 grid1 n=4 TMA36KiB_us=0.3200 clock_GHz=1.9910 required_bytes_per_SM_at4TBs=9697.0 stage_capacity2CTA2slots=147456 steady_lookahead_one_live_slot_perCTA=73728 steady_coverage=7.603
+LATENCY hot1 grid132 n=4 TMA36KiB_us=0.5680 clock_GHz=1.9655 required_bytes_per_SM_at4TBs=17212.1 stage_capacity2CTA2slots=147456 steady_lookahead_one_live_slot_perCTA=73728 steady_coverage=4.283
+LATENCY hot1 grid264 n=4 TMA36KiB_us=1.0560 clock_GHz=1.9723 required_bytes_per_SM_at4TBs=32000.0 stage_capacity2CTA2slots=147456 steady_lookahead_one_live_slot_perCTA=73728 steady_coverage=2.304

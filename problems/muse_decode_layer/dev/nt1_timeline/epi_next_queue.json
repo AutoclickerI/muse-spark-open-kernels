@@ -8,7 +8,9 @@
     "sha256": "917e79f37f28b5c1215cfd346d829baa768d0f5afea3dbb2f66073556639d028",
     "note": "h200_lab prof/lab/moe_nt1_epilogue.py: P3a final single reset batch; replaces held prior version. S14 f1c77ce6: VEC bank-safe vector reduction, PROD warp7 TMA, NORM per-run norms, PAIR two contiguous float2 planes/two writers plus per-run norms(125regs0spill). Fixed-math ONCE/ONCE_VEC/ONCE_PAIR contrast isolates old28.5us epi.16seed readflush paired router+MoE M1/8/16/32+nodes;8seed subphase store/bar,TMA,body,flush,observer,effGHz; exact host atomic model. All5epi cells528+6forced;ONCE variants1320+6;16seed local all gates. S14 NORM andPAIR normal+shipped-Hopper forced local_eval/reference+24static checks pass. Not before09:00KST reset; no attention checks.",
     "not_before": 1792972800.0,
-    "until": 1792972800.0
+    "until": 1792972800.0,
+    "judge_job": "d650c04ead114119",
+    "status": "done; official passed"
   },
   "second": {
     "pid": 1005738,
@@ -19,10 +21,15 @@
     "sha256": "e23854aca7a11da1272db413d863504c76f812d5d9b6508342c674b3d92254eb",
     "note": "h200_lab prof/lab/moe_nt1_epi_next.py: P3a independent second round behind unchanged917e79f3 reset batch. Exact S14 f1c77ce6+queued PAIR controls; TREE FADD depth8to3, FOUR4 half-active bank-safe writers, LOCAL CTA-local norm sums with final gather removes all FP32 global norm atomics, FOUR_LOCAL combination.32seeds M8/16/32 readflush ABBA, direct PAIR pairs,A:A,CUPTI nodes+unique TBs;16phase seeds at eachM,observer/effectiveGHz/export/gather and perM issue model. Every arm528+6 component and normal+forced whole-layer13cases12shapes24static gates in judge image; exact final payload32seeds all gates/nodes/traces pass locally. Native125/125/125/127regs0spill,same128HMUL2/32HMMA. Independent of reset results. Hold until epoch1792972800; do not replace first batch.",
     "not_before": 1792972800.0,
-    "until": 1792972800.0
+    "until": 1792972800.0,
+    "judge_job": "29ad388de976432c",
+    "status": "done; official passed"
   },
   "second_payload_sha256": "642d6ae01ccd91945eb9b91216b2dcf5eba464bacf16a3d4a47b27217486db39",
-  "judge_ids": [],
-  "state": "both held before first judge request",
+  "judge_ids": [
+    "d650c04ead114119",
+    "29ad388de976432c"
+  ],
+  "state": "both completed and audited; PAIR nominated to P4",
   "decision": "Second batch independent, already queued. Integrate only kernel wins with paired many-seed whole-layer validation; close losing recipes."
 }

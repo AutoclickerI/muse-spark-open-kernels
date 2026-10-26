@@ -1,0 +1,19 @@
+{
+  "pid": 4124752,
+  "priority": 1.2,
+  "t": 1792974258.8595657,
+  "problem": "muse_moe_w4a16",
+  "file": "problems/muse_moe_w4a16/lab/lab_payload+moe_nt1_pipe_rebuild.py",
+  "sha256": "de47736b9f588673007af6d5dd3fa8f0a1736064d049c95274d825f028e0838a",
+  "note": "h200_lab prof/lab/moe_nt1_pipe_rebuild.py: P3a response to 16c18078: shared MMA ILP2 improves 1.0/1.9/1.7% at M8/16/32 without saturated pipe; exact caa59593 packed FLIGHT ILP K16 LUT, 32 seeds with TASK and A:A; PAIR separately nominated to P4 || h200_lab problems/muse_moe_w4a16/dev/mixed_wgmma/branches/round2/payload.py: P3b round2 whole MoE S14 vs transposed register-A shared-B N64/N128 and intra-CTA two-WG activation reuse S2/S3. Four new variants, 24 seeds, phase attribution. All four local_eval screens and 995 poisoned/shifted graph checks pass. Independent follow-up behind unchanged f867a8b reset packet.",
+  "not_before": 0,
+  "payload": "prof/lab/moe_nt1_pipe_rebuild.py",
+  "payload_sha256": "caa595931a40c2d5eb3d9daf263d03284bb292fdce89bfdf1caf1264ab8bff92",
+  "sender": 4124752,
+  "sender_log": "runs/detached/de47736b9f588673.log",
+  "judge_job": null,
+  "state": "waiting for judge slot; sender alive",
+  "trigger_receipt": "16c180784f414576",
+  "classified_arm": "ILP; small dependency contrast, full-kernel effect unmeasured",
+  "merged_payload": "P3b round2 payload"
+}

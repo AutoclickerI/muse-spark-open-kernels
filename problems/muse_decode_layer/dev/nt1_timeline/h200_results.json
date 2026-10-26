@@ -1,0 +1,1110 @@
+{
+  "ratio_convention": "candidate time / control time; below one wins",
+  "runs": {
+    "epilogue": {
+      "job": "d650c04ead114119",
+      "receipt": "runs/muse_moe_w4a16/20261026T000006Z_submit_d650c04ead114119.json",
+      "receipt_sha256": "621070c1dd8a326d52a2158b9f7aeb3af64ac28cf30fe249788a46a45f91e942",
+      "wrapper_sha256": "917e79f37f28b5c1215cfd346d829baa768d0f5afea3dbb2f66073556639d028",
+      "payload_sha256": "2b0356d740f0b2ca4c7091e74025f9c2e7b9bdcf2d0ea0d2236405d38e1a7628",
+      "official_passed": true,
+      "seeds": 16,
+      "gates": {
+        "EPBASE": [
+          0.00241,
+          0.00241
+        ],
+        "NORM": [
+          0.00241,
+          0.00241
+        ],
+        "ONCE": [
+          0.00238,
+          0.00246
+        ],
+        "ONCE_PAIR": [
+          0.00238,
+          0.00246
+        ],
+        "ONCE_VEC": [
+          0.00238,
+          0.00246
+        ],
+        "PAIR": [
+          0.00241,
+          0.00241
+        ],
+        "PROD": [
+          0.00241,
+          0.00241
+        ],
+        "S14": [
+          0.00241,
+          0.00241
+        ],
+        "VEC": [
+          0.00241,
+          0.00241
+        ]
+      },
+      "AA_mean_absolute_us": {
+        "1": 0.243,
+        "8": 0.415,
+        "16": 0.235,
+        "32": 0.225
+      },
+      "rows": [
+        {
+          "M": 1,
+          "arm": "S14",
+          "control": "S14",
+          "ratio": 1.0,
+          "se": 0.0,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 36.538,
+          "AA_mean_abs_us": 0.243,
+          "AA_fraction": 0.006650610323498824,
+          "upper95_plus_AA": 1.006650610323499,
+          "clears_summary_control": false
+        },
+        {
+          "M": 1,
+          "arm": "EPBASE",
+          "control": "S14",
+          "ratio": 1.00216,
+          "se": 0.00145,
+          "n": 16,
+          "wins": 4,
+          "arm_us": 36.643,
+          "AA_mean_abs_us": 0.243,
+          "AA_fraction": 0.006645877248041917,
+          "upper95_plus_AA": 1.011647877248042,
+          "clears_summary_control": false
+        },
+        {
+          "M": 1,
+          "arm": "VEC",
+          "control": "S14",
+          "ratio": 1.00238,
+          "se": 0.00207,
+          "n": 16,
+          "wins": 5,
+          "arm_us": 36.599,
+          "AA_mean_abs_us": 0.243,
+          "AA_fraction": 0.006655327741195115,
+          "upper95_plus_AA": 1.0130925277411953,
+          "clears_summary_control": false
+        },
+        {
+          "M": 1,
+          "arm": "PROD",
+          "control": "S14",
+          "ratio": 1.00007,
+          "se": 0.00194,
+          "n": 16,
+          "wins": 7,
+          "arm_us": 36.513,
+          "AA_mean_abs_us": 0.243,
+          "AA_fraction": 0.006655629775696327,
+          "upper95_plus_AA": 1.0105280297756964,
+          "clears_summary_control": false
+        },
+        {
+          "M": 1,
+          "arm": "NORM",
+          "control": "S14",
+          "ratio": 0.99839,
+          "se": 0.00213,
+          "n": 16,
+          "wins": 11,
+          "arm_us": 36.354,
+          "AA_mean_abs_us": 0.243,
+          "AA_fraction": 0.00667350965505859,
+          "upper95_plus_AA": 1.0092383096550586,
+          "clears_summary_control": false
+        },
+        {
+          "M": 1,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.9989,
+          "se": 0.00232,
+          "n": 16,
+          "wins": 9,
+          "arm_us": 36.611,
+          "AA_mean_abs_us": 0.243,
+          "AA_fraction": 0.006630048346125482,
+          "upper95_plus_AA": 1.0100772483461256,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "S14",
+          "control": "S14",
+          "ratio": 1.0,
+          "se": 0.0,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 71.033,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005842354961778328,
+          "upper95_plus_AA": 1.0058423549617783,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "EPBASE",
+          "control": "S14",
+          "ratio": 0.99656,
+          "se": 0.00174,
+          "n": 16,
+          "wins": 11,
+          "arm_us": 70.892,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.0058338373864469896,
+          "upper95_plus_AA": 1.005804237386447,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "VEC",
+          "control": "S14",
+          "ratio": 1.01332,
+          "se": 0.00272,
+          "n": 16,
+          "wins": 2,
+          "arm_us": 71.978,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005842449081663842,
+          "upper95_plus_AA": 1.0244936490816638,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "PROD",
+          "control": "S14",
+          "ratio": 0.98056,
+          "se": 0.00308,
+          "n": 16,
+          "wins": 16,
+          "arm_us": 69.896,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005821969783678608,
+          "upper95_plus_AA": 0.9924187697836786,
+          "clears_summary_control": true
+        },
+        {
+          "M": 8,
+          "arm": "NORM",
+          "control": "S14",
+          "ratio": 0.98142,
+          "se": 0.00344,
+          "n": 16,
+          "wins": 15,
+          "arm_us": 69.78,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005836762682717111,
+          "upper95_plus_AA": 0.9939991626827172,
+          "clears_summary_control": true
+        },
+        {
+          "M": 8,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.97493,
+          "se": 0.00235,
+          "n": 16,
+          "wins": 16,
+          "arm_us": 69.454,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005825380107697181,
+          "upper95_plus_AA": 0.9853613801076971,
+          "clears_summary_control": true
+        },
+        {
+          "M": 8,
+          "arm": "ONCE",
+          "control": "S14",
+          "ratio": 1.30467,
+          "se": 0.00225,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 92.508,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005852878129459074,
+          "upper95_plus_AA": 1.3149328781294591,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "ONCE_VEC",
+          "control": "S14",
+          "ratio": 1.23515,
+          "se": 0.00247,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 87.727,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.0058429816362123395,
+          "upper95_plus_AA": 1.2458341816362124,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "ONCE_PAIR",
+          "control": "S14",
+          "ratio": 1.24614,
+          "se": 0.00262,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 88.423,
+          "AA_mean_abs_us": 0.415,
+          "AA_fraction": 0.005848569942209605,
+          "upper95_plus_AA": 1.2571237699422095,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "S14",
+          "control": "S14",
+          "ratio": 1.0,
+          "se": 0.0,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 81.533,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.0028822685293071514,
+          "upper95_plus_AA": 1.002882268529307,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "EPBASE",
+          "control": "S14",
+          "ratio": 0.99979,
+          "se": 0.00213,
+          "n": 16,
+          "wins": 8,
+          "arm_us": 81.499,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.0028828654339317045,
+          "upper95_plus_AA": 1.0068476654339316,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "VEC",
+          "control": "S14",
+          "ratio": 1.01457,
+          "se": 0.0018,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 82.643,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.002884986629236596,
+          "upper95_plus_AA": 1.0209829866292366,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "PROD",
+          "control": "S14",
+          "ratio": 0.97831,
+          "se": 0.00254,
+          "n": 16,
+          "wins": 16,
+          "arm_us": 79.647,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.002886522405112559,
+          "upper95_plus_AA": 0.9861749224051126,
+          "clears_summary_control": true
+        },
+        {
+          "M": 16,
+          "arm": "NORM",
+          "control": "S14",
+          "ratio": 0.9834,
+          "se": 0.00313,
+          "n": 16,
+          "wins": 15,
+          "arm_us": 79.913,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.0028918824221340705,
+          "upper95_plus_AA": 0.9924266824221342,
+          "clears_summary_control": true
+        },
+        {
+          "M": 16,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.97262,
+          "se": 0.00357,
+          "n": 16,
+          "wins": 16,
+          "arm_us": 79.237,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.002884582959980817,
+          "upper95_plus_AA": 0.9825017829599809,
+          "clears_summary_control": true
+        },
+        {
+          "M": 16,
+          "arm": "ONCE",
+          "control": "S14",
+          "ratio": 1.29879,
+          "se": 0.00675,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 105.976,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.0028800450101909864,
+          "upper95_plus_AA": 1.3149000450101909,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "ONCE_VEC",
+          "control": "S14",
+          "ratio": 1.24645,
+          "se": 0.00847,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 102.015,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.002871300789099642,
+          "upper95_plus_AA": 1.2659225007890997,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "ONCE_PAIR",
+          "control": "S14",
+          "ratio": 1.25036,
+          "se": 0.00752,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 101.971,
+          "AA_mean_abs_us": 0.235,
+          "AA_fraction": 0.002881550636945798,
+          "upper95_plus_AA": 1.2679807506369456,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "S14",
+          "control": "S14",
+          "ratio": 1.0,
+          "se": 0.0,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 110.753,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.0020315476781667314,
+          "upper95_plus_AA": 1.0020315476781667,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "EPBASE",
+          "control": "S14",
+          "ratio": 1.00208,
+          "se": 0.00129,
+          "n": 16,
+          "wins": 6,
+          "arm_us": 110.711,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.00203654560070815,
+          "upper95_plus_AA": 1.0066449456007083,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "VEC",
+          "control": "S14",
+          "ratio": 1.01898,
+          "se": 0.00194,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 112.695,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.0020344336483428724,
+          "upper95_plus_AA": 1.024816833648343,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "PROD",
+          "control": "S14",
+          "ratio": 0.98517,
+          "se": 0.00236,
+          "n": 16,
+          "wins": 15,
+          "arm_us": 108.915,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.0020351948767387412,
+          "upper95_plus_AA": 0.9918307948767388,
+          "clears_summary_control": true
+        },
+        {
+          "M": 32,
+          "arm": "NORM",
+          "control": "S14",
+          "ratio": 0.99,
+          "se": 0.0032,
+          "n": 16,
+          "wins": 13,
+          "arm_us": 109.606,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.002032279254785322,
+          "upper95_plus_AA": 0.9983042792547854,
+          "clears_summary_control": true
+        },
+        {
+          "M": 32,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.97932,
+          "se": 0.0028,
+          "n": 16,
+          "wins": 16,
+          "arm_us": 108.289,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.002034805012512813,
+          "upper95_plus_AA": 0.9868428050125129,
+          "clears_summary_control": true
+        },
+        {
+          "M": 32,
+          "arm": "ONCE",
+          "control": "S14",
+          "ratio": 1.33132,
+          "se": 0.00781,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 147.212,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.002034800152161509,
+          "upper95_plus_AA": 1.3486624001521617,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "ONCE_VEC",
+          "control": "S14",
+          "ratio": 1.31428,
+          "se": 0.00958,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 145.155,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.002037222279632117,
+          "upper95_plus_AA": 1.335094022279632,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "ONCE_PAIR",
+          "control": "S14",
+          "ratio": 1.2941,
+          "se": 0.00814,
+          "n": 16,
+          "wins": 0,
+          "arm_us": 143.089,
+          "AA_mean_abs_us": 0.225,
+          "AA_fraction": 0.0020349048494293764,
+          "upper95_plus_AA": 1.3120893048494295,
+          "clears_summary_control": false
+        }
+      ]
+    },
+    "epilogue_next": {
+      "job": "29ad388de976432c",
+      "receipt": "runs/muse_moe_w4a16/20261026T000017Z_submit_29ad388de976432c.json",
+      "receipt_sha256": "0cac1a533d0710186a82eb37dd4819470698bb0a05d5d54f9493c04bfda1698d",
+      "wrapper_sha256": "e23854aca7a11da1272db413d863504c76f812d5d9b6508342c674b3d92254eb",
+      "payload_sha256": "642d6ae01ccd91945eb9b91216b2dcf5eba464bacf16a3d4a47b27217486db39",
+      "official_passed": true,
+      "seeds": 32,
+      "gates": {
+        "FOUR": [
+          0.00238,
+          0.00246
+        ],
+        "FOUR_LOCAL": [
+          0.00238,
+          0.00246
+        ],
+        "LOCAL": [
+          0.00238,
+          0.00246
+        ],
+        "PAIR": [
+          0.00238,
+          0.00246
+        ],
+        "S14": [
+          0.00238,
+          0.00246
+        ],
+        "TREE": [
+          0.00238,
+          0.00246
+        ]
+      },
+      "AA_mean_absolute_us": {
+        "8": 0.442,
+        "16": 0.363,
+        "32": 0.322
+      },
+      "rows": [
+        {
+          "M": 8,
+          "arm": "FOUR",
+          "control": "S14",
+          "ratio": 1.00178,
+          "se": 0.00247,
+          "n": 32,
+          "wins": 12,
+          "arm_us": 73.289,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006041653727025883,
+          "upper95_plus_AA": 1.0126628537270257,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "FOUR_LOCAL",
+          "control": "S14",
+          "ratio": 1.0114,
+          "se": 0.00245,
+          "n": 32,
+          "wins": 5,
+          "arm_us": 74.044,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006037475014856033,
+          "upper95_plus_AA": 1.022239475014856,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "LOCAL",
+          "control": "S14",
+          "ratio": 0.99212,
+          "se": 0.00191,
+          "n": 32,
+          "wins": 25,
+          "arm_us": 72.566,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006043009673951989,
+          "upper95_plus_AA": 1.001906609673952,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.9783,
+          "se": 0.00228,
+          "n": 32,
+          "wins": 31,
+          "arm_us": 71.652,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006034843409814102,
+          "upper95_plus_AA": 0.9888036434098141,
+          "clears_summary_control": true
+        },
+        {
+          "M": 8,
+          "arm": "TREE",
+          "control": "S14",
+          "ratio": 0.97888,
+          "se": 0.00233,
+          "n": 32,
+          "wins": 32,
+          "arm_us": 71.628,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006040444518903222,
+          "upper95_plus_AA": 0.9894872445189031,
+          "clears_summary_control": true
+        },
+        {
+          "M": 16,
+          "arm": "FOUR",
+          "control": "S14",
+          "ratio": 1.00521,
+          "se": 0.00237,
+          "n": 32,
+          "wins": 12,
+          "arm_us": 79.735,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004576299366652034,
+          "upper95_plus_AA": 1.014431499366652,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "FOUR_LOCAL",
+          "control": "S14",
+          "ratio": 1.01404,
+          "se": 0.00216,
+          "n": 32,
+          "wins": 3,
+          "arm_us": 80.49,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004573195676481551,
+          "upper95_plus_AA": 1.0228467956764817,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "LOCAL",
+          "control": "S14",
+          "ratio": 0.98615,
+          "se": 0.00188,
+          "n": 32,
+          "wins": 29,
+          "arm_us": 78.172,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004579292457657473,
+          "upper95_plus_AA": 0.9944140924576574,
+          "clears_summary_control": true
+        },
+        {
+          "M": 16,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.97462,
+          "se": 0.0025,
+          "n": 32,
+          "wins": 31,
+          "arm_us": 77.386,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004571719174010803,
+          "upper95_plus_AA": 0.9840917191740108,
+          "clears_summary_control": true
+        },
+        {
+          "M": 16,
+          "arm": "TREE",
+          "control": "S14",
+          "ratio": 0.97404,
+          "se": 0.00235,
+          "n": 32,
+          "wins": 32,
+          "arm_us": 77.37,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.00456994338891043,
+          "upper95_plus_AA": 0.9832159433889105,
+          "clears_summary_control": true
+        },
+        {
+          "M": 32,
+          "arm": "FOUR",
+          "control": "S14",
+          "ratio": 1.01047,
+          "se": 0.00257,
+          "n": 32,
+          "wins": 7,
+          "arm_us": 112.605,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.0028894928289152346,
+          "upper95_plus_AA": 1.0183966928289152,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "FOUR_LOCAL",
+          "control": "S14",
+          "ratio": 1.0229,
+          "se": 0.00222,
+          "n": 32,
+          "wins": 3,
+          "arm_us": 113.885,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.0028921613908767614,
+          "upper95_plus_AA": 1.0301433613908768,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "LOCAL",
+          "control": "S14",
+          "ratio": 0.98488,
+          "se": 0.00193,
+          "n": 32,
+          "wins": 30,
+          "arm_us": 109.714,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.002890527735749312,
+          "upper95_plus_AA": 0.9915533277357492,
+          "clears_summary_control": true
+        },
+        {
+          "M": 32,
+          "arm": "PAIR",
+          "control": "S14",
+          "ratio": 0.97778,
+          "se": 0.00221,
+          "n": 32,
+          "wins": 32,
+          "arm_us": 108.818,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.0028933187524122846,
+          "upper95_plus_AA": 0.9850049187524123,
+          "clears_summary_control": true
+        },
+        {
+          "M": 32,
+          "arm": "TREE",
+          "control": "S14",
+          "ratio": 0.97746,
+          "se": 0.00216,
+          "n": 32,
+          "wins": 32,
+          "arm_us": 108.914,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.002889822428705217,
+          "upper95_plus_AA": 0.9845834224287051,
+          "clears_summary_control": true
+        },
+        {
+          "M": 8,
+          "arm": "FOUR",
+          "control": "PAIR",
+          "ratio": 1.02215,
+          "se": 0.00184,
+          "n": 32,
+          "wins": 1,
+          "arm_us": 73.21,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.00617115557983882,
+          "upper95_plus_AA": 1.0319275555798386,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "FOUR_LOCAL",
+          "control": "PAIR",
+          "ratio": 1.03406,
+          "se": 0.00199,
+          "n": 32,
+          "wins": 0,
+          "arm_us": 74.183,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006161176010676299,
+          "upper95_plus_AA": 1.0441215760106763,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "LOCAL",
+          "control": "PAIR",
+          "ratio": 1.01213,
+          "se": 0.00164,
+          "n": 32,
+          "wins": 3,
+          "arm_us": 72.512,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.006169481740953221,
+          "upper95_plus_AA": 1.0215138817409533,
+          "clears_summary_control": false
+        },
+        {
+          "M": 8,
+          "arm": "TREE",
+          "control": "PAIR",
+          "ratio": 0.99904,
+          "se": 0.00132,
+          "n": 32,
+          "wins": 16,
+          "arm_us": 71.637,
+          "AA_mean_abs_us": 0.442,
+          "AA_fraction": 0.00616407275569887,
+          "upper95_plus_AA": 1.0077912727556988,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "FOUR",
+          "control": "PAIR",
+          "ratio": 1.02842,
+          "se": 0.00168,
+          "n": 32,
+          "wins": 0,
+          "arm_us": 79.694,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004684373478555473,
+          "upper95_plus_AA": 1.0363971734785555,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "FOUR_LOCAL",
+          "control": "PAIR",
+          "ratio": 1.04155,
+          "se": 0.00198,
+          "n": 32,
+          "wins": 0,
+          "arm_us": 80.561,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004693122602748227,
+          "upper95_plus_AA": 1.0501239226027481,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "LOCAL",
+          "control": "PAIR",
+          "ratio": 1.00951,
+          "se": 0.00154,
+          "n": 32,
+          "wins": 2,
+          "arm_us": 78.139,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004689746861362444,
+          "upper95_plus_AA": 1.0172181468613624,
+          "clears_summary_control": false
+        },
+        {
+          "M": 16,
+          "arm": "TREE",
+          "control": "PAIR",
+          "ratio": 0.99811,
+          "se": 0.00119,
+          "n": 32,
+          "wins": 17,
+          "arm_us": 77.372,
+          "AA_mean_abs_us": 0.363,
+          "AA_fraction": 0.004682752546140723,
+          "upper95_plus_AA": 1.0051251525461409,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "FOUR",
+          "control": "PAIR",
+          "ratio": 1.03432,
+          "se": 0.00111,
+          "n": 32,
+          "wins": 0,
+          "arm_us": 112.547,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.00295921739362222,
+          "upper95_plus_AA": 1.039454817393622,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "FOUR_LOCAL",
+          "control": "PAIR",
+          "ratio": 1.04617,
+          "se": 0.00115,
+          "n": 32,
+          "wins": 0,
+          "arm_us": 113.795,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.002960294740542203,
+          "upper95_plus_AA": 1.0513842947405423,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "LOCAL",
+          "control": "PAIR",
+          "ratio": 1.00939,
+          "se": 0.00131,
+          "n": 32,
+          "wins": 2,
+          "arm_us": 109.841,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.0029590369716226183,
+          "upper95_plus_AA": 1.0149166369716225,
+          "clears_summary_control": false
+        },
+        {
+          "M": 32,
+          "arm": "TREE",
+          "control": "PAIR",
+          "ratio": 1.00007,
+          "se": 0.00084,
+          "n": 32,
+          "wins": 20,
+          "arm_us": 108.901,
+          "AA_mean_abs_us": 0.322,
+          "AA_fraction": 0.002957020963994821,
+          "upper95_plus_AA": 1.004673420963995,
+          "clears_summary_control": false
+        }
+      ]
+    },
+    "pipe": {
+      "job": "16c180784f414576",
+      "receipt": "runs/muse_moe_w4a16/20261026T000025Z_submit_16c180784f414576.json",
+      "receipt_sha256": "acbc618a599cba7ad7bfc0082eb743ce3058f92621e62435dc908d5fdd537d3b",
+      "wrapper_sha256": "875038058dfb252d2c8517f3c4eac71970d1091655948cd43bbae51826170e74",
+      "payload_sha256": "d53196031b271014911dde560636ce38715d52938e73be15dd9b601cb6b24268",
+      "official_passed": true,
+      "seeds": 16,
+      "gates": {
+        "S14": [
+          0.0023848670534789562,
+          0.0024627521634101868
+        ]
+      },
+      "AA_mean_absolute_us": {
+        "8": 0.443,
+        "16": 0.25,
+        "32": 0.336
+      },
+      "rows": [
+        {
+          "M": 8,
+          "arm": "PDIA",
+          "control": "S14",
+          "ratio": 0.90404,
+          "n": 16,
+          "correct": false,
+          "promotable": false,
+          "interpretation": "wrong-math diagnostic only"
+        },
+        {
+          "M": 16,
+          "arm": "PDIA",
+          "control": "S14",
+          "ratio": 0.89884,
+          "n": 16,
+          "correct": false,
+          "promotable": false,
+          "interpretation": "wrong-math diagnostic only"
+        },
+        {
+          "M": 32,
+          "arm": "PDIA",
+          "control": "S14",
+          "ratio": 0.82615,
+          "n": 16,
+          "correct": false,
+          "promotable": false,
+          "interpretation": "wrong-math diagnostic only"
+        }
+      ]
+    }
+  },
+  "pipe_contrasts": {
+    "8": {
+      "ILP2_over_shared_W8": 0.9899141630901288,
+      "W16_over_W8": 1.0184549356223176,
+      "ILP2_over_shared_W8_work_normalized": 0.9897309509139454,
+      "W16_over_W8_work_normalized": 1.0179552175749895,
+      "L2_over_HBM": 0.8706940437807569,
+      "copy_S4_over_S2": 0.9825327510917031
+    },
+    "16": {
+      "ILP2_over_shared_W8": 0.9814482345900658,
+      "W16_over_W8": 1.0201476161978855,
+      "ILP2_over_shared_W8_work_normalized": 0.9817708333333333,
+      "W16_over_W8_work_normalized": 1.0201915070774354,
+      "L2_over_HBM": 0.9408243543697623,
+      "copy_S4_over_S2": 1.0728531399373662
+    },
+    "32": {
+      "ILP2_over_shared_W8": 0.9827213822894169,
+      "W16_over_W8": 1.0166036717062634,
+      "ILP2_over_shared_W8_work_normalized": 0.9827487061529615,
+      "W16_over_W8_work_normalized": 1.0164551942902458,
+      "L2_over_HBM": 0.9643898881866796,
+      "copy_S4_over_S2": 1.148048624440179
+    }
+  },
+  "pipe_decision": "ILP2 gives a small shared-math improvement at identical 2-CTA/16-warp residency. This supports a dependency hypothesis, not a proven full-kernel win; microprobes lack independent A:A. Send the prepared packed four-arm batch for paired TASK-gated measurement. More flight, more warps, and LUT are not identified fixes; PDIA cannot be promoted.",
+  "P4_nomination": {
+    "arm": "epi_PAIR",
+    "M": [
+      8,
+      16,
+      32
+    ],
+    "keep_M1_flags": 95,
+    "rows": [
+      [
+        1,
+        8,
+        true
+      ],
+      [
+        1,
+        8,
+        false
+      ],
+      [
+        16,
+        1,
+        true
+      ],
+      [
+        16,
+        1,
+        false
+      ],
+      [
+        32,
+        1,
+        true
+      ],
+      [
+        32,
+        1,
+        false
+      ]
+    ],
+    "kernel_winner": true,
+    "whole_layer_verified": false,
+    "screened_S15_candidate_sha256": "af86073f101381a365affa7e66f0cebe4505d6b2fb45ea9fbfb38a56eb9bf601"
+  },
+  "P4_parser_status": {
+    "target": "problems/muse_decode_layer/dev/s16/decide.py",
+    "source_sha256": "9c46c1b80cac8302966f0fd498aae1d48bc906c9648a06f1a428c3abe6127f17",
+    "actual_receipt_selects": [
+      {
+        "name": "epi_PAIR",
+        "family": "epi",
+        "rows": [
+          [
+            1,
+            8,
+            true
+          ],
+          [
+            1,
+            8,
+            false
+          ],
+          [
+            16,
+            1,
+            true
+          ],
+          [
+            16,
+            1,
+            false
+          ],
+          [
+            32,
+            1,
+            true
+          ],
+          [
+            32,
+            1,
+            false
+          ]
+        ],
+        "kind": "PAIR"
+      }
+    ],
+    "status": "P4 concurrently repaired absent ONCE/M1 handling; verified",
+    "edited_by_P3a": false
+  }
+}

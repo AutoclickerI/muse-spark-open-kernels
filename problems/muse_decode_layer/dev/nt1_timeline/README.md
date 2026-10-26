@@ -1,139 +1,84 @@
-# P3a small-M MoE: current work
+# P3a small-M MoE: H200 decisions
 
-Base S14 final `f1c77ce6`; flags `{1:95,8:69,16:69,32:69}`. No new kernel promoted.
-Three independent payloads are queued for the reset; all performance conclusions await H200 receipts.
+Exact control: S14 `f1c77ce6`, flags `{1:95,8:69,16:69,32:69}`.
+**PAIR is nominated to P4 at M8/16/32; no new whole-layer kernel is frozen.**
+The three reset runs are complete and audited. `read_reset.py` reproduces the receipt/hash,
+correctness, seed-count and A:A checks and writes `h200_results.json` and `h200_pipe.txt`.
+Ratios below are candidate time / control time; smaller wins. A:A is mean absolute drift,
+not the largest per-seed excursion. The receipts retain summary statistics, not raw per-seed timings.
 
-## Pipe identification and conditional rebuilds
+## Reset decisions
 
-[PIPE.md](PIPE.md) gives the per-pipe SASS counts, nominal limits, Little's-law model and diagnostic design.
-The old 58.7 us math/activation clock belongs to ONCE, not S14. The diagnostic measures matched S14
-phase clocks before comparing schedules. Static counts alone have not identified the H200 bound.
-
-`prof/lab/moe_nt1_pipe.py` **d5319603** is queued on MoE: sender **1805785**, wrapper
-**875038058dfb252d**, priority **1.2**, not before **1792972800** (2026-10-26 09:00 KST).
-`pipe_queue.json` pins the wrapper and unchanged earlier senders. No judge job ID exists yet.
-It pairs exact S14 flags69 with a spill-free math-removed cell at M8/16/32, measures matched phases,
-and isolates cold/L2/shared math, load depth, warp occupancy, MMA chains and extra-block activation
-gathers. It measures 36 KiB TMA completion under load and reports Little's-law coverage.
-All 96 pipe probes, 66 work rows and six latency rows survive the output cap in a lossless packed
-record. After `h200_lab.py read <job>`, `read_pipe.py runs/<receipt>.json` prints the complete matrix.
-
-Four unsent responses are built against S14 and preserve its M1 path:
-
-| Arm | Cell SHA256[:8] | Change | Send after reset only if |
+| Run | Measured result at M8 / 16 / 32 | Controls | Decision |
 |---|---|---|---|
-| FLIGHT | `db750fa3` | Bulk L2 prefetch beyond the two raw stages | Cold/hot and depth contrasts isolate insufficient weight flight |
-| ILP | `809bef8e` | Two independent MMA accumulator chains | Shared-only math gains with independent chains, without a saturated pipe |
-| K16/r64 | `32d2d058` | K256/warp, 16 warps/CTA, timed shared B cache, two H200 CTAs/SM | Work-normalized shared math gains at 32 versus 16 active warps |
-| LUT | `95d67b20` | FP4 code-pair lookup; timed scale HMUL2 unchanged | Integer/PRMT reaches its measured limit while projected shared/PRMT service has headroom |
+| Epilogue `d650c04ead114119` | PAIR/S14 **.97493 / .97262 / .97932**, savings 1.787 / 2.085 / 2.292 us | 16 seeds, PAIR wins 16/16 at each M; A:A .415 / .235 / .225 us; EPBASE/S14 .99656 / .99979 / 1.00208 | Nominate PAIR. VEC loses 1.01332 / 1.01457 / 1.01898. PROD wins .98056 / .97831 / .98517 but PAIR is better. NORM .98142 / .98340 / .99000 adds no advantage over PAIR. ONCE recipes still lose 1.235–1.331. |
+| Epilogue-next `29ad388de976432c` | PAIR/S14 **.97830 / .97462 / .97778** confirms first run. TREE/PAIR .99904 / .99811 / 1.00007 | 32 seeds; PAIR wins 31 / 31 / 32; A:A .442 / .363 / .322 us | Keep PAIR. TREE is tied. FOUR/PAIR 1.02215 / 1.02842 / 1.03432; LOCAL 1.01213 / 1.00951 / 1.00939; FOUR_LOCAL 1.03406 / 1.04155 / 1.04617. Close these exact additions to PAIR, not epilogue optimization generally. |
+| Pipe `16c180784f414576` | Wrong-math PDIA/S14 .90404 / .89884 / .82615. Shared ILP2/W8 .98991 / .98145 / .98272 by node time | 16 routed seeds; S14 A:A .443 / .250 / .336 us. 4 seeds for 96 pipe / 66 work / 6 latency rows; microprobes have no independent A:A | PDIA is diagnostic only. A small independent-chain contrast supports testing ILP in the full kernel. Send the prepared four-arm batch; no rebuilt kernel is measured yet. |
 
-If shared gather or epilogue serialization dominates, use the already-queued PAIR/TREE results.
-If no contrast isolates a limit, send none of these as a claimed fix. A selected cell still needs a
-paired kernel win and integration's many-seed whole-layer pair. `pipe_ready_manifest.json` pins all
-candidate, cell and patch hashes, S14 base and full flag map. `patch_s14.py --kind <arm> -o <file>`
-reproduces each verified patch; all four apply cleanly onto S14 `f1c77ce6`.
+All three official hosts pass, with no lab failure, truncation or incomplete seed count. Every correct
+lab arm passes the native TASK gates before/after timing; maximum reported total/row error is below
+.00247, against .015/.075 limits. PDIA deliberately computes wrong math and is never eligible.
+M1's first-run PAIR/S14 is .99890 with .243 us A:A: neutral; retain original flags95.
+Both PAIR runs clear `ratio + 1.96*SE + A:A/control_us < 1` at all three affected M values.
+This is a stage nomination, not evidence of a six-load score gain.
 
-The follow-up payload is already built: `prof/lab/moe_nt1_pipe_rebuild.py` **caa59593**, **unsent**.
-It packs all four arms with exact S14, 32 seeds at each M, ABBA read flush, A:A, native TASK gates
-before/after, consumer nodes and unique-byte rates. Decision: send this one batch when the diagnostic
-isolates a bound supported by an arm in the table; otherwise hold it. Its exact payload passed all
-32 local seeds and 192 K16 forced ABI calls (`pipe_rebuild_validation.json`), in 51.5 s with warm builds.
-`build_pipe_rebuild_lab.py` and `run_pipe_rebuild_local.py` reproduce it. No new payload assembly is
-needed after the diagnostic receipt. Local ratios are retained as local evidence only.
+## P4 handoff
 
-Verification: each cell passed **528 component checks + six forced ABI launches**; each normal and
-forced whole-layer screen passed **13 cases, 12 dispatch shapes and 25 static checks** through
-`tools/local_eval.py` in the judge image. Worst TASK L2 is .0024375. K16's H200 two-stage shared size
-exceeds local sm120 capacity, so an explicit test-only one-stage native-math stand-in checks its glue;
-Hopper-only attention glue also uses the existing stand-ins. The original two-stage K16 is compiled
-sm90a and has 64 registers, 16-byte stack, zero spills, and room for two CTAs/SM at M32.
-LUT's independent full-bank proof covers 1,610,612,736 weights plus all scale codes (`pipe_lut_proof.json`).
+Use existing admitted S16 arm **`epi_PAIR`**, restricted to the six shapes
+`(batch,q_len,window) = (1,8,*) / (16,1,*) / (32,1,*)`. Leave M1 on its original flags95.
+The S15 arm has normal/forced 13-test, 12-shape, 26-static-check receipts in
+`dev/s16/admission.json`, exact SHA `af86073f101381a365affa7e66f0cebe4505d6b2fb45ea9fbfb38a56eb9bf601`.
+S14 patch: `epilogue_s14_pair.patch` (`786a5ecb`), cell `epilogue_s14_pair.cell.py`.
+`patch_s14.py --kind pair -o <candidate.py>` reproduces it against S14 `f1c77ce6`.
+P4 still must run its many-seed whole-layer pair and official correctness gates before freezing.
+TREE offers no measured incremental gain and is not preferred over the admitted PAIR implementation.
 
-The final diagnostic passed all 16 local seeds, eight phase seeds per M, four microkernel seeds per M,
-and all 96 pipe probes (`pipe_lab_validation.json`). Its D4 copy uses an explicit local D2 stand-in
-for 36 ABI launches; native D4 compiles sm90a. The packed local result is 5,832 characters, below the
-9,000-character wrapper cap. Native audits check seven full images and 14 math/copy specializations;
-PDIA retains activation/weight loads with zero HMMA/HMUL2, 120 registers and zero spills.
+The original P4 parser rejected the entire epilogue batch because ONCE has no M1 row. During this audit
+P4 independently repaired that handling. `read_reset.py` verifies the current real-receipt selector
+chooses exactly `epi_PAIR` at the six shapes above; this lane did not edit P4's source.
+`h200_results.json` records its source hash and exact selection.
 
-Recovery after the disk-full interruption: all source/JSON files parse, the pre-interruption component
-and whole-layer receipts match current hashes, and the exact final payload was rerun after fixing
-PDIA spills and receipt truncation. Nothing from the interrupted attempt had been committed or queued
-for this diagnostic. Only the newly verified payload was sent; both earlier reset wrappers are byte-exact.
+## Follow-up sent
 
-## Reset queue (unchanged)
+`prof/lab/moe_nt1_pipe_rebuild.py`, exact **`caa59593`**, was sent through `h200_lab.py` on
+`muse_moe_w4a16` at priority1.2. Sender **4124752**, merged wrapper **`de47736b9f588673`**,
+log `runs/detached/de47736b9f588673.log`; live metadata is in `followup_queue.json`.
+It shares the run with P3b's already-waiting round2 payload. All four FLIGHT / ILP / K16 / LUT arms
+remain packed together with exact S14, 32 seeds per M, ABBA read flush, A:A, before/after TASK gates,
+consumer nodes and unique-byte rates. The payload bytes match the existing local screen.
+A local timing result remains local evidence; the follow-up receipt will determine kernel performance.
 
-- MoE sender PID3360739, wrapper `917e79f37f28b5c1`, payload `prof/lab/moe_nt1_epilogue.py` `2b0356d7`.
-- Not before **1792972800 =2026-10-26 09:00 KST**; priority1.0; no judge ID yet.
-- `runs/waiting/3360739.json`, log `runs/detached/917e79f37f28b5c1.log`.
-- EPBASE/VEC/PROD/NORM/PAIR plus fixed-math ONCE contrasts;16seeds, exactS14 control.
+The trigger is the small shared-math ILP contrast at identical 2-CTA/16-active-warp residency.
+Work-normalized ratios are .98973 / .98177 / .98275. No saturated operational pipe is established.
+There is no microprobe A:A, so the contrast is a hypothesis requiring the full paired lab, not a
+proven bottleneck or a predicted kernel gain. The other three arms travel in the already-prepared batch;
+the diagnostic does not nominate them as fixes. More copy depth and 32 active warps do not improve
+matched work. Cold/hot math differs, but depth and Little's-law contrasts do not isolate insufficient
+flight. Integer/PRMT saturation is not demonstrated. See [PIPE.md](PIPE.md) for the measurements.
 
-## Second-round batch (screened and queued)
+After the follow-up receipt: require all32 seeds, every arm's native gate and valid S14/A:A controls.
+Nominate only a margin-safe paired winner to P4; a failed/unproven arm is unmeasured. Compare any new
+winner with PAIR in the whole layer rather than assuming the gains add. The combined payload currently
+compares rebuilds with S14, not PAIR. A loss closes only that exact tested recipe.
 
-`build_epi_next.py` derives four cuts from the queued two-writer PAIR cell:
+## Implementation evidence and reproduction
 
-| Arm | Cell | SHA256[:8] | New work |
-|---|---|---|---|
-| TREE | `epiu_cell.py` | `30e50fdd` | Eight-way FP32 sum uses a balanced tree: native marked FADD chain8->3 |
-| FOUR | `epif_cell.py` | `780b3cee` | Four16-lane writers instead of two32-lane writers, same modeled32 reduction bank wavefronts |
-| LOCAL | `epil_cell.py` | `c9ce6f15` | Shared per-CTA norm sums, transpose export, parallel final gather; zero global norm atomics |
-| FOUR_LOCAL | `epix_cell.py` | `b669c375` | Four writers plus disjoint local half-norm slots and final gather |
-
-All retain Ksplit8, two packed stages and original dequant/MMA. No widened prepare weights.
-LOCAL trades atomics for2KiB shared atM32,264KiB of current-call global export at grid264 and a finalizer gather.
-`ISSUE.md` gives the address/dependency model and its limits. `issue_audit.py` compiles marked actual
-bodies sm90a; `issue_budget.py` normalizes per16weights/lane against4TB/s; `reduction_depth.py` checks
-actual add dependencies. `audit_epi_next.py` confirms every full native flags69 image has128HMUL2/32HMMA;
-LOCAL variants contain zero FP32 global atomic sites. Native performance regs125/125/125/127, zero spills.
-
-`build_epi_next_lab.py` -> `prof/lab/moe_nt1_epi_next.py`: all four arms with S14 and PAIR controls,
-32weight/router seeds, M8/16/32, readflush AB/BAx6, direct PAIR ratios, A:A, CUPTI nodes/unique-byte rates,
-16phase seeds at each M, observer tax/effectiveGHz, local export/final gather clocks and route issue model.
-Synthetic weights; independent of the first reset outcome. All arms fit in one second-round run.
-
-Queued on MoE: sender **PID1005738**, wrapper **e23854aca7a11da1**, payload **642d6ae0**,
-priority**1.1** behind the first batch's1.0, not before**1792972800** (same09:00 KST reset).
-`runs/waiting/1005738.json`, log `runs/detached/e23854aca7a11da1.log`. No judge ID yet.
-The original sender3360739 and wrapper917e79f3 were verified unchanged after this send.
-
-
-Each arm passed528 component/replay checks +6forced ABI launches in the judge image (`check_epi_next.py`),
-including real/empty/one/all8 routes, zero inputs,8/16/24/32-token edges, three local-start offsets and fresh
-captured inputs. Worst TASK L2 .0024375; max relative versus INC .000251. Full normal/forced screens run
-through `tools/local_eval.py` with S14/S9 reference, inventory and dispatch audits, native NT1/NF math,
-and Hopper attention stand-ins. All four final normal/forced screens pass13 correctness cases,
-12dispatch shapes and24static checks each. `epi_next_screens.json` pins candidate hashes and coverage.
-The complete payload passes all32local seeds, nodes and16phase seeds per M in82.8s (warm local builds);
-`epi_next_lab_validation.json` pins payload642d6ae0 and exact output. `weights=None` is exercised.
- The first TREE normal screen compiles all24 sources/checks uncached;
-later screens reuse only byte-identical source/flags from that successful same-image receipt. Changed
-CUDA strings still compile with the original gate. Python/reference/runtime checks always execute.
-
-GPU0 OOM attempts are failed receipts, kept under `runs/screen/nt1_r2_*previous.log`; they are not passed
-screens. The resumed driver runs one GPU job at a time and only reuses successful exact-hash receipts.
-
-Decision rule: all four independent arms are queued regardless of reset ratios; the payload includes
-both S14 and PAIR. Nothing is waiting on a reset outcome before it can be sent. After both receipts, advance only a margin-safe paired kernel win to
-integration's many-seed whole-layer pair. If no arm wins versus S14 beyond A:A, close these recipes.
-
-## Reproduce / integration
-
-`screen_epi_next.py --resume --run-lab` runs the normal/forced full-layer screens and then the complete
-payload locally in the judge image. Evidence JSON records exact candidate/payload hashes. Local timings
-are diagnostic, not H200 evidence. `patch_s14.py --kind tree|four|local|four_local -o <candidate.py>` emits
-an experimental cell, patch and complete flag map onto S14. No second-round patch is promoted.
-The earlier experimental PAIR patch remains `epilogue_s14_pair.patch` `786a5ecb` onto S14 `f1c77ce6`.
-
-## Local ranking and limits
-
-GPU0 local32seed ratios versus PAIR (M8/16/32): TREE1.00038/1.00030/.99935,
-FOUR.99988/1.00570/1.00703, LOCAL1.00706/1.00961/1.00507,
-FOUR_LOCAL1.00639/1.01262/1.00952. A:A mean absolute drift1.159/1.415/1.687us.
-These show no clear win beyond PAIR on sm120; they do not select H200 performance. In the M32
-local trace, LOCAL's norm export/gather costs.160/.504us and final combine2.514us versus PAIR1.568;
-the structural atomics removal has a real tail cost. The H200 batch tests whether its reduction of
-contention pays that cost there. No new H200 bandwidth or speedup is claimed.
-
-The32 local router seeds give issue-normalized S14 math28.5625/34.3030/45.4292 instructions per unique
-16weights/lane atM8/16/32, scalar epilogues1.7656/2.1205/2.8083 before other costs. Routing is runtime
-input, so the payload prints the same accounting on H200. The older H200 route mix's M32 math45.979
-in `ISSUE.md` is a different16seed sample, not a contradiction.
+- [ISSUE.md](ISSUE.md): per-16-weight issue model, epilogue address/dependency accounting and measured decision.
+- [PIPE.md](PIPE.md): operational pipe limits, matched phases, TMA latency and classification limits.
+- `epi_next_validation.json`, `epi_next_screens.json`, `epi_next_lab_validation.json`: all four later
+  epilogues passed528 component/replay checks plus6 forced ABI calls each, normal/forced whole-layer
+  13 correctness cases,12 dispatch shapes and24 static checks; complete32-seed local payload passed.
+- `pipe_ready_manifest.json`, `pipe_ready_screens.json`, `pipe_ready_validation.json`: exact candidate,
+  cell and patch hashes; all four responses passed528 component checks plus6 ABI calls, and normal/forced
+  13-case/12-shape/25-static screens. Worst TASK L2 .0024375.
+- `pipe_rebuild_validation.json`: unchanged `caa59593` payload passed all32 local seeds and192 K16
+  forced ABI calls in51.5s. It is pre-send validation, not a live queue record.
+- K16's real two-stage Hopper kernel uses110,736 shared bytes atM32,64 registers,16-byte stack,
+  zero spills and two CTAs/SM. Local sm120 uses an explicit one-stage native-math stand-in only for ABI
+  coverage. No stand-in is shipped. LUT's independent proof covers all1,610,612,736 weights and scale codes
+  (`pipe_lut_proof.json`); prepare retains packed codes, not widened weights.
+- `pipe_lab_validation.json`, `pipe_native_audit.json`: final diagnostic passed16 local seeds,
+  eight phase seeds per M, all96 probes/66 work/6 latency rows. D4 uses a local D2 ABI stand-in for36 calls;
+  original D4 compiles sm90a. PDIA retains activation/weight loads with120 regs,zero spills,zero MMA/HMUL2.
+- Local checks use GPU0 in the judge image through `tools/local_eval.py`; Hopper-only attention glue
+  uses explicit stand-ins. H200 claims above come only from the listed judge receipts.

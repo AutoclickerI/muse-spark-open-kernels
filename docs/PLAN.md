@@ -1,16 +1,16 @@
 # Plan
 
-## Status (2026-10-26 00:00 KST, day 4 of 14; the kernel track closes 2026-11-05 16:59 KST)
+## Status (2026-10-26 09:35 KST, day 5 of 14; the kernel track closes 2026-11-05 16:59 KST)
 - G0 (R-20261025-1): the highest score on the overall kernel board; by our fit (GOAL) that is our decode-layer
-  speedup. Board: our S9 1.6073x places 180th; leader 2.285x, 10th 2.134x, 50th 1.896x, both rising (SOTA "Leaderboard").
-- Incumbent S14 final `f1c77ce6` (`problems/muse_decode_layer/cand_r3_best7_s14_final.py`; host runs 1.717-1.753x,
-  ~90-106th) is the first scored run at the 09:00 KST reset. S15 `60254883` (`cand_r3_best7_s15.py` = S14 + the
-  public proj port's winning shapes + last-CTA decode-1 sliding + register-fold N128 full verify; screens pass)
-  goes scored right after it; its leave-one-out lab (`dev/s15/`) runs first and decides the freeze.
-- **What 1st takes:** ~1.32x over S14. The leader sits at ~1.35x the one-continuous-stream bound (3.08x), we at
-  ~1.8x; their component boards run 1.4-1.8x ours (attention 2.91 vs 1.59, MoE 2.52 vs 1.69, proj 1.61 vs 1.19,
-  though ours there are older kernels). No single stage closes the gap: attention, MoE and glue each have to reach
-  their roofs, so every lane works a structural rebuild of its stage, not tuning.
+  speedup. Board: S15 `9c5fc18d` 1.8003x places ~94th of 698 (S14 final `9b94c126` 1.7428x); leader 2.3443x,
+  10th 2.1665x, 50th 1.9218x, all rising (SOTA "Leaderboard").
+- Incumbent S15 `60254883` (`problems/muse_decode_layer/cand_r3_best7_s15.py` = S14 + the public proj port's
+  winning shapes + last-CTA decode-1 sliding + register-fold N128 full verify); its leave-one-out lab (`dev/s15/`)
+  decides which pieces stay. S16 is composed from the reset labs' paired winners (P4).
+- **What 1st takes:** ~1.30x over S15. The leader sits at ~1.3x the one-continuous-stream bound (3.08x); their
+  component boards run 1.4-1.8x ours (attention 2.91 vs 1.59, MoE 2.52 vs 1.69, proj 1.61 vs 1.19; P12 is
+  re-measuring ours with S15's kernels). No single stage closes the gap: attention, MoE and glue each have to
+  reach their roofs, so every lane works a structural rebuild of its stage, not tuning.
 - Where the time goes (S11 timeline `c6bd22e2`, critical-path time above the byte roof, share of wall at d1 / d16 /
   d32 / v1 / v16 / v32): attention 25 / 13 / 12 / 19 / 12 / 13%; MoE 6 / 12 / 10 / 16 / 20 / 18% (2.0-3.0 TB/s at
   every M); glue 13 / 5 / 3 / 8 / 5 / 4%; dense projections 8-13%. Launch gaps are 0.5-2%. The lever table's

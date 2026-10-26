@@ -1,5 +1,27 @@
 # S14 pipe, dependency and TMA-flight identification
 
+Receipt **`16c180784f414576`** is complete:16 routed seeds,96 pipe probes,66 work rows,6 latency rows.
+Official host and correct S14/phase gates pass; PDIA is deliberately wrong math. `h200_pipe.txt` is the
+losslessly decoded matrix; `read_reset.py` verifies it and records decisions in `h200_results.json`.
+
+Measured classification at M8/16/32:
+
+- Shared ILP2/W8 node-time ratios .98991/.98145/.98272, work-normalized .98973/.98177/.98275,
+  with the same2 CTAs/16 active warps. This small contrast supports a dependency hypothesis.
+  Microprobes have no independent A:A; it does not prove a full-kernel gain or one dominant bottleneck.
+- Shared W16/W8 work-normalized ratios1.01796/1.02019/1.01646:32 active warps do not help.
+- Cold→hot math node ratios .87069/.94082/.96439, but depth4/depth2 copy ratios
+  .98253/1.07285/1.14805 do not isolate a flight shortage; depth4 also reduces actual residency to1 CTA.
+- Stable ILP4 LOP3/SHF/PRMT rates are about1.96 warp instructions/SM/cycle; BF16 HMUL2 reaches3.57,
+  HMMA .658, LDS128 .249, LDS32 .996, four-way LDS32 .250. These are operational same-op limits.
+  The dependent SHF/PRMT cap8 clocks1.336/1.447GHz are anomalous; their >2 issue rates are not used.
+  No integer/PRMT saturation is established in the real mixed kernel.
+
+The ILP contrast triggered the already-prepared four-arm paired lab, sender4124752, merged wrapper
+`de47736b9f588673`, on MoE. `followup_queue.json` records dispatch. FLIGHT/K16/LUT travel in that
+packed batch but are not identified fixes; no rebuilt kernel is promoted. PAIR's separate epilogue
+receipts nominate it to P4; TREE adds no gain. Whole-kernel and whole-layer controls still decide.
+
 The earlier58.7 us math/activation clock is ONCE, not S14. Counts28.56/34.30/45.43 per unique group
 are S14's repeated-block model. They must not be compared as the same schedule. The new lab measures
 matched S14 math/B-fill clocks and ONCE-style gathered-activation contrasts.
@@ -15,7 +37,7 @@ an exact physical port map. Do not add independent-pipe utilization percentages 
 | Class | Per requested group | M32 per unique group | Nominal warp instructions/SM/clock | M32 load at4TB/s |
 |---|---:|---:|---:|---:|
 | Integer/address math+finite epi |17.5833|27.9666|2|74.3%|
-| PRMT |1|1.5905|unpublished; calibrated|pending|
+| PRMT |1|1.5905|about1.96 measured operational|about4.3% at assumed1.98GHz|
 | Packed BF16 HMUL2 |8|12.7241|4 F16x2 envelope; BF16 calibrated|16.9% envelope|
 | HMMA16816 |2|3.1810|1 dense-TC upper bound; actual mma calibrated|16.9% upper-bound load|
 | LDS128 weights+scale |.5625|.8947|.25 shared-bandwidth envelope|19.0%|
@@ -57,10 +79,12 @@ not an observation of time-average outstanding bytes; slots may already be ready
 |2us|60,606|96,395|
 
 The72KiB envelope covers2.433us at unique4TB/s, or1.530us under the1.59052 all-cold reload assumption.
-That factor describes logical TMA traffic; L2 hits can make HBM traffic smaller. There is no measured
-H200 latency yet. The queued lab substitutes its cold/hot, lightly/fully loaded36KiB completion
-latencies, reports required bytes and coverage, and measures throughput against depth1/2/4 and actual
-CTA residency. It does not label exposed wait or issue-to-late-consume time as completion latency.
+That factor describes logical TMA traffic; L2 hits can make HBM traffic smaller. The measured cold
+36KiB completion is .676/1.096/2.000us at1/132/264 CTAs; hot is .320/.568/1.056us.
+At264 CTAs the unique4TB/s requirement is60,606 bytes/SM, giving1.217 steady-capacity coverage.
+An all-miss1.59052 reload model would reduce that to .765, but actual HBM misses and average outstanding
+bytes are unmeasured. Copy depth does not confirm the shortage. Exposed wait and issue-to-late-consume
+time are not completion latency.
 
 ## Diagnostic payload
 
@@ -92,12 +116,12 @@ Local D4 copy uses a test-only D2 stand-in because147KiB exceeds sm120's per-blo
 the original D4 compiles sm90a and fits H200. `pipe_lab_validation.json` records36 forced ABI calls.
 `compact_pipe` losslessly packs the full probe matrix to stay below the9000-character receipt cap;
 `read_pipe.py` decodes the local log or H200 receipt. The final local receipt uses5832 characters.
-Local timings cannot select the H200 bottleneck. The H200 result, not this static table, selects below.
+Local timings cannot select the H200 bottleneck. The receipt and classification above select below.
 
-Queued: MoE sender1805785, wrapper875038058dfb252d, priority1.2, not-before1792972800. Payload SHA256
-`d5319603`; no judge ID yet. The older epilogue senders3360739/1005738 remain unchanged.
+Completed: MoE sender1805785, wrapper875038058dfb252d, payload `d5319603`,
+judge **`16c180784f414576`**. Both epilogue receipts are also complete (README).
 
-## Ready variants and decision rule (unsent)
+## Rebuild decision rule and sent response
 
 All derive from S14, preserve original M1, and cover2<=M<=32 when the small-M path is called.
 `patch_s14.py --kind flight|ilp|k16|lut -o <candidate.py>` emits cell+patch+manifest; no variant is promoted.
@@ -108,15 +132,16 @@ All derive from S14, preserve original M1, and cover2<=M<=32 when the small-M pa
 | Shared-only math improves with independent chains, without a saturated pipe | ILP (`pilp_cell.py`) | Alternate two MMA accumulator chains; reject if new registers or final sum erase the benefit |
 | Shared-only math improves at32 versus16 active warps, after normalizing work and residency | K16/r64 (`pk16_cell.py`) | K256/warp,16 math warps/CTA,64 regs, last eight B operands cached in timed shared; two H200 CTAs fit |
 | Integer/PRMT throughput is close to the measured same-op envelope while shared has headroom | FP4-only LUT (`plut_cell.py`) |1KiB code-pair table, scale math unchanged; moves integer decode work to shared. Reject if predicted or measured bank service becomes the tighter roof |
-| Shared gather/epi serialization dominates | Existing PAIR/TREE cells | Their already-queued tests reduce bank requests and add-chain depth; do not rerun them as a new recipe |
+| Shared gather/epi serialization dominates | Existing PAIR/TREE cells | Completed tests nominate PAIR; TREE is tied; do not rerun these as a new recipe |
 
 If evidence conflicts or no diagnostic isolates a limit, none of these is sent as a purported solution.
 A classified branch must still beat S14 in a paired kernel lab and then the six-load whole-layer score.
-The paired follow-up is prebuilt as `prof/lab/moe_nt1_pipe_rebuild.py` (`caa59593`), unsent: all four arms
+The paired follow-up `prof/lab/moe_nt1_pipe_rebuild.py` (`caa59593`) is now sent: all four arms
 in one run,32 seeds/M, ABBA read flush, A:A and consumer node rates. It passed every local gate and
-all32 seeds; K16's local stand-in recorded192 ABI calls. Send this batch only when the diagnostic
-isolates a limit addressed by at least one arm. Otherwise hold it, rather than spending a run on an
-unidentified mechanism. `pipe_rebuild_validation.json` pins the exact payload and local receipt.
+all32 seeds; K16's local stand-in recorded192 ABI calls. The small independent-chain contrast is the
+classified ILP lead; full-kernel measurement must establish whether that lead survives. Other arms are
+packed comparisons, not claimed solutions. `pipe_rebuild_validation.json` pins the unchanged payload;
+`followup_queue.json` is the current send record. No measured rebuilt-kernel result exists yet.
 
 The K16 shared cache makes the two-stage kernel110,736 dynamic bytes atM32: it fits two228KiB H200
 CTAs, but exceeds local sm120's per-block capacity. The explicit test-only `k16_standin.py` runs native

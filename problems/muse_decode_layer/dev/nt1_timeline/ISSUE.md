@@ -1,5 +1,14 @@
 # S14 small-M issue model and second-round cuts
 
+H200 decisions: `d650c04ead114119` and `29ad388de976432c` pass all native gates.
+PAIR/S14 is .97493/.97262/.97932 (16 seeds) and .97830/.97462/.97778 (32 seeds) at M8/16/32,
+above A:A uncertainty. TREE/PAIR .99904/.99811/1.00007 does not establish a benefit from the shorter
+add chain. FOUR, LOCAL and FOUR_LOCAL lose versus PAIR: fewer modeled bank requests or zero norm
+atomics are insufficient to predict a win. LOCAL's traced M32 export/gather is .234/1.110 us and its
+combine is2.112 us versus PAIR1.498; this supports the tail-cost explanation, with observer tax and
+overlapping clocks preventing additive attribution. PAIR is nominated to P4, pending whole-layer pairing.
+Exact ratios, controls and remaining hypotheses are in README.md and `h200_results.json`.
+
 The 4 TB/s target counts unique packed expert bytes, including scale codes (9 bytes/16 weights).
 It is a logical rate, not a measured HBM counter. Exact base: S14 `f1c77ce6`, flags69 at M8/16/32.
 
@@ -53,7 +62,7 @@ outer integer work. We cannot call it purely memory bound from the static model.
 
 At M32 old ONCE's H200 critical CTA has58.7 us math/activation,28.5 us epi,3.6 us exposed weight waits
 (f58cc7a6). Epi includes stores, barrier, producer, activation/output and norm atomics. Its time is not an
-atomic-only measurement. The queued first batch separates these clocks and tests bank-safe loads,
+atomic-only measurement. The first batch (`d650c04ead114119`) separates these clocks and tests bank-safe loads,
 warp7 production, and run-based norms.
 
 Scalar gathers map four distinct words to a shared bank. The request model follows
@@ -65,7 +74,7 @@ four half-active warps instead of two full warps. It spends more warp instructio
 | Epi per CTA output tile | W13 warp instructions | W2 warp instructions | Per16 weights/lane W13/W2 |
 |---|---:|---:|---:|
 | Scalar (admitted) |185|308|1.445 /2.406|
-| PAIR (queued control) |148|129|1.156 /1.008|
+| PAIR (measured winner) |148|129|1.156 /1.008|
 | TREE |144|125|1.125 /0.977|
 | FOUR |314|270|2.453 /2.109|
 
@@ -87,6 +96,6 @@ allocated in the call; prepare retains exactly the original packed weights.
 
 The new trace separates local export (slot61) and the final gather (62), in addition to first-batch
 store/barrier, producer, writer0 and norm flush clocks. Producer/body overlap makes the subclocks
-non-additive. Full flags69 sm90a images retain128 HMUL2/32 HMMA each and zero spills; runtime H200
-residency remains a queued measurement. Aggregate issue counts cannot predict barrier skew or lost
+non-additive. Full flags69 sm90a images retain128 HMUL2/32 HMMA each and zero spills; measured H200
+residency is2 CTAs/SM for every arm. Aggregate issue counts cannot predict barrier skew or lost
 parallelism; use the paired whole-kernel and then whole-layer result to select the recipe.
