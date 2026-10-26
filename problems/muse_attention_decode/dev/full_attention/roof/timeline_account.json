@@ -1,0 +1,264 @@
+{
+  "receipt": "7eaa262a30ec483e",
+  "timeline_sha256": "18056fd3ac937c832c2ce61af9d8a97301c6a22048c204ba294d62b2ee6b89c4",
+  "scope": "retained median-seed real S15 whole-layer trace; logical bandwidth, not hardware DRAM counters",
+  "stream_roof_TBs": 4.58,
+  "rows": {
+    "d1F": {
+      "seed": 7206022,
+      "logical_read_bytes": 20805392,
+      "roof_us": 6.902662008733625,
+      "critical_us": 19.36,
+      "above_us": 12.457337991266375,
+      "main_logical_TBs": 1.0452869774919615,
+      "kernels": [
+        {
+          "name": "attn_main<1, 4>@9",
+          "grid": [
+            336,
+            1,
+            1
+          ],
+          "block": 128,
+          "shared": 73984,
+          "registers": 120,
+          "residence_us": 19.904,
+          "critical_us": 19.36,
+          "gap_us": 0.0
+        }
+      ]
+    },
+    "d16F": {
+      "seed": 7206022,
+      "logical_read_bytes": 327502304,
+      "roof_us": 73.86705327510917,
+      "critical_us": 104.64,
+      "above_us": 30.77294672489083,
+      "main_logical_TBs": 3.165619239096814,
+      "kernels": [
+        {
+          "name": "_attn_sumcast_ke@11",
+          "grid": [
+            16,
+            5,
+            1
+          ],
+          "block": 128,
+          "shared": 0,
+          "registers": 32,
+          "residence_us": 7.711,
+          "critical_us": 1.184,
+          "gap_us": 0.0
+        },
+        {
+          "name": "attn_main<1, 4>@9",
+          "grid": [
+            24,
+            1,
+            16
+          ],
+          "block": 128,
+          "shared": 73984,
+          "registers": 120,
+          "residence_us": 103.456,
+          "critical_us": 103.456,
+          "gap_us": 0.129
+        }
+      ]
+    },
+    "d32F": {
+      "seed": 7206022,
+      "logical_read_bytes": 658294956,
+      "roof_us": 146.09252314410483,
+      "critical_us": 194.528,
+      "above_us": 48.43547685589516,
+      "main_logical_TBs": 3.399160174322538,
+      "kernels": [
+        {
+          "name": "_attn_sumcast_ke@11",
+          "grid": [
+            32,
+            3,
+            1
+          ],
+          "block": 128,
+          "shared": 0,
+          "registers": 16,
+          "residence_us": 7.904,
+          "critical_us": 0.864,
+          "gap_us": 0.0
+        },
+        {
+          "name": "attn_main<1, 4>@9",
+          "grid": [
+            12,
+            1,
+            32
+          ],
+          "block": 128,
+          "shared": 73984,
+          "registers": 120,
+          "residence_us": 193.664,
+          "critical_us": 193.664,
+          "gap_us": 0.16
+        }
+      ]
+    },
+    "v1F": {
+      "seed": 7310751,
+      "logical_read_bytes": 21318188,
+      "roof_us": 7.014626200873362,
+      "critical_us": 29.855999999999998,
+      "above_us": 22.841373799126636,
+      "main_logical_TBs": 1.0779828074433657,
+      "kernels": [
+        {
+          "name": "_qk_prep_kernel@19",
+          "grid": [
+            8,
+            1,
+            1
+          ],
+          "block": 128,
+          "shared": 4096,
+          "registers": 62,
+          "residence_us": 5.983,
+          "critical_us": 2.4,
+          "gap_us": 0.0
+        },
+        {
+          "name": "flash::prepare_v@25",
+          "grid": [
+            1,
+            1,
+            1
+          ],
+          "block": 32,
+          "shared": 0,
+          "registers": 27,
+          "residence_us": 3.295,
+          "critical_us": 3.295,
+          "gap_us": 0.065
+        },
+        {
+          "name": "cutlass::device_@26",
+          "grid": [
+            132,
+            1,
+            1
+          ],
+          "block": 256,
+          "shared": 56320,
+          "registers": 255,
+          "residence_us": 19.776,
+          "critical_us": 17.153,
+          "gap_us": 0.0
+        },
+        {
+          "name": "cutlass::device_@27",
+          "grid": [
+            8,
+            1,
+            1
+          ],
+          "block": 256,
+          "shared": 20608,
+          "registers": 48,
+          "residence_us": 6.976,
+          "critical_us": 5.952,
+          "gap_us": 0.0
+        },
+        {
+          "name": "_norm_gate_kerne@23",
+          "grid": [
+            8,
+            1,
+            1
+          ],
+          "block": 128,
+          "shared": 0,
+          "registers": 29,
+          "residence_us": 1.28,
+          "critical_us": 1.056,
+          "gap_us": 0.0
+        }
+      ]
+    },
+    "v16F": {
+      "seed": 7310751,
+      "logical_read_bytes": 333470696,
+      "roof_us": 75.17019563318776,
+      "critical_us": 136.769,
+      "above_us": 61.598804366812246,
+      "main_logical_TBs": 2.556036117243071,
+      "kernels": [
+        {
+          "name": "vq8_main<4>@42",
+          "grid": [
+            132,
+            1,
+            1
+          ],
+          "block": 384,
+          "shared": 221184,
+          "registers": 168,
+          "residence_us": 130.464,
+          "critical_us": 130.464,
+          "gap_us": 0.256
+        },
+        {
+          "name": "vq8_combine@43",
+          "grid": [
+            16,
+            16,
+            1
+          ],
+          "block": 256,
+          "shared": 0,
+          "registers": 64,
+          "residence_us": 25.505,
+          "critical_us": 6.305,
+          "gap_us": 0.0
+        }
+      ]
+    },
+    "v32F": {
+      "seed": 7310751,
+      "logical_read_bytes": 673191644,
+      "roof_us": 149.34507510917032,
+      "critical_us": 231.968,
+      "above_us": 82.62292489082967,
+      "main_logical_TBs": 2.9629913908450707,
+      "kernels": [
+        {
+          "name": "vq8_main<4>@42",
+          "grid": [
+            132,
+            1,
+            1
+          ],
+          "block": 384,
+          "shared": 221184,
+          "registers": 168,
+          "residence_us": 227.2,
+          "critical_us": 227.2,
+          "gap_us": 0.289
+        },
+        {
+          "name": "vq8_combine@43",
+          "grid": [
+            16,
+            32,
+            1
+          ],
+          "block": 256,
+          "shared": 0,
+          "registers": 64,
+          "residence_us": 24.8,
+          "critical_us": 4.768,
+          "gap_us": 0.0
+        }
+      ]
+    }
+  }
+}

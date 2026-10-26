@@ -1,0 +1,16 @@
+{
+  "R4": {
+    "source_sha256": "f176779b49c1306eb4e96f0d401eedcea308b06f1e837eeaf41ecd01235e900f",
+    "cuda_sha256": "cd44b470832bb348f0c7ce8d5b7aebfb7bf914e4f1279d314970f3e79345f049",
+    "page_lookahead": 4,
+    "added_shared": 1024,
+    "patch_sha256": "ecf7830eeef403da0530d654c0e3ccd950a73351de6c0397422c51ae25324148"
+  },
+  "R8": {
+    "source_sha256": "17bfdfd78f647dce19c5dbdf19e7ceab0096340c3021066116376b532acb9829",
+    "cuda_sha256": "3aefb787a449669bfe1c70d34267edd936db042a7b25ebd7cc1652242b87a76b",
+    "page_lookahead": 8,
+    "added_shared": 2048,
+    "patch_sha256": "5c1d5de7df52a32b5f7e4bf29d42d1e9afe23a6d2594dba4744d6b6417c35b59"
+  }
+}

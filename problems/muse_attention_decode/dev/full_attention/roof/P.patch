@@ -1,0 +1,11 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s15.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s15.py
+@@ -7834,7 +7834,7 @@
+         torch.cuda.current_stream(dev).cuda_stream)
+     return out
+ 
+-_PP_ROWS = ((1, 1, False),)
++_PP_ROWS = ((1, 1, False),(1,8,False))
+ _PP_FAST = False
+ 
+ 

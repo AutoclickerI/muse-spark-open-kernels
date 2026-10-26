@@ -1,0 +1,15 @@
+{
+  "utc": "20261026T041909Z",
+  "problem": "muse_attention_decode",
+  "mode": "check",
+  "job": "97d6fa2bf2ec499b",
+  "sha256": "f1c795dea343e4821bd0e88f4c71d54b928cf0586627b8ae6b30fa07b3fbdaf5",
+  "file": "problems/muse_attention_decode/lab/lab_roof_attention.py",
+  "source": "runs/muse_attention_decode/20261026T041909Z_check_97d6fa2bf2ec499b.py",
+  "git": "40d8e10+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/full_attention/roof/roof_attention.py: P5b full-roof structural batch: exact S15 all6full loads8seeds8cold,A:A fresh rotated graph ownership; H1/H2 one-head N128 producer32/consumer216 half-ring2CTA residency target; F balanced d1 whole64-key tiles; G quad-row vector page issue; P native1launch verify1full vs5kernelFA3. All keys/allowed formats;560publicTASK plus11native profile gates. Exact wrapperf1c795de payloadd822c531 normal+forced in judge image passes560TASK+16host2static; sixO3sm90a compiles no main spills/C75. Includes actual S15N128/H phase clocks and d1partial/q1 clocks; no PDL residence double counting. Ranks19pct-of-gap lever, not another sub1pct run.",
+  "snapshot": "runs/sent/f1c795dea343e482/lab_roof_attention.py",
+  "senders": [
+    2245418
+  ]
+}

@@ -1,0 +1,220 @@
+[
+  {
+    "name": "H1",
+    "cuda_sha256": "7e30a54ca74e19f253c1cee0bc41e90053e70200174f8e2c33b9a1f08af7355e",
+    "ok": true,
+    "registers": [
+      "128",
+      "128",
+      "128",
+      "64"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "8",
+        "16",
+        "8"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 156,
+    "setmaxnreg": [
+      "/*4820*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd8 ;                           /* 0x000000d8000079c8 */",
+      "/*1a960*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */",
+      "/*4820*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd8 ;                           /* 0x000000d8000079c8 */",
+      "/*1aaa0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */",
+      "/*4820*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd8 ;                           /* 0x000000d8000079c8 */",
+      "/*1ab20*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */"
+    ],
+    "m64n8k32": []
+  },
+  {
+    "name": "H2",
+    "cuda_sha256": "611f96992140343a5150bab27f559af4c47a70d0d11247eb1b0095c977c70f78",
+    "ok": true,
+    "registers": [
+      "128",
+      "128",
+      "128",
+      "64"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "8",
+        "16",
+        "8"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 156,
+    "setmaxnreg": [
+      "/*4820*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd8 ;                           /* 0x000000d8000079c8 */",
+      "/*1a960*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */",
+      "/*4820*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd8 ;                           /* 0x000000d8000079c8 */",
+      "/*1aaa0*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */",
+      "/*4820*/                   USETMAXREG.TRY_ALLOC.CTAPOOL UP0, 0xd8 ;                           /* 0x000000d8000079c8 */",
+      "/*1ab20*/                   USETMAXREG.DEALLOC.CTAPOOL 0x20 ;                                 /* 0x00000020000079c8 */"
+    ],
+    "m64n8k32": []
+  },
+  {
+    "name": "F",
+    "cuda_sha256": "a655126cdcaf43553053674ef2260fd1c43870191402b17ff88bd48e428cb715",
+    "ok": true,
+    "registers": [
+      "254",
+      "119"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 0,
+    "setmaxnreg": [],
+    "m64n8k32": []
+  },
+  {
+    "name": "G",
+    "cuda_sha256": "487bb8af0a85a28ffcbb2fb2c547c0796ce7c642ed703d21b8a46c250eb6b382",
+    "ok": true,
+    "registers": [
+      "235",
+      "118"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 0,
+    "setmaxnreg": [],
+    "m64n8k32": []
+  },
+  {
+    "name": "q1_clock",
+    "cuda_sha256": "370b27f8d60dbe9bd9b1c5ae9ed10764fb5547c683e0beb1efd348fc46f82f52",
+    "ok": true,
+    "registers": [
+      "235",
+      "120"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 0,
+    "setmaxnreg": [],
+    "m64n8k32": []
+  },
+  {
+    "name": "partial_clock",
+    "cuda_sha256": "eeb783207544668791639921965c385c6d5b39b767bdcc23e599407879ceb6da",
+    "ok": true,
+    "registers": [
+      "254",
+      "120"
+    ],
+    "stack_spills": [
+      [
+        "32",
+        "0",
+        "0"
+      ],
+      [
+        "32",
+        "0",
+        "0"
+      ]
+    ],
+    "c75": [],
+    "hgmma": 0,
+    "setmaxnreg": [],
+    "m64n8k32": []
+  }
+]

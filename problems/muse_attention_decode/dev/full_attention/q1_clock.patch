@@ -1,0 +1,123 @@
+--- a/q1.cu
++++ b/q1.cu
+@@ -6,6 +6,29 @@
+ #include <stdint.h>
+ #include <cooperative_groups.h>
+ #include <stdexcept>
++
++
++#ifndef FULL_CLOCK
++#define FULL_CLOCK 0
++#endif
++#ifndef GATHER_ONLY
++#define GATHER_ONLY 0
++#endif
++#if FULL_CLOCK
++#define FAMARK(t) const unsigned long long t=clock64()
++#define FAADD(s,t) if((threadIdx.x&31)==0)fc[s]+=clock64()-(t)
++__device__ __forceinline__ unsigned long long fa_time(){unsigned long long t;asm volatile("mov.u64 %0, %%globaltimer;":"=l"(t));return t;}
++struct FaTimer {
++ unsigned long long *s,*d;
++ __device__ FaTimer(unsigned long long*ss,unsigned long long*dd):s(ss),d(dd){
++  if((threadIdx.x&31)==0){for(int i=0;i<16;++i)s[i]=0;s[0]=fa_time();s[1]=clock64();}
++ }
++ __device__ ~FaTimer(){if((threadIdx.x&31)==0){s[12]=clock64()-s[1];s[13]=fa_time();s[9]=s[14]?clock64()-s[14]:0;for(int i=0;i<16;++i)d[i]=s[i];}}
++};
++#else
++#define FAMARK(t)
++#define FAADD(s,t)
++#endif
+ 
+ namespace cg = cooperative_groups;
+ 
+@@ -126,7 +149,8 @@
+ //                    (L==8) row g -> token 2*mta, row g+8 -> token 2*mta+1 (query head g).
+ template <int L, int NTC>
+ DEVI void compute_tile(WarpState<L>& st, const uint8_t* Ks, const uint8_t* Vs, int tb, int h, int wh,
+-                       int kp0, int k_hi, int seq, int window, bool need_mask, float scale_log2) {
++                       int kp0, int k_hi, int seq, int window, bool need_mask, float scale_log2, unsigned long long* fc=nullptr) {
++  FAMARK(t_qk);
+   constexpr int MTW = WarpState<L>::MTW;
+   constexpr int KK = NTC / 2;
+   const int lane = threadIdx.x & 31;
+@@ -174,6 +198,7 @@
+     }
+   }
+ 
++  FAADD(6,t_qk);FAMARK(t_sm);
+   // Online softmax per row (rows g and g+8 of each m-tile; L==1 has only row g).
+   uint32_t pa[MTW][KK][4];
+ #pragma unroll
+@@ -221,6 +246,7 @@
+     }
+   }
+ 
++  FAADD(7,t_sm);FAMARK(t_pv);
+   // O += P V. B fragment (V, k = tokens, n = dims): n-tile jn column g is dim 8*g + jn, so a
+   // thread reads 8 contiguous bytes (dims 8g..8g+7) of four tokens and byte-transposes them.
+ #pragma unroll
+@@ -245,6 +271,7 @@
+         for (int mt = 0; mt < MTW; ++mt) mma16816(st.o[mt][4 * jj + x], pa[mt][kk], b0[x], b1[x]);
+     }
+   }
++  FAADD(8,t_pv);
+ }
+ 
+ template <int L, int STAGES>
+@@ -265,6 +292,16 @@
+ 
+   const int split = blockIdx.x, kvg = blockIdx.y, b = blockIdx.z;
+   const int tid = threadIdx.x, warp = tid >> 5, lane = tid & 31;
++#if FULL_CLOCK
++  __shared__ unsigned long long fas[4][16];
++  unsigned long long* fc=fas[warp];
++  const long long nr=(long long)p.batch*(p.hkv/2)*(p.ns/p.cs)*L*16;
++  auto dst=reinterpret_cast<unsigned long long*>(p.part_ml+nr*2)+(((b*(p.hkv/2)+kvg)*p.ns+split)*4+warp)*16;
++  FaTimer fa_guard(fc,dst);FAMARK(t_prep);
++#else
++  unsigned long long* fc=nullptr;
++#endif
++
+   const int g = lane >> 2, q4 = lane & 3;
+   const int h = warp & 1, wh = warp >> 1;
+   const bool last = split == p.ns - 1;
+@@ -452,22 +489,36 @@
+   const int tb = (L == 1) ? 32 * wh : 0;
+   const int win_edge = p.window ? (seq + L - p.window) : -2147483647;  // keys below need per-row masks
+ 
++  FAADD(2,t_prep);FAMARK(t_loop);
+   for (int i = 0; i < ntiles; ++i) {
++    FAMARK(t_wait);
+     cp_wait<STAGES - 2>();
++    FAADD(3,t_wait);FAMARK(t_sync);
+     __syncthreads();
++    FAADD(4,t_sync);FAMARK(t_issue);
+     const int nxt = i + STAGES - 1;
+     if (nxt < ntiles) issue(nxt % STAGES, rows_next);
+     cp_commit();
+     load_rows(nxt + 1, rows_next);
++    FAADD(5,t_issue);
+     const int slot = i % STAGES;
+     const int kp0 = c_lo + i * T;
+     const bool need_mask = (kp0 + T > c_hi) || (L > 1 && kp0 < win_edge);
++#if !GATHER_ONLY
+     compute_tile<L, NT>(st, sK + slot * TILE_BYTES, sV + slot * TILE_BYTES, tb, h, wh, kp0, c_hi, seq, p.window,
+-                        need_mask, scale_log2);
+-  }
++                        need_mask, scale_log2,fc);
++#endif
++  }
++  FAADD(11,t_loop);
++#if FULL_CLOCK
++  if(lane==0){fc[10]=ntiles;fc[14]=clock64();}
++#endif
+   cp_wait<0>();
++#if GATHER_ONLY
++  return;
++#endif
+   if (last && (L > 1 || wh == 0)) {
+-    compute_tile<L, 2>(st, sNK, sNV, 0, h, wh, seq, seq + L, seq, p.window, true, scale_log2);
++    compute_tile<L, 2>(st, sNK, sNV, 0, h, wh, seq, seq + L, seq, p.window, true, scale_log2,fc);
+   }
+ 
+   // Thread-partial sums -> row sums.

@@ -1,0 +1,13 @@
+{
+  "partition_cases": 2893,
+  "old_producer_chunks": 1024,
+  "new_chunks_per_head": 512,
+  "gather_coordinate_permutation": true,
+  "one_head_empty_count": 4,
+  "one_head_full_count": 4,
+  "consumer_registers": 216,
+  "producer_registers": 32,
+  "two_CTA_register_budget": 63488,
+  "capacity": 65536,
+  "passed": true
+}

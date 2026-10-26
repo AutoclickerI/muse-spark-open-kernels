@@ -1,0 +1,15 @@
+{
+  "utc": "20261026T053554Z",
+  "problem": "muse_attention_decode",
+  "mode": "check",
+  "job": "4df30d04a39e433e",
+  "sha256": "f5989be113d4baa1ed925c1455538ddf9abccc88f9c0d4cbe2c5e59394b3981c",
+  "file": "problems/muse_attention_decode/lab/lab_page_attention.py",
+  "source": "runs/muse_attention_decode/20261026T053554Z_check_4df30d04a39e433e.py",
+  "git": "73f1f23+dirty",
+  "note": "h200_lab problems/muse_attention_decode/dev/full_attention/page_ring/page_attention.py: P5b structural full attention: original row-ownership R4/R8 async page-coordinate rings to remove 1680cyc issue dependency; D native tensor-core denominator first TASK-gated measurement (old fb14 probe aborted at extra1e-6, not TASK failure); exact S15 A:A + known G transport control, all6full loads8freshseeds8cold,480public TASK+11native clocks incl actual q1 residency/phase A,R4,R8 and N128 A,D. Exact wrapperf5989be1 payloaddf468887 normal+forced judge-image pass480TASK+16host2static, R O3sm90a122regs0spills. D168regs known16B spill retained as measured design, no stricter oracle gate. Stage only; P4 holds G0. After97d6fa2b no sub1pct standalone sends.",
+  "snapshot": "runs/sent/f5989be113d4baa1/lab_page_attention.py",
+  "senders": [
+    2948858
+  ]
+}

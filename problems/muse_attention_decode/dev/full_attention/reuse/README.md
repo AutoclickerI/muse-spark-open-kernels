@@ -31,5 +31,18 @@ A:A drift is reported without adding a per-load win gate.
 Exact wrapper28483f42 passed488/488TASK checks,13host and2static checks
 in both modes (121.39/285.45s private lab). All native probes remain required.
 Sent as decode-host check **31730357bae64c9c**, priority3; `queue.json` keeps
-full source/payload hashes and sender identity. Results pending;
+full source/payload hashes and sender identity. Receipt landed and passed488/488TASK;
 `read_rebuild.py --reuse <receipt>` computes every paired seed score and point SE.
+
+## Result
+
+Job31730357bae64c9c confirms occupancy A/oldKM/reuse=3/2/3. Eight seeds:
+reuse d16F .999788,SE.002715,95%CI[.993369,1.006208];d32F1.007311,
+SE.004102,95%CI[.997612,1.017010]. OldKM1.182979/1.247170.
+The occupancy hypothesis explains much of the original loss; restoring it
+does not establish a structural win. d16F point goes to P4 under the current
+nomination rule (`P4_HANDOFF.json`), without another standalone run.
+Affected-shape A:A d16F/d32F.997908/1.001297 (load control details in result.json);
+six-load A:A R.997609[.996126,.999093] has d1 capture drift. Reuse R.998324
+[.996366,1.000286] does not clear G0. Close the tested shared score remap as
+a large-gain lever; direct accumulator layouts and other transport remain open.

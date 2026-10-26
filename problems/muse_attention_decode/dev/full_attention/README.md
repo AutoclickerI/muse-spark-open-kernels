@@ -1,7 +1,7 @@
 # P5b full attention and S15 audits
 
 Full decode16/32 and verify16/32 remain active. Exact S15 base is `60254883`.
-P5 owns sliding/decode1; this lane does not edit those implementations.
+P5 owns sliding attention. This lane owns full attention at all six loads under the12:55KST roof-gap brief; it does not edit P5 files.
 
 | Reset batch | Job | Native result / decision |
 |---|---|---|
@@ -75,3 +75,28 @@ score remapping, reducing static shared6144→2048B with114regs/zero spills.
 Normal/forced488TASK+13host+2static pass; decode check31730357bae64c9c now
 measures actual occupancy and pairs S15/A:A/old K-major/reuse. No gain inferred
 before that receipt.
+
+## Full-attention roof-gap batch
+
+K-tile reuse31730357 passed488TASK and restored occupancy3/2/3(A/old/reuse).
+It removes the large regression but gives d16F.999788[.993369,1.006208] and
+d32F1.007311[.997612,1.017010]. Only d16F point goes to P4, without another
+standalone send; joint G0 remains uncleared.
+
+`roof/README.md` ranks each full load using actual S15 critical increments
+(7eaa262a), exact q1 instruction clocks(5c995836), and explicitly marked older
+N64 verify clocks. New H1/H2 one-head N128 topology targets twice the residency;
+F balances d1 whole tiles; G changes page-row ownership/vector page issue;
+P replaces verify1full five-kernel FA3 chain with one native partial-input kernel.
+One attention-host payload includes all5arms+A:A,6full loads,8seeds×8cold
+rounds,560public TASK checks plus realHopper phase checks. NativeO3all6sources
+pass; normal exact wrapperf1c795de passes560TASK+16host+2static; forced also passes560TASK+16host+2static. Job97d6fa2bf2ec499b passes571TASK
+including11native phase checks. No changed cell wins; roof/result.json and
+roof/README.md retain all ratios/CI. Exact S15 N128 softmax1601–1633cycles/tile,
+and q1 page-issue1679–1698cycles/tile, confirm the next structural costs.
+
+`page_ring/` batches R4/R8 asynchronous page-coordinate rings with the previously
+unmeasured D tensor-core denominator. D was blocked by an extra1e-6 exact-sum
+probe, not a TASK failure; this batch gates on the unchanged public TASK checker.
+Native diagnostics remain evidence. All6full loads/8newseeds/A:A and actual
+phase/residency probes are packed together. See page_ring/README.md.

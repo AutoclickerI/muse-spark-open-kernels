@@ -27,7 +27,8 @@ def source(cuda):
         uint8_t* vt=VT+slot*16384+head*8192+slab*4096;
         #pragma unroll
         for(int d=0;d<16;d++)vt[off(cb+d,perm)]=valid?p.vc[src+d]:0;''')
-    edit('return CLKPAD + 24576 + ST * 49152;', 'return CLKPAD + 24576 + ST * 16384;')
+    prefix=25600 if 'DI void pv_sum64(' in cuda else 24576
+    edit(f'return CLKPAD + {prefix} + ST * 49152;', f'return CLKPAD + {prefix} + ST * 16384;')
     edit('int64_t split_stride, int64_t flags, int64_t stream) {',
          'int64_t split_stride, int64_t flags, int64_t stream, int64_t local_vt) {')
     edit('  // A segment has at most grid/NS', '  p.local_vt=(uint8_t*)local_vt;\n  // A segment has at most grid/NS')
@@ -35,6 +36,18 @@ def source(cuda):
 
 
 def install(m):
+    if m.VQ8_CUDA.startswith('// P5B_ONE_HEAD:'):
+        cuda=m.VQ8_CUDA;cache=[]
+        def mod():
+            if not cache:
+                arch=''.join(map(str,m.torch.cuda.get_device_capability()))
+                cache.append(m.load_inline(name='p5_one_head_local_'+hashlib.sha256(cuda.encode()).hexdigest()[:12]+'_'+arch,
+                    cpp_sources='#include <pybind11/pybind11.h>\n#include <pybind11/stl.h>\n'+m.VQ8_CPP,
+                    cuda_sources=cuda,functions=['vq8_forward','vq8_resources'],no_implicit_headers=True,with_pytorch_error_handling=False,
+                    extra_cuda_cflags=['-O3','-std=c++20',f'-gencode=arch=compute_{arch},code=sm_{arch}']))
+            return cache[0]
+        m._vq8_module=mod;mod()
+        return dict(local_vq8='one-head N128 original shared ring/stage2 fits sm120; native register transfer compiled separately')
     cuda=source(m.VQ8_CUDA)
     cpp='#include <pybind11/pybind11.h>\n#include <pybind11/stl.h>\n'+m.VQ8_CPP
     # Pointer-only pybind declaration in S15 has unnamed arguments.

@@ -782,6 +782,48 @@ Library's d1 A:A is1.013075 (1.004542–1.022814); other means are
 | VQ8 even/odd online-softmax states | v16F/v32F1.033005(SE.001895)/1.048299(.001689);parity/reg1.017210/1.014567;8seeds,854TASK pass; affected-shape A:A v16/32 .998796/.999073,d16/32 1.002203/.999249 | Two statically indexed m/l/O chains, exact final log-domain merge, same register transfer | Tested parity schedule loses beyond reg control; other overlap schedules remain;six-load A:A R.996636[.994997,.998278] drift retained, not per-load veto | `1bab0b2d0dc14931` |
 | q1 K-major native FP8 M64/N8 QK | d16F/d32F1.193606(SE.006464)/1.243381(.003908);8seeds,854TASK pass; affected-shape A:A v16/32 .998796/.999073,d16/32 1.002203/.999249 | Native QGMMA64x8x32, exact3layout probes, unchanged gather/split/PV; shared score remap | Current shared-remap form loses; direct accumulator softmax/PV mappings remain;six-load A:A R.996636[.994997,.998278] drift retained, not per-load veto | `1bab0b2d0dc14931` |
 | Whole guarded S15n native validation |268/268 TASK checks,67shapes×2seeds×2arms,no errors/failures | Real Hopper range kernels, all65timing shapes plus B64/B65 capacity and captured replay/cache/routing;267.69s | Whole guarded range patch792eacc3/source9cc90d2e goes to P4; scored dispatch identical, final composition uses G0 | `c03a3ae8ddfd490d` |
+| K-major dead-K score reuse |d16F.999788(SE.002715),95%CI[.993369,1.006208];d32F1.007311(.004102)[.997612,1.017010];8seeds,488TASK pass | Native API occupancy A/old/reuse3/2/3 proves the6144→2048Bstatic repair removes old2CTA regression | Only d16F point to P4, patch57130acd/source4b8641bc; no standalone follow-up for this tiny point. Exact shared-remap form lacks large gain; other direct accumulator/transport paths remain | `31730357bae64c9c` |
+
+### P5b full-attention roof-gap attribution
+
+Full columns in the S15 stage table are weighted16/62. The raw per-full-layer
+median-seed critical times below come from the retained trace, so they differ
+slightly from the three-seed weighted means. These are logical byte rates,
+not hardware HBM counters; 4.58TB/s is the best fitted whole-array stream, not
+a universal page-row ceiling. PDL wait residence is clipped at the predecessor
+frontier and is never charged twice. `dev/full_attention/roof/timeline_account.json`.
+
+| Load | Raw critical/roof us; mechanism | Structural test | Evidence |
+|---|---|---|---|
+| d1F |19.36/6.90;one launch,336split CTAs,1.05TB/s logical. Fixed prologue/short-tile/merge leading hypothesis, new97d6fa2b clocks show9089/9424prologue/epilogue vs8214loop cycles,2–4tiles;pageissue341/tile | F balances whole64-key tiles; no launch is deleted because none is extra | `7eaa262a30ec483e` |
+| d16F |104.64/73.87;3.17TB/s;sumcast adds1.18us. Exact q1 page/issue1578cycles/tile vsQK442,smx259,PV349;gather-only3.62TB/s | G quad-consecutive rows and vector page reads, same all-key gather/splits/math | `7eaa262a30ec483e`,`5c99583676994c2a` |
+| d32F |194.53/146.09;3.40TB/s;sumcast .86us. Page/issue1672 vsQK437,smx256,PV345;gather-only3.74TB/s | G; new exact-source97d6fa2b pageissue1698 vswait25cycles/tile | `7eaa262a30ec483e`,`5c99583676994c2a` |
+| v1F |29.86/7.01;prep2.40+metadata3.30+FA3main17.15+combine5.95+norm1.06uscritical;idle gap.065us | P one native partial-input launch,H1/H2 fused native FP8 path. Removes fixed kernels/work, not a claim all residence is launch cost | `7eaa262a30ec483e` |
+| v16F |136.77/75.17;main130.46us2.56TB/s;combine adds6.31us of25.51residence. One384thread/221184B/168regCTA perSM. Actual S15N128softmax1633cyc/tile,producerpage/copy1280,Vpublish631,MMAissue305;waitQK46/PV9 | H1/H2 onehead256threadCTA,110592Bdynamic,128entryregs and producer32/consumer216. H2 doublesgrid to use2CTA/SM;H1 control | `7eaa262a30ec483e`,`5c99583676994c2a` |
+| v32F |231.97/149.35;main227.20us2.96TB/s;combine adds4.77us of24.80residence. Actual S15N128softmax1601,producerpage/copy1257,Vpublish615,MMAissue303;waitQK48/PV9 | Same H1/H2, actual N128 per-phase clocks and API residency in same batch | `7eaa262a30ec483e`,`5c99583676994c2a` |
+
+Native phase receipt97d6fa2bf2ec499b passes571/571TASK checks (560timed/fixture +11profile).
+Role clocks overlap; summing producer and consumer phases would double-count time.
+A:A95%t7 intervals by d1/d16/d32/v1/v16/v32 are [.994217,1.011484]/
+[.994474,1.002567]/[.996945,1.000967]/[.990992,1.012954]/
+[.995514,1.002352]/[.995715,1.001420]. All8seeds retained; no G0 claim from stage-only data.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Whole64-key balanced d1 partial split F |d1F1.004925,95%CI[.996716,1.013134] | No partial-tile overlap; same336CTAs/one launch/all keys; fixed prologue+merge remains | Close balancing alone as a winner; eliminate duplicated normalization and short-split merge work next | `97d6fa2bf2ec499b` |
+| Quad-row/vector page lookup G |d16F1.163271[1.148947,1.177596],d32F1.182698[1.170122,1.195274] | Same bytes/splits/math, changed ownership and page vector reads; issue remains large | Tested mapping loses; original ownership with asynchronous coordinate lookahead remains | `97d6fa2bf2ec499b` |
+| Native one-launch partial-input v1 P |v1F1.400567[1.391031,1.410102] | Removes FA3 prep/metadata/combine/norm boundaries, retains every key | Tested native replacement loses40%; launch count alone does not explain roof gap, lower native prologue/inner-loop cost needed | `97d6fa2bf2ec499b` |
+| One-head N128 topology H1/H2 | H1v1/v16/v32F1.143737/1.241220/1.350739;H2 1.049733[1.036955,1.062511]/1.214812[1.203296,1.226327]/1.302626[1.296133,1.309120] | API confirms A1,H1/H2 2CTA/SM; half ring/256threads/producer32consumer216regs. Twice residency does not reduce total softmax/issue work | This topology loses despite achieved occupancy. Exact N128 softmax remains largest consumer phase; tensor denominator has not passed TASK yet | `97d6fa2bf2ec499b` |
+
+
+Follow-up4df30d04a39e433e (attention check,sender2948858) packs original-mapping
+R4/R8async page-coordinate rings and Dnative tensor-core denominator,
+A:A/Gcontrol,all6full loads8newseeds8cold;480TASK normal+forced pass locally.
+Native timing pending. D's prior4.77e-4 exact-operand discrepancy against
+an extra1e-6 oracle was not a TASK failure; it had no TASK/timing verdict.
+The new payload retains every TASK gate and tests the unchanged source,
+including its known16Bmain spills, instead of assigning a loss to the old abort.
+
 
 ## Projections and verify dense
 
