@@ -1,0 +1,946 @@
+{
+  "shapes": {
+    "d1S": {
+      "A2": {
+        "mean": 1.011209481162249,
+        "se": 0.0037874007216657964,
+        "n": 32,
+        "min": 0.9694623469873265,
+        "max": 1.046091696680619
+      },
+      "V": {
+        "mean": 1.0131039476264847,
+        "se": 0.003154544948233918,
+        "n": 32,
+        "min": 0.9705560576511439,
+        "max": 1.042566766931
+      },
+      "N": {
+        "mean": 1.0078876977609952,
+        "se": 0.0030121710494900784,
+        "n": 32,
+        "min": 0.9675128705840582,
+        "max": 1.045607439651761
+      },
+      "C": {
+        "mean": 1.0129375284879079,
+        "se": 0.0023640322431376496,
+        "n": 32,
+        "min": 0.9806942463147884,
+        "max": 1.0381672394043528
+      }
+    },
+    "d1F": {
+      "A2": {
+        "mean": 0.9934893273105917,
+        "se": 0.0016278257098206745,
+        "n": 32,
+        "min": 0.9731596828992073,
+        "max": 1.0146817585301837
+      },
+      "V": {
+        "mean": 0.9960492784959738,
+        "se": 0.0017386493743249654,
+        "n": 32,
+        "min": 0.9791237633757319,
+        "max": 1.0191244239631336
+      },
+      "N": {
+        "mean": 0.9859863720843236,
+        "se": 0.00210197407809581,
+        "n": 32,
+        "min": 0.9636737491432488,
+        "max": 1.0059804202678901
+      },
+      "C": {
+        "mean": 0.9900383594919568,
+        "se": 0.0019655875141641284,
+        "n": 32,
+        "min": 0.9699987804382292,
+        "max": 1.0083947583947583
+      }
+    },
+    "v1S": {
+      "A2": {
+        "mean": 0.9970936037557393,
+        "se": 0.0021869800827239508,
+        "n": 32,
+        "min": 0.9745333886354209,
+        "max": 1.0194345787753942
+      },
+      "V": {
+        "mean": 1.033689022767371,
+        "se": 0.0027330700425303336,
+        "n": 32,
+        "min": 1.0003805732017916,
+        "max": 1.068761630349961
+      },
+      "N": {
+        "mean": 0.9975368709243825,
+        "se": 0.002102241961833719,
+        "n": 32,
+        "min": 0.9763128901946383,
+        "max": 1.028453491303252
+      },
+      "C": {
+        "mean": 1.0044846881598657,
+        "se": 0.0024525243263141447,
+        "n": 32,
+        "min": 0.9670426560457268,
+        "max": 1.03124508354048
+      }
+    },
+    "v1F": {
+      "A2": {
+        "mean": 1.0094602758260682,
+        "se": 0.002267097255121885,
+        "n": 32,
+        "min": 0.9885212330243587,
+        "max": 1.038883246086934
+      },
+      "V": {
+        "mean": 1.0383224298532934,
+        "se": 0.0017871163258253446,
+        "n": 32,
+        "min": 1.0196158249586567,
+        "max": 1.0565535971935383
+      },
+      "N": {
+        "mean": 1.0013210004170838,
+        "se": 0.0020103212537343636,
+        "n": 32,
+        "min": 0.97602525305228,
+        "max": 1.0220626900477834
+      },
+      "C": {
+        "mean": 1.008551827924208,
+        "se": 0.002053031162678925,
+        "n": 32,
+        "min": 0.9876052580385182,
+        "max": 1.0325521853854795
+      }
+    }
+  },
+  "nominations": [
+    {
+      "shape": "d1F",
+      "arm": "V",
+      "mean": 0.9960492784959738,
+      "se": 0.0017386493743249654,
+      "n": 32,
+      "min": 0.9791237633757319,
+      "max": 1.0191244239631336,
+      "seeds": [
+        9101669,
+        9206398,
+        9311127,
+        9415856,
+        9520585,
+        9625314,
+        9730043,
+        9834772,
+        9939501,
+        10044230,
+        10148959,
+        10253688,
+        10358417,
+        10463146,
+        10567875,
+        10672604,
+        10777333,
+        10882062,
+        10986791,
+        11091520,
+        11196249,
+        11300978,
+        11405707,
+        11510436,
+        11615165,
+        11719894,
+        11824623,
+        11929352,
+        12034081,
+        12138810,
+        12243539,
+        12348268
+      ],
+      "receipt_base": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb"
+    },
+    {
+      "shape": "d1F",
+      "arm": "N",
+      "mean": 0.9859863720843236,
+      "se": 0.00210197407809581,
+      "n": 32,
+      "min": 0.9636737491432488,
+      "max": 1.0059804202678901,
+      "seeds": [
+        9101669,
+        9206398,
+        9311127,
+        9415856,
+        9520585,
+        9625314,
+        9730043,
+        9834772,
+        9939501,
+        10044230,
+        10148959,
+        10253688,
+        10358417,
+        10463146,
+        10567875,
+        10672604,
+        10777333,
+        10882062,
+        10986791,
+        11091520,
+        11196249,
+        11300978,
+        11405707,
+        11510436,
+        11615165,
+        11719894,
+        11824623,
+        11929352,
+        12034081,
+        12138810,
+        12243539,
+        12348268
+      ],
+      "receipt_base": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb"
+    },
+    {
+      "shape": "d1F",
+      "arm": "C",
+      "mean": 0.9900383594919568,
+      "se": 0.0019655875141641284,
+      "n": 32,
+      "min": 0.9699987804382292,
+      "max": 1.0083947583947583,
+      "seeds": [
+        9101669,
+        9206398,
+        9311127,
+        9415856,
+        9520585,
+        9625314,
+        9730043,
+        9834772,
+        9939501,
+        10044230,
+        10148959,
+        10253688,
+        10358417,
+        10463146,
+        10567875,
+        10672604,
+        10777333,
+        10882062,
+        10986791,
+        11091520,
+        11196249,
+        11300978,
+        11405707,
+        11510436,
+        11615165,
+        11719894,
+        11824623,
+        11929352,
+        12034081,
+        12138810,
+        12243539,
+        12348268
+      ],
+      "receipt_base": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb"
+    },
+    {
+      "shape": "v1S",
+      "arm": "N",
+      "mean": 0.9975368709243825,
+      "se": 0.002102241961833719,
+      "n": 32,
+      "min": 0.9763128901946383,
+      "max": 1.028453491303252,
+      "seeds": [
+        9101669,
+        9206398,
+        9311127,
+        9415856,
+        9520585,
+        9625314,
+        9730043,
+        9834772,
+        9939501,
+        10044230,
+        10148959,
+        10253688,
+        10358417,
+        10463146,
+        10567875,
+        10672604,
+        10777333,
+        10882062,
+        10986791,
+        11091520,
+        11196249,
+        11300978,
+        11405707,
+        11510436,
+        11615165,
+        11719894,
+        11824623,
+        11929352,
+        12034081,
+        12138810,
+        12243539,
+        12348268
+      ],
+      "receipt_base": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb"
+    }
+  ],
+  "score_diagnostics": {
+    "V": {
+      "mean": 0.992986625615338,
+      "se": 0.0004430349279903476,
+      "n": 32,
+      "min": 0.9875241950869245,
+      "max": 0.9997539193777383,
+      "interpretation": "Other four loads use identical S15 code; selection-data diagnostic, not held-out promotion"
+    },
+    "N": {
+      "mean": 1.0000039975699007,
+      "se": 0.00048451145585487113,
+      "n": 32,
+      "min": 0.9945197617034228,
+      "max": 1.0060981166203808,
+      "interpretation": "Other four loads use identical S15 code; selection-data diagnostic, not held-out promotion"
+    },
+    "C": {
+      "mean": 0.9980363697104115,
+      "se": 0.0004234857503890316,
+      "n": 32,
+      "min": 0.99321747434556,
+      "max": 1.0021364692471992,
+      "interpretation": "Other four loads use identical S15 code; selection-data diagnostic, not held-out promotion"
+    }
+  },
+  "failures": {
+    "d1S": {},
+    "d1F": {},
+    "v1S": {},
+    "v1F": {}
+  },
+  "task_checks": 640,
+  "profiles": {
+    "d1S": {
+      "A": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 20.48,
+          "end_us": 25.472,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 77.056,
+          "end_us": 82.912,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "A2": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 20.064,
+          "end_us": 24.992,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 77.216,
+          "end_us": 83.264,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "V": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 1>",
+          "start_us": 20.447,
+          "end_us": 25.983,
+          "registers": 78,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 1>",
+          "start_us": 78.112,
+          "end_us": 83.807,
+          "registers": 76,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "N": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 2>",
+          "start_us": 20.48,
+          "end_us": 25.952,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 2>",
+          "start_us": 78.208,
+          "end_us": 83.936,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "C": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 3>",
+          "start_us": 19.68,
+          "end_us": 26.015,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 3>",
+          "start_us": 71.615,
+          "end_us": 77.247,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    "d1F": {
+      "A": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 32.064,
+          "end_us": 37.344,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 88.832,
+          "end_us": 94.656,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "A2": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 31.68,
+          "end_us": 36.96,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 89.12,
+          "end_us": 94.976,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "V": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 1>",
+          "start_us": 31.712,
+          "end_us": 37.536,
+          "registers": 78,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 1>",
+          "start_us": 89.408,
+          "end_us": 95.008,
+          "registers": 76,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "N": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 2>",
+          "start_us": 32.384,
+          "end_us": 37.856,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 2>",
+          "start_us": 89.409,
+          "end_us": 94.976,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ],
+      "C": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 3>",
+          "start_us": 31.52,
+          "end_us": 36.864,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 3>",
+          "start_us": 89.856,
+          "end_us": 95.328,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    "v1S": {
+      "A": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 32.224,
+          "end_us": 35.68,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 124.447,
+          "end_us": 130.56,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "A2": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 31.297,
+          "end_us": 34.561,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 123.521,
+          "end_us": 129.601,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "V": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 1>",
+          "start_us": 31.136,
+          "end_us": 34.752,
+          "registers": 78,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 1>",
+          "start_us": 126.88,
+          "end_us": 132.96,
+          "registers": 76,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "N": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 2>",
+          "start_us": 32.0,
+          "end_us": 35.616,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 2>",
+          "start_us": 124.512,
+          "end_us": 130.496,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "C": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 3>",
+          "start_us": 31.136,
+          "end_us": 34.848,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 3>",
+          "start_us": 123.872,
+          "end_us": 129.728,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ]
+    },
+    "v1F": {
+      "A": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 44.896,
+          "end_us": 48.48,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 130.752,
+          "end_us": 136.832,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "A2": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 44.512,
+          "end_us": 48.192,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_cl<8, 256, 1>",
+          "start_us": 133.375,
+          "end_us": 140.415,
+          "registers": 57,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "V": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 1>",
+          "start_us": 44.384,
+          "end_us": 48.224,
+          "registers": 78,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 1>",
+          "start_us": 139.968,
+          "end_us": 146.144,
+          "registers": 76,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "N": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 2>",
+          "start_us": 44.96,
+          "end_us": 48.64,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 2>",
+          "start_us": 131.296,
+          "end_us": 136.992,
+          "registers": 96,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ],
+      "C": [
+        {
+          "role": "b1",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, false, 3>",
+          "start_us": 44.64,
+          "end_us": 48.543,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        },
+        {
+          "role": "b2",
+          "name": "void glue_cl::boundary_tail<8, 256, 1, true, 3>",
+          "start_us": 131.135,
+          "end_us": 137.12,
+          "registers": 111,
+          "shared": 0,
+          "grid": [
+            8,
+            8,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  "seeds": [
+    9101669,
+    9206398,
+    9311127,
+    9415856,
+    9520585,
+    9625314,
+    9730043,
+    9834772,
+    9939501,
+    10044230,
+    10148959,
+    10253688,
+    10358417,
+    10463146,
+    10567875,
+    10672604,
+    10777333,
+    10882062,
+    10986791,
+    11091520,
+    11196249,
+    11300978,
+    11405707,
+    11510436,
+    11615165,
+    11719894,
+    11824623,
+    11929352,
+    12034081,
+    12138810,
+    12243539,
+    12348268
+  ],
+  "base_sha256": "602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb",
+  "runtime_sha256": "1d76086ce03d6a86fbc261b647ce4cca0b3b4bef5ef0836e90c593e732be70da",
+  "elapsed_s": 16.4,
+  "receipt": "runs/muse_decode_layer/20261026T024505Z_check_e841e2e8b1d04f0c.json",
+  "official_host_passed": true,
+  "job": "e841e2e8b1d04f0c",
+  "receipt_sha256": "cda733a22fd4553ea4392f055ae9713446ef2071ab820b941763f1f599a71ad5"
+}

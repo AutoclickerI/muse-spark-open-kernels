@@ -24,7 +24,18 @@ All five A/A2/V/N/C arms pass normal and forced tools/local_eval.py checks:130 o
 
 The exact local packed rehearsal passed640 copied public TASK checker calls (four shapes x32 seeds xfive arms),32 balanced AB/BA x8 seed pairs per arm, identical A:A capture signatures and proof that both target boundary kernels changed. It used20.1s after prepare. No baseline-relative error threshold or routing-membership veto is applied. The diagnostic TASK namespace memoizes common oracle subexpressions only within one fresh fixture; every arm still runs the unchanged public check_implementation body on its own collected output/cache, and production kernels consume none of that data. Source/hash audit: claim_audit.json, native_audit.json, admission.json. Full raw local observations: local_raw.json.xz. Normal/forced receipts: screens.json.xz.
 
-Payload `2fe023f2`, wrapper `3de4daa1`, decode check sender **1294249**, priority2. Queue snapshot: queue.json; progress runs/detached/3de4daa1469726c1.log. The wrapper was built through h200_lab.py against the exact S15 host and sent unchanged via okc_run.py from this lane's out directory; it cannot be silently merged with another lab's output budget. No H200 result is claimed yet.
+Payload `2fe023f2`, wrapper `3de4daa1`, sender1294249 completed as H200 decode check **e841e2e8b1d04f0c**. Host passed; all640 public TASK checker calls passed on32 seeds, all A:A schedule/resource/DAG fingerprints identical. Lab16.4s, host prepare including lab196.2s. `h200_result.json` retains ratios/SE/seeds, exact receipt hash and sampled boundary timings. Ratios below are candidate/control latency; all are selection data, not held-out G0 promotion.
+
+| Shape | A:A (SE) | V (SE) | N (SE) | C (SE) |
+|---|---|---|---|---|
+| d1S |1.011209(.003787)|1.013104(.003155)|1.007888(.003012)|1.012938(.002364)|
+| d1F |.993489(.001628)|.996049(.001739)|.985986(.002102)|.990038(.001966)|
+| v1S |.997094(.002187)|1.033689(.002733)|.997537(.002102)|1.004485(.002453)|
+| v1F |1.009460(.002267)|1.038322(.001787)|1.001321(.002010)|1.008552(.002053)|
+
+Four exact S15 point patches are handed to P4 in `point_nominations.json`: V/N/C at d1F and N at v1S. Each carries32 seed IDs, SE, candidate/patch SHA256 and base60254883. `handoff.py` reproduces them under out/point_handoffs; every patch passes git apply --check. The selected N(d1F,v1S) composition is candidate `d162253e`, patch `63568db1`, with unchanged S15 dispatch everywhere else. P4 owns held-out six-load confirmation; no standalone full-six-load tail-only confirmation is sent, following the owner's priority to rank mechanisms before production-scale small-gain tests.
+
+The stats-only recipe N is the point leader. V is specifically adverse at verify1 (+3.37/+3.83%), and C does not recover those shapes. Sampled b1 residence rises with all arms; N d1F b1/b2 A5.280/5.824us ->5.472/5.567us, v1S3.456/6.113 ->3.616/5.984us. These residences include predecessor waits, so they do not prove a critical-path saving. Registers rise57->96 for N,111 for C. A CPU sm90a probe moving tail production after output stores leaves N/C register counts unchanged, so that source-order change is not sent. The next cheap mechanism arm specializes N's seven tail CTAs to omit prefix-only branch arithmetic/loads, with explicit ordered dependent loads, and keeps A:A plus the measured N arm on disjoint seeds. It leaves register/overlap causality and integration interactions open.
 
 Rebuild with build.py then build_lab.py. Screen GPU0 in tools/img with screen.py [--forced], check_native.py, audit.py, check_lab.py; check_archive.py and admit.py validate exact identities and receipt round trips. Read the accepted job with tools/h200_lab.py read, then report.py RECEIPT --out out/h200.json. Keep every sub-1 shape point for P4 and confirm the composed score on disjoint seeds.
 
