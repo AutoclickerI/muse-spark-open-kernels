@@ -1037,6 +1037,32 @@ S18 composition speed/correctness remains P4, not inferred from S15.
 | Immediate P packing into registers I | **Runtime unmeasured**; local normal+forced25fixtures eager/replay and25static pass each | Claimed live-range reduction not obtained: O3ST4 still168regs,+4Bspill,8105->8102static instructions; MUFU.EX2/F2FP/max/shuffle/add/FMA counts identical | No standalone run or P4 nomination; other layouts reducing actual softmax instructions remain | local `dev/full_attention/pack/instructions.json`,`native_I.json` |
 
 
+### P5b S18+R8+D oracle and reduction verdict
+
+Eight fresh seeds3671223+7919*i,8cold rounds,564TASK pass. Ratios new/control
+time,95%t7 intervals; native output poisoning and graph-node checks pass.
+A:A d1/d16/d32/v1/v16/v32 .994664[.982516,1.006812]/
+1.001785[.999147,1.004424]/1.000913[.998474,1.003353]/
+.998227[.982561,1.013894]/.996666[.991736,1.001596]/
+1.000285[.997469,1.003101]. All contain1. Stage control is exact S18e04635ec
+with R8/D; raw times17.8385/95.5865/178.6775/29.3150/131.5070/220.9800us.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| Initial fixed/reference+lastCTA+compact batch | **Unmeasured**; custom times .001us floor and negative prepass times | Callers cached the default stream before capture; custom kernels ran during warmup but not replay. Unpoisoned same-input checks did not detect it. Native API occupancy C3=4 remains valid separately | No point nominations. Correction selects stream inside each call, checks native kernel nodes and poisons outputs before TASK replay; numerical checks unchanged | `b9488225d13b4407` |
+| Fixed-reference oracle, free exact max | v16F.934211(SE.003015)[.927081,.941341];v32F.949841(.002017)[.945070,.954611] | Remove running max/rescale, keep FP8 P/D denominator/exact final normalization. Max supplied by native all-key pass outside timing, explicitly an oracle | Never a candidate. Max/rescale removal yields only5–7% of this stage; exponent/packing and other issue remain, not all softmax algorithms bounded | `d53966e4afa949fc` |
+| Paid fixed reference via native K-only pass | v16F1.424323[1.414016,1.434630];v32F1.515303[1.509933,1.520672] | Every current call recomputes true per-row max over all cached/causal new keys; separate pass71.868/133.309us. Four captured kernels versus2control | Close this two-pass recipe; no free-data reuse. Cheaper exact bounds or different softmax layouts remain | `d53966e4afa949fc` |
+| Full-context nonspinning lastCTA, NK64/128 x splits16..256 | Best d1F NK128/ns64 2.061395[2.035137,2.087653];best v1F NK128/ns32 4.294637[4.253015,4.336260];all20points lose | One launch includes full history and causal8queries, native FP8, final normalization/gate. Only2final CTAs merge all rows; v1 time125.9us atns32 rises278.1/515.2 atns128/256 despite less tile work | Source+scaling implicate serialized merge (inference, not phase clocks). Close this layout; parallel DSM/native-VQ8 reduction remains; FA3five-kernel fixed work still wins | `d53966e4afa949fc` |
+| C3 q1 dead-stage new-token reuse,3stages | d16F.988939(SE.002827)[.982253,.995624];d32F.990809(.004215)[.980842,1.000777] | Free4KiB dedicated new-token shared; read exact current FP8 after history drains. API R8/C3 CTAs3/4,cluster2 capacity198/264;128regs/no spills | Both points to P4, concrete source6e46ccbc/patchb2103b37 onto S18+R8/D controlbf1e3983. Four-CTA residency alone is not a large remaining lever; P4 confirms G0, no standalone small-point send | `d53966e4afa949fc` |
+| C4 storage-reuse control,original4stages | d16F.993815[.990556,.997073];d32F.996489[.993764,.999213] | Same storage change, still3CTA/SM; isolates pipeline/occupancy from the new-token-buffer change | Both point winners also nominated. Remaining d32 transport approaches old same-kernel gather-only3.74TB/s versus R8~3.68; not proof of a universal random-page roof | `d53966e4afa949fc` |
+
+Exact handoff/seed/resource/capture evidence: dev/full_attention/fixed/.
+Native clocks from4df30d04 and timeline7eaa262a still attribute d1fixed
+prologue/reduction and v1FA3prep/metadata/combine. The current oracle limits
+max/rescale's contribution in this layout; exp/packing remain the large
+verify issue term. Added occupancy gives only~1% at decode16/32.
+
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,

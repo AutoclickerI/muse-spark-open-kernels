@@ -106,3 +106,11 @@ Page/denominator check4df30d04a39e433e passes491TASK. R8decode16/32full
 .978271[.973818,.982723]/.982280[.979030,.985531].
 Exact P4 S18 nomination and source-only CUDA hunks: page_ring/P4_HANDOFF.json.
 A:A v16 .996655[.994010,.999300] drift retained; no whole-layer G0 claim.
+
+S18+R8+D round: fixed/d53966e4afa949fc passes564TASK with verified
+native graph capture. Free max oracle v16/32 .9342/.9498, but the charged
+K-only pass makes it1.4243/1.5153. Full lastCTA loses every d1/v1 geometry.
+Compact q1 C3 reaches4CTA/SM and .988939/.990809 at d16/32full; C3/C4
+points and concrete C3 layer patch go to P4, with no standalone small-gain
+run. b9488225 is unmeasured due to empty custom captures; corrected output
+poison/node guards and the evidence are in fixed/README.md.

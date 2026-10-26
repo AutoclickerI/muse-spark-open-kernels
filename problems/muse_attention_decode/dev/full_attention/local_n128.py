@@ -14,7 +14,7 @@ def source(cuda):
         assert cuda.count(a)==1,(a[:80],cuda.count(a))
         cuda=cuda.replace(a,b)
     # Keep aggregate initialization order intact: append pointer after sc.
-    edit('k_scale is applied on device\n};','k_scale is applied on device\n  uint8_t* local_vt;\n};')
+    edit('k_scale is applied on device\n','k_scale is applied on device\n  uint8_t* local_vt;\n')
     # S15's never-used non-Hopper N128 branch indexes WG1's Q beyond its head.
     # Native WGMMA supplies warp-local rows implicitly; make the stand-in agree.
     edit('w=threadIdx.x>>5;', 'w=(threadIdx.x>>5)&3;')
@@ -29,8 +29,8 @@ def source(cuda):
         for(int d=0;d<16;d++)vt[off(cb+d,perm)]=valid?p.vc[src+d]:0;''')
     prefix=25600 if 'DI void pv_sum64(' in cuda else 24576
     edit(f'return CLKPAD + {prefix} + ST * 49152;', f'return CLKPAD + {prefix} + ST * 16384;')
-    edit('int64_t split_stride, int64_t flags, int64_t stream) {',
-         'int64_t split_stride, int64_t flags, int64_t stream, int64_t local_vt) {')
+    a=cuda.index('void vq8_forward(');b=cuda.index(') {',a)
+    cuda=cuda[:b]+', int64_t local_vt'+cuda[b:]
     edit('  // A segment has at most grid/NS', '  p.local_vt=(uint8_t*)local_vt;\n  // A segment has at most grid/NS')
     return cuda
 

@@ -1,0 +1,90 @@
+--- a/F_vq.cu
++++ b/F_vq.cu
+@@ -59,6 +59,7 @@
+   int gate;  // combine applies sigmoid(gate) (0: RMSNorm only, the gate is applied by its own kernel)
+   int64_t split_stride;  // elements between projection partials (proj_splits > 0)
+   float sc;  // sm_scale * qk_scale_factor * log2(e); k_scale is applied on device
++  const float* fixed;
+ };
+ 
+ struct Sched {
+@@ -542,31 +543,9 @@
+           if (8 * n + e < a || 8 * n + e >= z) s[n][2 * rh + e] = -INFINITY;
+     }
+   }
+-  float mx[2];
+-#pragma unroll
+-  for (int rh = 0; rh < 2; rh++) {
+-    float v[NB];
+-#pragma unroll
+-    for (int n = 0; n < NB; n++) v[n] = fmaxf(s[n][2 * rh], s[n][2 * rh + 1]);
+-#pragma unroll
+-    if constexpr(NB==16) {
+-#pragma unroll
+-      for(int n=0;n<8;n++)v[n]=fmaxf(v[n],v[n+8]);
+-    }
+-#pragma unroll
+-    for(int n=0;n<4;n++)v[n]=fmaxf(v[n],v[n+4]);
+-    mx[rh] = fmaxf(fmaxf(v[0], v[2]), fmaxf(v[1], v[3]));
+-  }
+-#pragma unroll
+-  for (int rh = 0; rh < 2; rh++) mx[rh] = fmaxf(mx[rh], __shfl_xor_sync(0xffffffffu, mx[rh], 1));
+-#pragma unroll
+-  for (int rh = 0; rh < 2; rh++) mx[rh] = fmaxf(mx[rh], __shfl_xor_sync(0xffffffffu, mx[rh], 2));
+-#pragma unroll
+-  for (int rh = 0; rh < 2; rh++) {
+-    const float mn = fmaxf(m[rh], mx[rh] * sc);
+-    const float safe = mn == -INFINITY ? 0.f : mn;
+-    alpha[rh] = ex2(m[rh] - safe);
+-    m[rh] = mn;
++#pragma unroll
++  for(int rh=0;rh<2;rh++){
++    const float safe=m[rh];alpha[rh]=1.f;
+     const float bias = 8.f - safe;  // P x 256 uses E4M3's range below 1
+     // Denominator accumulates with PV, after E4M3 packing.
+ #pragma unroll
+@@ -588,14 +567,7 @@
+       pk[4 * kk + 2 * hf + 1] = pack4(s[n0][2], s[n0][3], s[n0 + 1][2], s[n0 + 1][3]);
+     }
+ }
+-DI void rescale(float (&O)[9][4], const float (&alpha)[2]) {
+-  if (__any_sync(0xffffffffu, alpha[0] != 1.f || alpha[1] != 1.f)) {
+-#pragma unroll
+-    for (int n = 0; n < 9; n++) {
+-      O[n][0] *= alpha[0]; O[n][1] *= alpha[0]; O[n][2] *= alpha[1]; O[n][3] *= alpha[1];
+-    }
+-  }
+-}
++DI void rescale(float (&O)[9][4],const float (&alpha)[2]) {(void)O;(void)alpha;}
+ 
+ // A portion's prologue: the warp's 16 query rows (RMSNorm, RoPE, E4M3 into Q) and, when the portion
+ // ends with the segment's virtual tile, its 2 of the block's L new keys (RMSNorm, RoPE, E4M3 into the
+@@ -780,7 +752,11 @@
+ #if VQ8_CLK
+     if (threadIdx.x == 0 && !clk_area()[41]) clk_area()[41] = gtime();
+ #endif
+-    float O[9][4], m[2] = {-INFINITY, -INFINITY}, l[2] = {0.f, 0.f}, alpha[2];
++    float O[9][4],m[2],l[2]={},alpha[2];
++    for(int rh=0;rh<2;rh++){
++      const int row=w*16+g+8*rh,tok=row>>3,head=(2*hp+hh)*8+(row&7);
++      m[rh]=live?p.fixed[(b*p.L+tok)*p.HQ+head]:0.f;
++    }
+ #pragma unroll
+     for (int n = 0; n < 8; n++)
+ #pragma unroll
+@@ -1065,13 +1041,14 @@
+ void vq8_forward(int64_t qkv, int64_t loc, int64_t pt, int64_t seq, int64_t kc, int64_t vc, int64_t ks, int64_t vs,
+                  int64_t inv_freq, int64_t part, int64_t out, int64_t B, int64_t L, int64_t HQ, int64_t HK, int64_t stride,
+                  int64_t pages, int64_t ps, int64_t window, int64_t proj_splits, int64_t min_tiles, int64_t grid,
+-                 int64_t stages, double sc, int64_t split_stride, int64_t flags, int64_t stream) {
++                 int64_t stages, double sc, int64_t split_stride, int64_t flags, int64_t stream,int64_t fixed) {
+   // flags: bit 0 PDL launch (after the QKV projection), bit 1 no gate (RMSNorm only).
+   const bool pdl = flags & 1;
+   VP p{(const void*)qkv, (const int64_t*)loc, (const int*)pt, (const int*)seq, (uint8_t*)kc, (uint8_t*)vc,
+        (const float*)ks, (const float*)vs, (const float*)inv_freq, (float*)part, (__nv_bfloat16*)out,
+        (int)B, (int)L, (int)HQ, (int)HK, (int)(HK / 2), (int)(B * (HK / 2)), (int)stride, (int)pages, (int)ps, 0,
+        (int)window, (int)proj_splits, (int)min_tiles, (int)grid, 1, !(flags & 2), split_stride, (float)sc};
++  p.fixed=(const float*)fixed;
+   // A segment has at most grid/NS + 2 partials; give each combine warp about 16 of them.
+   const int np_max = (int)(grid / p.NS) + 2;
+   while (p.wpr < 8 && p.wpr * 16 < np_max) p.wpr *= 2;

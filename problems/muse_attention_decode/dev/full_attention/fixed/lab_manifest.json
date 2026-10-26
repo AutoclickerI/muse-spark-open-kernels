@@ -1,0 +1,35 @@
+{
+  "base": {
+    "file": "problems/muse_decode_layer/cand_r3_best7_s18_final.py",
+    "sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+    "q1_sha256": "5de7a696264fff0afdadd2fef92690a359de437c78262ca3d7183670f9ae30a0",
+    "vq_sha256": "36b40412cb5a4d79b1d0afb5f9437dc7d40e66249b1380294c7ee7f4a6ac4d04",
+    "PP": "((1, 1, False),)",
+    "VQ": "{(16, 8, False): (4, 8), (32, 8, False): (4, 8)}",
+    "settings": "{'other': ('best6', 'auto', 'auto', 'auto'), (1, 1, 2048): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('attn_main', None), 'nt1_lop3', {'o': ('stream', 6, 1)}), (1, 1, 0): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('attn_main', None), 'nt1_lop3', {'o': ('stream', 6, 1)}), (16, 1, 2048): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (16, 1, 0): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (32, 1, 2048): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (32, 1, 0): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('attn_main', None), 'nt1_lop3', 'auto'), (1, 8, 2048): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('layer', None), 'nt1_lop3', 'auto'), (1, 8, 0): (('best6', ('cl', 8, 256, 1), ('cl', 8, 256, 0), ('cl', 8, 256, 1)), ('layer', None), 'nt1_lop3', 'auto'), (16, 8, 2048): (('best6', (16, 1), (4, 1), (8, 1)), ('layer', None), 'hh_m128', 'auto'), (16, 8, 0): (('best6', (16, 1), (4, 1), (8, 1)), ('layer', None), 'hh_m128', 'auto'), (32, 8, 2048): (('best6', (16, 1), (4, 1), (16, 1)), ('layer', None), 'mixed_parallel_m256', 'auto'), (32, 8, 0): (('best6', (16, 1), (4, 1), (16, 1)), ('layer', None), 'mixed_parallel_m256', 'auto')}"
+  },
+  "payload_sha256": "b1030f7c4cf1a12ac59174afff3d01981c07fa49b6faa29bc8087a653cb4d4af",
+  "native": {
+    "A_vq": "36b40412cb5a4d79b1d0afb5f9437dc7d40e66249b1380294c7ee7f4a6ac4d04",
+    "F_vq": "f61b0bec91f49902043720d4099f50c5d378fd7cfb943fd165a1b2654e1b0358",
+    "B_vq": "39e16252aef79db90d7fa9d0bc860972ec0cfb66249d7552dbdccc2c77b104d5",
+    "last": "14a6042a1314f81b55d06331969ef32376b4706919040567746a2d0de6877df4",
+    "C3": "519ea55f1acf936ac115e6e42b5d0c7abc6b913418865ebd2fe54d2d49932208",
+    "C4": "7f0244a853a368f433583bd1a04ff675bb9fe6c907e2291258f270e6d6fc717e"
+  },
+  "seeds": [
+    3671223,
+    3679142,
+    3687061,
+    3694980,
+    3702899,
+    3710818,
+    3718737,
+    3726656
+  ],
+  "rounds": 8,
+  "official_TASK": 84,
+  "scored_TASK": 320,
+  "stress_TASK": 160,
+  "oracle": "Ffree excludes its exact native K-only prepass; never nominatable. Fpaid recomputes bound inside every call."
+}

@@ -1,0 +1,237 @@
+--- a/B_vq.cu
++++ b/B_vq.cu
+@@ -487,7 +487,7 @@
+       const int slot = tr % ST;
+       proxy_fence();
+       if(lane==0)mb_arrive(&kfull[slot]);
+-      transpose_group(VR + slot * 16384, VT + slot * 16384, pw, lane);
++
+       proxy_fence();
+       __syncwarp();
+       if (lane == 0) mb_arrive(&full[slot]);
+@@ -509,7 +509,7 @@
+         const bool valid = key < seq;
+         const int64_t src = ((int64_t)page * p.ps + (key & (p.ps - 1))) * rowbytes + hoff;
+         cp16(kd + off(kk, cb), p.kc + src, valid);
+-        cp16(vd + off(kk, cb), p.vc + src, valid);
++
+       }
+       __syncwarp();  // every lane has read slot ps before it is refilled
+       page_fetch(p, S, wa, ring, ps, pw, lane);
+@@ -780,74 +780,37 @@
+ #if VQ8_CLK
+     if (threadIdx.x == 0 && !clk_area()[41]) clk_area()[41] = gtime();
+ #endif
+-    float O[9][4], m[2] = {-INFINITY, -INFINITY}, l[2] = {0.f, 0.f}, alpha[2];
+-#pragma unroll
+-    for (int n = 0; n < 8; n++)
+-#pragma unroll
+-      for (int e = 0; e < 4; e++) O[n][e] = 0.f;
+-    for(int e=0;e<4;e++)O[8][e]=0.f;
+-    if (nr > 0) {
+-      uint32_t pa[16], pb[16];
+-      float sx[16][4];
+-      mb_wait(&kfull[r % ST], (r / ST) & 1);
+-      protect(sx);
+-      wg_fence();
+-      qk128(sx, Q, Ks + (r % ST) * 16384 + hh * 8192);
+-      wg_commit();
+-      wg_wait<0>();
+-      protect(sx);
+-      if ((ka == 0 && p.window) || ka == nc - 1) softmax<16,true>(sx, m, l, alpha, pa, sc, lo + 128 * ka, lo_r, hi_r, live);
+-      else softmax<16,false>(sx, m, l, alpha, pa, sc, lo + 128 * ka, lo_r, hi_r, live);
+-      // Steps j: PV(j) with QK/softmax(j+1). Only the segment's last cached tile needs the key mask.
+-      const bool lastmask = nr >= 2 && ka + nr == nc;
+-      const int nplain = nr - 1 - (lastmask ? 1 : 0);
+-      int j = 0;
+-      for (; j + 2 <= nplain; j += 2) {
+-        step<ST, false>(p, Q, Ks, VT, kfull, full, empty, hh, r + j, O, sx, pa, pb, m, l, sc, lo + 128 * (ka + j + 1), lo_r, hi_r);
+-        step<ST, false>(p, Q, Ks, VT, kfull, full, empty, hh, r + j + 1, O, sx, pb, pa, m, l, sc, lo + 128 * (ka + j + 2), lo_r, hi_r);
++    float mx[2]={-INFINITY,-INFINITY};
++    auto reduce=[&](auto& sx,int key0,int keys){
++      constexpr int NB=sizeof(sx)/sizeof(sx[0]);
++      for(int rh=0;rh<2;rh++){
++        const int qr=w*16+g+8*rh,tok=qr>>3;
++        float v=mx[rh];
++        #pragma unroll
++        for(int n=0;n<NB;n++)for(int e=0;e<2;e++){
++          const int key=key0+8*n+2*t+e;
++          if(live&&key<keys&&key<=seq+tok)v=fmaxf(v,sx[n][2*rh+e]*sc);
++        }
++        mx[rh]=fmaxf(v,__shfl_xor_sync(0xffffffffu,v,1));
++        mx[rh]=fmaxf(mx[rh],__shfl_xor_sync(0xffffffffu,mx[rh],2));
+       }
+-      const int kb2 = lo + 128 * (nc - 1);
+-      if (nplain & 1) {
+-        step<ST, false>(p, Q, Ks, VT, kfull, full, empty, hh, r + j, O, sx, pa, pb, m, l, sc, lo + 128 * (ka + j + 1), lo_r, hi_r);
+-        finish<ST>(p, Q, Ks, VT, kfull, full, empty, hh, r + nr - 1, lastmask, O, sx, pb, pa, m, l, sc, kb2, lo_r, hi_r);
+-      } else {
+-        finish<ST>(p, Q, Ks, VT, kfull, full, empty, hh, r + nr - 1, lastmask, O, sx, pa, pb, m, l, sc, kb2, lo_r, hi_r);
+-      }
+-    }
+-    r += nr;
+-    if (virt) {
+-      // The block's own L keys (prepared in the prologue; this CTA alone writes them to the cache).
+-      float sx[8][4];
+-      uint32_t pk[8];
+-      protect(sx);
+-      wg_fence();
+-      qk(sx, Q, KN);
+-      wg_commit();
+-      wg_wait<0>();
+-      protect(sx);
+-      const int hi2[2] = {seq + 2 * w + 1, seq + 2 * w + 2};
+-      softmax<8,true>(sx, m, l, alpha, pk, sc, seq, lo_r, hi2, live);
+-      rescale(O, alpha);
+-      protect(O);
+-      protect(pk);
+-      wg_fence();
+-      pv_sum64(O, pk, VN);
+-      wg_commit();
+-      wg_wait<0>();
+-      protect(O);
+-    }
+-    const int slot = S.partB[s] + (cta - cta_of(S.segP[s], G, T));
+-#pragma unroll
+-    for (int rh = 0; rh < 2; rh++) {
+-      float lt = O[8][2*rh]*.25f;
+-      lt += __shfl_xor_sync(0xffffffffu, lt, 1);
+-      lt += __shfl_xor_sync(0xffffffffu, lt, 2);
+-      float* dst = p.part + ((int64_t)slot * 128 + hh * 64 + w * 16 + g + 8 * rh) * PR;
+-#pragma unroll
+-      for (int n = 0; n < 8; n++) *(float2*)(dst + 8 * n + 2 * t) = make_float2(O[n][2 * rh], O[n][2 * rh + 1]);
+-      if (t == 0) *(float2*)(dst + 64) = make_float2(m[rh], lt);
+-    }
+-  }
++    };
++    for(int j=0;j<nr;j++){
++      const int rr=r+j;float sx[16][4];
++      mb_wait(&kfull[rr%ST],(rr/ST)&1);protect(sx);wg_fence();
++      qk128(sx,Q,Ks+(rr%ST)*16384+hh*8192);wg_commit();wg_wait<0>();protect(sx);
++      reduce(sx,lo+128*(ka+j),seq);
++      __syncwarp();if(lane==0)mb_arrive(&empty[rr%ST]);
++    }
++    r+=nr;
++    if(virt){float sx[8][4];protect(sx);wg_fence();qk(sx,Q,KN);wg_commit();wg_wait<0>();protect(sx);reduce(sx,seq,seq+p.L);}
++    const int slot=S.partB[s]+(cta-cta_of(S.segP[s],G,T));
++    for(int rh=0;rh<2;rh++)if(t==0){
++      const int row=w*16+g+8*rh;
++      p.part[((int64_t)slot*128+hh*64+row)*PR+64]=mx[rh];
++    }
++  }
++
+ }
+ 
+ template <int ST>
+@@ -935,88 +898,20 @@
+ 
+ // wpr warps per output row (8 / wpr rows per CTA): merge the row's partials, RMSNorm, sigmoid gate.
+ // 4 CTAs per SM (<= 64 registers): one wave for every scored shape (B 32, q_len 8: 512 CTAs).
+-__global__ void __launch_bounds__(256, 4) vq8_combine(VP p) {
+-  asm volatile("griddepcontrol.launch_dependents;");
+-#if VQ8_CLK
+-  // Combine rows follow the main grid's: 0 entry, 1 after griddepcontrol.wait, 2 end (thread 0).
+-  unsigned long long* crow = clock_rows(p) + (p.grid + blockIdx.y * gridDim.x + blockIdx.x) * 32;
+-  if (threadIdx.x == 0) crow[0] = gtime();
+-#endif
+-  const float vsc = pa_f32(p.vs);
+-  asm volatile("griddepcontrol.wait;" ::: "memory");
+-#if VQ8_CLK
+-  if (threadIdx.x == 0) crow[1] = gtime();
+-#endif
+-  const int s = blockIdx.y, lane = threadIdx.x & 31;
+-  const int gw = blockIdx.x * 8 + (threadIdx.x >> 5), rr = gw / p.wpr, sub = gw % p.wpr;  // row's warps: one block
+-  const int r = (rr >> 3) / p.L * 64 + (rr >> 3) % p.L * 8 + (rr & 7);  // real rows only
+-  const int pb = sched_area(p)[s], np = sched_area(p)[s + 1] - pb;
+-  const int k_lo = sub * np / p.wpr, k_hi = (sub + 1) * np / p.wpr;
+-  const float* base = p.part + ((int64_t)pb * 128 + r) * PR;
+-  const int b = s / p.HP, hp = s % p.HP, hh = r >> 6, row = r & 63, tok = row >> 3;
+-  const int head = (2 * hp + hh) * 8 + (row & 7);
+-  float2 gate = make_float2(0.f, 0.f);  // read only with p.gate
+-  if (p.gate) {
+-    const int tk[1] = {b * p.L + tok}, cl[1] = {(p.HQ + 2 * p.HK + head) * 64 + 2 * lane};
+-    const bool vd[1] = {true};
+-    float2 g1[1];
+-    input_pairs<1>(p, tk, cl, vd, g1);
+-    gate = g1[0];
+-  }
+-  // This warp's slice of the row's partials, CH at a time with all their loads in flight (online max).
+-  constexpr int CH = 8;
+-  float mx = -INFINITY, total = 0.f, x = 0.f, y = 0.f;
+-  for (int k0 = k_lo; k0 < k_hi; k0 += CH) {
+-    float2 ov[CH], ml[CH];
+-#pragma unroll
+-    for (int k = 0; k < CH; k++) {
+-      const float* pp = base + (int64_t)min(k0 + k, np - 1) * 128 * PR;
+-      ov[k] = *(const float2*)(pp + 2 * lane);
+-      ml[k] = *(const float2*)(pp + 64);
+-    }
+-    float cm = mx;
+-#pragma unroll
+-    for (int k = 0; k < CH; k++)
+-      if (k0 + k < k_hi) cm = fmaxf(cm, ml[k].x);
+-    const float sa = mx == -INFINITY ? 0.f : ex2(mx - cm);
+-    total *= sa; x *= sa; y *= sa;
+-#pragma unroll
+-    for (int k = 0; k < CH; k++) {
+-      const float wgt = (k0 + k < k_hi && ml[k].x != -INFINITY) ? ex2(ml[k].x - cm) : 0.f;
+-      total = fmaf(wgt, ml[k].y, total);
+-      x = fmaf(wgt, ov[k].x, x);
+-      y = fmaf(wgt, ov[k].y, y);
+-    }
+-    mx = cm;
+-  }
+-  if (p.wpr > 1) {  // merge the row's warps through shared memory; its first warp finishes the row
+-    __shared__ float4 red[8][32];
+-    red[threadIdx.x >> 5][lane] = make_float4(mx, total, x, y);
+-    __syncthreads();
+-    if (sub) return;
+-    const int w0 = threadIdx.x >> 5;
+-    float cm = mx;
+-    for (int j = 1; j < p.wpr; j++) cm = fmaxf(cm, red[w0 + j][lane].x);
+-    const float sa = mx == -INFINITY ? 0.f : ex2(mx - cm);
+-    total *= sa; x *= sa; y *= sa;
+-    for (int j = 1; j < p.wpr; j++) {
+-      const float4 v = red[w0 + j][lane];
+-      const float wgt = v.x == -INFINITY ? 0.f : ex2(v.x - cm);
+-      total = fmaf(wgt, v.y, total);
+-      x = fmaf(wgt, v.z, x);
+-      y = fmaf(wgt, v.w, y);
+-    }
+-  }
+-  const float scl = vsc / total;  // P and its row sum both carry the x256
+-  x *= scl; y *= scl;
+-  const float norm = rsqrtf(wsum(x * x + y * y) * (1.f / 64.f) + 1e-5f);
+-  *(__nv_bfloat162*)(p.out + ((int64_t)(b * p.L + tok) * p.HQ + head) * 64 + 2 * lane) =
+-      p.gate ? __floats2bfloat162_rn(x * norm / (1.f + __expf(-gate.x)), y * norm / (1.f + __expf(-gate.y)))
+-             : __floats2bfloat162_rn(x * norm, y * norm);
+-#if VQ8_CLK
+-  if (threadIdx.x == 0) crow[2] = gtime();
+-#endif
+-}
++__global__ void __launch_bounds__(256,4) vq8_combine(VP p){
++      asm volatile("griddepcontrol.launch_dependents;");
++      asm volatile("griddepcontrol.wait;":::"memory");
++      const int seg=blockIdx.y,lane=threadIdx.x&31;
++      const int rr=blockIdx.x*8+(threadIdx.x>>5);
++      if(rr>=2*p.L*8)return;
++      const int r=(rr>>3)/p.L*64+(rr>>3)%p.L*8+(rr&7);
++      const int pb=sched_area(p)[seg],np=sched_area(p)[seg+1]-pb;
++      float mx=-INFINITY;
++      for(int j=lane;j<np;j+=32)mx=fmaxf(mx,p.part[((int64_t)(pb+j)*128+r)*PR+64]);
++      for(int d=16;d;d>>=1)mx=fmaxf(mx,__shfl_xor_sync(0xffffffffu,mx,d));
++      const int b=seg/p.HP,hp=seg%p.HP,hh=r>>6,row=r&63,tok=row>>3,head=(2*hp+hh)*8+(row&7);
++      if(lane==0)((float*)p.out)[(b*p.L+tok)*p.HQ+head]=mx==-INFINITY?0.f:mx+0.00390625f;
++    }
+ 
+ template <int ST> constexpr int smem_bytes() { return CLKPAD + 25600 + ST * 49152; }
+ 
+@@ -1040,7 +935,7 @@
+     cudaLaunchKernelEx(&cfg, vq8_main<ST>, p);
+   }
+   cudaLaunchConfig_t cfg = {};
+-  cfg.gridDim = dim3(2 * p.L * p.wpr, p.NS);
++  cfg.gridDim = dim3(2 * p.L, p.NS);
+   cfg.blockDim = dim3(256);
+   cfg.dynamicSmemBytes = 0;
+   cfg.stream = stream;

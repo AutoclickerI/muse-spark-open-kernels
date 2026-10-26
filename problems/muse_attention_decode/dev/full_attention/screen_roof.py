@@ -2,7 +2,7 @@
 import argparse,base64,hashlib,json,lzma,subprocess
 from pathlib import Path
 H=Path(__file__).resolve().parent;R=H.parents[3]
-ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true');ap.add_argument('--page-ring',action='store_true');a=ap.parse_args();mode='forced' if a.forced else 'normal';o=H/('page_ring' if a.page_ring else 'roof')
+ap=argparse.ArgumentParser();ap.add_argument('--forced',action='store_true');ap.add_argument('--page-ring',action='store_true');ap.add_argument('--fixed',action='store_true');a=ap.parse_args();mode='forced' if a.forced else 'normal';o=H/('fixed' if a.fixed else 'page_ring' if a.page_ring else 'roof')
 raw=(o/'preview.py').read_text();wrapper=hashlib.sha256(raw.encode()).hexdigest()
 hook=f'''
 import importlib.util as _i,sys as _s,types as _ty
@@ -15,14 +15,19 @@ def _roof_install(m):
 _host=_ty.ModuleType('roof_host');_host.__dict__.update(globals());_roof_install(_host)
 globals().update({{k:v for k,v in _host.__dict__.items() if k not in ('__name__','__file__','__spec__','__loader__','__package__')}})
 ROOF_LOCAL_INSTALL=_roof_install
+import local_n128
+FIXED_LOCAL_N128=local_n128
 '''
 mark='import time as _lab_time\n';assert raw.count(mark)==1;s=raw.replace(mark,hook+'\n'+mark).replace('_lab_import_start + 620','_lab_import_start + 1800')
 mark='    return fn(deadline, weights, state) if len(_inspect.signature(fn).parameters) >= 3 else fn(deadline, weights)'
 assert s.count(mark)==1;lines=o/(mode+'_lines.json')
 s=s.replace(mark,'    _out=fn(deadline,weights)\n    __import__("pathlib").Path('+repr(str(lines))+').write_text(__import__("json").dumps(_out))\n    return _out')
-local=o/(mode+'_local.py');local.write_text(s)
+# Preflight the shipped file. Stand-ins belong to the local runner, applied in
+# memory at import, so their repository imports are never submission imports.
+runner=o/(mode+'_screen_runner.py')
+runner.write_text('import sys,types,linecache\nfrom pathlib import Path\nsys.path[:0]='+repr([str(R/'tools'),str(H)])+'\nimport local_eval as ev\n_old=ev.load_module\ndef _load(name,path):\n if name!="submission":return _old(name,path)\n src='+repr(s)+'\n m=types.ModuleType(name);m.__file__=str(path);sys.modules[name]=m\n linecache.cache[str(path)]=(len(src),None,src.splitlines(True),str(path))\n exec(compile(src,str(path),"exec"),m.__dict__);return m\nev.load_module=_load\nsys.argv='+repr(['local_eval.py',str(o/'preview.py'),'--tests-only','--json',str(o/(mode+'_local_eval.json'))])+'\nev.main()\n')
 with (o/(mode+'.log')).open('w') as f:
- p=subprocess.run(['python3','tools/local_eval.py',str(local),'--tests-only','--json',str(o/(mode+'_local_eval.json'))],cwd=R,stdout=f,stderr=subprocess.STDOUT)
+ p=subprocess.run(['python3',str(runner)],cwd=R,stdout=f,stderr=subprocess.STDOUT)
 assert p.returncode==0,(mode,'local_eval',p.returncode)
 rows=json.loads(lines.read_text());blob=next(x[12:] for x in rows if x.startswith('RESULT_XZ85 '));d=json.loads(lzma.decompress(base64.b85decode(blob)))
 d.update(wrapper_sha256=wrapper,local_mode=mode);(o/(mode+'.json')).write_text(json.dumps(d,indent=2)+'\n')

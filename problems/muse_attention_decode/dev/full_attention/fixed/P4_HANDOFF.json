@@ -1,0 +1,185 @@
+{
+  "base": "S18 e04635ec + measured R8/D",
+  "recipe": "Native all-key fixed reference (paid), full lastCTA, compact q1 history-ring reuse",
+  "receipt": "runs/muse_attention_decode/20261026T065034Z_check_d53966e4afa949fc.json",
+  "TASK_checks": 564,
+  "points": [
+    {
+      "arm": "C3",
+      "shape": "16x1f",
+      "r": 0.9889388078251743,
+      "se": 0.002827301120149493,
+      "lo": 0.9822533030315893,
+      "hi": 0.9956243126187593,
+      "seeds": [
+        3671223,
+        3679142,
+        3687061,
+        3694980,
+        3702899,
+        3710818,
+        3718737,
+        3726656
+      ],
+      "nominated": true,
+      "kernel_sha256": "519ea55f1acf936ac115e6e42b5d0c7abc6b913418865ebd2fe54d2d49932208",
+      "kernel_patch": "problems/muse_attention_decode/dev/full_attention/fixed/C3.cuda.patch",
+      "driver": "problems/muse_attention_decode/dev/full_attention/fixed_driver.py.inc",
+      "kernel_patch_sha256": "081191430d6874b3612801c796ec7832b506a09a47c995f53fe150c028af6303"
+    },
+    {
+      "arm": "C4",
+      "shape": "16x1f",
+      "r": 0.9938147921742243,
+      "se": 0.001377942909816743,
+      "lo": 0.9905564749531781,
+      "hi": 0.9970731093952705,
+      "seeds": [
+        3671223,
+        3679142,
+        3687061,
+        3694980,
+        3702899,
+        3710818,
+        3718737,
+        3726656
+      ],
+      "nominated": true,
+      "kernel_sha256": "7f0244a853a368f433583bd1a04ff675bb9fe6c907e2291258f270e6d6fc717e",
+      "kernel_patch": "problems/muse_attention_decode/dev/full_attention/fixed/C4.cuda.patch",
+      "driver": "problems/muse_attention_decode/dev/full_attention/fixed_driver.py.inc",
+      "kernel_patch_sha256": "a1036dc45f51f58b1805a1161e633f776f3fe8eafde9f7469d6826ea3b083f58"
+    },
+    {
+      "arm": "C3",
+      "shape": "32x1f",
+      "r": 0.9908092557263586,
+      "se": 0.004215245541320873,
+      "lo": 0.9808417838954316,
+      "hi": 1.0007767275572856,
+      "seeds": [
+        3671223,
+        3679142,
+        3687061,
+        3694980,
+        3702899,
+        3710818,
+        3718737,
+        3726656
+      ],
+      "nominated": true,
+      "kernel_sha256": "519ea55f1acf936ac115e6e42b5d0c7abc6b913418865ebd2fe54d2d49932208",
+      "kernel_patch": "problems/muse_attention_decode/dev/full_attention/fixed/C3.cuda.patch",
+      "driver": "problems/muse_attention_decode/dev/full_attention/fixed_driver.py.inc",
+      "kernel_patch_sha256": "081191430d6874b3612801c796ec7832b506a09a47c995f53fe150c028af6303"
+    },
+    {
+      "arm": "C4",
+      "shape": "32x1f",
+      "r": 0.9964887382958816,
+      "se": 0.0011522889761081967,
+      "lo": 0.9937640078388161,
+      "hi": 0.999213468752947,
+      "seeds": [
+        3671223,
+        3679142,
+        3687061,
+        3694980,
+        3702899,
+        3710818,
+        3718737,
+        3726656
+      ],
+      "nominated": true,
+      "kernel_sha256": "7f0244a853a368f433583bd1a04ff675bb9fe6c907e2291258f270e6d6fc717e",
+      "kernel_patch": "problems/muse_attention_decode/dev/full_attention/fixed/C4.cuda.patch",
+      "driver": "problems/muse_attention_decode/dev/full_attention/fixed_driver.py.inc",
+      "kernel_patch_sha256": "a1036dc45f51f58b1805a1161e633f776f3fe8eafde9f7469d6826ea3b083f58"
+    }
+  ],
+  "preferred": {
+    "16x1f": "C3",
+    "32x1f": "C3"
+  },
+  "controls": {
+    "1x1f": {
+      "r": 0.9946638199311081,
+      "se": 0.005137489171430427,
+      "lo": 0.9825155884470937,
+      "hi": 1.0068120514151224
+    },
+    "16x1f": {
+      "r": 1.0017852961291003,
+      "se": 0.0011157748832300726,
+      "lo": 0.9991469077815578,
+      "hi": 1.0044236844766428
+    },
+    "32x1f": {
+      "r": 1.0009132758866142,
+      "se": 0.001031627411308744,
+      "lo": 0.9984738646918372,
+      "hi": 1.0033526870813911
+    },
+    "1x8f": {
+      "r": 0.9982273280358781,
+      "se": 0.006625486953495139,
+      "lo": 0.9825605409109593,
+      "hi": 1.0138941151607967
+    },
+    "16x8f": {
+      "r": 0.9966658043227052,
+      "se": 0.0020849815479783754,
+      "lo": 0.9917356063914681,
+      "hi": 1.0015960022539425
+    },
+    "32x8f": {
+      "r": 1.0002853790963495,
+      "se": 0.0011909342155701406,
+      "lo": 0.9974692671688667,
+      "hi": 1.0031014910238323
+    }
+  },
+  "seeds": [
+    3671223,
+    3679142,
+    3687061,
+    3694980,
+    3702899,
+    3710818,
+    3718737,
+    3726656
+  ],
+  "candidate_builder": "problems/muse_attention_decode/dev/full_attention/build_fixed_candidate.py",
+  "policy": "Every changed point<1 is nominated; Ffree is an oracle, never shipped. P4 confirms held-out whole-layer paired six-load G0, with no per-load veto.",
+  "concrete_C3_patch": {
+    "base_file": "problems/muse_decode_layer/cand_r3_best7_s18_final.py",
+    "base_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+    "control_sha256": "bf1e3983a3e628988651b9da1fc1db23ee9537415606b5a9b0070255fb098c9f",
+    "source_sha256": "6e46ccbca0a37e561ae3a69cd26c3bccb82907a4988fcec7da365450bb9470d2",
+    "patch_sha256": "b2103b37031f59fe4d1899f0e37a49c8d55d2479887fce922127393159a18c56",
+    "selection": {
+      "16x1": "C3",
+      "32x1": "C3"
+    },
+    "gate": "stage nomination; P4 confirms held-out whole-layer G0",
+    "patch": "problems/muse_attention_decode/dev/full_attention/fixed/candidate.patch",
+    "applies_onto": "fixed/control.py = S18 e04635ec plus measured R8/D CUDA globals",
+    "runtime_note": "Layer caller preserves the S18 sumcast; P4 confirms whole-layer G0. No standalone small-gain send.",
+    "local_admission": {
+      "normal": {
+        "source_sha256": "6e46ccbca0a37e561ae3a69cd26c3bccb82907a4988fcec7da365450bb9470d2",
+        "fixtures": 25,
+        "eager_and_replay_TASK": 50,
+        "static": 43,
+        "passed": true
+      },
+      "forced": {
+        "source_sha256": "6e46ccbca0a37e561ae3a69cd26c3bccb82907a4988fcec7da365450bb9470d2",
+        "fixtures": 25,
+        "eager_and_replay_TASK": 50,
+        "static": 43,
+        "passed": true
+      }
+    }
+  }
+}
