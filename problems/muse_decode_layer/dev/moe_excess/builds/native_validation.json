@@ -1,0 +1,459 @@
+{
+  "passed": true,
+  "arch": "sm90a",
+  "cuda_sha256": "18e7a802afd0737ea8821eef8773dace8d852313857c4edfa6a83fe6746f809f",
+  "sass_sha256": "4560193879fe4c07e3a3b9808a75741dd373b57265d363fb0e0041c5feb3f2cc",
+  "kernels": [
+    {
+      "name": "void pb_epi::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 110,
+        "LDG": 7,
+        "BF16_product": 192,
+        "LDS": 18,
+        "STS": 12,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_epi::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 154,
+        "LDG": 7,
+        "BF16_product": 256,
+        "LDS": 24,
+        "STS": 12,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_epi::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 110,
+        "LDG": 12,
+        "BF16_product": 192,
+        "LDS": 18,
+        "STS": 0,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_epi::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 154,
+        "LDG": 12,
+        "BF16_product": 256,
+        "LDS": 24,
+        "STS": 0,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_balance::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 110,
+        "LDG": 69,
+        "BF16_product": 192,
+        "LDS": 18,
+        "STS": 12,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_balance::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 154,
+        "LDG": 69,
+        "BF16_product": 256,
+        "LDS": 24,
+        "STS": 12,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_balance::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 110,
+        "LDG": 29,
+        "BF16_product": 192,
+        "LDS": 18,
+        "STS": 0,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_balance::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 154,
+        "LDG": 29,
+        "BF16_product": 256,
+        "LDS": 24,
+        "STS": 0,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_occ::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 24,
+        "LDGSTS": 45,
+        "LDG": 21,
+        "BF16_product": 96,
+        "LDS": 9,
+        "STS": 4,
+        "DEPBAR": 10,
+        "WARPGROUP": 13
+      }
+    },
+    {
+      "name": "void pb_occ::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 24,
+        "LDGSTS": 45,
+        "LDG": 8,
+        "BF16_product": 96,
+        "LDS": 9,
+        "STS": 0,
+        "DEPBAR": 10,
+        "WARPGROUP": 13
+      }
+    },
+    {
+      "name": "void pb_pad::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 96,
+        "LDGSTS": 200,
+        "LDG": 92,
+        "BF16_product": 384,
+        "LDS": 36,
+        "STS": 20,
+        "DEPBAR": 108,
+        "WARPGROUP": 192
+      }
+    },
+    {
+      "name": "void pb_pad::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 128,
+        "LDGSTS": 280,
+        "LDG": 92,
+        "BF16_product": 512,
+        "LDS": 48,
+        "STS": 20,
+        "DEPBAR": 144,
+        "WARPGROUP": 256
+      }
+    },
+    {
+      "name": "void pb_pad::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 96,
+        "LDGSTS": 200,
+        "LDG": 26,
+        "BF16_product": 384,
+        "LDS": 36,
+        "STS": 0,
+        "DEPBAR": 108,
+        "WARPGROUP": 192
+      }
+    },
+    {
+      "name": "void pb_pad::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 128,
+        "LDGSTS": 280,
+        "LDG": 26,
+        "BF16_product": 512,
+        "LDS": 48,
+        "STS": 0,
+        "DEPBAR": 144,
+        "WARPGROUP": 256
+      }
+    },
+    {
+      "name": "void pb_decode::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 110,
+        "LDG": 54,
+        "BF16_product": 192,
+        "LDS": 18,
+        "STS": 12,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_decode::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 154,
+        "LDG": 54,
+        "BF16_product": 256,
+        "LDS": 24,
+        "STS": 12,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_decode::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 110,
+        "LDG": 14,
+        "BF16_product": 192,
+        "LDS": 18,
+        "STS": 0,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_decode::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 154,
+        "LDG": 14,
+        "BF16_product": 256,
+        "LDS": 24,
+        "STS": 0,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_reg::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 60,
+        "LDG": 72,
+        "BF16_product": 192,
+        "LDS": 0,
+        "STS": 12,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_reg::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 84,
+        "LDG": 78,
+        "BF16_product": 256,
+        "LDS": 0,
+        "STS": 12,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    },
+    {
+      "name": "void pb_reg::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 48,
+        "LDGSTS": 60,
+        "LDG": 32,
+        "BF16_product": 192,
+        "LDS": 0,
+        "STS": 0,
+        "DEPBAR": 20,
+        "WARPGROUP": 26
+      }
+    },
+    {
+      "name": "void pb_reg::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "counts": {
+        "HGMMA": 64,
+        "LDGSTS": 84,
+        "LDG": 38,
+        "BF16_product": 256,
+        "LDS": 0,
+        "STS": 0,
+        "DEPBAR": 26,
+        "WARPGROUP": 34
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "void pb_epi::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 8,
+      "spill_store_bytes": 12,
+      "spill_load_bytes": 16
+    },
+    {
+      "name": "void pb_epi::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 8,
+      "spill_store_bytes": 4,
+      "spill_load_bytes": 4
+    },
+    {
+      "name": "void pb_epi::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_epi::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_balance::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_balance::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_balance::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 126,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_balance::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_occ::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 89,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_occ::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 88,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_pad::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 103,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_pad::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 104,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_pad::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 102,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_pad::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 100,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_decode::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 104,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_decode::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 101,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_decode::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 99,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_decode::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 99,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_reg::kernel<3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_reg::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 140,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_reg::kernel<3, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 125,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "name": "void pb_reg::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 144,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    }
+  ],
+  "source_witnesses": {
+    "REG": "Source directly loads original Q/SC packed words into registers, only X is cp.async staged. One WG, 64-row tiles, no widened prepare values.",
+    "DECODE": "One 16-register fragment replaces two; wait_group0 completes the asynchronous read before reuse. Exact dq unchanged.",
+    "PAD": "m64n48k16 WGMMA emitted; exact remaining rows choose16/32/48/64. Same weight bytes, precision and K reduction.",
+    "OCC": "128threads,WG1,3stages,32-row tiles,38400 dynamic shared bytes. Residency advantage is a resource bound pending H200.",
+    "BALANCE": "Shared prefix over C/ORDER, uniform expert,row64,channel task index. No host route read or output caching.",
+    "EPI": "Original scale bits/global scales, early norm loads; finalizer14 is existing warp-only PDL implementation, no CTA shared exchange."
+  },
+  "limitations": "Instruction counts are static. No H200 occupancy or performance is inferred; EPI W2 retains incumbent spill4/4 at depth4."
+}

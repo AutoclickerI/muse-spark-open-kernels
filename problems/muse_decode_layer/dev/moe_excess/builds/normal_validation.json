@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "mode": "normal",
+  "wrapper_sha256": "7275744dfef5bde83607a61c42ad7b1d582a8d5d6c951ce550e74c23265fefd8",
+  "payload_sha256": "fbbc47741b749b892a199d52c1114ad96fbf359b1340f3977ac83fa9df4a3437",
+  "TASK": 3840,
+  "nearby": 1040,
+  "protocol": {
+    "name": "palindromic-cohort-v1",
+    "rounds": 16,
+    "seed_count": 64,
+    "aggregation": "arithmetic-mean-all-rounds",
+    "selective_retiming": false
+  },
+  "exact_tail_transport": true,
+  "wire_bytes": 9614,
+  "new_calls": {
+    "0": {
+      "NIGHT_0_W13": {
+        "eager": 50,
+        "captured": 23
+      },
+      "NIGHT_0_W2": {
+        "eager": 50,
+        "captured": 23
+      }
+    },
+    "1": {
+      "NIGHT_1_W13": {
+        "eager": 50,
+        "captured": 23
+      },
+      "NIGHT_1_W2": {
+        "eager": 50,
+        "captured": 23
+      }
+    },
+    "2": {
+      "NIGHT_2_W13": {
+        "eager": 50,
+        "captured": 23
+      },
+      "NIGHT_2_W2": {
+        "eager": 50,
+        "captured": 23
+      }
+    },
+    "3": {
+      "NIGHT_3_W13": {
+        "eager": 50,
+        "captured": 23
+      },
+      "NIGHT_3_W2": {
+        "eager": 50,
+        "captured": 23
+      }
+    },
+    "4": {
+      "NIGHT_4_W13": {
+        "eager": 50,
+        "captured": 23
+      },
+      "NIGHT_4_W2": {
+        "eager": 50,
+        "captured": 23
+      }
+    },
+    "5": {
+      "NIGHT_5_W13": {
+        "eager": 50,
+        "captured": 23
+      },
+      "NIGHT_5_W2": {
+        "eager": 50,
+        "captured": 23
+      }
+    }
+  },
+  "elapsed_s": 414.29,
+  "limitation": "Local sm120/stand-ins; no native performance claim"
+}

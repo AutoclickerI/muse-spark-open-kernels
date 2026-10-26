@@ -1,0 +1,79 @@
+{
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base_file": "problems/muse_decode_layer/cand_r3_best7_s22_final.py",
+  "native_cuda_sha256": "18e7a802afd0737ea8821eef8773dace8d852313857c4edfa6a83fe6746f809f",
+  "arms": {
+    "REG": {
+      "sha256": "44f5ee770d57822eca0ca338606d7434c617564af38003a62bd96dfdfc1d3683",
+      "shipped_sha256": "0b546e9040c5c6e4a12c5da458649525b62f77e5a1bfb384569587a9cc0f270f",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L0 minus STREAM / operand issue: direct packed Q/scale register loads; one warpgroup and activation-only shared ring",
+      "kind": 0
+    },
+    "DECODE": {
+      "sha256": "294047bfa832fceca04befa500131b50629691c5de3c114c7d30b61bf2103b7f",
+      "shipped_sha256": "f4fef1af56b226f564569edd113d34e652e0d4b3c03f56656dc038d3f6af3f28",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L1 minus L0 / register pressure: single decoded fragment lifetime; synchronous completion at substep reuse",
+      "kind": 1
+    },
+    "PAD": {
+      "sha256": "30eece54acc0e23b90bad81f64a871aa3a81dd0ded320255fec1d7e8b5aab533",
+      "shipped_sha256": "12c302ef6864656f98c813382a3ebaf3539e3bf91d31c4ffe707b3317120c627",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L2 minus L1 / padded MMA: exact 16/32/48/64-row tail widths instead of 32/64",
+      "kind": 2
+    },
+    "OCC": {
+      "sha256": "b61895411c7e8a0190524f1c6d015b85d0d6d1c8ddb191adb9d02a0ad783a54f",
+      "shipped_sha256": "454592cac39fd6d9ec9778153d2e33a7966b975f529eb00206f4efd521db7e94",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L0 minus STREAM / residency: one warpgroup, 32-row tiles and three stages, 38400B rather than 102400B",
+      "kind": 3
+    },
+    "BALANCE": {
+      "sha256": "7cfb3df0518c5ace760157ae1146dbfa7878d60e031d25accadf5ad3519bc66e",
+      "shipped_sha256": "1cb66c015d5c5a4ac75bd4d7850683b7c44b1cda2659d5182db41b5da17e241a",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "CTA/SM tail / expert imbalance: flatten expert,row64,channel into uniform grid-stride tasks",
+      "kind": 4
+    },
+    "EPI": {
+      "sha256": "a67d07ac11a777a8255f0fe303f446f9ef6a1ffd3f620de4451bad0b3bace602",
+      "shipped_sha256": "1d13ff55413c69a2657baee5215e8a588b1e01df230e475ed24c3237c8c1cc4f",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "mechanism": "L3 minus L2 / epilogue-readiness: hoisted norm/global scales and warp-only PDL finalizer",
+      "kind": 5
+    }
+  }
+}

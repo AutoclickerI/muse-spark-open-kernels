@@ -3,5 +3,7 @@
   "log": "problems/muse_decode_layer/dev/moe_excess/out/receipt_reader.log",
   "waits_on": "inotify receipt close/move and sender pidfd; no polling",
   "result": "problems/muse_decode_layer/dev/moe_excess/result/ladder.md",
-  "status": "waiting for native receipt; no result yet"
+  "status": "replaced by finite builds/follow.py, which materializes diagnostic and production reports",
+  "replacement_pid": 408337,
+  "replacement": "problems/muse_decode_layer/dev/moe_excess/builds/follow_queue.json"
 }

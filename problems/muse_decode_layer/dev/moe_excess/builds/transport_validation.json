@@ -1,0 +1,42 @@
+{
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_decode_layer/dev/moe_excess/builds/out/wrapper.py",
+ "sha256": "aa449a800d62484a9e27c4f02ea72431a76ece54fe013044b082fff96f763212",
+ "tier": "wrapper",
+ "static": [
+  {
+   "name": "packaging",
+   "ok": true,
+   "msg": "single-file problem header and size"
+  },
+  {
+   "name": "local_imports",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "judge_packaging",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "undefined_names",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "call_signatures",
+   "ok": true,
+   "msg": ""
+  },
+  {
+   "name": "state_keys",
+   "ok": true,
+   "msg": "dynamic state contract: requires changed-unit/H200 checks"
+  },
+  {
+   "name": "wrapper_lab-only",
+   "ok": true,
+   "packets": 1
+  }
+ ]
+}

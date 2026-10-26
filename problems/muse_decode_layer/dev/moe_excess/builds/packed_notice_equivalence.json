@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "executable_source_unchanged": true,
+  "reason": "Remove copied MIT header trailing whitespace before git staging; queued manifest retains pre-normalization packed hashes, native evidence binds identical expanded source.",
+  "arms": {
+    "REG": {
+      "queued_metadata_packed_sha256": "4af8808f379993d2842bd503e20ba35a9fed8c0e6e1d153a97b288ba4bcad40b",
+      "normalized_packed_sha256": "0b546e9040c5c6e4a12c5da458649525b62f77e5a1bfb384569587a9cc0f270f",
+      "expanded_sha256": "44f5ee770d57822eca0ca338606d7434c617564af38003a62bd96dfdfc1d3683",
+      "exact_change": "rstrip trailing spaces on outer MIT notice comment-only lines; encoded executable source byte-identical"
+    },
+    "DECODE": {
+      "queued_metadata_packed_sha256": "63480799e36276dc8697c3e9b3d8a186b609a0910474fda37ba8592d884b447e",
+      "normalized_packed_sha256": "f4fef1af56b226f564569edd113d34e652e0d4b3c03f56656dc038d3f6af3f28",
+      "expanded_sha256": "294047bfa832fceca04befa500131b50629691c5de3c114c7d30b61bf2103b7f",
+      "exact_change": "rstrip trailing spaces on outer MIT notice comment-only lines; encoded executable source byte-identical"
+    },
+    "PAD": {
+      "queued_metadata_packed_sha256": "3ea5368e97bd56dc2db52f507ce9b32f6f2495721cd6ea2fb80cec89424e91ba",
+      "normalized_packed_sha256": "12c302ef6864656f98c813382a3ebaf3539e3bf91d31c4ffe707b3317120c627",
+      "expanded_sha256": "30eece54acc0e23b90bad81f64a871aa3a81dd0ded320255fec1d7e8b5aab533",
+      "exact_change": "rstrip trailing spaces on outer MIT notice comment-only lines; encoded executable source byte-identical"
+    },
+    "OCC": {
+      "queued_metadata_packed_sha256": "5b49f8c06369879d3e30edc1582b6197268de3e61f2b743d1c72cda6da44520f",
+      "normalized_packed_sha256": "454592cac39fd6d9ec9778153d2e33a7966b975f529eb00206f4efd521db7e94",
+      "expanded_sha256": "b61895411c7e8a0190524f1c6d015b85d0d6d1c8ddb191adb9d02a0ad783a54f",
+      "exact_change": "rstrip trailing spaces on outer MIT notice comment-only lines; encoded executable source byte-identical"
+    },
+    "BALANCE": {
+      "queued_metadata_packed_sha256": "740a889b01e51928a12a53ce447ded6da2f408de84bf104227f7a80361e4c410",
+      "normalized_packed_sha256": "1cb66c015d5c5a4ac75bd4d7850683b7c44b1cda2659d5182db41b5da17e241a",
+      "expanded_sha256": "7cfb3df0518c5ace760157ae1146dbfa7878d60e031d25accadf5ad3519bc66e",
+      "exact_change": "rstrip trailing spaces on outer MIT notice comment-only lines; encoded executable source byte-identical"
+    },
+    "EPI": {
+      "queued_metadata_packed_sha256": "3ef329be30c1323f88f3d1530a4e844c1c219177358588790bf65e62dc559fe6",
+      "normalized_packed_sha256": "1d13ff55413c69a2657baee5215e8a588b1e01df230e475ed24c3237c8c1cc4f",
+      "expanded_sha256": "a67d07ac11a777a8255f0fe303f446f9ef6a1ffd3f620de4451bad0b3bace602",
+      "exact_change": "rstrip trailing spaces on outer MIT notice comment-only lines; encoded executable source byte-identical"
+    }
+  }
+}

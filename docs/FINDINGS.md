@@ -2681,3 +2681,60 @@ all round/telemetry/work/TASK evidence, and report capped six-load scenarios.
 Fresh whole-layer candidate confirmation still requires tools/promotion.py.
 A local inotify/pidfd receipt reader is attached; it will materialize validated
 raw/summary/ladder artifacts on completion, without judge calls or promotion.
+
+### P3b overnight outcome builds on S22 (2026-10-27)
+
+Built six exact production candidates on newest P4 S22 `4b8c803d`/`d1ccdc35`,
+whose large-M body remains S19. REG streams original packed Q/SF directly into
+registers with one warpgroup/activation-only shared ring (64KiB,144/140regs);
+DECODE shortens fragment lifetime with wait-before-reuse (99/101regs); PAD
+uses16/32/48/64-row WGMMA tails (100/104regs); OCC uses one WG/32rows/3stages
+(38,400B,88/89regs); BALANCE flattens expert,row64,channel work; EPI hoists norm/GS
+loads and uses the existing warp-only PDL finalizer. All retain original formats,
+K work, routes, FP32 Y/SS and the three-stream production DAG. No public port
+recipe reopened, and no new weight encoding or widened prepare values.
+
+**Local checked:**72 full-MoE TASK comparisons, eager+graph at M33/128/256/257
+and explicit all-tail-width fixtures.22 actual sm90a heavy kernels emit HGMMA
+and BF16 products, including64x48x16; all shipped-depth candidates have zero
+spills except EPI W2's unchanged4/4bytes. Original two-WG REG spilled; replaced
+with the one-WG layout before admission and reran component/native screens.
+Exact normal and forced Hopper-glue production rehearsals each pass3840TASK
+plus1040nearby,64fixed fresh seeds x16palindromic all-round arithmetic means;
+all6new phases execute eager/captured. Worst4primary full round/enqueue/telemetry
+traces retained exactly as P4 ec754e5; every round contributes to score samples.
+Final public packets/6decimal archive round trips and4000-character suffix tail
+checks pass. No local timing selects an arm.
+
+First nonblocking normal rehearsal produced asynchronous CUDA700 with no launch
+origin recovered. A fresh launch-blocking run and the final nonblocking normal/
+forced runs pass all4880checks; the initial event remains unattributed, not
+claimed repaired. Native faults invalidate their affected arms. Missing local
+pybind includes/import collision/exec alias were repaired before queueing.
+
+**Queued one whole-graph cohort** via h200_lab, laneP3b, decision"P3b: S22
+production builds for large-M MoE ladder outcomes": payload `fbbc47741b749b89`,
+wrapper `aa449a800d62484a`, sender384352. Same host/rank6, queued after diagnostic
+`bad55569`/sender3645567; all hosts quota0 until09:00KST/reset wake09:01. The CLI
+normalizes two850budget literals to850.0; exact-substitution equivalence proves
+payload/candidate/check/timing code identical to rehearsed wrapper7275744d.
+Exact queued wrapper transport passes; original rehearsal hashes are retained.
+
+S22 A/A2/INC controls plus6candidate arms, full kernel_fn graphs atv16S/F and
+v32S/F; unchanged other score rows use independentA2 per P4's restricted-arm
+protocol. Judge by46sliding+16full whole-load time and six-load R, not per-kernel
+transfer. read.py uses promotion.evaluate's identity/native/protocol/TASK health;
+selected pieces/composition need new disjoint confirmation. No H200 receipt,
+new G0 winner or winner patch exists yet. Exact candidate files/identities and
+P4_HANDOFF are ready for that decision.
+
+Finite worker408337 waits on diagnostic receipt events/pidfd, materializes its
+validated term table, drops only qualified refuted hypotheses while the paired
+snapshot is still local under the dispatch lock, then reads the production
+receipt and exits. Positive non-largest terms remain eligible; confounded
+controls cannot prune. If already admitted, the original cohort remains intact.
+It replaces our old duplicate reader3678796; other lanes' processes untouched.
+No periodic polling, model, scoring, promotion or shared-doc writing in worker.
+P3b remains active; P3a's row unchanged; no RULINGS entry.
+
+[Candidates, screens, caveats, queue and reproduction](../problems/muse_decode_layer/dev/moe_excess/builds/README.md).

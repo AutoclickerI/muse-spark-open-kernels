@@ -5,6 +5,12 @@ ranked.** Public MoE ports remain closed (`550f0aa8`, `17b91ef9`). This experime
 targets the unassigned S19 excess at M128/256, rather than repeating that recipe.
 Do not use local sm120 timings to select a Hopper optimization.
 
+Overnight follow-through: [S22 production candidates](builds/README.md) prebuild
+REG/DECODE/PAD/OCC/BALANCE/EPI for the plausible load, decode, MMA, residency,
+tail and readiness outcomes. A separate whole-graph64×16 paired cohort follows
+this diagnostic, with S22 A:A controls and a finite event worker to remove
+qualified refuted arms before admission if possible. No native winner exists yet.
+
 ## Baseline and prior evidence
 
 Frozen S19 expanded source `62ea5bf4836277ceffb344e4792c92dd6d1e5980ea315fcbf96ae037b5ebc01a`,
@@ -130,13 +136,13 @@ waking **2026-10-27 09:01 KST**. No judge job ID or H200 result exists yet.
 Do not send a duplicate. Completion receipts will appear in
 `runs/muse_moe_w4a16/`; local generated files stay under ignored `out/`.
 
-[receipt_reader.json](receipt_reader.json) identifies the attached local
-`wait_read.py` process. It waits on receipt filesystem events and the sender's
-completion signal, then writes validated `result/{raw.json,summary.json,ladder.md}`.
-It makes no judge calls and does not select a candidate or edit shared docs.
-Its log is `out/receipt_reader.log`; `result/collection.json` appears after a
-successful native read. The queue/admission records describe the pending state
-at this commit; a later native report requires review before term assignment.
+[receipt_reader.json](receipt_reader.json) records replacement of the original
+reader by [builds/follow.py](builds/follow.py), worker408337. The finite worker
+waits on receipt events and sender completion, materializes validated
+`result/{raw.json,summary.json,ladder.md}`, handles pre-admission portfolio pruning,
+then reads the production result and exits. Its current identity and log are in
+[builds/follow_queue.json](builds/follow_queue.json). No scoring or promotion occurs.
+Queue/admission records describe pending work; native reports need review.
 
 Reproduce the exact payload and read its eventual receipt:
 
@@ -156,11 +162,12 @@ muse_moe_w4a16 --lab-only --import-budget 840 --check --lane P3b --decision
 
 Pending native ladder, largest assigned term and its CI: **unassigned at both M**.
 No optimization is selected from local timings, no paired build result exists,
-and no G0 winner or patch is handed to P4. After native evidence, first inspect
+and no G0 winner or patch is handed to P4. Six exact S22 production candidates
+are prebuilt in `builds/` so the next receipt can rank implementations. After native evidence, first inspect
 allocation/sink/clone/observer controls and branch tails; rank the supported
-load/decode/MMA/epilogue/scheduling term and its capped six-load transfer. Build
-against that term at the cheapest useful fidelity, then run one fresh symmetric
-whole-layer cohort versus exact S19 under `tools/promotion.py`. Preserve all
-rounds and telemetry there too. P3b remains active until that term evidence and
+load/decode/MMA/epilogue/scheduling term and its capped six-load transfer. The
+production batch compares the prebuilt outcome arms against the newest P4 S22
+graph under the ec754e5 protocol and `tools/promotion.py`; selection needs a new
+disjoint composition confirmation. P3b remains active until that term evidence and
 build decision exist; quota exhaustion does not close the lane. P3a row is
 unchanged.

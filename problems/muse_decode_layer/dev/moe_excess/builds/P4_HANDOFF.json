@@ -1,0 +1,163 @@
+{
+  "base_sha256": "4b8c803db080f4e0f2a69e4c666ee91573fc6ffde238d2e63db4223f83f84d27",
+  "base": "S22 4b8c803d",
+  "status": "screened candidate portfolio; no H200 result or G0 winner",
+  "arms": {
+    "REG": {
+      "source": "problems/muse_decode_layer/dev/moe_excess/builds/REG.py",
+      "sha256": "44f5ee770d57822eca0ca338606d7434c617564af38003a62bd96dfdfc1d3683",
+      "shipped_sha256": "0b546e9040c5c6e4a12c5da458649525b62f77e5a1bfb384569587a9cc0f270f",
+      "mechanism": "L0 minus STREAM / operand issue: direct packed Q/scale register loads; one warpgroup and activation-only shared ring",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "selection": "Only after production whole-load read; selected composition requires disjoint G0"
+    },
+    "DECODE": {
+      "source": "problems/muse_decode_layer/dev/moe_excess/builds/DECODE.py",
+      "sha256": "294047bfa832fceca04befa500131b50629691c5de3c114c7d30b61bf2103b7f",
+      "shipped_sha256": "f4fef1af56b226f564569edd113d34e652e0d4b3c03f56656dc038d3f6af3f28",
+      "mechanism": "L1 minus L0 / register pressure: single decoded fragment lifetime; synchronous completion at substep reuse",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "selection": "Only after production whole-load read; selected composition requires disjoint G0"
+    },
+    "PAD": {
+      "source": "problems/muse_decode_layer/dev/moe_excess/builds/PAD.py",
+      "sha256": "30eece54acc0e23b90bad81f64a871aa3a81dd0ded320255fec1d7e8b5aab533",
+      "shipped_sha256": "12c302ef6864656f98c813382a3ebaf3539e3bf91d31c4ffe707b3317120c627",
+      "mechanism": "L2 minus L1 / padded MMA: exact 16/32/48/64-row tail widths instead of 32/64",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "selection": "Only after production whole-load read; selected composition requires disjoint G0"
+    },
+    "OCC": {
+      "source": "problems/muse_decode_layer/dev/moe_excess/builds/OCC.py",
+      "sha256": "b61895411c7e8a0190524f1c6d015b85d0d6d1c8ddb191adb9d02a0ad783a54f",
+      "shipped_sha256": "454592cac39fd6d9ec9778153d2e33a7966b975f529eb00206f4efd521db7e94",
+      "mechanism": "L0 minus STREAM / residency: one warpgroup, 32-row tiles and three stages, 38400B rather than 102400B",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "selection": "Only after production whole-load read; selected composition requires disjoint G0"
+    },
+    "BALANCE": {
+      "source": "problems/muse_decode_layer/dev/moe_excess/builds/BALANCE.py",
+      "sha256": "7cfb3df0518c5ace760157ae1146dbfa7878d60e031d25accadf5ad3519bc66e",
+      "shipped_sha256": "1cb66c015d5c5a4ac75bd4d7850683b7c44b1cda2659d5182db41b5da17e241a",
+      "mechanism": "CTA/SM tail / expert imbalance: flatten expert,row64,channel into uniform grid-stride tasks",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "selection": "Only after production whole-load read; selected composition requires disjoint G0"
+    },
+    "EPI": {
+      "source": "problems/muse_decode_layer/dev/moe_excess/builds/EPI.py",
+      "sha256": "a67d07ac11a777a8255f0fe303f446f9ef6a1ffd3f620de4451bad0b3bace602",
+      "shipped_sha256": "1d13ff55413c69a2657baee5215e8a588b1e01df230e475ed24c3237c8c1cc4f",
+      "mechanism": "L3 minus L2 / epilogue-readiness: hoisted norm/global scales and warp-only PDL finalizer",
+      "rows": [
+        "v16S",
+        "v16F",
+        "v32S",
+        "v32F"
+      ],
+      "selection": "Only after production whole-load read; selected composition requires disjoint G0"
+    }
+  },
+  "selection_seeds": [
+    731527241,
+    731631970,
+    731736699,
+    731841428,
+    731946157,
+    732050886,
+    732155615,
+    732260344,
+    732365073,
+    732469802,
+    732574531,
+    732679260,
+    732783989,
+    732888718,
+    732993447,
+    733098176,
+    733202905,
+    733307634,
+    733412363,
+    733517092,
+    733621821,
+    733726550,
+    733831279,
+    733936008,
+    734040737,
+    734145466,
+    734250195,
+    734354924,
+    734459653,
+    734564382,
+    734669111,
+    734773840,
+    734878569,
+    734983298,
+    735088027,
+    735192756,
+    735297485,
+    735402214,
+    735506943,
+    735611672,
+    735716401,
+    735821130,
+    735925859,
+    736030588,
+    736135317,
+    736240046,
+    736344775,
+    736449504,
+    736554233,
+    736658962,
+    736763691,
+    736868420,
+    736973149,
+    737077878,
+    737182607,
+    737287336,
+    737392065,
+    737496794,
+    737601523,
+    737706252,
+    737810981,
+    737915710,
+    738020439,
+    738125168,
+    381522727,
+    381627456,
+    381732185,
+    381836914,
+    381941643,
+    382046372,
+    382151101,
+    382255830
+  ],
+  "paired_manifest": "problems/muse_decode_layer/dev/moe_excess/builds/manifest.json",
+  "queue": "problems/muse_decode_layer/dev/moe_excess/builds/queue.json",
+  "base_pin": "problems/muse_decode_layer/dev/moe_excess/builds/base.json",
+  "packed_notice_equivalence": "problems/muse_decode_layer/dev/moe_excess/builds/packed_notice_equivalence.json"
+}

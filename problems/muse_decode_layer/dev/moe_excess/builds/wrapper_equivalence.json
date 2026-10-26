@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "rehearsed_wrapper_sha256": "7275744dfef5bde83607a61c42ad7b1d582a8d5d6c951ce550e74c23265fefd8",
+  "queued_wrapper_sha256": "aa449a800d62484a9e27c4f02ea72431a76ece54fe013044b082fff96f763212",
+  "payload_sha256": "fbbc47741b749b892a199d52c1114ad96fbf359b1340f3977ac83fa9df4a3437",
+  "exact_changes": [
+    "_LAB_CONFIG import_budget integer850 -> float850.0",
+    "deadline monotonic_float +850 -> +850.0"
+  ],
+  "executable_payload_identical": true,
+  "reason": "CLI argparse converts budget to float; two exact literal substitutions produce byte-identical queued wrapper. Same numerical deadline and no changed candidate/check/timing code."
+}

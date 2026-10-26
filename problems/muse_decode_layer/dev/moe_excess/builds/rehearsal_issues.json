@@ -1,0 +1,17 @@
+{
+  "local_only": true,
+  "unmeasured_H200": true,
+  "issues": [
+    {
+      "wrapper": "989c2a4ebc5d5a1171ab0ddba83876cd68941a791d44f266587e735c0a2ed7a3",
+      "kind": "initial nonblocking normal rehearsal device fault",
+      "error": "CUDA_ERROR_ILLEGAL_ADDRESS (700), asynchronously reported; wrapper retained last error lines without originating launch",
+      "cause": "unassigned; do not attribute to a kernel or claim repaired",
+      "followup": "Fresh launch-blocking normal passed3840TASK+1040nearby. Final exact nonblocking normal and forced passed3840TASK+1040nearby each; first error did not recur and remains unattributed."
+    },
+    {
+      "kind": "local-only generator/admission defects corrected before queuing",
+      "details": "Added missing pybind includes, removed local import name collision, and bound exec-defined lab via globals for static analysis. REG initial two-WG spill issue replaced by one-WG layout; component/native screens rerun."
+    }
+  ]
+}
