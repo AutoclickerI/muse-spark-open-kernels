@@ -15,6 +15,9 @@ source and its SHA; each run contains its actual seed IDs. Recipes in the
 round2/repeat archives include `[family, QT, splits]`. Exact historical global
 and history shaders live in their immutable receipt sources.
 [handoff.json](handoff.json) retains rebuildable integration selections.
+[P4_decode_points.json](P4_decode_points.json) and its exact tracked patch
+deliver screened decode16 D8 / decode32 D4 candidatec2000b3c without an
+ignored-output dependency; apply onto exact S14, then P4 composes onto current.
 
 Rebuild all estimates directly from receipts:
 
