@@ -2231,3 +2231,35 @@ MoE/attention/coding levers stay ahead of further standalone prefetch schedules.
 contains H2/B1 exact sources and readable patches, all controls/losers and the OL
 launch fix; fresh S19 composition belongs to P4. P4's S19 already dropped old W.
 [Full result, per-load CIs, evidence and reproduction](../problems/muse_bf16_proj/dev/stream_continuity/extend/README.md).
+
+### P3b / P3a public MoE ports: native and matched ABI (2026-10-26)
+
+Reviewed, isolated external clones: operatorstack MIT `6d9b7765` and Lee Apache-2.0 `601c6541`, MoE v43d. Only reviewed kernels/repackers were copied; no donor driver, install/build script, tuner, test or notebook ran. Complete MIT/Apache texts and operatorstack NOTICE are retained in `dev/moe_public_ports/NOTICES.txt` and embedded sources. No RULINGS change.
+
+Native cohort **`550f0aa88785489f`** versus exact S19 `62ea5bf4`: 598 TASK checks, eight fresh input/router seeds on one fresh original-precision weight bank, four cold rounds in rotated forward/reverse cohorts, every integer-ns round retained; all six A:A CIs contain one. Whole-MoE graphs retain original S19 fusion and branch overlap. Both Lee RS-WGMMA configurations and both published small-M F choices were tested. Time ratios port/S19, 95% paired-seed t7 CIs; best Lee choice shown (unadjusted per-arm CI), all variants in the evidence.
+
+| M | operator | best Lee choice | Lee / S19 | pick |
+|---:|---:|---|---:|---|
+| 1 | 1.220410 [1.182233,1.258586] | F1 | 1.601007 [1.575827,1.626186] | S19 |
+| 8 | 1.203872 [1.138832,1.268912] | F2 | 1.366111 [1.262242,1.469981] | S19 |
+| 16 | 1.111078 [1.058164,1.163992] | F2 | 1.351470 [1.293243,1.409697] | S19 |
+| 32 | 1.055137 [1.036481,1.073794] | F2 | 1.310762 [1.259718,1.361806] | S19 |
+| 128 | 1.058696 [1.020878,1.096513] | X2 | 1.223691 [1.205230,1.242153] | S19 |
+| 256 | 1.175861 [1.131331,1.220390] | X2 | 1.187328 [1.126048,1.248607] | S19 |
+
+No whole port wins. The native phase cohort had three points below one at M128: O W13 .952213 [.894279,1.010148], O W2 .911612 [.874737,.948486], Lee X2 finalize .914463 [.870148,.958778]. A contract audit found native O W2 excluded S19's inline norm/SS and Lee finish read BF16 Y/scalar SS instead of FP32 Y/64 SS. These ratios are not transferable phase wins.
+
+Matched-ABI follow-up **`17b91ef9e95841e7`**: 132 TASK checks, eight new input/router seeds and another fresh weight bank, four symmetric cold rounds retained, both A:A CIs contain one. Operator consumes S19 metadata and writes sorted BF16 ACT, FP32 norm-weighted Y and 64 SS parts; all metadata costs are timed. Lee finalize consumes actual S19 FP32 Y/64 SS. Original complete S19 remains the control.
+
+| M | matched O W13 | matched O W2 | matched Lee finish |
+|---:|---:|---:|---:|
+| 128 | 0.981412 [0.904507,1.058317] | 1.025524 [0.943486,1.107562] | 1.350141 [1.307908,1.392374] |
+| 256 | 1.016750 [0.964685,1.068815] | 1.093285 [1.032576,1.153994] | 1.541246 [1.431000,1.651492] |
+
+All eight actual hybrid whole-MoE cells lose (O13/O2/O132/LF at M128: 1.092380/1.136557/1.102665/1.014787; M256: 1.122748/1.153772/1.159132/1.014262; every CI lower bound >1). Operator M128 W13 is an unresolved point; metadata is 8.665 vs 3.420 us, and losing S19's branch overlap costs more. Source mechanism: direct packed-word register loads, bit-permuted BF16x2 decode, shared activations, per-item 8/16/32 rows; not a causal decode-only ablation. Lee native finish's byte/sum advantage disappears at the real ABI. Unchanged S19 finish control points are not donor gains.
+
+**Decision: S19 at every M; no winner patch or G0 nominee to P4.** P3b's tested public-port recipe is closed; no new matched speedup mechanism justifies a >1% structural build. This does not close the MoE ceiling or other kernel designs. Small-M results and every native donor phase time are in the P4/P3a handoff; separate S19 W13/W2/finish denominators at M1–32 do not exist because the body fuses them. Whole-layer G0 remains unmeasured.
+
+`5e45775a66a9416f` is unmeasured: the first official M4 TASK gate exposed a missing generic S19 counter binding in the reduced prepare; restored original `smallm_bind`, expanded local forced glue to M4, reran unchanged primary cohort. Local verification: 50 real eager/graph port cases, 64 forced Hopper-glue calls, five matched-ABI eager/graph fixtures (M33/128/256/257 and skewed128), four dispatched sm90a compiles plus changed FP32 finalizer. Actual X SASS contains HGMMA; F contains HMMA. Native runs completed in 41.1 / 36.6 s including setup.
+
+Evidence: [native ratios](../problems/muse_decode_layer/dev/moe_public_ports/H200.md), [matched ABI](../problems/muse_decode_layer/dev/moe_public_ports/ABI_H200.md), [mechanisms](../problems/muse_decode_layer/dev/moe_public_ports/MECHANISMS.md), [P4 / P3a handoff](../problems/muse_decode_layer/dev/moe_public_ports/P4_HANDOFF.json). Receipts/source snapshots are in `runs/muse_prefill_layer/`; all raw rounds and source identities are in `receipt_data.json` / `abi_receipt_data.json`.

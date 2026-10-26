@@ -1,0 +1,45 @@
+{
+  "arch": "sm90a",
+  "passed": true,
+  "units": [
+    {
+      "name": "X1",
+      "flags": [
+        "-DRPW=2"
+      ],
+      "seconds": 22.447271596058272,
+      "shared_object": "/data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/mp_fec82341f1f174/mp_fec82341f1f174.so"
+    },
+    {
+      "name": "X2",
+      "flags": [
+        "-DNCW=16"
+      ],
+      "seconds": 12.757062160060741,
+      "shared_object": "/data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/mp_bfa02470b6a2d8/mp_bfa02470b6a2d8.so"
+    },
+    {
+      "name": "F1",
+      "flags": [
+        "-DWPC=16",
+        "-DSMAX=3",
+        "-DMT2",
+        "-DLASTA",
+        "-DSMREQ=196"
+      ],
+      "seconds": 13.75877992308233,
+      "shared_object": "/data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/mp_7cfc1e36aa48d0/mp_7cfc1e36aa48d0.so"
+    },
+    {
+      "name": "F2",
+      "flags": [
+        "-DWPC=16",
+        "-DSMAX=3",
+        "-DMT2",
+        "-DSMREQ=196"
+      ],
+      "seconds": 12.39977949205786,
+      "shared_object": "/data2/jihoon/muse_kernel/img-home/.cache/torch_extensions/py312_cu130/mp_0b9ad59f006ea7/mp_0b9ad59f006ea7.so"
+    }
+  ]
+}

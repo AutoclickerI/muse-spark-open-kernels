@@ -1,0 +1,42 @@
+{
+  "arch": "sm90a",
+  "counts": {
+    "X1": {
+      "HGMMA": 768,
+      "HMMA": 0,
+      "LDGSTS": 0,
+      "UTMALDG": 0,
+      "BF16x2": 4208,
+      "SHF": 1773,
+      "LOP3": 6227
+    },
+    "X2": {
+      "HGMMA": 384,
+      "HMMA": 0,
+      "LDGSTS": 0,
+      "UTMALDG": 0,
+      "BF16x2": 2108,
+      "SHF": 1116,
+      "LOP3": 3519
+    },
+    "F1": {
+      "HGMMA": 0,
+      "HMMA": 672,
+      "LDGSTS": 0,
+      "UTMALDG": 0,
+      "BF16x2": 1870,
+      "SHF": 673,
+      "LOP3": 1963
+    },
+    "F2": {
+      "HGMMA": 0,
+      "HMMA": 672,
+      "LDGSTS": 0,
+      "UTMALDG": 0,
+      "BF16x2": 1870,
+      "SHF": 600,
+      "LOP3": 2041
+    }
+  },
+  "caveat": "Counts across generated template instantiations, not dynamic instruction counts or a performance attribution."
+}

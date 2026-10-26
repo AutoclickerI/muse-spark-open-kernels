@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "eager_and_graph": [
+    [
+      33,
+      "normal"
+    ],
+    [
+      128,
+      "normal"
+    ],
+    [
+      128,
+      "skewed"
+    ],
+    [
+      256,
+      "normal"
+    ],
+    [
+      257,
+      "normal"
+    ]
+  ],
+  "contracts": "S19 sorted BF16 ACT, FP32 Y,64 FP32 SS tiles; full reference TASK; native finalizer"
+}

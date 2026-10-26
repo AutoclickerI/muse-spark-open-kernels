@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "isolated_clones": "/data2/jihoon/muse_kernel/review/moe-public-Ury55uMA",
+  "operator_identical_device_AST": [
+    "_d1_reduce",
+    "_decode_tile",
+    "_gu_split",
+    "_idx3",
+    "_mma_chunk",
+    "_route",
+    "_route2",
+    "_ssplit4",
+    "_w13_item",
+    "_w13_mix",
+    "_w13_silu",
+    "_w2",
+    "_w2_item",
+    "_w2_ks",
+    "_w2_mix",
+    "_wsplit4",
+    "_wsum_ks",
+    "_x8",
+    "_x_shared",
+    "_x_tile",
+    "_xb_store",
+    "_xg_offsets"
+  ],
+  "lee_F_identical_device_core_sha256": "688b708c0694ff915bc537bfb6bf2f42c190a6bcbaa43084b53f4873822ceb80",
+  "lee_X_identical_math": "group/unit/decode and all decode/WGMMA primitives retained; phase queue range/dependency/finalizer are explicit specializations",
+  "changed_host": "owned raw pointer API, CUDA launch error checks, unique C++ namespace per configuration",
+  "unexecuted": "donor scripts/tests/notebooks/autotuners/diagnostics",
+  "licenses": "Full MIT, operatorstack NOTICE, Apache-2.0 text embedded in copied Python and payload; Lee pin has no NOTICE"
+}
