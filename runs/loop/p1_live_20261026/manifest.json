@@ -1,0 +1,30 @@
+{
+  "host": "muse_bf16_proj",
+  "names": [
+    "p1_maximum",
+    "p1_optional",
+    "p1_peer"
+  ],
+  "reservations": {
+    "p1_maximum": 8744,
+    "p1_optional": 1024,
+    "p1_peer": 512
+  },
+  "payload_sha256": {
+    "p1_maximum": "79aea13813e66a1a",
+    "p1_optional": "384c9385e1afe31b",
+    "p1_peer": "7d4b3459a37155f4"
+  },
+  "wrapper_sha256": "276ff95b706987fff59720032e73b16faf9ca2d65ea0b06ed3e52ff74c6082c9",
+  "planner_batches": [
+    3
+  ],
+  "output_budget": 12000,
+  "queue": {
+    "lane": "P1",
+    "decision": "verify live maximum packet, optional failure isolation, and PLAN-ranked batching",
+    "priority": 2,
+    "priority_override": false
+  },
+  "expected_maximum_wire_bytes": 8744
+}

@@ -13,14 +13,26 @@ import okc_run as run
 class QueueDecisionRegression(unittest.TestCase):
     def test_rank_by_decision_not_host_and_explicit_priority_still_works(self):
         self.assertEqual(run.queue_metadata('P4', 'promote held-out winner', priority=-99)['priority'], 1)
-        self.assertEqual(run.queue_metadata('P10', 'rank exact coding')['priority'], 3)
+        self.assertEqual(run.queue_metadata('P10', 'rank exact coding')['priority'],run.ranked_lanes()['P10'])
         self.assertEqual(run.queue_metadata(None, 'legacy', priority=-1)['priority'], -1)
         # All unspecified lanes share the same default, independent of transport host.
-        self.assertEqual(run.queue_metadata(None, 'legacy')['lane'], 'P1')
-        self.assertEqual(run.queue_metadata(None, 'legacy')['priority'], 2)
+        ranks=run.ranked_lanes()
+        self.assertEqual(run.queue_metadata(None,'legacy')['lane'],'P1' if 'P1' in ranks else 'unspecified')
+        self.assertEqual(run.queue_metadata(None,'legacy')['priority'],ranks.get('P1',max(ranks.values())+1))
         with self.assertRaises(ValueError):
             run.queue_metadata('P404', 'unknown')
         self.assertEqual(run.queue_metadata('P4', 'one\nline')['decision'], 'one line')
+
+    def test_completed_P1_does_not_break_legacy_sends(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            plan=Path(tmp)/'PLAN.md'
+            plan.write_text('## Ranked work\n| 1 | P4 |\n| 3 | P10 |\n')
+            with patch.object(run,'PLAN',plan):
+                old=run.queue_metadata(None,'legacy')
+                self.assertEqual(old['lane'],'unspecified')
+                self.assertEqual(old['priority'],4)
+                self.assertEqual(run.queue_metadata(None,'manual',priority=-1)['priority'],-1)
+                with self.assertRaises(ValueError):run.queue_metadata('P1','closed lane')
 
     def test_waiters_refresh_PLAN_rank(self):
         with tempfile.TemporaryDirectory() as tmp:

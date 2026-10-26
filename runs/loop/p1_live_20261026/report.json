@@ -1,0 +1,43 @@
+{
+  "job": "1acc6c67671c4220",
+  "receipt": "runs/muse_bf16_proj/20261026T072505Z_check_1acc6c67671c4220.json",
+  "gpu": "H200",
+  "host": "muse_bf16_proj",
+  "planner_batches": [
+    3
+  ],
+  "packets": [
+    {
+      "name": "p1_maximum",
+      "checksum": "6a7a2ddfcf68c2cf3ca77445795c400692f4f1b6ed962725304fd18d09b22330",
+      "checksum_valid": true,
+      "complete": true,
+      "wire_bytes": 8744
+    },
+    {
+      "name": "p1_optional",
+      "checksum": "b02bcad7162163a90662a55c0cad2a93a62aa61ee1eeafcc47f720ba26138f5f",
+      "checksum_valid": true,
+      "complete": false,
+      "wire_bytes": 508
+    },
+    {
+      "name": "p1_peer",
+      "checksum": "14d43b69d4f40cad25c747735b9694ec605cef7e9d83c6e0c20950f93db547c7",
+      "checksum_valid": true,
+      "complete": true,
+      "wire_bytes": 364
+    }
+  ],
+  "isolation": "primary and subsequent peer complete; only deliberate optional payload incomplete",
+  "queue": {
+    "lane": "P1",
+    "decision": "verify live maximum packet, optional failure isolation, and PLAN-ranked batching",
+    "priority": 2,
+    "priority_override": false
+  },
+  "log_tail_chars": 16000,
+  "suffix_after_packets_chars": 835,
+  "expected_lab_only_host_stop": true,
+  "wrapper_sha256": "276ff95b706987fff59720032e73b16faf9ca2d65ea0b06ed3e52ff74c6082c9"
+}

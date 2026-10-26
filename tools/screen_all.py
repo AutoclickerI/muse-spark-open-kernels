@@ -145,7 +145,7 @@ def main():
     ap.add_argument("--gpu", default="0")
     ap.add_argument("--skip-recent", type=float, default=20, help="minutes")
     ap.add_argument("--send", action="store_true")
-    ap.add_argument("--lane", default="P1", help="PLAN lane served by these screens (default P1)")
+    ap.add_argument("--lane", help="PLAN decision lane; unlabeled screens follow ranked work")
     ap.add_argument("--decision", default="screen unsent candidates", help="one-line decision for the ledger")
     args = ap.parse_args()
 
@@ -165,7 +165,7 @@ def main():
         log = logdir / (Path(r['file']).stem + f".{r['problem']}.send.log")
         with log.open('w') as out:
             subprocess.Popen([sys.executable, str(REPO / "tools/okc_run.py"), "send", r['file'],
-                              '--lane', args.lane, '--decision', args.decision,
+                              *(['--lane',args.lane] if args.lane else []), '--decision', args.decision,
                               '--note', f"screen_all {stamp}: local tests {r['tests']} and graphs {r['graphs']} pass"],
                              cwd=REPO, stdout=out, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                              start_new_session=True)

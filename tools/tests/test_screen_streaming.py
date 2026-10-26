@@ -25,6 +25,7 @@ class ScreenStreamingRegression(unittest.TestCase):
                 return dict(file=file.name, problem='muse_decode_layer', ok=True, tests='1/1',
                             graphs='1/1', minutes=0, why='', log='unused')
             def popen(command, **kwargs):
+                self.assertNotIn('--lane',command)  # no completed/default lane is manufactured
                 sent.append(command[3])
                 if command[3] == 'fast.py':
                     fast_sent.set()

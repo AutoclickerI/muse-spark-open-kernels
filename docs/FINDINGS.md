@@ -79,6 +79,43 @@ Queue estimate = position x ~6.6 min; under load it stretches (1,709 jobs/64 GPU
 in 10-24 13: 35-15: 02). Withdraw does not cancel queued execution (`07d07d96`). These are
 receipt-timestamp observations, not a current service guarantee.
 
+### Experiment loop: live closure (P1)
+
+P1 completed in `242e2f2` plus the live closure: S18/S19 share a host-independent promotion evaluator,
+per-arm health preserves primary R after isolated optional failures, packets reserve output before logs,
+batches use declared compile/run/output/context risk, local preflight precedes prepare/GPU work, decisions
+queue by PLAN lane rank, and completed screens send immediately. Archived `5d0282bb` replays identically
+through both host paths. Calling contracts and migration remain in RESOURCES "Experiment loop (P1)".
+
+Live check **`1acc6c67671c4220`**, proj host, NVIDIA H200 (10-26; quota before send: 20 checks left): one
+resource-planned batch of three small payloads, `--lab-only --check --import-budget 30 --lane P1`.
+Receipt and exact submitted source: `runs/muse_bf16_proj/20261026T072505Z_check_1acc6c67671c4220.{json,py}`;
+replay manifest and verification: `runs/loop/p1_live_20261026/{manifest,report}.json`.
+
+| Receipt check | Observed |
+|---|---|
+| Resource planner | One batch, three payloads; reservations 8744 / 1024 / 512 bytes plus markers, 9 s declared work |
+| Maximum packet | Exactly 8,744 wire bytes including newline; complete; checksum and padding hash valid |
+| Optional fault | Deliberate RuntimeError caught; only this packet incomplete; 508 bytes, checksum valid |
+| Subsequent peer | Native CUDA work on H200 completes after the optional failure; 364 bytes, checksum valid |
+| Receipt tail | Full 16,000 characters, after 18,000 characters of deliberately noisy import output; all three packets intact; suffix after packets 835 characters |
+| Queue and ledger | `lane=P1`, priority 2 (PLAN rank at dispatch), no numeric override; decision `verify live maximum packet, optional failure isolation, and PLAN-ranked batching` |
+
+The minimal lab host deliberately raises at prepare after emitting evidence (`passed=false`); this is the
+expected lab-only stop, separate from each packet's completeness. This is a transport/CUDA execution proof,
+not a candidate correctness or speedup claim. Kernel promotion still requires the official TASK checker.
+
+Closure fixes: the old 9,000-byte reservation could not fit a maximum packet plus two peers, so lab-only
+runs now reserve 12,000 bytes (4,000 left for the prepare-stop suffix; no timed/profile phase); ordinary
+transports retain 9,000 and the per-payload maximum remains 8,744. Removing P1 also exposed the implicit
+P1 default in old send paths: unlabeled sends now record `lane=unspecified` and follow ranked decisions
+once P1 is absent; explicit old numeric priorities remain accepted. `screen_all` and the lab sender preserve
+that behavior. Both failures have regression tests. A concurrent import-evidence early/reprint fix is retained: readers
+validate every physical copy, collapse identical copies in final emission order, and reject conflicting copies;
+a regression covers a receipt that cuts the first large packet. All 25 tests pass in the judge image. Reproduce this proof with `tools/tests/live_loop.py`;
+its verifier checks receipt/source hashes, all packet checksums/identities, native device/seed pairs,
+isolation and ledger metadata. Only one live check was used.
+
 ## Whole layer and integration
 
 ### Structure (static)

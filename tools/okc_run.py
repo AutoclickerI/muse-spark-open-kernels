@@ -68,12 +68,12 @@ def ranked_lanes():
 
 def queue_metadata(lane=None, decision='', *, note='', priority=None):
     explicit_lane = lane is not None
-    lane = lane or 'P1'
     ranks = ranked_lanes()
-    if lane not in ranks:
+    lane = lane or ('P1' if 'P1' in ranks else 'unspecified')
+    if explicit_lane and lane not in ranks:
         raise ValueError(f'{lane}: no such lane in PLAN Ranked work; choose '+', '.join(ranks))
     decision = ' '.join((decision or note or 'unspecified decision (legacy caller)').split())
-    return dict(lane=lane, decision=decision, priority=ranks[lane] if explicit_lane or priority is None else priority,
+    return dict(lane=lane, decision=decision, priority=ranks.get(lane,max(ranks.values(),default=0)+1) if explicit_lane or priority is None else priority,
                 priority_override=not explicit_lane and priority is not None)
 
 

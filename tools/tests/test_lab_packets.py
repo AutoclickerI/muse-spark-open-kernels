@@ -73,6 +73,27 @@ class LabPacketRegression(unittest.TestCase):
         self.assertEqual([len(b) for b in lab.plan_batches([payload(0, output_bytes=5000), payload(1, output_bytes=5000)], budget_s=155)], [1, 1])
         self.assertEqual([len(b) for b in lab.plan_batches([payload(0, context_poison='device'), payload(1)], budget_s=155)], [1, 1])
 
+    def test_lab_only_fits_maximum_packet_and_two_peers(self):
+        entries=[]
+        for name, size in [('maximum', lab.LIMIT-256), ('optional', 768), ('peer', 512)]:
+            resources=dict(compile_s=0,run_s=1,output_bytes=size,context_poison='none')
+            entries.append((name, 'abc', 'LAB_RESOURCES='+repr(resources)+'\ndef lab(d,w):return ["ok"]'))
+        source, _ = lab.build(entries, 'muse_bf16_proj', lab_only=True)
+        self.assertIn("('peer', 'abc'", source)
+        self.assertEqual(len(lab.plan_batches(entries, budget_s=30, output_budget=lab.LAB_ONLY_LIMIT)), 1)
+        self.assertEqual(len(lab.plan_batches(entries, budget_s=30)), 2)
+
+    def test_reemitted_packets_validate_each_copy_and_preserve_final_batch_order(self):
+        import lab_packet
+        packets=[lab_packet.encode_packet(name,'sha',dict(complete=True,value=name)) for name in ('maximum','optional','peer')]
+        # The receipt may cut the early maximum packet while retaining its peers and the late complete batch.
+        records=lab_packet.read_packets('\n'.join(packets[1:]+packets))
+        self.assertEqual([r['name'] for r in records],['maximum','optional','peer'])
+        corrupted=packets[0].replace(' sha ',' sha 0',1)
+        with self.assertRaises(ValueError):lab_packet.read_packets(corrupted+'\n'+packets[0])
+        conflicting=lab_packet.encode_packet('maximum','sha',dict(complete=True,value='different'))
+        with self.assertRaisesRegex(ValueError,'conflicting'):lab_packet.read_packets(packets[0]+'\n'+conflicting)
+
     def test_post_measurement_device_fault_invalidates_packet_evidence(self):
         import lab_packet
         raw = dict(complete=True, failures=[], arm_status={'A': {'complete': True}})
@@ -85,7 +106,7 @@ class LabPacketRegression(unittest.TestCase):
         self.assertEqual(evidence['failures'][0]['scope'], 'device')
 
     def test_cli_splits_output_and_preserves_send_flags(self):
-        entries = [(str(i), str(i), 'LAB_RESOURCES='+repr(dict(compile_s=1, run_s=1, output_bytes=5000,
+        entries = [(str(i), str(i), 'LAB_RESOURCES='+repr(dict(compile_s=1, run_s=1, output_bytes=7000,
                     context_poison='none'))+'\ndef lab(d,w):return ["ok"]') for i in range(2)]
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -109,6 +130,23 @@ class LabPacketRegression(unittest.TestCase):
                 self.assertIn('--not-before', command)
                 # Explicit PLAN lane wins over a legacy numeric override.
                 self.assertNotIn('--priority', command)
+
+    def test_legacy_lab_send_after_P1_row_is_removed(self):
+        import okc_run
+        entry=('legacy','abc','def lab(d,w):return ["ok"]')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'tools').mkdir();(root/'tools/lab_packet.py').write_bytes((lab.REPO/'tools/lab_packet.py').read_bytes())
+            (root/'problems/muse_bf16_proj').mkdir(parents=True)
+            plan=root/'PLAN.md';plan.write_text('## Ranked work\n| 1 | P4 |\n')
+            with patch.object(lab,'REPO',root),patch.object(okc_run,'PLAN',plan), \
+                 patch.object(lab,'embed',return_value=entry),patch.object(lab,'quota',return_value={}), \
+                 patch.object(lab,'absorb_waiting',side_effect=lambda h,e,p,n,**kw:(e,p,n)), \
+                 patch.object(lab.subprocess,'run') as send,patch.object(sys,'argv',[
+                    'h200_lab.py','send','legacy.py','--lab-only','--note','legacy decision']):
+                lab.main()
+            command=send.call_args.args[0]
+            self.assertNotIn('--lane',command)
+            self.assertEqual(command[command.index('--decision')+1],'legacy decision')
 
     def test_import_lab_only_avoids_base_prepare(self):
         with patch.object(lab, 'best_source', side_effect=AssertionError('base must not be loaded')):

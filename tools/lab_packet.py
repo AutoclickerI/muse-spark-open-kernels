@@ -13,7 +13,7 @@ def encode_packet(name, source_sha, packet):
 
 
 def read_packets(tail):
-    packets = []
+    packets = {}
     for line in tail.splitlines():
         if not line.startswith('LAB_PACKET '):
             continue
@@ -22,10 +22,16 @@ def read_packets(tail):
             data = zlib.decompress(base64.b85decode(blob))
             if hashlib.sha256(data).hexdigest() != checksum:
                 raise ValueError('checksum mismatch')
-            packets.append(dict(name=name, source_sha256=source_sha, checksum=checksum, packet=json.loads(data)))
+            key = name, source_sha
+            previous = packets.pop(key, None)
+            if previous is not None and previous['checksum'] != checksum:
+                raise ValueError('conflicting lab result packets for '+name)
+            # Import evidence can print early and again after prepare. Validate every copy,
+            # retaining the order of the final emission (the receipt may cut the first).
+            packets[key] = dict(name=name, source_sha256=source_sha, checksum=checksum, packet=json.loads(data))
         except Exception as exc:
             raise ValueError('invalid lab result packet: '+str(exc)) from exc
-    return packets
+    return list(packets.values())
 
 
 def result_lines(tail):

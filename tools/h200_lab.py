@@ -26,8 +26,9 @@ a minimal import host and skips the scored source's compile/prepare entirely; it
 goes as a check and deliberately stops at prepare after emitting evidence. Payloads own
 setup and honor deadline. lab_cold_l2 reads a buffer larger than L2, as TASK prescribes.
 
-The judge keeps a 16,000-character tail. We reserve 9,000 wire bytes for evidence and
-markers, leaving 7,000 characters for profiler/error suffixes. Queue rank comes from the
+The judge keeps a 16,000-character tail. Ordinary transports reserve 9,000 wire bytes
+for packets/markers, leaving 7,000 characters for profiler/error suffixes. --lab-only
+reserves 12,000: its deliberate prepare stop skips profiling and leaves 4,000 for errors. Queue rank comes from the
 PLAN lane of the decision, independently of the host used for quota and transport.
 """
 
@@ -52,6 +53,7 @@ from screen_all import local_imports  # noqa: E402
 from lab_packet import read_packets, result_lines  # noqa: E402
 
 LIMIT = 9000          # packet wire bytes + bounded diagnostics + markers; 7000 chars for judge suffix
+LAB_ONLY_LIMIT = 12000  # no timed/profile phase; leave 4000 chars for its bounded prepare-stop suffix
 MARGIN_S = 15         # left of prepare's 300 s after the payload's deadline
 HOSTS = ("muse_bf16_proj", "muse_moe_w4a16", "muse_prefill_layer", "muse_decode_layer", "muse_attention_decode")
 IMPORT_BUDGET_S = 150  # H200 probe 33d8bb6861b64c9e completed 150 s after the host's own ~45 s import lab
@@ -77,7 +79,7 @@ def resources(entry):
     return value
 
 
-def plan_batches(embedded, budget_s):
+def plan_batches(embedded, budget_s, output_budget=LIMIT):
     """Pack time and reserved wire output; context-poisoning probes get their own run."""
     if not math.isfinite(budget_s) or budget_s <= 0:
         raise ValueError('batch budget must be positive and finite')
@@ -97,7 +99,7 @@ def plan_batches(embedded, budget_s):
                     or sum(r['context_poison'] == 'last' for r in rr) + (res['context_poison'] == 'last') > 1):
                 continue
             if (sum(r['compile_s']+r['run_s'] for r in rr)+need <= budget_s
-                    and sum(r['output_bytes']+256 for r in rr)+res['output_bytes']+256 <= LIMIT):
+                    and sum(r['output_bytes']+256 for r in rr)+res['output_bytes']+256 <= output_budget):
                 batch.append(entry)
                 batch.sort(key=lambda e: resources(e)['context_poison'] == 'last')
                 break
@@ -214,6 +216,10 @@ IMPORT_WRAPPER = '''
 import time as _lab_time
 _lab_import_start = _lab_time.monotonic()
 _lab_run(None, None, _lab_import_start, _lab_import_start + {budget}, "import")
+# Weight generation can fail before the judge calls host prepare (for example
+# after a failed capture). Emit evidence now and retain it for the prepare replay.
+for _lab_early_line in _lab_output:
+    print(_lab_early_line, flush=True)
 '''
 
 IMPORT_PREPARE_WRAPPER = '''
@@ -336,7 +342,7 @@ def absorb_waiting(host: str, embedded: list, priority: float, note: str, *, bud
                 continue
             names = {n for n, _, _ in embedded}
             kept = [e for e in lab_payloads(lab) if e[0] not in names]
-            if not kept or len(plan_batches(kept + embedded, budget_s)) != 1:
+            if not kept or len(plan_batches(kept + embedded, budget_s, config['output_budget'])) != 1:
                 continue
             import select
             try:
@@ -384,18 +390,19 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, pha
         isinstance(n, ast.FunctionDef) and n.name == "prepare" for n in ast.parse(src).body)
     prepare_phase = has_prepare and phase != "import"
     budget = import_budget if not prepare_phase else 300 - MARGIN_S - base_prepare_s
-    batches = plan_batches(embedded, budget)
+    output_budget = LAB_ONLY_LIMIT if lab_only else LIMIT
+    batches = plan_batches(embedded, budget, output_budget)
     if len(batches) != 1:
         raise ValueError("batch exceeds declared time/output/risk; split with plan_batches (the CLI does this automatically)")
     embedded = batches[0]
     config = dict(host=host, phase='prepare' if prepare_phase else 'import', import_budget=import_budget,
-                  base_sha256=hashlib.sha256(src.encode()).hexdigest(), lab_only=lab_only, base_prepare_s=base_prepare_s)
+                  base_sha256=hashlib.sha256(src.encode()).hexdigest(), lab_only=lab_only, base_prepare_s=base_prepare_s, output_budget=output_budget)
     helpers = (REPO / 'tools/lab_packet.py').read_text()
     out = src.rstrip() + "\n\n_LAB_CONFIG = " + repr(config) + "\n_LAB_RESOURCES = " + repr([resources(e) for e in embedded])
     out += "\n_lab_packet_ns = {}\nexec(" + repr(helpers) + ", _lab_packet_ns)\n_lab_encode_packet = _lab_packet_ns['encode_packet']\n"
     out += WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,
-        limit=LIMIT, print_line="_lab_output.append(line)" if has_prepare and not prepare_phase else "print(line, flush=True)")
+        limit=output_budget, print_line="_lab_output.append(line)" if has_prepare and not prepare_phase else "print(line, flush=True)")
     out += (PREPARE_WRAPPER if prepare_phase else IMPORT_WRAPPER).format(
         budget=300 - MARGIN_S if prepare_phase else import_budget)
     if has_prepare and not prepare_phase:
@@ -480,7 +487,7 @@ def main():
         isinstance(n, ast.FunctionDef) and n.name == 'prepare' for n in ast.parse(args.base_file.read_text()).body))
     prepare_phase = has_prepare and args.phase != 'import'
     budget = 300 - MARGIN_S - args.base_prepare if prepare_phase else args.import_budget
-    batches = plan_batches(embedded, budget)
+    batches = plan_batches(embedded, budget, LAB_ONLY_LIMIT if args.lab_only else LIMIT)
     if args.cmd == "build":
         for i, batch in enumerate(batches):
             src, base = build(batch, args.host, args.import_budget, args.phase, args.base_file,
@@ -518,7 +525,7 @@ def main():
                  "--note", batch_note, "--decision", metadata['decision']]
         if args.lane:command += ["--lane", args.lane]
         elif args.priority is not None:command += ["--priority", str(priority)]
-        else:command += ["--lane", metadata['lane']]
+        elif metadata["lane"] != "unspecified":command += ["--lane", metadata["lane"]]
         if args.not_before:command += ["--not-before", args.not_before]
         if args.check or args.lab_only or args.host == "muse_decode_layer":command += ["--check"]
         subprocess.run(command, cwd=REPO, check=True)

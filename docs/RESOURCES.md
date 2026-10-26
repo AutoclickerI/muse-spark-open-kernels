@@ -40,8 +40,15 @@ second compile of the same kernel is fast.
 Every sending lane: add `--lane P4|P10|P3a|P3b|P5b|P5|P7` for the decision served, and
 `--decision "one line describing what this run settles"` to both send tools. The current PLAN rank orders
 the local queue on every host; waiting entries refresh ranks when dispatching. Both fields reach the ledger.
-Existing calls without a lane share P1's rank (host no longer determines it); an existing explicit `--priority`
-still works without `--lane`. With a lane, PLAN rank takes precedence over `--priority`.
+Calls without a lane remain accepted; after P1 closes they are recorded as `lane=unspecified` and queue
+after the ranked decisions, independently of host. An existing explicit `--priority` still works without `--lane`. With a lane, PLAN rank takes precedence over `--priority`.
+
+Migration for lanes with old commands: keep existing `--check`, `--scored`, `--not-before`, `--phase`,
+`--import-budget`, `--base-file`, timing flags and optional numeric `--priority`. Add `--lane <active P-id>`
+and `--decision "what this run settles"` for PLAN scheduling; stop using `--lane P1` after its row closes.
+Unlabeled calls keep working but no longer borrow a completed lane's rank. Add `LAB_RESOURCES` to share a run;
+undeclared payloads keep the old interface and reserve a full packet. Replace raw `log_tail.splitlines()`
+parsers with `lab_packet.result_lines()` or `read_packets()` so encoded results remain visible.
 
 Payload declarations and output:
 ```python
@@ -54,8 +61,13 @@ def lab(deadline, weights, state):
 ```
 `output_bytes` reserves the complete encoded `LAB_PACKET` line plus newline (512..8744 bytes); budget an
 additional 256 bytes per payload for markers. Measure with `len(lab_packet.encode_packet(name, sha, packet).encode())+1`.
-The packet includes a SHA256 checksum; all packets print after the batch and after host prepare for import labs.
-The 9,000-byte total reserves 7,000 characters of the judge's 16,000-character tail for profiler/errors.
+The packet includes a SHA256 checksum; import batches print early and reprint after host prepare so setup
+failures or tuning logs do not erase evidence. Readers verify every emitted copy and collapse identical
+packets in their final emission order; conflicting copies fail verification.
+Ordinary transports reserve 9,000 bytes total, leaving 7,000 characters of the judge's 16,000-character tail
+for profiler/errors. `--lab-only` reserves 12,000 bytes and leaves 4,000: its deliberate prepare stop skips
+timing/profiling. The per-payload maximum stays 8,744 bytes, allowing one maximum packet and small peers
+in a single lab-only check.
 Logs only use unreserved space. A too-large actual packet is an explicit `LAB_PACKET_OVERSIZE` failure,
 never truncated or treated as measured evidence: split that experiment or fix the declaration before sending.
 The CLI splits oversized batches into separate runs; `build -o lab.py` writes `lab.py`, `lab.2.py`, etc.
@@ -100,7 +112,11 @@ Regression suite: `python3 -m unittest discover -s tools/tests -v`. It replays `
 faults an optional arm in the real S18 producer using tiny stand-ins, checks maximum-packet tail preservation,
 resource splits and CLI flags, static/changed/wrapper tiers, PLAN ranks and ledger fields, and streaming screens.
 Judge-image checks and a real changed-unit sm_90a compile are recorded locally under `runs/screen/p1/` (ignored).
-No new native H200 receipt was generated for the tooling change; future live runs verify runtime timing.
+Live transport proof: proj H200 check `1acc6c67671c4220` retained three valid checksummed packets, including
+an exact 8,744-byte packet, isolated a deliberate optional failure, completed its following peer, and
+recorded P1/decision/PLAN priority 2 in the ledger. Evidence/replay: FINDINGS "Judge, quotas and loop",
+`runs/loop/p1_live_20261026/`, `tools/tests/live_loop.py`. The lab-only host deliberately stops at prepare;
+its failed host status does not invalidate complete payloads.
 
 ## Consumers
 Files outside the repo that agents read for this project. They point to rules and never restate them.
