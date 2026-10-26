@@ -1,24 +1,9 @@
 {
-  "base_sha256": "435df5f78a0d157f979b4b472865a139a28ac333fe275b1aebc0055a76dbf6d3",
+  "base_sha256": "ee5fe24973f440e5c0daf34c9a65ca4848fc03dd661bd08b6d92b40280cab745",
   "guarded_s15n_sha256": "9cc90d2e4764f0b47016ec526aa9742a86394ec87c3e838bf66c6376a672bfc8",
-  "sha256": "6e43a36706f6c11a7d39299e6d21a5dd4e0acbeeaa4c24b7c85432d601315f06",
+  "sha256": "1468be3efe39e034db7efca0f83a441a79d022217683f18579f7b2df546dde68",
   "source": "problems/muse_decode_layer/dev/s16/generated/nearby_on_s16.py",
-  "screens": {
-    "normal": {
-      "cases": 143,
-      "eager": true,
-      "graph_replays": 2,
-      "passed": true,
-      "report": "problems/muse_decode_layer/dev/s16/screen/nearby_composed/normal/validation.json"
-    },
-    "forced": {
-      "cases": 143,
-      "eager": true,
-      "graph_replays": 2,
-      "passed": true,
-      "report": "problems/muse_decode_layer/dev/s16/screen/nearby_composed/forced/validation.json"
-    }
-  },
+  "screens": {},
   "sent": false,
-  "decision": "Native nearby TASK pass + S16 held-out R pass: use this composition after its screens. If S16 loses, retain S15 and use the guarded S15n handoff instead; no inference from missing/failed controls."
+  "decision": "Current frozen S16 plus guarded range dispatch; native TASK proof of this exact merge is required. Scored dispatch remains unchanged; no inference from missing/failed controls."
 }

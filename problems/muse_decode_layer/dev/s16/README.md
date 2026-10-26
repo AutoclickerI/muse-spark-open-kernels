@@ -1,11 +1,17 @@
 # S16 integration
 
 Frozen incumbent: [cand_r3_best7_s16_final.py](../../cand_r3_best7_s16_final.py), shipped
-**1d0c8893**, expanded **435df5f7**. Scored **1.824219x**, job **c6cc2874ab994ee9**.
-Held-out check **37c2879f62554dff**: six-load S16/S15 speedup R **1.008291**,95% CI
-**[1.005790,1.010799]**,16 seeds,2304 unchanged public TASK checks. A:A R1.002418,
-seed range0.999632-1.007002. S15 60254883 is retired. frozen.json and s16_report.json
-pin the source, receipt and every seed-level sample.
+**4ca750a5**, expanded **ee5fe249**. Scored **1.818167x**, job **93c6e7425c484608**.
+Held-out check **a8c66a6d5dfc4fc2**: R **1.002048**,95% CI **[1.000129,1.003971]**
+over preparation-corrected prior S16,16 seeds/1536 public TASK checks. A:A R1.003917,
+95% CI[1.002555,1.005282], seed range0.997737-1.007026. It passes the predeclared
+max-SE gate, but A:A's mean exceeds the apparent gain: this is marginal evidence,
+not a robust0.205% estimate. frozen.json and s16_report.json preserve that caveat.
+
+Prior nine-piece S16 shipped1d0c8893/expanded435df5f7 scored1.824219x (c6cc2874),
+and won over S15 at R1.008291,95% CI[1.005790,1.010799] (37c2879f,2304 TASK).
+Its full promotion is archived in batches/504e1fa66298bf9e/promotion.json. Unpaired
+scores do not rank the small difference between these sources.
 
 ## Promotion
 
@@ -26,9 +32,10 @@ CI is descriptive. Owner97e98f3 froze exact60254883; no conditional S15c was sen
 | Source | Screen / send | State |
 |---|---|---|
 | First S16 2e26db54 / shipped92a135bf | Normal/forced13 TASK,12 graph shapes; scored7139485dbeef4e0d=1.796154x | Superseded; unpaired score does not rank it |
-| Frozen S16 435df5f7 / shipped1d0c8893 | Normal/forced13 TASK/12 graphs/30 expanded checks; paired wrapper504e1fa6 passes2304 TASK per mode | Scored c6cc2874ab994ee9, check37c2879f62554dff; promoted |
+| Prior S16 435df5f7 / shipped1d0c8893 | Normal/forced13 TASK/12 graphs/30 expanded checks; paired wrapper504e1fa6 passes2304 TASK per mode | Scored c6cc2874ab994ee9, check37c2879f62554dff; later superseded |
 | Follow-up e3a919c5 / shipped6b5df6a8 | Normal/forced13 TASK/12 graphs/26 expanded checks | Scored cff1d0f93ce14a2f=1.811842x; comparison c096a2c5200447e9 is unmeasured (private prepare gate), repaired retry is screening |
-| Guarded nearby on frozen S16,6e43a367 | Normal/forced143 fixtures per mode; eager and2 graph replays; unchanged TASK | Ready and unsent; native validation remains pending |
+| Guarded nearby on prior S16,6e43a367 | Normal/forced143 fixtures per mode; native268/268 TASK at67 shapes | Native job e94388270a9e4c8e; superseded base |
+| Guarded nearby on current S16,1468be3e | Exact packed decode host,80 shapes including13 official and B64/B65;320 private TASK checks per mode | Screening, then one native check; not promoted yet |
 
 Follow-up e3a919c5 retains PAIR and attention release, adds OLD last-CTA at decode16
 sliding, direct-partials at decode32 sliding, and cooperative QT4/C16 at verify1 sliding.
@@ -62,10 +69,11 @@ checks at67 shapes. The exact S16 merge also needs its native combined projectio
 uncompressed wrapper was rejected413 before a job. The703314-byte replacement
 89f5138e passed268 checks per mode and is queued; nearby_native_queue.json pins the sender/job.
 The guard keeps all65 timed cases identical and bounds native N128 capacity at B64.
-prepare_nearby.py composes it onto frozen435df5f7. nearby_composition.json pins6e43a367
-and both143-fixture screens. Decision: native TASK/cache/replay pass -> the screened
-nearby composition is eligible; failure is unmeasured for correctness. If the newer
-follow-up supersedes435df5f7, rebase and screen onto that winner before using it.
+prepare_nearby.py now resolves the actual frozen source and its archived selection,
+including the TASK preparation fix. It emits1468be3e on currentee5fe249.
+nearby_native.py checks the packed candidate as the actual decode host, plus80 private
+shapes/320 TASK gates. Decision: exact native TASK/cache/replay pass -> current nearby
+merge is eligible with unchanged scored dispatch; failure remains unmeasured for correctness.
 
 ## Receipts and controls
 
@@ -107,8 +115,8 @@ remain E2M1/E4M3 codes; dense recodes remain exact BF16. No widened expert weigh
 are retained. prepare_audit.json records source hashes and inventory classes.
 
 Preparation-only retry: expandedee5fe249/shipped4ca750a5 scored1.818167x at93c6e7425c484608.
-Paired a8c66a6d5dfc4fc2 uses exactly the failed c096 seeds/weights/router with published
-TASK preparation semantics on both arms; normal/forced each pass1536 checks.
+Paired a8c66a6d5dfc4fc2 used exactly the failed c096 seeds/weights/router with published
+TASK preparation semantics on both arms; all1536 native TASK checks pass, so ee5fe249 is frozen.
 
 Next: read all pending
 receipts through h200_lab.py, apply the six-load gate, and add guarded nearby only
