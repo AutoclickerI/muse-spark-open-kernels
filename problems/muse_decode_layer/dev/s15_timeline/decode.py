@@ -1,9 +1,53 @@
 """Receipt -> full timeline, per-stage/load critical work and PLAN Where-the-time-goes table."""
 import argparse,base64,csv,json,lzma,statistics,struct
 from pathlib import Path
-from analysis import shape_summary
+from analysis import shape_summary,chain_account,model_roof
 LOADS=('d1','d16','d32','v1','v16','v32')
-GROUPS={'attention':('attention_sliding','attention_full'),'MoE':('moe_small','moe_heavy','moe_light','moe_meta','moe_combine'),'glue':('b1','b2','route','setup'),'projections':('qkv_gate','qkv3','gate','o','pool_router','unpooler','unpooler_slice'),'launch gaps':('launch_gaps',)}
+GROUPS={'attention':('attention_sliding','attention_full'),'MoE':('moe_small','moe_heavy','moe_light','moe_meta','moe_combine'),'glue':('b1','b2','route','setup'),'projections':('qkv_gate','qkv3','gate','o','pool_router','unpooler','unpooler_slice'),'DAG gaps':('launch_gaps',)}
+
+def gap_audit(cell):
+ """Partition logical-path gaps by actual GPU activity; overlap is not causation."""
+ trace=cell['trace'];account=chain_account(trace,cell['dag']);by={n['node']:n for n in trace};covered={};idle=0.
+ for step in account['path']:
+  end=by[step['node']]['start_ns'];start=end-round(step['gap_us']*1000)
+  if start==end:continue
+  cuts=sorted({start,end}|{max(start,min(end,n[k])) for n in trace for k in ('start_ns','end_ns')})
+  for a,b in zip(cuts,cuts[1:]):
+   active=tuple(sorted({n['role'] for n in trace if n['start_ns']<b and n['end_ns']>a}))
+   if active:covered[active]=covered.get(active,0.)+(b-a)/1000
+   else:idle+=(b-a)/1000
+ assert abs(idle+sum(covered.values())-account['critical_us']['launch_gaps'])<1e-7
+ return dict(seed=cell['trace_seed'],wall_us=account['wall_us'],dag_gaps_us=account['critical_us']['launch_gaps'],gpu_idle_us=idle,busy_overlap_us={'+'.join(k):v for k,v in covered.items()},critical_us=account['critical_us'])
+
+def representative_owners(cases):
+ """Owner totals on retained median-seed traces, with busy gaps assigned only to their owner.
+
+ The activity intervals identify an owner, not which concurrent branch caused
+ a scheduling delay. Never extrapolate this split onto the unretained seeds.
+ """
+ owner={s:g for g,stages in GROUPS.items() if g!='DAG gaps' for s in stages};shapes=[]
+ for c in cases:
+  audit=gap_audit(c);costs={g:sum(audit['critical_us'].get(s,0.) for s in stages) for g,stages in GROUPS.items() if g!='DAG gaps'}
+  for active,value in audit['busy_overlap_us'].items():
+   groups={owner[s] for s in active.split('+')};group=next(iter(groups)) if len(groups)==1 else 'unattributed busy overlap'
+   costs[group]=costs.get(group,0.)+value
+  costs['GPU idle']=audit['gpu_idle_us'];work=next(s['work'] for s in c['seeds'] if s['seed']==c['trace_seed']);rows={}
+  for group,cost in costs.items():
+   stages=GROUPS.get(group,());roof=sum(model_roof(work.get(s,{}))['roof_us'] for s in stages)
+   if group=='MoE':
+    combined={k:sum(work.get(s,{}).get(k,0) for s in stages) for k in ('read_bytes','write_bytes','bf16_flops','fp8_flops')};roof=model_roof(combined)['roof_us']
+   # Preserve per-role positive excess outside the concurrent MoE envelope.
+   excess=max(0.,cost-roof) if group in ('MoE','GPU idle','unattributed busy overlap') else sum(max(0.,audit['critical_us'].get(s,0.)-model_roof(work.get(s,{}))['roof_us']) for s in stages)
+   rows[group]=dict(critical_us=cost,roof_us=roof,above_roof_us=excess)
+  assert abs(sum(r['critical_us'] for r in rows.values())-audit['wall_us'])<1e-7
+  shapes.append(dict(case=c['case'],weight=c['weight'],wall_us=audit['wall_us'],rows=rows,gap_audit=audit))
+ loads={}
+ for load in LOADS:
+  selected=[s for s in shapes if s['case'][:-1]==load];wall=sum(s['weight']*s['wall_us'] for s in selected)/62;groups={g for s in selected for g in s['rows']};rows={}
+  for group in groups:
+   r={k:sum(s['weight']*s['rows'].get(group,{}).get(k,0.) for s in selected)/62 for k in ('critical_us','roof_us','above_roof_us')};r['above_roof_wall_pct']=100*r['above_roof_us']/wall;rows[group]=r
+  loads[load]=dict(wall_us=wall,rows=rows)
+ return dict(shapes=shapes,loads=loads)
 
 def decode(blob):
  raw=lzma.decompress(base64.b85decode(blob));size=struct.unpack_from('<I',raw)[0];x=json.loads(raw[4:4+size]);v=shift=0;binary=[]
@@ -56,10 +100,16 @@ def aggregate(x):
   assert abs(sum(r['critical_us'] for r in rows.values())-wall)<max(.002,.02*wall)
   loads[load]=dict(wall_us=wall,rows=rows)
  controls={c['case']:dict(**c['control_event_us'],mapped_over_plain=c['control_event_us']['mapped_event_us']/c['control_event_us']['plain_event_us'],profile_over_mapped=c['control_event_us']['profile_event_us']/c['control_event_us']['mapped_event_us']) for c in x['cases']}
- return dict(shapes=shapes,loads=loads,measurement_controls=controls,empty_event_us=x['empty_event_us'])
+ return dict(shapes=shapes,loads=loads,measurement_controls=controls,empty_event_us=x['empty_event_us'],representative_owners=representative_owners(x['cases']))
 
 def table(report):
- lines=['S15 completion-critical accounting; logical read/FLOP stream roof. Per-stage floors are not additive under overlap.','', '| Stage | '+' | '.join(LOADS)+' |','|---|'+'---:|'*6]
+ lines=['S15 completion-critical accounting; logical read/FLOP stream roof. Per-stage floors are not additive under overlap.','',
+ 'Owner table from each shape\'s retained median-seed trace (46/16 weighted). Cells: **critical us / roof us / above-roof % of wall**. Busy logical-DAG gaps go to the owner of the GPU work actually overlapping them. This identifies overlap, not a causal branch. MoE uses one combined unique-work roof across its concurrent branches.','',
+ '| Owner | '+' | '.join(LOADS)+' |','|---|'+'---:|'*6]
+ for group in ('attention','MoE','projections','glue','GPU idle','unattributed busy overlap'):
+  vals=[report['representative_owners']['loads'][load]['rows'].get(group) for load in LOADS]
+  if any(v is not None for v in vals):lines.append('| '+group+' | '+' | '.join('—' if v is None else f"{v['critical_us']:.2f} / {v['roof_us']:.2f} / {v['above_roof_wall_pct']:.1f}%" for v in vals)+' |')
+ lines+=['','Per-stage logical-DAG accounting below averages all three seeds. **DAG gaps are not launch overhead**: they can contain work on another stream. Use the owner table above to rank stages; branch rows below cannot predict isolated speedups.','', '| Stage | '+' | '.join(LOADS)+' |','|---|'+'---:|'*6]
  stages=('attention_sliding','attention_full','moe_small','moe_heavy','moe_light','moe_meta','moe_combine','qkv_gate','qkv3','gate','o','pool_router','unpooler','unpooler_slice','route','b1','b2','setup','launch_gaps')
  lines+=['Cells: **critical us / roof us / above-roof % of wall**.','']
  # Keep the explanatory line before, not inside, the Markdown table.
@@ -69,13 +119,16 @@ def table(report):
   for load in LOADS:
    r=report['loads'][load]['rows'].get(stage)
    values.append('—' if r is None else f"{r['critical_us']:.2f} / {r['roof_us']:.2f} / {r['above_roof_wall_pct']:.1f}%")
-  if any(v!='—' for v in values):lines.append('| '+stage+' | '+' | '.join(values)+' |')
- lines+=['','For PLAN “Where the time goes” (above-roof share of wall):']
+  if any(v!='—' for v in values):lines.append('| '+('DAG gaps' if stage=='launch_gaps' else stage)+' | '+' | '.join(values)+' |')
+ lines+=['','All-seed logical-DAG above-roof shares (DAG gaps remain unassigned here):']
  for group,stages in GROUPS.items():
   vals=[sum(report['loads'][load]['rows'].get(s,{}).get('above_roof_wall_pct',0) for s in stages) for load in LOADS]
   lines.append('- '+group+': '+' / '.join(f'{v:.1f}%' for v in vals)+' at d1 / d16 / d32 / v1 / v16 / v32.')
- lines+=['','Wall us/layer: '+' / '.join(f"{report['loads'][load]['wall_us']:.2f}" for load in LOADS)+'.',
- '“Launch gaps” are uncovered intervals along the observed completion chain. Non-kernel event/join nodes carry their predecessor frontier; this is not a CPU launch-overhead counter.',
+ lines+=['','For PLAN “Where the time goes” (representative owner above-roof share):']
+ for group in ('attention','MoE','projections','glue','GPU idle'):
+  lines.append('- '+group+': '+' / '.join(f"{report['representative_owners']['loads'][load]['rows'][group]['above_roof_wall_pct']:.1f}%" for load in LOADS)+'.')
+ lines+=['','All-seed mean wall us/layer: '+' / '.join(f"{report['loads'][load]['wall_us']:.2f}" for load in LOADS)+'.',
+ '“DAG gaps” are uncovered intervals along the observed completion chain. Non-kernel event/join nodes carry their predecessor frontier; this is not a CPU launch-overhead counter.',
  'Heavy/light may have zero completion-critical contribution while still contending for bandwidth. Join slack bounds how far the winning branch can improve before another branch becomes critical.']
  lines+=['','Measurement controls (whole replay event us; includes replay/event overhead):','', '| Shape | Plain | Mapped | Profiled | Mapped/plain | Profiled/mapped |', '|---|---:|---:|---:|---:|---:|']
  for case,v in report['measurement_controls'].items():lines.append(f"| {case} | {v['plain_event_us']:.2f} | {v['mapped_event_us']:.2f} | {v['profile_event_us']:.2f} | {v['mapped_over_plain']:.4f} | {v['profile_over_mapped']:.4f} |")

@@ -24,7 +24,7 @@ for before,after in zip(raw['cases'],out['cases']):
   assert x['account']['joins']==y['account']['joins']
   assert x['all_stamps_monotone'] and x['max_accounting_error']<.02
  assert abs(chain_account(after['trace'],after['dag'])['wall_us']-chain_account(before['trace'],before['dag'])['wall_us'])<1e-8
-report=aggregate(out);text=table(report);assert all(name in text for name in ('attention_sliding','attention_full','moe_small','moe_heavy','moe_light','launch_gaps'))
+report=aggregate(out);text=table(report);assert all(name in text for name in ('attention_sliding','attention_full','moe_small','moe_heavy','moe_light','DAG gaps','GPU idle'))
 result=dict(s15_sha256=raw['s15_sha256'],shapes=12,seeds_per_shape=3,profiles_per_seed=3,all_schedule_signatures_identical=True,all_output_gates_pass=True,all_stamps_monotone=True,max_accounting_error=max(s['max_accounting_error'] for c in raw['cases'] for s in c['seeds']),archive_chars=len(blob),timestamp_and_dag_roundtrip_exact=True,logical_work_roundtrip_exact=True,critical_accounting_roundtrip_exact=True,local_sm120_only=True)
 (HERE/('forced_validation.json' if a.forced else 'local_validation.json')).write_text(json.dumps(result,indent=2)+'\n');(HERE/('forced_receipt.txt' if a.forced else 'local_receipt.txt')).write_text('META packed actual local '+('forced' if a.forced else 'normal')+' timeline\nS15_TIMELINE_XZ85 '+blob+'\nEND local sm120 evidence\n')
 print('PASS',json.dumps(result))

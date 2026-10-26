@@ -17,3 +17,12 @@ mem=[dict(node=11,role='setup',name='cudaMemset',stream=1,start_ns=0,end_ns=500)
 md=dict(nodes=[[11,2],[12,0]],edges=[[0,1,0,0,0]])
 a4=chain_account(mem,md);assert a4['critical_us']['setup']==.5 and a4['critical_us']['b1']==1 and abs(a4['critical_us']['launch_gaps']-.1)<1e-9
 print('PASS memset time charged to GPU work rather than launch gaps')
+
+# A later-starting small branch can win completion while heavy work fills its
+# logical dependency gap. The gap must not be reported as GPU idle.
+from decode import gap_audit
+fork=[dict(node=1,role='route',name='r',stream=1,start_ns=0,end_ns=1000),dict(node=2,role='moe_heavy',name='h',stream=2,start_ns=1000,end_ns=5000),dict(node=3,role='moe_small',name='s',stream=3,start_ns=4000,end_ns=7000)]
+cell=dict(trace=fork,dag=dict(nodes=[[1,0],[2,0],[3,0]],edges=[[0,1,0,0,0],[0,2,0,0,0]]),trace_seed=1)
+a5=gap_audit(cell);assert a5['dag_gaps_us']==3 and a5['gpu_idle_us']==0 and a5['busy_overlap_us']=={'moe_heavy':3}
+fork[1]['start_ns']=2000;a6=gap_audit(cell);assert a6['gpu_idle_us']==1 and a6['busy_overlap_us']=={'moe_heavy':2}
+print('PASS busy cross-stream overlap separated from genuine GPU idle')

@@ -15,7 +15,10 @@
     "file": "problems/muse_attention_decode/lab/lab_lab_d1_chain.py",
     "sha256": "4de4a0502d687e04e8b54a917260e47e1dc17a7b4295cd2ef12ad4504ddb2bc3",
     "note": "h200_lab problems/muse_bf16_proj/dev/d1_chain/lab_d1_chain.py: P7 recovery d1_chain: exact reset measurement payload and screened kernels unchanged; original prefill lab output was displaced by later host prepare logs, A:A and gates UNMEASURED. Attention host completes its own tuning before import lab, preserving packed diagnostic output; fresh paired controls retained.",
-    "not_before": 0
+    "not_before": 0,
+    "job": "5a95984a640d410e",
+    "status": "accepted",
+    "pending_receipt": "runs/pending/5a95984a640d410e.json"
   },
   "transport_audit": {
     "identical_payload": true,

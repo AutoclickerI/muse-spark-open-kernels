@@ -15,7 +15,10 @@
     "file": "problems/muse_attention_decode/lab/lab_lab_boundary_batch.py",
     "sha256": "68a781ea6b773e611f2fa2647ae89b28e0ee78c9e19cc18306243f8595ae6fb3",
     "note": "h200_lab problems/muse_bf16_proj/dev/boundary_attribution/lab_boundary_batch.py: P7 recovery boundary_attribution: exact reset measurement payload and screened kernels unchanged; original prefill lab output was displaced by later host prepare logs, A:A and gates UNMEASURED. Attention host completes its own tuning before import lab, preserving packed diagnostic output; fresh paired controls retained.",
-    "not_before": 0
+    "not_before": 0,
+    "job": "ce5b991a8a984a03",
+    "status": "accepted",
+    "pending_receipt": "runs/pending/ce5b991a8a984a03.json"
   },
   "transport_audit": {
     "identical_payload": true,

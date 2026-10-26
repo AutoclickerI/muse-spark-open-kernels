@@ -424,9 +424,10 @@ Reset batches below are **unmeasured**, not losses: import-time output was displ
 
 | Recipe | Ratio vs control / A:A | Mechanism established | What remains open | Receipt |
 |---|---|---|---|---|
-| S14 metadata confirmation + d16/d32 boundary attribution (16 seeds) | Unavailable / unavailable | Diagnostic output lost after lab; host correctness passes | Every tested preload, geometry, serialization and MoE-release/unpool-hint arm; exact retry sender 4131535 | `4c86853a953b4eca` |
-| S14 decode-1 b1/route/b2 preload chain (11 arms, 32 seeds) | Unavailable / unavailable | Same output transport failure | W/W1/WR/W2, late-prew, hints, early residual and CL4; exact retry sender 4131717 | `841077efefb343a7` |
-| S14 d16/d32/v16/v32 boundary rebuild (10 arms, 24 seeds) | Unavailable / unavailable | Same output transport failure | Moment/exact single-CTA, serialization, route and tile-publication recipes; exact retry sender 4131824 | `a05f986396d744e7` |
+| S14 metadata confirmation + d16/d32 boundary attribution (16 seeds) | Unavailable / unavailable | Diagnostic output lost after lab; host correctness passes | Every tested preload, geometry, serialization and MoE-release/unpool-hint arm; exact retry `ce5b991a8a984a03` (sender 4131535) | `4c86853a953b4eca` |
+| S14 decode-1 b1/route/b2 preload chain (11 arms, 32 seeds) | Unavailable / unavailable | Same output transport failure | W/W1/WR/W2, late-prew, hints, early residual and CL4; exact retry `5a95984a640d410e` (sender 4131717) | `841077efefb343a7` |
+| S14 d16/d32/v16/v32 boundary rebuild (10 arms, 24 seeds) | Unavailable / unavailable | Same output transport failure | Moment/exact single-CTA, serialization, route and tile-publication recipes; exact retry `9f6849fcc12a448d` (sender 4131824) | `a05f986396d744e7` |
+| S15 all-stream critical timeline (12 shapes, 3 seeds, 108 profiles) | Mapped/plain 0.97566–1.02431; profiled/mapped 0.99639–1.01627; all gates/fingerprints pass, accounting error 0 | Verify DAG gaps overlap heavy/light MoE work: representative v16/v32 busy overlap 28.14/105.56 us, GPU idle only 5.45/5.86 us. Decoder separates them; these are not CPU launch gaps | Glue above fitted stream roof 3.6/0.5/0.5/0.7/1.3/1.5% at d1/d16/d32/v1/v16/v32 (median-seed owner traces); no kernel promotion. Full table `dev/s15_timeline/H200.md`; model includes 2.36 us intercept, unlike byte-only PLAN | `7eaa262a30ec483e` |
 
 ## Weight encoding
 

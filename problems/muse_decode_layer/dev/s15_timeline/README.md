@@ -1,9 +1,9 @@
 # P7 S15 completion-critical timeline
 
-**Accepted check `7eaa262a30ec483e` on `muse_decode_layer`; awaiting its diagnostic receipt.**
+**Completed H200 check `7eaa262a30ec483e`; decoded table and validation are in [H200.md](H200.md) and [h200_validation.json](h200_validation.json).**
 Frozen source: `cand_r3_best7_s15.py`, SHA256
 `602548834f7481747701469b2a85154dde214bea28076c10fefce2c46b5240cb`.
-No completed H200 receipt exists yet; local numbers below validate instrumentation/accounting, not performance.
+The H200 receipt validates unchanged scheduling and diagnostic accounting; this lab promotes no kernel recipe. Local numbers below remain instrumentation checks.
 
 ## What is timestamped
 
@@ -53,6 +53,26 @@ Noncritical heavy/light branches can have zero exposed contribution while conten
 full representative intervals remain in the trace. Join winner/runner-up slack is retained per seed, because
 speeding the currently winning branch may immediately make another branch critical. This is observed
 completion-path attribution, not a counterfactual speedup prediction or a measure of instruction wait cycles.
+
+## H200 result and the MoE gap correction
+
+All 12 shapes x3 seeds x3 profiles pass paired outputs, identical schedule/resource/DAG fingerprints and monotone stamps. Critical increments sum to timestamp wall exactly (maximum relative error 0). Plain/mapped event ratios range 0.97566–1.02431; profiled/mapped 0.99639–1.01627. These are timing controls for the observer, not evidence for a small kernel speedup.
+
+The logical completion path follows the last-finishing small-expert branch at verify 16/32. That branch starts late while heavy/light kernels occupy other streams. Calling all of its dependency gaps “launch gaps” would assign 12.2/26.7% of mean wall to launches. The retained representative traces show **28.14/105.56 us per weighted layer** of those gaps covered by other MoE kernels, with only **5.45/5.86 us GPU idle** (1.7/1.4% of representative wall). Overlap identifies the stage owner; it does not establish which branch caused the delay.
+
+`decode.py` now audits every representative gap against the union of all recorded GPU intervals. Its owner table moves busy overlap to the observed owner, uses one combined unique-work roof for concurrent MoE branches, and keeps actual GPU idle separate. The owner table uses each shape's retained median-seed trace; the detailed logical-DAG table still averages all three seeds. Neither table scales profiled time to an unprofiled event measurement. The fitted stream model includes its 2.36 us intercept; it is not the older PLAN byte-only metric.
+
+Representative owner time above its stream roof, as percent of wall:
+
+| Owner | d1 | d16 | d32 | v1 | v16 | v32 |
+|---|---:|---:|---:|---:|---:|---:|
+| Attention | 7.6 | 8.5 | 9.2 | 13.0 | 9.2 | 8.6 |
+| MoE | 18.7 | 18.2 | 21.4 | 14.8 | 17.3 | 24.2 |
+| Projections | 1.9 | 2.6 | 3.9 | 1.9 | 4.1 | 7.4 |
+| Glue | 3.6 | 0.5 | 0.5 | 0.7 | 1.3 | 1.5 |
+| GPU idle | 0.0 | 0.1 | 0.2 | 0.3 | 1.7 | 1.4 |
+
+All-seed mean b1+b2 critical increments at d16/d32/v16/v32 are **5.31/6.61/11.57/16.89 us**, separate from the MoE tail. Full per-role critical/roof/excess, event controls and representative owner table are in H200.md. P4 should rank the MoE/attention work from these diagnostics; no P7 patch is qualified by this observer lab.
 
 ## Byte / FLOP roofs
 
@@ -111,10 +131,10 @@ Log: `runs/detached/d8b2e3c7129a22fe.log`; accepted check **7eaa262a30ec483e**. 
 sender1492297 was verified and replaced by the same-file sender mechanism before dispatch; its record is
 `replaced_schedule.json`. Other P7 and integration senders are unchanged.
 
-After acceptance/completion, use the canonical receipt JSON directly:
+Reproduce the H200 table from the canonical receipt JSON:
 
 ```
-python3 problems/muse_decode_layer/dev/s15_timeline/decode.py runs/muse_decode_layer/RECEIPT.json --out problems/muse_decode_layer/dev/s15_timeline/out/h200
+python3 problems/muse_decode_layer/dev/s15_timeline/decode.py runs/muse_decode_layer/20261026T001048Z_check_7eaa262a30ec483e.json --out problems/muse_decode_layer/dev/s15_timeline/out/h200
 ```
 
 Or save `python3 tools/h200_lab.py read JOB` output to a text file and pass that text file in place of the JSON.
