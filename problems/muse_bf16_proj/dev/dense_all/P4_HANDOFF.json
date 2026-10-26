@@ -1,0 +1,88 @@
+{
+  "lane": "P10",
+  "status": "READY: native held-out G0 winner on frozen S19; confirm P4 composition",
+  "patch": "problems/muse_bf16_proj/dev/dense_all/patch_gate.py",
+  "command": "python3 problems/muse_bf16_proj/dev/dense_all/patch_gate.py BASE.py OUTPUT.py",
+  "base": "problems/muse_decode_layer/cand_r3_best7_s19_final.py",
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "winner_sha256": "b32767199b428a2dbf36def09b13d914c8157481f0e4c4ec00fb0fa4882362a2",
+  "dispatch": {
+    "tokens": 1,
+    "window": "sliding only",
+    "role": "gate_apply",
+    "arm": 3,
+    "schedule": "S4/WK4/ST1 exact12, full GEMV before Y dependency wait, fused sigmoid/multiply BF16 output"
+  },
+  "G0": {
+    "job": "e364381789e8445e",
+    "receipt": "runs/muse_prefill_layer/20261026T082835Z_submit_e364381789e8445e.json",
+    "R": 1.0044046459819183,
+    "CI95": [
+      1.0030034366594527,
+      1.005807812812697
+    ],
+    "seeds": 16,
+    "weight_seed": 14000311,
+    "router_seed": 14000313,
+    "TASK_checks": 576,
+    "AA": [
+      0.9999439947386286,
+      0.9983910819912143,
+      1.0014993229102636
+    ],
+    "baseline": "frozen S19"
+  },
+  "prepare": {
+    "added_s": 9.192027354001766,
+    "total_s": 170.4542296260188,
+    "details": {
+      "compile_small_(True, False)": 4.570508700009668,
+      "compile_small_(True, True)": 4.585394051013282,
+      "small_pack_gate": 0.002561658009653911,
+      "small_stream_('gate', (1, 4, 8, 4))": 0.0009630789863876998,
+      "total": 9.192027354001766
+    },
+    "gpu_bank_s": 0.003524736996041611
+  },
+  "selection": {
+    "matrix": "cc06d34c38284ff2",
+    "whole": "e7a553de66604682",
+    "gate_stage_ratio": [
+      0.919767,
+      0.914989,
+      0.924571
+    ],
+    "broad_coding_G0": [
+      1.00001406,
+      0.99764338,
+      1.00239038
+    ],
+    "merge_G0": [
+      0.98954861,
+      0.98669663,
+      0.99240883
+    ]
+  },
+  "rejected": [
+    "No T16 QKV change; P4 S19 rejection respected",
+    "No broad QKV/gate merge; native G0 loses",
+    "No large register-A code replacement: cc06/e7b0/ff324 all active large sites lose. Grouped changes save5\u201319% vs matched serial registers but best new ratios1.190\u20132.092."
+  ],
+  "validation": "admission.json, whole_lab_validation.json (576 local TASK), native_validation.json, codec_validation.json, prune_validation.json, whole_results.json; winner_validation.json normal/forced13TASK12graphs",
+  "limits": [
+    "Stage1 full timing movement is recorded although its code is unchanged; use six-load R, no per-load veto",
+    "Promotion of P4 composition still requires its own held-out G0 and official decode TASK run"
+  ],
+  "next": "P4 integrate only patch_gate.py, confirm new composition by held-out G0; orchestrator re-rank projection lever from the now-complete raw/code/synchronization verdicts.",
+  "large_followups": {
+    "pipeline_job": "e7b0d5786d174c26",
+    "grouped_job": "ff32499a47704733",
+    "all_complete": true,
+    "stage_winners": [],
+    "details": [
+      "pipeline_results.json",
+      "grouped_results.json"
+    ],
+    "next_term": "Activation/tensor schedule: matched raw register controls still lose; test a weight decode pipeline that preserves the native dense tile schedule rather than changing the GEMM orientation."
+  }
+}

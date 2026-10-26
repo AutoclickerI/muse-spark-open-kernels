@@ -1375,54 +1375,63 @@ Recipe ratios are candidate/control (lower is faster), except the explicitly lab
 | P10 fused pool whole-layer C1816 | layer speedup 1.0118260 [1.0103668,1.0132851] | NF original12-bit WR1/WK8/S1/ST1 replaces only pool_router at selected T; gate concurrency and fused route/norm retained | Lower95>1, 768/768 independent TASK checks. C1816 nominated to P4; rebase and official verification required. Outer unchanged S15 host prepare separately failed router autotune. | 818bd6da9a4b4123 |
 <!-- P10/P12 measurements end -->
 
-### P10 leader-gap decomposition and coded QKV dispatch
+### P10 leader-gap decomposition and exact coding at every dense site
 
-Evidence/code: `problems/muse_bf16_proj/dev/stream_gap/README.md`, `decomposition.csv`,
-`followup_results.json`, `qkv_results.json`; P4 delivery: `P4_HANDOFF.json` and `patch_qkv.py`.
-The component leader's 1.36125 time advantage (`08cc9405`) is an aggregate; its per-shape times and code
-are private. It is not a measured layer advantage. The decomposition identifies our costs, not that team's
-exact algorithm.
+Reproductions: `problems/muse_bf16_proj/dev/{stream_gap,dense_all}/`; current P4 delivery:
+`dense_all/P4_HANDOFF.json` and `patch_gate.py`. The private leader's 1.36125 component advantage
+(`08cc9405`) is aggregate, not a measured layer advantage or proof of that team's encoding.
 
-`2015fc90abf94e14`: 30 shapes,8 activation seeds,A:A. Complete one-pass weight representations are
-1.50–1.57 B/W at already-coded small QKV/O/unpool sites,2 B/W at raw BF16 sites,4 B/original FP32 router
-weight (two BF16 banks). Physical DRAM bytes remain unmeasured; bank sizes exclude repeated CTA requests,
-cache transactions and activation/output traffic. The report lists each shape's bank bytes, producer useful
-TB/s versus4.58/4.8, and captured launch counts. Its checksum-verified stream fits4.614 TB/s marginally
-with2.876us intercept (32–128MiB); max end-to-end4.203 TB/s. NOP graphs fit.519us/additional launch,
-first launch.944us. The stream intercept is not all launch cost.
+`2015fc90abf94e14` decomposes our 30 component shapes (8 seeds,A:A): already-coded banks
+1.50–1.57 B/W, raw BF16 2, original FP32 router 4 (BF16 hi+lo). Physical HBM counters are unmeasured;
+these logical bytes exclude repeated CTA requests and activation/output traffic. The independent checksum
+stream fits 4.614 TB/s marginal +2.876 us intercept (max end-to-end4.203), versus judge best4.58 and
+TASK4.8. Producer useful rates are only0.84–3.62 TB/s. NOPs fit0.519 us/additional launch, first0.944;
+the stream intercept is not all launch overhead. Component casts cost1.22–1.79 us and mostly disappear
+at the layer's FP32 consumers. `646822ab3d164be8`: O1 last-CTA norm fusion loses1.60–2.95; all20
+large-token raw reuse/split arms lose1.10–3.73 with actual neighbours. These close those schedules.
 
-The same receipt isolates generic FP32+cast versus direct BF16:1.22–1.79us output-boundary cost. Most
-small component shapes have2 nodes; large router3; direct outputs/router use1. These wins mostly do not
-transfer to the layer's FP32 fused consumers. Generic coded QKV loses1.039–1.154 and unpool1.060–1.249;
-pool/router component wins need the actual fused N4608 neighbour. M1 timing here is one-hot only;
-optimistic same-receipt component point-selection1.10711 has no joint-sample CI and is not promotion.
+`2b45988c88fb42a5` selected exact12 S4/WK4/ST1 QKV: M8full.905404[.897972,.912897],
+M16full.931355[.922068,.940737],M16QKV3.917619[.910580,.924713],16seeds/24arms,TASK+A:A.
+P4 S19 retained T8; its layer evidence rejected T16. The old three-point handoff is superseded by that
+G0 decision, not by a stricter per-stage gate.
 
-`646822ab3d164be8`:16 random activation/residual seeds,8 cold rounds,A:A,all joint samples retained.
-O1 last-CTA residual/two-norm fusion loses:WR4/2/1 ratios1.60265[1.58809,1.61735] /
-1.97132[1.95408,1.98872] /2.94660[2.92724,2.96608], versus the same NF O1+cluster boundary.
-All20 large-M full-token/split-K arms lose with their actual route/norm or residual/norm neighbours:
-M1281.102–1.701,M2561.521–3.734. Builds use73.8–98.3KB shared,90–190regs,zero spills; the exact
-resource causing the loss is not isolated. These close the tested schedules, not coding/reuse generally.
+`cc06d34c38284ff2`: complete36-cell matrix, qkv/qkv3/gate/O/pool_router/unpooler at
+T1/8/16/32/128/256;4small/7wide arms,8seeds8cold,A:A, separate one-hot checks. All public projection
+checks pass, including original FP32 router. O/pool/unpool keep actual S18 norm/route consumers.
+`dense_all/ratios.csv` retains every arm and paired Student-t7 CI. S4/WK4 generalizes where it wins;
+T1 fused coded gate .919767[.914989,.924571], T8QKV .933678[.925420,.942009]. Inactive QKV3 and
+raw gate cells are marked diagnostics. Large-token code now decodes into registers and reuses each tile
+across128/256tokens, removing decoded-weight shared staging and DSM output reduction; zero spills,
+98–196regs. It still loses at active sites by1.272–2.123 with neighbours, so occupancy/staging alone
+did not explain the original losses. All-bank GPU prepare adds24.520 s:24.404 s compilation and
+~0.116 s remaining setup. Per-bank pack/metadata times are retained; a coded body is shared across K splits.
 
-`2b45988c88fb42a5`: exact12 QKV,24 arms across4 shapes,16 fresh random activation seeds,8 cold rounds,
-independent A:A and separate published TASK one-hot checks; all pass. S4/WK4,one pipeline stage wins;
-S1/S2 lose despite identical precision. Ratios are candidate/control time;95% intervals use paired log
-ratios and t15. These are stage selection, not G0 confirmation.
+`e7b0d5786d174c26`: exact raw/coded register-A factorial, full/half token tiles,S2/4/8,8seeds8cold.
+Two live A-register sets overlap decoding with WGMMA. This improves matched coded schedules by
+1.3–6.4%, but best active coded ratios remain T128 QKV/O/pool/unpool1.292/1.212/1.423/1.228,
+T2561.436/1.243/1.947/1.238 (all lower95%>1). Matched coded/raw ratios are1.0015–1.183 at T128
+and0.9965–1.0182 at T256. Thus most of the large-shape loss also exists with exact raw BF16 under the
+same register schedule: synchronizing K64 tiles, activation transport and tile order are the next terms,
+not just exponent decoding or physical weight bytes. `ff32499a47704733` tests K128 groups plus adjacent
+token tiles (8cells26arms8seeds): matched register schedules improve5–19%, but best new ratios remain
+T128 QKV/O/pool/unpool1.476/1.217/1.635/1.190, T2561.707/1.392/2.092/1.518; no large-shape
+handoff. Registers122–196, zero local stack/spills. Together the raw/code oracles close these RS mappings;
+a code pipeline preserving the native dense tile schedule is the next structural test.
 
-| Shape | Ratio [95% CI] | A:A [95% CI] | P4 |
-|---|---|---|---|
-| M8 full QKV | .905404 [.897972,.912897] | 1.000580 [.991067,1.010184] | selected |
-| M16 full QKV | .931355 [.922068,.940737] | 1.005548 [.997452,1.013709] | selected |
-| M16 QKV3 | .917619 [.910580,.924713] | .996334 [.987218,1.005535] | selected |
-| M8 QKV3 | .896534 [.888875,.904259] | .984575 [.975835,.993394] | diagnostic; current M8 uses full QKV |
+`e7a553de66604682`: frozen S19,8newseeds,576public layer TASK checks. Broad code R1.000014
+[.997643,1.002390], early-load R.999654[.997462,1.001851], QKV+gate single-launch merge
+R.989549[.986697,.992409], composition R.989779[.986745,.992823]. No promotion. Gate coding helps
+T1sliding but hurts T1full; one fewer launch does not compensate for lost gate/attention overlap.
 
-The selected banks total1.51660 B/W including escape metadata (24.17% below raw BF16). The P4 patch
-builds only3 selected instances/two banks; preserves QKV3/gate concurrency,FP32 partial ABI,PDL and all
-neighbours. It applies to shipped S18e04635ec asf9e4661d. Exact selected Hopper builds pass with zero
-spills. Current-base local layer TASK validation is recorded in the handoff; Hopper-only DSM uses a local
-CTA-reduction stand-in,not local timing evidence. P4 must confirm held-out six-load R lower95%>1;
-no new layer ratio is established here. Server size/AST admission rejections created no jobs; the accepted
-856393-byte wrapper uses the unchanged measured host in compressed form with explicit entry points.
+`e364381789e8445e`: fixed gate1/sliding-only candidate on16disjoint confirmation seeds and fresh
+weight/router seeds, all12scoredshapes,576public layer TASK checks. G0 R1.004405[1.003003,1.005808]
+vs frozen S19; A:A R.999944[.998391,1.001499]. Each seed retains the six-load covariance and
+Tload=46*sliding+16*full. S19+selected-bank prepare170.454 s, added9.192 s (9.156 s native compile;
+GPU gate bank3.525 ms). The patch preserves the gate stream and fuses sigmoid/output after its Y wait;
+no extra launch, no T16 QKV or broad merge. P4 has the patch, CI, source pins and exact prepare receipts;
+its new composition and final official decode run remain P4's gate. Changes in unchanged rows are recorded,
+not attributed to the patch. The old1.36125 component gap has no new same-ABI paired residual measurement;
+dividing it by this layer R would mix two different workloads.
 
 ## Glue and routing
 

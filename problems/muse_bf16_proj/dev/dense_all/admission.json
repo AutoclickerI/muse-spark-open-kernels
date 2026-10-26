@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "payload_sha256": "1af228ae99813cc938bc24be3626cc6aedf0190093c00c543d7b2e897441b1ce",
+  "candidate_sha256": "48d667b0e43a1c4abbc925abfdc727ead73a5c524dce56dc94b8b6eb6a1c1994",
+  "cells": 36,
+  "rows": 58,
+  "seeds": 8,
+  "rounds": 8,
+  "receipt_chars": 7951,
+  "screens": {
+    "normal": {
+      "tests": 9,
+      "shapes": 30,
+      "source_sha256": "f524b639a10e80521d67753c8fec6b53b80ba7f987285b2c5d6c709a4dcd4120"
+    },
+    "forced": {
+      "tests": 9,
+      "shapes": 30,
+      "source_sha256": "f524b639a10e80521d67753c8fec6b53b80ba7f987285b2c5d6c709a4dcd4120"
+    }
+  },
+  "native_validation": 6,
+  "host_glue_validation": 64,
+  "codec_validation": 469762048,
+  "gate_validation": 16,
+  "limits": [
+    "Local Hopper WGMMA replaced by a Triton dot stand-in; native resource/host launch proof and GPU exact codec proof are separate. H200 arithmetic remains for the receipt.",
+    "Fused gate agreement is diagnostic until full-layer TASK validation.",
+    "No whole-layer G0 promotion or leader attribution from this stage batch."
+  ],
+  "lab_rehearsal_payload_sha256": "1af228ae99813cc938bc24be3626cc6aedf0190093c00c543d7b2e897441b1ce",
+  "resource_prefix_only_after_rehearsal": false
+}

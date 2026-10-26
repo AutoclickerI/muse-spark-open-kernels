@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "cells": 3,
+  "roles": [
+    "qkv_gate",
+    "gate",
+    "pool_router"
+  ],
+  "small_entries": 3,
+  "wide_entries": 1,
+  "local_prepare_s": {
+    "compile_small_(False, False)": 21.423586435965262,
+    "compile_small_(False, True)": 20.237761149997823,
+    "small_pack_qkv_gate": 0.35768853803165257,
+    "small_stream_('qkv_gate', (1, 4, 32, 1))": 0.16298885305877775,
+    "small_pack_gate": 0.0023724649799987674,
+    "small_stream_('gate', (1, 4, 32, 1))": 0.005916976951994002,
+    "compile_wide_False": 3.420282155275345e-07,
+    "wide_pack_pool_router": 0.033452380914241076,
+    "wide_metadata_('pool_router', 4)": 0.00222874095197767,
+    "total": 42.58401216601487
+  }
+}

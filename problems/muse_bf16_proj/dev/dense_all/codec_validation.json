@@ -1,0 +1,234 @@
+{
+  "passed": true,
+  "weight_patterns_compared": 469762048,
+  "records": [
+    {
+      "role": "qkv_gate",
+      "splits": 1,
+      "weights": 18874368,
+      "escapes": 2700,
+      "max_escapes": 28
+    },
+    {
+      "role": "qkv_gate",
+      "splits": 2,
+      "weights": 18874368,
+      "escapes": 2700,
+      "max_escapes": 18
+    },
+    {
+      "role": "qkv_gate",
+      "splits": 4,
+      "weights": 18874368,
+      "escapes": 2700,
+      "max_escapes": 13
+    },
+    {
+      "role": "qkv_gate",
+      "splits": 8,
+      "weights": 18874368,
+      "escapes": 2700,
+      "max_escapes": 9
+    },
+    {
+      "role": "qkv3",
+      "splits": 1,
+      "weights": 10485760,
+      "escapes": 1473,
+      "max_escapes": 28
+    },
+    {
+      "role": "qkv3",
+      "splits": 2,
+      "weights": 10485760,
+      "escapes": 1473,
+      "max_escapes": 18
+    },
+    {
+      "role": "qkv3",
+      "splits": 4,
+      "weights": 10485760,
+      "escapes": 1473,
+      "max_escapes": 13
+    },
+    {
+      "role": "qkv3",
+      "splits": 8,
+      "weights": 10485760,
+      "escapes": 1473,
+      "max_escapes": 9
+    },
+    {
+      "role": "gate",
+      "splits": 1,
+      "weights": 8388608,
+      "escapes": 1227,
+      "max_escapes": 28
+    },
+    {
+      "role": "gate",
+      "splits": 2,
+      "weights": 8388608,
+      "escapes": 1227,
+      "max_escapes": 16
+    },
+    {
+      "role": "gate",
+      "splits": 4,
+      "weights": 8388608,
+      "escapes": 1227,
+      "max_escapes": 10
+    },
+    {
+      "role": "gate",
+      "splits": 8,
+      "weights": 8388608,
+      "escapes": 1227,
+      "max_escapes": 7
+    },
+    {
+      "role": "o",
+      "splits": 1,
+      "weights": 8388608,
+      "escapes": 1000,
+      "max_escapes": 6
+    },
+    {
+      "role": "o",
+      "splits": 2,
+      "weights": 8388608,
+      "escapes": 1000,
+      "max_escapes": 5
+    },
+    {
+      "role": "o",
+      "splits": 4,
+      "weights": 8388608,
+      "escapes": 1000,
+      "max_escapes": 4
+    },
+    {
+      "role": "o",
+      "splits": 8,
+      "weights": 8388608,
+      "escapes": 1000,
+      "max_escapes": 3
+    },
+    {
+      "role": "pool_router",
+      "splits": 1,
+      "weights": 37748736,
+      "escapes": 5887,
+      "max_escapes": 88
+    },
+    {
+      "role": "pool_router",
+      "splits": 2,
+      "weights": 37748736,
+      "escapes": 5887,
+      "max_escapes": 47
+    },
+    {
+      "role": "pool_router",
+      "splits": 4,
+      "weights": 37748736,
+      "escapes": 5887,
+      "max_escapes": 25
+    },
+    {
+      "role": "pool_router",
+      "splits": 8,
+      "weights": 37748736,
+      "escapes": 5887,
+      "max_escapes": 15
+    },
+    {
+      "role": "unpooler",
+      "splits": 1,
+      "weights": 33554432,
+      "escapes": 3253,
+      "max_escapes": 13
+    },
+    {
+      "role": "unpooler",
+      "splits": 2,
+      "weights": 33554432,
+      "escapes": 3253,
+      "max_escapes": 10
+    },
+    {
+      "role": "unpooler",
+      "splits": 4,
+      "weights": 33554432,
+      "escapes": 3253,
+      "max_escapes": 6
+    },
+    {
+      "role": "unpooler",
+      "splits": 8,
+      "weights": 33554432,
+      "escapes": 3253,
+      "max_escapes": 5
+    }
+  ],
+  "prepare_times": {
+    "compile_small_(False, False)": 0.04023918497841805,
+    "compile_small_(False, True)": 0.0238551190122962,
+    "compile_small_(True, False)": 0.02659792301710695,
+    "compile_small_(True, True)": 0.03408028697595,
+    "small_pack_qkv_gate": 0.2207287469645962,
+    "small_stream_('qkv_gate', (1, 4, 32, 1))": 0.08976171491667628,
+    "small_stream_('qkv_gate', (1, 8, 16, 1))": 0.0014986359747126698,
+    "small_pack_qkv3": 0.0029456650372594595,
+    "small_stream_('qkv3', (1, 4, 32, 1))": 0.001278050011023879,
+    "small_stream_('qkv3', (1, 8, 16, 1))": 0.0009995009750127792,
+    "small_pack_gate": 0.0024330150336027145,
+    "small_stream_('gate', (1, 4, 32, 1))": 0.001087518990971148,
+    "small_stream_('gate', (1, 8, 16, 1))": 0.0009304310660809278,
+    "small_pack_o": 0.0024023819714784622,
+    "small_stream_('o', (1, 4, 4, 1))": 0.0013945229584351182,
+    "small_stream_('o', (1, 8, 2, 1))": 0.0019857899751514196,
+    "small_pack_pool_router": 0.04148311901371926,
+    "small_stream_('pool_router', (1, 4, 32, 1))": 0.32721792603842914,
+    "small_stream_('pool_router', (1, 8, 16, 1))": 0.0010200249962508678,
+    "small_pack_unpooler": 0.04115745204035193,
+    "small_stream_('unpooler', (1, 4, 16, 1))": 0.0017070610774680972,
+    "small_stream_('unpooler', (1, 8, 8, 1))": 0.009147119941189885,
+    "small_pack_unpooler_slice": 0.0019964639795944095,
+    "small_stream_('unpooler_slice', (1, 4, 16, 1))": 0.0017840369837358594,
+    "small_stream_('unpooler_slice', (1, 8, 8, 1))": 0.0009758239611983299,
+    "compile_wide_False": 5.849869921803474e-07,
+    "compile_wide_True": 2.980232238769531e-07,
+    "wide_pack_qkv_gate": 0.014002657029777765,
+    "wide_metadata_('qkv_gate', 1)": 0.00692079309374094,
+    "wide_metadata_('qkv_gate', 2)": 0.0012774229981005192,
+    "wide_metadata_('qkv_gate', 4)": 0.000701274024322629,
+    "wide_metadata_('qkv_gate', 8)": 0.0006733749760314822,
+    "wide_pack_qkv3": 0.0054909910541027784,
+    "wide_metadata_('qkv3', 1)": 0.002875023987144232,
+    "wide_metadata_('qkv3', 2)": 0.0007410410325974226,
+    "wide_metadata_('qkv3', 4)": 0.0006310249445959926,
+    "wide_metadata_('qkv3', 8)": 0.0010396209545433521,
+    "wide_pack_gate": 0.007880633929744363,
+    "wide_metadata_('gate', 1)": 0.0018274029716849327,
+    "wide_metadata_('gate', 2)": 0.0007449210388585925,
+    "wide_metadata_('gate', 4)": 0.0006304850103333592,
+    "wide_metadata_('gate', 8)": 0.0006457290146499872,
+    "wide_pack_o": 0.010954734985716641,
+    "wide_metadata_('o', 1)": 0.00826683803461492,
+    "wide_metadata_('o', 2)": 0.0008747039828449488,
+    "wide_metadata_('o', 4)": 0.0006905710324645042,
+    "wide_metadata_('o', 8)": 0.0006436570547521114,
+    "wide_pack_pool_router": 0.023788435966707766,
+    "wide_metadata_('pool_router', 1)": 0.0017931379843503237,
+    "wide_metadata_('pool_router', 2)": 0.01013899501413107,
+    "wide_metadata_('pool_router', 4)": 0.001598839065991342,
+    "wide_metadata_('pool_router', 8)": 0.0016038189642131329,
+    "wide_pack_unpooler": 0.01816096599213779,
+    "wide_metadata_('unpooler', 1)": 0.0011509619653224945,
+    "wide_metadata_('unpooler', 2)": 0.0007598190568387508,
+    "wide_metadata_('unpooler', 4)": 0.0006451070075854659,
+    "wide_metadata_('unpooler', 8)": 0.0006848810007795691,
+    "total": 1.206227116053924
+  }
+}
