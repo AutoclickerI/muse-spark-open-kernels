@@ -100,14 +100,17 @@ The main round2 candidate is a single fully embedded board wrapper; send that
 through `tools/okc_run.py send`. Neither path requires editing a source file
 when a reset result selects a cluster or query partition. The wrapper queue
 release is09:01KST, matching the existing P5 reset batch, with lower priority,
-so the second-round packet cannot jump the history reset packet's time gate.
+so the second-round packet could not jump the history reset packet's time gate.
+After all first-round P5 receipts completed, its priority became2 to put
+remaining structural measurements ahead of component-board diagnostics.
 
 ## Queue and final artifacts
 
-Second-round packet **295a2792**, live sender **1029989**, priority4, not-before
+Second-round packet **295a2792**, accepted as **27a914f72bfb47c8**;
+sender **1029989**, current priority2 (initially4), not-before
 **1792972860 (2026-10-26 09:01 KST)**. The one-minute offset from reset
 1792972800 matches the earlier P5 batch's time gate and keeps this packet behind
-it. No judge job ID exists before acceptance. Sender log:
+it. Sender log:
 `runs/detached/295a2792bb092012.log`.
 
 The first three reset packets completed as **ae6cd27877cc4ee2** (global),
@@ -142,7 +145,18 @@ loses1.07381, so it is excluded. The24-held-out-seed whole-layer packet
 is **768d8105**, sender **114722**, priority1, attention import hosting.
 It packs RESET/COOP/HALF/DOUBLE; selected-shape local admission passes
 all gates, two fresh seeds x2 cold rounds, with native DSM explicitly C1
-locally. There is no new P4 promotion from stage timing alone.
+locally. It completed as **6c26b14fdd28458b**: v16 cooperative variants
+lose1.063-1.153, RESET is neutral; v1 nominal COOP0.94983 is **unmeasured**
+because identical C16 DOUBLE/COOP1.03901 (SE0.00300) fails its control.
+No new P4 promotion is made. Machine audit: `dsm_confirmation.json`.
+
+The v1-only repeat is **6a0b3f0987e94ba5**, wrapper **51847d1b**,
+35 disjoint seeds x14 rounds, with A/A2/A3 and the C16 duplicate retained.
+Future generated packets now recapture graph pools and rotate capture
+ownership per seed; CUPTI increments still describe the first capture only.
+Seven arms x2 fresh seeds pass the actual local recapture/TASK/cache smoke.
+The reporter detects identical-recipe aliases and prevents promotion when
+their displacement exceeds baseline drift plus three standard errors.
 
 Follow-ups now validate each arm's new cache immediately after that arm
 replays. The original round2 packet is immutable and retains its original

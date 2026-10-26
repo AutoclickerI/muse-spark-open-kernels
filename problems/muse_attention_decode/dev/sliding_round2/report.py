@@ -13,9 +13,12 @@ def rank(times,name):
     mean,se=compare(times,name);noise,noise_se=compare(times,'A2')
     aa=[x/y for x,y in zip(times['A2'],times['A'])]
     other,other_se=compare(times,name,'A2')
-    clean=1-mean>abs(noise-1)+3*se and other+3*other_se<1
+    controls={n:compare(times,n) for n in times if n.startswith('A') and n[1:].isdigit()}
+    radius=max(abs(m-1) for m,e in controls.values())
+    comparisons={n:compare(times,name,n) for n in controls}
+    clean=1-mean>radius+3*se and all(m+3*e<1 for m,e in comparisons.values())
     return dict(ratio=mean,se=se,aa=noise,aa_se=noise_se,aa_range=[min(aa),max(aa)],
-                vs_a2=other,vs_a2_se=other_se,confirm=clean)
+                baseline_controls=controls,vs_a2=other,vs_a2_se=other_se,confirm=clean)
 
 def report(row,marker):
     times=row['times']
@@ -37,13 +40,24 @@ def report(row,marker):
             if name.startswith('C'):assert row['res'][name[1:]][-1]>0
     label=row.get('case','v'+str(row.get('B',1))+'S')
     noise,noise_se=compare(times,'A2')
+    groups={}
+    for name,recipe in row.get('arms',{}).items():groups.setdefault(tuple(recipe),[]).append(name)
+    aliases=[]
+    for names in groups.values():
+        for name in names[1:]:
+            mean,se=compare(times,name,names[0])
+            aliases.append(dict(names=[name,names[0]],ratio=mean,se=se,
+                failed=abs(mean-1)>abs(noise-1)+3*(se+noise_se)))
+    failed_alias=any(x['failed'] for x in aliases)
     status=('UNMEASURED whole-layer recipes: one isolated attention gate; no replay TASK gates'
-            if marker=='CS_XZ85' else 'stage-only gates' if marker=='DS_XZ85' else 'TASK gates complete')
+            if marker=='CS_XZ85' else 'UNMEASURED: identical-recipe control failed'
+            if failed_alias else 'stage-only gates' if marker=='DS_XZ85' else 'TASK gates complete')
     print(f'{label} seeds={expected} A:A={noise:.6f} SE={noise_se:.6f}; {status}')
-    result=dict(case=label,seeds=expected,controls=status,arms={})
+    result=dict(case=label,seeds=expected,controls=status,identical_recipe_controls=aliases,arms={})
+    if aliases:print(' identical recipes',json.dumps(aliases))
     for name in times:
-        if name in ('A','A2'):continue
-        summary=rank(times,name);measured=marker!='CS_XZ85'
+        if name=='A' or (name.startswith('A') and name[1:].isdigit()):continue
+        summary=rank(times,name);measured=marker!='CS_XZ85' and not failed_alias
         summary['measured']=measured;summary['confirm'] &= measured
         if 'OLD4' in times and name!='OLD4':
             summary['vs_old'],summary['vs_old_se']=compare(times,name,'OLD4')

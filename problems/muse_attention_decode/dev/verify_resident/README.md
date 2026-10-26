@@ -98,10 +98,14 @@ one launch. The compact receipt retains seed-level samples at1ns resolution,
 critical increments, stage bounds, resource reports and output drift.
 
 It is independent of every pending reset outcome. `tools/h200_lab.py` hosts
-it at attention import time with a650s budget. It is queued at priority5,
+it at attention import time with a650s budget. It is accepted as check
+**857f78fa889f4646**, at current priority2 (initially5),
 sender **1465956**, board SHA **a6c3423d**, not before **1792972860**
 (2026-10-26 09:01 KST), behind all four earlier P5 senders;
-no waiting payload is absorbed or replaced. No conditional selection or
+no waiting payload is absorbed or replaced. After the first three P5 reset
+receipts completed, its priority became2 alongside round2, preserving the
+sender and source bytes while moving structural work ahead of component-board
+diagnostics. No conditional selection or
 fallback dispatch depends on a reset result.
 
 ## Admission and rebuild
@@ -149,7 +153,7 @@ per-arm graph-port probe passed. Native cluster placement, producer interference
 and H200 speedup remain unverified.
 
 Lab source SHA **74864386**, component SHA **5e7cb4d1**. Full source hashes,
-screen counts, prewait SASS evidence and live sender identity are in
-`admission.json`. There is no accepted H200 job id yet. Next: collect the one native payload and
+screen counts, prewait SASS evidence and initial sender identity are in
+`admission.json`. Accepted job: **857f78fa889f4646**. Next: collect the one native payload and
 rank whole-layer ratios beyond A:A noise, checking QKV displacement before
 handing integration a patch onto the currently qualified base.

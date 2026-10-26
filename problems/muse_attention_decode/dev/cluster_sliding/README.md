@@ -73,9 +73,27 @@ and three seed standard errors. All8 gates per shape pass: maximum stage
 errors0.02213/0.02121/0.02066 at B1/16/32, partial error0.
 Verify32's best C4 loses1.07381 vsA (1.08299 vsA2); A:A0.99157,
 SE0.00309, range0.97661-1.00294. That closes only this DSM recipe atB32.
-The selected24-seed S14 confirmation packs RESET/COOP/HALF/DOUBLE only
-for **B1:C16 and B16:C8**, with immediate per-arm cache checks.
-No new P4 promotion yet. Existing handoff evidence remains
+The selected24-seed S14 confirmation **6c26b14fdd28458b** completed:
+
+- **Verify1 is unresolved.** Nominal COOP/A0.94983 and RESET/A0.96309
+  pass TASK, but COOP and DOUBLE are exactly the same C16 recipe and
+  DOUBLE/COOP is1.03901, SE0.00300 (A:A1.00963, SE0.00201).
+  This failed identical-recipe control makes the v1 ranking unmeasured.
+  No v1 arm goes to P4 from this run.
+- **Verify16 does not carry over.** RESET/A1.00412 is neutral (SE0.00395).
+  Cooperative C8/C4/C16 ratios are1.11715/1.06338/1.15331, with
+  A:A0.999657, SE0.000744. Registers254 vs RESET168 reduce active CTAs
+  from3 to2; attention completion increments are51.648 vs24.128us forA
+  and25.696us forRESET. This is consistent with register pressure, not
+  isolated causal proof. Close only these cooperative QT1/gang recipes;
+  bounded-prep resident verify remains independent.
+
+The v1-only control repeat **6a0b3f0987e94ba5**, wrapper **51847d1b**,
+uses35 disjoint seeds x14 cold rounds, A/A2/A3, RESET/COOP/C8 and the
+identical C16 duplicate. It recaptures fresh graph pools with rotated
+capture ownership each seed; fixed allocation bias is a hypothesis tested
+by this repeat. Seven-arm/two-seed local TASK/cache admission passes.
+Native whole-layer qualification is pending. Existing handoff evidence remains
 `7e93cc81af17489a`, `9d9a01e1f6db4d79`.
 
 `repair_global_lab.py` reconstructs ae6cd278's exact host and payload from

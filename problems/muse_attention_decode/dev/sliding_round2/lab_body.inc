@@ -67,6 +67,16 @@ def lab(deadline,weights,state=None):
         for seed in SEEDS:
             if time.monotonic()>deadline-8:raise TimeoutError(('incomplete round2',label,seed,len(times['A'])))
             if seed!=SEEDS[0]:cs_copy(data,mk(seed))
+            if seed!=SEEDS[0]:
+                # A fixed graph pool can give identical recipes persistent
+                # address/placement bias (6c26b14f: COOP vs DOUBLE +3.90%).
+                # Rotate capture ownership of fresh pools across seeds.
+                graphs.clear();out.clear();gc.collect();torch.cuda.empty_cache()
+                names=list(variants);offset=SEEDS.index(seed)%len(names)
+                for n in names[offset:]+names[:offset]:
+                    for _ in range(2):variants[n].kernel_fn(data,st)
+                    torch.cuda.synchronize()
+                    graphs[n],out[n],_,_=tl_capture(variants[n],st,data,act,False)
             checker=eh_checker(data,weights)
             for n in variants:
                 # Check the cache this arm just wrote. Replaying every arm

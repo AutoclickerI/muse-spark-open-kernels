@@ -5,12 +5,12 @@ import build_packet,kernels
 H=Path(__file__).resolve().parent
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','history','selected'))
+    ap=argparse.ArgumentParser();ap.add_argument('mode',choices=('dsm','dsm_recheck','history','selected'))
     ap.add_argument('--selection',required=True,type=json.loads,help='DSM {batch:cluster}; history {"qt":1|2|4}; selected {"batch,q_len":[kind,qt,splits]}')
     a=ap.parse_args();body=(H/'out/body.py').read_text()
     cut=body.index('SEEDS=tuple(');body=body[:cut]+(H/'lab_body.inc').read_text()
     body=body.replace('SEEDS=tuple(4194319+104729*i for i in range(16))','SEEDS=tuple(7101149+104729*i for i in range(24))')
-    if a.mode=='dsm':
+    if a.mode in ('dsm','dsm_recheck'):
         choice={int(b):int(c) for b,c in a.selection.items()}
         assert choice and all(b in (1,16,32) and c in (1,2,4,8,16) for b,c in choice.items())
         arms={}
@@ -19,6 +19,12 @@ def main():
             arms[(b,8)]={'RESET':('dsm_old',qt,c),'COOP':('dsm',qt,c),
                          'HALF':('dsm',qt,max(1,c//2)),'DOUBLE':('dsm',qt,min(16,c*2))}
         cases=tuple(arms)
+        if a.mode=='dsm_recheck':
+            assert set(choice)=={1},'recheck only the unresolved verify1 control'
+            body=body.replace('SEEDS=tuple(7101149+104729*i for i in range(24))',
+                              'SEEDS=tuple(12100117+104729*i for i in range(35))')
+            body=body.replace('ROUNDS=12','ROUNDS=14')
+            body=body.replace("variants={'A':host,'A2':host,", "variants={'A':host,'A2':host,'A3':host,")
     elif a.mode=='history':
         qt=int(a.selection['qt']);assert qt in (1,2,4)
         # Reuse the exact reset early-history shader for a held-out confirmation,
@@ -54,6 +60,9 @@ def main():
             if key not in used:lines[n.lineno-1:n.end_lineno]=[]
     body=''.join(lines)
     body=body.replace("END shapes=%d/3 seeds=%d",'END shapes=%d/'+str(len(cases))+' seeds=%d')
+    body=body.replace('META 16 fresh seeds x12 rotating cold READ rounds;',
+        'META '+('35 fresh seeds x14' if a.mode=='dsm_recheck' else '24 fresh seeds x12')+
+        ' rotating cold READ rounds; fresh graph pools/capture ownership per seed;')
     # h200_lab's generic wrapper retains 9000 characters, less than the
     # original round2 board's 15000. Keep the complete archive within it.
     body=body.replace('>13500:', '>7000:').replace("<14500,'round2 receipt would truncate'", "<8800,'follow-up receipt would truncate'")

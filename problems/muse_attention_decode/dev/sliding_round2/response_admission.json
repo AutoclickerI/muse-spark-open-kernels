@@ -7,9 +7,9 @@
     "receipt audits require both A and A2 and complete correctness/seed gates"
   ],
   "files": {
-    "lab_body.inc": "86cc0f03f949ec6bc2339744f0ee3fd3fd71ce716e75b31d22e01ddd9eee5834",
-    "followups.py": "803c6644514654899c97ba7750e7640c943598255627895b8784d48891f980a9",
-    "report.py": "0d65db1b44f06bb84e0e7831f11acb53e124c739168823265f4cd2739fe444ba"
+    "lab_body.inc": "b2d7ab60333b927b553a9f2d7c8bfcccc7b2cfa28d70771ff554fdea618389ad",
+    "followups.py": "13550e52726d4f454fa85547e6ea4fafbf5f70335a4a969a9d67bdb74cf115ec",
+    "report.py": "f9955a6a228bff4c7477e6d85900cb7c91ec29419a552bbf7f2785bc93e069b2"
   },
   "dsm_selection": {
     "1": 16,
@@ -104,5 +104,46 @@
     },
     "selection_status": "functional smoke only; not a native selection or a queued sender"
   },
-  "dsm_confirmation_job": "6c26b14fdd28458b"
+  "dsm_confirmation_job": "6c26b14fdd28458b",
+  "remaining_reset_priorities": {
+    "reason": "first three P5 reset receipts are complete; rank P5 structural measurements ahead of P12 component boards",
+    "changes": [
+      {
+        "sender": 1029989,
+        "sha256": "295a2792bb092012c09c91d521a1d26ebe67e4cedcf7d5eb055d250fe516b7ff",
+        "old_priority": 4.0,
+        "priority": 2.0
+      },
+      {
+        "sender": 1465956,
+        "sha256": "a6c3423dcb2dab7d6521d95d34f52d5cc4fac6de85c090d9974082661fe266e0",
+        "old_priority": 5.0,
+        "priority": 2.0
+      }
+    ]
+  },
+  "dsm_recheck": {
+    "reason": "COOP and DOUBLE are identical C16 recipes but differ1.03901 SE0.00300 in6c26b14f; verify1 unresolved",
+    "job": "6a0b3f0987e94ba5",
+    "wrapper_sha256": "51847d1be2ab42aa46a8fe32a58fbd9dbc1b4b306c8c19f41585599a348edb10",
+    "payload_sha256": "9115bb94d85c069d4bec37ba328f391dfbb205e3dd8ca8487c2ff8b10408a7ea",
+    "seeds": 35,
+    "rounds": 14,
+    "capture_protocol": "fresh graph pools each seed; capture ownership rotated across arms",
+    "CUPTI": "first capture only; paired times include recaptures",
+    "local_TASK": {
+      "v1S": {
+        "A": 2,
+        "A2": 2,
+        "A3": 2,
+        "RESET": 2,
+        "COOP": 2,
+        "HALF": 2,
+        "DOUBLE": 2
+      }
+    },
+    "local_only": true
+  },
+  "original_round2_job": "27a914f72bfb47c8",
+  "original_resident_job": "857f78fa889f4646"
 }
