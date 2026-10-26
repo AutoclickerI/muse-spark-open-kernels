@@ -1,0 +1,120 @@
+{
+  "job": "11d531dcb81d4b7f",
+  "shape_points": [
+    {
+      "arm": "N",
+      "shape": "v1F",
+      "patch": "problems/muse_bf16_proj/dev/residual_tail/rebuild/out/point_handoffs/v1F_N.patch",
+      "patch_sha256": "c9db4cdc0ad03165e1fb365a3cd3f0bbd393a74eb4cf665759200f7c2eb8b81e",
+      "candidate_sha256": "3f20a8ee90d4fbf306f2bc5f02b9aaddccc3339884271198f8cb005879688aba"
+    },
+    {
+      "arm": "T",
+      "shape": "v1F",
+      "patch": "problems/muse_bf16_proj/dev/residual_tail/rebuild/out/point_handoffs/v1F_T.patch",
+      "patch_sha256": "e5414dd7b51bf10fe858448699fd2dd5a65dcdd4bf8d328f40a8a5559eace745",
+      "candidate_sha256": "f72a7d817fa550ac2603efb6e94c67b9adfc9e6e79c9076495448c4617c51ca7"
+    }
+  ],
+  "all_patches_apply_to_S15": true,
+  "profiles": {
+    "d1S": {
+      "T_minus_N_critical_us": {
+        "attention_sliding": -0.512,
+        "b1": -0.16,
+        "b2": -0.064,
+        "gate": 0.032,
+        "launch_gaps": 0.0,
+        "moe_small": 0.992,
+        "o": 0.0,
+        "pool_router": -1.184,
+        "qkv3": 0.256,
+        "route": 0.096,
+        "unpooler_slice": 0.064
+      },
+      "N_b2_start": 79.04,
+      "T_b2_start": 78.496,
+      "N_MoE_end": 78.24,
+      "T_MoE_end": 77.76
+    },
+    "d1F": {
+      "T_minus_N_critical_us": {
+        "attention_full": 0.256,
+        "b1": 0.384,
+        "b2": -0.16,
+        "gate": -1.248,
+        "launch_gaps": 0.0,
+        "moe_small": 0.192,
+        "o": 0.128,
+        "pool_router": -0.32,
+        "qkv3": -0.192,
+        "route": -0.096,
+        "unpooler_slice": 0.544
+      },
+      "N_b2_start": 90.208,
+      "T_b2_start": 89.856,
+      "N_MoE_end": 89.472,
+      "T_MoE_end": 88.576
+    },
+    "v1S": {
+      "T_minus_N_critical_us": {
+        "attention_sliding": 0.865,
+        "b1": 0.161,
+        "b2": -0.128,
+        "launch_gaps": -0.16,
+        "moe_small": 2.112,
+        "o": 0.063,
+        "pool_router": 1.888,
+        "qkv_gate": -0.001,
+        "route": -0.289,
+        "unpooler_slice": 0.224
+      },
+      "N_b2_start": 123.072,
+      "T_b2_start": 127.744,
+      "N_MoE_end": 122.113,
+      "T_MoE_end": 126.944
+    },
+    "v1F": {
+      "T_minus_N_critical_us": {
+        "attention_full": 0.832,
+        "b1": 0.032,
+        "b2": -0.128,
+        "launch_gaps": 0.128,
+        "moe_small": 1.887,
+        "o": 0.032,
+        "pool_router": -0.063,
+        "qkv_gate": -1.344,
+        "route": 0.16,
+        "unpooler_slice": 0.033
+      },
+      "N_b2_start": 145.696,
+      "T_b2_start": 147.392,
+      "N_MoE_end": 144.928,
+      "T_MoE_end": 146.464
+    }
+  },
+  "interpretation": "One representative last-seed CUPTI trace per arm. Extra v1S upstream time precedes b2 start, so it cannot be attributed to execution of the new b2 path from this trace. Whole-layer paired ratios remain observations; allocation/capture/clock causes are unisolated.",
+  "max_critical_accounting_error": 2.2154439921118733e-16,
+  "T_vs_N_normalized_seed_ratios": {
+    "d1S": {
+      "mean": 0.9852230702806614,
+      "se": 0.0044828723734898004,
+      "n": 32
+    },
+    "d1F": {
+      "mean": 0.9988337633595418,
+      "se": 0.0025378135336911623,
+      "n": 32
+    },
+    "v1S": {
+      "mean": 1.0354375369862343,
+      "se": 0.0033510677663899455,
+      "n": 32
+    },
+    "v1F": {
+      "mean": 0.9979701984827039,
+      "se": 0.0032263186648493034,
+      "n": 32
+    }
+  }
+}

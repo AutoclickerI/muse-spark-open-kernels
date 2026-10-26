@@ -867,6 +867,10 @@ The former per-load A:A veto is superseded. Ratios are candidate/control latency
 | W2 b2-only preload, d1S | .997874 (.001613);32 | Nominate role-only row | Interaction with new residual-tail reuse | `5a95984a640d410e` |
 | D prior full-only preload, d1F | .985488 (.002062);32 | Nominate to P4; d1S is duplicate control | Held-out S15 composition; no historical score transfer assumed | `5a95984a640d410e` |
 
+### S15 MoE shell point nominations
+
+| Recipe | Ratio vs control (SE) | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
 | S15 MoE P original-ownership dependent finish, v16S/F + v32S/F | .993326(SE.000755) / .996274(.000711) / .996526(.000268) / .996821(.000364);32 seeds. A:A .999591/1.001177/.999730/1.000158 | Nominate all four points to P4. Typed dependencies from all three W2 branches; inline PTX keeps SS/Y after wait. Sampled P starts near heavy/light completion; small W2 end was not retained by a label-filter bug, so exact three-branch tail is unknown | Held-out composed six-load score/TASK confirmation, new P3b producer interaction, and small-W2 frontier | `1a7bbd9e33c04466` |
 | S15 MoE F4 v16S; F8 v16S/F; E v16S | .999530(SE.000831); .998367(.000591)/.999197(.000551); .999100(.000674);32 seeds | Nominate every sub-1 point, no A:A veto. Warp-private finish removes CTA hand-off; E changes only small W2 entry release | Point gains are selection observations; held-out six-load/TASK confirmation and composition with P | `1a7bbd9e33c04466` |
 
@@ -879,6 +883,13 @@ All640 copied public TASK checks pass,32 paired seeds, A:A capture signatures id
 | V: b1 writes b2's final7168 residual elements |1.013104(.003155)/.996049(.001739)/1.033689(.002733)/1.038322(.001787) | Exact identity confirmed; nominate d1F only. Verify store transfer loses3.4-3.8%; b1 also lengthens | Other tail ownership/scheduling and held-out d1F contribution; no general identity/fusion closure | `e841e2e8b1d04f0c` |
 | N: b1 writes seven squared-sum partials; b2 reduces first1024 |1.007888(.003012)/.985986(.002102)/.997537(.002102)/1.001321(.002010) | Nominate d1F/v1S points. Full8192 denominator/all outputs retained; N b1/b2 use96 regs vs57. Sampled residence changes do not establish critical causality | Disjoint-seed composition and tail-CTA specialization; A:A drift and overlap effects remain | `e841e2e8b1d04f0c` |
 | C: V+N combined |1.012938(.002364)/.990038(.001966)/1.004485(.002453)/1.008552(.002053) | Nominate d1F; combined kernel111 regs, no advantage over stats-only N in any point | Held-out six-load composition; better split of prefix/tail work and producer overlap | `e841e2e8b1d04f0c` |
+
+### Stats-only repeat and dedicated tail path
+
+| Recipe | Ratio vs control (SE) | Mechanism / decision | Leaves open | Receipt |
+|---|---|---|---|---|
+| N repeat on32 disjoint seeds |1.016186(.003004)/1.004723(.001935)/1.002925(.002758)/.997095(.001811), d1S/d1F/v1S/v1F; A:A1.019137/1.003947/1.004135/1.022328 | All512 batch TASK checks pass; original d1F/v1S point wins do not repeat. Nominate the new v1F point to P4; other earlier points remain selection data | Held-out six-load composition and directional capture effects; no per-shape A:A veto or family-wide closure | `11d531dcb81d4b7f` |
+| T: dedicated N b2 tail path, two ordered immutable preloads |1.000877(.003282)/1.003423(.001393)/1.038238(.002044)/.994935(.002209), same shapes/control | Nominate v1F to P4. N b1 handle unchanged; b2 N96/T98 registers. Sampled T b2 critical increments decrease.064/.160/.128/.128us versus N | v1S slowdown is upstream in the representative trace: pool/router+1.888 and MoE+2.112us before b2 starts. Allocation/capture/clock or graph effects unisolated; exact v1F patch e5414dd7 onto S15 | `11d531dcb81d4b7f` |
 
 ## Weight encoding
 
