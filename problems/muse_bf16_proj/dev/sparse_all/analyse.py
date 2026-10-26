@@ -35,6 +35,7 @@ def analyse(sha,kind):
         caveat='lab validity uses its own gates; the host board score is not the lab result')
 out=dict(updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),runs=[
     analyse('1a03dfa6906c8242f25c8d808aec8ef96ab6de960f905257195369842bf021dd','pool'),
+    analyse('f38ad830883f88b5b0151940ad436d240121b965ae5a632585439c8780238a84','pool'),
     analyse('d50be2e7d31519d68877a08613c11ab0bdac83caa74086708ca177382dae914b','all')])
 (H/'results.json').write_text(json.dumps(out,indent=2)+'\n')
 for r in out['runs']:

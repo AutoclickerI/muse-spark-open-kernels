@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "payload_sha256": "4df24e95a1fd3303b1b57381262829543576908f27b7c40780cac0d9ea8f84ee",
+  "lines": [
+    "POINT_META grouped unit reader vs scalar-point reader and S15,8seeds8cold orders; native small-M geometry/reductions and gate ordering unchanged; large group arm is direct VDSK",
+    "POINT 8:qkv_gate A=30.83 scalar=147.78 group=94.37 rS=4.7223 rG=3.0443[2.8301,3.0981] aa=0.0306 e=2.7e-06 p=0.0e+00",
+    "POINT 16:qkv_gate A=28.91 scalar=137.61 group=87.45 rS=4.7556 rG=3.0064[2.9807,3.1429] aa=0.0431 e=2.7e-06 p=0.0e+00",
+    "POINT 16:qkv3 A=19.33 scalar=98.72 group=65.34 rS=5.0417 rG=3.3557[2.8980,3.4919] aa=0.0893 e=1.8e-06 p=0.0e+00",
+    "POINT 8:pool_router A=53.46 scalar=162.32 group=166.57 rS=3.0443 rG=3.1449[3.0391,3.2118] aa=0.0376 e=1.4e-06 p=0.0e+00",
+    "POINT 16:pool_router A=53.01 scalar=168.20 group=171.38 rS=3.2075 rG=3.2517[3.0954,3.3895] aa=0.0213 e=1.4e-06 p=0.0e+00",
+    "POINT 32:pool_router A=53.76 scalar=226.51 group=151.81 rS=4.2083 rG=2.8323[2.7545,2.8459] aa=0.0242 e=1.4e-06 p=0.0e+00",
+    "POINT 1:unpooler_slice A=9.26 scalar=57.82 group=30.98 rS=6.2509 rG=3.3788[2.9527,3.6768] aa=0.1808 e=4.9e-07 p=0.0e+00",
+    "POINT 8:unpooler_slice A=10.46 scalar=57.80 group=32.26 rS=5.5345 rG=3.1061[2.9634,3.7262] aa=0.1327 e=4.8e-07 p=0.0e+00",
+    "POINT 1:gate A=14.56 scalar=192.74 group=116.96 rS=13.2374 rG=8.0285[7.9880,8.0341] aa=0.0044 e=1.7e-03 p=1.7e-03",
+    "POINT 8:gate A=14.58 scalar=180.45 group=109.38 rS=12.3896 rG=7.4921[7.4410,7.6066] aa=0.0164 e=1.7e-03 p=1.7e-03",
+    "POINT 16:gate A=14.58 scalar=192.74 group=110.82 rS=13.2156 rG=7.5860[7.5407,7.6132] aa=0.0055 e=1.7e-03 p=1.7e-03",
+    "POINT 32:gate A=16.31 scalar=176.35 group=102.90 rS=10.8112 rG=6.2985[6.1851,7.1187] aa=0.1451 e=1.7e-03 p=1.7e-03",
+    "POINT 128:qkv_gate A=41.18 scalar=86.06 group=148.70 rS=2.0905 rG=3.6133[3.5660,3.6433] aa=0.0090 e=7.4e-06 p=0.0e+00",
+    "POINT 128:o A=14.56 scalar=108.78 group=61.16 rS=7.4578 rG=4.1968[4.1132,4.2341] aa=0.0055 e=1.7e-03 p=0.0e+00",
+    "POINT 128:pool_router A=63.74 scalar=324.36 group=186.59 rS=5.0880 rG=2.9277[2.9162,2.9365] aa=0.0023 e=2.9e-06 p=0.0e+00",
+    "POINT 128:unpooler A=48.34 scalar=242.21 group=143.78 rS=5.0058 rG=2.9743[2.3530,3.0362] aa=0.1283 e=1.7e-03 p=0.0e+00",
+    "POINT 256:qkv_gate A=49.62 scalar=311.99 group=179.87 rS=6.2015 rG=3.5971[3.0695,3.6407] aa=0.0792 e=2.4e-03 p=0.0e+00",
+    "POINT 256:o A=24.22 scalar=123.21 group=74.41 rS=5.1948 rG=3.2323[2.6303,3.9074] aa=0.1003 e=1.7e-03 p=0.0e+00",
+    "POINT 256:pool_router A=96.54 scalar=496.88 group=304.54 rS=5.1449 rG=3.1529[3.1251,3.2115] aa=0.0076 e=2.9e-06 p=0.0e+00",
+    "POINT 256:unpooler A=78.08 scalar=456.60 group=239.70 rS=5.8467 rG=3.0716[3.0646,3.1699] aa=0.0057 e=2.9e-03 p=0.0e+00",
+    "POINT_ROUTE max_score_gap=5.36e-07 membership_differences=3 score_bound=1e-5 task_bound=.05",
+    "POINT_END complete=20/20 elapsed=15.0s"
+  ]
+}

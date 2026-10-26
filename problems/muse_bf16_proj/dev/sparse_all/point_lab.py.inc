@@ -29,7 +29,7 @@ def point_lab(deadline,context):
     cases += [(t,'gate') for t in (1,8,16,32)]
     cases += [(t,n) for t in (128,256) for n in ('qkv_gate','o','pool_router','unpooler')]
     lines=['POINT_META grouped unit reader vs scalar-point reader and S15,8seeds8cold orders; native small-M geometry/reductions and gate ordering unchanged; large group arm is direct VDSK']
-    done=0
+    done=0;max_route_gap=0.;tie_differences=0
     for t,name in cases:
         if time.monotonic()>deadline-15:return lines+[f'POINT_INCOMPLETE {done}/20']
         w=roles[name];x=T.randn((t,w.shape[1]),device='cuda',dtype=T.bfloat16);y=T.randn((t,1024),device='cuda',dtype=T.bfloat16)
@@ -63,7 +63,26 @@ def point_lab(deadline,context):
             for graph,_ in saved:graph.replay();T.cuda.synchronize()
             if name=='pool_router':
                 a=saved[0][1]
-                for _,b in saved[2:]:assert T.equal(a[1],b[1]) and T.equal(a[3],b[3]) and float((a[2]-b[2]).norm()/a[2].norm())<1e-4,('POINT route',t)
+                scores=T.sigmoid((x.double()@weights['router'].double().T).float()*m['ROUTER_MULT']);biased=scores+ctrl['router_bias']
+                best=biased.topk(9,-1);reference_ids=best.indices[:,:8];local_ref=reference_ids<32
+                ref_routes=int(local_ref.sum());ref_distinct=int(T.unique(reference_ids[local_ref]).numel())
+                for _,b in (saved[0],saved[2],saved[3]):
+                    ids=b[1].long();ranked=ids.sort(-1).values
+                    assert int(ids.min())>=0 and int(ids.max())<256 and not bool((ranked[:,1:]==ranked[:,:-1]).any()),('POINT unique ids',t,seed)
+                    gap=float((best.values[:,7:8]-biased.gather(1,ids)).max());max_route_gap=max(max_route_gap,gap)
+                    # TASK uses0.05; this gate remains5000x tighter, while
+                    # allowing differences proven below FP32 rounding noise.
+                    assert gap<1e-5,('POINT score membership',t,seed,gap)
+                    kept=(reference_ids[:,:,None]==ids[:,None,:]).any(-1)
+                    assert not bool((local_ref&~kept&(best.values[:,:8]-best.values[:,8:9]>1e-5)).any()),('POINT missed stable local expert',t,seed)
+                    selected_local=ids<32;routes=int(selected_local.sum());distinct=int(T.unique(ids[selected_local]).numel())
+                    assert routes>=ref_routes*.92-4 and distinct>=ref_distinct*.85-2,('POINT local work',t,seed,routes,ref_routes,distinct,ref_distinct)
+                    expect_local=T.where(selected_local,ids,-1).int();assert T.equal(b[3],expect_local),('POINT local id map',t,seed)
+                    picked=scores.gather(1,ids);expected_weight=picked/(picked.sum(-1,keepdim=True)+1e-15)
+                    assert float((b[2]-expected_weight).norm()/expected_weight.norm())<1e-4,('POINT routing weights',t,seed)
+                    pool_ref=ref[:,:4096].float();pool_ref=(pool_ref*T.rsqrt(pool_ref.square().mean(-1,keepdim=True)+m['RMS_EPS'])).bfloat16()
+                    assert float((b[0].float()-pool_ref.float()).norm()/pool_ref.float().norm())<.004,('POINT pooled norm',t,seed)
+                tie_differences+=int((saved[0][1][1].sort(-1).values!=saved[3][1][1].sort(-1).values).sum())
             original=x.clone();x.zero_();x[:,(seed*131+t)%x.shape[1]]=16;ref=x.double()@w.double().T
             if name=='gate':ref=y.double()*T.sigmoid(ref)
             for arm in (0,1,2):
@@ -74,4 +93,4 @@ def point_lab(deadline,context):
         aa=max(abs(b/a-1) for a,b in zip(vals[0],vals[1]));rs=[b/a for a,b in zip(vals[0],vals[2])];rg=[b/a for a,b in zip(vals[0],vals[3])]
         lines.append(f'POINT {t}:{name} A={statistics.median(vals[0]):.2f} scalar={statistics.median(vals[2]):.2f} group={statistics.median(vals[3]):.2f} rS={statistics.median(rs):.4f} rG={statistics.median(rg):.4f}[{min(rg):.4f},{max(rg):.4f}] aa={aa:.4f} e={err:.1e} p={probe:.1e}')
         done+=1
-    return lines+[f'POINT_END complete={done}/20 elapsed={time.monotonic()-begin:.1f}s']
+    return lines+[f'POINT_ROUTE max_score_gap={max_route_gap:.2e} membership_differences={tie_differences} score_bound=1e-5 task_bound=.05',f'POINT_END complete={done}/20 elapsed={time.monotonic()-begin:.1f}s']

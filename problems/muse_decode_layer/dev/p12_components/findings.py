@@ -35,6 +35,20 @@ for run in result['runs']:
         if run['kind']=='pool' and r['t']==1:decision+='; this M1 batch times one-hot activations only'
         if r['role'] in ('pooler','router_hi','router_lo','router_sum') or r['role']=='gate' and r['t']>=128:decision+='; standalone diagnostic'
         rows.append((f"P10 {run['kind']} T{r['t']} {r['role']} {r['arm']}",f"{r['ratio']:.5f} [{r['ratio_min']:.5f},{r['ratio_max']:.5f}]; AA max {r['aa_max']:.5f}",mechanism,decision,run['job']))
+if (A/'followup_results.json').exists():
+    follow=json.loads((A/'followup_results.json').read_text())
+    if follow.get('job'):
+        for r in follow['native']:
+            if not follow.get('native_valid'):continue
+            ratio=f"scalar {r['scalar_ratio']:.4f}; vector {r['vector_ratio']:.4f}; hoisted {r['ratio']:.4f} [{r['ratio_min']:.4f},{r['ratio_max']:.4f}]; AA {r['aa_max']:.4f}"
+            decision='Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open'
+            if r['followup_candidate']:decision='P4 whole-layer candidate; preserve current fusions and concurrent gate'
+            rows.append((f"P10 native reader T{r['t']} {r['role']}",ratio,'Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls',decision,follow['job']))
+        if not follow.get('point_valid'):
+            rows.append(('P10 grouped Triton point reader','unmeasured: T256 fused-route equality gate failed','Grouped codewords/masks per1024W inside original dot loops','Native ten-cell section is independently gated and valid; grouped section needs membership/order/tie diagnosis and a fresh gated run',follow['job']))
+        else:
+            for r in follow['point']:
+                rows.append((f"P10 grouped T{r['t']} {r['role']}",f"{r['ratio']:.4f} [{r['ratio_min']:.4f},{r['ratio_max']:.4f}]; AA {r['aa_max']:.4f}",'Grouped codeword and mask broadcast, original dot geometry','P4 candidate' if r['followup_candidate'] else 'Closes only this grouped-reader schedule',follow['job']))
 block=tag+'\n\nRecipe ratios are candidate/control (lower is faster), except the explicitly labelled component speedups. '
 block+='Full shape/seed evidence and code pins: `problems/muse_bf16_proj/dev/sparse_all/results.json` and `problems/muse_decode_layer/dev/p12_components/leader_gap.json`.\n\n'
 block+='| Recipe | Ratio and control spread | Mechanism | What remains open / decision | Receipt job |\n|---|---|---|---|---|\n'

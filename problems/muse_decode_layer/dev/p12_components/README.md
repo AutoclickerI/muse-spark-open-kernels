@@ -15,21 +15,27 @@ Queue policy for this task: scored, priority4, not-before epoch1792972800 = 2026
 Final queued component snapshots: MoE **4127d934**, sender **939577**; attention **f38b9ae3**, sender **939623**; projections **01f80a78**, sender **939656**. They were queued with epoch1792972800 / priority4; current receipts are recorded below and in `leader_gap.json`. `queue.json` records exact full hashes; all normal and forced screens are pinned in `admission.json`.
 
 
-Reset audit: the MoE receipt is complete; attention and projections still await receipts. The current `okc leaderboard <problem> --json` snapshots are `leader_moe.json`, `leader_attention.json`, and `leader_projection.json`. They contain aggregate value/speedup only; their rows do not publish per-shape leader times. The documented job endpoint is owner-only (`upstream/llms.txt:78`). Consequently the comparison reports our actual per-shape times and aggregate gaps; it does not fabricate leader shape times. Component receipts have the official paired SGLang controls and confidence interval, with no independent A:A arm. They are diagnostics for stage priority, not paired whole-layer promotions.
+Reset audit: all three frozen S15 component receipts are complete; see the ranked table below. The current `okc leaderboard <problem> --json` snapshots are `leader_moe.json`, `leader_attention.json`, and `leader_projection.json`. They contain aggregate value/speedup only; their rows do not publish per-shape leader times. The documented job endpoint is owner-only (`upstream/llms.txt:78`). Consequently the comparison reports our actual per-shape times and aggregate gaps; it does not fabricate leader shape times. Component receipts have the official paired SGLang controls and confidence interval, with no independent A:A arm. They are diagnostics for stage priority, not paired whole-layer promotions.
 
 `watch.py` waits on receipt-directory events, starts `tools/h200_lab.py read <job>` as each of the five P10/P12 jobs is accepted, and stops after all five receipts land. It never sends or promotes code. `leader_gap.json` records the current exact-SHA receipt state.
 
 ## Receipt results
 
-Leader per-shape times are not published. Ratios below compare aggregate component times; the official confidence interval covers our SGLang speedup, and no independent A:A was captured.
+All three frozen S15 component adapters pass. Their official paired SGLang confidence intervals are reported; none captured an independent A:A. Leader per-shape timings are not public in the board JSON, so the requested per-shape leader gaps remain unavailable. Our complete per-shape benchmark records are preserved in `leader_gap.json`.
 
-| Stage | Our speedup | 95% interval | Time / leader | Tests / shapes | Job |
-|---|---:|---|---:|---|---|
-| moe | 2.02924 | [1.9988011252708926, 2.059678316903508] | 1.25835 | 5 / 6 | `97f5e7f3c3fc4159` |
+| Gap rank | Stage | SGLang / ours | 95% interval | Aggregate time / leader | Tests / shapes | Receipt |
+|---:|---|---:|---|---:|---|---|
+| 1 | attention | 1.64698 | [1.62228,1.67169] | 1.76667 | 16 / 12 | `4e108beb9a0a4cdb` |
+| 2 | projection | 0.98059 | [0.96588,0.99530] | 1.65590 | 9 / 30 | `d6ad694a27954c80` |
+| 3 | moe | 2.02924 | [1.99880,2.05968] | 1.25835 | 5 / 6 | `97f5e7f3c3fc4159` |
 
-MoE per-shape us at T1/8/16/32/128/256: **30.878 /72.944 /105.207 /138.927 /207.993 /268.911**. All five required tests and six timed-shape checks passed. This completes the MoE diagnostic; it does not propose a new layer kernel. Attention and projections still await receipts before the stage ranking is complete.
+Attention is the largest aggregate component gap; the projection gap includes the board output-conversion chain and awaits its paired attribution. This ranking is diagnostic, not a measured layer-value ranking: board routing/input distributions and layer fusions differ. No component result promotes a layer change.
+
+MoE us at T1/8/16/32/128/256: **30.878 /72.944 /105.207 /138.927 /207.993 /268.911**.
+
+Attention us at d1/d16/d32/v1/v16/v32: sliding **9.320 /13.245 /16.862 /17.826 /22.707 /28.369**; full **19.439 /104.390 /195.318 /29.597 /139.703 /235.585**.
 
 
 Projection receipt `d6ad694a27954c80` passed9tests/30shapes and scored **0.98059x** [0.96588,0.99530], an aggregate **1.65590x** time gap to the component leader. It includes a measured board-adapter sum/cast/router-add chain, unlike fused in-layer consumers. This is a valid board result, not a direct inference of that layer stage's gap. `projection_reduce.py.inc` uses one Triton output reducer (including router hi+lo), preserving every S15 producer. Normal+forced9/30/25 and the exact30shape8seed paired lab pass locally. Follow-up sender **1147249**, MoE priority4.5, payload `917e4ec6`, wrapper `4502b8bb` (481537 bytes), on compact judged host `ac9dd461`. The oversized default-host waiter1130147 was cancelled before acceptance; it consumed no judge job. The follow-up separates A/A2 old adapter, reduced adapter B and producer-only P, each with FP64/probe checks. Promote the new component adapter only if it beats its A:A envelope; layer integration remains separate.
 
-Attention's scored-only waiter939623 was held to tomorrow after scored quota filled while checks remained. Replaced with exact-source check sender776198, accepted **4e108beb9a0a4cdb**. This is the same admitted f38b9ae3 code and completes the diagnostic without waiting for scored capacity.
+Attention's scored-only waiter939623 was held to tomorrow after scored quota filled while checks remained. Replaced with exact-source check sender776198, completed **4e108beb9a0a4cdb** with16tests/12shapes passing. This is the same admitted f38b9ae3 code and completes the diagnostic without waiting for scored capacity.

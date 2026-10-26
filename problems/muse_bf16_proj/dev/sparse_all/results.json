@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-10-26T02:17:15.328134+00:00",
+  "updated_utc": "2026-10-26T02:22:06.339073+00:00",
   "runs": [
     {
       "kind": "pool",
@@ -19,6 +19,10 @@
         "LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts)"
       ],
       "caveat": "lab validity uses its own gates; the host board score is not the lab result"
+    },
+    {
+      "kind": "pool",
+      "status": "pending"
     },
     {
       "kind": "all",
