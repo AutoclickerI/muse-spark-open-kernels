@@ -146,6 +146,7 @@ class LabPacketRegression(unittest.TestCase):
                 lab.main()
             command=send.call_args.args[0]
             self.assertNotIn('--lane',command)
+            self.assertNotIn('--check',command)  # non-decode lab-only sends spend spare scored quota
             self.assertEqual(command[command.index('--decision')+1],'legacy decision')
 
     def test_import_lab_only_avoids_base_prepare(self):

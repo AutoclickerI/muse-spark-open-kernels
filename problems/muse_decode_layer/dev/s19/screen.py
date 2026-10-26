@@ -4,8 +4,6 @@ from pathlib import Path
 H=Path(__file__).resolve().parent;R=H.parents[3]
 def _load(path,name):
     sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
-# dev/s16 leads sys.path in S16's screen and has its own screen_all; tools/local_preflight needs tools' one.
-sys.modules['screen_all']=_load(R/'tools/screen_all.py','screen_all')
 s18=_load(H.parent/'s18/screen.py','s18_screen')
 WIN=R/'problems/muse_attention_decode/dev/window_rebuild';sys.path.insert(0,str(WIN))
 wr_local=_load(WIN/'kernel.py','s19_wr_local_kernel')

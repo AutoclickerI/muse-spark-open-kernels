@@ -22,9 +22,10 @@ build API creates exactly one batch and rejects a batch needing a split.
 Prepare phase uses the best scored host's unchanged prepare/state. --base-prepare gives
 its estimated cost for planning (default 130 s); the real deadline is prepare start+285 s.
 --phase import runs with weights/state None after the base definitions. --lab-only uses
-a minimal import host and skips the scored source's compile/prepare entirely; it always
-goes as a check and deliberately stops at prepare after emitting evidence. Payloads own
-setup and honor deadline. lab_cold_l2 reads a buffer larger than L2, as TASK prescribes.
+a minimal import host and skips the scored source's compile/prepare entirely; it
+deliberately stops at prepare after emitting evidence. Non-decode hosts spend spare
+scored quota first (then checks); use --check to preserve scored quota. Decode labs
+always use checks. Payloads own setup and honor deadline. lab_cold_l2 reads a buffer larger than L2, as TASK prescribes.
 
 The judge keeps a 16,000-character tail. Ordinary transports reserve 9,000 wire bytes
 for packets/markers, leaving 7,000 characters for profiler/error suffixes. --lab-only
@@ -49,7 +50,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
-from screen_all import local_imports  # noqa: E402
+from okc_packaging import local_imports  # noqa: E402
 from lab_packet import read_packets, result_lines  # noqa: E402
 
 LIMIT = 9000          # packet wire bytes + bounded diagnostics + markers; 7000 chars for judge suffix
@@ -527,7 +528,7 @@ def main():
         elif args.priority is not None:command += ["--priority", str(priority)]
         elif metadata["lane"] != "unspecified":command += ["--lane", metadata["lane"]]
         if args.not_before:command += ["--not-before", args.not_before]
-        if args.check or args.lab_only or args.host == "muse_decode_layer":command += ["--check"]
+        if args.check or args.host == "muse_decode_layer":command += ["--check"]
         subprocess.run(command, cwd=REPO, check=True)
 
 

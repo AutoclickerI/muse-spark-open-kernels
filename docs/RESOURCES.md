@@ -27,7 +27,7 @@ second compile of the same kernel is fast.
 | Host env `~/anaconda3/envs/comp_kv` (torch 2.13, cu130) | Tests without the image (`--no-baseline`) | `baseline.py` needs `sglang` |
 | `okc` 0.7.1 (`~/.okc/bin`) | Boards (`okc leaderboard <p> --json`), `okc problems`, `okc withdraw` | Never `okc check`/`submit` directly (AGENTS) |
 | `tools/screen_all.py` | Screen candidates in parallel and queue each pass immediately, including while other screens run | Logs in `runs/screen/` (ignored). `--send --lane <P-id> --decision "..."` uses `okc_run.py send`; OOM retries alone do not hold successful peers |
-| `tools/h200_lab.py` | H200 measurements on any host; time/output/risk planned batches | Existing flags and `lab(deadline, weights[, state]) -> list[str]` still work. New payloads return structured packets and declare `LAB_RESOURCES` (below); `--lab-only` skips the scored base and runs at import on any host, always as a check; `--phase import`, `--import-budget` (150 s default), `--base-file`, `--not-before`, `--check`, `--priority` remain. `read <job>` recovers packets/old lines; programmatic readers use `lab_packet` |
+| `tools/h200_lab.py` | H200 measurements on any host; time/output/risk planned batches | Existing flags and `lab(deadline, weights[, state]) -> list[str]` still work. New payloads return structured packets and declare `LAB_RESOURCES` (below); `--lab-only` skips the scored base and runs at import on any host; non-decode labs use spare scored quota unless `--check`; `--phase import`, `--import-budget` (150 s default), `--base-file`, `--not-before`, `--check`, `--priority` remain. `read <job>` recovers packets/old lines; programmatic readers use `lab_packet` |
 | `sim/` | Bounds and ceilings: `python -m sim` (problems), `-m sim.calibrate` (SGLang's measured times), `-m sim.bound` (`docs/reference/bound.md`) | Model inputs: `sim/routing.json`, `sim/hw.py` |
 | `prof/` | Lab payloads for `h200_lab.py` (`prof/lab/`), a profile report from saved receipts (`prof/write_report.py`), the embedded-source extractor for SASS inspection (`prof/compile_static.py`, output `prof/sass/`); the rest are parked serving probes | Outputs are ignored; regenerate rather than edit |
 | `runs/calibration/` | SGLang's own kernels profiled on the judge, per problem | `runs/calibration/profiles/*_sglang.*.txt` |
@@ -82,7 +82,10 @@ A waiting batch is merged only with matching host/base/phase/budget and decision
 
 `--lab-only --import-budget 700` supplies the minimal self-preparing import host on any problem; weights/state
 are None and the payload owns synthetic setup. It deliberately stops the judge at prepare after emitting
-its packet. It spends check quota, and the host's failure is separate from the experiment's TASK evidence.
+its packet. Non-decode hosts use scored submits while scored quota remains, then checks. A lab-only host
+therefore appears as a failed scored run on that host's board; this is intentional use of spare scored quota,
+and its failed host status is separate from the experiment's TASK evidence. Add `--check` to `h200_lab.py send`
+to force check quota and preserve scored attempts. Decode-host labs always use checks.
 Use `--phase import` with a real base when its own official timing is also wanted.
 
 Readers: `tools/h200_lab.py read <job>` verifies checksums and displays evidence. Code that used to search

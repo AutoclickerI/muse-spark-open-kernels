@@ -29,6 +29,35 @@ class LocalTierRegression(unittest.TestCase):
             self.assertNotIn('executed candidate', run.stderr)
             self.assertNotIn('prepare_s', result)
 
+    def test_s16_screen_all_cannot_shadow_packaging_preflight(self):
+        # Recreate S19's import path in a fresh process, both with and without the
+        # S16 module cached already. Preflight must not replace another lane's module.
+        code="""
+import json,sys
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path[:0]=[str(root/'problems/muse_decode_layer/dev/s16'),str(root/'tools')]
+if sys.argv[4]=='cached':
+    import screen_all
+    lane_screen=screen_all
+    assert Path(lane_screen.__file__).parent.name=='s16'
+from local_preflight import preflight
+good=preflight(Path(sys.argv[2]));bad=preflight(Path(sys.argv[3]))
+assert all(c['ok'] for c in good),good
+assert any(c['name']=='local_imports' and not c['ok'] for c in bad),bad
+if sys.argv[4]=='cached':assert sys.modules['screen_all'] is lane_screen
+print(json.dumps({'preflight':True,'packaging_rejection':True}))
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            good,bad=Path(tmp)/'good.py',Path(tmp)/'bad.py'
+            source='# okc: problem=muse_decode_layer\ndef prepare(w):return {}\ndef kernel_fn(d,s):return d\n'
+            good.write_text(source);bad.write_text(source+'import tools\n')
+            for mode in ('uncached','cached'):
+                with self.subTest(mode=mode):
+                    run=subprocess.run([sys.executable,'-c',code,str(TOOLS.parent),str(good),str(bad),mode],
+                                       capture_output=True,text=True)
+                    self.assertEqual(run.returncode,0,run.stdout+run.stderr)
+                    self.assertTrue(json.loads(run.stdout)['packaging_rejection'])
+
     def test_changed_units_only_compile_changed_source(self):
         import local_eval
         with tempfile.TemporaryDirectory() as tmp:

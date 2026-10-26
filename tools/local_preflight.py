@@ -112,7 +112,7 @@ def state_keys(source):
 
 
 def preflight(file, *, payload=False):
-    from screen_all import local_imports
+    from okc_packaging import local_imports
     from okc_run import rejected_words
     source = file.read_text()
     checks = []
