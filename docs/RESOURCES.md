@@ -59,15 +59,16 @@ def lab(deadline, weights, state):
                        "checks": task_and_nearby_checks, "complete": complete},
             "logs": diagnostics}
 ```
-`output_bytes` reserves the complete encoded `LAB_PACKET` line plus newline (512..8744 bytes); budget an
+`output_bytes` reserves the complete encoded `LAB_PACKET` line plus newline (512..8744 bytes on ordinary hosts,
+up to 11744 on a lab-only host); budget an
 additional 256 bytes per payload for markers. Measure with `len(lab_packet.encode_packet(name, sha, packet).encode())+1`.
 The packet includes a SHA256 checksum; import batches print early and reprint after host prepare so setup
 failures or tuning logs do not erase evidence. Readers verify every emitted copy and collapse identical
 packets in their final emission order; conflicting copies fail verification.
 Ordinary transports reserve 9,000 bytes total, leaving 7,000 characters of the judge's 16,000-character tail
 for profiler/errors. `--lab-only` reserves 12,000 bytes and leaves 4,000: its deliberate prepare stop skips
-timing/profiling. The per-payload maximum stays 8,744 bytes, allowing one maximum packet and small peers
-in a single lab-only check.
+timing/profiling. A lab-only payload can use up to 11,744 bytes of its 12,000-byte reservation, with 256 bytes
+for markers; the same payload is rejected on an ordinary host. Smaller packets can still share one check.
 Logs only use unreserved space. A too-large actual packet is an explicit `LAB_PACKET_OVERSIZE` failure,
 never truncated or treated as measured evidence: split that experiment or fix the declaration before sending.
 The CLI splits oversized batches into separate runs; `build -o lab.py` writes `lab.py`, `lab.2.py`, etc.

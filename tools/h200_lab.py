@@ -63,7 +63,7 @@ BASE_PREPARE_S = 130
 DEFAULT_RESOURCES = dict(compile_s=30, run_s=40, output_bytes=LIMIT-256, context_poison="none")
 
 
-def resources(entry):
+def resources(entry, output_budget=LIMIT):
     value = dict(DEFAULT_RESOURCES)
     for n in ast.parse(entry[2]).body:
         if isinstance(n, ast.Assign) and any(getattr(t, 'id', None) == 'LAB_RESOURCES' for t in n.targets):
@@ -73,8 +73,8 @@ def resources(entry):
             raise ValueError(f"{entry[0]}: {key} must be finite and nonnegative")
     if value['compile_s'] + value['run_s'] <= 0:
         raise ValueError(f"{entry[0]}: compile_s + run_s must be positive")
-    if not isinstance(value['output_bytes'], int) or not 512 <= value['output_bytes'] <= LIMIT-256:
-        raise ValueError(f"{entry[0]}: output_bytes must be 512..{LIMIT-256} wire bytes")
+    if not isinstance(value['output_bytes'], int) or not 512 <= value['output_bytes'] <= output_budget-256:
+        raise ValueError(f"{entry[0]}: output_bytes must be 512..{output_budget-256} wire bytes for this transport")
     if value['context_poison'] not in ('none', 'last', 'device'):
         raise ValueError(f"{entry[0]}: context_poison must be none, last or device")
     return value
@@ -90,19 +90,19 @@ def plan_batches(embedded, budget_s, output_budget=LIMIT):
     for entry in embedded:
         if not re.fullmatch(r'[\w.+-]{1,80}', entry[0]):
             raise ValueError('payload name must be 1..80 letters, numbers, _, ., + or -')
-        res = resources(entry)
+        res = resources(entry, output_budget)
         need = res['compile_s'] + res['run_s']
         if need > budget_s:
             raise ValueError(f"{entry[0]} needs {need:g}s; only {budget_s:g}s declared available; use import/lab-only or increase --import-budget")
         for batch in batches:
-            rr = [resources(e) for e in batch]
+            rr = [resources(e, output_budget) for e in batch]
             if (res['context_poison'] == 'device' or any(r['context_poison'] == 'device' for r in rr)
                     or sum(r['context_poison'] == 'last' for r in rr) + (res['context_poison'] == 'last') > 1):
                 continue
             if (sum(r['compile_s']+r['run_s'] for r in rr)+need <= budget_s
                     and sum(r['output_bytes']+256 for r in rr)+res['output_bytes']+256 <= output_budget):
                 batch.append(entry)
-                batch.sort(key=lambda e: resources(e)['context_poison'] == 'last')
+                batch.sort(key=lambda e: resources(e, output_budget)['context_poison'] == 'last')
                 break
         else:
             batches.append([entry])
@@ -399,7 +399,7 @@ def build(embedded: list, host: str, import_budget: float = IMPORT_BUDGET_S, pha
     config = dict(host=host, phase='prepare' if prepare_phase else 'import', import_budget=import_budget,
                   base_sha256=hashlib.sha256(src.encode()).hexdigest(), lab_only=lab_only, base_prepare_s=base_prepare_s, output_budget=output_budget)
     helpers = (REPO / 'tools/lab_packet.py').read_text()
-    out = src.rstrip() + "\n\n_LAB_CONFIG = " + repr(config) + "\n_LAB_RESOURCES = " + repr([resources(e) for e in embedded])
+    out = src.rstrip() + "\n\n_LAB_CONFIG = " + repr(config) + "\n_LAB_RESOURCES = " + repr([resources(e, output_budget) for e in embedded])
     out += "\n_lab_packet_ns = {}\nexec(" + repr(helpers) + ", _lab_packet_ns)\n_lab_encode_packet = _lab_packet_ns['encode_packet']\n"
     out += WRAPPER.format(
         names=", ".join(f"{n} {s}" for n, s, _ in embedded), base=base["job"], payloads=embedded,

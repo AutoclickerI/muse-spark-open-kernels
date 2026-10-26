@@ -42,6 +42,31 @@ def interval(ratios, aa=None):
 LABELS = {"decode 1", "decode 16", "decode 32", "verify 1", "verify 16", "verify 32"}
 
 
+def _protocol_arm_valid(raw, manifest, name, seed_count):
+    """Require the prospectively declared sampling plan, without changing archived gates."""
+    plan = manifest.get('measurement_protocol')
+    if plan is None:
+        return True
+    if (raw.get('measurement_protocol') != plan
+            or plan.get('name') != 'palindromic-cohort-v1'
+            or plan.get('aggregation') != 'arithmetic-mean-all-rounds'
+            or plan.get('selective_retiming') is not False
+            or plan.get('seed_count') != seed_count):
+        return False
+    rounds = plan.get('rounds')
+    if not isinstance(rounds, int) or rounds <= 0 or rounds % 2:
+        return False
+    labels = manifest['arms'].get(name, {}).get('rows') or [
+        ('d' if q == 1 else 'v') + str(b) + suffix
+        for b, q in LOADS for suffix in ('S', 'F')]
+    counts = raw.get('timing_round_counts', {})
+    for label in labels:
+        values = counts.get(label, {}).get(name)
+        if not isinstance(values, list) or len(values) != seed_count or any(v != rounds for v in values):
+            return False
+    return True
+
+
 def evaluate(receipt, raw, manifest):
     """The host selects transport/quota only. Callers verify wrapper and official-source hashes."""
     old = manifest.get('baseline_arm', 'INC')
@@ -84,7 +109,8 @@ def evaluate(receipt, raw, manifest):
         s = statuses.get(name, {})
         timing = bool(seed_ok and loads_ok and name not in invalid and not s.get('failures')
                       and s.get('sha256') == identities.get(name) and s.get('native') is True
-                      and s.get('complete') is True and s.get('seed_ids') == seeds)
+                      and s.get('complete') is True and s.get('seed_ids') == seeds
+                      and _protocol_arm_valid(raw, manifest, name, len(seeds)))
         for rows in samples.values():
             for row in rows:
                 value = row.get(name)

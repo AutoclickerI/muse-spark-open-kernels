@@ -1,0 +1,32 @@
+{
+  "source_sha256": "a72f63984d68fc10cc7061f96c15d97759483dcb38565f7ff2cf431d4fbccb26",
+  "shipped_sha256": "a7966c4e443f721a80c8cd8e251bd3999e332f147c179769416ac825ce0e197f",
+  "wrapper_sha256": "7f4a56c6b0d6c87f9f14ec54a4cd05d21cf882e5190f04e245e049c10be465e9",
+  "waiting": {
+    "pid": 1990194,
+    "priority": 1,
+    "t": 1793009970.409818,
+    "problem": "muse_prefill_layer",
+    "file": "problems/muse_prefill_layer/lab/lab_s21_pair.py",
+    "sha256": "7f4a56c6b0d6c87f9f14ec54a4cd05d21cf882e5190f04e245e049c10be465e9",
+    "note": "h200_lab problems/muse_decode_layer/dev/s21/generated/s21_pair.py: P4 S21 core a72f6398 shipped a7966c4e: S19+C3+M64+exact12 gate; B1 PRIVATE1 AFFINE32 H2 dropped. Hold current sub-1pct batch for overnight nominees, latest 09:00 KST reset. 64 fresh seeds, 2560 TASK+260 nearby, 16 all-round symmetric cohorts; exact old verify16 fixture replay after primary. Contracts/screens/10328-byte full-tail transport passed. S19 scored sender 4046452 untouched.",
+    "not_before": 1793059200.0,
+    "lane": "P4",
+    "decision": "S21 overnight batch vs S19: held-out G0 with 64 fixed seeds, symmetric cohorts and original verify16 forensic replay",
+    "priority_override": false,
+    "until": 1793059200.0
+  },
+  "release_time": "2026-10-27T09:00:00+09:00",
+  "planning_estimate_R": 1.0065499243596263,
+  "release_threshold_R": 1.01,
+  "estimate_note": "Planning multiplication of points measured on different backgrounds, not composed native evidence",
+  "pending_nominees": [
+    "P5b all-FA3 shape-only scheduling/fused combine",
+    "P3a W13->W2",
+    "P5 producer-complete query setup",
+    "P10 large shapes"
+  ],
+  "replace_unsent_snapshot_after_new_nomination": true,
+  "S19_sender_unchanged": true,
+  "official_S21_scored_run": null
+}

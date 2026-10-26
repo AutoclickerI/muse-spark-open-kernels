@@ -83,6 +83,32 @@ class LabPacketRegression(unittest.TestCase):
         self.assertEqual(len(lab.plan_batches(entries, budget_s=30, output_budget=lab.LAB_ONLY_LIMIT)), 1)
         self.assertEqual(len(lab.plan_batches(entries, budget_s=30)), 2)
 
+    def test_lab_only_large_single_packet_survives_16000_tail(self):
+        import lab_packet
+        data=''.join(random.Random(217).choices('abcdefghijklmnopqrstuvwxyz0123456789',k=20000))
+        packet=dict(complete=True,identities={'candidate':'a'*64},seeds=list(range(64)),
+                    paired=[{'old':1.,'new':1.}]*64,checks={'TASK':True},padding='')
+        low,high=0,len(data)
+        while low<high:
+            mid=(low+high+1)//2;packet['padding']=data[:mid]
+            if len(lab_packet.encode_packet('large','abc',packet).encode())+1<=11000:low=mid
+            else:high=mid-1
+        packet['padding']=data[:low]
+        wire=len(lab_packet.encode_packet('large','abc',packet).encode())+1
+        self.assertGreater(wire,lab.LIMIT)
+        payload='LAB_RESOURCES='+repr(dict(compile_s=0,run_s=1,output_bytes=11700,context_poison='none'))+'\n'
+        payload+='def lab(d,w):return '+repr(dict(packet=packet,logs=['noise'*10000]))+'\n'
+        entry=('large','abc',payload)
+        with self.assertRaises(ValueError):lab.plan_batches([entry],budget_s=30)
+        source,_=lab.build([entry],'muse_prefill_layer',lab_only=True)
+        cuda=types.SimpleNamespace(synchronize=lambda:None,empty_cache=lambda:None)
+        fake=types.SimpleNamespace(cuda=cuda);out=io.StringIO();namespace={}
+        with patch.dict(sys.modules,{'torch':fake}),contextlib.redirect_stdout(out):
+            exec(source,namespace)
+            with self.assertRaisesRegex(RuntimeError,'lab-only host'):namespace['prepare'](None)
+        records=lab_packet.read_packets((out.getvalue()+'P'*3900)[-16000:])
+        self.assertEqual(records[0]['packet'],packet)
+
     def test_reemitted_packets_validate_each_copy_and_preserve_final_batch_order(self):
         import lab_packet
         packets=[lab_packet.encode_packet(name,'sha',dict(complete=True,value=name)) for name in ('maximum','optional','peer')]

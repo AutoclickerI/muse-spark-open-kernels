@@ -1,0 +1,1208 @@
+{
+  "culprit": {
+    "arm": "INC (S19 62ea5bf4)",
+    "shape": "v16S inferred from shape aggregate; per-seed S/F split not archived",
+    "load": "verify 16",
+    "seed": 1730886002,
+    "seed_index": 15,
+    "load_ratios": {
+      "A": 1.0,
+      "A2": 1.001889,
+      "INC": 1.2902879999999999,
+      "no_GATE": 1.001889,
+      "no_PRIVATE1": 1.001889,
+      "no_B1": 0.999722,
+      "no_C3": 1.001889,
+      "no_M64": 1.001889,
+      "no_AFFINE32": 1.001889,
+      "no_H2": 1.001387
+    },
+    "round": null,
+    "round_reason": "Only arithmetic means reached per-seed load archive; eight per-arm replay times were discarded by producer",
+    "rounds_in_source": 8,
+    "timing_order": "rotate(names,r); reverse on odd r",
+    "telemetry_scope": "run endpoints only; no clock/temperature/power at the pair",
+    "transient_assessment": "Isolated INC-only latency anomaly is consistent with a transient, but not proven judge-side; no per-round trace or simultaneous device telemetry"
+  },
+  "archives": [
+    {
+      "job": "0640cce4b12f42f9",
+      "receipt": "runs/muse_prefill_layer/20261026T091016Z_check_0640cce4b12f42f9.json",
+      "sha256": "1a20d0b414431b42ac4776870e41462d508b54b30a4ff8a0495e585b1a7d69e1",
+      "machine": {
+        "gpu_after": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.178.04",
+          "name": "NVIDIA H200",
+          "power.draw": 123.76,
+          "power.limit": 700,
+          "temperature.gpu": 34
+        },
+        "gpu_before": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.178.04",
+          "name": "NVIDIA H200",
+          "power.draw": 130.6,
+          "power.limit": 700,
+          "temperature.gpu": 29
+        },
+        "node": "n-oeisv6y44av4eaf3f4hjxhypoq"
+      },
+      "timing_source": {
+        "sha256": "3a53b0017a2bcd00c61b04598fd25df34dd0806738c95b6162771c2a7dbd9cfe",
+        "function": "def ab_time(graphs, rounds):\n    \"\"\"name -> per-round us; every round replays each graph once in a rotating order, cold L2 before each.\"\"\"\n    names = list(graphs);times = {n: [] for n in names}\n    for r in range(rounds):\n        order = names[r % len(names):] + names[:r % len(names)]\n        if r % 2:order = order[::-1]\n        evs = []\n        for n in order:\n            s, e = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)\n            lab_cold_l2();s.record();graphs[n][0].replay();e.record();evs.append((n, s, e))\n        torch.cuda.synchronize()\n        for n, s, e in evs:times[n].append(s.elapsed_time(e) * 1000.)\n    return times",
+        "rounds_expressions": [
+          "16 if b * q <= 8 else 8"
+        ]
+      },
+      "native": true,
+      "seed_count": 16,
+      "AA_G0": {
+        "R": 1.0003415636468502,
+        "CI95": [
+          0.9998135710652475,
+          1.000869835056601
+        ],
+        "n": 16,
+        "log_se": 0.0002476901909706283,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA_loads": {
+        "decode 1": {
+          "R": 1.003020871647347,
+          "CI95": [
+            1.0015760432949983,
+            1.0044677842438043
+          ],
+          "n": 16,
+          "log_se": 0.0006762915040279921,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9987492179695974,
+          "CI95": [
+            0.9968804462038228,
+            1.0006214929718191
+          ],
+          "n": 16,
+          "log_se": 0.000878660490812122,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0002347379338314,
+          "CI95": [
+            0.9991659517890501,
+            1.001304667335968
+          ],
+          "n": 16,
+          "log_se": 0.0005015747641903092,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0010753738956466,
+          "CI95": [
+            1.000226644203315,
+            1.0019248237668446
+          ],
+          "n": 16,
+          "log_se": 0.00039792520381816144,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.9999072916229097,
+          "CI95": [
+            0.9986570024583004,
+            1.001159146112742
+          ],
+          "n": 16,
+          "log_se": 0.0005869985908345605,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 0.9990679197409135,
+          "CI95": [
+            0.998192411298496,
+            0.9999441960864167
+          ],
+          "n": 16,
+          "log_se": 0.0004113110229052878,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "max_primary": {
+        "ratio": 1.2902879999999999,
+        "load": "verify 16",
+        "seed_index": 15,
+        "seed": 1730886002
+      },
+      "verify16_range": [
+        0.993549,
+        1.2902879999999999
+      ],
+      "verify16_AA_range": [
+        0.995627,
+        1.003341
+      ],
+      "v16S_summary": {
+        "n": 16,
+        "aa": [
+          0.994751,
+          1.00644
+        ],
+        "r": {
+          "A2": 0.999805,
+          "INC": 1.024775,
+          "no_H2": 0.997568,
+          "no_B1": 0.995444
+        }
+      },
+      "order_exposure": {
+        "d1S": {
+          "arms": 6,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 46.875,
+            "A2": 48,
+            "INC": 46.875,
+            "no_GATE": 48,
+            "no_PRIVATE1": 47.25,
+            "no_B1": 48
+          },
+          "AA_slot_difference": 1.125
+        },
+        "d1F": {
+          "arms": 5,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 39.375,
+            "A2": 39.6875,
+            "INC": 39.375,
+            "no_PRIVATE1": 39.6875,
+            "no_B1": 39.375
+          },
+          "AA_slot_difference": 0.3125
+        },
+        "v1S": {
+          "arms": 4,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "INC": 31,
+            "no_B1": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "v1F": {
+          "arms": 5,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 39.375,
+            "A2": 39.6875,
+            "INC": 39.375,
+            "no_M64": 39.6875,
+            "no_B1": 39.375
+          },
+          "AA_slot_difference": 0.3125
+        },
+        "d16S": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "no_B1": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "d16F": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_C3": 20,
+            "no_B1": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "d32S": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_AFFINE32": 20,
+            "no_B1": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "d32F": {
+          "arms": 6,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 22.5,
+            "A2": 24,
+            "INC": 23.25,
+            "no_C3": 24,
+            "no_AFFINE32": 23.25,
+            "no_B1": 24
+          },
+          "AA_slot_difference": 1.5
+        },
+        "v16S": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_H2": 20,
+            "no_B1": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "v16F": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_H2": 20,
+            "no_B1": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "v32S": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_H2": 20,
+            "no_B1": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "v32F": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_H2": 20,
+            "no_B1": 19.375
+          },
+          "AA_slot_difference": 0.0
+        }
+      },
+      "round_data_present": false
+    },
+    {
+      "job": "6ac9317e0a4d456d",
+      "receipt": "runs/muse_prefill_layer/20261026T072754Z_submit_6ac9317e0a4d456d.json",
+      "sha256": "2f4d921030e7114caffbdc35dfe5ad3e475ff1c784d868c01295eb694520b3b1",
+      "machine": {
+        "gpu_after": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.178.04",
+          "name": "NVIDIA H200",
+          "power.draw": 127.18,
+          "power.limit": 700,
+          "temperature.gpu": 39
+        },
+        "gpu_before": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.178.04",
+          "name": "NVIDIA H200",
+          "power.draw": 133.62,
+          "power.limit": 700,
+          "temperature.gpu": 36
+        },
+        "node": "n-mcawtvyff5ndtc5n7rfc5engrq"
+      },
+      "timing_source": {
+        "sha256": "3a53b0017a2bcd00c61b04598fd25df34dd0806738c95b6162771c2a7dbd9cfe",
+        "function": "def ab_time(graphs, rounds):\n    \"\"\"name -> per-round us; every round replays each graph once in a rotating order, cold L2 before each.\"\"\"\n    names = list(graphs);times = {n: [] for n in names}\n    for r in range(rounds):\n        order = names[r % len(names):] + names[:r % len(names)]\n        if r % 2:order = order[::-1]\n        evs = []\n        for n in order:\n            s, e = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)\n            lab_cold_l2();s.record();graphs[n][0].replay();e.record();evs.append((n, s, e))\n        torch.cuda.synchronize()\n        for n, s, e in evs:times[n].append(s.elapsed_time(e) * 1000.)\n    return times",
+        "rounds_expressions": [
+          "16 if b * q <= 8 else 8"
+        ]
+      },
+      "native": true,
+      "seed_count": 16,
+      "AA_G0": {
+        "R": 0.9989675922881204,
+        "CI95": [
+          0.9979744912062495,
+          0.999961681621462
+        ],
+        "n": 16,
+        "log_se": 0.0004666300253823973,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA_loads": {
+        "decode 1": {
+          "R": 0.9922586281962635,
+          "CI95": [
+            0.9870226752819774,
+            0.9975223567671858
+          ],
+          "n": 16,
+          "log_se": 0.002482183485623999,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 1.001792481532983,
+          "CI95": [
+            0.9995805123353847,
+            1.0040093455916463
+          ],
+          "n": 16,
+          "log_se": 0.0010370408769898461,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.9988856292009237,
+          "CI95": [
+            0.9970026417222715,
+            1.00077217298093
+          ],
+          "n": 16,
+          "log_se": 0.0008852297352283421,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0003247619292717,
+          "CI95": [
+            0.9977845469918838,
+            1.0028714438859652
+          ],
+          "n": 16,
+          "log_se": 0.0011928782361476738,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 1.000041795408759,
+          "CI95": [
+            0.9983768378856861,
+            1.001709529522242
+          ],
+          "n": 16,
+          "log_se": 0.0007817384023093565,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 1.0005315984231145,
+          "CI95": [
+            0.999325695388366,
+            1.0017389566412291
+          ],
+          "n": 16,
+          "log_se": 0.0005657936814300983,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "max_primary": {
+        "ratio": 1.055526,
+        "load": "verify 1",
+        "seed_index": 2,
+        "seed": 610560731
+      },
+      "verify16_range": [
+        0.995109,
+        1.007118
+      ],
+      "verify16_AA_range": [
+        0.992355,
+        1.00364
+      ],
+      "v16S_summary": {
+        "n": 16,
+        "aa": [
+          0.989117,
+          1.006611
+        ],
+        "r": {
+          "A2": 0.999849,
+          "INC": 0.998485
+        }
+      },
+      "order_exposure": {
+        "d1S": {
+          "arms": 4,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "INC": 31,
+            "no_FAST": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "d1F": {
+          "arms": 4,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "INC": 31,
+            "no_FAST": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "v1S": {
+          "arms": 3,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 23.4375,
+            "A2": 23.625,
+            "INC": 23.4375
+          },
+          "AA_slot_difference": 0.1875
+        },
+        "v1F": {
+          "arms": 3,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 23.4375,
+            "A2": 23.625,
+            "INC": 23.4375
+          },
+          "AA_slot_difference": 0.1875
+        },
+        "d16S": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "P10_d16": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "d16F": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "P10_d16": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "d32S": {
+          "arms": 3,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 11.25,
+            "A2": 11.625,
+            "INC": 11.625
+          },
+          "AA_slot_difference": 0.375
+        },
+        "d32F": {
+          "arms": 3,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 11.25,
+            "A2": 11.625,
+            "INC": 11.625
+          },
+          "AA_slot_difference": 0.375
+        },
+        "v16S": {
+          "arms": 3,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 11.25,
+            "A2": 11.625,
+            "INC": 11.625
+          },
+          "AA_slot_difference": 0.375
+        },
+        "v16F": {
+          "arms": 3,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 11.25,
+            "A2": 11.625,
+            "INC": 11.625
+          },
+          "AA_slot_difference": 0.375
+        },
+        "v32S": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "late_pdl": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "v32F": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "late_pdl": 16
+          },
+          "AA_slot_difference": 1
+        }
+      },
+      "round_data_present": false
+    },
+    {
+      "job": "7c0fd3cc95ea4242",
+      "receipt": "runs/muse_prefill_layer/20261026T062959Z_check_7c0fd3cc95ea4242.json",
+      "sha256": "4e0abdd9f14392e25b3673795fdd7cb1cd43bc83ff14031ad7f449a91495fd7a",
+      "machine": {
+        "gpu_after": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.159.03",
+          "name": "NVIDIA H200",
+          "power.draw": 126.81,
+          "power.limit": 700,
+          "temperature.gpu": 42
+        },
+        "gpu_before": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.159.03",
+          "name": "NVIDIA H200",
+          "power.draw": 134.67,
+          "power.limit": 700,
+          "temperature.gpu": 36
+        },
+        "node": "n-qtqz4qekgtq37epqb5xaarah6h"
+      },
+      "timing_source": {
+        "sha256": "3a53b0017a2bcd00c61b04598fd25df34dd0806738c95b6162771c2a7dbd9cfe",
+        "function": "def ab_time(graphs, rounds):\n    \"\"\"name -> per-round us; every round replays each graph once in a rotating order, cold L2 before each.\"\"\"\n    names = list(graphs);times = {n: [] for n in names}\n    for r in range(rounds):\n        order = names[r % len(names):] + names[:r % len(names)]\n        if r % 2:order = order[::-1]\n        evs = []\n        for n in order:\n            s, e = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)\n            lab_cold_l2();s.record();graphs[n][0].replay();e.record();evs.append((n, s, e))\n        torch.cuda.synchronize()\n        for n, s, e in evs:times[n].append(s.elapsed_time(e) * 1000.)\n    return times",
+        "rounds_expressions": [
+          "16 if b * q <= 8 else 8"
+        ]
+      },
+      "native": true,
+      "seed_count": 16,
+      "AA_G0": {
+        "R": 0.999779874292596,
+        "CI95": [
+          0.999150305016048,
+          1.0004098402636872
+        ],
+        "n": 16,
+        "log_se": 0.00029552251500339675,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA_loads": {
+        "decode 1": {
+          "R": 0.9998160002086419,
+          "CI95": [
+            0.9990627189423098,
+            1.000569849439983
+          ],
+          "n": 16,
+          "log_se": 0.0003536025610336502,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 0.9996506419879787,
+          "CI95": [
+            0.9970388587969468,
+            1.0022692668496003
+          ],
+          "n": 16,
+          "log_se": 0.0012273586694651333,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 0.9983365278924151,
+          "CI95": [
+            0.9972983857201163,
+            0.9993757507234068
+          ],
+          "n": 16,
+          "log_se": 0.00048811307167862054,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0009805432648502,
+          "CI95": [
+            0.9992157898422744,
+            1.0027484134862936
+          ],
+          "n": 16,
+          "log_se": 0.0008278586242974746,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.998730439497252,
+          "CI95": [
+            0.9974863657633318,
+            0.999976064850832
+          ],
+          "n": 16,
+          "log_se": 0.0005847673665496525,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 1.0011683796103448,
+          "CI95": [
+            0.9998496531672606,
+            1.002488845354359
+          ],
+          "n": 16,
+          "log_se": 0.0006183700314500522,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "max_primary": {
+        "ratio": 1.036999,
+        "load": "verify 32",
+        "seed_index": 4,
+        "seed": 505329189
+      },
+      "verify16_range": [
+        0.995026,
+        1.007765
+      ],
+      "verify16_AA_range": [
+        0.993447,
+        1.00278
+      ],
+      "v16S_summary": {
+        "n": 16,
+        "aa": [
+          0.992544,
+          1.004258
+        ],
+        "r": {
+          "A2": 0.999878,
+          "INC": 1.001732
+        }
+      },
+      "order_exposure": {
+        "d1S": {
+          "arms": 5,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 39.375,
+            "A2": 39.6875,
+            "INC": 39.375,
+            "no_FAST": 39.6875,
+            "no_W": 39.375
+          },
+          "AA_slot_difference": 0.3125
+        },
+        "d1F": {
+          "arms": 5,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 39.375,
+            "A2": 39.6875,
+            "INC": 39.375,
+            "no_FAST": 39.6875,
+            "no_W": 39.375
+          },
+          "AA_slot_difference": 0.3125
+        },
+        "v1S": {
+          "arms": 5,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 39.375,
+            "A2": 39.6875,
+            "INC": 39.375,
+            "no_P10": 39.6875,
+            "no_W": 39.375
+          },
+          "AA_slot_difference": 0.3125
+        },
+        "v1F": {
+          "arms": 5,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 39.375,
+            "A2": 39.6875,
+            "INC": 39.375,
+            "no_P10": 39.6875,
+            "no_W": 39.375
+          },
+          "AA_slot_difference": 0.3125
+        },
+        "d16S": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "no_P10": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "d16F": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_P10": 20,
+            "no_R8": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "d32S": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "SPLIT2_M32": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "d32F": {
+          "arms": 5,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 19.375,
+            "A2": 19.375,
+            "INC": 19.375,
+            "no_R8": 20,
+            "SPLIT2_M32": 19.375
+          },
+          "AA_slot_difference": 0.0
+        },
+        "v16S": {
+          "arms": 3,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 11.25,
+            "A2": 11.625,
+            "INC": 11.625
+          },
+          "AA_slot_difference": 0.375
+        },
+        "v16F": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "no_D": 16
+          },
+          "AA_slot_difference": 1
+        },
+        "v32S": {
+          "arms": 7,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 27.125,
+            "A2": 28,
+            "INC": 27.125,
+            "v32S_noRAW2": 28,
+            "v32S_PIPE2": 27.125,
+            "v32S_no_pdl_M": 28,
+            "v32S_no_pdl_M_noRAW2": 27.125
+          },
+          "AA_slot_difference": 0.875
+        },
+        "v32F": {
+          "arms": 4,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 15,
+            "A2": 16,
+            "INC": 15,
+            "no_D": 16
+          },
+          "AA_slot_difference": 1
+        }
+      },
+      "round_data_present": false
+    },
+    {
+      "job": "5d0282bb6ac74764",
+      "receipt": "runs/muse_prefill_layer/20261026T054357Z_check_5d0282bb6ac74764.json",
+      "sha256": "388b3abbdc9411db2c5d07498765a1c96fd9c793723e09fc57655fcd97df65b2",
+      "machine": {
+        "gpu_after": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.159.03",
+          "name": "NVIDIA H200",
+          "power.draw": 127.78,
+          "power.limit": 700,
+          "temperature.gpu": 37
+        },
+        "gpu_before": {
+          "clocks.max.sm": 1980,
+          "clocks.mem": 3201,
+          "clocks.sm": 1980,
+          "driver_version": "580.159.03",
+          "name": "NVIDIA H200",
+          "power.draw": 136.95,
+          "power.limit": 700,
+          "temperature.gpu": 37
+        },
+        "node": "n-i3rdb5ks34a6fp3m52rhc7cstu"
+      },
+      "timing_source": {
+        "sha256": "3a53b0017a2bcd00c61b04598fd25df34dd0806738c95b6162771c2a7dbd9cfe",
+        "function": "def ab_time(graphs, rounds):\n    \"\"\"name -> per-round us; every round replays each graph once in a rotating order, cold L2 before each.\"\"\"\n    names = list(graphs);times = {n: [] for n in names}\n    for r in range(rounds):\n        order = names[r % len(names):] + names[:r % len(names)]\n        if r % 2:order = order[::-1]\n        evs = []\n        for n in order:\n            s, e = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)\n            lab_cold_l2();s.record();graphs[n][0].replay();e.record();evs.append((n, s, e))\n        torch.cuda.synchronize()\n        for n, s, e in evs:times[n].append(s.elapsed_time(e) * 1000.)\n    return times",
+        "rounds_expressions": [
+          "16 if b * q <= 8 else 8"
+        ]
+      },
+      "native": true,
+      "seed_count": 16,
+      "AA_G0": {
+        "R": 1.0011391397538867,
+        "CI95": [
+          1.0002146002545511,
+          1.002064533843113
+        ],
+        "n": 16,
+        "log_se": 0.00043345728139675447,
+        "AA_log_se": 0.0,
+        "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+      },
+      "AA_loads": {
+        "decode 1": {
+          "R": 1.0003778222400916,
+          "CI95": [
+            0.9986472126033825,
+            1.0021114309436154
+          ],
+          "n": 16,
+          "log_se": 0.0008123172051529248,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 16": {
+          "R": 1.0019431777078078,
+          "CI95": [
+            0.9995825427976467,
+            1.0043093875424405
+          ],
+          "n": 16,
+          "log_se": 0.0011066556613134938,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "decode 32": {
+          "R": 1.0024293043346182,
+          "CI95": [
+            0.9995522506405523,
+            1.0053146391745202
+          ],
+          "n": 16,
+          "log_se": 0.0013484438067740908,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 1": {
+          "R": 1.0014428606791324,
+          "CI95": [
+            1.0000445008818086,
+            1.002843175799565
+          ],
+          "n": 16,
+          "log_se": 0.0006555575248314018,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 16": {
+          "R": 0.999307818933741,
+          "CI95": [
+            0.9983940086173398,
+            1.0002224656426757
+          ],
+          "n": 16,
+          "log_se": 0.0004292102439781054,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        },
+        "verify 32": {
+          "R": 1.001337040171167,
+          "CI95": [
+            1.0002313036161903,
+            1.002443999096734
+          ],
+          "n": 16,
+          "log_se": 0.0005183533939750778,
+          "AA_log_se": 0.0,
+          "method": "95% Student-t on paired seed log R; max(paired, A:A) SE"
+        }
+      },
+      "max_primary": {
+        "ratio": 1.05026271,
+        "load": "decode 16",
+        "seed_index": 6,
+        "seed": 405538647
+      },
+      "verify16_range": [
+        0.99645318,
+        1.00592027
+      ],
+      "verify16_AA_range": [
+        0.99617959,
+        1.00283291
+      ],
+      "v16S_summary": {
+        "n": 16,
+        "aa": [
+          0.99537091,
+          1.00426986
+        ],
+        "r": {
+          "A2": 0.9990751,
+          "no_Vwait32": 1.00003345,
+          "no_BLOCK": 0.99832142,
+          "no_D8": 0.99848413,
+          "no_D4": 0.99979287,
+          "no_pool128": 0.99934735,
+          "INC": 1.00159038
+        }
+      },
+      "order_exposure": {
+        "d1S": {
+          "arms": 8,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 63,
+            "A2": 64,
+            "no_Vwait32": 63,
+            "no_BLOCK": 64,
+            "no_D8": 63,
+            "no_D4": 64,
+            "no_pool128": 63,
+            "INC": 64
+          },
+          "AA_slot_difference": 1
+        },
+        "d1F": {
+          "arms": 8,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 63,
+            "A2": 64,
+            "no_Vwait32": 63,
+            "no_BLOCK": 64,
+            "no_D8": 63,
+            "no_D4": 64,
+            "no_pool128": 63,
+            "INC": 64
+          },
+          "AA_slot_difference": 1
+        },
+        "v1S": {
+          "arms": 8,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 63,
+            "A2": 64,
+            "no_Vwait32": 63,
+            "no_BLOCK": 64,
+            "no_D8": 63,
+            "no_D4": 64,
+            "no_pool128": 63,
+            "INC": 64
+          },
+          "AA_slot_difference": 1
+        },
+        "v1F": {
+          "arms": 8,
+          "rounds": 16,
+          "mean_slot": {
+            "A": 63,
+            "A2": 64,
+            "no_Vwait32": 63,
+            "no_BLOCK": 64,
+            "no_D8": 63,
+            "no_D4": 64,
+            "no_pool128": 63,
+            "INC": 64
+          },
+          "AA_slot_difference": 1
+        },
+        "d16S": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "d16F": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "d32S": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "d32F": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "v16S": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "v16F": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "v32S": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        },
+        "v32F": {
+          "arms": 8,
+          "rounds": 8,
+          "mean_slot": {
+            "A": 31,
+            "A2": 32,
+            "no_Vwait32": 31,
+            "no_BLOCK": 32,
+            "no_D8": 31,
+            "no_D4": 32,
+            "no_pool128": 31,
+            "INC": 32
+          },
+          "AA_slot_difference": 1
+        }
+      },
+      "round_data_present": false
+    }
+  ],
+  "AA_coverage": {
+    "joint_global_intervals": 4,
+    "contain_unity": 2,
+    "caveat": "Four run-level archives are insufficient to validate a new robust confidence estimator; per-load intervals are correlated"
+  },
+  "decision": "Keep 0640cce4 failed and all samples. Retain Student-t held-out seed gate in tools/promotion.py. Prospectively use 64 fixed fresh seeds and symmetric palindromic cohort order (ABBA for two arms), retain round diagnostics and NVML snapshots. No selective reruns, trimming or optional stopping."
+}
