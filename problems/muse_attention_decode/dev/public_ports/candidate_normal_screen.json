@@ -1,5 +1,5 @@
 {
- "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_ports/out/candidate_attention.py",
+ "file": "/home/jihoon/competitions/muse_kernel/problems/muse_attention_decode/dev/public_ports/out/candidate_normal_attention.py",
  "sha256": "da67a687aee6451252011c05ce7c0f267f83c5ecf7b57b484d785ee3d300f8cc",
  "tier": "screen",
  "static": [
@@ -213,7 +213,7 @@
  "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
  "cc": "12.0",
  "torch": "2.14.1+cu130",
- "prepare_s": 0.00011016998905688524,
+ "prepare_s": 0.00017576594837009907,
  "tests": [
   {
    "case": "batch 1, ctx 10, heads tp8, layer sliding",
