@@ -32,7 +32,7 @@ Each rule is `[hard]` (external or protective) or `[owner]`, with its source. `l
 | 4 | Value-dependent work inside kernels (device counters, route-driven schedules) | Rule 4 bans host-side sync and control flow | allowed |
 | 5 | Lossless re-encoding, compression, duplicate layouts and padding of the weights in `prepare()` (recoded scale bank, coded BF16 exponents), decoded in timed kernels | llms.txt:107; audit what each tensor holds at what precision, not its bytes | allowed |
 | 5 | NVFP4 weights or scales held in a wider format made in `prepare()` (BF16/FP16/FP8 values or their bit patterns) | Moves timed dequant into prepare | forbidden |
-| 2, 6 | Correctness | TASK.md:76-87 is the check (routing by expert membership, near ties free, any order; 3-15% relative L2), not our own gates; TASK alone defines correctness, promotion follows GOAL G0 (R-20261026-1) | allowed |
+| 2, 6 | Correctness | TASK.md:76-87 is the check (routing by expert membership, near ties free, any order; 3-15% relative L2), nothing stricter; promotion: GOAL G0 | allowed |
 | 2 | The unpooler's T <= 8 shortcut (TASK.md:22) | Set by the call's total T; internal chunking doesn't extend it | forbidden above T = 8 |
 | 2 | L2 persistence (access-policy windows, set-aside L2) across the per-replay flush | Defeats the cold-cache protocol | forbidden |
 | 2 | Prefetching a later stage's weights into L2 within one timed call | Nothing survives the flush | allowed |

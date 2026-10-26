@@ -35,7 +35,7 @@ loosely) → H200 via `okc_run.py send` / `h200_lab.py send` (queue ~6.6 min per
   second round fits.
 
 ## Ranked work
-Promotion (GOAL G0, R-20261026-1) has one score gate: per seed pair R = exp(mean over the six loads of log(T_old / T_new)),
+Promotion (GOAL G0) has one score gate: per seed pair R = exp(mean over the six loads of log(T_old / T_new)),
 each load's T = 46 t_sliding + 16 t_full; promote when R's lower confidence bound across held-out confirmation
 seeds is above 1. Correctness is TASK.md's checker on every arm and seed, nothing stricter. A win at every load,
 stage or row is not required; shape-dispatchable pieces are chosen per shape, then the composition is confirmed by

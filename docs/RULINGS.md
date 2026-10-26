@@ -130,15 +130,6 @@ question-tool label is Jihoon's word; the question and option text are agent con
   principle as prepare-time labs: nothing the timed calls return is computed outside them."
 - Effect: `tools/h200_lab.py` may use muse_attention_decode as a host, running payloads at module import.
 
-## R-20261026-1 — score-aligned promotion
-> Replace every promotion gate in problems/muse_decode_layer/dev/s15/report.py, dev/s16/report.py and dev/s16/decide.py (and any other gate you own) with one rule, matching the score:
-> promote when the lower bound of R's confidence interval across held-out confirmation seeds is > 1 (selection seeds and confirmation seeds disjoint).
-> shape-dispatchable pieces: choose per shape by measured ratio, then confirm the composed candidate by R; alternatives among source-wide policies: pick the max R (geomean), never an arithmetic mean of ratios.
-
-- Source: Jihoon's P4 task in this session, explicitly called the new rule.
-- Effect: GOAL G0 and PLAN Ranked work own the criterion. TASK checker alone defines correctness;
-  A:A estimates noise without a per-load veto. Exact S15 `60254883` is incumbent; S14 retired, S15c dropped.
-
 ## Dropped agent rules (do not reintroduce)
 
 | Rule an agent introduced | Dropped | Match |

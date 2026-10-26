@@ -114,13 +114,16 @@ Reset integration decisions (2026-10-26; stage nominations still require the com
 |---|---|---|---|---|
 | Exact S14 final f1c77ce6 scored |1.742759x SGLang; unpaired, no A:A | Retained S14 portfolio | Retired by S15 | `9b94c126d450448a` |
 | Exact S15 60254883 scored |1.800345x SGLang; unpaired, no A:A | NF projection rows + last-CTA sliding d1 + register-fold full verify | Frozen incumbent (paired geomean 1.026 over S14, `281b1383`) | `9c5fc18d302c4d40` |
-| Shared-merge global attention on S11 host, versus OLD last/partial | Best new/OLD at d1S/d16S/d32S/d1F:0.995906/1.009411/1.001125/1.121209; full A:A radii0.056417/0.047526/0.018671/0.035314 | Last-CTA shared merge weights and fixed split waves | Select C128 d1S for S16 confirmation under the R policy; its small gain remains uncertain. Full C128 loses; other ownership or S15 interactions remain open | `ae6cd27877cc4ee2` |
+| S15 leave-one-out,16 seeds | S14/S15 at d1/d16/d32/v1/v16/v32=1.054865/1.050962/1.027606/0.989473/1.009972/1.022677; descriptive six-load R1.025676, A:A0.996805 | NF projection rows, last-CTA d1 sliding and register-fold full verify compose positively overall | Owner froze exact60254883. Legacy private-equivalence failures do not veto TASK, but missing seed covariance/per-arm TASK means no new held-out CI can be reconstructed | `281b1383359c4fe2` |
+| Compact early sliding history on S14 | E4/OLD4=0.997414, SE0.001244; A:A range0.988238-1.095457. E2/E1/L4=1.016159/1.040193/1.020247 | Gather plus V transpose before dependency wait, smaller shared history | No independent promotion; the small point estimate loses to the selected C128 estimate and has large uncertainty. Other history ownership stays open | `402819c28279466d` |
+| Shared-merge global attention on S11 host, versus OLD last/partial | Best new/OLD at d1S/d16S/d32S/d1F:0.995906/1.009411/1.001125/1.121209; full A:A radii0.056417/0.047526/0.018671/0.035314 | Last-CTA shared merge weights and fixed split waves | Original captured paths have no TASK gates: standalone winner unmeasured. C128 d1S is experimental in S16; gated exact-kernel repeat bb7239af and independent composed TASK pair must establish it. Full C128 timing loses | `ae6cd27877cc4ee2` |
 | Small-M PAIR epilogue nomination | M8/16/32 PAIR/S14=0.97493/0.97262/0.97932, SE0.00235/0.00357/0.00280; A:A absolute0.415/0.235/0.225us on71.033/81.533/110.753us controls | Two contiguous float2 planes/two writers plus per-run norm accumulation | Select PAIR M8/16/32 and NORM M1 for composed R confirmation; M1's small gain remains uncertain. ONCE variants lose1.235-1.331x at M8-32; new transport remains open | `d650c04ead114119` |
 | Native verify-sliding DSM cluster nomination | B1 C16/control0.719269, SE0.002772, A:A radius0.059278; B16 C8/control0.849109, SE0.003406, A:A0.033439. B32 best C4 loses1.073812 | Distributed output rows across cluster CTAs, avoiding last-CTA serialization | Nominate B1/B16 sliding verify to S16; retain B32. New stage result is not yet an S15 whole-layer gain | `b05713ecf6574ad9` |
 | Full-verify softmax batch on N64/stage6 | B16/B32 mixed25%=1.05012/1.04610; mixed50%=1.08436/1.07352; TC25=1.03473/1.03452; ping=1.15929/1.17091; best gap=1.00004/1.00126. A:A radii0.00438/0.00392 | Polynomial/MUFU mix, TC row sums, two-WG scheduling | No arm nominated; these recipes lose or overlap A:A. S15 N128/stage4 softmax and other schedules remain open | `457f3c73b3214534` |
 | Heavy direct-copy launch and S3 policies | Ordinary direct/control1.1965/1.1381 at M128/256; other policies1.1427-1.2992; max A:A3.120us on182.90/256.67us controls; all TASK PASS | Direct activation copies, cluster/ordinary/serial launches, optional S3 | No heavy arm admitted; closes these transport/launch policies, leaves cheaper reuse and ownership open | `8792099636654bac` |
-| PDL/boundary reset archive | Unmeasured: official host passes, but no LAB_BEGIN/BD_BATCH_XZ85 survives the16000-character receipt tail | Import/setup result displaced by later host logs | No boundary/PDL arm admitted from this receipt; requires a surviving paired archive | `4c86853a953b4eca` |
+| PDL/boundary reset archive | Unmeasured: official host passes, but no LAB_BEGIN/BD_BATCH_XZ85 survives the16000-character receipt tail | No LAB marker survives; cause not established | No boundary/PDL arm admitted from this receipt; requires a surviving paired archive | `4c86853a953b4eca` |
 | S15e producer-release composition, repaired entry point | Six-load S15/E R of paired load means1.004957; A:A R0.999668. Attention/MoE off-over-full R1.001668/1.001811; projection0.999729. Eight seeds, complete gates; seed covariance discarded, no exact CI | PDL producer release and consumer launch/wait edges, unchanged arithmetic | Attention/MoE selected for a future held-out composition; projection omitted. No standalone promotion from aggregate means | `f88fda4aac144374` |
+| S15n nearby range dispatch,65 cases | Nearby/scored speedup by six loads: S15 .9547/.8651/.8184/.8119/.7327/.7263 → S15n1.0292/1.0142/.8884/.8682/1.0050/.9360. Scored identical-dispatch seed ratios span .97794-1.03416; no independent A:A arm | Range-based projection/MoE/attention plans remove nearby shape cliffs while retaining scored dispatch | Timing criterion passes; native correctness unproven (finite-only lab). Guarded9cc90d2e has native TASK audit sender1096763 queued; no final promotion yet | `a793c99eb9d447df` |
 | S15L owned-library composition, repaired entry point | Full six-load R0.998959, A:A R0.998656;768 TASK checks pass. O off/full at v16/v32=1.004843/1.001366, pool128 at v16=1.001877; unpool1280.996584, v1full0.992091, v32slide0.993620 | NF O128/256, dependent VDSK pool/unpool, VQ8 replacements | Nominate O and pool128 only. Full L loses; actual changed-load unpool/attention replacements lose. Seed covariance missing: all aggregates are selection evidence, not promotion CI | `f22020d25d234be6` |
 | First S16 composition 2e26db54 scored |1.796154x SGLang, unpaired; no promotion CI yet | C128 d1S, DSM v1S/v16S, NORM M1, PAIR M8/16/32 on exact S15 | Correct scored source; freeze waits on held-out six-load confirmation. Unpaired S15/S16 scores do not rank this small difference | `7139485dbeef4e0d` |
 | ILP replaces PAIR in the small-M MoE | ILP/PAIR M8/16/32=1.01094/1.02063/1.01190;32 fresh seeds. A:A absolute0.488/0.377/0.364us, max1.424/0.928/1.648us | Alternate MMA accumulator chains lose to the admitted float2 epilogue despite beating S14 | Retain PAIR; close exact ILP replacement, leave combined instruction/epilogue edits open | `1b135b70835f4634` |
@@ -271,7 +274,7 @@ First/second/pipe S14 A:A mean absolute drift is .415/.235/.225, .442/.363/.322 
 These A:A summaries are not maximum per-seed envelopes. Exact rows, hashes and reproducible admission
 checks: `dev/nt1_timeline/h200_results.json`, `read_reset.py`; complete pipe matrix: `h200_pipe.txt`.
 
-| Recipe | Ratio versus control | Mechanism / decision | What remains open | Receipt job |
+| Recipe | Ratio versus control | Mechanism / decision | Leaves open | Receipt job |
 |---|---|---|---|---|
 | EPBASE / S14, 16 seeds | .99656 / .99979 / 1.00208 | Diagnostic hooks disabled; neutral control within uncertainty | Small phase differences are not speedups | `d650c04ead114119` |
 | VEC / S14 | 1.01332 / 1.01457 / 1.01898 | Single vector writer loses despite fewer modeled bank requests; close this recipe | Other writer ownership and producer overlap | `d650c04ead114119` |
@@ -466,7 +469,7 @@ Live designs: `problems/muse_attention_decode/dev/cluster_sliding/`,
 Ratios are candidate/control time. Stage-only wins require a paired whole-layer
 confirmation; a missing correctness/control gate is unmeasured, not a loss.
 
-| Recipe | Ratio vs control / A:A | Mechanism established | What it closes or leaves open | Receipt |
+| Recipe | Ratio vs control / A:A | Mechanism established | Leaves open (and what it closes) | Receipt |
 |---|---|---|---|---|
 | Decode-1 full, one-head N128 persistent gather (stages 3/4; compact eight-row partials) | H3/H4/GC 1.4240/1.3879/1.5046; A:A 0.99029 (SE 0.00174), eight seeds; fresh BF16/partial errors 0.0047-0.0059 | Per tile: producer issue 1714, softmax 907, publication 695 cycles in the instrumented H3 shader | Closes these stage schedules, not one-head full attention; no P4 promotion | `58d6a59603564014` |
 | Sliding LAST/MASK/FAST, six shapes, eight seeds | LAST d1/16/32 0.9307/1.0523/1.0718, v1/16/32 0.9030/0.8618/0.7997; A:A 0.9856/0.9890/0.9884/0.9968/0.9923/0.9894. FAST verify 1.0503/1.4051/1.2840; all eight stage/strided-partial gates per shape pass | Padded masks are bitwise equal; FAST changes RoPE math and does not improve verify. LAST removes a launch but still serializes final reduction | Closes these FAST verify and LAST d16/d32 stage recipes; query partition, DSM and resident-history rebuilds remain open. Whole-layer v1 decision is in round2, not a P4 promotion | `2f8b702dc76b42fd` |
@@ -500,7 +503,7 @@ softmax vs QK ~200/PV ~208: issue, not memory, made it lose (`a1679f9c`).
 replays; all probability/cache/TASK gates and native tensor-sum probes pass. A:A means0.99941/0.99947,
 seed ranges0.99562–1.00164 /0.99608–1.00154. Ratios are candidate/control time; no arm is promoted.
 
-| Recipe | Ratio verify16 /32 | Mechanism / evidence | What remains open | Receipt |
+| Recipe | Ratio verify16 /32 | Mechanism / evidence | Leaves open | Receipt |
 |---|---:|---|---|---|
 |25% FMA-polynomial /MUFU split|1.05012 /1.04610|Exp/sum357.8→386.3 /360.4→387.5 cycles; extra issue outweighs SFU relief|Different software-exp implementation or issue schedule; this compiled split loses|`457f3c73b3214534`|
 |50% FMA-polynomial /MUFU split|1.08436 /1.07352|Exp/sum476.6/473.4 cycles, above native357.8/360.4|Other approximation/reduction implementations; not all mixed-pipe designs|`457f3c73b3214534`|
@@ -516,7 +519,7 @@ all independent probes and TASK/cache gates pass. A:A means0.99964/1.00105,
 seed ranges0.99310–1.00543 /0.99778–1.00871. No arm beats A:A; no P4 promotion.
 Clocked gather/page issue1539/1597 cycles dominates softmax618/615 (instrumentation perturbs wall time).
 
-| Recipe | Ratio decode16 /32 | Mechanism / evidence | What remains open | Receipt |
+| Recipe | Ratio decode16 /32 | Mechanism / evidence | Leaves open | Receipt |
 |---|---:|---|---|---|
 |attn_main25% FMA/MUFU split|1.00182 /1.00284|Inside A:A spread; exp/sum103→92 /102→91 cycles saves too little|Gather/issue and other software-exp schedules|`e4fcf732f35b425d`|
 |attn_main50% FMA/MUFU split|1.00898 /1.01133|Exp/sum falls but page/issue and total time rise|Different issue/transport structures|`e4fcf732f35b425d`|
@@ -542,7 +545,7 @@ Library's d1 A:A is1.013075 (1.004542–1.022814); other means are
 .998606/.999222/.998548/.999198/.999509, ranges .992040–1.008489 /
 .996336–1.002392 / .993566–1.003576 / .997946–1.000551 / .997735–1.001910.
 
-| Recipe | Ratio vs control | Mechanism checked | Decision / what remains open | Receipt |
+| Recipe | Ratio vs control | Mechanism checked | Leaves open | Receipt |
 |---|---|---|---|---|
 | S15e all release edits | 1.018308/.988901/.991881/1.001564/.977655/.992563 vs S15; E-identical no-glue1.018116/.987360/.991442/1.002360/.979613/.993467 | Native changed sources execute; equivalence/routing gates pass all12 shapes×8seeds. Most old producers already released at entry | No wholesale promotion: d1 control drifts and joint seed confidence was omitted. Selected producers go to held-out TASK/R confirmation | `f88fda4aac144374` |
 | q1 attention PDL consumer enable+wait | E/no-attention .992546/.993376 at d16/d32; A:A .997998/.998476 | Existing sumcast entry release can overlap the now-enabled attn_main prologue; wait precedes qkv reads | Nominate exact attention patch for confirmation; no change to decode1/sliding kernel math | `f88fda4aac144374` |
@@ -597,11 +600,22 @@ LDGSTS 40→8; hints 1.0027, metadata 1.0032 (A:A 1.0007), tiles 0.887. Confirma
 
 Recipe ratios are candidate/control (lower is faster), except the explicitly labelled component speedups. Full shape/seed evidence and code pins: `problems/muse_bf16_proj/dev/sparse_all/results.json` and `problems/muse_decode_layer/dev/p12_components/leader_gap.json`.
 
-| Recipe | Ratio and control spread | Mechanism | What remains open / decision | Receipt job |
+| Recipe | Ratio and control spread | Mechanism | Leaves open | Receipt job |
 |---|---|---|---|---|
 | P12 S15 projection component | SGLang/ours 0.98059 [0.96588,0.99530]; ours/leader 1.65590; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 9 tests/30 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. Includes board sum/cast/router-add tax; one-reducer/producer-only follow-up queued. | d6ad694a27954c80 |
 | P12 S15 moe component | SGLang/ours 2.02924 [1.99880,2.05968]; ours/leader 1.25835; A:A unavailable | Frozen S15 path behind the board ABI; official paired SGLang control | 5 tests/6 shapes pass. Leader per-shape times unpublished; aggregate gap only; no layer promotion. | 97f5e7f3c3fc4159 |
 | P10 pool sparse batch | unmeasured: failed or incomplete control/gate | No recipe loss or promotion inferred | LAB_ERROR CompilationError: at 6:4:; AttributeError("'NoneType' object has no attribute 'startswith'"); AttributeError("'NoneType' object has no attribute 'startswith'"); LAB_ERROR host supplies weights=None; payloads needing weights must synthesize them (state is also None on import-time hosts) | b02c4f27e71c4340 |
+| P10 native reader T1 o | scalar 2.8559; vector 1.9388; hoisted 1.7258 [1.6875,1.7769]; AA 0.0509 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T1 pool_router | scalar 2.9181; vector 2.9461; hoisted 1.5186 [1.4856,1.5405]; AA 0.0180 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T1 qkv3 | scalar 2.8628; vector 2.6410; hoisted 2.0212 [1.9836,2.0774]; AA 0.0307 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T1 qkv_gate | scalar 2.4827; vector 2.4379; hoisted 1.5906 [1.5436,1.6078]; AA 0.0309 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T8 o | scalar 3.1813; vector 2.1402; hoisted 2.1710 [2.1127,2.2551]; AA 0.0261 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T16 o | scalar 2.7611; vector 2.6437; hoisted 1.8668 [1.7843,1.9187]; AA 0.0434 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T16 unpooler | scalar 2.4719; vector 2.0911; hoisted 1.8947 [1.8671,1.9123]; AA 0.0177 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T32 qkv3 | scalar 2.2702; vector 2.0040; hoisted 1.6462 [1.6212,1.6732]; AA 0.0301 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T32 qkv_gate | scalar 2.7584; vector 2.4959; hoisted 1.6404 [1.6282,1.6740]; AA 0.0259 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 native reader T32 unpooler | scalar 3.4319; vector 3.4155; hoisted 1.9563 [1.9371,2.0129]; AA 0.0271 | Identical bank/escapes: scalar vs parallel butterfly/PRMT vs invariant pointers plus independent dense loads; raw12/S15 controls | Measured loss closes these three indexed sparse readers on this stage; alternative transport/layout and stronger compression remain open | 3a91afeed9ea47fd |
+| P10 grouped Triton point reader | unmeasured: T256 fused-route equality gate failed | Grouped codewords/masks per1024W inside original dot loops | Native ten-cell section is independently gated and valid; grouped section needs membership/order/tie diagnosis and a fresh gated run | 3a91afeed9ea47fd |
 <!-- P10/P12 measurements end -->
 
 ## Glue and routing
@@ -621,7 +635,7 @@ Boundary critical-path attribution: `problems/muse_bf16_proj/dev/boundary_attrib
 
 Reset batches below are **unmeasured**, not losses: the prefill receipts contain no LAB diagnostics; displacement was not established. Host submission scores do not measure the embedded recipes. Exact payloads were requeued on the attention host, whose tuning precedes the lab.
 
-| Recipe | Ratio vs control / A:A | Mechanism established | What remains open | Receipt |
+| Recipe | Ratio vs control / A:A | Mechanism established | Leaves open | Receipt |
 |---|---|---|---|---|
 | S14 metadata confirmation + d16/d32 boundary attribution (16 seeds) | Unavailable / unavailable | No LAB diagnostic; host correctness passes | Every tested preload, geometry, serialization and MoE-release/unpool-hint arm; exact retry `ce5b991a8a984a03` (sender 4131535) | `4c86853a953b4eca` |
 | S14 decode-1 b1/route/b2 preload chain (11 arms, 32 seeds) | Unavailable / unavailable | No LAB diagnostic; wrapper mechanism unresolved | W/W1/WR/W2, late-prew, hints, early residual and CL4; exact retry `5a95984a640d410e` (sender 4131717) | `841077efefb343a7` |
