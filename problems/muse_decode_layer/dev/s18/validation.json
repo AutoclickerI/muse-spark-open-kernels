@@ -70,5 +70,40 @@
       }
     }
   },
-  "note": "Local timings use stand-ins (DSM as one-CTA launch, VQ8 S14 ring, pool128 CHAIN torch.mm split) and do not rank pieces; only TASK and completeness are evidence."
+  "note": "Local timings use stand-ins (DSM as one-CTA launch, VQ8 S14 ring, pool128 CHAIN torch.mm split) and do not rank pieces; only TASK and completeness are evidence.",
+  "remote_wrapper": {
+    "host": "muse_prefill_layer lab-only (prefill_host.py)",
+    "sent_wrapper_sha256": "f57d9a9d4edc2bd4d8c5488f1380426a2d950405965329a69acf900eaa66a3e8",
+    "note": "normal screened 13279bf4, identical but for the budget literal 700 vs 700.0",
+    "normal": {
+      "wrapper_sha256": "13279bf417fb6f8ee2f2483ab6cf78192b25036d5d1ecfe96bad1945994aee36",
+      "complete": true,
+      "task_checks": 1536,
+      "nearby_task_checks": 260,
+      "failures": [],
+      "agreement_diagnostics": {
+        "d16S:no_D8": "ids2/16",
+        "d16S:INC": "ids2/16",
+        "d32S:no_D4": "ids12/32",
+        "d32S:INC": "ids12/32"
+      },
+      "seeds": 16,
+      "host_prepare": "raised as designed after the lab lines"
+    },
+    "forced": {
+      "wrapper_sha256": "f57d9a9d4edc2bd4d8c5488f1380426a2d950405965329a69acf900eaa66a3e8",
+      "complete": true,
+      "task_checks": 1536,
+      "nearby_task_checks": 260,
+      "failures": [],
+      "agreement_diagnostics": {
+        "d16S:no_D8": "ids2/16",
+        "d16S:INC": "ids2/16",
+        "d32S:no_D4": "ids12/32",
+        "d32S:INC": "ids12/32"
+      },
+      "seeds": 16,
+      "host_prepare": "raised as designed after the lab lines"
+    }
+  }
 }

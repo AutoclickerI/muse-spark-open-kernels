@@ -1,0 +1,42 @@
+{
+  "host": "muse_prefill_layer",
+  "host_file": "problems/muse_decode_layer/dev/s18/prefill_host.py",
+  "host_file_sha256": "46096e8a02489dfef4f6d89ce81c6d0bc432ad5de57e8ee5991430efd41fad74",
+  "import_budget": 700.0,
+  "payload": "problems/muse_decode_layer/dev/s18/generated/s18_pair_remote.py",
+  "payload_sha256": "4fb5abe5abad6c6537ae7590772658aae89b6870c4404bc573316445f81173f3",
+  "body_sha256": "11835356f4ce8e13392c972256a39c57720a03e19f03710edf46d8165eceed17",
+  "wrapper_sha256": "f57d9a9d4edc2bd4d8c5488f1380426a2d950405965329a69acf900eaa66a3e8",
+  "sent_wrapper": "problems/muse_prefill_layer/lab/lab_s18_pair_remote.py",
+  "decode_wrapper_sha256": "a2514bca91f81922698433c93f226eb166bbb5d39607a043b83accd7d02cabe8",
+  "sha256": "95df42fe7b3a31e66d60bc769bae15412c952ad77753b7d15b3beea3d89b3af4",
+  "shipped_sha256": "e04635ec0369348273c945204be0795ca93d47f36e7d57078ce5d025693994c9",
+  "checker_sha256": "63c76da556b07a1e80be88445cbe0ea84d17278731979bb40586c4e605ffe4d7",
+  "confirmation_seeds": [
+    404910273,
+    405015002,
+    405119731,
+    405224460,
+    405329189,
+    405433918,
+    405538647,
+    405643376,
+    405748105,
+    405852834,
+    405957563,
+    406062292,
+    406167021,
+    406271750,
+    406376479,
+    406481208
+  ],
+  "arms": [
+    "no_Vwait32",
+    "no_BLOCK",
+    "no_D8",
+    "no_D4",
+    "no_pool128",
+    "INC"
+  ],
+  "official_TASK_run": "28b5c189e7b5469c"
+}

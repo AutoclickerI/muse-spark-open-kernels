@@ -62,7 +62,26 @@ replaces the half-build's pdl_B: B is M plus `_gb`/`_gi` L2 hints and measured l
   `404910273 + 104729*i`, fresh weights/router seeds `404910271/404910269`, 1536 public TASK checks plus 260
   nearby TASK checks. Decode checks for 10-26 are spent: sender 2880917 waits for the reset (10-27 09:01 KST) at
   priority -1 (`runs/detached/a2514bca91f81922.log`); the sender writes the receipt (`tools/okc_run.py collect` if
-  it dies).
+  it dies). This is the confirmation and the only freeze.
+- First read off the decode host (`remote_lab.py`, prefill check `5d0282bb6ac74764`, wrapper `f57d9a9d`): the same
+  payload, arms and seeds, sent by `tools/h200_lab.py` on muse_prefill_layer at import (700 s budget). The payload
+  executes S18 itself (the decode wrapper's host hook appended) and draws inputs from S18's copy of TASK's
+  `generate_input`; weights come from TASK's `generate_weights` at the held-out seeds, as on decode. Prepare-phase
+  hosting cannot fit: prefill's own prepare (114-135 s on the judge) leaves ~150 s of the 285 s lab budget, below
+  S18's prepare alone (241.6 s); splitting S17 and S18 across runs would unpair the seeds across nodes. The host
+  is `prefill_host.py`, whose prepare stops the run once the lab lines print: the pair needs ~400-450 s cold
+  (da0cd64b: 399.7 s) and the prefill best source's own run (336-580 s wall) would overrun 15 minutes. Exact
+  wrapper screened locally in normal (13279bf4, which differs only in writing the budget as `700`) and forced
+  mode: complete, 1536 + 260 TASK checks, no failures. `remote_lab.py report <receipt>` reads it into
+  `batches/f57d9a9d4edc2bd4/` and never writes the final file.
+  **Result:** lab 398.6 s at import, run 434.5 s wall, 301 s of the lab budget unused; complete, 1536 + 260 TASK
+  checks pass on every arm and seed. S18/S17 **R 1.004321 [1.002314, 1.006332]** (16 seeds, A:A log SE .00043),
+  so this read clears the gate. Loads: d1 1.0114, d16 1.0097, d32 1.0012, v1 1.0025, v16 1.0024, **v32 0.9989
+  [.9981, .9997]**: S18 loses at v32S (S17/S18 .9948) and no leave-out recovers it, so a non-left-out piece
+  (most likely source-wide pdl_M) costs v32S. Leave-out R (>1 keeps the piece): BLOCK 1.00214 [1.00122, 1.00307],
+  pool128 1.00132 [1.00040, 1.00225], D8 1.00147 [.99986, 1.00309], Vwait32 1.00090 [.99998, 1.00183] (v32
+  load 1.0027 [1.0016, 1.0037]), D4 1.00079 [.99953, 1.00205]. Route-ID diagnostics: d16S 4/16, d32S 4/32 rows
+  (D8/D4 vs controls). A composition re-selected from this read needs seeds other than these 16.
 
 Gate (`../s16/score_gate.py`): promote S18 when the lower 95% bound of the six-load geomean R (46 sliding +
 16 full per load) over the held-out seeds is above 1 and every arm passes TASK. Leave-out R > 1 favours
@@ -72,3 +91,7 @@ promotion it writes `cand_r3_best7_s18_final.py`.
 
 Rebuild from the repo root: `python3 problems/muse_decode_layer/dev/s18/build_lab.py`, then
 `CUDA_VISIBLE_DEVICES=0 tools/img python problems/muse_decode_layer/dev/s18/screen_lab.py [--forced]`.
+Off-decode first read: `python3 problems/muse_decode_layer/dev/s18/remote_lab.py build`, `CUDA_VISIBLE_DEVICES=0
+tools/img python problems/muse_decode_layer/dev/s18/remote_lab.py screen [--forced]`, then `tools/h200_lab.py send
+<payload> --host muse_prefill_layer --phase import --import-budget 700 --base-file <abs prefill_host.py> --check`
+(the absolute path keeps the wrapper byte-identical to the screened one).
