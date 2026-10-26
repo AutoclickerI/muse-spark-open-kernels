@@ -1,0 +1,877 @@
+{
+  "rows": [
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "A",
+      "TASK": true,
+      "note": "relative L2 error 7.325e-02 (worst row 9.381e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M",
+      "TASK": true,
+      "note": "relative L2 error 7.325e-02 (worst row 9.381e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M2",
+      "TASK": true,
+      "note": "relative L2 error 7.325e-02 (worst row 9.381e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "C",
+      "TASK": true,
+      "note": "relative L2 error 7.325e-02 (worst row 9.381e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "S",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "X",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "L",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "Z",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "E",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "W",
+      "TASK": true,
+      "note": "relative L2 error 7.325e-02 (worst row 9.381e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "CLOCK",
+      "TASK": true,
+      "note": "relative L2 error 7.325e-02 (worst row 9.381e-02) [bound 0.150: 2.5 x the reference's 0.073 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "A",
+      "TASK": true,
+      "note": "relative L2 error 6.964e-02 (worst row 9.462e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M",
+      "TASK": true,
+      "note": "relative L2 error 6.964e-02 (worst row 9.462e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M2",
+      "TASK": true,
+      "note": "relative L2 error 6.964e-02 (worst row 9.462e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "C",
+      "TASK": true,
+      "note": "relative L2 error 6.964e-02 (worst row 9.462e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "S",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "X",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "L",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "Z",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "E",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "W",
+      "TASK": true,
+      "note": "relative L2 error 6.964e-02 (worst row 9.462e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "CLOCK",
+      "TASK": true,
+      "note": "relative L2 error 6.964e-02 (worst row 9.462e-02) [bound 0.150: 2.5 x the reference's 0.069 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "A",
+      "TASK": true,
+      "note": "relative L2 error 7.112e-02 (worst row 1.107e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M",
+      "TASK": true,
+      "note": "relative L2 error 7.112e-02 (worst row 1.107e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M2",
+      "TASK": true,
+      "note": "relative L2 error 7.112e-02 (worst row 1.107e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "C",
+      "TASK": true,
+      "note": "relative L2 error 7.112e-02 (worst row 1.107e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "S",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "X",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "L",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "Z",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "E",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "W",
+      "TASK": true,
+      "note": "relative L2 error 7.112e-02 (worst row 1.107e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "CLOCK",
+      "TASK": true,
+      "note": "relative L2 error 7.112e-02 (worst row 1.107e-01) [bound 0.150: 2.5 x the reference's 0.071 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "A",
+      "TASK": true,
+      "note": "relative L2 error 7.242e-02 (worst row 1.170e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M",
+      "TASK": true,
+      "note": "relative L2 error 7.242e-02 (worst row 1.170e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "M2",
+      "TASK": true,
+      "note": "relative L2 error 7.242e-02 (worst row 1.170e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "C",
+      "TASK": true,
+      "note": "relative L2 error 7.242e-02 (worst row 1.170e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "S",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "X",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "L",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "Z",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "E",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "W",
+      "TASK": true,
+      "note": "relative L2 error 7.242e-02 (worst row 1.170e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "name": "CLOCK",
+      "TASK": true,
+      "note": "relative L2 error 7.242e-02 (worst row 1.170e-01) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "A",
+      "TASK": true,
+      "note": "relative L2 error 7.391e-02 (worst row 8.663e-02) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "M",
+      "TASK": true,
+      "note": "relative L2 error 7.391e-02 (worst row 8.663e-02) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "M2",
+      "TASK": true,
+      "note": "relative L2 error 7.391e-02 (worst row 8.663e-02) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "C",
+      "TASK": true,
+      "note": "relative L2 error 7.391e-02 (worst row 8.663e-02) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "S",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "X",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "L",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "Z",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "E",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "W",
+      "TASK": true,
+      "note": "relative L2 error 7.391e-02 (worst row 8.663e-02) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "CLOCK",
+      "TASK": true,
+      "note": "relative L2 error 7.391e-02 (worst row 8.663e-02) [bound 0.150: 2.5 x the reference's 0.075 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "A",
+      "TASK": true,
+      "note": "relative L2 error 7.663e-02 (worst row 1.084e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "M",
+      "TASK": true,
+      "note": "relative L2 error 7.663e-02 (worst row 1.084e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "M2",
+      "TASK": true,
+      "note": "relative L2 error 7.663e-02 (worst row 1.084e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "C",
+      "TASK": true,
+      "note": "relative L2 error 7.663e-02 (worst row 1.084e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "S",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "X",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "L",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "Z",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "E",
+      "TASK": null,
+      "note": "altered-work oracle: no TASK correctness claim"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "W",
+      "TASK": true,
+      "note": "relative L2 error 7.663e-02 (worst row 1.084e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "name": "CLOCK",
+      "TASK": true,
+      "note": "relative L2 error 7.663e-02 (worst row 1.084e-01) [bound 0.150: 2.5 x the reference's 0.077 with FP8 E4M3 queries + 0.015]"
+    }
+  ],
+  "TASK_passed": 36,
+  "oracle_branches": 30,
+  "sources": {
+    "dA": "ab54831f8e1b6b4ebe217e686ddb5f2eeb95aea2509ad94f1ebe0aa6328fcbdc",
+    "dM": "c3c4239d4cf47a8e6f7a12e614e9985703c3aeb122651bf350e1ded67ad31777",
+    "dCLOCK": "e55c1d00fad98e170fe4a5d880eb5ede51c437f8520e09859fac5c0b1f017e38",
+    "vA": "6bc3ea444fb1152665a680bd55a9fe1e3ba260295e07e0ca0e408ccd53f0ea00",
+    "vM": "42b70b6e06c9e885e436003cbb433b972883e9246c27d8fa2436b0aadebcb572",
+    "vCLOCK": "cf385fe53385395c32a8da15964006e46fae1a82c14f38cb85f6a307b6af63d5"
+  },
+  "standins": [
+    "decode DSM C1 keeps every key, not native D8/D4 geometry",
+    "verify two genuine WGs and nonspinning global last-WG combine instead of DSM",
+    "W is standalone ready-input only, never a producer-dependent candidate"
+  ]
+}

@@ -1,0 +1,80 @@
+[
+  {
+    "name": "dEXP",
+    "sha256": "959d531f5fab8fab4dc5f1139e1bb7a6188011ed6a610500767abb1b41e1c0cd",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/dEXP.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN39_GLOBAL__N__f61d7277_7_dEXP_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "instruction_sites": {
+      "MUFU.EX2": 23,
+      "F2I": 103,
+      "FFMA": 305,
+      "QGMMA": 9,
+      "LDGSTS": 24
+    },
+    "no_C75": true
+  },
+  {
+    "name": "dCLOCK_BASE",
+    "sha256": "85a4c2fa5f60a6a3455a7133f121a24bb55557b361c66e7ec04932b9c63095f9",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/dCLOCK_BASE.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN47_GLOBAL__N__b6c2195f_14_dCLOCK_BASE_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:140 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:752 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "instruction_sites": {
+      "MUFU.EX2": 91,
+      "F2I": 3,
+      "FFMA": 205,
+      "QGMMA": 9,
+      "LDGSTS": 24
+    },
+    "no_C75": true
+  },
+  {
+    "name": "dCLOCK_EXP",
+    "sha256": "429d2d8f0c8f5b0000980a7ddaf0c6fc96b7a049030d00d8991f527b6776adaa",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/dCLOCK_EXP.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN46_GLOBAL__N__3c9fd811_13_dCLOCK_EXP_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:144 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:752 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "instruction_sites": {
+      "MUFU.EX2": 23,
+      "F2I": 103,
+      "FFMA": 305,
+      "QGMMA": 9,
+      "LDGSTS": 24
+    },
+    "no_C75": true
+  },
+  {
+    "name": "vEXP",
+    "sha256": "5262c6c0b6ffc1fcebc0f902d18e32a6943b5663b79d98744b7614c3373cfac7",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/vEXP.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN39_GLOBAL__N__065cff90_7_vEXP_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:167 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "instruction_sites": {
+      "MUFU.EX2": 10,
+      "F2I": 68,
+      "FFMA": 177,
+      "QGMMA": 9,
+      "LDGSTS": 24
+    },
+    "no_C75": true
+  },
+  {
+    "name": "vCLOCK_BASE",
+    "sha256": "d6fa3d59ad290b23030531624e795cb02cb196c9737608fa829d93d1f46195a2",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/vCLOCK_BASE.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN47_GLOBAL__N__311ee19e_14_vCLOCK_BASE_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:161 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:760 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "instruction_sites": {
+      "MUFU.EX2": 78,
+      "F2I": 0,
+      "FFMA": 109,
+      "QGMMA": 9,
+      "LDGSTS": 24
+    },
+    "no_C75": true
+  },
+  {
+    "name": "vCLOCK_EXP",
+    "sha256": "d0e448c55021c0f637623281cdd77c70ae345796393999c19fd936c4ec004575",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/vCLOCK_EXP.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN46_GLOBAL__N__e8c4cb80_13_vCLOCK_EXP_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:156 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:760 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "instruction_sites": {
+      "MUFU.EX2": 10,
+      "F2I": 68,
+      "FFMA": 177,
+      "QGMMA": 9,
+      "LDGSTS": 24
+    },
+    "no_C75": true
+  }
+]

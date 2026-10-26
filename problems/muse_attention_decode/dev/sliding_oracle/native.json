@@ -1,0 +1,50 @@
+[
+  {
+    "name": "dA",
+    "sha256": "2d829f4b51d49beeff4bdfad2449daab7a6843e0aea4e0ca57f4e776e9fdd8ee",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/dA.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN37_GLOBAL__N__37c7c193_5_dA_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:728 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "copy_sites": 24,
+    "tensor_sites": 9,
+    "no_C75": true
+  },
+  {
+    "name": "dM",
+    "sha256": "d8abac6c8f54ab6fa54c8a0ce9875610cf29124bcd9916da654824789f405656",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/dM.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN37_GLOBAL__N__7d117e2b_5_dM_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:138 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:752 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "copy_sites": 24,
+    "tensor_sites": 9,
+    "no_C75": true
+  },
+  {
+    "name": "dCLOCK",
+    "sha256": "85a4c2fa5f60a6a3455a7133f121a24bb55557b361c66e7ec04932b9c63095f9",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/dCLOCK.cu\n\nResource usage:\n Common:\n  GLOBAL:24 CONSTANT[4]:8\n Function _ZN41_GLOBAL__N__32a0527c_9_dCLOCK_cu_ab5716f012sliding_mainILi1ELi1ELi128EEEvNS_2VPE:\n  REG:140 STACK:32 SHARED:1024 LOCAL:0 CONSTANT[0]:752 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "copy_sites": 24,
+    "tensor_sites": 9,
+    "no_C75": true
+  },
+  {
+    "name": "vA",
+    "sha256": "f755216970a712469304811466226233f9df78e9de93d96fe2259c57a991d80e",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/vA.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN37_GLOBAL__N__2de70571_5_vA_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:172 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:744 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "copy_sites": 24,
+    "tensor_sites": 9,
+    "no_C75": true
+  },
+  {
+    "name": "vM",
+    "sha256": "b13ef54f07bab64bfff7aaf0ab17456f511bccee8b920d01d356415272631fef",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/vM.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN37_GLOBAL__N__6731bac9_5_vM_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:155 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:760 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "copy_sites": 24,
+    "tensor_sites": 9,
+    "no_C75": true
+  },
+  {
+    "name": "vCLOCK",
+    "sha256": "f182c77ed2067d4b8b9f4ce8fffd6cd77fd8279978e81e31b0ed23588c2e368c",
+    "resources": "\nFatbin elf code:\n================\narch = sm_90a\ncode version = [1,8]\nhost = linux\ncompile_size = 64bit\nidentifier = /data2/jihoon/worktrees/muse_kernel/p5-sliding-oracle/problems/muse_attention_decode/dev/sliding_oracle/out/vCLOCK.cu\n\nResource usage:\n Common:\n  GLOBAL:0\n Function _ZN41_GLOBAL__N__b096388b_9_vCLOCK_cu_ab5716f012sliding_mainILi8ELi1ELi128EEEvNS_2VPE:\n  REG:161 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:760 TEXTURE:0 SURFACE:0 SAMPLER:0\n",
+    "copy_sites": 24,
+    "tensor_sites": 9,
+    "no_C75": true
+  }
+]

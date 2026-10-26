@@ -1,0 +1,142 @@
+{
+  "payload_sha256": "f23abf6cf50ae6f6e7a4aa28c2516dfcf148c98183367e5a49d8e1ba1895f375",
+  "layer_TASK": 40,
+  "producer_attention_TASK": 8,
+  "archive_chars": 6227,
+  "standins": [
+    "All S15 Hopper glue forced",
+    "decode C1 DSM every key",
+    "verify real two WGs/global last-WG merge",
+    "unrelated full N128 replaced by frozen S14 N64 arithmetic"
+  ],
+  "clock_glue": [
+    {
+      "B": 16,
+      "L": 1,
+      "clocks": [
+        {
+          "candidate": false,
+          "TASK": true,
+          "gate_split": true,
+          "projection_role": "qkv3",
+          "partial_splits": 10,
+          "partial_dtype": "torch.float32",
+          "partial_stride": [
+            20480,
+            1280,
+            1
+          ]
+        },
+        {
+          "candidate": true,
+          "TASK": true,
+          "gate_split": true,
+          "projection_role": "qkv3",
+          "partial_splits": 10,
+          "partial_dtype": "torch.float32",
+          "partial_stride": [
+            20480,
+            1280,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "B": 32,
+      "L": 1,
+      "clocks": [
+        {
+          "candidate": false,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.float32",
+          "partial_stride": [
+            73728,
+            2304,
+            1
+          ]
+        },
+        {
+          "candidate": true,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.float32",
+          "partial_stride": [
+            73728,
+            2304,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "B": 16,
+      "L": 8,
+      "clocks": [
+        {
+          "candidate": false,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            294912,
+            2304,
+            1
+          ]
+        },
+        {
+          "candidate": true,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            294912,
+            2304,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "B": 32,
+      "L": 8,
+      "clocks": [
+        {
+          "candidate": false,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            589824,
+            2304,
+            1
+          ]
+        },
+        {
+          "candidate": true,
+          "TASK": true,
+          "gate_split": false,
+          "projection_role": "qkv_gate",
+          "partial_splits": 1,
+          "partial_dtype": "torch.bfloat16",
+          "partial_stride": [
+            589824,
+            2304,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

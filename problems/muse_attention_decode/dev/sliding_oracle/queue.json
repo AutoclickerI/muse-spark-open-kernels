@@ -1,0 +1,30 @@
+{
+  "oracle": {
+    "job": "f365764142034130",
+    "sender_pid": 3354514,
+    "state": "done",
+    "host": "muse_attention_decode",
+    "mode": "check",
+    "wrapper_sha256": "18781d298814dfb8d97f94578fa57b0d5bbd2aa748981c4e700b5f2244fb088f",
+    "payload_sha256": "768703f70b01302414500bfed859d74069ef6df861b4b14e93f076172f9936ce",
+    "seeds": 12,
+    "rounds": 8,
+    "loads": 4,
+    "source": "runs/muse_attention_decode/20261026T062008Z_check_f365764142034130.py",
+    "receipt": "runs/muse_attention_decode/20261026T062008Z_check_f365764142034130.json",
+    "TASK": 316
+  },
+  "followup": {
+    "job": "7bd3eced41e24402",
+    "sender_pid": 3610930,
+    "state": "running",
+    "host": "muse_attention_decode",
+    "mode": "check",
+    "wrapper_sha256": "0f1a49c5d2116dc8d089539a5dca5a2a914b95ed4c4ad022d889e6519be674d8",
+    "payload_sha256": "f23abf6cf50ae6f6e7a4aa28c2516dfcf148c98183367e5a49d8e1ba1895f375",
+    "seeds": 16,
+    "rounds": 10,
+    "loads": 4,
+    "source": "runs/muse_attention_decode/20261026T065219Z_check_7bd3eced41e24402.py"
+  }
+}

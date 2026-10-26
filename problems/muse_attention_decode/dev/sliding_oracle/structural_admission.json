@@ -1,0 +1,317 @@
+{
+  "TASK_passed": 24,
+  "rows": [
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.794e-02 (worst row 8.153e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.794e-02 (worst row 8.153e-02) [bound 0.150: 2.5 x the reference's 0.066 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.931e-02 (worst row 9.702e-02) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 1,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.931e-02 (worst row 9.702e-02) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.737e-02 (worst row 1.148e-01) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 16,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.737e-02 (worst row 1.148e-01) [bound 0.150: 2.5 x the reference's 0.067 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.870e-02 (worst row 1.005e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 32,
+        "q_len": 8,
+        "ctx": 80000,
+        "page": 1,
+        "spread": "agentic",
+        "dist": "soft"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.870e-02 (worst row 1.005e-01) [bound 0.150: 2.5 x the reference's 0.068 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 7.296e-02 (worst row 1.003e-01) [bound 0.150: 2.5 x the reference's 0.074 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 1,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 7.296e-02 (worst row 1.003e-01) [bound 0.150: 2.5 x the reference's 0.074 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 8.244e-02 (worst row 1.045e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 3,
+        "q_len": 8,
+        "ctx": 4000,
+        "page": 64,
+        "kv_scale": 0.015625,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 8.244e-02 (worst row 1.045e-01) [bound 0.150: 2.5 x the reference's 0.082 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 3.985e-02 (worst row 3.985e-02) [bound 0.121: 2.5 x the reference's 0.042 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 1,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 3.985e-02 (worst row 3.985e-02) [bound 0.121: 2.5 x the reference's 0.042 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.356e-02 (worst row 7.315e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 1,
+        "q_len": 8,
+        "ctx": 10,
+        "page": 64,
+        "dist": "edges"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.356e-02 (worst row 7.315e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 1,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "soft"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.612e-02 (worst row 7.948e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 1,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "soft"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.612e-02 (worst row 7.948e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 1,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "coherent"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 6.612e-02 (worst row 7.948e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 1,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "coherent"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 6.612e-02 (worst row 7.948e-02) [bound 0.150: 2.5 x the reference's 0.064 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 8,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "soft"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 7.294e-02 (worst row 9.983e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 8,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "soft"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 7.294e-02 (worst row 9.983e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 8,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "coherent"
+      },
+      "splits": 0,
+      "TASK": true,
+      "message": "relative L2 error 7.294e-02 (worst row 9.983e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    },
+    {
+      "case": {
+        "batch": 4,
+        "q_len": 8,
+        "ctx": 6000,
+        "page": 1,
+        "dist": "coherent"
+      },
+      "splits": 3,
+      "TASK": true,
+      "message": "relative L2 error 7.294e-02 (worst row 9.983e-02) [bound 0.150: 2.5 x the reference's 0.072 with FP8 E4M3 queries + 0.015]"
+    }
+  ],
+  "normal_exp_relative_envelope": [
+    -0.029382526874542236,
+    0.03028881549835205
+  ],
+  "source_sha256": {
+    "dEA": "2f6a7732a6616b8521f6bf7a00f43d7eb6c54d5d6a2742198d20a9ab6a29a52d",
+    "vEA": "c9834616c0722a7bd39a019e081ff5f4765b1a6d1d661779bc7a6fe633528337"
+  },
+  "standins": [
+    "decode C1 DSM every key",
+    "verify two real WGs/global last-WG combine"
+  ]
+}
