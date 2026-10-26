@@ -1,0 +1,1507 @@
+{
+  "passed": true,
+  "arch": "sm90a",
+  "kernels": [
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 14,
+        "global_load": 2
+      },
+      "name": "void chunk::xkernel<4, false, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 0,
+        "sink": 26,
+        "global_load": 6
+      },
+      "name": "void chunk::xkernel<4, false, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 12,
+        "global_load": 54
+      },
+      "name": "void chunk::xkernel<4, false, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 196,
+        "global_load": 54
+      },
+      "name": "void chunk::xkernel<4, false, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 4
+      },
+      "name": "void chunk::xkernel<4, false, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 4
+      },
+      "name": "void chunk::xkernel<4, false, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 4
+      },
+      "name": "void chunk::xkernel<4, false, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": false,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 12,
+        "global_load": 54
+      },
+      "name": "void chunk::xkernel<4, false, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 14,
+        "global_load": 2
+      },
+      "name": "void chunk::xkernel<4, true, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 0,
+        "sink": 14,
+        "global_load": 6
+      },
+      "name": "void chunk::xkernel<4, true, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 0,
+        "global_load": 14
+      },
+      "name": "void chunk::xkernel<4, true, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 14
+      },
+      "name": "void chunk::xkernel<4, true, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 9
+      },
+      "name": "void chunk::xkernel<4, true, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 9
+      },
+      "name": "void chunk::xkernel<4, true, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 154,
+        "sink": 184,
+        "global_load": 9
+      },
+      "name": "void chunk::xkernel<4, true, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "heavy",
+      "first": true,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 64,
+        "bf16": 256,
+        "async_copy": 154,
+        "sink": 0,
+        "global_load": 14
+      },
+      "name": "void chunk::xkernel<4, true, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 8,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 9,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 20
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 20
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 18
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 18
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 18
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": false,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 20
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 8,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 9,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 21
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 21
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 19
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 19
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 19
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "small",
+      "first": true,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 21
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 5,
+        "global_load": 0
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 7,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 2,
+        "global_load": 19
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 86,
+        "global_load": 19
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": false,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 2,
+        "global_load": 19
+      },
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 5,
+        "global_load": 0
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 5,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 0,
+        "global_load": 13
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 13
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 49,
+        "sink": 84,
+        "global_load": 10
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder",
+      "family": "medium",
+      "first": true,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 49,
+        "sink": 0,
+        "global_load": 13
+      },
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 8,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 9,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 20
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 20
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 18
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 18
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 18
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": false,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 20
+      },
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 6,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 8,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 5,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 9,
+        "global_load": 2
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 4,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 21
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 3,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 21
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 2,
+      "hist": false,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 19
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 1,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 19
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 0,
+      "hist": false,
+      "counts": {
+        "mma": 0,
+        "bf16": 0,
+        "async_copy": 0,
+        "sink": 118,
+        "global_load": 19
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    },
+    {
+      "module": "ladder_pm",
+      "family": "small",
+      "first": true,
+      "mode": 4,
+      "hist": true,
+      "counts": {
+        "mma": 32,
+        "bf16": 128,
+        "async_copy": 0,
+        "sink": 4,
+        "global_load": 21
+      },
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)"
+    }
+  ],
+  "compiler_resources": [
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 27,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 125,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 128,
+      "stack_bytes": 8,
+      "spill_store_bytes": 4,
+      "spill_load_bytes": 4
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 128,
+      "stack_bytes": 8,
+      "spill_store_bytes": 12,
+      "spill_load_bytes": 16
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 125,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 56,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 47,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, false, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 128,
+      "stack_bytes": 32,
+      "spill_store_bytes": 64,
+      "spill_load_bytes": 56
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 27,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 126,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 128,
+      "stack_bytes": 8,
+      "spill_store_bytes": 8,
+      "spill_load_bytes": 8
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 127,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 72,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 53,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::xkernel<4, true, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned long*)",
+      "registers": 128,
+      "stack_bytes": 32,
+      "spill_store_bytes": 64,
+      "spill_load_bytes": 56
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::kernel<4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 8,
+      "spill_store_bytes": 4,
+      "spill_load_bytes": 4
+    },
+    {
+      "module": "ladder",
+      "name": "void chunk::kernel<4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int)",
+      "registers": 128,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 23,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 45,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 109,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 117,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 114,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 94,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 94,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 113,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 23,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 40,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 112,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 117,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 115,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 91,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 91,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 115,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 16,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 70,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 82,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 84,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 77,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 48,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 37,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, false, 6, 1, 8, 16, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 93,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 6, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 16,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 5, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 71,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 4, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 80,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 3, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 80,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 2, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 77,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 1, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 48,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 0, false>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 37,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder",
+      "name": "void mwbr::xgemm<16, true, 7, 1, 8, 16, 4, true>(int const*, unsigned char const*, float const*, __nv_bfloat16 const*, int const*, int const*, int const*, int const*, int const*, __nv_bfloat16 const*, __nv_bfloat16*, float*, float*, int, unsigned int, unsigned long*)",
+      "registers": 89,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 23,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 45,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 109,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 117,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 114,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 94,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 94,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, false, true, false, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 113,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 6, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 23,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 5, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 40,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 112,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 3, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 117,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 2, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 115,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 1, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 91,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 0, false>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 91,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    },
+    {
+      "module": "ladder_pm",
+      "name": "void pmz::xphase<1, true, true, true, 8, 4, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, unsigned char const*, unsigned char const*, float const*, float const*, int const*, int const*, int const*, __nv_bfloat16*, float*, float*, int, int, unsigned long*)",
+      "registers": 115,
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0
+    }
+  ],
+  "artifact_sha256": {
+    "ladder.cu": "df3893427766be234db44351a8572eaa0d8dd6e633df7ebf36b4327e0ba55696",
+    "ladder.o": "569f5fcca3c375bf8481fe334d61a7001a07365acf1749c8016880f32b6f8837",
+    "ladder.sass": "b34d090c643a6d29af4b91c2db67c1404e0b9c2179d08486d08c6b04d3e4456e",
+    "ladder.compile.log": "eff159775333fa71908562a3fb5f401d2b4470f7cef71b62aebb5f81a043ab4a",
+    "ladder_pm.cu": "399b148f9eb3a066b197edabf6d583429ef606107997618a61e4b14b0430feff",
+    "ladder_pm.o": "e5be599363097cbbda210c6a4dcc8c472f596af47e9cecbc737e284c16a3ac00",
+    "ladder_pm.sass": "2636f078a80c7d18c2aa448189f31bad51569118ed65aed6ffa60d920cc9a64d",
+    "ladder_pm.compile.log": "ef1ac7c90d06d81806e3bc754d8255c90c2014976a94e7472da88a7ff00b9070"
+  },
+  "note": "MATH/INIT have no global async weight/activation copies; L0/L1 have no MMA; L0 has no BF16 decode products; L1+ retains decode. Spills are disclosed, not filtered: original heavy W2 4/4 bytes; L3 W13 8/8 and W2 12/16; HIST 64/56. Measured clone/sink/observer controls and actual H200 occupancy/resource validation are required for attribution."
+}

@@ -2485,3 +2485,47 @@ All eight actual hybrid whole-MoE cells lose (O13/O2/O132/LF at M128: 1.092380/1
 `5e45775a66a9416f` is unmeasured: the first official M4 TASK gate exposed a missing generic S19 counter binding in the reduced prepare; restored original `smallm_bind`, expanded local forced glue to M4, reran unchanged primary cohort. Local verification: 50 real eager/graph port cases, 64 forced Hopper-glue calls, five matched-ABI eager/graph fixtures (M33/128/256/257 and skewed128), four dispatched sm90a compiles plus changed FP32 finalizer. Actual X SASS contains HGMMA; F contains HMMA. Native runs completed in 41.1 / 36.6 s including setup.
 
 Evidence: [native ratios](../problems/muse_decode_layer/dev/moe_public_ports/H200.md), [matched ABI](../problems/muse_decode_layer/dev/moe_public_ports/ABI_H200.md), [mechanisms](../problems/muse_decode_layer/dev/moe_public_ports/MECHANISMS.md), [P4 / P3a handoff](../problems/muse_decode_layer/dev/moe_public_ports/P4_HANDOFF.json). Receipts/source snapshots are in `runs/muse_prefill_layer/`; all raw rounds and source identities are in `receipt_data.json` / `abi_receipt_data.json`.
+
+### P3b exact S19 large-M excess ladder: queued, not yet measured (2026-10-26)
+
+P3b is active. Public MoE ports remain closed; the large-M S19 excess is still
+unassigned. Read S18 `3330edc2`: its ~15 us gather and 26/56 us sync belong to
+added transport paths, and the checksum stream changed granularity/addressing.
+Those results do not assign S19's 32.63/67.58 us MoE-core excess at M128/256.
+
+Built a single exact-S19 `62ea5bf4` cohort covering W13 and W2's three concurrent
+branches, including P7 small W2. L0 loads, L1 decode/scale, L2 MMA and L3
+epilogue retain tiles/grids/issue order. BASE/AA share the cuts' build with
+original allocations; on-chip MATH and unique-byte STREAM provide references.
+Original padded MATCH, full SHADOW, INIT and instrumented HIST expose
+resource/sink/observer costs. Eight fresh layer weight/router/input seeds, four
+rotated forward/reverse cold rounds, every integer-ns sample and round telemetry;
+expert counts, CTA/SM work histograms and exact last-CTA finish retained. Frozen
+metadata avoids atomic route-order changes; real W13 resets each W2 fixture.
+
+**Checked locally, not H200 timings:** 384 full-math TASK comparisons, full wire
+cohort, all diagnostic eager/graph paths, two sm90a compiles, 64 actual SASS cut
+audits, and lossless independent reader/work-count validation. L0/L1 have no MMA;
+L0 no BF16 products; MATH/INIT no global async operand copies. Static spill
+bytes are disclosed: original/SHADOW heavy W2 4/4, L3 W13 8/8 and W2 12/16,
+HIST 64/56. Controls must qualify any attribution. Final packet 11,154 bytes
+under11,744; all1,536 timing integers remain exact. Histogram summaries use
+256ns bins and exact last-CTA timestamps, from one final HIST replay per seed.
+
+**Hard quota wait:** all five hosts0scored+0checks. Queued via h200_lab, laneP3b,
+decision"assign the large-M MoE excess", priority6. Wrapper `bad55569a98d1c1d`,
+payload `38c3c1f24bc1a0a3`; sender3645567 wakes2026-10-27 09:01KST.
+This is a queued source identity, not a judge receipt. It replaces unmeasured
+waiters4c0e2cd5/ad8b29e1 to improve lossless transport and put BASE/AA in the
+same translation units as the cuts at original allocation; no quota spent.
+Largest term/CI, term ceiling and ranked build remain pending. No G0 winner or
+patch has been handed to P4; no lane closure follows from quota exhaustion.
+Existing timeline9c16c850 full-removal scenario is R1.04778; it is not an
+achieved gain. P3a's row is unchanged.
+
+[Design, caveats, queue and reproduction](../problems/muse_decode_layer/dev/moe_excess/README.md).
+`read.py` will emit native us/paired t7 CIs and conditional contrasts, verify
+all round/telemetry/work/TASK evidence, and report capped six-load scenarios.
+Fresh whole-layer candidate confirmation still requires tools/promotion.py.
+A local inotify/pidfd receipt reader is attached; it will materialize validated
+raw/summary/ladder artifacts on completion, without judge calls or promotion.

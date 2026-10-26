@@ -1,0 +1,21 @@
+{
+  "status": "waiting-for-quota-reset; no H200 receipt yet",
+  "wrapper_sha256": "bad55569a98d1c1d953043c89528db093f98c26f1bf7525bb59ba11444ae4a11",
+  "payload_sha256": "38c3c1f24bc1a0a319a1ab579956251ebad8464da15f6ba5121f0f2206cb42e7",
+  "pid": 3645567,
+  "priority": 6,
+  "lane": "P3b",
+  "decision": "assign the large-M MoE excess",
+  "host": "muse_moe_w4a16",
+  "file": "problems/muse_moe_w4a16/lab/lab_large_moe_excess.py",
+  "snapshot": "runs/sent/bad55569a98d1c1d/lab_large_moe_excess.py",
+  "until_unix": 1793059260.0,
+  "reset_utc": "2026-10-27T00:00:00Z",
+  "sender_wake_utc": "2026-10-27T00:01:00Z",
+  "detached_log": "runs/detached/bad55569a98d1c1d.log",
+  "superseded_unmeasured_wrappers": [
+    "4c0e2cd5a697d46b56af037933b64890751f10216106ae32b6bed615502ccf2c",
+    "ad8b29e1d73ffcb2c9fe4eb00de10930d5e5114222f2f903d8817b1a5f2cc9a7"
+  ],
+  "reason": "Final exact S19 BASE/AA use the same translation units as cuts; original allocation. Fixed lossless byte-context codec adds transport headroom. No quota consumed by superseded waiters."
+}

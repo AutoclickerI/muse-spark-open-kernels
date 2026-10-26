@@ -1,0 +1,65 @@
+{
+  "observed_utc": "2026-10-26T13:42:59.786939+00:00",
+  "limits": {
+    "muse_bf16_proj": {
+      "scored": {
+        "per_day": 10,
+        "used": 10,
+        "left": 0
+      },
+      "checks": {
+        "per_day": 20,
+        "used": 20,
+        "left": 0
+      }
+    },
+    "muse_attention_decode": {
+      "scored": {
+        "per_day": 10,
+        "used": 10,
+        "left": 0
+      },
+      "checks": {
+        "per_day": 20,
+        "used": 20,
+        "left": 0
+      }
+    },
+    "muse_moe_w4a16": {
+      "scored": {
+        "per_day": 10,
+        "used": 10,
+        "left": 0
+      },
+      "checks": {
+        "per_day": 20,
+        "used": 20,
+        "left": 0
+      }
+    },
+    "muse_decode_layer": {
+      "scored": {
+        "per_day": 10,
+        "used": 10,
+        "left": 0
+      },
+      "checks": {
+        "per_day": 20,
+        "used": 20,
+        "left": 0
+      }
+    },
+    "muse_prefill_layer": {
+      "scored": {
+        "per_day": 10,
+        "used": 10,
+        "left": 0
+      },
+      "checks": {
+        "per_day": 20,
+        "used": 20,
+        "left": 0
+      }
+    }
+  }
+}
