@@ -1,0 +1,10 @@
+{
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "source_sha256": "2bc9885da284aba15fcba35eb62d76fc002cc62ce41f43e44014550afcbb6237",
+  "patch_sha256": "6f36fa09ef1ceb7015baaefa5608317ab5eb5e79327bc7fe4e444dbdb474683d",
+  "selection": {
+    "1x8f": "U64"
+  },
+  "units": {},
+  "runtime": "Same S19 partial-sum cast on q1; same qk_prep on M/U; metadata initialized from literal shape constants in prepare only. Only nominated full-attention rows are dispatched; no losing CUDA units are embedded."
+}

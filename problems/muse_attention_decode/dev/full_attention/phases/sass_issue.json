@@ -1,0 +1,44 @@
+{
+  "D": {
+    "scope": "static ST4 main, all paths; not per-tile dynamic instruction count",
+    "instructions": 7881,
+    "ops": {
+      "MUFU.EX2": 492,
+      "FFMA": 612,
+      "FADD": 242,
+      "F2FP": 280,
+      "FMNMX": 527,
+      "SHFL": 190,
+      "STL": 6,
+      "LDL": 7
+    }
+  },
+  "E25": {
+    "scope": "static ST4 main, all paths; not per-tile dynamic instruction count",
+    "instructions": 8713,
+    "ops": {
+      "MUFU.EX2": 372,
+      "FFMA": 972,
+      "FADD": 602,
+      "F2FP": 280,
+      "FMNMX": 647,
+      "SHFL": 190,
+      "STL": 6,
+      "LDL": 7
+    }
+  },
+  "E50": {
+    "scope": "static ST4 main, all paths; not per-tile dynamic instruction count",
+    "instructions": 9705,
+    "ops": {
+      "MUFU.EX2": 252,
+      "FFMA": 1332,
+      "FADD": 962,
+      "F2FP": 280,
+      "FMNMX": 767,
+      "SHFL": 190,
+      "STL": 5,
+      "LDL": 6
+    }
+  }
+}

@@ -1,0 +1,109 @@
+--- a/ATTN_PORT_CUDA_SRC
++++ b/T8
+@@ -248,7 +248,7 @@
+ }
+ 
+ template <int L, int STAGES>
+-__global__ void __launch_bounds__(NTHR, 2) attn_main(const Params p) {
++__global__ void __launch_bounds__(NTHR, L==1?4:2) attn_main(const Params p) {
+ #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 900
+   asm volatile("griddepcontrol.launch_dependents;" ::: "memory");
+ #endif
+@@ -257,9 +257,9 @@
+   extern __shared__ __align__(128) uint8_t smem[];
+   uint8_t* sK = smem;
+   uint8_t* sV = smem + STAGES * TILE_BYTES;
+-  uint8_t* sNK = smem + 2 * STAGES * TILE_BYTES;  // new tokens: 16 rows of K, 16 of V
+-  uint8_t* sNV = sNK + 16 * ROWB;
+-  __half* sQ = reinterpret_cast<__half*>(sNV + 16 * ROWB);  // [2][L*8][64]
++  uint8_t* sNK = (L==1)?sK:smem + 2 * STAGES * TILE_BYTES;  // new tokens: 16 rows of K, 16 of V
++  uint8_t* sNV = (L==1)?sV:sNK + 16 * ROWB;
++  __half* sQ = reinterpret_cast<__half*>((L==1)?smem+2*STAGES*TILE_BYTES:sNV+16*ROWB);  // [2][L*8][64]
+   float2* sCS = reinterpret_cast<float2*>(sQ + 2 * L * G * D);  // [L][32]
+   __nv_bfloat16* sG = reinterpret_cast<__nv_bfloat16*>(sCS + L * 32);  // gates of this CTA's rows [L*16/CS][64]
+ 
+@@ -288,11 +288,15 @@
+   __shared__ __align__(128) int page_ring[PD][64];
+   const bool use_ring=(L==1 && !p.window);
+   auto page_issue=[&](int tile){
+-    if(threadIdx.x<64){
+-      const int key=c_lo+tile*T+threadIdx.x;
+-      const int clamped=min(key,max(seq-1,0));
+-      const int*src=pt+(clamped>>p.ps_log2);
+-      asm volatile("cp.async.ca.shared.global [%0], [%1], 4;" ::"r"(smem_u32(&page_ring[tile%PD][threadIdx.x])),"l"(src):"memory");
++    const int key0=c_lo+tile*T;
++    // Four page IDs per instruction when the whole quad is in bounds. The
++    // scalar tail handles arbitrary nearby lengths, offsets and page sizes.
++    if(p.ps==1 && (reinterpret_cast<uintptr_t>(pt+key0)&15)==0 && key0+63<seq){
++      if(threadIdx.x<16){const int key=key0+4*threadIdx.x;
++        asm volatile("cp.async.ca.shared.global [%0], [%1], 16;"::"r"(smem_u32(&page_ring[tile%PD][4*threadIdx.x])),"l"(pt+key):"memory");}
++    }else if(threadIdx.x<64){
++      const int key=key0+threadIdx.x,clamped=min(key,max(seq-1,0));
++      asm volatile("cp.async.ca.shared.global [%0], [%1], 4;"::"r"(smem_u32(&page_ring[tile%PD][threadIdx.x])),"l"(pt+(clamped>>p.ps_log2)):"memory");
+     }
+   };
+   if(use_ring){
+@@ -392,7 +396,7 @@
+       }
+     }
+   }
+-  if (last) {  // zero the new-token rows past L
++  if (last && L!=1) {  // zero the new-token rows past L
+     for (int i = tid; i < 2 * 16 * ROWB / 16; i += NTHR) {
+       if ((i % (16 * ROWB / 16)) >= L * ROWB / 16) reinterpret_cast<uint4*>(sNK)[i] = make_uint4(0, 0, 0, 0);
+     }
+@@ -440,7 +444,7 @@
+       *reinterpret_cast<__nv_fp8x2_storage_t*>(cache + nloc[i] * p.row_bytes + head * D + 2 * lane) = f8;
+       const int byte = hk * D + 2 * lane;
+       uint8_t* dst = (isv ? sNV : sNK) + j * ROWB + ((((byte >> 4) ^ swz(j))) << 4) + (byte & 15);
+-      *reinterpret_cast<__nv_fp8x2_storage_t*>(dst) = f8;
++      if constexpr(L!=1)*reinterpret_cast<__nv_fp8x2_storage_t*>(dst) = f8;
+     }
+   }
+   __syncthreads();
+@@ -490,6 +494,15 @@
+                         need_mask, scale_log2);
+   }
+   cp_wait<0>();
++  if constexpr(L==1){if(last){
++    __threadfence_block();__syncthreads();
++    const int r=tid/8,col=tid%8;
++    const long long row=p.cache_loc[b];
++    const int off=r*ROWB+((col^swz(r))<<4);
++    cp_async16(smem_u32(sNK+off),p.k_cache+row*p.row_bytes+kvg*ROWB+col*16,r==0?16:0);
++    cp_async16(smem_u32(sNV+off),p.v_cache+row*p.row_bytes+kvg*ROWB+col*16,r==0?16:0);
++    cp_commit();cp_wait<0>();__syncthreads();
++  }}
+   if (last && (L > 1 || wh == 0)) {
+     compute_tile<L, 2>(st, sNK, sNV, 0, h, wh, seq, seq + L, seq, p.window, true, scale_log2);
+   }
+@@ -653,7 +666,7 @@
+ 
+ template <int L, int STAGES>
+ constexpr int smem_bytes() {
+-  return 2 * STAGES * TILE_BYTES + 2 * 16 * ROWB + 2 * L * G * D * 2 + L * 32 * 8 + L * 16 * D * 2;
++  return 2 * STAGES * TILE_BYTES + (L==1?0:2*16*ROWB) + 2 * L * G * D * 2 + L * 32 * 8 + L * 16 * D * 2;
+ }
+ 
+ template <int L, int STAGES>
+@@ -746,7 +759,7 @@
+   p.row_bytes = hkv * 64;
+   p.scale_log2 = (float)scale_log2;
+   cudaStream_t s = reinterpret_cast<cudaStream_t>(stream);
+-  cudaError_t e = (q_len == 1) ? launch_t<1, 4>(p, s) : launch_t<8, 3>(p, s);
++  cudaError_t e = (q_len == 1) ? launch_t<1, 3>(p, s) : launch_t<8, 3>(p, s);
+   if (e != cudaSuccess) throw std::runtime_error(cudaGetErrorString(e));
+ }
+ 
+@@ -762,8 +775,8 @@
+   return n;
+ }
+ 
+-int64_t occupancy(int64_t q_len) { return (q_len == 1) ? occupancy_t<1, 4>() : occupancy_t<8, 3>(); }
++int64_t occupancy(int64_t q_len) { return (q_len == 1) ? occupancy_t<1, 3>() : occupancy_t<8, 3>(); }
+ 
+ int64_t max_cluster(int64_t q_len, int64_t cs) {
+-  return (q_len == 1) ? max_cluster_t<1, 4>((int)cs) : max_cluster_t<8, 3>((int)cs);
+-}
++  return (q_len == 1) ? max_cluster_t<1, 3>((int)cs) : max_cluster_t<8, 3>((int)cs);
++}

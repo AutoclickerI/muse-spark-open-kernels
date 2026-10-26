@@ -1,0 +1,39 @@
+--- a/problems/muse_decode_layer/cand_r3_best7_s19_final.py
++++ b/problems/muse_decode_layer/cand_r3_best7_s19_final.py
+@@ -32,3 +32,36 @@
+     return _s16_entry_prepare(weights)
+ def kernel_fn(data,state):
+     return _s16_entry_kernel(data,state)
++
++_P5_PHASE_SELECTION={(1, 8): 'U64'}
++_P5_PHASE_SOURCES={}
++# P5b's measured full-attention selections, all other S19 calls unchanged.
++_P5_PHASE_MODS={};_P5_PHASE_COUNTS={};_P5_PHASE_META={}
++def _p5_phase_call(qkv,data,state,role):
++    P,S=qkv;c=data['config'];B,L=c['batch'],c['q_len'];dev=P.device
++    stream=torch.cuda.current_stream(dev).cuda_stream;pages=data['page_table'].shape[1];ps=c['page_size']
++    sc=c['sm_scale']*c['qk_scale_factor']*1.4426950408889634
++    out=torch.empty((B*L,Q_SIZE),device=dev,dtype=torch.bfloat16)
++    # BEGIN M
++    if role.startswith(('M','U')):
++        from sgl_kernel.flash_attn import flash_attn_with_kvcache
++        ns=int(role[1:]);q,gate=qk_prep(qkv,data,state,q_fp8=True)
++        descale={} if c['kv_scale']==1 else dict(k_descale=data['k_scale'].reshape(1,1).expand(B,HKV),v_descale=data['v_scale'].reshape(1,1).expand(B,HKV))
++        a=flash_attn_with_kvcache(q=q,k_cache=data['k_cache'],v_cache=data['v_cache'],page_table=data['page_table'],cache_seqlens=data['cache_seqlens'],cu_seqlens_q=data['cu_seqlens_q'],max_seqlen_q=L,softmax_scale=c['sm_scale']*c['qk_scale_factor'],causal=True,window_size=(-1,-1),scheduler_metadata=_P5_PHASE_META[ns] if role.startswith('M') else None,num_splits=ns,**descale)
++        if isinstance(a,tuple):a=a[0]
++        _launch(_norm_gate_kernel,(B*L,),a,gate,out,RMS_EPS,HQ=HQ,D=HD,num_warps=4)
++        return out
++    # END M
++
++
++_p5_phase_original_attention=_best7_attention
++def _best7_attention(qkv,data,state,plan):
++    c=data['config'];role=_P5_PHASE_SELECTION.get((c['batch'],c['q_len'])) if not c['window'] else None
++    if role and not role.startswith('P'):return _p5_phase_call(qkv,data,state,role)
++    return _p5_phase_original_attention(qkv,data,state,plan)
++def _p5_phase_setup(device):
++    pass
++_p5_phase_original_prepare=prepare
++def prepare(weights):
++    _p5_phase_setup(weights['qkv_gate'].device)
++    return _p5_phase_original_prepare(weights)

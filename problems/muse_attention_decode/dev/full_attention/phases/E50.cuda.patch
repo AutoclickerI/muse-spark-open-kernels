@@ -1,0 +1,28 @@
+--- a/VQ8_CUDA
++++ b/E50
+@@ -519,6 +519,16 @@
+   }
+ }
+ 
++
++// Cody-Waite nearest integer range reduction; pure registers, no artificial
++// memory clobbers around the polynomial or probability pair. FP32 throughout.
++DI float phase_poly(float x){
++ float xc=fmaxf(x,-126.f),r=xc+12582912.f,n=r-12582912.f,f=xc-n;
++ float p=fmaf(f,0.05587551f,0.24223916f);
++ p=fmaf(p,f,0.69314718f);p=fmaf(p,f,0.99994826f);
++ return __uint_as_float(__float_as_uint(p)+(__float_as_uint(r)<<23));
++}
++
+ // Online softmax of one 64-key tile; P x256 packed in place into the PV A fragment.
+ // (ex2.approx.f16x2 lowers to two MUFU.EX2.F16 on sm_90, so FP32 exponentials cost the same MUFU work.)
+ template <int NB,bool MASK>
+@@ -571,7 +581,7 @@
+     // Denominator accumulates with PV, after E4M3 packing.
+ #pragma unroll
+     for (int n = 0; n < NB; n++) {
+-      const float p0 = ex2(fmaf(s[n][2 * rh], sc, bias)), p1 = ex2(fmaf(s[n][2 * rh + 1], sc, bias));
++      const float p0 = phase_poly(fmaf(s[n][2 * rh],sc,bias)), p1 = ex2(fmaf(s[n][2 * rh + 1],sc,bias));
+       s[n][2 * rh] = p0;
+       s[n][2 * rh + 1] = p1;
+ 

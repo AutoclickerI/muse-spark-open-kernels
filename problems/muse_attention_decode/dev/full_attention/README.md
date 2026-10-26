@@ -114,3 +114,13 @@ Compact q1 C3 reaches4CTA/SM and .988939/.990809 at d16/32full; C3/C4
 points and concrete C3 layer patch go to P4, with no standalone small-gain
 run. b9488225 is unmeasured due to empty custom captures; corrected output
 poison/node guards and the evidence are in fixed/README.md.
+
+## S19 fixed phases (deea291e294b4a53)
+
+Full report, per-point SE/CIs, native phase attribution and exact S19 patches:
+[phases/README.md](phases/README.md), [P4 handoff](phases/P4_HANDOFF.json).
+M64 v1F .909787[.898514,.921060]; metadata five->four kernels, shape-only
+constant schedule. D poly25/50 loses; d1 geometry has no winner. C3 remains
+the preferred decode point; T16 alternatives nominated with native3CTA/SM.
+498nativeTASK/8seeds; payload normal+forced each498+16host/6static.
+Only P4 confirms composed held-out whole-layer G0; no new standalone run.

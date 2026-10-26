@@ -1,0 +1,13 @@
+{
+  "measured": false,
+  "failures": [
+    {
+      "mode": "forced.log",
+      "reason": "LAB_ERROR AcceleratorError: CUDA error: invalid device function\nSearch for `cudaErrorInvalidDeviceFunction' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\n"
+    }
+  ],
+  "fixes": [
+    "Graph CUDA runtime function-name probing removed; CUPTI observes native names without runtime/driver handle conversion.",
+    "Local-only cs16->8 remap also caps split count to32*cs, preserving the kernel invariant; nativecs16/ns384 untouched."
+  ]
+}

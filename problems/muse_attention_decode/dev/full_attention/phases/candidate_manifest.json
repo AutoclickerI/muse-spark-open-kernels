@@ -1,0 +1,14 @@
+{
+  "base_sha256": "8b415553106d8cea7a66c59625fc02861aefcbc37e2b65b213dd4b24f66d7ed8",
+  "source_sha256": "5aa9dafecbb8f1b65e3c21fc067b69fa6cb5efd5a38d41a4129956ed78e981cd",
+  "patch_sha256": "c10e8f0642fb82e888d5662f03f18b19a082103e1d0745bdedea847b25ed06a8",
+  "selection": {
+    "16x1f": "C3",
+    "32x1f": "C3",
+    "1x8f": "M64"
+  },
+  "units": {
+    "C3": "519ea55f1acf936ac115e6e42b5d0c7abc6b913418865ebd2fe54d2d49932208"
+  },
+  "runtime": "Same S19 partial-sum cast on q1; same qk_prep on M/U; metadata initialized from literal shape constants in prepare only. P choices guarded by context and actual cluster capacity."
+}

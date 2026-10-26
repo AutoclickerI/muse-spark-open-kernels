@@ -1178,6 +1178,67 @@ max/rescale's contribution in this layout; exp/packing remain the large
 verify issue term. Added occupancy gives only~1% at decode16/32.
 
 
+### P5b S19 fixed phases and remaining issue
+
+S19 shipped8b415553,expanded62ea5bf4, R8/D already applied;8fresh seeds
+4671259+7919*i,8cold rounds,498native TASK pass (78official,140stress,
+280scored), host TASK passes. Ratios are new/control time with95%t7 CI;
+all SE/seeds/CUPTI/samples in dev/full_attention/phases/result.json.
+A:A d1/d16/d32/v1/v16/v32 means1.003063/1.001887/1.001040/1.001728/
+.996347/.998640, SE.004849/.002076/.001058/.004183/.001241/.001350.
+v16 CI[.993413,.999281] shows-.365% mean drift; report it, not a per-load
+veto (G0 uses A:A noise). No failed TASK/device/empty-capture controls.
+Control means17.608/96.395/179.186/29.6155/133.198/223.689us.
+
+Source correction: **d1 is native partial-input attention**, not FA3;
+`_PP_ROWS=((1,1,False),)`, `_PP_FAST=False`. v1 FA3 launches prep, metadata,
+main, combine, norm/gate. Default metadata reads current lengths and cannot
+be cached as-is. A legal constant schedule can replace that policy: fixed
+S, one packed M tile, batch0, heads_l2=1. Only those constants enter prepare;
+FA3 computes every split's key range from fresh device lengths and combine
+resets its semaphore. Prep/main/combine/norm depend on current values.
+Combine is required atS>1; public fwd still executes it when returning its
+partials, so reading them afterward does not remove a launch. Fusion into
+projection/FA3 combine remains a kernel change, not an untimed-data cache.
+
+| Recipe | Ratio vs control | Mechanism | Leaves open | Receipt |
+|---|---|---|---|---|
+| P64c8 | 1x1f 1.570602[1.552734,1.588471] | Same S19 native partial kernel; split/cluster geometry only. Incumbent336CTAs;384/c16 needs24clusters versus21resident slots. | No point winner; close tested split geometry, d1 prologue/reduction remains. | `deea291e294b4a53` |
+| P128c8 | 1x1f 1.120041[1.108761,1.131320] | Same S19 native partial kernel; split/cluster geometry only. Incumbent336CTAs;384/c16 needs24clusters versus21resident slots. | No point winner; close tested split geometry, d1 prologue/reduction remains. | `deea291e294b4a53` |
+| P128c16 | 1x1f 1.186645[1.178075,1.195215] | Same S19 native partial kernel; split/cluster geometry only. Incumbent336CTAs;384/c16 needs24clusters versus21resident slots. | No point winner; close tested split geometry, d1 prologue/reduction remains. | `deea291e294b4a53` |
+| P256c8 | 1x1f 1.000538[0.991084,1.009991] | Same S19 native partial kernel; split/cluster geometry only. Incumbent336CTAs;384/c16 needs24clusters versus21resident slots. | No point winner; close tested split geometry, d1 prologue/reduction remains. | `deea291e294b4a53` |
+| P256c16 | 1x1f 1.020657[1.012105,1.029209] | Same S19 native partial kernel; split/cluster geometry only. Incumbent336CTAs;384/c16 needs24clusters versus21resident slots. | No point winner; close tested split geometry, d1 prologue/reduction remains. | `deea291e294b4a53` |
+| P384c16 | 1x1f 1.547330[1.532862,1.561797] | Same S19 native partial kernel; split/cluster geometry only. Incumbent336CTAs;384/c16 needs24clusters versus21resident slots. | No point winner; close tested split geometry, d1 prologue/reduction remains. | `deea291e294b4a53` |
+| M1 | 1x8f 24.135894[23.904792,24.366996] | Shape-only17int32 schedule, fresh runtime key bounds; M1 removes combine but main712.5us; other explicit counts preserve required combine. | Close tested count only; retain M64 point winner. | `deea291e294b4a53` |
+| M8 | 1x8f 3.107040[3.070437,3.143643] | Shape-only17int32 schedule, fresh runtime key bounds; Static split count changes parallelism and combine work. | Close tested count only; retain M64 point winner. | `deea291e294b4a53` |
+| M16 | 1x8f 1.790416[1.772784,1.808048] | Shape-only17int32 schedule, fresh runtime key bounds; Static split count changes parallelism and combine work. | Close tested count only; retain M64 point winner. | `deea291e294b4a53` |
+| M32 | 1x8f 1.151979[1.138316,1.165641] | Shape-only17int32 schedule, fresh runtime key bounds; Static split count changes parallelism and combine work. | Close tested count only; retain M64 point winner. | `deea291e294b4a53` |
+| M64 | 1x8f 0.909787[0.898514,0.921060] | Shape-only17int32 schedule, fresh runtime key bounds; metadata removed, four kernels. Main16.896us and exposed combine6.400us in one profile. | M64 to P4, no new CUDA units; G0 pending. Same-cap U64 comparison is not pure metadata isolation: default actual split count can differ. | `deea291e294b4a53` |
+| M128 | 1x8f 1.121963[1.109381,1.134546] | Shape-only17int32 schedule, fresh runtime key bounds; Static split count changes parallelism and combine work. | Close tested count only; retain M64 point winner. | `deea291e294b4a53` |
+| U64 | 1x8f 0.999652[0.990027,1.009278] | Shape-only17int32 schedule, fresh runtime key bounds; U64 keeps dynamic metadata under requested cap64. | U64 point neutral and dominated by M64; nominal point included in handoff. | `deea291e294b4a53` |
+| C3 | 16x1f 0.995921[0.991601,1.000241];32x1f 0.991918[0.983318,1.000519] | Four-CTA dead-stage storage reuse, zero spills; new S19 confirmation. | Both points to P4; C3 preferred at both; G0 pending. | `deea291e294b4a53` |
+| T8 | 16x1f 1.010738[1.006100,1.015375];32x1f 1.003610[0.995320,1.011901] | Vector16B page-ID copies with scalar alignment/tail path; native4CTA/SM,128regs/no spills. | No point winner; coordinate vectorization alone does not remove the remaining transport cost. | `deea291e294b4a53` |
+| T16 | 16x1f 0.996973[0.991219,1.002726];32x1f 0.996044[0.992139,0.999949] | Vector pages andPD16; static shared drops native occupancy to3CTA despite128regs/no spills. | Both points to P4; C3 preferred at both; G0 pending. | `deea291e294b4a53` |
+| E25 | 16x8f 1.075556[1.070841,1.080272];32x8f 1.065355[1.060803,1.069906] | On D: pure-register25% Cody-Waite polynomial/MUFU split. ST4 static MUFU492->372, total instructions7881->8713;280F2FP/190SHFL unchanged. | Closes this SFU/FMA rebalance on D; fragment/packing issue and exposed combine tail remain. v16 A:A drift-.365% disclosed. | `deea291e294b4a53` |
+| E50 | 16x8f 1.221827[1.215289,1.228365];32x8f 1.236092[1.232464,1.239719] | On D: pure-register50% Cody-Waite polynomial/MUFU split. ST4 static MUFU492->252, total instructions7881->9705;280F2FP/190SHFL unchanged. | Closes this SFU/FMA rebalance on D; fragment/packing issue and exposed combine tail remain. v16 A:A drift-.365% disclosed. | `deea291e294b4a53` |
+
+Remaining native terms: d1 single336CTA launch19.008us in one profile;
+prior prologue/epilogue8751/9230 versus8179loop cycles (4df30d04).
+C3 d16/d32 each512CTAs,4CTA/SM: transport/math remains; T16's small points
+lose to C3. Old same-kernel gather-only3.62/3.74TB/s is not a universal roof.
+v1 M64 main16.896us, combine6.400us critical increment, norm1.824us
+including gap, prep1.344us. v16/v32 D main128.960/221.313us; combine
+critical tails6.688/5.280us versus26.048/22.784us residence. Earlier D
+softmax1515/1491 versus MMAissue452/446cycles/tile still attributes the
+large verify term; polynomial split adds issue and loses. These first-seed
+CUPTI spans are diagnostic, not paired timing estimates.
+
+Local exact payload normal/forced each498TASK+16host+6static. Preferred
+S19+C3/M64 layer-call patch and standalone21-line M64 patch are in
+phases/P4_HANDOFF.json with hashes and component admission. P4 confirms
+held-out six-load G0 and nearby performance; no stage-only promotion or
+standalone small-point follow-up.
+
 ## Projections and verify dense
 
 Current small-M: balanced split-K Triton GEMVs, lossless coded qkv/pool_router at t1,
