@@ -102,7 +102,9 @@ FA3 375 + GEMM 93; verify-32 sliding 798, Marlin 604.
 
 ### Our kernels on the H200
 
-Incumbent: S16 **4ca750a5** (`problems/muse_decode_layer/cand_r3_best7_s16_final.py`, expandedee5fe249),
+Incumbent: S16 **d2b83953** (`problems/muse_decode_layer/cand_r3_best7_s16_final.py`, expanded1468be3e),
+guarded nearby on scored S16 4ca750a5; exact native checke26bc28c passes320 TASK/80 shapes,
+scored dispatch unchanged. Previous scored S16 **4ca750a5**, expandedee5fe249,
 scored1.818167x (`93c6e742`); held-out R1.002048 over preparation-corrected prior S16,
 95% CI[1.000129,1.003971],16 seeds/1536 TASK (`a8c66a6d`). A:A R1.003917 exceeds
 the apparent gain: passes the declared max-SE gate, but evidence is marginal. Prior nine-piece
@@ -145,6 +147,7 @@ Reset integration decisions (2026-10-26; stage nominations require a whole-layer
 | Expanded S17fea71760 scored |1.828637x SGLang; unpaired | First S17 + CHUNK4 M128/256 retaining P7 P W2/finish, fused pool/router T1/8/16, latest v1F T tail; preparation uses TASK routing semantics | [Exact composition and per-piece evidence](../problems/muse_decode_layer/dev/s17/README.md); paired da0cd64b accepted: CURRENT=ee5fe249 versus A/A2, original S16, first S17 and three leave-outs;1536+390 local TASK checks pass | `7ec5f9ab1eee4a17` |
 | TASK-semantic preparation retry paired | R1.002048,95% CI[1.000129,1.003971]; A:A1.003917,CI[1.002555,1.005282];1536 TASK pass at16 unchanged fresh seeds/weights/router | New five-piece composition over prior S16; preparation uses public routing semantics on both arms, all timed AST nodes unchanged by that fix | Promote shipped4ca750a5 under declared max-SE gate. A:A mean exceeds apparent gain: marginal evidence, not a robust effect estimate. No extra small-gain sweep; larger-lever integration next | `a8c66a6d5dfc4fc2` |
 | Prior S16 guarded-nearby native merge |268/268 TASK checks,67 shapes x2 seeds x2 arms; no timing or A:A measured | Exact6e43a367 merges prior nine-piece435df5f7 with guarded range dispatch | Correct native merge, but base is superseded. Current frozenee5fe249 is rebased as1468be3e and gets80-shape native validation | `e94388270a9e4c8e` |
+| Current S16 guarded-nearby native merge |320/320 public TASK checks at80 shapes x2 seeds x2 arms,2 graph replays; packed candidate official host TASK passes, check host1.813381x. No new timing/A:A claim | Whole guarded range lookup on exact currentee5fe249, including13 official cases and B64/B65 | Freeze shippedd2b83953/expanded1468be3e under explicit nearby criterion froma793c99e: nearby gaps improve, scored dispatch unchanged. Exact final is not yet scored; larger-lever composition next | `e26bc28cfe8449f5` |
 
 Original S15 admission wrapper49ce378b was rejected422 before a job existed: its packed source had no
 explicit top-level `kernel_fn`. Entry-only repair2a4d0dde passed normal/forced full-wrapper screens and ran
